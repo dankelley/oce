@@ -1,6 +1,17 @@
 library(oce)
 context("Flags")
 
+test_that("[[ and [[<- work with ctd flags", {
+          data(section)
+          ctd <- section[["station", 100]]
+          expect_equal(c(2,2,2,2,2,3), ctd[["salinityFlag"]][1:6])
+          ctd[["salinity"]][2] <- -999
+          ctd[["salinityFlag"]] <- ifelse(ctd[["salinity"]] < 0, 3, ctd[["salinityFlag"]])
+          expect_equal(c(2,3,2,2,2,3), ctd[["salinityFlag"]][1:6])
+          ctd[["salinity"]] <- ifelse(ctd[["salinityFlag"]]!=2, NA, ctd[["salinity"]])
+          expect_equal(is.na(ctd[["salinity"]][1:6]), c(FALSE, TRUE, FALSE, FALSE, FALSE, TRUE))
+})
+
 test_that("handleFLags works with ctd data", {
           data(section)
           ctd <- section[["station", 100]]

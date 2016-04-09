@@ -118,23 +118,26 @@ lines(adp[['time']], adp[['pressure']], lwd=2)
 ## ------------------------------------------------------------------------
 data(section)
 stn <- section[["station", 100]]
-stn[["salinityFlag"]]
+head(stn[["salinityFlag"]])
 
 ## ------------------------------------------------------------------------
 # fake second datum
 stn[["salinity"]][2] <- -999
 
 ## ------------------------------------------------------------------------
-stn[["salinityFlag"]]
+stn[["salinityFlag"]] <- ifelse(stn[["salinity"]] < 0, 3, stn[["salinityFlag"]])
+
+## ------------------------------------------------------------------------
+head(stn[["salinityFlag"]])
 
 ## ------------------------------------------------------------------------
 stn2 <- stn
 stn2[["salinity"]] <- ifelse(stn2[["salinityFlag"]]!=2, NA, stn2[["salinity"]])
+head(stn2[["salinityFlag"]])
 
 ## ------------------------------------------------------------------------
 stn3 <- stn
 stn3[["salinity"]][2] <- -999
-stn3[["salinityFlag"]] <- ifelse(stn3[["salinity"]] < 0, 3, stn3[["salinityFlag"]])
 stn3 <- handleFlags(stn3, list(salinity=c(1,3:9)))
 
 ## ------------------------------------------------------------------------

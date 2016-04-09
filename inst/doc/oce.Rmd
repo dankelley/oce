@@ -474,22 +474,33 @@ lines(adp[['time']], adp[['pressure']], lwd=2)
 # Handling data-quality flags
 
 ## About flags
-Hydrographic and some other data may be accompanied with data-quality flags.
-These flags may derive from statistical checks, from a designation by a human
-analyst, or a combination of the two. For example, salinity is subject to a
-variety of instrumental and other errors, and so archives of its value
-commonly contain quality flags.
+Hydrographic and some other data may be accompanied by data-quality flags.  For
+example, salinity is subject to a variety of instrumental and other errors, and
+so archives of its value commonly contain quality flags.  These flags may
+derive from statistical checks, from the judgement of a human analyst, or a
+combination of the two.
 
-Unfortunately, different data-archiving agencies employ different flags. For
-example, the [World Hydrographic Programme](https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm)
+Some flags are in the form of numerical values (typically integers) but others
+may be expressed as character strings. A frustrating aspect of oceanographic
+analysis is that different data archiving agencies employ different systems for
+flags. For example, the [World Hydrographic
+Programme](https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm)
 designates good bottle/CTD data with a flag value of 2, whereas the [World
 Ocean
 Database](http://data.nodc.noaa.gov/woa/WOD/CODES/TXT/Definition_of_Quality_Flags.txt)
-uses 0 for good data. Other schemes are widely used, in addition to these WHP
-and WOD schemes.
+uses 0 for good data.  It is also common to indicate bad data by setting values
+to non-physical values, e.g. -999, -99.99, or similar, and sometimes these
+coded values may contradict more formal flags, when both are present.
 
-Data-quality flags are stored in the `flags` entry in the `metadata` slot
-of `oce` objects. This entry is a list, containing items with names corresponding
+Dealing with flags often requires ad hoc analysis methods, and for this reason,
+the `oce` package offers tools for dealing with flags in a variety of ways.
+The first thing to realize is that only certain data types contain flags, and
+only certain data objects will contain flags. For example, hydrographic data
+are quite likely to be provided with data-quality flags, but these are never
+provided with coastline data.
+
+Data-quality flags are stored in the `flags` entry in the `metadata` slot of
+`oce` objects. This entry is a list, containing items with names corresponding
 to names of data elements that are stored in the `data` slot. Direct
 manipulation is possible, although it is more convenient to use the `[[` and
 `[[<-` access methods provided in `oce`, or, for some tasks, the `handleFlags`
@@ -499,11 +510,11 @@ function provided by `oce`.
 
 An example should clarify a working procedure. The `section` dataset provided
 with `oce` holds many `ctd` objects that each have data-quality flags. 
-The salinity flags for the 100th station may be found as follows.
+The first few salinity flags for the 100th station may be found as follows.
 ```{r}
 data(section)
 stn <- section[["station", 100]]
-stn[["salinityFlag"]]
+head(stn[["salinityFlag"]])
 ```
 Note that these data use the WHP scheme, i.e. good data are indicated with 2,
 whereas questionable data are indicated with 3. (How these assessments were
@@ -519,12 +530,12 @@ not contain any such cases, but the situation may be simulated as follows.
 stn[["salinity"]][2] <- -999
 ```
 With this, the setting of flags might be done with
-```
+```{r}
 stn[["salinityFlag"]] <- ifelse(stn[["salinity"]] < 0, 3, stn[["salinityFlag"]])
 ```
 with a check being done with
 ```{r}
-stn[["salinityFlag"]]
+head(stn[["salinityFlag"]])
 ```
 
 It should be obvious to the reader that this procedure could be extended in
@@ -542,13 +553,13 @@ set to the missing-value code as follows, where `stn2` is the new version:
 ```{r}
 stn2 <- stn
 stn2[["salinity"]] <- ifelse(stn2[["salinityFlag"]]!=2, NA, stn2[["salinity"]])
+head(stn2[["salinityFlag"]])
 ```
 
 This can be expressed more compactly with `handleFlags`, e.g.
 ```{r}
 stn3 <- stn
 stn3[["salinity"]][2] <- -999
-stn3[["salinityFlag"]] <- ifelse(stn3[["salinity"]] < 0, 3, stn3[["salinityFlag"]])
 stn3 <- handleFlags(stn3, list(salinity=c(1,3:9)))
 ```
 
