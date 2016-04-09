@@ -129,18 +129,16 @@ stn[["salinityFlag"]]
 
 ## ------------------------------------------------------------------------
 stn2 <- stn
-stn2[["salinity"]] <- ifelse(stn[["salinityFlag"]]!=2, NA, stn[["salinity"]])
+stn2[["salinity"]] <- ifelse(stn2[["salinityFlag"]]!=2, NA, stn2[["salinity"]])
 
 ## ------------------------------------------------------------------------
-stn3 <- handleFlags(stn, list(salinity=3))
+stn3 <- stn
+stn3[["salinity"]][2] <- -999
+stn3[["salinityFlag"]] <- ifelse(stn3[["salinity"]] < 0, 3, stn3[["salinityFlag"]])
+stn3 <- handleFlags(stn3, list(salinity=c(1,3:9)))
 
 ## ------------------------------------------------------------------------
-stn3 <- handleFlags(stn, flags=list(salinity=3), actions=list(salinity="NA"))
-
-## ------------------------------------------------------------------------
-head(stn[["salinity"]]) # no NA values
-head(stn2[["salinity"]]) # NA at positions 2 and 6
-head(stn3[["salinity"]]) # as previous
+head(data.frame(stnS=stn[["salinity"]], stn2S=stn2[["salinity"]], stn3S=stn3[["salinity"]]))
 
 ## ----fig.keep="none"-----------------------------------------------------
 library(oce)

@@ -538,18 +538,21 @@ stn[[<span class="st">&quot;salinity&quot;</span>]][<span class="dv">2</span>] &
 <h2><span class="header-section-number">9.3</span> Using flags to manipulate data</h2>
 <p>A conservative approach is to set data to the missing-value code <code>NA</code> if the data-quality flag indicates a problem. For example, in the WHP scheme, values other than 2 indicate unchecked, bad or suspect data, and those data could be set to the missing-value code as follows, where <code>stn2</code> is the new version:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stn2 &lt;-<span class="st"> </span>stn
-stn2[[<span class="st">&quot;salinity&quot;</span>]] &lt;-<span class="st"> </span><span class="kw">ifelse</span>(stn[[<span class="st">&quot;salinityFlag&quot;</span>]]!=<span class="dv">2</span>, <span class="ot">NA</span>, stn[[<span class="st">&quot;salinity&quot;</span>]])</code></pre></div>
-<p>This can be expressed more compactly with</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stn3 &lt;-<span class="st"> </span><span class="kw">handleFlags</span>(stn, <span class="kw">list</span>(<span class="dt">salinity=</span><span class="dv">3</span>))</code></pre></div>
-<p>or more specifically with</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stn3 &lt;-<span class="st"> </span><span class="kw">handleFlags</span>(stn, <span class="dt">flags=</span><span class="kw">list</span>(<span class="dt">salinity=</span><span class="dv">3</span>), <span class="dt">actions=</span><span class="kw">list</span>(<span class="dt">salinity=</span><span class="st">&quot;NA&quot;</span>))</code></pre></div>
-<p>The following shows the results</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(stn[[<span class="st">&quot;salinity&quot;</span>]]) <span class="co"># no NA values</span>
-<span class="co">#&gt; [1]   36.4766 -999.0000   36.6001   36.5399   36.2388   35.7580</span>
-<span class="kw">head</span>(stn2[[<span class="st">&quot;salinity&quot;</span>]]) <span class="co"># NA at positions 2 and 6</span>
-<span class="co">#&gt; [1]   36.4766 -999.0000   36.6001   36.5399   36.2388        NA</span>
-<span class="kw">head</span>(stn3[[<span class="st">&quot;salinity&quot;</span>]]) <span class="co"># as previous</span>
-<span class="co">#&gt; [1]   36.4766 -999.0000   36.6001   36.5399   36.2388        NA</span></code></pre></div>
+stn2[[<span class="st">&quot;salinity&quot;</span>]] &lt;-<span class="st"> </span><span class="kw">ifelse</span>(stn2[[<span class="st">&quot;salinityFlag&quot;</span>]]!=<span class="dv">2</span>, <span class="ot">NA</span>, stn2[[<span class="st">&quot;salinity&quot;</span>]])</code></pre></div>
+<p>This can be expressed more compactly with <code>handleFlags</code>, e.g.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stn3 &lt;-<span class="st"> </span>stn
+stn3[[<span class="st">&quot;salinity&quot;</span>]][<span class="dv">2</span>] &lt;-<span class="st"> </span>-<span class="dv">999</span>
+stn3[[<span class="st">&quot;salinityFlag&quot;</span>]] &lt;-<span class="st"> </span><span class="kw">ifelse</span>(stn3[[<span class="st">&quot;salinity&quot;</span>]] &lt;<span class="st"> </span><span class="dv">0</span>, <span class="dv">3</span>, stn3[[<span class="st">&quot;salinityFlag&quot;</span>]])
+stn3 &lt;-<span class="st"> </span><span class="kw">handleFlags</span>(stn3, <span class="kw">list</span>(<span class="dt">salinity=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">3</span>:<span class="dv">9</span>)))</code></pre></div>
+<p>A summary of the salinities follows</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(<span class="kw">data.frame</span>(<span class="dt">stnS=</span>stn[[<span class="st">&quot;salinity&quot;</span>]], <span class="dt">stn2S=</span>stn2[[<span class="st">&quot;salinity&quot;</span>]], <span class="dt">stn3S=</span>stn3[[<span class="st">&quot;salinity&quot;</span>]]))
+<span class="co">#&gt;        stnS     stn2S   stn3S</span>
+<span class="co">#&gt; 1   36.4766   36.4766 36.4766</span>
+<span class="co">#&gt; 2 -999.0000 -999.0000      NA</span>
+<span class="co">#&gt; 3   36.6001   36.6001 36.6001</span>
+<span class="co">#&gt; 4   36.5399   36.5399 36.5399</span>
+<span class="co">#&gt; 5   36.2388   36.2388 36.2388</span>
+<span class="co">#&gt; 6   35.7580        NA      NA</span></code></pre></div>
 </div>
 </div>
 <div id="working-in-non-english-languages" class="section level1">
