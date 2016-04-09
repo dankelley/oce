@@ -117,16 +117,30 @@ lines(adp[['time']], adp[['pressure']], lwd=2)
 
 ## ------------------------------------------------------------------------
 data(section)
-stn <- section[["station",100]]
+stn <- section[["station", 100]]
 stn[["salinityFlag"]]
 
 ## ------------------------------------------------------------------------
 # fake second datum
 stn[["salinity"]][2] <- -999
-# Flag negative salinities with code 3, for bad data
-stn[["salinityFlag"]] <- ifelse(stn[["salinity"]] < 0, 3, stn[["salinityFlag"]])
-# Check the results
+
+## ------------------------------------------------------------------------
 stn[["salinityFlag"]]
+
+## ------------------------------------------------------------------------
+stn2 <- stn
+stn2[["salinity"]] <- ifelse(stn[["salinityFlag"]]!=2, NA, stn[["salinity"]])
+
+## ------------------------------------------------------------------------
+stn3 <- handleFlags(stn, list(salinity=3))
+
+## ------------------------------------------------------------------------
+stn3 <- handleFlags(stn, flags=list(salinity=3), actions=list(salinity="NA"))
+
+## ------------------------------------------------------------------------
+head(stn[["salinity"]]) # no NA values
+head(stn2[["salinity"]]) # NA at positions 2 and 6
+head(stn3[["salinity"]]) # as previous
 
 ## ----fig.keep="none"-----------------------------------------------------
 library(oce)

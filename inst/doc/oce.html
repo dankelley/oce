@@ -96,7 +96,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#tidal-harmonic-analysis"><span class="toc-section-number">7.2</span> Tidal-harmonic analysis</a></li>
 </ul></li>
 <li><a href="#acoustic-doppler-profiler-data"><span class="toc-section-number">8</span> Acoustic Doppler Profiler data</a></li>
-<li><a href="#handling-data-quality-flags"><span class="toc-section-number">9</span> Handling data-quality flags</a></li>
+<li><a href="#handling-data-quality-flags"><span class="toc-section-number">9</span> Handling data-quality flags</a><ul>
+<li><a href="#about-flags"><span class="toc-section-number">9.1</span> About flags</a></li>
+<li><a href="#retrieving-and-changing-flags"><span class="toc-section-number">9.2</span> Retrieving and changing flags</a></li>
+<li><a href="#using-flags-to-manipulate-data"><span class="toc-section-number">9.3</span> Using flags to manipulate data</a></li>
+</ul></li>
 <li><a href="#working-in-non-english-languages"><span class="toc-section-number">10</span> Working in non-English languages</a></li>
 <li><a href="#the-future-of-oce"><span class="toc-section-number">11</span> The future of oce</a></li>
 <li><a href="#development-website"><span class="toc-section-number">12</span> Development website</a></li>
@@ -506,23 +510,47 @@ latlim &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">
 </div>
 <div id="handling-data-quality-flags" class="section level1">
 <h1><span class="header-section-number">9</span> Handling data-quality flags</h1>
-<p>Hydrographic and some other data may be accompanied with data-quality flags. These flags may derive from statistical checks, from a designation by a human analysist, or a combination of the two. For example, salinity is subject to a variety of instrumental and other errors, and and so archives of its value commonly contain quality flags.</p>
+<div id="about-flags" class="section level2">
+<h2><span class="header-section-number">9.1</span> About flags</h2>
+<p>Hydrographic and some other data may be accompanied with data-quality flags. These flags may derive from statistical checks, from a designation by a human analyst, or a combination of the two. For example, salinity is subject to a variety of instrumental and other errors, and so archives of its value commonly contain quality flags.</p>
 <p>Unfortunately, different data-archiving agencies employ different flags. For example, the <a href="https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm">World Hydrographic Programme</a> designates good bottle/CTD data with a flag value of 2, whereas the <a href="http://data.nodc.noaa.gov/woa/WOD/CODES/TXT/Definition_of_Quality_Flags.txt">World Ocean Database</a> uses 0 for good data. Other schemes are widely used, in addition to these WHP and WOD schemes.</p>
-<p>The oce function <code>handleFlags()</code> is designed to help in the processing of data-quality flags. Although this function has no way to know the flag scheme used in a given dataset, it at least provides a way to perform some simple operations on flagged data, as is illustrated in its documentation entry.</p>
-<p>It is also possible to manipulate flags directly. For an example</p>
+<p>Data-quality flags are stored in the <code>flags</code> entry in the <code>metadata</code> slot of <code>oce</code> objects. This entry is a list, containing items with names corresponding to names of data elements that are stored in the <code>data</code> slot. Direct manipulation is possible, although it is more convenient to use the <code>[[</code> and <code>[[&lt;-</code> access methods provided in <code>oce</code>, or, for some tasks, the <code>handleFlags</code> function provided by <code>oce</code>.</p>
+</div>
+<div id="retrieving-and-changing-flags" class="section level2">
+<h2><span class="header-section-number">9.2</span> Retrieving and changing flags</h2>
+<p>An example should clarify a working procedure. The <code>section</code> dataset provided with <code>oce</code> holds many <code>ctd</code> objects that each have data-quality flags. The salinity flags for the 100th station may be found as follows.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(section)
-stn &lt;-<span class="st"> </span>section[[<span class="st">&quot;station&quot;</span>,<span class="dv">100</span>]]
+stn &lt;-<span class="st"> </span>section[[<span class="st">&quot;station&quot;</span>, <span class="dv">100</span>]]
 stn[[<span class="st">&quot;salinityFlag&quot;</span>]]
 <span class="co">#&gt;  [1] 2 2 2 2 2 3 3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</span></code></pre></div>
-<p>shows the flags for the 100th station in the <code>section</code> object. These data are using the WHP scheme, i.e. good data are indicated with 2, whereas questionable data are indicated with 3. (How these assessments were made is of a matter for separate discussion.)</p>
-<p>Sometimes even data flagged as good might be wildly erroneous, e.g. with numerical values of -999 or some other flag. (This would be a remnant of another scheme.) To illustrate dealing with such data, we may alter the second salinity, then set up a check for negative salinities: data.</p>
+<p>Note that these data use the WHP scheme, i.e. good data are indicated with 2, whereas questionable data are indicated with 3. (How these assessments were made is of a matter for separate discussion.)</p>
+<p>Before discussing how such flags might be handled, it is important to note that it is often necessary to alter such flags. For example, some datasets will have flags set to indicate good data, even though the data are set to -999, which is one of several old-fashioned missing-value codes. The <code>section</code> dataset does not contain any such cases, but the situation may be simulated as follows.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># fake second datum</span>
-stn[[<span class="st">&quot;salinity&quot;</span>]][<span class="dv">2</span>] &lt;-<span class="st"> </span>-<span class="dv">999</span>
-<span class="co"># Flag negative salinities with code 3, for bad data</span>
-stn[[<span class="st">&quot;salinityFlag&quot;</span>]] &lt;-<span class="st"> </span><span class="kw">ifelse</span>(stn[[<span class="st">&quot;salinity&quot;</span>]] &lt;<span class="st"> </span><span class="dv">0</span>, <span class="dv">3</span>, stn[[<span class="st">&quot;salinityFlag&quot;</span>]])
-<span class="co"># Check the results</span>
-stn[[<span class="st">&quot;salinityFlag&quot;</span>]]
-<span class="co">#&gt;  [1] 2 3 2 2 2 3 3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</span></code></pre></div>
+stn[[<span class="st">&quot;salinity&quot;</span>]][<span class="dv">2</span>] &lt;-<span class="st"> </span>-<span class="dv">999</span></code></pre></div>
+<p>With this, the setting of flags might be done with</p>
+<pre><code>stn[[&quot;salinityFlag&quot;]] &lt;- ifelse(stn[[&quot;salinity&quot;]] &lt; 0, 3, stn[[&quot;salinityFlag&quot;]])</code></pre>
+<p>with a check being done with</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stn[[<span class="st">&quot;salinityFlag&quot;</span>]]
+<span class="co">#&gt;  [1] 2 2 2 2 2 3 3 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</span></code></pre></div>
+<p>It should be obvious to the reader that this procedure could be extended in more sophisticated ways, e.g. with schemes searching for pressure inversions, large departures from a TS relationship, loops on TS diagrams, etc. It can be useful to combine automatic schemes with interactive plotting, to identify bad data.</p>
+</div>
+<div id="using-flags-to-manipulate-data" class="section level2">
+<h2><span class="header-section-number">9.3</span> Using flags to manipulate data</h2>
+<p>A conservative approach is to set data to the missing-value code <code>NA</code> if the data-quality flag indicates a problem. For example, in the WHP scheme, values other than 2 indicate unchecked, bad or suspect data, and those data could be set to the missing-value code as follows, where <code>stn2</code> is the new version:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stn2 &lt;-<span class="st"> </span>stn
+stn2[[<span class="st">&quot;salinity&quot;</span>]] &lt;-<span class="st"> </span><span class="kw">ifelse</span>(stn[[<span class="st">&quot;salinityFlag&quot;</span>]]!=<span class="dv">2</span>, <span class="ot">NA</span>, stn[[<span class="st">&quot;salinity&quot;</span>]])</code></pre></div>
+<p>This can be expressed more compactly with</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stn3 &lt;-<span class="st"> </span><span class="kw">handleFlags</span>(stn, <span class="kw">list</span>(<span class="dt">salinity=</span><span class="dv">3</span>))</code></pre></div>
+<p>or more specifically with</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stn3 &lt;-<span class="st"> </span><span class="kw">handleFlags</span>(stn, <span class="dt">flags=</span><span class="kw">list</span>(<span class="dt">salinity=</span><span class="dv">3</span>), <span class="dt">actions=</span><span class="kw">list</span>(<span class="dt">salinity=</span><span class="st">&quot;NA&quot;</span>))</code></pre></div>
+<p>The following shows the results</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(stn[[<span class="st">&quot;salinity&quot;</span>]]) <span class="co"># no NA values</span>
+<span class="co">#&gt; [1]   36.4766 -999.0000   36.6001   36.5399   36.2388   35.7580</span>
+<span class="kw">head</span>(stn2[[<span class="st">&quot;salinity&quot;</span>]]) <span class="co"># NA at positions 2 and 6</span>
+<span class="co">#&gt; [1]   36.4766 -999.0000   36.6001   36.5399   36.2388        NA</span>
+<span class="kw">head</span>(stn3[[<span class="st">&quot;salinity&quot;</span>]]) <span class="co"># as previous</span>
+<span class="co">#&gt; [1]   36.4766 -999.0000   36.6001   36.5399   36.2388        NA</span></code></pre></div>
+</div>
 </div>
 <div id="working-in-non-english-languages" class="section level1">
 <h1><span class="header-section-number">10</span> Working in non-English languages</h1>

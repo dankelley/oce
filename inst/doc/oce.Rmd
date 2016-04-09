@@ -473,10 +473,11 @@ lines(adp[['time']], adp[['pressure']], lwd=2)
 
 # Handling data-quality flags
 
+## About flags
 Hydrographic and some other data may be accompanied with data-quality flags.
 These flags may derive from statistical checks, from a designation by a human
-analysist, or a combination of the two. For example, salinity is subject to a
-variety of instrumental and other errors, and and so archives of its value
+analyst, or a combination of the two. For example, salinity is subject to a
+variety of instrumental and other errors, and so archives of its value
 commonly contain quality flags.
 
 Unfortunately, different data-archiving agencies employ different flags. For
@@ -487,35 +488,77 @@ Database](http://data.nodc.noaa.gov/woa/WOD/CODES/TXT/Definition_of_Quality_Flag
 uses 0 for good data. Other schemes are widely used, in addition to these WHP
 and WOD schemes.
 
-The oce function `handleFlags()` is designed to help in the processing of
-data-quality flags.  Although this function has no way to know the flag scheme
-used in a given dataset, it at least provides a way to perform some simple
-operations on flagged data, as is illustrated in its documentation entry.
+Data-quality flags are stored in the `flags` entry in the `metadata` slot
+of `oce` objects. This entry is a list, containing items with names corresponding
+to names of data elements that are stored in the `data` slot. Direct
+manipulation is possible, although it is more convenient to use the `[[` and
+`[[<-` access methods provided in `oce`, or, for some tasks, the `handleFlags`
+function provided by `oce`.
 
-It is also possible to manipulate flags directly. For an example
+## Retrieving and changing flags
+
+An example should clarify a working procedure. The `section` dataset provided
+with `oce` holds many `ctd` objects that each have data-quality flags. 
+The salinity flags for the 100th station may be found as follows.
 ```{r}
 data(section)
-stn <- section[["station",100]]
+stn <- section[["station", 100]]
 stn[["salinityFlag"]]
 ```
-shows the flags for the 100th station in the `section` object. These data are using
-the WHP scheme, i.e. good data are indicated with 2, whereas questionable data are indicated
-with 3. (How these assessments were made is of a matter for separate discussion.)
+Note that these data use the WHP scheme, i.e. good data are indicated with 2,
+whereas questionable data are indicated with 3. (How these assessments were
+made is of a matter for separate discussion.)
 
-Sometimes even data flagged as good might be wildly erroneous, e.g. with
-numerical values of -999 or some other flag. (This would be a remnant of
-another scheme.) To illustrate dealing with such data, we may alter the second
-salinity, then set up a check for negative salinities:
-data.
+Before discussing how such flags might be handled, it is important to note that
+it is often necessary to alter such flags. For example, some datasets will have
+flags set to indicate good data, even though the data are set to -999, which is
+one of several old-fashioned missing-value codes. The `section` dataset does
+not contain any such cases, but the situation may be simulated as follows.
 ```{r}
 # fake second datum
 stn[["salinity"]][2] <- -999
-# Flag negative salinities with code 3, for bad data
+```
+With this, the setting of flags might be done with
+```
 stn[["salinityFlag"]] <- ifelse(stn[["salinity"]] < 0, 3, stn[["salinityFlag"]])
-# Check the results
+```
+with a check being done with
+```{r}
 stn[["salinityFlag"]]
 ```
 
+It should be obvious to the reader that this procedure could be extended in
+more sophisticated ways, e.g. with schemes searching for pressure inversions,
+large departures from a TS relationship, loops on TS diagrams, etc. It can be
+useful to combine automatic schemes with interactive plotting, to identify bad
+data.
+
+## Using flags to manipulate data
+
+A conservative approach is to set data to the missing-value code `NA` if the
+data-quality flag indicates a problem. For example, in the WHP scheme, values
+other than 2 indicate unchecked, bad or suspect data, and those data could be
+set to the missing-value code as follows, where `stn2` is the new version:
+```{r}
+stn2 <- stn
+stn2[["salinity"]] <- ifelse(stn[["salinityFlag"]]!=2, NA, stn[["salinity"]])
+```
+
+This can be expressed more compactly with
+```{r}
+stn3 <- handleFlags(stn, list(salinity=3))
+```
+or more specifically with
+```{r}
+stn3 <- handleFlags(stn, flags=list(salinity=3), actions=list(salinity="NA"))
+```
+
+The following shows the results
+```{r}
+head(stn[["salinity"]]) # no NA values
+head(stn2[["salinity"]]) # NA at positions 2 and 6
+head(stn3[["salinity"]]) # as previous
+```
 
 
 
