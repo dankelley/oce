@@ -211,7 +211,7 @@ setMethod(f="[[<-",
               } else if (i == "pitch" || i == "pitchSlow") {
                   x@data$rollSlow <- value
               } else {
-                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+                  x <- callNextMethod()
               }
               ## Not checking validity because user may want to shorten items one by one, and check validity later.
               ## validObject(x)

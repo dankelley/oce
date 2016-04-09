@@ -85,7 +85,8 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,windrose-method}},
   \code{\link{plotScan}}, \code{\link{tidem-class}}
 
-Other things related to \code{met} data: \code{\link{as.met}},
+Other things related to \code{met} data: \code{\link{[[,met-method}},
+  \code{\link{[[<-,met-method}}, \code{\link{as.met}},
   \code{\link{met-class}}, \code{\link{met}},
   \code{\link{read.met}}, \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}

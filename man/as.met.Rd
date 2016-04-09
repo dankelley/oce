@@ -35,7 +35,8 @@ construct objects that behave as though read by that function.
 Dan Kelley
 }
 \seealso{
-Other things related to \code{met} data: \code{\link{met-class}},
+Other things related to \code{met} data: \code{\link{[[,met-method}},
+  \code{\link{[[<-,met-method}}, \code{\link{met-class}},
   \code{\link{met}}, \code{\link{plot,met-method}},
   \code{\link{read.met}}, \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}

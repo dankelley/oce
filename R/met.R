@@ -38,6 +38,26 @@
 #' @family things related to \code{met} data
 setClass("met", contains="oce")
 
+#' @title Extract Something From a \code{met} Object
+#' @param x A met object, i.e. one inheriting from \code{\link{met-class}}.
+#' @template sub_subTemplate
+#' @family things related to \code{met} data
+setMethod(f="[[",
+          signature(x="met", i="ANY", j="ANY"),
+          definition=function(x, i, j, ...) {
+              callNextMethod()
+          })
+
+#' @title Replace Parts of a \code{met} Object
+#' @param x An \code{met} object, i.e. inheriting from \code{\link{met-class}}
+#' @template sub_subsetTemplate
+#' @family things related to \code{met} data
+setMethod(f="[[<-",
+          signature(x="met", i="ANY", j="ANY"),
+          definition=function(x, i, j, value) {
+              callNextMethod(x=x, i=i, j=j, value=value)
+          })
+
 
 #' Sample meteorological object
 #' 

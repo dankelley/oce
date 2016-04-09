@@ -23,7 +23,8 @@ data ranges, etc.
 Dan Kelley
 }
 \seealso{
-Other things related to \code{met} data: \code{\link{as.met}},
+Other things related to \code{met} data: \code{\link{[[,met-method}},
+  \code{\link{[[<-,met-method}}, \code{\link{as.met}},
   \code{\link{met-class}}, \code{\link{met}},
   \code{\link{plot,met-method}}, \code{\link{read.met}},
   \code{\link{subset,met-method}}

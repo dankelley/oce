@@ -260,8 +260,7 @@ plot.lobo.TS <- function(lobo, ...)
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar value to be used with \code{\link{par}("mar")}.
-#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
-#' amount of debugging information, or to 2 to get more.
+#' @template debugTemplate
 #' @param \dots optional arguments passed to plotting functions.
 #' @author Dan Kelley
 #' 
