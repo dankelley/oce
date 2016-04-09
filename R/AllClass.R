@@ -255,18 +255,20 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),
           function(x, i, j, ..., value) { # FIXME: use j for e.g. times
+              ## message("in base [[<-")
+              ## message("value: ", paste(value, collapse=" "))
               ## metadata must match exactly but data can be partially matched
               if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
               } else {
                   if (length(grep("Unit$", i))) {
                       if (!("units" %in% names(x@metadata)))
-                          x@metadata$flags <- list()
+                          x@metadata$units <- list()
                       x@metadata$units[[gsub("Unit$", "", i)]] <- value
                   } else if (length(grep("Flag$", i))) {
                       if (!("flags" %in% names(x@metadata)))
-                          x@metadata$units <- list()
-                      x@metadata$units[[gsub("Flag$", "", i)]] <- value
+                          x@metadata$flags <- list()
+                      x@metadata$flags[[gsub("Flag$", "", i)]] <- value
                   } else {
                       index <- pmatch(i, names(x@data))
                       if (!is.na(index[1])) {
