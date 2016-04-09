@@ -2062,6 +2062,8 @@ read.section <- function(file, directory, sectionId="", flags,
 #' \code{"boxcar"} is best for ctd data, and the \code{"lm"} method is probably
 #' too slow to recommend for exploratory work, in which it is common to do trials
 #' with a variety of \code{"p"} values.
+#'
+#' @template flagDeletionTemplate
 #' 
 #' @param section A \code{section} object containing the section to be gridded.
 #' 
@@ -2137,9 +2139,11 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
     }
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
+    warning("Data flags are omitted from the gridded section object. Use handleFlags() first to remove bad data.")
     for (i in 1:n) {
         ##message("i: ", i, ", p before decimation: ", paste(section@data$station[[i]]@data$pressure, " "))
 	res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...)
+        res@data$station[[i]]@metadata$flags <- NULL
         ##message("i: ", i, ", p after decimation: ", paste(res@data$station[[i]]@data$pressure, " "))
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))

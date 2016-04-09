@@ -1085,6 +1085,8 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
 #' xd <- ctdDecimate(x)
 #' xd[["sigmaTheta"]] <- swSigmaTheta(xd[["salinity"]],xd[["temperature"]],xd[["pressure"]])
 #' }
+#'
+#' @template flagDeletionTemplate
 #' 
 #' @param x a \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
 #' 
@@ -1159,6 +1161,8 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
     ## if (!inherits(x, "ctd"))
     ##     stop("method is only for objects of class '", "ctd", "'")
     res <- x
+    res[["flags"]] <- NULL
+    warning("Data flags are omitted from the decimated ctd object. Use handleFlags() first to remove bad data.")
     n <- length(x@data$pressure)
     if (n < 2) {
         warning("too few data to ctdDecimate()")

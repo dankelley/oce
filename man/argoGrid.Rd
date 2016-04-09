@@ -36,14 +36,15 @@ Grid a Argo drifter, by interpolating to fixed pressure levels.
 The gridding is done with \code{\link{approx}}.  If there is
 sufficient user demand, other methods may be added, by analogy to
 \code{\link{sectionGrid}}.
+}
+\section{A note about flags}{
 
-A note about flags: because \code{argoGrid} interpolates existing
-data to create new data, any data quality flags that exist in the
-object are discarded during the processing, and a warning is
-issues. Thus, any data exclusion
-based on flags (e.g. done with \code{\link{handleFlags}})
-should be completed \strong{prior} to calling
-\code{argoGrid}.
+Any data-quality flags contained within the original object are ignored by this
+function, and the returned value contains no such flags.  This is because such
+flags represent an assessment of the original data, not of quantities derived
+from those data.  This function produces a warning to this effect. The
+recommended practice is to use \code{\link{handleFlags}} or some other means to
+deal with flags before calling the present function.
 }
 \examples{
 library(oce)

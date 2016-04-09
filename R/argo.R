@@ -363,13 +363,7 @@ ncdfFixMatrix <- function(x)
 #' sufficient user demand, other methods may be added, by analogy to
 #' \code{\link{sectionGrid}}.
 #'
-#' A note about flags: because \code{argoGrid} interpolates existing
-#' data to create new data, any data quality flags that exist in the
-#' object are discarded during the processing, and a warning is
-#' issues. Thus, any data exclusion
-#' based on flags (e.g. done with \code{\link{handleFlags}})
-#' should be completed \strong{prior} to calling
-#' \code{argoGrid}.
+#' @template flagDeletionTemplate
 #' 
 #' @return An object of \code{\link{argo-class}} that contains a pressure matrix
 #' with constant values along the first index.
@@ -395,7 +389,7 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
     nprofile <- dim[2]
     ## FIXME: modify sal, temp, and pre.  In the end, pre constant along first index
     res <- argo
-    res[['flags']] <- NULL
+    res[["flags"]] <- NULL
     warning("Data flags are omitted from the gridded object. Use handleFlags() first to remove bad data.")
     pressure <- argo[["pressure"]]
     if (missing(p)) {
