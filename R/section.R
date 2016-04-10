@@ -70,6 +70,11 @@ setClass("section", contains="oce")
 #' Multanovsky, undertaking a westward transect from the Mediterranean outflow
 #' region across to North America, with a change of heading in the last few dozen
 #' stations to run across the nominal Gulf Stream axis.
+#'
+#' The data flags follow the WHP CTD convention, i.e. 1 for uncalibrated,
+#' 2 for an acceptable measurement, 3 for a questionable measurement, 4
+#' for a bad measurement, etc; see \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+#' for further details.
 #' 
 #' @examples
 #' \dontrun{
@@ -2214,9 +2219,10 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
     warning("Data flags are omitted from the gridded section object. Use handleFlags() first to remove bad data.")
+    owarn <- options()$warn # prevent a string of warnings from ctdDecimate()
     for (i in 1:n) {
         ##message("i: ", i, ", p before decimation: ", paste(section@data$station[[i]]@data$pressure, " "))
-	res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...)
+	suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...))
         res@data$station[[i]]@metadata$flags <- NULL
         ##message("i: ", i, ", p after decimation: ", paste(res@data$station[[i]]@data$pressure, " "))
     }
