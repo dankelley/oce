@@ -23,7 +23,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{met-class}},
   \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}}, \code{\link{sealevel}},
+  \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 

@@ -517,8 +517,7 @@ stn <- section[["station", 100]]
 head(stn[["salinityFlag"]])
 ```
 Note that these data use the WHP scheme, i.e. good data are indicated with 2,
-whereas questionable data are indicated with 3. (How these assessments were
-made is of a matter for separate discussion.)
+whereas questionable data are indicated with 3.
 
 Before discussing how such flags might be handled, it is important to note that
 it is often necessary to alter such flags. For example, some datasets will have

@@ -278,9 +278,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
   \code{\link{ctd}}, \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plotScan}},
-  \code{\link{sealevelTuktoyaktuk}},
-  \code{\link{subset,ctd-method}},
+  \code{\link{plotScan}}, \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }
 

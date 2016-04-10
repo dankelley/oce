@@ -98,8 +98,8 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{odf-class}},
   \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{sealevel}}, \code{\link{section-class}},
-  \code{\link{topo-class}}, \code{\link{windrose-class}}
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
@@ -109,7 +109,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
-  \code{\link{sealevelTuktoyaktuk}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

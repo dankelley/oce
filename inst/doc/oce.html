@@ -524,7 +524,7 @@ latlim &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">
 stn &lt;-<span class="st"> </span>section[[<span class="st">&quot;station&quot;</span>, <span class="dv">100</span>]]
 <span class="kw">head</span>(stn[[<span class="st">&quot;salinityFlag&quot;</span>]])
 <span class="co">#&gt; [1] 2 2 2 2 2 3</span></code></pre></div>
-<p>Note that these data use the WHP scheme, i.e. good data are indicated with 2, whereas questionable data are indicated with 3. (How these assessments were made is of a matter for separate discussion.)</p>
+<p>Note that these data use the WHP scheme, i.e. good data are indicated with 2, whereas questionable data are indicated with 3.</p>
 <p>Before discussing how such flags might be handled, it is important to note that it is often necessary to alter such flags. For example, some datasets will have flags set to indicate good data, even though the data are set to -999, which is one of several old-fashioned missing-value codes. The <code>section</code> dataset does not contain any such cases, but the situation may be simulated as follows.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># fake second datum</span>
 stn[[<span class="st">&quot;salinity&quot;</span>]][<span class="dv">2</span>] &lt;-<span class="st"> </span>-<span class="dv">999</span></code></pre></div>

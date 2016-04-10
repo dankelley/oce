@@ -168,6 +168,8 @@ setClass("landsat", contains="satellite")
 #'
 #' @name landsat
 #' @docType data
+#'
+#' @family datasets provided with \code{oce}
 #' @family things related to \code{landsat} data
 NULL
 

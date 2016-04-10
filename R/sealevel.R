@@ -36,8 +36,9 @@ setClass("sealevel", contains="oce")
 #' where the csv file was downloaded from [1]. Note the correction of longitude
 #' sign, which is required because the data file has no indication that this is
 #' the western hemisphere.
+#'
 #' @family datasets provided with \code{oce}
-#' @family classes provided by \code{oce}
+#' @family things related to \code{sealevel} data
 NULL
 
 #' Sea-level data set acquired in 1975 at Tuktoyaktuk
@@ -82,9 +83,9 @@ NULL
 #' lines(time, detided, col="red")
 #' }
 #' 
-#' @family things related to \code{ctd} data
+#' @family datasets provided with \code{oce}
+#' @family things related to \code{sealevel} data
 NULL
-
 
 setMethod(f="initialize",
           signature="sealevel",

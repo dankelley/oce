@@ -114,6 +114,8 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{[[<-,sealevel-method}},
   \code{\link{as.sealevel}}, \code{\link{read.sealevel}},
   \code{\link{sealevel-class}},
+  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{sealevel}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }
