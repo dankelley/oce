@@ -189,6 +189,10 @@ setMethod(f="summary",
 #' If \code{i} is \code{"depth"}, then a vector containing the depths
 #' of the stations is returned.
 #'
+#' If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
+#' the potential temperatures of all the stations are returned in one 
+#' vector.
+#'
 #' If \code{i} is a string ending with \code{"Flag"}, then the characters
 #' prior to that ending are taken to be the name of a variable contained
 #' within the stations in the section. If this flag is available in 
@@ -209,6 +213,7 @@ setMethod(f="[[",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
               ## Data-quality flags are a special case
+              res <- NULL
               if (1 == length(grep(".*Flag$", i))) {
                   baseName <- gsub("Flag$", "", i)
                   if (baseName %in% names(x@data$station[[1]]@metadata$flags)) {
@@ -217,6 +222,11 @@ setMethod(f="[[",
                   } else {
                       stop("the stations within this section do not contain a '", baseName, "' flag")
                   }
+              }
+              ## some derived things (not all ... be sure to document when adding things!)
+              if (i == "theta" || i == "potential temperature") {
+                  res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
+                  return(res)
               }
               if (i %in% names(x@metadata)) {
                   if (i %in% c("longitude", "latitude")) {

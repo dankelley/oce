@@ -53,6 +53,10 @@ returned, using \code{\link{geodDist}}.
 If \code{i} is \code{"depth"}, then a vector containing the depths
 of the stations is returned.
 
+If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
+the potential temperatures of all the stations are returned in one 
+vector.
+
 If \code{i} is a string ending with \code{"Flag"}, then the characters
 prior to that ending are taken to be the name of a variable contained
 within the stations in the section. If this flag is available in 
