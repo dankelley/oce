@@ -53,6 +53,12 @@ returned, using \code{\link{geodDist}}.
 If \code{i} is \code{"depth"}, then a vector containing the depths
 of the stations is returned.
 
+If \code{i} is a string ending with \code{"Flag"}, then the characters
+prior to that ending are taken to be the name of a variable contained
+within the stations in the section. If this flag is available in 
+the first station of the section, then the flag values are looked
+up for every station.
+
 If none of the conditions listed above holds, the general
 method is used (see \sQuote{Details of the general method}).
 }

@@ -189,6 +189,12 @@ setMethod(f="summary",
 #' If \code{i} is \code{"depth"}, then a vector containing the depths
 #' of the stations is returned.
 #'
+#' If \code{i} is a string ending with \code{"Flag"}, then the characters
+#' prior to that ending are taken to be the name of a variable contained
+#' within the stations in the section. If this flag is available in 
+#' the first station of the section, then the flag values are looked
+#' up for every station.
+#'
 #' If none of the conditions listed above holds, the general
 #' method is used (see \sQuote{Details of the general method}).
 #'
@@ -202,6 +208,16 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              ## Data-quality flags are a special case
+              if (1 == length(grep(".*Flag$", i))) {
+                  baseName <- gsub("Flag$", "", i)
+                  if (baseName %in% names(x@data$station[[1]]@metadata$flags)) {
+                      res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
+                      return(res)
+                  } else {
+                      stop("the stations within this section do not contain a '", baseName, "' flag")
+                  }
+              }
               if (i %in% names(x@metadata)) {
                   if (i %in% c("longitude", "latitude")) {
                       if (!missing(j) && "byStation" == j) {
