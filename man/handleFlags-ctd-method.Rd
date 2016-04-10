@@ -3,7 +3,7 @@
 \docType{methods}
 \name{handleFlags,ctd-method}
 \alias{handleFlags,ctd-method}
-\title{Handle flags in CTD objects}
+\title{Handle flags in \code{ctd} objects}
 \usage{
 \S4method{handleFlags}{ctd}(object, flags = list(), actions = list())
 }
@@ -109,6 +109,7 @@ plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
 }
 \seealso{
 Other functions that handle data-quality flags: \code{\link{handleFlags,argo-method}},
+  \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}}
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},

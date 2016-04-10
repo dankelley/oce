@@ -151,7 +151,7 @@ NULL
 ## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
-#' @title Handle flags in CTD objects
+#' @title Handle flags in \code{ctd} objects
 #' @details
 #' If \code{flags} and \code{actions} are not provided, the
 #' default is to use WHP (World Hydrographic Program) flags [1], in which the

@@ -104,6 +104,54 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
+## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
+## DEVELOPERS: marked '# DEVELOPER 1:', etc.
+#' @title Handle flags in section objects
+#' @details
+#' If \code{flags} and \code{actions} are not provided, the
+#' default is to use WHP (World Hydrographic Program) flags [1], in which the
+#' value 2 indicates good data, and other values indicate either unchecked,
+#' suspicious, or bad data. Any data not flagged as good are set
+#' to \code{NA} in the returned value. Since WHP flag codes run
+#' from 1 to 9, this default is equivalent to
+#' setting \code{flags=list(all=c(1, 3:9))} along with
+#' \code{action=list("NA")}.
+#' @param object An object of \code{\link{section-class}}.
+#' @template handleFlagsTemplate
+#' @references
+#' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+#' @examples
+#' library(oce)
+#' data(section)
+#' section2 <- handleFlags(section)
+#' par(mfrow=c(2,1))
+#' plotTS(section)
+#' plotTS(section2)
+#'
+#' @family things related to \code{section} data
+setMethod("handleFlags",
+          c(object="section", flags="ANY", actions="ANY"),
+          function(object, flags=list(), actions=list()) {
+              ## DEVELOPER 1: alter the next comment to explain your setup
+              ## Default to the World Hydrographic Program system, with
+              ## flags from 1 to 9, with flag=2 for acceptable data.
+              if (missing(flags))
+                  flags <- list(c(1, 3:9)) # DEVELOPER 2: alter this line to suit a newdata class
+              if (missing(actions)) {
+                  actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
+                  names(actions) <- names(flags)
+              }
+              if (any(names(actions)!=names(flags))) {
+                  stop("names of flags and actions must match")
+              }
+              res <- object
+              for (i in seq_along(res@data$station)) {
+                  res@data$station[[i]] <- handleFlags(res@data$station[[i]], flags, actions)
+              }
+              res
+          })
+
 
 #' Summarize an oceanographic section
 #' 

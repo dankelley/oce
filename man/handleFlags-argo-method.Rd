@@ -92,6 +92,7 @@ argoNew <- handleFlags(argo, flags=list(salinity=4))
 }
 \seealso{
 Other functions that handle data-quality flags: \code{\link{handleFlags,ctd-method}},
+  \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}}
 
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
