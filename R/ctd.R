@@ -2993,12 +2993,17 @@ woceNames2oceNames <- function(names)
     ## FIXME: list, partly because the present function should be documented, and that documentation
     ## FIXME: should list a source.
     ## SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
-    names <- gsub("CTDOXY.*", "oxygen", names)
-    names <- gsub("CTDPRS.*", "pressure", names)
-    names <- gsub("CTDSAL.*", "salinity", names)
-    names <- gsub("CTDTMP.*", "temperature", names)
-    names <- gsub("OXYGEN.*", "oxygen", names)
-    names <- gsub("SALNTY.*", "salinityBottle", names)
+    names <- gsub("_FLAG_W", "Flag", names)
+    names <- gsub("CTDOXY", "oxygen", names)
+    names <- gsub("CTDPRS", "pressure", names)
+    names <- gsub("CTDSAL", "salinity", names)
+    names <- gsub("CTDTMP", "temperature", names)
+    names <- gsub("OXYGEN", "oxygen", names)
+    names <- gsub("SALNTY", "salinityBottle", names)
+    names <- gsub("SILCAT", "silicate", names)
+    names <- gsub("NITRIT", "nitrite", names)
+    names <- gsub("NO2+NO3", "nitrite+nitrate", names)
+    names <- gsub("PHSPHT", "phosphate", names)
     names
 }
 
@@ -3123,6 +3128,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         res@metadata$filename.orig <- filename.orig # from instrument
         res@metadata$systemUploadTime <- systemUploadTime
         res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+                                   salinity=list(unit=expression(), scale="PSS-78"),
                                    conductivity=list(unit=expression(ratio), scale=""))
         res@metadata$pressureType <- "sea"
         res@metadata$ship <- ship
@@ -3262,38 +3268,55 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         oxygen <- vector("numeric", nlines)
         b <- 0
         oceDebug(debug, "pcol:", pcol, ", Scol:", Scol, ", Tcol:", Tcol, ", Ocol:", Ocol, "\n")
-        for (iline in 1:nlines) {
-            if (0 < (length(grep("END_DATA", lines[iline]))))
-                break
-            items <- strsplit(lines[iline], ",")[[1]]
-            pressure[iline] <- as.numeric(items[pcol])
-            salinity[iline] <- as.numeric(items[Scol])
-            temperature[iline] <- as.numeric(items[Tcol])
-            oxygen[iline] <- as.numeric(items[Ocol])
-            if (monitor) {
-                cat(".")
-                if (!((b+1) %% 50))
-                    cat(b+1, "\n")
-            }
-            b <- b + 1
-        }
-        pressure <- pressure[1:b]
-        temperature <- temperature[1:b]
-        salinity <- salinity[1:b]
-        oxygen <- oxygen[1:b]
-        if (monitor)
-            cat("\nRead", b-1, "lines of data\n")
-        pressure[pressure == missing.value] <- NA
-        salinity[salinity == missing.value] <- NA
-        temperature[temperature == missing.value] <- NA
-        sigmaTheta <- swSigmaTheta(salinity, temperature, pressure)
-        data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta)
-        names <- c("pressure", "salinity", "temperature", "sigmaTheta", "oxygen")
-        labels <- c("Pressure", "Salinity", "Temperature", "Sigma Theta", "Oxygen")
-        if (length(oxygen) > 0) {
-            oxygen[oxygen == missing.value] <- NA
-            data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
-        }
+        m <- matrix(NA, nrow=nlines, ncol=length(varNames))
+        ending <- grep("END_DATA", lines)
+        if (length(ending) == 1)
+            lines <- lines[-ending]
+        varNamesOce <- woceNames2oceNames(varNames)
+        nonflags <- grep("Flag$",varNamesOce, invert=TRUE)
+        flags <- grep("Flag$",varNamesOce)
+        dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=woceNames2oceNames(varNames))
+        data <- as.list(dataAndFlags[, nonflags])
+        flags <- as.list(dataAndFlags[, flags])
+        names(flags) <- gsub("Flag", "", names(flags))
+        ## --- CHOP BELOW AFTER NEXT GIT PUSH ---
+        ## if (FALSE) {
+        ##     for (iline in 1:nlines) {
+        ##         if (0 < (length(grep("END_DATA", lines[iline]))))
+        ##             break
+        ##         items <- strsplit(lines[iline], ",")[[1]]
+        ##         pressure[iline] <- as.numeric(items[pcol])
+        ##         salinity[iline] <- as.numeric(items[Scol])
+        ##         temperature[iline] <- as.numeric(items[Tcol])
+        ##         oxygen[iline] <- as.numeric(items[Ocol])
+        ##         if (monitor) {
+        ##             cat(".")
+        ##             if (!((b+1) %% 50))
+        ##                 cat(b+1, "\n")
+        ##         }
+        ##         b <- b + 1
+        ##     }
+        ##     pressure <- pressure[1:b]
+        ##     temperature <- temperature[1:b]
+        ##     salinity <- salinity[1:b]
+        ##     oxygen <- oxygen[1:b]
+        ##     if (monitor)
+        ##         cat("\nRead", b-1, "lines of data\n")
+        ##     pressure[pressure == missing.value] <- NA
+        ##     salinity[salinity == missing.value] <- NA
+        ##     temperature[temperature == missing.value] <- NA
+        ##     sigmaTheta <- swSigmaTheta(salinity, temperature, pressure)
+        ##     data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta)
+        ##     names <- c("pressure", "salinity", "temperature", "sigmaTheta", "oxygen")
+        ##     labels <- c("Pressure", "Salinity", "Temperature", "Sigma Theta", "Oxygen")
+        ##     if (length(oxygen) > 0) {
+        ##         oxygen[oxygen == missing.value] <- NA
+        ##         data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
+        ##     }
+        ## }
+        ## --- CHOP ABOVE ---
+        names <- names(data)
+        labels <- names # should capitalize
         if (is.na(waterDepth)) {
             waterDepth <- max(abs(data$pressure), na.rm=TRUE)
             waterDepthWarning <- TRUE
@@ -3306,6 +3329,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         res@metadata$filename.orig <- filename.orig # from instrument
         res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
                                    conductivity=list(unit=expression(ratio), scale=""))
+        res@metadata$flags <- flags
         res@metadata$pressureType <- "sea"
         res@metadata$systemUploadTime <- systemUploadTime
         res@metadata$ship <- ship

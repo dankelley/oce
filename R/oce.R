@@ -778,6 +778,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 return("met") # FIXME: may be other things too ...
             } else if (1 == length(grep("Station_Name,", someLines, useBytes=TRUE))) {
                 return("sealevel")
+            } else if (1 == length(grep("CTD,", someLines, useBytes=TRUE))) {
+                return("ctd/woce/exchange")
+            } else if (1 == length(grep("BOTTLE,", someLines, useBytes=TRUE))) {
+                return("section")
             } else {
                 return("unknown")
             }

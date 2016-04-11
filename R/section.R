@@ -2005,6 +2005,7 @@ read.section <- function(file, directory, sectionId="", flags,
         if (1 == length(wf <- which(var.names=="NITRAT_FLAG_W")))
             flags$nitrate <- as.numeric(data[, wf - col.start + 1])
     } else nitrate <- NULL
+    haveNO2plusNO3 <- FALSE
     if (1 == length(w <- which(var.names=="NO2+NO3"))) {
         haveNO2plusNO3 <- TRUE
         no2plusno3 <- as.numeric(data[, w - col.start + 1])
