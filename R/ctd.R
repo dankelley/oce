@@ -898,12 +898,12 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             stop("lengths of salinity and pressure must match, but they are ", nS, " and ", np)
         if (missing(scan))
             scan <- as.numeric(seq_along(salinity))
-        data <- list(salinity=salinity,
+        data <- list(scan=scan,
+                     salinity=salinity,
                      temperature=temperature,
                      pressure=pressure,
                      sigmaTheta=swSigmaTheta(salinity, temperature, pressure)) # FIXME: what about gsw?
         res@metadata$units$sigmaTheta <- list(unit=expression(kg/m^3), scale="")
-        if (!missing(scan)) data$scan <- as.vector(scan)
         if (!missing(conductivity)) data$conductivity <- as.vector(conductivity)
         if (!missing(quality)) data$quality <- quality
         if (!missing(oxygen)) data$oxygen <- oxygen
