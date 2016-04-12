@@ -168,6 +168,19 @@ dataLabel <- function(names, units)
     res
 }
 
+#' Capitalize first letter of each of a vector of words
+#'
+#' This is used in making labels for data names in some ctd functions
+#' @param w vector of character strings
+#' @return vector of strings patterned on \code{w} but with first letter
+#' in upper case and others in lower case
+titleCase <- function(w)
+{
+    unlist(lapply(seq_along(w),
+                  function(i) paste(toupper(substr(w[i], 1, 1)),
+                                    tolower(substr(w[i], 2, nchar(w[i]))), sep="")))
+}
+
 curl <- function(u, v, x, y, geographical=FALSE, method=1)
 {
     if (missing(u)) stop("must supply u")

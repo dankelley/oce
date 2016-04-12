@@ -71,6 +71,7 @@ of some particular files being used in the author's research.
 \seealso{
 Other functions that handle \code{ctd} data: \code{\link{read.ctd.itp}},
   \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}}
 }
 

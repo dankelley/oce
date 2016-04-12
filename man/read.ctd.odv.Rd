@@ -69,6 +69,7 @@ oce package.)
 \seealso{
 Other functions that handle \code{ctd} data: \code{\link{read.ctd.itp}},
   \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}}
 }
 

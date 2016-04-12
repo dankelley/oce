@@ -234,7 +234,7 @@ setMethod(f="initialize",
               .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
               names <- names(.Object@data)
               .Object@metadata$names <- names
-              .Object@metadata$labels <- paste(toupper(substring(names,1,1)), substring(names,2),sep="")
+              .Object@metadata$labels <- titleCase(names) # paste(toupper(substring(names,1,1)), substring(names,2),sep="")
               ##.Object@metadata$filename <- filename
               if (missing(units)) {
                   .Object@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
@@ -931,7 +931,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ##20150712                                              "inferred water depth from maximum pressure")
         ##20150712 }
         names <- names(data)
-        labels <- paste(toupper(substring(names,1,1)),substring(names,2),sep="")
+        labels <- titleCase(names) # paste(toupper(substring(names,1,1)),substring(names,2),sep="")
         if (length(longitude) != length(latitude))
             stop("lengths of longitude and latitude must match")
         if (1 < length(longitude) && length(longitude) != length(salinity))
@@ -3007,15 +3007,15 @@ woceNames2oceNames <- function(names)
     names
 }
 
-#' Read a WOCE-type CTD file
+#' Read a WOCE-type CTD file in which the first word is "CTD"
 #' @template readCtdTemplate
 #'
 #' @details
 #' \code{read.ctd.woce()} reads files stored in the exchange format used
-#' by the World Ocean Circulation Experiment (WOCE), i.e. the first 4 characters
-#' of the first line being ``\code{CTD,}''), and also in a rarer format with
-#' the first 3 characters being ``\code{CTD}'' followed by a blank or the end of
-#' end of the line.
+#' by the World Ocean Circulation Experiment (WOCE), in which the first 4
+#' characters are ``\code{CTD,}''. It also also in a rarer format with
+#' the first 3 characters are \code{CTD}'' followed by a blank or the end
+#' of the line.
 #'
 #' @references
 #' The WOCE-exchange format is described at
@@ -3261,14 +3261,14 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         varUnits <- strsplit(line, split=",")[[1]]
         lines <- readLines(file)
-        nlines <- length(lines)
-        pressure <- vector("numeric", nlines)
-        temperature <- vector("numeric", nlines)
-        salinity <- vector("numeric", nlines)
-        oxygen <- vector("numeric", nlines)
-        b <- 0
+        ## nlines <- length(lines)
+        ## pressure <- vector("numeric", nlines)
+        ## temperature <- vector("numeric", nlines)
+        ## salinity <- vector("numeric", nlines)
+        ## oxygen <- vector("numeric", nlines)
+        ## b <- 0
         oceDebug(debug, "pcol:", pcol, ", Scol:", Scol, ", Tcol:", Tcol, ", Ocol:", Ocol, "\n")
-        m <- matrix(NA, nrow=nlines, ncol=length(varNames))
+        ##m <- matrix(NA, nrow=nlines, ncol=length(varNames))
         ending <- grep("END_DATA", lines)
         if (length(ending) == 1)
             lines <- lines[-ending]
@@ -3279,44 +3279,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         data <- as.list(dataAndFlags[, nonflags])
         flags <- as.list(dataAndFlags[, flags])
         names(flags) <- gsub("Flag", "", names(flags))
-        ## --- CHOP BELOW AFTER NEXT GIT PUSH ---
-        ## if (FALSE) {
-        ##     for (iline in 1:nlines) {
-        ##         if (0 < (length(grep("END_DATA", lines[iline]))))
-        ##             break
-        ##         items <- strsplit(lines[iline], ",")[[1]]
-        ##         pressure[iline] <- as.numeric(items[pcol])
-        ##         salinity[iline] <- as.numeric(items[Scol])
-        ##         temperature[iline] <- as.numeric(items[Tcol])
-        ##         oxygen[iline] <- as.numeric(items[Ocol])
-        ##         if (monitor) {
-        ##             cat(".")
-        ##             if (!((b+1) %% 50))
-        ##                 cat(b+1, "\n")
-        ##         }
-        ##         b <- b + 1
-        ##     }
-        ##     pressure <- pressure[1:b]
-        ##     temperature <- temperature[1:b]
-        ##     salinity <- salinity[1:b]
-        ##     oxygen <- oxygen[1:b]
-        ##     if (monitor)
-        ##         cat("\nRead", b-1, "lines of data\n")
-        ##     pressure[pressure == missing.value] <- NA
-        ##     salinity[salinity == missing.value] <- NA
-        ##     temperature[temperature == missing.value] <- NA
-        ##     sigmaTheta <- swSigmaTheta(salinity, temperature, pressure)
-        ##     data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta)
-        ##     names <- c("pressure", "salinity", "temperature", "sigmaTheta", "oxygen")
-        ##     labels <- c("Pressure", "Salinity", "Temperature", "Sigma Theta", "Oxygen")
-        ##     if (length(oxygen) > 0) {
-        ##         oxygen[oxygen == missing.value] <- NA
-        ##         data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
-        ##     }
-        ## }
-        ## --- CHOP ABOVE ---
         names <- names(data)
-        labels <- names # should capitalize
+        labels <- titleCase(names)
         if (is.na(waterDepth)) {
             waterDepth <- max(abs(data$pressure), na.rm=TRUE)
             waterDepthWarning <- TRUE
@@ -3361,6 +3325,13 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     res
 }
 
+#' Read a WOCE-type CTD file with first word "EXPOCODE"
+#' @template readCtdTemplate
+#'
+#' @details
+#' \code{read.ctd.woce.other()} reads files stored in the exchange format used
+#' by the World Ocean Circulation Experiment (WOCE), in which the first
+#' word in the file is \code{EXPOCODE}.
 read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                                 debug=getOption("oceDebug"), processingLog, ...)
 {

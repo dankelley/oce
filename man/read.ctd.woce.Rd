@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{read.ctd.woce}
 \alias{read.ctd.woce}
-\title{Read a WOCE-type CTD file}
+\title{Read a WOCE-type CTD file in which the first word is "CTD"}
 \usage{
 read.ctd.woce(file, columns = NULL, station = NULL, missing.value = -999,
   monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
@@ -48,17 +48,17 @@ variable across data formats, because the meta-information provided
 in those formats varies widely.
 }
 \description{
-Read a WOCE-type CTD file
+Read a WOCE-type CTD file in which the first word is "CTD"
 
 The \code{read.ctd} family of functions can read a variety of CTD
 data formats. See \dQuote{Details}.
 }
 \details{
 \code{read.ctd.woce()} reads files stored in the exchange format used
-by the World Ocean Circulation Experiment (WOCE), i.e. the first 4 characters
-of the first line being ``\code{CTD,}''), and also in a rarer format with
-the first 3 characters being ``\code{CTD}'' followed by a blank or the end of
-end of the line.
+by the World Ocean Circulation Experiment (WOCE), in which the first 4
+characters are ``\code{CTD,}''. It also also in a rarer format with
+the first 3 characters are \code{CTD}'' followed by a blank or the end
+of the line.
 }
 \author{
 Dan Kelley
@@ -72,6 +72,7 @@ and a sample file is at
 \seealso{
 Other functions that handle \code{ctd} data: \code{\link{read.ctd.itp}},
   \code{\link{read.ctd.odf}}, \code{\link{read.ctd.odv}},
-  \code{\link{read.ctd.sbe}}, \code{\link{read.ctd}}
+  \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}}, \code{\link{read.ctd}}
 }
 

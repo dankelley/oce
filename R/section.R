@@ -2220,7 +2220,6 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
     warning("Data flags are omitted from the gridded section object. Use handleFlags() first to remove bad data.")
-    owarn <- options()$warn # prevent a string of warnings from ctdDecimate()
     for (i in 1:n) {
         ##message("i: ", i, ", p before decimation: ", paste(section@data$station[[i]]@data$pressure, " "))
 	suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...))
