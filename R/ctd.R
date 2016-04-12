@@ -897,7 +897,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if (nS != np)
             stop("lengths of salinity and pressure must match, but they are ", nS, " and ", np)
         if (missing(scan))
-            scan <- as.numeric(seq_along(salinity))
+            scan <- seq_along(salinity)
+        scan <- as.numeric(scan)
         data <- list(scan=scan,
                      salinity=salinity,
                      temperature=temperature,
