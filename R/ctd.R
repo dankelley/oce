@@ -3471,6 +3471,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     date <- recovery <- NA
     header <- c()
     col.names.inferred <- NULL
+    found.scan <- FALSE
     found.time <- FALSE
     found.pressure <- FALSE
     found.depth <- FALSE
