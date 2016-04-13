@@ -51,7 +51,15 @@ available as \code{x[["conservative temperature"]]} (or
 \code{x[["CT"]]}).  The GSW reference salinity is \code{x[["SR"]]},
 and preformed salinity is \code{x[["Sstar"]]}.
 
-Similarly, a ctd object normally contains pressure, but both
+Various densities can be retrieved:
+\code{x[["sigma0"]]} yields potential density referenced to the surface, using \code{\link{swSigma0}},
+\code{x[["sigma1"]]} yields potential density referenced to 1000dbar, using \code{\link{swSigma1}},
+\code{x[["sigma2"]]} yields potential density referenced to 2000dbar, using \code{\link{swSigma2}},
+\code{x[["sigma3"]]} yields potential density referenced to 3000dbar, using \code{\link{swSigma3}},
+and
+\code{x[["sigma4"]]} yields potential density referenced to 4000dbar, using \code{\link{swSigma4}}
+
+A ctd object normally contains pressure, but both
 vertical coordinate and depth can be obtained, with 
 \code{x[["z"]]} and \code{x[["depth"]]}, respectively.
 

@@ -1392,7 +1392,7 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
 #' @examples
 #' swSigma0(35, 13, 1000)
 #' @family functions that calculate seawater properties
-swSigma0 <- function(salinity, temperature, pressure,
+swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=0,
@@ -1413,7 +1413,7 @@ swSigma0 <- function(salinity, temperature, pressure,
 #' @author Dan Kelley
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
-swSigma1 <- function(salinity, temperature, pressure,
+swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=1000,
@@ -1434,7 +1434,7 @@ swSigma1 <- function(salinity, temperature, pressure,
 #' @author Dan Kelley
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
-swSigma2 <- function(salinity, temperature, pressure,
+swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=2000,
@@ -1455,7 +1455,7 @@ swSigma2 <- function(salinity, temperature, pressure,
 #' @author Dan Kelley
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
-swSigma3 <- function(salinity, temperature, pressure,
+swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=3000,
@@ -1476,7 +1476,7 @@ swSigma3 <- function(salinity, temperature, pressure,
 #' @author Dan Kelley
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
-swSigma4 <- function(salinity, temperature, pressure,
+swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=4000,

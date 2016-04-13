@@ -335,7 +335,15 @@ setMethod(f="summary",
 #' \code{x[["CT"]]}).  The GSW reference salinity is \code{x[["SR"]]},
 #' and preformed salinity is \code{x[["Sstar"]]}.
 #'
-#' Similarly, a ctd object normally contains pressure, but both
+#' Various densities can be retrieved:
+#' \code{x[["sigma0"]]} yields potential density referenced to the surface, using \code{\link{swSigma0}},
+#' \code{x[["sigma1"]]} yields potential density referenced to 1000dbar, using \code{\link{swSigma1}},
+#' \code{x[["sigma2"]]} yields potential density referenced to 2000dbar, using \code{\link{swSigma2}},
+#' \code{x[["sigma3"]]} yields potential density referenced to 3000dbar, using \code{\link{swSigma3}},
+#' and
+#' \code{x[["sigma4"]]} yields potential density referenced to 4000dbar, using \code{\link{swSigma4}}
+#'
+#' A ctd object normally contains pressure, but both
 #' vertical coordinate and depth can be obtained, with 
 #' \code{x[["z"]]} and \code{x[["depth"]]}, respectively.
 #'
@@ -377,6 +385,16 @@ setMethod(f="[[",
                   swN2(x)
               } else if (i == "sigmaTheta") {
                   swSigmaTheta(x)
+              } else if (i == "sigma0") {
+                  swSigma0(x)
+              } else if (i == "sigma1") {
+                  swSigma1(x)
+              } else if (i == "sigma2") {
+                  swSigma2(x)
+              } else if (i == "sigma3") {
+                  swSigma3(x)
+              } else if (i == "sigma4") {
+                  swSigma4(x)
               } else if (i %in% c("theta", "potential temperature")) {
                   swTheta(x)
               } else if (i == "Rrho") {
@@ -1498,6 +1516,11 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 #' \code{method="downcast"}, although it is almost always best to use \code{\link{plotScan}} to
 #' investigate the data, and then use the \code{method="index"} or \code{method="scan"} method based on
 #' visual inspection of the data.
+#'
+#' \code{ctdTrim} begins by examining the pressure differences between subsequent samples. If
+#' these are all of the same value, then the input \code{ctd} object is returned, unaltered.
+#' This handles the case of pressure-binned data. However, if the pressure difference
+#' varies, a variety of approaches are taken to trimming the dataset.
 #' 
 #' \itemize{
 #'   \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to only data for
@@ -1596,12 +1619,18 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
     methodIsFunction <- !missing(method) && is.function(method)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
+    pressure <- x[["pressure"]]
+    if (1 == length(unique(diff(pressure)))) {
+        oceDebug(debug, "diff(p) is constant, so return input unaltered\n", unindent=1)
+        oceDebug(debug, "} # ctdTrim()\n", unindent=1)
+        return(x)
+    }
     if (!("scan" %in% names(x@data))) {
-        x@data$scan <- seq_along(x@data[["pressure"]])
+        x@data$scan <- seq_along(pressure)
     }
     res <- x
     if (!methodIsFunction) {
-        n <- length(x@data$pressure)
+        n <- length(pressure)
         if (n < 2) {
             warning("too few data to ctdTrim()")
             return(res)
@@ -1680,7 +1709,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 }
             }
             oceDebug(debug, 'pmin=', pmin, '\n')
-            keep <- (x@data$pressure > pmin) # 2. in water (or below start depth)
+            keep <- (pressure > pmin) # 2. in water (or below start depth)
             ## 2014-01-08 delta.p <- diff(x@data$pressure)  # descending
             ## 2014-01-08 delta.p <- c(delta.p[1], delta.p) # to get right length
             ## 2014-01-08 ## previous to this time, we had
@@ -1697,10 +1726,10 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             ##2015-04-04 max.spot <- which.max(smooth(x@data$pressure[trim.top:trim.bottom],kind="3R"))
             ##2015-04-04 max.location <- trim.top + max.spot
             ##2015-04-04 keep[max.location:n] <- FALSE
-            max.location <- which.max(smooth(x@data$pressure, kind="3R"))
+            max.location <- which.max(smooth(pressure, kind="3R"))
             keep[max.location:n] <- FALSE
             oceDebug(debug, "removed data at indices from ", max.location,
-                     " (where pressure is ", x@data$pressure[max.location], ") to the end of the data\n", sep="")
+                     " (where pressure is ", pressure[max.location], ") to the end of the data\n", sep="")
             ## 2011-02-04 if (FALSE) {
             ## 2011-02-04     ## deleted method: slowly-falling data
             ## 2011-02-04     delta.p.sorted <- sort(delta.p)
@@ -1744,7 +1773,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                     oceDebug(debug-1, "bilinearB s0=", s0, "dpds=", dpds, "\n")
                     ifelse(s < s0, 0, dpds*(s-s0))
                 }
-                pp <- x@data$pressure[keep]
+                pp <- pressure[keep]
                 pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
                 ss <- x@data$scan[keep]
                 ##look <- smooth(pp) < 20 # smooth because in-air can sometimes be crazy high
@@ -1837,7 +1866,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
     ##     waterDepthWarning <- TRUE
     ## }
     if (removeDepthInversions) {
-        badDepths <- c(FALSE, diff(res@data$pressure) <= 0)
+        badDepths <- c(FALSE, diff(pressure) <= 0)
         nbad <- sum(badDepths)
         if (nbad > 0) {
             for (col in seq_along(x@data))
@@ -2809,6 +2838,12 @@ setMethod(f="subset",
 #' for pressure vs scan, 2 for \code{diff(pressure)} vs scan, 3 for temperature vs
 #' scan, and 4 for salinity vs scan.
 #' 
+#' @param xtype Character string indicating variable for the x axis. May be
+#' \code{"scan"} (the default) or \code{"time"}. In the former case, a
+#' \code{scan} variable will be created using \code{\link{seq_along}},
+#' if necessary. In the latter case, an error results if the \code{data}
+#' slot of \code{x} lacks a variable called \code{time}.
+#'
 #' @param type Line type.
 #' 
 #' @param mgp Three-element numerical vector to use for \code{par(mgp)}, and also
@@ -2830,8 +2865,8 @@ setMethod(f="subset",
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{ctd} data
-plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
-                     mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]), ...)
+plotScan <- function(x, which=1, xtype="scan",
+                     type='l', mgp=getOption("oceMgp"), mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]), ...)
 {
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
@@ -2840,52 +2875,45 @@ plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
         par(mfrow=c(nw,1))
     par(mar=mar)
     par(mgp=mgp)
-    scan <- if (("scan" %in% names(x@data))) x[["scan"]] else seq_along(x@data$pressure)
+    xtype <- match.arg(xtype, c("scan", "time"))
     for (w in which) {
-        if (w == 1) {
-            plot(scan, x@data$pressure, ylab=resizableLabel("p", "y"), xlab="Scan", yaxs='r', type=type, ...)
-        } else if (w == 2) {
-            dp <- diff(x@data$pressure)
-            dp <- c(dp, dp[length(dp)])
-            plot(scan, dp, ylab="diff(pressure)", xlab="Scan", yaxs='r', type=type, ...)
-        } else if (w == 3) {
-            dp <- diff(x@data$pressure)
-            dp <- c(dp, dp[length(dp)])
-            plot(scan, x[["temperature"]], ylab=resizableLabel("T", "y"),
-                 xlab="Scan", yaxs='r', type=type, ...)
-        } else if (w == 4) {
-            dp <- diff(x@data$pressure)
-            dp <- c(dp, dp[length(dp)])
-            plot(scan, x[["salinity"]], ylab=resizableLabel("S", "y"),
-                 xlab="Scan", yaxs='r', type=type, ...)
-        } else {
-            stop("unknown 'which'; must be in 1:4")
+        if (xtype == "scan") {
+            xvar <- if (("scan" %in% names(x@data))) x[["scan"]] else seq_along(x@data$pressure)
+            if (w == 1) {
+                plot(xvar, x@data$pressure, xlab="Scan", ylab=resizableLabel("p", "y"),
+                     yaxs='r', type=type, ...)
+            } else if (w == 2) {
+                plot(xvar[-1], diff(x@data$pressure), xlab="Scan", ylab="diff(pressure)",
+                     yaxs='r', type=type, ...)
+            } else if (w == 3) {
+                plot(xvar, x[["temperature"]], xlab="Scan", ylab=resizableLabel("T", "y"),
+                     yaxs='r', type=type, ...)
+            } else if (w == 4) {
+                plot(xvar, x[["salinity"]], xlab="Scan", ylab=resizableLabel("S", "y"),
+                     yaxs='r', type=type, ...)
+            } else {
+                stop("unknown 'which'; must be in 1:4")
+            }
+        } else if (xtype == "time") {
+            if (!("time" %in% names(x@data)))
+                stop("there is no 'time' in this ctd object")
+            if (w == 1) {
+                oce.plot.ts(x@data$time, x@data$pressure, ylab=resizableLabel("p", "y"),
+                            yaxs='r', type=type, ...)
+            } else if (w == 2) {
+                oce.plot.ts(x@data$time[-1], diff(x@data$pressure), ylab="diff(pressure)",
+                            yaxs='r', type=type, ...)
+            } else if (w == 3) {
+                oce.plot.ts(x@data$time, x[["temperature"]], ylab=resizableLabel("T", "y"),
+                            yaxs='r', type=type, ...)
+            } else if (w == 4) {
+                oce.plot.ts(x@data$time, x[["salinity"]], ylab=resizableLabel("S", "y"),
+                            yaxs='r', type=type, ...)
+            } else {
+                stop("unknown 'which'; must be in 1:4")
+            }
         }
     }
-    ## mtext(x@metadata$station, side=3, adj=1, cex=par('cex'))
-    ## mtext(latlonFormat(x@metadata$latitude, x@metadata$longitude, digits=5), side=3, adj=0, cex=par('cex'))
-    ## if (1 <= adorn.length) {
-    ##     t <- try(eval(adorn[1]), silent=TRUE)
-    ##     if (class(t) == "try-error")
-    ##         warning("cannot evaluate adorn[", 1, "]\n")
-    ## }
-
-    ## ##    par(mar=c(4,4,1,4)) # bot left top right
-    ## Slen <- length(x@data$salinity)
-    ## Tlen <- length(x@data$temperature)
-    ## if (Slen != Tlen)
-    ##     stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
-    ## plot(x[[name]], x[["temperature"]], xlab="scan", ylab=resizableLabel("T", "y"),
-    ##      yaxs='r', type=type)
-    ## grid()
-    ## if (2 <= adorn.length) {
-    ##     t <- try(eval(adorn[2]), silent=TRUE)
-    ##     if (class(t) == "try-error")
-    ##         warning("cannot evaluate adorn[", 2, "]\n")
-    ## }
-    ## plot(x[[name]], x[['salinity']], xlab="scan", ylab=resizableLabel("S", "y"),
-    ##      yaxs='r', type=type)
-    ## grid()
 }
 
 #' Read a general CTD file

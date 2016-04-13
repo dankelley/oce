@@ -4,8 +4,9 @@
 \alias{plotScan}
 \title{Plot seawater data in a low-level fashion}
 \usage{
-plotScan(x, which = 1, type = "l", mgp = getOption("oceMgp"),
-  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]), ...)
+plotScan(x, which = 1, xtype = "scan", type = "l",
+  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1],
+  mgp[1]), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}.}
@@ -13,6 +14,12 @@ plotScan(x, which = 1, type = "l", mgp = getOption("oceMgp"),
 \item{which}{Numerical vector numerical codes specifying the panels to draw: 1
 for pressure vs scan, 2 for \code{diff(pressure)} vs scan, 3 for temperature vs
 scan, and 4 for salinity vs scan.}
+
+\item{xtype}{Character string indicating variable for the x axis. May be
+\code{"scan"} (the default) or \code{"time"}. In the former case, a
+\code{scan} variable will be created using \code{\link{seq_along}},
+if necessary. In the latter case, an error results if the \code{data}
+slot of \code{x} lacks a variable called \code{time}.}
 
 \item{type}{Line type.}
 

@@ -38,6 +38,11 @@ investigate the data, and then use the \code{method="index"} or \code{method="sc
 visual inspection of the data.
 }
 \details{
+\code{ctdTrim} begins by examining the pressure differences between subsequent samples. If
+these are all of the same value, then the input \code{ctd} object is returned, unaltered.
+This handles the case of pressure-binned data. However, if the pressure difference
+varies, a variety of approaches are taken to trimming the dataset.
+
 \itemize{
   \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to only data for
   which the CTD is descending.  This is done in stages, with variants based on \code{method[1]}, if
