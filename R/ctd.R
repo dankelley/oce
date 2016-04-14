@@ -4720,25 +4720,22 @@ plotProfile <- function (x,
         plotJustProfile(st, y, col = col, type=type, lwd=lwd, lty=lty,
                         cex=cex, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
- 
-
-
     } else if (xtype == "density") {
-        st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) # FIXME: why not use existing column?
-        look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
+        rho <- swRho(x@data$salinity, x@data$temperature, x@data$pressure) # NOTE: ignoring any existing column
+        look <- if (keepNA) 1:length(y) else !is.na(rho) & !is.na(y)
         ## FIXME: if this works, extend to other x types
         look <- look & (min(ylim) <= y & y <= max(ylim))
         if (!add) {
             if (densitylimGiven) {
-                plot(st[look], y[look], xlim=densitylim, ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
+                plot(rho[look], y[look], xlim=densitylim, ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
             } else {
-                plot(st[look], y[look], xlim=range(st[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
+                plot(rho[look], y[look], xlim=range(rho[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
             }
             if (is.null(xlab)) {
                 if (getOption("oceUnitBracket") == '[') {
-                    mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, cex=par("cex"))
+                    mtext(expression(paste(rho, " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, cex=par("cex"))
                 } else {
-                    mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, cex=par("cex"))
+                    mtext(expression(paste(rho, " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, cex=par("cex"))
                 }
             } else {
                 mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
@@ -4753,7 +4750,7 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
         }
-        plotJustProfile(st, y, col = col, type=type, lwd=lwd, lty=lty,
+        plotJustProfile(rho, y, col = col, type=type, lwd=lwd, lty=lty,
                         cex=cex, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "density+N2") {
@@ -4834,9 +4831,9 @@ plotProfile <- function (x,
                  xlim=N2lim, ylim=ylim, cex=cex, pch=pch,
                  type = "n", xlab = "", ylab = yname, axes = FALSE)
             if (getOption("oceUnitBracket") == '[') {
-                mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = axis.name.loc, col = col, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
+                mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
             } else {
-                mtext(expression(paste(N^2, " ( ", s^-2, " )")), side = 3, line = axis.name.loc, col = col, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
+                mtext(expression(paste(N^2, " ( ", s^-2, " )")), side = 3, line = axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
             }
             axis(2)
             axis(3)
