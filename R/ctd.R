@@ -4161,7 +4161,7 @@ plotProfile <- function (x,
                                 cex=1, pch=1, pt.bg="transparent",
                                 df=df, keepNA=FALSE, debug=getOption("oceDebug"))
     {
-        oceDebug(debug, "plotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type, "\", col[1:3]=\"", col[1:3], "\", ...) {\n", sep="", unindent=1)
+        oceDebug(debug, "plotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type, "\", col[1:3]=c(\"", paste(col[1:3], collapse='","'), "\"), ...) {\n", sep="", unindent=1)
         if (!keepNA) {
             keep <- !is.na(x) & !is.na(y)
             x <- x[keep]
@@ -4214,12 +4214,12 @@ plotProfile <- function (x,
                        pressure=rev(range(x@data$pressure, na.rm=TRUE)),
                        z=range(swZ(x@data$pressure), na.rm=TRUE),
                        depth=rev(range(swDepth(x), na.rm=TRUE)),
-                       sigmaTheta=rev(range(x@data$sigmaTheta, na.rm=TRUE)))
+                       sigmaTheta=rev(range(x[["sigmaTheta"]], na.rm=TRUE)))
     examineIndices <- switch(ytype,
                        pressure = (min(ylim) <= x@data$pressure & x@data$pressure <= max(ylim)),
                        z = (min(ylim) <= swZ(x@data$pressure) & swZ(x@data$pressure) <= max(ylim)),
                        depth = (min(ylim) <= swDepth(x@data$pressure) & swDepth(x@data$pressure) <= max(ylim)),
-                       sigmaTheta  = (min(ylim) <= x@data$sigmaTheta & x@data$sigmaTheta <= max(ylim)))
+                       sigmaTheta  = (min(ylim) <= x[["sigmaTheta"]] & x[["sigmaTheta"]] <= max(ylim)))
     if (0 == sum(examineIndices) && ytype == 'z' && ylim[1] >= 0 && ylim[2] >= 0) {
         warning("nothing is being plotted, because z is always negative and ylim specified a positive interval\n")
         return(invisible())
@@ -4687,6 +4687,42 @@ plotProfile <- function (x,
                             col=col, pch=pch, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
+    } else if (xtype == "sigmaTheta") {
+        st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) # FIXME: why not use existing column?
+        look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
+        ## FIXME: if this works, extend to other x types
+        look <- look & (min(ylim) <= y & y <= max(ylim))
+        if (!add) {
+            if (densitylimGiven) {
+                plot(st[look], y[look], xlim=densitylim, ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
+            } else {
+                plot(st[look], y[look], xlim=range(st[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
+            }
+            if (is.null(xlab)) {
+                if (getOption("oceUnitBracket") == '[') {
+                    mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, cex=par("cex"))
+                } else {
+                    mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, cex=par("cex"))
+                }
+            } else {
+                mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
+            }
+            axis(2)
+            axis(3)
+            box()
+            if (grid) {
+                at <- par("yaxp")
+                abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+                at <- par("xaxp")
+                abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            }
+        }
+        plotJustProfile(st, y, col = col, type=type, lwd=lwd, lty=lty,
+                        cex=cex, pch=pch, pt.bg=pt.bg,
+                        keepNA=keepNA, debug=debug-1)
+ 
+
+
     } else if (xtype == "density") {
         st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) # FIXME: why not use existing column?
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
@@ -4912,6 +4948,12 @@ plotProfile <- function (x,
             points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
         } else {
             points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
+        }
+        if (grid) {
+            at <- par("xaxp")
+            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     }
     oceDebug(debug, "} # plotProfile()\n", unindent=1)
