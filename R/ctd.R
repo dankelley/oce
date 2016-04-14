@@ -320,38 +320,86 @@ setMethod(f="summary",
 #' head(ctd[["temperature"]])
 #'
 #' @section Details of the specialized \code{ctd} method:
-#' The first step \code{[[,ctd-method} takes is to address requests
-#' for inferences about data stored in \code{\link{ctd-class}}
-#' objects. For example, these objects hold in-situ temperature,
-#' but users often need potential temperatures, and so this can
-#' be calculated and returned, even though the information may
-#' not be in the data object. Thus, \code{x[["temperature"]]}
-#' (or \code{x[["t"]]}) retrieves in-situ temperature stored within \code{x}, while
-#' \code{x[["theta"]]} (or \code{x[["potential temperature"]]})
-#' give potential temperature. Similarly, \code{x[["temperature68"]]}
-#' can be used to convert to the IPTS-1968 temperature scale. The
-#' "conservative temperature" of the Gibbs Seawater (GSW) formulation is
-#' available as \code{x[["conservative temperature"]]} (or 
-#' \code{x[["CT"]]}).  The GSW reference salinity is \code{x[["SR"]]},
-#' and preformed salinity is \code{x[["Sstar"]]}.
 #'
-#' Various densities can be retrieved:
-#' \code{x[["sigma0"]]} yields potential density referenced to the surface, using \code{\link{swSigma0}},
-#' \code{x[["sigma1"]]} yields potential density referenced to 1000dbar, using \code{\link{swSigma1}},
-#' \code{x[["sigma2"]]} yields potential density referenced to 2000dbar, using \code{\link{swSigma2}},
-#' \code{x[["sigma3"]]} yields potential density referenced to 3000dbar, using \code{\link{swSigma3}},
-#' and
-#' \code{x[["sigma4"]]} yields potential density referenced to 4000dbar, using \code{\link{swSigma4}}
+#' Some uses of \code{[[,ctd-method} involve direct retrieval of
+#' items within the \code{data} slot of the \code{ctd} object, 
+#' while other uses involve calculations based on items in that
+#' \code{data} slot. For an example, all \code{ctd} objects
+#' should hold an item named \code{temperature} in the \code{data}
+#' slot, so for example \code{x[["temperature"]]} will retrieve that
+#' item. By contrast, \code{x[["sigmaTheta"]]} is taken to be a
+#' request to compute \eqn{\sigma_\theta}{sigma[theta]}, and so
+#' it yields a call to \code{\link{swTheta}(x)} \emph{even if}
+#' the \code{data} slot of \code{x} might happen to contain an item
+#' named \code{theta}. This can be confusing at first, but it tends
+#' to lead to fewer surprises in everyday work, for otherwise the
+#' user would be forced to check the contents of any \code{ctd}
+#' object under analysis, to determine whether that item will be looked
+#' up or computed. Nothing is lost in this scheme, since the data
+#' within the object are always accessible with a direct call, e.g.
+#' \code{x@data$sigmaTheta}, or a with \code{\link{oceGetData}}.
 #'
-#' A ctd object normally contains pressure, but both
-#' vertical coordinate and depth can be obtained, with 
-#' \code{x[["z"]]} and \code{x[["depth"]]}, respectively.
+#' This preference for computed over stored quantities is accomplished
+#' by first checking for computed quantities, and then falling
+#' back to the general \code{\link{[[}} method if no match is found.
+#' The computed quantities are as follows.
 #'
-#' In addition, some specialized quantities are also provided, e.g. 
-#' density ratio \code{x[["Rrho"]]} (computed with \code{\link{swRrho}(x)}),
-#' spice \code{x[["spice"]]} (computed with \code{\link{swSpice}(x)}),
-#' and the square of buoyancy frequency \code{x[["N2"]]} (calculated
-#' with \code{\link{swN2}(x)}).
+#' \itemize{
+#'
+#' \item{\code{CT} or \code{Conservative Temperature}: Conservative Temperature,
+#' computed with \code{\link[gsw]{gsw_CT_from_t}} in the \code{gsw} package.}
+#'
+#' \item{\code{depth} Depth in metres below the surface, computed with \code{\link{swDepth}(x)}.}
+#'
+#' \item{\code{N2} Square of Brunt-Vaisala frequency, computed  with \code{\link{swN2}(x)}.}
+#'
+#' \item{\code{potential temperature}, potential temperature in the UNESCO formulation,
+#' computed with \code{\link{swTheta}(x)}. This is a synonym for \code{theta}.}
+#'
+#' \item{\code{Rrho} density ratio, computed with \code{\link{swRrho}(x)}.}
+#'
+#' \item{\code{SA} or \code{Absolute Salinity}: Absolute Salinity,
+#' computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.}
+#'
+#' \item{\code{sigmaTheta} a form of potential density anomaly, computed with
+#' \code{\link{swSigmaTheta}(x)}.}
+#'
+#' \item{\code{sigma0} equal to \code{sigmaTheta}, i.e. potential density anomaly
+#' referenced to a pressure of 0dbar, computed with \code{\link{swSigma0}(x)}.}
+#'
+#' \item{\code{sigma1} potential density anomaly
+#' referenced to a pressure of 1000dbar, computed with \code{\link{swSigma1}(x)}.}
+#'
+#' \item{\code{sigma2} potential density anomaly
+#' referenced to a pressure of 2000dbar, computed with \code{\link{swSigma2}(x)}.}
+#'
+#' \item{\code{sigma3} potential density anomaly
+#' referenced to a pressure of 3000dbar, computed with \code{\link{swSigma3}(x)}.}
+#'
+#' \item{\code{sigma4} potential density anomaly
+#' referenced to a pressure of 4000dbar, computed with \code{\link{swSigma4}(x)}.}
+#'                                        
+#' \item{\code{SP} salinity on the Practical Salinity Scale, which is \code{x@data$salinity}.}
+#'
+#' \item{\code{spice} a variable that is in some sense orthogonal to density, calculated
+#' with \code{\link{swSpice}(x)}.}
+#'
+#' \item{\code{SR} Reference Salinity computed with \code{\link[gsw]{gsw_SR_from_SP}} in
+#' the \code{gsw} package.}
+#'
+#' \item{\code{Sstar} Preformed Salinity computed with \code{\link[gsw]{gsw_SR_from_SP}} in
+#' the \code{gsw} package.}
+#'
+#' \item{\code{temperature68}, temperature on the IPTS-1968 scale, computed
+#' with \code{\link{T68fromT90}(x)}.}
+#'
+#' \item{\code{theta}, potential temperature in the UNESCO formulation,
+#' computed with \code{\link{swTheta}(x)}. This is a synonym for \code{potential temperature}.}
+#'
+#' \item{\code{z} Vertical coordinate in metres above the surface, computed with
+#' \code{\link{swZ}(x)}.}
+#'
+#' }
 #'
 #' @template sub_subTemplate
 #' @family things related to \code{ctd} data
@@ -371,11 +419,11 @@ setMethod(f="[[",
                   gsw::gsw_Sstar_from_SA(SA=SA, p=x@data$pressure,
                                          longitude=x@metadata$longitude,
                                          latitude=x@metadata$latitude)
-              } else if (i == "temperature" || i == "t") { # FIXME: document "t" part
+              } else if (i == "temperature") {
                   x@data$temperature
               } else if (i == "temperature68") {
                   T68fromT90(x@data$temperature)
-              } else if (i == "pressure" || i == "p") {
+              } else if (i == "pressure") {
                   x@data$pressure
               } else if (i == "longitude") {
                   if ("longitude" %in% names(x@data)) x@data$longitude else x@metadata$longitude
@@ -779,8 +827,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@data$salinity <- salinity
         res@data$temperature <- temperature
         res@data$conductivity <- conductivity
-        res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
-                            name="sigmaTheta", label="Sigma Theta", unit=list(unit=expression(kg/m^3), scale=""))
+        ## res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
+        ##                    name="sigmaTheta", label="Sigma Theta", unit=list(unit=expression(kg/m^3), scale=""))
         ## copy relevant metadata
         if ("date" %in% mnames) res@metadata$date <- o@metadata$date
         if ("deploymentType" %in% mnames) res@metadata$deploymentType <- o@metadata$deploymentType
@@ -3861,9 +3909,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
                                 unit=list(unit="dbar", scale=""), debug=debug-1)
             warning("created a pressure column from the depth column\n")
         }
-        res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
-                        name="sigmaTheta", label="Sigma Theta", unit=list(unit=expression(kg/m^3), scale=""),
-                        debug=debug-1)
+        ## res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
+        ##                 name="sigmaTheta", label="Sigma Theta", unit=list(unit=expression(kg/m^3), scale=""),
+        ##                 debug=debug-1)
     }
     ## waterDepthWarning <- FALSE
     ## if (is.na(res@metadata$waterDepth)) {

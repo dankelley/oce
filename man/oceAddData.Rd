@@ -12,10 +12,10 @@
   
 
 \usage{
-oceGetData(object, name, default=NA)
+oceGetData(object, name, default=NULL)
 oceDeleteData(object, name)
 oceSetData(object, name, value, units, note="")
-oceGetMetadata(object, name, default=NA)
+oceGetMetadata(object, name, default=NULL)
 oceDeleteMetadata(object, name)
 oceSetMetadata(object, name, value, note="")
 }

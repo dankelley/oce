@@ -79,7 +79,7 @@ extract <- function(x, names)
     res
 }
 
-oceGetData <- function(object, name, default=NA)
+oceGetData <- function(object, name, default=NULL)
 {
     if (!inherits(object, "oce"))
         stop("oceGetData() only works for oce objects")
@@ -114,7 +114,7 @@ oceSetData <- function(object, name, value, units, note="")
     object
 }
 
-oceGetMetadata <- function(object, name, default=NA)
+oceGetMetadata <- function(object, name, default=NULL)
 {
     if (!inherits(object, "oce"))
         stop("oceGetData() only works for oce objects")

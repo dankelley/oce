@@ -828,6 +828,11 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     fileType <- "unknown" 
     range <- NULL
     beamType <- "unknown"
+    ## The next three lines are just to prevent code-diagnostic warnings; 
+    ## These matrices are redefined later, when we know the geometry
+    a <- matrix(NA_real_, nrow=1, ncol=1)
+    b <- matrix(NA_real_, nrow=1, ncol=1)
+    c <- matrix(NA_real_, nrow=1, ncol=1)
     while (offset < fileSize) {
         ##print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
