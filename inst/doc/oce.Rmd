@@ -543,6 +543,16 @@ large departures from a TS relationship, loops on TS diagrams, etc. It can be
 useful to combine automatic schemes with interactive plotting, to identify bad
 data.
 
+
+**Exercise 8.** Manipulating flags. The dataset provided with oce using
+```r
+library(oce)
+d <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
+```
+contains a column named `flags` that consists of a 3-digit number. THe first
+digit is a flag for temperature, the second for conductivity, and the third for
+oxygen. Compute the individual flags and add them to the metdata of the `ctd` object.
+
 ## Using flags to manipulate data
 
 A conservative approach is to set data to the missing-value code `NA` if the
@@ -753,3 +763,23 @@ oce.plot.ts(sealevel[['time']], sealevel[['elevation']] - predict(m),
 ```
 
 The spike reveals a surge of about 1.5m, on the 29th of September, 2003.
+
+**Exercise 8.** Manipulating flags.
+```r
+library(oce)
+d <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
+
+## The following is in the .cnv file:
+# Processing Notes:  Flag word has 3 columns: Temperature, Conductivity, and Oxygen
+# Processing Notes:  Flag_code:  0 = no QC; 2 = good; 6 = interpolated, or replaced by dual sensor or upcast value;
+
+flag <- d[['flag']]
+flag1 <- floor(flag/100)
+flag2 <- floor((flag-100*flag1)/10)
+flag3 <- floor((flag-100*flag1-10*flag2))
+d[["flags"]]$temperature <- flag1
+d[["flags"]]$conductivity <- flag2
+d[["flags"]]$oxygen <- flag3
+```
+
+
