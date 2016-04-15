@@ -211,7 +211,7 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 #' library(oce)
 #' data(ctd)
 #' # Illustrate difference between UNESCO and GSW
-#' p <- pressure(ctd)
+#' p <- ctd[["pressure"]]
 #' ylim <- rev(range(p))
 #' par(mfrow=c(1,3), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 #' plot(ctd[["sigmaTheta"]], p, ylim=ylim, type='l', xlab=expression(sigma[theta]))
