@@ -38,8 +38,7 @@ data(adp)
 cat("the first time is:", format(time(adp)[1]), "\n")
 }
 
-\seealso{Similar accessor functions are \code{\link{heading}}, \code{\link{pitch}}, \code{\link{roll}}, and
-    \code{\link{velocity}}.}
+\seealso{Similar accessor functions are \code{\link{heading}}, \code{\link{pitch}}, \code{\link{roll}}.}
 
 \author{Dan Kelley}
 

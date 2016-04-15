@@ -143,29 +143,29 @@ oceSetMetadata <- function(object, name, value, note="")
 }
 
 
-"conductivity<-" <- function(x, value)
-{
-    x@data$conductivity <- value
-    if (!("units" %in% names(x@metadata))) # handle old objects that might lack this
-        x@metadata$units <- list()
-    x@metadata$units$conductivityUnit <- "ratio" # FIXME: handle other units (hard for <- though)
-    x
-}
-
-conductivity <- function(x)
-{
-    if (!("conductivity" %in% names(x@data)))
-        stop("no item 'data$conductivity' in object; try using e.g. 'conductivity(x) <- swCSTp(x)' to add it")
-    x@data$conductivity
-}
-
-
-header <- function(x)
-{
-    if (!inherits(x, "oce"))
-        stop("method is only for oce objects")
-    return(x@metadata$header)
-}
+## "conductivity<-" <- function(x, value)
+## {
+##     x@data$conductivity <- value
+##     if (!("units" %in% names(x@metadata))) # handle old objects that might lack this
+##         x@metadata$units <- list()
+##     x@metadata$units$conductivityUnit <- "ratio" # FIXME: handle other units (hard for <- though)
+##     x
+## }
+## 
+## conductivity <- function(x)
+## {
+##     if (!("conductivity" %in% names(x@data)))
+##         stop("no item 'data$conductivity' in object; try using e.g. 'conductivity(x) <- swCSTp(x)' to add it")
+##     x@data$conductivity
+## }
+## 
+## 
+## header <- function(x)
+## {
+##     if (!inherits(x, "oce"))
+##         stop("method is only for oce objects")
+##     return(x@metadata$header)
+## }
 
 heading <- function(x, time)
 {
@@ -294,29 +294,29 @@ longitude <- function(x, time, byDepth=TRUE)
     x
 }
 
-"pressure<-" <- function(x, value)
-{
-    if (!("pressure" %in% names(x@data)))
-        stop("no item 'data$pressure' in object")
-    x@data$pressure <- value
-    x
-}
-
-"salinity<-" <- function(x, value)
-{
-    if (!("salinity" %in% names(x@data)))
-        stop("no item 'data$salinity' in object")
-    x@data$salinity <- value
-    x
-}
-
-"temperature<-" <- function(x, value)
-{
-    if (!("temperature" %in% names(x@data)))
-        stop("no item 'data$temperature' in object")
-    x@data$temperature <- value
-    x
-}
+## "pressure<-" <- function(x, value)
+## {
+##     if (!("pressure" %in% names(x@data)))
+##         stop("no item 'data$pressure' in object")
+##     x@data$pressure <- value
+##     x
+## }
+## 
+## "salinity<-" <- function(x, value)
+## {
+##     if (!("salinity" %in% names(x@data)))
+##         stop("no item 'data$salinity' in object")
+##     x@data$salinity <- value
+##     x
+## }
+## 
+## "temperature<-" <- function(x, value)
+## {
+##     if (!("temperature" %in% names(x@data)))
+##         stop("no item 'data$temperature' in object")
+##     x@data$temperature <- value
+##     x
+## }
 
 pitch <- function(x, time)
 {
@@ -499,51 +499,51 @@ hydrographyLocal <- function(x, time, item) # FIXME consider broadening as repla
     res
 }
 
-distance <- function(x, time)
-{
-    if (inherits(x, "adp")) {
-        x@data$distance
-    } else {
-        stop("method is only for objects of class '", "adp", "'")
-    }
-}
+## distance <- function(x, time)
+## {
+##     if (inherits(x, "adp")) {
+##         x@data$distance
+##     } else {
+##         stop("method is only for objects of class '", "adp", "'")
+##     }
+## }
+##
+##elevation <- function(x, time) hydrographyLocal(x, time, "elevation")
+##
+##pressure <- function(x, time) hydrographyLocal(x, time, "pressure")
+##
+##salinity <- function(x, time) hydrographyLocal(x, time, "salinity")
+##
+## spice <- function(x, time)
+## {
+##     S <- salinity(x, time)
+##     T <- temperature(x, time)
+##     p <- pressure(x, time)
+##     swSpice(S, T, p)
+## }
 
-elevation <- function(x, time) hydrographyLocal(x, time, "elevation")
-
-pressure <- function(x, time) hydrographyLocal(x, time, "pressure")
-
-salinity <- function(x, time) hydrographyLocal(x, time, "salinity")
-
-spice <- function(x, time)
-{
-    S <- salinity(x, time)
-    T <- temperature(x, time)
-    p <- pressure(x, time)
-    swSpice(S, T, p)
-}
-
-temperature <- function(x, time) hydrographyLocal(x, time, "temperature")
-nitrate <- function(x, time) hydrographyLocal(x, time, "nitrate")
-"nitrate<-" <- function(x, value) { x@data$nitrate <- value }
-nitrite <- function(x, time) hydrographyLocal(x, time, "nitrite")
-"nitrite<-" <- function(x, value) { x@data$nitrite <- value }
-oxygen <- function(x, time) hydrographyLocal(x, time, "oxygen")
-"oxygen<-" <- function(x, value) { x@data$oxygen <- value }
-phosphate <- function(x, time) hydrographyLocal(x, time, "phosphate")
-"phosphate<-" <- function(x, value) { x@data$phosphate <- value }
-silicate <- function(x, time) hydrographyLocal(x, time, "silicate")
-"silicate<-" <- function(x, value) { x@data$silicate <- value }
-
-sigmaTheta <- function(x, time) hydrographyLocal(x, time, "sigmaTheta")
-
-"sigmaTheta<-" <- function(x, value)
-{
-    x@data$sigmaTheta <- value
-    x
-}
-
-tritium <- function(x, time)
-    hydrographyLocal(x, time, "tritium")
+## temperature <- function(x, time) hydrographyLocal(x, time, "temperature")
+## nitrate <- function(x, time) hydrographyLocal(x, time, "nitrate")
+## "nitrate<-" <- function(x, value) { x@data$nitrate <- value }
+## nitrite <- function(x, time) hydrographyLocal(x, time, "nitrite")
+## "nitrite<-" <- function(x, value) { x@data$nitrite <- value }
+## oxygen <- function(x, time) hydrographyLocal(x, time, "oxygen")
+## "oxygen<-" <- function(x, value) { x@data$oxygen <- value }
+## phosphate <- function(x, time) hydrographyLocal(x, time, "phosphate")
+## "phosphate<-" <- function(x, value) { x@data$phosphate <- value }
+## silicate <- function(x, time) hydrographyLocal(x, time, "silicate")
+## "silicate<-" <- function(x, value) { x@data$silicate <- value }
+## 
+## sigmaTheta <- function(x, time) hydrographyLocal(x, time, "sigmaTheta")
+## 
+## "sigmaTheta<-" <- function(x, value)
+## {
+##     x@data$sigmaTheta <- value
+##     x
+## }
+## 
+## tritium <- function(x, time)
+##     hydrographyLocal(x, time, "tritium")
 
 time <- function(x)
 {
@@ -552,19 +552,19 @@ time <- function(x)
     x@data$time
 }
 
-velocity <- function(x)
-{
-    if (!inherits(x, "oce"))
-        stop("'x' must be an oce object")
-    if (!("v" %in% names(x@data)))
-        stop("'x' does not contain 'data$v'")
-    x@data$v
-}
-
-"velocity<-" <- function(x, value)
-{
-    if (!("v" %in% names(x@data)))
-        stop("no 'v' in names(x@data)")
-    x@data$v <- value
-    x
-}
+## velocity <- function(x)
+## {
+##     if (!inherits(x, "oce"))
+##         stop("'x' must be an oce object")
+##     if (!("v" %in% names(x@data)))
+##         stop("'x' does not contain 'data$v'")
+##     x@data$v
+## }
+## 
+## "velocity<-" <- function(x, value)
+## {
+##     if (!("v" %in% names(x@data)))
+##         stop("no 'v' in names(x@data)")
+##     x@data$v <- value
+##     x
+## }

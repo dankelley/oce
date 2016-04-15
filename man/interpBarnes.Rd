@@ -94,9 +94,9 @@ contour(mismatchGrid$xg, mismatchGrid$yg, mismatchGrid$zg, labcex=1)
 
 # 5. One-dimensional example, smoothing a salinity profile
 data(ctd)
-p <- pressure(ctd)
+p <- ctd[["pressure"]]
 y <- rep(1, length(p)) # fake y data, with arbitrary value
-S <- salinity(ctd)
+S <- ctd[["salinity"]]
 pg <- pretty(p, n=100)
 g <- interpBarnes(p, y, S, xg=pg, xr=1)
 plot(S, p, cex=0.5, col="blue", ylim=rev(range(p)))

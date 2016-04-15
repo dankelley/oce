@@ -101,6 +101,12 @@ test_that("gsw calcuations on ctd data", {
           expect_equal(Sstar, nctd[["Sstar"]])
 })
 
+test_that("accessors work as functions and [[", {
+          library(oce)
+          data(ctd)
+          expect_equal(swSigmaTheta(ctd), ctd[["sigmaTheta"]])
+})
+
 test_that("ability to change conductivityUnit", {
           ## These came from issue 731
           ctd2 <- ctd

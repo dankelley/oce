@@ -23,7 +23,7 @@
 \examples{
 library(oce)
 data(ctd) 
-st <- swSigmaTheta(salinity(ctd), temperature(ctd), pressure(ctd))
+st <- swSigmaTheta(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]])
 new <- addColumn(ctd, st, "sigmaTheta")
 }
 

@@ -1,3 +1,9 @@
+T68fromT90 <- function(temperature) temperature * 1.00024
+T90fromT68 <- function(temperature) temperature / 1.00024
+T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-temperature))/1.00024
+
+
+
 #' Look Within the First Element of a List for Replacement Values
 #'
 #' @details
@@ -695,7 +701,7 @@ swTFreeze <- function(salinity, pressure=0,
                       eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must supply salinity (which may be S or a CTD object)")
-    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
+    l <- lookWithin(list(salinity=salinity, pressure=pressure,
                          longitude=longitude, latitude=latitude, eos=eos))
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
