@@ -21,36 +21,42 @@
 #' with \code{N} being an integer from 0 to 9.
 #' Users are asked to inform the developer about errors or ommissions.
 #' \tabular{llll}{
-#'   \strong{Key}            \tab \strong{Result}         \tab \strong{Unit, scale} \tab \strong{Notes} \cr
-#'   \code{altM}             \tab \code{altimeter}        \tab m                    \tab                \cr
-#'   \code{cNms/cm}          \tab \code{conductivityN}    \tab ms/cm                \tab                \cr
-#'   \code{CStarAtN}         \tab \code{beamAttenuation}  \tab 1/m                  \tab                \cr
-#'   \code{CStarTrN}         \tab \code{beamTransmission} \tab percent              \tab                \cr
-#'   \code{depS}             \tab \code{depth}            \tab m                    \tab                \cr
-#'   \code{depSM}            \tab \code{depth}            \tab m                    \tab                \cr
-#'   \code{depSM}            \tab \code{depth}            \tab m                    \tab                \cr
-#'   \code{flag}             \tab \code{flag}             \tab \code{NULL}          \tab                \cr
-#'   \code{flsp}             \tab \code{fluorescence}     \tab \code{NULL}          \tab                \cr
-#'   \code{nbin}             \tab \code{nbin}             \tab \code{NULL}          \tab                \cr
-#'   \code{potempN90C}       \tab \code{thetaN}           \tab degC, ITS-90         \tab                \cr
-#'   \code{pr}               \tab \code{pressure}         \tab dbar                 \tab                \cr
-#'   \code{prDM}             \tab \code{pressure}         \tab dbar                 \tab 1              \cr
-#'   \code{salNN}            \tab \code{salinityN}        \tab unitless, PSS-78     \tab 2              \cr
-#'   \code{sbeoxNml/l}       \tab \code{oxygenN}          \tab ml/l                 \tab                \cr
-#'   \code{scan}             \tab \code{scan}             \tab \code{NULL}          \tab                \cr
-#'   \code{sigma-theta}      \tab \code{sigmaTheta}       \tab kg/m^3               \tab 3              \cr
-#'   \code{spar}             \tab \code{spar}             \tab \code{NULL}          \tab                \cr
-#'   \code{svcm}             \tab \code{soundSpeed}       \tab m/s                  \tab                \cr
-#'   \code{tN68}             \tab \code{temperatureN}     \tab degC, IPTS-68        \tab                \cr 
-#'   \code{tN90c}            \tab \code{temperatureN}     \tab degC, ITS-90         \tab                \cr
-#'   \code{upolyN}           \tab \code{upolyN}           \tab \code{NULL}          \tab                \cr 
-#'   \code{vN}               \tab \code{voltageN}         \tab V                    \tab                \cr 
-#'   \code{wetcdom}          \tab \code{fluorescence}     \tab mg/m^3               \tab                \cr 
+#'   \strong{Key}       \tab \strong{Result}                   \tab \strong{Unit, scale} \tab \strong{Notes} \cr
+#'   \code{altM}        \tab \code{altimeter}                  \tab m                    \tab                \cr
+#'   \code{cNms/cm}     \tab \code{conductivityN}              \tab ms/cm                \tab                \cr
+#'   \code{CStarAtN}    \tab \code{beamAttenuation}            \tab 1/m                  \tab                \cr
+#'   \code{CStarTrN}    \tab \code{beamTransmission}           \tab percent              \tab                \cr
+#'   \code{depS}        \tab \code{depth}                      \tab m                    \tab                \cr
+#'   \code{depSM}       \tab \code{depth}                      \tab m                    \tab                \cr
+#'   \code{depSM}       \tab \code{depth}                      \tab m                    \tab                \cr
+#'   \code{dz/dtM}      \tab \code{descentRate}                \tab m/s                  \tab                \cr
+#'   \code{flag}        \tab \code{flag}                       \tab \code{NULL}          \tab                \cr
+#'   \code{flsP}        \tab \code{fluorescence}               \tab \code{NULL}          \tab                \cr
+#'   \code{nbin}        \tab \code{nbin}                       \tab \code{NULL}          \tab                \cr
+#'   \code{potempN90C}  \tab \code{thetaN}                     \tab degC, ITS-90         \tab                \cr
+#'   \code{pr}          \tab \code{pressure}                   \tab dbar                 \tab                \cr
+#'   \code{prDM}        \tab \code{pressure}                   \tab dbar                 \tab 1              \cr
+#'   \code{ptempC}      \tab \code{theta}                      \tab degC, ITS-90         \tab 2              \cr
+#'   \code{salNN}       \tab \code{salinityN}                  \tab unitless, PSS-78     \tab 3              \cr
+#'   \code{sbeoxNML/L}  \tab \code{oxygenConcentrationVolumeN} \tab ml/l                 \tab                \cr
+#'   \code{sbeoxNMm/Kg} \tab \code{oxygenConcentrationMoleN}   \tab ml/l                 \tab                \cr
+#'   \code{sbeoxNPs}    \tab \code{oxygenSaturationN}          \tab percent              \tab                \cr
+#'   \code{sbeoxNV}     \tab \code{oxygenVoltageN}             \tab ml/l                 \tab                \cr
+#'   \code{scan}        \tab \code{scan}                       \tab \code{NULL}          \tab                \cr
+#'   \code{sigma-theta} \tab \code{sigmaTheta}                 \tab kg/m^3               \tab 4              \cr
+#'   \code{spar}        \tab \code{spar}                       \tab \code{NULL}          \tab                \cr
+#'   \code{svCM}        \tab \code{soundSpeed}                 \tab m/s                  \tab                \cr
+#'   \code{tN68}        \tab \code{temperatureN}               \tab degC, IPTS-68        \tab                \cr 
+#'   \code{tN90c}       \tab \code{temperatureN}               \tab degC, ITS-90         \tab                \cr
+#'   \code{upolyN}      \tab \code{upolyN}                     \tab \code{NULL}          \tab                \cr 
+#'   \code{vN}          \tab \code{voltageN}                   \tab V                    \tab                \cr 
+#'   \code{wetCDOM}     \tab \code{fluorescence}               \tab mg/m^3               \tab                \cr 
 #' }
 #' \itemize{
 #' \item{1. what to do if a file has both \code{pr} and \code{prDM}?}
-#' \item{2: some files have PSU for this ... should we handle that? And are there other S scales?}
-#' \item{3: 'theta' may appear in different ways with different encodings.}
+#' \item{2: assuming a modern scale for temperature, since sample CNV file headers do not specify it.}
+#' \item{3: some files have PSU for this ... should we handle that? And are there other S scales?}
+#' \item{4: 'theta' may appear in different ways with different encodings.}
 #' }
 #'
 #' @param h The header line.
@@ -72,10 +78,10 @@ oceNameFromSBE <- function(h)
     if (1 == length(grep("altM", name, ignore.case=TRUE))) {
         name <- "altimeter"
         unit <- list(unit=expression(m), scale="")
-    } else if (1 == length(grep("c[0-9]ms/cm", name, ignore.case=TRUE))) {
-        number <- gsub("ms/cm$", "", gsub("^c", "", name))
+    } else if (1 == length(grep("c[0-9]mS/cm", name, ignore.case=TRUE))) {
+        number <- gsub("mS/cm$", "", gsub("^c", "", name, ignore.case=TRUE), ignore.case=TRUE)
         name <- paste("conductivity", number, sep="")
-        unit <- list(unit=expression(ms/cm), scale="")
+        unit <- list(unit=expression(mS/cm), scale="")
     } else if (1 == length(grep("CStarTr[0-9]", name, ignore.case=TRUE))) {
         number <- gsub("^CStarTr", "", name, ignore.case=TRUE)
         name <- paste("beamTransmission", number, sep="")
@@ -84,12 +90,15 @@ oceNameFromSBE <- function(h)
         number <- gsub("^CStarAt", "", name, ignore.case=TRUE)
         name <- paste("beamAttenuation", number, sep="")
         unit <- list(unit=expression(1/m), scale="")
-    } else if (length(grep("depS[M]*", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("depS[M]*", name, ignore.case=TRUE))) {
         name <- "depth"
         unit <- list(unit=expression(m), scale="")
-    } else if (length(grep("flag", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("dz/dt[M]*", name, ignore.case=TRUE))) {
+        name <- "descentRate"
+        unit <- list(unit=expression(m/s), scale="")
+    } else if (1 == length(grep("flag", name, ignore.case=TRUE))) {
         name <- "flag"                 # unitless
-    } else if (name == "flsp") {
+    } else if (1 == length(grep("flsP", name, ignore.case=TRUE))) {
         name <- "fluorescence"         # unitless
     } else if (1 == length(grep("potemp[0-9]90c", name, ignore.case=TRUE))) {
         number <- gsub("90c$", "", gsub("^potemp", "", name))
@@ -102,45 +111,56 @@ oceNameFromSBE <- function(h)
     } else if (length(grep("pr[m]*", name, ignore.case=TRUE))) {
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="")
+    } else if (1 == length(grep("ptempC", name, ignore.case=TRUE))) {
+        name <- "theta"
+        unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
     } else if (1 == length(grep("sal[0-9]{2}", name, ignore.case=TRUE))) {
         number <- gsub(".$", "", gsub("^sal", "", name))
         name <- paste("salinity", number, sep="")
         unit <- list(unit=expression(), scale="PSS-78") # FIXME: guess on scale
     } else if (1 == length(grep("sbeox[0-9]ML/L", name, ignore.case=TRUE))) {
         number <- gsub("ML/L$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        name <- paste("oxygen", number, sep="")
+        name <- paste("oxygenConcentrationVolume", number, sep="")
         unit <- list(unit=expression(ml/l), scale="")
     } else if (1 == length(grep("sbeox[0-9]Mm/Kg", name, ignore.case=TRUE))) {
         number <- gsub("Mm/Kg$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        name <- "oxygen"
+        name <- paste("oxygenConcentrationMole", number, sep="")
         unit <- list(unit=expression(mu*mol/kg), scale="")
     } else if (1 == length(grep("sbeox[0-9]PS", name, ignore.case=TRUE))) {
         number <- gsub("PS$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        name <- "oxygen"
+        name <- paste("oxygenSaturation", number, sep="")
         unit <- list(unit=expression(percent), scale="")
     } else if (1 == length(grep("sbeox[0-9]V", name, ignore.case=TRUE))) {
         number <- gsub("V$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        name <- "oxygen"
+        name <- paste("oxygenVoltage", number, sep="")
         unit <- list(unit=expression(V), scale="")
     } else if (1 == length(grep("scan", name, ignore.case=TRUE))) {
         name <- "scan" # no unit
-    } else if (1 == length(grep("sigma-\xC3\xA8.*", name, ignore.case=TRUE))) {
-        number <- gsub("^sigma-\xC3\xA8", "", name)
+    } else if (1 == length(grep("sigma-.*[0-9]*", name, ignore.case=TRUE))) {
+        message("sigma-theta lookup")
+        number <- substr(gsub(".*(\\d+).*", "\\1", name, ignore.case=TRUE), 1, 1)
+        message("number:", number)
         ## } else if (name == "sigma-è00") { avoid encoding code warnings
-        name <- paste("sigmaTheta", substr(number, 1, 1), sep="")
+        name <- paste("sigmaTheta", number, sep="")
         unit <- list(unit=expression(kg/m^3), scale="")
     } else if (name == "spar") {
         name <- "spar"                 # unitless (?)
-    } else if (name == "svcm") {
+    } else if (1 == length(grep("svCM", name, ignore.case=TRUE))) {
         name <- "soundSpeed"
         unit <- list(unit=expression(m/s), scale="")
     } else if (1 == length(grep("t[0-9]68", name, ignore.case=TRUE))) {
+        message("  name: '", name, "'")
         number <- gsub("68$", "", gsub("^t", "", name))
+        message("  number: '", number, "'")
         name <- paste("temperature", number, sep="")
+        message("final  name: '", name, "'")
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
     } else if (1 == length(grep("t[0-9]90c", name, ignore.case=TRUE))) {
-        number <- gsub("90c$", "", gsub("^t", "", name))
+        message("  name: '", name, "'")
+        number <- gsub("90c$", "", gsub("^t", "", name, ignore.case=TRUE), ignore.case=TRUE)
+        message("  number: '", number, "'")
         name <- paste("temperature", number, sep="")
+        message("final  name: '", name, "'")
         unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (1 == length(grep("timeS", name, ignore.case=TRUE))) {
         name <- "time"
@@ -151,7 +171,7 @@ oceNameFromSBE <- function(h)
     } else if (1 == length(grep("v[0-9]+", name, ignore.case=TRUE))) {
         name <- paste("v", gsub("v", "", name), sep="")
         unit <- list(unit=expression(V), scale="")
-    } else if (name == "wetcdom") {
+    } else if (1 == length(grep("wetCDOM", name, ignore.case=TRUE))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="")
     } else {

@@ -35,34 +35,41 @@ The table given below indicates the translation patterns used,
 with \code{N} being an integer from 0 to 9.
 Users are asked to inform the developer about errors or ommissions.
 \tabular{llll}{
-  \strong{Key}            \tab \strong{Result}         \tab \strong{Unit, scale} \tab \strong{Notes} \cr
-  \code{altM}             \tab \code{altimeter}        \tab m                    \tab                \cr
-  \code{cNms/cm}          \tab \code{conductivityN}    \tab ms/cm                \tab                \cr
-  \code{cstartrN}         \tab \code{beamTransmission} \tab percent              \tab                \cr
-  \code{depS}             \tab \code{depth}            \tab m                    \tab                \cr
-  \code{depSM}            \tab \code{depth}            \tab m                    \tab                \cr
-  \code{flag}             \tab \code{flag}             \tab \code{NULL}          \tab                \cr
-  \code{flsp}             \tab \code{fluorescence}     \tab \code{NULL}          \tab                \cr
-  \code{nbin}             \tab \code{nbin}             \tab \code{NULL}          \tab                \cr
-  \code{potempN90C}       \tab \code{thetaN}           \tab degC, ITS-90         \tab                \cr
-  \code{pr}               \tab \code{pressure}         \tab dbar                 \tab                \cr
-  \code{prDM}             \tab \code{pressure}         \tab dbar                 \tab 1              \cr
-  \code{salNN}            \tab \code{salinityN}        \tab unitless, PSS-78     \tab 2              \cr
-  \code{sbeoxNml/l}       \tab \code{oxygenN}          \tab ml/l                 \tab                \cr
-  \code{scan}             \tab \code{scan}             \tab \code{NULL}          \tab                \cr
-  \code{sigma-theta}      \tab \code{sigmaTheta}       \tab kg/m^3               \tab 3              \cr
-  \code{spar}             \tab \code{spar}             \tab \code{NULL}          \tab                \cr
-  \code{svcm}             \tab \code{soundSpeed}       \tab m/s                  \tab                \cr
-  \code{tN68}             \tab \code{temperatureN}     \tab degC, IPTS-68        \tab                \cr 
-  \code{tN90c}            \tab \code{temperatureN}     \tab degC, ITS-90         \tab                \cr
-  \code{upolyN}           \tab \code{upolyN}           \tab \code{NULL}          \tab                \cr 
-  \code{vN}               \tab \code{voltageN}         \tab V                    \tab                \cr 
-  \code{wetcdom}          \tab \code{fluorescence}     \tab mg/m^3               \tab                \cr 
+  \strong{Key}       \tab \strong{Result}                   \tab \strong{Unit, scale} \tab \strong{Notes} \cr
+  \code{altM}        \tab \code{altimeter}                  \tab m                    \tab                \cr
+  \code{cNms/cm}     \tab \code{conductivityN}              \tab ms/cm                \tab                \cr
+  \code{CStarAtN}    \tab \code{beamAttenuation}            \tab 1/m                  \tab                \cr
+  \code{CStarTrN}    \tab \code{beamTransmission}           \tab percent              \tab                \cr
+  \code{depS}        \tab \code{depth}                      \tab m                    \tab                \cr
+  \code{depSM}       \tab \code{depth}                      \tab m                    \tab                \cr
+  \code{depSM}       \tab \code{depth}                      \tab m                    \tab                \cr
+  \code{flag}        \tab \code{flag}                       \tab \code{NULL}          \tab                \cr
+  \code{flsp}        \tab \code{fluorescence}               \tab \code{NULL}          \tab                \cr
+  \code{nbin}        \tab \code{nbin}                       \tab \code{NULL}          \tab                \cr
+  \code{potempN90C}  \tab \code{thetaN}                     \tab degC, ITS-90         \tab                \cr
+  \code{pr}          \tab \code{pressure}                   \tab dbar                 \tab                \cr
+  \code{prDM}        \tab \code{pressure}                   \tab dbar                 \tab 1              \cr
+  \code{ptempC}      \tab \code{theta}                      \tab degC, ITS-90         \tab 2              \cr
+  \code{salNN}       \tab \code{salinityN}                  \tab unitless, PSS-78     \tab 3              \cr
+  \code{sbeoxNML/L}  \tab \code{oxygenConcentrationVolumeN} \tab ml/l                 \tab                \cr
+  \code{sbeoxNMm/Kg} \tab \code{oxygenConcentrationMoleN}   \tab ml/l                 \tab                \cr
+  \code{sbeoxNPs}    \tab \code{oxygenSaturationN}          \tab percent              \tab                \cr
+  \code{sbeoxNV}     \tab \code{oxygenVoltageN}             \tab ml/l                 \tab                \cr
+  \code{scan}        \tab \code{scan}                       \tab \code{NULL}          \tab                \cr
+  \code{sigma-theta} \tab \code{sigmaTheta}                 \tab kg/m^3               \tab 4              \cr
+  \code{spar}        \tab \code{spar}                       \tab \code{NULL}          \tab                \cr
+  \code{svcm}        \tab \code{soundSpeed}                 \tab m/s                  \tab                \cr
+  \code{tN68}        \tab \code{temperatureN}               \tab degC, IPTS-68        \tab                \cr 
+  \code{tN90c}       \tab \code{temperatureN}               \tab degC, ITS-90         \tab                \cr
+  \code{upolyN}      \tab \code{upolyN}                     \tab \code{NULL}          \tab                \cr 
+  \code{vN}          \tab \code{voltageN}                   \tab V                    \tab                \cr 
+  \code{wetcdom}     \tab \code{fluorescence}               \tab mg/m^3               \tab                \cr 
 }
 \itemize{
 \item{1. what to do if a file has both \code{pr} and \code{prDM}?}
-\item{2: some files have PSU for this ... should we handle that? And are there other S scales?}
-\item{3: 'theta' may appear in different ways with different encodings.}
+\item{2: assuming a modern scale for temperature, since sample CNV file headers do not specify it.}
+\item{3: some files have PSU for this ... should we handle that? And are there other S scales?}
+\item{4: 'theta' may appear in different ways with different encodings.}
 }
 }
 \author{
