@@ -34,6 +34,46 @@ Second, if no match is found, a general function is used
 (see \sQuote{Details of the general method}). If neither
 method can locates the requested item, \code{NULL} is returned.
 }
+\section{Details of the general method}{
+
+
+If the specialized method produces no matches, the following generalized
+method is applied. As with the specialized method, the procedure hinges
+first on the value of \code{i}.
+
+First, a check is made as to whether \code{i} names one of the standard
+\code{oce} slots, and returns the slot contents if so. Thus, 
+\code{x[["metadata"]]} will retrieve the \code{metadata} slot, 
+while \code{x[["data"]]} and \code{x[["processingLog"]]} return
+those slots.
+
+Next, if \code{i} is a string ending in the
+\code{"Unit"}, then the characters preceding that string
+are taken to be the name of an item in the data object, and a list
+containing the unit is returned. This list consists of an item
+named \code{unit}, which is an \code{\link{expression}}, and
+an item named \code{scale}, which is a string describing the
+measurement scale.  If the string ends in \code{" unit"}, e.g.
+\code{x[["temperature unit"]]}, then just the expression is returned, 
+and if it ends in \code{" scale"}, then just the scale is returned.
+
+Next, if \code{i} is a string ending in \code{"Flag"}, then the corresponding
+data-quality flag is returned (or \code{NULL} if there is no such flag). 
+For example, \code{x[["salinityFlag"]]} returns a vector of salinity
+flags if \code{x} is a ctd object.
+
+If none of the preceding conditions are met, a check is done
+to see if the \code{metadata} slot contains an item with
+the provided name, and that is returned, if so. A direct match
+is required for this condition.
+
+Finally, the \code{data} slot is checked to see if it contains 
+an item with the name indicated by \code{i}. In this case, a partial
+match will work; this is accomplished by using \code{\link{pmatch}}.
+
+If none of the above-listed conditions holds, then \code{NULL} is returned.
+}
+
 \section{Details of the specialized \code{ctd} method}{
 
 
@@ -117,53 +157,14 @@ computed with \code{\link{swTheta}(x)}. This is a synonym for \code{potential te
 
 }
 }
-
-\section{Details of the general method}{
-
-
-If the specialized method produces no matches, the following generalized
-method is applied. As with the specialized method, the procedure hinges
-first on the value of \code{i}.
-
-First, a check is made as to whether \code{i} names one of the standard
-\code{oce} slots, and returns the slot contents if so. Thus, 
-\code{x[["metadata"]]} will retrieve the \code{metadata} slot, 
-while \code{x[["data"]]} and \code{x[["processingLog"]]} return
-those slots.
-
-Next, if \code{i} is a string ending in the
-\code{"Unit"}, then the characters preceding that string
-are taken to be the name of an item in the data object, and a list
-containing the unit is returned. This list consists of an item
-named \code{unit}, which is an \code{\link{expression}}, and
-an item named \code{scale}, which is a string describing the
-measurement scale.  If the string ends in \code{" unit"}, e.g.
-\code{x[["temperature unit"]]}, then just the expression is returned, 
-and if it ends in \code{" scale"}, then just the scale is returned.
-
-Next, if \code{i} is a string ending in \code{"Flag"}, then the corresponding
-data-quality flag is returned (or \code{NULL} if there is no such flag). 
-For example, \code{x[["salinityFlag"]]} returns a vector of salinity
-flags if \code{x} is a ctd object.
-
-If none of the preceding conditions are met, a check is done
-to see if the \code{metadata} slot contains an item with
-the provided name, and that is returned, if so. A direct match
-is required for this condition.
-
-Finally, the \code{data} slot is checked to see if it contains 
-an item with the name indicated by \code{i}. In this case, a partial
-match will work; this is accomplished by using \code{\link{pmatch}}.
-
-If none of the above-listed conditions holds, then \code{NULL} is returned.
-}
 \examples{
 data(ctd)
 head(ctd[["temperature"]])
 
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
+Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+  \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
   \code{\link{[[,bremen-method}},
@@ -172,6 +173,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,echosounder-method}},
   \code{\link{[[,g1sst-method}},
   \code{\link{[[,gps-method}},
+  \code{\link{[[,ladp-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
   \code{\link{[[,met-method}}, \code{\link{[[,odf-method}},
@@ -180,16 +182,22 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,section-method}},
   \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
-  \code{\link{[[,windrose-method}}
+  \code{\link{[[,windrose-method}},
+  \code{\link{[[<-,adv-method}}
 
 Other things related to \code{ctd} data: \code{\link{[[<-,ctd-method}},
-  \code{\link{as.ctd}}, \code{\link{ctd-class}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
+  \code{\link{as.ctd}}, \code{\link{cnvName2oceName}},
+  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
   \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

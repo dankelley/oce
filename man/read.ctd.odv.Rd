@@ -10,7 +10,7 @@ read.ctd.odv(file, columns = NULL, station = NULL, missing.value = -999,
 \arguments{
 \item{file}{A connection or a character string giving the name of the file to
 load.  For \code{read.ctd.sbe()} and \code{read.ctd.woce()}, this may be a
-wildcard (e.g.  \code{"*.cnv"} or \code{"*.csv"}) in which case the return
+wildcard (e.g. \code{"*.cnv"} or \code{"*.csv"}) in which case the return
 value is a vector containing CTD objects created by reading the files from
 \code{\link{list.files}} with \code{pattern} set to the specified wildcard
 pattern.}
@@ -32,8 +32,11 @@ be set to \code{NA} upon reading.}
 \item{monitor}{Boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}
 
-\item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate amount
-of debugging information, or to 2 to get more.}
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 
 \item{processingLog}{If provided, the action item to be stored in the log.
 This is typically only provided for internal calls; the default that it provides is
@@ -49,9 +52,6 @@ in those formats varies widely.
 }
 \description{
 Read an ODV-type CTD file
-
-The \code{read.ctd} family of functions can read a variety of CTD
-data formats. See \dQuote{Details}.
 }
 \details{
 \code{read.ctd.odf()} reads files stored in ODV format, used by some European data providers.
@@ -67,9 +67,20 @@ because it is unreliable, which causes problems with CRAN submission of the
 oce package.)
 }
 \seealso{
-Other functions that handle \code{ctd} data: \code{\link{read.ctd.itp}},
-  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{ctd}}, \code{\link{gps-class}},
+  \code{\link{handleFlags,ctd-method}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}}
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }
 

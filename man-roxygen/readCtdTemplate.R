@@ -1,6 +1,3 @@
-#' @description The \code{read.ctd} family of functions can read a variety of CTD
-#' data formats. See \dQuote{Details}.
-#'
 #' @return An object of \code{\link{ctd-class}}. The details of the contents
 #' depend on the source file. The \code{metadata} slot is particularly 
 #' variable across data formats, because the meta-information provided
@@ -8,13 +5,16 @@
 #' 
 #' @param file A connection or a character string giving the name of the file to
 #' load.  For \code{read.ctd.sbe()} and \code{read.ctd.woce()}, this may be a
-#' wildcard (e.g.  \code{"*.cnv"} or \code{"*.csv"}) in which case the return
+#' wildcard (e.g. \code{"*.cnv"} or \code{"*.csv"}) in which case the return
 #' value is a vector containing CTD objects created by reading the files from
 #' \code{\link{list.files}} with \code{pattern} set to the specified wildcard
 #' pattern.
 #' 
-#' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
-#' of debugging information, or to 2 to get more.
+#' @param debug An integer specifying whether debugging information is
+#' to be printed during the processing. This is a general parameter that
+#' is used by many \code{oce} functions. Generally, setting \code{debug=0}
+#' turns off the printing, while higher values suggest that more information
+#' be printed.
 #' 
 #' @param columns If \code{NULL}, then \code{read.ctd} tries to infer column names
 #' from the header.  For SBE files only, the \code{column} argument can control
@@ -39,7 +39,6 @@
 #' 
 #' @param ... additional arguments, passed to called routines.
 #' 
-#' @family functions that handle \code{ctd} data
-#' 
 #' @author Dan Kelley
 #' 
+#' @family things related to \code{ctd} data

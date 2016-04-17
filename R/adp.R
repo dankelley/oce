@@ -371,7 +371,7 @@ setMethod(f="summary",
           })
 
 
-#' Extract Parts of an \code{adp} Object
+#' @title Extract Parts of an \code{adp} Object
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
 #' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
@@ -380,9 +380,7 @@ setMethod(f="summary",
 #' form; see examples.
 #' 
 #' @param x An adp object, i.e. one inheriting from \code{\link{adp-class}}.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
+#' @template sub_subTemplate
 #'
 #' @examples
 #' data(adp)
@@ -395,7 +393,6 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #'
 #' @family things related to \code{adp} data
-#' @family functions that extract parts of oce objects
 setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -434,21 +431,17 @@ setMethod(f="[[",
               }
           })
 
-#' Replace Parts of an \code{adp} Object
+#' @title Replace Parts of an \code{adp} Object
+#' @param x An \code{adp} object, i.e. inheriting from \code{\link{adp-class}}
+#' @template sub_subsetTemplate
 #'
+#' @details
 #' In addition to the usual insertion of elements by name, note
 #' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 #' 
-#' @param x An adp object
-#' @param i The item to insert
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#' @param value The value to be inserted into \code{x}.
-#'
 #' @author Dan Kelley
 #'
 #' @family things related to \code{adp} data
-#' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature="adp",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times

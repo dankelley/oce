@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{read.ctd.odf}
 \alias{read.ctd.odf}
-\title{Read an ODF-type CTD file}
+\title{Read an ODF -type CTD file, i.e. a file with name ending in \code{.odf}.}
 \usage{
 read.ctd.odf(file, columns = NULL, station = NULL, missing.value = -999,
   monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
@@ -10,7 +10,7 @@ read.ctd.odf(file, columns = NULL, station = NULL, missing.value = -999,
 \arguments{
 \item{file}{A connection or a character string giving the name of the file to
 load.  For \code{read.ctd.sbe()} and \code{read.ctd.woce()}, this may be a
-wildcard (e.g.  \code{"*.cnv"} or \code{"*.csv"}) in which case the return
+wildcard (e.g. \code{"*.cnv"} or \code{"*.csv"}) in which case the return
 value is a vector containing CTD objects created by reading the files from
 \code{\link{list.files}} with \code{pattern} set to the specified wildcard
 pattern.}
@@ -32,8 +32,11 @@ be set to \code{NA} upon reading.}
 \item{monitor}{Boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}
 
-\item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate amount
-of debugging information, or to 2 to get more.}
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 
 \item{processingLog}{If provided, the action item to be stored in the log.
 This is typically only provided for internal calls; the default that it provides is
@@ -48,13 +51,10 @@ variable across data formats, because the meta-information provided
 in those formats varies widely.
 }
 \description{
-Read an ODF-type CTD file
-
-The \code{read.ctd} family of functions can read a variety of CTD
-data formats. See \dQuote{Details}.
+Read an ODF -type CTD file, i.e. a file with name ending in \code{.odf}.
 }
 \details{
-\code{read.ctd.odf()} reads files stored in Ocean Data Format, used in
+\code{read.ctd.odf} reads files stored in Ocean Data Format, used in
 some Canadian hydrographic databases.
 }
 \author{
@@ -65,13 +65,24 @@ The ODF format, used by the Canadian Department of Fisheries and Oceans, is
 described to some extent in the documentation for \code{\link{read.odf}}.  It
 is not clear that ODF format is handled correctly in \code{read.ctd.odf}, or
 the more general function \code{\link{read.odf}}, because the format seems to
-be somewhat variable and some of the R code is designed mainly by examination
-of some particular files being used in the author's research.
+be somewhat variable and so the R code was written in an ad-hoc way, to handle
+a few files being used in the author's research.
 }
 \seealso{
-Other functions that handle \code{ctd} data: \code{\link{read.ctd.itp}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{ctd}}, \code{\link{gps-class}},
+  \code{\link{handleFlags,ctd-method}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odv}},
+  \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}}
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }
 
