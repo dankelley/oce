@@ -64,7 +64,7 @@ list}
 
 \item{units}{an optional list containing units.  If not supplied, a default of
 \code{list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-  salinity=list(unit=expression(ratio), scale="",
+  salinity=list(unit=expression(), scale="",
   pressure=list(unit=expression(dbar), scale="")} is used. This is quite
 typical of archived datasets, but for some instrumental files it will make
 sense to use \code{salinity=list(unit=expression(uS/cm), scale="")} or 

@@ -176,7 +176,9 @@ cnvName2oceName <- function(h)
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="")
     } else {
-        message("unrecognized name '", name, "'")
+        warning("unrecognized name '", name, "' set to 'unknown'")
+        name <- "unknown"
+        unit <- list(unit=expression(), scale="")
     }
     ## Finally, drop any zero suffices, so that e.g. salinity0 becomes
     ## salinity.
@@ -263,7 +265,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     ##conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
-    ## units$conductivity <- list(unit=expression(ratio), scale="") # guess; other types are "mS/cm" and "S/m"
+    ## units$conductivity <- list(unit=expression(), scale="") # guess; other types are "mS/cm" and "S/m"
     ## units$temperature <- list(unit=expression(degree*C), scale="ITS-90") # guess; other option is IPTS-68
     pressureType = "sea"               # guess; other option is "absolute"
 
@@ -278,12 +280,18 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
         col.names.inferred <- c(col.names.inferred, nu$name)
         units[[nu$name]] <- nu$unit
     }
+    ## Make 'unknown' be 'unknownN', where N is 1, then 2, etc.
+    iunknown <- grep("unknown", col.names.inferred)
+    if (length(iunknown)) {
+        col.names.inferred[iunknown] <- paste('unknown', seq_along(iunknown), sep="")
+    }
     found.scan <- "scan" %in% col.names.inferred
     found.temperature <- "temperature" %in% col.names.inferred
     found.pressure <- "pressure" %in% col.names.inferred
     found.salinity <- "salinity" %in% col.names.inferred
     found.time <- "time" %in% col.names.inferred
     found.depth <- "depth" %in% col.names.inferred
+    found.conductivity <- "conductivity" %in% col.names.inferred
     found.conductivity.ratio <- "conductivity.ratio" %in% col.names.inferred
     ## FIXME: should we insist on having salinity, temperature, and pressure?
 
@@ -340,7 +348,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
         ##>         if (0 < regexpr("ratio", lline)) {
         ##>             found.conductivity.ratio <- TRUE;
         ##>             name <- "conductivityratio"
-        ##>             units$conductivity <-list(unit=expression(ratio), scale="")
+        ##>             units$conductivity <-list(unit=expression(), scale="")
         ##>         } else {
         ##>             found.conductivity <- TRUE;
         ##>             name <- "conductivity"
@@ -375,9 +383,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
 
         if (0 < regexpr(".*seacat profiler.*", lline))
             serialNumber <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
-        if (length(grep("^\\* temperature sn", lline)))
+        if (length(grep("^\\* Temperature SN", lline, ignore.case=TRUE)))
             serialNumberTemperature <- gsub("^.*=\\s", "", lline)
-        if (length(grep("^\\* conductivity sn", lline)))
+        if (length(grep("^\\* Conductivity SN", lline, ignore.case=TRUE)))
             serialNumberConductivity <- gsub("^.*=\\s", "", lline)
         if (0 < (r<-regexpr("date:", lline))) {
             d <- sub("(.*)date:([ ])*", "", lline)
@@ -518,6 +526,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     res@metadata$type <- "SBE"
     res@metadata$hexfilename <- hexfilename # from instrument
     res@metadata$serialNumber <- serialNumber
+    res@metadata$serialNumberTemperature <- serialNumberTemperature
     res@metadata$serialNumberConductivity <- serialNumberConductivity
     res@metadata$pressureType <- pressureType
     res@metadata$units <- units
@@ -558,7 +567,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     pushBack(lines, file)
     if (is.null(columns)) {
         oceDebug(debug, "About to read these names: c(\"", paste(col.names.inferred, collapse='","'),"\")\n", sep="")
-        data <- as.list(read.table(file, skip=iline-1, header=FALSE, col.names=col.names.inferred))
+        data <- as.list(read.table(file, skip=iline-1, header=FALSE))
+        if (length(data) != length(col.names.inferred))
+            stop("Number of columns in .cnv data file does not equal number of named variables")
+        names(data) <- col.names.inferred
         ## data <- as.list(read.table(text=lines[seq.int(iline, length(lines))],
         ##                            header=FALSE, col.names=col.names.inferred))
         ndata <- length(data[[1]])

@@ -994,7 +994,7 @@ setMethod(f="plot",
                   level <- seq(1L, dim(x@data$temperature)[1])
               ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
                             units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                       conductivity=list(list=expression(ratio), scale=""))) # guess on units
+                                       conductivity=list(list=expression(), scale=""))) # guess on units
               which <- oce.pmatch(which,
                                   list(trajectory=1,
                                        "salinity ts"=2,

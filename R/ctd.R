@@ -240,7 +240,7 @@ setMethod(f="initialize",
               if (missing(units)) {
                   .Object@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
                                                  salinity=list(unit=expression(), scale="PSS-78"),
-                                                 conductivity=list(unit=expression(ratio), scale=""),
+                                                 conductivity=list(unit=expression(), scale=""),
                                                  pressure=list(unit=expression(dbar), scale=""),
                                                  depth=list(unit=expression(m), scale=""))
               } else {
@@ -585,7 +585,7 @@ setMethod(f="[[<-",
 #' 
 #' @param units an optional list containing units.  If not supplied, a default of
 #' \code{list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-#'   salinity=list(unit=expression(ratio), scale="",
+#'   salinity=list(unit=expression(), scale="",
 #'   pressure=list(unit=expression(dbar), scale="")} is used. This is quite
 #' typical of archived datasets, but for some instrumental files it will make
 #' sense to use \code{salinity=list(unit=expression(uS/cm), scale="")} or 
@@ -1553,7 +1553,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     if (!is.null(station))
         res@metadata$station <- station
     res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                               conductivity=list(unit=expression(ratio), scale="")) # FIXME just a guess for ODV
+                               conductivity=list(unit=expression(), scale="")) # FIXME just a guess for ODV
     oceDebug(debug, "} # read.ctd.odf()")
     res
 }
@@ -3208,7 +3208,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         res@metadata$systemUploadTime <- systemUploadTime
         res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
                                    salinity=list(unit=expression(), scale="PSS-78"),
-                                   conductivity=list(unit=expression(ratio), scale=""))
+                                   conductivity=list(unit=expression(), scale=""))
         res@metadata$pressureType <- "sea"
         res@metadata$ship <- ship
         res@metadata$scientist <- scientist
@@ -3371,7 +3371,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         res@metadata$filename <- filename # provided to this routine
         res@metadata$filename.orig <- filename.orig # from instrument
         res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                   conductivity=list(unit=expression(ratio), scale=""))
+                                   conductivity=list(unit=expression(), scale=""))
         res@metadata$flags <- flags
         res@metadata$pressureType <- "sea"
         res@metadata$systemUploadTime <- systemUploadTime
@@ -3557,7 +3557,7 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 ##>     ##conductivity.standard <- 4.2914
 ##>     found.header.latitude <- found.header.longitude <- FALSE
 ##>     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
-##>     conductivityUnit = list(unit=expression(ratio), scale="") # guess; other types are "mS/cm" and "S/m"
+##>     conductivityUnit = list(unit=expression(), scale="") # guess; other types are "mS/cm" and "S/m"
 ##>     temperatureUnit = list(unit=expression(degree*C), scale="ITS-90") # guess; other option is IPTS-68
 ##>     pressureType = "sea"               # guess; other option is "absolute"
 ##> 
@@ -3620,7 +3620,7 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 ##>                 if (0 < regexpr("ratio", lline)) {
 ##>                     found.conductivity.ratio <- TRUE;
 ##>                     name <- "conductivityratio"
-##>                     conductivityUnit = list(unit=expression(ratio), scale="")
+##>                     conductivityUnit = list(unit=expression(), scale="")
 ##>                 } else {
 ##>                     found.conductivity <- TRUE;
 ##>                     name <- "conductivity"
