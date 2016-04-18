@@ -16,12 +16,10 @@ value is a vector containing CTD objects created by reading the files from
 \code{\link{list.files}} with \code{pattern} set to the specified wildcard
 pattern.}
 
-\item{columns}{If \code{NULL}, then \code{read.ctd} tries to infer column names
-from the header.  For SBE files only, the \code{column} argument can control
-the column selection.  It is a list that names data types and the columns
-containing them, starting at 1.  The list must include \code{"pressure"},
-\code{"temperature"} and \code{"salinity"}, with any other values being ignored
-(in this version of the function).}
+\item{columns}{Ignored. This is an archaic argument that never actually
+did anything. The old documents suggest that it would have worked only
+for \code{\link{read.ctd.sbe}}, anyway. This argument will be removed
+in a future version; see \link{oce-deprecated}.}
 
 \item{station}{Optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the

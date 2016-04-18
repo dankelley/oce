@@ -10,7 +10,7 @@ cnvName2oceName(h)
 \item{h}{The header line.}
 }
 \value{
-a list containing \code{name} and \code{unit}, the latter a list as used throughout oce.
+a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
 }
 \description{
 This function is used by \code{\link{read.ctd.sbe}} to infer data names

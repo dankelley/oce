@@ -21,6 +21,7 @@
     \strong{Deprecated} \tab \strong{Replacement} \tab \strong{Notes}\cr
     \code{mapZones} \tab \code{\link{mapGrid}} \tab Improve name sensibility\cr
     \code{mapMeridians} \tab \code{\link{mapGrid}} \tab Improve name sensibility\cr
+    \code{columns} \tab \code{\link{read.ctd}} \tab Unnecessary, and never worked\cr
   }
 
   The next CRAN release of \sQuote{oce} will have these functions flagged as

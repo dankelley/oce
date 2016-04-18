@@ -65,7 +65,7 @@
 #' }
 #'
 #' @param h The header line.
-#' @return a list containing \code{name} and \code{unit}, the latter a list as used throughout oce.
+#' @return a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
 #' @author Dan Kelley
 #' @family things related to \code{ctd} data
 cnvName2oceName <- function(h)
@@ -78,6 +78,7 @@ cnvName2oceName <- function(h)
         stop("header line does not contain a variable name")
     ## message("h: '", h, "'")
     name <- gsub("^# name [0-9][0-9]* = (.*):.*$", "\\1", h, ignore.case=TRUE)
+    nameOriginal <- name
     ## message("name: '", name, "'")
     if (1 == length(grep("altM", name, ignore.case=TRUE))) {
         name <- "altimeter"
@@ -184,7 +185,7 @@ cnvName2oceName <- function(h)
     if (1 == length(grep("0$", name)))
         name <- substr(name, 1, nchar(name)-1)
     ##message(" name: '", name, "'")
-    list(name=name, unit=unit)
+    list(name=name, nameOriginal=nameOriginal, unit=unit)
 }
 
 
@@ -203,6 +204,9 @@ cnvName2oceName <- function(h)
 #' data from the second sensor are also available as e.g. \code{x[["temperature1"]]},
 #' where \code{x} is the name of the returned value.  For the details of the 
 #' mapping from \code{.cnv} names to \code{ctd} names, see \code{\link{cnvName2oceName}}.
+#'
+#' The original variable names as stored in \code{file} are stored within the \code{data}
+#' slot as attributes, as a way to prevent confusion on variable names.
 #'
 #' @references
 #' The Sea-Bird SBE 19plus profiler is described at
@@ -273,10 +277,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     ## Get names and units of columns in the SBE data file
     nameLines  <- grep("^# name [0-9][0-9]* = .*:.*$", lines, ignore.case=TRUE)
     units <- list()
-    col.names.inferred <- NULL
+    col.names.inferred <- col.names.original <- NULL
     for (iline in nameLines) {
         nu <- cnvName2oceName(lines[iline])
         col.names.inferred <- c(col.names.inferred, nu$name)
+        col.names.original <- c(col.names.original, nu$nameOriginal)
         units[[nu$name]] <- nu$unit
     }
     found.scan <- "scan" %in% col.names.inferred
@@ -580,6 +585,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             warning("no data in CTD file \"", filename, "\"\n")
             data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
         }
+        attributes(data) <- list(names=col.names.inferred, namesOriginal=col.names.original)
+        ## FIXME: should the above attributes() call be later, also? (see next block)
     } else {
         dataAll <- read.table(file, skip=iline-1, header=FALSE, col.names=col.names.inferred)
         ## dataAll <- read.table(text=lines[seq.int(iline, length(lines))],
