@@ -1455,13 +1455,57 @@ interpBarnes <- function(x, y, z, w,
     list(xg=xg, yg=yg, zg=g$zg, wg=g$wg, zd=g$zd)
 }
 
-coriolis <- function(lat, degrees=TRUE)
+#' Coriolis parameter on rotating earth
+#' 
+#' Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude.
+#' 
+#' @param latitude Vector of latitudes in \eqn{^\circ}{deg}N or radians north of the equator.
+#' @param degrees Flag indicating whether degrees are used for latitude; if set
+#' to \code{FALSE}, radians are used.
+#' @return Coriolis parameter [radian/s].
+#' @author Dan Kelley
+#' @references Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
+#' Press, New York, 662 pp.
+#' @examples
+#' C <- coriolis(45) # 1e-4
+coriolis <- function(latitude, degrees=TRUE)
 {
     ## Siderial day 86164.1 s.
-    if (degrees) lat <- lat * 0.0174532925199433
-    1.458423010785138e-4 * sin(lat)
+    if (degrees) latitude <- latitude * 0.0174532925199433
+    1.458423010785138e-4 * sin(latitude)
 }
 
+
+
+#' Correct for drift in instrument clock
+#' 
+#' It is assumed that the instrument clock matches the real time at the start
+#' of the sampling, and that the clock drifts linearly (i.e. is uniformly fast
+#' or slow) over the sampling interval.  Linear interpolation is used to infer
+#' the values of all variables in the \code{data} slot.  The data length is
+#' altered in this process, e.g. a slow instrument clock (positive
+#' \code{slowEnd}) takes too few samples in a given time interval, so
+#' \code{undriftTime} will increase the number of data.
+#' 
+#' @param x an object of \code{\link{oce-class}}.
+#' @param slowEnd number of seconds to add to final instrument time, to get the
+#' correct time of the final sample.  This will be a positive number, for a
+#' "slow" instrument clock.
+#' @param tname Character string indicating the name of the time column in the
+#' \code{data} slot of \code{x}.
+#' @return An object of the same class as \code{x}, with the \code{data} slot
+#' adjusted appropriately.
+#' @author Dan Kelley
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' rbr011855 <- read.oce(
+#'  "/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/raw/pt_rbr_011855.dat")
+#' d <- subset(rbr011855, time < as.POSIXct("2008-06-25 10:05:00"))
+#' x <- undriftTime(d, 1)	  # clock lost 1 second over whole experiment
+#' summary(d)
+#' summary(x)
+#' }
 undriftTime <- function(x, slowEnd = 0, tname="time")
 {
     if (!inherits(x, "oce"))
@@ -1495,6 +1539,40 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
     res
 }
 
+
+
+
+#' Fill a gap in an oce object
+#' 
+#' Sequences of \code{NA} values, are filled by linear interpolation between
+#' the non-\code{NA} values that bound the gap.
+#' 
+#' @param x an \code{oce} object.
+#' @param method to use; see \dQuote{Details}.
+#' @param rule integer controlling behaviour at start and end of \code{x}.  If
+#' \code{rule=1}, \code{NA} values at the ends are left in the return value.
+#' If \code{rule=2}, they are replaced with the nearest non-NA point.
+#' @return A new \code{oce} object, with gaps removed.
+#'
+#' @section Bugs:
+#' \enumerate{
+#' \item Eventually, this will be expanded to work
+#' with any \code{oce} object.  But, for now, it only works for vectors that
+#' can be coerced to numeric.
+#' \item If the first or last point is \code{NA}, then \code{x} is returned unaltered.
+#' \item Only method \code{linear} is permitted now.
+#' }
+#' @author Dan Kelley
+#' @examples
+#' library(oce)
+#' # Integers
+#' x <- c(1:2, NA, NA, 5:6)
+#' y <- fillGap(x)
+#' print(data.frame(x,y))
+#' # Floats
+#' x <- x + 0.1
+#' y <- fillGap(x)
+#' print(data.frame(x,y))
 fillGap <- function(x, method=c("linear"), rule=1)
 {
     if (!is.numeric(x))
@@ -1517,6 +1595,25 @@ fillGap <- function(x, method=c("linear"), rule=1)
 }
 
 
+#' Add a column to an oce object's \code{data}.
+#' 
+#' If there is already a column with the given name, its contents are replaced
+#' by the new value.
+#' 
+#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param data the data.  The length of this item must match that of the
+#' existing data entries in the \code{data} slot).
+#' @param name the name of the column.
+#' @return An object of \code{\link[base]{class}} \code{oce}, with a new
+#' column.
+#' @author Dan Kelley
+#' @seealso \code{\link{ctdAddColumn}} does a similar thing for \code{ctd}
+#' objects, and is in fact called, if \code{x} is of class \code{ctd}.
+#' @examples
+#' library(oce)
+#' data(ctd) 
+#' st <- swSigmaTheta(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]])
+#' new <- addColumn(ctd, st, "sigmaTheta")
 addColumn <- function (x, data, name)
 {
     if (!inherits(x, "oce"))
@@ -1539,6 +1636,44 @@ addColumn <- function (x, data, name)
     res
 }
 
+
+#' Smooth and decimate, or subsample, an oce object.
+#' 
+#' Later on, other methods will be added, and \code{\link{ctdDecimate}} will be
+#' retired in favour of this, a more general, function.  The filtering is done
+#' with the \code{\link{filter}} function of the stats package.
+#' 
+#' @param x an \code{oce} object containing a \code{data} element.
+#' @param by an indication of the subsampling.  If this is a single number,
+#' then it indicates the spacing between elements of \code{x} that are
+#' selected.  If it is two numbers (a condition only applicabile if \code{x} is
+#' an \code{echosounder} object, at present), then the first number indicates
+#' the time spacing and the second indicates the depth spacing.
+#' @param to Indices at which to subsample.  If given, this over-rides
+#' \code{by}.
+#' @param filter optional list of numbers representing a digital filter to be
+#' applied to each variable in the \code{data} slot of \code{x}, before
+#' decimation is done. If not supplied, then the decimation is done strictly by
+#' sub-sampling.
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @return An object of \code{\link[base]{class}} \code{"oce"} that has been
+#' subsampled appropriately.
+#' @section Bugs: Only a preliminary version of this function is provided in
+#' the present package.  It only works for objects of class \code{echosounder},
+#' for which the decmation is done after applying a running median filter and
+#' then a boxcar filter, each of length equal to the corresponding component of
+#' \code{by}.
+#' @author Dan Kelley
+#' @seealso Filter coefficients may be calculated using
+#' \code{\link{makeFilter}}.  (Note that \code{\link{ctdDecimate}} will be
+#' retired when the present function gains equivalent functionality.)
+#' @examples
+#' library(oce)
+#' data(adp)
+#' plot(adp)
+#' adpDec <- decimate(adp,by=2,filter=c(1/4,1/2,1/4))
+#' plot(adpDec)
 decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "oce"))
@@ -1716,7 +1851,29 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     res
 }
 
-oce.smooth <- function(x, ...)
+
+
+#' Smooth an oce object.
+#' 
+#' Each data element is smoothed as a timeseries. For ADP data, this is done
+#' along time, not distance.  Time vectors, if any, are not smoothed.  A good
+#' use of \code{oce.smooth} is for despiking noisy data.
+#' 
+#' @aliases oce.smooth
+#' @param x an \code{oce} object.
+#' @param \dots parameters to be supplied to \code{\link{smooth}}, which does
+#' the actual work.
+#' @return An object of \code{\link[base]{class}} \code{"oce"} that has been
+#' smoothed appropriately.
+#' @author Dan Kelley
+#' @seealso The work is done with \code{\link{smooth}}, and the \code{...}
+#' arguments are handed to it directly by \code{oce.smooth}.
+#' @examples
+#' library(oce)
+#' data(ctd)
+#' d <- oce.smooth(ctd)
+#' plot(d)
+oceSmooth <- function(x, ...)
 {
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
@@ -1756,7 +1913,7 @@ oce.smooth <- function(x, ...)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
-oceSmooth <- oce.smooth
+oce.smooth <- oceSmooth
 
 bcdToInteger <- function(x, endian=c("little", "big"))
 {
