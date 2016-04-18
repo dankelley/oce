@@ -189,7 +189,9 @@ cnvName2oceName <- function(h)
 }
 
 
-#' Read an SBE-type CTD file, i.e. a file with name ending in \code{.cnv}.
+#' Read an Seabird \code{ctd} file.
+#'
+#' Read a Teledyne/Seabird CTD file, i.e. a file with name ending in \code{.cnv}.
 #' @template readCtdTemplate
 #'
 #' @details
@@ -206,22 +208,29 @@ cnvName2oceName <- function(h)
 #' mapping from \code{.cnv} names to \code{ctd} names, see \code{\link{cnvName2oceName}}.
 #'
 #' The original variable names as stored in \code{file} are stored within the \code{data}
-#' slot as attributes, as a way to prevent confusion on variable names.
+#' slot as attribute named \code{namesOriginal}, and so can be retrieved with e.g.
+#' \code{attr(x@data, "namesOriginal")}, if \code{x} is the object returned by
+#' this function. This feature can be helpful in detailed work.  See the Appendix
+#' VI of [2], noting that the \code{namesOriginal} values are taken from
+#' the "Short Name" column of the table spanning pages 161 through 172.
 #'
 #' @references
-#' The Sea-Bird SBE 19plus profiler is described at
+#' 1. The Sea-Bird SBE 19plus profiler is described at
 #' \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
 #' information is given in the Sea-Bird data-processing manaual
 #' \url{http://www.seabird.com/old-manuals/Software_Manuals/SBE_Data_Processing/SBEDataProcessing_7.20g.pdf}.
+#'
+#' 2. A SBE data processing manual is at \url{http://www.seabird.com/sites/all/modules/pubdlcnt/pubdlcnt.php?file=http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.25.0.pdf&nid=1320}.
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (!is.null(columns)) {
-        columnsNames <- names(columns)
-        if (!("temperature" %in% columnsNames)) stop("'columns' must contain 'temperature'")
-        if (!("pressure" %in% columnsNames)) stop("'columns' must contain 'pressure'")
-        if (!("salinity" %in% columnsNames)) stop("'columns' must contain 'salinity'")
-        if (3 > length(columns)) stop("'columns' must contain three or more elements")
+        warning("'columns' argument is defunct, and will be removed in the next release of oce\n")
+        ## columnsNames <- names(columns)
+        ## if (!("temperature" %in% columnsNames)) stop("'columns' must contain 'temperature'")
+        ## if (!("pressure" %in% columnsNames)) stop("'columns' must contain 'pressure'")
+        ## if (!("salinity" %in% columnsNames)) stop("'columns' must contain 'salinity'")
+        ## if (3 > length(columns)) stop("'columns' must contain three or more elements")
     }
 
     if (length(grep("\\*", file, ignore.case=TRUE))) {

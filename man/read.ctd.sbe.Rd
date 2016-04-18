@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.sbe.R
 \name{read.ctd.sbe}
 \alias{read.ctd.sbe}
-\title{Read an SBE-type CTD file, i.e. a file with name ending in \code{.cnv}.}
+\title{Read an Seabird \code{ctd} file.}
 \usage{
 read.ctd.sbe(file, columns = NULL, station = NULL, missing.value,
   monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
@@ -15,10 +15,8 @@ value is a vector containing CTD objects created by reading the files from
 \code{\link{list.files}} with \code{pattern} set to the specified wildcard
 pattern.}
 
-\item{columns}{Ignored. This is an archaic argument that never actually
-did anything. The old documents suggest that it would have worked only
-for \code{\link{read.ctd.sbe}}, anyway. This argument will be removed
-in a future version; see \link{oce-deprecated}.}
+\item{columns}{Ignored, and slated for removal in April, 2016;
+see \link{oce-defunct}.}
 
 \item{station}{Optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the
@@ -49,7 +47,7 @@ variable across data formats, because the meta-information provided
 in those formats varies widely.
 }
 \description{
-Read an SBE-type CTD file, i.e. a file with name ending in \code{.cnv}.
+Read a Teledyne/Seabird CTD file, i.e. a file with name ending in \code{.cnv}.
 }
 \details{
 \code{read.ctd.sbe} reads files stored in Seabird \code{.cnv} format.
@@ -65,16 +63,22 @@ where \code{x} is the name of the returned value.  For the details of the
 mapping from \code{.cnv} names to \code{ctd} names, see \code{\link{cnvName2oceName}}.
 
 The original variable names as stored in \code{file} are stored within the \code{data}
-slot as attributes, as a way to prevent confusion on variable names.
+slot as attribute named \code{namesOriginal}, and so can be retrieved with e.g.
+\code{attr(x@data, "namesOriginal")}, if \code{x} is the object returned by
+this function. This feature can be helpful in detailed work.  See the Appendix
+VI of [2], noting that the \code{namesOriginal} values are taken from
+the "Short Name" column of the table spanning pages 161 through 172.
 }
 \author{
 Dan Kelley
 }
 \references{
-The Sea-Bird SBE 19plus profiler is described at
+1. The Sea-Bird SBE 19plus profiler is described at
 \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
 information is given in the Sea-Bird data-processing manaual
 \url{http://www.seabird.com/old-manuals/Software_Manuals/SBE_Data_Processing/SBEDataProcessing_7.20g.pdf}.
+
+2. A SBE data processing manual is at \url{http://www.seabird.com/sites/all/modules/pubdlcnt/pubdlcnt.php?file=http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.25.0.pdf&nid=1320}.
 }
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},

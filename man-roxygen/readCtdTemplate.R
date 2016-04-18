@@ -16,10 +16,8 @@
 #' turns off the printing, while higher values suggest that more information
 #' be printed.
 #' 
-#' @param columns Ignored. This is an archaic argument that never actually
-#' did anything. The old documents suggest that it would have worked only
-#' for \code{\link{read.ctd.sbe}}, anyway. This argument will be removed
-#' in a future version; see \link{oce-deprecated}.
+#' @param columns Ignored, and slated for removal in April, 2016;
+#' see \link{oce-defunct}.
 #' 
 #' @param station Optional character string containing an identifying name or
 #' number for the station. This can be useful if the routine cannot determine the

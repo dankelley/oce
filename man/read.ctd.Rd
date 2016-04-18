@@ -23,10 +23,8 @@ is assumed.  If \code{type="ITP"} then an ice-tethered profiler file is
 assumed.  If \code{type="ODF"} an ODF file is assumed.  If \code{type="ODV"} an
 ascii-ODV file is assumed.}
 
-\item{columns}{Ignored. This is an archaic argument that never actually
-did anything. The old documents suggest that it would have worked only
-for \code{\link{read.ctd.sbe}}, anyway. This argument will be removed
-in a future version; see \link{oce-deprecated}.}
+\item{columns}{Ignored, and slated for removal in April, 2016;
+see \link{oce-defunct}.}
 
 \item{station}{Optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the
