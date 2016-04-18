@@ -1,54 +1,5 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-
-## #' Set any flagged data to NA
-## #'
-## #' If this is applied to a non-oce object, then that object is returned
-## #' unchanged. If it is applied to an object that lacks \code{metadata$flags},
-## #' then \code{x} is again returned unchanged, but a warning is issued.
-## #'
-## #' If \code{action} is \code{"NA"}, then any flagged data are set to \code{NA}.
-## #' Any other \code{action} yields an error.
-## #'
-## #' Note that this only works for objects of \code{\link{argo-class}}, so far.
-## #'
-## #' @param x An oce object.
-## #' @param action The action to be undertaken.
-## #' @return Either a non-oce object returned as-is, or an oce object that may have been modified to account for flags.
-## #' @examples
-## #' data(argo)
-## #' par(mfcol=c(2, 2))
-## #' plot(argo, which=2)
-## #' plot(handleFlagsOLD(argo), which=2)
-## #' plot(argo, which=3)
-## #' plot(handleFlagsOLD(argo), which=3)
-## handleFlagsOLD <- function(x, action="NA")
-## {
-##     if (!inherits(x, "oce"))
-##         return(x)
-##     if (!("flags" %in% names(x@metadata))) {
-##         warning("x does not contain an item named 'flags' in its metadata slot")
-##         return(x)
-##     }
-##     if ("NA" != action) stop("the only permitted action is \"NA\"")
-##     fnames <- names(x@metadata$flags)
-##     fnamesPlain <- gsub("Qc$","",fnames) # for argo ... defunct but no harm
-##     dnames <- names(x@data)
-##     for (name in fnamesPlain) {
-##         if (name %in% dnames) {
-##             if (inherits(x, "argo")) {
-##                 bad <- x@metadata$flags[[name]] != "1"
-##                 x@data[[name]][bad] <- NA
-##             } else {
-##                 warning("cannot handle flags for an object of class \"", class(x)[1], "\"")
-##             }
-##         } else {
-##             warning("no item named \"", name, "\" in data")
-##         }
-##     }
-##     x
-## }
-
 #' Calculate a rounded bound, rounded up to matissa 1, 2, or 5
 #'
 #' @param x a single positive number
@@ -178,6 +129,89 @@ titleCase <- function(w)
                                     tolower(substr(w[i], 2, nchar(w[i]))), sep="")))
 }
 
+
+#' Curl of 2D vector field
+#' 
+#' Calculate the z component of the curl of an x-y vector field.
+#' 
+#' The computed component of the curl is defined by \eqn{\partial }{dv/dx -
+#' du/dy}\eqn{ v/\partial x - \partial u/\partial y}{dv/dx - du/dy} and the
+#' estimate is made using first-difference approximations to the derivatives.
+#' Two methods are provided, selected by the value of \code{method}.
+#' 
+#' \itemize{
+#' 
+#' \item For \code{method=1}, a centred-difference, 5-point stencil is used in
+#' the interior of the domain.  For example, \eqn{\partial v/\partial x}{dv/dx}
+#' is given by the ratio of \eqn{v_{i+1,j}-v_{i-1,j}}{v[i+1,j]-v[i-1,j]} to the
+#' x extent of the grid cell at index \eqn{j}{j}. (The cell extents depend on
+#' the value of \code{geographical}.)  Then, the edges are filled in with
+#' nearest-neighbour values. Finally, the corners are filled in with the
+#' adjacent value along a diagonal.  If \code{geographical=TRUE}, then \code{x}
+#' and \code{y} are taken to be longitude and latitude in degrees, and the
+#' earth shape is approximated as a sphere with radius 6371km.  The resultant
+#' \code{x} and \code{y} are identical to the provided values, and the
+#' resultant \code{curl} is a matrix with dimension identical to that of
+#' \code{u}.
+#' 
+#' \item For \code{method=2}, each interior cell in the grid is considered
+#' individually, with derivatives calculated at the cell center. For example,
+#' \eqn{\partial v/\partial x}{dv/dx} is given by the ratio of
+#' \eqn{0.5*(v_{i+1,j}+v_{i+1,j+1}) -
+#' 0.5*(v_{i,j}+v_{i,j+1})}{0.5*(v[i+1,j]+v[i+1,j+1]) - 0.5*(v[i,j]+v[i,j+1])}
+#' to the average of the x extent of the grid cell at indices \eqn{j}{j} and
+#' \eqn{j+1}{j+1}. (The cell extents depend on the value of
+#' \code{geographical}.)  The returned \code{x} and \code{y} values are the
+#' mid-points of the supplied values. Thus, the returned \code{x} and \code{y}
+#' are shorter than the supplied values by 1 item, and the returned \code{curl}
+#' matrix dimensions are similarly reduced compared with the dimensions of
+#' \code{u} and \code{v}.
+#' }
+#' 
+#' @param u matrix containing the 'x' component of a vector field
+#' @param v matrix containing the 'y' component of a vector field
+#' @param x the x values for the matrices, a vector of length equal to the
+#' number of rows in \code{u} and \code{v}.
+#' @param y the y values for the matrices, a vector of length equal to the
+#' number of cols in \code{u} and \code{v}.
+#' @param geographical logical value indicating whether \code{x} and \code{y}
+#' are longitude and latitude, in which case spherical trigonometry is used.
+#' @param method A number indicating the method to be used to calculate the
+#' first-difference approximations to the derivatives.  See \dQuote{Details}.
+#' @return A list containing vectors \code{x} and \code{y}, along with matrix
+#' \code{curl}.  See \dQuote{Details} for the lengths and dimensions, for
+#' various values of \code{method}.
+#' @section Development status.: This function is under active development as
+#' of December 2014 and is unlikely to be stabilized until February 2015.
+#' @author Dan Kelley and Chantelle Layton
+#' @examples
+#' library(oce)
+#' ## 1. Shear flow with uniform curl.
+#' x <- 1:4
+#' y <- 1:10
+#' u <- outer(x, y, function(x,y) y/2)
+#' v <- outer(x, y, function(x,y) -x/2)
+#' C <- curl(u, v, x, y, FALSE)
+#' 
+#' ## 2. Rankine vortex: constant curl inside circle, zero outside
+#' rankine <- function(x, y)
+#' {
+#'     r <- sqrt(x^2 + y^2)
+#'     theta <- atan2(y, x)
+#'     speed <- ifelse(r < 1, 0.5*r, 0.5/r)
+#'     list(u=-speed*sin(theta), v=speed*cos(theta))
+#' }
+#' x <- seq(-2, 2, length.out=100)
+#' y <- seq(-2, 2, length.out=50)
+#' u <- outer(x, y, function(x,y) rankine(x,y)$u)
+#' v <- outer(x, y, function(x,y) rankine(x,y)$v)
+#' C <- curl(u, v, x, y, FALSE)
+#' ## plot results
+#' par(mfrow=c(2,2))
+#' imagep(x, y, u, zlab="u", asp=1)
+#' imagep(x, y, v, zlab="v", asp=1)
+#' imagep(x, y, C$curl, zlab="curl", asp=1)
+#' hist(C$curl, breaks=100)
 curl <- function(u, v, x, y, geographical=FALSE, method=1)
 {
     if (missing(u)) stop("must supply u")
@@ -201,6 +235,16 @@ curl <- function(u, v, x, y, geographical=FALSE, method=1)
     res
 }
 
+
+#' Calculate range, extended a little, as is done for axes.
+#' 
+#' This is analogous to what is done as part of the R axis range calculation,
+#' in the case where \code{xaxs="r"}.
+#' 
+#' @param x a numeric vector.
+#' @param extend fraction to extend on either end
+#' @return A two-element vector with the extended range of \code{x}.
+#' @author Dan Kelley
 rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
 {
     if (length(x) == 1) {
@@ -212,6 +256,38 @@ rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
     }
 }
 
+
+#' Apply a function to vector data
+#' 
+#' The function \code{FUN} is applied to \code{f} in bins specified by
+#' \code{xbreaks}.  (If \code{FUN} is \code{\link{mean}},
+#' consider using \code{\link{binMean2D}} instead, since it should be faster.)
+#' 
+#' @param x a vector of numerical values.
+#' @param f a vector of data to which the elements of \code{FUN} may be
+#' supplied
+#' @param xbreaks values of x at the boundaries between bins; calculated using
+#' \code{\link{pretty}} if not supplied.
+#' @param FUN function to apply to the data
+#' @param \dots arguments to pass to the function \code{FUN}
+#' @return A list with the following elements: the breaks in x and y
+#' (\code{xbreaks} and \code{ybreaks}), the break mid-points (\code{xmids} and
+#' \code{ymids}), and a matrix containing the result of applying function
+#' \code{FUN} to \code{f} subsetted by these breaks.
+#' @author Dan Kelley
+#' @examples
+#' library(oce)
+#' ## salinity profile with median and quartile 1 and 3
+#' data(ctd)
+#' p <- ctd[["pressure"]]
+#' S <- ctd[["salinity"]]
+#' q1 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 1/4))
+#' q3 <- binApply1D(p, S, pretty(p, 30), function(x) quantile(x, 3/4))
+#' plotProfile(ctd, "salinity", col='gray', type='n')
+#' polygon(c(q1$result, rev(q3$result)),
+#' c(q1$xmids, rev(q1$xmids)), col='gray')
+#' points(S, p, pch=20)
+#' @family bin-related functions
 binApply1D <- function(x, f, xbreaks, FUN, ...)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -231,6 +307,54 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=res)
 }
 
+
+
+#' Apply a function to matrix data
+#' 
+#' The function \code{FUN} is applied to \code{f} in bins specified by
+#' \code{xbreaks} and \code{ybreaks}.  (If \code{FUN} is \code{\link{mean}},
+#' consider using \code{\link{binMean2D}} instead, since it should be faster.)
+#' 
+#' @param x a vector of numerical values.
+#' @param y a vector of numerical values.
+#' @param f a vector of data to which the elements of \code{FUN} may be
+#' supplied
+#' @param xbreaks values of x at the boundaries between bins; calculated using
+#' \code{\link{pretty}} if not supplied.
+#' @param ybreaks values of y at the boundaries between bins; calculated using
+#' \code{\link{pretty}} if not supplied.
+#' @param FUN function to apply to the data
+#' @param \dots arguments to pass to the function \code{FUN}
+#' @return A list with the following elements: the breaks in x and y
+#' (\code{xbreaks} and \code{ybreaks}), the break mid-points (\code{xmids} and
+#' \code{ymids}), and a matrix containing the result of applying function
+#' \code{FUN} to \code{f} subsetted by these breaks.
+#' @author Dan Kelley
+#' @examples
+#' library(oce)
+#' \dontrun{
+#' ## secchi depths in lat and lon bins
+#' if (require(ocedata)) {
+#'     data(secchi, package="ocedata")
+#'     col <- rev(oce.colorsJet(100))[rescale(secchi$depth,
+#'                                            xlow=0, xhigh=20,
+#'                                            rlow=1, rhigh=100)]
+#'     zlim <- c(0, 20)
+#'     breaksPalette <- seq(min(zlim), max(zlim), 1)
+#'     colPalette <- rev(oce.colorsJet(length(breaksPalette)-1))
+#'     drawPalette(zlim, "Secchi Depth", breaksPalette, colPalette)
+#'     data(coastlineWorld)
+#'     mapPlot(coastlineWorld, longitudelim=c(-5,20), latitudelim=c(50,66),
+#'       grid=5, fill='gray', projection="+proj=lcc +lat_1=50 +lat_2=65")
+#'     bc <- binApply2D(secchi$longitude, secchi$latitude,
+#'                      pretty(secchi$longitude, 80),
+#'                      pretty(secchi$latitude, 40),
+#'                      f=secchi$depth, FUN=mean)
+#'     mapImage(bc$xmids, bc$ymids, bc$result, zlim=zlim, col=colPalette)
+#'     mapPolygon(coastlineWorld, col='gray')
+#' }
+#' }
+#' @family bin-related functions
 binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -259,6 +383,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
          result=res)
 }
 
+##' @family bin-related functions
 binCount1D <- function(x, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -278,6 +403,7 @@ binCount1D <- function(x, xbreaks)
          number=res$number)
 }
 
+##' @family bin-related functions
 binMean1D <- function(x, f, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -303,22 +429,8 @@ binMean1D <- function(x, f, xbreaks)
          result=if (fGiven) res$result else rep(NA, length=nx))
 }
 
-##binWhich1D <- function(x, xbreaks)
-##{
-##    if (missing(x)) stop("must supply 'x'")
-##    if (missing(xbreaks))
-##        xbreaks <- pretty(x)
-##    nxbreaks <- length(xbreaks)
-##    if (nxbreaks < 2)
-##        stop("must have more than 1 break")
-##    res <- .C("bin_which_1d", length(x), as.double(x),
-##               length(xbreaks), as.double(xbreaks),
-##               bi=integer(length(x)),
-##               NAOK=TRUE, PACKAGE="oce")
-##    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), bi=res$bi)
-##}
 
-
+##' @family bin-related functions
 binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -351,7 +463,7 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
     res
 }
 
-
+##' @family bin-related functions
 binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -391,6 +503,45 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE)
     res
 }
 
+
+#' Bin-average a vector y, based on x values
+#' 
+#' The \code{y} vector is averaged in bins defined for \code{x}.  Missing
+#' values in \code{y} are ignored.
+#' 
+#' @param x a vector of numerical values.
+#' @param y a vector of numerical values.
+#' @param xmin x value at the lower limit of first bin; the minimum \code{x}
+#' will be used if this is not provided.
+#' @param xmax x value at the upper limit of last bin; the maximum \code{x}
+#' will be used if this is not provided.
+#' @param xinc width of bins, in terms of x value; 1/10th of \code{xmax-xmin}
+#' will be used if this is not provided.
+#' @return A list with two elements: \code{x}, the mid-points of the bins, and
+#' \code{y}, the average \code{y} value in the bins.
+#' @author Dan Kelley
+#' 
+#' @examples
+#' library(oce)
+#' ## A. fake linear data
+#' x <- seq(0, 100, 1)
+#' y <- 1 + 2 * x
+#' plot(x, y, pch=1)
+#' ba <- binAverage(x, y)
+#' points(ba$x, ba$y, pch=3, col='red', cex=3)
+#' 
+#' ## B. fake quadratic data
+#' y <- 1 + x ^2
+#' plot(x, y, pch=1)
+#' ba <- binAverage(x, y)
+#' points(ba$x, ba$y, pch=3, col='red', cex=3)
+#' 
+#' ## C. natural data
+#' data(co2)
+#' plot(co2)
+#' avg <- binAverage(time(co2), co2, 1950, 2000, 2)
+#' points(avg$x, avg$y, col='red')
+#' @family bin-related functions
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
     if (missing(y))
