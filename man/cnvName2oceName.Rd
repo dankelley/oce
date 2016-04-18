@@ -51,7 +51,7 @@ way: \code{M} is omitted if \code{N} is zero, or \code{M} equals \code{N}
   \code{potempN90C}  \tab \code{thetaM}                     \tab degC, ITS-90         \tab                \cr
   \code{pr}          \tab \code{pressure}                   \tab dbar                 \tab                \cr
   \code{prDM}        \tab \code{pressure}                   \tab dbar                 \tab 1              \cr
-  \code{ptempC}      \tab \code{theta}                      \tab degC, ITS-90         \tab 2              \cr
+  \code{ptempC}      \tab \code{pressureTemperature}        \tab degC, ITS-90         \tab 2              \cr
   \code{potempN90C}  \tab \code{thetaM}                     \tab degC, ITS-90         \tab 2              \cr
   \code{salNN}       \tab \code{salinityM}                  \tab unitless, PSS-78     \tab 3              \cr
   \code{sbeoxNML/L}  \tab \code{oxygenConcentrationVolumeM} \tab ml/l                 \tab                \cr

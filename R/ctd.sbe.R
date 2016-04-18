@@ -38,7 +38,7 @@
 #'   \code{potempN90C}  \tab \code{thetaM}                     \tab degC, ITS-90         \tab                \cr
 #'   \code{pr}          \tab \code{pressure}                   \tab dbar                 \tab                \cr
 #'   \code{prDM}        \tab \code{pressure}                   \tab dbar                 \tab 1              \cr
-#'   \code{ptempC}      \tab \code{theta}                      \tab degC, ITS-90         \tab 2              \cr
+#'   \code{ptempC}      \tab \code{pressureTemperature}        \tab degC, ITS-90         \tab 2              \cr
 #'   \code{potempN90C}  \tab \code{thetaM}                     \tab degC, ITS-90         \tab 2              \cr
 #'   \code{salNN}       \tab \code{salinityM}                  \tab unitless, PSS-78     \tab 3              \cr
 #'   \code{sbeoxNML/L}  \tab \code{oxygenConcentrationVolumeM} \tab ml/l                 \tab                \cr
@@ -116,7 +116,7 @@ cnvName2oceName <- function(h)
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="")
     } else if (1 == length(grep("ptempC", name, ignore.case=TRUE))) {
-        name <- "theta"
+        name <- "pressureTemperature" # temperature at the pressure sensor
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
     } else if (1 == length(grep("potemp[0-9]*90C", name, ignore.case=TRUE))) {
         number <- gsub("90C$", "", gsub("^potemp", "", name))
@@ -176,8 +176,7 @@ cnvName2oceName <- function(h)
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="")
     } else {
-        warning("unrecognized name '", name, "' set to 'unknown'")
-        name <- "unknown"
+        warning("unrecognized name '", name, "', so not setting any unit")
         unit <- list(unit=expression(), scale="")
     }
     ## Finally, drop any zero suffices, so that e.g. salinity0 becomes
@@ -279,11 +278,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
         nu <- cnvName2oceName(lines[iline])
         col.names.inferred <- c(col.names.inferred, nu$name)
         units[[nu$name]] <- nu$unit
-    }
-    ## Make 'unknown' be 'unknownN', where N is 1, then 2, etc.
-    iunknown <- grep("unknown", col.names.inferred)
-    if (length(iunknown)) {
-        col.names.inferred[iunknown] <- paste('unknown', seq_along(iunknown), sep="")
     }
     found.scan <- "scan" %in% col.names.inferred
     found.temperature <- "temperature" %in% col.names.inferred
