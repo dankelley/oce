@@ -51,9 +51,10 @@ computed with \code{\link{swConservativeTemperature}}.  For a ctd object,
 absolute salinity may also be recovered by indexing as e.g.
 \code{ctd[["absoluteSalinity"]]} or \code{ctd[["SA"]]}.
 
-Other functions that calculate seawater properties: \code{\link{swAlphaOverBeta}},
-  \code{\link{swAlpha}}, \code{\link{swBeta}},
-  \code{\link{swCSTp}},
+Other functions that calculate seawater properties: \code{\link{T68fromT90}},
+  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
+  \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
+  \code{\link{swBeta}}, \code{\link{swCSTp}},
   \code{\link{swConservativeTemperature}},
   \code{\link{swDepth}}, \code{\link{swDynamicHeight}},
   \code{\link{swLapseRate}}, \code{\link{swN2}},

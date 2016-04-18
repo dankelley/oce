@@ -1,8 +1,23 @@
+#' @title Convert from ITS-90 to IPTS-68 temperature
+#' 
+#' @template temperatureConversionTemplate
+#' @param temperature Vector of temperatures expressed in the ITS-90 scale.
+#' @return Temperature expressed in the IPTS-68 scale.
 T68fromT90 <- function(temperature) temperature * 1.00024
+
+#' @title Convert from IPTS-68 to ITS-90 temperature
+#' 
+#' @template temperatureConversionTemplate
+#' @param temperature Vector of temperatures expressed in the IPTS-68 scale.
+#' @return temperature Temperature expressed in the ITS-90 scale.
 T90fromT68 <- function(temperature) temperature / 1.00024
+
+#' @title Convert from ITS-48 to ITS-90 temperature
+#' 
+#' @template temperatureConversionTemplate
+#' @param temperature Vector of temperatures expressed in the ITS-48 scale.
+#' @return Temperature expressed in the ITS-90 scale.
 T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-temperature))/1.00024
-
-
 
 #' Look Within the First Element of a List for Replacement Values
 #'
