@@ -384,7 +384,20 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
          result=res)
 }
 
-##' @family bin-related functions
+
+#' Bin-count vector data
+#'
+#' Count the number of elements of a given vector that fall within
+#' successive pairs of values within a second vector.
+#' 
+#' @param x Vector of numerical values.
+#' @param xbreaks Vector of values of x at the boundaries between bins, calculated using
+#' \code{\link{pretty}} if not supplied.
+#' @return A list with the following elements: the breaks (\code{xbreaks},
+#' midpoints (\code{xmids}) between those breaks, and
+#' the count (\code{number}) of \code{x} values between successive breaks.
+#' @author Dan Kelley
+#' @family bin-related functions
 binCount1D <- function(x, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -404,7 +417,33 @@ binCount1D <- function(x, xbreaks)
          number=res$number)
 }
 
-##' @family bin-related functions
+#' Bin-average f=f(x)
+#'
+#' Average the values of a vector \code{f} in bins defined on another
+#' vector \code{x}. A common example might be averaging CTD profile
+#' data into pressure bins (see \dQuote{Examples}).
+#' 
+#' @param x Vector of numerical values.
+#' @param f Vector of numerical values.
+#' @param xbreaks Vector of values of x at the boundaries between bins, calculated using
+#' \code{\link{pretty}} if not supplied.
+#' @return A list with the following elements: the breaks (\code{xbreaks},
+#' midpoints (\code{xmids}) between those breaks, 
+#' the count (\code{number}) of \code{x} values between successive breaks,
+#' and the resultant average (\code{result}) of \code{f}, classified by the
+#' \code{x} breaks.
+#'
+#' @examples
+#' library(oce)
+#' data(ctd)
+#' z <- ctd[["z"]]
+#' T <- ctd[["temperature"]]
+#' plot(T, z)
+#' TT <- binMean1D(z, T, seq(-100, 0, 1))
+#' lines(TT$result, TT$xmids, col='red')
+#'
+#' @author Dan Kelley
+#' @family bin-related functions
 binMean1D <- function(x, f, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -430,8 +469,24 @@ binMean1D <- function(x, f, xbreaks)
          result=if (fGiven) res$result else rep(NA, length=nx))
 }
 
-
-##' @family bin-related functions
+#' Bin-count matrix data
+#'
+#' Count the number of elements of a given matrix z=z(x,y) that fall within
+#' successive pairs of breaks in x and y.
+#' 
+#' @param x Vector of numerical values.
+#' @param y Vector of numerical values.
+#' @param xbreaks Vector of values of \code{x} at the boundaries between bins, calculated using
+#' \code{\link{pretty}(x)} if not supplied.
+#' @param ybreaks Vector of values of \code{y} at the boundaries between bins, calculated using
+#' \code{\link{pretty}(y)} if not supplied.
+#' @return A list with the following elements: the breaks (\code{xbreaks}
+#' and \code{ybreaks}), the midpoints (\code{xmids} and \code{ymids})
+#' between those breaks, and
+#' the count (\code{number}) of \code{f} values in the boxes defined 
+#' between successive breaks.
+#' @author Dan Kelley
+#' @family bin-related functions
 binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -450,10 +505,10 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
             mean=double((nxbreaks-1)*(nybreaks-1)),
             NAOK=TRUE, PACKAGE="oce")
     res <- list(xbreaks=xbreaks,
-                 ybreaks=ybreaks,
-                 xmids=xbreaks[-1]-0.5*diff(xbreaks),
-                 ymids=ybreaks[-1]-0.5*diff(ybreaks),
-                 number=matrix(M$number, nrow=nxbreaks-1))
+                ybreaks=ybreaks,
+                xmids=xbreaks[-1]-0.5*diff(xbreaks),
+                ymids=ybreaks[-1]-0.5*diff(ybreaks),
+                number=matrix(M$number, nrow=nxbreaks-1))
     if (flatten) {
         res2 <- list()
         res2$x <- rep(res$xmids, times=nybreaks-1)
@@ -464,7 +519,39 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
     res
 }
 
-##' @family bin-related functions
+
+#' Bin-average f=f(x,y)
+#'
+#' Average the values of a vector \code{f(x,y)} in bins defined on 
+#' vectors \code{x} and \code{y}. A common example might be averaging 
+#' spatial data into location bins.
+#' 
+#' @param x Vector of numerical values.
+#' @param y Vector of numerical values.
+#' @param f Matrix of numerical values, a matrix f=f(x,y).
+#' @param xbreaks Vector of values of \code{x} at the boundaries between bins, calculated using
+#' \code{\link{pretty}(x)} if not supplied.
+#' @param ybreaks Vector of values of \code{y} at the boundaries between bins, calculated using
+#' \code{\link{pretty}(y)} if not supplied.
+#' @return A list with the following elements: the midpoints (renamed as
+#' \code{x} and \code{y}), the count (\code{number}) of \code{f(x,y)} values
+#' for \code{x} and \code{y} values that lie between corresponding breaks,
+#' and the resultant average (\code{f}) of \code{f(x,y)}, classified by the
+#' \code{x} and \code{y} breaks.
+#'
+#' @examples
+#' library(oce)
+#' x <- runif(500)
+#' y <- runif(500)
+#' f <- x + y
+#' xb <- seq(0, 1, 0.1)
+#' yb <- seq(0, 1, 0.2)
+#' m <- binMean2D(x, y, f, xb, yb)
+#' plot(x, y)
+#' contour(m$xmids, m$ymids, m$result, add=TRUE, levels=seq(0, 2, 0.5), labcex=1)
+#'
+#' @author Dan Kelley
+#' @family bin-related functions
 binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE)
 {
     if (missing(x)) stop("must supply 'x'")
