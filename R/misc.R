@@ -480,6 +480,11 @@ binMean1D <- function(x, f, xbreaks)
 #' \code{\link{pretty}(x)} if not supplied.
 #' @param ybreaks Vector of values of \code{y} at the boundaries between bins, calculated using
 #' \code{\link{pretty}(y)} if not supplied.
+#' @param flatten A logical value indicating whether 
+#' the return value also contains equilength
+#' vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
+#' representation of \code{xmids}, \code{ymids}, \code{result} and
+#' \code{number}.
 #' @return A list with the following elements: the breaks (\code{xbreaks}
 #' and \code{ybreaks}), the midpoints (\code{xmids} and \code{ymids})
 #' between those breaks, and
@@ -533,6 +538,15 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 #' \code{\link{pretty}(x)} if not supplied.
 #' @param ybreaks Vector of values of \code{y} at the boundaries between bins, calculated using
 #' \code{\link{pretty}(y)} if not supplied.
+#' @param flatten A logical value indicating whether 
+#' the return value also contains equilength
+#' vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
+#' representation of \code{xmids}, \code{ymids}, \code{result} and
+#' \code{number}.
+#' @param fill Logical value indicating whether to fill \code{NA}-value gaps in
+#' the matrix. Gaps will be filled as the average of linear interpolations
+#' across rows and columns.
+#'
 #' @return A list with the following elements: the midpoints (renamed as
 #' \code{x} and \code{y}), the count (\code{number}) of \code{f(x,y)} values
 #' for \code{x} and \code{y} values that lie between corresponding breaks,

@@ -18,6 +18,16 @@ binMean2D(x, y, f, xbreaks, ybreaks, flatten = FALSE, fill = FALSE)
 
 \item{ybreaks}{Vector of values of \code{y} at the boundaries between bins, calculated using
 \code{\link{pretty}(y)} if not supplied.}
+
+\item{flatten}{A logical value indicating whether 
+the return value also contains equilength
+vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
+representation of \code{xmids}, \code{ymids}, \code{result} and
+\code{number}.}
+
+\item{fill}{Logical value indicating whether to fill \code{NA}-value gaps in
+the matrix. Gaps will be filled as the average of linear interpolations
+across rows and columns.}
 }
 \value{
 A list with the following elements: the midpoints (renamed as
