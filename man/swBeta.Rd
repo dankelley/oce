@@ -43,7 +43,9 @@ equation of state, but are formulaed empirically by Trevor J. McDougall,
 the \code{\link{swRho}} documentation.
 }
 \seealso{
-Other functions that calculate seawater properties: \code{\link{swAbsoluteSalinity}},
+Other functions that calculate seawater properties: \code{\link{T68fromT90}},
+  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
+  \code{\link{swAbsoluteSalinity}},
   \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
   \code{\link{swCSTp}},
   \code{\link{swConservativeTemperature}},

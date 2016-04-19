@@ -96,7 +96,9 @@ The corresponding potential density anomaly
 \eqn{\sigma_\theta}{sigma-theta} can be calculated with
 \code{\link{swSigmaTheta}}.
 
-Other functions that calculate seawater properties: \code{\link{swAbsoluteSalinity}},
+Other functions that calculate seawater properties: \code{\link{T68fromT90}},
+  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
+  \code{\link{swAbsoluteSalinity}},
   \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
   \code{\link{swBeta}}, \code{\link{swCSTp}},
   \code{\link{swConservativeTemperature}},

@@ -2,7 +2,7 @@
 % Please edit documentation in R/geod.R
 \name{geodXyInverse}
 \alias{geodXyInverse}
-\title{inverse geodesic calculation}
+\title{Inverse geodesic calculation}
 \usage{
 geodXyInverse(x, y, longitudeRef = 0, latitudeRef = 0)
 }
@@ -19,14 +19,15 @@ geodXyInverse(x, y, longitudeRef = 0, latitudeRef = 0)
 a data frame containing \code{longitude} and \code{latitude}
 }
 \description{
-inverse geodesic calculation
-}
-\details{
 The calculation is done by finding a minimum value of a cost
 function that is the vector difference between (\code{x},\code{y})
 and the corresponding values returned by \code{\link{geodXy}}. This
 minimum is calculated in C for speed, using the \code{nmmin} function
 that is the underpinning for the Nelder-Meade version of the R function
 \code{\link{optim}}.
+}
+\seealso{
+Other functions relating to geodesy: \code{\link{geodDist}},
+  \code{\link{geodGc}}, \code{\link{geodXy}}
 }
 
