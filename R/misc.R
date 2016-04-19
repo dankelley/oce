@@ -1355,6 +1355,23 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
     res
 }
 
+
+#' Determine time offset from timezone
+#' 
+#' The data are from
+#' \url{http://www.timeanddate.com/library/abbreviations/timezones/} and were
+#' hand-edited to develop this code, so there may be errors.  Also, note that
+#' some of these contradict; if you examine the code, you'll see some
+#' commented-out portions that represent solving conflicting definitions by
+#' choosing the more common timezone abbreviation over a the less common one.
+#' 
+#' @param tz a timezone, e.g. \code{UTC}.
+#' @return Number of hours in offset, e.g. \code{AST} yields 4.
+#' @author Dan Kelley
+#' @examples
+#' library(oce)
+#' cat("Atlantic Standard Time is ", GMTOffsetFromTz("AST"), "hours after UTC")
+#' @family functions relating to time
 GMTOffsetFromTz <- function(tz)
 {
     ## Data are from
