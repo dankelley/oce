@@ -2692,45 +2692,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     invisible()
 }
 
-## http://williams.best.vwh.net/avform.htm#Intermediate
-## interpreted by CR; typo corrected by DK
-geodGc <- function(longitude, latitude, dmax)
-{
-    n <- length(latitude)
-    if (n != length(longitude))
-        stop("lengths of longitude and latude must match")
-    d2r <- atan2(1, 1) / 45
-    rlat <- d2r * latitude
-    rlon <- d2r * longitude
-    lon <- NULL
-    lat <- NULL
-    ## FIXME: if this is slow, may need to use C
-    for (i in seq.int(1, n-1)) {
-        d <- 2 * asin(sqrt((sin((rlat[i] - rlat[i+1])/2))^2
-                           + cos(rlat[i]) * cos(rlat[i+1]) * (sin((rlon[i] - rlon[i+1])/2))^2))
-        ddeg <- d / d2r
-        if (ddeg < dmax) {
-            lon <- c(lon, longitude[i])
-            lat <- c(lat, latitude[i])
-        } else {
-            f <- seq(0, 1, length.out=ceiling(1 + ddeg/dmax))
-            A <- sin((1 - f) * d) / sin(d)
-            B <- sin(f * d) / sin(d)
-            x <- A * cos(rlat[i]) * cos(rlon[i]) + B * cos(rlat[i+1]) * cos(rlon[i+1])
-            y <- A * cos(rlat[i]) * sin(rlon[i]) + B * cos(rlat[i+1]) * sin(rlon[i+1])
-            z <- A * sin(rlat[i])              + B * sin(rlat[i+1])
-            lat <- atan2(z, sqrt(x^2+y^2)) / d2r
-            lon <- atan2(y, x) / d2r
-        }
-    }
-    lon <- c(lon, longitude[n])
-    lat <- c(lat, latitude[n])
-    ## use range 0 to 360 if input longitudes in that way
-    if (any(longitude > 180))
-        lon <- ifelse(lon < 0, lon+360, lon)
-    list(longitude=lon, latitude=lat)
-}
-
 lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 {
     names <- names(longitude)

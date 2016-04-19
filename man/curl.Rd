@@ -102,4 +102,7 @@ hist(C$curl, breaks=100)
 \author{
 Dan Kelley and Chantelle Layton
 }
+\seealso{
+Other functions relating to vector calculus: \code{\link{grad}}
+}
 

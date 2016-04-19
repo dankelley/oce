@@ -212,6 +212,7 @@ titleCase <- function(w)
 #' imagep(x, y, v, zlab="v", asp=1)
 #' imagep(x, y, C$curl, zlab="curl", asp=1)
 #' hist(C$curl, breaks=100)
+#' @family functions relating to vector calculus
 curl <- function(u, v, x, y, geographical=FALSE, method=1)
 {
     if (missing(u)) stop("must supply u")
@@ -1452,6 +1453,27 @@ GMTOffsetFromTz <- function(tz)
     if (tz == "Z"  )    return(  0  ) # Zulu Time Zone  Military        UTC
 }
 
+
+#' Acceleration due to earth gravity
+#' 
+#' Compute \eqn{g}{g}, the acceleration due to gravity, as a function of
+#' latitude.
+#' 
+#' Value not verified yet, except roughly.
+#' 
+#' @param latitude Latitude in \eqn{^\circ}{deg}N or radians north of the
+#' equator.
+#' @param degrees Flag indicating whether degrees are used for latitude; if set
+#' to \code{FALSE}, radians are used.
+#' @return Acceleration due to gravity [\eqn{m^2/s}{m^2/s}].
+#' @author Dan Kelley
+#' @references Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
+#' Press, New York, 662 pp.
+#' 
+#' \strong{Caution:} Fofonoff and Millard (1983 UNESCO) use a different
+#' formula.
+#' @examples
+#' g <- gravity(45) # 9.8
 gravity <- function(latitude=45, degrees=TRUE)
 {
     if (degrees) latitude <- latitude * 0.0174532925199433
@@ -2432,6 +2454,39 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"))
     }
 }
 
+
+#' Calculate the grad of a matrix by first differences
+#' 
+#' In the interior of the matrix, centred second-order differences are used to
+#' infer the components of the grad.  Along the edges, first-order differences
+#' are used.
+#' 
+#' @param h a matrix
+#' @param x x values
+#' @param y y values
+#' @return A list containing \code{gx} and \code{gy}, matrices of the same
+#' dimension as \code{h}.
+#' @author Dan Kelley, based on advice of Clark Richards, and mimicking a matlab function.
+#' @examples
+#' ## Geostrophic flow around an eddy
+#' library(oce)
+#' dx <- 5e3
+#' dy <- 10e3
+#' x <- seq(-200e3, 200e3, dx)
+#' y <- seq(-200e3, 200e3, dy)
+#' R <- 100e3
+#' h <- outer(x, y, function(x, y) 500*exp(-(x^2+y^2)/R^2))
+#' grad <- grad(h, x, y)
+#' par(mfrow=c(2,2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+#' contour(x,y,h,asp=1, main=expression(h))
+#' f <- 1e-4
+#' gprime <- 9.8 * 1 / 1024
+#' u <- -(gprime / f) * grad$gy
+#' v <-  (gprime / f) * grad$gx
+#' contour(x, y, u, asp=1, main=expression(u))
+#' contour(x, y, v, asp=1, main=expression(v))
+#' contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
+#' @family functions relating to vector calculus
 grad <- function(h, x, y)
 {
     if (missing(h)) stop("must give h")
