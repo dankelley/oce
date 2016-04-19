@@ -384,7 +384,20 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
          result=res)
 }
 
-##' @family bin-related functions
+
+#' Bin-count vector data
+#'
+#' Count the number of elements of a given vector that fall within
+#' successive pairs of values within a second vector.
+#' 
+#' @param x Vector of numerical values.
+#' @param xbreaks Vector of values of x at the boundaries between bins, calculated using
+#' \code{\link{pretty}} if not supplied.
+#' @return A list with the following elements: the breaks (\code{xbreaks},
+#' midpoints (\code{xmids}) between those breaks, and
+#' the count (\code{number}) of \code{x} values between successive breaks.
+#' @author Dan Kelley
+#' @family bin-related functions
 binCount1D <- function(x, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -404,7 +417,33 @@ binCount1D <- function(x, xbreaks)
          number=res$number)
 }
 
-##' @family bin-related functions
+#' Bin-average f=f(x)
+#'
+#' Average the values of a vector \code{f} in bins defined on another
+#' vector \code{x}. A common example might be averaging CTD profile
+#' data into pressure bins (see \dQuote{Examples}).
+#' 
+#' @param x Vector of numerical values.
+#' @param f Vector of numerical values.
+#' @param xbreaks Vector of values of x at the boundaries between bins, calculated using
+#' \code{\link{pretty}} if not supplied.
+#' @return A list with the following elements: the breaks (\code{xbreaks},
+#' midpoints (\code{xmids}) between those breaks, 
+#' the count (\code{number}) of \code{x} values between successive breaks,
+#' and the resultant average (\code{result}) of \code{f}, classified by the
+#' \code{x} breaks.
+#'
+#' @examples
+#' library(oce)
+#' data(ctd)
+#' z <- ctd[["z"]]
+#' T <- ctd[["temperature"]]
+#' plot(T, z)
+#' TT <- binMean1D(z, T, seq(-100, 0, 1))
+#' lines(TT$result, TT$xmids, col='red')
+#'
+#' @author Dan Kelley
+#' @family bin-related functions
 binMean1D <- function(x, f, xbreaks)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -430,8 +469,29 @@ binMean1D <- function(x, f, xbreaks)
          result=if (fGiven) res$result else rep(NA, length=nx))
 }
 
-
-##' @family bin-related functions
+#' Bin-count matrix data
+#'
+#' Count the number of elements of a given matrix z=z(x,y) that fall within
+#' successive pairs of breaks in x and y.
+#' 
+#' @param x Vector of numerical values.
+#' @param y Vector of numerical values.
+#' @param xbreaks Vector of values of \code{x} at the boundaries between bins, calculated using
+#' \code{\link{pretty}(x)} if not supplied.
+#' @param ybreaks Vector of values of \code{y} at the boundaries between bins, calculated using
+#' \code{\link{pretty}(y)} if not supplied.
+#' @param flatten A logical value indicating whether 
+#' the return value also contains equilength
+#' vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
+#' representation of \code{xmids}, \code{ymids}, \code{result} and
+#' \code{number}.
+#' @return A list with the following elements: the breaks (\code{xbreaks}
+#' and \code{ybreaks}), the midpoints (\code{xmids} and \code{ymids})
+#' between those breaks, and
+#' the count (\code{number}) of \code{f} values in the boxes defined 
+#' between successive breaks.
+#' @author Dan Kelley
+#' @family bin-related functions
 binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -450,10 +510,10 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
             mean=double((nxbreaks-1)*(nybreaks-1)),
             NAOK=TRUE, PACKAGE="oce")
     res <- list(xbreaks=xbreaks,
-                 ybreaks=ybreaks,
-                 xmids=xbreaks[-1]-0.5*diff(xbreaks),
-                 ymids=ybreaks[-1]-0.5*diff(ybreaks),
-                 number=matrix(M$number, nrow=nxbreaks-1))
+                ybreaks=ybreaks,
+                xmids=xbreaks[-1]-0.5*diff(xbreaks),
+                ymids=ybreaks[-1]-0.5*diff(ybreaks),
+                number=matrix(M$number, nrow=nxbreaks-1))
     if (flatten) {
         res2 <- list()
         res2$x <- rep(res$xmids, times=nybreaks-1)
@@ -464,7 +524,48 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
     res
 }
 
-##' @family bin-related functions
+
+#' Bin-average f=f(x,y)
+#'
+#' Average the values of a vector \code{f(x,y)} in bins defined on 
+#' vectors \code{x} and \code{y}. A common example might be averaging 
+#' spatial data into location bins.
+#' 
+#' @param x Vector of numerical values.
+#' @param y Vector of numerical values.
+#' @param f Matrix of numerical values, a matrix f=f(x,y).
+#' @param xbreaks Vector of values of \code{x} at the boundaries between bins, calculated using
+#' \code{\link{pretty}(x)} if not supplied.
+#' @param ybreaks Vector of values of \code{y} at the boundaries between bins, calculated using
+#' \code{\link{pretty}(y)} if not supplied.
+#' @param flatten A logical value indicating whether 
+#' the return value also contains equilength
+#' vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
+#' representation of \code{xmids}, \code{ymids}, \code{result} and
+#' \code{number}.
+#' @param fill Logical value indicating whether to fill \code{NA}-value gaps in
+#' the matrix. Gaps will be filled as the average of linear interpolations
+#' across rows and columns.
+#'
+#' @return A list with the following elements: the midpoints (renamed as
+#' \code{x} and \code{y}), the count (\code{number}) of \code{f(x,y)} values
+#' for \code{x} and \code{y} values that lie between corresponding breaks,
+#' and the resultant average (\code{f}) of \code{f(x,y)}, classified by the
+#' \code{x} and \code{y} breaks.
+#'
+#' @examples
+#' library(oce)
+#' x <- runif(500)
+#' y <- runif(500)
+#' f <- x + y
+#' xb <- seq(0, 1, 0.1)
+#' yb <- seq(0, 1, 0.2)
+#' m <- binMean2D(x, y, f, xb, yb)
+#' plot(x, y)
+#' contour(m$xmids, m$ymids, m$result, add=TRUE, levels=seq(0, 2, 0.5), labcex=1)
+#'
+#' @author Dan Kelley
+#' @family bin-related functions
 binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -777,6 +878,39 @@ smoothSomething <- function(x, ...)
 }
 
 
+#' Rescale values to lie in a given range
+#' 
+#' This is helpful in e.g. developing a colour scale for an image plot.  It is
+#' not necessary that \code{rlow} be less than \code{rhigh}, and in fact
+#' reversing them is a good way to get a reversed colour scale for a plot.
+#' 
+#' @param x a numeric vector.
+#' @param xlow \code{x} value to correspond to \code{rlow}.  If not given, it
+#' will be calculated as the minimum value of \code{x}
+#' @param xhigh \code{x} value to correspond to \code{rhigh}.  If not given, it
+#' will be calculated as the maximum value of \code{x}
+#' @param rlow value of the result corresponding to \code{x} equal to
+#' \code{xlow}.
+#' @param rhigh value of the result corresponding to \code{x} equal to
+#' \code{xhigh}.
+#' @param clip logical, set to \code{TRUE} to clip the result to the range
+#' spanned by \code{rlow} and \code{rhigh}.
+#' @return A new vector, which has minimum \code{lim[1]} and maximum
+#' \code{lim[2]}.
+#' @author Dan Kelley
+#' 
+#' @examples
+#' library(oce)
+#' # Fake tow-yow data
+#' t <- seq(0, 600, 5)
+#' x <- 0.5 * t
+#' z <- 50 * (-1 + sin(2 * pi * t / 360))
+#' T <- 5 + 10 * exp(z / 100)
+#' palette <- oce.colorsJet(100)
+#' zlim <- range(T)
+#' drawPalette(zlim=zlim, col=palette)
+#' plot(x, z, type='p', pch=20, cex=3,
+#'      col=palette[rescale(T, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=100)])
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
     x <- as.numeric(x)
@@ -795,6 +929,45 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
     res
 }
 
+
+#' Adjust the time within Oce object
+#' 
+#' This function compensates for drifting instrument clocks, according to
+#' \eqn{t'=t + a + b (t-t0)}{t'=t + a + b*(t-t0)}, where \eqn{t'}{t'} is the
+#' true time and \eqn{t}{t} is the time stored in the object.  A single check
+#' on time mismatch can be described by a simple time offset, with a non-zero
+#' value of \code{a}, a zero value of \code{b}, and an arbitrary value of
+#' \code{t0}.  Checking the mismatch before and after an experiment yields
+#' sufficient information to specify a linear drift, via \code{a}, \code{b},
+#' and \code{t0}.  Note that \code{t0} is just a convenience parameter, which
+#' avoids the user having to know the "zero time" used in R and clarifies the
+#' values of the other two parameters.  It makes sense for \code{t0} to have
+#' the same timezone as the time within \code{x}.
+#' 
+#' The returned object is computed by linear interpolation, using
+#' \code{\link{approx}} with \code{rule=2}, to avoid \code{NA} values at the
+#' start or end.  The new time will be as given by the formula above. Note that
+#' if the drift is large enough, the sampling rate will be changed.  It is a
+#' good idea to start with an object that has an extended time range, so that,
+#' after this is called, \code{\link{subset}} can be used to trim to a desired
+#' time range.
+#' 
+#' @param x an \code{oce} object (presently, this must be of class \code{adv})
+#' @param a intercept [in seconds] in linear model of time drift (see
+#' \dQuote{Details}).
+#' @param b slope [unitless] in linear model of time drift [unitless] (see
+#' \dQuote{Details}).
+#' @param t0 reference time [in POSIXct format] used in linear model of time
+#' drift (see \dQuote{Details}).
+#' @param debug a flag that, if nonzero, turns on debugging.
+#' @return A new object, with time and other data adjusted.
+#' @author Dan Kelley
+#' @keywords misc
+#' @examples
+#' library(oce)
+#' data(adv)
+#' adv2 <- retime(adv,0,1e-4,as.POSIXct("2008-07-01 00:00:00",tz="UTC"))
+#' plot(adv[["time"]], adv2[["time"]]-adv[["time"]], type='l')
 retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 {
     if (missing(x))
@@ -818,6 +991,19 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
     res
 }
 
+
+#' Calculate min, mean, and max values
+#' 
+#' This is a faster cousin of the standard \code{\link{fivenum}} function,
+#' used in generic \code{summary} functions for \code{oce} objects.
+#' 
+#' @param x a vector or matrix of numerical values.
+#' @return A character vector of four values: the minimum, the mean, the
+#' maximum, and an indication of the number of data.
+#' @author Dan Kelley
+#' @examples
+#' library(oce)
+#' threenum(1:10)
 threenum <- function(x)
 {
     dim <- dim(x)
@@ -1116,6 +1302,41 @@ fullFilename <- function(filename)
 }
 
 
+#' Provide axis names in adjustable sizes
+#' 
+#' Provide axis names in adjustable sizes, e.g. using T instead of Temperature,
+#' and including units as appropriate.
+#' Used by e.g. \code{\link{plot,ctd-method}}.
+#' 
+#' @param item code for the label.  This must be an element from the following
+#' list, or an abbreviation that uniquely identifies an element through its
+#' first letters: \code{"S"}, \code{"C"}, \code{"conductivity mS/cm"},
+#' \code{"conductivity S/m"}, \code{"T"}, \code{"theta"}, \code{"sigmaTheta"},
+#' \code{"conservative temperature"}, \code{"absolute salinity"},
+#' \code{"nitrate"}, \code{"nitrite"}, \code{"oxygen"}, \code{"oxygen
+#' saturation"}, \code{"oxygen mL/L"}, \code{"oxygen umol/L"}, \code{"oxygen
+#' umol/kg"}, \code{"phosphate"}, \code{"silicate"}, \code{"tritium"},
+#' \code{"spice"}, \code{"fluorescence"}, \code{"p"}, \code{"z"},
+#' \code{"distance"}, \code{"distance km"}, \code{"along-track distance km"},
+#' \code{"heading"}, \code{"pitch"}, \code{"roll"}, \code{"u"}, \code{"v"},
+#' \code{"w"}, \code{"speed"}, \code{"direction"}, \code{"eastward"},
+#' \code{"northward"}, \code{"depth"}, \code{"elevation"}, \code{"latitude"},
+#' \code{"longitude"}, \code{"frequency cph"}, or \code{"spectral density
+#' m2/cph"}.
+#' @param axis a string indicating which axis to use; must be \code{x} or
+#' \code{y}.
+#' @param sep optional character string inserted between the unit and the
+#' parentheses or brackets that enclose it. If not provided, then
+#' \code{\link{getOption}("oceUnitSep")} is checked. If that exists, then it is
+#' used as the separator; if not, no separator is used.
+#' @param unit optional unit to use, an expression (ignored at present)
+#' @return A character string or expression, in either a long or a shorter
+#' format, for use in the indicated axis at the present plot size.  Whether the
+#' unit is enclosed in parentheses or square brackets is determined by the
+#' value of \code{getOption("oceUnitBracket")}, which may be \code{"["} or
+#' \code{"("}.  Whether spaces are used between the unit and these deliminators
+#' is set by \code{psep} or \code{\link{getOption}("oceUnitSep")}.
+#' @author Dan Kelley
 resizableLabel <- function(item, axis, sep, unit=NULL)
 {
     if (missing(item))

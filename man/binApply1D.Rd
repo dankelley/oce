@@ -48,6 +48,8 @@ Dan Kelley
 }
 \seealso{
 Other bin-related functions: \code{\link{binApply2D}},
-  \code{\link{binAverage}}
+  \code{\link{binAverage}}, \code{\link{binCount1D}},
+  \code{\link{binCount2D}}, \code{\link{binMean1D}},
+  \code{\link{binMean2D}}
 }
 

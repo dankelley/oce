@@ -162,6 +162,51 @@ useHeading <- function(b, g, add=0)
     res
 }
 
+
+
+#' Window an oce object by time or distance
+#' 
+#' Windows \code{x} on either time or distance, depending on the value of
+#' \code{which}.  In each case, values of \code{start} and \code{end} may be
+#' integers, to indicate a portion of the time or distance range.  If
+#' \code{which} is \code{"time"}, then the \code{start} and \code{end} values
+#' may also be provided as POSIX times, or character strings indicating times
+#' (in time zone given by the value of \code{getOption("oceTz")}).
+#' 
+#' @param x an \code{oce} object.
+#' @param start the start time (or distance) of the time (or space) region of
+#' interest.  This may be a single value or a vector.
+#' @param end the end time (or distance) of the time (or space) region of
+#' interest.  This may be a single value or a vector.
+#' @param frequency not permitted yet.
+#' @param deltat not permitted yet
+#' @param extend not permitted yet
+#' @param which string containing the name of the quantity on which sampling is
+#' done.  Possibilities are \code{"time"}, which applies the windowing on the
+#' \code{time} entry of the \code{data} slot, and \code{"distance"}, for the
+#' \code{distance} entry (for those objects, such as \code{adp}, that have this
+#' entry).
+#' @param indexReturn boolean flag indicating whether to return a list of the
+#' "kept" indices for the \code{time} entry of the \code{data} slot, as well as
+#' the \code{timeSlow} entry, if there is one..  Either of these lists will be
+#' \code{NULL}, if the object lacks the relevant items.
+#' @param debug a flag that turns on debugging.
+#' @param \dots ignored
+#' @return Normally, this is new \code{oce} object.  However, if
+#' \code{indexReturn=TRUE}, the return value is two-element list containing
+#' items named \code{index} and \code{indexSlow}, which are the indices for the
+#' \code{time} entry of the \code{data} slot (and the \code{timeSlow}, if it
+#' exists).
+#' @author Dan Kelley
+#' @seealso \code{\link{subset}} provides more flexible selection of subsets.
+#' @examples
+#' library(oce)
+#' data(adp)
+#' plot(adp)
+#' early <- window(adp, start="2008-06-26 00:00:00", end="2008-06-26 12:00:00")
+#' plot(early)
+#' bottom <- window(adp, start=0, end=20, which="distance")
+#' plot(bottom)
 window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE,
                        which=c("time","distance"), indexReturn=FALSE,
                        debug=getOption("oceDebug"), ...)
