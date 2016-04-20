@@ -252,8 +252,8 @@ test_that("misc sw calculations", {
           ctd <- ctdAddColumn(ctd, conductivity, "conductivity")
           S <- swSCTp(ctd)
           misfit <- sqrt(mean((S-salinity)^2))
-          expect_less_than(misfit, 1e-3)
-                                        # Test that swCSTp() takes both salinity and CTD [issue 630]
+          expect_lt(misfit, 1e-3)
+          ## Test that swCSTp() takes both salinity and CTD [issue 630]
           cond1 <- swCSTp(salinity, temperature, pressure, eos="unesco")
           cond2 <- swCSTp(ctd)
           expect_equal(cond1, cond2)
