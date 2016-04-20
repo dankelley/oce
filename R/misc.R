@@ -131,16 +131,16 @@ titleCase <- function(w)
 
 
 #' Curl of 2D vector field
-#' 
+#'
 #' Calculate the z component of the curl of an x-y vector field.
-#' 
+#'
 #' The computed component of the curl is defined by \eqn{\partial }{dv/dx -
 #' du/dy}\eqn{ v/\partial x - \partial u/\partial y}{dv/dx - du/dy} and the
 #' estimate is made using first-difference approximations to the derivatives.
 #' Two methods are provided, selected by the value of \code{method}.
-#' 
+#'
 #' \itemize{
-#' 
+#'
 #' \item For \code{method=1}, a centred-difference, 5-point stencil is used in
 #' the interior of the domain.  For example, \eqn{\partial v/\partial x}{dv/dx}
 #' is given by the ratio of \eqn{v_{i+1,j}-v_{i-1,j}}{v[i+1,j]-v[i-1,j]} to the
@@ -153,7 +153,7 @@ titleCase <- function(w)
 #' \code{x} and \code{y} are identical to the provided values, and the
 #' resultant \code{curl} is a matrix with dimension identical to that of
 #' \code{u}.
-#' 
+#'
 #' \item For \code{method=2}, each interior cell in the grid is considered
 #' individually, with derivatives calculated at the cell center. For example,
 #' \eqn{\partial v/\partial x}{dv/dx} is given by the ratio of
@@ -167,7 +167,7 @@ titleCase <- function(w)
 #' matrix dimensions are similarly reduced compared with the dimensions of
 #' \code{u} and \code{v}.
 #' }
-#' 
+#'
 #' @param u matrix containing the 'x' component of a vector field
 #' @param v matrix containing the 'y' component of a vector field
 #' @param x the x values for the matrices, a vector of length equal to the
@@ -192,7 +192,7 @@ titleCase <- function(w)
 #' u <- outer(x, y, function(x,y) y/2)
 #' v <- outer(x, y, function(x,y) -x/2)
 #' C <- curl(u, v, x, y, FALSE)
-#' 
+#'
 #' ## 2. Rankine vortex: constant curl inside circle, zero outside
 #' rankine <- function(x, y)
 #' {
@@ -238,10 +238,10 @@ curl <- function(u, v, x, y, geographical=FALSE, method=1)
 
 
 #' Calculate range, extended a little, as is done for axes.
-#' 
+#'
 #' This is analogous to what is done as part of the R axis range calculation,
 #' in the case where \code{xaxs="r"}.
-#' 
+#'
 #' @param x a numeric vector.
 #' @param extend fraction to extend on either end
 #' @return A two-element vector with the extended range of \code{x}.
@@ -259,11 +259,11 @@ rangeExtended <- function(x, extend=0.04) # extend by 4% on each end, like axes
 
 
 #' Apply a function to vector data
-#' 
+#'
 #' The function \code{FUN} is applied to \code{f} in bins specified by
 #' \code{xbreaks}.  (If \code{FUN} is \code{\link{mean}},
 #' consider using \code{\link{binMean2D}} instead, since it should be faster.)
-#' 
+#'
 #' @param x a vector of numerical values.
 #' @param f a vector of data to which the elements of \code{FUN} may be
 #' supplied
@@ -311,11 +311,11 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
 
 
 #' Apply a function to matrix data
-#' 
+#'
 #' The function \code{FUN} is applied to \code{f} in bins specified by
 #' \code{xbreaks} and \code{ybreaks}.  (If \code{FUN} is \code{\link{mean}},
 #' consider using \code{\link{binMean2D}} instead, since it should be faster.)
-#' 
+#'
 #' @param x a vector of numerical values.
 #' @param y a vector of numerical values.
 #' @param f a vector of data to which the elements of \code{FUN} may be
@@ -389,7 +389,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
 #'
 #' Count the number of elements of a given vector that fall within
 #' successive pairs of values within a second vector.
-#' 
+#'
 #' @param x Vector of numerical values.
 #' @param xbreaks Vector of values of x at the boundaries between bins, calculated using
 #' \code{\link{pretty}} if not supplied.
@@ -422,7 +422,7 @@ binCount1D <- function(x, xbreaks)
 #' Average the values of a vector \code{f} in bins defined on another
 #' vector \code{x}. A common example might be averaging CTD profile
 #' data into pressure bins (see \dQuote{Examples}).
-#' 
+#'
 #' @param x Vector of numerical values.
 #' @param f Vector of numerical values.
 #' @param xbreaks Vector of values of x at the boundaries between bins, calculated using
@@ -473,7 +473,7 @@ binMean1D <- function(x, f, xbreaks)
 #'
 #' Count the number of elements of a given matrix z=z(x,y) that fall within
 #' successive pairs of breaks in x and y.
-#' 
+#'
 #' @param x Vector of numerical values.
 #' @param y Vector of numerical values.
 #' @param xbreaks Vector of values of \code{x} at the boundaries between bins, calculated using
@@ -530,7 +530,7 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 #' Average the values of a vector \code{f(x,y)} in bins defined on 
 #' vectors \code{x} and \code{y}. A common example might be averaging 
 #' spatial data into location bins.
-#' 
+#'
 #' @param x Vector of numerical values.
 #' @param y Vector of numerical values.
 #' @param f Matrix of numerical values, a matrix f=f(x,y).
@@ -607,10 +607,10 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE)
 
 
 #' Bin-average a vector y, based on x values
-#' 
+#'
 #' The \code{y} vector is averaged in bins defined for \code{x}.  Missing
 #' values in \code{y} are ignored.
-#' 
+#'
 #' @param x a vector of numerical values.
 #' @param y a vector of numerical values.
 #' @param xmin x value at the lower limit of first bin; the minimum \code{x}
@@ -622,7 +622,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE)
 #' @return A list with two elements: \code{x}, the mid-points of the bins, and
 #' \code{y}, the average \code{y} value in the bins.
 #' @author Dan Kelley
-#' 
+#'
 #' @examples
 #' library(oce)
 #' ## A. fake linear data
@@ -631,13 +631,13 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE)
 #' plot(x, y, pch=1)
 #' ba <- binAverage(x, y)
 #' points(ba$x, ba$y, pch=3, col='red', cex=3)
-#' 
+#'
 #' ## B. fake quadratic data
 #' y <- 1 + x ^2
 #' plot(x, y, pch=1)
 #' ba <- binAverage(x, y)
 #' points(ba$x, ba$y, pch=3, col='red', cex=3)
-#' 
+#'
 #' ## C. natural data
 #' data(co2)
 #' plot(co2)
@@ -879,11 +879,11 @@ smoothSomething <- function(x, ...)
 
 
 #' Rescale values to lie in a given range
-#' 
+#'
 #' This is helpful in e.g. developing a colour scale for an image plot.  It is
 #' not necessary that \code{rlow} be less than \code{rhigh}, and in fact
 #' reversing them is a good way to get a reversed colour scale for a plot.
-#' 
+#'
 #' @param x a numeric vector.
 #' @param xlow \code{x} value to correspond to \code{rlow}.  If not given, it
 #' will be calculated as the minimum value of \code{x}
@@ -898,7 +898,7 @@ smoothSomething <- function(x, ...)
 #' @return A new vector, which has minimum \code{lim[1]} and maximum
 #' \code{lim[2]}.
 #' @author Dan Kelley
-#' 
+#'
 #' @examples
 #' library(oce)
 #' # Fake tow-yow data
@@ -931,7 +931,7 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 
 
 #' Adjust the time within Oce object
-#' 
+#'
 #' This function compensates for drifting instrument clocks, according to
 #' \eqn{t'=t + a + b (t-t0)}{t'=t + a + b*(t-t0)}, where \eqn{t'}{t'} is the
 #' true time and \eqn{t}{t} is the time stored in the object.  A single check
@@ -943,7 +943,7 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 #' avoids the user having to know the "zero time" used in R and clarifies the
 #' values of the other two parameters.  It makes sense for \code{t0} to have
 #' the same timezone as the time within \code{x}.
-#' 
+#'
 #' The returned object is computed by linear interpolation, using
 #' \code{\link{approx}} with \code{rule=2}, to avoid \code{NA} values at the
 #' start or end.  The new time will be as given by the formula above. Note that
@@ -951,7 +951,7 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 #' good idea to start with an object that has an extended time range, so that,
 #' after this is called, \code{\link{subset}} can be used to trim to a desired
 #' time range.
-#' 
+#'
 #' @param x an \code{oce} object (presently, this must be of class \code{adv})
 #' @param a intercept [in seconds] in linear model of time drift (see
 #' \dQuote{Details}).
@@ -993,10 +993,10 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 
 
 #' Calculate min, mean, and max values
-#' 
+#'
 #' This is a faster cousin of the standard \code{\link{fivenum}} function,
 #' used in generic \code{summary} functions for \code{oce} objects.
-#' 
+#'
 #' @param x a vector or matrix of numerical values.
 #' @return A character vector of four values: the minimum, the mean, the
 #' maximum, and an indication of the number of data.
@@ -1298,11 +1298,11 @@ fullFilename <- function(filename)
 
 
 #' Provide axis names in adjustable sizes
-#' 
+#'
 #' Provide axis names in adjustable sizes, e.g. using T instead of Temperature,
 #' and including units as appropriate.
 #' Used by e.g. \code{\link{plot,ctd-method}}.
-#' 
+#'
 #' @param item code for the label.  This must be an element from the following
 #' list, or an abbreviation that uniquely identifies an element through its
 #' first letters: \code{"S"}, \code{"C"}, \code{"conductivity mS/cm"},
@@ -1578,14 +1578,14 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 
 
 #' Determine time offset from timezone
-#' 
+#'
 #' The data are from
 #' \url{http://www.timeanddate.com/library/abbreviations/timezones/} and were
 #' hand-edited to develop this code, so there may be errors.  Also, note that
 #' some of these contradict; if you examine the code, you'll see some
 #' commented-out portions that represent solving conflicting definitions by
 #' choosing the more common timezone abbreviation over a the less common one.
-#' 
+#'
 #' @param tz a timezone, e.g. \code{UTC}.
 #' @return Number of hours in offset, e.g. \code{AST} yields 4.
 #' @author Dan Kelley
@@ -1693,12 +1693,12 @@ GMTOffsetFromTz <- function(tz)
 
 
 #' Acceleration due to earth gravity
-#' 
+#'
 #' Compute \eqn{g}{g}, the acceleration due to gravity, as a function of
 #' latitude.
-#' 
+#'
 #' Value not verified yet, except roughly.
-#' 
+#'
 #' @param latitude Latitude in \eqn{^\circ}{deg}N or radians north of the
 #' equator.
 #' @param degrees Flag indicating whether degrees are used for latitude; if set
@@ -1707,7 +1707,7 @@ GMTOffsetFromTz <- function(tz)
 #' @author Dan Kelley
 #' @references Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
 #' Press, New York, 662 pp.
-#' 
+#'
 #' \strong{Caution:} Fofonoff and Millard (1983 UNESCO) use a different
 #' formula.
 #' @examples
@@ -1867,9 +1867,9 @@ interpBarnes <- function(x, y, z, w,
 }
 
 #' Coriolis parameter on rotating earth
-#' 
+#'
 #' Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude.
-#' 
+#'
 #' @param latitude Vector of latitudes in \eqn{^\circ}{deg}N or radians north of the equator.
 #' @param degrees Flag indicating whether degrees are used for latitude; if set
 #' to \code{FALSE}, radians are used.
@@ -1889,7 +1889,7 @@ coriolis <- function(latitude, degrees=TRUE)
 
 
 #' Correct for drift in instrument clock
-#' 
+#'
 #' It is assumed that the instrument clock matches the real time at the start
 #' of the sampling, and that the clock drifts linearly (i.e. is uniformly fast
 #' or slow) over the sampling interval.  Linear interpolation is used to infer
@@ -1897,7 +1897,7 @@ coriolis <- function(latitude, degrees=TRUE)
 #' altered in this process, e.g. a slow instrument clock (positive
 #' \code{slowEnd}) takes too few samples in a given time interval, so
 #' \code{undriftTime} will increase the number of data.
-#' 
+#'
 #' @param x an object of \code{\link{oce-class}}.
 #' @param slowEnd number of seconds to add to final instrument time, to get the
 #' correct time of the final sample.  This will be a positive number, for a
@@ -1954,10 +1954,10 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
 
 
 #' Fill a gap in an oce object
-#' 
+#'
 #' Sequences of \code{NA} values, are filled by linear interpolation between
 #' the non-\code{NA} values that bound the gap.
-#' 
+#'
 #' @param x an \code{oce} object.
 #' @param method to use; see \dQuote{Details}.
 #' @param rule integer controlling behaviour at start and end of \code{x}.  If
@@ -2007,10 +2007,10 @@ fillGap <- function(x, method=c("linear"), rule=1)
 
 
 #' Add a column to an oce object's \code{data}.
-#' 
+#'
 #' If there is already a column with the given name, its contents are replaced
 #' by the new value.
-#' 
+#'
 #' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
 #' @param data the data.  The length of this item must match that of the
 #' existing data entries in the \code{data} slot).
@@ -2049,11 +2049,11 @@ addColumn <- function (x, data, name)
 
 
 #' Smooth and decimate, or subsample, an oce object.
-#' 
+#'
 #' Later on, other methods will be added, and \code{\link{ctdDecimate}} will be
 #' retired in favour of this, a more general, function.  The filtering is done
 #' with the \code{\link{filter}} function of the stats package.
-#' 
+#'
 #' @param x an \code{oce} object containing a \code{data} element.
 #' @param by an indication of the subsampling.  If this is a single number,
 #' then it indicates the spacing between elements of \code{x} that are
@@ -2265,11 +2265,11 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 
 
 #' Smooth an oce object.
-#' 
+#'
 #' Each data element is smoothed as a timeseries. For ADP data, this is done
 #' along time, not distance.  Time vectors, if any, are not smoothed.  A good
 #' use of \code{oce.smooth} is for despiking noisy data.
-#' 
+#'
 #' @aliases oce.smooth
 #' @param x an \code{oce} object.
 #' @param \dots parameters to be supplied to \code{\link{smooth}}, which does
@@ -2367,6 +2367,80 @@ byteToBinary <- function(x, endian=c("little", "big"))
     res
 }
 
+
+#' Confidence interval in parenthetic notation
+#'
+#' Format a confidence interval in parenthetic notation.
+#'
+#' If a \code{model} is given, then \code{ci} is ignored, and a confidence
+#' interval is calculated using \code{\link{confint}} with \code{level} set to
+#' 0.6914619.  This \code{level} corresponds to a range of plus or minus one
+#' standard deviation, for the t distribution and a large number of degrees of
+#' freedom (since \code{qt(0.6914619, 100000)} is 0.5).
+#'
+#' If \code{model} is missing, \code{ci} must be provided.  If it contains 3
+#' elements, then first and third elements are taken as the range of the
+#' confidence interval (which by convention should use the \code{level} stated
+#' in the previous paragraph), and the second element is taken as the central
+#' value.  Alternatively, if \code{ci} has 2 elements, they are taken to be
+#' bounds of the confidence interval and their mean is taken to be the central
+#' value.
+#'
+#' In the \code{+/-} notation, e.g. \eqn{a \pm b}{a +/- b} means that the true
+#' value lies between \eqn{a-b}{a-b} and \eqn{a+b}{a+b} with a high degree of
+#' certainty.  Mills et al. (1993, section 4.1 on page 83) suggest that
+#' \eqn{b}{b} should be set equal to 2 times the standard uncertainty or
+#' standard deviation.  JCGM (2008, section 7.2.2 on pages 25 and 26), however,
+#' suggest that \eqn{b}{b} should be set to the standard uncertainty, while
+#' also recommending that the \eqn{\pm}{+/-} notation be avoided altogether.
+#'
+#' The \code{parentheses} notation is often called the compact notation.  In
+#' it, the digits in parenthese indicate the uncertainty in the corresponding
+#' digits to their left, e.g. 12.34(3) means that the last digit (4) has an
+#' uncertainty of 3.  However, as with the \eqn{\pm}{+/-} notation, different
+#' authorities offer different advice on defining this uncertainty; Mills et
+#' al. (1993, section 4.1 on page 83) provide an example in which the
+#' parenthetic notation has the same value as the \eqn{\pm}{+/-} notation,
+#' while JCM (2008, section 7.2.2 on pages 25 and 26) suggest halving the
+#' number put in parentheses.
+#'
+#' The \code{foramtci} function is based on the JCM (2008) notation, i.e.
+#' \code{formatCI(ci=c(8,12), style="+/-")} yields \code{"10+-2"}, and
+#' \code{formatCI(ci=c(8,12), style="parentheses")} yields \code{"10(2)"}.
+#'
+#' \strong{Note:} if the confidence range exceeds the value, the
+#' \code{parentheses} format reverts to \code{+/-} format.
+#'
+#' @param ci optional vector of length 2 or 3.
+#' @param style string indicating notation to be used.
+#' @param model optional regression model, e.g. returned by \code{\link{lm}} or
+#' \code{\link{nls}}.
+#' @param digits optional number of digits to use; if not supplied,
+#' \code{\link{getOption}("digits")} is used.
+#' @return If \code{ci} is given, the result is a character string with the
+#' estimate and its uncertainty, in plus/minus or parenthetic notation.  If
+#' \code{model} is given, the result is a 1-column matrix holding character
+#' strings, with row names corresponding to the parameters of the model.
+#' @author Dan Kelley
+#' @references JCGM, 2008.  \emph{Evaluation of measurement data - Guide to the
+#' expression of uncertainty in measurement (JCGM 100:2008)}, published by the
+#' Joint Committee for Guides in Metrology.
+#' [\url{http://www.bipm.org/en/publications/guides/gum.html}] (See section
+#' 7.2.2 for a summary of notation, which shows equal values to the right of a
+#' \code{+-} sign and in parentheses.)
+#'
+#' I. Mills, T. Cvitas, K. Homann, N. Kallay, and K. Kuchitsu, 1993.
+#' \emph{Quantities, Units and Symbols in Physical Chemistry}, published
+#' Blackwell Science for the International Union of Pure and Applied Chemistry.
+#' (See section 4.1, page 83, for a summary of notation, which shows that a
+#' value to the right of a \code{+-} sign is to be halved if put in
+#'
+#' @keywords misc
+#' @examples
+#' x <- seq(0, 1, length.out=300)
+#' y <- rnorm(n=300, mean=10, sd=1) * x
+#' m <- lm(y~x)
+#' print(formatCI(model=m))
 formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
 {
     formatCI.one <- function(ci, style, digits=NULL)
@@ -2694,11 +2768,11 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"))
 
 
 #' Calculate the grad of a matrix by first differences
-#' 
+#'
 #' In the interior of the matrix, centred second-order differences are used to
 #' infer the components of the grad.  Along the edges, first-order differences
 #' are used.
-#' 
+#'
 #' @param h a matrix
 #' @param x x values
 #' @param y y values

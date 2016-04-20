@@ -19,4 +19,6 @@ inst/doc/.gitignore
 src/*.o$
 autom4te.cache
 man-roxygen
+tests/testthat/*png
+tests/testthat/*pdf
 
