@@ -2935,7 +2935,8 @@ lonlat2map <- function(longitude, latitude, projection="")
         stop('must install.packages("rgdal") to plot maps with projections')
     owarn <- options()$warn
     options(warn=-1)
-    XY <- rgdal::project(ll, proj=as.character(projection), inv=FALSE)
+    ## April 2016: rgdal::project will soon return named quantities
+    XY <- unname(rgdal::project(ll, proj=as.character(projection), inv=FALSE))
     options(warn=owarn)
     xy <- list(x=XY[,1], y=XY[,2])
     ## 20150523 if (!getOption("externalProj4", FALSE)) {
