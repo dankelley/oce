@@ -33,13 +33,13 @@ test_that("Moon", {
           ## in formulae.  (Note: this also tests eclipticalToEquatorial)
           t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
           m <- moonAngle(t, 0, 0) # lat and lon arbitrary
-          expect_less_than(abs(m$lambda - 133.162659), 0.02)
-          expect_less_than(abs(m$beta - -3.229127), 0.001)
+          expect_equal(m$lambda, 133.162659, tolerance=0.0002)
+          expect_equal(m$beta, -3.229127, tolerance=0.0002)
           ##expect_equal(abs(m$obliquity - 23.440636) < 0.001)
-          expect_less_than(abs(m$rightAscension - 134.688473), 0.02)
-          expect_less_than(abs(m$declination - 13.768366), 0.01)
-          expect_less_than(abs(m$diameter - 0.991990), 0.0001)
-          expect_less_than(abs(m$distance - 368405.6), 20)
+          expect_equal(m$rightAscension, 134.688473, tolerance=0.02)
+          expect_equal(m$declination, 13.768366, tolerance=0.001)
+          expect_equal(m$diameter, 0.991990, tolerance=0.0001)
+          expect_equal(m$distance, 368405.6, tolerance=0.1)
           ## moon illuminated fraction [1] ex 31.b page 156
           illfrac <- (1 + cos(RPD * 105.8493)) / 2
           expect_equal(moonAngle(ISOdatetime(1979,12,25,0,0,0,tz="UTC"),0,0)$illuminatedFraction,illfrac,tolerance=0.001)
