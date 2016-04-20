@@ -127,6 +127,7 @@ setMethod(f="summary",
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+W", "\u00B0W", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+N", "\u00B0N", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+S", "\u00B0S", res)
+                                             if (nchar(res)) res <- gsub("percent", "%", res)
                                              ##> message("res: '", res, "'")
                                              if (nchar(res)) res <- gsub("degree", "\u00B0", res)
                                              ##> message("res: '", res, "'")
@@ -250,7 +251,6 @@ setMethod(f="[[",
 
 #' @title Replace Parts of an \code{oce} Object
 #' @param x An \code{oce} object, i.e. inheriting from \code{\link{oce-class}}.
-#' @family functions that replace parts of an \code{oce} object
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),

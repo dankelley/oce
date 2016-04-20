@@ -1023,15 +1023,20 @@ threenum <- function(x)
         res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
     } else if (is.factor(x)) {
         res <- rep(NA, 3)
-    } else if (sum(!is.na(x))) {
+    } else if (0 < sum(!is.na(x))) {
         res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
     } else {
         res <- rep(NA, 3)
     }
     ## 20160314: tack on dimensions, neccessitating conversion to character
-    res[1] <- format(res[1]) # do these independently
-    res[2] <- format(res[2])
-    res[3] <- format(res[3])
+    ##res <- format(res, digits=4)
+    r1 <- format(res[1], digits=5)
+    r2 <- format(res[2], digits=5)
+    r3 <- format(res[3], digits=5)
+    res <- c(r1, r2, r3)
+    ## res[1] <- format(res[1], digits=4) # do these independently
+    ## res[2] <- format(res[2], digits=4)
+    ## res[3] <- format(res[3], digits=4)
     if (is.array(x)) {
         res <- c(res, paste(dim(x), collapse="x"))
     } else {

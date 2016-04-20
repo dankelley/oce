@@ -64,7 +64,7 @@ list}
 
 \item{units}{an optional list containing units.  If not supplied, a default of
 \code{list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-  salinity=list(unit=expression(ratio), scale="",
+  salinity=list(unit=expression(), scale="",
   pressure=list(unit=expression(dbar), scale="")} is used. This is quite
 typical of archived datasets, but for some instrumental files it will make
 sense to use \code{salinity=list(unit=expression(uS/cm), scale="")} or 
@@ -215,13 +215,18 @@ Engineering}, \bold{5}, pp 22-23.
 }
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{ctd-class}},
+  \code{\link{[[<-,ctd-method}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
-  \code{\link{gps-class}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{ctd}}, \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }

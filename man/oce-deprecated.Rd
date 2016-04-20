@@ -2,7 +2,7 @@
 \name{oce-deprecated}
 \alias{oce-deprecated}
 \alias{oce-defunct}
-\title{Deprecated functions in package \sQuote{oce}}
+\title{Deprecated functions and arguments in package \sQuote{oce}}
 
 \description{Certain functions and function arguments are still provided for
   compatibility with older versions of \sQuote{oce}, but will be removed soon.
@@ -34,6 +34,7 @@
   \tabular{lll}{
     \strong{Defunct} \tab \strong{Replacement} \tab \strong{Notes}\cr
     \code{makeSection} \tab \code{\link{as.section}} \tab Improve utility and name sensibility\cr
+    \code{columns} \tab \code{\link{read.ctd}} \tab Unnecessary, and never worked\cr
   }
 
   Several \sQuote{oce} function arguments are also slated for removal but are

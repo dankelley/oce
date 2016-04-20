@@ -190,12 +190,12 @@ setMethod(f="[[",
 #' In addition to the usual insertion of elements by name, note
 #' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 #' 
-#' @param x An adv object
-#' @param i The item to insert
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
+#' @param x An \code{adv} object.
 #' @param value The value to be inserted into \code{x}.
-#' @family functions that replace parts of \code{oce} objects
+#'
+#' @author Dan Kelley
+#'
+#' @template sub_subTemplate
 #' @family things related to \code{adv} data
 setMethod(f="[[<-",
           signature="adv",
