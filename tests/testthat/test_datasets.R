@@ -13,8 +13,8 @@ test_that("cm", {
           data("cm")
           S <- cm[["salinity"]]
           S1 <- swSCTp(cm)
-          expect_lt(mean(abs(S-S1)), 0.001)
-          expect_lt(median(abs(S-S1)), 0.0011)
+          expect_less_than(mean(abs(S-S1)), 0.001)
+          expect_less_than(median(abs(S-S1)), 0.0011)
           S2a <- swSCTp(cm[['conductivity']],cm[['temperature']], cm[['pressure']], conductivityUnit=cm[['conductivity unit']])
           expect_equal(S1, S2a)
           S2b <- swSCTp(cm[['conductivity']],cm[['temperature']], cm[['pressure']], conductivityUnit=cm[['conductivityUnit']])
@@ -26,7 +26,7 @@ test_that("cm", {
           ## about the 0.003 disagreement, however, because the actual values
           ## appear to be wrong by a lot more than that ... I don't believe the
           ## deep salinities in the St Lawrence Estuary are in excess of 40.
-          expect_lt(max(abs(S-S1)), 0.003)
+          expect_less_than(max(abs(S-S1)), 0.003)
 })
 
 ##data("coastlineWorld")
