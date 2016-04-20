@@ -7,6 +7,7 @@ test_that("forward=inverse", {
           xy <- geodXy(lon, lat)
           LONLAT <- geodXyInverse(xy$x, xy$y)
           err <- mean(sqrt((lon-LONLAT$longitude)^2+(lat-LONLAT$latitude)^2))
-          expect_less_than(err, 1e-4) # 10m criterion; basin-wide data
+          expect_equal(lon, LONLAT$longitude, tolerance=1e-5) # 1m criterion; basin-wide data
+          expect_equal(lat, LONLAT$latitude, tolerance=1e-5) # 1m criterion; basin-wide data
 })
 
