@@ -39,11 +39,11 @@
 #'   \code{latitude}    \tab \code{latitude}                   \tab degN                 \tab                \cr
 #'   \code{longitude}   \tab \code{longitude}                  \tab degE                 \tab                \cr
 #'   \code{nbin}        \tab \code{nbin}                       \tab -                    \tab                \cr
+#'   \code{potempN68C}  \tab \code{thetaM}                     \tab degC, IPTS-68        \tab                \cr
 #'   \code{potempN90C}  \tab \code{thetaM}                     \tab degC, ITS-90         \tab                \cr
 #'   \code{pr}          \tab \code{pressure}                   \tab dbar                 \tab                \cr
 #'   \code{prDM}        \tab \code{pressure}                   \tab dbar                 \tab 1              \cr
 #'   \code{ptempC}      \tab \code{pressureTemperature}        \tab degC, ITS-90         \tab 2              \cr
-#'   \code{potempN90C}  \tab \code{thetaM}                     \tab degC, ITS-90         \tab 2              \cr
 #'   \code{pumps}       \tab \code{pumpStatus}                 \tab                      \tab                \cr
 #'   \code{salNN}       \tab \code{salinityM}                  \tab unitless, PSS-78     \tab 3              \cr
 #'   \code{sbeoxNML/L}  \tab \code{oxygenConcentrationVolumeM} \tab ml/l                 \tab                \cr
@@ -55,6 +55,7 @@
 #'   \code{spar}        \tab \code{spar}                       \tab -                    \tab                \cr
 #'   \code{svCM}        \tab \code{soundSpeed}                 \tab m/s                  \tab                \cr
 #'   \code{tN68}        \tab \code{temperatureM}               \tab degC, IPTS-68        \tab                \cr 
+#'   \code{tN68C}       \tab \code{temperatureM}               \tab degC, IPTS-68        \tab                \cr 
 #'   \code{tN90c}       \tab \code{temperatureM}               \tab degC, ITS-90         \tab                \cr
 #'   \code{upolyN}      \tab \code{upolyM}                     \tab -                    \tab                \cr 
 #'   \code{vN}          \tab \code{voltageM}                   \tab V                    \tab                \cr 
@@ -136,6 +137,10 @@ cnvName2oceName <- function(h)
     } else if (1 == length(grep("ptempC", name, ignore.case=TRUE))) {
         name <- "pressureTemperature" # temperature at the pressure sensor
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
+    } else if (1 == length(grep("potemp[0-9]*68C", name, ignore.case=TRUE))) {
+        number <- gsub("68C$", "", gsub("^potemp", "", name))
+        name <- paste("theta", number, sep="")
+        unit <- list(unit=expression(degree*C), scale="ITS-68") # FIXME: guess on scale
     } else if (1 == length(grep("potemp[0-9]*90C", name, ignore.case=TRUE))) {
         number <- gsub("90C$", "", gsub("^potemp", "", name))
         name <- paste("theta", number, sep="")
@@ -176,12 +181,16 @@ cnvName2oceName <- function(h)
     } else if (1 == length(grep("svCM", name, ignore.case=TRUE))) {
         name <- "soundSpeed"
         unit <- list(unit=expression(m/s), scale="")
-    } else if (1 == length(grep("t[0-9]68", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^t[0-9]68$", name, ignore.case=TRUE))) {
         number <- gsub("68$", "", gsub("^t", "", name))
         name <- paste("temperature", number, sep="")
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (1 == length(grep("t[0-9]90c", name, ignore.case=TRUE))) {
-        number <- gsub("90c$", "", gsub("^t", "", name, ignore.case=TRUE), ignore.case=TRUE)
+    } else if (1 == length(grep("^t[0-9]68C$", name, ignore.case=TRUE))) {
+        number <- gsub("68C$", "", gsub("^t", "", name))
+        name <- paste("temperature", number, sep="")
+        unit <- list(unit=expression(degree*C), scale="IPTS-68")
+    } else if (1 == length(grep("^t[0-9]90C$", name, ignore.case=TRUE))) {
+        number <- gsub("90C$", "", gsub("^t", "", name, ignore.case=TRUE), ignore.case=TRUE)
         name <- paste("temperature", number, sep="")
         unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (1 == length(grep("timeS", name, ignore.case=TRUE))) {
@@ -204,7 +213,7 @@ cnvName2oceName <- function(h)
     ## salinity.
     if (1 == length(grep("0$", name)))
         name <- substr(name, 1, nchar(name)-1)
-    ## message(" name: '", name, "', nameOriginal: '", nameOriginal, '"')
+    message(" name: '", name, "', nameOriginal: '", nameOriginal, '"')
     list(name=name, nameOriginal=nameOriginal, unit=unit)
 }
 

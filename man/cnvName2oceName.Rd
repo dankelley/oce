@@ -47,15 +47,16 @@ way: \code{M} is omitted if \code{N} is zero, or \code{M} equals \code{N}
   \code{dz/dtM}      \tab \code{descentRate}                \tab m/s                  \tab                \cr
   \code{flag}        \tab \code{flag}                       \tab -                    \tab                \cr
   \code{flC}         \tab \code{fluorescenceChelsea}        \tab ug/l                 \tab                \cr
+  \code{flC1}        \tab \code{fluorescenceChelsea1}       \tab ug/l                 \tab                \cr
   \code{flsP}        \tab \code{fluorescence}               \tab -                    \tab                \cr
   \code{latitude}    \tab \code{latitude}                   \tab degN                 \tab                \cr
   \code{longitude}   \tab \code{longitude}                  \tab degE                 \tab                \cr
   \code{nbin}        \tab \code{nbin}                       \tab -                    \tab                \cr
+  \code{potempN68C}  \tab \code{thetaM}                     \tab degC, IPTS-68        \tab                \cr
   \code{potempN90C}  \tab \code{thetaM}                     \tab degC, ITS-90         \tab                \cr
   \code{pr}          \tab \code{pressure}                   \tab dbar                 \tab                \cr
   \code{prDM}        \tab \code{pressure}                   \tab dbar                 \tab 1              \cr
   \code{ptempC}      \tab \code{pressureTemperature}        \tab degC, ITS-90         \tab 2              \cr
-  \code{potempN90C}  \tab \code{thetaM}                     \tab degC, ITS-90         \tab 2              \cr
   \code{pumps}       \tab \code{pumpStatus}                 \tab                      \tab                \cr
   \code{salNN}       \tab \code{salinityM}                  \tab unitless, PSS-78     \tab 3              \cr
   \code{sbeoxNML/L}  \tab \code{oxygenConcentrationVolumeM} \tab ml/l                 \tab                \cr
@@ -67,6 +68,7 @@ way: \code{M} is omitted if \code{N} is zero, or \code{M} equals \code{N}
   \code{spar}        \tab \code{spar}                       \tab -                    \tab                \cr
   \code{svCM}        \tab \code{soundSpeed}                 \tab m/s                  \tab                \cr
   \code{tN68}        \tab \code{temperatureM}               \tab degC, IPTS-68        \tab                \cr 
+  \code{tN68C}       \tab \code{temperatureM}               \tab degC, IPTS-68        \tab                \cr 
   \code{tN90c}       \tab \code{temperatureM}               \tab degC, ITS-90         \tab                \cr
   \code{upolyN}      \tab \code{upolyM}                     \tab -                    \tab                \cr 
   \code{vN}          \tab \code{voltageM}                   \tab V                    \tab                \cr 
