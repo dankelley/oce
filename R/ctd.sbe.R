@@ -33,13 +33,17 @@
 #'   \code{depSM}       \tab \code{depth}                      \tab m                    \tab                \cr
 #'   \code{dz/dtM}      \tab \code{descentRate}                \tab m/s                  \tab                \cr
 #'   \code{flag}        \tab \code{flag}                       \tab -                    \tab                \cr
+#'   \code{flC}         \tab \code{fluorescenceChelsea}        \tab ug/l                 \tab                \cr
 #'   \code{flsP}        \tab \code{fluorescence}               \tab -                    \tab                \cr
+#'   \code{latitude}    \tab \code{latitude}                   \tab degN                 \tab                \cr
+#'   \code{longitude}   \tab \code{longitude}                  \tab degE                 \tab                \cr
 #'   \code{nbin}        \tab \code{nbin}                       \tab -                    \tab                \cr
 #'   \code{potempN90C}  \tab \code{thetaM}                     \tab degC, ITS-90         \tab                \cr
 #'   \code{pr}          \tab \code{pressure}                   \tab dbar                 \tab                \cr
 #'   \code{prDM}        \tab \code{pressure}                   \tab dbar                 \tab 1              \cr
 #'   \code{ptempC}      \tab \code{pressureTemperature}        \tab degC, ITS-90         \tab 2              \cr
 #'   \code{potempN90C}  \tab \code{thetaM}                     \tab degC, ITS-90         \tab 2              \cr
+#'   \code{pumps}       \tab \code{pumpStatus}                 \tab                      \tab                \cr
 #'   \code{salNN}       \tab \code{salinityM}                  \tab unitless, PSS-78     \tab 3              \cr
 #'   \code{sbeoxNML/L}  \tab \code{oxygenConcentrationVolumeM} \tab ml/l                 \tab                \cr
 #'   \code{sbeoxNMm/Kg} \tab \code{oxygenConcentrationMoleM}   \tab ml/l                 \tab                \cr
@@ -104,9 +108,18 @@ cnvName2oceName <- function(h)
     } else if (1 == length(grep("flag", name, ignore.case=TRUE))) {
         name <- "flag"
         unit <- list(unit=expression(), scale="")
+    } else if (1 == length(grep("flC", name, ignore.case=TRUE))) {
+        name <- "fluorescenceChelsea"
+        unit <- list(unit=expression(mu*g/l), scale="")
     } else if (1 == length(grep("flsP", name, ignore.case=TRUE))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="")
+    } else if (1 == length(grep("latitude", name, ignore.case=TRUE))) {
+        name <- "latitude"
+        unit <- list(unit=expression(degree*N), scale="")
+    } else if (1 == length(grep("longitude", name, ignore.case=TRUE))) {
+        name <- "longitude"
+        unit <- list(unit=expression(degree*E), scale="")
     } else if (name == "nbin") {
         name <- "nbin"
         unit <- list(unit=expression(), scale="")
@@ -123,6 +136,9 @@ cnvName2oceName <- function(h)
         number <- gsub("90C$", "", gsub("^potemp", "", name))
         name <- paste("theta", number, sep="")
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
+    } else if (1 == length(grep("pumps", name, ignore.case=TRUE))) {
+        name <- "pumpStatus"
+        unit <- list(unit=expression(), scale="")
     } else if (1 == length(grep("sal[0-9]{2}", name, ignore.case=TRUE))) {
         number <- gsub(".$", "", gsub("^sal", "", name))
         name <- paste("salinity", number, sep="")
@@ -184,7 +200,7 @@ cnvName2oceName <- function(h)
     ## salinity.
     if (1 == length(grep("0$", name)))
         name <- substr(name, 1, nchar(name)-1)
-    ##message(" name: '", name, "'")
+    ## message(" name: '", name, "', nameOriginal: '", nameOriginal, '"')
     list(name=name, nameOriginal=nameOriginal, unit=unit)
 }
 
@@ -587,7 +603,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             names <- names(data)
             ##labels <- names
             if (!found.scan) {
-                data[['scan']] <- 1:ndata
+                data$scan <- 1:ndata
+                names <- names(data)
+                col.names.inferred <- c(col.names.inferred, "scan")
+                col.names.original <- c(col.names.original, "scan")
             }
         } else {
             haveData <- FALSE
@@ -645,13 +664,14 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             } else {
                 stop("cannot find salinity in this file, nor conductivity or conductivity ratio")
             }
-            res <- ctdAddColumn(res, S, name="salinity", label="Salinity", unit=c("", "PSS-78"), debug=debug-1)
+            res <- ctdAddColumn(res, S, name="salinity", label="Salinity",
+                                unit=c(unit=expression(), scale="PSS-78"), debug=debug-1)
         }
         if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
             g <- if (found.header.latitude) gravity(latitude) else 9.8
             rho0 <- 1000 + swSigmaTheta(median(res@data$salinity), median(res@data$temperature), 0)
             res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
-                                unit=list(unit="dbar", scale=""), debug=debug-1)
+                                unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
             warning("created a pressure column from the depth column\n")
         }
         ## res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
