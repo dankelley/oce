@@ -34,6 +34,7 @@
 #'   \code{dz/dtM}      \tab \code{descentRate}                \tab m/s                  \tab                \cr
 #'   \code{flag}        \tab \code{flag}                       \tab -                    \tab                \cr
 #'   \code{flC}         \tab \code{fluorescenceChelsea}        \tab ug/l                 \tab                \cr
+#'   \code{flC1}        \tab \code{fluorescenceChelsea1}       \tab ug/l                 \tab                \cr
 #'   \code{flsP}        \tab \code{fluorescence}               \tab -                    \tab                \cr
 #'   \code{latitude}    \tab \code{latitude}                   \tab degN                 \tab                \cr
 #'   \code{longitude}   \tab \code{longitude}                  \tab degE                 \tab                \cr
@@ -110,6 +111,9 @@ cnvName2oceName <- function(h)
         unit <- list(unit=expression(), scale="")
     } else if (1 == length(grep("flC", name, ignore.case=TRUE))) {
         name <- "fluorescenceChelsea"
+        unit <- list(unit=expression(mu*g/l), scale="")
+    } else if (1 == length(grep("flC1", name, ignore.case=TRUE))) {
+        name <- "fluorescenceChelsea1"
         unit <- list(unit=expression(mu*g/l), scale="")
     } else if (1 == length(grep("flsP", name, ignore.case=TRUE))) {
         name <- "fluorescence"
