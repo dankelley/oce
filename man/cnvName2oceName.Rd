@@ -46,13 +46,17 @@ way: \code{M} is omitted if \code{N} is zero, or \code{M} equals \code{N}
   \code{depSM}       \tab \code{depth}                      \tab m                    \tab                \cr
   \code{dz/dtM}      \tab \code{descentRate}                \tab m/s                  \tab                \cr
   \code{flag}        \tab \code{flag}                       \tab -                    \tab                \cr
+  \code{flC}         \tab \code{fluorescenceChelsea}        \tab ug/l                 \tab                \cr
   \code{flsP}        \tab \code{fluorescence}               \tab -                    \tab                \cr
+  \code{latitude}    \tab \code{latitude}                   \tab degN                 \tab                \cr
+  \code{longitude}   \tab \code{longitude}                  \tab degE                 \tab                \cr
   \code{nbin}        \tab \code{nbin}                       \tab -                    \tab                \cr
   \code{potempN90C}  \tab \code{thetaM}                     \tab degC, ITS-90         \tab                \cr
   \code{pr}          \tab \code{pressure}                   \tab dbar                 \tab                \cr
   \code{prDM}        \tab \code{pressure}                   \tab dbar                 \tab 1              \cr
   \code{ptempC}      \tab \code{pressureTemperature}        \tab degC, ITS-90         \tab 2              \cr
   \code{potempN90C}  \tab \code{thetaM}                     \tab degC, ITS-90         \tab 2              \cr
+  \code{pumps}       \tab \code{pumpStatus}                 \tab                      \tab                \cr
   \code{salNN}       \tab \code{salinityM}                  \tab unitless, PSS-78     \tab 3              \cr
   \code{sbeoxNML/L}  \tab \code{oxygenConcentrationVolumeM} \tab ml/l                 \tab                \cr
   \code{sbeoxNMm/Kg} \tab \code{oxygenConcentrationMoleM}   \tab ml/l                 \tab                \cr
