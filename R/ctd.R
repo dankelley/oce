@@ -1848,9 +1848,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                     oceDebug(debug, "method[2]=\"A\"\n")
                     t <- try(m <- nls(pp ~ bilinearA(ss, s0, p0, dpds),
                                       start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
-                    if (class(t) == "try-error") stop("trimming failed to converge with submethod A")
-                    C <- coef(m)
-                    scanStart <- max(1, floor(0.5 + C["s0"]))
+                    scanStart <- if (class(t) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
                     ##> oceDebug(debug, "method[2]=\"A\", so using single-segment model\n")
                     ##> sGuess <- mean(ss, na.rm=TRUE)
                     ##> pGuess <- 0
@@ -1869,9 +1867,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                     oceDebug(debug, "method[3]=\"B\" so using two-segment model with zero near-surface pressure\n")
                     t <- try(m <- nls(pp ~ bilinearB(ss, s0, dpds),
                                       start=list(s0=s0, dpds=dpds0)), silent=TRUE)
-                    if (class(t) == "try-error") stop("trimming failed to converge with submethod B")
-                    C <- coef(m)
-                    scanStart <- max(1, floor(0.5 + C["s0"]))
+                    scanStart <- if (class(t) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
                 } else {
                     stop("unknown submethod '", submethod, "'")
                 }
