@@ -1123,7 +1123,7 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
             if (is.list(unit)) {
                 res@metadata$units[[name]] <- unit
             } else {
-                stop("unit should be a list containing two items")
+                res@metadata$units[[name]] <- list(unit=as.expression(unit[[1]]), scale=unit[[2]])
             }
         } else {
             warning("ignoring unit since it not of length 1 or 2")

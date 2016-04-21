@@ -664,13 +664,14 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             } else {
                 stop("cannot find salinity in this file, nor conductivity or conductivity ratio")
             }
-            res <- ctdAddColumn(res, S, name="salinity", label="Salinity", unit=c("", "PSS-78"), debug=debug-1)
+            res <- ctdAddColumn(res, S, name="salinity", label="Salinity",
+                                unit=c(unit=expression(), scale="PSS-78"), debug=debug-1)
         }
         if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
             g <- if (found.header.latitude) gravity(latitude) else 9.8
             rho0 <- 1000 + swSigmaTheta(median(res@data$salinity), median(res@data$temperature), 0)
             res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
-                                unit=list(unit="dbar", scale=""), debug=debug-1)
+                                unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
             warning("created a pressure column from the depth column\n")
         }
         ## res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
