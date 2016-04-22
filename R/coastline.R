@@ -363,7 +363,7 @@ setMethod(f="plot",
                       stop("if longitudelim or latitudelim are given, both must be given")
                   if (!missing(clongitude) || !missing(clatitude) || !missing(span))
                       stop("if longitudelim or latitudelim are given, must not supply clongitude, clatitude, or span")
-                  message("A")
+                  ##message("A")
                   clongitude <- mean(longitudelim)
                   clatitude <- mean(latitudelim)
                   span <- geodDist(min(longitudelim), min(latitudelim), max(longitudelim), max(latitudelim))
@@ -389,8 +389,6 @@ setMethod(f="plot",
                           lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                           projection=projection,
                           debug=debug-1, ...)
-                  message("about to call mapPlot() with border: ", border, ", col: ", col)
-
                   oceDebug(debug, "} # plot.coastline()\n", unindent=1)
                   return(invisible())
               }
