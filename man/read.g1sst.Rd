@@ -52,7 +52,7 @@ Dan Kelley
 }
 \references{
 1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
-2. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
+2. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
 }
 \seealso{
 Other things related to satellite data: \code{\link{g1sst-class}},
