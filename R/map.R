@@ -25,6 +25,7 @@
 #' @param longitudes a numericl vector of longitudes
 #' @return vector of longitudes, shifted to the desired range.
 #' @seealso \code{\link{matrixShiftLongitude}} and \code{\link{standardizeLongitude}}.
+#' @family functions related to maps
 shiftLongitude <- function(longitudes) {
     if (any(longitudes > 180)) longitudes-360 else longitudes
 }
@@ -165,7 +166,7 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
                     tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
                     lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
@@ -352,7 +353,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #' }
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
                        latitude=seq(0, 1, length.out=ncol(z)),
                        z,
@@ -466,7 +467,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapDirectionField <- function(longitude, latitude, u, v,
                               scale=1, length=0.05, code=2, col=par("fg"), ...)
 {
@@ -527,7 +528,7 @@ mapDirectionField <- function(longitude, latitude, u, v,
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapLongitudeLatitudeXY <- function(longitude, latitude)
 {
     if ("none" == .Projection()$type)
@@ -964,7 +965,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' 8. A fascinating historical perspective is provided by Snyder, J. P.
 #' (1993). Two thousand years of map projections. University of Chicago Press.
 #'
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill,
                     border=NULL, col=NA, # 'col' default differs from plot.coastline(), owing to ugly-horiz.-line issue
@@ -1279,7 +1280,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' }
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     col="darkgray", lty="solid", lwd=0.5*par("lwd"), polarCircle=0,
                     longitudelim, latitudelim,
@@ -1409,7 +1410,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
     .Deprecated("mapGrid",
@@ -1501,7 +1502,7 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 #' }
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapScalebar <- function(x, y=NULL, length,
                         lwd=1.5*par("lwd"), cex=par("cex"),
                         col="black")
@@ -1591,7 +1592,7 @@ mapScalebar <- function(x, y=NULL, length,
 #' }
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapText <- function(longitude, latitude, labels, ...)
 {
     if ("none" == .Projection()$type)
@@ -1646,7 +1647,7 @@ mapText <- function(longitude, latitude, labels, ...)
 #' }
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapTissot <- function(grid=rep(15, 2), scale=0.2, ...)
 {
     if ("none" == .Projection()$type)
@@ -1706,7 +1707,7 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, ...)
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
     .Deprecated("mapGrid",
@@ -1777,7 +1778,7 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 {
     if ("none" == .Projection()$type)
@@ -1848,7 +1849,7 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 {
     if ("none" == .Projection()$type)
@@ -1910,7 +1911,7 @@ mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapArrows <- function(longitude0, latitude0,
                       longitude1=longitude0, latitude1=latitude0,
                       length=0.25, angle=30,
@@ -1936,6 +1937,26 @@ mapArrows <- function(longitude0, latitude0,
     }
 }
 
+
+#' Geographical position in degrees and minutes
+#' 
+#' Format geographical positions to degrees, minutes, and hemispheres
+#' 
+#' @param latlon a vector of latitudes or longitudes
+#' @param isLat a boolean that indicates whether the quantity is latitude or
+#' longitude
+#' @param type a string indicating the type of return value (see below)
+#' @param showHemi a boolean that indicates whether to indicate the hemisphere
+#' @return A list containing \code{degrees}, \code{minutes}, \code{seconds},
+#' and \code{hemispheres}, or a vector of strings or (broken) a vector of
+#' expressions.
+#' @author Dan Kelley
+#' @keywords misc
+#' @examples
+#' 
+#' library(oce)
+#' formatPosition(10+1:10/60+2.8/3600)
+#' formatPosition(10+1:10/60+2.8/3600, type="string")
 formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"), showHemi=TRUE)
 {
     type <- match.arg(type)
@@ -2027,7 +2048,7 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapLocator <- function(n=512, type='n', ...)
 {
     if ("none" == .Projection()$type)
@@ -2086,7 +2107,7 @@ mapLocator <- function(n=512, type='n', ...)
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 map2lonlat <- function(x, y, init=c(0,0))
 {
     if ("none" == .Projection()$type)
@@ -2243,7 +2264,7 @@ map2lonlat <- function(x, y, init=c(0,0))
 #' }
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
                        border=NULL, col=NA, lty=par('lty'), ..., fillOddEven=FALSE)
 {
@@ -2419,7 +2440,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions that handle map projections
+#' @family functions related to maps
 mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                      breaks, col, colormap, border=NA,
                      lwd=par("lwd"), lty=par("lty"), missingColor=NA,
@@ -2692,6 +2713,37 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     invisible()
 }
 
+
+
+#' Convert from longitude and latitude to UTM
+#' 
+#' @param longitude decimal longitude.  May also be a list containing items
+#' named \code{longitude} and \code{latitude}, in which case the indicated
+#' values are used, and next argument is ignored.
+#' @param latitude decimal latitude (ignored if \code{longitude} is a list
+#' containing both coordinates)
+#' @param zone optional indication of UTM zone.  Normally this is inferred from
+#' the longitude, but specifying it can be helpful in dealing with Landsat
+#' images, which may cross zones and which therefore are described by a single
+#' zone.
+#' @param km logical value indicating whether \code{easting} and
+#' \code{northing} are in kilometers or meters.
+#' @return A list containing \code{easting}, \code{northing}, \code{zone} and
+#' \code{hemisphere}.
+#' @author Dan Kelley
+#' @seealso \code{\link{utm2lonlat}} does the inverse operation.  For general
+#' projections and their inverses, use \code{\link{lonlat2map}} and
+#' \code{\link{map2lonlat}}.
+#' @references
+#' \url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
+#' downloaded May 31, 2014.
+#' @examples
+#' 
+#' library(oce)
+#' ## Cape Split, in the Minas Basin of the Bay of Fundy
+#' lonlat2utm(-64.496567, 45.334626)
+#' 
+#' @family functions related to maps
 lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 {
     names <- names(longitude)
@@ -2750,6 +2802,35 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
          hemisphere=ifelse(latitude>0, "N", "S"))
 }
 
+#' Convert from UTM to longitude and latitude
+#' 
+#' @param easting easting coordinate (in km or m, depending on value of
+#' \code{km}).  Alternatively, a list containing items named \code{easting},
+#' \code{northing}, and \code{zone}, in which case these are taken from the
+#' list and the arguments named \code{northing}, \code{zone} and are ignored.
+#' @param northing northing coordinate (in km or m, depending on value of
+#' \code{km}).
+#' @param zone UTM zone
+#' @param hemisphere indication of hemisphere; \code{"N"} for North, anything
+#' else for South.
+#' @param km logical value indicating whether \code{easting} and
+#' \code{northing} are in kilometers or meters.
+#' @return A list containing \code{longitude} and \code{latitude}.
+#' @author Dan Kelley
+#' @seealso \code{\link{lonlat2utm}} does the inverse operation.  For general
+#' projections and their inverses, use \code{\link{lonlat2map}} and
+#' \code{\link{map2lonlat}}.
+#' @references
+#' \url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
+#' downloaded May 31, 2014.
+#' @keywords misc
+#' @examples
+#' 
+#' library(oce)
+#' ## Cape Split, in the Minas Basin of the Bay of Fundy
+#' utm2lonlat(852863, 5029997, 19)
+#' 
+#' @family functions related to maps
 utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
 {
     names <- names(easting)
@@ -2838,6 +2919,40 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
                 "urm5", "urmfps", "utm", "vandg", "vitk1", "wag1", "wag2",
                 "wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
 
+
+
+#' Convert from longitude and latitude to x-y coordinates
+#' 
+#' If a projection is already being used (e.g. as set by \code{\link{mapPlot}})
+#' then only \code{longitude} and \code{latitude} should be given, and the
+#' other arguments will be inferred by \code{lonlat2map}.  This is important
+#' because otherwise, if a new projection is called for, it will ruin any
+#' additions to the existing plot.
+#' 
+#' @param longitude a vector containing decimal longitudes, or a list
+#' containing items named \code{longitude} and \code{latitude}, in which case
+#' the indicated values are used, and next argument is ignored.
+#' @param latitude a vector containing decimal latitude (ignored if
+#' \code{longitude} is a list, as described above).
+#' @param projection optional indication of projection.  This must be character
+#' string in the format used by the \code{rgdal} package;
+#' see \code{\link{mapPlot}}.)
+#' @return A list containing \code{x} and \code{y}.
+#' @author Dan Kelley
+#' @seealso \code{mapLongitudeLatitudeXY} is a safer alternative, if a map has
+#' already been drawn with \code{\link{mapPlot}}, because that function cannot
+#' alter an existing projection. \code{\link{map2lonlat}} is an inverse to
+#' \code{map2lonlat}.
+#' @examples
+#' 
+#' \dontrun{
+#' library(oce)
+#' ## Cape Split, in the Minas Basin of the Bay of Fundy
+#' cs <- list(longitude=-64.49657,latitude=45.33462)
+#' xy <- lonlat2map(cs, projection="+proj=merc")
+#' map2lonlat(xy)
+#' }
+#' @family functions related to maps
 lonlat2map <- function(longitude, latitude, projection="")
 {
     ##cat("map.R:1676 in lonlat2map(..., projection='", projection, "', ...)\n", sep="")

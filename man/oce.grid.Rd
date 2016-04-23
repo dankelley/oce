@@ -17,9 +17,6 @@ oce.grid(xat, yat, col = "lightgray", lty = "dotted", lwd = par("lwd"))
 
 \item{lwd}{width for grid lines (see \code{\link{par}})}
 }
-\value{
-nothing
-}
 \description{
 Add a grid to an existing plot, with special abilities for those created by oce
 }

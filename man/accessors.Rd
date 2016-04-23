@@ -9,7 +9,6 @@
 \alias{pitch<-}
 \alias{roll}
 \alias{roll<-}
-\alias{time}
 
 \title{Access or modify part of an Oce object}
 
@@ -26,7 +25,6 @@ pitch(x, time)
 pitch(x) <- value
 roll(x, time)
 roll(x) <- value
-time(x)
 }
 
 \arguments{

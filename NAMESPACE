@@ -16,7 +16,7 @@ importFrom("stats", "approx", "approxfun", "coef", "confint", "cor", "cov",
            "fivenum", "frequency", "integrate", "is.ts", "kernel", "lm",
            "median", "na.exclude", "nls", "optim", "optimize", "predict",
            "printCoefmat", "quantile", "rnorm", "runmed", "sd", "smooth",
-           "smooth.spline", "spectrum", "time", "ts", "uniroot", "var",
+           "smooth.spline", "spectrum", "ts", "uniroot", "var",
            "weighted.mean", "window")
 importFrom("utils", "data", "head", "flush.console", "read.csv", "read.table",
            "setTxtProgressBar", "str", "tail", "txtProgressBar", "write.table")
@@ -95,7 +95,6 @@ export(abbreviateTimeLabels,
        enuToOtherAdv,
        equatorialToLocalHorizontal,
        errorbars,
-       extract,
        fillGap,
        findBottom,
        findInOrdered,
@@ -199,9 +198,7 @@ export(abbreviateTimeLabels,
        plotTaylor,
        predict.tidem,
        "processingLog<-",
-       processingLog,
        processingLogAppend,
-       processingLogItem,
        processingLogShow,
        pitch,
        "pitch<-",
@@ -314,7 +311,6 @@ export(abbreviateTimeLabels,
        tidem,
        tidemAstron,
        tidemVuf,
-       time.oce,
        titleCase,
        toEnu,
        toEnuAdp,
@@ -340,7 +336,6 @@ export(abbreviateTimeLabels,
 S3method(head, adp)
 S3method(predict, tidem)
 S3method(tail, adp)
-S3method(time, oce)
 S3method(window, oce)
 
 exportClasses(oce, adp, adv, amsr, bremen, cm, coastline, ctd, argo, ladp, landsat, lisst, lobo, met, odf, sealevel, section, rsk, tidem, topo, windrose)

@@ -692,7 +692,6 @@ binAverage <- function(x, y, xmin, xmax, xinc)
 #' contour(u$xg, u$yg, u$zg)
 #' U <- ungrid(u$xg, u$yg, u$zg)
 #' points(U$x, U$y, col=oce.colorsJet(100)[rescale(U$grid, rlow=1, rhigh=100)], pch=20)
-#'
 ungrid <- function(x, y, grid)
 {
     nrow <- nrow(grid)
@@ -748,7 +747,8 @@ ungrid <- function(x, y, grid)
 #' plot(xout, approx, type='l')
 #' points(xout[1], f[1,1,1])
 #' points(xout[m], f[n,n,n])
-approx3d <- function(x, y, z, f, xout, yout, zout) {
+approx3d <- function(x, y, z, f, xout, yout, zout)
+{
     equispaced <- function(x) sd(diff(x)) / mean(diff(x)) < 1e-5
     if (missing(x)) stop("must provide x")
     if (missing(y)) stop("must provide y")
@@ -763,6 +763,32 @@ approx3d <- function(x, y, z, f, xout, yout, zout) {
     .Call("approx3d", x, y, z, f, xout, yout, zout)
 }
 
+
+#' Draw error bars on an existing xy diagram
+#' 
+#' @param x x coordinates of points on the existing plot.
+#' @param y y coordinates of points on the existing plot.
+#' @param xe error on x coordinates of points on the existing plot, either a
+#' single number or a vector of length identical to that of \code{y}.
+#' @param ye as \code{xe} but for y coordinate.
+#' @param percent boolean flag indicating whether \code{xe} and \code{ye} are
+#' in terms of percent of the corresponding \code{x} and \code{y} values.
+#' @param style indication of the style of error bar.  Using \code{style=0}
+#' yields simple line segments (drawn with \code{\link{segments}}) and
+#' \code{style=1} yields line segments with short perpendicular endcaps.
+#' @param length length of endcaps, for \code{style=1} only; it is passed to
+#' \code{\link{arrows}}, which is used to draw that style of error bars.
+#' @param \dots graphical parameters passed to the code that produces the error
+#' bars, e.g. to \code{\link{segments}} for \code{style=0}.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' data(ctd)
+#' S <- ctd[["salinity"]]
+#' T <- ctd[["temperature"]]
+#' plot(S, T)
+#' errorbars(S, T, 0.05, 0.5)
 errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 {
     if (missing(x))
@@ -812,6 +838,20 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
     }
 }
 
+
+#' Find indices of times in an ordered vector
+#' 
+#' The indices point to the largest items in \code{x} that are less than or
+#' equal the values in \code{f}.  The method uses a bisection search, so the
+#' time taken is proportional to \code{length(f) * log2(length(x))}.
+#' 
+#' @param x a numeric vector, in increasing order by value.
+#' @param f a numeric vector of items whose indices are sought.
+#' @return A numerical vector indicating the indices of left-sided neighbors.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' findInOrdered(seq(0,10,1), c(1.2,7.3))
 findInOrdered <- function(x, f)
 {
     if (missing(x))
@@ -820,6 +860,7 @@ findInOrdered <- function(x, f)
         stop("'f' missing")
     .Call("bisect", x, f)
 }
+
 
 filterSomething <- function(x, filter)
 {
@@ -945,6 +986,24 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
     }
 }
 
+
+#' Pretty lat/lon in deg, min, sec
+#' 
+#' Round a geographical positions in degrees, minutes, and seconds
+#' Depending on the range of values in \code{x}, rounding is done to degrees,
+#' half-degrees, minutes, etc.
+#' 
+#' @param x a series of one or more values of a latitude or longitude, in
+#' decimal degrees
+#' @param debug set to a positive value to get debugging information during
+#' processing.
+#' @return A vector of numbers that will yield good axis labels if
+#' \code{\link{formatPosition}} is used.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' formatPosition(prettyPosition(10+1:10/60+2.8/3600))
 prettyPosition <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "prettyPosition(...) {\n", sep="", unindent=1)
@@ -1157,30 +1216,6 @@ threenum <- function(x)
     res
 }
 
-## threenum <- function(x)
-## {
-##     if (is.character(x) || is.null(x)) {
-##         res <- rep(NA, 3)
-##     } else if (is.list(x)) {
-##         if (2 == sum(c("lsb", "msb") %in% names(x))) { # e.g. landsat data
-##             x <- as.numeric(x$lsb) + 256 * as.numeric(x$msb)
-##             res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
-##         } else {
-##             res <- rep(NA, 3)
-##         }
-##     } else if (is.raw(x)) {
-##         x <- as.numeric(x)
-##         res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
-##     } else if (is.factor(x)) {
-##         res <- rep(NA, 3)
-##     } else if (sum(!is.na(x))) {
-##         res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
-##     } else {
-##         res <- rep(NA, 3)
-##     }
-##     res
-## }
-
 normalize <- function(x)
 {
     var <- var(x, na.rm=TRUE)
@@ -1390,6 +1425,22 @@ despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, 
     }
     x
 }
+
+
+
+#' Substitute NA for data outside a range
+#' 
+#' Substitute NA for data outside a range, e.g. to remove wild spikes in data.
+#' 
+#' @param x vector of values
+#' @param min minimum acceptable value.  If not supplied, and if \code{max} is
+#' also not supplied, a \code{min} of the 0.5 percentile will be used.
+#' @param max maximum acceptable value.  If not supplied, and if \code{min} is
+#' also not supplied, a \code{min} of the 0.995 percentile will be used.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' ten.to.twenty <- rangeLimit(1:100, 10, 20)
 rangeLimit <- function(x, min, max)
 {
     if (missing(min) && missing(max)) {
@@ -1399,6 +1450,22 @@ rangeLimit <- function(x, min, max)
     }
     ifelse(max < x | x < min, NA, x)
 }
+
+
+#' Determine year from various abbreviations
+#' 
+#' Various data files may contain various abbreviations for years.  For
+#' example, 99 refers to 1999, and 8 refers to 2008.  Sometimes, even 108
+#' refers to 2008 (the idea being that the "zero" year was 1900).  This
+#' function deals with the three cases mentioned.  It will fail if someone
+#' supplies 60, meaning year 2060 as opposed to 1960.
+#' 
+#' @param year a year, or vector of years, possibly abbreviated
+#' @author Dan Kelley
+#' @examples
+#' 
+#' fullYear <- unabbreviateYear(c(99, 8, 108))
+#' @family things related to time
 unabbreviateYear <- function(year)
 {
     ## handle e.g. 2008 as 2008 (full year), 8 (year-2000 offset), or 108 (year 1900 offset)
@@ -1440,6 +1507,37 @@ angleRemap <- function(theta)
     atan2(sin(toRad * theta), cos(toRad * theta)) / toRad
 }
 
+
+#' Unwrap an angle that suffers modulo-360 problems
+#' 
+#' This is mostly used for instrument heading angles, in cases where the
+#' instrument is aligned nearly northward, so that small variations in heading
+#' (e.g. due to mooring motion) can yield values that swing from small angles
+#' to large angles, because of the modulo-360 cut point.
+#' The method is to use the cosine and sine of the angle, to construct "x" and
+#' "y" values on a unit circle, then to find means and medians of x and y
+#' respectively, and finally to use \code{\link{atan2}} to infer the angles.
+#' 
+#' @param angle an angle (in degrees) that is thought be near 360 degrees, with
+#' added noise
+#' @return A list with two estimates: \code{mean} is based on an arithmetic
+#' mean, and \code{median} is based on the median. Both are mapped to the range
+#' 0 to 360.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' true <- 355
+#' a <- true + rnorm(100, sd=10)
+#' a <- ifelse(a > 360, a - 360, a)
+#' a2 <- unwrapAngle(a)
+#' par(mar=c(3,3,5,3))
+#' hist(a, breaks=360)
+#' abline(v=a2$mean, col="blue", lty="dashed")
+#' abline(v=true, col="blue")
+#' mtext("true (solid)\n estimate (dashed)", at=true, side=3, col="blue")
+#' abline(v=mean(a), col="red")
+#' mtext("mean", at=mean(a), side=3, col="red")
 unwrapAngle <- function(angle)
 {
     toRad <- atan2(1, 1) / 45
@@ -1457,7 +1555,39 @@ unwrapAngle <- function(angle)
     list(mean=resMean, median=resMedian)
 }
 
-oce.pmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
+
+#' Partial matching of strings or numbers
+#' 
+#' An extended version of \code{\link{pmatch}} that allows \code{x} to be
+#' numeric or string-based.  As with \code{\link{pmatch}}, partial string
+#' matches are handled.
+#' This is a wrapper that is useful mainly for \code{which} arguments to
+#' plotting functions.
+#' 
+#' @aliases oce.pmatch
+#' @param x a code, or vector of codes.  This may be numeric, in which case it
+#' is simply returned without further analysis of the other arguments, or it
+#' may be string-based, in which case \code{\link{pmatch}} is used to find
+#' numeric matches.
+#' @param table a list that maps strings to numbers; \code{\link{pmatch}} is
+#' used on \code{names(table)}.  If the name contains characters that are
+#' normally not permitted in a variable name, use quotes, e.g.
+#' \code{list(salinity=1, temperature=2, "salinity+temperature"=3)}.
+#' @param nomatch value to be returned for cases of no match (passed to
+#' \code{\link{pmatch}}.
+#' @param duplicates.ok code for the handling of duplicates (passed to
+#' \code{\link{pmatch}}).
+#' @return A number, or vector of numbers, corresponding to the matches.
+#' Non-matches are indicated with \code{NA} values, or whatever value is given
+#' by the \code{NA} argument.
+#' @author Dan Kelley
+#' @seealso Since \code{\link{pmatch}} is used for the actual matching, its
+#' documentation should be consulted.
+#' @examples
+#' 
+#' library(oce)
+#' oce.pmatch(c("s", "at", "te"), list(salinity=1, temperature=3.1))
+ocePmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
 {
     ## FIXME: do element by element, and extend as follows, to allow string numbers
     ## if (1 == length(grep("^[0-9]*$", ww))) which2[w] <- as.numeric(ww)
@@ -1482,9 +1612,30 @@ oce.pmatch <- function(x, table, nomatch=NA_integer_, duplicates.ok=FALSE)
         stop("'x' must be numeric or character")
     }
 }
-ocePmatch <- oce.pmatch
+oce.pmatch <- ocePmatch
 
-oce.spectrum <- function(x, ...)
+
+#' Wrapper to give normalized spectrum
+#' 
+#' This is a wrapper around the R \code{\link{spectrum}} function, which
+#' returns spectral values that are adjusted so that the integral of those
+#' values equals the variance of the input \code{x}.
+#' 
+#' @aliases oce.spectrum oceSpectrum
+#' @param x As for \code{\link{spectrum}}, a univariate or multivariate time
+#' series.
+#' @param \dots extra arguments passed on to \code{\link{spectrum}}.
+#' @return A spectrum that has values that integrate to the variance.
+#' @author Dan Kelley
+#' @seealso \code{\link{spectrum}}.
+#' @examples
+#'   x <- rnorm(1e3)
+#'   s <- spectrum(x, plot=FALSE)
+#'   ss <- oce.spectrum(x, plot=FALSE)
+#'   cat("variance of x=", var(x), "\n")
+#'   cat("integral of     spectrum=", sum(s$spec)*diff(s$freq[1:2]), "\n")
+#'   cat("integral of oce.spectrum=", sum(ss$spec)*diff(ss$freq[1:2]), "\n")
+oceSpectrum <- function(x, ...)
 {
     args <- list(...)
     want.plot <- FALSE
@@ -1501,8 +1652,23 @@ oce.spectrum <- function(x, ...)
         plot(res)
     invisible(res)
 }
-oceSpectrum <- oce.spectrum
+oce.spectrum <- oceSpectrum
 
+
+#' Show some values from a vector
+#' 
+#' This is similar to \code{\link{str}}, but it shows data at the first and
+#' last of the vector, which is quite helpful in debugging.
+#' 
+#' @param v the vector.
+#' @param msg a message to show, introducing the vector.  If not provided, then
+#' a label is created from \code{v}.
+#' @param digits for numerical values of \code{v}, this is the number of digits
+#' to use, in formatting the numbers with \code{\link{format}}; otherwise,
+#' \code{digits} is ignored.
+#' @return A string, suitable for using in \code{\link{cat}} or
+#' \code{\link{oceDebug}}.
+#' @author Dan Kelley
 vectorShow <- function(v, msg, digits=5)
 {
     n <- length(v)
@@ -1528,6 +1694,17 @@ vectorShow <- function(v, msg, digits=5)
     }
 }
 
+
+#' Full name of file, including path
+#' 
+#' Determines the full name of a file, including the path.  Used by many
+#' \code{read.X} routines, where \code{X} is the name of a class of object.
+#' This is a wrapper around \code{\link{normalizePath}}, with warnings turned
+#' off so that messages are not printed for unfound files (e.g. URLs).
+#' 
+#' @param filename name of file
+#' @return Full file name
+#' @author Dan Kelley
 fullFilename <- function(filename)
 {
     warn <- options('warn')$warn
@@ -1770,6 +1947,17 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
     if (fraction < 1) full else abbreviated
 }
 
+
+#' Format a latitude-longitude pair
+#' 
+#' Format a latitude-longitude pair, using "S" for negative latitudes, etc.
+#' 
+#' @param lat latitude in \eqn{^\circ}{deg}N north of the equator.
+#' @param lon longitude in \eqn{^\circ}{deg}N east of Greenwich.
+#' @param digits the number of significant digits to use when printing.
+#' @return A character string.
+#' @author Dan Kelley
+#' @seealso \code{\link{latFormat}} and \code{\link{lonFormat}}.
 latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)
@@ -1787,6 +1975,16 @@ latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
     res
 }
 
+
+#' Format a latitude
+#' 
+#' Format a latitude, using "S" for negative latitude.
+#' 
+#' @param lat latitude in \eqn{^\circ}{deg}N north of the equator.
+#' @param digits the number of significant digits to use when printing.
+#' @return A character string.
+#' @author Dan Kelley
+#' @seealso \code{\link{lonFormat}} and \code{\link{latlonFormat}}.
 latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lat)
@@ -1802,6 +2000,16 @@ latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
     res
 }
 
+
+#' Format a longitude
+#' 
+#' Format a longitude, using "W" for west longitude.
+#' 
+#' @param lon longitude in \eqn{^\circ}{deg}N east of Greenwich.
+#' @param digits the number of significant digits to use when printing.
+#' @return A character string.
+#' @author Dan Kelley
+#' @seealso \code{\link{latFormat}} and \code{\link{latlonFormat}}.
 lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)
@@ -1959,6 +2167,66 @@ gravity <- function(latitude=45, degrees=TRUE)
     9.780318*(1.0+5.3024e-3*sin(latitude)^2-5.9e-6*sin(2*latitude)^2)
 }
 
+
+#' Make a digital filter
+#' 
+#' The filter is suitable for use by \code{\link{filter}},
+#' \code{\link{convolve}} or (for the \code{asKernal=TRUE} case) with
+#' \code{\link{kernapply}}.  Note that \code{\link{convolve}} should be faster
+#' than \code{\link{filter}}, but it cannot be used if the time series has
+#' missing values.  For the Blackman-Harris filter, the half-power frequency is
+#' at \code{1/m} cycles per time unit, as shown in the \dQuote{Examples}
+#' section.  When using \code{\link{filter}} or \code{\link{kernapply}} with
+#' these filters, use \code{circular=TRUE}.
+#' 
+#' @param type a string indicating the type of filter to use.  (See Harris
+#' (1978) for a comparison of these and similar filters.)  \itemize{ \item
+#' \code{"blackman-harris"} yields a modified raised-cosine filter designated
+#' as "4-Term (-92 dB) Blackman-Harris" by Harris (1978; coefficients given in
+#' the table on page 65).  This is also called "minimum 4-sample Blackman
+#' Harris" by that author, in his Table 1, which lists figures of merit as
+#' follows: highest side lobe level -92dB; side lobe fall off -6 db/octave;
+#' coherent gain 0.36; equivalent noise bandwidth 2.00 bins; 3.0-dB bandwidth
+#' 1.90 bins; scallop loss 0.83 dB; worst case process loss 3.85 dB; 6.0-db
+#' bandwidth 2.72 bins; overlap correlation 46 percent for 75\% overlap and 3.8
+#' for 50\% overlap.  Note that the equivalent noise bandwidth is the width of
+#' a spectral peak, so that a value of 2 indicates a cutoff frequency of
+#' \code{1/m}, where \code{m} is as given below.  \item \code{"rectangular"}
+#' for a flat filter.  (This is just for convenience.  Note that
+#' \code{\link{kernel}("daniell",....)} gives the same result, in kernel form.)
+#' \code{"hamming"} for a Hamming filter (a raised-cosine that does not taper
+#' to zero at the ends) \item \code{"hann"} (a raised cosine that tapers to
+#' zero at the ends).  }
+#' @param m length of filter.  This should be an odd number, for any
+#' non-rectangular filter.
+#' @param asKernel boolean, set to \code{TRUE} to get a smoothing kernel for
+#' the return value.
+#' @return If \code{asKernel} is \code{FALSE}, this returns a list of filter
+#' coefficients, symmetric about the midpoint and summing to 1.  These may be
+#' used with \code{\link{filter}}, which should be provided with argument
+#' \code{circular=TRUE} to avoid phase offsets.  If \code{asKernel} is
+#' \code{TRUE}, the return value is a smoothing kernel, which can be applied to
+#' a timeseries with \code{\link{kernapply}}, whose bandwidth can be determined
+#' with \code{\link{bandwidth.kernel}}, and which has both print and plot
+#' methods.
+#' @author Dan Kelley
+#' @references F. J. Harris, 1978.  On the use of windows for harmonic analysis
+#' with the discrete Fourier Transform.  \emph{Proceedings of the IEEE}, 66(1),
+#' 51-83 (\url{http://web.mit.edu/xiphmont/Public/windows.pdf}.)
+#' @examples
+#' 
+#' library(oce)
+#' y <- c(rep(1,10), rep(-1,10))
+#' x <- seq_along(y)
+#' plot(x, y, type='o', ylim=c(-1.05, 1.05))
+#' BH <- makeFilter("blackman-harris", 11, asKernel=FALSE)
+#' H <- makeFilter("hamming", 11, asKernel=FALSE)
+#' yBH <- stats::filter(y, BH)
+#' points(x, yBH, col=2, type='o')
+#' yH <- stats::filter(y, H)
+#' points(yH, col=3, type='o')
+#' legend("topright", col=1:3, cex=2/3, pch=1,
+#'        legend=c("input", "Blackman Harris", "Hamming"))
 makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
 {
     type <- match.arg(type)
@@ -1990,7 +2258,65 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
     return(kernel(coef=coef, name=paste(type, "(", m, ")", sep=""), r=0)) # the r=0 is to prevent code-analysis warning; it only applies to Fejer, which we do not use
 }
 
-oce.filter <- function(x, a=1, b, zero.phase=FALSE)
+
+#' Filter a time-series
+#'
+#' Filter a time-series, possibly recursively
+#' 
+#' The filter is defined as e.g.  \eqn{y[i]=b[1]*x[i] + }{y[i]=b[1]*x[i] +
+#' b[2]*x[i-1] + b[3]*x[i-2] + ... - a[2]*y[i-1] - a[3]*y[i-2] - a[4]*y[i-3] -
+#' ...}\eqn{ b[2]*x[i-1] + b[3]*x[i-2] + ... - a[2]*y[i-1] - a[3]*y[i-2] -
+#' }{y[i]=b[1]*x[i] + b[2]*x[i-1] + b[3]*x[i-2] + ... - a[2]*y[i-1] -
+#' a[3]*y[i-2] - a[4]*y[i-3] - ...}\eqn{ a[4]*y[i-3] - ...}{y[i]=b[1]*x[i] +
+#' b[2]*x[i-1] + b[3]*x[i-2] + ... - a[2]*y[i-1] - a[3]*y[i-2] - a[4]*y[i-3] -
+#' ...}, where some of the illustrated terms will be omitted if the lengths of
+#' \code{a} and \code{b} are too small, and terms are dropped at the start of
+#' the time series where the index on \code{x} would be less than 1.
+#' 
+#' By contrast with the \code{\link{filter}} function of R, \code{oce.filter}
+#' lacks the option to do a circular filter.  As a consequence,
+#' \code{oce.filter} introduces a phase lag.  One way to remove this lag is to
+#' run the filter forwards and then backwards, as in the \dQuote{Examples}.
+#' However, the result is still problematic, in the sense that applying it in
+#' the reverse order would yield a different result.  (Matlab's \code{filtfilt}
+#' shares this problem.)
+#' 
+#' @aliases oce.filter
+#' @param x a vector of numeric values, to be filtered as a time series.
+#' @param a a vector of numeric values, giving the \eqn{a}{a} coefficients (see
+#' \dQuote{Details}).
+#' @param b a vector of numeric values, giving the \eqn{b}{b} coefficients (see
+#' \dQuote{Details}).
+#' @param zero.phase boolean, set to \code{TRUE} to run the filter forwards,
+#' and then backwards, thus removing any phase shifts associated with the
+#' filter.
+#' @return A numeric vector of the filtered results, \eqn{y}{y}, as denoted in
+#' \dQuote{Details}.
+#' @note The first value in the \code{a} vector is ignored, and if
+#' \code{length(a)} equals 1, a non-recursive filter results.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' par(mar=c(4,4,1,1))
+#' b <- rep(1,5)/5
+#' a <- 1
+#' x <- seq(0, 10)
+#' y <- ifelse(x == 5, 1, 0)
+#' f1 <- oce.filter(y, a, b)
+#' plot(x, y, ylim=c(-0, 1.5), pch="o", type='b')
+#' points(x, f1, pch="x", col="red")
+#' 
+#' # remove the phase lag
+#' f2 <- oce.filter(y, a, b, TRUE)
+#' points(x, f2, pch="+", col="blue")
+#' 
+#' legend("topleft", col=c("black","red","blue"), pch=c("o","x","+"),
+#'        legend=c("data","normal filter", "zero-phase filter"))
+#' mtext("note that normal filter rolls off at end")
+#' 
+#' 
+oceFilter <- function(x, a=1, b, zero.phase=FALSE)
 {
     if (missing(x))
         stop("must supply x")
@@ -2005,9 +2331,102 @@ oce.filter <- function(x, a=1, b, zero.phase=FALSE)
         return(rev(res))
     }
 }
-oceFilter <- oce.filter
+oce.filter <- oceFilter
 
 
+#' Grid data using Barnes algorithm
+#' 
+#' Grid data using Barnes algorithm.
+#' 
+#' The algorithm follows that described by Koch et al. (1983), with the
+#' addition of the ability to blank out the grid in spots where data are
+#' sparse, using the \code{trim} argument, and the ability to pre-grid, with
+#' the \code{pregrid} argument.
+#' 
+#' @param x,y a vector of x and ylocations.
+#' @param z a vector of z values, one at each (x,y) location.
+#' @param w a optional vector of weights at the (x,y) location.  If not
+#' supplied, then a weight of 1 is used for each point, which means equal
+#' weighting.  Higher weights give data points more influence.
+#' @param xg,yg optional vectors defining the x and y grids.  If not supplied,
+#' these values are inferred from the data, using e.g. \code{pretty(x, n=50)}.
+#' @param xgl,ygl optional lengths of the x and y grids, to be constructed with
+#' \code{\link{seq}} spanning the data range.  These values \code{xgl} are only
+#' examined if \code{xg} and \code{yg} are not supplied.
+#' @param xr,yr optional values defining the width of the radius ellipse in the
+#' x and y directions.  If not supplied, these are calculated as the span of x
+#' and y over the square root of the number of data.
+#' @param gamma grid-focussing parameter.  At each iteration, \code{xr} and
+#' \code{yr} are reduced by a factor of \code{sqrt(gamma)}.
+#' @param iterations number of iterations.
+#' @param trim a number between 0 and 1, indicating the quantile of data weight
+#' to be used as a criterion for blanking out the gridded value (using
+#' \code{NA}).  If 0, the whole \code{zg} grid is returned.  If >0, any spots
+#' on the grid where the data weight is less than the \code{trim}-th
+#' \code{\link{quantile}} are set to \code{NA}.  See examples.
+#' @param pregrid an indication of whether to pre-grid the data. If
+#' \code{FALSE}, this is not done, i.e. conventional Barnes interpolation is
+#' performed.  Otherwise, then the data are first averaged within grid cells
+#' using \code{\link{binMean2D}}.  If \code{pregrid} is \code{TRUE} or
+#' \code{4}, then this averaging is done within a grid that is 4 times finer
+#' than the grid that will be used for the Barnes interpolation. Otherwise,
+#' \code{pregrid} may be a single integer indicating the grid refinement (4
+#' being the result if \code{TRUE} had been supplied), or a vector of two
+#' integers, for the grid refinement in x and y. The purpose of using
+#' \code{pregrid} is to speed processing on large datasets, and to remove
+#' spatial bias (e.g. with a single station that is repeated frequently in an
+#' otherwise seldom-sampled region).  A form of pregridding is done in the
+#' World Ocean Atlas, for example.
+#' @param debug a flag that turns on debugging.  Set to 0 for no debugging
+#' information, to 1 for more, etc; the value is reduced by 1 for each
+#' descendent function call.
+#' @return A list containing: \code{xg}, a vector holding the x-grid);
+#' \code{yg}, a vector holding the y-grid; \code{zg}, a matrix holding the
+#' gridded values; \code{wg}, a matrix holding the weights used in the
+#' interpolation at its final iteration; and \code{zd}, a vector of the same
+#' length as \code{x}, which holds the interpolated values at the data points.
+#' @author Dan Kelley
+#' @seealso See \code{\link{wind}}.
+#' @references S. E.  Koch and M.  DesJardins and P. J. Kocin, 1983.  ``An
+#' interactive Barnes objective map anlaysis scheme for use with satellite and
+#' conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22, p. 1487-1503.
+#' @examples
+#' 
+#' library(oce)
+#' 
+#' # 1. contouring example, with wind-speed data from Koch et al. (1983)
+#' data(wind)
+#' u <- interpBarnes(wind$x, wind$y, wind$z)
+#' contour(u$xg, u$yg, u$zg, labcex=1)
+#' text(wind$x, wind$y, wind$z, cex=0.7, col="blue")
+#' title("Numbers are the data")
+#' 
+#' # 2. As 1, but blank out spots where data are sparse
+#' u <- interpBarnes(wind$x, wind$y, wind$z, trim=0.1)
+#' contour(u$xg, u$yg, u$zg, level=seq(0, 30, 1)) 
+#' points(wind$x, wind$y, cex=1.5, pch=20, col="blue")
+#' 
+#' # 3. As 1, but interpolate back to points, and display the percent mismatch
+#' u <- interpBarnes(wind$x, wind$y, wind$z)
+#' contour(u$xg, u$yg, u$zg, labcex=1)
+#' mismatch <- 100 * (wind$z - u$zd) / wind$z
+#' text(wind$x, wind$y, round(mismatch), col="blue")
+#' title("Numbers are percent mismatch between grid and data")
+#' 
+#' 
+#' # 4. As 3, but contour the mismatch
+#' mismatchGrid <- interpBarnes(wind$x, wind$y, mismatch)
+#' contour(mismatchGrid$xg, mismatchGrid$yg, mismatchGrid$zg, labcex=1)
+#' 
+#' # 5. One-dimensional example, smoothing a salinity profile
+#' data(ctd)
+#' p <- ctd[["pressure"]]
+#' y <- rep(1, length(p)) # fake y data, with arbitrary value
+#' S <- ctd[["salinity"]]
+#' pg <- pretty(p, n=100)
+#' g <- interpBarnes(p, y, S, xg=pg, xr=1)
+#' plot(S, p, cex=0.5, col="blue", ylim=rev(range(p)))
+#' lines(g$zg, g$xg, col="red")
 interpBarnes <- function(x, y, z, w,
                          xg, yg, xgl, ygl,
                          xr, yr, gamma=0.5, iterations=2, trim=0,
@@ -2969,6 +3388,23 @@ magneticField <- function(longitude, latitude, time)
 }
 
 
+#' Locate byte sequences in a raw vector
+#' 
+#' Find spots in a raw vector that match a given byte sequence.
+#' 
+#' @param input a vector of raw (byte) values.
+#' @param b1 a vector of bytes to match (must be of length 2 or 3 at present;
+#' for 1-byte, use \code{\link{which}}).
+#' @param \dots additional bytes to match for (up to 2 permitted)
+#' @return List of the indices of \code{input} that match the start of the
+#' \code{bytes} sequence (see example).
+#' @author Dan Kelley
+#' @examples
+#' 
+#' buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
+#' match <- matchBytes(buf, 0xa5, 0x11)
+#' print(buf)
+#' print(match)
 matchBytes <- function(input, b1, ...)
 {
     if (missing(input))
@@ -3017,6 +3453,35 @@ matrixShiftLongitude <- function(m, longitude)
     list(m=m, longitude=longitude)
 }
 
+
+#' Smooth a Matrix
+#' 
+#' The values on the edge of the matrix are unaltered.  For interior points,
+#' the result is defined in terms in terms of the original as follows.
+#' \eqn{r_{i,j} = (2 m_{i,j} + m_{i-1,j} + m_{i+1,j} + m_{i,j-1} +
+#' m_{i,j+1})/6}{r_[i,j] = (2 m_[i,j] + m_[i-1,j] + m_[i+1,j] + m_[i,j-1] +
+#' m_[i,j+1])/6}.  Note that missing values propagate to neighbours.
+#' 
+#' @param m a matrix to be smoothed.
+#' @param passes an integer specifying the number of times the smoothing is to
+#' be applied.
+#' @return A smoothed matrix.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' opar <- par(no.readonly = TRUE)
+#' m <- matrix(rep(seq(0, 1, length.out=5), 5), nrow=5, byrow=TRUE)
+#' m[3,3] <- 2
+#' m1 <- matrixSmooth(m)
+#' m2 <- matrixSmooth(m1)
+#' m3 <- matrixSmooth(m2)
+#' par(mfrow=c(2,2))
+#' image(m,  col=rainbow(100), zlim=c(0,4), main="original image")
+#' image(m1, col=rainbow(100), zlim=c(0,4), main="smoothed 1 time")
+#' image(m2, col=rainbow(100), zlim=c(0,4), main="smoothed 2 times")
+#' image(m3, col=rainbow(100), zlim=c(0,4), main="smoothed 3 times")
+#' par(opar)
 matrixSmooth <- function(m, passes=1)
 {
     if (missing(m))
@@ -3032,6 +3497,22 @@ matrixSmooth <- function(m, passes=1)
     m
 }
 
+
+#' Time interval as colon-separated string
+#' 
+#' Convert a time interval to a colon-separated string
+#' 
+#' @param sec length of time interval in seconds.
+#' @return A string with a colon-separated time interval.
+#' @author Dan Kelley
+#' @seealso See \code{\link{ctimeToSeconds}}, the inverse of this.
+#' @examples
+#' 
+#' library(oce)
+#' cat("   10 s = ", secondsToCtime(10), "\n", sep="")
+#' cat("   61 s = ", secondsToCtime(61), "\n", sep="")
+#' cat("86400 s = ", secondsToCtime(86400), "\n", sep="")
+#' @family things related to time
 secondsToCtime <- function(sec)
 {
     if (sec < 60)
@@ -3048,6 +3529,23 @@ secondsToCtime <- function(sec)
     return(sprintf("%02d:%02d:%02d", hour, min, sec))
 }
 
+
+#' Interpret a character string as a time interval
+#' 
+#' Interpret a character string as a time interval
+#' Strings are of the form MM:SS or HH:MM:SS.
+#' 
+#' @param ctime a character string (see \sQuote{Details}.
+#' @return A numeric value, the number of seconds represented by the string.
+#' @author Dan Kelley
+#' @seealso See \code{\link{secondsToCtime}}, the inverse of this.
+#' @examples
+#' 
+#' library(oce)
+#' cat("10      = ", ctimeToSeconds("10"), "s\n", sep="")
+#' cat("01:04   = ", ctimeToSeconds("01:04"), "s\n", sep="")
+#' cat("1:00:00 = ", ctimeToSeconds("1:00:00"), "s\n", sep="")
+#' @family things related to time
 ctimeToSeconds <- function(ctime)
 {
     if (length(grep(":", ctime)) > 0) {
@@ -3088,7 +3586,35 @@ ctimeToSeconds <- function(ctime)
 ##    res
 ##}
 
-oce.debug <- function(debug=0, ..., unindent=0)
+
+
+#' Print a debugging message
+#' 
+#' Print an indented debugging message.
+#' Many oce functions decrease the \code{debug} level by 1 when they call other
+#' functions, so the effect is a nesting, with more space for deeper function
+#' level.
+#' 
+#' @aliases oce.debug
+#' @param debug an integer, less than or equal to zero for no message, and
+#' greater than zero for increasing levels of debugging.  Values greater than 4
+#' are treated like 4.
+#' @param \dots items to be supplied to \code{\link{cat}}, which does the
+#' printing.  Almost always, this should include a trailing newline.
+#' @param unindent Number of levels to un-indent, e.g. for start and end lines
+#' from a called function.
+#' @author Dan Kelley
+#' @keywords misc
+#' @examples
+#' 
+#' foo <- function(debug)
+#' {
+#'    oceDebug(debug, "in function foo\n")
+#' }
+#' debug <- 1
+#' oceDebug(debug, "in main")
+#' foo(debug=debug-1)
+oceDebug <- function(debug=0, ..., unindent=0)
 {
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {
@@ -3100,8 +3626,25 @@ oce.debug <- function(debug=0, ..., unindent=0)
     flush.console()
     invisible()
 }
-oceDebug <- oce.debug
+oce.debug <- oceDebug
 
+
+#' Show metadata item
+#' 
+#' This is a helper function for various \code{summary} functions.
+#' 
+#' @param object an object inheriting from the base \code{oce} class.
+#' @param name name of item
+#' @param label label to print before item
+#' @param postlabel label to print after item
+#' @param isdate boolean indicating whether the item is a time
+#' @param quote boolean indicating whether to enclose the item in quotes
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' data(ctd)
+#' showMetadataItem(ctd, "ship", "ship")
 showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE, quote=FALSE)
 {
     if (name %in% names(object@metadata)) {
@@ -3112,6 +3655,41 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
     }
 }
 
+
+#' Use trapezoidal integration
+#' 
+#' Estimate the integral of one-dimensional function using the trapezoidal
+#' rule.
+#' 
+#' 
+#' @param x x values, or a single value that is taken as the (constant)
+#' difference between x values.
+#' @param y y values, with length (\code{n}, say) that must match that of
+#' \code{x}.  If \code{y} is not given, the integration is done with the
+#' \code{x} values taken to be y, and \eqn{dx}{dx} taken to be 1.
+#' @param type Flag indicating the desired return value (see \dQuote{Value}).
+#' @return If \code{type="A"} (the default), a single value is returned,
+#' containing the estimate of the integral of \code{y=y(x)}.  If
+#' \code{type="dA"}, a numeric vector of the same length as \code{x}, of which
+#' the first element is zer0, the second element is the integral between
+#' \code{x[1]} and \code{x[2]}, etc.  If \code{type="cA"}, the result is the
+#' cumulative sum (as in \code{\link{cumsum}}) of the values that would be
+#' returned for \code{type="dA"}.  See \dQuote{Examples}.
+#' @section Bugs: There is no handling of \code{NA} values.
+#' @author Dan Kelley
+#' @keywords misc
+#' @examples
+#' 
+#' x <- seq(0, 1, length.out=10) # try larger length.out to see if area approaches 2
+#' y <- 2*x + 3*x^2
+#' A <- integrateTrapezoid(x, y)
+#' dA <- integrateTrapezoid(x, y, "dA")
+#' cA <- integrateTrapezoid(x, y, "cA")
+#' print(A)
+#' print(sum(dA))
+#' print(tail(cA, 1))
+#' print(integrateTrapezoid(diff(x[1:2]), y))
+#' print(integrateTrapezoid(y))
 integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"))
 {
     if (missing(y)) {
@@ -3164,6 +3742,21 @@ grad <- function(h, x, y)
     .Call("gradient", h, as.double(x), as.double(y))
 }
 
+
+#' Version of as.raw() that clips data
+#' 
+#' A version of as.raw() that clips data to prevent warnings
+#' 
+#' Negative values are clipped to 0, while values above 255 are clipped to 255;
+#' the result is passed to \code{\link{as.raw}} and returned.
+#' 
+#' @param x values to be converted to raw
+#' @return Raw values corresponding to \code{x}.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' x <- c(-0.1, 0, 1, 255, 255.1)
+#' data.frame(x, oce.as.raw(x))
 oce.as.raw <- function(x)
 {       # prevent warnings from out-of-range with as.raw()
     na <- is.na(x)
@@ -3174,11 +3767,42 @@ oce.as.raw <- function(x)
     x
 }
 
-oce.convolve <- function(x, f, end=2)
+
+#' Convolve two time series
+#' 
+#' Convolve two time series, using a backward-looking method.
+#' This function provides a straightforward convolution, which may be useful to
+#' those who prefer not to use \code{\link{convolve}} and \code{filter} in the
+#' \code{stats} package.
+#' 
+#' @aliases oce.convolve
+#' @param x a numerical vector of observations.
+#' @param f a numerical vector of filter coefficients.
+#' @param end a flag that controls how to handle the points of the \code{x}
+#' series that have indices less than the length of \code{f}.  If \code{end=0},
+#' the values are set to 0.  If \code{end=1}, the original x values are used
+#' there.  If \code{end=2}, that fraction of the \code{f} values that overlap
+#' with \code{x} are used.
+#' @return A vector of the convolution output.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' t <- 0:1027
+#' n <- length(t)
+#' signal <- ifelse(sin(t * 2 * pi / 128) > 0, 1, 0)
+#' tau <- 10
+#' filter <- exp(-seq(5*tau, 0) / tau)
+#' filter <- filter / sum(filter)
+#' observation <- oce.convolve(signal, filter)
+#' plot(t, signal, type='l')
+#' lines(t, observation, lty='dotted')
+#' 
+oceConvolve <- function(x, f, end=2)
 {
     .Call("oce_convolve", x, f, end)
 }
-oceConvolve <- oce.convolve
+oce.convolve <- oceConvolve
 
 
 #' Try to guess data names from hints found in file headers

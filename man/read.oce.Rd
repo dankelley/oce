@@ -14,9 +14,9 @@ to load.}
 function is selected, based on the header.}
 }
 \value{
-An object of base \code{\link[base]{class}} \code{"oce"}, and also
-with a class that signifies the type of data, e.g. \code{"ctd"},
-\code{"sealevel"}, etc.
+An object of \code{\link{oce-class}} that is 
+specialized to the data type, e.g. \code{\link{ctd-class}},
+if the data file contains \code{ctd} data.
 }
 \description{
 Read an oceanographic data file, auto-discovering the file type from the
@@ -43,5 +43,4 @@ type can be determined, then one of the following is called:
 \code{\link{read.lobo}}, \code{\link{read.rsk}},
 \code{\link{read.sealevel}}, etc.
 }
-\keyword{misc}
 

@@ -1,92 +1,136 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
-extract <- function(x, names)
-{
-    if (!inherits(x, "oce"))
-        stop("method is only for oce objects")
-    if (missing(x))
-        stop("must supply 'x'")
-    if (missing(names))
-        stop("must supply 'names'")
-    res <- list()
-    if (inherits(x, "section")) {
-        for (name in names) {
-            print(names(x@metadata))
-            stationDataNames <- names(x@data$station[[1]]@data)
-            print(stationDataNames)
-            if (name %in% names(x)) {
-                res[[name]] <- x[[name]]
-            } else if (name %in% names(x@metadata)) {
-                if (name %in% c("longitude", "latitude", "stationId", "date")) {
-                    item <- NULL
-                    for (i in seq_along(x@data$station)) {
-                        stn <- x@data$station[[i]]
-                        item <- c(item, rep(x@metadata[[name]][[i]], length(x@data$station[[i]]@data$salinity)))
-                    }
-                    res[[name]] = item
-                } else {
-                    res[[name]] = x@metadata[[name]]
-                }
-            } else if (name %in% stationDataNames) {
-                ##cat("in station data, for name=", name, "\n")
-                item <- NULL
-                for (i in 1:length(x@data$station)) {
-                    ##cat("in station", i, "\n")
-                    stn <- x@data$station[[i]]
-                    item <- c(item, x@data$station[[i]]@data[[name]])
-                }
-                res[[name]] <- item
-            } else {
-                stop("'", name, "' not in object's metadata or data$station[[1]]@data")
-            }
-        }
-    } else if (inherits(x, "adp")) {
-        for (name in names) {
-            if (name %in% names(x)) {
-                res[[name]] <- x[[name]]
-            } else if (name %in% names(x@metadata)) {
-                res[[name]] <-  x@metadata[[name]]
-            } else if (name %in% names(x@data)) {
-                res[[name]] <- x@data[[name]]
-            } else {
-                stop("'", name, "' not in object")
-            }
-        }
-    } else if (inherits(x, "adv")) {
-        for (name in names) {
-            if (name %in% names(x)) {
-                res[[name]] <- x[[name]]
-            } else if (name %in% names(x@metadata)) {
-                res[[name]] <-  x@metadata[[name]]
-            } else if (name %in% names(x@data)) {
-                res[[name]] <- x@data[[name]]
-            } else {
-                stop("'", name, "' not in object")
-            }
-        }
-    } else {
-        for (name in names) {
-            if (name %in% names(x)) {
-                res[[name]] <- x[[name]]
-            } else if (name %in% names(x@metadata)) {
-                res[[name]] = x@metadata[[name]]
-            } else if (name %in% names(x@data)) {
-                res[[name]] = x@data[[name]]
-            } else {
-                stop("'", name, "' not in object")
-            }
-        }
-    }
-    res
-}
 
-oceGetData <- function(object, name, default=NULL)
+## #' Extract data from an oce object
+## #' 
+## #' This is a convenience function that extracts data from an \code{oce} object,
+## #' providing the user with isolation from the internal storage scheme used in
+## #' \code{oce} objects.
+## #' 
+## #' @param x an \code{oce} object.
+## #' @param names a vector of character values, indicating names of items to be
+## #' extracted.
+## #' @return A list of the values found.
+## #' @author Dan Kelley
+## #' @keywords misc
+## #' @examples
+## #' 
+## #' library(oce)
+## #' ## ctd cast
+## #' data(ctd)
+## #' TS <- extract(ctd, c("temperature", "salinity"))
+## #' print(summary(lm(temperature~salinity, data=TS)))
+## #' 
+## #' ## section
+## #' data(section)
+## #' TSlon <- extract(section, c("temperature","salinity","pressure","longitude"))
+## #' med <- factor(-20 > TSlon$longitude, labels=c("med","other"))
+## #' plotTS(TSlon, col=c("black","gray")[med])
+## extract <- function(x, names)
+## {
+##     if (!inherits(x, "oce"))
+##         stop("method is only for oce objects")
+##     if (missing(x))
+##         stop("must supply 'x'")
+##     if (missing(names))
+##         stop("must supply 'names'")
+##     res <- list()
+##     if (inherits(x, "section")) {
+##         for (name in names) {
+##             print(names(x@metadata))
+##             stationDataNames <- names(x@data$station[[1]]@data)
+##             print(stationDataNames)
+##             if (name %in% names(x)) {
+##                 res[[name]] <- x[[name]]
+##             } else if (name %in% names(x@metadata)) {
+##                 if (name %in% c("longitude", "latitude", "stationId", "date")) {
+##                     item <- NULL
+##                     for (i in seq_along(x@data$station)) {
+##                         stn <- x@data$station[[i]]
+##                         item <- c(item, rep(x@metadata[[name]][[i]], length(x@data$station[[i]]@data$salinity)))
+##                     }
+##                     res[[name]] = item
+##                 } else {
+##                     res[[name]] = x@metadata[[name]]
+##                 }
+##             } else if (name %in% stationDataNames) {
+##                 ##cat("in station data, for name=", name, "\n")
+##                 item <- NULL
+##                 for (i in 1:length(x@data$station)) {
+##                     ##cat("in station", i, "\n")
+##                     stn <- x@data$station[[i]]
+##                     item <- c(item, x@data$station[[i]]@data[[name]])
+##                 }
+##                 res[[name]] <- item
+##             } else {
+##                 stop("'", name, "' not in object's metadata or data$station[[1]]@data")
+##             }
+##         }
+##     } else if (inherits(x, "adp")) {
+##         for (name in names) {
+##             if (name %in% names(x)) {
+##                 res[[name]] <- x[[name]]
+##             } else if (name %in% names(x@metadata)) {
+##                 res[[name]] <-  x@metadata[[name]]
+##             } else if (name %in% names(x@data)) {
+##                 res[[name]] <- x@data[[name]]
+##             } else {
+##                 stop("'", name, "' not in object")
+##             }
+##         }
+##     } else if (inherits(x, "adv")) {
+##         for (name in names) {
+##             if (name %in% names(x)) {
+##                 res[[name]] <- x[[name]]
+##             } else if (name %in% names(x@metadata)) {
+##                 res[[name]] <-  x@metadata[[name]]
+##             } else if (name %in% names(x@data)) {
+##                 res[[name]] <- x@data[[name]]
+##             } else {
+##                 stop("'", name, "' not in object")
+##             }
+##         }
+##     } else {
+##         for (name in names) {
+##             if (name %in% names(x)) {
+##                 res[[name]] <- x[[name]]
+##             } else if (name %in% names(x@metadata)) {
+##                 res[[name]] = x@metadata[[name]]
+##             } else if (name %in% names(x@data)) {
+##                 res[[name]] = x@data[[name]]
+##             } else {
+##                 stop("'", name, "' not in object")
+##             }
+##         }
+##     }
+##     res
+## }
+
+#' Get data from an \code{oce} object
+#'
+#' In contrast to the various \code{[[} functions, this is
+#' guaranteed to look only within the \code{data} slot. If
+#' the named item is not found, \code{NULL} is returned.
+#'
+#' @param object an \code{oce} object
+#' @param name String indicating the name of the item to be found.
+oceGetData <- function(object, name)
 {
     if (!inherits(object, "oce"))
         stop("oceGetData() only works for oce objects")
     if (missing(name))
         stop("'name' must be supplied")
-    if (name %in% names(object@data)) object@data[[name]] else default
+    object@data[[name]]
 }
+
+
+#' Delete data from an \code{oce} object
+#'
+#' Return a copy of the supplied object that lacks the named
+#' element in its \code{data} slot, and that has a note
+#' about the deletion in its processing log.
+#'
+#' @param object an \code{oce} object
+#' @param name String indicating the name of the item to be deleted.
 oceDeleteData <- function(object, name)
 {
     if (!inherits(object, "oce"))
@@ -96,6 +140,16 @@ oceDeleteData <- function(object, name)
     object@processingLog <- processingLogAppend(object@processingLog, paste("oceDeleteData() removed data$", name, sep="", collapse=""))
     object
 }
+
+#' Set something in the \code{data} slot of an \code{oce} object
+#' @param object an \code{oce} object
+#' @param name String indicating the name of the item to be set.
+#' @param value Value for the item.
+#' @param units An optional list specifying units for the item, containing an element
+#' named \code{units} that is an \code{\link{expression}}, and a string named
+#' \code{scale} that describes the scale used. For example, modern temperatures
+#' have \code{unit=list(unit=expression(degree*C), scale="ITS-90")}.
+#' @param note A note to be stored in the processing log.
 oceSetData <- function(object, name, value, units, note="")
 {
     if (!inherits(object, "oce"))
@@ -114,14 +168,32 @@ oceSetData <- function(object, name, value, units, note="")
     object
 }
 
-oceGetMetadata <- function(object, name, default=NULL)
+#' Get metadata element from an \code{oce} object
+#'
+#' In contrast to the various \code{[[} functions, this is
+#' guaranteed to look only within the \code{metadata} slot. If
+#' the named item is not found, \code{NULL} is returned.
+#'
+#' @param object an \code{oce} object
+#' @param name String indicating the name of the item to be found.
+oceGetMetadata <- function(object, name)
 {
     if (!inherits(object, "oce"))
         stop("oceGetData() only works for oce objects")
     if (missing(name))
         stop("'name' must be supplied")
-    if (name %in% names(object@metadata)) object@metadata[[name]] else default
+    object@metadata[[name]]
 }
+
+
+#' Delete metadata from an \code{oce} object
+#'
+#' Return a copy of the supplied object that lacks the named
+#' element in its \code{metadata} slot, and that has a note
+#' about the deletion in its processing log.
+#'
+#' @param object an \code{oce} object
+#' @param name String indicating the name of the item to be deleted.
 oceDeleteMetadata <- function(object, name)
 {
     if (!inherits(object, "oce"))
@@ -131,6 +203,12 @@ oceDeleteMetadata <- function(object, name)
     object@processingLog <- processingLogAppend(object@processingLog, paste("oceDeleteMetadata() removed metadadata$", name, sep="", collapse=""))
     object
 }
+
+#' Set something in the \code{metadata} slot of an \code{oce} object
+#' @param object an \code{oce} object
+#' @param name String indicating the name of the item to be set.
+#' @param value Value for the item.
+#' @param note A note to be stored in the processing log.
 oceSetMetadata <- function(object, name, value, note="")
 {
     if (!inherits(object, "oce"))
@@ -396,31 +474,31 @@ roll <- function(x, time)
     x
 }
 
-time.oce <- function(x, ...)
-{
-    which <- if ("which" %in% names(list(...))) list(...)$which else 1
-    if (inherits(x, "adp")) {
-        res <- x@data$time
-    } else if (inherits(x, "adv")) {
-        if (which == 1) {
-            res <- x@data$time
-        } else if (which == 2) {
-            names <- names(x@data)
-            if ("timeSlow" %in% names)
-                res <- x@data$timeSlow
-            else
-                res <- x@data$time
-        } else {
-            stop("unknown 'which'; must be 1 for ADP velocity timescale, or 2 for ADP heading timescale")
-        }
-    } else {
-        if ("time" %in% names(x@data))
-            res <- x@data$time
-        else
-            stop("cannot determine times for this Oce object")
-    }
-    res
-}
+## time.oce <- function(x, ...)
+## {
+##     which <- if ("which" %in% names(list(...))) list(...)$which else 1
+##     if (inherits(x, "adp")) {
+##         res <- x@data$time
+##     } else if (inherits(x, "adv")) {
+##         if (which == 1) {
+##             res <- x@data$time
+##         } else if (which == 2) {
+##             names <- names(x@data)
+##             if ("timeSlow" %in% names)
+##                 res <- x@data$timeSlow
+##             else
+##                 res <- x@data$time
+##         } else {
+##             stop("unknown 'which'; must be 1 for ADP velocity timescale, or 2 for ADP heading timescale")
+##         }
+##     } else {
+##         if ("time" %in% names(x@data))
+##             res <- x@data$time
+##         else
+##             stop("cannot determine times for this Oce object")
+##     }
+##     res
+## }
 
 hydrographyLocal <- function(x, time, item) # FIXME consider broadening as replacement for extract()
 {

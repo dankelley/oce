@@ -434,7 +434,8 @@ clicks using \code{\link{mapLocator}}.  Great circle paths can be calculated
 with \code{\link{geodGc}}.  See [8] for a demonstration of the available map
 projections (with graphs).
 
-Other functions that handle map projections: \code{\link{map2lonlat}},
+Other functions related to maps: \code{\link{lonlat2map}},
+  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
   \code{\link{mapArrows}}, \code{\link{mapAxis}},
   \code{\link{mapContour}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
@@ -444,6 +445,7 @@ Other functions that handle map projections: \code{\link{map2lonlat}},
   \code{\link{mapMeridians}}, \code{\link{mapPoints}},
   \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
   \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{mapZones}}
+  \code{\link{mapZones}}, \code{\link{shiftLongitude}},
+  \code{\link{utm2lonlat}}
 }
 

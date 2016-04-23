@@ -623,7 +623,6 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 #' @param col colour of grid lines (see \code{\link{par}})
 #' @param lty type for grid lines (see \code{\link{par}})
 #' @param lwd width for grid lines (see \code{\link{par}})
-#' @return nothing
 oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd")) 
 {
     if (missing(xat) && missing(yat)) {
@@ -845,6 +844,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
 #' @return A POSIXlt object.
 #' @author Dan Kelley
 #' @seealso \code{\link{as.POSIXlt}}, from which this is derived.
+#' @family things related to time
 oce.as.POSIXlt <- function (x, tz = "")
 {
     fromchar <- function(x)
@@ -1089,20 +1089,6 @@ standardDepths <- function()
       1200, 1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500, 4000,
       4500, 5000, 5500)
 }
-
-## summary.oce <- function(object, ...)
-## {
-##     if (!inherits(object, "oce"))
-##         stop("method is only for oce objects")
-##     cat("Data summary:\n")
-##     print(summary(object@data))
-##     cat("\nMetadata:\n")
-##     print(object@metadata)
-##     print(summary(object))
-##     return(invisible(object))
-## }
-
-
 
 #' Find the type of an oceanographic data file
 #' 
@@ -1364,16 +1350,15 @@ oce.magic <- oceMagic
 #' to load.
 #' @param ... arguments to be handed to whichever instrument-specific reading
 #' function is selected, based on the header.
-#' @return An object of base \code{\link[base]{class}} \code{"oce"}, and also
-#' with a class that signifies the type of data, e.g. \code{"ctd"},
-#' \code{"sealevel"}, etc.
+#' @return An object of \code{\link{oce-class}} that is 
+#' specialized to the data type, e.g. \code{\link{ctd-class}},
+#' if the data file contains \code{ctd} data.
 #' @author Dan Kelley
 #' @seealso The file type is determined by \code{\link{oceMagic}}.  If the file
 #' type can be determined, then one of the following is called:
 #' \code{\link{read.ctd}}, \code{\link{read.coastline}}
 #' \code{\link{read.lobo}}, \code{\link{read.rsk}},
 #' \code{\link{read.sealevel}}, etc.
-#' @keywords misc
 #' @examples
 #' 
 #' library(oce)
@@ -1736,6 +1721,39 @@ oce.colorsPalette <- function(n, which=1)
 }
 oceColorsPalette <- oce.colorsPalette
 
+
+#' Modified version of axis.POSIXct
+#' 
+#' As \code{\link{axis.POSIXct}} but with axis labels obeying the timezone of
+#' \code{x}.  This will not be needed for 2.9 and later, but is included so
+#' that \code{oce} will work even with earlier versions.
+#' 
+#' @param side as for \code{\link{axis.POSIXct}}.
+#' @param x as for \code{\link{axis.POSIXct}}.
+#' @param at as for \code{\link{axis.POSIXct}}.
+#' @param tformat as \code{format} for \code{\link{axis.POSIXct}} for now, but
+#' eventually will have new features for multiline labels, e.g. day on one line
+#' and month on another.
+#' @param labels as for \code{\link{axis.POSIXct}}.
+#' @param drawTimeRange boolean, \code{TRUE} to draw a time range on the
+#' opposite side of the plot.
+#' @param drawFrequency boolean, \code{TRUE} to show the frequency of sampling
+#' in the data
+#' @param abbreviateTimeRange boolean, \code{TRUE} to abbreviate the second
+#' number in the time range, e.g. dropping the year if it is the same in the
+#' first number.
+#' @param cex size of labels on axes; see \code{\link[graphics]{par}}("cex").
+#' @param cex.axis see \code{\link[graphics]{par}}("cex.axis").
+#' @param cex.main see \code{\link[graphics]{par}}("cex.main").
+#' @param mar value for \code{par(mar)} for axis
+#' @param mgp value for \code{par(mgp)} for axis
+#' @param main title of plot
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @param \dots as for \code{\link{axis.POSIXct}}.
+#' @return A vector of times corresponding to axis ticks is returned silently.
+#' @author Dan Kelley
+#' @seealso This is used mainly by \code{\link{oce.plot.ts}}.
 oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
                               drawTimeRange=getOption("oceDrawTimeRange"),
                               abbreviateTimeRange=FALSE, drawFrequency=FALSE,
@@ -2017,6 +2035,23 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     invisible(z)                       # FIXME: or z.sub?
 }
 
+
+#' Convert a numeric time to hour, minute, and second
+#' 
+#' @param t a vector of factors or character strings, in the format 1200 for
+#' 12:00, 0900 for 09:00, etc.
+#' @param default value to be used for the returned hour, minute and second if
+#' there is something wrong with the input value (e.g. its length exceeds 4
+#' characters, or it contains non-numeric characters)
+#' @return A list containing \code{hour}, \code{minute}, and \code{second}, the
+#' last of which is always zero.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' t <- c("0900", "1234")
+#' numberAsHMS(t)
+#' 
+#' @family things related to time
 numberAsHMS <- function(t, default=0)
 {
     if ("factor" == class(t))
@@ -2045,6 +2080,73 @@ numberAsHMS <- function(t, default=0)
     list(hour=hour, minute=minute, second=second)
 }
 
+
+#' Convert a numeric time to a POSIXct time
+#' 
+#' There are many varieties, according to the value of \code{type} as defined
+#' in \sQuote{Details}.
+#' 
+#' \itemize{
+#' 
+#' \item \code{"unix"} employs Unix times, measured in seconds since the start
+#' of the year 1970.
+#' 
+#' \item \code{"matlab"} employs Matlab times, measured in days since what
+#' MathWorks [1] calls ``January 0, 0000'' (i.e.  \code{ISOdatetime(0, 1, 1, 0,
+#' 0, 0)} in R notation).
+#' 
+#' \item \code{"gps"} employs the GPS convention. For this, \code{t} is a
+#' two-column matrix, with the first column being the the GPS "week"
+#' (referenced to 1999-08-22) and the second being the GPS "second" (i.e. the
+#' second within the week).
+#' 
+#' \item \code{"argo"} employs Argo times, measured in days since the start of
+#' the year 1900.
+#' 
+#' \item \code{"ncep1"} employs NCEP times, measured in hours since the start
+#' of the year 1800.
+#' 
+#' \item \code{"ncep2"} employs NCEP times, measured in days since the start of
+#' the year 1. (Note that, for reasons that are unknown at this time, a simple
+#' R expression of this definition is out by two days compared with the UDUNITS
+#' library, which is used by NCEP. Therefore, a two-day offset is applied. See
+#' [2,3].)
+#' 
+#' \item \code{"sas"} employs SAS times, indicated by \code{type="sas"}, have
+#' origin at the start of 1960.
+#' 
+#' \item \code{"spss"} employs SPSS times, in seconds after 1582-10-14.
+#' 
+#' \item \code{"yearday"} employs a convention in which \code{t} is a
+#' two-column matrix, with the first column being the year, and the second the
+#' yearday (starting at 1 for the first second of January 1, to match the
+#' convention used by Sea-Bird CTD software).
+#' 
+#' }
+#' 
+#' @param t an integer corresponding to a time, in a way that depends on
+#' \code{type}.
+#' @param type the type of time (see \dQuote{Details}).
+#' @param tz a string indicating the time zone, used only for unix and matlab
+#' times, since GPS times are always referenced to the UTC timezone.
+#' @return A \code{\link{POSIXct}} time vector.
+#' @author Dan Kelley
+#' @seealso \code{\link{numberAsHMS}}
+#' @references [1] Matlab times:
+#' \url{http://www.mathworks.com/help/matlab/ref/datenum.html}
+#' 
+#' [2] NCEP times: \url{http://www.esrl.noaa.gov/psd/data/gridded/faq.html#3}
+#' 
+#' [3] problem with NCEP times:
+#' \url{https://github.com/dankelley/oce/issues/738}
+#' @examples
+#' 
+#' numberAsPOSIXct(0)                     # unix time 0
+#' numberAsPOSIXct(1, type="matlab")      # matlab time 1
+#' numberAsPOSIXct(cbind(566,345615), type="gps") # Canada Day
+#' numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
+#' 
+#' @family things related to time
 numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
                                       "ncep1", "ncep2",
                                       "sas", "spss", "yearday"), tz="UTC")
@@ -2095,6 +2197,51 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
     t
 }
 
+
+#' Plot an inset diagram
+#' 
+#' Adds an inset diagram to an existing plot.  Note that if the inset is a map
+#' or coastline, it will be necessary to supply \code{inset=TRUE} to prevent
+#' the inset diagram from occupying the whole device width.  After
+#' \code{plotInset()} has been called, any further plotting will take place
+#' within the inset, so it is essential to finish a plot before drawing an
+#' inset.
+#' 
+#' @param xleft location of left-hand of the inset diagram, in the existing
+#' plot units.  (PROVISIONAL FEATURE: this may also be \code{"bottomleft"}, to
+#' put the inset there.  Eventually, other positions may be added.)
+#' @param ybottom location of bottom side of the inset diagram, in the existing
+#' plot units.
+#' @param xright location of right-hand side of the inset diagram, in the
+#' existing plot units.
+#' @param ytop location of top side of the inset diagram, in the existing plot
+#' units.
+#' @param expr An expression that draws the inset plot.  This may be a single
+#' plot command, or a sequence of commands enclosed in curly braces.
+#' @param mar margins, in line heights, to be used at the four sides of the
+#' inset diagram.  (This is often helpful to save space.)
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @author Dan Kelley
+#' @keywords hplot
+#' @examples
+#' 
+#' library(oce)
+#' ## power law in linear and log form
+#' x <- 1:10
+#' y <- x^2
+#' plot(x, y, log='xy',type='l')
+#' plotInset(3, 1, 10, 8,
+#'           expr=plot(x,y,type='l',cex.axis=3/4,mgp=c(3/2,1/2,0)),
+#'           mar=c(2.5,2.5,1,1))
+#' 
+#' ## CTD data with location
+#' data(ctd) 
+#' plot(ctd, which="TS")
+#' plotInset(29.9, 2.7, 31, 10,
+#'           expr=plot(ctd, which='map',
+#'           coastline="coastlineWorld",
+#'           span=5000, mar=NULL, cex.axis=3/4))
 plotInset <- function(xleft, ybottom, xright, ytop, expr,
                       mar=c(2, 2, 1, 1),
                       debug=getOption("oceDebug"))
@@ -2333,7 +2480,6 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 #' drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1,1), v=c(1, -1), scalex=0.5, add=TRUE,
 #'                    type=2)
 #' @author Dan Kelley
-
 drawDirectionField <- function(x, y, u, v, scalex, scaley, length=0.05, add=FALSE,
                                type=1, col=par("fg"), pch=1, cex=par("cex"),
                                lwd=par("lwd"), lty=par("lty"),
@@ -2387,6 +2533,47 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, length=0.05, add=FALS
     oceDebug(debug, "} # drawDirectionField\n", unindent=1)
 }
 
+
+#' Contour with ability to flip x and y
+#' 
+#' This provides something analagous to \code{\link{contour}}, but with the
+#' ability to flip x and y.
+#' Setting \code{revy=TRUE} can be helpful if the \code{y} data represent
+#' pressure or depth below the surface.
+#' 
+#' @aliases oce.contour oceContour
+#' @param x values for x grid.
+#' @param y values for y grid.
+#' @param z matrix for values to be contoured.  The first dimension of \code{z}
+#' must equal the number of items in \code{x}, etc.
+#' @param revx set to \code{TRUE} to reverse the order in which the labels on
+#' the x axis are drawn
+#' @param revy set to \code{TRUE} to reverse the order in which the labels on
+#' the y axis are drawn
+#' @param add logical value indicating whether the contours should be added to
+#' a pre-existing plot.
+#' @param tformat time format; if not supplied, a reasonable choice will be
+#' made by \code{\link{oce.axis.POSIXct}}, which draws time axes.
+#' @param drawTimeRange logical, only used if the \code{x} axis is a time.  If
+#' \code{TRUE}, then an indication of the time range of the data (not the axis)
+#' is indicated at the top-left margin of the graph.  This is useful because
+#' the labels on time axes only indicate hours if the range is less than a day,
+#' etc.
+#' @param debug a flag that turns on debugging; set to 1 to information about
+#' the processing.
+#' @param \dots optional arguments passed to plotting functions.
+#' @author Dan Kelley
+#' @keywords misc
+#' @examples
+#' 
+#' library(oce)
+#' data(topoWorld)
+#' ## coastline now, and in last glacial maximum
+#' lon <- topoWorld[["longitude"]]
+#' lat <- topoWorld[["latitude"]]
+#' z <- topoWorld[["z"]]
+#' oce.contour(lon, lat, z, levels=0, drawlabels=FALSE)
+#' oce.contour(lon, lat, z, levels=-130, drawlabels=FALSE, col='blue', add=TRUE)
 oce.contour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
                        tformat, drawTimeRange=getOption("oceDrawTimeRange"),
                        debug=getOption("oceDebug"), ...)

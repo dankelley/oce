@@ -17,9 +17,6 @@ amount of debugging information, or to 2 to get more.}
 (Typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.)}
 
-\item{type}{type of data; must be \code{"ctd"}, the only type handled at
-present.}
-
 \item{\dots}{additional arguments, passed to called routines.}
 }
 \value{

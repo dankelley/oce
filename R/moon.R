@@ -152,6 +152,7 @@ siderealTime <- function(t)
 #' cat(format(t), "is Julian Day", format(jd, digits=14), "\n")
 #' 
 #' @family things related to astronomy
+#' @family things related to time
 julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz="UTC")
 {
     if (!inherits(t, "POSIXt"))  {
@@ -195,6 +196,7 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
 #' cat(format(t), "is Julian Century anomaly", format(jca, digits=8), "\n")
 #' 
 #' @family things related to astronomy
+#' @family things related to time
 julianCenturyAnomaly <- function(jd)
 {
     (jd - 2415020.0) / 36525         # [1] Meeus 1982 (eq 7.1 or 15.1)
