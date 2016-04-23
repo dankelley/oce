@@ -6,10 +6,11 @@
 \title{Extract Parts of an \code{adp} Object
 
 In addition to the usual extraction of elements by name, some shortcuts
-are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
+are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
 for the other velocity components. The \code{a} and \code{q}
-data can be retrived in \code{\link{raw}} form or numeric
-form; see examples.}
+data can be retrieved in \code{\link{raw}} form or numeric
+form (see examples). The coordinate system may be 
+retrieved with e.g. \code{x[["coordinate"]]}.}
 \usage{
 \S4method{[[}{adp}(x, i, j, ...)
 }
@@ -116,7 +117,8 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
 
 Other things related to \code{adp} data: \code{\link{[[<-,adp-method}},
   \code{\link{adp-class}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{plot,adp-method}},
+  \code{\link{as.adp}}, \code{\link{beamToXyz}},
+  \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -125,7 +127,8 @@ Other things related to \code{adp} data: \code{\link{[[<-,adp-method}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}},
   \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}},
-  \code{\link{xyzToEnuAdp}}
+  \code{\link{summary,adp-method}}, \code{\link{toEnu}},
+  \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 

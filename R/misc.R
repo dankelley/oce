@@ -682,6 +682,50 @@ ungrid <- function(x, y, grid)
     list(x=x[ok], y=y[ok], grid=grid[ok])
 }
 
+
+
+#' Trilinear interpolation in a 3D array
+#' 
+#' Interpolate within a 3D array, using the trilinear approximation.
+#' 
+#' Trilinear interpolation is used to interpolate within the \code{f} array,
+#' for those (\code{xout}, \code{yout} and \code{zout}) triplets that are
+#' inside the region specified by \code{x}, \code{y} and \code{z}.  Triplets
+#' that lie outside the range of \code{x}, \code{y} or \code{z} result in
+#' \code{NA} values.
+#' 
+#' @param x vector of x values for grid (must be equi-spaced)
+#' @param y vector of y values for grid (must be equi-spaced)
+#' @param z vector of z values for grid (must be equi-spaced)
+#' @param f matrix of rank 3, with the gridd values mapping to the \code{x}
+#' values (first index of \code{f}), etc.
+#' @param xout vector of x values for output.
+#' @param yout vector of y values for output (length must match that of
+#' \code{xout}).
+#' @param zout vector of z values for output (length must match that of
+#' \code{xout}).
+#' @return A vector of interpolated values (or \code{NA} values), with length
+#' matching that of \code{xout}.
+#' @author Dan Kelley and Clark Richards
+#' 
+#' @examples
+#' ## set up a grid
+#' library(oce)
+#' n <- 5
+#' x <- seq(0, 1, length.out=n)
+#' y <- seq(0, 1, length.out=n)
+#' z <- seq(0, 1, length.out=n)
+#' f <- array(1:n^3, dim=c(length(x), length(y), length(z)))
+#' ## interpolate along a diagonal line
+#' m <- 100
+#' xout <- seq(0, 1, length.out=m)
+#' yout <- seq(0, 1, length.out=m)
+#' zout <- seq(0, 1, length.out=m)
+#' approx <- approx3d(x, y, z, f, xout, yout, zout)
+#' ## graph the results
+#' plot(xout, approx, type='l')
+#' points(xout[1], f[1,1,1])
+#' points(xout[m], f[n,n,n])
 approx3d <- function(x, y, z, f, xout, yout, zout) {
     equispaced <- function(x) sd(diff(x)) / mean(diff(x)) < 1e-5
     if (missing(x)) stop("must provide x")
@@ -2331,6 +2375,22 @@ oceSmooth <- function(x, ...)
 }
 oce.smooth <- oceSmooth
 
+
+
+#' Decode BCD to integer
+#' 
+#' @param x a raw value, or vector of raw values, coded in binary-coded
+#' decimal.
+#' @param endian character string indicating the endian-ness ("big" or
+#' "little").  The PC/intel convention is to use "little", and so most data
+#' files are in that format.
+#' @return An integer, or list of integers.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' twenty.five <- bcdToInteger(as.raw(0x25))
+#' thirty.seven <- as.integer(as.raw(0x25))
 bcdToInteger <- function(x, endian=c("little", "big"))
 {
     endian <- match.arg(endian)

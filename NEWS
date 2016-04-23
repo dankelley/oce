@@ -1,10 +1,13 @@
 0.9-19
+- remove is.beam(), is.xyz(), is.enu() and coordinate(), since
+  x[["coordinate"]] now permits these simply
+- replace several function style accessors with [[ style
 - fix test-suite error relating to an rgdal change
-- handleFlags() added, generic and specifics for ctd and argo
+- add handleFlags() as generic plus specifics for ctd and argo classe
 - use S4 documentation, e.g. ?'plot,ctd-method' instead of ?plot.ctd
 - subset(argo, "adjusted") drops non-adjusted data
 - read.argo() reads all documented data and metadata fields
-- trimString() added
+- add trimString()
 
 0.9-18
 - improve plot.coastline() and mapPlot()

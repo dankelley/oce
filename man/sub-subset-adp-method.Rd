@@ -81,7 +81,8 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,amsr-
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{adp-class}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{plot,adp-method}},
+  \code{\link{as.adp}}, \code{\link{beamToXyz}},
+  \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -90,7 +91,8 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}},
   \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}},
-  \code{\link{xyzToEnuAdp}}
+  \code{\link{summary,adp-method}}, \code{\link{toEnu}},
+  \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 

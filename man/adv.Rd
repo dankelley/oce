@@ -45,9 +45,11 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
 
 Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
+  \code{\link{beamToXyz}}, \code{\link{enuToOther}},
   \code{\link{plot,adv-method}},
   \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}},
-  \code{\link{xyzToEnuAdv}}
+  \code{\link{summary,adv-method}}, \code{\link{toEnu}},
+  \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
 

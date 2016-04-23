@@ -113,9 +113,11 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
 
 Other things related to \code{adv} data: \code{\link{[[<-,adv-method}},
   \code{\link{adv-class}}, \code{\link{adv}},
+  \code{\link{beamToXyz}}, \code{\link{enuToOther}},
   \code{\link{plot,adv-method}},
   \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}},
-  \code{\link{xyzToEnuAdv}}
+  \code{\link{summary,adv-method}}, \code{\link{toEnu}},
+  \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
 

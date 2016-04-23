@@ -216,8 +216,11 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 
 Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
-  \code{\link{adv}}, \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}},
-  \code{\link{xyzToEnuAdv}}
+  \code{\link{adv}}, \code{\link{beamToXyz}},
+  \code{\link{enuToOther}},
+  \code{\link{subset,adv-method}},
+  \code{\link{summary,adv-method}}, \code{\link{toEnu}},
+  \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
 

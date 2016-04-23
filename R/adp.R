@@ -374,10 +374,11 @@ setMethod(f="summary",
 #' @title Extract Parts of an \code{adp} Object
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
-#' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
+#' are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
 #' for the other velocity components. The \code{a} and \code{q}
-#' data can be retrived in \code{\link{raw}} form or numeric
-#' form; see examples.
+#' data can be retrieved in \code{\link{raw}} form or numeric
+#' form (see examples). The coordinate system may be 
+#' retrieved with e.g. \code{x[["coordinate"]]}.
 #' 
 #' @param x An adp object, i.e. one inheriting from \code{\link{adp-class}}.
 #' @template sub_subTemplate
@@ -426,6 +427,8 @@ setMethod(f="[[",
                       res <- x@data$g
                   }
                   res
+              } else if (i == "coordinate") {
+                  res <- x@metadata$oceCoordinate
               } else {
                   callNextMethod()
               }
@@ -719,45 +722,20 @@ tail.adp <- function(x, n = 6L, ...)
     res 
 }
 
-coordinate <- function(x)
-{
-    if (inherits(x, "adp") || inherits(x, "adv"))
-        x@metadata$oceCoordinate
-    else {
-        warning("unknown object type; it must inherit from either \"adv\" or \"adp\"")
-        NULL
-    }
-}
 
-is.beam <- function(x)
-{
-    if (inherits(x, "adp") || inherits(x, "adv"))
-        return(x@metadata$oceCoordinate == "beam")
-    else {
-        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
-        return(FALSE)
-    }
-}
 
-is.xyz <- function(x)
-{
-    if (inherits(x, "adp") || inherits(x, "adv"))
-        return(x@metadata$oceCoordinate == "xyz")
-    else {
-        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
-        return(FALSE)
-    }
-}
-is.enu <- function(x)
-{
-    if (inherits(x, "adp") || inherits(x, "adv"))
-        return(x@metadata$oceCoordinate == "enu")
-    else {
-        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
-        return(FALSE)
-    }
-}
-
+#' Get names of Acoustic-Doppler Beams
+#' 
+#' @param x an \code{adp} or \code{adv} object, i.e. one inheriting from
+#' \code{\link{adp-class}} or \code{\link{adv-class}}.
+#' @param which an integer indicating beam number.
+#' @return A character string containing a reasonable name for the beam, of the
+#' form \code{"beam 1"}, etc., for beam coordinates, \code{"east"}, etc. for
+#' enu coordinates, \code{"u"}, etc. for \code{"xyz"}, or \code{"u'"}, etc.,
+#' for \code{"other"} coordinates.  The coordinate system is determined
+#' with \code{x[["coordinate"]]}.
+#' @author Dan Kelley
+#' @seealso This is used by \code{\link{read.oce}}.
 beamName <- function(x, which)
 {
     if (x@metadata$oceCoordinate == "beam") {
