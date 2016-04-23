@@ -227,7 +227,6 @@ setMethod(f="[[<-",
 #' @param \dots ignored.
 #' @return A new \code{echosounder} object.
 #' @author Dan Kelley
-#' @keywords misc
 #' @examples
 #' library(oce)
 #' data(echosounder)
@@ -378,6 +377,24 @@ as.echosounder <- function(time, depth, a, src="",
     res
 }
 
+
+
+#' Find the ocean bottom in an echosounder object
+#' 
+#' Finds the depth in a Biosonics echosounder file, by finding the strongest
+#' reflector and smoothing its trace.
+#' 
+#' @param x an object of class \code{echosounder}
+#' @param ignore number of metres of data to ignore, near the surface
+#' @param clean a function to clean the inferred depth of spikes
+#' @return A list with elements: the \code{time} of a ping, the \code{depth} of
+#' the inferred depth in metres, and the \code{index} of the inferred bottom
+#' location, referenced to the object's \code{depth} vector.
+#' @author Dan Kelley
+#' @seealso The documentation for \code{\link{echosounder-class}} explains the
+#' structure of \code{echosounder} objects, and also outlines the other
+#' functions dealing with them.
+#' @family things related to \code{echosounder} data
 findBottom <- function(x, ignore=5, clean=despike)
 {
     a <- x[["a"]]

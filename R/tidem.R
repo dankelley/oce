@@ -221,7 +221,6 @@ setMethod(f="plot",
 #' @author Dan Kelley, based directly on \code{t_vuf} from the \code{T_TIDE}
 #' package.
 #' @seealso \code{\link{tidem}}, which uses this.
-#' @keywords misc
 #' @examples
 #' 
 #' tidemVuf(as.POSIXct("2008-01-22 18:50:24"), 43, 45.0)
@@ -446,7 +445,6 @@ tidemVuf <- function(t, j, lat=NULL)
 #' @author Dan Kelley, based directly on \code{t_astron} from the \code{T_TIDE}
 #' package.
 #' @seealso \code{\link{tidem}}, which uses this.
-#' @keywords misc
 #' @examples
 #' tidemAstron(as.POSIXct("2008-01-22 18:50:24"))
 #' @family things related to \code{tidem} data

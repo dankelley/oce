@@ -15,7 +15,7 @@
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{An \code{adv} object, e.g. as read by \code{\link{read.adv}}.}
+\item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
 
 \item{which}{List of desired plot types.  These are graphed in panels running
 down from the top of the page.  See \dQuote{Details} for the meanings of
@@ -212,15 +212,17 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
-  \code{\link{adv}}, \code{\link{beamToXyz}},
+  \code{\link{adv}}, \code{\link{beamName}},
+  \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
   \code{\link{enuToOther}},
   \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}}, \code{\link{toEnu}},
-  \code{\link{velocityStatistics}},
+  \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
 

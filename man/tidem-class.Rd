@@ -32,7 +32,8 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}
 
 Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{[[<-,tidem-method}},

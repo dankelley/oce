@@ -257,7 +257,6 @@ setValidity("sealevel",
 #' with them.
 #' @references \code{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (this link
 #' worked for years but failed at least temporarily on December 4, 2016).
-#' @keywords misc
 #' @examples
 #' library(oce)
 #' 
@@ -612,7 +611,6 @@ setMethod(f="plot",
 #' for years but failed at least temporarily on December 4, 2016).  The MEDS
 #' repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
 #' provides Type 2 data.
-#' @keywords misc
 #' @examples
 #' \dontrun{
 #' library(oce)

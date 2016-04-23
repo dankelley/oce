@@ -7,8 +7,7 @@
 beamName(x, which)
 }
 \arguments{
-\item{x}{an \code{adp} or \code{adv} object, i.e. one inheriting from
-\code{\link{adp-class}} or \code{\link{adv-class}}.}
+\item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
 
 \item{which}{an integer indicating beam number.}
 }
@@ -27,5 +26,34 @@ Dan Kelley
 }
 \seealso{
 This is used by \code{\link{read.oce}}.
+
+Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{adp}}, \code{\link{as.adp}},
+  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
+  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
+  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
+  \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.nortek}},
+  \code{\link{read.adp.rdi}},
+  \code{\link{read.adp.sontek.serial}},
+  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
+  \code{\link{read.aquadoppHR}},
+  \code{\link{read.aquadoppProfiler}},
+  \code{\link{read.aquadopp}},
+  \code{\link{subset,adp-method}},
+  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+
+Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+  \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
+  \code{\link{adv}}, \code{\link{beamToXyz}},
+  \code{\link{enuToOtherAdv}}, \code{\link{enuToOther}},
+  \code{\link{plot,adv-method}},
+  \code{\link{subset,adv-method}},
+  \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
 

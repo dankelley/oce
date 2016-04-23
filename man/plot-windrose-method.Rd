@@ -77,8 +77,9 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
   \code{\link{plot,tidem-method}},
-  \code{\link{plot,topo-method}}, \code{\link{plotScan}},
-  \code{\link{tidem-class}}
+  \code{\link{plot,topo-method}},
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
   \code{\link{[[<-,windrose-method}},

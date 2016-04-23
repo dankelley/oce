@@ -39,10 +39,9 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
   \code{\link{[[<-,echosounder-method}},
   \code{\link{as.echosounder}},
   \code{\link{echosounder-class}},
-  \code{\link{echosounder}},
+  \code{\link{echosounder}}, \code{\link{findBottom}},
   \code{\link{plot,echosounder-method}},
   \code{\link{read.echosounder}},
   \code{\link{summary,echosounder-method}}
 }
-\keyword{misc}
 

@@ -3061,6 +3061,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=
 #'
 #' @return vector of strings holding \code{oce}-style names.
 #' @author Dan Kelley
+#' @family things related to \code{ctd} data
 woceNames2oceNames <- function(names)
 {
     ## FIXME: this almost certainly needs a lot more translations. The next comment lists some that
@@ -3445,6 +3446,20 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missing.value=
     as.ctd(salinity, temperature, pressure, oxygen=oxygen, station=station, date=date)
 }
 
+
+#' Parse a latitude or longitude string
+#' 
+#' Parse a latitude or longitude string, e.g. as in the header of a CTD file
+#' The following formats are understood (for, e.g. latitude) \preformatted{ *
+#' NMEA Latitude = 47 54.760 N ** Latitude: 47 53.27 N }
+#' 
+#' @param line a character string containing an indication of latitude or
+#' longitude.
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @return A numerical value of latitude or longitude.
+#' @author Dan Kelley
+#' @seealso Used by \code{\link{read.ctd}}.
 parseLatLon <- function(line, debug=getOption("oceDebug"))
 {
     ## The following formats are understood (for, e.g. latitude)
@@ -3501,6 +3516,82 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 }
 
 
+
+#' Plot temperature-salinity diagram
+#' 
+#' Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
+#' 
+#' @param x An object containing salinity and temperature data, typically a
+#' \code{ctd} object or \code{section} object.
+#' @param inSitu A boolean indicating whether to use in-situ temperature or
+#' (the default) potential temperature, calculated with reference pressure
+#' given by \code{referencePressure}.  This is ignored if \code{eos="gsw"},
+#' because those cases the y axis is necessarily the conservative formulation
+#' of temperature.
+#' @param type representation of data, \code{"p"} for points, \code{"l"} for
+#' connecting lines, or \code{"n"} for no indication.
+#' @param referencePressure reference pressure, to be used in calculating
+#' potential temperature, if \code{inSitu} is \code{FALSE}.
+#' @param nlevels Number of automatically-selected isopycnal levels (ignored if
+#' \code{levels} is supplied).
+#' @param levels Optional vector of desired isopycnal levels.
+#' @param grid a flag that can be set to \code{TRUE} to get a grid.
+#' @param col.grid colour for grid.
+#' @param lty.grid line type for grid.
+#' @param rho1000 if TRUE, label isopycnals as e.g. 1024; if FALSE, label as
+#' e.g. 24
+#' @param eos equation of state to be used, either \code{"unesco"} or
+#' \code{"gsw"}.
+#' @param cex character-expansion factor for symbols, as in
+#' \code{\link{par}("cex")}.
+#' @param pch symbol type, as in \code{\link{par}("pch")}.
+#' @param bg optional colour to be painted under plotting area, before
+#' plotting.  (This is useful for cases in which \code{inset=TRUE}.)
+#' @param pt.bg inside colour for symbols with \code{pch} in 21:25
+#' @param col colour for symbols.
+#' @param col.rho colour for isopycnal lines.
+#' @param cex.rho size of isopycnal labels.
+#' @param rotate if TRUE, labels in right-hand margin are written vertically
+#' @param useSmoothScatter if TRUE, use \code{\link{smoothScatter}} to plot the
+#' points.
+#' @param xlab optional label for the x axis, with default "Salinity [PSU]".
+#' @param ylab optional label for the y axis, with default "Temperature [C]".
+#' @param Slim optional limits for salinity axis, otherwise inferred from data.
+#' @param Tlim optional limits for temperature axis, otherwise inferred from
+#' data.
+#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
+#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' @param mar value to be used with \code{\link{par}("mar")}.  If set to
+#' \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS diagram
+#' with a palette to the right is \code{mar=par("mar")+c(0, 0, 0, 1))}.
+#' @param lwd line width of lines or symbols.
+#' @param lty line type of lines or symbols.
+#' @param lwd.rho line width for density curves.
+#' @param lty.rho line type for density curves.
+#' @param add a flag that controls whether to add to an existing plot.  (It
+#' makes sense to use \code{add=TRUE} in the \code{panel} argument of a
+#' \code{\link{coplot}}, for example.)
+#' @param inset set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+#' effect is to prevent the present function from adjusting margins, which is
+#' necessary because margin adjustment is the basis for the method used by
+#' \code{\link{plotInset}}.
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @param \dots optional arguments passed to plotting functions.
+#' @return A list is silently returned, containing \code{xat} and \code{yat},
+#' values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
+#' @author Dan Kelley
+#' @seealso \code{\link{summary,ctd-method}} summarizes the information, while
+#' \code{\link{read.ctd}} scans it from a file.
+#' @examples
+#' 
+#' library(oce)
+#' data(ctd)
+#' plotTS(ctd)
+#' 
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{ctd} data
 plotTS <- function (x,
                     inSitu=FALSE,
                     type='p',
@@ -3654,6 +3745,31 @@ plotTS <- function (x,
     invisible(list(xat=xat, yat=yat))
 }
 
+
+#' Add isopycnal curves to TS plot
+#' 
+#' Adds isopycnal lines to an existing temperature-salinity plot.  This is
+#' called by \code{\link{plotTS}}, and may be called by the user also, e.g. if
+#' an image plot is used to show TS data density.
+#' 
+#' @param nlevels suggested number of density levels (i.e. isopycnal curves);
+#' ignored if \code{levels} is supplied.
+#' @param levels optional density levels to draw.
+#' @param rotate boolean, set to \code{TRUE} to write all density labels
+#' horizontally.
+#' @param rho1000 boolean, set to \code{TRUE} to write isopycnal labels as e.g.
+#' 1024 instead of 24.
+#' @param digits number of decimal digits to use in label (supplied to
+#' \code{\link{round}}).
+#' @param eos equation of state to be used, either \code{"unesco"} or
+#' \code{"gsw"}.
+#' @param cex size for labels.
+#' @param col colour for lines and labels.
+#' @param lwd line width for isopcynal curves
+#' @param lty line type for isopcynal curves
+#' @return None.
+#' @author Dan Kelley
+#' @seealso \code{\link{plotTS}}, which calls this.
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
                            eos=getOption("oceEOS", default='gsw'),
                            cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
@@ -3712,6 +3828,118 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     }
 }
 
+
+#' Plot a profile, with decreasing pressure on the y axis
+#' 
+#' Plot a profile, showing variation of some quantity (or quantities) with
+#' pressure, using the oceanographic convention of putting lower pressures
+#' nearer the top of the plot. This works for any \code{oce} object that has a
+#' pressure column in its \code{data} slot.
+#' The colours (\code{col.salinity}, etc.) are ony used if two profiles appear
+#' on a plot.
+#' 
+#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param xtype Item(s) plotted on the x axis, either a vector of length equal
+#' to that of \code{x@data$pressure} or a text code from the list below.
+#' \describe{ \item{list("\"salinity\"")}{Profile of salinity.}
+#' \item{list("\"conductivity\"")}{Profile of conductivity.}
+#' \item{list("\"temperature\"")}{Profile of \emph{in-situ} temperature.}
+#' \item{list("\"theta\"")}{Profile of \emph{potential} temperature.}
+#' \item{list("\"density\"")}{Profile of density (expressed as
+#' \eqn{\sigma_\theta}{sigma_theta}).} \item{list("\"index\"")}{Index of sample
+#' (very useful for working with \code{\link{ctdTrim}}).}
+#' \item{list("\"salinity+temperature\"")}{Profile of salinity and temperature
+#' within a single axis frame.} \item{list("\"N2\"")}{Profile of square of
+#' buoyancy frequency \eqn{N^2}{N^2}, calculated with \code{\link{swN2}} with
+#' an optional argument setting of \code{df=length(x[["pressure"]])/4} to do
+#' some smoothing.} \item{list("\"density+N2\"")}{Profile of sigma-theta and
+#' the square of buoyancy frequency within a single axis frame.}
+#' \item{list("\"density+dpdt\"")}{Profile of sigma-theta and dP/dt for the
+#' sensor.  The latter is useful in indicating problems with the deployment.
+#' It is calculated by first differencing pressure and then using a smoothing
+#' spline on the result (to avoid grid-point wiggles that result because the
+#' SBE software only writes 3 decimal places in pressure).  Note that dP/dt may
+#' be off by a scale factor; this should not be a problem if there is a
+#' \code{time} column in the \code{data} slot, or a \code{sample.rate} in the
+#' \code{metadata} slot. } \item{list("\"spice\"")}{Profile of spice}
+#' \item{list("\"Rrho\"")}{Profile of Rrho, defined in the diffusive sense}
+#' \item{list("\"RrhoSF\"")}{Profile of Rrho, defined in the salt-finger sense}
+#' \item{an expression}{an expression to be evaluated, in the calling
+#' environment, for some quantity; in this case, it makes sense to specify also
+#' \code{xlab}.} }
+#' @param ytype variable to use on y axis; note that \code{z} is the negative
+#' of \code{depth}.
+#' @param eos equation of state to be used, either \code{"unesco"} or
+#' \code{"gsw"}.
+#' @param xlab optional label for x axis (at top of plot).
+#' @param ylab optional label for y axis.  Set to \code{""} to prevent
+#' labelling the axis.
+#' @param lty line type for the profile.
+#' @param col colour for a general profile.
+#' @param col.salinity colour for salinity profile (see \dQuote{Details}).
+#' @param col.temperature colour for temperature (see \dQuote{Details}).
+#' @param col.rho colour for density (see \dQuote{Details}).
+#' @param col.N2 colour for square of buoyancy frequency (see
+#' \dQuote{Details}).
+#' @param col.dpdt colour for dP/dt.
+#' @param col.time colour for delta-time.
+#' @param pt.bg inside colour for symbols with \code{pch} in 21:25
+#' @param grid logical, set to \code{TRUE} to get a grid.
+#' @param col.grid colour for grid.
+#' @param lty.grid line type for grid.
+#' @param Slim Optional limit for S axis
+#' @param Clim Optional limit for conductivity axis
+#' @param Tlim Optional limit for T axis
+#' @param densitylim Optional limit for density axis
+#' @param N2lim Optional limit for N2 axis
+#' @param Rrholim Optional limit for Rrho axis
+#' @param dpdtlim Optional limit for dp/dt axis
+#' @param timelim Optional limit for delta-time axis
+#' @param plim Optional limit for pressure axis, ignored unless
+#' \code{ytype=="pressure"}, in which case it takes precedence over
+#' \code{ylim}.
+#' @param ylim Optional limit for y axis, which can apply to any plot type,
+#' although is overridden by \code{plim} if \code{ytype=="pressure"}.
+#' @param lwd lwd value for data line
+#' @param xaxs value of \code{\link{par}} \code{xaxs} to use
+#' @param yaxs value of \code{\link{par}} \code{yaxs} to use
+#' @param cex size to be used for plot symbols (see \code{\link{par}})
+#' @param pch code for plotting symbol (see \code{\link{par}}).
+#' @param useSmoothScatter boolean, set to \code{TRUE} to use
+#' \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw the plot.
+#' @param df optional argument, passed to \code{\link{swN2}} if provided, and
+#' if a plot using \eqn{N^2}{N^2} is requested.
+#' @param keepNA FALSE
+#' @param type type of plot to draw, using the same scheme as
+#' \code{\link{plot}}.
+#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
+#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' @param mar value to be used with \code{\link{par}("mar")}.
+#' @param add a flag that controls whether to add to an existing plot.  (It
+#' makes sense to use \code{add=TRUE} in the \code{panel} argument of a
+#' \code{\link{coplot}}, for example.)
+#' @param inset set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+#' effect is to prevent the present function from adjusting margins, which is
+#' necessary because margin adjustment is the basis for the method used by
+#' \code{\link{plotInset}}.
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @param \dots optional arguments passed to other functions.  A common example
+#' is to set \code{df}, for use in \link{swN2} calculations.
+#' @return None.
+#' @author Dan Kelley
+#' @seealso \code{\link{read.ctd}} scans ctd information from a file,
+#' \code{\link{plot,ctd-method}} is a general plotting function for \code{ctd}
+#' objects, and \code{\link{plotTS}} plots a temperature-salinity diagrams.
+#' @examples
+#' 
+#' library(oce)
+#' data(ctd)
+#' plotProfile(ctd, xtype="temperature")
+#'
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{ctd} data
 plotProfile <- function (x,
                          xtype="salinity+temperature",
                          ytype=c("pressure", "z", "depth", "sigmaTheta"),

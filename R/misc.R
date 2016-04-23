@@ -671,6 +671,28 @@ binAverage <- function(x, y, xmin, xmax, xinc)
 
 
 
+#' Extract (x, y, z) from (x, y, grid)
+#'
+#' Extract the grid points from a grid, returning columns.
+#' This is useful for e.g. gridding large datasets, in which the first step
+#' might be to use \code{\link{binMean2D}}, followed by
+#' \code{\link{interpBarnes}}.
+#'
+#' @param x a vector holding the x coordinates of grid.
+#' @param y a vector holding the y coordinates of grid.
+#' @param grid a matrix holding the grid.
+#' @return A list containing three vectors: \code{x}, the grid x values,
+#' \code{y}, the grid y values, and \code{grid}, the grid values.
+#' @author Dan Kelley
+#' @examples
+#'
+#' library(oce)
+#' data(wind)
+#' u <- interpBarnes(wind$x, wind$y, wind$z)
+#' contour(u$xg, u$yg, u$zg)
+#' U <- ungrid(u$xg, u$yg, u$zg)
+#' points(U$x, U$y, col=oce.colorsJet(100)[rescale(U$grid, rlow=1, rhigh=100)], pch=20)
+#'
 ungrid <- function(x, y, grid)
 {
     nrow <- nrow(grid)
@@ -817,6 +839,53 @@ filterSomething <- function(x, filter)
     res
 }
 
+
+#' Plot a Model-data Comparison Diagram
+#' 
+#' Creates a diagram as described by Taylor (2001).  The graph is in the form
+#' of a semicircle, with radial lines and spokes connecting at a focus point on
+#' the flat (lower) edge.  The radius of a point on the graph indicates the
+#' standard deviation of the corresponding quantity, i.e. x and the columns in
+#' y.  The angle connecting a point on the graph to the focus provides an
+#' indication of correlation coefficient with respect to x.  The ``east'' side
+#' of the graph indicates \eqn{R=1}{R=1}, while \eqn{R=0}{R=0} is at the
+#' ``north edge'' and \eqn{R=-1}{R=-1} is at the ``west'' side.  The \code{x}
+#' data are indicated with a bullet on the graph, appearing on the lower edge
+#' to the right of the focus at a distance indicating the standard deviation of
+#' \code{x}.  The other points on the graph represent the columns of \code{y},
+#' coded automatically or with the supplied values of \code{pch} and
+#' \code{col}.
+#' The example shows two tidal models of the Halifax sealevel data, computed
+#' with \code{\link{tidem}} with just the M2 component and the S2 component;
+#' the graph indicates that the M2 model is much better than the S2 model.
+#' 
+#' @param x a vector of reference values of some quantity, e.g. measured over
+#' time or space.
+#' @param y a matrix whose columns hold values of values to be compared with
+#' those in x.  (If \code{y} is a vector, it is converted first to a one-column
+#' matrix).
+#' @param scale optional scale, interpreted as the maximum value of standard
+#' deviation.
+#' @param pch list of characters to plot, one for each column of \code{y}.
+#' @param col list of colours for points on the plot, one for each column of
+#' \code{y}.
+#' @param labels optional vector of strings to use for labelling the points.
+#' @param pos optional vector of positions for labelling strings.  If not
+#' provided, labels will be to the left of the symbols.
+#' @param \dots optional arguments passed by \code{plotTaylor} to more child
+#' functions.
+#' @author Dan Kelley
+#' @references Taylor, Karl E., 2001.  Summarizing multiple aspects of model
+#' performance in a single diagram, \emph{J. Geophys. Res.}, 106:D7,
+#' 7183--7192.
+#' @examples
+#' 
+#' library(oce)
+#' data(sealevel)
+#' x <- sealevel[["elevation"]]
+#' M2 <- predict(tidem(sealevel, constituents="M2"))
+#' S2 <- predict(tidem(sealevel, constituents=c("S2")))
+#' plotTaylor(x, cbind(M2, S2))
 plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
 {
     if (missing(x)) stop("must supply 'x'")
@@ -1006,7 +1075,6 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 #' @param debug a flag that, if nonzero, turns on debugging.
 #' @return A new object, with time and other data adjusted.
 #' @author Dan Kelley
-#' @keywords misc
 #' @examples
 #' library(oce)
 #' data(adv)
@@ -1122,6 +1190,31 @@ normalize <- function(x)
         (x - mean(x, na.rm=TRUE)) / sqrt(var)
 }
 
+
+#' Detrend a set of observations
+#' 
+#' Detrends \code{y} by subtracting a linear trend in \code{x}, to create
+#' \code{Y} that has \code{Y[1]=0} and \code{Y[length(Y)]=0}.  If \code{y} is
+#' not given, then y is taken from x, and x is set to the series of integers
+#' from 1 to \code{length{x}}.
+#' 
+#' @param x a vector of numerical values.  If \code{y} is not given, then
+#' \code{x} is taken for \code{y}.
+#' @param y an optional vector
+#' @return A list containing \code{Y}, the detrended version of \code{y}, and
+#' the intercept \code{a} and slope \code{b} of the linear function of \code{x}
+#' that is subtracted from \code{y} to yield \code{Y}.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' x <- seq(0, 0.9 * pi, length.out=50)
+#' y <- sin(x)
+#' plot(x, y)
+#' d <- detrend(x, y)
+#' points(x, d$Y, pch=20)
+#' abline(h=0, lty='dotted')
+#' abline(d$a, d$b, col='red')
+#' points(x, d$Y + d$a + d$b * x, col='blue', pch='+')
 detrend <- function(x, y)
 {
     if (missing(x))
@@ -1141,6 +1234,80 @@ detrend <- function(x, y)
     list(Y=y-(a+b*x), a=a, b=b)
 }
 
+
+
+#' Remove spikes from a time series
+#' 
+#' The method identifies spikes with respect to a "reference" time-series, and
+#' replaces these spikes with the reference value, or with \code{NA} according
+#' to the value of \code{action}; see \dQuote{Details}.
+#' 
+#' For \code{reference="median"}, the first step is to linearly interpolate
+#' across any gaps, in which \code{x==NA}.  Then the reference time series is
+#' constructed using \code{\link{runmed}} as a running median of \code{k}
+#' elements.  Then, the standard deviation of the difference between \code{x}
+#' and the reference is calculated.  Any \code{x} values that differ from the
+#' reference by more than \code{n} times this standard deviation are considered
+#' to be spikes.  If \code{replace="reference"}, these \code{x} values are
+#' replaced with the reference series, and the resultant time series is
+#' returned.  If \code{replace="NA"}, the spikes are replaced with \code{NA} in
+#' the returned time series.
+#' 
+#' For \code{reference="smooth"}, the processing is the same as for
+#' \code{"median"}, except that \code{\link{smooth}} is used to calculate the
+#' reference time series.
+#' 
+#' For \code{reference="trim"}, the reference time series is constructed by
+#' linear interpolation across any regions in which \code{x<min} or
+#' \code{x>max}.  In this case, the value of \code{n} is ignored, and the
+#' return value either uses the reference time series for spikes, or \code{NA},
+#' according to the value of \code{replace}.
+#' 
+#' @param x a vector of (time-series) values, a list of vectors, a data frame,
+#' or an object that inherits from class \code{oce}.
+#' @param reference indication of the type of reference time series to be used
+#' in the detection of spikes; see \sQuote{Details}.
+#' @param n an indication of the limit to differences between \code{x} and the
+#' reference time series, used for \code{reference="median"} or
+#' \code{reference="smooth"}; see \sQuote{Details.}
+#' @param k length of running median used with \code{reference="median"}, and
+#' ignored for other values of \code{reference}.
+#' @param min minimum non-spike value of \code{x}, used with
+#' \code{reference="trim"}.
+#' @param max maximum non-spike value of \code{x}, used with
+#' \code{reference="trim"}.
+#' @param replace an indication of what to do with spike values, with
+#' \code{"reference"} indicating to replace them with the reference time
+#' series, and \code{"NA"} indicating to replace them with \code{NA}.
+#' @param skip optional vector naming columns to be skipped. This is ignored if
+#' \code{x} is a simple vector. Any items named in \code{skip} will be passed
+#' through to the return value without modification.  In some cases,
+#' \code{despike} will set up reasonable defaults for \code{skip}, e.g. for a
+#' \code{ctd} object, \code{skip} will be set to \code{c("time", "scan",
+#' "pressure")} if it is not supplied as an argument.
+#' @return A new vector in which spikes are replaced as described above.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' n <- 50
+#' x <- 1:n
+#' y <- rnorm(n=n)
+#' y[n/2] <- 10                    # 10 standard deviations
+#' plot(x, y, type='l')
+#' lines(x, despike(y), col='red')
+#' lines(x, despike(y, reference="smooth"), col='darkgreen')
+#' lines(x, despike(y, reference="trim", min=-3, max=3), col='blue')
+#' legend("topright", lwd=1, col=c("black", "red", "darkgreen", "blue"),
+#'        legend=c("raw", "median", "smooth", "trim"))
+#' 
+#' # add a spike to a CTD object
+#' data(ctd)
+#' plot(ctd)
+#' T <- ctd[["temperature"]]
+#' T[10] <- T[10] + 10
+#' ctd[["temperature"]] <- T
+#' CTD <- despike(ctd)
+#' plot(CTD)
 despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA, max=NA,
                     replace=c("reference","NA"), skip)
 {
@@ -1242,6 +1409,31 @@ unabbreviateYear <- function(year)
     ifelse(year > 1800, year, ifelse(year > 50, year + 1900, year + 2000))
 }
 
+
+#' Convert angles from 0:360 to -180:180
+#' 
+#' This is mostly used for instrument heading angles, in cases where the
+#' instrument is aligned nearly northward, so that small variations in heading
+#' (e.g. due to mooring motion) can yield values that swing from small angles
+#' to large angles, because of the modulo-360 cut point.
+#' The method is to use the cosine and sine of the angle in order to find "x"
+#' and "y" values on a unit circle, and then to use \code{\link{atan2}} to
+#' infer the angles.
+#' 
+#' @param theta an angle (in degrees) that is in the range from 0 to 360
+#' degrees
+#' @return A vector of angles, in the range -180 to 180.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' ## fake some heading data that lie near due-north (0 degrees)
+#' n <- 20
+#' heading <- 360 + rnorm(n, sd=10)
+#' heading <- ifelse(heading > 360, heading - 360, heading)
+#' x <- 1:n
+#' plot(x, heading, ylim=c(-10, 360), type='l', col='lightgray', lwd=10)
+#' lines(x, angleRemap(heading))
 angleRemap <- function(theta)
 {
     toRad <- atan2(1, 1) / 45
@@ -2400,6 +2592,21 @@ bcdToInteger <- function(x, endian=c("little", "big"))
     if (endian=="little") 10*byte1 + byte2 else byte1 + 10*byte2
 }
 
+
+#' Format bytes as binary
+#' 
+#' @param x an integer to be interpreted as a byte.
+#' @param endian character string indicating the endian-ness ("big" or
+#' "little").  The PC/intel convention is to use "little", and so most data
+#' files are in that format.
+#' @return A character string representing the bit strings for the elements of
+#' \code{x}.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' x <- 0:16
+#' print(byteToBinary(x))
 byteToBinary <- function(x, endian=c("little", "big"))
 {
     onebyte2binary <- function(x)
@@ -2500,7 +2707,6 @@ byteToBinary <- function(x, endian=c("little", "big"))
 #' (See section 4.1, page 83, for a summary of notation, which shows that a
 #' value to the right of a \code{+-} sign is to be halved if put in
 #'
-#' @keywords misc
 #' @examples
 #' x <- seq(0, 1, length.out=300)
 #' y <- rnorm(n=300, mean=10, sd=1) * x
@@ -2575,6 +2781,17 @@ formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
     }
 }
 
+
+#' Decode integer to corresponding ASCII code
+#' 
+#' @param i an integer, or integer vector.
+#' @return A character, or character vector.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' A <- integerToAscii(65)
+#' cat("A=", A, "\n")
 integerToAscii <- function(i)
 {
     c("", "\001", "\002", "\003", "\004", "\005", "\006", "\a", "\b",
@@ -2607,6 +2824,27 @@ integerToAscii <- function(i)
       "\xfe", "\xff")[i+1]
 }
 
+
+#' Earth magnetic declination
+#' 
+#' Instruments that use magnetic compasses to determine current direction need
+#' to have corrections applied for magnetic declination, to get currents with
+#' the y component oriented to geographic, not magnetic, north.  Sometimes, and
+#' for some instruments, the declination is specified when the instrument is
+#' set up, so that the velocities as recorded are already.  Other times, the
+#' data need to be adjusted.  This function is for the latter case.
+#' 
+#' @param x an oce object.
+#' @param declination magnetic declination (to be added to the heading)
+#' @param debug a debugging flag, set to a positive value to get debugging.
+#' @return Object, with velocity components adjusted to be aligned with
+#' geographic north and east.
+#' @author Dan Kelley
+#' @seealso Use \code{\link{magneticField}} to determine the declination,
+#' inclination and intensity at a given spot on the world, at a given time.
+#' @references \url{http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
+#' 
+#' @family things related to magnetism
 applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "applyMagneticDeclination(x,declination=", declination, ") {\n", sep="", unindent=1)
@@ -2631,6 +2869,58 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
     res
 }
 
+
+#' Earth magnetic declination, inclination, and intensity
+#' 
+#' Implements the 12th generation International Geomagnetic Reference Field
+#' (IGRF), based on a reworked version of a Fortran program downloaded from a
+#' NOAA website [1,2].  The code (subroutine \code{igrf12syn}) seems to have
+#' been written by Susan Macmillan of the British Geological Survey.  Comments
+#' in the code indicate that it employs coefficients agreed to in December 2014
+#' by the IAGA Working Group V-MOD.  Comments in the \code{igrf12syn} source
+#' code also suggest that the valid time interval is from years 1900 to 2020,
+#' with only the values from 1945 to 2010 being considered definitive.
+#' 
+#' @param longitude longitude in degrees east (negative for degrees west).  The
+#' dimensions must conform to lat.
+#' @param latitude latitude in degrees north, a number, vector, or matrix.
+#' @param time either a decimal year or a POSIX time corresponding to the
+#' \code{longitude} and \code{latitude} values, or a vector or matrix matching
+#' these location values.
+#' @return A list containing \code{declination}, \code{inclination}, and
+#' \code{intensity}.
+#' @author Dan Kelley wrote the R code and a fortran wrapper to the
+#' \code{igrf12.f} subroutine, which was written by Susan Macmillan of the
+#' British Geological Survey and distributed ``without limitation'' (email from
+#' SM to DK dated June 5, 2015).
+#' @references
+#' 1. The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
+#' website (\url{http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
+#' 2015.
+#' @examples
+#' library(oce)
+#' # Halifax NS
+#' magneticField(-(63+36/60), 44+39/60, 2013)
+#' 
+#' \dontrun{
+#' ## map of North American values
+#' data(coastlineWorld)
+#' mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
+#'         projection="+proj=lcc +lat_0=20 +lat_1=60 +lon_0=-100")
+#' lon <- seq(-180, 180, 1)
+#' lat <- seq(-90, 90)
+#' lonm <- rep(lon, each=length(lat))
+#' latm <- rep(lat, times=length(lon))
+#' ## Note the counter-intuitive nrow argument
+#' decl <- matrix(magneticField(lonm, latm, 2013)$declination,
+#'                nrow=length(lon), byrow=TRUE)
+#' mapContour(lon, lat, decl, col='red', levels=seq(-90, 90, 5))
+#' incl <- matrix(magneticField(lonm, latm, 2013)$inclination,
+#'                nrow=length(lon), byrow=TRUE)
+#' mapContour(lon, lat, incl, col='blue', levels=seq(-90, 90, 5))
+#' }
+#' 
+#' @family things related to magnetism
 magneticField <- function(longitude, latitude, time)
 {
     if (missing(longitude) || missing(latitude) || missing(time))

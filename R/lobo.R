@@ -115,7 +115,6 @@ setMethod(f="[[<-",
 #' structure of LOBO objects, and also outlines the other functions dealing
 #' with them.
 #' @references \url{http://lobo.satlantic.com} \url{http://www.mbari.org/lobo/}
-#' @keywords misc
 #' @examples
 #' 
 #' library(oce)

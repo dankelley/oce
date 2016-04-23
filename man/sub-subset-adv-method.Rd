@@ -8,7 +8,7 @@
 \S4method{[[}{adv}(x, i, j) <- value
 }
 \arguments{
-\item{x}{An \code{adv} object.}
+\item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -106,11 +106,12 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
 
 Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{adv-class}}, \code{\link{adv}},
-  \code{\link{beamToXyz}}, \code{\link{enuToOther}},
+  \code{\link{beamName}}, \code{\link{beamToXyz}},
+  \code{\link{enuToOtherAdv}}, \code{\link{enuToOther}},
   \code{\link{plot,adv-method}},
   \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}}, \code{\link{toEnu}},
-  \code{\link{velocityStatistics}},
+  \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
 

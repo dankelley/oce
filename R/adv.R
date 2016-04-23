@@ -135,7 +135,7 @@ setMethod(f="summary",
 
 #' @title Extract Parts of an \code{adv} Object
 #'
-#' @param x An adv object, i.e. one inheriting from \code{\link{adv-class}}.
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #'
 #' @examples
 #' data(adv)
@@ -190,7 +190,7 @@ setMethod(f="[[",
 #' In addition to the usual insertion of elements by name, note
 #' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 #' 
-#' @param x An \code{adv} object.
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #' @param value The value to be inserted into \code{x}.
 #'
 #' @author Dan Kelley
@@ -226,7 +226,7 @@ setMethod(f="[[<-",
 #' analogous to \code{\link{subset.data.frame}}, except that subsets can only be
 #' specified in terms of \code{time}.
 #' 
-#' @param x a \code{adv} object.
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #' 
 #' @param subset a condition to be applied to the \code{data} portion of \code{x}.
 #' See \sQuote{Details}.
@@ -426,7 +426,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' }
 #' 
 #' 
-#' @param x An \code{adv} object, e.g. as read by \code{\link{read.adv}}.
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #' 
 #' @param which List of desired plot types.  These are graphed in panels running
 #' down from the top of the page.  See \dQuote{Details} for the meanings of
@@ -1113,6 +1113,21 @@ setMethod(f="plot",
               invisible()
           })
 
+
+
+#' Convert an \code{adv} object to ENU coordinates
+#' 
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
+#' @param declination magnetic declination to be added to the heading, to get
+#' ENU with N as "true" north.
+#' @template debugTemplate
+#' @author Dan Kelley
+#' @seealso See \code{\link{read.adv}} for notes on functions relating to
+#' \code{"adv"} objects.  Also, see \code{\link{beamToXyzAdv}} and
+#' \code{\link{xyzToEnuAdv}}.
+#' @references
+#' \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+#' @family things related to \code{adv} data
 toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "adv.2enu() {\n", unindent=1)
@@ -1130,6 +1145,30 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
     x
 }
 
+
+#' Convert ADV from beam coordinates to xyz coordinates
+#' 
+#' Convert ADV velocity components from a beam-based coordinate system to a
+#' xyz-based coordinate system.
+#' 
+#' The coordinate transformation is done using the transformation matrix
+#' contained in \code{x@metadata$transformation.matrix}, which is normally
+#' inferred from the header in the binary file.  If there is no such matrix
+#' (e.g. if the data were streamed through a data logger that did not capture
+#' the header), \code{beamToXyzAdv} the user will need to store one in
+#' \code{x}, e.g. by doing something like the following:
+#' \code{x@metadata$transformation.matrix <- rbind(c(11100, -5771, -5321), c(
+#' 291, 9716, -10002), c( 1409, 1409, 1409)) / 4096} .
+#' 
+#' @param x an object of class \code{"adv"}.
+#' @param debug a flag that, if non-zero, turns on debugging.  Higher values
+#' yield more extensive debugging.
+#' @author Dan Kelley
+#' @seealso See \code{\link{read.adv}} for notes on functions relating to
+#' \code{"adv"} objects.
+#' @references
+#' \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+#' @family things related to \code{adp} data
 beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "beamToXyzAdv() {\n", unindent=1)
@@ -1231,7 +1270,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' \tab adv \tab - \tab - \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab
 #' Z\cr }
 #' 
-#' @param x an object of class \code{adv}.
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #' @param declination magnetic declination to be added to the heading, to get
 #' ENU with N as "true" north.
 #' @param cabled boolean value indicating whether the sensor head is connected
@@ -1415,6 +1454,32 @@ xyzToEnuAdv <- function(x, declination=0,
     x
 }
 
+
+
+#' Convert east-north-up to other coordinate
+#' 
+#' Convert ADV velocity components from an enu-based coordinate system to
+#' another system, perhaps to align axes with the coastline.
+#' 
+#' The supplied angles specify rotations to be made around the axes for which
+#' heading, pitch, and roll are defined.  For example, an eastward current will
+#' point southeast if \code{heading=45} is used.
+#' 
+#' The returned value has heading, pitch, and roll matching those of \code{x},
+#' so these angles retain their meaning as the instrument orientation.
+#' 
+#' NOTE: this function works similarly to \code{\link{xyzToEnuAdv}}, except
+#' that in the present function, it makes no difference whether the instrument
+#' points up or down, etc.
+#' 
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
+#' @param heading number or vector of numbers, giving the angle, in degrees, to
+#' be added to the heading.  See \dQuote{Details}.
+#' @param pitch as \code{heading} but for pitch.
+#' @param roll as \code{heading} but for roll.
+#' @template debugTemplate
+#' @author Dan Kelley
+#' @family things related to \code{adv} data
 enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "adv"))

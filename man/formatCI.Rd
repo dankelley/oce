@@ -89,5 +89,4 @@ Blackwell Science for the International Union of Pure and Applied Chemistry.
 (See section 4.1, page 83, for a summary of notation, which shows that a
 value to the right of a \code{+-} sign is to be halved if put in
 }
-\keyword{misc}
 

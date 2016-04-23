@@ -8,7 +8,7 @@
 \S4method{subset}{adp}(x, subset, ...)
 }
 \arguments{
-\item{x}{An \code{\link{adp-class}} object.}
+\item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
 
 \item{subset}{A condition to be applied to the \code{data} portion of
 \code{x}.  See \sQuote{Details}.}
@@ -38,7 +38,10 @@ Dan Kelley
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
   \code{\link{adp}}, \code{\link{as.adp}},
-  \code{\link{beamToXyz}}, \code{\link{enuToOther}},
+  \code{\link{beamName}}, \code{\link{beamToXyzAdp}},
+  \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
+  \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
+  \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
   \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
@@ -47,8 +50,8 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppHR}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnu}},
-  \code{\link{velocityStatistics}},
+  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 

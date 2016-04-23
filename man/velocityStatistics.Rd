@@ -49,7 +49,10 @@ Dan Kelley
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
   \code{\link{adp}}, \code{\link{as.adp}},
-  \code{\link{beamToXyz}}, \code{\link{enuToOther}},
+  \code{\link{beamName}}, \code{\link{beamToXyzAdp}},
+  \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
+  \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
+  \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
   \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
@@ -59,15 +62,18 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}},
   \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnu}},
-  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
+  \code{\link{toEnu}}, \code{\link{xyzToEnuAdp}},
+  \code{\link{xyzToEnu}}
 
 Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
-  \code{\link{adv}}, \code{\link{beamToXyz}},
+  \code{\link{adv}}, \code{\link{beamName}},
+  \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
   \code{\link{enuToOther}}, \code{\link{plot,adv-method}},
   \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}}, \code{\link{toEnu}},
-  \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
+  \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
+  \code{\link{toEnu}}, \code{\link{xyzToEnuAdv}},
+  \code{\link{xyzToEnu}}
 }
 

@@ -47,5 +47,4 @@ Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{subset,lobo-method}}
 }
-\keyword{misc}
 

@@ -32,7 +32,6 @@ NULL
 #' Standard Atmosphere, 1976.  NOAA-S/T 76-1562.  (Available as of 2010-09-30
 #' at
 #' \url{http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770009539_1977009539.pdf}).
-#' @keywords misc
 #' @examples
 #' degC <- seq(0,30,length.out=100)
 #' p <- seq(98,102,length.out=100) * 1e3

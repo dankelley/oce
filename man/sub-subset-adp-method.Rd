@@ -8,7 +8,7 @@
 \S4method{[[}{adp}(x, i, j) <- value
 }
 \arguments{
-\item{x}{An \code{adp} object, i.e. inheriting from \code{\link{adp-class}}}
+\item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
 
 \item{i}{The item to replace.}
 
@@ -81,7 +81,10 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,amsr-
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{adp-class}}, \code{\link{adp}},
-  \code{\link{as.adp}}, \code{\link{beamToXyz}},
+  \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
+  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
+  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
   \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
@@ -91,8 +94,8 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}},
   \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnu}},
-  \code{\link{velocityStatistics}},
+  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 

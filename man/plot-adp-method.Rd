@@ -18,7 +18,7 @@
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{an \code{adp} object, e.g. as read by \code{\link{read.adp}}.}
+\item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
 
 \item{which}{list of desired plot types.  These are graphed in panels
 running down from the top of the page.  See \dQuote{Details} for the
@@ -348,12 +348,16 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
   \code{\link{adp}}, \code{\link{as.adp}},
-  \code{\link{beamToXyz}}, \code{\link{enuToOther}},
+  \code{\link{beamName}}, \code{\link{beamToXyzAdp}},
+  \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
+  \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
+  \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -362,8 +366,8 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}},
   \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}}, \code{\link{toEnu}},
-  \code{\link{velocityStatistics}},
+  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 

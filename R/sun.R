@@ -1,3 +1,63 @@
+#' Solar Angle as Function of Space and Time
+#' 
+#' Solar angle as function of space and time.
+#' 
+#' Based on NASA-provided Fortran program, in turn (according to comments in
+#' the code) based on "The Astronomical Almanac".
+#' 
+#' @param t Time, a POSIXt object (must be in timezone UTC), or a numeric value
+#' that corresponds to such a time.
+#' @param longitude observer longitude in degrees east
+#' @param latitude observer latitude in degrees north
+#' @param useRefraction boolean, set to \code{TRUE} to apply a correction for
+#' atmospheric refraction
+#' @return A list containing the following.  \item{time}{time}
+#' \item{azimuth}{azimuth, in degrees eastward of north, from 0 to 360.  (See
+#' diagram below.)} \item{altitude}{altitude, in degrees above the horizon,
+#' ranging from -90 to 90.  (See diagram below.)} \item{diameter}{solar
+#' diameter, in degrees} \item{distance}{distance to sun, in astronomical
+#' units}
+#' \if{html}{\figure{starCoords.png options:width=400px}{starCoords.png}}
+#'
+#' @author Dan Kelley
+#' @seealso The equivalent function for the moon is \code{\link{moonAngle}}.
+#' @references Based on Fortran code retrieved from
+#' ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f on
+#' 2009-11-1.  Comments in that code list as references:
+#' 
+#' Michalsky, J., 1988: The Astronomical Almanac's algorithm for approximate
+#' solar position (1950-2050), Solar Energy 40, 227-235
+#' 
+#' The Astronomical Almanac, U.S. Gov't Printing Office, Washington, D.C.
+#' (published every year).
+#' 
+#' The code comments suggest that the appendix in Michalsky (1988) contains
+#' errors, and declares the use of the following formulae in the 1995 version
+#' the Almanac: \itemize{ \item p. A12: approximation to sunrise/set times;
+#' \item p. B61: solar altitude (AKA elevation) and azimuth; \item p. B62:
+#' refraction correction; \item p. C24: mean longitude, mean anomaly, ecliptic
+#' longitude, obliquity of ecliptic, right ascension, declination, Earth-Sun
+#' distance, angular diameter of Sun; \item p. L2: Greenwich mean sidereal time
+#' (ignoring T^2, T^3 terms).  }
+#' 
+#' The code lists authors as Dr. Joe Michalsky and Dr. Lee Harrison (State
+#' University of New York), with modifications by Dr. Warren Wiscombe (NASA
+#' Goddard Space Flight Center).
+#' @examples
+#' 
+#' rise <- as.POSIXct("2011-03-03 06:49:00", tz="UTC") + 4*3600
+#' set <- as.POSIXct("2011-03-03 18:04:00", tz="UTC") + 4*3600
+#' mismatch <- function(lonlat) 
+#' {
+#'     sunAngle(rise, lonlat[1], lonlat[2])$altitude^2 + sunAngle(set, lonlat[1], lonlat[2])$altitude^2
+#' }
+#' result <- optim(c(1,1), mismatch)
+#' lon.hfx <- (-63.55274)
+#' lat.hfx <- 44.65
+#' dist <- geodDist(result$par[1], result$par[2], lon.hfx, lat.hfx)
+#' cat(sprintf("Infer Halifax latitude %.2f and longitude %.2f; distance mismatch %.0f km", 
+#'             result$par[2], result$par[1], dist))
+#' @family things related to astronomy
 sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
 {
     if (missing(t)) stop("must provide t")

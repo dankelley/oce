@@ -269,7 +269,8 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
@@ -279,12 +280,14 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
   \code{\link{ctd}}, \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plotScan}}, \code{\link{read.ctd.itp}},
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{read.ctd.itp}},
   \code{\link{read.ctd.odf}}, \code{\link{read.ctd.odv}},
   \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+  \code{\link{summary,ctd-method}},
+  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
 

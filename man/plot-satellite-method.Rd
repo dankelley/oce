@@ -46,7 +46,8 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to satellite data: \code{\link{g1sst-class}},
   \code{\link{read.g1sst}}, \code{\link{satellite-class}},
