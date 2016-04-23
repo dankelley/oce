@@ -50,8 +50,6 @@ read.observatory <- function(file,
 #' 
 #' @param file a connection or a character string giving the name of the file
 #' to load.
-#' @param type type of data; must be \code{"ctd"}, the only type handled at
-#' present.
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #' @param processingLog if provided, the action item to be stored in the log.
