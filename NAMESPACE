@@ -323,9 +323,9 @@ export(abbreviateTimeLabels,
        xyzToEnuAdp,
        xyzToEnuAdv)
 
-S3method(head, adp)
+S3method(head, oce)
 S3method(predict, tidem)
-S3method(tail, adp)
+S3method(tail, oce)
 S3method(window, oce)
 
 exportClasses(oce, adp, adv, amsr, bremen, cm, coastline, ctd, argo, ladp, landsat, lisst, lobo, met, odf, sealevel, section, rsk, tidem, topo, windrose)

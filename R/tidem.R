@@ -18,6 +18,57 @@ setMethod(f="initialize",
           })
 
 
+#' Tidal constituent information
+#' 
+#' The \code{tidedata} dataset contains Tide-constituent information that is
+#' use by \code{\link{tidem}} to fit tidal models.  \code{tidedata} is a list
+#' containing \describe{ \item{const}{a list containing vectors \describe{
+#' \item{list("name")}{a string with constituent name} \item{list("freq")}{the
+#' frequency, in cycles per hour} \item{list("kmpr")}{a string naming the
+#' comparison constituent, blank if there is none} \item{list("ikmpr")}{index
+#' of comparison constituent, or \code{0} if there is none}
+#' \item{list("df")}{frequency difference betwee constituent and its
+#' comparison, used in the Rayleigh criterion} \item{list("d1")}{first Doodson
+#' number} \item{list("d2")}{second Doodson number} \item{list("d3")}{third
+#' Doodson number} \item{list("d4")}{fourth Doodson number}
+#' \item{list("d5")}{fifth Doodson number} \item{list("d6")}{sixth Doodson
+#' number} \item{list("semi")}{(fill in some info later)}
+#' \item{list("nsat")}{number of satellite constituents}
+#' \item{list("ishallow")}{(fill in some info later)}
+#' \item{list("nshallow")}{(fill in some info later)}
+#' \item{list("doodsonamp")}{(fill in some info later)}
+#' \item{list("doodsonspecies")}{(fill in some info later)} } }
+#' \item{list("sat")}{a list containing vectors \describe{
+#' \item{list("deldood")}{(fill in some info later)}
+#' \item{list("phcorr")}{(fill in some info later)} \item{list("amprat")}{(fill
+#' in some info later)} \item{list("ilatfac")}{(fill in some info later)}
+#' \item{list("iconst")}{(fill in some info later)} } }
+#' \item{list("shallow")}{a list containing vectors \describe{
+#' \item{list("iconst")}{(fill in some info later)} \item{list("coef")}{(fill
+#' in some info later)} \item{list("iname")}{(fill in some info later)} } } }
+#' Apart from the use of \code{d1} through \code{d6}, the naming and content
+#' follows \code{T_TIDE}.  All of this is based on Foreman (1977), to which the
+#' reader is referred for details.
+#' 
+#' @name tidedata
+#' @docType data
+#' @author Dan Kelley
+#' @references Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
+#' prediction.  Pacific Marine Science Report 77-10, Institute of Ocean
+#' Sciences, Patricia Bay, Sidney, BC, 58pp.
+#' 
+#' Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+#' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
+#' Computers and Geosciences, 28, 929-937.
+#' @source The data come from the \code{tide3.dat} file of the \code{T_TIDE}
+#' package (Pawlowicz et al., 2002), and derive from Appendices provided by
+#' Foreman (1977).  The data are scanned using \file{tests/tide.R} in this
+#' package, which also performs some tests using \code{T_TIDE} values as a
+#' reference.
+#' @family things related to \code{tidem} data
+NULL
+
+
 #' Summarize a tide-model object
 #' 
 #' \code{summary} method for class \code{"tidem"}.

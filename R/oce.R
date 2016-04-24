@@ -55,7 +55,57 @@
 #' @docType package
 #' @name oce
 NULL
-#> NULL
+
+
+#' Deprecated and defunct elements of package \sQuote{oce}
+#' 
+#' Certain functions and function arguments are still provided for
+#' compatibility with older versions of \sQuote{oce}, but will be removed soon.
+#' The \sQuote{oce} scheme for removing functions is the same as that used by
+#' \sQuote{Bioconductor}: items are marked as "deprecated" in one release, as
+#' "defunct" in the next, and then removed entirely. This goal is to provide a
+#' gentle migration path for users who keep their packages reasonably
+#' up-to-date.
+#' 
+#' 
+#' Several \sQuote{oce} functions are marked "deprecated" in the present
+#' release of oce. Please use the replacement functions as listed below.
+#' 
+#' \tabular{lll}{ \strong{Deprecated} \tab \strong{Replacement} \tab
+#' \strong{Notes}\cr \code{mapZones} \tab \code{\link{mapGrid}} \tab Improve
+#' name sensibility\cr \code{mapMeridians} \tab \code{\link{mapGrid}} \tab
+#' Improve name sensibility\cr }
+#' 
+#' The next CRAN release of \sQuote{oce} will have these functions flagged as
+#' "defunct", which will mean that trying to use them will generate an error
+#' and a hint as to the replacement function.
+#' 
+#' The following are marked "defunct", which means that calling them in the
+#' present version of oce will produce an error, and that they will be removed
+#' altogether in the next oce release on CRAN.
+#' 
+#' \tabular{lll}{ \strong{Defunct} \tab \strong{Replacement} \tab
+#' \strong{Notes}\cr \code{makeSection} \tab \code{\link{as.section}} \tab
+#' Improve utility and name sensibility\cr \code{columns} \tab
+#' \code{\link{read.ctd}} \tab Unnecessary, and never worked\cr }
+#' 
+#' Several \sQuote{oce} function arguments are also slated for removal but are
+#' being permitted in the present CRAN release. They are as follows.
+#' 
+#' \tabular{lll}{ \strong{Deprecated} \tab \strong{Replacement} \tab
+#' \strong{Notes}\cr \code{date} argument to \code{\link{as.ctd}} \tab - \tab
+#' Was never used, and could be confused with \code{startTime}\cr \code{fill}
+#' argument to \code{\link{mapPlot}} etc. \tab \code{col} \tab Rationalize with
+#' \code{\link{polygon}}\cr }
+#' 
+#' @aliases oce-defunct
+#' @name oce-deprecated
+#'
+#' @seealso The \sQuote{Bioconductor} scheme for removing functions is
+#' described at
+#' \url{https://www.bioconductor.org/developers/how-to/deprecation/} and it is
+#' extended here to function arguments.
+NULL
 
 #' Coerce Something Into an oce Object
 #'
@@ -319,6 +369,80 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
         res@metadata$numberOfCells <- dim(res@data$v)[2]
     }
     oceDebug(debug, "} # window.oce()\n", unindent=1)
+    res
+}
+
+
+#' Extract the start of an \code{oce} object
+#'
+#' This only works for \code{adp} and \code{adv} objects.
+#'
+#' @param x An \code{oce} object.
+#' @param n Number of elements to extract.
+#' @param ... ignored
+#' @seealso \code{\link{tail.oce}}, which yields the end of an \code{oce} object.
+head.oce <- function(x, n=6L, ...)
+{
+    res <- NULL
+    if (inherits(x, "adp") || inherits(x, "adv")) {
+        numberOfProfiles <- dim(x@data$v)[1]
+        if (n < 0)
+            look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
+        else
+            look <- seq.int(1, min(n, numberOfProfiles))
+        res <- x
+        for (name in names(x@data)) {
+            if ("distance" == name)
+                next
+            if (is.vector(x@data[[name]])) {
+                res@data[[name]] <- x@data[[name]][look]
+            } else if (is.matrix(x@data[[name]])) {
+                res@data[[name]] <- x@data[[name]][look,]
+            } else if (is.array(x@data[[name]])) {
+                res@data[[name]] <- x@data[[name]][look,,]
+            } else {
+                res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+            }
+        }
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        res
+    } else {
+        message("not sure how to 'head' this")
+    }
+    res
+}
+
+
+#' Extract the end of an \code{oce} object
+#'
+#' This only works for \code{adp} and \code{adv} objects.
+#'
+#' @inheritParams head.oce
+#' @seealso \code{\link{head.oce}}, which yields the start of an \code{oce} object.
+tail.oce <- function(x, n=6L, ...)
+{
+    res <- NULL
+    if (inherits(x, "adp") || inherits(x, "adv")) {
+        numberOfProfiles <- dim(x@data$v)[1]
+        if (n < 0)
+            look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
+        else
+            look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
+        res <- x
+        for (name in names(x@data)) {
+            if (is.vector(x@data[[name]])) {
+                res@data[[name]] <- x@data[[name]][look]
+            } else if (is.matrix(x@data[[name]])) {
+                res@data[[name]] <- x@data[[name]][look,]
+            } else if (is.array(x@data[[name]])) {
+                res@data[[name]] <- x@data[[name]][look,,]
+            } else {
+                res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+            }
+        }
+    } else {
+        message("cannot 'tail' this")
+    } 
     res
 }
 

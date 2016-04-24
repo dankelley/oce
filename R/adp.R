@@ -674,53 +674,53 @@ as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coor
 }
 
 
-head.adp <- function(x, n=6L, ...)
-{
-    numberOfProfiles <- dim(x@data$v)[1]
-    if (n < 0)
-        look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
-    else
-        look <- seq.int(1, min(n, numberOfProfiles))
-    res <- x
-    for (name in names(x@data)) {
-        if ("distance" == name)
-            next
-        if (is.vector(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look]
-        } else if (is.matrix(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look,]
-        } else if (is.array(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look,,]
-        } else {
-            res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
-        }
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    res
-}
+## head.adp <- function(x, n=6L, ...)
+## {
+##     numberOfProfiles <- dim(x@data$v)[1]
+##     if (n < 0)
+##         look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
+##     else
+##         look <- seq.int(1, min(n, numberOfProfiles))
+##     res <- x
+##     for (name in names(x@data)) {
+##         if ("distance" == name)
+##             next
+##         if (is.vector(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look]
+##         } else if (is.matrix(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look,]
+##         } else if (is.array(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look,,]
+##         } else {
+##             res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+##         }
+##     }
+##     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+##     res
+## }
 
-tail.adp <- function(x, n = 6L, ...)
-{
-    numberOfProfiles <- dim(x@data$v)[1]
-    if (n < 0)
-        look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
-    else
-        look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
-    res <- x
-    for (name in names(x@data)) {
-        if (is.vector(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look]
-        } else if (is.matrix(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look,]
-        } else if (is.array(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look,,]
-        } else {
-            res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
-        }
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    res 
-}
+## tail.adp <- function(x, n = 6L, ...)
+## {
+##     numberOfProfiles <- dim(x@data$v)[1]
+##     if (n < 0)
+##         look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
+##     else
+##         look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
+##     res <- x
+##     for (name in names(x@data)) {
+##         if (is.vector(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look]
+##         } else if (is.matrix(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look,]
+##         } else if (is.array(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look,,]
+##         } else {
+##             res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+##         }
+##     }
+##     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+##     res 
+## }
 
 
 
