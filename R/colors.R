@@ -1,5 +1,30 @@
 # vim: tw=120 shiftwidth=4 softtabstop=4 wrap linebreak expandtab:
 
+
+#' Data that define some colour palettes
+#' 
+#' The \code{colors} dataset is a list containing vectors of colour-scheme
+#' names, e.g. \code{colors$viridis} holds colours for the colour palette known
+#' as Viridis, which in 2015 became the default colour palette in the
+#' matplotlib 2.0 Python library [1].
+#' 
+#' 
+#' @name colors
+#' @docType data
+
+#' @author Authored by matplotlib contributes, packaged in oce by Dan Kelley
+#' @seealso \code{\link{oceColorsViridis}} uses this dataset.
+#' 
+#' @references
+#' 1. Matplotlib is developed on github; see
+#' \url{https://github.com/matplotlib/matplotlib}
+#' @source The data come from the code in matplotlib [1].
+#' @family datasets provided with \code{oce}
+#' @family things related to colors
+NULL
+
+
+
 colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 
 ## keeping this (which was called 'colorize' until 2014-05-07) for a while, but not in NAMESPACE.
@@ -559,6 +584,7 @@ colormapFromName <- function(name)
 #' grid()
 #' points(seq_along(cm$x1), cm$x1, pch=21, bg=cm$col1)
 #' }
+#' @family things related to colors
 colormap <- function(z=NULL,
                      zlim, zclip=FALSE,
                      breaks, col=oce.colorsJet,

@@ -3604,7 +3604,6 @@ ctimeToSeconds <- function(ctime)
 #' @param unindent Number of levels to un-indent, e.g. for start and end lines
 #' from a called function.
 #' @author Dan Kelley
-#' @keywords misc
 #' @examples
 #' 
 #' foo <- function(debug)
@@ -3677,7 +3676,6 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 #' returned for \code{type="dA"}.  See \dQuote{Examples}.
 #' @section Bugs: There is no handling of \code{NA} values.
 #' @author Dan Kelley
-#' @keywords misc
 #' @examples
 #' 
 #' x <- seq(0, 1, length.out=10) # try larger length.out to see if area approaches 2

@@ -19,6 +19,42 @@
 ## 7. the C code suggests the velocityScale is in the second bit of conf.hMode
 ##    but the docs suggest the fifth bit (page 31)
 
+
+
+#' Decode a Nortek header
+#' 
+#' Decode data in a Nortek ADV or ADP header.
+#' 
+#' Decodes the header in a binary-format Nortek ADV/ADP file.  This function is
+#' designed to be used by \code{\link{read.adp}} and \code{\link{read.adv}},
+#' but can be used directly as well.  The code is based on information in the
+#' Nortek System Integrator Guide (2008) and on postings on the Nortek
+#' ``knowledge center'' discussion board.  One might assume that the latter is
+#' less authorative than the former.  For example, the inference of cell size
+#' follows advice found at
+#' \url{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
+#' (downloaded June 2012)), which contains a typo in an early posting that is
+#' corrected later on.
+#' 
+#' @param buf a ``raw'' buffer containing the header
+#' @param type type of device
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @param \dots additional arguments, passed to called routines.
+#' @return A list containing elements \code{hardware}, \code{head}, \code{user}
+#' and \code{offset}.  The easiest way to find the contents of these is to run
+#' this function with \code{debug=3}.
+#' @author Dan Kelley and Clark Richards
+#' @seealso Most users should employ the functions \code{\link{read.adp}} and
+#' \code{\link{read.adv}} instead of this one.
+#' @references 1. Information on Nortek profilers (including the System
+#' Integrator Guide, which explains the data format byte-by-byte) is available
+#' at \url{http://www.nortekusa.com/}.  (One must join the site to see the
+#' manuals.)
+#' 
+#' 2. The Nortek Knowledge Center
+#' \url{http://www.nortekusa.com/en/knowledge-center} may be of help if
+#' problems arise in dealing with data from Nortek instruments.
 decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "vector"), debug=getOption("oceDebug"), ...)
 {
     type <- match.arg(type)

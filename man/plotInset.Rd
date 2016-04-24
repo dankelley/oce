@@ -60,5 +60,4 @@ plotInset(29.9, 2.7, 31, 10,
 \author{
 Dan Kelley
 }
-\keyword{hplot}
 

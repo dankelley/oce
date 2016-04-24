@@ -1951,7 +1951,6 @@ mapArrows <- function(longitude0, latitude0,
 #' and \code{hemispheres}, or a vector of strings or (broken) a vector of
 #' expressions.
 #' @author Dan Kelley
-#' @keywords misc
 #' @examples
 #' 
 #' library(oce)
@@ -2823,7 +2822,6 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 #' @references
 #' \url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
 #' downloaded May 31, 2014.
-#' @keywords misc
 #' @examples
 #' 
 #' library(oce)

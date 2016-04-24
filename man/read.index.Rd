@@ -49,5 +49,4 @@ Dan Kelley
 See \url{http://www.esrl.noaa.gov/psd/data/climateindices/list/}
 for a list of indices.
 }
-\keyword{misc}
 

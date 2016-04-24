@@ -21,7 +21,6 @@
 #' @author Dan Kelley
 #' @references See \url{http://www.esrl.noaa.gov/psd/data/climateindices/list/}
 #' for a list of indices.
-#' @keywords misc
 #' @examples
 #' 
 #' \dontrun{

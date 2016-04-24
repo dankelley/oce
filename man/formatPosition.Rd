@@ -34,5 +34,4 @@ formatPosition(10+1:10/60+2.8/3600, type="string")
 \author{
 Dan Kelley
 }
-\keyword{misc}
 

@@ -62,5 +62,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapTissot}}, \code{\link{mapZones}},
   \code{\link{shiftLongitude}}
 }
-\keyword{misc}
 

@@ -48,5 +48,4 @@ print(integrateTrapezoid(y))
 \author{
 Dan Kelley
 }
-\keyword{misc}
 

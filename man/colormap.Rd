@@ -234,4 +234,9 @@ for years but failed 2015-12-08), and numerical specifications for some
 colour maps are at \url{http://www.beamreach.org/maps/gmt/share/cpt},
 \url{http://soliton.vm.bytemark.co.uk/pub/cpt-city}, and other sources.
 }
+\seealso{
+Other things related to colors: \code{\link{colors}},
+  \code{\link{oce.colorsGebco}},
+  \code{\link{oce.colorsTwo}}
+}
 

@@ -37,5 +37,4 @@ foo(debug=debug-1)
 \author{
 Dan Kelley
 }
-\keyword{misc}
 

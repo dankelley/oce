@@ -1674,6 +1674,154 @@ read.netcdf <- function(file, ...)
 }
 
 
+#' Create a palette of colours
+#' 
+#' Create a palette of colours
+#' 
+#' \code{oce.colorsPalette} provides a variety of pre-defined palettes.
+#' \code{which}=1 yields the ColorBrewer diverging red/blue scheme while
+#' \code{which}=2 yields the ColorBrewer diverging RYB scheme [1].
+#' 
+#' A family of nine-colour schemes is as follows: \code{which="jet"} (or
+#' \code{which="9A"} or \code{which=9.01} for the Jet scheme; \code{which="9B"}
+#' or \code{which=9.02} for a scheme similar to Jet but omitting the green, and
+#' somewhat desaturating the yellow and cyan.
+#' 
+#' \code{\link{oce.colorsGebco}} provides palettes that mimic the GEBCO atlas colours,
+#' with shades of blue for water and of brown for land.  The blue values go
+#' from dark to light, and the brown ones from light to dark; in this way,
+#' topographic images have light values near sea-level, and get darker in
+#' either deeper water or higher terrain.
+#' 
+#' \code{oce.colorsJet} provides a palette similar to the Matlab \dQuote{jet}
+#' palette.
+#' 
+#' \code{oce.colorsTwo} provides a two-tone palette that fades to white at
+#' central values.
+#' 
+#' \code{oce.colorsViridis} provides a matplotlib (python) colour scheme that
+#' became the standard in 2015; see [2]. This is a blue-yellow transition that
+#' is designed to reproduce well in black-and-white, and also to be
+#' interpretable by those with certain forms of colour blindness [3,4,5].
+#' 
+#' \code{oce.colorsCDOM}, \code{oce.colorsChlorophyll},
+#' \code{oce.colorsDensity}, \code{oce.colorsFreesurface},
+#' \code{oce.colorsOxygen}, \code{oce.colorspAR}, \code{oce.colorsPhase},
+#' \code{oce.colorsSalinity}, \code{oce.colorsTemperature},
+#' \code{oce.colorsTurbidity}, \code{oce.colorsVelocity} and
+#' \code{oce.colorsVorticity} are based on RGB values set up by Kristen M.
+#' Thyng for her Python package named \code{cmcolor} [7].
+#' 
+#' @aliases oce.colors oceColors oce.colorsJet oceColorsJet 
+#' oce.colorsTwo oceColorsTwo oce.colorsPalette oceColorsPalette
+#' oce.colors9A oceColors9A oce.colors9B oceColors9B oce.colorsViridis
+#' oceColorsViridis oce.colorsCDOM oce.colorsChlorophyll oce.colorsDensity
+#' oce.colorsFreesurface oce.colorsOxygen oce.colorsPAR oce.colorsPhase
+#' oce.colorsSalinity oce.colorsTemperature oce.colorsTurbidity
+#' oce.colorsVelocity oce.colorsVorticity oceColorsCDOM oceColorsChlorophyll
+#' oceColorsDensity oceColorsFreesurface oceColorsOxygen oceColorsPAR
+#' oceColorsPhase oceColorsSalinity oceColorsTemperature oceColorsTurbidity
+#' oceColorsVelocity oceColorsVorticity
+#' @param n the number of colours (\eqn{\ge 1}{>=1}) to be in the palette.
+#' @param low the hue, in [0,1], for the low end of a \code{oce.colorsTwo}
+#' scale.
+#' @param high the hue, in [0,1], for the high end of a \code{oce.colorsTwo}
+#' scale.
+#' @param smax the maximum saturation, in [0,1], for the colours of
+#' \code{oce.colorsTwo}.
+#' @param alpha the alpha value, in [0,1], for the colours of
+#' \code{oce.colorsTwo}.
+#' @author Dan Kelley
+#' @references [1] Color Brewer. \url{http://colorbrewer2.org/}
+#' 
+#' [2] A blog item on the Viridis (and related) matplotlib colour scales is at
+#' \url{http://bids.github.io/colormap/}.
+#' 
+#' [3] Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
+#' Schemes for Improved Data Graphics. \emph{Eos Trans. AGU}, 85(40),
+#' doi:10.1029/2004EO400002.
+#' 
+#' [4] Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
+#' Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
+#' \url{http://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}
+#' 
+#' [5] Stephenson, David B., 2005. Comment on ``Color schemes for improved data
+#' graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).
+#' 
+#' [6] The Geography department at the University of Oregon has good resources
+#' on colour schemes; see e.g.
+#' \code{http://geography.uoregon.edu/datagraphics/color_scales.htm} (This URL
+#' worked prior to December 8, 2015, but was found to fail on that date; it is
+#' included here in case users want to search for themselves.)
+#' 
+#' [7] The \code{cmocean} Python package, written by Kristen M Thyng, is
+#' available at \url{https://github.com/kthyng/cmocean}.
+#' @examples
+#' 
+#' library(oce)
+#' opar <- par(no.readonly = TRUE)
+#' # 1. Show a few palettes
+#' x <- array(1:1000, dim=c(1,1000))
+#' par(mfrow=c(1,5), mar=c(1, 3, 3, 1))
+#' image(x, col=oce.colorsTwo(200), main="oce.colorsTwo")
+#' image(x, col=oce.colorsJet(200), main="oce.colorsJet")
+#' image(x, col=oce.colorsGebco(200), main="oce.colorsGebco")
+#' image(x, col=oce.colorsPalette(200), main="oce.colorsPalette")
+#' image(x, col=oce.colorsViridis(200), main="oce.colorsViridis")
+#' 
+#' # 4. Kristen M Thyng's 'cmocean' colours, specialised for oceanography.
+#' par(mfrow=c(3,4), mar=c(1, 3, 3, 1))
+#' image(x, col=oce.colorsCDOM(200), main="oce.colorsCDOM")
+#' image(x, col=oce.colorsChlorophyll(200), main="oce.colorsChlorophyll")
+#' image(x, col=oce.colorsDensity(200), main="oce.colorsDensity")
+#' image(x, col=oce.colorsFreesurface(200), main="oce.colorsFreesurface")
+#' image(x, col=oce.colorsOxygen(200), main="oce.colorsOxygen")
+#' image(x, col=oce.colorsPAR(200), main="oce.colorsPAR")
+#' image(x, col=oce.colorsPhase(200), main="oce.colorsPhase")
+#' image(x, col=oce.colorsSalinity(200), main="oce.colorsSalinity")
+#' image(x, col=oce.colorsTemperature(200), main="oce.colorsTemperature")
+#' image(x, col=oce.colorsTurbidity(200), main="oce.colorsTurbidity")
+#' image(x, col=oce.colorsVelocity(200), main="oce.colorsVelocity")
+#' image(x, col=oce.colorsVorticity(200), main="oce.colorsVorticity")
+#'  
+#' # 3. Acoustic-Doppler profiler data; note that plot,adp-method() puts makes
+#' # zlim be symmetric about zero velocity.
+#' par(mfrow=c(1,1))
+#' data(adp)
+#' plot(adp, which='u1')
+#' 
+#' # 4. Contrast Jet with Viridis, using standard Volcano dataset;
+#' # try printing the results in black and white.
+#' par(mfrow=c(2,1))
+#' imagep(volcano, col=oce.colorsJet)
+#' imagep(volcano, col=oce.colorsViridis)
+#' @family things related to colors
+oce.colorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
+{
+    ## code borrows heavily from cm.color()
+    if ((n <- as.integer(n[1])) > 0) {
+        even.n <- n%%2 == 0
+        k <- n%/%2
+        l1 <- k + 1 - even.n
+        l2 <- n - k + even.n
+        c(if (l1 > 0) hsv(h = low,
+                          s = seq.int(smax, ifelse(even.n, 0.5/k, 0), length.out = l1),
+                          v = 1, alpha = alpha),
+          if (l2 > 1) hsv(h = high,
+                          s = seq.int(0, smax, length.out = l2)[-1],
+                          v = 1, alpha = alpha))
+    }
+    else character(0)
+}
+oceColorsTwo <- oce.colorsTwo
+
+#' Gebco colors
+#' @aliases oceColorsGebco oce.colors.gebco
+#' @param n Number of colors to return
+#' @param region String indicating application region, one of \code{"water"}, \code{"land"},
+#' or \code{"both"}.
+#' @param type String indicating the purpose, one of \code{"fill"} or \code{"line"}.
+#' @family things related to colors
 oce.colorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
 {
     region <- match.arg(region)
@@ -1714,25 +1862,6 @@ oce.colorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill
 }
 oceColorsGebco <- oce.colorsGebco
 
-
-oce.colorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
-{
-    ## code borrows heavily from cm.color()
-    if ((n <- as.integer(n[1])) > 0) {
-        even.n <- n%%2 == 0
-        k <- n%/%2
-        l1 <- k + 1 - even.n
-        l2 <- n - k + even.n
-        c(if (l1 > 0) hsv(h = low,
-                          s = seq.int(smax, ifelse(even.n, 0.5/k, 0), length.out = l1),
-                          v = 1, alpha = alpha),
-          if (l2 > 1) hsv(h = high,
-                          s = seq.int(0, smax, length.out = l2)[-1],
-                          v = 1, alpha = alpha))
-    }
-    else character(0)
-}
-oceColorsTwo <- oce.colorsTwo
 
 oce.colorsCLOSURE <- function(colorname) {
     function(n) {
@@ -2340,7 +2469,6 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #' @author Dan Kelley
-#' @keywords hplot
 #' @examples
 #' 
 #' library(oce)
@@ -2680,7 +2808,6 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, length=0.05, add=FALS
 #' the processing.
 #' @param \dots optional arguments passed to plotting functions.
 #' @author Dan Kelley
-#' @keywords misc
 #' @examples
 #' 
 #' library(oce)
