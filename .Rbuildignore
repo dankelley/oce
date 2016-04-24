@@ -13,7 +13,7 @@ src-x86_64
 README.rst
 .Rhistory
 .gitignore
-inst/doc/.gitignore
+inst/doc/oce.R
 ^.*\.Rproj$
 ^\.Rproj\.user$
 src/*.o$
@@ -23,4 +23,5 @@ tests/testthat/*png
 tests/testthat/*pdf
 man/figures/Makefile
 man/figures/*.R
+vignettes
 

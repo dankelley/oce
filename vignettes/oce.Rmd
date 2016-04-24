@@ -17,7 +17,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-<!-- edit vignettest/oce.Rmd then run with -->
+<!-- edit vignettes/oce.Rmd then run with -->
 <!-- devtools::build_vignettes() -->
 <!-- in the console. -->
 
