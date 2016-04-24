@@ -21,4 +21,6 @@ autom4te.cache
 man-roxygen
 tests/testthat/*png
 tests/testthat/*pdf
+man/figures/Makefile
+man/figures/*.R
 
