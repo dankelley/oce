@@ -1929,7 +1929,7 @@ mapArrows <- function(longitude0, latitude0,
     latitude0 <- latitude0[ok]
     longitude1 <- longitude1[ok]
     latitude1 <- latitude1[ok]
-    if (length(longitude) > 0) {
+    if (length(longitude0) > 0) {
         xy0 <- lonlat2map(longitude0, latitude0)
         xy1 <- lonlat2map(longitude1, latitude1)
         arrows(xy0$x, xy0$y, xy1$x, xy1$y,
