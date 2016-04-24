@@ -41,6 +41,13 @@ are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
 for the other velocity components. The \code{a} and \code{q}
 data can be retrived in \code{\link{raw}} form 
 or numeric form; see \dQuote{Examples}.
+
+It is also worth noting that heading, pitch, etc. may be stored in
+"slow" form in the object (e.g. in \code{headingSlow} within
+the \code{data} slot). In that case, accessing by full name, e.g.
+\code{x[["headingSlow"]]} retrieves the item as expected, but
+\code{x[["heading"]]} interpolates to the faster timescale, using
+\code{\link{approx}(timeSlow, headingSlow, time)}.
 }
 
 \section{Details of the general method}{

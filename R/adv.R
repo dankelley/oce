@@ -148,12 +148,20 @@ setMethod(f="summary",
 #' for the other velocity components. The \code{a} and \code{q}
 #' data can be retrived in \code{\link{raw}} form 
 #' or numeric form; see \dQuote{Examples}.
+#'
+#' It is also worth noting that heading, pitch, etc. may be stored in
+#' "slow" form in the object (e.g. in \code{headingSlow} within
+#' the \code{data} slot). In that case, accessing by full name, e.g.
+#' \code{x[["headingSlow"]]} retrieves the item as expected, but
+#' \code{x[["heading"]]} interpolates to the faster timescale, using
+#' \code{\link{approx}(timeSlow, headingSlow, time)}.
 #' 
 #' @template sub_subTemplate
 #' @family things related to \code{adv} data
 setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              haveSlow <- "timeSlow" %in% names(x@data)
               if (i == "u1") {
                   return(x@data$v[,1])
               } else if (i == "u2") {
@@ -180,6 +188,16 @@ setMethod(f="[[",
                       res <- x@data$q
                   }
                   return(res)
+              } else if (i %in% c("heading", "pitch", "roll")) {
+                  if (haveSlow) {
+                      ## offset the time so approx doesn't yield all NAs
+                      tSlow <- as.numeric(x@data$timeSlow)
+                      t <- as.numeric(x@data$time)
+                      t0 <- t[1]
+                      res <- approx(tSlow-t0, x@data[[i]], t-t0)$y
+                  } else {
+                      res <- x@data[[i]]
+                  }
               } else {
                   callNextMethod()
               }
@@ -187,8 +205,13 @@ setMethod(f="[[",
 
 #' Replace Parts of an \code{adv} Object
 #'
-#' In addition to the usual insertion of elements by name, note
-#' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
+#' @details
+#' If the \code{adv} object holds slow variables (i.e. if \code{timeSlow} is
+#' in the \code{data} slot), then assigning to .e.g. \code{heading} will not
+#' actually assign to a variable of that name, but instead assigns to
+#' \code{headingSlow}. To catch misapplication of this rule, an error
+#' message will be issued if the assigned value is not of the same length
+#' as \code{timeSlow}.
 #' 
 #' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #' @param value The value to be inserted into \code{x}.
@@ -200,16 +223,23 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature="adv",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+              haveSlow <- "timeSlow" %in% names(x@data)
               if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
               } else if (i %in% names(x@data)) {
                  x@data[[i]] <- value
-              } else if (i == "heading") {
-                  x@data$headingSlow <- value
-              } else if (i == "pitch" || i == "pitchSlow") {
-                  x@data$pitchSlow <- value
-              } else if (i == "pitch" || i == "pitchSlow") {
-                  x@data$rollSlow <- value
+              } else if (i %in% c("heading", "pitch", "roll")) {
+                  ## do not store as indicated; interpolate to the Slow variant
+                  if (haveSlow) {
+                      name <- paste(i, "Slow", sep="")
+                      if (!(name %in% names(x@data)))
+                          stop("no variable named '", name, "' in object's data slot")
+                      if (length(value) != length(x@data[[name]]))
+                          stop("length mismatch; value has ", length(value), " but ", name, " has ", length(x@data[[name]]), " elements")
+                      x@data[[name]] <- value
+                  } else {
+                      x@data[[i]] <- value
+                  }
               } else {
                   x <- callNextMethod()
               }

@@ -245,133 +245,133 @@ oceSetMetadata <- function(object, name, value, note="")
 ##     return(x@metadata$header)
 ## }
 
-heading <- function(x, time)
-{
-    if (missing(x)) stop("must supply 'x'")
-    if (!missing(time) && inherits(time, "oce")) {
-        if ("timeSlow" %in% names(time@data)) {
-            time <- time@data$timeSlow
-        } else if ("time" %in% names(time@data)) {
-            time <- time@data$time
-        } else {
-            stop("cannot determine time to which to interpolate")
-        }
-    }
-    if (inherits(x, "adp")) {
-        if (missing(time)) {
-            return(x@data$heading)
-        } else {
-            return(approx(x@data$time, x@data$heading, time)$y)
-        }
-    } else if (inherits(x, "adv")) {
-        if (missing(time)) {
-            return(x@data$heading)
-        } else {
-            if ("timeSlow" %in% names(x@data)) {
-                return(approx(x@data$timeSlow, x@data$headingSlow, time)$y)
-            } else {
-                return(approx(x@data$time, x@data$heading, time)$y)
-            }
-        }
-    } else {
-        stop("only works for 'adv' and 'adp' objects")
-    }
-}
+## heading <- function(x, time)
+## {
+##     if (missing(x)) stop("must supply 'x'")
+##     if (!missing(time) && inherits(time, "oce")) {
+##         if ("timeSlow" %in% names(time@data)) {
+##             time <- time@data$timeSlow
+##         } else if ("time" %in% names(time@data)) {
+##             time <- time@data$time
+##         } else {
+##             stop("cannot determine time to which to interpolate")
+##         }
+##     }
+##     if (inherits(x, "adp")) {
+##         if (missing(time)) {
+##             return(x@data$heading)
+##         } else {
+##             return(approx(x@data$time, x@data$heading, time)$y)
+##         }
+##     } else if (inherits(x, "adv")) {
+##         if (missing(time)) {
+##             return(x@data$heading)
+##         } else {
+##             if ("timeSlow" %in% names(x@data)) {
+##                 return(approx(x@data$timeSlow, x@data$headingSlow, time)$y)
+##             } else {
+##                 return(approx(x@data$time, x@data$heading, time)$y)
+##             }
+##         }
+##     } else {
+##         stop("only works for 'adv' and 'adp' objects")
+##     }
+## }
+## 
+## "heading<-" <- function(x, value)
+## {
+##     if ("headingSlow" %in% names(x@data)) {
+##         x@data$headingSlow <- value
+##     } else if ("heading" %in% names(x@data)) {
+##         x@data$heading <- value
+##     } else {
+##         stop("object has no item named 'data$heading' or 'data$headingSlow'")
+##     }
+##     x
+## }
+## 
+## "pitch<-" <- function(x, value)
+## {
+##     if ("pitchSlow" %in% names(x@data)) {
+##         x@data$pitchSlow <- value
+##     } else if ("pitch" %in% names(x@data)) {
+##         x@data$pitch <- value
+##     } else {
+##         stop("object has no item named 'data$pitch' or 'data$pitchSlow'")
+##     }
+##     x
+## }
 
-"heading<-" <- function(x, value)
-{
-    if ("headingSlow" %in% names(x@data)) {
-        x@data$headingSlow <- value
-    } else if ("heading" %in% names(x@data)) {
-        x@data$heading <- value
-    } else {
-        stop("object has no item named 'data$heading' or 'data$headingSlow'")
-    }
-    x
-}
-
-"pitch<-" <- function(x, value)
-{
-    if ("pitchSlow" %in% names(x@data)) {
-        x@data$pitchSlow <- value
-    } else if ("pitch" %in% names(x@data)) {
-        x@data$pitch <- value
-    } else {
-        stop("object has no item named 'data$pitch' or 'data$pitchSlow'")
-    }
-    x
-}
-
-latitude <- function(x, time, byDepth=TRUE)
-{
-    if (inherits(x, "section")) {
-        if (byDepth) {
-            nstation <- length(x@data$station)
-            res <- NULL
-            for (i in 1:nstation) {
-                res <- c(res, rep(x@metadata$latitude[i], length.out=length(x@data$station[[i]]@data$temperature)))
-            }
-        } else {
-            res <- x@metadata$latitude
-        }
-    } else {
-        if ("latitude" %in% names(x@metadata)) 
-            res <- x@metadata$latitude
-        else if ("latitude" %in% names(x@data))
-            res <- x@data$latitude
-        else
-            stop("no 'latitude' in names(x@data) or names(x@metadata)")
-    }
-    res 
-}
-
-longitude <- function(x, time, byDepth=TRUE)
-{
-    if (inherits(x, "section")) {
-        if (byDepth) {
-            nstation <- length(x@data$station)
-            res <- NULL
-            for (i in 1:nstation) {
-                res <- c(res, rep(x@metadata$longitude[i], length.out=length(x@data$station[[i]]@data$temperature)))
-            }
-        } else {
-            res <- x@metadata$longitude
-        }
-    } else {
-        if ("longitude" %in% names(x@metadata)) 
-            res <- x@metadata$longitude
-        else if ("longitude" %in% names(x@data))
-            res <- x@data$longitude
-        else
-            stop("no 'longitude' in names(x@data) or names(x@metadata)")
-    }
-    res 
-}
-
-"latitude<-" <- function(x, value)
-{
-    if ("latitude" %in% names(x@metadata)) {
-        x@metadata$latitude <- value[1]
-    } else if ("latitude" %in% names(x@data)) {
-        x@data$latitude <- value
-    } else {
-        stop("no item 'data$latitude$ or 'metadata$latitude' in object")
-    }
-    x
-}
-
-"longitude<-" <- function(x, value)
-{
-    if ("longitude" %in% names(x@metadata)) {
-        x@metadata$longitude <- value[1]
-    } else if ("longitude" %in% names(x@data)) {
-        x@data$longitude <- value
-    } else {
-        stop("no item 'data$longitude$ or 'metadata$longitude' in object")
-    }
-    x
-}
-
+##latitude <- function(x, time, byDepth=TRUE)
+##{
+##    if (inherits(x, "section")) {
+##        if (byDepth) {
+##            nstation <- length(x@data$station)
+##            res <- NULL
+##            for (i in 1:nstation) {
+##                res <- c(res, rep(x@metadata$latitude[i], length.out=length(x@data$station[[i]]@data$temperature)))
+##            }
+##        } else {
+##            res <- x@metadata$latitude
+##        }
+##    } else {
+##        if ("latitude" %in% names(x@metadata)) 
+##            res <- x@metadata$latitude
+##        else if ("latitude" %in% names(x@data))
+##            res <- x@data$latitude
+##        else
+##            stop("no 'latitude' in names(x@data) or names(x@metadata)")
+##    }
+##    res 
+##}
+##
+##longitude <- function(x, time, byDepth=TRUE)
+##{
+##    if (inherits(x, "section")) {
+##        if (byDepth) {
+##            nstation <- length(x@data$station)
+##            res <- NULL
+##            for (i in 1:nstation) {
+##                res <- c(res, rep(x@metadata$longitude[i], length.out=length(x@data$station[[i]]@data$temperature)))
+##            }
+##        } else {
+##            res <- x@metadata$longitude
+##        }
+##    } else {
+##        if ("longitude" %in% names(x@metadata)) 
+##            res <- x@metadata$longitude
+##        else if ("longitude" %in% names(x@data))
+##            res <- x@data$longitude
+##        else
+##            stop("no 'longitude' in names(x@data) or names(x@metadata)")
+##    }
+##    res 
+##}
+## 
+## "latitude<-" <- function(x, value)
+## {
+##     if ("latitude" %in% names(x@metadata)) {
+##         x@metadata$latitude <- value[1]
+##     } else if ("latitude" %in% names(x@data)) {
+##         x@data$latitude <- value
+##     } else {
+##         stop("no item 'data$latitude$ or 'metadata$latitude' in object")
+##     }
+##     x
+## }
+## 
+## "longitude<-" <- function(x, value)
+## {
+##     if ("longitude" %in% names(x@metadata)) {
+##         x@metadata$longitude <- value[1]
+##     } else if ("longitude" %in% names(x@data)) {
+##         x@data$longitude <- value
+##     } else {
+##         stop("no item 'data$longitude$ or 'metadata$longitude' in object")
+##     }
+##     x
+## }
+## 
 ## "pressure<-" <- function(x, value)
 ## {
 ##     if (!("pressure" %in% names(x@data)))
@@ -396,83 +396,83 @@ longitude <- function(x, time, byDepth=TRUE)
 ##     x
 ## }
 
-pitch <- function(x, time)
-{
-    if (missing(x)) stop("must supply 'x'")
-    if (!missing(time) && inherits(time, "oce")) {
-        if ("timeSlow" %in% names(time@data)) {
-            time <- time@data$timeSlow
-        } else if ("time" %in% names(time@data)) {
-            time <- time@data$time
-        } else {
-            stop("cannot determine time to which to interpolate")
-        }
-    }
-    if (inherits(x, "adp")) {
-        if (missing(time)) {
-            return(x@data$pitch)
-        } else {
-            return(approx(x@data$time, x@data$pitch, time)$y)
-        }
-    } else if (inherits(x, "adv")) {
-        if (missing(time)) {
-            return(x@data$pitch)
-        } else {
-            if ("timeSlow" %in% names(x@data)) {
-                return(approx(x@data$timeSlow, x@data$pitchSlow, time)$y)
-            } else {
-                return(approx(x@data$time, x@data$pitch, time)$y)
-            }
-        }
-    } else {
-        stop("only works for 'adv' and 'adp' objects")
-    }
-}
+## pitch <- function(x, time)
+## {
+##     if (missing(x)) stop("must supply 'x'")
+##     if (!missing(time) && inherits(time, "oce")) {
+##         if ("timeSlow" %in% names(time@data)) {
+##             time <- time@data$timeSlow
+##         } else if ("time" %in% names(time@data)) {
+##             time <- time@data$time
+##         } else {
+##             stop("cannot determine time to which to interpolate")
+##         }
+##     }
+##     if (inherits(x, "adp")) {
+##         if (missing(time)) {
+##             return(x@data$pitch)
+##         } else {
+##             return(approx(x@data$time, x@data$pitch, time)$y)
+##         }
+##     } else if (inherits(x, "adv")) {
+##         if (missing(time)) {
+##             return(x@data$pitch)
+##         } else {
+##             if ("timeSlow" %in% names(x@data)) {
+##                 return(approx(x@data$timeSlow, x@data$pitchSlow, time)$y)
+##             } else {
+##                 return(approx(x@data$time, x@data$pitch, time)$y)
+##             }
+##         }
+##     } else {
+##         stop("only works for 'adv' and 'adp' objects")
+##     }
+## }
 
-roll <- function(x, time)
-{
-    if (missing(x)) stop("must supply 'x'")
-    if (!missing(time) && inherits(time, "oce")) {
-        if ("timeSlow" %in% names(time@data)) {
-            time <- time@data$timeSlow
-        } else if ("time" %in% names(time@data)) {
-            time <- time@data$time
-        } else {
-            stop("cannot determine time to which to interpolate")
-        }
-    }
-    if (inherits(x, "adp")) {
-        if (missing(time)) {
-            return(x@data$roll)
-        } else {
-            return(approx(x@data$time, x@data$roll, time)$y)
-        }
-    } else if (inherits(x, "adv")) {
-        if (missing(time)) {
-            return(x@data$roll)
-        } else {
-            if ("timeSlow" %in% names(x@data)) {
-                return(approx(x@data$timeSlow, x@data$rollSlow, time)$y)
-            } else {
-                return(approx(x@data$time, x@data$roll, time)$y)
-            }
-        }
-    } else {
-        stop("only works for 'adv' and 'adp' objects")
-    }
-}
-
-"roll<-" <- function(x, value)
-{
-    if ("rollSlow" %in% names(x@data)) {
-        x@data$rollSlow <- value
-    } else if ("roll" %in% names(x@data)) {
-        x@data$roll <- value
-    } else {
-        stop("object has no item named 'data$roll' or 'data$rollSlow'")
-    }
-    x
-}
+## roll <- function(x, time)
+## {
+##     if (missing(x)) stop("must supply 'x'")
+##     if (!missing(time) && inherits(time, "oce")) {
+##         if ("timeSlow" %in% names(time@data)) {
+##             time <- time@data$timeSlow
+##         } else if ("time" %in% names(time@data)) {
+##             time <- time@data$time
+##         } else {
+##             stop("cannot determine time to which to interpolate")
+##         }
+##     }
+##     if (inherits(x, "adp")) {
+##         if (missing(time)) {
+##             return(x@data$roll)
+##         } else {
+##             return(approx(x@data$time, x@data$roll, time)$y)
+##         }
+##     } else if (inherits(x, "adv")) {
+##         if (missing(time)) {
+##             return(x@data$roll)
+##         } else {
+##             if ("timeSlow" %in% names(x@data)) {
+##                 return(approx(x@data$timeSlow, x@data$rollSlow, time)$y)
+##             } else {
+##                 return(approx(x@data$time, x@data$roll, time)$y)
+##             }
+##         }
+##     } else {
+##         stop("only works for 'adv' and 'adp' objects")
+##     }
+## }
+## 
+## "roll<-" <- function(x, value)
+## {
+##     if ("rollSlow" %in% names(x@data)) {
+##         x@data$rollSlow <- value
+##     } else if ("roll" %in% names(x@data)) {
+##         x@data$roll <- value
+##     } else {
+##         stop("object has no item named 'data$roll' or 'data$rollSlow'")
+##     }
+##     x
+## }
 
 ## time.oce <- function(x, ...)
 ## {
@@ -500,82 +500,82 @@ roll <- function(x, time)
 ##     res
 ## }
 
-hydrographyLocal <- function(x, time, item) # FIXME consider broadening as replacement for extract()
-{
-    if (inherits(x, "section")) {
-        if (item == "latitude") {
-            res <- NULL
-            for (i in 1:length(x@data$station))
-                res <- c(res, rep(x@metadata$latitude[i], length(x@data$station[[i]]@data$salinity)))
-        } else if (item == "longitude") {
-            res <- NULL
-            for (i in 1:length(x@data$station))
-                res <- c(res, rep(x@metadata$longitude[i], length(x@data$station[[i]]@data$salinity)))
-        } else {
-            if (!(item %in% names(x@data$station[[1]]@data)))
-                stop("the station data do not contain an item named \"", item, "\"")
-            res <- NULL
-            for (station in seq_along(x@data$station)) {
-                res <- c(res, x@data$station[[station]]@data[[item]])
-            }
-        }
-    } else if (inherits(x, "adv")) {
-        index <- agrep(item, names(x@data)) # use agrep to get e.g. temperatureSlow if given 'temperature'
-        if (length(index))
-            res <- x@data[[index]]
-        else
-            stop("cannot find item named '", item, "' in object's data")
-    } else if (inherits(x, "ctd")) {
-        if (item == "latitude") {
-            res <- rep(x@metadata$latitude, length(x@data$salinity))
-        } else if (item == "longitude") {
-            res <- rep(x@metadata$longitude, length(x@data$salinity))
-        } else if (item == "time") {
-            res <- rep(x@metadata$startTime, length(x@data$salinity))
-        } else {
-            if (!(item %in% names(x@data)))
-                stop("'x' does not contain data named \"", item, "\"")
-            if (missing(time)) {
-                res <- x@data[[item]]
-            } else {
-                ## Note 20151225 this block seems to have been quite mixed up 
-                if (inherits(time, "oce")) {
-                    if ("time" %in% names(x@data)) {
-                        res <- approx(x@data[["time"]], x@data[[item]], time)$y
-                    } else {
-                        stop("cannot find @data$time in object")
-                    }
-                    ##stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
-                    ##} else if (!inherits(as.POSIXct("2008-01-01"), "POSIXt")) {
-                    ##stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
-                    ##}
-                } else {
-                    stop("no time in object")
-                }
-                ##res <- approx(time@data$time, x@data[[item]], time)$y # FIXME: if broadening, consider timeSlow also
-            }
-        }
-    } else {
-        if (!(item %in% names(x@data)))
-            stop("'x' does not contain data named \"", item, "\"")
-        if (missing(time)) {
-            res <- x@data[[item]]
-        } else {
-            if (inherits(time, "oce")) {
-                if ("time" %in% names(x@data)) {
-                    res <- approx(x@data$time, x@data[[item]], time)$y
-                } else {
-                    stop("cannot find @data$time in object")
-                }
-                ##     time <- time@data$time # FIXME: if broadening, consider timeSlow also
-                ## } else if (!inherits(as.POSIXct("2008-01-01"), "POSIXt")) {
-                ##     stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
-            }
-            res <- approx(time@data$time, x@data[[item]], time)$y # FIXME: if broadening, consider timeSlow also
-        }
-    }
-    res
-}
+## hydrographyLocal <- function(x, time, item) # FIXME consider broadening as replacement for extract()
+## {
+##     if (inherits(x, "section")) {
+##         if (item == "latitude") {
+##             res <- NULL
+##             for (i in 1:length(x@data$station))
+##                 res <- c(res, rep(x@metadata$latitude[i], length(x@data$station[[i]]@data$salinity)))
+##         } else if (item == "longitude") {
+##             res <- NULL
+##             for (i in 1:length(x@data$station))
+##                 res <- c(res, rep(x@metadata$longitude[i], length(x@data$station[[i]]@data$salinity)))
+##         } else {
+##             if (!(item %in% names(x@data$station[[1]]@data)))
+##                 stop("the station data do not contain an item named \"", item, "\"")
+##             res <- NULL
+##             for (station in seq_along(x@data$station)) {
+##                 res <- c(res, x@data$station[[station]]@data[[item]])
+##             }
+##         }
+##     } else if (inherits(x, "adv")) {
+##         index <- agrep(item, names(x@data)) # use agrep to get e.g. temperatureSlow if given 'temperature'
+##         if (length(index))
+##             res <- x@data[[index]]
+##         else
+##             stop("cannot find item named '", item, "' in object's data")
+##     } else if (inherits(x, "ctd")) {
+##         if (item == "latitude") {
+##             res <- rep(x@metadata$latitude, length(x@data$salinity))
+##         } else if (item == "longitude") {
+##             res <- rep(x@metadata$longitude, length(x@data$salinity))
+##         } else if (item == "time") {
+##             res <- rep(x@metadata$startTime, length(x@data$salinity))
+##         } else {
+##             if (!(item %in% names(x@data)))
+##                 stop("'x' does not contain data named \"", item, "\"")
+##             if (missing(time)) {
+##                 res <- x@data[[item]]
+##             } else {
+##                 ## Note 20151225 this block seems to have been quite mixed up 
+##                 if (inherits(time, "oce")) {
+##                     if ("time" %in% names(x@data)) {
+##                         res <- approx(x@data[["time"]], x@data[[item]], time)$y
+##                     } else {
+##                         stop("cannot find @data$time in object")
+##                     }
+##                     ##stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
+##                     ##} else if (!inherits(as.POSIXct("2008-01-01"), "POSIXt")) {
+##                     ##stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
+##                     ##}
+##                 } else {
+##                     stop("no time in object")
+##                 }
+##                 ##res <- approx(time@data$time, x@data[[item]], time)$y # FIXME: if broadening, consider timeSlow also
+##             }
+##         }
+##     } else {
+##         if (!(item %in% names(x@data)))
+##             stop("'x' does not contain data named \"", item, "\"")
+##         if (missing(time)) {
+##             res <- x@data[[item]]
+##         } else {
+##             if (inherits(time, "oce")) {
+##                 if ("time" %in% names(x@data)) {
+##                     res <- approx(x@data$time, x@data[[item]], time)$y
+##                 } else {
+##                     stop("cannot find @data$time in object")
+##                 }
+##                 ##     time <- time@data$time # FIXME: if broadening, consider timeSlow also
+##                 ## } else if (!inherits(as.POSIXct("2008-01-01"), "POSIXt")) {
+##                 ##     stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
+##             }
+##             res <- approx(time@data$time, x@data[[item]], time)$y # FIXME: if broadening, consider timeSlow also
+##         }
+##     }
+##     res
+## }
 
 ## distance <- function(x, time)
 ## {

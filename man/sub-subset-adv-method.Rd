@@ -19,8 +19,7 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-In addition to the usual insertion of elements by name, note
-that e.g. \code{pitch} gets stored into \code{pitchSlow}.
+Replace Parts of an \code{adv} Object
 
 The \code{[[} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose,
@@ -38,6 +37,14 @@ is used to try to access the requested information (see
 Second, if no match is found, a general function is used
 (see \sQuote{Details of the general method}). If neither
 method can locates the requested item, \code{NULL} is returned.
+}
+\details{
+If the \code{adv} object holds slow variables (i.e. if \code{timeSlow} is
+in the \code{data} slot), then assigning to .e.g. \code{heading} will not
+actually assign to a variable of that name, but instead assigns to
+\code{headingSlow}. To catch misapplication of this rule, an error
+message will be issued if the assigned value is not of the same length
+as \code{timeSlow}.
 }
 \section{Details of the general method}{
 
