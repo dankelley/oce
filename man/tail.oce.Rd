@@ -7,14 +7,15 @@
 \method{tail}{oce}(x, n = 6L, ...)
 }
 \arguments{
-\item{x}{An \code{oce} object.}
+\item{x}{An \code{oce} object of a suitable class (presently only \code{adp} is
+permitted).}
 
 \item{n}{Number of elements to extract.}
 
 \item{...}{ignored}
 }
 \description{
-This only works for \code{adp} and \code{adv} objects.
+Extract the end of an \code{oce} object
 }
 \seealso{
 \code{\link{head.oce}}, which yields the start of an \code{oce} object.

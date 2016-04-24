@@ -375,9 +375,8 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
 
 #' Extract the start of an \code{oce} object
 #'
-#' This only works for \code{adp} and \code{adv} objects.
-#'
-#' @param x An \code{oce} object.
+#' @param x An \code{oce} object of a suitable class (presently only \code{adp} is
+#' permitted).
 #' @param n Number of elements to extract.
 #' @param ... ignored
 #' @seealso \code{\link{tail.oce}}, which yields the end of an \code{oce} object.
@@ -386,10 +385,8 @@ head.oce <- function(x, n=6L, ...)
     res <- NULL
     if (inherits(x, "adp") || inherits(x, "adv")) {
         numberOfProfiles <- dim(x@data$v)[1]
-        if (n < 0)
-            look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
-        else
-            look <- seq.int(1, min(n, numberOfProfiles))
+        look <- if (n < 0) seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
+            else seq.int(1, min(n, numberOfProfiles))
         res <- x
         for (name in names(x@data)) {
             if ("distance" == name)
@@ -415,19 +412,15 @@ head.oce <- function(x, n=6L, ...)
 
 #' Extract the end of an \code{oce} object
 #'
-#' This only works for \code{adp} and \code{adv} objects.
-#'
 #' @inheritParams head.oce
 #' @seealso \code{\link{head.oce}}, which yields the start of an \code{oce} object.
 tail.oce <- function(x, n=6L, ...)
 {
     res <- NULL
-    if (inherits(x, "adp") || inherits(x, "adv")) {
+    if (inherits(x, "adp")) {
         numberOfProfiles <- dim(x@data$v)[1]
-        if (n < 0)
-            look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
-        else
-            look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
+        look <- if (n < 0) seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
+            else seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
         res <- x
         for (name in names(x@data)) {
             if (is.vector(x@data[[name]])) {

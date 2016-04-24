@@ -337,7 +337,17 @@ setMethod(f="subset",
           })
 
 
-
+#' @template readAdvTemplate
+#' @param type character string indicating type of file, and used by
+#' \code{read.adv} to dispatch to one of the speciality functions.
+#' @param start the time of the first sample, typically created with
+#' \code{\link{as.POSIXct}}.  This may be a vector of times,
+#' if \code{filename} is a vector of file names.
+#' @param deltat the time between samples. (This is mandatory if
+#' \code{header=FALSE}.)
+#' @param header A logical value indicating whether the file starts with a header.
+#' (This will not be the case for files that are created by data loggers that
+#' chop the raw data up into a series of sub-files, e.g. once per hour.)
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
@@ -362,7 +372,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=longitude, latitude=latitude,
                             debug=debug, processingLog=processingLog)
     else if (type == "sontek.text")
-        read.adv.sontek.text(basefile=file, from=from, to=to, by=by, tz=tz,
+        read.adv.sontek.text(file=file, from=from, to=to, by=by, tz=tz,
                              longitude=longitude, latitude=latitude,
                              debug=debug, processingLog=processingLog)
     else
