@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{drawIsopycnals}
 \alias{drawIsopycnals}
-\title{Add isopycnal curves to TS plot}
+\title{Add Isopycnal Curves to TS Plot}
 \usage{
 drawIsopycnals(nlevels = 6, levels, rotate = TRUE, rho1000 = FALSE,
   digits = 2, eos = getOption("oceEOS", default = "gsw"), cex = 0.75 *

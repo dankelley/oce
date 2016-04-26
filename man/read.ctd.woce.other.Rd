@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{read.ctd.woce.other}
 \alias{read.ctd.woce.other}
-\title{Read a WOCE-type CTD file with first word "EXPOCODE"}
+\title{Read a WOCE-type CTD file with First Word "EXPOCODE"}
 \usage{
 read.ctd.woce.other(file, columns = NULL, station = NULL,
   missing.value = -999, monitor = FALSE, debug = getOption("oceDebug"),
@@ -48,7 +48,7 @@ variable across data formats, because the meta-information provided
 in those formats varies widely.
 }
 \description{
-Read a WOCE-type CTD file with first word "EXPOCODE"
+Read a WOCE-type CTD file with First Word "EXPOCODE"
 }
 \details{
 \code{read.ctd.woce.other()} reads files stored in the exchange format used

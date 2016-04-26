@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{plotInset}
 \alias{plotInset}
-\title{Plot an inset diagram}
+\title{Plot an Inset Diagram}
 \usage{
 plotInset(xleft, ybottom, xright, ytop, expr, mar = c(2, 2, 1, 1),
   debug = getOption("oceDebug"))

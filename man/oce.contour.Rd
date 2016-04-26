@@ -3,7 +3,7 @@
 \name{oce.contour}
 \alias{oce.contour}
 \alias{oceContour}
-\title{Contour with ability to flip x and y}
+\title{Oce Variant of contour}
 \usage{
 oce.contour(x, y, z, revx = FALSE, revy = FALSE, add = FALSE, tformat,
   drawTimeRange = getOption("oceDrawTimeRange"),

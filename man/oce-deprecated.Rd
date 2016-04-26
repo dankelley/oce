@@ -3,7 +3,7 @@
 \name{oce-deprecated}
 \alias{oce-defunct}
 \alias{oce-deprecated}
-\title{Deprecated and defunct elements of package \sQuote{oce}}
+\title{Deprecated and Defunct Elements of package \sQuote{oce}}
 \description{
 Certain functions and function arguments are still provided for
 compatibility with older versions of \sQuote{oce}, but will be removed soon.

@@ -3,7 +3,7 @@
 \name{oceMagic}
 \alias{oce.magic}
 \alias{oceMagic}
-\title{Find the type of an oceanographic data file}
+\title{Find the Type of an Oceanographic Data File}
 \usage{
 oceMagic(file, debug = getOption("oceDebug"))
 }

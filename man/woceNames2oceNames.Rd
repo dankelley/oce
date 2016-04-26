@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{woceNames2oceNames}
 \alias{woceNames2oceNames}
-\title{Translate WOCE data names to \code{oce} data names}
+\title{Translate WOCE Data Names to Oce Data Names}
 \usage{
 woceNames2oceNames(names)
 }

@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to store CTD (or general hydrographic) Data
+#' Class to Store CTD (or general hydrographic) Data
 #'
 #' Class to store hydrographic data such as measured with a CTD (conductivity,
 #' temperature, depth) instrument.
@@ -57,7 +57,6 @@
 #' \code{\link{as.ctd}}.  See \code{\link{read.ctd}} for references on data
 #' formats used in CTD files. Data can also be assembled into
 #' \code{ctd} objects with \code{\link{as.ctd}}.
-#'
 #'
 #' Statistical summaries are provided by \code{\link{summary,ctd-method}}, while
 #' \code{\link{show}} displays an overview.
@@ -152,7 +151,7 @@ NULL
 ## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
-#' @title Handle flags in \code{ctd} objects
+#' @title Handle Flags in CTD Objects
 #' @details
 #' If \code{flags} and \code{actions} are not provided, the
 #' default is to use WHP (World Hydrographic Program) flags [1], in which the
@@ -258,7 +257,7 @@ setMethod(f="initialize",
           })
 
 
-#' Summarize a \code{ctd} Object
+#' Summarize a CTD Object
 #' 
 #' Summarizes some of the data in a \code{ctd} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
@@ -313,7 +312,7 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' @title Extract Parts of a \code{ctd} Object
+#' @title Extract Parts of a CTD Object
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @template sub_subTemplate
 #'
@@ -494,7 +493,7 @@ setMethod(f="[[",
               }
           })
 
-#' @title Replace Parts of a \code{ctd} Object
+#' @title Replace Parts of a CTD Object
 #' @param x A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}
 #' @template sub_subsetTemplate
 #'
@@ -515,7 +514,7 @@ setMethod(f="[[<-",
           })
 
 
-#' Coerce data into ctd dataset.
+#' Coerce data into CTD dataset
 #' 
 #' Assemble data into a \code{\link{ctd-class}} dataset.
 #' 
@@ -1056,7 +1055,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 }
 
 
-#' Add a column to the data slot of a ctd object
+#' Add a Column to the Data Slot of a CTD Object
 #'
 #' Add a column to the \code{data} slot of an object of
 #' \code{\link{ctd-class}}, also updating the \code{metadata}
@@ -1135,7 +1134,7 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
 }
 
 
-#' Decimate a CTD profile.
+#' Decimate a CTD profile
 #' 
 #' Interpolate a CTD profile to specified pressure values.
 #' 
@@ -1389,7 +1388,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
     res
 }
 
-#' Find profiles within a towyow CTD record
+#' Find Profiles within a Tow-Yow CTD Record
 #' 
 #' Examine the pressure record looking for extended periods of either ascent or descent, and return
 #' either indices to these events or a vector of CTD records containing the events.
@@ -1529,7 +1528,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     }
 }
 
-#' Read an ODF -type CTD file, i.e. a file with name ending in \code{.odf}.
+#' Read a CTD file in ODF format
 #' @template readCtdTemplate
 #'
 #' @details
@@ -1559,7 +1558,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 }
 
 
-#' Trim start/end portions of a CTD cast
+#' Trim Beginning and Ending of a CTD cast
 #' 
 #' Often in CTD profiling, the goal is to isolate only the downcast, discarding measurements made in
 #' the air, in an equilibration phase in which the device is held below the water surface, and then the
@@ -1933,7 +1932,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 }
 
 
-#' Update a CTD header
+#' Update a CTD Header
 #' 
 #' Update the header of a \code{ctd} object, e.g. adjusting \code{nvalues} and the
 #' \code{span} of each column. This is done automatically by \code{ctdTrim}, for
@@ -1991,7 +1990,7 @@ ctdUpdateHeader <- function (x, debug = FALSE)
 }
 
 
-#' Write a CTD data object as a .csv file
+#' Write a CTD Data Object as a CSV File
 #' 
 #' Writes a comma-separated file containing the data frame stored in
 #' \code{object@data}.  The file is suitable for reading with a spreadsheet, or
@@ -2034,7 +2033,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 }
 
 
-#' Plot seawater CTD data
+#' Plot CTD Data
 #' 
 #' Plot CTD data, by default in a four-panel display showing (a) profiles of
 #' salinity and temperature, (b) profiles of density and the square of buoyancy
@@ -2239,7 +2238,6 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' 
 #' @param ... Optional arguments passed to plotting functions. A common example is
 #' to set \code{df}, for use in \link{swN2} calculations.
-#' 
 #' 
 #' @seealso
 #' The documentation for \code{\link{ctd-class}} explains the structure of CTD
@@ -2835,7 +2833,7 @@ setMethod(f="plot",
           })
 
 
-#' Subset a CTD object
+#' Subset a CTD Object
 #'
 #' This function is somewhat analogous to
 #' \code{\link{subset.data.frame}}, but only one independent variable may be
@@ -2874,7 +2872,7 @@ setMethod(f="subset",
           })
 
 
-#' Plot seawater data in a low-level fashion
+#' Plot CTD data in a Low-Level Fashion
 #' 
 #' Plot CTD data as time-series against scan number, to help with trimming
 #' extraneous data from a CTD cast.
@@ -2963,7 +2961,7 @@ plotScan <- function(x, which=1, xtype="scan",
     }
 }
 
-#' Read a general CTD file
+#' Read a General CTD File
 #' @template readCtdTemplate
 #' @param type If \code{NULL}, then the first line is studied, in order to
 #' determine the file type.  If \code{type="SBE19"}, then a \emph{Seabird 19}, or
@@ -3051,7 +3049,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=
     res
 }
 
-#' Translate WOCE data names to \code{oce} data names
+#' Translate WOCE Data Names to Oce Data Names
 #'
 #' Translate WOCE-style names to \code{oce} names, using \code{\link{gsub}}
 #' to match patterns. For example, the pattern \code{"CTDOXY.*"} is taken
@@ -3083,7 +3081,7 @@ woceNames2oceNames <- function(names)
     names
 }
 
-#' Read a WOCE-type CTD file in which the first word is "CTD"
+#' Read a WOCE-type CTD file with First Word "CTD"
 #' @template readCtdTemplate
 #'
 #' @details
@@ -3401,7 +3399,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     res
 }
 
-#' Read a WOCE-type CTD file with first word "EXPOCODE"
+#' Read a WOCE-type CTD file with First Word "EXPOCODE"
 #' @template readCtdTemplate
 #'
 #' @details
@@ -3447,7 +3445,7 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missing.value=
 }
 
 
-#' Parse a latitude or longitude string
+#' Parse a Latitude or Longitude String
 #' 
 #' Parse a latitude or longitude string, e.g. as in the header of a CTD file
 #' The following formats are understood (for, e.g. latitude) \preformatted{ *
@@ -3497,7 +3495,7 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
 time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 
 
-#' Read an ODV-type CTD file
+#' Read an ODV-type CTD File
 #' @template readCtdTemplate
 #'
 #' @details
@@ -3517,7 +3515,7 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 
 
 
-#' Plot temperature-salinity diagram
+#' Plot Temperature-Salinity Diagram
 #' 
 #' Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
 #' 
@@ -3746,7 +3744,7 @@ plotTS <- function (x,
 }
 
 
-#' Add isopycnal curves to TS plot
+#' Add Isopycnal Curves to TS Plot
 #' 
 #' Adds isopycnal lines to an existing temperature-salinity plot.  This is
 #' called by \code{\link{plotTS}}, and may be called by the user also, e.g. if
@@ -3829,7 +3827,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 }
 
 
-#' Plot a profile, with decreasing pressure on the y axis
+#' Plot a CTD Profile
 #' 
 #' Plot a profile, showing variation of some quantity (or quantities) with
 #' pressure, using the oceanographic convention of putting lower pressures
@@ -4776,7 +4774,7 @@ plotProfile <- function (x,
     oceDebug(debug, "} # plotProfile()\n", unindent=1)
 }
 
-#' Read an ITP-type CTD file
+#' Read an ITP-type CTD File
 #' @template readCtdTemplate
 #'
 #' @details

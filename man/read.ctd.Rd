@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{read.ctd}
 \alias{read.ctd}
-\title{Read a general CTD file}
+\title{Read a General CTD File}
 \usage{
 read.ctd(file, type = NULL, columns = NULL, station = NULL,
   missing.value = -999, monitor = FALSE, debug = getOption("oceDebug"),
@@ -55,7 +55,7 @@ variable across data formats, because the meta-information provided
 in those formats varies widely.
 }
 \description{
-Read a general CTD file
+Read a General CTD File
 }
 \details{
 \code{read.ctd()} is a base function that in turn calls specialized functions, e.g.

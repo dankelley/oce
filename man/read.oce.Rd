@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{read.oce}
 \alias{read.oce}
-\title{Read an oceanographic data file}
+\title{Read an Oceanographic Data File}
 \usage{
 read.oce(file, ...)
 }

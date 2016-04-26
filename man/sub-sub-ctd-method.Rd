@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,ctd-method}
 \alias{[[,ctd-method}
-\title{Extract Parts of a \code{ctd} Object}
+\title{Extract Parts of a CTD Object}
 \usage{
 \S4method{[[}{ctd}(x, i, j, ...)
 }

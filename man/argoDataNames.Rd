@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{argoDataNames}
 \alias{argoDataNames}
-\title{Convert profile-data names from the Argo convention to the oce convention}
+\title{Convert Data Names From the Argo Convention to the Oce Convention}
 \usage{
 argoDataNames(names)
 }

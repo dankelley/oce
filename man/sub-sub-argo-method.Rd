@@ -3,12 +3,12 @@
 \docType{methods}
 \name{[[,argo-method}
 \alias{[[,argo-method}
-\title{Extract Something From a \code{argo} Object}
+\title{Extract Something From an Argo Object}
 \usage{
 \S4method{[[}{argo}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A argo object, i.e. one inheriting from \code{\link{argo-class}}.}
+\item{x}{An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.}
 
 \item{i}{Character string indicating the name of item to extract.}
 

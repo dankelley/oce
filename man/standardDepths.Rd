@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{standardDepths}
 \alias{standardDepths}
-\title{Standard oceanographic depths}
+\title{Standard Oceanographic Depths}
 \usage{
 standardDepths()
 }

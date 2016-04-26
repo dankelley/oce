@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{write.ctd}
 \alias{write.ctd}
-\title{Write a CTD data object as a .csv file}
+\title{Write a CTD Data Object as a CSV File}
 \usage{
 write.ctd(object, file = stop("'file' must be specified"))
 }

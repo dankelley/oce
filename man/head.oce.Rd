@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{head.oce}
 \alias{head.oce}
-\title{Extract the start of an \code{oce} object}
+\title{Extract The Start of an Oce Object}
 \usage{
 \method{head}{oce}(x, n = 6L, ...)
 }
@@ -15,7 +15,7 @@ permitted).}
 \item{...}{ignored}
 }
 \description{
-Extract the start of an \code{oce} object
+Extract The Start of an Oce Object
 }
 \seealso{
 \code{\link{tail.oce}}, which yields the end of an \code{oce} object.

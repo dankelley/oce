@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{oce.write.table}
 \alias{oce.write.table}
-\title{Write the data portion of object to a file}
+\title{Write the Data Portion of Object to a File}
 \usage{
 oce.write.table(x, file = "", ...)
 }

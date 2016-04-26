@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' oce: A package for Oceanographic analysis
+#' oce: A Package for Oceanographic Analysis
 #'
 #' The oce package provides functions for working with
 #' Oceanographic data, for calculations that are specific
@@ -57,7 +57,7 @@
 NULL
 
 
-#' Deprecated and defunct elements of package \sQuote{oce}
+#' Deprecated and Defunct Elements of package \sQuote{oce}
 #' 
 #' Certain functions and function arguments are still provided for
 #' compatibility with older versions of \sQuote{oce}, but will be removed soon.
@@ -107,7 +107,7 @@ NULL
 #' extended here to function arguments.
 NULL
 
-#' Coerce Something Into an oce Object
+#' Coerce Something Into an Oce Object
 #'
 #' @details
 #' This function is limited and not intended for common use.
@@ -191,7 +191,7 @@ as.oce <- function(x, ...)
 }
 
 
-#' Replace the heading for one instrument with the heading for another
+#' Replace the Heading for One Instrument With That of Another
 #' 
 #' Replace the heading angles in one oce object with that from another,
 #' possibly with a constant adjustment.
@@ -228,7 +228,7 @@ useHeading <- function(b, g, add=0)
 
 
 
-#' Window an oce object by time or distance
+#' Window an Oce Object by Time or Distance
 #' 
 #' Windows \code{x} on either time or distance, depending on the value of
 #' \code{which}.  In each case, values of \code{start} and \code{end} may be
@@ -236,6 +236,7 @@ useHeading <- function(b, g, add=0)
 #' \code{which} is \code{"time"}, then the \code{start} and \code{end} values
 #' may also be provided as POSIX times, or character strings indicating times
 #' (in time zone given by the value of \code{getOption("oceTz")}).
+#' Note that \code{\link{subset}} may be more useful than this function.
 #' 
 #' @param x an \code{oce} object.
 #' @param start the start time (or distance) of the time (or space) region of
@@ -373,7 +374,7 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
 }
 
 
-#' Extract the start of an \code{oce} object
+#' Extract The Start of an Oce Object
 #'
 #' @param x An \code{oce} object of a suitable class (presently only \code{adp} is
 #' permitted).
@@ -410,7 +411,7 @@ head.oce <- function(x, n=6L, ...)
 }
 
 
-#' Extract the end of an \code{oce} object
+#' Extract the End of an Oce Object
 #'
 #' @inheritParams head.oce
 #' @seealso \code{\link{head.oce}}, which yields the start of an \code{oce} object.
@@ -483,7 +484,7 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 }
 
 
-#' Interpolate 1D data with Unesco or Reiniger-Ross algorithm
+#' Interpolate 1D Data with Unesco or Reiniger-Ross Algorithm
 #' 
 #' Interpolate one-dimensional data using schemes that permit curvature but
 #' tends minimize extrema that are not well-indicated by the data.
@@ -602,7 +603,7 @@ oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
 oce.approx <- oceApprox
 
 
-#' Draw a stick-plot diagram
+#' Draw a Stick Plot
 #' 
 #' The arrows are drawn with directions on the graph that match the directions
 #' indicated by the \code{u} and \code{v} components. The arrow size is set
@@ -697,7 +698,7 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
     options(warn=warn)
 }
 
-#' Add a grid to an existing plot, with special abilities for those created by oce
+#' Add a Grid to an Existing Oce Plot
 #'
 #' @details
 #' For plots not created by oce functions, or for missing \code{xat} and \code{yat},
@@ -756,7 +757,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 }
 
 
-#' Plot a time-series, obeying the timezone
+#' Oce Variant of plot.ts
 #' 
 #' Plot a time-series, obeying the timezone and possibly drawing the range in
 #' the top-left margin
@@ -946,7 +947,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
 }
 
 
-#' More general form of as.POSIXlt
+#' Oce Variant of as.POSIXlt
 #' 
 #' Used in parsing headers, this function is built on the standard
 #' \code{\link{as.POSIXlt}} function.  the only difference is that this also
@@ -1020,7 +1021,7 @@ oce.as.POSIXlt <- function (x, tz = "")
 }
 
 
-#' Edit an oce object
+#' Edit an Oce Object
 #' 
 #' Edit an element of an oce object, inserting a note in the processing
 #' log of the returned object.
@@ -1162,7 +1163,7 @@ oceEdit <- function(x, item, value, action, reason="", person="",
 oce.edit <- oceEdit
 
 
-#' Write the data portion of object to a file
+#' Write the Data Portion of Object to a File
 #' 
 #' The output has a line containing the names of the columns in \code{x$data},
 #' each enclosed in double quotes.  After that line are lines for the data
@@ -1193,7 +1194,7 @@ oce.write.table <- function (x, file="", ...)
 }
 
 
-#' Standard oceanographic depths
+#' Standard Oceanographic Depths
 #' 
 #' This returns so-called standard depths 0m, 10m, etc. below the sea surface.
 #' 
@@ -1207,7 +1208,7 @@ standardDepths <- function()
       4500, 5000, 5500)
 }
 
-#' Find the type of an oceanographic data file
+#' Find the Type of an Oceanographic Data File
 #' 
 #' This function tries to infer the file type, based on either the data within
 #' the file or, more rarely, based on the file name.
@@ -1454,7 +1455,7 @@ oce.magic <- oceMagic
 
 
 
-#' Read an oceanographic data file
+#' Read an Oceanographic Data File
 #' 
 #' Read an oceanographic data file, auto-discovering the file type from the
 #' first line of the file.
@@ -1596,7 +1597,7 @@ read.oce <- function(file, ...)
     stop("unknown file type \"", type, "\"")
 }
 
-#' Read a netcdf file
+#' Read a NetCDF File
 #'
 #' @details
 #' Read a netcdf file, trying to interpret its contents sensibly.
@@ -1674,9 +1675,9 @@ read.netcdf <- function(file, ...)
 }
 
 
-#' Create a palette of colours
+#' Create a Palette of Colours
 #' 
-#' Create a palette of colours
+#' Create a palette of colours.
 #' 
 #' \code{oce.colorsPalette} provides a variety of pre-defined palettes.
 #' \code{which}=1 yields the ColorBrewer diverging red/blue scheme while
@@ -1815,7 +1816,7 @@ oce.colorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 }
 oceColorsTwo <- oce.colorsTwo
 
-#' Gebco colors
+#' Gebco Colors
 #' @aliases oceColorsGebco oce.colors.gebco
 #' @param n Number of colors to return
 #' @param region String indicating application region, one of \code{"water"}, \code{"land"},
@@ -1888,7 +1889,7 @@ oceColorsVelocity <- oce.colorsVelocity <- oce.colorsCLOSURE("velocity")
 oceColorsVorticity <- oce.colorsVorticity <- oce.colorsCLOSURE("vorticity")
 
 
-## matlab-like scheme
+## Simulation of Matlab Jet Colors
 oce.colorsJet <- function(n)
 {
     if (missing(n) || n <= 0)
@@ -1968,7 +1969,7 @@ oce.colorsPalette <- function(n, which=1)
 oceColorsPalette <- oce.colorsPalette
 
 
-#' Modified version of axis.POSIXct
+#' Oce Version of axis.POSIXct
 #' 
 #' As \code{\link{axis.POSIXct}} but with axis labels obeying the timezone of
 #' \code{x}.  This will not be needed for 2.9 and later, but is included so
@@ -2282,7 +2283,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
 }
 
 
-#' Convert a numeric time to hour, minute, and second
+#' Convert a Numeric Time to Hour, Minute, and Second
 #' 
 #' @param t a vector of factors or character strings, in the format 1200 for
 #' 12:00, 0900 for 09:00, etc.
@@ -2327,7 +2328,7 @@ numberAsHMS <- function(t, default=0)
 }
 
 
-#' Convert a numeric time to a POSIXct time
+#' Convert a Numeric Time to a POSIXct Time
 #' 
 #' There are many varieties, according to the value of \code{type} as defined
 #' in \sQuote{Details}.
@@ -2444,7 +2445,7 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
 }
 
 
-#' Plot an inset diagram
+#' Plot an Inset Diagram
 #' 
 #' Adds an inset diagram to an existing plot.  Note that if the inset is a map
 #' or coastline, it will be necessary to supply \code{inset=TRUE} to prevent
@@ -2576,7 +2577,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
 }
 
 
-#' Decode a time, similar to as.POSIXct()
+#' Oce Version of as.POSIXct
 #' 
 #' @details
 #' Each format in \code{timeFormats} is used in turn as the \code{format}
@@ -2678,7 +2679,7 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 }
 
 
-#' Draw a direction field.
+#' Draw a Direction Field
 #' 
 #' The direction field is indicated variously, depending on the value of
 #' \code{type}:\itemize{  
@@ -2779,7 +2780,7 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, length=0.05, add=FALS
 }
 
 
-#' Contour with ability to flip x and y
+#' Oce Variant of contour
 #' 
 #' This provides something analagous to \code{\link{contour}}, but with the
 #' ability to flip x and y.

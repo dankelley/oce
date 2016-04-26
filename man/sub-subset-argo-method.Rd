@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,argo-method}
 \alias{[[<-,argo-method}
-\title{Replace Parts of a \code{argo} Object}
+\title{Replace Parts of an Argo Object}
 \usage{
 \S4method{[[}{argo}(x, i, j) <- value
 }

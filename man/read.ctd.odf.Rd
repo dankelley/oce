@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{read.ctd.odf}
 \alias{read.ctd.odf}
-\title{Read an ODF -type CTD file, i.e. a file with name ending in \code{.odf}.}
+\title{Read a CTD file in ODF format}
 \usage{
 read.ctd.odf(file, columns = NULL, station = NULL, missing.value = -999,
   monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
@@ -47,7 +47,7 @@ variable across data formats, because the meta-information provided
 in those formats varies widely.
 }
 \description{
-Read an ODF -type CTD file, i.e. a file with name ending in \code{.odf}.
+Read a CTD file in ODF format
 }
 \details{
 \code{read.ctd.odf} reads files stored in Ocean Data Format, used in

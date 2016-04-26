@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdTrim}
 \alias{ctdTrim}
-\title{Trim start/end portions of a CTD cast}
+\title{Trim Beginning and Ending of a CTD cast}
 \usage{
 ctdTrim(x, method, removeDepthInversions = FALSE, parameters = NULL,
   debug = getOption("oceDebug"))

@@ -46,8 +46,8 @@ setClass("argo", contains="oce")
 #' @family things related to \code{argo} data
 NULL
 
-#' @title Extract Something From a \code{argo} Object
-#' @param x A argo object, i.e. one inheriting from \code{\link{argo-class}}.
+#' @title Extract Something From an Argo Object
+#' @param x An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.
 #' @examples
 #' data(argo)
 #' dim(argo[['temperature']])
@@ -60,7 +60,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{argo} Object
+#' @title Replace Parts of an Argo Object
 #' @param x An \code{argo} object, i.e. inheriting from \code{\link{argo-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{argo} data
@@ -97,7 +97,7 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
     res
 }
 
-#' Convert profile-data names from the Argo convention to the oce convention
+#' Convert Data Names From the Argo Convention to the Oce Convention
 #'
 #' For example, \code{"PSAL"} becomes \code{"salinity"}
 #' @param names vector of character strings containing names in the Argo convention.
@@ -116,7 +116,7 @@ argoDataNames <- function(names)
 }
 
 
-#' Subset an argo object
+#' Subset an Argo Object
 #'
 #' Subset an argo object, either by selecting just the "adjusted" data
 #' or by subsetting by pressure or other variables.
@@ -295,7 +295,7 @@ setMethod(f="subset",
           })
 
 
-#' Summarize an Argo object
+#' Summarize an Argo Object
 #' 
 #' @description Summarizes some of the data in an \code{argo} object.
 #' 
@@ -335,7 +335,7 @@ ncdfFixMatrix <- function(x)
     x
 }
 
-#' Grid a Argo drifter path.
+#' Grid a Argo Drifter Path
 #' 
 #' Grid a Argo drifter, by interpolating to fixed pressure levels.
 #' The gridding is done with \code{\link{approx}}.  If there is
@@ -436,7 +436,7 @@ argoDecodeFlags <- function(f) # local function
 
 
 
-#' Read an Argo data file
+#' Read an Argo Data File
 #' 
 #' \code{read.argo} is used to read an Argo file, producing an object of type
 #' \code{argo}. The file must be in the ARGO-style netCDF format described at
@@ -786,7 +786,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     res
 }
 
-#' Coerce data into argo dataset
+#' Coerce Data Into an Argo Dataset
 #' 
 #' Coerce a dataset into an argo dataset. This is not the right way to 
 #' read official argo datasets, which are provided in NetCDF format and may
@@ -857,7 +857,7 @@ as.argo <- function(time, longitude, latitude,
 }
 
 
-#' Plot argo data
+#' Plot Argo Data
 #' 
 #' Plot a summary diagram for argo data.
 #' 
@@ -911,7 +911,6 @@ as.argo <- function(time, longitude, latitude,
 #' are applied to the appropriate panels, as they are drawn from top-left to
 #' bottom-right.   If only a single expression is provided, it is used for all
 #' panels. (See \dQuote{Examples}.)
-#' 
 #' 
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
 #' \code{par(mar)}, computed from this.  The default is tighter than the R
@@ -1154,7 +1153,7 @@ setMethod(f="plot",
 ## DEVELOPERS: please pattern functions and documentation on the 'ctd' code, for uniformity.
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
-#' @title Handle flags in ARGO objects
+#' @title Handle Flags in ARGO Objects
 #' @details
 #' If \code{flags} and \code{actions} are not provided, the
 #' default is to use ARGO flags [1], in which the

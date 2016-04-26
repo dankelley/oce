@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{oce.grid}
 \alias{oce.grid}
-\title{Add a grid to an existing plot, with special abilities for those created by oce}
+\title{Add a Grid to an Existing Oce Plot}
 \usage{
 oce.grid(xat, yat, col = "lightgray", lty = "dotted", lwd = par("lwd"))
 }
@@ -18,7 +18,7 @@ oce.grid(xat, yat, col = "lightgray", lty = "dotted", lwd = par("lwd"))
 \item{lwd}{width for grid lines (see \code{\link{par}})}
 }
 \description{
-Add a grid to an existing plot, with special abilities for those created by oce
+Add a Grid to an Existing Oce Plot
 }
 \details{
 For plots not created by oce functions, or for missing \code{xat} and \code{yat},

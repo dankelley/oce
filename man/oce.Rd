@@ -4,7 +4,7 @@
 \name{oce}
 \alias{oce}
 \alias{oce-package}
-\title{oce: A package for Oceanographic analysis}
+\title{oce: A Package for Oceanographic Analysis}
 \description{
 The oce package provides functions for working with
 Oceanographic data, for calculations that are specific

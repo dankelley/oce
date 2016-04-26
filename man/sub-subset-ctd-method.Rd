@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,ctd-method}
 \alias{[[<-,ctd-method}
-\title{Replace Parts of a \code{ctd} Object}
+\title{Replace Parts of a CTD Object}
 \usage{
 \S4method{[[}{ctd}(x, i, j, ...) <- value
 }

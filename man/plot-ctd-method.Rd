@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,ctd-method}
 \alias{plot,ctd-method}
-\title{Plot seawater CTD data}
+\title{Plot CTD Data}
 \usage{
 \S4method{plot}{ctd}(x, which, col = par("fg"), fill, borderCoastline = NA,
   colCoastline = "lightgray", eos = getOption("oceEOS", default = "gsw"),

@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{as.argo}
 \alias{as.argo}
-\title{Coerce data into argo dataset}
+\title{Coerce Data Into an Argo Dataset}
 \usage{
 as.argo(time, longitude, latitude, salinity, temperature, pressure,
   units = NULL, id, filename = "", missingValue)

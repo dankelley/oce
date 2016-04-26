@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{read.ctd.odv}
 \alias{read.ctd.odv}
-\title{Read an ODV-type CTD file}
+\title{Read an ODV-type CTD File}
 \usage{
 read.ctd.odv(file, columns = NULL, station = NULL, missing.value = -999,
   monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
@@ -47,7 +47,7 @@ variable across data formats, because the meta-information provided
 in those formats varies widely.
 }
 \description{
-Read an ODV-type CTD file
+Read an ODV-type CTD File
 }
 \details{
 \code{read.ctd.odf()} reads files stored in ODV format, used by some European data providers.

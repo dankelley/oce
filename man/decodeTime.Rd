@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{decodeTime}
 \alias{decodeTime}
-\title{Decode a time, similar to as.POSIXct()}
+\title{Oce Version of as.POSIXct}
 \usage{
 decodeTime(time, timeFormats, tz = "UTC")
 }
@@ -17,7 +17,7 @@ decodeTime(time, timeFormats, tz = "UTC")
 A time as returned by \code{\link{as.POSIXct}}.
 }
 \description{
-Decode a time, similar to as.POSIXct()
+Oce Version of as.POSIXct
 }
 \details{
 Each format in \code{timeFormats} is used in turn as the \code{format}

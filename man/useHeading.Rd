@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{useHeading}
 \alias{useHeading}
-\title{Replace the heading for one instrument with the heading for another}
+\title{Replace the Heading for One Instrument With That of Another}
 \usage{
 useHeading(b, g, add = 0)
 }

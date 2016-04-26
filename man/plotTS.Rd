@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{plotTS}
 \alias{plotTS}
-\title{Plot temperature-salinity diagram}
+\title{Plot Temperature-Salinity Diagram}
 \usage{
 plotTS(x, inSitu = FALSE, type = "p", referencePressure = 0,
   nlevels = 6, levels, grid = TRUE, col.grid = "lightgray",

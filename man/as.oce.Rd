@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{as.oce}
 \alias{as.oce}
-\title{Coerce Something Into an oce Object}
+\title{Coerce Something Into an Oce Object}
 \usage{
 as.oce(x, ...)
 }
@@ -15,7 +15,7 @@ as.oce(x, ...)
 \code{as.oce} returns an object inheriting from \code{\link{oce-class}}.
 }
 \description{
-Coerce Something Into an oce Object
+Coerce Something Into an Oce Object
 }
 \details{
 This function is limited and not intended for common use.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{plotScan}
 \alias{plotScan}
-\title{Plot seawater data in a low-level fashion}
+\title{Plot CTD data in a Low-Level Fashion}
 \usage{
 plotScan(x, which = 1, xtype = "scan", type = "l",
   mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1],

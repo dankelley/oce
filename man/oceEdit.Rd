@@ -3,7 +3,7 @@
 \name{oceEdit}
 \alias{oce.edit}
 \alias{oceEdit}
-\title{Edit an oce object}
+\title{Edit an Oce Object}
 \usage{
 oceEdit(x, item, value, action, reason = "", person = "",
   debug = getOption("oceDebug"))

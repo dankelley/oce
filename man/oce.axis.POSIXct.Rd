@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{oce.axis.POSIXct}
 \alias{oce.axis.POSIXct}
-\title{Modified version of axis.POSIXct}
+\title{Oce Version of axis.POSIXct}
 \usage{
 oce.axis.POSIXct(side, x, at, tformat, labels = TRUE,
   drawTimeRange = getOption("oceDrawTimeRange"),

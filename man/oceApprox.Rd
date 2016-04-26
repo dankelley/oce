@@ -3,7 +3,7 @@
 \name{oceApprox}
 \alias{oce.approx}
 \alias{oceApprox}
-\title{Interpolate 1D data with Unesco or Reiniger-Ross algorithm}
+\title{Interpolate 1D Data with Unesco or Reiniger-Ross Algorithm}
 \usage{
 oceApprox(x, y, xout, method = c("rr", "unesco"))
 }

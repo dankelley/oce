@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdAddColumn}
 \alias{ctdAddColumn}
-\title{Add a column to the data slot of a ctd object}
+\title{Add a Column to the Data Slot of a CTD Object}
 \usage{
 ctdAddColumn(x, column, name, label, unit = NULL,
   debug = getOption("oceDebug"))

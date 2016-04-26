@@ -3,7 +3,7 @@
 \docType{class}
 \name{ctd-class}
 \alias{ctd-class}
-\title{Class to store CTD (or general hydrographic) Data}
+\title{Class to Store CTD (or general hydrographic) Data}
 \description{
 Class to store hydrographic data such as measured with a CTD (conductivity,
 temperature, depth) instrument.
@@ -66,7 +66,6 @@ A file containing CTD profile data may be read with
 \code{\link{as.ctd}}.  See \code{\link{read.ctd}} for references on data
 formats used in CTD files. Data can also be assembled into
 \code{ctd} objects with \code{\link{as.ctd}}.
-
 
 Statistical summaries are provided by \code{\link{summary,ctd-method}}, while
 \code{\link{show}} displays an overview.

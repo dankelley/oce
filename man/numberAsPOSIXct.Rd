@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{numberAsPOSIXct}
 \alias{numberAsPOSIXct}
-\title{Convert a numeric time to a POSIXct time}
+\title{Convert a Numeric Time to a POSIXct Time}
 \usage{
 numberAsPOSIXct(t, type = c("unix", "matlab", "gps", "argo", "ncep1", "ncep2",
   "sas", "spss", "yearday"), tz = "UTC")

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{subset,argo-method}
 \alias{subset,argo-method}
-\title{Subset an argo object}
+\title{Subset an Argo Object}
 \usage{
 \S4method{subset}{argo}(x, subset, ...)
 }

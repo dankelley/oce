@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,ctd-method}
 \alias{summary,ctd-method}
-\title{Summarize a \code{ctd} Object}
+\title{Summarize a CTD Object}
 \usage{
 \S4method{summary}{ctd}(object, ...)
 }

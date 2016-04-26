@@ -3,7 +3,7 @@
 \docType{methods}
 \name{handleFlags,ctd-method}
 \alias{handleFlags,ctd-method}
-\title{Handle flags in \code{ctd} objects}
+\title{Handle Flags in CTD Objects}
 \usage{
 \S4method{handleFlags}{ctd}(object, flags = list(), actions = list())
 }

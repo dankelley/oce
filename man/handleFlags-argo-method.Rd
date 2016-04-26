@@ -3,7 +3,7 @@
 \docType{methods}
 \name{handleFlags,argo-method}
 \alias{handleFlags,argo-method}
-\title{Handle flags in ARGO objects}
+\title{Handle Flags in ARGO Objects}
 \usage{
 \S4method{handleFlags}{argo}(object, flags = list(), actions = list())
 }

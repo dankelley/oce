@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdFindProfiles}
 \alias{ctdFindProfiles}
-\title{Find profiles within a towyow CTD record}
+\title{Find Profiles within a Tow-Yow CTD Record}
 \usage{
 ctdFindProfiles(x, cutoff = 0.5, minLength = 10, minHeight = 0.1 *
   diff(range(x[["pressure"]])), direction = c("descending", "ascending"),

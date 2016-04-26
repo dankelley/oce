@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{plotProfile}
 \alias{plotProfile}
-\title{Plot a profile, with decreasing pressure on the y axis}
+\title{Plot a CTD Profile}
 \usage{
 plotProfile(x, xtype = "salinity+temperature", ytype = c("pressure", "z",
   "depth", "sigmaTheta"), eos = getOption("oceEOS", default = "gsw"),

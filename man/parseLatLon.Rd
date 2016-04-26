@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{parseLatLon}
 \alias{parseLatLon}
-\title{Parse a latitude or longitude string}
+\title{Parse a Latitude or Longitude String}
 \usage{
 parseLatLon(line, debug = getOption("oceDebug"))
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{oce.plot.ts}
 \alias{oce.plot.ts}
-\title{Plot a time-series, obeying the timezone}
+\title{Oce Variant of plot.ts}
 \usage{
 oce.plot.ts(x, y, type = "l", xlim, ylim, xlab, ylab,
   drawTimeRange = getOption("oceDrawTimeRange"), adorn = NULL,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{window.oce}
 \alias{window.oce}
-\title{Window an oce object by time or distance}
+\title{Window an Oce Object by Time or Distance}
 \usage{
 \method{window}{oce}(x, start = NULL, end = NULL, frequency = NULL,
   deltat = NULL, extend = FALSE, which = c("time", "distance"),
@@ -52,6 +52,7 @@ integers, to indicate a portion of the time or distance range.  If
 \code{which} is \code{"time"}, then the \code{start} and \code{end} values
 may also be provided as POSIX times, or character strings indicating times
 (in time zone given by the value of \code{getOption("oceTz")}).
+Note that \code{\link{subset}} may be more useful than this function.
 }
 \examples{
 library(oce)

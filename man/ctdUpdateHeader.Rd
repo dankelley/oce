@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdUpdateHeader}
 \alias{ctdUpdateHeader}
-\title{Update a CTD header}
+\title{Update a CTD Header}
 \usage{
 ctdUpdateHeader(x, debug = FALSE)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{read.argo}
 \alias{read.argo}
-\title{Read an Argo data file}
+\title{Read an Argo Data File}
 \usage{
 read.argo(file, debug = getOption("oceDebug"), processingLog, ...)
 }

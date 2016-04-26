@@ -4,7 +4,7 @@
 \alias{oce.colors.gebco}
 \alias{oce.colorsGebco}
 \alias{oceColorsGebco}
-\title{Gebco colors}
+\title{Gebco Colors}
 \usage{
 oce.colorsGebco(n = 9, region = c("water", "land", "both"),
   type = c("fill", "line"))
@@ -18,7 +18,7 @@ or \code{"both"}.}
 \item{type}{String indicating the purpose, one of \code{"fill"} or \code{"line"}.}
 }
 \description{
-Gebco colors
+Gebco Colors
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},

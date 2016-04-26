@@ -39,7 +39,7 @@
 \alias{oceColorsVelocity}
 \alias{oceColorsViridis}
 \alias{oceColorsVorticity}
-\title{Create a palette of colours}
+\title{Create a Palette of Colours}
 \usage{
 oce.colorsTwo(n, low = 2/3, high = 0, smax = 1, alpha = 1)
 }
@@ -59,7 +59,7 @@ scale.}
 \code{oce.colorsTwo}.}
 }
 \description{
-Create a palette of colours
+Create a palette of colours.
 }
 \details{
 \code{oce.colorsPalette} provides a variety of pre-defined palettes.

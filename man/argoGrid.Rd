@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{argoGrid}
 \alias{argoGrid}
-\title{Grid a Argo drifter path.}
+\title{Grid a Argo Drifter Path}
 \usage{
 argoGrid(argo, p, debug = getOption("oceDebug"), ...)
 }

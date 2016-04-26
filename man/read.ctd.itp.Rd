@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{read.ctd.itp}
 \alias{read.ctd.itp}
-\title{Read an ITP-type CTD file}
+\title{Read an ITP-type CTD File}
 \usage{
 read.ctd.itp(file, columns = NULL, station = NULL, missing.value = -999,
   monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
@@ -47,7 +47,7 @@ variable across data formats, because the meta-information provided
 in those formats varies widely.
 }
 \description{
-Read an ITP-type CTD file
+Read an ITP-type CTD File
 }
 \details{
 \code{read.ctd.itp()} reads files stored in ice-tethered profile format.

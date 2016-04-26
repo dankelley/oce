@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{numberAsHMS}
 \alias{numberAsHMS}
-\title{Convert a numeric time to hour, minute, and second}
+\title{Convert a Numeric Time to Hour, Minute, and Second}
 \usage{
 numberAsHMS(t, default = 0)
 }
@@ -19,7 +19,7 @@ A list containing \code{hour}, \code{minute}, and \code{second}, the
 last of which is always zero.
 }
 \description{
-Convert a numeric time to hour, minute, and second
+Convert a Numeric Time to Hour, Minute, and Second
 }
 \examples{
 

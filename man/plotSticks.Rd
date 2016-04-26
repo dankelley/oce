@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{plotSticks}
 \alias{plotSticks}
-\title{Draw a stick-plot diagram}
+\title{Draw a Stick Plot}
 \usage{
 plotSticks(x, y, u, v, yscale = 1, add = FALSE, length = 1/20,
   mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1 +

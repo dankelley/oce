@@ -3,7 +3,7 @@
 \docType{methods}
 \name{subset,ctd-method}
 \alias{subset,ctd-method}
-\title{Subset a CTD object}
+\title{Subset a CTD Object}
 \usage{
 \S4method{subset}{ctd}(x, subset, ...)
 }
