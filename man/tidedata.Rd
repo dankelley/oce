@@ -3,8 +3,15 @@
 \docType{data}
 \name{tidedata}
 \alias{tidedata}
-\title{Tidal Constituent Information
-
+\title{Tidal Constituent Information}
+\source{
+The data come from the \code{tide3.dat} file of the \code{T_TIDE}
+package (Pawlowicz et al., 2002), and derive from Appendices provided by
+Foreman (1977).  The data are scanned using \file{tests/tide.R} in this
+package, which also performs some tests using \code{T_TIDE} values as a
+reference.
+}
+\description{
 The \code{tidedata} dataset contains Tide-constituent information that is
 use by \code{\link{tidem}} to fit tidal models.  \code{tidedata} is a list
 containing \describe{ \item{const}{a list containing vectors \describe{
@@ -33,13 +40,7 @@ in some info later)} \item{list("ilatfac")}{(fill in some info later)}
 in some info later)} \item{list("iname")}{(fill in some info later)} } } }
 Apart from the use of \code{d1} through \code{d6}, the naming and content
 follows \code{T_TIDE}.  All of this is based on Foreman (1977), to which the
-reader is referred for details.}
-\source{
-The data come from the \code{tide3.dat} file of the \code{T_TIDE}
-package (Pawlowicz et al., 2002), and derive from Appendices provided by
-Foreman (1977).  The data are scanned using \file{tests/tide.R} in this
-package, which also performs some tests using \code{T_TIDE} values as a
-reference.
+reader is referred for details.
 }
 \author{
 Dan Kelley

@@ -3,9 +3,7 @@
 \docType{methods}
 \name{plot,tidem-method}
 \alias{plot,tidem-method}
-\title{Plot a Tidem Prediction
-
-Plot a summary diagram for a tidal fit.}
+\title{Plot a Tidem Prediction}
 \usage{
 \S4method{plot}{tidem}(x, which = 1, labelIf = NULL, log = "",
   mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, mgp[2] + 0.25,
@@ -31,6 +29,9 @@ default, in order to use more space for the data and less for the axes.}
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
 
 \item{\dots}{optional arguments passed to plotting functions.}
+}
+\description{
+Plot a summary diagram for a tidal fit.
 }
 \examples{
 \dontrun{

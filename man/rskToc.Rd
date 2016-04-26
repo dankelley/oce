@@ -2,10 +2,7 @@
 % Please edit documentation in R/rsk.R
 \name{rskToc}
 \alias{rskToc}
-\title{Decode table-of-contents File from a Rsk File
-
-Decode table-of-contents file from a rsk file, of the sort used by some
-researchers at Dalhousie University.}
+\title{Decode table-of-contents File from a Rsk File}
 \usage{
 rskToc(dir, from, to, debug = getOption("oceDebug"))
 }
@@ -26,6 +23,10 @@ indicating to print information about the processing.}
 A list with two elements: \code{filename}, a vector of file names, and
 \code{startTime}, a vector of \code{\link{POSIXct}} times indicating the (real)
 times of the first datum in the corresponding files.
+}
+\description{
+Decode table-of-contents file from a rsk file, of the sort used by some
+researchers at Dalhousie University.
 }
 \details{
 It is assumed that the \code{.TBL} file contains lines of the form \code{"File

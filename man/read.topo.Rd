@@ -2,10 +2,7 @@
 % Please edit documentation in R/topo.R
 \name{read.topo}
 \alias{read.topo}
-\title{Read a Topo File
-
-Read a file that contains topographic data in the ETOPO dataset, as provided by
-the NOAA website [1].}
+\title{Read a Topo File}
 \usage{
 read.topo(file, ...)
 }
@@ -20,6 +17,10 @@ An object of type \code{\link{topo-class}} that which has the following slots.
   \code{z}}
 \item{\code{metadata}}{: a list containing the source filename}
 \item{\code{processingLog}}{: a log, in the standard \code{oce} format.}
+}
+\description{
+Read a file that contains topographic data in the ETOPO dataset, as provided by
+the NOAA website [1].
 }
 \examples{
 \dontrun{

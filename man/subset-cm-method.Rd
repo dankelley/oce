@@ -3,9 +3,7 @@
 \docType{methods}
 \name{subset,cm-method}
 \alias{subset,cm-method}
-\title{Subset a CM Object
-
-This function is somewhat analogous to \code{\link{subset.data.frame}}.}
+\title{Subset a CM Object}
 \usage{
 \S4method{subset}{cm}(x, subset, ...)
 }
@@ -19,6 +17,9 @@ See \sQuote{Details}.}
 }
 \value{
 A new \code{cm} object.
+}
+\description{
+This function is somewhat analogous to \code{\link{subset.data.frame}}.
 }
 \examples{
 library(oce)

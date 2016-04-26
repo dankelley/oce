@@ -3,9 +3,7 @@
 \docType{methods}
 \name{subset,met-method}
 \alias{subset,met-method}
-\title{Subset a Met Object
-
-This function is somewhat analogous to \code{\link{subset.data.frame}}.}
+\title{Subset a Met Object}
 \usage{
 \S4method{subset}{met}(x, subset, ...)
 }
@@ -18,6 +16,9 @@ This function is somewhat analogous to \code{\link{subset.data.frame}}.}
 }
 \value{
 A new \code{met} object.
+}
+\description{
+This function is somewhat analogous to \code{\link{subset.data.frame}}.
 }
 \examples{
 library(oce)

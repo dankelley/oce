@@ -2,6 +2,7 @@
 
 #' @title Class to Store Rsk Data
 #' 
+#' @description
 #' Class for data stored in the ``Ruskin'' format used by RBR [1], including both
 #' \code{rsk} SQLite files and the ASCII \code{txt} exported files.
 #' 
@@ -25,6 +26,7 @@ setClass("rsk", contains="oce")
 
 #' @title Sample Rsk Dataset
 #'
+#' @description
 #' A sample \code{rsk} object derived from a Concerto CTD manufactured by RBR Ltd.
 #'
 #' @details The data were obtained September 2015, off the west coast
@@ -67,6 +69,7 @@ setMethod(f="initialize",
 
 #' @title Summarize a Rsk Object
 #' 
+#' @description
 #' Summarizes some of the data in a \code{rsk} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
 #'
@@ -126,6 +129,7 @@ setMethod(f="[[<-",
 
 #' @title Subset a Rsk Object
 #' 
+#' @description
 #' Subset a rsk object.  This function is somewhat analogous to
 #' \code{\link{subset.data.frame}}, but subsetting is only permitted by time.
 #' 
@@ -187,6 +191,7 @@ setMethod(f="subset",
 
 #' @title Coerce Data Into a Rsk Object
 #' 
+#' @description
 #' Create a rsk object.
 #' 
 #' @details
@@ -263,6 +268,7 @@ as.rsk <- function(time, columns,
 
 #' @title Plot Rsk Data
 #' 
+#' @description
 #' Rsk data may be in many forms, and it is not easy to devise a general plotting
 #' strategy for all of them. The present function is quite crude, on the
 #' assumption that users will understand their own datasets, and that they can
@@ -276,6 +282,7 @@ as.rsk <- function(time, columns,
 #' \code{rsk} objects is that they contain a \code{time} vector in their
 #' \code{data} slot.
 #' 
+#' @details
 #' Several plots are available.  \itemize{
 #'     \item \code{which=0} or \code{"timeseries"} for time-series plots of each variable;
 #'     this over-rides any other specification
@@ -343,7 +350,6 @@ as.rsk <- function(time, columns,
 #' @param debug a flag that turns on debugging, if it exceeds 0.
 #' 
 #' @param ... optional arguments passed to plotting functions.
-#' 
 #' 
 #' @examples
 #' library(oce)
@@ -534,6 +540,7 @@ setMethod(f="plot",
 
 #' @title Read a Rsk file
 #' 
+#' @description
 #' Read an RBR rsk or txt file, e.g. as produced by an RBR logger, producing an
 #' object of class \code{rsk}.
 #' 
@@ -1079,13 +1086,9 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
 
 #' @title Estimate Atmospheric Pressure in Rsk Object
 #' 
-#' Estimate atmospheric pressure in rsk record
-#' 
-#' @param x A \code{rsk} object, or a list of pressures (in decibars).
-#' 
-#' @param dp Half-width of pressure window to be examined (in decibars).
-#' 
-#' 
+#' @description
+#' Estimate atmospheric pressure in rsk record.
+#'
 #' @details
 #' Pressures must be in decibars for this to work.  First, a subset of pressures is
 #' created, in which the range is \code{sap-dp} to \code{sap+dp}.  Here,
@@ -1093,6 +1096,10 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
 #' window, three measures of central tendency are calculated: the median, the mean,
 #' and a weighted mean that has weight given by \eqn{exp(-2*((p
 #'     - sap) / dp)^2)}{exp(-2*((p - sap) / dp)^2)}.
+##' 
+#' @param x A \code{rsk} object, or a list of pressures (in decibars).
+#' 
+#' @param dp Half-width of pressure window to be examined (in decibars).
 #' 
 #' @return
 #' A list of four estimates: \code{sap}, the median, the mean, and the weighted
@@ -1127,21 +1134,9 @@ rskPatm <- function(x, dp=0.5)
 
 #' @title Decode table-of-contents File from a Rsk File
 #' 
+#' @description
 #' Decode table-of-contents file from a rsk file, of the sort used by some
 #' researchers at Dalhousie University.
-#' 
-#' @param dir name of a directory containing a single table-of-contents file, with
-#' \code{.TBL} at the end of its file name.
-#' 
-#' @param from optional \code{\link{POSIXct}} time, indicating the beginning of a
-#' data interval of interest.  This must have timezone \code{"UTC"}.
-#'     
-#' @param to optional \code{\link{POSIXct}} time, indicating the end of a data
-#' interval of interest.  This must have timezone \code{"UTC"}.
-#' 
-#' @param debug optional integer to control debugging, with positive values
-#' indicating to print information about the processing.
-#'   
 #' 
 #' @details
 #' It is assumed that the \code{.TBL} file contains lines of the form \code{"File
@@ -1157,6 +1152,18 @@ rskPatm <- function(x, dp=0.5)
 #' the \code{UTC} time zone, because that time zone is used in decoding the lines
 #' in the \code{.TBL} file.
 #' 
+#' @param dir name of a directory containing a single table-of-contents file, with
+#' \code{.TBL} at the end of its file name.
+#' 
+#' @param from optional \code{\link{POSIXct}} time, indicating the beginning of a
+#' data interval of interest.  This must have timezone \code{"UTC"}.
+#'     
+#' @param to optional \code{\link{POSIXct}} time, indicating the end of a data
+#' interval of interest.  This must have timezone \code{"UTC"}.
+#' 
+#' @param debug optional integer to control debugging, with positive values
+#' indicating to print information about the processing.
+#'   
 #' @examples
 #' \dontrun{
 #' table <- rskToc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",

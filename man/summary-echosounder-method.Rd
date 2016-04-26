@@ -3,9 +3,7 @@
 \docType{methods}
 \name{summary,echosounder-method}
 \alias{summary,echosounder-method}
-\title{Summarize an Echosounder Object
-
-Summarizes some of the data in an \code{echosounder} object.}
+\title{Summarize an Echosounder Object}
 \usage{
 \S4method{summary}{echosounder}(object, ...)
 }
@@ -15,6 +13,9 @@ a call to \code{\link{read.echosounder}}, \code{\link{read.oce}}, or
 \code{\link{as.echosounder}}.}
 
 \item{\dots}{further arguments passed to or from other methods.}
+}
+\description{
+Summarizes some of the data in an \code{echosounder} object.
 }
 \author{
 Dan Kelley

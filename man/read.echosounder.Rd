@@ -2,14 +2,7 @@
 % Please edit documentation in R/echosounder.R
 \name{read.echosounder}
 \alias{read.echosounder}
-\title{Read an Echosounder File
-
-Read an echosounder data file, producing an object of type
-\code{echosounder}.
-
-Reads a biosonics echosounder file.  This function was written for and
-tested with single-beam, dual-beam, and split-beam Biosonics files of type
-V3, and may not work properly with other file formats.}
+\title{Read an Echosounder File}
 \usage{
 read.echosounder(file, channel = 1, soundSpeed = swSoundSpeed(35, 10, 50),
   tz = getOption("oceTz"), debug = getOption("oceDebug"), processingLog)
@@ -38,6 +31,11 @@ An object of \code{\link[base]{class}} \code{"echosounder"} with
 standard slots \code{metadata}, \code{data} and \code{processingLog} that
 are described in the documentation for the object
 \code{\link{echosounder-class}}.
+}
+\description{
+Reads a biosonics echosounder file.  This function was written for and
+tested with single-beam, dual-beam, and split-beam Biosonics files of type
+V3, and may not work properly with other file formats.
 }
 \section{Bugs}{
  Only the amplitude information (in counts) is determined.  A

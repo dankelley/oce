@@ -3,11 +3,31 @@
 \docType{methods}
 \name{plot,lisst-method}
 \alias{plot,lisst-method}
-\title{Plot LISST data
+\title{Plot LISST data}
+\usage{
+\S4method{plot}{lisst}(x, which = c(16, 37, 38), tformat,
+  debug = getOption("oceDebug"), ...)
+}
+\arguments{
+\item{x}{a \code{lisst} object, e.g. as read by \code{\link{read.lisst}}.}
 
-Plot \code{LISST} data
+\item{which}{list of desired plot types.  These are graphed in panels
+running down from the top of the page.  See \dQuote{Details} for the
+meanings of various values of \code{which}.}
 
+\item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
+plot types that call that function.  (See \code{\link{strptime}} for the
+format used.)}
+
+\item{debug}{a flag that turns on debugging.  The value indicates the depth
+within the call stack to which debugging applies.}
+
+\item{\dots}{optional arguments passed to plotting functions.}
+}
+\description{
 Creates a multi-panel summary plot of data measured by LISST instrument.
+}
+\details{
 The panels are controlled by the \code{which} argument, as follows.
 \itemize{
 
@@ -36,26 +56,7 @@ of temperature.
 of transmission, in percent.
 
 \item \code{which=42} or \code{which="beam"} for a time-series plot of
-beam-C, in 1/metre.  }}
-\usage{
-\S4method{plot}{lisst}(x, which = c(16, 37, 38), tformat,
-  debug = getOption("oceDebug"), ...)
-}
-\arguments{
-\item{x}{a \code{lisst} object, e.g. as read by \code{\link{read.lisst}}.}
-
-\item{which}{list of desired plot types.  These are graphed in panels
-running down from the top of the page.  See \dQuote{Details} for the
-meanings of various values of \code{which}.}
-
-\item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
-plot types that call that function.  (See \code{\link{strptime}} for the
-format used.)}
-
-\item{debug}{a flag that turns on debugging.  The value indicates the depth
-within the call stack to which debugging applies.}
-
-\item{\dots}{optional arguments passed to plotting functions.}
+beam-C, in 1/metre.  }
 }
 \examples{
 

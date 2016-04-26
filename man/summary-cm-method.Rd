@@ -3,10 +3,7 @@
 \docType{methods}
 \name{summary,cm-method}
 \alias{summary,cm-method}
-\title{Summarize a CM Object
-
-Summarizes some of the data in a \code{cm} object, presenting such information
-as the station name, sampling location, data ranges, etc.}
+\title{Summarize a CM Object}
 \usage{
 \S4method{summary}{cm}(object, ...)
 }
@@ -14,6 +11,10 @@ as the station name, sampling location, data ranges, etc.}
 \item{object}{A \code{cm} object, i.e. one inheriting from \code{\link{cm-class}}.}
 
 \item{...}{Further arguments passed to or from other methods.}
+}
+\description{
+Summarizes some of the data in a \code{cm} object, presenting such information
+as the station name, sampling location, data ranges, etc.
 }
 \author{
 Dan Kelley

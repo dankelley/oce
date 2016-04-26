@@ -18,7 +18,7 @@ be printed.}
 \value{
 an object of class \code{oce}. It is up to a calling function to determine what to do with this object.
 }
-\details{
+\description{
 ODF (Ocean Data Format) is a 
 format developed at the Bedford Institute of Oceanography and also used
 at other Canadian Department of Fisheries and Oceans (DFO) facilities.
@@ -27,7 +27,8 @@ of instrument types. Thus, \code{read.odf}
 is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2015,
 \code{read.odf} is still in development, with features being added as  a 
 project with DFO makes available more files.
-
+}
+\details{
 Note that some elements of the metadata are particular to ODF objects,
 e.g. \code{depthMin}, \code{depthMax} and \code{sounding}, which
 are inferred from ODF items named \code{MIN_DEPTH}, \code{MAX_DEPTH}

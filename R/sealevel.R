@@ -1,5 +1,6 @@
 #' @title Class to Store Sealevel Data
 #' 
+#' @description
 #' Class to store sealevel data, e.g. from a tide gauge, with standard slots
 #' \code{metadata}, \code{data} and \code{processingLog}.
 #' 
@@ -23,6 +24,7 @@ setClass("sealevel", contains="oce")
 
 #' @title Sealevel data for Halifax Harbour
 #' 
+#' @description
 #' This sample sea-level dataset is the 2003 record from Halifax Harbour in
 #' Nova Scotia, Canada.  For reasons that are not mentioned on the data archive
 #' website, the record ends on the 8th of October.
@@ -103,9 +105,8 @@ setMethod(f="initialize",
 
 #' @title Summarize a Sealevel Object
 #' 
+#' @description
 #' Summarizes some of the data in a sealevel object.
-#' 
-#' Pertinent summary information is presented.
 #' 
 #' @param object A \code{sealevel} object, i.e. one inheriting from \code{\link{sealevel-class}}.
 #' @param \dots further arguments passed to or from other methods.
@@ -141,8 +142,7 @@ setMethod(f="summary",
 
 #' @title Subset a Sealevel Object
 #' 
-#' Subset a sealevel object
-#' 
+#' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}, but
 #' subsetting is only permitted by time.
 #' 
@@ -215,9 +215,9 @@ setValidity("sealevel",
 
 #' @title Coerce Data Into a Sealevel Object
 #' 
+#' @description
 #' Coerces a dataset (minimally, a sequence of times and heights) into a
 #' sealevel dataset.
-#' 
 #' The arguments are based on the standard data format, as were described in a
 #' file formerly available at [1].
 #' 
@@ -328,8 +328,7 @@ as.sealevel <- function(elevation,
 
 #' @title Plot Sealevel Data
 #' 
-#' Plot a summary diagram for sealevel data.
-#' 
+#' @description
 #' Creates a plot for a sea-level dataset, in one of two varieties.  Depending
 #' on the length of \code{which}, either a single-panel or multi-panel plot is
 #' drawn.  If there is just one panel, then the value of \code{par} used in
@@ -580,9 +579,11 @@ setMethod(f="plot",
 
 #' @title Read a Sealevel File
 #' 
+#' @description
 #' Read a data file holding sea level data.  BUG: the time vector assumes GMT,
 #' regardless of the GMT.offset value.
 #' 
+#' @details
 #' This function starts by scanning the first line of the file, from which it
 #' determines whether the file is in one of two known formats: type 1, the
 #' format used at the Hawaii archive centre, and type 2, the

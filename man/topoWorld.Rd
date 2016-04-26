@@ -3,8 +3,17 @@
 \docType{data}
 \name{topoWorld}
 \alias{topoWorld}
-\title{Global Topographic Dataset at Half-degree Resolution
-
+\title{Global Topographic Dataset at Half-degree Resolution}
+\source{
+The binary ETOPO5 dataset was downloaded in late 2009 from the NOAA website,
+\url{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5/}, decoded,
+decimated from 1/12th degree resolution to 1/2 degree resolution, and shifted so
+that longitude runs from negative to positive instead of from 0 to 360.
+}
+\usage{
+data(topoWorld)
+}
+\description{
 Global topographic dataset at half-degree resolution, created by decimating the
 ETOPO5 dataset.  Its longitude ranges from -179.5 to 180, and its latitude
 ranges from -89.5 to 90.  Height is measured in metres above nominal sea level.
@@ -14,15 +23,7 @@ coastlines in regions of steep topography. For example, near the southeast
 corner of Newfoundland, a 200m contour will overlap a coastline drawn with
 \code{\link[ocedata]{coastlineWorldFine}}. The solution in such cases is to
 download a higher-resolution topography file and create a \code{topo} object
-with \code{\link{read.topo}} or \code{\link{as.topo}}.}
-\source{
-The binary ETOPO5 dataset was downloaded in late 2009 from the NOAA website,
-\url{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5/}, decoded,
-decimated from 1/12th degree resolution to 1/2 degree resolution, and shifted so
-that longitude runs from negative to positive instead of from 0 to 360.
-}
-\usage{
-data(topoWorld)
+with \code{\link{read.topo}} or \code{\link{as.topo}}.
 }
 \examples{
 \dontrun{

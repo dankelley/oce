@@ -3,24 +3,24 @@
 \docType{data}
 \name{section}
 \alias{section}
-\title{Hydrographic section
-
-This is line A03 (ExpoCode 90CT40_1, with nominal sampling date 1993-09-11).
-The chief scientist was Tereschenkov of SOI, working aboard the Russian ship
-Multanovsky, undertaking a westward transect from the Mediterranean outflow
-region across to North America, with a change of heading in the last few dozen
-stations to run across the nominal Gulf Stream axis.
-
-The data flags follow the WHP CTD convention, i.e. 1 for uncalibrated,
-2 for an acceptable measurement, 3 for a questionable measurement, 4
-for a bad measurement, etc; see \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
-for further details.}
+\title{Hydrographic section}
 \source{
 This is based on the WOCE file named \code{a03_hy1.csv}, downloaded
 from \url{http://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
 }
 \usage{
 data(section)
+}
+\description{
+This is line A03 (ExpoCode 90CT40_1, with nominal sampling date 1993-09-11).
+The chief scientist was Tereschenkov of SOI, working aboard the Russian ship
+Multanovsky, undertaking a westward transect from the Mediterranean outflow
+region across to North America, with a change of heading in the last few dozen
+stations to run across the nominal Gulf Stream axis.
+The data flags follow the WHP CTD convention, i.e. 1 for uncalibrated,
+2 for an acceptable measurement, 3 for a questionable measurement, 4
+for a bad measurement, etc; see \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+for further details.
 }
 \examples{
 \dontrun{

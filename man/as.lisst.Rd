@@ -2,14 +2,7 @@
 % Please edit documentation in R/lisst.R
 \name{as.lisst}
 \alias{as.lisst}
-\title{Coerce Data Into a LISST Object
-
-Coerce data into a lisst object
-
-If \code{data} contains fewer than 42 columns, an error is reported.  If it
-contains more than 42 columns, only the first 42 are used.  This is used by
-\code{\link{read.lisst}}, the documentation on which explains the meanings
-of the columns.}
+\title{Coerce Data Into a LISST Object}
 \usage{
 as.lisst(data, filename = "", year = 0, tz = "UTC", longitude = NA,
   latitude = NA)
@@ -33,6 +26,13 @@ timestamps do not indicate the timezone.}
 }
 \value{
 An object of \code{\link{lisst-class}}.
+}
+\description{
+Coerce data into a lisst object
+If \code{data} contains fewer than 42 columns, an error is reported.  If it
+contains more than 42 columns, only the first 42 are used.  This is used by
+\code{\link{read.lisst}}, the documentation on which explains the meanings
+of the columns.
 }
 \author{
 Dan Kelley

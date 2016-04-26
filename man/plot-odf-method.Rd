@@ -3,17 +3,19 @@
 \docType{methods}
 \name{plot,odf-method}
 \alias{plot,odf-method}
-\title{Plot an ODF Object
-
-Plot data contained within an ODF object.
-
-Uses \code{\link{oce.plot.ts}} to create panels of time-series plots for all
-the columns contained in the \code{odf} object.}
+\title{Plot an ODF Object}
 \usage{
 \S4method{plot}{odf}(x)
 }
 \arguments{
 \item{x}{A \code{odf} object, e.g. one inheriting from \code{\link{odf-class}}.}
+}
+\description{
+Plot data contained within an ODF object,
+using \code{\link{oce.plot.ts}} to create panels of time-series plots for all
+the columns contained in the \code{odf} object. This is crude, but \code{odf}
+objects are usually cast to other types, and those types have more useful
+plots.
 }
 \author{
 Dan Kelley

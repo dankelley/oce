@@ -3,6 +3,7 @@
 
 #' @title Class to Store Current Meter (CM) Data
 #' 
+#' @description
 #' Class to store current meter data from an interocean S4 device.  A file
 #' containing CM profile data may be read with \code{\link{read.cm}}. The results
 #' may be plotted with \code{\link{plot,cm-method}} or summarized with
@@ -15,8 +16,9 @@
 #' @family things related to \code{cm} data
 setClass("cm", contains="oce")
 
-#' @title A CM record
+#' @title A CM Record
 #' 
+#' @description
 #' The result of using \code{\link{read.cm}} on a current meter file holding measurements made with an
 #' InterOcean S4 device.  See \code{\link{read.cm}} for some general cautionary notes on reading such
 #' files, and be aware that the salinities in this sample dataset are known to be incorrect, for
@@ -38,7 +40,9 @@ NULL
 
 #' @title Extract Something From a CM Object
 #' @param x A cm object, i.e. one inheriting from \code{\link{cm-class}}.
+#'
 #' @template sub_subTemplate
+#'
 #' @family things related to \code{cm} data
 setMethod(f="[[",
           signature(x="cm", i="ANY", j="ANY"),
@@ -80,6 +84,7 @@ setMethod(f="initialize",
 
 #' @title Summarize a CM Object
 #' 
+#' @description
 #' Summarizes some of the data in a \code{cm} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
 #'
@@ -107,6 +112,7 @@ setMethod(f="summary",
 
 #' @title Subset a CM Object
 #' 
+#' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
 #' 
 #' @param x a \code{cm} object, i.e. inheriting from \code{\link{cm-class}}.
@@ -167,8 +173,10 @@ setMethod(f="subset",
 
 #' @title Read a CM file
 #' 
+#' @description
 #' Read a current-meter data file, producing an object of type \code{cm}.
 #' 
+#' @details
 #' There is function has been tested on only a single file, and the data-scanning
 #' algorithm was based on visual inspection of that file.  Whether it will work
 #' generally is an open question. It should be noted that the sample file had

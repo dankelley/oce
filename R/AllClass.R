@@ -164,6 +164,7 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 
 #' Subset an oce Object
 #'
+#' @description
 #' This is a basic class for general oce objects.  It has specialised
 #' versions for most sub-classes, e.g. \code{\link{subset,ctd-method}} 
 #' for \code{ctd} objects.
@@ -198,6 +199,7 @@ setMethod(f="subset",
 
 #' Extract Something From an oce Object
 #'
+#' @description
 #' The named item is sought first in
 #' \code{metadata}, where an exact match to the name is required. If
 #' it is not present in the \code{metadata} slot, then a partial-name

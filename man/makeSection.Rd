@@ -2,10 +2,7 @@
 % Please edit documentation in R/section.R
 \name{makeSection}
 \alias{makeSection}
-\title{Make a Section (DEFUNCT)
-
-This is a defunct function; use \code{\link{as.section}} instead, and
-see \link{oce-defunct} for more on the oce procedure for retiring functions.}
+\title{Make a Section (DEFUNCT)}
 \usage{
 makeSection(item, ...)
 }
@@ -13,5 +10,9 @@ makeSection(item, ...)
 \item{item}{Ignored, since this function is defunct}
 
 \item{...}{Ignored, since this function is defunct}
+}
+\description{
+This is a defunct function; use \code{\link{as.section}} instead, and
+see \link{oce-defunct} for more on the oce procedure for retiring functions.
 }
 

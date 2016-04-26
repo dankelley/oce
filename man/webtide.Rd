@@ -2,28 +2,14 @@
 % Please edit documentation in R/tidem.R
 \name{webtide}
 \alias{webtide}
-\title{Get a Tidal Prediction from a WebTide Database
-
-Get a tidal prediction from a WebTide database
-
-If \code{action="map"} then a map is drawn, with a dot for the lower-left
-corner of each triangle used in the finite-element tidal simulation upon
-which WebTide predictions are based.  If \code{node} is missing, then
-\code{\link{locator}} is called, so that the user can indicate a spot of
-interest on the map, and this point is indicated on the map (and in the
-return value).  If \code{node} is provided, however, the point is indicated
-but \code{\link{locator}} is not called.  (This second style is of use in
-documenting interactive work after the fact.)
-
-If \code{action="predict"} then either a node number or the longitude and
-latitude must be specified.  If \code{plot=TRUE} (the default) then a plot
-is drawn, but no plot is produced otherwise.  In either case, the (silent)
-return value is a list as described in the next section.  The times used for
-prediction are specified with the \code{time} argument, and if this is not
-specified then a week following the present time is used.
-
-Naturally, \code{webtide} will not work unless WebTide has been installed on
-the computer.}
+\title{Get a Tidal Prediction from a WebTide Database}
+\source{
+The WebTide software may be downloaded for free at the
+Department of Fisheries and Oceans (Canada) website, which in February 2016
+was
+\code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php},
+although this site seems not to be particularly static.
+}
 \usage{
 webtide(action = c("map", "predict"), longitude, latitude, node, time,
   basedir = getOption("webtide"), region = "nwatl", plot = TRUE, tformat,
@@ -81,6 +67,34 @@ in metres and the predicted horizontal components of velocity, \code{u} and
 \code{v}, along with the \code{node} number, and the \code{basedir} and
 \code{region} as supplied to this function.
 }
+\description{
+Get a tidal prediction from a WebTide database.
+
+If \code{action="map"} then a map is drawn, with a dot for the lower-left
+corner of each triangle used in the finite-element tidal simulation upon
+which WebTide predictions are based.  If \code{node} is missing, then
+\code{\link{locator}} is called, so that the user can indicate a spot of
+interest on the map, and this point is indicated on the map (and in the
+return value).  If \code{node} is provided, however, the point is indicated
+but \code{\link{locator}} is not called.  (This second style is of use in
+documenting interactive work after the fact.)
+
+If \code{action="predict"} then either a node number or the longitude and
+latitude must be specified.  If \code{plot=TRUE} (the default) then a plot
+is drawn, but no plot is produced otherwise.  In either case, the (silent)
+return value is a list as described in the next section.  The times used for
+prediction are specified with the \code{time} argument, and if this is not
+specified then a week following the present time is used.
+
+Naturally, \code{webtide} will not work unless WebTide has been installed on
+the computer.
+}
+\section{Caution}{
+
+WebTide is not an open-source application, so the present function was
+designed based on little more than guesses about the WebTide file structure.
+Users should be on the lookout for odd results.
+}
 \examples{
 \dontrun{
 library(oce)
@@ -89,18 +103,5 @@ prediction <- webtide("predict", longitude=-69.61, latitude=48.14)
 }
 \author{
 Dan Kelley
-}
-\references{
-The WebTide software may be downloaded for free at the
-Department of Fisheries and Oceans (Canada) website, which in February 2016
-was
-\code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php},
-although this site seems not to be particularly static.
-Note that WebTide is not an open-source application, as it consists mainly
-of compiled Java code, which precludes examination of the source. The
-present function relies on a certain structure of the WebTide data files,
-and since the WebTide source is closed, this was done partly by guessing.
-This means that the present function is brittle to changes in WebTide; users
-should be on the lookout for odd results.
 }
 

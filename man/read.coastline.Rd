@@ -2,17 +2,7 @@
 % Please edit documentation in R/coastline.R
 \name{read.coastline}
 \alias{read.coastline}
-\title{Read a Coastline File
-
-Read a coastline file in R, Splus, mapgen, shapefile, or openstreetmap
-format.
-
-The S and R formats are identical, and consist of two columns, lon and lat,
-with land-jump segments separated by lines with two NAs.
-
-The MapGen format is of the form \preformatted{ # -b -16.179081 28.553943
--16.244793 28.563330 } BUG: the 'arc/info ungenerate' format is not yet
-understood.}
+\title{Read a Coastline File}
 \usage{
 read.coastline(file, type = c("R", "S", "mapgen", "shapefile",
   "openstreetmap"), debug = getOption("oceDebug"), monitor = FALSE,
@@ -35,6 +25,15 @@ better for normal calls by a user.)}
 }
 \value{
 An object of \code{\link{coastline-class}}.
+}
+\description{
+Read a coastline file in R, Splus, mapgen, shapefile, or openstreetmap
+format.
+The S and R formats are identical, and consist of two columns, lon and lat,
+with land-jump segments separated by lines with two NAs.
+The MapGen format is of the form \preformatted{ # -b -16.179081 28.553943
+-16.244793 28.563330 } BUG: the 'arc/info ungenerate' format is not yet
+understood.
 }
 \author{
 Dan Kelley

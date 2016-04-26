@@ -2,17 +2,7 @@
 % Please edit documentation in R/section.R
 \name{read.section}
 \alias{read.section}
-\title{Read a Section File
-
-Read a file that contains a series of \code{ctd} profiles that make up an
-oceanographic section.
-
-Only \emph{exchange BOT} comma-separated value format is permitted at this time,
-but other formats may be added later.  It should also be noted that the parsing
-scheme was developed after inspection of the A03 data set (see Examples). This
-may cause problems if the format is not universal. For example, the header must
-name the salinity column "\code{CTDSAL}"; if not, salinity values will not be
-read from the file.}
+\title{Read a Section File}
 \usage{
 read.section(file, directory, sectionId = "", flags, ship = "",
   scientist = "", institute = "", missingValue = -999,
@@ -47,6 +37,16 @@ better for normal calls by a user.}
 }
 \value{
 An object of class \code{\link{section-class}}.
+}
+\description{
+Read a file that contains a series of \code{ctd} profiles that make up an
+oceanographic section.
+Only \emph{exchange BOT} comma-separated value format is permitted at this time,
+but other formats may be added later.  It should also be noted that the parsing
+scheme was developed after inspection of the A03 data set (see Examples). This
+may cause problems if the format is not universal. For example, the header must
+name the salinity column "\code{CTDSAL}"; if not, salinity values will not be
+read from the file.
 }
 \section{Disambiguating salinity}{
 

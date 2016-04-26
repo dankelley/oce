@@ -39,6 +39,9 @@ the fourth is, again, used for the grid lines.}
 
 \item{...}{Optional arguments passed to plotting functions.}
 }
+\description{
+Plot a \code{windrose} object, i.e. one inheriting from \code{\link{windrose-class}}.
+}
 \examples{
 library(oce)
 opar <- par(no.readonly = TRUE)

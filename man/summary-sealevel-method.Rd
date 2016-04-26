@@ -3,11 +3,7 @@
 \docType{methods}
 \name{summary,sealevel-method}
 \alias{summary,sealevel-method}
-\title{Summarize a Sealevel Object
-
-Summarizes some of the data in a sealevel object.
-
-Pertinent summary information is presented.}
+\title{Summarize a Sealevel Object}
 \usage{
 \S4method{summary}{sealevel}(object, ...)
 }
@@ -19,6 +15,9 @@ Pertinent summary information is presented.}
 \value{
 A matrix containing statistics of the elements of the \code{data}
 slot.
+}
+\description{
+Summarizes some of the data in a sealevel object.
 }
 \examples{
 library(oce)

@@ -3,10 +3,7 @@
 \docType{methods}
 \name{summary,section-method}
 \alias{summary,section-method}
-\title{Summarize a Section Object
-
-Pertinent summary information is presented, including station locations,
-distance along track, etc.}
+\title{Summarize a Section Object}
 \usage{
 \S4method{summary}{section}(object, ...)
 }
@@ -19,6 +16,10 @@ to \code{\link{read.section}}, \code{\link{read.oce}}, or
 }
 \value{
 \code{NULL}
+}
+\description{
+Pertinent summary information is presented, including station locations,
+distance along track, etc.
 }
 \examples{
 library(oce)

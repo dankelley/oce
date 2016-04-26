@@ -3,10 +3,7 @@
 \docType{methods}
 \name{summary,rsk-method}
 \alias{summary,rsk-method}
-\title{Summarize a Rsk Object
-
-Summarizes some of the data in a \code{rsk} object, presenting such information
-as the station name, sampling location, data ranges, etc.}
+\title{Summarize a Rsk Object}
 \usage{
 \S4method{summary}{rsk}(object, ...)
 }
@@ -15,6 +12,10 @@ as the station name, sampling location, data ranges, etc.}
 \code{\link{read.rsk}}, \code{\link{read.oce}}, or \code{\link{as.rsk}}.}
 
 \item{...}{Further arguments passed to or from other methods.}
+}
+\description{
+Summarizes some of the data in a \code{rsk} object, presenting such information
+as the station name, sampling location, data ranges, etc.
 }
 \examples{
 library(oce)

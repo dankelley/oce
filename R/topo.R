@@ -3,6 +3,7 @@
 
 #' @title Class to Store Topographic Data
 #' 
+#' @description
 #' Topographic data may be read with \code{\link{read.topo}} or assembled with
 #' \code{\link{as.topo}}.  Plotting are handled with \code{\link{plot,topo-method}}
 #' and summaries with \code{\link{summary,topo-method}}. Data retrieval may be
@@ -18,6 +19,7 @@ setClass("topo", contains="oce")
 
 #' @title Global Topographic Dataset at Half-degree Resolution
 #' 
+#' @description
 #' Global topographic dataset at half-degree resolution, created by decimating the
 #' ETOPO5 dataset.  Its longitude ranges from -179.5 to 180, and its latitude
 #' ranges from -89.5 to 90.  Height is measured in metres above nominal sea level.
@@ -67,8 +69,9 @@ setMethod(f="initialize",
           })
 
 
-#' @title Summarize A topography Object
+#' @title Summarize A Topo Object
 #' 
+#' @description
 #' Pertinent summary information is presented, including the longitude and
 #' latitude range, and the range of elevation.
 #' 
@@ -123,7 +126,7 @@ setMethod(f="[[<-",
 
 #' @title Subset a Topo Object
 #' 
-#' @details
+#' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
 #' Subsetting can be by \code{time} or \code{distance}, but these may not be
 #' combined; use a sequence of calls to subset by both.
@@ -178,6 +181,7 @@ setMethod(f="subset",
 
 #' @title Interpolate Within a Topo Object
 #' 
+#' @description
 #' Bilinear interpolation is used so that values will vary smoothly within a
 #' longitude-latitude grid cell. Note that the sign convention for
 #' \code{longitude} and \code{latitude} must match that in \code{topo}.
@@ -216,6 +220,7 @@ topoInterpolate <- function(longitude, latitude, topo)
 
 #' @title Plot a Topo Object
 #' 
+#' @description
 #' This plots contours of topographic elevation.  The plot aspect ratio is set
 #' based on the middle latitude in the plot.  The line properties, such as
 #' \code{land.lwd}, may either be a single item, or a vector; in the latter case,
@@ -572,6 +577,7 @@ setMethod(f="plot",
 
 #' @title Read a Topo File
 #' 
+#' @description
 #' Read a file that contains topographic data in the ETOPO dataset, as provided by
 #' the NOAA website [1].
 #' 

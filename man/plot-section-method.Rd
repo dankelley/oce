@@ -3,38 +3,7 @@
 \docType{methods}
 \name{plot,section-method}
 \alias{plot,section-method}
-\title{Plot a Section
-
-Creates a summary plot for a CTD section, with one panel for each value of
-\code{which}.  The codes are as follows.
-
-\itemize{  
-    \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
-    \item \code{which=2} or \code{"salinity"} for salinity contours
-    \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
-    \item \code{which=4} or \code{"nitrate"} for nitrate concentration contours
-    \item \code{which=5} or \code{"nitrite"} for nitrite concentration contours
-    \item \code{which=6} or \code{"oxygen"} for oxygen concentration  contours
-    \item \code{which=7} or \code{"phosphate"} for phosphate concentration contours
-    \item \code{which=8} or \code{"silicate"} for silicate concentration contours
-    \item \code{which=9} or \code{"u"} for eastward velocity
-    \item \code{which=10} or \code{"uz"} for vertical derivative of eastward velocity
-    \item \code{which=11} or \code{"v"} for northward velocity
-    \item \code{which=12} or \code{"vz"} for vertical derivative of northward velocity
-    \item \code{which=20} or \code{"data"} for a dot for each data location
-    \item \code{which=99} or \code{"map"} for a location map
-}
-
-The y-axis for the contours is pressure, plotted in the conventional reversed
-form, so that the water surface appears at the top of the plot.  The x-axis is
-more complicated. If \code{at} is not supplied, then the routine calculates x
-as the distance between the first station in the section and each of the other
-stations. (This will produce an error if the stations are not ordered
-geographically, because the \code{\link{contour}} routine cannot handle
-non-increasing axis coordinates.) If \code{at} is specified, then it is taken
-to be the location, in arbitrary units, along the x-axis of labels specified by
-\code{labels}; the way this works is designed to be the same as for
-\code{\link{axis}}.}
+\title{Plot a Section}
 \usage{
 \S4method{plot}{section}(x, which = c(1, 2, 3, 99),
   eos = getOption("oceEOS", default = "gsw"), at = NULL, labels = TRUE,
@@ -165,6 +134,41 @@ of debugging information, or to 2 to get more.}
 }
 \value{
 None.
+}
+\description{
+Creates a summary plot for a CTD section, with one panel for each value of
+\code{which}.
+}
+\details{
+The type of plot is governed by \code{which}, as follows.
+
+\itemize{  
+    \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
+    \item \code{which=2} or \code{"salinity"} for salinity contours
+    \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
+    \item \code{which=4} or \code{"nitrate"} for nitrate concentration contours
+    \item \code{which=5} or \code{"nitrite"} for nitrite concentration contours
+    \item \code{which=6} or \code{"oxygen"} for oxygen concentration  contours
+    \item \code{which=7} or \code{"phosphate"} for phosphate concentration contours
+    \item \code{which=8} or \code{"silicate"} for silicate concentration contours
+    \item \code{which=9} or \code{"u"} for eastward velocity
+    \item \code{which=10} or \code{"uz"} for vertical derivative of eastward velocity
+    \item \code{which=11} or \code{"v"} for northward velocity
+    \item \code{which=12} or \code{"vz"} for vertical derivative of northward velocity
+    \item \code{which=20} or \code{"data"} for a dot for each data location
+    \item \code{which=99} or \code{"map"} for a location map
+}
+
+The y-axis for the contours is pressure, plotted in the conventional reversed
+form, so that the water surface appears at the top of the plot.  The x-axis is
+more complicated. If \code{at} is not supplied, then the routine calculates x
+as the distance between the first station in the section and each of the other
+stations. (This will produce an error if the stations are not ordered
+geographically, because the \code{\link{contour}} routine cannot handle
+non-increasing axis coordinates.) If \code{at} is specified, then it is taken
+to be the location, in arbitrary units, along the x-axis of labels specified by
+\code{labels}; the way this works is designed to be the same as for
+\code{\link{axis}}.
 }
 \examples{
 library(oce)

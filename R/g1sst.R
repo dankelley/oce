@@ -4,6 +4,7 @@ setClass("satellite", contains="oce")
 
 #' @title Class to Hold G1SST Satellite-model Data
 #'
+#' @description
 #' G1SST is an acronym for global 1-km sea surface temperature, a product
 #' that combines satellite data with the model output. It is provided by
 #' the JPO ROMS (Regional Ocean Modelling System) modelling group.
@@ -11,6 +12,7 @@ setClass("satellite", contains="oce")
 #' the \code{\link{read.g1sst}} documentation for an example
 #' of downloading and plotting.
 #'
+#' @details
 #' It is important not to regard G1SST data in the same category as,
 #' say, \code{\link{amsr-class}} data, because the two products
 #' differ greatly with respect to cloud cover. The satellite used by
@@ -53,8 +55,10 @@ setMethod(f="[[<-",
 
 #' @title Read a G1SST file
 #'
-#' This works with netcdf files as provided by the ERDAPP server [1].
+#' @description
+#' Read a G1SST file in the netcdf format provided by the ERDAPP server [1].
 #'
+#' @details
 #' As noted in the documentation for \code{\link{g1sst-class}}, one
 #' must be aware of the incorporation of model simulations in the 
 #' \code{g1sst} product. For example, the code presented below

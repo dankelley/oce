@@ -3,8 +3,8 @@
 \docType{class}
 \name{rsk-class}
 \alias{rsk-class}
-\title{Class to Store Rsk Data
-
+\title{Class to Store Rsk Data}
+\description{
 Class for data stored in the ``Ruskin'' format used by RBR [1], including both
 \code{rsk} SQLite files and the ASCII \code{txt} exported files.
 
@@ -15,7 +15,8 @@ produces overviews.   If atmospheric pressure has not been removed from the
 data, the functions \code{\link{rskPatm}} may provide guidance as to its value;
 however, this last function is no equal to decent record-keeping at sea.  Data
 may be retrieved with \code{\link{[[,rsk-method}} or replaced with
-\code{\link{[[<-,rsk-method}}.}
+\code{\link{[[<-,rsk-method}}.
+}
 \author{
 Dan Kelley and Clark Richards
 }

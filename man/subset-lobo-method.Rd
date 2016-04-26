@@ -3,10 +3,7 @@
 \docType{methods}
 \name{subset,lobo-method}
 \alias{subset,lobo-method}
-\title{Subset a LOBO Object
-
-Subset an lobo object, in a way that is somewhat
-analogous to \code{\link{subset.data.frame}}.}
+\title{Subset a LOBO Object}
 \usage{
 \S4method{subset}{lobo}(x, subset, ...)
 }
@@ -20,6 +17,10 @@ analogous to \code{\link{subset.data.frame}}.}
 }
 \value{
 A new \code{lobo} object.
+}
+\description{
+Subset an lobo object, in a way that is somewhat
+analogous to \code{\link{subset.data.frame}}.
 }
 \author{
 Dan Kelley

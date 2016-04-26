@@ -2,11 +2,7 @@
 % Please edit documentation in R/tidem.R
 \name{tidemAstron}
 \alias{tidemAstron}
-\title{Ephemeris Calculations for Tidem
-
-Do ephemeris calculations for tidem.
-
-Based directly on \code{t_astron}, from the \code{T_TIDE} package.}
+\title{Ephemeris Calculations for Tidem}
 \usage{
 tidemAstron(t)
 }
@@ -17,6 +13,10 @@ use \code{tz="GMT"} in constructing \code{t}.)}
 \value{
 A \code{\link[base]{data.frame}} containing
 \item{list("astro")}{(fill in later)} \item{list("ader")}{(fill in later)}
+}
+\description{
+Do ephemeris calculations for tidem.  This is based directly
+on \code{t_astron}, from the \code{T_TIDE} package.
 }
 \examples{
 tidemAstron(as.POSIXct("2008-01-22 18:50:24"))

@@ -1,5 +1,6 @@
 #' @title Class to Store LOBO Data
 #' 
+#' @description
 #' Class to store LOBO data.
 #' A \code{lobo} object may be read with \code{\link{read.lobo}} or
 #' constructed with \code{\link{as.lobo}}.  Plots can be made with
@@ -57,6 +58,7 @@ setMethod(f="initialize",
 
 #' @title LOBO Dataset
 #' 
+#' @description
 #' This is sample lobo dataset obtained in the Northwest Arm of Halifax by
 #' Satlantic.
 #' 
@@ -100,8 +102,7 @@ setMethod(f="[[<-",
 
 #' @title Summarize a LOBO Object
 #' 
-#' Summarizes some of the data in a lobo object.
-#' 
+#' @description
 #' Pertinent summary information is presented, including the sampling interval,
 #' data ranges, etc.
 #' 
@@ -133,6 +134,7 @@ setMethod(f="summary",
 
 #' @title Subset a LOBO Object
 #' 
+#' @description
 #' Subset an lobo object, in a way that is somewhat
 #' analogous to \code{\link{subset.data.frame}}.
 #' 
@@ -238,6 +240,7 @@ plot.lobo.TS <- function(lobo, ...)
 
 #' @title Plot LOBO data
 #' 
+#' @description
 #' Plot a summary diagram for lobo data.
 #' 
 #' @param x A \code{lobo} object, e.g. as read by \code{\link{read.lobo}}.
@@ -346,8 +349,10 @@ setMethod(f="plot",
 
 #' @title Read a LOBO File
 #' 
+#' @description
 #' Read a data file created by a LOBO instrument.
 #' 
+#' @details
 #' This version of \code{read.lobo} is really quite crude, having been
 #' developed mainly for a ``predict the Spring bloom'' contest at Dalhousie
 #' University.  In particular, the function assumes that the data columns are
@@ -355,7 +360,6 @@ setMethod(f="plot",
 #' add new ones, this function is unlikely to work correctly. Furthermore, it
 #' should be noted that the file format was inferred simply by downloading
 #' files; the supplier makes no claims that the format will be fixed in time.
-#' 
 #' It is also worth noting that there is no \code{\link{read.oce}} equivalent
 #' to \code{read.lobo}, because the file format has no recognizable header.
 #' 
@@ -432,9 +436,8 @@ read.lobo <- function(file, cols=7, processingLog)
 
 #' @title Coerce Data into a Lobo Object
 #' 
+#' @description
 #' Coerce a dataset into a lobo dataset.
-#' 
-#' This function assembles vectors into a \code{lobo} object.
 #' 
 #' @param time vector of times of observation
 #' @param u vector of x velocity component observations

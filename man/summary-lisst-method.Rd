@@ -3,10 +3,7 @@
 \docType{methods}
 \name{summary,lisst-method}
 \alias{summary,lisst-method}
-\title{Summarize a LISST Object
-
-Summarizes some of the data in a \code{lisst} object, presenting such information
-as the station name, sampling location, data ranges, etc.}
+\title{Summarize a LISST Object}
 \usage{
 \S4method{summary}{lisst}(object, ...)
 }
@@ -15,6 +12,10 @@ as the station name, sampling location, data ranges, etc.}
 \code{\link{read.lisst}} or \code{\link{as.lisst}}.}
 
 \item{...}{Ignored.}
+}
+\description{
+Summarizes some of the data in a \code{lisst} object, presenting such information
+as the station name, sampling location, data ranges, etc.
 }
 \examples{
 library(oce)

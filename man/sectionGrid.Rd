@@ -2,15 +2,7 @@
 % Please edit documentation in R/section.R
 \name{sectionGrid}
 \alias{sectionGrid}
-\title{Grid a Section
-
-Grid a section, by interpolating to fixed pressure levels.  The
-\code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in the
-documentation for \code{\link{ctdDecimate}}, which is used to do this
-processing.  The default \code{"approx"} method is best for bottle data, the
-\code{"boxcar"} is best for ctd data, and the \code{"lm"} method is probably
-too slow to recommend for exploratory work, in which it is common to do trials
-with a variety of \code{"p"} values.}
+\title{Grid a Section}
 \usage{
 sectionGrid(section, p, method = "approx", debug = getOption("oceDebug"),
   ...)
@@ -42,6 +34,15 @@ main body of the data file, but also the details of the header.}
 \value{
 An object of \code{\link{section-class}} that contains stations whose
 pressure values match identically.
+}
+\description{
+Grid a section, by interpolating to fixed pressure levels.  The
+\code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in the
+documentation for \code{\link{ctdDecimate}}, which is used to do this
+processing.  The default \code{"approx"} method is best for bottle data, the
+\code{"boxcar"} is best for ctd data, and the \code{"lm"} method is probably
+too slow to recommend for exploratory work, in which it is common to do trials
+with a variety of \code{"p"} values.
 }
 \section{A note about flags}{
 

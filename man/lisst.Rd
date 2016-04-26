@@ -3,15 +3,16 @@
 \docType{data}
 \name{lisst}
 \alias{lisst}
-\title{LISST Dataset
-
-LISST (Laser in-situ scattering and transmissometry) dataset, constructed
-artificially.}
+\title{LISST Dataset}
 \source{
 This was constructed artifically using \code{\link{as.lisst}},
 }
 \usage{
 data(lisst)
+}
+\description{
+LISST (Laser in-situ scattering and transmissometry) dataset, constructed
+artificially.
 }
 \author{
 Dan Kelley

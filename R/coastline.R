@@ -1,12 +1,15 @@
 #' @title Class to Store Coastline Data
 #' 
+#' @description
 #' Class to store coastline data, which may be read with
 #' \code{\link{read.coastline}} or constructed with \code{\link{as.coastline}},
 #' plotted with \code{\link{plot,coastline-method}} or summarized with
 #' \code{\link{summary,coastline-method}}. Data within \code{coastline}
 #' objects may be retrieved with \code{\link{[[,coastline-method}}
 #' or replaced with \code{\link{[[<-,coastline-method}}.
+#'
 #' @author Dan Kelley
+#'
 #' @family classes provided by \code{oce}
 #' @family things related to \code{coastline} data
 setClass("coastline", contains="oce")
@@ -14,6 +17,7 @@ setClass("coastline", contains="oce")
 
 #' @title World Coastline
 #' 
+#' @description
 #' This is a coarse resolution coastline at scale 1:110M, with 10,696 points,
 #' suitable for world-scale plots plotted at a small size, e.g. inset diagrams.
 #' Finer resolution coastline files are provided in the
@@ -74,6 +78,7 @@ setMethod(f="[[<-",
 
 #' @title Subset a Coastline Object
 #' 
+#' @description
 #' Summarizes coastline length, bounding box, etc.
 #' @param x A \code{coastline} object, i.e. one inheriting from \code{\link{coastline-class}}.
 #' @param subset An expression indicating how to subset \code{x}.
@@ -102,6 +107,7 @@ setMethod(f="subset",
                                         
 #' @title Summarize a Coastline Object
 #' 
+#' @description
 #' Summarizes coastline length, bounding box, etc.
 #' 
 #' @param object an object of class \code{"coastline"}, usually, a result of a
@@ -121,8 +127,8 @@ setMethod(f="summary",
  
 #' @title Coerce Data into a Coastline Object 
 #' 
+#' @description
 #' Coerces a sequence of longitudes and latitudes into a coastline dataset.
-#' 
 #' This may be used when \code{\link{read.coastline}} cannot read a file, or
 #' when the data have been manipulated.
 #' 
@@ -158,8 +164,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 
 #' @title Plot a Coastline
 #' 
-#' Plot a coastline
-#' 
+#' @description
 #' This function plots a coastline.  An attempt is made to fill the space of
 #' the plot, and this is done by limiting either the longitude range or the
 #' latitude range, as appropriate, by modifying the eastern or northern limit,
@@ -598,12 +603,11 @@ setMethod(f="plot",
 
 #' @title Read a Coastline File
 #' 
+#' @description
 #' Read a coastline file in R, Splus, mapgen, shapefile, or openstreetmap
 #' format.
-#' 
 #' The S and R formats are identical, and consist of two columns, lon and lat,
 #' with land-jump segments separated by lines with two NAs.
-#' 
 #' The MapGen format is of the form \preformatted{ # -b -16.179081 28.553943
 #' -16.244793 28.563330 } BUG: the 'arc/info ungenerate' format is not yet
 #' understood.
@@ -692,6 +696,7 @@ read.coastline <- function(file,
 
 #' @title Read a Coastline File in Shapefile Format
 #' 
+#' @description
 #' Read coastline data stored in the shapefile format [1].
 #' 
 #' @param file name of file containing coastline data.
@@ -881,6 +886,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
 
 #' @title Read a Coastline File in Openstreetmap Format
 #' 
+#' @description
 #' Read coastline data stored in the openstreetmap format [1].
 #'
 #' @inheritParams read.coastline.shapefile
@@ -949,8 +955,8 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
 
 #' @title Find the Name of the Best Coastline Object
 #' 
+#' @description
 #' Find the name of the most appropriate coastline for a given locale
-#' 
 #' Checks \code{coastlineWorld}, \code{coastlineWorldFine} and
 #' \code{coastlineWorldCoarse}, in that order, to find the one most appropriate
 #' for the locale.
@@ -1003,7 +1009,7 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 
 #' @title Cut a Coastline Object at Specified Longitude
 #'
-#' @details
+#' @description
 #' This can be helpful in preventing \code{\link{mapPlot}} from producing ugly
 #' horizontal lines in world maps. These lines occur when a coastline segment
 #' is intersected by longitude lon_0+180.  Since the coastline files in the oce
@@ -1011,6 +1017,7 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' function is not needed for default maps, which have \code{+lon_0=0}. However,
 #' may help with other values of \code{lon_0}.
 #'
+#' @section Caution:
 #' This function is provisional. Its behaviour, name and very existence
 #' may change through the late months of 2015.  One part of the
 #' development plan is to see if there is common ground between this

@@ -3,6 +3,7 @@
 
 #' @title Class to Store GPS Data
 #' 
+#' @description
 #' Class to store gps data. These objects may be read with
 #' \code{\link{read.gps}} or assembled with \code{\link{as.gps}}.
 #'
@@ -28,6 +29,7 @@ setMethod(f="initialize",
 
 #' @title Summarize a GPS Object
 #' 
+#' @description
 #' Summarize a \code{gps} object, i.e. one inheriting from \code{\link{gps-class}}.
 #' 
 #' @param object an object of class \code{"gps"}
@@ -65,13 +67,11 @@ setMethod(f="[[<-",
 
 #' @title Plot a GPS Object
 #' 
-#' Plot a gps object
-#' 
+#' @description
 #' This function plots a gps object.  An attempt is made to use the whole space
 #' of the plot, and this is done by limiting either the longitude range or the
 #' latitude range, as appropriate, by modifying the eastern or northern limit,
 #' as appropriate.
-#' 
 #' To get an inset map inside another map, draw the first map, do
 #' \code{par(new=TRUE)}, and then call \code{plot.gps} with a value of
 #' \code{mar} that moves the inset plot to a desired location on the existing
@@ -367,8 +367,8 @@ setMethod(f="plot",
 
 #' @title Coerce data into a GPS dataset
 #' 
+#' @description
 #' Coerces a sequence of longitudes and latitudes into a GPS dataset.
-#' 
 #' This may be used when \code{\link{read.gps}} cannot read a file, or when the
 #' data have been manipulated.
 #' 
@@ -395,8 +395,8 @@ as.gps <- function(longitude, latitude, filename="")
 
 #' @title Read a GPS File
 #' 
-#' Read a gps file in gpx format format.
 #' 
+#' @description
 #' Reads GPX format files by simply finding all longitudes and latitudes; in
 #' other words, information on separate tracks, or waypoints, etc., is lost.
 #' 

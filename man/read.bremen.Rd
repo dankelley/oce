@@ -13,6 +13,10 @@ to load.}
 \value{
 An object of \code{\link{bremen-class}}.
 }
+\description{
+Read a file in Bremen format, producing an object inheriting from
+\code{\link{bremen-class}}.
+}
 \section{Issues}{
  This may be renamed (or removed) without notice.
 }

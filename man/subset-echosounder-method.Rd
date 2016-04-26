@@ -3,11 +3,7 @@
 \docType{methods}
 \name{subset,echosounder-method}
 \alias{subset,echosounder-method}
-\title{Subset an Echosounder Object
-
-This function is somewhat analogous to \code{\link{subset.data.frame}}.
-Subsetting can be by \code{time} or \code{depth}, but these may not be
-combined; use a sequence of calls to subset by both.}
+\title{Subset an Echosounder Object}
 \usage{
 \S4method{subset}{echosounder}(x, subset, ...)
 }
@@ -21,6 +17,11 @@ combined; use a sequence of calls to subset by both.}
 }
 \value{
 A new \code{echosounder} object.
+}
+\description{
+This function is somewhat analogous to \code{\link{subset.data.frame}}.
+Subsetting can be by \code{time} or \code{depth}, but these may not be
+combined; use a sequence of calls to subset by both.
 }
 \examples{
 library(oce)

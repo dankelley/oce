@@ -18,7 +18,7 @@ See \sQuote{Details}.}
 \value{
 A new \code{\link{topo-class}} object.
 }
-\details{
+\description{
 This function is somewhat analogous to \code{\link{subset.data.frame}}.
 Subsetting can be by \code{time} or \code{distance}, but these may not be
 combined; use a sequence of calls to subset by both.

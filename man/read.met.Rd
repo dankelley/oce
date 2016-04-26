@@ -2,14 +2,7 @@
 % Please edit documentation in R/met.R
 \name{read.met}
 \alias{read.met}
-\title{Read a Met File
-
-Read a meteorological data file
-
-Reads a comma-separated value file in the format used by the Meteorological
-Service of Canada (MSC).  The agency does not publish a format for these
-files, so this function was based on a study of a few sample files, and it
-may fail for other files, if MSC changes the format.}
+\title{Read a Met File}
 \usage{
 read.met(file, type = NULL, skip, tz = getOption("oceTz"),
   debug = getOption("oceDebug"), processingLog, ...)
@@ -48,6 +41,12 @@ one; the weather forecaster's "North wind" has positive \code{v} and zero
 \code{u}.  In addition to these things, \code{data} also contains items
 called \code{wind} (in km/h) and \code{direction} (in tenths of a degree),
 taken straight from the data file.
+}
+\description{
+Reads a comma-separated value file in the format used by the Meteorological
+Service of Canada (MSC).  The agency does not publish a format for these
+files, so this function was based on a study of a few sample files, and it
+may fail for other files, if MSC changes the format.
 }
 \section{Note}{
  There seem to be several similar formats in use, so this

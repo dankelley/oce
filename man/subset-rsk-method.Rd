@@ -3,10 +3,7 @@
 \docType{methods}
 \name{subset,rsk-method}
 \alias{subset,rsk-method}
-\title{Subset a Rsk Object
-
-Subset a rsk object.  This function is somewhat analogous to
-\code{\link{subset.data.frame}}, but subsetting is only permitted by time.}
+\title{Subset a Rsk Object}
 \usage{
 \S4method{subset}{rsk}(x, subset, ...)
 }
@@ -20,6 +17,10 @@ See \sQuote{Details}.}
 }
 \value{
 A new \code{rsk} object.
+}
+\description{
+Subset a rsk object.  This function is somewhat analogous to
+\code{\link{subset.data.frame}}, but subsetting is only permitted by time.
 }
 \examples{
 library(oce)

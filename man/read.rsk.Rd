@@ -2,10 +2,7 @@
 % Please edit documentation in R/rsk.R
 \name{read.rsk}
 \alias{read.rsk}
-\title{Read a Rsk file
-
-Read an RBR rsk or txt file, e.g. as produced by an RBR logger, producing an
-object of class \code{rsk}.}
+\title{Read a Rsk file}
 \usage{
 read.rsk(file, from = 1, to, by = 1, type, tz = getOption("oceTz", default
   = "UTC"), patm = FALSE, processingLog, debug = getOption("oceDebug"))
@@ -46,6 +43,10 @@ is better for normal calls by a user.}
 }
 \value{
 An object of \code{\link{rsk-class}}.
+}
+\description{
+Read an RBR rsk or txt file, e.g. as produced by an RBR logger, producing an
+object of class \code{rsk}.
 }
 \details{
 This can read files produced by several RBR instruments.  At the moment, five

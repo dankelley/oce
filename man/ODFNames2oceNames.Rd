@@ -14,6 +14,9 @@ ODFNames2oceNames(names, PARAMETER_HEADER = NULL)
 \value{
 A vector of strings.
 }
+\description{
+Translate data names in the ODF convention to similar names in the Oce convention.
+}
 \details{
 The following table gives the regular expressions that define recognized
 ODF names, along with the translated names as used in oce objects.

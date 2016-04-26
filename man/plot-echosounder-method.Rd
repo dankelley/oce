@@ -3,13 +3,7 @@
 \docType{methods}
 \name{plot,echosounder-method}
 \alias{plot,echosounder-method}
-\title{Plot Echosounder Data
-
-Plot echosounder data
-
-Simple linear approximation is used when a \code{newx} value is specifie
-with the \code{which=2} method, but arguably a gridding method should be
-used, and this may be added in the future.}
+\title{Plot Echosounder Data}
 \usage{
 \S4method{plot}{echosounder}(x, which = 1, beam = "a", newx, xlab, ylab,
   xlim, ylim, zlim, type = "l", col = oce.colorsJet, lwd = 2,
@@ -117,6 +111,12 @@ with \code{radius}.}
 \value{
 A list is silently returned, containing \code{xat} and \code{yat},
 values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
+}
+\description{
+Plot echosounder data.
+Simple linear approximation is used when a \code{newx} value is specifie
+with the \code{which=2} method, but arguably a gridding method should be
+used, and this may be added in the future.
 }
 \examples{
 

@@ -6,8 +6,10 @@
 
 #' @title Class to Store Echosounder Data
 #' 
+#' @description
 #' Class to store echosounder data.
 #'
+#' @details
 #' The \code{data} slot is a list containing
 #' 
 #' \itemize{
@@ -84,6 +86,7 @@ setClass("echosounder", contains="oce")
 
 #' @title Echosounder Dataset
 #' 
+#' @description
 #' This is degraded subsample of measurements that were made with a Biosonics
 #' scientific echousounder, as part of the St Lawrence Internal Wave Experiment
 #' (SLEIWEX).
@@ -112,6 +115,7 @@ setMethod(f="initialize",
 
 #' @title Summarize an Echosounder Object
 #' 
+#' @description
 #' Summarizes some of the data in an \code{echosounder} object.
 #' 
 #' @param object an object of class \code{"echosounder"}, usually, a result of
@@ -217,6 +221,7 @@ setMethod(f="[[<-",
 
 #' @title Subset an Echosounder Object
 #' 
+#' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
 #' Subsetting can be by \code{time} or \code{depth}, but these may not be
 #' combined; use a sequence of calls to subset by both.
@@ -381,6 +386,7 @@ as.echosounder <- function(time, depth, a, src="",
 
 #' @title Find the Ocean Bottom in an Echosounder Object
 #' 
+#' @description
 #' Finds the depth in a Biosonics echosounder file, by finding the strongest
 #' reflector and smoothing its trace.
 #' 
@@ -407,8 +413,8 @@ findBottom <- function(x, ignore=5, clean=despike)
 
 #' @title Plot Echosounder Data
 #' 
-#' Plot echosounder data
-#' 
+#' @description
+#' Plot echosounder data.
 #' Simple linear approximation is used when a \code{newx} value is specifie
 #' with the \code{which=2} method, but arguably a gridding method should be
 #' used, and this may be added in the future.
@@ -719,9 +725,7 @@ setMethod(f="plot",
 
 #' @title Read an Echosounder File
 #' 
-#' Read an echosounder data file, producing an object of type
-#' \code{echosounder}.
-#' 
+#' @description
 #' Reads a biosonics echosounder file.  This function was written for and
 #' tested with single-beam, dual-beam, and split-beam Biosonics files of type
 #' V3, and may not work properly with other file formats.

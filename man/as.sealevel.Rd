@@ -2,13 +2,7 @@
 % Please edit documentation in R/sealevel.R
 \name{as.sealevel}
 \alias{as.sealevel}
-\title{Coerce Data Into a Sealevel Object
-
-Coerces a dataset (minimally, a sequence of times and heights) into a
-sealevel dataset.
-
-The arguments are based on the standard data format, as were described in a
-file formerly available at [1].}
+\title{Coerce Data Into a Sealevel Object}
 \usage{
 as.sealevel(elevation, time, header = NULL, stationNumber = NA,
   stationVersion = NA, stationName = NULL, region = NULL, year = NA,
@@ -62,6 +56,12 @@ time, then 1 hour is assumed.}
 \value{
 An object of \code{\link[base]{class}} \code{"sealevel"} (for
 details, see \code{\link{read.sealevel}}).
+}
+\description{
+Coerces a dataset (minimally, a sequence of times and heights) into a
+sealevel dataset.
+The arguments are based on the standard data format, as were described in a
+file formerly available at [1].
 }
 \examples{
 library(oce)

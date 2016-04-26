@@ -2,11 +2,7 @@
 % Please edit documentation in R/topo.R
 \name{topoInterpolate}
 \alias{topoInterpolate}
-\title{Interpolate Within a Topo Object
-
-Bilinear interpolation is used so that values will vary smoothly within a
-longitude-latitude grid cell. Note that the sign convention for
-\code{longitude} and \code{latitude} must match that in \code{topo}.}
+\title{Interpolate Within a Topo Object}
 \usage{
 topoInterpolate(longitude, latitude, topo)
 }
@@ -23,6 +19,11 @@ topoInterpolate(longitude, latitude, topo)
 \value{
 Vector of heights giving the elevation of the earth above means sea
 level at the indicated location on the earth.
+}
+\description{
+Bilinear interpolation is used so that values will vary smoothly within a
+longitude-latitude grid cell. Note that the sign convention for
+\code{longitude} and \code{latitude} must match that in \code{topo}.
 }
 \examples{
 library(oce)

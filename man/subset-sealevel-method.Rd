@@ -3,12 +3,7 @@
 \docType{methods}
 \name{subset,sealevel-method}
 \alias{subset,sealevel-method}
-\title{Subset a Sealevel Object
-
-Subset a sealevel object
-
-This function is somewhat analogous to \code{\link{subset.data.frame}}, but
-subsetting is only permitted by time.}
+\title{Subset a Sealevel Object}
 \usage{
 \S4method{subset}{sealevel}(x, subset, ...)
 }
@@ -22,6 +17,10 @@ subsetting is only permitted by time.}
 }
 \value{
 A new \code{sealevel} object.
+}
+\description{
+This function is somewhat analogous to \code{\link{subset.data.frame}}, but
+subsetting is only permitted by time.
 }
 \examples{
 library(oce)

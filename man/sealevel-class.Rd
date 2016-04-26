@@ -3,10 +3,11 @@
 \docType{class}
 \name{sealevel-class}
 \alias{sealevel-class}
-\title{Class to Store Sealevel Data
-
+\title{Class to Store Sealevel Data}
+\description{
 Class to store sealevel data, e.g. from a tide gauge, with standard slots
-\code{metadata}, \code{data} and \code{processingLog}.}
+\code{metadata}, \code{data} and \code{processingLog}.
+}
 \section{Methods}{
  Data may be accessed as e.g.  \code{sealevel[["time"]]},
 where the string could also be e.g.  \code{"elevation"} for the

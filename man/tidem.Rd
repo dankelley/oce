@@ -2,12 +2,60 @@
 % Please edit documentation in R/tidem.R
 \name{tidem}
 \alias{tidem}
-\title{Fit a Tidem (Tidal Model) to a Timeseries
+\title{Fit a Tidem (Tidal Model) to a Timeseries}
+\usage{
+tidem(t, x, constituents, latitude = NULL, rc = 1, regress = lm,
+  debug = getOption("oceDebug"))
+}
+\arguments{
+\item{t}{Either a \code{sealevel} object (e.g. produced by
+\code{\link{read.sealevel}} or \code{\link{as.sealevel}}) or a vector of
+times. In the former case, time is part of the object, so \code{t} may not
+be given here.  In the latter case, \code{tidem} needs a way to determine
+time, so \code{t} must be given.}
 
+\item{x}{an optional numerical vector holding something that varies with
+time.  This is ignored if \code{t} is a \code{\link{sealevel-class}} object,
+in which case it is inferred as \code{t[["elevation"]]}.}
+
+\item{constituents}{an optional list of tidal constituents to which the fit
+is done (see \dQuote{Details}.)}
+
+\item{latitude}{if provided, the latitude of the observations.  If not
+provided, \code{tidem} will try to infer this from \code{sl}.}
+
+\item{rc}{the value of the coefficient in the Rayleigh criterion.}
+
+\item{regress}{function to be used for regression, by default
+\code{\link{lm}}, but could be for example \code{rlm} from the
+\code{MASS} package.}
+
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
+}
+\value{
+An object of \code{\link{tidem-class}}, consisting of
+\item{const}{constituent number, e.g. 1 for \code{Z0}, 1 for \code{SA},
+etc.} \item{model}{the regression model} \item{name}{a vector of constituent
+names, in non-subscript format, e.g. "\code{M2}".} \item{frequency}{a vector
+of constituent frequencies, in inverse hours.} \item{amplitude}{a vector of
+fitted constituent amplitudes, in metres.} \item{phase}{a vector of fitted
+constituent phase.  NOTE: The definition of phase is likely to change as
+this function evolves.  For now, it is phase with respect to the first data
+sample.} \item{p}{a vector containing a sort of p value for each
+constituent.  This is calculated as the average of the p values for the
+sine() and cosine() portions used in fitting; whether it makes any sense is
+an open question.}
+}
+\description{
 The fit is done in terms of sine and cosine components at the indicated
 tidal frequencies, with the amplitude and phase being calculated from the
 resultant coefficients on the sine and cosine terms.
-
+}
+\details{
 The tidal constituents to be used in the analysis are specified as follows.
 
 \enumerate{
@@ -57,53 +105,7 @@ data(tidedata) print(tidedata$const$name) }
 
 \strong{The text should include discussion of the (not yet performed) nodal
 correction treatement.}
-}}
-\usage{
-tidem(t, x, constituents, latitude = NULL, rc = 1, regress = lm,
-  debug = getOption("oceDebug"))
 }
-\arguments{
-\item{t}{Either a \code{sealevel} object (e.g. produced by
-\code{\link{read.sealevel}} or \code{\link{as.sealevel}}) or a vector of
-times. In the former case, time is part of the object, so \code{t} may not
-be given here.  In the latter case, \code{tidem} needs a way to determine
-time, so \code{t} must be given.}
-
-\item{x}{an optional numerical vector holding something that varies with
-time.  This is ignored if \code{t} is a \code{\link{sealevel-class}} object,
-in which case it is inferred as \code{t[["elevation"]]}.}
-
-\item{constituents}{an optional list of tidal constituents to which the fit
-is done (see \dQuote{Details}.)}
-
-\item{latitude}{if provided, the latitude of the observations.  If not
-provided, \code{tidem} will try to infer this from \code{sl}.}
-
-\item{rc}{the value of the coefficient in the Rayleigh criterion.}
-
-\item{regress}{function to be used for regression, by default
-\code{\link{lm}}, but could be for example \code{rlm} from the
-\code{MASS} package.}
-
-\item{debug}{An integer specifying whether debugging information is
-to be printed during the processing. This is a general parameter that
-is used by many \code{oce} functions. Generally, setting \code{debug=0}
-turns off the printing, while higher values suggest that more information
-be printed.}
-}
-\value{
-An object of \code{\link{tidem-class}}, consisting of
-\item{const}{constituent number, e.g. 1 for \code{Z0}, 1 for \code{SA},
-etc.} \item{model}{the regression model} \item{name}{a vector of constituent
-names, in non-subscript format, e.g. "\code{M2}".} \item{frequency}{a vector
-of constituent frequencies, in inverse hours.} \item{amplitude}{a vector of
-fitted constituent amplitudes, in metres.} \item{phase}{a vector of fitted
-constituent phase.  NOTE: The definition of phase is likely to change as
-this function evolves.  For now, it is phase with respect to the first data
-sample.} \item{p}{a vector containing a sort of p value for each
-constituent.  This is calculated as the average of the p values for the
-sine() and cosine() portions used in fitting; whether it makes any sense is
-an open question.}
 }
 \section{Bugs}{
 

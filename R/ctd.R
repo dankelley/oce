@@ -2835,6 +2835,7 @@ setMethod(f="plot",
 
 #' Subset a CTD Object
 #'
+#' @description
 #' This function is somewhat analogous to
 #' \code{\link{subset.data.frame}}, but only one independent variable may be
 #' used in \code{subset} in any call to the function, which means that

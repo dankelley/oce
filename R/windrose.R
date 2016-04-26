@@ -173,6 +173,9 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 
 #' @title Plot Windrose data
 #' 
+#' @description
+#' Plot a \code{windrose} object, i.e. one inheriting from \code{\link{windrose-class}}.
+#'
 #' @param x A \code{windrose} object, e.g. inheriting from \code{\link{windrose-class}}.
 #' 
 #' @param type The thing to be plotted, either the number of counts in the angle

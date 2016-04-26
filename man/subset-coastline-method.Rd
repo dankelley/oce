@@ -3,9 +3,7 @@
 \docType{methods}
 \name{subset,coastline-method}
 \alias{subset,coastline-method}
-\title{Subset a Coastline Object
-
-Summarizes coastline length, bounding box, etc.}
+\title{Subset a Coastline Object}
 \usage{
 \S4method{subset}{coastline}(x, subset, ...)
 }
@@ -18,6 +16,9 @@ Summarizes coastline length, bounding box, etc.}
 }
 \value{
 A \code{coastline} object.
+}
+\description{
+Summarizes coastline length, bounding box, etc.
 }
 \author{
 Dan Kelley

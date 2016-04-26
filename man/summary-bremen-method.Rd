@@ -3,12 +3,7 @@
 \docType{methods}
 \name{summary,bremen-method}
 \alias{summary,bremen-method}
-\title{Summarize a Bremen Object
-
-Summarizes some of the data in a \code{bremen} object.
-
-Pertinent summary information is presented, including the station name,
-sampling location, data ranges, etc.}
+\title{Summarize a Bremen Object}
 \usage{
 \S4method{summary}{bremen}(object, ...)
 }
@@ -17,6 +12,10 @@ sampling location, data ranges, etc.}
 call to \code{\link{read.bremen}}.}
 
 \item{...}{Further arguments passed to or from other methods.}
+}
+\description{
+Pertinent summary information is presented, including the station name,
+sampling location, data ranges, etc.
 }
 \author{
 Dan Kelley

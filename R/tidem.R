@@ -2,6 +2,7 @@
 
 #' @title Class to Store Tidal Models
 #' 
+#' @description
 #' Class to store tidal-constituent models.
 #' 
 #' @author Dan Kelley
@@ -20,6 +21,7 @@ setMethod(f="initialize",
 
 #' @title Tidal Constituent Information
 #' 
+#' @description
 #' The \code{tidedata} dataset contains Tide-constituent information that is
 #' use by \code{\link{tidem}} to fit tidal models.  \code{tidedata} is a list
 #' containing \describe{ \item{const}{a list containing vectors \describe{
@@ -71,12 +73,10 @@ NULL
 
 #' @title Summarize a Tidem Object
 #' 
-#' \code{summary} method for class \code{"tidem"}.
-#' 
+#' @description
 #' By default, all fitted constituents are plotted, but it is quite useful to
 #' set e.g. p=0.05 To see just those constituents that are significant at the 5
 #' percent level.
-#' 
 #' Note that the p values are estimated as the average of the p values for the
 #' sine and cosine components at a given frequency.
 #' 
@@ -165,6 +165,7 @@ setMethod(f="[[<-",
 
 #' @title Plot a Tidem Prediction
 #' 
+#' @description
 #' Plot a summary diagram for a tidal fit.
 #' 
 #' @param x A \code{tidem} object, i.e. one inheriting from
@@ -259,9 +260,9 @@ setMethod(f="plot",
 
 #' @title Ephemeris Calculations for Tidem
 #' 
-#' Do ephemeris calculations for tidem.
-#' 
-#' Based directly on \code{t_vuf}, from the \code{T_TIDE} package.
+#' @description
+#' Do ephemeris calculations for tidem. This is based directly
+#' on \code{t_vuf}, from the \code{T_TIDE} package.
 #' 
 #' @param t time in \code{POSIXct} format.  (It is \strong{very} important to
 #' use \code{tz="GMT"} in constructing \code{t}.)
@@ -485,9 +486,9 @@ tidemVuf <- function(t, j, lat=NULL)
 
 #' @title Ephemeris Calculations for Tidem
 #' 
-#' Do ephemeris calculations for tidem.
-#' 
-#' Based directly on \code{t_astron}, from the \code{T_TIDE} package.
+#' @description
+#' Do ephemeris calculations for tidem.  This is based directly
+#' on \code{t_astron}, from the \code{T_TIDE} package.
 #' 
 #' @param t time in \code{POSIXct} format.  (It is \strong{very} important to
 #' use \code{tz="GMT"} in constructing \code{t}.)
@@ -536,10 +537,12 @@ tidemAstron <- function(t)
 
 #' @title Fit a Tidem (Tidal Model) to a Timeseries
 #' 
+#' @description
 #' The fit is done in terms of sine and cosine components at the indicated
 #' tidal frequencies, with the amplitude and phase being calculated from the
 #' resultant coefficients on the sine and cosine terms.
 #' 
+#' @details
 #' The tidal constituents to be used in the analysis are specified as follows.
 #' 
 #' \enumerate{
@@ -893,8 +896,8 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
 
 #' @title Predict a Time Series from a Tidem Tidal Model
 #' 
+#' @description
 #' Predict a time series from a tidal model.
-#' 
 #' This is a wrapper around the predict method for \code{object$model}.
 #' 
 #' @param object A \code{tidem} object, i.e. one inheriting from
@@ -969,7 +972,8 @@ predict.tidem <- function(object, newdata, ...)
 
 #' @title Get a Tidal Prediction from a WebTide Database
 #' 
-#' Get a tidal prediction from a WebTide database
+#' @description
+#' Get a tidal prediction from a WebTide database.
 #' 
 #' If \code{action="map"} then a map is drawn, with a dot for the lower-left
 #' corner of each triangle used in the finite-element tidal simulation upon
@@ -1024,17 +1028,17 @@ predict.tidem <- function(object, newdata, ...)
 #' in metres and the predicted horizontal components of velocity, \code{u} and
 #' \code{v}, along with the \code{node} number, and the \code{basedir} and
 #' \code{region} as supplied to this function.
-#' @references The WebTide software may be downloaded for free at the
+#'
+#' @source The WebTide software may be downloaded for free at the
 #' Department of Fisheries and Oceans (Canada) website, which in February 2016
 #' was
 #' \code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php},
 #' although this site seems not to be particularly static.
-#' Note that WebTide is not an open-source application, as it consists mainly
-#' of compiled Java code, which precludes examination of the source. The
-#' present function relies on a certain structure of the WebTide data files,
-#' and since the WebTide source is closed, this was done partly by guessing.
-#' This means that the present function is brittle to changes in WebTide; users
-#' should be on the lookout for odd results.
+#'
+#' @section Caution:
+#' WebTide is not an open-source application, so the present function was
+#' designed based on little more than guesses about the WebTide file structure.
+#' Users should be on the lookout for odd results.
 #' @examples
 #' \dontrun{
 #' library(oce)

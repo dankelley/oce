@@ -3,12 +3,7 @@
 \docType{methods}
 \name{summary,met-method}
 \alias{summary,met-method}
-\title{Summarize a Met Object
-
-Summarizes some of the data in a \code{met} object.
-
-Pertinent summary information is presented, including the sampling location,
-data ranges, etc.}
+\title{Summarize a Met Object}
 \usage{
 \S4method{summary}{met}(object, ...)
 }
@@ -16,6 +11,10 @@ data ranges, etc.}
 \item{object}{A \code{met} object, i.e. one inheriting from \code{\link{met-class}}.}
 
 \item{\dots}{further arguments passed to or from other methods.}
+}
+\description{
+Pertinent summary information is presented, including the sampling location,
+data ranges, etc.
 }
 \author{
 Dan Kelley

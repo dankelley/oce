@@ -3,14 +3,7 @@
 \docType{methods}
 \name{plot,bremen-method}
 \alias{plot,bremen-method}
-\title{Plot a Bremen Object
-
-Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
-
-If \code{x} seems to be a CTD dataset, uses \code{\link{plot,ctd-method}};
-otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
-plot is created with \code{\link{plot,ladp-method}} to show velocity varation with
-pressure.}
+\title{Plot a Bremen Object}
 \usage{
 \S4method{plot}{bremen}(x, type, ...)
 }
@@ -21,6 +14,13 @@ pressure.}
 coerced before ploting. The choices are \code{ctd} and \code{ladp}.}
 
 \item{...}{Other arguments, passed to plotting functions.}
+}
+\description{
+Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
+If \code{x} seems to be a CTD dataset, uses \code{\link{plot,ctd-method}};
+otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
+plot is created with \code{\link{plot,ladp-method}} to show velocity varation with
+pressure.
 }
 \author{
 Dan Kelley

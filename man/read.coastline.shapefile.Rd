@@ -2,9 +2,7 @@
 % Please edit documentation in R/coastline.R
 \name{read.coastline.shapefile}
 \alias{read.coastline.shapefile}
-\title{Read a Coastline File in Shapefile Format
-
-Read coastline data stored in the shapefile format [1].}
+\title{Read a Coastline File in Shapefile Format}
 \usage{
 read.coastline.shapefile(file, lonlim = c(-180, 180), latlim = c(-90, 90),
   debug = getOption("oceDebug"), monitor = FALSE, processingLog)
@@ -28,6 +26,9 @@ better for normal calls by a user.)}
 }
 \value{
 An object of \code{\link{coastline-class}}
+}
+\description{
+Read coastline data stored in the shapefile format [1].
 }
 \section{A hack for depth contours}{
  The following demonstrates that this

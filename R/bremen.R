@@ -2,6 +2,7 @@
 
 #' @title Class for data stored in a format used at Bremen
 #'
+#' @description
 #' Class for data stored in a format used at Bremen. This is somewhat unusual
 #' amongst \code{oce} classes, in that it does not map to a particular
 #' instrument. Although some functions are provided for dealing with these
@@ -10,6 +11,7 @@
 #' another storage class (e.g. using \code{\link{as.ctd}} for CTD-style
 #' data) so that specialized functions can be used thereafter.
 #'
+#' @description
 #' The main function is \code{\link{read.bremen}}.  A simple
 #' plotting method is provided with \code{\link{plot,bremen-method}}, and
 #' \code{\link{summary,bremen-method}} provides summaries. Data may be
@@ -53,8 +55,8 @@ setMethod(f="[[<-",
 
 #' @title Plot a Bremen Object
 #'
+#' @description
 #' Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
-#'
 #' If \code{x} seems to be a CTD dataset, uses \code{\link{plot,ctd-method}};
 #' otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
 #' plot is created with \code{\link{plot,ladp-method}} to show velocity varation with
@@ -84,8 +86,7 @@ setMethod(f="plot",
 
 #' @title Summarize a Bremen Object
 #'
-#' Summarizes some of the data in a \code{bremen} object.
-#'
+#' @description
 #' Pertinent summary information is presented, including the station name,
 #' sampling location, data ranges, etc.
 #'
@@ -126,6 +127,10 @@ findInHeaderBremen <- function(key, lines)
 
 
 #' @title Read a Bremen File
+#'
+#' @description
+#' Read a file in Bremen format, producing an object inheriting from
+#' \code{\link{bremen-class}}.
 #'
 #' @param file a connection or a character string giving the name of the file
 #' to load.

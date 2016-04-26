@@ -3,9 +3,7 @@
 \docType{methods}
 \name{subset,odf-method}
 \alias{subset,odf-method}
-\title{Subset an ODF object
-
-This function is somewhat analogous to \code{\link{subset.data.frame}}.}
+\title{Subset an ODF object}
 \usage{
 \S4method{subset}{odf}(x, subset, ...)
 }
@@ -19,6 +17,9 @@ This function is somewhat analogous to \code{\link{subset.data.frame}}.}
 }
 \value{
 A new \code{odf} object.
+}
+\description{
+This function is somewhat analogous to \code{\link{subset.data.frame}}.
 }
 \author{
 Dan Kelley

@@ -3,11 +3,7 @@
 \docType{data}
 \name{sealevel}
 \alias{sealevel}
-\title{Sealevel data for Halifax Harbour
-
-This sample sea-level dataset is the 2003 record from Halifax Harbour in
-Nova Scotia, Canada.  For reasons that are not mentioned on the data archive
-website, the record ends on the 8th of October.}
+\title{Sealevel data for Halifax Harbour}
 \source{
 The data were created as \preformatted{ sealevel <-
 read.oce("490-01-JAN-2003_slev.csv") sealevel <- oce.edit(sealevel,
@@ -15,6 +11,11 @@ read.oce("490-01-JAN-2003_slev.csv") sealevel <- oce.edit(sealevel,
 where the csv file was downloaded from [1]. Note the correction of longitude
 sign, which is required because the data file has no indication that this is
 the western hemisphere.
+}
+\description{
+This sample sea-level dataset is the 2003 record from Halifax Harbour in
+Nova Scotia, Canada.  For reasons that are not mentioned on the data archive
+website, the record ends on the 8th of October.
 }
 \author{
 Dan Kelley

@@ -3,15 +3,16 @@
 \docType{class}
 \name{g1sst-class}
 \alias{g1sst-class}
-\title{Class to Hold G1SST Satellite-model Data
-
+\title{Class to Hold G1SST Satellite-model Data}
+\description{
 G1SST is an acronym for global 1-km sea surface temperature, a product
 that combines satellite data with the model output. It is provided by
 the JPO ROMS (Regional Ocean Modelling System) modelling group.
 See the JPL website [1] to learn more about the data, and see
 the \code{\link{read.g1sst}} documentation for an example
 of downloading and plotting.
-
+}
+\details{
 It is important not to regard G1SST data in the same category as,
 say, \code{\link{amsr-class}} data, because the two products
 differ greatly with respect to cloud cover. The satellite used by
@@ -19,7 +20,8 @@ differ greatly with respect to cloud cover. The satellite used by
 even if there is cloud cover, whereas \code{g1sst} fills in cloud
 gaps with model simulations.  It can be helpful to consult 
 [1] for a given time, clicking and then unclicking the radio button
-that turns off the model-based filling of cloud gaps.}
+that turns off the model-based filling of cloud gaps.
+}
 \author{
 Dan Kelley
 }

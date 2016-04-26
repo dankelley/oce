@@ -3,14 +3,15 @@
 \docType{data}
 \name{cm}
 \alias{cm}
-\title{A CM record
-
+\title{A CM Record}
+\usage{
+data(cm)
+}
+\description{
 The result of using \code{\link{read.cm}} on a current meter file holding measurements made with an
 InterOcean S4 device.  See \code{\link{read.cm}} for some general cautionary notes on reading such
 files, and be aware that the salinities in this sample dataset are known to be incorrect, for
-unknown reasons perhaps related to lack of calibration of an old instrument that is seldom used.}
-\usage{
-data(cm)
+unknown reasons perhaps related to lack of calibration of an old instrument that is seldom used.
 }
 \examples{
 \dontrun{

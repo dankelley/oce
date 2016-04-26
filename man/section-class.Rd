@@ -3,8 +3,8 @@
 \docType{class}
 \name{section-class}
 \alias{section-class}
-\title{Class to Store Hydrographic Section Data
-
+\title{Class to Store Hydrographic Section Data}
+\description{
 Class to store hydrographic section data, with standard slots \code{metadata},
 \code{data} and \code{processingLog}.
 
@@ -29,7 +29,8 @@ values of dynamic height are provided by e.g.
 
 The depths of all data are obtained from e.g.  \code{section[["depth"]]}, and
 the distances along the transect, measured from the first station, are obtained
-from e.g.  \code{section[["distance"]]}.}
+from e.g.  \code{section[["distance"]]}.
+}
 \examples{
 library(oce)
 data(section)

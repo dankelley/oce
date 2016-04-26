@@ -3,14 +3,7 @@
 \docType{methods}
 \name{plot,coastline-method}
 \alias{plot,coastline-method}
-\title{Plot a Coastline
-
-Plot a coastline
-
-This function plots a coastline.  An attempt is made to fill the space of
-the plot, and this is done by limiting either the longitude range or the
-latitude range, as appropriate, by modifying the eastern or northern limit,
-as appropriate.}
+\title{Plot a Coastline}
 \usage{
 \S4method{plot}{coastline}(x, xlab = "", ylab = "", showHemi = TRUE, asp,
   clongitude, clatitude, span, lonlabel = NULL, latlabel = NULL,
@@ -134,6 +127,12 @@ set \code{yaxp=c(-90,90,4)} for a plot extending from pole to pole.}
 }
 \value{
 None.
+}
+\description{
+This function plots a coastline.  An attempt is made to fill the space of
+the plot, and this is done by limiting either the longitude range or the
+latitude range, as appropriate, by modifying the eastern or northern limit,
+as appropriate.
 }
 \details{
 If \code{longitudelim}, \code{latitudelim} and \code{projection} are all given,

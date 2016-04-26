@@ -41,6 +41,7 @@ setMethod(f="[[<-",
 
 #' @title LISST Dataset
 #' 
+#' @description
 #' LISST (Laser in-situ scattering and transmissometry) dataset, constructed
 #' artificially.
 #' 
@@ -71,6 +72,7 @@ setMethod(f="initialize",
 
 #' @title Summarize a LISST Object
 #' 
+#' @description
 #' Summarizes some of the data in a \code{lisst} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
 #'
@@ -99,9 +101,10 @@ setMethod(f="summary",
 
 #' @title Plot LISST data
 #' 
-#' Plot \code{LISST} data
-#' 
+#' @description
 #' Creates a multi-panel summary plot of data measured by LISST instrument.
+#'
+#' @details
 #' The panels are controlled by the \code{which} argument, as follows.
 #' \itemize{
 #' 
@@ -208,8 +211,8 @@ setMethod(f="plot",
 
 #' @title Coerce Data Into a LISST Object
 #' 
+#' @description
 #' Coerce data into a lisst object
-#' 
 #' If \code{data} contains fewer than 42 columns, an error is reported.  If it
 #' contains more than 42 columns, only the first 42 are used.  This is used by
 #' \code{\link{read.lisst}}, the documentation on which explains the meanings
@@ -270,9 +273,9 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 
 #' @title Read a LISST File
 #' 
+#' @description
 #' Read a LISST data file, producing a \code{lisst} object, i.e. one
 #' inheriting from \code{\link{lisst-class}}.
-#' 
 #' The file should contain 42 columns, with no header.  If there are fewer than
 #' 42 columns, an error results.  If there are more, only the first 42 are
 #' used.  Note that \code{\link{read.oce}} can recognize LISST files by their

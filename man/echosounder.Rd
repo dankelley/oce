@@ -3,14 +3,15 @@
 \docType{data}
 \name{echosounder}
 \alias{echosounder}
-\title{Echosounder Dataset
-
-This is degraded subsample of measurements that were made with a Biosonics
-scientific echousounder, as part of the St Lawrence Internal Wave Experiment
-(SLEIWEX).}
+\title{Echosounder Dataset}
 \source{
 This file came from the SLEIWEX-2008 experiment, and was decimated
 using \code{\link{decimate}} with \code{by=c()}.
+}
+\description{
+This is degraded subsample of measurements that were made with a Biosonics
+scientific echousounder, as part of the St Lawrence Internal Wave Experiment
+(SLEIWEX).
 }
 \author{
 Dan Kelley

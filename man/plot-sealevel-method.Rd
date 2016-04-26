@@ -3,17 +3,7 @@
 \docType{methods}
 \name{plot,sealevel-method}
 \alias{plot,sealevel-method}
-\title{Plot Sealevel Data
-
-Plot a summary diagram for sealevel data.
-
-Creates a plot for a sea-level dataset, in one of two varieties.  Depending
-on the length of \code{which}, either a single-panel or multi-panel plot is
-drawn.  If there is just one panel, then the value of \code{par} used in
-\code{plot,sealevel-method} is retained upon exit, making it convenient to add to
-the plot.  For multi-panel plots, \code{par} is returned to the value it had
-before the call, and so \code{adorn} must be used to add to individual
-panels.}
+\title{Plot Sealevel Data}
 \usage{
 \S4method{plot}{sealevel}(x, which = 1:3, adorn = NULL,
   drawTimeRange = getOption("oceDrawTimeRange"), mgp = getOption("oceMgp"),
@@ -57,6 +47,15 @@ of time-series plots, matching the space used up by a palette in an
 }
 \value{
 None.
+}
+\description{
+Creates a plot for a sea-level dataset, in one of two varieties.  Depending
+on the length of \code{which}, either a single-panel or multi-panel plot is
+drawn.  If there is just one panel, then the value of \code{par} used in
+\code{plot,sealevel-method} is retained upon exit, making it convenient to add to
+the plot.  For multi-panel plots, \code{par} is returned to the value it had
+before the call, and so \code{adorn} must be used to add to individual
+panels.
 }
 \examples{
 library(oce)

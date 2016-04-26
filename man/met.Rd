@@ -3,11 +3,7 @@
 \docType{data}
 \name{met}
 \alias{met}
-\title{Sample Met Object
-
-This is sample \code{met} object containing data for Halifax, Nova Scotia,
-during September of 2003 (the period during which Hurricane Juan struck the
-city).}
+\title{Sample Met Object}
 \source{
 Downloaded from the Environment Canada website on May 29, 2014, and
 processed as follows.
@@ -16,6 +12,11 @@ met <- read.met('http://climate.weather.gc.ca/climateData/bulkdata_e.html?format
 met[['time']] <- met[['time']] + 4 * 3600
 }
 (Note the conversion from local standard time to UTC.)
+}
+\description{
+This is sample \code{met} object containing data for Halifax, Nova Scotia,
+during September of 2003 (the period during which Hurricane Juan struck the
+city).
 }
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},

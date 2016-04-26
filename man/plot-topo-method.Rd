@@ -3,13 +3,7 @@
 \docType{methods}
 \name{plot,topo-method}
 \alias{plot,topo-method}
-\title{Plot a Topo Object
-
-This plots contours of topographic elevation.  The plot aspect ratio is set
-based on the middle latitude in the plot.  The line properties, such as
-\code{land.lwd}, may either be a single item, or a vector; in the latter case,
-the length must match the length of the corresponding properties, e.g.
-\code{land.z}.}
+\title{Plot a Topo Object}
 \usage{
 \S4method{plot}{topo}(x, xlab = "", ylab = "", asp, clongitude, clatitude,
   span, expand = 1.5, water.z, col.water, lty.water, lwd.water, land.z,
@@ -87,6 +81,13 @@ default, in order to use more space for the data and less for the axes.}
 debugging.}
 
 \item{...}{Additional arguments passed on to plotting functions.}
+}
+\description{
+This plots contours of topographic elevation.  The plot aspect ratio is set
+based on the middle latitude in the plot.  The line properties, such as
+\code{land.lwd}, may either be a single item, or a vector; in the latter case,
+the length must match the length of the corresponding properties, e.g.
+\code{land.z}.
 }
 \examples{
 library(oce)

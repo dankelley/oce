@@ -3,9 +3,7 @@
 \docType{methods}
 \name{summary,gps-method}
 \alias{summary,gps-method}
-\title{Summarize a GPS Object
-
-Summarize a \code{gps} object, i.e. one inheriting from \code{\link{gps-class}}.}
+\title{Summarize a GPS Object}
 \usage{
 \S4method{summary}{gps}(object, ...)
 }
@@ -13,6 +11,9 @@ Summarize a \code{gps} object, i.e. one inheriting from \code{\link{gps-class}}.
 \item{object}{an object of class \code{"gps"}}
 
 \item{\dots}{further arguments passed to or from other methods.}
+}
+\description{
+Summarize a \code{gps} object, i.e. one inheriting from \code{\link{gps-class}}.
 }
 \author{
 Dan Kelley
