@@ -3,7 +3,10 @@
 \docType{methods}
 \name{summary,topo-method}
 \alias{summary,topo-method}
-\title{Summarize a topography data object}
+\title{Summarize A topography Object
+
+Pertinent summary information is presented, including the longitude and
+latitude range, and the range of elevation.}
 \usage{
 \S4method{summary}{topo}(object, ...)
 }
@@ -14,10 +17,6 @@
 }
 \value{
 A matrix containing statistics of the elements of the \code{data} slot.
-}
-\description{
-Pertinent summary information is presented, including the longitude and
-latitude range, and the range of elevation.
 }
 \examples{
 library(oce)

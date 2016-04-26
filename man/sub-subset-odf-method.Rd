@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,odf-method}
 \alias{[[<-,odf-method}
-\title{Replace Parts of a \code{odf} Object}
+\title{Replace Parts of an ODF Object}
 \usage{
 \S4method{[[}{odf}(x, i, j) <- value
 }

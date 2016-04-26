@@ -3,7 +3,7 @@
 \name{oceSmooth}
 \alias{oce.smooth}
 \alias{oceSmooth}
-\title{Smooth an oce object.}
+\title{Smooth an Oce Object}
 \usage{
 oceSmooth(x, ...)
 }

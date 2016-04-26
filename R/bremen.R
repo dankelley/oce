@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class for data stored in a format used at Bremen
+#' @title Class for data stored in a format used at Bremen
 #'
 #' Class for data stored in a format used at Bremen. This is somewhat unusual
 #' amongst \code{oce} classes, in that it does not map to a particular
@@ -31,7 +31,7 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-#' @title Extract Something From a \code{bremen} Object
+#' @title Extract Something From a Bremen Object
 #' @param x A bremen object, i.e. one inheriting from \code{\link{bremen-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{bremen} data
@@ -41,7 +41,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{bremen} Object
+#' @title Replace Parts of a Bremen Object
 #' @param x An \code{bremen} object, i.e. inheriting from \code{\link{bremen-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{bremen} data
@@ -51,7 +51,7 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, value=value)
           })
 
-#' Plot a bremen object
+#' @title Plot a Bremen Object
 #'
 #' Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
 #'
@@ -82,7 +82,7 @@ setMethod(f="plot",
           })
 
 
-#' Summarize a bremen object
+#' @title Summarize a Bremen Object
 #'
 #' Summarizes some of the data in a \code{bremen} object.
 #'
@@ -125,7 +125,7 @@ findInHeaderBremen <- function(key, lines)
 }
 
 
-#' Read a Bremen data file
+#' @title Read a Bremen File
 #'
 #' @param file a connection or a character string giving the name of the file
 #' to load.

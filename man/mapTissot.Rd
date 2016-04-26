@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapTissot}
 \alias{mapTissot}
-\title{Plot Tissot indicatrices.}
+\title{Add Tissot Indicatrices to a Map}
 \usage{
 mapTissot(grid = rep(15, 2), scale = 0.2, ...)
 }

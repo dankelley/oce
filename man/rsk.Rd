@@ -3,10 +3,9 @@
 \docType{data}
 \name{rsk}
 \alias{rsk}
-\title{Sample rsk Dataset}
-\description{
-A sample \code{rsk} object derived from a Concerto CTD manufactured by RBR Ltd.
-}
+\title{Sample Rsk Dataset
+
+A sample \code{rsk} object derived from a Concerto CTD manufactured by RBR Ltd.}
 \details{
 The data were obtained September 2015, off the west coast
     of Greenland, by Matt Rutherford and Nicole Trenholm of the

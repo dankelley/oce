@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,rsk-method}
 \alias{[[,rsk-method}
-\title{Extract Something From a \code{rsk} Object}
+\title{Extract Something From a Rsk Object}
 \usage{
 \S4method{[[}{rsk}(x, i, j, ...)
 }

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,bremen-method}
 \alias{[[<-,bremen-method}
-\title{Replace Parts of a \code{bremen} Object}
+\title{Replace Parts of a Bremen Object}
 \usage{
 \S4method{[[}{bremen}(x, i, j) <- value
 }

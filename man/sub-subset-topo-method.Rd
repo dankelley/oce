@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,topo-method}
 \alias{[[<-,topo-method}
-\title{Replace Parts of a \code{topo} Object}
+\title{Replace Parts of a Topo Object}
 \usage{
 \S4method{[[}{topo}(x, i, j) <- value
 }

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,topo-method}
 \alias{[[,topo-method}
-\title{Extract Something From a \code{topo} Object}
+\title{Extract Something From a Topo Object}
 \usage{
 \S4method{[[}{topo}(x, i, j, ...)
 }

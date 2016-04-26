@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapPlot}
 \alias{mapPlot}
-\title{Plot a map with projection}
+\title{Draw a Map}
 \usage{
 mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg, fill,
   border = NULL, col = NA, type = "l", axes = TRUE, drawBox = TRUE,

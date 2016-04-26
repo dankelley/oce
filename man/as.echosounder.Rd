@@ -2,7 +2,7 @@
 % Please edit documentation in R/echosounder.R
 \name{as.echosounder}
 \alias{as.echosounder}
-\title{Coerce data into echosounder dataset}
+\title{Coerce Data into an Echosounder Object}
 \usage{
 as.echosounder(time, depth, a, src = "", sourceLevel = 220,
   receiverSensitivity = -55.4, transmitPower = 0, pulseDuration = 400,

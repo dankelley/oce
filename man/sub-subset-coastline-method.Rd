@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,coastline-method}
 \alias{[[<-,coastline-method}
-\title{Replace Parts of a \code{coastline} Object}
+\title{Replace Parts of a Coastline Object}
 \usage{
 \S4method{[[}{coastline}(x, i, j) <- value
 }

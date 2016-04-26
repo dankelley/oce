@@ -3,7 +3,7 @@
 \docType{methods}
 \name{handleFlags,section-method}
 \alias{handleFlags,section-method}
-\title{Handle flags in section objects}
+\title{Handle flags in Section Objects}
 \usage{
 \S4method{handleFlags}{section}(object, flags = list(), actions = list())
 }

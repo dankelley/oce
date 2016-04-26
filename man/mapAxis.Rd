@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapAxis}
 \alias{mapAxis}
-\title{Plot axis labels on an existing map.}
+\title{Add Axis Labels to an Existing Map}
 \usage{
 mapAxis(side = 1:2, longitude = NULL, latitude = NULL, tick = TRUE,
   line = NA, pos = NA, outer = FALSE, font = NA, lty = "solid",

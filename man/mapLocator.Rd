@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapLocator}
 \alias{mapLocator}
-\title{Locate points on a existing map.}
+\title{Locate Points on a Map}
 \usage{
 mapLocator(n = 512, type = "n", ...)
 }

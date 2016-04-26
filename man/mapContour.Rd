@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapContour}
 \alias{mapContour}
-\title{Plot contours on a existing map.}
+\title{Add Contours on a Existing map}
 \usage{
 mapContour(longitude = seq(0, 1, length.out = nrow(z)), latitude = seq(0, 1,
   length.out = ncol(z)), z, nlevels = 10, levels = pretty(range(z, na.rm =

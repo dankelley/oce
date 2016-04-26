@@ -2,7 +2,11 @@
 % Please edit documentation in R/tidem.R
 \name{predict.tidem}
 \alias{predict.tidem}
-\title{Predict a time series from a tidal model}
+\title{Predict a Time Series from a Tidem Tidal Model
+
+Predict a time series from a tidal model.
+
+This is a wrapper around the predict method for \code{object$model}.}
 \usage{
 \method{predict}{tidem}(object, newdata, ...)
 }
@@ -18,12 +22,6 @@ provided in the original call to \code{\link{tidem}}.}
 }
 \value{
 A vector of predictions.
-}
-\description{
-Predict a time series from a tidal model.
-}
-\details{
-This is a wrapper around the predict method for \code{object$model}.
 }
 \examples{
 

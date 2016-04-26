@@ -3,18 +3,17 @@
 \docType{data}
 \name{coastlineWorld}
 \alias{coastlineWorld}
-\title{World coastline}
+\title{World Coastline
+
+This is a coarse resolution coastline at scale 1:110M, with 10,696 points,
+suitable for world-scale plots plotted at a small size, e.g. inset diagrams.
+Finer resolution coastline files are provided in the
+\code{ocedata} package.}
 \source{
 Downloaded from \url{http://www.naturalearthdata.com}, in
 \code{ne_110m_admin_0_countries.shp}. This procedure worked in July 2015 and
 also in October 2015, so it is likely to be reasonably stable, but be aware
 that webpages do tend to change.
-}
-\description{
-This is a coarse resolution coastline at scale 1:110M, with 10,696 points,
-suitable for world-scale plots plotted at a small size, e.g. inset diagrams.
-Finer resolution coastline files are provided in the
-\code{ocedata} package.
 }
 \section{Installing your own datasets}{
  Follow the procedure along the lines

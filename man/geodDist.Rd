@@ -2,7 +2,7 @@
 % Please edit documentation in R/geod.R
 \name{geodDist}
 \alias{geodDist}
-\title{Compute geodesic distance on surface of earth.}
+\title{Compute Geodesic Distance on Surface of Earth}
 \usage{
 geodDist(longitude1, latitude1 = NULL, longitude2 = NULL,
   latitude2 = NULL, alongPath = FALSE)

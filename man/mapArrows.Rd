@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapArrows}
 \alias{mapArrows}
-\title{Plot arrows on a existing map.}
+\title{Add Arrows to a Map}
 \usage{
 mapArrows(longitude0, latitude0, longitude1 = longitude0,
   latitude1 = latitude0, length = 0.25, angle = 30, code = 2,

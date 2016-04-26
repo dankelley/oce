@@ -3,11 +3,10 @@
 \docType{class}
 \name{gps-class}
 \alias{gps-class}
-\title{Class to store gps data}
-\description{
+\title{Class to Store GPS Data
+
 Class to store gps data. These objects may be read with
-\code{\link{read.gps}} or assembled with \code{\link{as.gps}}.
-}
+\code{\link{read.gps}} or assembled with \code{\link{as.gps}}.}
 \author{
 Dan Kelley
 }

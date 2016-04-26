@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to store RBR rsk data
+#' @title Class to Store Rsk Data
 #' 
 #' Class for data stored in the ``Ruskin'' format used by RBR [1], including both
 #' \code{rsk} SQLite files and the ASCII \code{txt} exported files.
@@ -23,7 +23,7 @@
 #' @family things related to \code{rsk} data
 setClass("rsk", contains="oce")
 
-#' Sample rsk Dataset
+#' @title Sample Rsk Dataset
 #'
 #' A sample \code{rsk} object derived from a Concerto CTD manufactured by RBR Ltd.
 #'
@@ -65,7 +65,7 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-#' Summarize a \code{rsk} Object
+#' @title Summarize a Rsk Object
 #' 
 #' Summarizes some of the data in a \code{rsk} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
@@ -102,7 +102,7 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' @title Extract Something From a \code{rsk} Object
+#' @title Extract Something From a Rsk Object
 #' @param x A rsk object, i.e. one inheriting from \code{\link{rsk-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{rsk} data
@@ -112,7 +112,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{rsk} Object
+#' @title Replace Parts of a Rsk Object
 #' @param x An \code{rsk} object, i.e. inheriting from \code{\link{rsk-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{rsk} data
@@ -124,7 +124,7 @@ setMethod(f="[[<-",
 
 
 
-#' Subset a rsk object
+#' @title Subset a Rsk Object
 #' 
 #' Subset a rsk object.  This function is somewhat analogous to
 #' \code{\link{subset.data.frame}}, but subsetting is only permitted by time.
@@ -185,7 +185,7 @@ setMethod(f="subset",
  
 
 
-#' Create a rsk object
+#' @title Coerce Data Into a Rsk Object
 #' 
 #' Create a rsk object.
 #' 
@@ -219,7 +219,6 @@ setMethod(f="subset",
 #' estimated as the median difference in times.
 #' 
 #' @param debug a flag that can be set to \code{TRUE} to turn on debugging.
-#' 
 #' 
 #' @return
 #' An object of \code{\link{rsk-class}} \code{"rsk"}.
@@ -262,7 +261,7 @@ as.rsk <- function(time, columns,
 }
 
 
-#' Plot rsk data
+#' @title Plot Rsk Data
 #' 
 #' Rsk data may be in many forms, and it is not easy to devise a general plotting
 #' strategy for all of them. The present function is quite crude, on the
@@ -533,7 +532,7 @@ setMethod(f="plot",
 
 
 
-#' Read an RBR rsk or Ruskin export file
+#' @title Read a Rsk file
 #' 
 #' Read an RBR rsk or txt file, e.g. as produced by an RBR logger, producing an
 #' object of class \code{rsk}.
@@ -1078,7 +1077,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
 
 
 
-#' Estimate atmospheric pressure in rsk record
+#' @title Estimate Atmospheric Pressure in Rsk Object
 #' 
 #' Estimate atmospheric pressure in rsk record
 #' 
@@ -1126,7 +1125,7 @@ rskPatm <- function(x, dp=0.5)
 }
 
 
-#' Decode table-of-contents file from a rsk file
+#' @title Decode table-of-contents File from a Rsk File
 #' 
 #' Decode table-of-contents file from a rsk file, of the sort used by some
 #' researchers at Dalhousie University.

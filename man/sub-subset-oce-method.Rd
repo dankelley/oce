@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,oce-method}
 \alias{[[<-,oce-method}
-\title{Replace Parts of an \code{oce} Object}
+\title{Replace Parts of an Oce Object}
 \usage{
 \S4method{[[}{oce}(x, i, j, ...) <- value
 }

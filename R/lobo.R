@@ -1,4 +1,4 @@
-#' Class to store LOBO data
+#' @title Class to Store LOBO Data
 #' 
 #' Class to store LOBO data.
 #' A \code{lobo} object may be read with \code{\link{read.lobo}} or
@@ -55,7 +55,7 @@ setMethod(f="initialize",
           })
 
 
-#' lobo dataset
+#' @title LOBO Dataset
 #' 
 #' This is sample lobo dataset obtained in the Northwest Arm of Halifax by
 #' Satlantic.
@@ -78,7 +78,7 @@ setMethod(f="initialize",
 #' @family things related to \code{lobo} data
 NULL
 
-#' @title Extract Something From a \code{lobo} Object
+#' @title Extract Something From a LOBO Object
 #' @param x A lobo object, i.e. one inheriting from \code{\link{lobo-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{lobo} data
@@ -88,7 +88,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{lobo} Object
+#' @title Replace Parts of a LOBO Object
 #' @param x An \code{lobo} object, i.e. inheriting from \code{\link{lobo-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{lobo} data
@@ -98,7 +98,7 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, value=value)
           })
 
-#' Summarize a lobo data object
+#' @title Summarize a LOBO Object
 #' 
 #' Summarizes some of the data in a lobo object.
 #' 
@@ -131,7 +131,7 @@ setMethod(f="summary",
 
 
 
-#' Subset an lobo object
+#' @title Subset a LOBO Object
 #' 
 #' Subset an lobo object, in a way that is somewhat
 #' analogous to \code{\link{subset.data.frame}}.
@@ -236,7 +236,7 @@ plot.lobo.TS <- function(lobo, ...)
 }
 
 
-#' Plot lobo data
+#' @title Plot LOBO data
 #' 
 #' Plot a summary diagram for lobo data.
 #' 
@@ -344,7 +344,7 @@ setMethod(f="plot",
 
 
 
-#' Read a lobo data file
+#' @title Read a LOBO File
 #' 
 #' Read a data file created by a LOBO instrument.
 #' 
@@ -430,7 +430,7 @@ read.lobo <- function(file, cols=7, processingLog)
 
 
 
-#' Coerce data into lobo dataset
+#' @title Coerce Data into a Lobo Object
 #' 
 #' Coerce a dataset into a lobo dataset.
 #' 

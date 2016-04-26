@@ -3,15 +3,14 @@
 \docType{class}
 \name{coastline-class}
 \alias{coastline-class}
-\title{Class to store coastline data}
-\description{
+\title{Class to Store Coastline Data
+
 Class to store coastline data, which may be read with
 \code{\link{read.coastline}} or constructed with \code{\link{as.coastline}},
 plotted with \code{\link{plot,coastline-method}} or summarized with
 \code{\link{summary,coastline-method}}. Data within \code{coastline}
 objects may be retrieved with \code{\link{[[,coastline-method}}
-or replaced with \code{\link{[[<-,coastline-method}}.
-}
+or replaced with \code{\link{[[<-,coastline-method}}.}
 \author{
 Dan Kelley
 }

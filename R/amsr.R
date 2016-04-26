@@ -53,7 +53,7 @@ setMethod(f="show",
           })
 
 
-#' Summarize an amsr Object
+#' Summarize an AMSR Object
 #'
 #' Although the data are stored in \code{\link{raw}} form, the summary
 #' presents results in physical units.
@@ -191,7 +191,7 @@ setMethod(f="[[",
               res
           })
 
-#' @title Replace Parts of a \code{amsr} Object
+#' @title Replace Parts of an AMSR Object
 #' @param x An \code{amsr} object, i.e. inheriting from \code{\link{amsr-class}}
 #' @family things related to \code{amsr} data
 #' @template sub_subsetTemplate

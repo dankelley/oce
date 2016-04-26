@@ -3,7 +3,9 @@
 \docType{methods}
 \name{plot,lobo-method}
 \alias{plot,lobo-method}
-\title{Plot lobo data}
+\title{Plot LOBO data
+
+Plot a summary diagram for lobo data.}
 \usage{
 \S4method{plot}{lobo}(x, which = c(1, 2, 3), adorn = NULL,
   mgp = getOption("oceMgp"), mar = c(mgp[2] + 1, mgp[1] + 1, 1, mgp[1] +
@@ -41,9 +43,6 @@ turns off the printing, while higher values suggest that more information
 be printed.}
 
 \item{\dots}{optional arguments passed to plotting functions.}
-}
-\description{
-Plot a summary diagram for lobo data.
 }
 \author{
 Dan Kelley

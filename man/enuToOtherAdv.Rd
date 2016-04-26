@@ -2,7 +2,7 @@
 % Please edit documentation in R/adv.R
 \name{enuToOtherAdv}
 \alias{enuToOtherAdv}
-\title{Convert east-north-up to other coordinate}
+\title{Convert ENU to Other Coordinate}
 \usage{
 enuToOtherAdv(x, heading = 0, pitch = 0, roll = 0,
   debug = getOption("oceDebug"))

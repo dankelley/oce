@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.nortek.R
 \name{read.adp.nortek}
 \alias{read.adp.nortek}
-\title{Read nortek ADP data}
+\title{Read a Nortek ADP File}
 \usage{
 read.adp.nortek(file, from = 1, to, by = 1, tz = getOption("oceTz"),
   longitude = NA, latitude = NA, type = c("aquadoppHR",
@@ -71,7 +71,7 @@ amount of debugging information, or to 2 to get more.}
 An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 }
 \description{
-Read nortek ADP data
+Read a Nortek ADP File
 }
 \author{
 Dan Kelley

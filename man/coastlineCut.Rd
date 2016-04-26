@@ -2,7 +2,7 @@
 % Please edit documentation in R/coastline.R
 \name{coastlineCut}
 \alias{coastlineCut}
-\title{Cut a coastline file at specified longitude}
+\title{Cut a Coastline Object at Specified Longitude}
 \usage{
 coastlineCut(coastline, lon_0 = 0)
 }
@@ -13,9 +13,6 @@ coastlineCut(coastline, lon_0 = 0)
 }
 \value{
 a new coastline object
-}
-\description{
-Cut a coastline file at specified longitude
 }
 \details{
 This can be helpful in preventing \code{\link{mapPlot}} from producing ugly

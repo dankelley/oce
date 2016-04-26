@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{shiftLongitude}
 \alias{shiftLongitude}
-\title{Shift longitude to range -180 to 180, if any element exceeds 180}
+\title{Shift Longitude to Range -180 to 180}
 \usage{
 shiftLongitude(longitudes)
 }

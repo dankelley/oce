@@ -3,7 +3,7 @@
 \docType{methods}
 \name{subset,topo-method}
 \alias{subset,topo-method}
-\title{Subset a topo object}
+\title{Subset a Topo Object}
 \usage{
 \S4method{subset}{topo}(x, subset, ...)
 }
@@ -17,9 +17,6 @@ See \sQuote{Details}.}
 }
 \value{
 A new \code{\link{topo-class}} object.
-}
-\description{
-Subset a topo object
 }
 \details{
 This function is somewhat analogous to \code{\link{subset.data.frame}}.

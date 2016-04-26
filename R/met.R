@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to store meteorological data
+#' @title Class to Store Meteorological Data
 #' 
 #' Class to store meteorological data, with standard slots \code{metadata},
 #' \code{data} and \code{processingLog}.  For objects created with
@@ -38,7 +38,7 @@
 #' @family things related to \code{met} data
 setClass("met", contains="oce")
 
-#' @title Extract Something From a \code{met} Object
+#' @title Extract Something From a Met Object
 #' @param x A met object, i.e. one inheriting from \code{\link{met-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{met} data
@@ -48,7 +48,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{met} Object
+#' @title Replace Parts of a Met Object
 #' @param x An \code{met} object, i.e. inheriting from \code{\link{met-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{met} data
@@ -59,7 +59,7 @@ setMethod(f="[[<-",
           })
 
 
-#' Sample meteorological object
+#' @title Sample Met Object
 #' 
 #' This is sample \code{met} object containing data for Halifax, Nova Scotia,
 #' during September of 2003 (the period during which Hurricane Juan struck the
@@ -94,7 +94,7 @@ setMethod(f="initialize",
           })
 
 
-#' Summarize a met object
+#' @title Summarize a Met Object
 #' 
 #' Summarizes some of the data in a \code{met} object.
 #' 
@@ -120,7 +120,7 @@ setMethod(f="summary",
           })
 
 
-#' Subset a met object
+#' @title Subset a Met Object
 #' 
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
 #' 
@@ -155,7 +155,7 @@ setMethod(f="subset",
  
 
 
-#' Coerce data into met dataset
+#' @title Coerce Data into Met Object
 #' 
 #' Coerces a dataset into a met dataset.
 #' 
@@ -190,7 +190,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 
 
 
-#' Read a meteorological data file
+#' @title Read a Met File
 #' 
 #' Read a meteorological data file
 #' 
@@ -344,7 +344,7 @@ read.met <- function(file, type=NULL, skip,
 }
 
 
-#' Plot meteorological data
+#' @title Plot Met Data
 #' 
 #' Plot meteorological data
 #' 

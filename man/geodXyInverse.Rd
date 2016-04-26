@@ -2,7 +2,7 @@
 % Please edit documentation in R/geod.R
 \name{geodXyInverse}
 \alias{geodXyInverse}
-\title{Inverse geodesic calculation}
+\title{Inverse Geodesic Calculation}
 \usage{
 geodXyInverse(x, y, longitudeRef = 0, latitudeRef = 0)
 }

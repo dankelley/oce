@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,adp-method}
 \alias{[[,adp-method}
-\title{Extract Parts of an \code{adp} Object
+\title{Extract Parts of an ADP Object
 
 In addition to the usual extraction of elements by name, some shortcuts
 are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly

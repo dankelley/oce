@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.nortek.R
 \name{decodeHeaderNortek}
 \alias{decodeHeaderNortek}
-\title{Decode a Nortek header}
+\title{Decode a Nortek Header}
 \usage{
 decodeHeaderNortek(buf, type = c("aquadoppHR", "aquadoppProfiler", "aquadopp",
   "vector"), debug = getOption("oceDebug"), ...)

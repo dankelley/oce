@@ -218,7 +218,7 @@ cnvName2oceName <- function(h)
 }
 
 
-#' Read an Seabird \code{ctd} file.
+#' Read an Seabird CTD File
 #'
 #' Read a Teledyne/Seabird CTD file, i.e. a file with name ending in \code{.cnv}.
 #' @template readCtdTemplate

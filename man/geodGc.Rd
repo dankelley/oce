@@ -2,7 +2,7 @@
 % Please edit documentation in R/geod.R
 \name{geodGc}
 \alias{geodGc}
-\title{Great-circle segments between points on earth}
+\title{Great-circle Segments Between Points on Earth}
 \usage{
 geodGc(longitude, latitude, dmax)
 }

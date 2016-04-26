@@ -2,7 +2,20 @@
 % Please edit documentation in R/odf.R
 \name{ODF2oce}
 \alias{ODF2oce}
-\title{Create odf object from the output of \code{ODF::read_ODF()}}
+\title{Create ODF object from the output of \code{ODF::read_ODF()}
+
+As of August 11, 2015, \code{ODF::read_ODF} returns a list with 9 elements,
+one named \code{DATA}, which is a \code{\link{data.frame}} containing the
+columnar data, the others being headers of various sorts.  The present
+function constructs an oce object from such data, facilitating processing
+and plotting with the general oce functions.
+
+This function works by storing the 8 headers verbatim in the
+\code{odfHeaders} in the \code{metadata} slot. It copies some of the header
+information into more standard names (e.g.  \code{metadata@longitude} is a
+copy of \code{metadata@odfHeader$EVENT_HEADER$INITIAL_LATITUDE}).  As for
+the \code{DATA}, they are stored in the \code{data} slot, after renaming
+from ODF to oce convention using \code{\link{ODFNames2oceNames}}.}
 \usage{
 ODF2oce(ODF, coerce = TRUE, debug = getOption("oceDebug"))
 }
@@ -17,21 +30,6 @@ amount of debugging information, or to 2 to get more.}
 }
 \value{
 An oce object, possibly coerced to a subtype.
-}
-\description{
-As of August 11, 2015, \code{ODF::read_ODF} returns a list with 9 elements,
-one named \code{DATA}, which is a \code{\link{data.frame}} containing the
-columnar data, the others being headers of various sorts.  The present
-function constructs an oce object from such data, facilitating processing
-and plotting with the general oce functions.
-}
-\details{
-This function works by storing the 8 headers verbatim in the
-\code{odfHeaders} in the \code{metadata} slot. It copies some of the header
-information into more standard names (e.g.  \code{metadata@longitude} is a
-copy of \code{metadata@odfHeader$EVENT_HEADER$INITIAL_LATITUDE}).  As for
-the \code{DATA}, they are stored in the \code{data} slot, after renaming
-from ODF to oce convention using \code{\link{ODFNames2oceNames}}.
 }
 \section{Caution}{
  This function may change as the \code{ODF} package

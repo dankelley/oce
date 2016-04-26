@@ -1,4 +1,4 @@
-#' Class to store sealevel data
+#' @title Class to Store Sealevel Data
 #' 
 #' Class to store sealevel data, e.g. from a tide gauge, with standard slots
 #' \code{metadata}, \code{data} and \code{processingLog}.
@@ -21,7 +21,7 @@
 setClass("sealevel", contains="oce")
 
 
-#' Sea-level data set, from Halifax Harbour
+#' @title Sealevel data for Halifax Harbour
 #' 
 #' This sample sea-level dataset is the 2003 record from Halifax Harbour in
 #' Nova Scotia, Canada.  For reasons that are not mentioned on the data archive
@@ -101,7 +101,7 @@ setMethod(f="initialize",
 
 
 
-#' Summarize a sealevel object
+#' @title Summarize a Sealevel Object
 #' 
 #' Summarizes some of the data in a sealevel object.
 #' 
@@ -139,7 +139,7 @@ setMethod(f="summary",
 
 
 
-#' Subset a sealevel object
+#' @title Subset a Sealevel Object
 #' 
 #' Subset a sealevel object
 #' 
@@ -178,7 +178,7 @@ setMethod(f="subset",
  
 
 
-#' @title Extract Something From a \code{sealevel} Object
+#' @title Extract Something From a Sealevel Object
 #' @param x A sealevel object, i.e. one inheriting from \code{\link{sealevel-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{sealevel} data
@@ -188,7 +188,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{sealevel} Object
+#' @title Replace Parts of a Sealevel Object
 #' @param x An \code{sealevel} object, i.e. inheriting from \code{\link{sealevel-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{sealevel} data
@@ -213,7 +213,7 @@ setValidity("sealevel",
 
 
 
-#' Coerce data into sea-level dataset
+#' @title Coerce Data Into a Sealevel Object
 #' 
 #' Coerces a dataset (minimally, a sequence of times and heights) into a
 #' sealevel dataset.
@@ -326,7 +326,7 @@ as.sealevel <- function(elevation,
 }
 
 
-#' Plot sealevel data
+#' @title Plot Sealevel Data
 #' 
 #' Plot a summary diagram for sealevel data.
 #' 
@@ -578,7 +578,7 @@ setMethod(f="plot",
 
 
 
-#' Read a sea-level data file
+#' @title Read a Sealevel File
 #' 
 #' Read a data file holding sea level data.  BUG: the time vector assumes GMT,
 #' regardless of the GMT.offset value.
@@ -776,5 +776,4 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
                                               paste('read.sealevel(file="', fileOrig, '", tz="', tz, '")', sep="", collapse=""))
     res
 }
-
 

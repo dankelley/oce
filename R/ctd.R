@@ -83,7 +83,7 @@
 setClass("ctd", contains="oce")
 
 
-#' A CTD profile in Halifax Harbour.
+#' A CTD profile in Halifax Harbour
 #' 
 #' This is a CTD profile measured in Halifax Harbour in 2003, based
 #' on \code{\link{ctdRaw}}, but trimmed to just the downcast with
@@ -117,7 +117,7 @@ setClass("ctd", contains="oce")
 #' @family things related to \code{ctd} data
 NULL
 
-#' Seawater CTD profile, without trimming of extraneous data.
+#' Seawater CTD Profile, Without Trimming of Extraneous Data
 #' 
 #' 
 #' This is sample CTD profile provided for testing.  It includes not just the

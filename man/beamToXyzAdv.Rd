@@ -2,7 +2,7 @@
 % Please edit documentation in R/adv.R
 \name{beamToXyzAdv}
 \alias{beamToXyzAdv}
-\title{Convert ADV from beam coordinates to xyz coordinates}
+\title{Convert ADV from Beam to XYZ Coordinates}
 \usage{
 beamToXyzAdv(x, debug = getOption("oceDebug"))
 }

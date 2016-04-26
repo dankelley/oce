@@ -3,7 +3,7 @@
 \docType{methods}
 \name{subset,adv-method}
 \alias{subset,adv-method}
-\title{Subset an adv object}
+\title{Subset an ADV Object}
 \usage{
 \S4method{subset}{adv}(x, subset, ...)
 }

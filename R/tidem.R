@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to store tidal-constituent models
+#' @title Class to Store Tidal Models
 #' 
 #' Class to store tidal-constituent models.
 #' 
@@ -18,7 +18,7 @@ setMethod(f="initialize",
           })
 
 
-#' Tidal constituent information
+#' @title Tidal Constituent Information
 #' 
 #' The \code{tidedata} dataset contains Tide-constituent information that is
 #' use by \code{\link{tidem}} to fit tidal models.  \code{tidedata} is a list
@@ -69,7 +69,7 @@ setMethod(f="initialize",
 NULL
 
 
-#' Summarize a tide-model object
+#' @title Summarize a Tidem Object
 #' 
 #' \code{summary} method for class \code{"tidem"}.
 #' 
@@ -141,7 +141,7 @@ setMethod(f="summary",
               invisible(NULL)
           })
 
-#' @title Extract Something From a \code{tidem} Object
+#' @title Extract Something From a Tidem Object
 #' @param x A tidem object, i.e. one inheriting from \code{\link{tidem-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{tidem} data
@@ -151,7 +151,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{tidem} Object
+#' @title Replace Parts of a Tidem Object
 #' @param x An \code{tidem} object, i.e. inheriting from \code{\link{tidem-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{tidem} data
@@ -163,7 +163,7 @@ setMethod(f="[[<-",
 
 
 
-#' Plot a tidal fit
+#' @title Plot a Tidem Prediction
 #' 
 #' Plot a summary diagram for a tidal fit.
 #' 
@@ -257,7 +257,7 @@ setMethod(f="plot",
           })
 
 
-#' Do ephemeris calculations for tidem
+#' @title Ephemeris Calculations for Tidem
 #' 
 #' Do ephemeris calculations for tidem.
 #' 
@@ -483,7 +483,7 @@ tidemVuf <- function(t, j, lat=NULL)
 
 
 
-#' Do ephemeris calculations for tidem
+#' @title Ephemeris Calculations for Tidem
 #' 
 #' Do ephemeris calculations for tidem.
 #' 
@@ -534,7 +534,7 @@ tidemAstron <- function(t)
 }
 
 
-#' Fit a tidal model to a timeseries
+#' @title Fit a Tidem (Tidal Model) to a Timeseries
 #' 
 #' The fit is done in terms of sine and cosine components at the indicated
 #' tidal frequencies, with the amplitude and phase being calculated from the
@@ -891,7 +891,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
 }
 
 
-#' Predict a time series from a tidal model
+#' @title Predict a Time Series from a Tidem Tidal Model
 #' 
 #' Predict a time series from a tidal model.
 #' 
@@ -967,7 +967,7 @@ predict.tidem <- function(object, newdata, ...)
 
 
 
-#' Get a tidal prediction from a WebTide database
+#' @title Get a Tidal Prediction from a WebTide Database
 #' 
 #' Get a tidal prediction from a WebTide database
 #' 

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,windrose-method}
 \alias{plot,windrose-method}
-\title{Plot a wind rose diagram}
+\title{Plot Windrose data}
 \usage{
 \S4method{plot}{windrose}(x, type = c("count", "mean", "median", "fivenum"),
   convention = c("meteorological", "oceanographic"),
@@ -38,9 +38,6 @@ the second is used outside this range, the third is used for the median, and
 the fourth is, again, used for the grid lines.}
 
 \item{...}{Optional arguments passed to plotting functions.}
-}
-\description{
-Plot a wind rose diagram
 }
 \examples{
 library(oce)

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,adp-method}
 \alias{[[<-,adp-method}
-\title{Replace Parts of an \code{adp} Object}
+\title{Replace Parts of an ADP Object}
 \usage{
 \S4method{[[}{adp}(x, i, j) <- value
 }

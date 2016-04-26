@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.nortek.R
 \name{read.aquadopp}
 \alias{read.aquadopp}
-\title{Read Nortek Aquadopp file}
+\title{Read a Nortek Aquadopp File}
 \usage{
 read.aquadopp(file, from = 1, to, by = 1, tz = getOption("oceTz"),
   longitude = NA, latitude = NA, orientation, distance, monitor = FALSE,

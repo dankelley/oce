@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,rsk-method}
 \alias{[[<-,rsk-method}
-\title{Replace Parts of a \code{rsk} Object}
+\title{Replace Parts of a Rsk Object}
 \usage{
 \S4method{[[}{rsk}(x, i, j) <- value
 }

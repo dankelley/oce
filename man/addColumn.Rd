@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{addColumn}
 \alias{addColumn}
-\title{Add a column to an oce object's \code{data}.}
+\title{Add a Column to the Data Slot of an Oce object}
 \usage{
 addColumn(x, data, name)
 }

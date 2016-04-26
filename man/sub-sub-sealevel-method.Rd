@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,sealevel-method}
 \alias{[[,sealevel-method}
-\title{Extract Something From a \code{sealevel} Object}
+\title{Extract Something From a Sealevel Object}
 \usage{
 \S4method{[[}{sealevel}(x, i, j, ...)
 }

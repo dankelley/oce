@@ -2,7 +2,20 @@
 % Please edit documentation in R/sealevel.R
 \name{read.sealevel}
 \alias{read.sealevel}
-\title{Read a sea-level data file}
+\title{Read a Sealevel File
+
+Read a data file holding sea level data.  BUG: the time vector assumes GMT,
+regardless of the GMT.offset value.
+
+This function starts by scanning the first line of the file, from which it
+determines whether the file is in one of two known formats: type 1, the
+format used at the Hawaii archive centre, and type 2, the
+comma-separated-value format used by the Marine Environmental Data Service.
+(The file type is inferred by checking for the existence of the string
+\code{Station_Name} on the first line of the file, indicating type 2.) If
+the file is in neither of these formats, the user might wish to scan it
+directly, and then to use \code{\link{as.sealevel}} to create a
+\code{sealevel} object.}
 \usage{
 read.sealevel(file, tz = getOption("oceTz"), processingLog,
   debug = getOption("oceDebug"))
@@ -27,21 +40,6 @@ be printed.}
 }
 \value{
 An object of \code{\link{sealevel-class}}.
-}
-\description{
-Read a data file holding sea level data.  BUG: the time vector assumes GMT,
-regardless of the GMT.offset value.
-}
-\details{
-This function starts by scanning the first line of the file, from which it
-determines whether the file is in one of two known formats: type 1, the
-format used at the Hawaii archive centre, and type 2, the
-comma-separated-value format used by the Marine Environmental Data Service.
-(The file type is inferred by checking for the existence of the string
-\code{Station_Name} on the first line of the file, indicating type 2.) If
-the file is in neither of these formats, the user might wish to scan it
-directly, and then to use \code{\link{as.sealevel}} to create a
-\code{sealevel} object.
 }
 \examples{
 \dontrun{

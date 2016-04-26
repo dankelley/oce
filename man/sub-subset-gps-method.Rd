@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,gps-method}
 \alias{[[<-,gps-method}
-\title{Replace Parts of a \code{gps} Object}
+\title{Replace Parts of a GPS Object}
 \usage{
 \S4method{[[}{gps}(x, i, j) <- value
 }

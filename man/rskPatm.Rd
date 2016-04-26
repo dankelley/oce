@@ -2,7 +2,9 @@
 % Please edit documentation in R/rsk.R
 \name{rskPatm}
 \alias{rskPatm}
-\title{Estimate atmospheric pressure in rsk record}
+\title{Estimate Atmospheric Pressure in Rsk Object
+
+Estimate atmospheric pressure in rsk record}
 \usage{
 rskPatm(x, dp = 0.5)
 }
@@ -14,9 +16,6 @@ rskPatm(x, dp = 0.5)
 \value{
 A list of four estimates: \code{sap}, the median, the mean, and the weighted
 mean.
-}
-\description{
-Estimate atmospheric pressure in rsk record
 }
 \details{
 Pressures must be in decibars for this to work.  First, a subset of pressures is

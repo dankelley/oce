@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,g1sst-method}
 \alias{[[<-,g1sst-method}
-\title{Replace Parts of a \code{g1sst} Object}
+\title{Replace Parts of a G1SST Object}
 \usage{
 \S4method{[[}{g1sst}(x, i, j) <- value
 }

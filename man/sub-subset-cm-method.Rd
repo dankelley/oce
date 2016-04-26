@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,cm-method}
 \alias{[[<-,cm-method}
-\title{Replace Parts of a \code{cm} Object}
+\title{Replace Parts of a CM Object}
 \usage{
 \S4method{[[}{cm}(x, i, j) <- value
 }

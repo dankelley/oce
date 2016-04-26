@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{lonlat2map}
 \alias{lonlat2map}
-\title{Convert from longitude and latitude to x-y coordinates}
+\title{Convert Longitude and Latitude to X and Y}
 \usage{
 lonlat2map(longitude, latitude, projection = "")
 }

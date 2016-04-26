@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{map2lonlat}
 \alias{map2lonlat}
-\title{Convert from x-y to longitude and latitude.}
+\title{Convert X and Y to Longitude and Latitude}
 \usage{
 map2lonlat(x, y, init = c(0, 0))
 }

@@ -3,7 +3,9 @@
 \docType{methods}
 \name{summary,coastline-method}
 \alias{summary,coastline-method}
-\title{Summarize a coastline data object}
+\title{Summarize a Coastline Object
+
+Summarizes coastline length, bounding box, etc.}
 \usage{
 \S4method{summary}{coastline}(object, ...)
 }
@@ -12,9 +14,6 @@
 call to \code{\link{read.coastline}} or \code{\link{read.oce}}.}
 
 \item{\dots}{further arguments passed to or from other methods.}
-}
-\description{
-Summarizes coastline length, bounding box, etc.
 }
 \author{
 Dan Kelley

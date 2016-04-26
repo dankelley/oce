@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapLongitudeLatitudeXY}
 \alias{mapLongitudeLatitudeXY}
-\title{Convert from longitude and latitude to x and y.}
+\title{Convert From Longitude and Latitude to X and Y}
 \usage{
 mapLongitudeLatitudeXY(longitude, latitude)
 }

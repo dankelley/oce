@@ -3,11 +3,10 @@
 \docType{class}
 \name{echosounder-class}
 \alias{echosounder-class}
-\title{Class to store echosounder data}
-\description{
+\title{Class to Store Echosounder Data
+
 Class to store echosounder data.
-}
-\details{
+
 The \code{data} slot is a list containing
 
 \itemize{
@@ -41,8 +40,7 @@ y-angle data.
 \item In addition to these matrices, ad-hoc calculated matrices named
 \code{Sv} and \code{TS} may be accessed as explained in the next section.
 
-}
-}
+}}
 \section{Methods}{
 
 

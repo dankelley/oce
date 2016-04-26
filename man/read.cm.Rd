@@ -2,7 +2,49 @@
 % Please edit documentation in R/cm.R
 \name{read.cm}
 \alias{read.cm}
-\title{Read a current-meter data file}
+\title{Read a CM file
+
+Read a current-meter data file, producing an object of type \code{cm}.
+
+There is function has been tested on only a single file, and the data-scanning
+algorithm was based on visual inspection of that file.  Whether it will work
+generally is an open question. It should be noted that the sample file had
+several odd characteristics, some of which are listed below.
+\itemize{
+
+  \item  The file contained two columns named \code{"Cond"}, which was guessed
+  to stand for conductivity. Since only the first contained data, the second was
+  ignored, but this may not be the case for all files.  
+
+  \item The unit for \code{"Cond"} was stated in the file to be \code{"mS"},
+  which makes no sense, so the unit was assumed to be mS/cm, and the value was
+  divided by the standard value 42.914mS/cm (see Culkin and Smith, 1980), to
+  estimate the conductivity ratio.
+
+  \item The file contained a column named \code{"T-Temp"}, which is not
+  something the author has seen in his career. It was assumed to stand for
+  in-situ temperature.
+
+  \item The file contained a column named \code{"Depth"}, which is not something
+  an instrument can measure. Presumably it was calculated from pressure (with
+  what atmospheric offset, though?) and so pressure was inferred from it using
+  \code{\link{swPressure}}.
+
+  \item The file contained several columns that lacked names. These were
+  ignored.
+
+  \item The file contained several columns that seem to be derived from the
+  actual measured data, such as \code{"Speed"}, \code{"Dir"}, \code{"N-S Dist"},
+  etc. These are ignored.
+
+  \item The file contained several columns that were basically a mystery to the
+  author, e.g. \code{"Hx"}, \code{"Hy"}, \code{"Vref"}, etc. These were ignored.
+
+}
+
+Based on such considerations, \code{read.cm.s4()} reads only the columns that
+were reasonably well-understood based on the sample file. Users who need more
+columns should contact the author.}
 \usage{
 read.cm(file, from = 1, to, by = 1, tz = getOption("oceTz"),
   type = c("s4"), longitude = NA, latitude = NA,
@@ -61,50 +103,6 @@ should be), \code{temperature} (temperature, assumed in-situ), and
 in the data, but this is just a guess.
 
 See \dQuote{Details} for an explanation of why other columns are ignored.
-}
-\description{
-Read a current-meter data file, producing an object of type \code{cm}.
-}
-\details{
-There is function has been tested on only a single file, and the data-scanning
-algorithm was based on visual inspection of that file.  Whether it will work
-generally is an open question. It should be noted that the sample file had
-several odd characteristics, some of which are listed below.
-\itemize{
-
-\item  The file contained two columns named \code{"Cond"}, which was guessed
-  to stand for conductivity. Since only the first contained data, the second was
-  ignored, but this may not be the case for all files.
-
-\item The unit for \code{"Cond"} was stated in the file to be \code{"mS"},
-  which makes no sense, so the unit was assumed to be mS/cm, and the value was
-  divided by the standard value 42.914mS/cm (see Culkin and Smith, 1980), to
-  estimate the conductivity ratio.
-
-\item The file contained a column named \code{"T-Temp"}, which is not
-  something the author has seen in his career. It was assumed to stand for
-  in-situ temperature.
-
-\item The file contained a column named \code{"Depth"}, which is not something
-  an instrument can measure. Presumably it was calculated from pressure (with
-  what atmospheric offset, though?) and so pressure was inferred from it using
-  \code{\link{swPressure}}.
-
-\item The file contained several columns that lacked names. These were
-  ignored.
-
-\item The file contained several columns that seem to be derived from the
-  actual measured data, such as \code{"Speed"}, \code{"Dir"}, \code{"N-S Dist"},
-  etc. These are ignored.
-
-\item The file contained several columns that were basically a mystery to the
-  author, e.g. \code{"Hx"}, \code{"Hy"}, \code{"Vref"}, etc. These were ignored.
-
-}
-
-Based on such considerations, \code{read.cm.s4()} reads only the columns that
-were reasonably well-understood based on the sample file. Users who need more
-columns should contact the author.
 }
 \examples{
 \dontrun{

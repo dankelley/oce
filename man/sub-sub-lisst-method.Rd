@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,lisst-method}
 \alias{[[,lisst-method}
-\title{Extract Something From a \code{lisst} Object}
+\title{Extract Something From a LISST Object}
 \usage{
 \S4method{[[}{lisst}(x, i, j, ...)
 }

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,lobo-method}
 \alias{[[,lobo-method}
-\title{Extract Something From a \code{lobo} Object}
+\title{Extract Something From a LOBO Object}
 \usage{
 \S4method{[[}{lobo}(x, i, j, ...)
 }

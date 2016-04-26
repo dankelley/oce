@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,lobo-method}
 \alias{[[<-,lobo-method}
-\title{Replace Parts of a \code{lobo} Object}
+\title{Replace Parts of a LOBO Object}
 \usage{
 \S4method{[[}{lobo}(x, i, j) <- value
 }

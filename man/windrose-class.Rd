@@ -3,7 +3,7 @@
 \docType{class}
 \name{windrose-class}
 \alias{windrose-class}
-\title{Class to store windrose data}
+\title{Class to Store Windrose Data}
 \description{
 Windrose objects store statistical information about winds, mainly for
 plotting as "wind rose" plots (see \code{\link{plot,windrose-method}}.

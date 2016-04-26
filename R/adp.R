@@ -1,6 +1,6 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
-#' Class to Hold adp (adcp) Data
+#' Class to Hold ADP (ADCP) Data
 #'
 #' This class stores data from acoustic Doppler profilers. Some manufacturers
 #' call these ADCPs, while others call them ADPs; here the shorter form is
@@ -254,7 +254,7 @@ setMethod(f="initialize",
           })
 
 
-#' Summarize an ADP object
+#' Summarize an ADP Object
 #' 
 #' Summarize data in an \code{adp} object.
 #' 
@@ -371,7 +371,7 @@ setMethod(f="summary",
           })
 
 
-#' @title Extract Parts of an \code{adp} Object
+#' @title Extract Parts of an ADP Object
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
 #' are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
@@ -434,7 +434,7 @@ setMethod(f="[[",
               }
           })
 
-#' @title Replace Parts of an \code{adp} Object
+#' @title Replace Parts of an ADP Object
 #' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 #' @template sub_subsetTemplate
 #'
@@ -497,7 +497,7 @@ setValidity("adp",
             })
 
 
-#' Subset an adp object
+#' Subset an ADP Object
 #' 
 #' Subset an adp (acoustic Doppler profile) object, in a manner that is function
 #' is somewhat analogous to \code{\link{subset.data.frame}}.  Subsetting can be by
@@ -626,7 +626,7 @@ setMethod(f="subset",
               res
           })
 
-#' Create an adp Object
+#' Create an ADP Object
 #'
 #' @details
 #' Construct an object of \code{\link{adp-class}}.  Only a basic
@@ -756,7 +756,7 @@ beamName <- function(x, which)
 }
 
 
-#' Read an ADP data file
+#' Read an ADP File
 #' 
 #' Read an ADP data file, producing an \code{adp} object, i.e. one inheriting
 #' from \code{\link{adp-class}}.
@@ -810,7 +810,7 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 
-#' Plot ADP data
+#' Plot ADP Data
 #' 
 #' Create a summary plot of data measured by an acoustic doppler profiler.
 #' 
@@ -2145,7 +2145,7 @@ setMethod(f="plot",
 
 
 
-#' Convert an \code{adp} object to ENU coordinates
+#' Convert an ADP Object to ENU Coordinates
 #' 
 #' @param x an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 #' @param declination magnetic declination to be added to the heading, to get
@@ -2176,9 +2176,9 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 }
 
 
-#' Adjust ADP signal for spherical spreading
+#' Adjust ADP Signal for Spherical Spreading
 #' 
-#' Compensate ADP signal strength for spherical spreading
+#' Compensate ADP signal strength for spherical spreading.
 #' 
 #' First, beam echo intensity is converted from counts to decibels, by
 #' multiplying by \code{count2db}.  Then, the signal decrease owing to
@@ -2258,7 +2258,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 }
 
 
-#' Change ADP coordinate system
+#' Convert ADP From Beam to XYZ Coordinates
 #' 
 #' Convert ADP velocity components from a beam-based coordinate system to a
 #' xyz-based coordinate system.
@@ -2397,7 +2397,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 }
 
 
-#' Convert XYZ to ENU coordinates
+#' Convert ADP From XYZ to ENU Coordinates
 #'
 #' Convert ADP velocity components from a xyz-based coordinate system to
 #' an enu-based coordinate system, by using the instrument's recording of
@@ -2640,7 +2640,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 }
 
 
-#' Convert east-north-up to other coordinate
+#' Convert ADP ENU to Rotated Coordinate
 #' 
 #' Convert ADP velocity components from an enu-based coordinate system to
 #' another system, perhaps to align axes with the coastline.
@@ -2745,7 +2745,7 @@ display.bytes <- function(b, label="", ...)
 }
 
 
-#' Subtract bottom velocity from ADP velocity
+#' Subtract Bottom Velocity from ADP
 #' 
 #' Subtracts bottom tracking velocities from an \code{"adp"} object. Works for
 #' all coordinate systems (\code{beam}, \code{xyz}, and \code{enu}).

@@ -2,7 +2,7 @@
 
 setClass("satellite", contains="oce")
 
-#' Class to hold G1SST satellite-model data
+#' @title Class to Hold G1SST Satellite-model Data
 #'
 #' G1SST is an acronym for global 1-km sea surface temperature, a product
 #' that combines satellite data with the model output. It is provided by
@@ -28,7 +28,7 @@ setClass("satellite", contains="oce")
 setClass("g1sst", contains="satellite")
 
                                         
-#' @title Extract Something From a \code{g1sst} Object
+#' @title Extract Something From a G1SST Object
 #' @param x A g1sst object, i.e. one inheriting from \code{\link{g1sst-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{g1sst} data
@@ -38,7 +38,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{g1sst} Object
+#' @title Replace Parts of a G1SST Object
 #' @param x An \code{g1sst} object, i.e. inheriting from \code{\link{g1sst-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{g1sst} data
@@ -51,7 +51,7 @@ setMethod(f="[[<-",
 
 
 
-#' Read G1SST satellite data
+#' @title Read a G1SST file
 #'
 #' This works with netcdf files as provided by the ERDAPP server [1].
 #'

@@ -3,15 +3,14 @@
 \docType{class}
 \name{lobo-class}
 \alias{lobo-class}
-\title{Class to store LOBO data}
-\description{
+\title{Class to Store LOBO Data
+
 Class to store LOBO data.
 A \code{lobo} object may be read with \code{\link{read.lobo}} or
 constructed with \code{\link{as.lobo}}.  Plots can be made with
 \code{\link{plot,lobo-method}}, while \code{\link{summary,lobo-method}} produces
 statistical summaries. Data within a \code{lobo} object may be retrieved with
-\code{\link{[[,lobo-method}} and altered with \code{\link{[[,lobo-method}}.
-}
+\code{\link{[[,lobo-method}} and altered with \code{\link{[[,lobo-method}}.}
 \author{
 Dan Kelley
 }

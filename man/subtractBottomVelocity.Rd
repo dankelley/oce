@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{subtractBottomVelocity}
 \alias{subtractBottomVelocity}
-\title{Subtract bottom velocity from ADP velocity}
+\title{Subtract Bottom Velocity from ADP}
 \usage{
 subtractBottomVelocity(x, debug = getOption("oceDebug"))
 }

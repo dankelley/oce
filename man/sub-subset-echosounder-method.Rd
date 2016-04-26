@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,echosounder-method}
 \alias{[[<-,echosounder-method}
-\title{Replace Parts of a \code{echosounder} Object}
+\title{Replace Parts of an Echosounder Object}
 \usage{
 \S4method{[[}{echosounder}(x, i, j) <- value
 }

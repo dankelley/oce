@@ -16,7 +16,7 @@
     function(new) if(!missing(new)) val <<- new else val
 })
 
-#' Shift longitude to range -180 to 180, if any element exceeds 180
+#' Shift Longitude to Range -180 to 180
 #'
 #' This is a utility function used by \code{\link{mapGrid}}. It works
 #' simply by subtracting 180 from each longitude, if any longitude
@@ -100,7 +100,7 @@ badFillFix2 <- function(x, y, xorig, yorig)
 
 
 
-#' Plot axis labels on an existing map.
+#' Add Axis Labels to an Existing Map
 #'
 #' Plot axis labels on an existing map.
 #'
@@ -304,7 +304,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 }
 
 
-#' Plot contours on a existing map.
+#' Add Contours on a Existing map
 #'
 #' Plot contours on an existing map.
 #'
@@ -412,7 +412,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 
 
 
-#' Plot a direction field on a existing map.
+#' Add a Direction Field to an Existing Map
 #'
 #' Plot a direction field on a existing map.
 #'
@@ -495,7 +495,7 @@ mapDirectionField <- function(longitude, latitude, u, v,
 
 
 
-#' Convert from longitude and latitude to x and y.
+#' Convert From Longitude and Latitude to X and Y
 #'
 #' Find (x,y) values corresponding to (longitude, latitude) values, using the
 #' present projection.
@@ -548,7 +548,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 
 
 
-#' Plot a map with projection
+#' Draw a Map
 #'
 #' @description
 #' Plot coordinates as a map, using one of the subset of projections
@@ -1220,7 +1220,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 }
 
 
-#' Plot longitude and latitude grid on an existing map.
+#' Add a Longitude and Latitude Grid to a Map
 #'
 #' @description
 #' Plot longitude and latitude grid on an existing map.
@@ -1372,7 +1372,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 }
 
 
-#' Plot meridians on an existing map [DEPRECATED]
+#' Add Meridians on a Map [DEPRECATED]
 #'
 #' Plot meridians (lines of constant latitude) on an existing map.
 #' \strong{Warning:} this function will be removed soon;
@@ -1463,7 +1463,7 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 
 
 
-#' Draw a scalebar on an existing map.
+#' Add a Scalebar to a Map
 #'
 #' Draw a scalebar on an existing map.
 #'
@@ -1478,7 +1478,7 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 #'
 #' @param col colour of the scalebar.
 #'
-#' @param cex character expansion factor for the scalebar title.
+#' @param cex character expansion factor for the scalebar text.
 #'
 #' @details
 #' The scale is appropriate to the centre of the plot, and will become
@@ -1560,7 +1560,7 @@ mapScalebar <- function(x, y=NULL, length,
 }
 
 
-#' Plot text on a existing map.
+#' Add Text to a Map
 #'
 #' Plot text on an existing map.
 #'
@@ -1610,7 +1610,7 @@ mapText <- function(longitude, latitude, labels, ...)
 
 
 
-#' Plot Tissot indicatrices.
+#' Add Tissot Indicatrices to a Map
 #'
 #' Plot ellipses at grid intersection points, as a method for
 #' indicating the distortion inherent in the projection [1].
@@ -1666,7 +1666,7 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, ...)
 }
 
 
-#' Plot zones on an existing map [DEPRECATED]
+#' Add Zones to a Map [DEPRECATED]
 #'
 #' Plot zones (lines of constant longitude) on a existing map.
 #' \strong{Warning:} this function will be removed soon;
@@ -1743,10 +1743,9 @@ mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), 
 }
 
 
-#' Plot lines on a existing map.
+#' Add Lines to a Map
 #'
 #' Plot lines on an existing map
-#'
 #'
 #' @param longitude vector of longitudes of points to be plotted, or an
 #' object from which longitude and latitude can be inferred (e.g. a coastline
@@ -1815,7 +1814,7 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 }
 
 
-#' Plot points on a existing map.
+#' Add Points to a Map
 #'
 #' Plot points on an existing map.
 #'
@@ -1876,7 +1875,7 @@ mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
     }
 }
 
-#' Plot arrows on a existing map.
+#' Add Arrows to a Map
 #'
 #' Plot arrows on an existing map, e.g. to indicate a place location.
 #' This is not well-suited for drawing direction fields, e.g. of
@@ -1938,7 +1937,7 @@ mapArrows <- function(longitude0, latitude0,
 }
 
 
-#' Geographical position in degrees and minutes
+#' Format Geographical Position in Degrees and Minutes
 #' 
 #' Format geographical positions to degrees, minutes, and hemispheres
 #' 
@@ -2027,7 +2026,7 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
 }
 
 
-#' Locate points on a existing map.
+#' Locate Points on a Map
 #'
 #' Locate points on an existing map.
 #'
@@ -2063,7 +2062,7 @@ mapLocator <- function(n=512, type='n', ...)
 
 
 
-#' Convert from x-y to longitude and latitude.
+#' Convert X and Y to Longitude and Latitude
 #'
 #' Convert from x-y coordinates to longitude and latitude. This is normally called
 #' internally within oce; see \sQuote{Bugs}.
@@ -2217,7 +2216,7 @@ map2lonlat <- function(x, y, init=c(0,0))
 
 
 
-#' Plot a polygon on a existing map.
+#' Add a Polygon to a Map
 #'
 #' Plot a polygon on an existing map.
 #'
@@ -2294,7 +2293,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 }
 
 
-#' Plot an image on a existing map
+#' Add an Image to a Map
 #'
 #' Plot an image on an existing map.
 #'
@@ -2714,7 +2713,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
 
 
 
-#' Convert from longitude and latitude to UTM
+#' Convert Longitude and Latitude to UTM
 #' 
 #' @param longitude decimal longitude.  May also be a list containing items
 #' named \code{longitude} and \code{latitude}, in which case the indicated
@@ -2801,7 +2800,7 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
          hemisphere=ifelse(latitude>0, "N", "S"))
 }
 
-#' Convert from UTM to longitude and latitude
+#' Convert UTM to Longitude and Latitude
 #' 
 #' @param easting easting coordinate (in km or m, depending on value of
 #' \code{km}).  Alternatively, a list containing items named \code{easting},
@@ -2919,7 +2918,7 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
 
 
 
-#' Convert from longitude and latitude to x-y coordinates
+#' Convert Longitude and Latitude to X and Y
 #' 
 #' If a projection is already being used (e.g. as set by \code{\link{mapPlot}})
 #' then only \code{longitude} and \code{latitude} should be given, and the

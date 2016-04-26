@@ -3,8 +3,8 @@
 \docType{class}
 \name{bremen-class}
 \alias{bremen-class}
-\title{Class for data stored in a format used at Bremen}
-\description{
+\title{Class for data stored in a format used at Bremen
+
 Class for data stored in a format used at Bremen. This is somewhat unusual
 amongst \code{oce} classes, in that it does not map to a particular
 instrument. Although some functions are provided for dealing with these
@@ -12,14 +12,12 @@ data (see \dQuote{Details}), the most common action is to read the
 data with \code{\link{read.bremen}}, and then to coerce the object to
 another storage class (e.g. using \code{\link{as.ctd}} for CTD-style
 data) so that specialized functions can be used thereafter.
-}
-\details{
+
 The main function is \code{\link{read.bremen}}.  A simple
 plotting method is provided with \code{\link{plot,bremen-method}}, and
 \code{\link{summary,bremen-method}} provides summaries. Data may be
 retrieved with \code{\link{[[,bremen-method}} or replaced with
-\code{\link{[[<-,bremen-method}}.
-}
+\code{\link{[[<-,bremen-method}}.}
 \author{
 Dan Kelley
 }

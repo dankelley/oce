@@ -2,7 +2,7 @@
 % Please edit documentation in R/odf.R
 \name{ODFNames2oceNames}
 \alias{ODFNames2oceNames}
-\title{Translate from ODF names to oce names}
+\title{Translate from ODF Names to Oce Names}
 \usage{
 ODFNames2oceNames(names, PARAMETER_HEADER = NULL)
 }
@@ -13,9 +13,6 @@ ODFNames2oceNames(names, PARAMETER_HEADER = NULL)
 }
 \value{
 A vector of strings.
-}
-\description{
-Translate from ODF names to oce names
 }
 \details{
 The following table gives the regular expressions that define recognized

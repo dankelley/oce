@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapImage}
 \alias{mapImage}
-\title{Plot an image on a existing map}
+\title{Add an Image to a Map}
 \usage{
 mapImage(longitude, latitude, z, zlim, zclip = FALSE, breaks, col, colormap,
   border = NA, lwd = par("lwd"), lty = par("lty"), missingColor = NA,

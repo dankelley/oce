@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,bremen-method}
 \alias{[[,bremen-method}
-\title{Extract Something From a \code{bremen} Object}
+\title{Extract Something From a Bremen Object}
 \usage{
 \S4method{[[}{bremen}(x, i, j, ...)
 }

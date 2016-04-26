@@ -3,7 +3,7 @@
 \docType{class}
 \name{lisst-class}
 \alias{lisst-class}
-\title{Class to store LISST data}
+\title{Class to Store LISST Data}
 \description{
 Class to store LISST (Laser in-situ scattering and transmissometry) data.
 }

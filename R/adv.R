@@ -133,7 +133,7 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' @title Extract Parts of an \code{adv} Object
+#' @title Extract Parts of an ADV Object
 #'
 #' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #'
@@ -203,7 +203,7 @@ setMethod(f="[[",
               }
           })
 
-#' Replace Parts of an \code{adv} Object
+#' Replace Parts of an ADV Object
 #'
 #' @details
 #' If the \code{adv} object holds slow variables (i.e. if \code{timeSlow} is
@@ -250,7 +250,7 @@ setMethod(f="[[<-",
 
 
 
-#' Subset an adv object
+#' Subset an ADV Object
 #' 
 #' Subset an adv (acoustic Doppler profile) object.  This function is somewhat
 #' analogous to \code{\link{subset.data.frame}}, except that subsets can only be
@@ -1155,7 +1155,7 @@ setMethod(f="plot",
 
 
 
-#' Convert an \code{adv} object to ENU coordinates
+#' Convert an ADV Object to ENU Coordinates
 #' 
 #' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #' @param declination magnetic declination to be added to the heading, to get
@@ -1186,7 +1186,7 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 }
 
 
-#' Convert ADV from beam coordinates to xyz coordinates
+#' Convert ADV from Beam to XYZ Coordinates
 #' 
 #' Convert ADV velocity components from a beam-based coordinate system to a
 #' xyz-based coordinate system.
@@ -1245,7 +1245,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 
 
 
-#' Convert XYZ to ENU coordinates
+#' Convert an ADP from XYZ to ENU Coordinates
 #'
 #' Convert ADV velocity components from a xyz-based coordinate system to
 #' an enu-based coordinate system.
@@ -1496,7 +1496,7 @@ xyzToEnuAdv <- function(x, declination=0,
 
 
 
-#' Convert east-north-up to other coordinate
+#' Convert ENU to Other Coordinate
 #' 
 #' Convert ADV velocity components from an enu-based coordinate system to
 #' another system, perhaps to align axes with the coastline.

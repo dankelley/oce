@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{toEnuAdp}
 \alias{toEnuAdp}
-\title{Convert an \code{adp} object to ENU coordinates}
+\title{Convert an ADP Object to ENU Coordinates}
 \usage{
 toEnuAdp(x, declination = 0, debug = getOption("oceDebug"))
 }
@@ -19,7 +19,7 @@ turns off the printing, while higher values suggest that more information
 be printed.}
 }
 \description{
-Convert an \code{adp} object to ENU coordinates
+Convert an ADP Object to ENU Coordinates
 }
 \author{
 Dan Kelley

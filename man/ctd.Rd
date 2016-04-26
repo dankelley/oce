@@ -3,7 +3,7 @@
 \docType{data}
 \name{ctd}
 \alias{ctd}
-\title{A CTD profile in Halifax Harbour.}
+\title{A CTD profile in Halifax Harbour}
 \usage{
 data(ctd)
 }

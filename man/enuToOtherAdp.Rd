@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{enuToOtherAdp}
 \alias{enuToOtherAdp}
-\title{Convert east-north-up to other coordinate}
+\title{Convert ADP ENU to Rotated Coordinate}
 \usage{
 enuToOtherAdp(x, heading = 0, pitch = 0, roll = 0)
 }

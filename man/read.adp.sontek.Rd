@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.sontek.R
 \name{read.adp.sontek}
 \alias{read.adp.sontek}
-\title{Read a Sontek adp file}
+\title{Read a Sontek ADP File}
 \usage{
 read.adp.sontek(file, from = 1, to, by = 1, tz = getOption("oceTz"),
   longitude = NA, latitude = NA, type = c("adp", "pcadp"),

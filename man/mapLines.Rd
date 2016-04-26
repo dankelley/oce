@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapLines}
 \alias{mapLines}
-\title{Plot lines on a existing map.}
+\title{Add Lines to a Map}
 \usage{
 mapLines(longitude, latitude, greatCircle = FALSE, ...)
 }

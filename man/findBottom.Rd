@@ -2,7 +2,10 @@
 % Please edit documentation in R/echosounder.R
 \name{findBottom}
 \alias{findBottom}
-\title{Find the ocean bottom in an echosounder object}
+\title{Find the Ocean Bottom in an Echosounder Object
+
+Finds the depth in a Biosonics echosounder file, by finding the strongest
+reflector and smoothing its trace.}
 \usage{
 findBottom(x, ignore = 5, clean = despike)
 }
@@ -17,10 +20,6 @@ findBottom(x, ignore = 5, clean = despike)
 A list with elements: the \code{time} of a ping, the \code{depth} of
 the inferred depth in metres, and the \code{index} of the inferred bottom
 location, referenced to the object's \code{depth} vector.
-}
-\description{
-Finds the depth in a Biosonics echosounder file, by finding the strongest
-reflector and smoothing its trace.
 }
 \author{
 Dan Kelley

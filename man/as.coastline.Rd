@@ -2,7 +2,12 @@
 % Please edit documentation in R/coastline.R
 \name{as.coastline}
 \alias{as.coastline}
-\title{Coerce data into coastline dataset}
+\title{Coerce Data into a Coastline Object 
+
+Coerces a sequence of longitudes and latitudes into a coastline dataset.
+
+This may be used when \code{\link{read.coastline}} cannot read a file, or
+when the data have been manipulated.}
 \usage{
 as.coastline(longitude, latitude, fillable = FALSE)
 }
@@ -21,13 +26,6 @@ filled polygon.}
 \value{
 An object of \code{\link[base]{class}} \code{"coastline"} (for
 details, see \code{\link{read.coastline}}).
-}
-\description{
-Coerces a sequence of longitudes and latitudes into a coastline dataset.
-}
-\details{
-This may be used when \code{\link{read.coastline}} cannot read a file, or
-when the data have been manipulated.
 }
 \author{
 Dan Kelley

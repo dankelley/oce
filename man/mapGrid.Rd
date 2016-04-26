@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapGrid}
 \alias{mapGrid}
-\title{Plot longitude and latitude grid on an existing map.}
+\title{Add a Longitude and Latitude Grid to a Map}
 \usage{
 mapGrid(dlongitude = 15, dlatitude = 15, longitude, latitude,
   col = "darkgray", lty = "solid", lwd = 0.5 * par("lwd"),

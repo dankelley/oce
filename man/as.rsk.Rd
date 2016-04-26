@@ -2,7 +2,9 @@
 % Please edit documentation in R/rsk.R
 \name{as.rsk}
 \alias{as.rsk}
-\title{Create a rsk object}
+\title{Coerce Data Into a Rsk Object
+
+Create a rsk object.}
 \usage{
 as.rsk(time, columns, filename = "", instrumentType = "rbr",
   serialNumber = "", model = "", sampleInterval = NA,
@@ -29,9 +31,6 @@ estimated as the median difference in times.}
 }
 \value{
 An object of \code{\link{rsk-class}} \code{"rsk"}.
-}
-\description{
-Create a rsk object.
 }
 \details{
 The contents of \code{columns} are be copied into the \code{data} slot

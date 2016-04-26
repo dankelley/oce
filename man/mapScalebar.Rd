@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapScalebar}
 \alias{mapScalebar}
-\title{Draw a scalebar on an existing map.}
+\title{Add a Scalebar to a Map}
 \usage{
 mapScalebar(x, y = NULL, length, lwd = 1.5 * par("lwd"), cex = par("cex"),
   col = "black")
@@ -17,7 +17,7 @@ reasonable choice is made, based on the underlying map.}
 
 \item{lwd}{line width of the scalebar.}
 
-\item{cex}{character expansion factor for the scalebar title.}
+\item{cex}{character expansion factor for the scalebar text.}
 
 \item{col}{colour of the scalebar.}
 }

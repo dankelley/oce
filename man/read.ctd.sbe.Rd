@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.sbe.R
 \name{read.ctd.sbe}
 \alias{read.ctd.sbe}
-\title{Read an Seabird \code{ctd} file.}
+\title{Read an Seabird CTD File}
 \usage{
 read.ctd.sbe(file, columns = NULL, station = NULL, missing.value,
   monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)

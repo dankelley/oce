@@ -94,7 +94,7 @@ geodXy <- function(longitude, latitude, longitudeRef=0, latitudeRef=0, rotate=0)
     data.frame(x=xy$x, y=xy$y)
 }
 
-#' Inverse geodesic calculation
+#' Inverse Geodesic Calculation
 #'
 #' The calculation is done by finding a minimum value of a cost
 #' function that is the vector difference between (\code{x},\code{y})
@@ -123,7 +123,7 @@ geodXyInverse <- function(x, y, longitudeRef=0, latitudeRef=0)
 }
 
 
-#' Compute geodesic distance on surface of earth.
+#' Compute Geodesic Distance on Surface of Earth
 #' 
 #' This calculates geodesic distance between points on the earth, i.e.
 #' distance measured along the (presumed ellipsoidal) surface. The method
@@ -230,7 +230,7 @@ geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NUL
 
 
 
-#' Great-circle segments between points on earth
+#' Great-circle Segments Between Points on Earth
 #' 
 #' Each pair in the \code{longitude} and \code{latitude} vectors is considered
 #' in turn.  For long vectors, this may be slow.

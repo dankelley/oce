@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{decimate}
 \alias{decimate}
-\title{Smooth and decimate, or subsample, an oce object.}
+\title{Smooth and Decimate, or Subsample, an Oce Object}
 \usage{
 decimate(x, by = 10, to, filter, debug = getOption("oceDebug"))
 }

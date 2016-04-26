@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.rdi.R
 \name{read.adp.rdi}
 \alias{read.adp.rdi}
-\title{Read a Teledyne/RDI adp file}
+\title{Read a Teledyne/RDI ADP File}
 \usage{
 read.adp.rdi(file, from = 1, to, by = 1, tz = getOption("oceTz"),
   longitude = NA, latitude = NA, type = c("workhorse"), monitor = FALSE,

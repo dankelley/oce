@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{beamUnspreadAdp}
 \alias{beamUnspreadAdp}
-\title{Adjust ADP signal for spherical spreading}
+\title{Adjust ADP Signal for Spherical Spreading}
 \usage{
 beamUnspreadAdp(x, count2db = c(0.45, 0.45, 0.45, 0.45), asMatrix = FALSE,
   debug = getOption("oceDebug"))
@@ -27,7 +27,7 @@ be printed.}
 An object of \code{\link[base]{class}} \code{"adp"}.
 }
 \description{
-Compensate ADP signal strength for spherical spreading
+Compensate ADP signal strength for spherical spreading.
 }
 \details{
 First, beam echo intensity is converted from counts to decibels, by

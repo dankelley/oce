@@ -1,7 +1,9 @@
-#' Class to store LISST data
+#' @title Class to Store LISST Data
 #' 
+#' @description
 #' Class to store LISST (Laser in-situ scattering and transmissometry) data.
 #' 
+#' @details
 #' One may read \code{lisst} objects with \code{\link{read.lisst}},
 #' generate them with \code{\link{as.lisst}}, plot them
 #' with \code{\link{plot,lisst-method}}, and summarize them with
@@ -16,7 +18,7 @@
 #' @family things related to \code{lisst} data
 setClass("lisst", contains="oce")
 
-#' @title Extract Something From a \code{lisst} Object
+#' @title Extract Something From a LISST Object
 #' @param x A lisst object, i.e. one inheriting from \code{\link{lisst-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{lisst} data
@@ -26,7 +28,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{lisst} Object
+#' Replace Parts of a LISST Object
 #' @param x An \code{lisst} object, i.e. inheriting from \code{\link{lisst-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{lisst} data
@@ -37,7 +39,7 @@ setMethod(f="[[<-",
           })
 
 
-#' LISST dataset
+#' @title LISST Dataset
 #' 
 #' LISST (Laser in-situ scattering and transmissometry) dataset, constructed
 #' artificially.
@@ -67,7 +69,7 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-#' Summarize a \code{lisst} Object
+#' @title Summarize a LISST Object
 #' 
 #' Summarizes some of the data in a \code{lisst} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
@@ -95,7 +97,7 @@ setMethod(f="summary",
 
 
 
-#' Plot LISST data
+#' @title Plot LISST data
 #' 
 #' Plot \code{LISST} data
 #' 
@@ -204,7 +206,7 @@ setMethod(f="plot",
 
 
 
-#' Coerce data into a lisst object
+#' @title Coerce Data Into a LISST Object
 #' 
 #' Coerce data into a lisst object
 #' 
@@ -266,7 +268,7 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 }
 
 
-#' Read a LISST data file
+#' @title Read a LISST File
 #' 
 #' Read a LISST data file, producing a \code{lisst} object, i.e. one
 #' inheriting from \code{\link{lisst-class}}.

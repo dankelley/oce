@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapPolygon}
 \alias{mapPolygon}
-\title{Plot a polygon on a existing map.}
+\title{Add a Polygon to a Map}
 \usage{
 mapPolygon(longitude, latitude, density = NULL, angle = 45, border = NULL,
   col = NA, lty = par("lty"), ..., fillOddEven = FALSE)

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,coastline-method}
 \alias{[[,coastline-method}
-\title{Extract Something From a \code{coastline} Object}
+\title{Extract Something From a Coastline Object}
 \usage{
 \S4method{[[}{coastline}(x, i, j, ...)
 }

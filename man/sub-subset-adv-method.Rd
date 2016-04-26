@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,adv-method}
 \alias{[[<-,adv-method}
-\title{Replace Parts of an \code{adv} Object}
+\title{Replace Parts of an ADV Object}
 \usage{
 \S4method{[[}{adv}(x, i, j) <- value
 }
@@ -19,7 +19,7 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-Replace Parts of an \code{adv} Object
+Replace Parts of an ADV Object
 
 The \code{[[} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose,

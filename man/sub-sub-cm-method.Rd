@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,cm-method}
 \alias{[[,cm-method}
-\title{Extract Something From a \code{cm} Object}
+\title{Extract Something From a CM Object}
 \usage{
 \S4method{[[}{cm}(x, i, j, ...)
 }

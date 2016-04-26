@@ -3,7 +3,12 @@
 \docType{methods}
 \name{summary,lobo-method}
 \alias{summary,lobo-method}
-\title{Summarize a lobo data object}
+\title{Summarize a LOBO Object
+
+Summarizes some of the data in a lobo object.
+
+Pertinent summary information is presented, including the sampling interval,
+data ranges, etc.}
 \usage{
 \S4method{summary}{lobo}(object, ...)
 }
@@ -16,13 +21,6 @@ to \code{\link{read.lobo}} or \code{\link{read.oce}}.}
 \value{
 A matrix containing statistics of the elements of the \code{data}
 slot.
-}
-\description{
-Summarizes some of the data in a lobo object.
-}
-\details{
-Pertinent summary information is presented, including the sampling interval,
-data ranges, etc.
 }
 \examples{
 

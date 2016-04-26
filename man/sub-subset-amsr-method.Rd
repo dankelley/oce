@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,amsr-method}
 \alias{[[<-,amsr-method}
-\title{Replace Parts of a \code{amsr} Object}
+\title{Replace Parts of an AMSR Object}
 \usage{
 \S4method{[[}{amsr}(x, i, j) <- value
 }

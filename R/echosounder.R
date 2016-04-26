@@ -4,7 +4,7 @@
 ##   [1] "DT4 Data File Format Specification" [July, 2010] DT4_format_2010.pdf
 
 
-#' Class to store echosounder data
+#' @title Class to Store Echosounder Data
 #' 
 #' Class to store echosounder data.
 #'
@@ -82,7 +82,7 @@
 setClass("echosounder", contains="oce")
 
 
-#' echosounder dataset
+#' @title Echosounder Dataset
 #' 
 #' This is degraded subsample of measurements that were made with a Biosonics
 #' scientific echousounder, as part of the St Lawrence Internal Wave Experiment
@@ -110,7 +110,7 @@ setMethod(f="initialize",
 
 
 
-#' Summarize an echosounder object
+#' @title Summarize an Echosounder Object
 #' 
 #' Summarizes some of the data in an \code{echosounder} object.
 #' 
@@ -145,7 +145,7 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' @title Extract Parts of a \code{echosounder} Object
+#' @title Extract Parts of an Echosounder Object
 #' @param x A \code{echosounder} object, i.e. one inheriting from \code{\link{echosounder-class}}.
 #'
 #' @section Details of the specialized \code{echosounder} method:
@@ -204,7 +204,7 @@ setMethod(f="[[",
               }
           })
 
-#' @title Replace Parts of a \code{echosounder} Object
+#' @title Replace Parts of an Echosounder Object
 #' @param x An \code{echosounder} object, i.e. inheriting from \code{\link{echosounder-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{echosounder} data
@@ -215,7 +215,7 @@ setMethod(f="[[<-",
           })
 
 
-#' Subset an echosounder object
+#' @title Subset an Echosounder Object
 #' 
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
 #' Subsetting can be by \code{time} or \code{depth}, but these may not be
@@ -305,7 +305,7 @@ setMethod(f="subset",
           })
 
 
-#' Coerce data into echosounder dataset
+#' Coerce Data into an Echosounder Object
 #' 
 #' Coerces a dataset into a echosounder dataset.
 #' 
@@ -379,7 +379,7 @@ as.echosounder <- function(time, depth, a, src="",
 
 
 
-#' Find the ocean bottom in an echosounder object
+#' @title Find the Ocean Bottom in an Echosounder Object
 #' 
 #' Finds the depth in a Biosonics echosounder file, by finding the strongest
 #' reflector and smoothing its trace.
@@ -405,7 +405,7 @@ findBottom <- function(x, ignore=5, clean=despike)
 }
 
 
-#' Plot echosounder data
+#' @title Plot Echosounder Data
 #' 
 #' Plot echosounder data
 #' 
@@ -717,7 +717,7 @@ setMethod(f="plot",
           })
 
 
-#' Read an echosounder data file
+#' @title Read an Echosounder File
 #' 
 #' Read an echosounder data file, producing an object of type
 #' \code{echosounder}.

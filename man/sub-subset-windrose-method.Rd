@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,windrose-method}
 \alias{[[<-,windrose-method}
-\title{Replace Parts of a \code{windrose} Object}
+\title{Replace Parts of a Windrose Object}
 \usage{
 \S4method{[[}{windrose}(x, i, j) <- value
 }

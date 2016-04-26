@@ -1,7 +1,7 @@
 ## vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
 
 
-#' Class to store current meter data
+#' @title Class to Store Current Meter (CM) Data
 #' 
 #' Class to store current meter data from an interocean S4 device.  A file
 #' containing CM profile data may be read with \code{\link{read.cm}}. The results
@@ -15,7 +15,7 @@
 #' @family things related to \code{cm} data
 setClass("cm", contains="oce")
 
-#' A cm record
+#' @title A CM record
 #' 
 #' The result of using \code{\link{read.cm}} on a current meter file holding measurements made with an
 #' InterOcean S4 device.  See \code{\link{read.cm}} for some general cautionary notes on reading such
@@ -36,7 +36,7 @@ setClass("cm", contains="oce")
 #' @family things related to \code{cm} data
 NULL
 
-#' @title Extract Something From a \code{cm} Object
+#' @title Extract Something From a CM Object
 #' @param x A cm object, i.e. one inheriting from \code{\link{cm-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{cm} data
@@ -46,7 +46,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{cm} Object
+#' @title Replace Parts of a CM Object
 #' @param x An \code{cm} object, i.e. inheriting from \code{\link{cm-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{cm} data
@@ -78,7 +78,7 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-#' Summarize a \code{cm} Object
+#' @title Summarize a CM Object
 #' 
 #' Summarizes some of the data in a \code{cm} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
@@ -105,7 +105,7 @@ setMethod(f="summary",
           })
 
 
-#' Subset a cm object
+#' @title Subset a CM Object
 #' 
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
 #' 
@@ -165,7 +165,7 @@ setMethod(f="subset",
           })
 
 
-#' Read a current-meter data file
+#' @title Read a CM file
 #' 
 #' Read a current-meter data file, producing an object of type \code{cm}.
 #' 
@@ -457,7 +457,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 
-#' Plot cm (current meter) data
+#' Plot CM data
 #' 
 #' Creates a multi-panel summary plot of data measured by a current meter.
 #' 

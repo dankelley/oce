@@ -2,7 +2,7 @@
 % Please edit documentation in R/windrose.R
 \name{as.windrose}
 \alias{as.windrose}
-\title{Create a windrose object}
+\title{Create a Windrose Object}
 \usage{
 as.windrose(x, y, dtheta = 15, debug = getOption("oceDebug"))
 }

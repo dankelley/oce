@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,sealevel-method}
 \alias{[[<-,sealevel-method}
-\title{Replace Parts of a \code{sealevel} Object}
+\title{Replace Parts of a Sealevel Object}
 \usage{
 \S4method{[[}{sealevel}(x, i, j) <- value
 }

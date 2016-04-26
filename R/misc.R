@@ -237,7 +237,7 @@ curl <- function(u, v, x, y, geographical=FALSE, method=1)
 }
 
 
-#' Calculate range, extended a little, as is done for axes.
+#' Calculate Range, Extended a Little, as is Done for Axes
 #'
 #' This is analogous to what is done as part of the R axis range calculation,
 #' in the case where \code{xaxs="r"}.
@@ -2666,7 +2666,7 @@ fillGap <- function(x, method=c("linear"), rule=1)
 }
 
 
-#' Add a column to an oce object's \code{data}.
+#' Add a Column to the Data Slot of an Oce object
 #'
 #' If there is already a column with the given name, its contents are replaced
 #' by the new value.
@@ -2708,7 +2708,7 @@ addColumn <- function (x, data, name)
 }
 
 
-#' Smooth and decimate, or subsample, an oce object.
+#' Smooth and Decimate, or Subsample, an Oce Object
 #'
 #' Later on, other methods will be added, and \code{\link{ctdDecimate}} will be
 #' retired in favour of this, a more general, function.  The filtering is done
@@ -2924,7 +2924,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 
 
 
-#' Smooth an oce object.
+#' Smooth an Oce Object
 #'
 #' Each data element is smoothed as a timeseries. For ADP data, this is done
 #' along time, not distance.  Time vectors, if any, are not smoothed.  A good

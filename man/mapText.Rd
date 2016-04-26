@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapText}
 \alias{mapText}
-\title{Plot text on a existing map.}
+\title{Add Text to a Map}
 \usage{
 mapText(longitude, latitude, labels, ...)
 }

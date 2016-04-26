@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{formatPosition}
 \alias{formatPosition}
-\title{Geographical position in degrees and minutes}
+\title{Format Geographical Position in Degrees and Minutes}
 \usage{
 formatPosition(latlon, isLat = TRUE, type = c("list", "string",
   "expression"), showHemi = TRUE)

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,windrose-method}
 \alias{[[,windrose-method}
-\title{Extract Something From a \code{windrose} Object}
+\title{Extract Something From a Windrose Object}
 \usage{
 \S4method{[[}{windrose}(x, i, j, ...)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapZones}
 \alias{mapZones}
-\title{Plot zones on an existing map [DEPRECATED]}
+\title{Add Zones to a Map [DEPRECATED]}
 \usage{
 mapZones(longitude, polarCircle = 0, lty = "solid", lwd = 0.5 *
   par("lwd"), col = "darkgray", ...)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.sontek.R
 \name{read.adp.sontek.serial}
 \alias{read.adp.sontek.serial}
-\title{Read a serial Sontek adp file}
+\title{Read a serial Sontek ADP file}
 \usage{
 read.adp.sontek.serial(file, from = 1, to, by = 1,
   tz = getOption("oceTz"), longitude = NA, latitude = NA,

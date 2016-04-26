@@ -3,7 +3,13 @@
 \docType{methods}
 \name{subset,section-method}
 \alias{subset,section-method}
-\title{Subset a section object}
+\title{Subset a Section Object
+
+This function is somewhat analogous to \code{\link{subset.data.frame}}.  The
+condition set by \code{subset} may be in terms of \code{stationId} or any
+combination of \code{longitude}, \code{latitude} and \code{time}.  However,
+\code{stationId} may not be combined with the others; to get that effect, call
+this function more than once.}
 \usage{
 \S4method{subset}{section}(x, subset, ...)
 }
@@ -17,13 +23,6 @@ See \sQuote{Details}.}
 }
 \value{
 A new \code{section} object.
-}
-\description{
-This function is somewhat analogous to \code{\link{subset.data.frame}}.  The
-condition set by \code{subset} may be in terms of \code{stationId} or any
-combination of \code{longitude}, \code{latitude} and \code{time}.  However,
-\code{stationId} may not be combined with the others; to get that effect, call
-this function more than once.
 }
 \examples{
 library(oce)

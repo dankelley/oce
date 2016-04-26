@@ -3,7 +3,7 @@
 \docType{data}
 \name{ctdRaw}
 \alias{ctdRaw}
-\title{Seawater CTD profile, without trimming of extraneous data.}
+\title{Seawater CTD Profile, Without Trimming of Extraneous Data}
 \usage{
 data(ctdRaw)
 }

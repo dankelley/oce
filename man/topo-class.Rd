@@ -3,15 +3,14 @@
 \docType{class}
 \name{topo-class}
 \alias{topo-class}
-\title{Class to store topographic data}
-\description{
+\title{Class to Store Topographic Data
+
 Topographic data may be read with \code{\link{read.topo}} or assembled with
 \code{\link{as.topo}}.  Plotting are handled with \code{\link{plot,topo-method}}
 and summaries with \code{\link{summary,topo-method}}. Data retrieval may be
 done with \code{\link{[[,topo-method}} and replacement with
 \code{\link{[[<-,topo-method}}.  The key data, stored within the data slot,
-are: \code{longititude}, \code{latitude}, and \code{z}.
-}
+are: \code{longititude}, \code{latitude}, and \code{z}.}
 \author{
 Dan Kelley
 }

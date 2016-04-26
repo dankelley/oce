@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,tidem-method}
 \alias{[[<-,tidem-method}
-\title{Replace Parts of a \code{tidem} Object}
+\title{Replace Parts of a Tidem Object}
 \usage{
 \S4method{[[}{tidem}(x, i, j) <- value
 }

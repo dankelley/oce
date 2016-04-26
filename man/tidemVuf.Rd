@@ -2,7 +2,11 @@
 % Please edit documentation in R/tidem.R
 \name{tidemVuf}
 \alias{tidemVuf}
-\title{Do ephemeris calculations for tidem}
+\title{Ephemeris Calculations for Tidem
+
+Do ephemeris calculations for tidem.
+
+Based directly on \code{t_vuf}, from the \code{T_TIDE} package.}
 \usage{
 tidemVuf(t, j, lat = NULL)
 }
@@ -17,12 +21,6 @@ use \code{tz="GMT"} in constructing \code{t}.)}
 \value{
 A \code{\link[base]{data.frame}} containing
 \item{list("astro")}{(fill in later)} \item{list("ader")}{(fill in later)}
-}
-\description{
-Do ephemeris calculations for tidem.
-}
-\details{
-Based directly on \code{t_vuf}, from the \code{T_TIDE} package.
 }
 \examples{
 

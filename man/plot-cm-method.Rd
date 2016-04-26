@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,cm-method}
 \alias{plot,cm-method}
-\title{Plot cm (current meter) data}
+\title{Plot CM data}
 \usage{
 \S4method{plot}{cm}(x, which = c(1:2, 7:9), type = "l", adorn = NULL,
   drawTimeRange = getOption("oceDrawTimeRange"), drawZeroLine = FALSE,

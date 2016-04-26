@@ -1,4 +1,4 @@
-#' Class to store coastline data
+#' @title Class to Store Coastline Data
 #' 
 #' Class to store coastline data, which may be read with
 #' \code{\link{read.coastline}} or constructed with \code{\link{as.coastline}},
@@ -12,7 +12,7 @@
 setClass("coastline", contains="oce")
 
 
-#' World coastline
+#' @title World Coastline
 #' 
 #' This is a coarse resolution coastline at scale 1:110M, with 10,696 points,
 #' suitable for world-scale plots plotted at a small size, e.g. inset diagrams.
@@ -52,7 +52,7 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-#' @title Extract Something From a \code{coastline} Object
+#' @title Extract Something From a Coastline Object
 #' @param x A coastline object, i.e. one inheriting from \code{\link{coastline-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{coastline} data
@@ -62,7 +62,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{coastline} Object
+#' @title Replace Parts of a Coastline Object
 #' @param x An \code{coastline} object, i.e. inheriting from \code{\link{coastline-class}}
 #' @family things related to \code{coastline} data
 #' @template sub_subsetTemplate
@@ -72,7 +72,7 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, value=value)
           })
 
-#' Summarize a coastline data object
+#' @title Subset a Coastline Object
 #' 
 #' Summarizes coastline length, bounding box, etc.
 #' @param x A \code{coastline} object, i.e. one inheriting from \code{\link{coastline-class}}.
@@ -100,7 +100,7 @@ setMethod(f="subset",
 
 
                                         
-#' Summarize a coastline data object
+#' @title Summarize a Coastline Object
 #' 
 #' Summarizes coastline length, bounding box, etc.
 #' 
@@ -119,7 +119,7 @@ setMethod(f="summary",
           })
 
  
-#' Coerce data into coastline dataset
+#' @title Coerce Data into a Coastline Object 
 #' 
 #' Coerces a sequence of longitudes and latitudes into a coastline dataset.
 #' 
@@ -156,7 +156,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 }
 
 
-#' Plot a coastline
+#' @title Plot a Coastline
 #' 
 #' Plot a coastline
 #' 
@@ -596,7 +596,7 @@ setMethod(f="plot",
           })
 
 
-#' Scan a coastline data file
+#' @title Read a Coastline File
 #' 
 #' Read a coastline file in R, Splus, mapgen, shapefile, or openstreetmap
 #' format.
@@ -690,7 +690,7 @@ read.coastline <- function(file,
     res
 }
 
-#' Scan a coastline data file in shapefile format
+#' @title Read a Coastline File in Shapefile Format
 #' 
 #' Read coastline data stored in the shapefile format [1].
 #' 
@@ -879,7 +879,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     res
 }
 
-#' Scan a coastline data file in openstreetmap format
+#' @title Read a Coastline File in Openstreetmap Format
 #' 
 #' Read coastline data stored in the openstreetmap format [1].
 #'
@@ -947,7 +947,7 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
 }
 
 
-#' Find the name of the best coastline file
+#' @title Find the Name of the Best Coastline Object
 #' 
 #' Find the name of the most appropriate coastline for a given locale
 #' 
@@ -1001,7 +1001,7 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
     res
 }
 
-#' Cut a coastline file at specified longitude
+#' @title Cut a Coastline Object at Specified Longitude
 #'
 #' @details
 #' This can be helpful in preventing \code{\link{mapPlot}} from producing ugly

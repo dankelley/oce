@@ -249,7 +249,7 @@ setMethod(f="[[",
               }
           })
 
-#' @title Replace Parts of an \code{oce} Object
+#' @title Replace Parts of an Oce Object
 #' @param x An \code{oce} object, i.e. inheriting from \code{\link{oce-class}}.
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",

@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{as.adp}
 \alias{as.adp}
-\title{Create an adp Object}
+\title{Create an ADP Object}
 \usage{
 as.adp(time, distance, v, a = NULL, q = NULL, orientation = "upward",
   coordinate = "enu")
@@ -26,7 +26,7 @@ as.adp(time, distance, v, a = NULL, q = NULL, orientation = "upward",
 An object of \code{\link{adp-class}}.
 }
 \description{
-Create an adp Object
+Create an ADP Object
 }
 \details{
 Construct an object of \code{\link{adp-class}}.  Only a basic

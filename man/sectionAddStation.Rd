@@ -3,7 +3,13 @@
 \name{sectionAddStation}
 \alias{sectionAddCtd}
 \alias{sectionAddStation}
-\title{Add CTD profile to section}
+\title{Add a CTD Station to a Section
+
+Add a CTD profile to an existing section.
+
+Until March 2015, this operation was carried out with the \code{+} operator,
+but at that time, the syntax was flagged by the development version of R, so it
+was changed to the present form.}
 \usage{
 sectionAddStation(section, station)
 }
@@ -14,14 +20,6 @@ sectionAddStation(section, station)
 }
 \value{
 An object of \code{\link[base]{class}} \code{section}.
-}
-\description{
-Add a CTD profile to an existing section.
-}
-\details{
-Until March 2015, this operation was carried out with the \code{+} operator,
-but at that time, the syntax was flagged by the development version of R, so it
-was changed to the present form.
 }
 \examples{
 library(oce)

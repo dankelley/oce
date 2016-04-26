@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{utm2lonlat}
 \alias{utm2lonlat}
-\title{Convert from UTM to longitude and latitude}
+\title{Convert UTM to Longitude and Latitude}
 \usage{
 utm2lonlat(easting, northing, zone = 1, hemisphere = "N", km = FALSE)
 }
@@ -27,7 +27,7 @@ else for South.}
 A list containing \code{longitude} and \code{latitude}.
 }
 \description{
-Convert from UTM to longitude and latitude
+Convert UTM to Longitude and Latitude
 }
 \examples{
 

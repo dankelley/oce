@@ -3,13 +3,12 @@
 \docType{class}
 \name{odf-class}
 \alias{odf-class}
-\title{Class to store ODF data}
-\description{
+\title{Class to Store ODF data
+
 Class for data stored in a format used at Canadian Department of Fisheries
 and Oceans laboratories. This is somewhat unusual amongst \code{oce}
 classes, in that it does not map to a particular instrument, but rather to a
-storage type; in that sense, it is similar to the \code{bremen-class}.
-}
+storage type; in that sense, it is similar to the \code{bremen-class}.}
 \section{Methods}{
 
 

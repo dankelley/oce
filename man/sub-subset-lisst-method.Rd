@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,lisst-method}
 \alias{[[<-,lisst-method}
-\title{Replace Parts of a \code{lisst} Object}
+\title{Replace Parts of a LISST Object}
 \usage{
 \S4method{[[}{lisst}(x, i, j) <- value
 }
@@ -19,6 +19,8 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
+Replace Parts of a LISST Object
+
 The \code{[[<-} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose,
 as with the related extraction method, \code{\link{[[}},

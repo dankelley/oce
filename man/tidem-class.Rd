@@ -3,10 +3,9 @@
 \docType{class}
 \name{tidem-class}
 \alias{tidem-class}
-\title{Class to store tidal-constituent models}
-\description{
-Class to store tidal-constituent models.
-}
+\title{Class to Store Tidal Models
+
+Class to store tidal-constituent models.}
 \author{
 Dan Kelley
 }

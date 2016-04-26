@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to store hydrographic section data
+#' @title Class to Store Hydrographic Section Data
 #' 
 #' Class to store hydrographic section data, with standard slots \code{metadata},
 #' \code{data} and \code{processingLog}.
@@ -63,7 +63,7 @@
 setClass("section", contains="oce")
 
 
-#' Hydrographic section
+#' @title Hydrographic section
 #' 
 #' This is line A03 (ExpoCode 90CT40_1, with nominal sampling date 1993-09-11).
 #' The chief scientist was Tereschenkov of SOI, working aboard the Russian ship
@@ -112,7 +112,7 @@ setMethod(f="initialize",
 ## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
-#' @title Handle flags in section objects
+#' @title Handle flags in Section Objects
 #' @details
 #' If \code{flags} and \code{actions} are not provided, the
 #' default is to use WHP (World Hydrographic Program) flags [1], in which the
@@ -158,7 +158,7 @@ setMethod("handleFlags",
           })
 
 
-#' Summarize an oceanographic section
+#' @title Summarize a Section Object
 #' 
 #' Pertinent summary information is presented, including station locations,
 #' distance along track, etc.
@@ -342,7 +342,7 @@ setMethod(f="[[",
               res
           })
 
-#' @title Replace Parts of a \code{section} Object
+#' @title Replace Parts of a Section Object
 #' @param x A \code{section} object, i.e. inheriting from \code{\link{section-class}}
 #' @family things related to \code{section} data
 #' @template sub_subsetTemplate
@@ -381,7 +381,7 @@ setMethod(f="show",
               }
           })
 
-#' Subset a section object
+#' @title Subset a Section Object
 #' 
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.  The
 #' condition set by \code{subset} may be in terms of \code{stationId} or any
@@ -395,7 +395,6 @@ setMethod(f="show",
 #' See \sQuote{Details}.
 #' 
 #' @param ... May include \code{debug}, to set a debugging level.
-#' 
 #' 
 #' @return A new \code{section} object.
 #' 
@@ -509,7 +508,7 @@ setMethod(f="subset",
           })
 
  
-#' Sort a section
+#' @title Sort a Section
 #' 
 #' Sections created with \code{\link{as.section}} have "stations" that are in the
 #' order of the CTD objects (or filenames for such objects) provided.  Sometimes,
@@ -571,7 +570,7 @@ sectionSort <- function(section, by)
     res
 }
 
-#' Make a section (DEFUNCT)
+#' @title Make a Section (DEFUNCT)
 #'
 #' This is a defunct function; use \code{\link{as.section}} instead, and
 #' see \link{oce-defunct} for more on the oce procedure for retiring functions.
@@ -696,7 +695,7 @@ makeSection <- function(item, ...)
 }
 
 
-#' Add CTD profile to section
+#' @title Add a CTD Station to a Section
 #' 
 #' Add a CTD profile to an existing section.
 #' 
@@ -749,7 +748,7 @@ sectionAddStation <- function(section, station)
 sectionAddCtd <- sectionAddStation
 
 
-#' Plot a CTD section
+#' @title Plot a Section
 #' 
 #' Creates a summary plot for a CTD section, with one panel for each value of
 #' \code{which}.  The codes are as follows.
@@ -1785,7 +1784,7 @@ setMethod(f="plot",
           })
 
 
-#' Read a section containing multiple CTD profiles
+#' @title Read a Section File
 #' 
 #' Read a file that contains a series of \code{ctd} profiles that make up an
 #' oceanographic section.
@@ -2133,7 +2132,7 @@ read.section <- function(file, directory, sectionId="", flags,
     res
 }
 
-#' Grid a section
+#' @title Grid a Section
 #' 
 #' Grid a section, by interpolating to fixed pressure levels.  The
 #' \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in the
@@ -2232,7 +2231,7 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 }
 
 
-#' Smooth a section
+#' @title Smooth a Section
 #' 
 #' Smooth a section in the lateral (alpha version that may change).
 #' 
@@ -2266,9 +2265,7 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' @param ... Optional extra arguments, passed to either
 #' \code{\link{smooth.spline}} or \code{\link{interpBarnes}}.
 #' 
-#' 
 #' @return An object of \code{\link{section-class}} that ordered in some way.
-#' 
 #' 
 #' @examples
 #' library(oce)
@@ -2404,7 +2401,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
 }
 
 
-#' Create a section
+#' @title Create a Section
 #' 
 #' Create a section based on columnar data, or a set of \code{\link{oce-class}}
 #' objects that can be coerced to CTD form with \code{\link{as.ctd}}.

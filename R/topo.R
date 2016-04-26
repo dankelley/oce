@@ -1,7 +1,7 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 
-#' Class to store topographic data
+#' @title Class to Store Topographic Data
 #' 
 #' Topographic data may be read with \code{\link{read.topo}} or assembled with
 #' \code{\link{as.topo}}.  Plotting are handled with \code{\link{plot,topo-method}}
@@ -16,7 +16,7 @@
 #' @family things related to \code{topo} data
 setClass("topo", contains="oce")
 
-#' Global topographic dataset at half-degree resolution
+#' @title Global Topographic Dataset at Half-degree Resolution
 #' 
 #' Global topographic dataset at half-degree resolution, created by decimating the
 #' ETOPO5 dataset.  Its longitude ranges from -179.5 to 180, and its latitude
@@ -67,7 +67,7 @@ setMethod(f="initialize",
           })
 
 
-#' Summarize a topography data object
+#' @title Summarize A topography Object
 #' 
 #' Pertinent summary information is presented, including the longitude and
 #' latitude range, and the range of elevation.
@@ -94,7 +94,7 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' @title Extract Something From a \code{topo} Object
+#' @title Extract Something From a Topo Object
 #' @param x A topo object, i.e. one inheriting from \code{\link{topo-class}}.
 #' @examples
 #' data(topoWorld)
@@ -111,7 +111,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{topo} Object
+#' @title Replace Parts of a Topo Object
 #' @param x An \code{topo} object, i.e. inheriting from \code{\link{topo-class}}
 #' @family things related to \code{topo} data
 #' @template sub_subsetTemplate
@@ -121,7 +121,7 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, value=value)
           })
 
-#' Subset a topo object
+#' @title Subset a Topo Object
 #' 
 #' @details
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
@@ -176,7 +176,7 @@ setMethod(f="subset",
               res
           })
 
-#' Interpolate within a topography dataset
+#' @title Interpolate Within a Topo Object
 #' 
 #' Bilinear interpolation is used so that values will vary smoothly within a
 #' longitude-latitude grid cell. Note that the sign convention for
@@ -214,7 +214,7 @@ topoInterpolate <- function(longitude, latitude, topo)
 }
 
 
-#' Plot topography data
+#' @title Plot a Topo Object
 #' 
 #' This plots contours of topographic elevation.  The plot aspect ratio is set
 #' based on the middle latitude in the plot.  The line properties, such as
@@ -570,7 +570,7 @@ setMethod(f="plot",
           })
 
 
-#' Read an topography file
+#' @title Read a Topo File
 #' 
 #' Read a file that contains topographic data in the ETOPO dataset, as provided by
 #' the NOAA website [1].
@@ -578,7 +578,6 @@ setMethod(f="plot",
 #' @param file Name of a file containing an ETOPO-format dataset.
 #' 
 #' @param \dots Additional arguments, passed to called routines.
-#' 
 #' 
 #' @return
 #' An object of type \code{\link{topo-class}} that which has the following slots.
@@ -664,7 +663,7 @@ read.topo <- function(file, ...)
 }
 
 
-#' Coerce data into topo dataset
+#' Coerce Data into Topo Object
 #' 
 #' @param longitude Either a vector of longitudes (in degrees east, and bounded by
 #' -180 and 180), or a \code{bathy} object created by \code{getNOAA.bathy()} from

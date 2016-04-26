@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,tidem-method}
 \alias{[[,tidem-method}
-\title{Extract Something From a \code{tidem} Object}
+\title{Extract Something From a Tidem Object}
 \usage{
 \S4method{[[}{tidem}(x, i, j, ...)
 }

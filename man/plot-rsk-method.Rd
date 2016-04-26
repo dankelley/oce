@@ -3,7 +3,29 @@
 \docType{methods}
 \name{plot,rsk-method}
 \alias{plot,rsk-method}
-\title{Plot rsk data}
+\title{Plot Rsk Data
+
+Rsk data may be in many forms, and it is not easy to devise a general plotting
+strategy for all of them. The present function is quite crude, on the
+assumption that users will understand their own datasets, and that they can
+devise plots that are best-suited to their applications.  Sometimes, the
+sensible scheme is to coerce the object into another form, e.g. using
+\code{plot(as.ctd(rsk))} if the object contains CTD-like data.  Other times,
+users should extract data from the \code{rsk} object and construct plots
+themselves. The idea is to use the present function mainly to get an overview,
+and for that reason, the default plot type (set by \code{which}) is a set of
+time-series plots, because the one thing that is definitely known about
+\code{rsk} objects is that they contain a \code{time} vector in their
+\code{data} slot.
+
+Several plots are available.  \itemize{
+    \item \code{which=0} or \code{"timeseries"} for time-series plots of each variable;
+    this over-rides any other specification
+    \item \code{which=1} or \code{"temperature"} for a time-series plot of temperature
+    \item \code{which=2} or \code{"text"} for textual information about the dataset
+    \item \code{which=3} or \code{"pressure"} for a time-series plot of pressure
+    \item \code{which=4} or \code{"profile"} for a temperature profile
+}}
 \usage{
 \S4method{plot}{rsk}(x, which = "timeseries", title = "", adorn = NULL,
   tlim, plim, Tlim, xlab, ylab, tformat,
@@ -72,30 +94,6 @@ R default, in order to use more space for the data and less for the axes.}
 \item{debug}{a flag that turns on debugging, if it exceeds 0.}
 
 \item{...}{optional arguments passed to plotting functions.}
-}
-\description{
-Rsk data may be in many forms, and it is not easy to devise a general plotting
-strategy for all of them. The present function is quite crude, on the
-assumption that users will understand their own datasets, and that they can
-devise plots that are best-suited to their applications.  Sometimes, the
-sensible scheme is to coerce the object into another form, e.g. using
-\code{plot(as.ctd(rsk))} if the object contains CTD-like data.  Other times,
-users should extract data from the \code{rsk} object and construct plots
-themselves. The idea is to use the present function mainly to get an overview,
-and for that reason, the default plot type (set by \code{which}) is a set of
-time-series plots, because the one thing that is definitely known about
-\code{rsk} objects is that they contain a \code{time} vector in their
-\code{data} slot.
-}
-\details{
-Several plots are available.  \itemize{
-    \item \code{which=0} or \code{"timeseries"} for time-series plots of each variable;
-    this over-rides any other specification
-    \item \code{which=1} or \code{"temperature"} for a time-series plot of temperature
-    \item \code{which=2} or \code{"text"} for textual information about the dataset
-    \item \code{which=3} or \code{"pressure"} for a time-series plot of pressure
-    \item \code{which=4} or \code{"profile"} for a temperature profile
-}
 }
 \examples{
 library(oce)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{rangeExtended}
 \alias{rangeExtended}
-\title{Calculate range, extended a little, as is done for axes.}
+\title{Calculate Range, Extended a Little, as is Done for Axes}
 \usage{
 rangeExtended(x, extend = 0.04)
 }

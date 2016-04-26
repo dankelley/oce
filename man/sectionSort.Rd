@@ -2,7 +2,16 @@
 % Please edit documentation in R/section.R
 \name{sectionSort}
 \alias{sectionSort}
-\title{Sort a section}
+\title{Sort a Section
+
+Sections created with \code{\link{as.section}} have "stations" that are in the
+order of the CTD objects (or filenames for such objects) provided.  Sometimes,
+this is not the desired order, e.g. if file names discovered with
+\code{\link{dir}} are in an order that makes no sense.  (For example, a
+practioner might name stations \code{"stn1"}, \code{"stn2"}, etc., not
+realizing that this will yield an unhelpful ordering, by file name, if there
+are more than 9 stations.) The purpose of \code{sectionSort} is to permit
+reordering the constituent stations in sensible ways.}
 \usage{
 sectionSort(section, by)
 }
@@ -18,16 +27,6 @@ distance from the first station, \code{"longitude"}, for longitude, and
 \value{
 An object of \code{\link{section-class}} that has less lateral
 variation than the input section.
-}
-\description{
-Sections created with \code{\link{as.section}} have "stations" that are in the
-order of the CTD objects (or filenames for such objects) provided.  Sometimes,
-this is not the desired order, e.g. if file names discovered with
-\code{\link{dir}} are in an order that makes no sense.  (For example, a
-practioner might name stations \code{"stn1"}, \code{"stn2"}, etc., not
-realizing that this will yield an unhelpful ordering, by file name, if there
-are more than 9 stations.) The purpose of \code{sectionSort} is to permit
-reordering the constituent stations in sensible ways.
 }
 \examples{
 \dontrun{

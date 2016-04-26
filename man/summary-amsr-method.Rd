@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,amsr-method}
 \alias{summary,amsr-method}
-\title{Summarize an amsr Object}
+\title{Summarize an AMSR Object}
 \usage{
 \S4method{summary}{amsr}(object, ...)
 }

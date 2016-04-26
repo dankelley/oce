@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,g1sst-method}
 \alias{[[,g1sst-method}
-\title{Extract Something From a \code{g1sst} Object}
+\title{Extract Something From a G1SST Object}
 \usage{
 \S4method{[[}{g1sst}(x, i, j, ...)
 }

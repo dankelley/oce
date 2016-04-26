@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{read.adp}
 \alias{read.adp}
-\title{Read an ADP data file}
+\title{Read an ADP File}
 \usage{
 read.adp(file, from = 1, to, by = 1, tz = getOption("oceTz"),
   longitude = NA, latitude = NA, manufacturer = c("rdi", "nortek",

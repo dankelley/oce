@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapPoints}
 \alias{mapPoints}
-\title{Plot points on a existing map.}
+\title{Add Points to a Map}
 \usage{
 mapPoints(longitude, latitude, debug = getOption("oceDebug"), ...)
 }

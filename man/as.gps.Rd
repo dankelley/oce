@@ -2,7 +2,12 @@
 % Please edit documentation in R/gps.R
 \name{as.gps}
 \alias{as.gps}
-\title{Coerce data into a GPS dataset}
+\title{Coerce data into a GPS dataset
+
+Coerces a sequence of longitudes and latitudes into a GPS dataset.
+
+This may be used when \code{\link{read.gps}} cannot read a file, or when the
+data have been manipulated.}
 \usage{
 as.gps(longitude, latitude, filename = "")
 }
@@ -19,13 +24,6 @@ Equator.}
 }
 \value{
 An object of \code{\link{gps-class}}.
-}
-\description{
-Coerces a sequence of longitudes and latitudes into a GPS dataset.
-}
-\details{
-This may be used when \code{\link{read.gps}} cannot read a file, or when the
-data have been manipulated.
 }
 \author{
 Dan Kelley

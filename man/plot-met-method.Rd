@@ -3,7 +3,21 @@
 \docType{methods}
 \name{plot,met-method}
 \alias{plot,met-method}
-\title{Plot meteorological data}
+\title{Plot Met Data
+
+Plot meteorological data
+
+Creates a multi-panel summary plot of data measured in a meteorological data
+set.  cast. The panels are controlled by the \code{which} argument.
+Normally, 4 panels are specified with the \code{which}, but it can also be
+useful to specify less than 4 panels, and then to draw other panels after
+this call.
+
+If more than one panel is drawn, then on exit from \code{plot.met}, the
+value of \code{par} will be reset to the value it had before the function
+call.  However, if only one panel is drawn, the adjustments to \code{par}
+made within \code{plot.met} are left in place, so that further additions may
+be made to the plot.}
 \usage{
 \S4method{plot}{met}(x, which = 1:4, mgp = getOption("oceMgp"),
   mar = c(mgp[1] + 1, mgp[1] + 1, mgp[1] + 1, mgp[1] + 1), tformat,
@@ -36,22 +50,6 @@ turns off the printing, while higher values suggest that more information
 be printed.}
 
 \item{\dots}{optional arguments passed to plotting functions.}
-}
-\description{
-Plot meteorological data
-}
-\details{
-Creates a multi-panel summary plot of data measured in a meteorological data
-set.  cast. The panels are controlled by the \code{which} argument.
-Normally, 4 panels are specified with the \code{which}, but it can also be
-useful to specify less than 4 panels, and then to draw other panels after
-this call.
-
-If more than one panel is drawn, then on exit from \code{plot.met}, the
-value of \code{par} will be reset to the value it had before the function
-call.  However, if only one panel is drawn, the adjustments to \code{par}
-made within \code{plot.met} are left in place, so that further additions may
-be made to the plot.
 }
 \examples{
 library(oce)

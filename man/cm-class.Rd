@@ -3,14 +3,13 @@
 \docType{class}
 \name{cm-class}
 \alias{cm-class}
-\title{Class to store current meter data}
-\description{
+\title{Class to Store Current Meter (CM) Data
+
 Class to store current meter data from an interocean S4 device.  A file
 containing CM profile data may be read with \code{\link{read.cm}}. The results
 may be plotted with \code{\link{plot,cm-method}} or summarized with
 \code{\link{summary,cm-method}}.  Data may be retrieved with
-\code{\link{[[,cm-method}} or replaced with \ \code{\link{[[<-,cm-method}}.
-}
+\code{\link{[[,cm-method}} or replaced with \ \code{\link{[[<-,cm-method}}.}
 \author{
 Dan Kelley
 }

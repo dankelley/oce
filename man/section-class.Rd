@@ -3,12 +3,11 @@
 \docType{class}
 \name{section-class}
 \alias{section-class}
-\title{Class to store hydrographic section data}
-\description{
+\title{Class to Store Hydrographic Section Data
+
 Class to store hydrographic section data, with standard slots \code{metadata},
 \code{data} and \code{processingLog}.
-}
-\details{
+
 A \code{\link{list}} of stations is retrieved by \code{s[["station"]]}.
 Individual stations are retrieved by providing a station number as a second
 argument in the index, e.g.  the first station is \code{s[["station", 1]]}
@@ -17,7 +16,7 @@ argument in the index, e.g.  the first station is \code{s[["station", 1]]}
 Aggregated values of the quantities measured at each level of the CTD
 profiles contained within the section may be accessed as e.g.
 \code{section[["salinity"]]}.  This works for any quantity whose name is
-present in the constituent profiles.
+present in the constituent profiles.   
 
 Since it is often useful to pair such quantities with locations,
 \code{section[["longitude"]]} and \code{section[["latitude"]]} return vectors
@@ -30,8 +29,7 @@ values of dynamic height are provided by e.g.
 
 The depths of all data are obtained from e.g.  \code{section[["depth"]]}, and
 the distances along the transect, measured from the first station, are obtained
-from e.g.  \code{section[["distance"]]}.
-}
+from e.g.  \code{section[["distance"]]}.}
 \examples{
 library(oce)
 data(section)

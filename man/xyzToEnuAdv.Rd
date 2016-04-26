@@ -2,7 +2,7 @@
 % Please edit documentation in R/adv.R
 \name{xyzToEnuAdv}
 \alias{xyzToEnuAdv}
-\title{Convert XYZ to ENU coordinates}
+\title{Convert an ADP from XYZ to ENU Coordinates}
 \usage{
 xyzToEnuAdv(x, declination = 0, cabled = FALSE, horizontalCase,
   sensorOrientation, debug = getOption("oceDebug"))

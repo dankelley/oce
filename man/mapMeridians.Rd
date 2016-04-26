@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapMeridians}
 \alias{mapMeridians}
-\title{Plot meridians on an existing map [DEPRECATED]}
+\title{Add Meridians on a Map [DEPRECATED]}
 \usage{
 mapMeridians(latitude, lty = "solid", lwd = 0.5 * par("lwd"),
   col = "darkgray", ...)

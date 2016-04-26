@@ -1,4 +1,4 @@
-#' Class to store ODF data
+#' @title Class to Store ODF data
 #' 
 #' Class for data stored in a format used at Canadian Department of Fisheries
 #' and Oceans laboratories. This is somewhat unusual amongst \code{oce}
@@ -51,7 +51,7 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-#' @title Extract Something From a \code{odf} Object
+#' @title Extract Something From an ODF Object
 #' @param x A odf object, i.e. one inheriting from \code{\link{odf-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{odf} data
@@ -61,7 +61,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{odf} Object
+#' @title Replace Parts of an ODF Object
 #' @param x An \code{odf} object, i.e. inheriting from \code{\link{odf-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{odf} data
@@ -71,7 +71,7 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, value=value)
           })
 
-#' Subset an odf object
+#' @title Subset an ODF object
 #' 
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
 #' 
@@ -103,7 +103,7 @@ setMethod(f="subset",
           })
 
 
-#' Plot an ODF object
+#' @title Plot an ODF Object
 #' 
 #' Plot data contained within an ODF object.
 #' 
@@ -129,7 +129,7 @@ setMethod(f="plot",
           })
 
 
-#' Summarize an odf object
+#' @title Summarize an ODF Object
 #' 
 #' Summarizes some of the data in a \code{odf} object.
 #' 
@@ -176,7 +176,7 @@ findInHeader <- function(key, lines) # local
         gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
 }
 
-#' Translate from ODF names to oce names
+#' @title Translate from ODF Names to Oce Names
 #'
 #' @details
 #' The following table gives the regular expressions that define recognized
@@ -301,7 +301,7 @@ ODFNames2oceNames <- function(names, PARAMETER_HEADER=NULL)
 }
 
 
-#' Create odf object from the output of \code{ODF::read_ODF()}
+#' @title Create ODF object from the output of \code{ODF::read_ODF()}
 #' 
 #' As of August 11, 2015, \code{ODF::read_ODF} returns a list with 9 elements,
 #' one named \code{DATA}, which is a \code{\link{data.frame}} containing the
@@ -414,7 +414,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 }
 
 
-#' Read an ODF file, producing an oce object
+#' @title Read an ODF file
 #'
 #' @details
 #' ODF (Ocean Data Format) is a 

@@ -2,7 +2,9 @@
 % Please edit documentation in R/coastline.R
 \name{read.coastline.openstreetmap}
 \alias{read.coastline.openstreetmap}
-\title{Scan a coastline data file in openstreetmap format}
+\title{Read a Coastline File in Openstreetmap Format
+
+Read coastline data stored in the openstreetmap format [1].}
 \usage{
 read.coastline.openstreetmap(file, lonlim = c(-180, 180), latlim = c(-90,
   90), debug = getOption("oceDebug"), monitor = FALSE, processingLog)
@@ -26,9 +28,6 @@ better for normal calls by a user.)}
 }
 \value{
 An object of \code{\link{coastline-class}}
-}
-\description{
-Read coastline data stored in the openstreetmap format [1].
 }
 \author{
 Dan Kelley

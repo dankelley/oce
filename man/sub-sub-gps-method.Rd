@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,gps-method}
 \alias{[[,gps-method}
-\title{Extract Something From a \code{gps} Object}
+\title{Extract Something From a GPS Object}
 \usage{
 \S4method{[[}{gps}(x, i, j, ...)
 }

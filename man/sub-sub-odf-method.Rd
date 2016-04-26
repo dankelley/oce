@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,odf-method}
 \alias{[[,odf-method}
-\title{Extract Something From a \code{odf} Object}
+\title{Extract Something From an ODF Object}
 \usage{
 \S4method{[[}{odf}(x, i, j, ...)
 }

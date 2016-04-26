@@ -3,7 +3,19 @@
 \docType{methods}
 \name{plot,gps-method}
 \alias{plot,gps-method}
-\title{Plot a gps object}
+\title{Plot a GPS Object
+
+Plot a gps object
+
+This function plots a gps object.  An attempt is made to use the whole space
+of the plot, and this is done by limiting either the longitude range or the
+latitude range, as appropriate, by modifying the eastern or northern limit,
+as appropriate.
+
+To get an inset map inside another map, draw the first map, do
+\code{par(new=TRUE)}, and then call \code{plot.gps} with a value of
+\code{mar} that moves the inset plot to a desired location on the existing
+plot, and with \code{bg="white"}.}
 \usage{
 \S4method{plot}{gps}(x, xlab = "", ylab = "", asp, clongitude, clatitude,
   span, projection, parameters = NULL, orientation = NULL, expand = 1,
@@ -95,20 +107,6 @@ processing.}
 
 \item{\dots}{optional arguments passed to plotting functions.  For example,
 set \code{yaxp=c(-90,90,4)} for a plot extending from pole to pole.}
-}
-\description{
-Plot a gps object
-}
-\details{
-This function plots a gps object.  An attempt is made to use the whole space
-of the plot, and this is done by limiting either the longitude range or the
-latitude range, as appropriate, by modifying the eastern or northern limit,
-as appropriate.
-
-To get an inset map inside another map, draw the first map, do
-\code{par(new=TRUE)}, and then call \code{plot.gps} with a value of
-\code{mar} that moves the inset plot to a desired location on the existing
-plot, and with \code{bg="white"}.
 }
 \author{
 Dan Kelley

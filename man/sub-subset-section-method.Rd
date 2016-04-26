@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,section-method}
 \alias{[[<-,section-method}
-\title{Replace Parts of a \code{section} Object}
+\title{Replace Parts of a Section Object}
 \usage{
 \S4method{[[}{section}(x, i, j) <- value
 }

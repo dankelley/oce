@@ -3,7 +3,16 @@
 \docType{methods}
 \name{summary,tidem-method}
 \alias{summary,tidem-method}
-\title{Summarize a tide-model object}
+\title{Summarize a Tidem Object
+
+\code{summary} method for class \code{"tidem"}.
+
+By default, all fitted constituents are plotted, but it is quite useful to
+set e.g. p=0.05 To see just those constituents that are significant at the 5
+percent level.
+
+Note that the p values are estimated as the average of the p values for the
+sine and cosine components at a given frequency.}
 \usage{
 \S4method{summary}{tidem}(object, p, constituent, ...)
 }
@@ -20,17 +29,6 @@ individual coefficient.  If not given, all coefficients are shown.}
 }
 \value{
 \code{NULL}
-}
-\description{
-\code{summary} method for class \code{"tidem"}.
-}
-\details{
-By default, all fitted constituents are plotted, but it is quite useful to
-set e.g. p=0.05 To see just those constituents that are significant at the 5
-percent level.
-
-Note that the p values are estimated as the average of the p values for the
-sine and cosine components at a given frequency.
 }
 \examples{
 \dontrun{
