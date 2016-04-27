@@ -309,6 +309,15 @@ setMethod(f="summary",
               }
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
+              names <- names(object@data)
+              namesOriginal <- attr(object@data, "namesOriginal")
+              if (!is.null(namesOriginal)) {
+                  cat(sprintf("%30s %20s\n", "Oce Name", "SBE Name"))
+                  cat(sprintf("%30s %20s\n", paste(rep("-", 30), collapse=""), paste(rep("-", 20), collapse="")))
+                  for (i in seq_along(names)) {
+                      cat(sprintf("%30s %20s\n", names[i], namesOriginal[i]))
+                  }
+              }
               callNextMethod()
           })
 
