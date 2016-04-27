@@ -213,7 +213,7 @@ cnvName2oceName <- function(h)
     ## salinity.
     if (1 == length(grep("0$", name)))
         name <- substr(name, 1, nchar(name)-1)
-    message(" name: '", name, "', nameOriginal: '", nameOriginal, '"')
+    ##message(" name: '", name, "', nameOriginal: '", nameOriginal, '"')
     list(name=name, nameOriginal=nameOriginal, unit=unit)
 }
 
