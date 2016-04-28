@@ -1,7 +1,9 @@
-#' Class to store LISST data
+#' @title Class to Store LISST Data
 #' 
+#' @description
 #' Class to store LISST (Laser in-situ scattering and transmissometry) data.
 #' 
+#' @details
 #' One may read \code{lisst} objects with \code{\link{read.lisst}},
 #' generate them with \code{\link{as.lisst}}, plot them
 #' with \code{\link{plot,lisst-method}}, and summarize them with
@@ -16,7 +18,7 @@
 #' @family things related to \code{lisst} data
 setClass("lisst", contains="oce")
 
-#' @title Extract Something From a \code{lisst} Object
+#' @title Extract Something From a LISST Object
 #' @param x A lisst object, i.e. one inheriting from \code{\link{lisst-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{lisst} data
@@ -26,7 +28,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{lisst} Object
+#' Replace Parts of a LISST Object
 #' @param x An \code{lisst} object, i.e. inheriting from \code{\link{lisst-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{lisst} data
@@ -37,8 +39,9 @@ setMethod(f="[[<-",
           })
 
 
-#' LISST dataset
+#' @title LISST Dataset
 #' 
+#' @description
 #' LISST (Laser in-situ scattering and transmissometry) dataset, constructed
 #' artificially.
 #' 
@@ -67,8 +70,9 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-#' Summarize a \code{lisst} Object
+#' @title Summarize a LISST Object
 #' 
+#' @description
 #' Summarizes some of the data in a \code{lisst} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
 #'
@@ -95,11 +99,12 @@ setMethod(f="summary",
 
 
 
-#' Plot LISST data
+#' @title Plot LISST data
 #' 
-#' Plot \code{LISST} data
-#' 
+#' @description
 #' Creates a multi-panel summary plot of data measured by LISST instrument.
+#'
+#' @details
 #' The panels are controlled by the \code{which} argument, as follows.
 #' \itemize{
 #' 
@@ -204,10 +209,10 @@ setMethod(f="plot",
 
 
 
-#' Coerce data into a lisst object
+#' @title Coerce Data Into a LISST Object
 #' 
+#' @description
 #' Coerce data into a lisst object
-#' 
 #' If \code{data} contains fewer than 42 columns, an error is reported.  If it
 #' contains more than 42 columns, only the first 42 are used.  This is used by
 #' \code{\link{read.lisst}}, the documentation on which explains the meanings
@@ -266,11 +271,11 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
 }
 
 
-#' Read a LISST data file
+#' @title Read a LISST File
 #' 
+#' @description
 #' Read a LISST data file, producing a \code{lisst} object, i.e. one
 #' inheriting from \code{\link{lisst-class}}.
-#' 
 #' The file should contain 42 columns, with no header.  If there are fewer than
 #' 42 columns, an error results.  If there are more, only the first 42 are
 #' used.  Note that \code{\link{read.oce}} can recognize LISST files by their

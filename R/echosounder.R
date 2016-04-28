@@ -4,10 +4,12 @@
 ##   [1] "DT4 Data File Format Specification" [July, 2010] DT4_format_2010.pdf
 
 
-#' Class to store echosounder data
+#' @title Class to Store Echosounder Data
 #' 
+#' @description
 #' Class to store echosounder data.
 #'
+#' @details
 #' The \code{data} slot is a list containing
 #' 
 #' \itemize{
@@ -82,8 +84,9 @@
 setClass("echosounder", contains="oce")
 
 
-#' echosounder dataset
+#' @title Echosounder Dataset
 #' 
+#' @description
 #' This is degraded subsample of measurements that were made with a Biosonics
 #' scientific echousounder, as part of the St Lawrence Internal Wave Experiment
 #' (SLEIWEX).
@@ -110,8 +113,9 @@ setMethod(f="initialize",
 
 
 
-#' Summarize an echosounder object
+#' @title Summarize an Echosounder Object
 #' 
+#' @description
 #' Summarizes some of the data in an \code{echosounder} object.
 #' 
 #' @param object an object of class \code{"echosounder"}, usually, a result of
@@ -145,7 +149,7 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' @title Extract Parts of a \code{echosounder} Object
+#' @title Extract Parts of an Echosounder Object
 #' @param x A \code{echosounder} object, i.e. one inheriting from \code{\link{echosounder-class}}.
 #'
 #' @section Details of the specialized \code{echosounder} method:
@@ -204,7 +208,7 @@ setMethod(f="[[",
               }
           })
 
-#' @title Replace Parts of a \code{echosounder} Object
+#' @title Replace Parts of an Echosounder Object
 #' @param x An \code{echosounder} object, i.e. inheriting from \code{\link{echosounder-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{echosounder} data
@@ -215,8 +219,9 @@ setMethod(f="[[<-",
           })
 
 
-#' Subset an echosounder object
+#' @title Subset an Echosounder Object
 #' 
+#' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
 #' Subsetting can be by \code{time} or \code{depth}, but these may not be
 #' combined; use a sequence of calls to subset by both.
@@ -227,7 +232,6 @@ setMethod(f="[[<-",
 #' @param \dots ignored.
 #' @return A new \code{echosounder} object.
 #' @author Dan Kelley
-#' @keywords misc
 #' @examples
 #' library(oce)
 #' data(echosounder)
@@ -306,7 +310,7 @@ setMethod(f="subset",
           })
 
 
-#' Coerce data into echosounder dataset
+#' Coerce Data into an Echosounder Object
 #' 
 #' Coerces a dataset into a echosounder dataset.
 #' 
@@ -378,6 +382,25 @@ as.echosounder <- function(time, depth, a, src="",
     res
 }
 
+
+
+#' @title Find the Ocean Bottom in an Echosounder Object
+#' 
+#' @description
+#' Finds the depth in a Biosonics echosounder file, by finding the strongest
+#' reflector and smoothing its trace.
+#' 
+#' @param x an object of class \code{echosounder}
+#' @param ignore number of metres of data to ignore, near the surface
+#' @param clean a function to clean the inferred depth of spikes
+#' @return A list with elements: the \code{time} of a ping, the \code{depth} of
+#' the inferred depth in metres, and the \code{index} of the inferred bottom
+#' location, referenced to the object's \code{depth} vector.
+#' @author Dan Kelley
+#' @seealso The documentation for \code{\link{echosounder-class}} explains the
+#' structure of \code{echosounder} objects, and also outlines the other
+#' functions dealing with them.
+#' @family things related to \code{echosounder} data
 findBottom <- function(x, ignore=5, clean=despike)
 {
     a <- x[["a"]]
@@ -388,10 +411,10 @@ findBottom <- function(x, ignore=5, clean=despike)
 }
 
 
-#' Plot echosounder data
+#' @title Plot Echosounder Data
 #' 
-#' Plot echosounder data
-#' 
+#' @description
+#' Plot echosounder data.
 #' Simple linear approximation is used when a \code{newx} value is specifie
 #' with the \code{which=2} method, but arguably a gridding method should be
 #' used, and this may be added in the future.
@@ -700,11 +723,9 @@ setMethod(f="plot",
           })
 
 
-#' Read an echosounder data file
+#' @title Read an Echosounder File
 #' 
-#' Read an echosounder data file, producing an object of type
-#' \code{echosounder}.
-#' 
+#' @description
 #' Reads a biosonics echosounder file.  This function was written for and
 #' tested with single-beam, dual-beam, and split-beam Biosonics files of type
 #' V3, and may not work properly with other file formats.
@@ -828,6 +849,11 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     fileType <- "unknown" 
     range <- NULL
     beamType <- "unknown"
+    ## The next three lines are just to prevent code-diagnostic warnings; 
+    ## These matrices are redefined later, when we know the geometry
+    a <- matrix(NA_real_, nrow=1, ncol=1)
+    b <- matrix(NA_real_, nrow=1, ncol=1)
+    c <- matrix(NA_real_, nrow=1, ncol=1)
     while (offset < fileSize) {
         ##print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res

@@ -19,7 +19,7 @@ S2 <- swSCTp(cm[['conductivity']],cm[['temperature']], cm[['pressure']],
              conductivityUnit=as.character(cm[['conductivityUnit']]$unit))
 testthat::expect_equal(max(abs(S1-S2)), 0)
 ## I am not sure why these differ by 0.003PSU.
-testthat::expect_less_than(max(abs(S-S1)), 0.003)
-testthat::expect_less_than(max(abs(S-S2)), 0.003)
+testthat::expect_lt(max(abs(S-S1)), 0.003)
+testthat::expect_lt(max(abs(S-S2)), 0.003)
 tools::resaveRdaFiles("cm.rda")
 

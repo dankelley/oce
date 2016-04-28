@@ -2,7 +2,7 @@
 % Please edit documentation in R/lobo.R
 \name{read.lobo}
 \alias{read.lobo}
-\title{Read a lobo data file}
+\title{Read a LOBO File}
 \usage{
 read.lobo(file, cols = 7, processingLog)
 }
@@ -30,7 +30,6 @@ exactly as specified in the Examples section; if you reorder the columns or
 add new ones, this function is unlikely to work correctly. Furthermore, it
 should be noted that the file format was inferred simply by downloading
 files; the supplier makes no claims that the format will be fixed in time.
-
 It is also worth noting that there is no \code{\link{read.oce}} equivalent
 to \code{read.lobo}, because the file format has no recognizable header.
 }

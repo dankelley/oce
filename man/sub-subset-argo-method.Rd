@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,argo-method}
 \alias{[[<-,argo-method}
-\title{Replace Parts of a \code{argo} Object}
+\title{Replace Parts of an Argo Object}
 \usage{
 \S4method{[[}{argo}(x, i, j) <- value
 }
@@ -52,7 +52,8 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
+Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+  \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,bremen-method}},
   \code{\link{[[<-,cm-method}},
   \code{\link{[[<-,coastline-method}},
@@ -62,6 +63,7 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,gps-method}},
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
+  \code{\link{[[<-,met-method}},
   \code{\link{[[<-,oce-method}},
   \code{\link{[[<-,odf-method}},
   \code{\link{[[<-,rsk-method}},
@@ -74,6 +76,7 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{argo-class}}, \code{\link{argoGrid}},
   \code{\link{argo}}, \code{\link{as.argo}},
+  \code{\link{handleFlags,argo-method}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}

@@ -25,10 +25,9 @@ within the call stack to which debugging applies.}
 \item{\dots}{optional arguments passed to plotting functions.}
 }
 \description{
-Plot \code{LISST} data
+Creates a multi-panel summary plot of data measured by LISST instrument.
 }
 \details{
-Creates a multi-panel summary plot of data measured by LISST instrument.
 The panels are controlled by the \code{which} argument, as follows.
 \itemize{
 
@@ -94,7 +93,8 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
   \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},

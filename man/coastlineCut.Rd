@@ -2,7 +2,7 @@
 % Please edit documentation in R/coastline.R
 \name{coastlineCut}
 \alias{coastlineCut}
-\title{Cut a coastline file at specified longitude}
+\title{Cut a Coastline Object at Specified Longitude}
 \usage{
 coastlineCut(coastline, lon_0 = 0)
 }
@@ -15,15 +15,14 @@ coastlineCut(coastline, lon_0 = 0)
 a new coastline object
 }
 \description{
-Cut a coastline file at specified longitude
-}
-\details{
 This can be helpful in preventing \code{\link{mapPlot}} from producing ugly
 horizontal lines in world maps. These lines occur when a coastline segment
 is intersected by longitude lon_0+180.  Since the coastline files in the oce
 and ocedata packages are already "cut" at longitudes of -180 and 180, the present
 function is not needed for default maps, which have \code{+lon_0=0}. However,
 may help with other values of \code{lon_0}.
+}
+\section{Caution}{
 
 This function is provisional. Its behaviour, name and very existence
 may change through the late months of 2015.  One part of the

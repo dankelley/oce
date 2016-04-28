@@ -2,7 +2,7 @@
 % Please edit documentation in R/g1sst.R
 \name{read.g1sst}
 \alias{read.g1sst}
-\title{Read G1SST satellite data}
+\title{Read a G1SST file}
 \usage{
 read.g1sst(filename)
 }
@@ -13,7 +13,7 @@ read.g1sst(filename)
 An object of \code{\link{g1sst-class}}.
 }
 \description{
-This works with netcdf files as provided by the ERDAPP server [1].
+Read a G1SST file in the netcdf format provided by the ERDAPP server [1].
 }
 \details{
 As noted in the documentation for \code{\link{g1sst-class}}, one
@@ -52,7 +52,7 @@ Dan Kelley
 }
 \references{
 1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
-2. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
+2. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
 }
 \seealso{
 Other things related to satellite data: \code{\link{g1sst-class}},

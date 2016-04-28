@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,echosounder-method}
 \alias{[[<-,echosounder-method}
-\title{Replace Parts of a \code{echosounder} Object}
+\title{Replace Parts of an Echosounder Object}
 \usage{
 \S4method{[[}{echosounder}(x, i, j) <- value
 }
@@ -52,7 +52,8 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
+Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+  \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
   \code{\link{[[<-,cm-method}},
@@ -62,6 +63,7 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,gps-method}},
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
+  \code{\link{[[<-,met-method}},
   \code{\link{[[<-,oce-method}},
   \code{\link{[[<-,odf-method}},
   \code{\link{[[<-,rsk-method}},
@@ -74,7 +76,7 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
 Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
   \code{\link{as.echosounder}},
   \code{\link{echosounder-class}},
-  \code{\link{echosounder}},
+  \code{\link{echosounder}}, \code{\link{findBottom}},
   \code{\link{plot,echosounder-method}},
   \code{\link{read.echosounder}},
   \code{\link{subset,echosounder-method}},

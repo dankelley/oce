@@ -75,12 +75,10 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' Extract Something From an ladp Object
+#' @title Extract Something From an ladp Object
 #'
 #' @param x A \code{ladp} object, i.e. one inheriting from \code{\link{ladp-class}}.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
+#' @template sub_subTemplate
 #'
 #' @examples
 #' data(ctd)
@@ -89,7 +87,6 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #'
 #' @family things related to \code{ladp} data
-#' @family functions that extract parts of oce objects
 setMethod(f="[[",
           signature(x="ladp", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {

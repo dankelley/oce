@@ -2,7 +2,7 @@
 % Please edit documentation in R/echosounder.R
 \name{read.echosounder}
 \alias{read.echosounder}
-\title{Read an echosounder data file}
+\title{Read an Echosounder File}
 \usage{
 read.echosounder(file, channel = 1, soundSpeed = swSoundSpeed(35, 10, 50),
   tz = getOption("oceTz"), debug = getOption("oceDebug"), processingLog)
@@ -33,10 +33,6 @@ are described in the documentation for the object
 \code{\link{echosounder-class}}.
 }
 \description{
-Read an echosounder data file, producing an object of type
-\code{echosounder}.
-}
-\details{
 Reads a biosonics echosounder file.  This function was written for and
 tested with single-beam, dual-beam, and split-beam Biosonics files of type
 V3, and may not work properly with other file formats.
@@ -73,7 +69,7 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
   \code{\link{[[<-,echosounder-method}},
   \code{\link{as.echosounder}},
   \code{\link{echosounder-class}},
-  \code{\link{echosounder}},
+  \code{\link{echosounder}}, \code{\link{findBottom}},
   \code{\link{plot,echosounder-method}},
   \code{\link{subset,echosounder-method}},
   \code{\link{summary,echosounder-method}}

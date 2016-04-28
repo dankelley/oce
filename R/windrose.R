@@ -1,7 +1,8 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to store windrose data
+#' @title Class to Store Windrose Data
 #' 
+#' @description
 #' Windrose objects store statistical information about winds, mainly for
 #' plotting as "wind rose" plots (see \code{\link{plot,windrose-method}}.
 #' There is no reading method, because there is no standard way to store
@@ -48,7 +49,7 @@ setMethod(f="summary",
           })
 
 
-#' @title Extract Something From a \code{windrose} Object
+#' @title Extract Something From a Windrose Object
 #' @param x A windrose object, i.e. one inheriting from \code{\link{windrose-class}}.
 #' @section Details of the specialized windrose method:
 #' There are no special features for \code{\link{windrose-class}} data;
@@ -61,7 +62,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{windrose} Object
+#' @title Replace Parts of a Windrose Object
 #' @param x An \code{windrose} object, i.e. inheriting from \code{\link{windrose-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{windrose} data
@@ -72,7 +73,7 @@ setMethod(f="[[<-",
           })
 
 
-#' Create a windrose object
+#' Create a Windrose Object
 #' 
 #' Create a wind-rose object, typically for plotting with
 #' \code{\link{plot,windrose-method}}.
@@ -170,8 +171,11 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 }
 
 
-#' Plot a wind rose diagram
+#' @title Plot Windrose data
 #' 
+#' @description
+#' Plot a \code{windrose} object, i.e. one inheriting from \code{\link{windrose-class}}.
+#'
 #' @param x A \code{windrose} object, e.g. inheriting from \code{\link{windrose-class}}.
 #' 
 #' @param type The thing to be plotted, either the number of counts in the angle
@@ -199,7 +203,6 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 #' the fourth is, again, used for the grid lines.
 #' 
 #' @param ... Optional arguments passed to plotting functions.
-#' 
 #' 
 #' @examples
 #' library(oce)

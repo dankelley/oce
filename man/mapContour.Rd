@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapContour}
 \alias{mapContour}
-\title{Plot contours on a existing map.}
+\title{Add Contours on a Existing map}
 \usage{
 mapContour(longitude = seq(0, 1, length.out = nrow(z)), latitude = seq(0, 1,
   length.out = ncol(z)), z, nlevels = 10, levels = pretty(range(z, na.rm =
@@ -63,7 +63,8 @@ Dan Kelley
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
 
-Other functions that handle map projections: \code{\link{map2lonlat}},
+Other functions related to maps: \code{\link{lonlat2map}},
+  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
   \code{\link{mapArrows}}, \code{\link{mapAxis}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
@@ -72,6 +73,7 @@ Other functions that handle map projections: \code{\link{map2lonlat}},
   \code{\link{mapMeridians}}, \code{\link{mapPlot}},
   \code{\link{mapPoints}}, \code{\link{mapPolygon}},
   \code{\link{mapScalebar}}, \code{\link{mapText}},
-  \code{\link{mapTissot}}, \code{\link{mapZones}}
+  \code{\link{mapTissot}}, \code{\link{mapZones}},
+  \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
 

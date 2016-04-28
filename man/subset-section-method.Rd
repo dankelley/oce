@@ -3,7 +3,7 @@
 \docType{methods}
 \name{subset,section-method}
 \alias{subset,section-method}
-\title{Subset a section object}
+\title{Subset a Section Object}
 \usage{
 \S4method{subset}{section}(x, subset, ...)
 }
@@ -38,6 +38,7 @@ Dan Kelley
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
+  \code{\link{handleFlags,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},

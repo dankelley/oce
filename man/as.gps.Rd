@@ -22,8 +22,6 @@ An object of \code{\link{gps-class}}.
 }
 \description{
 Coerces a sequence of longitudes and latitudes into a GPS dataset.
-}
-\details{
 This may be used when \code{\link{read.gps}} cannot read a file, or when the
 data have been manipulated.
 }

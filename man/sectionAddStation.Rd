@@ -3,7 +3,7 @@
 \name{sectionAddStation}
 \alias{sectionAddCtd}
 \alias{sectionAddStation}
-\title{Add CTD profile to section}
+\title{Add a CTD Station to a Section}
 \usage{
 sectionAddStation(section, station)
 }
@@ -18,7 +18,8 @@ An object of \code{\link[base]{class}} \code{section}.
 \description{
 Add a CTD profile to an existing section.
 }
-\details{
+\section{Historical note}{
+
 Until March 2015, this operation was carried out with the \code{+} operator,
 but at that time, the syntax was flagged by the development version of R, so it
 was changed to the present form.
@@ -44,6 +45,7 @@ Dan Kelley
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
+  \code{\link{handleFlags,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},

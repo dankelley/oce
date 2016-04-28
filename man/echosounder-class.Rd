@@ -3,7 +3,7 @@
 \docType{class}
 \name{echosounder-class}
 \alias{echosounder-class}
-\title{Class to store echosounder data}
+\title{Class to Store Echosounder Data}
 \description{
 Class to store echosounder data.
 }
@@ -84,12 +84,13 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{odf-class}},
   \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{sealevel}}, \code{\link{section-class}},
-  \code{\link{topo-class}}, \code{\link{windrose-class}}
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
 
 Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
   \code{\link{as.echosounder}}, \code{\link{echosounder}},
+  \code{\link{findBottom}},
   \code{\link{plot,echosounder-method}},
   \code{\link{read.echosounder}},
   \code{\link{subset,echosounder-method}},

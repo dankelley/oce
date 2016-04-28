@@ -3,7 +3,7 @@
 \docType{methods}
 \name{subset,rsk-method}
 \alias{subset,rsk-method}
-\title{Subset a rsk object}
+\title{Subset a Rsk Object}
 \usage{
 \S4method{subset}{rsk}(x, subset, ...)
 }

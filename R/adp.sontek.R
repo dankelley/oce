@@ -1,6 +1,6 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
-#' Read a Sontek adp file
+#' Read a Sontek ADP File
 #'
 #' Read a Sontek acoustic-Dopplerprofiler file [1].
 #"
@@ -407,7 +407,7 @@ sontek.time <- function(t, tz=getOption("oceTz"))
     ISOdatetime(year, month, day, hour, minute, second+milliseconds/1000, tz=tz)
 }
 
-#' Read a serial Sontek adp file
+#' Read a serial Sontek ADP file
 #'
 #' Read a Sontek acoustic-Dopplerprofiler file, in a serial form that
 #' is possibly unique to Dalhousie University.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{woceNames2oceNames}
 \alias{woceNames2oceNames}
-\title{Translate WOCE data names to \code{oce} data names}
+\title{Translate WOCE Data Names to Oce Data Names}
 \usage{
 woceNames2oceNames(names)
 }
@@ -19,5 +19,23 @@ to mean \code{oxygen}.
 }
 \author{
 Dan Kelley
+}
+\seealso{
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{ctd}}, \code{\link{gps-class}},
+  \code{\link{handleFlags,ctd-method}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
+  \code{\link{plotScan}}, \code{\link{plotTS}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdTrim}
 \alias{ctdTrim}
-\title{Trim start/end portions of a CTD cast}
+\title{Trim Beginning and Ending of a CTD cast}
 \usage{
 ctdTrim(x, method, removeDepthInversions = FALSE, parameters = NULL,
   debug = getOption("oceDebug"))
@@ -38,6 +38,11 @@ investigate the data, and then use the \code{method="index"} or \code{method="sc
 visual inspection of the data.
 }
 \details{
+\code{ctdTrim} begins by examining the pressure differences between subsequent samples. If
+these are all of the same value, then the input \code{ctd} object is returned, unaltered.
+This handles the case of pressure-binned data. However, if the pressure difference
+varies, a variety of approaches are taken to trimming the dataset.
+
 \itemize{
   \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to only data for
   which the CTD is descending.  This is done in stages, with variants based on \code{method[1]}, if
@@ -116,14 +121,20 @@ The Seabird CTD instrument is described at
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
   \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
-  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
+  \code{\link{plotScan}}, \code{\link{plotTS}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+  \code{\link{summary,ctd-method}},
+  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
 

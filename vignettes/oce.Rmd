@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
     toc: true
+    number_sections: true
     fig_caption: yes
     fig_width: 5
     fig_height: 5
@@ -16,6 +17,10 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+<!-- edit vignettes/oce.Rmd then run with -->
+<!-- devtools::build_vignettes() -->
+<!-- in the console. -->
+
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
@@ -30,7 +35,7 @@ setting.  These things are illustrated here in a practical context.  Worked
 exercises are provided to help readers take early steps towards using the `oce`
 package in their research.
 
-## 1. Introduction
+# Introduction
 
 Oceanographers must deal with measurements made by a wide variety of
 instruments, a task that is complicated by a tendency of instrument
@@ -40,7 +45,7 @@ of limited use to researchers who work with several instrument types at the
 same time, and who need to move beyond engineering plots to scientific plots
 and statistical analysis.
 
-## 2. Object design and generic functions
+# Object design and generic functions
 
 ![**Figure 1.** Basic layout of a CTD object.  All `oce` objects contain slots named `data`, `metadata`, and `processingLog`, with the contents depending on the type of data.](ctd-object.png)
 
@@ -101,7 +106,7 @@ time-distance variation in each of the measured velocity components.
    by Oceanographers.  For example, `oceContour()` is a function that provides
    an alternative to `contour()` in the `graphics` package.
 
-## 3. Calculation of seawater properties
+# Calculation of seawater properties
 
 The `oce` package provides many functions for dealing with seawater properties.
 Perhaps the most used is `swRho(S,T,p)`, which computes seawater density
@@ -161,9 +166,9 @@ e. Draw a blank $T$-$S$ diagram with $S$ from 30 to 40 PSU and $T$ from -2 to 20
 
 
 
-## 4. CTD data
+# CTD data
 
-### 4.1 Example with pre-trimmed data
+## Example with pre-trimmed data
 
 Many of the object types supported by `oce` come with built-in data.  For an
 example, `data(ctd)` yields a CTD profile that has been trimmed to just the
@@ -190,7 +195,7 @@ to what are sometimes called "science" units.
 **Exercise 2.** Plot a profile of $\sigma_\theta$ and $N^2$, for the data in
 the pycnocline. (Hint: use `subset()`.)
 
-### 4.2 Example with raw data
+## Example with raw data
 
 Practicing Oceanographers may be wondering how the CTD cast used in the
 preceding section was trimmed of equilibration-phase and upcast-phase data.
@@ -235,7 +240,7 @@ just one line of code:
 plot(ctdDecimate(ctdTrim(read.ctd("stn123.cnv"))))
 ```
 
-### 4.3 Example with WOCE archive data
+## Example with WOCE archive data
 
 The package has a harder time scanning the headers of data files in the WOCE
 archive format than it does in the Seabird format illustrated in the previous
@@ -288,7 +293,7 @@ relationship, with each file showing the overall relationship in gray and the
 individual profile in black.
 
 
-## 5. Section plots
+# Section plots
 
 The commands
 ```{r eval=FALSE}
@@ -323,9 +328,9 @@ Mediterranean-derived waters. (Hint: use the accessor function `[[`.)
 **Exercise 5.** Plot dynamic height and geostrophic velocity across the Gulf
 Stream. (Hint: use the `swDynamicHeight()` function.)
 
-## 6. Maps
+# Maps
 
-### 6.1 About projections
+## About projections
 
 There are several ways to handle map projections in R and other systems. Oce
 uses the `rgdal` package to calculate the details of map projections.  A wide
@@ -359,7 +364,7 @@ this is tricky enough to be the heart of the longest-lived bug in the `oce`
 issue list, i.e. <https://github.com/dankelley/oce/issues/388>. In some instances the function `coastlineCut()` can help, but it is provisional and subject to change.
 
 
-### 6.2 Popular world-view projections
+## Popular world-view projections
 
 A few common projections are worth highlighting. In addition to the Winkel
 Tripel projection shown in Figure 5, it is also common to employ Mollweide,
@@ -388,7 +393,7 @@ mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
 mapImage(lon, lat, z, colormap=cm)
 ```
 
-### 6.3 Popular mid-latitude projections
+## Popular mid-latitude projections
 
 Mid-latitude regions are sometimes represented with Lambert Conformal Conic projection,
 e.g. Figure 7 was produced as follows.
@@ -409,7 +414,7 @@ mapPlot(coastlineWorld, projection="+proj=aea +lat_1=30 +lat_2=70 +lon_0=-40",
         longitudelim=lonlim, latitudelim=latlim)
 ```
 
-### 6.4 Popular high-latitude projections
+## Popular high-latitude projections
 
 High-latitude regions are often represented with stereopolar projections, e.g.
 Figure 8 was produced with the following.
@@ -421,9 +426,9 @@ mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
 
 
 
-## 7. Sea-level data
+# Sea-level data
 
-### 7.1 Time-domain analysis
+## Time-domain analysis
 
 The following code graphs a built-in dataset of sea-level time series (Figure
 9).  The top panel provides an overview of the entire data set. The second
@@ -443,7 +448,7 @@ plot(sealevel)
 **Exercise 6.** Illustrate Halifax sea-level variations during Hurricane Juan,
 near the end of September, 2003.
 
-### 7.2 Tidal-harmonic analysis
+## Tidal-harmonic analysis
 
 A preliminary version of tidal analysis is provided by the `tidem` function
 provided in this version of the package, but readers are cautioned that the
@@ -454,7 +459,7 @@ phase and the inference of satellite nodes.)
 whether Hurricane Juan is visible. (Hint: use `predict` with the results from
 `tidem`.)
 
-## 8. Working with Acoustic Doppler Profiler data
+# Acoustic Doppler Profiler data
 
 The following commands produce Figure 10, showing one velocity component of
 currents measured in the St Lawrence Estuary Internal Wave Experiment. This
@@ -466,7 +471,115 @@ plot(adp, which=1)
 lines(adp[['time']], adp[['pressure']], lwd=2)
 ```
 
-## 9. Working in non-English languages
+# Handling data-quality flags
+
+## About flags
+Hydrographic and some other data may be accompanied by data-quality flags.  For
+example, salinity is subject to a variety of instrumental and other errors, and
+so archives of its value commonly contain quality flags.  These flags may
+derive from statistical checks, from the judgement of a human analyst, or a
+combination of the two.
+
+Some flags are in the form of numerical values (typically integers) but others
+may be expressed as character strings. A frustrating aspect of oceanographic
+analysis is that different data archiving agencies employ different systems for
+flags. For example, the [World Hydrographic
+Programme](https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm)
+designates good bottle/CTD data with a flag value of 2, whereas the [World
+Ocean
+Database](http://data.nodc.noaa.gov/woa/WOD/CODES/TXT/Definition_of_Quality_Flags.txt)
+uses 0 for good data.  It is also common to indicate bad data by setting values
+to non-physical values, e.g. -999, -99.99, or similar, and sometimes these
+coded values may contradict more formal flags, when both are present.
+
+Dealing with flags often requires ad hoc analysis methods, and for this reason,
+the `oce` package offers tools for dealing with flags in a variety of ways.
+The first thing to realize is that only certain data types contain flags, and
+only certain data objects will contain flags. For example, hydrographic data
+are quite likely to be provided with data-quality flags, but these are never
+provided with coastline data.
+
+Data-quality flags are stored in the `flags` entry in the `metadata` slot of
+`oce` objects. This entry is a list, containing items with names corresponding
+to names of data elements that are stored in the `data` slot. Direct
+manipulation is possible, although it is more convenient to use the `[[` and
+`[[<-` access methods provided in `oce`, or, for some tasks, the `handleFlags`
+function provided by `oce`.
+
+## Retrieving and changing flags
+
+An example should clarify a working procedure. The `section` dataset provided
+with `oce` holds many `ctd` objects that each have data-quality flags. 
+The first few salinity flags for the 100th station may be found as follows.
+```{r}
+data(section)
+stn <- section[["station", 100]]
+head(stn[["salinityFlag"]])
+```
+Note that these data use the WHP scheme, i.e. good data are indicated with 2,
+whereas questionable data are indicated with 3.
+
+Before discussing how such flags might be handled, it is important to note that
+it is often necessary to alter such flags. For example, some datasets will have
+flags set to indicate good data, even though the data are set to -999, which is
+one of several old-fashioned missing-value codes. The `section` dataset does
+not contain any such cases, but the situation may be simulated as follows.
+```{r}
+# fake second datum
+stn[["salinity"]][2] <- -999
+```
+With this, the setting of flags might be done with
+```{r}
+stn[["salinityFlag"]] <- ifelse(stn[["salinity"]] < 0, 3, stn[["salinityFlag"]])
+```
+with a check being done with
+```{r}
+head(stn[["salinityFlag"]])
+```
+
+It should be obvious to the reader that this procedure could be extended in
+more sophisticated ways, e.g. with schemes searching for pressure inversions,
+large departures from a TS relationship, loops on TS diagrams, etc. It can be
+useful to combine automatic schemes with interactive plotting, to identify bad
+data.
+
+
+**Exercise 8.** Manipulating flags. The dataset provided with oce using
+```r
+library(oce)
+d <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
+```
+contains a column named `flags` that consists of a 3-digit number. THe first
+digit is a flag for temperature, the second for conductivity, and the third for
+oxygen. Compute the individual flags and add them to the metdata of the `ctd` object.
+
+## Using flags to manipulate data
+
+A conservative approach is to set data to the missing-value code `NA` if the
+data-quality flag indicates a problem. For example, in the WHP scheme, values
+other than 2 indicate unchecked, bad or suspect data, and those data could be
+set to the missing-value code as follows, where `stn2` is the new version:
+```{r}
+stn2 <- stn
+stn2[["salinity"]] <- ifelse(stn2[["salinityFlag"]]!=2, NA, stn2[["salinity"]])
+head(stn2[["salinityFlag"]])
+```
+
+This can be expressed more compactly with `handleFlags`, e.g.
+```{r}
+stn3 <- stn
+stn3[["salinity"]][2] <- -999
+stn3 <- handleFlags(stn3, list(salinity=c(1,3:9)))
+```
+
+A summary of the salinities follows
+```{r}
+head(data.frame(stnS=stn[["salinity"]], stn2S=stn2[["salinity"]], stn3S=stn3[["salinity"]]))
+```
+
+
+
+#  Working in non-English languages
 
 Many of the `oce` plotting functions produce axis labels that can be
 displayed in languages other than English.  At the time of writing, French,
@@ -489,7 +602,7 @@ effort, if they have knowledge of how nautical words such as *Pitch* and *Roll*
 and technical terms such as *Absolute Salinity* and *Potential Temperature*
 should be written in various languages.
 
-## 10. The future of oce
+# The future of oce
 
 The present version of `oce` can only handle data types that the authors have
 been using in their research. New data types will be added as the need arises
@@ -504,7 +617,7 @@ with which the additions can be made.  One might call this
 development-by-triage, by analogy to the scheme used in Emergency Rooms to
 organize medical effort efficiently.
 
-## 11. Development website
+# Development website
 
 The site [http://github.com/dankelley/oce](http://github.com/dankelley/oce)
 provides a window on the development that goes on between the CRAN releases of
@@ -516,7 +629,7 @@ being changed on a given day.  Official CRAN releases derive from the `master`
 branch, and are done when the code is considered to be of reasonable stability
 and quality.  This is all in a common pattern for open-source software.
 
-## 12. Answers to exercises
+# Answers to exercises
 
 **Exercise 1.** Seawater properties.
 ```{r fig.width=5, fig.height=5, fig.keep="none"}
@@ -650,3 +763,23 @@ oce.plot.ts(sealevel[['time']], sealevel[['elevation']] - predict(m),
 ```
 
 The spike reveals a surge of about 1.5m, on the 29th of September, 2003.
+
+**Exercise 8.** Manipulating flags.
+```r
+library(oce)
+d <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
+
+## The following is in the .cnv file:
+# Processing Notes:  Flag word has 3 columns: Temperature, Conductivity, and Oxygen
+# Processing Notes:  Flag_code:  0 = no QC; 2 = good; 6 = interpolated, or replaced by dual sensor or upcast value;
+
+flag <- d[['flag']]
+flag1 <- floor(flag/100)
+flag2 <- floor((flag-100*flag1)/10)
+flag3 <- floor((flag-100*flag1-10*flag2))
+d[["flags"]]$temperature <- flag1
+d[["flags"]]$conductivity <- flag2
+d[["flags"]]$oxygen <- flag3
+```
+
+

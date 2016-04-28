@@ -1,5 +1,6 @@
-#' Class to store LOBO data
+#' @title Class to Store LOBO Data
 #' 
+#' @description
 #' Class to store LOBO data.
 #' A \code{lobo} object may be read with \code{\link{read.lobo}} or
 #' constructed with \code{\link{as.lobo}}.  Plots can be made with
@@ -55,8 +56,9 @@ setMethod(f="initialize",
           })
 
 
-#' lobo dataset
+#' @title LOBO Dataset
 #' 
+#' @description
 #' This is sample lobo dataset obtained in the Northwest Arm of Halifax by
 #' Satlantic.
 #' 
@@ -78,7 +80,7 @@ setMethod(f="initialize",
 #' @family things related to \code{lobo} data
 NULL
 
-#' @title Extract Something From a \code{lobo} Object
+#' @title Extract Something From a LOBO Object
 #' @param x A lobo object, i.e. one inheriting from \code{\link{lobo-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{lobo} data
@@ -88,7 +90,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{lobo} Object
+#' @title Replace Parts of a LOBO Object
 #' @param x An \code{lobo} object, i.e. inheriting from \code{\link{lobo-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{lobo} data
@@ -98,10 +100,9 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, value=value)
           })
 
-#' Summarize a lobo data object
+#' @title Summarize a LOBO Object
 #' 
-#' Summarizes some of the data in a lobo object.
-#' 
+#' @description
 #' Pertinent summary information is presented, including the sampling interval,
 #' data ranges, etc.
 #' 
@@ -115,7 +116,6 @@ setMethod(f="[[<-",
 #' structure of LOBO objects, and also outlines the other functions dealing
 #' with them.
 #' @references \url{http://lobo.satlantic.com} \url{http://www.mbari.org/lobo/}
-#' @keywords misc
 #' @examples
 #' 
 #' library(oce)
@@ -132,8 +132,9 @@ setMethod(f="summary",
 
 
 
-#' Subset an lobo object
+#' @title Subset a LOBO Object
 #' 
+#' @description
 #' Subset an lobo object, in a way that is somewhat
 #' analogous to \code{\link{subset.data.frame}}.
 #' 
@@ -237,8 +238,9 @@ plot.lobo.TS <- function(lobo, ...)
 }
 
 
-#' Plot lobo data
+#' @title Plot LOBO data
 #' 
+#' @description
 #' Plot a summary diagram for lobo data.
 #' 
 #' @param x A \code{lobo} object, e.g. as read by \code{\link{read.lobo}}.
@@ -260,8 +262,7 @@ plot.lobo.TS <- function(lobo, ...)
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar value to be used with \code{\link{par}("mar")}.
-#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
-#' amount of debugging information, or to 2 to get more.
+#' @template debugTemplate
 #' @param \dots optional arguments passed to plotting functions.
 #' @author Dan Kelley
 #' 
@@ -346,10 +347,12 @@ setMethod(f="plot",
 
 
 
-#' Read a lobo data file
+#' @title Read a LOBO File
 #' 
+#' @description
 #' Read a data file created by a LOBO instrument.
 #' 
+#' @details
 #' This version of \code{read.lobo} is really quite crude, having been
 #' developed mainly for a ``predict the Spring bloom'' contest at Dalhousie
 #' University.  In particular, the function assumes that the data columns are
@@ -357,7 +360,6 @@ setMethod(f="plot",
 #' add new ones, this function is unlikely to work correctly. Furthermore, it
 #' should be noted that the file format was inferred simply by downloading
 #' files; the supplier makes no claims that the format will be fixed in time.
-#' 
 #' It is also worth noting that there is no \code{\link{read.oce}} equivalent
 #' to \code{read.lobo}, because the file format has no recognizable header.
 #' 
@@ -432,11 +434,10 @@ read.lobo <- function(file, cols=7, processingLog)
 
 
 
-#' Coerce data into lobo dataset
+#' @title Coerce Data into a Lobo Object
 #' 
+#' @description
 #' Coerce a dataset into a lobo dataset.
-#' 
-#' This function assembles vectors into a \code{lobo} object.
 #' 
 #' @param time vector of times of observation
 #' @param u vector of x velocity component observations

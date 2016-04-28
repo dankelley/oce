@@ -3,7 +3,7 @@
 \docType{methods}
 \name{subset,cm-method}
 \alias{subset,cm-method}
-\title{Subset a cm object}
+\title{Subset a CM Object}
 \usage{
 \S4method{subset}{cm}(x, subset, ...)
 }

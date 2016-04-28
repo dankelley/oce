@@ -3,12 +3,12 @@
 \docType{methods}
 \name{[[,adv-method}
 \alias{[[,adv-method}
-\title{Extract Parts of an \code{adv} Object}
+\title{Extract Parts of an ADV Object}
 \usage{
 \S4method{[[}{adv}(x, i, j, ...)
 }
 \arguments{
-\item{x}{An adv object, i.e. one inheriting from \code{\link{adv-class}}.}
+\item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -41,6 +41,13 @@ are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
 for the other velocity components. The \code{a} and \code{q}
 data can be retrived in \code{\link{raw}} form 
 or numeric form; see \dQuote{Examples}.
+
+It is also worth noting that heading, pitch, etc. may be stored in
+"slow" form in the object (e.g. in \code{headingSlow} within
+the \code{data} slot). In that case, accessing by full name, e.g.
+\code{x[["headingSlow"]]} retrieves the item as expected, but
+\code{x[["heading"]]} interpolates to the faster timescale, using
+\code{\link{approx}(timeSlow, headingSlow, time)}.
 }
 
 \section{Details of the general method}{
@@ -89,7 +96,8 @@ head(adv[["q", "numeric"]]) # in numeric form
 
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,amsr-method}},
+Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+  \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
   \code{\link{[[,bremen-method}},
   \code{\link{[[,cm-method}},
@@ -98,20 +106,30 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,amsr-me
   \code{\link{[[,echosounder-method}},
   \code{\link{[[,g1sst-method}},
   \code{\link{[[,gps-method}},
+  \code{\link{[[,ladp-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,met-method}}, \code{\link{[[,odf-method}},
+  \code{\link{[[,rsk-method}},
   \code{\link{[[,sealevel-method}},
   \code{\link{[[,section-method}},
   \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
-  \code{\link{[[,windrose-method}}
+  \code{\link{[[,windrose-method}},
+  \code{\link{[[<-,adv-method}}
 
 Other things related to \code{adv} data: \code{\link{[[<-,adv-method}},
   \code{\link{adv-class}}, \code{\link{adv}},
+  \code{\link{beamName}}, \code{\link{beamToXyz}},
+  \code{\link{enuToOtherAdv}}, \code{\link{enuToOther}},
   \code{\link{plot,adv-method}},
-  \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}},
-  \code{\link{xyzToEnuAdv}}
+  \code{\link{read.adv.nortek}},
+  \code{\link{read.adv.sontek.adr}},
+  \code{\link{read.adv.sontek.serial}},
+  \code{\link{read.adv.sontek.text}},
+  \code{\link{read.adv}}, \code{\link{subset,adv-method}},
+  \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
 

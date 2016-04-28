@@ -334,7 +334,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 }                                       # decodeHeaderRDI
 
 
-#' Read a Teledyne/RDI adp file
+#' Read a Teledyne/RDI ADP File
 #'
 #' Read a Teledyne/RDI ADCP file (called 'adp' in oce).
 #'

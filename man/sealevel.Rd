@@ -3,7 +3,7 @@
 \docType{data}
 \name{sealevel}
 \alias{sealevel}
-\title{Sea-level data set, from Halifax Harbour}
+\title{Sealevel data for Halifax Harbour}
 \source{
 The data were created as \preformatted{ sealevel <-
 read.oce("490-01-JAN-2003_slev.csv") sealevel <- oce.edit(sealevel,
@@ -21,23 +21,24 @@ website, the record ends on the 8th of October.
 Dan Kelley
 }
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{echosounder-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{odf-class}},
-  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
-
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
+  \code{\link{coastlineWorld}}, \code{\link{colors}},
+  \code{\link{ctdRaw}}, \code{\link{ctd}},
+  \code{\link{echosounder}}, \code{\link{landsat}},
   \code{\link{lisst}}, \code{\link{lobo}},
-  \code{\link{met}}, \code{\link{section}},
-  \code{\link{topoWorld}}
+  \code{\link{met}}, \code{\link{rsk}},
+  \code{\link{sealevelTuktoyaktuk}}, \code{\link{section}},
+  \code{\link{topoWorld}}, \code{\link{wind}}
+
+Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
+  \code{\link{[[<-,sealevel-method}},
+  \code{\link{as.sealevel}},
+  \code{\link{plot,sealevel-method}},
+  \code{\link{read.sealevel}},
+  \code{\link{sealevel-class}},
+  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{subset,sealevel-method}},
+  \code{\link{summary,sealevel-method}}
 }
 

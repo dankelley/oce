@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{read.argo}
 \alias{read.argo}
-\title{Read an Argo data file}
+\title{Read an Argo Data File}
 \usage{
 read.argo(file, debug = getOption("oceDebug"), processingLog, ...)
 }
@@ -169,7 +169,9 @@ objects, and also outlines the other functions dealing with them.
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argo}},
-  \code{\link{as.argo}}, \code{\link{plot,argo-method}},
+  \code{\link{as.argo}},
+  \code{\link{handleFlags,argo-method}},
+  \code{\link{plot,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }

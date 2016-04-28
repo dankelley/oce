@@ -3,7 +3,7 @@
 \docType{class}
 \name{odf-class}
 \alias{odf-class}
-\title{Class to store ODF data}
+\title{Class to Store ODF data}
 \description{
 Class for data stored in a format used at Canadian Department of Fisheries
 and Oceans laboratories. This is somewhat unusual amongst \code{oce}
@@ -48,7 +48,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}}, \code{\link{sealevel}},
+  \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 

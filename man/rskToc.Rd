@@ -2,7 +2,7 @@
 % Please edit documentation in R/rsk.R
 \name{rskToc}
 \alias{rskToc}
-\title{Decode table-of-contents file from a rsk file}
+\title{Decode table-of-contents File from a Rsk File}
 \usage{
 rskToc(dir, from, to, debug = getOption("oceDebug"))
 }

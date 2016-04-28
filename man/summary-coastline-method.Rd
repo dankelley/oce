@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,coastline-method}
 \alias{summary,coastline-method}
-\title{Summarize a coastline data object}
+\title{Summarize a Coastline Object}
 \usage{
 \S4method{summary}{coastline}(object, ...)
 }

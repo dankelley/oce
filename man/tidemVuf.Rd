@@ -2,7 +2,7 @@
 % Please edit documentation in R/tidem.R
 \name{tidemVuf}
 \alias{tidemVuf}
-\title{Do ephemeris calculations for tidem}
+\title{Ephemeris Calculations for Tidem}
 \usage{
 tidemVuf(t, j, lat = NULL)
 }
@@ -19,10 +19,8 @@ A \code{\link[base]{data.frame}} containing
 \item{list("astro")}{(fill in later)} \item{list("ader")}{(fill in later)}
 }
 \description{
-Do ephemeris calculations for tidem.
-}
-\details{
-Based directly on \code{t_vuf}, from the \code{T_TIDE} package.
+Do ephemeris calculations for tidem. This is based directly
+on \code{t_vuf}, from the \code{T_TIDE} package.
 }
 \examples{
 
@@ -41,8 +39,7 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{predict.tidem}},
   \code{\link{summary,tidem-method}},
-  \code{\link{tidem-class}}, \code{\link{tidemAstron}},
-  \code{\link{tidem}}
+  \code{\link{tidedata}}, \code{\link{tidem-class}},
+  \code{\link{tidemAstron}}, \code{\link{tidem}}
 }
-\keyword{misc}
 

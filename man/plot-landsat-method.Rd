@@ -7,9 +7,9 @@
 \usage{
 \S4method{plot}{landsat}(x, band, which = 1, decimate = TRUE, zlim,
   utm = FALSE, col = oce.colorsPalette, drawPalette = TRUE,
-  showBandName = TRUE, alpha.f = 1, red.f = 2, green.f = 2,
-  blue.f = 4, offset = c(0, 0, 0, 0), transform = diag(c(red.f, green.f,
-  blue.f, alpha.f)), debug = getOption("oceDebug"), ...)
+  showBandName = TRUE, alpha.f = 1, red.f = 1.7, green.f = 1.5,
+  blue.f = 6, offset = c(0, -0.05, -0.2, 0), transform = diag(c(red.f,
+  green.f, blue.f, alpha.f)), debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.}

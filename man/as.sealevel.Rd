@@ -2,7 +2,7 @@
 % Please edit documentation in R/sealevel.R
 \name{as.sealevel}
 \alias{as.sealevel}
-\title{Coerce data into sea-level dataset}
+\title{Coerce Data Into a Sealevel Object}
 \usage{
 as.sealevel(elevation, time, header = NULL, stationNumber = NA,
   stationVersion = NA, stationName = NULL, region = NULL, year = NA,
@@ -60,8 +60,6 @@ details, see \code{\link{read.sealevel}}).
 \description{
 Coerces a dataset (minimally, a sequence of times and heights) into a
 sealevel dataset.
-}
-\details{
 The arguments are based on the standard data format, as were described in a
 file formerly available at [1].
 }
@@ -97,8 +95,9 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{plot,sealevel-method}},
   \code{\link{read.sealevel}},
   \code{\link{sealevel-class}},
+  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{sealevel}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }
-\keyword{misc}
 

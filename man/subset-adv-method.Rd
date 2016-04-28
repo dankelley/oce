@@ -3,12 +3,12 @@
 \docType{methods}
 \name{subset,adv-method}
 \alias{subset,adv-method}
-\title{Subset an adv object}
+\title{Subset an ADV Object}
 \usage{
 \S4method{subset}{adv}(x, subset, ...)
 }
 \arguments{
-\item{x}{a \code{adv} object.}
+\item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of \code{x}.
 See \sQuote{Details}.}
@@ -36,8 +36,16 @@ Dan Kelley
 \seealso{
 Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
-  \code{\link{adv}}, \code{\link{plot,adv-method}},
-  \code{\link{summary,adv-method}},
-  \code{\link{xyzToEnuAdv}}
+  \code{\link{adv}}, \code{\link{beamName}},
+  \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
+  \code{\link{enuToOther}}, \code{\link{plot,adv-method}},
+  \code{\link{read.adv.nortek}},
+  \code{\link{read.adv.sontek.adr}},
+  \code{\link{read.adv.sontek.serial}},
+  \code{\link{read.adv.sontek.text}},
+  \code{\link{read.adv}}, \code{\link{summary,adv-method}},
+  \code{\link{toEnuAdv}}, \code{\link{toEnu}},
+  \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
 

@@ -1,7 +1,8 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to store tidal-constituent models
+#' @title Class to Store Tidal Models
 #' 
+#' @description
 #' Class to store tidal-constituent models.
 #' 
 #' @author Dan Kelley
@@ -18,14 +19,64 @@ setMethod(f="initialize",
           })
 
 
-#' Summarize a tide-model object
+#' @title Tidal Constituent Information
 #' 
-#' \code{summary} method for class \code{"tidem"}.
+#' @description
+#' The \code{tidedata} dataset contains Tide-constituent information that is
+#' use by \code{\link{tidem}} to fit tidal models.  \code{tidedata} is a list
+#' containing \describe{ \item{const}{a list containing vectors \describe{
+#' \item{list("name")}{a string with constituent name} \item{list("freq")}{the
+#' frequency, in cycles per hour} \item{list("kmpr")}{a string naming the
+#' comparison constituent, blank if there is none} \item{list("ikmpr")}{index
+#' of comparison constituent, or \code{0} if there is none}
+#' \item{list("df")}{frequency difference betwee constituent and its
+#' comparison, used in the Rayleigh criterion} \item{list("d1")}{first Doodson
+#' number} \item{list("d2")}{second Doodson number} \item{list("d3")}{third
+#' Doodson number} \item{list("d4")}{fourth Doodson number}
+#' \item{list("d5")}{fifth Doodson number} \item{list("d6")}{sixth Doodson
+#' number} \item{list("semi")}{(fill in some info later)}
+#' \item{list("nsat")}{number of satellite constituents}
+#' \item{list("ishallow")}{(fill in some info later)}
+#' \item{list("nshallow")}{(fill in some info later)}
+#' \item{list("doodsonamp")}{(fill in some info later)}
+#' \item{list("doodsonspecies")}{(fill in some info later)} } }
+#' \item{list("sat")}{a list containing vectors \describe{
+#' \item{list("deldood")}{(fill in some info later)}
+#' \item{list("phcorr")}{(fill in some info later)} \item{list("amprat")}{(fill
+#' in some info later)} \item{list("ilatfac")}{(fill in some info later)}
+#' \item{list("iconst")}{(fill in some info later)} } }
+#' \item{list("shallow")}{a list containing vectors \describe{
+#' \item{list("iconst")}{(fill in some info later)} \item{list("coef")}{(fill
+#' in some info later)} \item{list("iname")}{(fill in some info later)} } } }
+#' Apart from the use of \code{d1} through \code{d6}, the naming and content
+#' follows \code{T_TIDE}.  All of this is based on Foreman (1977), to which the
+#' reader is referred for details.
 #' 
+#' @name tidedata
+#' @docType data
+#' @author Dan Kelley
+#' @references Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
+#' prediction.  Pacific Marine Science Report 77-10, Institute of Ocean
+#' Sciences, Patricia Bay, Sidney, BC, 58pp.
+#' 
+#' Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+#' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
+#' Computers and Geosciences, 28, 929-937.
+#' @source The data come from the \code{tide3.dat} file of the \code{T_TIDE}
+#' package (Pawlowicz et al., 2002), and derive from Appendices provided by
+#' Foreman (1977).  The data are scanned using \file{tests/tide.R} in this
+#' package, which also performs some tests using \code{T_TIDE} values as a
+#' reference.
+#' @family things related to \code{tidem} data
+NULL
+
+
+#' @title Summarize a Tidem Object
+#' 
+#' @description
 #' By default, all fitted constituents are plotted, but it is quite useful to
 #' set e.g. p=0.05 To see just those constituents that are significant at the 5
 #' percent level.
-#' 
 #' Note that the p values are estimated as the average of the p values for the
 #' sine and cosine components at a given frequency.
 #' 
@@ -90,7 +141,7 @@ setMethod(f="summary",
               invisible(NULL)
           })
 
-#' @title Extract Something From a \code{tidem} Object
+#' @title Extract Something From a Tidem Object
 #' @param x A tidem object, i.e. one inheriting from \code{\link{tidem-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{tidem} data
@@ -100,7 +151,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{tidem} Object
+#' @title Replace Parts of a Tidem Object
 #' @param x An \code{tidem} object, i.e. inheriting from \code{\link{tidem-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{tidem} data
@@ -112,8 +163,9 @@ setMethod(f="[[<-",
 
 
 
-#' Plot a tidal fit
+#' @title Plot a Tidem Prediction
 #' 
+#' @description
 #' Plot a summary diagram for a tidal fit.
 #' 
 #' @param x A \code{tidem} object, i.e. one inheriting from
@@ -206,11 +258,11 @@ setMethod(f="plot",
           })
 
 
-#' Do ephemeris calculations for tidem
+#' @title Ephemeris Calculations for Tidem
 #' 
-#' Do ephemeris calculations for tidem.
-#' 
-#' Based directly on \code{t_vuf}, from the \code{T_TIDE} package.
+#' @description
+#' Do ephemeris calculations for tidem. This is based directly
+#' on \code{t_vuf}, from the \code{T_TIDE} package.
 #' 
 #' @param t time in \code{POSIXct} format.  (It is \strong{very} important to
 #' use \code{tz="GMT"} in constructing \code{t}.)
@@ -221,7 +273,6 @@ setMethod(f="plot",
 #' @author Dan Kelley, based directly on \code{t_vuf} from the \code{T_TIDE}
 #' package.
 #' @seealso \code{\link{tidem}}, which uses this.
-#' @keywords misc
 #' @examples
 #' 
 #' tidemVuf(as.POSIXct("2008-01-22 18:50:24"), 43, 45.0)
@@ -433,11 +484,11 @@ tidemVuf <- function(t, j, lat=NULL)
 
 
 
-#' Do ephemeris calculations for tidem
+#' @title Ephemeris Calculations for Tidem
 #' 
-#' Do ephemeris calculations for tidem.
-#' 
-#' Based directly on \code{t_astron}, from the \code{T_TIDE} package.
+#' @description
+#' Do ephemeris calculations for tidem.  This is based directly
+#' on \code{t_astron}, from the \code{T_TIDE} package.
 #' 
 #' @param t time in \code{POSIXct} format.  (It is \strong{very} important to
 #' use \code{tz="GMT"} in constructing \code{t}.)
@@ -446,7 +497,6 @@ tidemVuf <- function(t, j, lat=NULL)
 #' @author Dan Kelley, based directly on \code{t_astron} from the \code{T_TIDE}
 #' package.
 #' @seealso \code{\link{tidem}}, which uses this.
-#' @keywords misc
 #' @examples
 #' tidemAstron(as.POSIXct("2008-01-22 18:50:24"))
 #' @family things related to \code{tidem} data
@@ -485,12 +535,14 @@ tidemAstron <- function(t)
 }
 
 
-#' Fit a tidal model to a timeseries
+#' @title Fit a Tidem (Tidal Model) to a Timeseries
 #' 
+#' @description
 #' The fit is done in terms of sine and cosine components at the indicated
 #' tidal frequencies, with the amplitude and phase being calculated from the
 #' resultant coefficients on the sine and cosine terms.
 #' 
+#' @details
 #' The tidal constituents to be used in the analysis are specified as follows.
 #' 
 #' \enumerate{
@@ -842,10 +894,10 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
 }
 
 
-#' Predict a time series from a tidal model
+#' @title Predict a Time Series from a Tidem Tidal Model
 #' 
+#' @description
 #' Predict a time series from a tidal model.
-#' 
 #' This is a wrapper around the predict method for \code{object$model}.
 #' 
 #' @param object A \code{tidem} object, i.e. one inheriting from
@@ -918,9 +970,10 @@ predict.tidem <- function(object, newdata, ...)
 
 
 
-#' Get a tidal prediction from a WebTide database
+#' @title Get a Tidal Prediction from a WebTide Database
 #' 
-#' Get a tidal prediction from a WebTide database
+#' @description
+#' Get a tidal prediction from a WebTide database.
 #' 
 #' If \code{action="map"} then a map is drawn, with a dot for the lower-left
 #' corner of each triangle used in the finite-element tidal simulation upon
@@ -975,17 +1028,17 @@ predict.tidem <- function(object, newdata, ...)
 #' in metres and the predicted horizontal components of velocity, \code{u} and
 #' \code{v}, along with the \code{node} number, and the \code{basedir} and
 #' \code{region} as supplied to this function.
-#' @references The WebTide software may be downloaded for free at the
+#'
+#' @source The WebTide software may be downloaded for free at the
 #' Department of Fisheries and Oceans (Canada) website, which in February 2016
 #' was
 #' \code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php},
 #' although this site seems not to be particularly static.
-#' Note that WebTide is not an open-source application, as it consists mainly
-#' of compiled Java code, which precludes examination of the source. The
-#' present function relies on a certain structure of the WebTide data files,
-#' and since the WebTide source is closed, this was done partly by guessing.
-#' This means that the present function is brittle to changes in WebTide; users
-#' should be on the lookout for odd results.
+#'
+#' @section Caution:
+#' WebTide is not an open-source application, so the present function was
+#' designed based on little more than guesses about the WebTide file structure.
+#' Users should be on the lookout for odd results.
 #' @examples
 #' \dontrun{
 #' library(oce)

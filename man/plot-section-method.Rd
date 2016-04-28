@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,section-method}
 \alias{plot,section-method}
-\title{Plot a CTD section}
+\title{Plot a Section}
 \usage{
 \S4method{plot}{section}(x, which = c(1, 2, 3, 99),
   eos = getOption("oceEOS", default = "gsw"), at = NULL, labels = TRUE,
@@ -137,9 +137,11 @@ None.
 }
 \description{
 Creates a summary plot for a CTD section, with one panel for each value of
-\code{which}.  The codes are as follows.
+\code{which}.
 }
 \details{
+The type of plot is governed by \code{which}, as follows.
+
 \itemize{  
     \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
     \item \code{which=2} or \code{"salinity"} for salinity contours
@@ -222,12 +224,14 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
-  \code{\link{as.section}}, \code{\link{read.section}},
-  \code{\link{section-class}},
+  \code{\link{as.section}},
+  \code{\link{handleFlags,section-method}},
+  \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},
   \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
   \code{\link{sectionSort}}, \code{\link{section}},

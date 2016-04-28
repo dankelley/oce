@@ -3,7 +3,7 @@
 \docType{methods}
 \name{subset,lobo-method}
 \alias{subset,lobo-method}
-\title{Subset an lobo object}
+\title{Subset a LOBO Object}
 \usage{
 \S4method{subset}{lobo}(x, subset, ...)
 }

@@ -3,7 +3,7 @@
 \docType{class}
 \name{tidem-class}
 \alias{tidem-class}
-\title{Class to store tidal-constituent models}
+\title{Class to Store Tidal Models}
 \description{
 Class to store tidal-constituent models.
 }
@@ -32,14 +32,15 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}
 
 Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{[[<-,tidem-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{predict.tidem}},
   \code{\link{summary,tidem-method}},
-  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
-  \code{\link{tidem}}
+  \code{\link{tidedata}}, \code{\link{tidemAstron}},
+  \code{\link{tidemVuf}}, \code{\link{tidem}}
 }
 

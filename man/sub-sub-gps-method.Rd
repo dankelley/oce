@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,gps-method}
 \alias{[[,gps-method}
-\title{Extract Something From a \code{gps} Object}
+\title{Extract Something From a GPS Object}
 \usage{
 \S4method{[[}{gps}(x, i, j, ...)
 }
@@ -74,7 +74,8 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
+Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+  \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
   \code{\link{[[,bremen-method}},
@@ -83,14 +84,17 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,ctd-method}},
   \code{\link{[[,echosounder-method}},
   \code{\link{[[,g1sst-method}},
+  \code{\link{[[,ladp-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,met-method}}, \code{\link{[[,odf-method}},
+  \code{\link{[[,rsk-method}},
   \code{\link{[[,sealevel-method}},
   \code{\link{[[,section-method}},
   \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
-  \code{\link{[[,windrose-method}}
+  \code{\link{[[,windrose-method}},
+  \code{\link{[[<-,adv-method}}
 
 Other things related to \code{gps} data: \code{\link{[[<-,gps-method}},
   \code{\link{as.gps}}, \code{\link{gps-class}},

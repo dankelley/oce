@@ -3,7 +3,7 @@
 \docType{class}
 \name{topo-class}
 \alias{topo-class}
-\title{Class to store topographic data}
+\title{Class to Store Topographic Data}
 \description{
 Topographic data may be read with \code{\link{read.topo}} or assembled with
 \code{\link{as.topo}}.  Plotting are handled with \code{\link{plot,topo-method}}
@@ -24,8 +24,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{odf-class}},
   \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{sealevel}}, \code{\link{section-class}},
-  \code{\link{windrose-class}}
+  \code{\link{section-class}}, \code{\link{windrose-class}}
 
 Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},

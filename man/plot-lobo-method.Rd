@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,lobo-method}
 \alias{plot,lobo-method}
-\title{Plot lobo data}
+\title{Plot LOBO data}
 \usage{
 \S4method{plot}{lobo}(x, which = c(1, 2, 3), adorn = NULL,
   mgp = getOption("oceMgp"), mar = c(mgp[2] + 1, mgp[1] + 1, 1, mgp[1] +
@@ -34,8 +34,11 @@ default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
 
-\item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
-amount of debugging information, or to 2 to get more.}
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 
 \item{\dots}{optional arguments passed to plotting functions.}
 }
@@ -66,7 +69,8 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},

@@ -48,7 +48,9 @@ Water-substance}, American Chemical Society Monograph Series.  Reinhold
 Publishing.
 }
 \seealso{
-Other functions that calculate seawater properties: \code{\link{swAbsoluteSalinity}},
+Other functions that calculate seawater properties: \code{\link{T68fromT90}},
+  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
+  \code{\link{swAbsoluteSalinity}},
   \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
   \code{\link{swBeta}}, \code{\link{swCSTp}},
   \code{\link{swConservativeTemperature}},

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,cm-method}
 \alias{summary,cm-method}
-\title{Summarize a \code{cm} Object}
+\title{Summarize a CM Object}
 \usage{
 \S4method{summary}{cm}(object, ...)
 }

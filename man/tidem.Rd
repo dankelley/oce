@@ -2,7 +2,7 @@
 % Please edit documentation in R/tidem.R
 \name{tidem}
 \alias{tidem}
-\title{Fit a tidal model to a timeseries}
+\title{Fit a Tidem (Tidal Model) to a Timeseries}
 \usage{
 tidem(t, x, constituents, latitude = NULL, rc = 1, regress = lm,
   debug = getOption("oceDebug"))
@@ -166,7 +166,7 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{predict.tidem}},
   \code{\link{summary,tidem-method}},
-  \code{\link{tidem-class}}, \code{\link{tidemAstron}},
-  \code{\link{tidemVuf}}
+  \code{\link{tidedata}}, \code{\link{tidem-class}},
+  \code{\link{tidemAstron}}, \code{\link{tidemVuf}}
 }
 

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,sealevel-method}
 \alias{summary,sealevel-method}
-\title{Summarize a sealevel object}
+\title{Summarize a Sealevel Object}
 \usage{
 \S4method{summary}{sealevel}(object, ...)
 }
@@ -18,9 +18,6 @@ slot.
 }
 \description{
 Summarizes some of the data in a sealevel object.
-}
-\details{
-Pertinent summary information is presented.
 }
 \examples{
 library(oce)
@@ -38,6 +35,8 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{plot,sealevel-method}},
   \code{\link{read.sealevel}},
   \code{\link{sealevel-class}},
+  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{sealevel}},
   \code{\link{subset,sealevel-method}}
 }
 

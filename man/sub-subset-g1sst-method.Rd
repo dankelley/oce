@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,g1sst-method}
 \alias{[[<-,g1sst-method}
-\title{Replace Parts of a \code{g1sst} Object}
+\title{Replace Parts of a G1SST Object}
 \usage{
 \S4method{[[}{g1sst}(x, i, j) <- value
 }
@@ -52,7 +52,8 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
+Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+  \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
   \code{\link{[[<-,cm-method}},
@@ -62,6 +63,7 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,gps-method}},
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
+  \code{\link{[[<-,met-method}},
   \code{\link{[[<-,oce-method}},
   \code{\link{[[<-,odf-method}},
   \code{\link{[[<-,rsk-method}},

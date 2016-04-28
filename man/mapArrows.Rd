@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapArrows}
 \alias{mapArrows}
-\title{Plot arrows on a existing map.}
+\title{Add Arrows to a Map}
 \usage{
 mapArrows(longitude0, latitude0, longitude1 = longitude0,
   latitude1 = latitude0, length = 0.25, angle = 30, code = 2,
@@ -56,7 +56,8 @@ Dan Kelley
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
 
-Other functions that handle map projections: \code{\link{map2lonlat}},
+Other functions related to maps: \code{\link{lonlat2map}},
+  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
   \code{\link{mapAxis}}, \code{\link{mapContour}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
@@ -65,6 +66,7 @@ Other functions that handle map projections: \code{\link{map2lonlat}},
   \code{\link{mapMeridians}}, \code{\link{mapPlot}},
   \code{\link{mapPoints}}, \code{\link{mapPolygon}},
   \code{\link{mapScalebar}}, \code{\link{mapText}},
-  \code{\link{mapTissot}}, \code{\link{mapZones}}
+  \code{\link{mapTissot}}, \code{\link{mapZones}},
+  \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
 

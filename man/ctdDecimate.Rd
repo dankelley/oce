@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdDecimate}
 \alias{ctdDecimate}
-\title{Decimate a CTD profile.}
+\title{Decimate a CTD profile}
 \usage{
 ctdDecimate(x, p = 1, method = "boxcar", e = 1.5,
   debug = getOption("oceDebug"))
@@ -66,6 +66,15 @@ xd <- ctdDecimate(x)
 xd[["sigmaTheta"]] <- swSigmaTheta(xd[["salinity"]],xd[["temperature"]],xd[["pressure"]])
 }
 }
+\section{A note about flags}{
+
+Data-quality flags contained within the original object are ignored by this
+function, and the returned value contains no such flags.  This is because such
+flags represent an assessment of the original data, not of quantities derived
+from those data.  This function produces a warning to this effect. The
+recommended practice is to use \code{\link{handleFlags}} or some other means to
+deal with flags before calling the present function.
+}
 \examples{
 library(oce)
 data(ctd)
@@ -94,14 +103,20 @@ CTD objects, and also outlines the other functions dealing with them.
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
-  \code{\link{gps-class}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
+  \code{\link{ctdAddColumn}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{ctd}}, \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
-  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
+  \code{\link{plotScan}}, \code{\link{plotTS}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+  \code{\link{summary,ctd-method}},
+  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
 

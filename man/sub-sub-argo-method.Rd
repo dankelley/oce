@@ -3,12 +3,12 @@
 \docType{methods}
 \name{[[,argo-method}
 \alias{[[,argo-method}
-\title{Extract Something From a \code{argo} Object}
+\title{Extract Something From an Argo Object}
 \usage{
 \S4method{[[}{argo}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A argo object, i.e. one inheriting from \code{\link{argo-class}}.}
+\item{x}{An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -79,7 +79,8 @@ dim(argo[['temperature']])
 
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
+Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+  \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,bremen-method}},
   \code{\link{[[,cm-method}},
@@ -88,18 +89,22 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,echosounder-method}},
   \code{\link{[[,g1sst-method}},
   \code{\link{[[,gps-method}},
+  \code{\link{[[,ladp-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,met-method}}, \code{\link{[[,odf-method}},
+  \code{\link{[[,rsk-method}},
   \code{\link{[[,sealevel-method}},
   \code{\link{[[,section-method}},
   \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
-  \code{\link{[[,windrose-method}}
+  \code{\link{[[,windrose-method}},
+  \code{\link{[[<-,adv-method}}
 
 Other things related to \code{argo} data: \code{\link{[[<-,argo-method}},
   \code{\link{argo-class}}, \code{\link{argoGrid}},
   \code{\link{argo}}, \code{\link{as.argo}},
+  \code{\link{handleFlags,argo-method}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}

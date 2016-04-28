@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapImage}
 \alias{mapImage}
-\title{Plot an image on a existing map}
+\title{Add an Image to a Map}
 \usage{
 mapImage(longitude, latitude, z, zlim, zclip = FALSE, breaks, col, colormap,
   border = NA, lwd = par("lwd"), lty = par("lty"), missingColor = NA,
@@ -159,7 +159,8 @@ Dan Kelley
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
 
-Other functions that handle map projections: \code{\link{map2lonlat}},
+Other functions related to maps: \code{\link{lonlat2map}},
+  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
   \code{\link{mapArrows}}, \code{\link{mapAxis}},
   \code{\link{mapContour}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
@@ -168,6 +169,7 @@ Other functions that handle map projections: \code{\link{map2lonlat}},
   \code{\link{mapMeridians}}, \code{\link{mapPlot}},
   \code{\link{mapPoints}}, \code{\link{mapPolygon}},
   \code{\link{mapScalebar}}, \code{\link{mapText}},
-  \code{\link{mapTissot}}, \code{\link{mapZones}}
+  \code{\link{mapTissot}}, \code{\link{mapZones}},
+  \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
 

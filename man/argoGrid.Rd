@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{argoGrid}
 \alias{argoGrid}
-\title{Grid a Argo drifter path.}
+\title{Grid a Argo Drifter Path}
 \usage{
 argoGrid(argo, p, debug = getOption("oceDebug"), ...)
 }
@@ -31,11 +31,18 @@ with constant values along the first index.
 }
 \description{
 Grid a Argo drifter, by interpolating to fixed pressure levels.
-}
-\details{
 The gridding is done with \code{\link{approx}}.  If there is
 sufficient user demand, other methods may be added, by analogy to
 \code{\link{sectionGrid}}.
+}
+\section{A note about flags}{
+
+Data-quality flags contained within the original object are ignored by this
+function, and the returned value contains no such flags.  This is because such
+flags represent an assessment of the original data, not of quantities derived
+from those data.  This function produces a warning to this effect. The
+recommended practice is to use \code{\link{handleFlags}} or some other means to
+deal with flags before calling the present function.
 }
 \examples{
 library(oce)
@@ -50,12 +57,13 @@ imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
 
 }
 \author{
-Dan Kelley
+Dan Kelley and Clark Richards
 }
 \seealso{
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argo}}, \code{\link{as.argo}},
+  \code{\link{handleFlags,argo-method}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}

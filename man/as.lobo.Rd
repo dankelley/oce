@@ -2,7 +2,7 @@
 % Please edit documentation in R/lobo.R
 \name{as.lobo}
 \alias{as.lobo}
-\title{Coerce data into lobo dataset}
+\title{Coerce Data into a Lobo Object}
 \usage{
 as.lobo(time, u, v, salinity, temperature, pressure, nitrate, fluorescence,
   filename = "")
@@ -31,9 +31,6 @@ An object of \code{\link{lobo-class}}.
 }
 \description{
 Coerce a dataset into a lobo dataset.
-}
-\details{
-This function assembles vectors into a \code{lobo} object.
 }
 \author{
 Dan Kelley

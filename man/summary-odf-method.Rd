@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,odf-method}
 \alias{summary,odf-method}
-\title{Summarize an odf object}
+\title{Summarize an ODF Object}
 \usage{
 \S4method{summary}{odf}(object, ...)
 }
@@ -18,9 +18,6 @@ A matrix containing statistics of the elements of the \code{data}
 slot.
 }
 \description{
-Summarizes some of the data in a \code{odf} object.
-}
-\details{
 Pertinent summary information is presented, including the station name,
 sampling location, data ranges, etc.
 }

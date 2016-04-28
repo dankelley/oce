@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,gps-method}
 \alias{summary,gps-method}
-\title{Summarize a gps object}
+\title{Summarize a GPS Object}
 \usage{
 \S4method{summary}{gps}(object, ...)
 }

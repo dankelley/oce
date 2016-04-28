@@ -1,7 +1,8 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to store hydrographic section data
+#' @title Class to Store Hydrographic Section Data
 #' 
+#' @description
 #' Class to store hydrographic section data, with standard slots \code{metadata},
 #' \code{data} and \code{processingLog}.
 #'
@@ -63,13 +64,18 @@
 setClass("section", contains="oce")
 
 
-#' Hydrographic section
+#' @title Hydrographic section
 #' 
+#' @description
 #' This is line A03 (ExpoCode 90CT40_1, with nominal sampling date 1993-09-11).
 #' The chief scientist was Tereschenkov of SOI, working aboard the Russian ship
 #' Multanovsky, undertaking a westward transect from the Mediterranean outflow
 #' region across to North America, with a change of heading in the last few dozen
 #' stations to run across the nominal Gulf Stream axis.
+#' The data flags follow the WHP CTD convention, i.e. 1 for uncalibrated,
+#' 2 for an acceptable measurement, 3 for a questionable measurement, 4
+#' for a bad measurement, etc; see \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+#' for further details.
 #' 
 #' @examples
 #' \dontrun{
@@ -104,9 +110,58 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
+## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
+## DEVELOPERS: marked '# DEVELOPER 1:', etc.
+#' @title Handle flags in Section Objects
+#' @details
+#' If \code{flags} and \code{actions} are not provided, the
+#' default is to use WHP (World Hydrographic Program) flags [1], in which the
+#' value 2 indicates good data, and other values indicate either unchecked,
+#' suspicious, or bad data. Any data not flagged as good are set
+#' to \code{NA} in the returned value. Since WHP flag codes run
+#' from 1 to 9, this default is equivalent to
+#' setting \code{flags=list(all=c(1, 3:9))} along with
+#' \code{action=list("NA")}.
+#' @param object An object of \code{\link{section-class}}.
+#' @template handleFlagsTemplate
+#' @references
+#' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+#' @examples
+#' library(oce)
+#' data(section)
+#' section2 <- handleFlags(section)
+#' par(mfrow=c(2,1))
+#' plotTS(section)
+#' plotTS(section2)
+#'
+#' @family things related to \code{section} data
+setMethod("handleFlags",
+          c(object="section", flags="ANY", actions="ANY"),
+          function(object, flags=list(), actions=list()) {
+              ## DEVELOPER 1: alter the next comment to explain your setup
+              ## Default to the World Hydrographic Program system, with
+              ## flags from 1 to 9, with flag=2 for acceptable data.
+              if (missing(flags))
+                  flags <- list(c(1, 3:9)) # DEVELOPER 2: alter this line to suit a newdata class
+              if (missing(actions)) {
+                  actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
+                  names(actions) <- names(flags)
+              }
+              if (any(names(actions)!=names(flags))) {
+                  stop("names of flags and actions must match")
+              }
+              res <- object
+              for (i in seq_along(res@data$station)) {
+                  res@data$station[[i]] <- handleFlags(res@data$station[[i]], flags, actions)
+              }
+              res
+          })
 
-#' Summarize an oceanographic section
+
+#' @title Summarize a Section Object
 #' 
+#' @description
 #' Pertinent summary information is presented, including station locations,
 #' distance along track, etc.
 #' 
@@ -115,7 +170,6 @@ setMethod(f="initialize",
 #' \code{\link{as.section}}.
 #' 
 #' @param ... Further arguments passed to or from other methods.
-#' 
 #' 
 #' @return \code{NULL}
 #' 
@@ -189,6 +243,16 @@ setMethod(f="summary",
 #' If \code{i} is \code{"depth"}, then a vector containing the depths
 #' of the stations is returned.
 #'
+#' If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
+#' the potential temperatures of all the stations are returned in one 
+#' vector.
+#'
+#' If \code{i} is a string ending with \code{"Flag"}, then the characters
+#' prior to that ending are taken to be the name of a variable contained
+#' within the stations in the section. If this flag is available in 
+#' the first station of the section, then the flag values are looked
+#' up for every station.
+#'
 #' If none of the conditions listed above holds, the general
 #' method is used (see \sQuote{Details of the general method}).
 #'
@@ -202,6 +266,22 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              ## Data-quality flags are a special case
+              res <- NULL
+              if (1 == length(grep(".*Flag$", i))) {
+                  baseName <- gsub("Flag$", "", i)
+                  if (baseName %in% names(x@data$station[[1]]@metadata$flags)) {
+                      res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
+                      return(res)
+                  } else {
+                      stop("the stations within this section do not contain a '", baseName, "' flag")
+                  }
+              }
+              ## some derived things (not all ... be sure to document when adding things!)
+              if (i == "theta" || i == "potential temperature") {
+                  res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
+                  return(res)
+              }
               if (i %in% names(x@metadata)) {
                   if (i %in% c("longitude", "latitude")) {
                       if (!missing(j) && "byStation" == j) {
@@ -263,7 +343,7 @@ setMethod(f="[[",
               res
           })
 
-#' @title Replace Parts of a \code{section} Object
+#' @title Replace Parts of a Section Object
 #' @param x A \code{section} object, i.e. inheriting from \code{\link{section-class}}
 #' @family things related to \code{section} data
 #' @template sub_subsetTemplate
@@ -302,8 +382,9 @@ setMethod(f="show",
               }
           })
 
-#' Subset a section object
+#' @title Subset a Section Object
 #' 
+#' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.  The
 #' condition set by \code{subset} may be in terms of \code{stationId} or any
 #' combination of \code{longitude}, \code{latitude} and \code{time}.  However,
@@ -316,7 +397,6 @@ setMethod(f="show",
 #' See \sQuote{Details}.
 #' 
 #' @param ... May include \code{debug}, to set a debugging level.
-#' 
 #' 
 #' @return A new \code{section} object.
 #' 
@@ -430,8 +510,9 @@ setMethod(f="subset",
           })
 
  
-#' Sort a section
+#' @title Sort a Section
 #' 
+#' @description
 #' Sections created with \code{\link{as.section}} have "stations" that are in the
 #' order of the CTD objects (or filenames for such objects) provided.  Sometimes,
 #' this is not the desired order, e.g. if file names discovered with
@@ -492,8 +573,9 @@ sectionSort <- function(section, by)
     res
 }
 
-#' Make a section (DEFUNCT)
+#' @title Make a Section (DEFUNCT)
 #'
+#' @description
 #' This is a defunct function; use \code{\link{as.section}} instead, and
 #' see \link{oce-defunct} for more on the oce procedure for retiring functions.
 #' @param item Ignored, since this function is defunct
@@ -617,10 +699,12 @@ makeSection <- function(item, ...)
 }
 
 
-#' Add CTD profile to section
+#' @title Add a CTD Station to a Section
 #' 
+#' @description
 #' Add a CTD profile to an existing section.
-#' 
+#'
+#' @section Historical note:
 #' Until March 2015, this operation was carried out with the \code{+} operator,
 #' but at that time, the syntax was flagged by the development version of R, so it
 #' was changed to the present form.
@@ -670,10 +754,14 @@ sectionAddStation <- function(section, station)
 sectionAddCtd <- sectionAddStation
 
 
-#' Plot a CTD section
+#' @title Plot a Section
 #' 
+#' @description
 #' Creates a summary plot for a CTD section, with one panel for each value of
-#' \code{which}.  The codes are as follows.
+#' \code{which}.
+#'
+#' @details
+#' The type of plot is governed by \code{which}, as follows.
 #' 
 #' \itemize{  
 #'     \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
@@ -1706,11 +1794,11 @@ setMethod(f="plot",
           })
 
 
-#' Read a section containing multiple CTD profiles
+#' @title Read a Section File
 #' 
+#' @description
 #' Read a file that contains a series of \code{ctd} profiles that make up an
 #' oceanographic section.
-#' 
 #' Only \emph{exchange BOT} comma-separated value format is permitted at this time,
 #' but other formats may be added later.  It should also be noted that the parsing
 #' scheme was developed after inspection of the A03 data set (see Examples). This
@@ -1926,6 +2014,7 @@ read.section <- function(file, directory, sectionId="", flags,
         if (1 == length(wf <- which(var.names=="NITRAT_FLAG_W")))
             flags$nitrate <- as.numeric(data[, wf - col.start + 1])
     } else nitrate <- NULL
+    haveNO2plusNO3 <- FALSE
     if (1 == length(w <- which(var.names=="NO2+NO3"))) {
         haveNO2plusNO3 <- TRUE
         no2plusno3 <- as.numeric(data[, w - col.start + 1])
@@ -2053,8 +2142,9 @@ read.section <- function(file, directory, sectionId="", flags,
     res
 }
 
-#' Grid a section
+#' @title Grid a Section
 #' 
+#' @description
 #' Grid a section, by interpolating to fixed pressure levels.  The
 #' \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in the
 #' documentation for \code{\link{ctdDecimate}}, which is used to do this
@@ -2062,6 +2152,8 @@ read.section <- function(file, directory, sectionId="", flags,
 #' \code{"boxcar"} is best for ctd data, and the \code{"lm"} method is probably
 #' too slow to recommend for exploratory work, in which it is common to do trials
 #' with a variety of \code{"p"} values.
+#'
+#' @template flagDeletionTemplate
 #' 
 #' @param section A \code{section} object containing the section to be gridded.
 #' 
@@ -2137,9 +2229,11 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
     }
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
+    warning("Data flags are omitted from the gridded section object. Use handleFlags() first to remove bad data.")
     for (i in 1:n) {
         ##message("i: ", i, ", p before decimation: ", paste(section@data$station[[i]]@data$pressure, " "))
-	res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...)
+	suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...))
+        res@data$station[[i]]@metadata$flags <- NULL
         ##message("i: ", i, ", p after decimation: ", paste(res@data$station[[i]]@data$pressure, " "))
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
@@ -2148,10 +2242,12 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 }
 
 
-#' Smooth a section
+#' @title Smooth a Section
 #' 
+#' @description
 #' Smooth a section in the lateral (alpha version that may change).
 #' 
+#' @details
 #' This function should be used with caution, as should any operation that changes
 #' data.  Although smoothing may be desirable to produce aesthetically-pleasing
 #' plots, it can also introduce artifacts that can lead to erroneous conclusions.
@@ -2182,9 +2278,7 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' @param ... Optional extra arguments, passed to either
 #' \code{\link{smooth.spline}} or \code{\link{interpBarnes}}.
 #' 
-#' 
 #' @return An object of \code{\link{section-class}} that ordered in some way.
-#' 
 #' 
 #' @examples
 #' library(oce)
@@ -2320,8 +2414,9 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
 }
 
 
-#' Create a section
+#' @title Create a Section
 #' 
+#' @description
 #' Create a section based on columnar data, or a set of \code{\link{oce-class}}
 #' objects that can be coerced to CTD form with \code{\link{as.ctd}}.
 #' 
@@ -2363,9 +2458,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
 #' 
 #' @param sectionId Section identifier.
 #' 
-#' 
 #' @return An object of \code{\link{section-class}}.
-#' 
 #' 
 #' @examples
 #' library(oce)

@@ -127,6 +127,7 @@ setMethod(f="summary",
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+W", "\u00B0W", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+N", "\u00B0N", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+S", "\u00B0S", res)
+                                             if (nchar(res)) res <- gsub("percent", "%", res)
                                              ##> message("res: '", res, "'")
                                              if (nchar(res)) res <- gsub("degree", "\u00B0", res)
                                              ##> message("res: '", res, "'")
@@ -163,6 +164,7 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 
 #' Subset an oce Object
 #'
+#' @description
 #' This is a basic class for general oce objects.  It has specialised
 #' versions for most sub-classes, e.g. \code{\link{subset,ctd-method}} 
 #' for \code{ctd} objects.
@@ -197,6 +199,7 @@ setMethod(f="subset",
 
 #' Extract Something From an oce Object
 #'
+#' @description
 #' The named item is sought first in
 #' \code{metadata}, where an exact match to the name is required. If
 #' it is not present in the \code{metadata} slot, then a partial-name
@@ -248,25 +251,26 @@ setMethod(f="[[",
               }
           })
 
-#' @title Replace Parts of an \code{oce} Object
+#' @title Replace Parts of an Oce Object
 #' @param x An \code{oce} object, i.e. inheriting from \code{\link{oce-class}}.
-#' @family functions that replace parts of an \code{oce} object
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),
           function(x, i, j, ..., value) { # FIXME: use j for e.g. times
+              ## message("in base [[<-")
+              ## message("value: ", paste(value, collapse=" "))
               ## metadata must match exactly but data can be partially matched
               if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
               } else {
                   if (length(grep("Unit$", i))) {
                       if (!("units" %in% names(x@metadata)))
-                          x@metadata$flags <- list()
+                          x@metadata$units <- list()
                       x@metadata$units[[gsub("Unit$", "", i)]] <- value
                   } else if (length(grep("Flag$", i))) {
                       if (!("flags" %in% names(x@metadata)))
-                          x@metadata$units <- list()
-                      x@metadata$units[[gsub("Flag$", "", i)]] <- value
+                          x@metadata$flags <- list()
+                      x@metadata$flags[[gsub("Flag$", "", i)]] <- value
                   } else {
                       index <- pmatch(i, names(x@data))
                       if (!is.na(index[1])) {
@@ -434,5 +438,11 @@ handleFlagsInternal <- function(object, flags, actions) {
             }
         }
     }
+    object@processingLog <- processingLogAppend(object@processingLog,
+                                                paste("handleFlags(flags=",
+                                                      substitute(flags, parent.frame()),
+                                                      ", actions=",
+                                                      substitute(actions, parent.frame()),
+                                                      ")", collapse=" ", sep=""))
     object
 }

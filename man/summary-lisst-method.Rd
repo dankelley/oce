@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,lisst-method}
 \alias{summary,lisst-method}
-\title{Summarize a \code{lisst} Object}
+\title{Summarize a LISST Object}
 \usage{
 \S4method{summary}{lisst}(object, ...)
 }

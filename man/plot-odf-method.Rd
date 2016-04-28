@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,odf-method}
 \alias{plot,odf-method}
-\title{Plot an ODF object}
+\title{Plot an ODF Object}
 \usage{
 \S4method{plot}{odf}(x)
 }
@@ -11,11 +11,11 @@
 \item{x}{A \code{odf} object, e.g. one inheriting from \code{\link{odf-class}}.}
 }
 \description{
-Plot data contained within an ODF object.
-}
-\details{
-Uses \code{\link{oce.plot.ts}} to create panels of time-series plots for all
-the columns contained in the \code{odf} object.
+Plot data contained within an ODF object,
+using \code{\link{oce.plot.ts}} to create panels of time-series plots for all
+the columns contained in the \code{odf} object. This is crude, but \code{odf}
+objects are usually cast to other types, and those types have more useful
+plots.
 }
 \author{
 Dan Kelley
@@ -41,7 +41,8 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{[[,odf-method}},

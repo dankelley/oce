@@ -2,7 +2,7 @@
 % Please edit documentation in R/topo.R
 \name{read.topo}
 \alias{read.topo}
-\title{Read an topography file}
+\title{Read a Topo File}
 \usage{
 read.topo(file, ...)
 }

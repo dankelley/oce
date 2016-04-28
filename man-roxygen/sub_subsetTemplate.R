@@ -36,5 +36,5 @@
 #' @param ... Optional additional information (ignored).
 #' @param value The value to be placed into \code{x}, somewhere.
 #'
-#' @family functions that replace  parts of \code{oce} objects
+#' @family functions that replace parts of \code{oce} objects
 

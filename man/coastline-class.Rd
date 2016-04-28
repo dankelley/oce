@@ -3,7 +3,7 @@
 \docType{class}
 \name{coastline-class}
 \alias{coastline-class}
-\title{Class to store coastline data}
+\title{Class to Store Coastline Data}
 \description{
 Class to store coastline data, which may be read with
 \code{\link{read.coastline}} or constructed with \code{\link{as.coastline}},
@@ -23,8 +23,8 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{odf-class}},
   \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{sealevel}}, \code{\link{section-class}},
-  \code{\link{topo-class}}, \code{\link{windrose-class}}
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
 
 Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},

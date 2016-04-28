@@ -3,7 +3,7 @@
 \docType{class}
 \name{windrose-class}
 \alias{windrose-class}
-\title{Class to store windrose data}
+\title{Class to Store Windrose Data}
 \description{
 Windrose objects store statistical information about winds, mainly for
 plotting as "wind rose" plots (see \code{\link{plot,windrose-method}}.
@@ -23,8 +23,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{odf-class}},
   \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{sealevel}}, \code{\link{section-class}},
-  \code{\link{topo-class}}
+  \code{\link{section-class}}, \code{\link{topo-class}}
 
 Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
   \code{\link{[[<-,windrose-method}},

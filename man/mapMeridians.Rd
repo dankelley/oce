@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapMeridians}
 \alias{mapMeridians}
-\title{Plot meridians on an existing map [DEPRECATED]}
+\title{Add Meridians on a Map [DEPRECATED]}
 \usage{
 mapMeridians(latitude, lty = "solid", lwd = 0.5 * par("lwd"),
   col = "darkgray", ...)
@@ -51,7 +51,8 @@ Dan Kelley
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
 
-Other functions that handle map projections: \code{\link{map2lonlat}},
+Other functions related to maps: \code{\link{lonlat2map}},
+  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
   \code{\link{mapArrows}}, \code{\link{mapAxis}},
   \code{\link{mapContour}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
@@ -61,6 +62,7 @@ Other functions that handle map projections: \code{\link{map2lonlat}},
   \code{\link{mapPlot}}, \code{\link{mapPoints}},
   \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
   \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{mapZones}}
+  \code{\link{mapZones}}, \code{\link{shiftLongitude}},
+  \code{\link{utm2lonlat}}
 }
 

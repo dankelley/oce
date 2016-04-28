@@ -3,7 +3,7 @@
 \docType{data}
 \name{ctd}
 \alias{ctd}
-\title{A CTD profile in Halifax Harbour.}
+\title{A CTD profile in Halifax Harbour}
 \usage{
 data(ctd)
 }
@@ -36,22 +36,30 @@ The full profile (not trimmed to the downcast) is available as
 
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{echosounder}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{met}},
+  \code{\link{coastlineWorld}}, \code{\link{colors}},
+  \code{\link{ctdRaw}}, \code{\link{echosounder}},
+  \code{\link{landsat}}, \code{\link{lisst}},
+  \code{\link{lobo}}, \code{\link{met}}, \code{\link{rsk}},
+  \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}
+  \code{\link{topoWorld}}, \code{\link{wind}}
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
   \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
-  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
+  \code{\link{plotScan}}, \code{\link{plotTS}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+  \code{\link{summary,ctd-method}},
+  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
 

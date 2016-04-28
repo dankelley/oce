@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,argo-method}
 \alias{summary,argo-method}
-\title{Summarize an Argo object}
+\title{Summarize an Argo Object}
 \usage{
 \S4method{summary}{argo}(object, ...)
 }
@@ -35,7 +35,9 @@ Dan Kelley
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argo}},
-  \code{\link{as.argo}}, \code{\link{plot,argo-method}},
-  \code{\link{read.argo}}, \code{\link{subset,argo-method}}
+  \code{\link{as.argo}},
+  \code{\link{handleFlags,argo-method}},
+  \code{\link{plot,argo-method}}, \code{\link{read.argo}},
+  \code{\link{subset,argo-method}}
 }
 

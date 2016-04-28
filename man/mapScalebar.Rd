@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapScalebar}
 \alias{mapScalebar}
-\title{Draw a scalebar on an existing map.}
+\title{Add a Scalebar to a Map}
 \usage{
 mapScalebar(x, y = NULL, length, lwd = 1.5 * par("lwd"), cex = par("cex"),
   col = "black")
@@ -17,7 +17,7 @@ reasonable choice is made, based on the underlying map.}
 
 \item{lwd}{line width of the scalebar.}
 
-\item{cex}{character expansion factor for the scalebar title.}
+\item{cex}{character expansion factor for the scalebar text.}
 
 \item{col}{colour of the scalebar.}
 }
@@ -51,7 +51,8 @@ Dan Kelley
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
 
-Other functions that handle map projections: \code{\link{map2lonlat}},
+Other functions related to maps: \code{\link{lonlat2map}},
+  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
   \code{\link{mapArrows}}, \code{\link{mapAxis}},
   \code{\link{mapContour}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
@@ -61,6 +62,7 @@ Other functions that handle map projections: \code{\link{map2lonlat}},
   \code{\link{mapMeridians}}, \code{\link{mapPlot}},
   \code{\link{mapPoints}}, \code{\link{mapPolygon}},
   \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{mapZones}}
+  \code{\link{mapZones}}, \code{\link{shiftLongitude}},
+  \code{\link{utm2lonlat}}
 }
 

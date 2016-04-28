@@ -11,7 +11,7 @@ test_that("as.ctd() with specified arguments", {
           expect_equal(ctd[["temperature"]], ctd_ctd[["temperature"]])
           expect_equal(ctd[["pressure"]], ctd_ctd[["pressure"]])
           expect_equal(ctd_ctd[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
-          expect_equal(ctd_ctd[["conductivityUnit"]], list(unit=expression(ratio), scale=""))
+          expect_equal(ctd_ctd[["conductivityUnit"]], list(unit=expression(), scale=""))
           expect_equal(ctd_ctd[["pressureType"]], "sea")
 })
 
@@ -101,6 +101,12 @@ test_that("gsw calcuations on ctd data", {
           expect_equal(Sstar, nctd[["Sstar"]])
 })
 
+test_that("accessors work as functions and [[", {
+          library(oce)
+          data(ctd)
+          expect_equal(swSigmaTheta(ctd), ctd[["sigmaTheta"]])
+})
+
 test_that("ability to change conductivityUnit", {
           ## These came from issue 731
           ctd2 <- ctd
@@ -127,7 +133,7 @@ test_that("Dalhousie-produced cnv file", {
           expect_equal(d1[["temperatureUnit"]]$unit, expression(degree*C))
           ## NB. the file holds IPTS-68 but we ## store ITS-90 internally
           expect_equal(d1[["temperatureUnit"]]$scale, "ITS-90")
-          expect_equal(d1[["conductivityUnit"]]$unit, expression(ratio))
+          expect_null(d1[["conductivityUnit"]]) # this file does not have conductivity
           expect_equal(d1[["pressureUnit"]]$unit, expression(dbar))
           expect_equal(d1[["pressureType"]], "sea")
           expect_equal(d1[["ship"]], "Divcom3")
@@ -156,7 +162,7 @@ test_that("Dalhousie-produced cnv file", {
 test_that("Beaufort sea data I (reading ctd/woce/exchange)", {
           d2 <- read.oce(system.file("extdata", "d200321-001.ctd", package="oce"))
           expect_equal(d2[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
-          expect_equal(d2[["conductivityUnit"]], list(unit=expression(ratio), scale=""))
+          expect_equal(d2[["conductivityUnit"]], list(unit=expression(), scale=""))
           expect_equal(d2[["pressureUnit"]], list(unit=expression(dbar), scale=""))
           expect_equal(d2[["pressureType"]], "sea")
           expect_equal(d2[["ship"]], "CCGS Louis S St.Laurent")
@@ -185,7 +191,7 @@ test_that("Beaufort sea data II", {
           d3 <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
           expect_equal(d3[["temperatureUnit"]]$unit, expression(degree*C))
           expect_equal(d3[["temperatureUnit"]]$scale, "ITS-90")
-          expect_equal(d3[["conductivityUnit"]]$unit, "mS/cm")
+          expect_equal(d3[["conductivityUnit"]]$unit, expression(mS/cm))
           expect_equal(d3[["pressureType"]], "sea")
           expect_equal(d3[["ship"]], "CCGS Louis St-Laurent")
           expect_equal(d3[["station"]], "BL1")
@@ -204,7 +210,7 @@ test_that("ODF file", {
           d4 <- read.ctd.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
           expect_equal(d4[["temperatureUnit"]]$unit, expression(degree*C))
           expect_equal(d4[["temperatureUnit"]]$scale, "ITS-90")
-          expect_equal(d4[["conductivityUnit"]]$unit, expression(ratio)) # was S/m in the .cnv but ratio in ODF
+          expect_equal(d4[["conductivityUnit"]]$unit, expression()) # was S/m in the .cnv but ratio in ODF
           expect_equal(d4[["pressureType"]], "sea")
           expect_equal(d4[["ship"]], "CCGS SIGMA T (Call Sign: unknown)")
           expect_equal(d4[["cruise"]], "Scotian Shelf")

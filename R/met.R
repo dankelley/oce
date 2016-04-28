@@ -1,7 +1,8 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to store meteorological data
+#' @title Class to Store Meteorological Data
 #' 
+#' @description
 #' Class to store meteorological data, with standard slots \code{metadata},
 #' \code{data} and \code{processingLog}.  For objects created with
 #' \code{\link{read.met}}, the \code{data} slot will contain all the columns
@@ -38,9 +39,30 @@
 #' @family things related to \code{met} data
 setClass("met", contains="oce")
 
+#' @title Extract Something From a Met Object
+#' @param x A met object, i.e. one inheriting from \code{\link{met-class}}.
+#' @template sub_subTemplate
+#' @family things related to \code{met} data
+setMethod(f="[[",
+          signature(x="met", i="ANY", j="ANY"),
+          definition=function(x, i, j, ...) {
+              callNextMethod()
+          })
 
-#' Sample meteorological object
+#' @title Replace Parts of a Met Object
+#' @param x An \code{met} object, i.e. inheriting from \code{\link{met-class}}
+#' @template sub_subsetTemplate
+#' @family things related to \code{met} data
+setMethod(f="[[<-",
+          signature(x="met", i="ANY", j="ANY"),
+          definition=function(x, i, j, value) {
+              callNextMethod(x=x, i=i, j=j, value=value)
+          })
+
+
+#' @title Sample Met Object
 #' 
+#' @description
 #' This is sample \code{met} object containing data for Halifax, Nova Scotia,
 #' during September of 2003 (the period during which Hurricane Juan struck the
 #' city).
@@ -74,10 +96,9 @@ setMethod(f="initialize",
           })
 
 
-#' Summarize a met object
+#' @title Summarize a Met Object
 #' 
-#' Summarizes some of the data in a \code{met} object.
-#' 
+#' @description
 #' Pertinent summary information is presented, including the sampling location,
 #' data ranges, etc.
 #' 
@@ -100,8 +121,9 @@ setMethod(f="summary",
           })
 
 
-#' Subset a met object
+#' @title Subset a Met Object
 #' 
+#' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
 #' 
 #' @param x An object inheriting from \code{\link{met-class}}.
@@ -135,10 +157,10 @@ setMethod(f="subset",
  
 
 
-#' Coerce data into met dataset
+#' @title Coerce Data into Met Object
 #' 
+#' @description
 #' Coerces a dataset into a met dataset.
-#' 
 #' This function is used by \code{\link{read.met}}, and may be used to
 #' construct objects that behave as though read by that function.
 #' 
@@ -170,10 +192,9 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 
 
 
-#' Read a meteorological data file
+#' @title Read a Met File
 #' 
-#' Read a meteorological data file
-#' 
+#' @description
 #' Reads a comma-separated value file in the format used by the Meteorological
 #' Service of Canada (MSC).  The agency does not publish a format for these
 #' files, so this function was based on a study of a few sample files, and it
@@ -324,16 +345,16 @@ read.met <- function(file, type=NULL, skip,
 }
 
 
-#' Plot meteorological data
+#' @title Plot Met Data
 #' 
-#' Plot meteorological data
-#' 
+#' @description
 #' Creates a multi-panel summary plot of data measured in a meteorological data
 #' set.  cast. The panels are controlled by the \code{which} argument.
 #' Normally, 4 panels are specified with the \code{which}, but it can also be
 #' useful to specify less than 4 panels, and then to draw other panels after
 #' this call.
 #' 
+#' @details
 #' If more than one panel is drawn, then on exit from \code{plot.met}, the
 #' value of \code{par} will be reset to the value it had before the function
 #' call.  However, if only one panel is drawn, the adjustments to \code{par}

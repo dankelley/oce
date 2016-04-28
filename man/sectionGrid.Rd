@@ -2,7 +2,7 @@
 % Please edit documentation in R/section.R
 \name{sectionGrid}
 \alias{sectionGrid}
-\title{Grid a section}
+\title{Grid a Section}
 \usage{
 sectionGrid(section, p, method = "approx", debug = getOption("oceDebug"),
   ...)
@@ -44,6 +44,15 @@ processing.  The default \code{"approx"} method is best for bottle data, the
 too slow to recommend for exploratory work, in which it is common to do trials
 with a variety of \code{"p"} values.
 }
+\section{A note about flags}{
+
+Data-quality flags contained within the original object are ignored by this
+function, and the returned value contains no such flags.  This is because such
+flags represent an assessment of the original data, not of quantities derived
+from those data.  This function produces a warning to this effect. The
+recommended practice is to use \code{\link{handleFlags}} or some other means to
+deal with flags before calling the present function.
+}
 \examples{
 # Gulf Stream
 library(oce)
@@ -60,6 +69,7 @@ Dan Kelley
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
+  \code{\link{handleFlags,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},

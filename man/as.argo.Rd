@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{as.argo}
 \alias{as.argo}
-\title{Coerce data into argo dataset}
+\title{Coerce Data Into an Argo Dataset}
 \usage{
 as.argo(time, longitude, latitude, salinity, temperature, pressure,
   units = NULL, id, filename = "", missingValue)
@@ -52,6 +52,7 @@ objects, and also outlines the other functions dealing with them.
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argo}},
+  \code{\link{handleFlags,argo-method}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}

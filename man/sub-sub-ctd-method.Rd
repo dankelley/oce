@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,ctd-method}
 \alias{[[,ctd-method}
-\title{Extract Parts of a \code{ctd} Object}
+\title{Extract Parts of a CTD Object}
 \usage{
 \S4method{[[}{ctd}(x, i, j, ...)
 }
@@ -34,34 +34,6 @@ Second, if no match is found, a general function is used
 (see \sQuote{Details of the general method}). If neither
 method can locates the requested item, \code{NULL} is returned.
 }
-\section{Details of the specialized \code{ctd} method}{
-
-The first step \code{[[,ctd-method} takes is to address requests
-for inferences about data stored in \code{\link{ctd-class}}
-objects. For example, these objects hold in-situ temperature,
-but users often need potential temperatures, and so this can
-be calculated and returned, even though the information may
-not be in the data object. Thus, \code{x[["temperature"]]}
-(or \code{x[["t"]]}) retrieves in-situ temperature stored within \code{x}, while
-\code{x[["theta"]]} (or \code{x[["potential temperature"]]})
-give potential temperature. Similarly, \code{x[["temperature68"]]}
-can be used to convert to the IPTS-1968 temperature scale. The
-"conservative temperature" of the Gibbs Seawater (GSW) formulation is
-available as \code{x[["conservative temperature"]]} (or 
-\code{x[["CT"]]}).  The GSW reference salinity is \code{x[["SR"]]},
-and preformed salinity is \code{x[["Sstar"]]}.
-
-Similarly, a ctd object normally contains pressure, but both
-vertical coordinate and depth can be obtained, with 
-\code{x[["z"]]} and \code{x[["depth"]]}, respectively.
-
-In addition, some specialized quantities are also provided, e.g. 
-density ratio \code{x[["Rrho"]]} (computed with \code{\link{swRrho}(x)}),
-spice \code{x[["spice"]]} (computed with \code{\link{swSpice}(x)}),
-and the square of buoyancy frequency \code{x[["N2"]]} (calculated
-with \code{\link{swN2}(x)}).
-}
-
 \section{Details of the general method}{
 
 
@@ -101,13 +73,98 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
+\section{Details of the specialized \code{ctd} method}{
+
+
+Some uses of \code{[[,ctd-method} involve direct retrieval of
+items within the \code{data} slot of the \code{ctd} object, 
+while other uses involve calculations based on items in that
+\code{data} slot. For an example, all \code{ctd} objects
+should hold an item named \code{temperature} in the \code{data}
+slot, so for example \code{x[["temperature"]]} will retrieve that
+item. By contrast, \code{x[["sigmaTheta"]]} is taken to be a
+request to compute \eqn{\sigma_\theta}{sigma[theta]}, and so
+it yields a call to \code{\link{swTheta}(x)} \emph{even if}
+the \code{data} slot of \code{x} might happen to contain an item
+named \code{theta}. This can be confusing at first, but it tends
+to lead to fewer surprises in everyday work, for otherwise the
+user would be forced to check the contents of any \code{ctd}
+object under analysis, to determine whether that item will be looked
+up or computed. Nothing is lost in this scheme, since the data
+within the object are always accessible with a direct call, e.g.
+\code{x@data$sigmaTheta}, or a with \code{\link{oceGetData}}.
+
+This preference for computed over stored quantities is accomplished
+by first checking for computed quantities, and then falling
+back to the general \code{\link{[[}} method if no match is found.
+The computed quantities are as follows.
+
+\itemize{
+
+\item{\code{CT} or \code{Conservative Temperature}: Conservative Temperature,
+computed with \code{\link[gsw]{gsw_CT_from_t}} in the \code{gsw} package.}
+
+\item{\code{depth} Depth in metres below the surface, computed with \code{\link{swDepth}(x)}.}
+
+\item{\code{N2} Square of Brunt-Vaisala frequency, computed  with \code{\link{swN2}(x)}.}
+
+\item{\code{potential temperature}, potential temperature in the UNESCO formulation,
+computed with \code{\link{swTheta}(x)}. This is a synonym for \code{theta}.}
+
+\item{\code{Rrho} density ratio, computed with \code{\link{swRrho}(x)}.}
+
+\item{\code{SA} or \code{Absolute Salinity}: Absolute Salinity,
+computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.}
+
+\item{\code{sigmaTheta} a form of potential density anomaly, computed with
+\code{\link{swSigmaTheta}(x)}.}
+
+\item{\code{sigma0} equal to \code{sigmaTheta}, i.e. potential density anomaly
+referenced to a pressure of 0dbar, computed with \code{\link{swSigma0}(x)}.}
+
+\item{\code{sigma1} potential density anomaly
+referenced to a pressure of 1000dbar, computed with \code{\link{swSigma1}(x)}.}
+
+\item{\code{sigma2} potential density anomaly
+referenced to a pressure of 2000dbar, computed with \code{\link{swSigma2}(x)}.}
+
+\item{\code{sigma3} potential density anomaly
+referenced to a pressure of 3000dbar, computed with \code{\link{swSigma3}(x)}.}
+
+\item{\code{sigma4} potential density anomaly
+referenced to a pressure of 4000dbar, computed with \code{\link{swSigma4}(x)}.}
+                                       
+\item{\code{SP} salinity on the Practical Salinity Scale, which is \code{x@data$salinity}.}
+
+\item{\code{spice} a variable that is in some sense orthogonal to density, calculated
+with \code{\link{swSpice}(x)}.}
+
+\item{\code{SR} Reference Salinity computed with \code{\link[gsw]{gsw_SR_from_SP}} in
+the \code{gsw} package.}
+
+\item{\code{Sstar} Preformed Salinity computed with \code{\link[gsw]{gsw_SR_from_SP}} in
+the \code{gsw} package.}
+
+\item{\code{temperature68}, temperature on the IPTS-1968 scale, computed
+with \code{\link{T68fromT90}(x)}.}
+
+\item{\code{theta}, potential temperature in the UNESCO formulation,
+computed with \code{\link{swTheta}(x)}. This is a synonym for \code{potential temperature}.}
+
+\item{\code{z} Vertical coordinate in metres above the surface, computed with
+\code{\link{swZ}(x)}.}
+
+}
+}
 \examples{
 data(ctd)
 head(ctd[["temperature"]])
 
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
+Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+  \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
   \code{\link{[[,bremen-method}},
@@ -116,25 +173,34 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,echosounder-method}},
   \code{\link{[[,g1sst-method}},
   \code{\link{[[,gps-method}},
+  \code{\link{[[,ladp-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,met-method}}, \code{\link{[[,odf-method}},
+  \code{\link{[[,rsk-method}},
   \code{\link{[[,sealevel-method}},
   \code{\link{[[,section-method}},
   \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
-  \code{\link{[[,windrose-method}}
+  \code{\link{[[,windrose-method}},
+  \code{\link{[[<-,adv-method}}
 
 Other things related to \code{ctd} data: \code{\link{[[<-,ctd-method}},
-  \code{\link{as.ctd}}, \code{\link{ctd-class}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdTrim}},
+  \code{\link{as.ctd}}, \code{\link{cnvName2oceName}},
+  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
   \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
-  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
+  \code{\link{plotScan}}, \code{\link{plotTS}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+  \code{\link{summary,ctd-method}},
+  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
 

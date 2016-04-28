@@ -1,6 +1,6 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
-#' Class to Hold adp (adcp) Data
+#' Class to Hold ADP (ADCP) Data
 #'
 #' This class stores data from acoustic Doppler profilers. Some manufacturers
 #' call these ADCPs, while others call them ADPs; here the shorter form is
@@ -254,7 +254,7 @@ setMethod(f="initialize",
           })
 
 
-#' Summarize an ADP object
+#' Summarize an ADP Object
 #' 
 #' Summarize data in an \code{adp} object.
 #' 
@@ -371,18 +371,17 @@ setMethod(f="summary",
           })
 
 
-#' Extract Parts of an \code{adp} Object
+#' @title Extract Parts of an ADP Object
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
-#' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
+#' are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
 #' for the other velocity components. The \code{a} and \code{q}
-#' data can be retrived in \code{\link{raw}} form or numeric
-#' form; see examples.
+#' data can be retrieved in \code{\link{raw}} form or numeric
+#' form (see examples). The coordinate system may be 
+#' retrieved with e.g. \code{x[["coordinate"]]}.
 #' 
-#' @param x An adp object, i.e. one inheriting from \code{\link{adp-class}}.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @template sub_subTemplate
 #'
 #' @examples
 #' data(adp)
@@ -395,7 +394,6 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #'
 #' @family things related to \code{adp} data
-#' @family functions that extract parts of oce objects
 setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -429,26 +427,24 @@ setMethod(f="[[",
                       res <- x@data$g
                   }
                   res
+              } else if (i == "coordinate") {
+                  res <- x@metadata$oceCoordinate
               } else {
                   callNextMethod()
               }
           })
 
-#' Replace Parts of an \code{adp} Object
+#' @title Replace Parts of an ADP Object
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @template sub_subsetTemplate
 #'
+#' @details
 #' In addition to the usual insertion of elements by name, note
 #' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 #' 
-#' @param x An adp object
-#' @param i The item to insert
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#' @param value The value to be inserted into \code{x}.
-#'
 #' @author Dan Kelley
 #'
 #' @family things related to \code{adp} data
-#' @family functions that alter oce data and metadata
 setMethod(f="[[<-",
           signature="adp",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
@@ -457,7 +453,7 @@ setMethod(f="[[<-",
               } else if (i %in% names(x@data)) {
                   x@data[[i]] <- value
               } else {
-                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+                  x <- callNextMethod()
               }
               ## Not checking validity because user may want to shorten items one by one, and check validity later.
               ## validObject(x)
@@ -501,14 +497,14 @@ setValidity("adp",
             })
 
 
-#' Subset an adp object
+#' Subset an ADP Object
 #' 
 #' Subset an adp (acoustic Doppler profile) object, in a manner that is function
 #' is somewhat analogous to \code{\link{subset.data.frame}}.  Subsetting can be by
 #' \code{time} or \code{distance}, but these may not be combined; use a sequence
 #' of calls to subset by both.
 #' 
-#' @param x An \code{\link{adp-class}} object.
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 #' 
 #' @param subset A condition to be applied to the \code{data} portion of
 #' \code{x}.  See \sQuote{Details}.
@@ -630,7 +626,7 @@ setMethod(f="subset",
               res
           })
 
-#' Create an adp Object
+#' Create an ADP Object
 #'
 #' @details
 #' Construct an object of \code{\link{adp-class}}.  Only a basic
@@ -678,93 +674,69 @@ as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coor
 }
 
 
-head.adp <- function(x, n=6L, ...)
-{
-    numberOfProfiles <- dim(x@data$v)[1]
-    if (n < 0)
-        look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
-    else
-        look <- seq.int(1, min(n, numberOfProfiles))
-    res <- x
-    for (name in names(x@data)) {
-        if ("distance" == name)
-            next
-        if (is.vector(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look]
-        } else if (is.matrix(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look,]
-        } else if (is.array(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look,,]
-        } else {
-            res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
-        }
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    res
-}
+## head.adp <- function(x, n=6L, ...)
+## {
+##     numberOfProfiles <- dim(x@data$v)[1]
+##     if (n < 0)
+##         look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
+##     else
+##         look <- seq.int(1, min(n, numberOfProfiles))
+##     res <- x
+##     for (name in names(x@data)) {
+##         if ("distance" == name)
+##             next
+##         if (is.vector(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look]
+##         } else if (is.matrix(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look,]
+##         } else if (is.array(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look,,]
+##         } else {
+##             res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+##         }
+##     }
+##     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+##     res
+## }
 
-tail.adp <- function(x, n = 6L, ...)
-{
-    numberOfProfiles <- dim(x@data$v)[1]
-    if (n < 0)
-        look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
-    else
-        look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
-    res <- x
-    for (name in names(x@data)) {
-        if (is.vector(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look]
-        } else if (is.matrix(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look,]
-        } else if (is.array(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look,,]
-        } else {
-            res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
-        }
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    res 
-}
+## tail.adp <- function(x, n = 6L, ...)
+## {
+##     numberOfProfiles <- dim(x@data$v)[1]
+##     if (n < 0)
+##         look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
+##     else
+##         look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
+##     res <- x
+##     for (name in names(x@data)) {
+##         if (is.vector(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look]
+##         } else if (is.matrix(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look,]
+##         } else if (is.array(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look,,]
+##         } else {
+##             res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+##         }
+##     }
+##     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+##     res 
+## }
 
-coordinate <- function(x)
-{
-    if (inherits(x, "adp") || inherits(x, "adv"))
-        x@metadata$oceCoordinate
-    else {
-        warning("unknown object type; it must inherit from either \"adv\" or \"adp\"")
-        NULL
-    }
-}
 
-is.beam <- function(x)
-{
-    if (inherits(x, "adp") || inherits(x, "adv"))
-        return(x@metadata$oceCoordinate == "beam")
-    else {
-        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
-        return(FALSE)
-    }
-}
 
-is.xyz <- function(x)
-{
-    if (inherits(x, "adp") || inherits(x, "adv"))
-        return(x@metadata$oceCoordinate == "xyz")
-    else {
-        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
-        return(FALSE)
-    }
-}
-is.enu <- function(x)
-{
-    if (inherits(x, "adp") || inherits(x, "adv"))
-        return(x@metadata$oceCoordinate == "enu")
-    else {
-        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
-        return(FALSE)
-    }
-}
-
+#' Get names of Acoustic-Doppler Beams
+#' 
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param which an integer indicating beam number.
+#' @return A character string containing a reasonable name for the beam, of the
+#' form \code{"beam 1"}, etc., for beam coordinates, \code{"east"}, etc. for
+#' enu coordinates, \code{"u"}, etc. for \code{"xyz"}, or \code{"u'"}, etc.,
+#' for \code{"other"} coordinates.  The coordinate system is determined
+#' with \code{x[["coordinate"]]}.
+#' @author Dan Kelley
+#' @seealso This is used by \code{\link{read.oce}}.
+#' @family things related to \code{adp} data
+#' @family things related to \code{adv} data
 beamName <- function(x, which)
 {
     if (x@metadata$oceCoordinate == "beam") {
@@ -784,7 +756,7 @@ beamName <- function(x, which)
 }
 
 
-#' Read an ADP data file
+#' Read an ADP File
 #' 
 #' Read an ADP data file, producing an \code{adp} object, i.e. one inheriting
 #' from \code{\link{adp-class}}.
@@ -838,7 +810,7 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 
-#' Plot ADP data
+#' Plot ADP Data
 #' 
 #' Create a summary plot of data measured by an acoustic doppler profiler.
 #' 
@@ -992,7 +964,7 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' they were measured on the dock or on the ship as it travelled to the mooring
 #' site.
 #' 
-#' @param x an \code{adp} object, e.g. as read by \code{\link{read.adp}}.
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 #' @param which list of desired plot types.  These are graphed in panels
 #' running down from the top of the page.  See \dQuote{Details} for the
 #' meanings of various values of \code{which}.
@@ -2171,6 +2143,21 @@ setMethod(f="plot",
               invisible(res)
           })
 
+
+
+#' Convert an ADP Object to ENU Coordinates
+#' 
+#' @param x an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param declination magnetic declination to be added to the heading, to get
+#' ENU with N as "true" north.
+#' @template debugTemplate
+#' @author Dan Kelley
+#' @seealso See \code{\link{read.adp}} for notes on functions relating to
+#' \code{"adp"} objects.  Also, see \code{\link{beamToXyzAdp}} and
+#' \code{\link{xyzToEnuAdp}}.
+#' @references
+#' \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+#' @family things related to \code{adp} data
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "toEnuAdp() {\n", unindent=1)
@@ -2188,6 +2175,48 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     x
 }
 
+
+#' Adjust ADP Signal for Spherical Spreading
+#' 
+#' Compensate ADP signal strength for spherical spreading.
+#' 
+#' First, beam echo intensity is converted from counts to decibels, by
+#' multiplying by \code{count2db}.  Then, the signal decrease owing to
+#' spherical spreading is compensated for by adding the term
+#' \eqn{20\log10(r)}{20*log10(r)}, where \eqn{r}{r} is the distance from the
+#' sensor head to the water from which scattering is occuring.  \eqn{r}{r} is
+#' given by \code{x[["distance"]]}.
+#' 
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param count2db a set of coefficients, one per beam, to convert from beam
+#' echo intensity to decibels.
+#' @param asMatrix a boolean that indicates whether to return a numeric matrix,
+#' as opposed to returning an updated object (in which the matrix is cast to a
+#' raw value).
+#' @template debugTemplate
+#' @return An object of \code{\link[base]{class}} \code{"adp"}.
+#' @author Dan Kelley
+#' @references The coefficient to convert to decibels is a personal
+#' communication.  The logarithmic term is explained in textbooks on acoustics,
+#' optics, etc.
+#' @examples
+#' 
+#' library(oce)
+#' data(adp)
+#' plot(adp, which=5) # beam 1 echo intensity
+#' adp.att <- beamUnspreadAdp(adp)
+#' plot(adp.att, which=5) # beam 1 echo intensity
+#' ## Profiles
+#' par(mar=c(4, 4, 1, 1))
+#' a <- adp[["a", "numeric"]]             # second arg yields matrix return value
+#' distance <- adp[["distance"]]
+#' plot(apply(a,2,mean), distance, type='l', xlim=c(0,256))
+#' lines(apply(a,2,median), distance, type='l',col='red')
+#' legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
+#' ## Image
+#' plot(adp.att, which="amplitude",col=oce.colorsJet(100))
+#' 
+#' @family things related to \code{adp} data
 beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALSE, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "beamUnspreadAdp(...) {\n", unindent=1)
@@ -2228,6 +2257,58 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
     res
 }
 
+
+#' Convert ADP From Beam to XYZ Coordinates
+#' 
+#' Convert ADP velocity components from a beam-based coordinate system to a
+#' xyz-based coordinate system.
+#' 
+#' The action depends on the type of object.
+#' 
+#' For a 3-beam \code{aquadopp} object, the beams are transformed into
+#' velocities using the matrix stored in the header.
+#' 
+#' For 4-beam \code{rdi} object, the beams are converted to velocity components
+#' using formulae from section 5.5 of \emph{RD Instruments} (1998), viz. the
+#' along-beam velocity components \eqn{B_1}{B1}, \eqn{B_2}{B2}, \eqn{B_3}{B3},
+#' and \eqn{B_4}{B4} are used to calculate velocity components in a cartesian
+#' system referenced to the instrument using the following formulae:
+#' \eqn{u=ca(B_1-B_2)}{u=c*a*(B1-B2)}, \eqn{v=ca(B_4-B_3)}{v=c*a*(B4-B3)},
+#' \eqn{w=-b(B_1+B_2+B_3+B_4)}{w=-b*(B1+B2+B3+B4)}, and an estimate of the
+#' error in velocity is calculated using \eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1 +
+#' B2 - B3 - B4)}
+#' 
+#' (Note that the multiplier on \eqn{e}{e} is subject to discussion; RDI
+#' suggests one multiplier, but some oceanographers favour another.)
+#' 
+#' In the above, \eqn{c=1}{c=1} if the beam geometry is convex, and
+#' \eqn{c=-1}{c=-1} if the beam geometry is concave,
+#' \eqn{a=1/(2\sin\theta)}{a=1/(2*sin(theta))},
+#' \eqn{b=1/(4\cos\theta)}{b=1/(4*cos(theta))} and
+#' \eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}, where \eqn{\theta}{theta} is the angle the
+#' beams make to the instrument \dQuote{vertical}.
+#' 
+#' @param x an object of class \code{"adp"}.
+#' @param debug a debugging flag, 0 for no debugging, and higher values for
+#' more and more debugging.
+#' @return An object with the first 3 velocitiy indices having been altered to
+#' represent velocity components in xyz (or instrument) coordinates.  (For
+#' \code{rdi} data, the values at the 4th velocity index are changed to
+#' represent the "error" velocity.)
+#' 
+#' To indicate the change, the value of \code{metadata$oce.orientation} is
+#' changed from \code{beam} to \code{xyz}.
+#' @author Dan Kelley
+#' @seealso See \code{\link{read.adp}} for other functions that relate to
+#' objects of class \code{"adp"}.
+#' @references
+#' 
+#' 1. R D Instruments, 1998. \emph{ADP Coordinate Transformation, formulas and
+#' calculations.} P/N 951-6079-00 (July 1998).
+#' 
+#' 2. WHOI/USGS-provided Matlab code for beam-enu transformation
+#' \url{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
+#' @family things related to \code{adp} data
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 {
     debug <- if (debug > 0) 1 else 0
@@ -2316,7 +2397,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 }
 
 
-#' Convert XYZ to ENU coordinates
+#' Convert ADP From XYZ to ENU Coordinates
 #'
 #' Convert ADP velocity components from a xyz-based coordinate system to
 #' an enu-based coordinate system, by using the instrument's recording of
@@ -2372,7 +2453,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 #' \code{data$v[,,1:3]} are filled in with the result of the matrix
 #' multiplication.
 #'
-#' @param x an object of class \code{"adp"}.
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 #' @param declination magnetic declination to be added to the heading after
 #' "righting" (see below), to get ENU with N as "true" north.
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
@@ -2558,6 +2639,43 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     res
 }
 
+
+#' Convert ADP ENU to Rotated Coordinate
+#' 
+#' Convert ADP velocity components from an enu-based coordinate system to
+#' another system, perhaps to align axes with the coastline.
+#' 
+#' The supplied angles specify rotations to be made around the axes for which
+#' heading, pitch, and roll are defined.  For example, an eastward current will
+#' point southeast if \code{heading=45} is used.
+#' 
+#' The returned value has heading, pitch, and roll matching those of \code{x},
+#' so these angles retain their meaning as the instrument orientation.
+#' 
+#' NOTE: this function works similarly to \code{\link{xyzToEnuAdp}}, except
+#' that in the present function, it makes no difference whether the instrument
+#' points up or down, etc.
+#' 
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param heading number or vector of numbers, giving the angle, in degrees, to
+#' be added to the heading.  See \dQuote{Details}.
+#' @param pitch as \code{heading} but for pitch.
+#' @param roll as \code{heading} but for roll.
+#' @return An object with \code{data$v[,1:3,]} altered appropriately, and
+#' \code{metadata$oce.coordinate} changed from \code{enu} to \code{other}.
+#' @author Dan Kelley
+#' @seealso See \code{\link{read.adp}} for other functions that relate to
+#' objects of class \code{"adp"}.
+#' @references RD Instruments, 1998. \emph{ADP Coordinate Transformation,
+#' formulas and calculations.} P/N 951-6079-00 (July 1998)
+#' @examples
+#' 
+#' library(oce)
+#' data(adp)
+#' o <- enuToOtherAdp(adp, heading=-31.5)
+#' plot(o, which=1:3)
+#' 
+#' @family things related to \code{adp} data
 enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adp"))
@@ -2626,6 +2744,22 @@ display.bytes <- function(b, label="", ...)
     print(b, ...)
 }
 
+
+#' Subtract Bottom Velocity from ADP
+#' 
+#' Subtracts bottom tracking velocities from an \code{"adp"} object. Works for
+#' all coordinate systems (\code{beam}, \code{xyz}, and \code{enu}).
+#' 
+#' @param x an object of class \code{"adp"}, which contains bottom tracking
+#' velocities.
+#' @param debug a flag that, if non-zero, turns on debugging.  Higher values
+#' yield more extensive debugging.  This is passed to called functions, after
+#' subtracting 1.
+#' @author Dan Kelley and Clark Richards
+#' @seealso See \code{\link{read.adp}} for notes on functions relating to
+#' \code{"adp"} objects, and \code{\link{adp-class}} for notes on the ADP
+#' object class.
+## @family things related to \code{adp} data
 subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "subtractBottomVelocity(x) {\n", unindent=1)
@@ -2644,6 +2778,40 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
     res
 }
 
+
+#' Bin-map an ADP object
+#' 
+#' Bin-map an ADP object, by interpolating velocities, backscatter amplitudes,
+#' etc., to uniform depth bins, thus compensating for the pitch and roll of the
+#' instrument.  This only makes sense for ADP objects that are in beam
+#' coordinates.
+#' 
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @return An object of \code{\link[base]{class}} \code{"adp"}.
+#' @section Bugs: This only works for 4-beam RDI ADP objects.
+#' @author Dan Kelley and Clark Richards
+#' @seealso See \code{\link{adp-class}} for a discussion of \code{adp} objects
+#' and notes on the many functions dealing with them.
+#' @references The method was devised by Clark Richards for use in his PhD work
+#' at Department of Oceanography at Dalhousie University.
+#' @examples
+#' 
+#' \dontrun{
+#' library(oce)    
+#' beam <- read.oce("adp_rdi_2615.000",
+#'                  from=as.POSIXct("2008-06-26", tz="UTC"),
+#'                  to=as.POSIXct("2008-06-26 00:10:00", tz="UTC"),
+#'                  longitude=-69.73433, latitude=47.88126)
+#' beam2 <- binmapAdp(beam)
+#' plot(enuToOther(toEnu(beam), heading=-31.5))
+#' plot(enuToOther(toEnu(beam2), heading=-31.5))
+#' plot(beam, which=5:8) # backscatter amplitude
+#' plot(beam2, which=5:8)
+#' }
+#' 
+#' @family things related to \code{adp} data
 binmapAdp <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "binmap(x, debug) {\n", unindent=1)

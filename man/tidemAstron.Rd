@@ -2,7 +2,7 @@
 % Please edit documentation in R/tidem.R
 \name{tidemAstron}
 \alias{tidemAstron}
-\title{Do ephemeris calculations for tidem}
+\title{Ephemeris Calculations for Tidem}
 \usage{
 tidemAstron(t)
 }
@@ -15,10 +15,8 @@ A \code{\link[base]{data.frame}} containing
 \item{list("astro")}{(fill in later)} \item{list("ader")}{(fill in later)}
 }
 \description{
-Do ephemeris calculations for tidem.
-}
-\details{
-Based directly on \code{t_astron}, from the \code{T_TIDE} package.
+Do ephemeris calculations for tidem.  This is based directly
+on \code{t_astron}, from the \code{T_TIDE} package.
 }
 \examples{
 tidemAstron(as.POSIXct("2008-01-22 18:50:24"))
@@ -35,8 +33,7 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{predict.tidem}},
   \code{\link{summary,tidem-method}},
-  \code{\link{tidem-class}}, \code{\link{tidemVuf}},
-  \code{\link{tidem}}
+  \code{\link{tidedata}}, \code{\link{tidem-class}},
+  \code{\link{tidemVuf}}, \code{\link{tidem}}
 }
-\keyword{misc}
 

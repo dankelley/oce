@@ -2,7 +2,7 @@
 % Please edit documentation in R/topo.R
 \name{as.topo}
 \alias{as.topo}
-\title{Coerce data into topo dataset}
+\title{Coerce Data into Topo Object}
 \usage{
 as.topo(longitude, latitude, z, filename = "")
 }
@@ -21,7 +21,7 @@ the \code{marmap} package; in the second case, all other arguments are ignored.}
 An object of \code{\link{topo-class}}.
 }
 \description{
-Coerce data into topo dataset
+Coerce Data into Topo Object
 }
 \author{
 Dan Kelley

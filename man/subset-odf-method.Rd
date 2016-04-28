@@ -3,7 +3,7 @@
 \docType{methods}
 \name{subset,odf-method}
 \alias{subset,odf-method}
-\title{Subset an odf object}
+\title{Subset an ODF object}
 \usage{
 \S4method{subset}{odf}(x, subset, ...)
 }

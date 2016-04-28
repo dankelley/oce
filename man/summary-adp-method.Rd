@@ -5,7 +5,7 @@
 \alias{summary,adp,missing-method}
 \alias{summary,adp-method}
 \alias{summary.adp}
-\title{Summarize an ADP object}
+\title{Summarize an ADP Object}
 \usage{
 \S4method{summary}{adp}(object, ...)
 }
@@ -33,6 +33,10 @@ Dan Kelley
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
   \code{\link{adp}}, \code{\link{as.adp}},
+  \code{\link{beamName}}, \code{\link{beamToXyzAdp}},
+  \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
+  \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
+  \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
   \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
@@ -41,7 +45,8 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppHR}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}},
-  \code{\link{subset,adp-method}},
-  \code{\link{xyzToEnuAdp}}
+  \code{\link{subset,adp-method}}, \code{\link{toEnuAdp}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 

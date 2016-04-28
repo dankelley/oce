@@ -53,7 +53,9 @@ computation of fundamental properties of seawater. \emph{Unesco Technical
 Papers in Marine Science}, \bold{44}, 53 pp.  (Section 7, pages 38-40)
 }
 \seealso{
-Other functions that calculate seawater properties: \code{\link{swAbsoluteSalinity}},
+Other functions that calculate seawater properties: \code{\link{T68fromT90}},
+  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
+  \code{\link{swAbsoluteSalinity}},
   \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
   \code{\link{swBeta}}, \code{\link{swCSTp}},
   \code{\link{swConservativeTemperature}},

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,windrose-method}
 \alias{plot,windrose-method}
-\title{Plot a wind rose diagram}
+\title{Plot Windrose data}
 \usage{
 \S4method{plot}{windrose}(x, type = c("count", "mean", "median", "fivenum"),
   convention = c("meteorological", "oceanographic"),
@@ -40,7 +40,7 @@ the fourth is, again, used for the grid lines.}
 \item{...}{Optional arguments passed to plotting functions.}
 }
 \description{
-Plot a wind rose diagram
+Plot a \code{windrose} object, i.e. one inheriting from \code{\link{windrose-class}}.
 }
 \examples{
 library(oce)
@@ -77,8 +77,9 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,sealevel-method}},
   \code{\link{plot,section-method}},
   \code{\link{plot,tidem-method}},
-  \code{\link{plot,topo-method}}, \code{\link{plotScan}},
-  \code{\link{tidem-class}}
+  \code{\link{plot,topo-method}},
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
   \code{\link{[[<-,windrose-method}},

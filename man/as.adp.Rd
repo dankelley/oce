@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{as.adp}
 \alias{as.adp}
-\title{Create an adp Object}
+\title{Create an ADP Object}
 \usage{
 as.adp(time, distance, v, a = NULL, q = NULL, orientation = "upward",
   coordinate = "enu")
@@ -26,7 +26,7 @@ as.adp(time, distance, v, a = NULL, q = NULL, orientation = "upward",
 An object of \code{\link{adp-class}}.
 }
 \description{
-Create an adp Object
+Create an ADP Object
 }
 \details{
 Construct an object of \code{\link{adp-class}}.  Only a basic
@@ -54,7 +54,11 @@ Dan Kelley
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
-  \code{\link{adp}}, \code{\link{plot,adp-method}},
+  \code{\link{adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
+  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
+  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
+  \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -63,7 +67,8 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}},
   \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}},
-  \code{\link{xyzToEnuAdp}}
+  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
 

@@ -3,12 +3,11 @@
 \docType{class}
 \name{section-class}
 \alias{section-class}
-\title{Class to store hydrographic section data}
+\title{Class to Store Hydrographic Section Data}
 \description{
 Class to store hydrographic section data, with standard slots \code{metadata},
 \code{data} and \code{processingLog}.
-}
-\details{
+
 A \code{\link{list}} of stations is retrieved by \code{s[["station"]]}.
 Individual stations are retrieved by providing a station number as a second
 argument in the index, e.g.  the first station is \code{s[["station", 1]]}
@@ -17,7 +16,7 @@ argument in the index, e.g.  the first station is \code{s[["station", 1]]}
 Aggregated values of the quantities measured at each level of the CTD
 profiles contained within the section may be accessed as e.g.
 \code{section[["salinity"]]}.  This works for any quantity whose name is
-present in the constituent profiles.
+present in the constituent profiles.   
 
 Since it is often useful to pair such quantities with locations,
 \code{section[["longitude"]]} and \code{section[["latitude"]]} return vectors
@@ -72,12 +71,12 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{odf-class}},
   \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{sealevel}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+  \code{\link{topo-class}}, \code{\link{windrose-class}}
 
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
+  \code{\link{handleFlags,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}},
   \code{\link{sectionAddStation}},

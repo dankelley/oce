@@ -2,7 +2,7 @@
 % Please edit documentation in R/rsk.R
 \name{as.rsk}
 \alias{as.rsk}
-\title{Create a rsk object}
+\title{Coerce Data Into a Rsk Object}
 \usage{
 as.rsk(time, columns, filename = "", instrumentType = "rbr",
   serialNumber = "", model = "", sampleInterval = NA,

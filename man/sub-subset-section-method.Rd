@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,section-method}
 \alias{[[<-,section-method}
-\title{Replace Parts of a \code{section} Object}
+\title{Replace Parts of a Section Object}
 \usage{
 \S4method{[[}{section}(x, i, j) <- value
 }
@@ -62,7 +62,8 @@ section[["sectionId"]]
 Dan Kelley
 }
 \seealso{
-Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
+Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+  \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
   \code{\link{[[<-,cm-method}},
@@ -73,6 +74,7 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,gps-method}},
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
+  \code{\link{[[<-,met-method}},
   \code{\link{[[<-,oce-method}},
   \code{\link{[[<-,odf-method}},
   \code{\link{[[<-,rsk-method}},
@@ -83,6 +85,7 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
 
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{as.section}},
+  \code{\link{handleFlags,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},

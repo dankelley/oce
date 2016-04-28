@@ -1,7 +1,8 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class for data stored in a format used at Bremen
+#' @title Class for data stored in a format used at Bremen
 #'
+#' @description
 #' Class for data stored in a format used at Bremen. This is somewhat unusual
 #' amongst \code{oce} classes, in that it does not map to a particular
 #' instrument. Although some functions are provided for dealing with these
@@ -10,6 +11,7 @@
 #' another storage class (e.g. using \code{\link{as.ctd}} for CTD-style
 #' data) so that specialized functions can be used thereafter.
 #'
+#' @description
 #' The main function is \code{\link{read.bremen}}.  A simple
 #' plotting method is provided with \code{\link{plot,bremen-method}}, and
 #' \code{\link{summary,bremen-method}} provides summaries. Data may be
@@ -31,7 +33,7 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-#' @title Extract Something From a \code{bremen} Object
+#' @title Extract Something From a Bremen Object
 #' @param x A bremen object, i.e. one inheriting from \code{\link{bremen-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{bremen} data
@@ -41,7 +43,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{bremen} Object
+#' @title Replace Parts of a Bremen Object
 #' @param x An \code{bremen} object, i.e. inheriting from \code{\link{bremen-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{bremen} data
@@ -51,10 +53,10 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, value=value)
           })
 
-#' Plot a bremen object
+#' @title Plot a Bremen Object
 #'
+#' @description
 #' Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
-#'
 #' If \code{x} seems to be a CTD dataset, uses \code{\link{plot,ctd-method}};
 #' otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
 #' plot is created with \code{\link{plot,ladp-method}} to show velocity varation with
@@ -82,10 +84,9 @@ setMethod(f="plot",
           })
 
 
-#' Summarize a bremen object
+#' @title Summarize a Bremen Object
 #'
-#' Summarizes some of the data in a \code{bremen} object.
-#'
+#' @description
 #' Pertinent summary information is presented, including the station name,
 #' sampling location, data ranges, etc.
 #'
@@ -125,7 +126,11 @@ findInHeaderBremen <- function(key, lines)
 }
 
 
-#' Read a Bremen data file
+#' @title Read a Bremen File
+#'
+#' @description
+#' Read a file in Bremen format, producing an object inheriting from
+#' \code{\link{bremen-class}}.
 #'
 #' @param file a connection or a character string giving the name of the file
 #' to load.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{write.ctd}
 \alias{write.ctd}
-\title{Write a CTD data object as a .csv file}
+\title{Write a CTD Data Object as a CSV File}
 \usage{
 write.ctd(object, file = stop("'file' must be specified"))
 }
@@ -37,14 +37,20 @@ of CTD objects, and also outlines the other functions dealing with them.
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
   \code{\link{ctd}}, \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
-  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
+  \code{\link{plotScan}}, \code{\link{plotTS}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}
+  \code{\link{summary,ctd-method}},
+  \code{\link{woceNames2oceNames}}
 }
 

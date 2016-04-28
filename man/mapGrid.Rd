@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapGrid}
 \alias{mapGrid}
-\title{Plot longitude and latitude grid on an existing map.}
+\title{Add a Longitude and Latitude Grid to a Map}
 \usage{
 mapGrid(dlongitude = 15, dlatitude = 15, longitude, latitude,
   col = "darkgray", lty = "solid", lwd = 0.5 * par("lwd"),
@@ -72,7 +72,8 @@ Dan Kelley
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
 
-Other functions that handle map projections: \code{\link{map2lonlat}},
+Other functions related to maps: \code{\link{lonlat2map}},
+  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
   \code{\link{mapArrows}}, \code{\link{mapAxis}},
   \code{\link{mapContour}},
   \code{\link{mapDirectionField}}, \code{\link{mapImage}},
@@ -81,6 +82,7 @@ Other functions that handle map projections: \code{\link{map2lonlat}},
   \code{\link{mapMeridians}}, \code{\link{mapPlot}},
   \code{\link{mapPoints}}, \code{\link{mapPolygon}},
   \code{\link{mapScalebar}}, \code{\link{mapText}},
-  \code{\link{mapTissot}}, \code{\link{mapZones}}
+  \code{\link{mapTissot}}, \code{\link{mapZones}},
+  \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
 

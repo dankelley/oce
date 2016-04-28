@@ -2,7 +2,7 @@
 % Please edit documentation in R/sealevel.R
 \name{read.sealevel}
 \alias{read.sealevel}
-\title{Read a sea-level data file}
+\title{Read a Sealevel File}
 \usage{
 read.sealevel(file, tz = getOption("oceTz"), processingLog,
   debug = getOption("oceDebug"))
@@ -73,8 +73,9 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{as.sealevel}},
   \code{\link{plot,sealevel-method}},
   \code{\link{sealevel-class}},
+  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{sealevel}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }
-\keyword{misc}
 

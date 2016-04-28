@@ -3,7 +3,7 @@
 \docType{data}
 \name{echosounder}
 \alias{echosounder}
-\title{echosounder dataset}
+\title{Echosounder Dataset}
 \source{
 This file came from the SLEIWEX-2008 experiment, and was decimated
 using \code{\link{decimate}} with \code{by=c()}.
@@ -19,16 +19,19 @@ Dan Kelley
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{met}},
+  \code{\link{coastlineWorld}}, \code{\link{colors}},
+  \code{\link{ctdRaw}}, \code{\link{ctd}},
+  \code{\link{landsat}}, \code{\link{lisst}},
+  \code{\link{lobo}}, \code{\link{met}}, \code{\link{rsk}},
+  \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
-  \code{\link{topoWorld}}
+  \code{\link{topoWorld}}, \code{\link{wind}}
 
 Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
   \code{\link{as.echosounder}},
   \code{\link{echosounder-class}},
+  \code{\link{findBottom}},
   \code{\link{plot,echosounder-method}},
   \code{\link{read.echosounder}},
   \code{\link{subset,echosounder-method}},

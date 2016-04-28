@@ -3,7 +3,7 @@
 \docType{methods}
 \name{subset,coastline-method}
 \alias{subset,coastline-method}
-\title{Summarize a coastline data object}
+\title{Subset a Coastline Object}
 \usage{
 \S4method{subset}{coastline}(x, subset, ...)
 }

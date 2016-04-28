@@ -2,7 +2,7 @@
 % Please edit documentation in R/section.R
 \name{as.section}
 \alias{as.section}
-\title{Create a section}
+\title{Create a Section}
 \usage{
 as.section(salinity, temperature, pressure, longitude, latitude, station,
   sectionId = "")
@@ -32,8 +32,7 @@ An object of \code{\link{section-class}}.
 \description{
 Create a section based on columnar data, or a set of \code{\link{oce-class}}
 objects that can be coerced to CTD form with \code{\link{as.ctd}}.
-}
-\details{
+
 If the first argument is a numerical vector, then it is taken to be the
 salinity, and \code{\link{factor}} is applied to \code{station} to break the
 data up into chunks that are assembled into \code{\link{ctd-class}} objects with
@@ -82,6 +81,7 @@ Dan Kelley
 \seealso{
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
+  \code{\link{handleFlags,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},

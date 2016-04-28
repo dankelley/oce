@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,bremen-method}
 \alias{plot,bremen-method}
-\title{Plot a bremen object}
+\title{Plot a Bremen Object}
 \usage{
 \S4method{plot}{bremen}(x, type, ...)
 }
@@ -17,8 +17,6 @@ coerced before ploting. The choices are \code{ctd} and \code{ladp}.}
 }
 \description{
 Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
-}
-\details{
 If \code{x} seems to be a CTD dataset, uses \code{\link{plot,ctd-method}};
 otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
 plot is created with \code{\link{plot,ladp-method}} to show velocity varation with
@@ -48,7 +46,8 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
   \code{\link{[[<-,bremen-method}},

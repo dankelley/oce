@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,argo-method}
 \alias{plot,argo-method}
-\title{Plot argo data}
+\title{Plot Argo Data}
 \usage{
 \S4method{plot}{argo}(x, which = 1, level, coastline = c("best",
   "coastlineWorld", "coastlineWorldMedium", "coastlineWorldFine", "none"),
@@ -128,12 +128,15 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argo}},
-  \code{\link{as.argo}}, \code{\link{read.argo}},
+  \code{\link{as.argo}},
+  \code{\link{handleFlags,argo-method}},
+  \code{\link{read.argo}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }

@@ -3,7 +3,7 @@
 \docType{class}
 \name{cm-class}
 \alias{cm-class}
-\title{Class to store current meter data}
+\title{Class to Store Current Meter (CM) Data}
 \description{
 Class to store current meter data from an interocean S4 device.  A file
 containing CM profile data may be read with \code{\link{read.cm}}. The results
@@ -23,8 +23,8 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{odf-class}},
   \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{sealevel}}, \code{\link{section-class}},
-  \code{\link{topo-class}}, \code{\link{windrose-class}}
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
 
 Other things related to \code{cm} data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{cm}},

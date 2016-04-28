@@ -2,7 +2,7 @@
 % Please edit documentation in R/coastline.R
 \name{coastlineBest}
 \alias{coastlineBest}
-\title{Find the name of the best coastline file}
+\title{Find the Name of the Best Coastline Object}
 \usage{
 coastlineBest(lonRange, latRange, span, debug = getOption("oceDebug"))
 }
@@ -22,8 +22,6 @@ The name of a coastline that can be loaded with \code{data()}.
 }
 \description{
 Find the name of the most appropriate coastline for a given locale
-}
-\details{
 Checks \code{coastlineWorld}, \code{coastlineWorldFine} and
 \code{coastlineWorldCoarse}, in that order, to find the one most appropriate
 for the locale.

@@ -133,9 +133,9 @@ setMethod(f="summary",
               callNextMethod()
           })
 
-#' @title Extract Parts of an \code{adv} Object
+#' @title Extract Parts of an ADV Object
 #'
-#' @param x An adv object, i.e. one inheriting from \code{\link{adv-class}}.
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #'
 #' @examples
 #' data(adv)
@@ -148,12 +148,20 @@ setMethod(f="summary",
 #' for the other velocity components. The \code{a} and \code{q}
 #' data can be retrived in \code{\link{raw}} form 
 #' or numeric form; see \dQuote{Examples}.
+#'
+#' It is also worth noting that heading, pitch, etc. may be stored in
+#' "slow" form in the object (e.g. in \code{headingSlow} within
+#' the \code{data} slot). In that case, accessing by full name, e.g.
+#' \code{x[["headingSlow"]]} retrieves the item as expected, but
+#' \code{x[["heading"]]} interpolates to the faster timescale, using
+#' \code{\link{approx}(timeSlow, headingSlow, time)}.
 #' 
 #' @template sub_subTemplate
 #' @family things related to \code{adv} data
 setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
+              haveSlow <- "timeSlow" %in% names(x@data)
               if (i == "u1") {
                   return(x@data$v[,1])
               } else if (i == "u2") {
@@ -180,38 +188,60 @@ setMethod(f="[[",
                       res <- x@data$q
                   }
                   return(res)
+              } else if (i %in% c("heading", "pitch", "roll")) {
+                  if (haveSlow) {
+                      ## offset the time so approx doesn't yield all NAs
+                      tSlow <- as.numeric(x@data$timeSlow)
+                      t <- as.numeric(x@data$time)
+                      t0 <- t[1]
+                      res <- approx(tSlow-t0, x@data[[i]], t-t0)$y
+                  } else {
+                      res <- x@data[[i]]
+                  }
               } else {
                   callNextMethod()
               }
           })
 
-#' Replace Parts of an \code{adv} Object
+#' Replace Parts of an ADV Object
 #'
-#' In addition to the usual insertion of elements by name, note
-#' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
+#' @details
+#' If the \code{adv} object holds slow variables (i.e. if \code{timeSlow} is
+#' in the \code{data} slot), then assigning to .e.g. \code{heading} will not
+#' actually assign to a variable of that name, but instead assigns to
+#' \code{headingSlow}. To catch misapplication of this rule, an error
+#' message will be issued if the assigned value is not of the same length
+#' as \code{timeSlow}.
 #' 
-#' @param x An adv object
-#' @param i The item to insert
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #' @param value The value to be inserted into \code{x}.
-#' @family functions that replace parts of \code{oce} objects
+#'
+#' @author Dan Kelley
+#'
+#' @template sub_subTemplate
 #' @family things related to \code{adv} data
 setMethod(f="[[<-",
           signature="adv",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+              haveSlow <- "timeSlow" %in% names(x@data)
               if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
               } else if (i %in% names(x@data)) {
                  x@data[[i]] <- value
-              } else if (i == "heading") {
-                  x@data$headingSlow <- value
-              } else if (i == "pitch" || i == "pitchSlow") {
-                  x@data$pitchSlow <- value
-              } else if (i == "pitch" || i == "pitchSlow") {
-                  x@data$rollSlow <- value
+              } else if (i %in% c("heading", "pitch", "roll")) {
+                  ## do not store as indicated; interpolate to the Slow variant
+                  if (haveSlow) {
+                      name <- paste(i, "Slow", sep="")
+                      if (!(name %in% names(x@data)))
+                          stop("no variable named '", name, "' in object's data slot")
+                      if (length(value) != length(x@data[[name]]))
+                          stop("length mismatch; value has ", length(value), " but ", name, " has ", length(x@data[[name]]), " elements")
+                      x@data[[name]] <- value
+                  } else {
+                      x@data[[i]] <- value
+                  }
               } else {
-                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+                  x <- callNextMethod()
               }
               ## Not checking validity because user may want to shorten items one by one, and check validity later.
               ## validObject(x)
@@ -220,13 +250,13 @@ setMethod(f="[[<-",
 
 
 
-#' Subset an adv object
+#' Subset an ADV Object
 #' 
 #' Subset an adv (acoustic Doppler profile) object.  This function is somewhat
 #' analogous to \code{\link{subset.data.frame}}, except that subsets can only be
 #' specified in terms of \code{time}.
 #' 
-#' @param x a \code{adv} object.
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #' 
 #' @param subset a condition to be applied to the \code{data} portion of \code{x}.
 #' See \sQuote{Details}.
@@ -307,7 +337,17 @@ setMethod(f="subset",
           })
 
 
-
+#' @template readAdvTemplate
+#' @param type character string indicating type of file, and used by
+#' \code{read.adv} to dispatch to one of the speciality functions.
+#' @param start the time of the first sample, typically created with
+#' \code{\link{as.POSIXct}}.  This may be a vector of times,
+#' if \code{filename} is a vector of file names.
+#' @param deltat the time between samples. (This is mandatory if
+#' \code{header=FALSE}.)
+#' @param header A logical value indicating whether the file starts with a header.
+#' (This will not be the case for files that are created by data loggers that
+#' chop the raw data up into a series of sub-files, e.g. once per hour.)
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
@@ -332,7 +372,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=longitude, latitude=latitude,
                             debug=debug, processingLog=processingLog)
     else if (type == "sontek.text")
-        read.adv.sontek.text(basefile=file, from=from, to=to, by=by, tz=tz,
+        read.adv.sontek.text(file=file, from=from, to=to, by=by, tz=tz,
                              longitude=longitude, latitude=latitude,
                              debug=debug, processingLog=processingLog)
     else
@@ -426,7 +466,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' }
 #' 
 #' 
-#' @param x An \code{adv} object, e.g. as read by \code{\link{read.adv}}.
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #' 
 #' @param which List of desired plot types.  These are graphed in panels running
 #' down from the top of the page.  See \dQuote{Details} for the meanings of
@@ -1113,6 +1153,21 @@ setMethod(f="plot",
               invisible()
           })
 
+
+
+#' Convert an ADV Object to ENU Coordinates
+#' 
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
+#' @param declination magnetic declination to be added to the heading, to get
+#' ENU with N as "true" north.
+#' @template debugTemplate
+#' @author Dan Kelley
+#' @seealso See \code{\link{read.adv}} for notes on functions relating to
+#' \code{"adv"} objects.  Also, see \code{\link{beamToXyzAdv}} and
+#' \code{\link{xyzToEnuAdv}}.
+#' @references
+#' \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+#' @family things related to \code{adv} data
 toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "adv.2enu() {\n", unindent=1)
@@ -1130,6 +1185,30 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
     x
 }
 
+
+#' Convert ADV from Beam to XYZ Coordinates
+#' 
+#' Convert ADV velocity components from a beam-based coordinate system to a
+#' xyz-based coordinate system.
+#' 
+#' The coordinate transformation is done using the transformation matrix
+#' contained in \code{x@metadata$transformation.matrix}, which is normally
+#' inferred from the header in the binary file.  If there is no such matrix
+#' (e.g. if the data were streamed through a data logger that did not capture
+#' the header), \code{beamToXyzAdv} the user will need to store one in
+#' \code{x}, e.g. by doing something like the following:
+#' \code{x@metadata$transformation.matrix <- rbind(c(11100, -5771, -5321), c(
+#' 291, 9716, -10002), c( 1409, 1409, 1409)) / 4096} .
+#' 
+#' @param x an object of class \code{"adv"}.
+#' @param debug a flag that, if non-zero, turns on debugging.  Higher values
+#' yield more extensive debugging.
+#' @author Dan Kelley
+#' @seealso See \code{\link{read.adv}} for notes on functions relating to
+#' \code{"adv"} objects.
+#' @references
+#' \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+#' @family things related to \code{adp} data
 beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "beamToXyzAdv() {\n", unindent=1)
@@ -1166,7 +1245,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 
 
 
-#' Convert XYZ to ENU coordinates
+#' Convert an ADP from XYZ to ENU Coordinates
 #'
 #' Convert ADV velocity components from a xyz-based coordinate system to
 #' an enu-based coordinate system.
@@ -1231,7 +1310,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' \tab adv \tab - \tab - \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab
 #' Z\cr }
 #' 
-#' @param x an object of class \code{adv}.
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #' @param declination magnetic declination to be added to the heading, to get
 #' ENU with N as "true" north.
 #' @param cabled boolean value indicating whether the sensor head is connected
@@ -1415,6 +1494,32 @@ xyzToEnuAdv <- function(x, declination=0,
     x
 }
 
+
+
+#' Convert ENU to Other Coordinate
+#' 
+#' Convert ADV velocity components from an enu-based coordinate system to
+#' another system, perhaps to align axes with the coastline.
+#' 
+#' The supplied angles specify rotations to be made around the axes for which
+#' heading, pitch, and roll are defined.  For example, an eastward current will
+#' point southeast if \code{heading=45} is used.
+#' 
+#' The returned value has heading, pitch, and roll matching those of \code{x},
+#' so these angles retain their meaning as the instrument orientation.
+#' 
+#' NOTE: this function works similarly to \code{\link{xyzToEnuAdv}}, except
+#' that in the present function, it makes no difference whether the instrument
+#' points up or down, etc.
+#' 
+#' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
+#' @param heading number or vector of numbers, giving the angle, in degrees, to
+#' be added to the heading.  See \dQuote{Details}.
+#' @param pitch as \code{heading} but for pitch.
+#' @param roll as \code{heading} but for roll.
+#' @template debugTemplate
+#' @author Dan Kelley
+#' @family things related to \code{adv} data
 enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "adv"))

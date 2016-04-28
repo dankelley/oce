@@ -2,13 +2,13 @@
 % Please edit documentation in R/adv.R
 \name{xyzToEnuAdv}
 \alias{xyzToEnuAdv}
-\title{Convert XYZ to ENU coordinates}
+\title{Convert an ADP from XYZ to ENU Coordinates}
 \usage{
 xyzToEnuAdv(x, declination = 0, cabled = FALSE, horizontalCase,
   sensorOrientation, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{an object of class \code{adv}.}
+\item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
 
 \item{declination}{magnetic declination to be added to the heading, to get
 ENU with N as "true" north.}
@@ -112,8 +112,16 @@ See \code{\link{read.adv}} for notes on functions relating to
 
 Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
-  \code{\link{adv}}, \code{\link{plot,adv-method}},
-  \code{\link{subset,adv-method}},
-  \code{\link{summary,adv-method}}
+  \code{\link{adv}}, \code{\link{beamName}},
+  \code{\link{beamToXyz}}, \code{\link{enuToOtherAdv}},
+  \code{\link{enuToOther}}, \code{\link{plot,adv-method}},
+  \code{\link{read.adv.nortek}},
+  \code{\link{read.adv.sontek.adr}},
+  \code{\link{read.adv.sontek.serial}},
+  \code{\link{read.adv.sontek.text}},
+  \code{\link{read.adv}}, \code{\link{subset,adv-method}},
+  \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnu}}
 }
 

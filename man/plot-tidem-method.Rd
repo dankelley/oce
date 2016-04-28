@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,tidem-method}
 \alias{plot,tidem-method}
-\title{Plot a tidal fit}
+\title{Plot a Tidem Prediction}
 \usage{
 \S4method{plot}{tidem}(x, which = 1, labelIf = NULL, log = "",
   mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, mgp[2] + 0.25,
@@ -65,13 +65,15 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,section-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{[[<-,tidem-method}},
   \code{\link{predict.tidem}},
   \code{\link{summary,tidem-method}},
-  \code{\link{tidem-class}}, \code{\link{tidemAstron}},
-  \code{\link{tidemVuf}}, \code{\link{tidem}}
+  \code{\link{tidedata}}, \code{\link{tidem-class}},
+  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
+  \code{\link{tidem}}
 }
 

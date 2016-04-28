@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,sealevel-method}
 \alias{plot,sealevel-method}
-\title{Plot sealevel data}
+\title{Plot Sealevel Data}
 \usage{
 \S4method{plot}{sealevel}(x, which = 1:3, adorn = NULL,
   drawTimeRange = getOption("oceDrawTimeRange"), mgp = getOption("oceMgp"),
@@ -49,9 +49,6 @@ of time-series plots, matching the space used up by a palette in an
 None.
 }
 \description{
-Plot a summary diagram for sealevel data.
-}
-\details{
 Creates a plot for a sea-level dataset, in one of two varieties.  Depending
 on the length of \code{which}, either a single-panel or multi-panel plot is
 drawn.  If there is just one panel, then the value of \code{par} used in
@@ -108,12 +105,15 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{[[<-,sealevel-method}},
   \code{\link{as.sealevel}}, \code{\link{read.sealevel}},
   \code{\link{sealevel-class}},
+  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{sealevel}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }

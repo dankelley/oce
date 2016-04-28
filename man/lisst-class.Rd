@@ -3,7 +3,7 @@
 \docType{class}
 \name{lisst-class}
 \alias{lisst-class}
-\title{Class to store LISST data}
+\title{Class to Store LISST Data}
 \description{
 Class to store LISST (Laser in-situ scattering and transmissometry) data.
 }
@@ -30,7 +30,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{echosounder-class}},
   \code{\link{lobo-class}}, \code{\link{met-class}},
   \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}}, \code{\link{sealevel}},
+  \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 

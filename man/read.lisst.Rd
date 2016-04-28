@@ -2,7 +2,7 @@
 % Please edit documentation in R/lisst.R
 \name{read.lisst}
 \alias{read.lisst}
-\title{Read a LISST data file}
+\title{Read a LISST File}
 \usage{
 read.lisst(file, year = 0, tz = "UTC", longitude = NA, latitude = NA)
 }
@@ -24,8 +24,6 @@ An object of \code{\link{lisst-class}}.
 \description{
 Read a LISST data file, producing a \code{lisst} object, i.e. one
 inheriting from \code{\link{lisst-class}}.
-}
-\details{
 The file should contain 42 columns, with no header.  If there are fewer than
 42 columns, an error results.  If there are more, only the first 42 are
 used.  Note that \code{\link{read.oce}} can recognize LISST files by their

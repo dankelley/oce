@@ -2,7 +2,7 @@
 % Please edit documentation in R/met.R
 \name{as.met}
 \alias{as.met}
-\title{Coerce data into met dataset}
+\title{Coerce Data into Met Object}
 \usage{
 as.met(time, temperature, pressure, u, v,
   filename = "(constructed from data)")
@@ -26,8 +26,6 @@ An object of \code{\link{met-class}}.
 }
 \description{
 Coerces a dataset into a met dataset.
-}
-\details{
 This function is used by \code{\link{read.met}}, and may be used to
 construct objects that behave as though read by that function.
 }
@@ -35,7 +33,8 @@ construct objects that behave as though read by that function.
 Dan Kelley
 }
 \seealso{
-Other things related to \code{met} data: \code{\link{met-class}},
+Other things related to \code{met} data: \code{\link{[[,met-method}},
+  \code{\link{[[<-,met-method}}, \code{\link{met-class}},
   \code{\link{met}}, \code{\link{plot,met-method}},
   \code{\link{read.met}}, \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}

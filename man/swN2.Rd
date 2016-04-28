@@ -87,7 +87,7 @@ principles as well as data practicalities.
 library(oce)
 data(ctd)
 # Illustrate difference between UNESCO and GSW
-p <- pressure(ctd)
+p <- ctd[["pressure"]]
 ylim <- rev(range(p))
 par(mfrow=c(1,3), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 plot(ctd[["sigmaTheta"]], p, ylim=ylim, type='l', xlab=expression(sigma[theta]))
@@ -102,7 +102,9 @@ abline(v=0)
 Dan Kelley
 }
 \seealso{
-Other functions that calculate seawater properties: \code{\link{swAbsoluteSalinity}},
+Other functions that calculate seawater properties: \code{\link{T68fromT90}},
+  \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
+  \code{\link{swAbsoluteSalinity}},
   \code{\link{swAlphaOverBeta}}, \code{\link{swAlpha}},
   \code{\link{swBeta}}, \code{\link{swCSTp}},
   \code{\link{swConservativeTemperature}},

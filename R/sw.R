@@ -1,3 +1,24 @@
+#' @title Convert from ITS-90 to IPTS-68 temperature
+#' 
+#' @template temperatureConversionTemplate
+#' @param temperature Vector of temperatures expressed in the ITS-90 scale.
+#' @return Temperature expressed in the IPTS-68 scale.
+T68fromT90 <- function(temperature) temperature * 1.00024
+
+#' @title Convert from IPTS-68 to ITS-90 temperature
+#' 
+#' @template temperatureConversionTemplate
+#' @param temperature Vector of temperatures expressed in the IPTS-68 scale.
+#' @return temperature Temperature expressed in the ITS-90 scale.
+T90fromT68 <- function(temperature) temperature / 1.00024
+
+#' @title Convert from ITS-48 to ITS-90 temperature
+#' 
+#' @template temperatureConversionTemplate
+#' @param temperature Vector of temperatures expressed in the ITS-48 scale.
+#' @return Temperature expressed in the ITS-90 scale.
+T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-temperature))/1.00024
+
 #' Look Within the First Element of a List for Replacement Values
 #'
 #' @details
@@ -205,7 +226,7 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 #' library(oce)
 #' data(ctd)
 #' # Illustrate difference between UNESCO and GSW
-#' p <- pressure(ctd)
+#' p <- ctd[["pressure"]]
 #' ylim <- rev(range(p))
 #' par(mfrow=c(1,3), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 #' plot(ctd[["sigmaTheta"]], p, ylim=ylim, type='l', xlab=expression(sigma[theta]))
@@ -695,7 +716,7 @@ swTFreeze <- function(salinity, pressure=0,
                       eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must supply salinity (which may be S or a CTD object)")
-    l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
+    l <- lookWithin(list(salinity=salinity, pressure=pressure,
                          longitude=longitude, latitude=latitude, eos=eos))
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
@@ -1392,7 +1413,7 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
 #' @examples
 #' swSigma0(35, 13, 1000)
 #' @family functions that calculate seawater properties
-swSigma0 <- function(salinity, temperature, pressure,
+swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=0,
@@ -1413,7 +1434,7 @@ swSigma0 <- function(salinity, temperature, pressure,
 #' @author Dan Kelley
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
-swSigma1 <- function(salinity, temperature, pressure,
+swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=1000,
@@ -1434,7 +1455,7 @@ swSigma1 <- function(salinity, temperature, pressure,
 #' @author Dan Kelley
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
-swSigma2 <- function(salinity, temperature, pressure,
+swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=2000,
@@ -1455,7 +1476,7 @@ swSigma2 <- function(salinity, temperature, pressure,
 #' @author Dan Kelley
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
-swSigma3 <- function(salinity, temperature, pressure,
+swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=3000,
@@ -1476,7 +1497,7 @@ swSigma3 <- function(salinity, temperature, pressure,
 #' @author Dan Kelley
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
-swSigma4 <- function(salinity, temperature, pressure,
+swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=4000,

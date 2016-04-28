@@ -3,7 +3,7 @@
 \docType{methods}
 \name{handleFlags,argo-method}
 \alias{handleFlags,argo-method}
-\title{Handle flags in ARGO objects}
+\title{Handle Flags in ARGO Objects}
 \usage{
 \S4method{handleFlags}{argo}(object, flags = list(), actions = list())
 }
@@ -28,10 +28,6 @@ with \code{object} as the single argument, and must return a
 replacement for the data item in question.}
 }
 \description{
-DEVELOPERS: please pattern functions and documentation on the 'ctd' code, for uniformity.
-DEVELOPERS: Youi will need to change the docs, and the 3 spots in the code
-DEVELOPERS: marked '# DEVELOPER 1:', etc.
-
 Data-quality flags are stored in the \code{metadata}
 slot of \code{\link{oce-class}} objects in a 
 \code{\link{list}} named \code{flags}.
@@ -96,6 +92,15 @@ argoNew <- handleFlags(argo, flags=list(salinity=4))
 }
 \seealso{
 Other functions that handle data-quality flags: \code{\link{handleFlags,ctd-method}},
+  \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}}
+
+Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
+  \code{\link{argoGrid}}, \code{\link{argo}},
+  \code{\link{as.argo}}, \code{\link{plot,argo-method}},
+  \code{\link{read.argo}},
+  \code{\link{subset,argo-method}},
+  \code{\link{summary,argo-method}}
 }
 

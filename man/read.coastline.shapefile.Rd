@@ -2,7 +2,7 @@
 % Please edit documentation in R/coastline.R
 \name{read.coastline.shapefile}
 \alias{read.coastline.shapefile}
-\title{Scan a coastline data file in shapefile format}
+\title{Read a Coastline File in Shapefile Format}
 \usage{
 read.coastline.shapefile(file, lonlim = c(-180, 180), latlim = c(-90, 90),
   debug = getOption("oceDebug"), monitor = FALSE, processingLog)

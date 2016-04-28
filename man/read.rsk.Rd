@@ -2,7 +2,7 @@
 % Please edit documentation in R/rsk.R
 \name{read.rsk}
 \alias{read.rsk}
-\title{Read an RBR rsk or Ruskin export file}
+\title{Read a Rsk file}
 \usage{
 read.rsk(file, from = 1, to, by = 1, type, tz = getOption("oceTz", default
   = "UTC"), patm = FALSE, processingLog, debug = getOption("oceDebug"))

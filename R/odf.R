@@ -1,5 +1,6 @@
-#' Class to store ODF data
+#' @title Class to Store ODF data
 #' 
+#' @description
 #' Class for data stored in a format used at Canadian Department of Fisheries
 #' and Oceans laboratories. This is somewhat unusual amongst \code{oce}
 #' classes, in that it does not map to a particular instrument, but rather to a
@@ -51,7 +52,7 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-#' @title Extract Something From a \code{odf} Object
+#' @title Extract Something From an ODF Object
 #' @param x A odf object, i.e. one inheriting from \code{\link{odf-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{odf} data
@@ -61,7 +62,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{odf} Object
+#' @title Replace Parts of an ODF Object
 #' @param x An \code{odf} object, i.e. inheriting from \code{\link{odf-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{odf} data
@@ -71,8 +72,9 @@ setMethod(f="[[<-",
               callNextMethod(x=x, i=i, j=j, value=value)
           })
 
-#' Subset an odf object
+#' @title Subset an ODF object
 #' 
+#' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
 #' 
 #' @param x a \code{odf} object.
@@ -103,12 +105,14 @@ setMethod(f="subset",
           })
 
 
-#' Plot an ODF object
+#' @title Plot an ODF Object
 #' 
-#' Plot data contained within an ODF object.
-#' 
-#' Uses \code{\link{oce.plot.ts}} to create panels of time-series plots for all
-#' the columns contained in the \code{odf} object.
+#' @description
+#' Plot data contained within an ODF object,
+#' using \code{\link{oce.plot.ts}} to create panels of time-series plots for all
+#' the columns contained in the \code{odf} object. This is crude, but \code{odf}
+#' objects are usually cast to other types, and those types have more useful
+#' plots.
 #' 
 #' @param x A \code{odf} object, e.g. one inheriting from \code{\link{odf-class}}.
 #' @author Dan Kelley
@@ -129,10 +133,9 @@ setMethod(f="plot",
           })
 
 
-#' Summarize an odf object
+#' @title Summarize an ODF Object
 #' 
-#' Summarizes some of the data in a \code{odf} object.
-#' 
+#' @description
 #' Pertinent summary information is presented, including the station name,
 #' sampling location, data ranges, etc.
 #' 
@@ -176,7 +179,10 @@ findInHeader <- function(key, lines) # local
         gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
 }
 
-#' Translate from ODF names to oce names
+#' @title Translate from ODF Names to Oce Names
+#'
+#' @description
+#' Translate data names in the ODF convention to similar names in the Oce convention.
 #'
 #' @details
 #' The following table gives the regular expressions that define recognized
@@ -301,16 +307,17 @@ ODFNames2oceNames <- function(names, PARAMETER_HEADER=NULL)
 }
 
 
-#' Create odf object from the output of \code{ODF::read_ODF()}
+#' @title Create ODF object from the output of \code{ODF::read_ODF()}
 #' 
+#' @description
 #' As of August 11, 2015, \code{ODF::read_ODF} returns a list with 9 elements,
 #' one named \code{DATA}, which is a \code{\link{data.frame}} containing the
 #' columnar data, the others being headers of various sorts.  The present
 #' function constructs an oce object from such data, facilitating processing
 #' and plotting with the general oce functions.
-#' 
-#' This function works by storing the 8 headers verbatim in the
-#' \code{odfHeaders} in the \code{metadata} slot. It copies some of the header
+#' This involves storing the 8 headers verbatim in the
+#' \code{odfHeaders} in the \code{metadata} slot, and also
+#' copying some of the header
 #' information into more standard names (e.g.  \code{metadata@longitude} is a
 #' copy of \code{metadata@odfHeader$EVENT_HEADER$INITIAL_LATITUDE}).  As for
 #' the \code{DATA}, they are stored in the \code{data} slot, after renaming
@@ -414,9 +421,9 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 }
 
 
-#' Read an ODF file, producing an oce object
+#' @title Read an ODF file
 #'
-#' @details
+#' @description
 #' ODF (Ocean Data Format) is a 
 #' format developed at the Bedford Institute of Oceanography and also used
 #' at other Canadian Department of Fisheries and Oceans (DFO) facilities.
@@ -426,6 +433,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' \code{read.odf} is still in development, with features being added as  a 
 #' project with DFO makes available more files.
 #'
+#' @details
 #' Note that some elements of the metadata are particular to ODF objects,
 #' e.g. \code{depthMin}, \code{depthMax} and \code{sounding}, which
 #' are inferred from ODF items named \code{MIN_DEPTH}, \code{MAX_DEPTH}
@@ -536,7 +544,7 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     res <- new("odf")
     res@metadata$header <- NULL
     res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                               conductivity=list(unit=expression(ratio), scale="")) # FIXME: guess on units
+                               conductivity=list(unit=expression(), scale="")) # FIXME: guess on units
     res@metadata$type <- type
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber

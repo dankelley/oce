@@ -3,7 +3,7 @@
 \docType{data}
 \name{topoWorld}
 \alias{topoWorld}
-\title{Global topographic dataset at half-degree resolution}
+\title{Global Topographic Dataset at Half-degree Resolution}
 \source{
 The binary ETOPO5 dataset was downloaded in late 2009 from the NOAA website,
 \url{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5/}, decoded,
@@ -17,8 +17,7 @@ data(topoWorld)
 Global topographic dataset at half-degree resolution, created by decimating the
 ETOPO5 dataset.  Its longitude ranges from -179.5 to 180, and its latitude
 ranges from -89.5 to 90.  Height is measured in metres above nominal sea level.
-}
-\details{
+
 The coarse resolution can be a problem in plotting depth contours along with
 coastlines in regions of steep topography. For example, near the southeast
 corner of Newfoundland, a 200m contour will overlap a coastline drawn with
@@ -39,11 +38,14 @@ imagep(topoWorld)
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
+  \code{\link{coastlineWorld}}, \code{\link{colors}},
+  \code{\link{ctdRaw}}, \code{\link{ctd}},
+  \code{\link{echosounder}}, \code{\link{landsat}},
   \code{\link{lisst}}, \code{\link{lobo}},
-  \code{\link{met}}, \code{\link{sealevel}},
-  \code{\link{section}}
+  \code{\link{met}}, \code{\link{rsk}},
+  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{sealevel}}, \code{\link{section}},
+  \code{\link{wind}}
 
 Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},

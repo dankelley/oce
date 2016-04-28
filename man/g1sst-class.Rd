@@ -3,7 +3,7 @@
 \docType{class}
 \name{g1sst-class}
 \alias{g1sst-class}
-\title{Class to hold G1SST satellite-model data}
+\title{Class to Hold G1SST Satellite-model Data}
 \description{
 G1SST is an acronym for global 1-km sea surface temperature, a product
 that combines satellite data with the model output. It is provided by
@@ -26,7 +26,7 @@ that turns off the model-based filling of cloud gaps.
 Dan Kelley
 }
 \references{
-1. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
+1. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
 }
 \seealso{
 Other things related to satellite data: \code{\link{plot,satellite-method}},

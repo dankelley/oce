@@ -1,5 +1,6 @@
-#' Class to store sealevel data
+#' @title Class to Store Sealevel Data
 #' 
+#' @description
 #' Class to store sealevel data, e.g. from a tide gauge, with standard slots
 #' \code{metadata}, \code{data} and \code{processingLog}.
 #' 
@@ -21,8 +22,9 @@
 setClass("sealevel", contains="oce")
 
 
-#' Sea-level data set, from Halifax Harbour
+#' @title Sealevel data for Halifax Harbour
 #' 
+#' @description
 #' This sample sea-level dataset is the 2003 record from Halifax Harbour in
 #' Nova Scotia, Canada.  For reasons that are not mentioned on the data archive
 #' website, the record ends on the 8th of October.
@@ -36,8 +38,9 @@ setClass("sealevel", contains="oce")
 #' where the csv file was downloaded from [1]. Note the correction of longitude
 #' sign, which is required because the data file has no indication that this is
 #' the western hemisphere.
+#'
 #' @family datasets provided with \code{oce}
-#' @family classes provided by \code{oce}
+#' @family things related to \code{sealevel} data
 NULL
 
 #' Sea-level data set acquired in 1975 at Tuktoyaktuk
@@ -82,9 +85,9 @@ NULL
 #' lines(time, detided, col="red")
 #' }
 #' 
-#' @family things related to \code{ctd} data
+#' @family datasets provided with \code{oce}
+#' @family things related to \code{sealevel} data
 NULL
-
 
 setMethod(f="initialize",
           signature="sealevel",
@@ -100,11 +103,10 @@ setMethod(f="initialize",
 
 
 
-#' Summarize a sealevel object
+#' @title Summarize a Sealevel Object
 #' 
+#' @description
 #' Summarizes some of the data in a sealevel object.
-#' 
-#' Pertinent summary information is presented.
 #' 
 #' @param object A \code{sealevel} object, i.e. one inheriting from \code{\link{sealevel-class}}.
 #' @param \dots further arguments passed to or from other methods.
@@ -138,10 +140,9 @@ setMethod(f="summary",
 
 
 
-#' Subset a sealevel object
+#' @title Subset a Sealevel Object
 #' 
-#' Subset a sealevel object
-#' 
+#' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}, but
 #' subsetting is only permitted by time.
 #' 
@@ -177,7 +178,7 @@ setMethod(f="subset",
  
 
 
-#' @title Extract Something From a \code{sealevel} Object
+#' @title Extract Something From a Sealevel Object
 #' @param x A sealevel object, i.e. one inheriting from \code{\link{sealevel-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{sealevel} data
@@ -187,7 +188,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{sealevel} Object
+#' @title Replace Parts of a Sealevel Object
 #' @param x An \code{sealevel} object, i.e. inheriting from \code{\link{sealevel-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{sealevel} data
@@ -212,11 +213,11 @@ setValidity("sealevel",
 
 
 
-#' Coerce data into sea-level dataset
+#' @title Coerce Data Into a Sealevel Object
 #' 
+#' @description
 #' Coerces a dataset (minimally, a sequence of times and heights) into a
 #' sealevel dataset.
-#' 
 #' The arguments are based on the standard data format, as were described in a
 #' file formerly available at [1].
 #' 
@@ -256,7 +257,6 @@ setValidity("sealevel",
 #' with them.
 #' @references \code{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (this link
 #' worked for years but failed at least temporarily on December 4, 2016).
-#' @keywords misc
 #' @examples
 #' library(oce)
 #' 
@@ -326,10 +326,9 @@ as.sealevel <- function(elevation,
 }
 
 
-#' Plot sealevel data
+#' @title Plot Sealevel Data
 #' 
-#' Plot a summary diagram for sealevel data.
-#' 
+#' @description
 #' Creates a plot for a sea-level dataset, in one of two varieties.  Depending
 #' on the length of \code{which}, either a single-panel or multi-panel plot is
 #' drawn.  If there is just one panel, then the value of \code{par} used in
@@ -578,11 +577,13 @@ setMethod(f="plot",
 
 
 
-#' Read a sea-level data file
+#' @title Read a Sealevel File
 #' 
+#' @description
 #' Read a data file holding sea level data.  BUG: the time vector assumes GMT,
 #' regardless of the GMT.offset value.
 #' 
+#' @details
 #' This function starts by scanning the first line of the file, from which it
 #' determines whether the file is in one of two known formats: type 1, the
 #' format used at the Hawaii archive centre, and type 2, the
@@ -611,7 +612,6 @@ setMethod(f="plot",
 #' for years but failed at least temporarily on December 4, 2016).  The MEDS
 #' repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
 #' provides Type 2 data.
-#' @keywords misc
 #' @examples
 #' \dontrun{
 #' library(oce)
@@ -777,5 +777,4 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
                                               paste('read.sealevel(file="', fileOrig, '", tz="', tz, '")', sep="", collapse=""))
     res
 }
-
 

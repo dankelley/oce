@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,met-method}
 \alias{plot,met-method}
-\title{Plot meteorological data}
+\title{Plot Met Data}
 \usage{
 \S4method{plot}{met}(x, which = 1:4, mgp = getOption("oceMgp"),
   mar = c(mgp[1] + 1, mgp[1] + 1, mgp[1] + 1, mgp[1] + 1), tformat,
@@ -38,15 +38,13 @@ be printed.}
 \item{\dots}{optional arguments passed to plotting functions.}
 }
 \description{
-Plot meteorological data
-}
-\details{
 Creates a multi-panel summary plot of data measured in a meteorological data
 set.  cast. The panels are controlled by the \code{which} argument.
 Normally, 4 panels are specified with the \code{which}, but it can also be
 useful to specify less than 4 panels, and then to draw other panels after
 this call.
-
+}
+\details{
 If more than one panel is drawn, then on exit from \code{plot.met}, the
 value of \code{par} will be reset to the value it had before the function
 call.  However, if only one panel is drawn, the adjustments to \code{par}
@@ -83,9 +81,11 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
-Other things related to \code{met} data: \code{\link{as.met}},
+Other things related to \code{met} data: \code{\link{[[,met-method}},
+  \code{\link{[[<-,met-method}}, \code{\link{as.met}},
   \code{\link{met-class}}, \code{\link{met}},
   \code{\link{read.met}}, \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}

@@ -2,12 +2,12 @@
 % Please edit documentation in R/adp.R
 \name{xyzToEnuAdp}
 \alias{xyzToEnuAdp}
-\title{Convert XYZ to ENU coordinates}
+\title{Convert ADP From XYZ to ENU Coordinates}
 \usage{
 xyzToEnuAdp(x, declination = 0, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{an object of class \code{"adp"}.}
+\item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
 
 \item{declination}{magnetic declination to be added to the heading after
 "righting" (see below), to get ENU with N as "true" north.}
@@ -91,6 +91,10 @@ Oceanography.
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
   \code{\link{adp}}, \code{\link{as.adp}},
+  \code{\link{beamName}}, \code{\link{beamToXyzAdp}},
+  \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
+  \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
+  \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
   \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
@@ -100,6 +104,8 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}},
   \code{\link{subset,adp-method}},
-  \code{\link{summary,adp-method}}
+  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnu}}
 }
 

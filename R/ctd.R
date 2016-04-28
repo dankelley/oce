@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to store CTD (or general hydrographic) Data
+#' Class to Store CTD (or general hydrographic) Data
 #'
 #' Class to store hydrographic data such as measured with a CTD (conductivity,
 #' temperature, depth) instrument.
@@ -58,7 +58,6 @@
 #' formats used in CTD files. Data can also be assembled into
 #' \code{ctd} objects with \code{\link{as.ctd}}.
 #'
-#'
 #' Statistical summaries are provided by \code{\link{summary,ctd-method}}, while
 #' \code{\link{show}} displays an overview.
 #'
@@ -84,7 +83,7 @@
 setClass("ctd", contains="oce")
 
 
-#' A CTD profile in Halifax Harbour.
+#' A CTD profile in Halifax Harbour
 #' 
 #' This is a CTD profile measured in Halifax Harbour in 2003, based
 #' on \code{\link{ctdRaw}}, but trimmed to just the downcast with
@@ -118,7 +117,7 @@ setClass("ctd", contains="oce")
 #' @family things related to \code{ctd} data
 NULL
 
-#' Seawater CTD profile, without trimming of extraneous data.
+#' Seawater CTD Profile, Without Trimming of Extraneous Data
 #' 
 #' 
 #' This is sample CTD profile provided for testing.  It includes not just the
@@ -144,14 +143,15 @@ NULL
 #' @seealso A similar dataset (trimmed to the downcast) is available as
 #' \code{\link{ctd}}.
 #' 
+#' @family things related to \code{ctd} data
 #' @family datasets provided with \code{oce}
 NULL
 
 
-##' DEVELOPERS: please pattern functions and documentation on this, for uniformity.
-##' DEVELOPERS: Youi will need to change the docs, and the 3 spots in the code
-##' DEVELOPERS: marked '# DEVELOPER 1:', etc.
-#' @title Handle flags in CTD objects
+## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
+## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
+## DEVELOPERS: marked '# DEVELOPER 1:', etc.
+#' @title Handle Flags in CTD Objects
 #' @details
 #' If \code{flags} and \code{actions} are not provided, the
 #' default is to use WHP (World Hydrographic Program) flags [1], in which the
@@ -234,12 +234,12 @@ setMethod(f="initialize",
               .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
               names <- names(.Object@data)
               .Object@metadata$names <- names
-              .Object@metadata$labels <- paste(toupper(substring(names,1,1)), substring(names,2),sep="")
+              .Object@metadata$labels <- titleCase(names) # paste(toupper(substring(names,1,1)), substring(names,2),sep="")
               ##.Object@metadata$filename <- filename
               if (missing(units)) {
                   .Object@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
                                                  salinity=list(unit=expression(), scale="PSS-78"),
-                                                 conductivity=list(unit=expression(ratio), scale=""),
+                                                 conductivity=list(unit=expression(), scale=""),
                                                  pressure=list(unit=expression(dbar), scale=""),
                                                  depth=list(unit=expression(m), scale=""))
               } else {
@@ -257,7 +257,7 @@ setMethod(f="initialize",
           })
 
 
-#' Summarize a \code{ctd} Object
+#' Summarize a CTD Object
 #' 
 #' Summarizes some of the data in a \code{ctd} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
@@ -309,43 +309,108 @@ setMethod(f="summary",
               }
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
+              names <- names(object@data)
+              namesOriginal <- attr(object@data, "namesOriginal")
+              if (!is.null(namesOriginal)) {
+                  cat(sprintf("%30s %20s\n", "Oce Name", "SBE Name"))
+                  cat(sprintf("%30s %20s\n", paste(rep("-", 30), collapse=""), paste(rep("-", 20), collapse="")))
+                  for (i in seq_along(names)) {
+                      cat(sprintf("%30s %20s\n", names[i], namesOriginal[i]))
+                  }
+              }
               callNextMethod()
           })
 
-#' @title Extract Parts of a \code{ctd} Object
+#' @title Extract Parts of a CTD Object
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#' @template sub_subTemplate
 #'
 #' @examples
 #' data(ctd)
 #' head(ctd[["temperature"]])
 #'
 #' @section Details of the specialized \code{ctd} method:
-#' The first step \code{[[,ctd-method} takes is to address requests
-#' for inferences about data stored in \code{\link{ctd-class}}
-#' objects. For example, these objects hold in-situ temperature,
-#' but users often need potential temperatures, and so this can
-#' be calculated and returned, even though the information may
-#' not be in the data object. Thus, \code{x[["temperature"]]}
-#' (or \code{x[["t"]]}) retrieves in-situ temperature stored within \code{x}, while
-#' \code{x[["theta"]]} (or \code{x[["potential temperature"]]})
-#' give potential temperature. Similarly, \code{x[["temperature68"]]}
-#' can be used to convert to the IPTS-1968 temperature scale. The
-#' "conservative temperature" of the Gibbs Seawater (GSW) formulation is
-#' available as \code{x[["conservative temperature"]]} (or 
-#' \code{x[["CT"]]}).  The GSW reference salinity is \code{x[["SR"]]},
-#' and preformed salinity is \code{x[["Sstar"]]}.
 #'
-#' Similarly, a ctd object normally contains pressure, but both
-#' vertical coordinate and depth can be obtained, with 
-#' \code{x[["z"]]} and \code{x[["depth"]]}, respectively.
+#' Some uses of \code{[[,ctd-method} involve direct retrieval of
+#' items within the \code{data} slot of the \code{ctd} object, 
+#' while other uses involve calculations based on items in that
+#' \code{data} slot. For an example, all \code{ctd} objects
+#' should hold an item named \code{temperature} in the \code{data}
+#' slot, so for example \code{x[["temperature"]]} will retrieve that
+#' item. By contrast, \code{x[["sigmaTheta"]]} is taken to be a
+#' request to compute \eqn{\sigma_\theta}{sigma[theta]}, and so
+#' it yields a call to \code{\link{swTheta}(x)} \emph{even if}
+#' the \code{data} slot of \code{x} might happen to contain an item
+#' named \code{theta}. This can be confusing at first, but it tends
+#' to lead to fewer surprises in everyday work, for otherwise the
+#' user would be forced to check the contents of any \code{ctd}
+#' object under analysis, to determine whether that item will be looked
+#' up or computed. Nothing is lost in this scheme, since the data
+#' within the object are always accessible with a direct call, e.g.
+#' \code{x@data$sigmaTheta}, or a with \code{\link{oceGetData}}.
 #'
-#' In addition, some specialized quantities are also provided, e.g. 
-#' density ratio \code{x[["Rrho"]]} (computed with \code{\link{swRrho}(x)}),
-#' spice \code{x[["spice"]]} (computed with \code{\link{swSpice}(x)}),
-#' and the square of buoyancy frequency \code{x[["N2"]]} (calculated
-#' with \code{\link{swN2}(x)}).
+#' This preference for computed over stored quantities is accomplished
+#' by first checking for computed quantities, and then falling
+#' back to the general \code{\link{[[}} method if no match is found.
+#' The computed quantities are as follows.
 #'
-#' @template sub_subTemplate
+#' \itemize{
+#'
+#' \item{\code{CT} or \code{Conservative Temperature}: Conservative Temperature,
+#' computed with \code{\link[gsw]{gsw_CT_from_t}} in the \code{gsw} package.}
+#'
+#' \item{\code{depth} Depth in metres below the surface, computed with \code{\link{swDepth}(x)}.}
+#'
+#' \item{\code{N2} Square of Brunt-Vaisala frequency, computed  with \code{\link{swN2}(x)}.}
+#'
+#' \item{\code{potential temperature}, potential temperature in the UNESCO formulation,
+#' computed with \code{\link{swTheta}(x)}. This is a synonym for \code{theta}.}
+#'
+#' \item{\code{Rrho} density ratio, computed with \code{\link{swRrho}(x)}.}
+#'
+#' \item{\code{SA} or \code{Absolute Salinity}: Absolute Salinity,
+#' computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.}
+#'
+#' \item{\code{sigmaTheta} a form of potential density anomaly, computed with
+#' \code{\link{swSigmaTheta}(x)}.}
+#'
+#' \item{\code{sigma0} equal to \code{sigmaTheta}, i.e. potential density anomaly
+#' referenced to a pressure of 0dbar, computed with \code{\link{swSigma0}(x)}.}
+#'
+#' \item{\code{sigma1} potential density anomaly
+#' referenced to a pressure of 1000dbar, computed with \code{\link{swSigma1}(x)}.}
+#'
+#' \item{\code{sigma2} potential density anomaly
+#' referenced to a pressure of 2000dbar, computed with \code{\link{swSigma2}(x)}.}
+#'
+#' \item{\code{sigma3} potential density anomaly
+#' referenced to a pressure of 3000dbar, computed with \code{\link{swSigma3}(x)}.}
+#'
+#' \item{\code{sigma4} potential density anomaly
+#' referenced to a pressure of 4000dbar, computed with \code{\link{swSigma4}(x)}.}
+#'                                        
+#' \item{\code{SP} salinity on the Practical Salinity Scale, which is \code{x@data$salinity}.}
+#'
+#' \item{\code{spice} a variable that is in some sense orthogonal to density, calculated
+#' with \code{\link{swSpice}(x)}.}
+#'
+#' \item{\code{SR} Reference Salinity computed with \code{\link[gsw]{gsw_SR_from_SP}} in
+#' the \code{gsw} package.}
+#'
+#' \item{\code{Sstar} Preformed Salinity computed with \code{\link[gsw]{gsw_SR_from_SP}} in
+#' the \code{gsw} package.}
+#'
+#' \item{\code{temperature68}, temperature on the IPTS-1968 scale, computed
+#' with \code{\link{T68fromT90}(x)}.}
+#'
+#' \item{\code{theta}, potential temperature in the UNESCO formulation,
+#' computed with \code{\link{swTheta}(x)}. This is a synonym for \code{potential temperature}.}
+#'
+#' \item{\code{z} Vertical coordinate in metres above the surface, computed with
+#' \code{\link{swZ}(x)}.}
+#'
+#' }
+#'
 #' @family things related to \code{ctd} data
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
@@ -363,11 +428,11 @@ setMethod(f="[[",
                   gsw::gsw_Sstar_from_SA(SA=SA, p=x@data$pressure,
                                          longitude=x@metadata$longitude,
                                          latitude=x@metadata$latitude)
-              } else if (i == "temperature" || i == "t") { # FIXME: document "t" part
+              } else if (i == "temperature") {
                   x@data$temperature
               } else if (i == "temperature68") {
                   T68fromT90(x@data$temperature)
-              } else if (i == "pressure" || i == "p") {
+              } else if (i == "pressure") {
                   x@data$pressure
               } else if (i == "longitude") {
                   if ("longitude" %in% names(x@data)) x@data$longitude else x@metadata$longitude
@@ -377,6 +442,16 @@ setMethod(f="[[",
                   swN2(x)
               } else if (i == "sigmaTheta") {
                   swSigmaTheta(x)
+              } else if (i == "sigma0") {
+                  swSigma0(x)
+              } else if (i == "sigma1") {
+                  swSigma1(x)
+              } else if (i == "sigma2") {
+                  swSigma2(x)
+              } else if (i == "sigma3") {
+                  swSigma3(x)
+              } else if (i == "sigma4") {
+                  swSigma4(x)
               } else if (i %in% c("theta", "potential temperature")) {
                   swTheta(x)
               } else if (i == "Rrho") {
@@ -427,9 +502,8 @@ setMethod(f="[[",
               }
           })
 
-#' @title Replace Parts of a \code{ctd} Object
+#' @title Replace Parts of a CTD Object
 #' @param x A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}
-#' @family things related to \code{ctd} data
 #' @template sub_subsetTemplate
 #'
 #' @examples
@@ -440,6 +514,8 @@ setMethod(f="[[",
 #' # Increase the salinity by 0.01.
 #' ctd[["salinity"]] <- 0.01 + ctd[["salinity"]] # acts in data
 #' summary(ctd)
+#'
+#' @family things related to \code{ctd} data
 setMethod(f="[[<-",
           signature(x="ctd", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) { # FIXME: use j for e.g. times
@@ -447,7 +523,7 @@ setMethod(f="[[<-",
           })
 
 
-#' Coerce data into ctd dataset.
+#' Coerce data into CTD dataset
 #' 
 #' Assemble data into a \code{\link{ctd-class}} dataset.
 #' 
@@ -517,7 +593,7 @@ setMethod(f="[[<-",
 #' 
 #' @param units an optional list containing units.  If not supplied, a default of
 #' \code{list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-#'   salinity=list(unit=expression(ratio), scale="",
+#'   salinity=list(unit=expression(), scale="",
 #'   pressure=list(unit=expression(dbar), scale="")} is used. This is quite
 #' typical of archived datasets, but for some instrumental files it will make
 #' sense to use \code{salinity=list(unit=expression(uS/cm), scale="")} or 
@@ -761,8 +837,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@data$salinity <- salinity
         res@data$temperature <- temperature
         res@data$conductivity <- conductivity
-        res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
-                            name="sigmaTheta", label="Sigma Theta", unit=list(unit=expression(kg/m^3), scale=""))
+        ## res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
+        ##                    name="sigmaTheta", label="Sigma Theta", unit=list(unit=expression(kg/m^3), scale=""))
         ## copy relevant metadata
         if ("date" %in% mnames) res@metadata$date <- o@metadata$date
         if ("deploymentType" %in% mnames) res@metadata$deploymentType <- o@metadata$deploymentType
@@ -897,13 +973,13 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if (nS != np)
             stop("lengths of salinity and pressure must match, but they are ", nS, " and ", np)
         if (missing(scan))
-            scan <- as.numeric(seq_along(salinity))
-        data <- list(salinity=salinity,
+            scan <- seq_along(salinity)
+        data <- list(scan=scan,
+                     salinity=salinity,
                      temperature=temperature,
                      pressure=pressure,
                      sigmaTheta=swSigmaTheta(salinity, temperature, pressure)) # FIXME: what about gsw?
         res@metadata$units$sigmaTheta <- list(unit=expression(kg/m^3), scale="")
-        if (!missing(scan)) data$scan <- as.vector(scan)
         if (!missing(conductivity)) data$conductivity <- as.vector(conductivity)
         if (!missing(quality)) data$quality <- quality
         if (!missing(oxygen)) data$oxygen <- oxygen
@@ -931,7 +1007,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ##20150712                                              "inferred water depth from maximum pressure")
         ##20150712 }
         names <- names(data)
-        labels <- paste(toupper(substring(names,1,1)),substring(names,2),sep="")
+        labels <- titleCase(names) # paste(toupper(substring(names,1,1)),substring(names,2),sep="")
         if (length(longitude) != length(latitude))
             stop("lengths of longitude and latitude must match")
         if (1 < length(longitude) && length(longitude) != length(salinity))
@@ -988,7 +1064,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 }
 
 
-#' Add a column to the data slot of a ctd object
+#' Add a Column to the Data Slot of a CTD Object
 #'
 #' Add a column to the \code{data} slot of an object of
 #' \code{\link{ctd-class}}, also updating the \code{metadata}
@@ -1055,7 +1131,7 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
             if (is.list(unit)) {
                 res@metadata$units[[name]] <- unit
             } else {
-                stop("unit should be a list containing two items")
+                res@metadata$units[[name]] <- list(unit=as.expression(unit[[1]]), scale=unit[[2]])
             }
         } else {
             warning("ignoring unit since it not of length 1 or 2")
@@ -1067,7 +1143,7 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
 }
 
 
-#' Decimate a CTD profile.
+#' Decimate a CTD profile
 #' 
 #' Interpolate a CTD profile to specified pressure values.
 #' 
@@ -1085,6 +1161,8 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
 #' xd <- ctdDecimate(x)
 #' xd[["sigmaTheta"]] <- swSigmaTheta(xd[["salinity"]],xd[["temperature"]],xd[["pressure"]])
 #' }
+#'
+#' @template flagDeletionTemplate
 #' 
 #' @param x a \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
 #' 
@@ -1159,6 +1237,8 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
     ## if (!inherits(x, "ctd"))
     ##     stop("method is only for objects of class '", "ctd", "'")
     res <- x
+    res[["flags"]] <- NULL
+    warning("Data flags are omitted from the decimated ctd object. Use handleFlags() first to remove bad data.")
     n <- length(x@data$pressure)
     if (n < 2) {
         warning("too few data to ctdDecimate()")
@@ -1317,7 +1397,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
     res
 }
 
-#' Find profiles within a towyow CTD record
+#' Find Profiles within a Tow-Yow CTD Record
 #' 
 #' Examine the pressure record looking for extended periods of either ascent or descent, and return
 #' either indices to these events or a vector of CTD records containing the events.
@@ -1457,10 +1537,11 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     }
 }
 
-#' Read an ODF-type CTD file
+#' Read a CTD file in ODF format
 #' @template readCtdTemplate
+#'
 #' @details
-#' \code{read.ctd.odf()} reads files stored in Ocean Data Format, used in
+#' \code{read.ctd.odf} reads files stored in Ocean Data Format, used in
 #' some Canadian hydrographic databases.
 #'
 #' @references
@@ -1468,8 +1549,8 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #' described to some extent in the documentation for \code{\link{read.odf}}.  It
 #' is not clear that ODF format is handled correctly in \code{read.ctd.odf}, or
 #' the more general function \code{\link{read.odf}}, because the format seems to
-#' be somewhat variable and some of the R code is designed mainly by examination
-#' of some particular files being used in the author's research.
+#' be somewhat variable and so the R code was written in an ad-hoc way, to handle
+#' a few files being used in the author's research.
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -1480,13 +1561,13 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     if (!is.null(station))
         res@metadata$station <- station
     res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                               conductivity=list(unit=expression(ratio), scale="")) # FIXME just a guess for ODV
+                               conductivity=list(unit=expression(), scale="")) # FIXME just a guess for ODV
     oceDebug(debug, "} # read.ctd.odf()")
     res
 }
 
 
-#' Trim start/end portions of a CTD cast
+#' Trim Beginning and Ending of a CTD cast
 #' 
 #' Often in CTD profiling, the goal is to isolate only the downcast, discarding measurements made in
 #' the air, in an equilibration phase in which the device is held below the water surface, and then the
@@ -1494,6 +1575,11 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 #' \code{method="downcast"}, although it is almost always best to use \code{\link{plotScan}} to
 #' investigate the data, and then use the \code{method="index"} or \code{method="scan"} method based on
 #' visual inspection of the data.
+#'
+#' \code{ctdTrim} begins by examining the pressure differences between subsequent samples. If
+#' these are all of the same value, then the input \code{ctd} object is returned, unaltered.
+#' This handles the case of pressure-binned data. However, if the pressure difference
+#' varies, a variety of approaches are taken to trimming the dataset.
 #' 
 #' \itemize{
 #'   \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to only data for
@@ -1592,12 +1678,18 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
     methodIsFunction <- !missing(method) && is.function(method)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
+    pressure <- x[["pressure"]]
+    if (1 == length(unique(diff(pressure)))) {
+        oceDebug(debug, "diff(p) is constant, so return input unaltered\n", unindent=1)
+        oceDebug(debug, "} # ctdTrim()\n", unindent=1)
+        return(x)
+    }
     if (!("scan" %in% names(x@data))) {
-        x@data$scan <- seq_along(x@data[["pressure"]])
+        x@data$scan <- seq_along(pressure)
     }
     res <- x
     if (!methodIsFunction) {
-        n <- length(x@data$pressure)
+        n <- length(pressure)
         if (n < 2) {
             warning("too few data to ctdTrim()")
             return(res)
@@ -1676,7 +1768,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 }
             }
             oceDebug(debug, 'pmin=', pmin, '\n')
-            keep <- (x@data$pressure > pmin) # 2. in water (or below start depth)
+            keep <- (pressure > pmin) # 2. in water (or below start depth)
             ## 2014-01-08 delta.p <- diff(x@data$pressure)  # descending
             ## 2014-01-08 delta.p <- c(delta.p[1], delta.p) # to get right length
             ## 2014-01-08 ## previous to this time, we had
@@ -1693,10 +1785,10 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             ##2015-04-04 max.spot <- which.max(smooth(x@data$pressure[trim.top:trim.bottom],kind="3R"))
             ##2015-04-04 max.location <- trim.top + max.spot
             ##2015-04-04 keep[max.location:n] <- FALSE
-            max.location <- which.max(smooth(x@data$pressure, kind="3R"))
+            max.location <- which.max(smooth(pressure, kind="3R"))
             keep[max.location:n] <- FALSE
             oceDebug(debug, "removed data at indices from ", max.location,
-                     " (where pressure is ", x@data$pressure[max.location], ") to the end of the data\n", sep="")
+                     " (where pressure is ", pressure[max.location], ") to the end of the data\n", sep="")
             ## 2011-02-04 if (FALSE) {
             ## 2011-02-04     ## deleted method: slowly-falling data
             ## 2011-02-04     delta.p.sorted <- sort(delta.p)
@@ -1740,7 +1832,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                     oceDebug(debug-1, "bilinearB s0=", s0, "dpds=", dpds, "\n")
                     ifelse(s < s0, 0, dpds*(s-s0))
                 }
-                pp <- x@data$pressure[keep]
+                pp <- pressure[keep]
                 pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
                 ss <- x@data$scan[keep]
                 ##look <- smooth(pp) < 20 # smooth because in-air can sometimes be crazy high
@@ -1764,9 +1856,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                     oceDebug(debug, "method[2]=\"A\"\n")
                     t <- try(m <- nls(pp ~ bilinearA(ss, s0, p0, dpds),
                                       start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
-                    if (class(t) == "try-error") stop("trimming failed to converge with submethod A")
-                    C <- coef(m)
-                    scanStart <- max(1, floor(0.5 + C["s0"]))
+                    scanStart <- if (class(t) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
                     ##> oceDebug(debug, "method[2]=\"A\", so using single-segment model\n")
                     ##> sGuess <- mean(ss, na.rm=TRUE)
                     ##> pGuess <- 0
@@ -1785,9 +1875,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                     oceDebug(debug, "method[3]=\"B\" so using two-segment model with zero near-surface pressure\n")
                     t <- try(m <- nls(pp ~ bilinearB(ss, s0, dpds),
                                       start=list(s0=s0, dpds=dpds0)), silent=TRUE)
-                    if (class(t) == "try-error") stop("trimming failed to converge with submethod B")
-                    C <- coef(m)
-                    scanStart <- max(1, floor(0.5 + C["s0"]))
+                    scanStart <- if (class(t) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
                 } else {
                     stop("unknown submethod '", submethod, "'")
                 }
@@ -1833,7 +1921,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
     ##     waterDepthWarning <- TRUE
     ## }
     if (removeDepthInversions) {
-        badDepths <- c(FALSE, diff(res@data$pressure) <= 0)
+        badDepths <- c(FALSE, diff(pressure) <= 0)
         nbad <- sum(badDepths)
         if (nbad > 0) {
             for (col in seq_along(x@data))
@@ -1853,7 +1941,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 }
 
 
-#' Update a CTD header
+#' Update a CTD Header
 #' 
 #' Update the header of a \code{ctd} object, e.g. adjusting \code{nvalues} and the
 #' \code{span} of each column. This is done automatically by \code{ctdTrim}, for
@@ -1911,7 +1999,7 @@ ctdUpdateHeader <- function (x, debug = FALSE)
 }
 
 
-#' Write a CTD data object as a .csv file
+#' Write a CTD Data Object as a CSV File
 #' 
 #' Writes a comma-separated file containing the data frame stored in
 #' \code{object@data}.  The file is suitable for reading with a spreadsheet, or
@@ -1954,7 +2042,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 }
 
 
-#' Plot seawater CTD data
+#' Plot CTD Data
 #' 
 #' Plot CTD data, by default in a four-panel display showing (a) profiles of
 #' salinity and temperature, (b) profiles of density and the square of buoyancy
@@ -2159,7 +2247,6 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' 
 #' @param ... Optional arguments passed to plotting functions. A common example is
 #' to set \code{df}, for use in \link{swN2} calculations.
-#' 
 #' 
 #' @seealso
 #' The documentation for \code{\link{ctd-class}} explains the structure of CTD
@@ -2755,8 +2842,9 @@ setMethod(f="plot",
           })
 
 
-#' Subset a CTD object
+#' Subset a CTD Object
 #'
+#' @description
 #' This function is somewhat analogous to
 #' \code{\link{subset.data.frame}}, but only one independent variable may be
 #' used in \code{subset} in any call to the function, which means that
@@ -2794,7 +2882,7 @@ setMethod(f="subset",
           })
 
 
-#' Plot seawater data in a low-level fashion
+#' Plot CTD data in a Low-Level Fashion
 #' 
 #' Plot CTD data as time-series against scan number, to help with trimming
 #' extraneous data from a CTD cast.
@@ -2805,6 +2893,12 @@ setMethod(f="subset",
 #' for pressure vs scan, 2 for \code{diff(pressure)} vs scan, 3 for temperature vs
 #' scan, and 4 for salinity vs scan.
 #' 
+#' @param xtype Character string indicating variable for the x axis. May be
+#' \code{"scan"} (the default) or \code{"time"}. In the former case, a
+#' \code{scan} variable will be created using \code{\link{seq_along}},
+#' if necessary. In the latter case, an error results if the \code{data}
+#' slot of \code{x} lacks a variable called \code{time}.
+#'
 #' @param type Line type.
 #' 
 #' @param mgp Three-element numerical vector to use for \code{par(mgp)}, and also
@@ -2826,8 +2920,8 @@ setMethod(f="subset",
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{ctd} data
-plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
-                     mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]), ...)
+plotScan <- function(x, which=1, xtype="scan",
+                     type='l', mgp=getOption("oceMgp"), mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]), ...)
 {
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
@@ -2836,55 +2930,48 @@ plotScan <- function(x, which=1, type='l', mgp=getOption("oceMgp"),
         par(mfrow=c(nw,1))
     par(mar=mar)
     par(mgp=mgp)
-    scan <- if (("scan" %in% names(x@data))) x[["scan"]] else seq_along(x@data$pressure)
+    xtype <- match.arg(xtype, c("scan", "time"))
     for (w in which) {
-        if (w == 1) {
-            plot(scan, x@data$pressure, ylab=resizableLabel("p", "y"), xlab="Scan", yaxs='r', type=type, ...)
-        } else if (w == 2) {
-            dp <- diff(x@data$pressure)
-            dp <- c(dp, dp[length(dp)])
-            plot(scan, dp, ylab="diff(pressure)", xlab="Scan", yaxs='r', type=type, ...)
-        } else if (w == 3) {
-            dp <- diff(x@data$pressure)
-            dp <- c(dp, dp[length(dp)])
-            plot(scan, x[["temperature"]], ylab=resizableLabel("T", "y"),
-                 xlab="Scan", yaxs='r', type=type, ...)
-        } else if (w == 4) {
-            dp <- diff(x@data$pressure)
-            dp <- c(dp, dp[length(dp)])
-            plot(scan, x[["salinity"]], ylab=resizableLabel("S", "y"),
-                 xlab="Scan", yaxs='r', type=type, ...)
-        } else {
-            stop("unknown 'which'; must be in 1:4")
+        if (xtype == "scan") {
+            xvar <- if (("scan" %in% names(x@data))) x[["scan"]] else seq_along(x@data$pressure)
+            if (w == 1) {
+                plot(xvar, x@data$pressure, xlab="Scan", ylab=resizableLabel("p", "y"),
+                     yaxs='r', type=type, ...)
+            } else if (w == 2) {
+                plot(xvar[-1], diff(x@data$pressure), xlab="Scan", ylab="diff(pressure)",
+                     yaxs='r', type=type, ...)
+            } else if (w == 3) {
+                plot(xvar, x[["temperature"]], xlab="Scan", ylab=resizableLabel("T", "y"),
+                     yaxs='r', type=type, ...)
+            } else if (w == 4) {
+                plot(xvar, x[["salinity"]], xlab="Scan", ylab=resizableLabel("S", "y"),
+                     yaxs='r', type=type, ...)
+            } else {
+                stop("unknown 'which'; must be in 1:4")
+            }
+        } else if (xtype == "time") {
+            if (!("time" %in% names(x@data)))
+                stop("there is no 'time' in this ctd object")
+            if (w == 1) {
+                oce.plot.ts(x@data$time, x@data$pressure, ylab=resizableLabel("p", "y"),
+                            yaxs='r', type=type, ...)
+            } else if (w == 2) {
+                oce.plot.ts(x@data$time[-1], diff(x@data$pressure), ylab="diff(pressure)",
+                            yaxs='r', type=type, ...)
+            } else if (w == 3) {
+                oce.plot.ts(x@data$time, x[["temperature"]], ylab=resizableLabel("T", "y"),
+                            yaxs='r', type=type, ...)
+            } else if (w == 4) {
+                oce.plot.ts(x@data$time, x[["salinity"]], ylab=resizableLabel("S", "y"),
+                            yaxs='r', type=type, ...)
+            } else {
+                stop("unknown 'which'; must be in 1:4")
+            }
         }
     }
-    ## mtext(x@metadata$station, side=3, adj=1, cex=par('cex'))
-    ## mtext(latlonFormat(x@metadata$latitude, x@metadata$longitude, digits=5), side=3, adj=0, cex=par('cex'))
-    ## if (1 <= adorn.length) {
-    ##     t <- try(eval(adorn[1]), silent=TRUE)
-    ##     if (class(t) == "try-error")
-    ##         warning("cannot evaluate adorn[", 1, "]\n")
-    ## }
-
-    ## ##    par(mar=c(4,4,1,4)) # bot left top right
-    ## Slen <- length(x@data$salinity)
-    ## Tlen <- length(x@data$temperature)
-    ## if (Slen != Tlen)
-    ##     stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
-    ## plot(x[[name]], x[["temperature"]], xlab="scan", ylab=resizableLabel("T", "y"),
-    ##      yaxs='r', type=type)
-    ## grid()
-    ## if (2 <= adorn.length) {
-    ##     t <- try(eval(adorn[2]), silent=TRUE)
-    ##     if (class(t) == "try-error")
-    ##         warning("cannot evaluate adorn[", 2, "]\n")
-    ## }
-    ## plot(x[[name]], x[['salinity']], xlab="scan", ylab=resizableLabel("S", "y"),
-    ##      yaxs='r', type=type)
-    ## grid()
 }
 
-#' Read a general CTD file
+#' Read a General CTD File
 #' @template readCtdTemplate
 #' @param type If \code{NULL}, then the first line is studied, in order to
 #' determine the file type.  If \code{type="SBE19"}, then a \emph{Seabird 19}, or
@@ -2972,7 +3059,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=
     res
 }
 
-#' Translate WOCE data names to \code{oce} data names
+#' Translate WOCE Data Names to Oce Data Names
 #'
 #' Translate WOCE-style names to \code{oce} names, using \code{\link{gsub}}
 #' to match patterns. For example, the pattern \code{"CTDOXY.*"} is taken
@@ -2982,6 +3069,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=
 #'
 #' @return vector of strings holding \code{oce}-style names.
 #' @author Dan Kelley
+#' @family things related to \code{ctd} data
 woceNames2oceNames <- function(names)
 {
     ## FIXME: this almost certainly needs a lot more translations. The next comment lists some that
@@ -2989,24 +3077,29 @@ woceNames2oceNames <- function(names)
     ## FIXME: list, partly because the present function should be documented, and that documentation
     ## FIXME: should list a source.
     ## SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
-    names <- gsub("CTDOXY.*", "oxygen", names)
-    names <- gsub("CTDPRS.*", "pressure", names)
-    names <- gsub("CTDSAL.*", "salinity", names)
-    names <- gsub("CTDTMP.*", "temperature", names)
-    names <- gsub("OXYGEN.*", "oxygen", names)
-    names <- gsub("SALNTY.*", "salinityBottle", names)
+    names <- gsub("_FLAG_W", "Flag", names)
+    names <- gsub("CTDOXY", "oxygen", names)
+    names <- gsub("CTDPRS", "pressure", names)
+    names <- gsub("CTDSAL", "salinity", names)
+    names <- gsub("CTDTMP", "temperature", names)
+    names <- gsub("OXYGEN", "oxygen", names)
+    names <- gsub("SALNTY", "salinityBottle", names)
+    names <- gsub("SILCAT", "silicate", names)
+    names <- gsub("NITRIT", "nitrite", names)
+    names <- gsub("NO2+NO3", "nitrite+nitrate", names)
+    names <- gsub("PHSPHT", "phosphate", names)
     names
 }
 
-#' Read a WOCE-type CTD file
+#' Read a WOCE-type CTD file with First Word "CTD"
 #' @template readCtdTemplate
 #'
 #' @details
 #' \code{read.ctd.woce()} reads files stored in the exchange format used
-#' by the World Ocean Circulation Experiment (WOCE), i.e. the first 4 characters
-#' of the first line being ``\code{CTD,}''), and also in a rarer format with
-#' the first 3 characters being ``\code{CTD}'' followed by a blank or the end of
-#' end of the line.
+#' by the World Ocean Circulation Experiment (WOCE), in which the first 4
+#' characters are ``\code{CTD,}''. It also also in a rarer format with
+#' the first 3 characters are \code{CTD}'' followed by a blank or the end
+#' of the line.
 #'
 #' @references
 #' The WOCE-exchange format is described at
@@ -3119,7 +3212,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         res@metadata$filename.orig <- filename.orig # from instrument
         res@metadata$systemUploadTime <- systemUploadTime
         res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                   conductivity=list(unit=expression(ratio), scale=""))
+                                   salinity=list(unit=expression(), scale="PSS-78"),
+                                   conductivity=list(unit=expression(), scale=""))
         res@metadata$pressureType <- "sea"
         res@metadata$ship <- ship
         res@metadata$scientist <- scientist
@@ -3251,45 +3345,26 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         varUnits <- strsplit(line, split=",")[[1]]
         lines <- readLines(file)
-        nlines <- length(lines)
-        pressure <- vector("numeric", nlines)
-        temperature <- vector("numeric", nlines)
-        salinity <- vector("numeric", nlines)
-        oxygen <- vector("numeric", nlines)
-        b <- 0
+        ## nlines <- length(lines)
+        ## pressure <- vector("numeric", nlines)
+        ## temperature <- vector("numeric", nlines)
+        ## salinity <- vector("numeric", nlines)
+        ## oxygen <- vector("numeric", nlines)
+        ## b <- 0
         oceDebug(debug, "pcol:", pcol, ", Scol:", Scol, ", Tcol:", Tcol, ", Ocol:", Ocol, "\n")
-        for (iline in 1:nlines) {
-            if (0 < (length(grep("END_DATA", lines[iline]))))
-                break
-            items <- strsplit(lines[iline], ",")[[1]]
-            pressure[iline] <- as.numeric(items[pcol])
-            salinity[iline] <- as.numeric(items[Scol])
-            temperature[iline] <- as.numeric(items[Tcol])
-            oxygen[iline] <- as.numeric(items[Ocol])
-            if (monitor) {
-                cat(".")
-                if (!((b+1) %% 50))
-                    cat(b+1, "\n")
-            }
-            b <- b + 1
-        }
-        pressure <- pressure[1:b]
-        temperature <- temperature[1:b]
-        salinity <- salinity[1:b]
-        oxygen <- oxygen[1:b]
-        if (monitor)
-            cat("\nRead", b-1, "lines of data\n")
-        pressure[pressure == missing.value] <- NA
-        salinity[salinity == missing.value] <- NA
-        temperature[temperature == missing.value] <- NA
-        sigmaTheta <- swSigmaTheta(salinity, temperature, pressure)
-        data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta)
-        names <- c("pressure", "salinity", "temperature", "sigmaTheta", "oxygen")
-        labels <- c("Pressure", "Salinity", "Temperature", "Sigma Theta", "Oxygen")
-        if (length(oxygen) > 0) {
-            oxygen[oxygen == missing.value] <- NA
-            data <- list(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
-        }
+        ##m <- matrix(NA, nrow=nlines, ncol=length(varNames))
+        ending <- grep("END_DATA", lines)
+        if (length(ending) == 1)
+            lines <- lines[-ending]
+        varNamesOce <- woceNames2oceNames(varNames)
+        nonflags <- grep("Flag$",varNamesOce, invert=TRUE)
+        flags <- grep("Flag$",varNamesOce)
+        dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=woceNames2oceNames(varNames))
+        data <- as.list(dataAndFlags[, nonflags])
+        flags <- as.list(dataAndFlags[, flags])
+        names(flags) <- gsub("Flag", "", names(flags))
+        names <- names(data)
+        labels <- titleCase(names)
         if (is.na(waterDepth)) {
             waterDepth <- max(abs(data$pressure), na.rm=TRUE)
             waterDepthWarning <- TRUE
@@ -3301,7 +3376,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         res@metadata$filename <- filename # provided to this routine
         res@metadata$filename.orig <- filename.orig # from instrument
         res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                   conductivity=list(unit=expression(ratio), scale=""))
+                                   conductivity=list(unit=expression(), scale=""))
+        res@metadata$flags <- flags
         res@metadata$pressureType <- "sea"
         res@metadata$systemUploadTime <- systemUploadTime
         res@metadata$ship <- ship
@@ -3333,6 +3409,13 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     res
 }
 
+#' Read a WOCE-type CTD file with First Word "EXPOCODE"
+#' @template readCtdTemplate
+#'
+#' @details
+#' \code{read.ctd.woce.other()} reads files stored in the exchange format used
+#' by the World Ocean Circulation Experiment (WOCE), in which the first
+#' word in the file is \code{EXPOCODE}.
 read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                                 debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -3371,6 +3454,20 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missing.value=
     as.ctd(salinity, temperature, pressure, oxygen=oxygen, station=station, date=date)
 }
 
+
+#' Parse a Latitude or Longitude String
+#' 
+#' Parse a latitude or longitude string, e.g. as in the header of a CTD file
+#' The following formats are understood (for, e.g. latitude) \preformatted{ *
+#' NMEA Latitude = 47 54.760 N ** Latitude: 47 53.27 N }
+#' 
+#' @param line a character string containing an indication of latitude or
+#' longitude.
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @return A numerical value of latitude or longitude.
+#' @author Dan Kelley
+#' @seealso Used by \code{\link{read.ctd}}.
 parseLatLon <- function(line, debug=getOption("oceDebug"))
 {
     ## The following formats are understood (for, e.g. latitude)
@@ -3408,461 +3505,7 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
 time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 
 
-#' Read an SBE-type CTD file
-#' @template readCtdTemplate
-#'
-#' @details
-#' \code{read.ctd.sbe()} reads files stored in Seabird \code{.cnv} format.
-#'
-#' @references
-#' The Sea-Bird SBE 19plus profiler is described at
-#' \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
-#' information is given in the Sea-Bird data-processing manaual
-#' \url{http://www.seabird.com/old-manuals/Software_Manuals/SBE_Data_Processing/SBEDataProcessing_7.20g.pdf}.
-read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
-                         monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
-{
-    if (!is.null(columns)) {
-        columnsNames <- names(columns)
-        if (!("temperature" %in% columnsNames)) stop("'columns' must contain 'temperature'")
-        if (!("pressure" %in% columnsNames)) stop("'columns' must contain 'pressure'")
-        if (!("salinity" %in% columnsNames)) stop("'columns' must contain 'salinity'")
-        if (3 > length(columns)) stop("'columns' must contain three or more elements")
-    }
-
-    if (length(grep("\\*", file))) {
-        oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read a series of files\n", unindent=1)
-        files <- list.files(pattern=file)
-        nfiles <- length(files)
-        if (monitor)
-            pb <- txtProgressBar(1, nfiles, style=3)
-        res <- vector("list", nfiles)
-        for (i in 1:nfiles) {
-            res[[i]] <- read.ctd.sbe(files[i], debug=debug-1)
-            if (monitor)
-                setTxtProgressBar(pb, i)
-        }
-        oceDebug(debug, "} # read.ctd.sbe() {\n")
-        return(res)
-    }
-    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent=1)
-
-    ## Read Seabird data file.  Note on headers: '*' is machine-generated,
-    ## '**' is a user header, and '#' is a post-processing header.
-    filename <- ""
-    if (is.character(file)) {
-        filename <- fullFilename(file)
-        file <- file(file, "r")
-        on.exit(close(file))
-    }
-    if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
-    if (!isOpen(file)) {
-        open(file, "r")
-        on.exit(close(file))
-    }
-    res <- new("ctd", pressureType="sea")
-    ## Header
-    scientist <- ship <- institute <- address <- cruise <- hexfilename <- ""
-    sampleInterval <- NA
-    systemUploadTime <- NULL
-    latitude <- longitude <- NA
-    startTime <- NULL
-    waterDepth <- NA
-    date <- recovery <- NA
-    header <- c()
-    col.names.inferred <- NULL
-    found.time <- FALSE
-    found.pressure <- FALSE
-    found.depth <- FALSE
-    ##conductivity.standard <- 4.2914
-    found.header.latitude <- found.header.longitude <- FALSE
-    serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
-    conductivityUnit = list(unit=expression(ratio), scale="") # guess; other types are "mS/cm" and "S/m"
-    temperatureUnit = list(unit=expression(degree*C), scale="ITS-90") # guess; other option is IPTS-68
-    pressureType = "sea"               # guess; other option is "absolute"
-
-    lines <- readLines(file)
-    for (iline in seq_along(lines)) {
-        line <- lines[iline]
-        #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        oceDebug(debug, "examining header line '",line,"'\n", sep="")
-        header <- c(header, line)
-        ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
-        aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
-        if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) {
-            ## Sometimes SBE files have a header line after the *END* line.
-            iline <- iline + 1
-            if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
-                iline <- iline + 1
-            break
-        }
-        lline <- tolower(aline)
-        ## BUG: discovery of column names is brittle to format changes
-        if (0 < (r <- regexpr("# name ", lline))) {
-            oceDebug(debug, "lline: '",lline,"'\n",sep="")
-            tokens <- strsplit(line, split=" ", useBytes=TRUE)
-            oceDebug(debug, "   successfully tokenized\n")
-            name <- tokens[[1]][6]
-            oceDebug(debug, "  name: '",name,"'\n",sep="")
-            if (0 < regexpr("scan", lline)) {
-                name <- "scan"
-                found.scan <- TRUE
-            }
-            if (0 < regexpr("pressure", lline)) {
-                if (0 > regexpr("deg c", lline)) {
-                    ## ignore "# name 5 = ptempC: Pressure Temperature [deg C]"
-                    name <- "pressure"
-                    found.pressure <- TRUE
-                }
-            }
-            if (0 < regexpr("time", lline)) {
-                name <- "time"
-                found.time <- TRUE
-            }
-            if (0 < regexpr("salinity", lline)) {
-                name <- "salinity"
-                found.salinity <- TRUE
-            }
-            if (0 < regexpr("temperature", lline)) {
-                ## ignore "# name 5 = ptempC: Pressure Temperature [deg C]"
-                if (0 > regexpr("pressure", lline) && 0 > regexpr("potential", lline)) {
-                    name <- "temperature"
-                    found.temperature <- TRUE
-                    unit <- gsub(":.*","",gsub(".*=[ ]*","", line))
-                    if (length(grep("68", unit)))
-                        temperatureUnit <- list(unit=expression(degree*C), scale="IPTS-68")
-                    else if (length(grep("90", unit)))
-                        temperatureUnit <- list(unit=expression(degree*C), scale="ITS-90")
-                    oceDebug(debug, "temperatureUnit: ", temperatureUnit$unit, "(inferred from '", unit, "'\n", sep="")
-                }
-            }
-            if (0 < regexpr("conductivity", lline)) {
-                if (0 < regexpr("ratio", lline)) {
-                    found.conductivity.ratio <- TRUE;
-                    name <- "conductivityratio"
-                    conductivityUnit = list(unit=expression(ratio), scale="")
-                } else {
-                    found.conductivity <- TRUE;
-                    name <- "conductivity"
-                    unit <- gsub(":.*","",gsub(".*=[ ]*","", line))
-                    if (length(grep("S/m", unit)))
-                        conductivityUnit <- list(unit="S/m", scale="")
-                    else if (length(grep("mS/cm", unit)))
-                        conductivityUnit <- list(unit="mS/cm", scale="")
-                }
-            }
-            if (0 < regexpr("depth", lline) || 0 < regexpr("depSM", lline)) {
-                name <- "depth"
-                found.depth <- TRUE
-            }
-            if (0 < regexpr("fluorometer", lline))
-                name <- "fluorometer"
-            ## Used to have oxygen.temperature and oxygen.current here (why??)
-            if (0 < regexpr("oxygen", lline))
-                name <- "oxygen"
-            if (0 < regexpr("flag", lline))
-                name <- "flag"
-            if (0 < regexpr("sigma-theta", lline)) {
-                name <- "sigmaTheta"
-                ##foundSigmaTheta <- TRUE
-            } else {
-                if (0 < regexpr("sigma-t", lline)) {
-                    name <- "sigmat"
-                    ##foundSigmaT <- TRUE
-                }
-            }
-            col.names.inferred <- c(col.names.inferred, name)
-        }
-        if (0 < regexpr(".*seacat profiler.*", lline))
-            serialNumber <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
-        if (length(grep("^\\* temperature sn", lline)))
-            serialNumberTemperature <- gsub("^.*=\\s", "", lline)
-        if (length(grep("^\\* conductivity sn", lline)))
-            serialNumberConductivity <- gsub("^.*=\\s", "", lline)
-        if (0 < (r<-regexpr("date:", lline))) {
-            d <- sub("(.*)date:([ ])*", "", lline)
-            date <- decodeTime(d, "%Y%m%d") # e.g. 20130701 Canada Day
-        }
-        ##* NMEA UTC (Time) = Jul 28 2011  04:17:53
-        ##* system upload time = jan 26 2010 13:02:57
-        if (length(grep("^\\* .*time.*=.*$", lline))) {
-            if (0 == length(grep("real-time sample interval", lline))) {
-                d <- sub(".*=", "", lline)
-                d <- sub("^ *", "", d)
-                d <- sub(" *$", "", d)
-                date <- decodeTime(d)
-            }
-        }
-        if (0 < (r<-regexpr("filename", lline)))
-            hexfilename <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline)
-        if (0 < (r<-regexpr("system upload time", lline))) {
-            d <- sub("([^=]*)[ ]*=[ ]*", "", ignore.case=TRUE, lline)
-            systemUploadTime <- decodeTime(d)
-            oceDebug(debug, " systemUploadTime ", format(systemUploadTime), " inferred from substring '", d, "'\n", sep="")
-        }
-        ## Styles:
-        ## * NMEA Latitude = 47 54.760 N
-        ## ** Latitude:      47 53.27 N
-        if (!found.header.latitude && (0 < (r<-regexpr("latitude*[0-8]*", lline, ignore.case=TRUE)))) {
-            latitude <- parseLatLon(lline, debug=debug-1)
-            found.header.latitude <- TRUE
-        }
-        if (!found.header.longitude && (0 < (r<-regexpr("longitude*[0-8]*", lline, ignore.case=TRUE)))) {
-            longitude <- parseLatLon(lline, debug=debug-1)
-            found.header.longitude <- TRUE
-        }
-        if (0 < (r<-regexpr("start_time =", lline))) {
-            d <- sub("#[ ]*start_time[ ]*=[ ]*", "", lline)
-            startTime <- decodeTime(d)
-            oceDebug(debug, " startTime ", format(startTime), "' inferred from substring '", d, "'\n", sep="")
-        }
-        if (0 < (r<-regexpr("ship:", lline))) {
-            ship <- sub("(.*)ship:([ \t])*", "", ignore.case=TRUE, line) # note: using full string
-            ship <- sub("[ \t]*$", "", ship)
-        }
-        if (0 < (r<-regexpr("scientist:", lline)))
-            scientist <- sub("(.*)scientist:([ ])*", "", ignore.case=TRUE, line) # full string
-        if (0 < (r<-regexpr("chef", lline)))
-            scientist <- sub("(.*):([ ])*", "", ignore.case=TRUE, line) # full string
-        if (0 < (r<-regexpr("institute:", lline)))
-            institute <- sub("(.*)institute:([ ])*", "", ignore.case=TRUE, line) # full string
-        if (0 < (r<-regexpr("address:", lline)))
-            address <- sub("(.*)address:([ ])*", "", ignore.case=TRUE, line) # full string
-        if (0 < (r<-regexpr("cruise:", lline))) {
-            cruise <- sub("(.*)cruise:([ ])*", "", ignore.case=TRUE, line) # full string
-            cruise <- sub("[ ]*$", "", ignore.case=TRUE, cruise) # full string
-        }
-        if (is.null(station)) {
-            if (0 < (r<-regexpr("station:", lline)))
-                station <- sub("[ ]*$", "", sub("(.*)station:([ ])*", "", ignore.case=TRUE, line)) # full string
-        }
-        if (0 < (r<-regexpr("recovery:", lline)))
-            recovery <- sub("(.*)recovery:([ ])*", "", lline)
-        if (0 < (r<-regexpr("depth", lline))) { # "** Depth (m): 3447 "
-            look <- sub("[a-z:()]*", "", lline, ignore.case=TRUE)
-            look <- gsub("^[*a-zA-Z\\(\\) :]*", "", lline, ignore.case=TRUE)
-            look <- gsub("[ ]*", "", look, ignore.case=TRUE)
-            oceDebug(debug, " trying to get water depth from '", lline, "', reduced to '", look, "'\n", sep="")
-            if (!length(grep('[a-zA-Z]', look))) {
-                waterDepth<- as.numeric(look)
-                oceDebug(debug, "got waterDepth: ", waterDepth, "\n")
-            }
-        }
-        if (0 < (r<-regexpr("water depth:", lline))
-            || 0 < (r<-regexpr(pattern="profondeur", text=lline))) {
-            ## Examples from files in use by author:
-            ##** Profondeur: 76
-            ##** Water Depth:   40 m
-            look <- sub("[ ]*$", "", sub(".*:[ ]*", "", lline))
-            linesplit <- strsplit(look," ")[[1]]
-            nitems <- length(linesplit)
-            if (nitems == 1) {
-                waterDepth <- as.numeric(linesplit[1])
-            } else if (nitems == 2) {
-                unit <- linesplit[2]
-                if (unit == "m") {
-                    waterDepth <- as.numeric(linesplit[1])
-                } else if (unit == "km") {
-                    waterDepth <- 1000 * as.numeric(linesplit[1])
-                } else {
-                    warning("ignoring unit on water depth '", look, "'")
-                }
-            } else {
-                stop("cannot interpret water depth from '", lline, "'")
-            }
-        }
-        if (0 < (r<-regexpr("^. sample rate =", lline))) {
-            ## * sample rate = 1 scan every 5.0 seconds
-            rtmp <- lline;
-            rtmp <- sub("(.*) sample rate = ", "", rtmp)
-            rtmp <- sub("scan every ", "", rtmp)
-            rtmp <- strsplit(rtmp, " ")
-            ##      if (length(rtmp[[1]]) != 3)
-            ##        warning("cannot parse sample-rate string in `",line,"'")
-            sampleInterval <- as.double(rtmp[[1]][2]) / as.double(rtmp[[1]][1])
-            if (rtmp[[1]][3] == "seconds") {
-                ;
-            } else {
-                if (rtmp[[1]][3] == "minutes") {
-                    sampleInterval <- sampleInterval / 60;
-                } else {
-                    if (rtmp[[1]][3] == "hours") {
-                        sampleInterval <- sampleInterval / 3600;
-                    } else {
-                        warning("cannot understand `",rtmp[[1]][2],"' as a unit of time for sampleInterval")
-                    }
-                }
-            }
-        }
-    }
-    oceDebug(debug, "Finished reading header\n")
-    if (debug > 0) {
-        if (is.nan(sampleInterval))
-            warning("'* sample rate =' not found in header")
-        if (is.nan(latitude))
-            warning("'** Latitude:' not found in header")
-        if (is.nan(longitude))
-            warning("'** Longitude:' not found in header")
-        if (is.null(date))
-            warning("'** Date:' not found in header")
-        if (is.null(recovery))
-            warning("'** Recovery' not found in header")
-    }
-    ## Require p,S,T data at least
-    if (!found.temperature)
-        stop("cannot find 'temperature' in this file")
-    if (!found.pressure && !found.depth)
-        stop("no column named 'pressure', 'depth' or 'depSM'")
-
-    res@metadata$header <- header
-    res@metadata$type <- "SBE"
-    res@metadata$hexfilename <- hexfilename # from instrument
-    res@metadata$serialNumber <- serialNumber
-    res@metadata$serialNumberConductivity <- serialNumberConductivity
-    res@metadata$pressureType <- pressureType
-    res@metadata$units <- list(conductivity=conductivityUnit, temperature=temperatureUnit)
-    res@metadata$systemUploadTime <- systemUploadTime
-    res@metadata$ship <- ship
-    res@metadata$scientist <- scientist
-    res@metadata$institute <- institute
-    res@metadata$address <- address
-    res@metadata$cruise <- cruise
-    res@metadata$station <- station
-    res@metadata$deploymentType <- "unknown"
-    res@metadata$date <- date
-    res@metadata$startTime <- startTime
-    res@metadata$latitude <- latitude
-    res@metadata$longitude <- longitude
-    res@metadata$recovery <- recovery
-    res@metadata$waterDepth <- waterDepth # if NA, will update later
-    res@metadata$sampleInterval <- sampleInterval
-    res@metadata$names <- col.names.inferred
-    res@metadata$labels <- col.names.inferred
-    res@metadata$filename <- filename
-    ## Read the data as a table.
-    ## FIXME: should we match to standardized names?
-    ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag")
-
-    ## Handle similar names by tacking numbers on the end, e.g. the first column that
-    ## is automatically inferred to hold temperature is called "temperature", while the
-    ## next one is called "temperature2", and a third would be called "temperature3".
-    col.names.inferred <- tolower(col.names.inferred)
-    for (uname in unique(col.names.inferred)) {
-        w <- which(uname == col.names.inferred)
-        lw <- length(w)
-        ##message("uname:", uname, ", lw: ", lw)
-        if (1 != lw) {
-            col.names.inferred[w[-1]] <- paste(uname, seq.int(2, lw), sep="")
-        }
-    }
-    pushBack(lines, file)
-    if (is.null(columns)) {
-        oceDebug(debug, "About to read these names:", col.names.inferred,"\n")
-        data <- as.list(read.table(file, skip=iline-1, header=FALSE, col.names=col.names.inferred))
-        ## data <- as.list(read.table(text=lines[seq.int(iline, length(lines))],
-        ##                            header=FALSE, col.names=col.names.inferred))
-        ndata <- length(data[[1]])
-        if (0 < ndata) {
-            haveData <- TRUE
-            names <- names(data)
-            ##labels <- names
-            if (!found.scan) {
-                data[['scan']] <- 1:ndata
-            }
-        } else {
-            haveData <- FALSE
-            warning("no data in CTD file \"", filename, "\"\n")
-            data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
-        }
-    } else {
-        dataAll <- read.table(file, skip=iline-1, header=FALSE, col.names=col.names.inferred)
-        ## dataAll <- read.table(text=lines[seq.int(iline, length(lines))],
-        ##                       header=FALSE, col.names=col.names.inferred)
-        if ("scan" %in% names(columns)) {
-            data <- dataAll[, as.numeric(columns)]
-            names(data) <- names(columns)
-        } else {
-            data <- cbind(seq.int(1, dim(dataAll)[1]), dataAll[, as.numeric(columns)])
-            names(data) <- c("scan", names(columns))
-        }
-        data <- as.list(data)
-        ndata <- length(data[[1]])
-        haveData <- ndata > 0
-    }
-    if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    ##hitem <- processingLogItem(processingLog)
-    res@data <- data
-    ## Add standard things, if missing
-    if (haveData) {
-        if (!found.salinity) {
-            if (found.conductivity.ratio) {
-                warning("cannot find 'salinity' in this file; calculating from T, conductivity ratio, and p")
-                C <- data$conductivityratio
-                cmax <- max(C, na.rm=TRUE)
-                if (cmax > 5) {
-                    warning("max(conductivity) > 5, so dividing by 42.914 before computing S. However, the original data are left in the object.")
-                    C <- C / 42.914
-                } else if (cmax > 1) {
-                    warning("max(conductivity) between 1 and 5, so dividing by 4.2914 before computing S. However, the original data are left in the object.")
-                    C <- C / 4.2914
-                }
-                S <- swSCTp(C, data$temperature, data$pressure)
-            } else if (found.conductivity) {
-                warning("cannot find 'salinity' in this file; calculating from T, conductivity, and p")
-                C <- data$conductivity
-                cmax <- max(C, na.rm=TRUE)
-                if (cmax > 5) {
-                    warning("max(conductivity) > 5, so dividing by 42.914 before computing S. However, the original data are left in the object.")
-                    C <- C / 42.914
-                } else if (cmax > 1) {
-                    warning("max(conductivity) between 1 and 5, so dividing by 4.2914 before computing S. However, the original data are left in the object.")
-                    C <- C / 4.2914
-                }
-                S <- swSCTp(C, data$temperature, data$pressure)
-            } else {
-                stop("cannot find salinity in this file, nor conductivity or conductivity ratio")
-            }
-            res <- ctdAddColumn(res, S, name="salinity", label="Salinity", unit=c("", "PSS-78"), debug=debug-1)
-        }
-        if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
-            g <- if (found.header.latitude) gravity(latitude) else 9.8
-            rho0 <- 1000 + swSigmaTheta(median(res@data$salinity), median(res@data$temperature), 0)
-            res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
-                                unit=list(unit="dbar", scale=""), debug=debug-1)
-            warning("created a pressure column from the depth column\n")
-        }
-        res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
-                        name="sigmaTheta", label="Sigma Theta", unit=list(unit=expression(kg/m^3), scale=""),
-                        debug=debug-1)
-    }
-    ## waterDepthWarning <- FALSE
-    ## if (is.na(res@metadata$waterDepth)) {
-    ##     res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
-    ##     waterDepthWarning <- TRUE
-    ## }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    ## update to temperature IPTS-90, if have an older version
-    if (2 == length(res@metadata$unit$temperature) &&
-        "IPTS-68" == as.character(res@metadata$units$temperature$scale)) {
-        res@data$temperature68 <- res@data$temperature
-        res@metadata$units$temperature68 <- list(unit=expression(degree*C), scale="IPTS-68")
-        res@data$temperature <- T90fromT68(res@data$temperature68)
-        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-        warning("converted temperature from IPTS-68 to ITS-90")
-        res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-68 to ITS-90")
-    }
-    if (!("salinity" %in% names(res@metadata$units))) res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
-    if (!("pressure" %in% names(res@metadata$units))) res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    if (!("depth" %in% names(res@metadata$units))) res@metadata$units$depth <- list(unit=expression(m), scale="")
-    oceDebug(debug, "} # read.ctd.sbe()\n")
-    ## if (waterDepthWarning)
-    ##     res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
-    res
-}
-
-#' Read an ODV-type CTD file
+#' Read an ODV-type CTD File
 #' @template readCtdTemplate
 #'
 #' @details
@@ -3881,6 +3524,82 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 }
 
 
+
+#' Plot Temperature-Salinity Diagram
+#' 
+#' Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
+#' 
+#' @param x An object containing salinity and temperature data, typically a
+#' \code{ctd} object or \code{section} object.
+#' @param inSitu A boolean indicating whether to use in-situ temperature or
+#' (the default) potential temperature, calculated with reference pressure
+#' given by \code{referencePressure}.  This is ignored if \code{eos="gsw"},
+#' because those cases the y axis is necessarily the conservative formulation
+#' of temperature.
+#' @param type representation of data, \code{"p"} for points, \code{"l"} for
+#' connecting lines, or \code{"n"} for no indication.
+#' @param referencePressure reference pressure, to be used in calculating
+#' potential temperature, if \code{inSitu} is \code{FALSE}.
+#' @param nlevels Number of automatically-selected isopycnal levels (ignored if
+#' \code{levels} is supplied).
+#' @param levels Optional vector of desired isopycnal levels.
+#' @param grid a flag that can be set to \code{TRUE} to get a grid.
+#' @param col.grid colour for grid.
+#' @param lty.grid line type for grid.
+#' @param rho1000 if TRUE, label isopycnals as e.g. 1024; if FALSE, label as
+#' e.g. 24
+#' @param eos equation of state to be used, either \code{"unesco"} or
+#' \code{"gsw"}.
+#' @param cex character-expansion factor for symbols, as in
+#' \code{\link{par}("cex")}.
+#' @param pch symbol type, as in \code{\link{par}("pch")}.
+#' @param bg optional colour to be painted under plotting area, before
+#' plotting.  (This is useful for cases in which \code{inset=TRUE}.)
+#' @param pt.bg inside colour for symbols with \code{pch} in 21:25
+#' @param col colour for symbols.
+#' @param col.rho colour for isopycnal lines.
+#' @param cex.rho size of isopycnal labels.
+#' @param rotate if TRUE, labels in right-hand margin are written vertically
+#' @param useSmoothScatter if TRUE, use \code{\link{smoothScatter}} to plot the
+#' points.
+#' @param xlab optional label for the x axis, with default "Salinity [PSU]".
+#' @param ylab optional label for the y axis, with default "Temperature [C]".
+#' @param Slim optional limits for salinity axis, otherwise inferred from data.
+#' @param Tlim optional limits for temperature axis, otherwise inferred from
+#' data.
+#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
+#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' @param mar value to be used with \code{\link{par}("mar")}.  If set to
+#' \code{NULL}, then \code{par("mar")} is used.  A good choice for a TS diagram
+#' with a palette to the right is \code{mar=par("mar")+c(0, 0, 0, 1))}.
+#' @param lwd line width of lines or symbols.
+#' @param lty line type of lines or symbols.
+#' @param lwd.rho line width for density curves.
+#' @param lty.rho line type for density curves.
+#' @param add a flag that controls whether to add to an existing plot.  (It
+#' makes sense to use \code{add=TRUE} in the \code{panel} argument of a
+#' \code{\link{coplot}}, for example.)
+#' @param inset set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+#' effect is to prevent the present function from adjusting margins, which is
+#' necessary because margin adjustment is the basis for the method used by
+#' \code{\link{plotInset}}.
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @param \dots optional arguments passed to plotting functions.
+#' @return A list is silently returned, containing \code{xat} and \code{yat},
+#' values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
+#' @author Dan Kelley
+#' @seealso \code{\link{summary,ctd-method}} summarizes the information, while
+#' \code{\link{read.ctd}} scans it from a file.
+#' @examples
+#' 
+#' library(oce)
+#' data(ctd)
+#' plotTS(ctd)
+#' 
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{ctd} data
 plotTS <- function (x,
                     inSitu=FALSE,
                     type='p',
@@ -4034,6 +3753,31 @@ plotTS <- function (x,
     invisible(list(xat=xat, yat=yat))
 }
 
+
+#' Add Isopycnal Curves to TS Plot
+#' 
+#' Adds isopycnal lines to an existing temperature-salinity plot.  This is
+#' called by \code{\link{plotTS}}, and may be called by the user also, e.g. if
+#' an image plot is used to show TS data density.
+#' 
+#' @param nlevels suggested number of density levels (i.e. isopycnal curves);
+#' ignored if \code{levels} is supplied.
+#' @param levels optional density levels to draw.
+#' @param rotate boolean, set to \code{TRUE} to write all density labels
+#' horizontally.
+#' @param rho1000 boolean, set to \code{TRUE} to write isopycnal labels as e.g.
+#' 1024 instead of 24.
+#' @param digits number of decimal digits to use in label (supplied to
+#' \code{\link{round}}).
+#' @param eos equation of state to be used, either \code{"unesco"} or
+#' \code{"gsw"}.
+#' @param cex size for labels.
+#' @param col colour for lines and labels.
+#' @param lwd line width for isopcynal curves
+#' @param lty line type for isopcynal curves
+#' @return None.
+#' @author Dan Kelley
+#' @seealso \code{\link{plotTS}}, which calls this.
 drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits=2,
                            eos=getOption("oceEOS", default='gsw'),
                            cex=0.75*par('cex'), col="darkgray", lwd=par("lwd"), lty=par("lty"))
@@ -4092,6 +3836,118 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     }
 }
 
+
+#' Plot a CTD Profile
+#' 
+#' Plot a profile, showing variation of some quantity (or quantities) with
+#' pressure, using the oceanographic convention of putting lower pressures
+#' nearer the top of the plot. This works for any \code{oce} object that has a
+#' pressure column in its \code{data} slot.
+#' The colours (\code{col.salinity}, etc.) are ony used if two profiles appear
+#' on a plot.
+#' 
+#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param xtype Item(s) plotted on the x axis, either a vector of length equal
+#' to that of \code{x@data$pressure} or a text code from the list below.
+#' \describe{ \item{list("\"salinity\"")}{Profile of salinity.}
+#' \item{list("\"conductivity\"")}{Profile of conductivity.}
+#' \item{list("\"temperature\"")}{Profile of \emph{in-situ} temperature.}
+#' \item{list("\"theta\"")}{Profile of \emph{potential} temperature.}
+#' \item{list("\"density\"")}{Profile of density (expressed as
+#' \eqn{\sigma_\theta}{sigma_theta}).} \item{list("\"index\"")}{Index of sample
+#' (very useful for working with \code{\link{ctdTrim}}).}
+#' \item{list("\"salinity+temperature\"")}{Profile of salinity and temperature
+#' within a single axis frame.} \item{list("\"N2\"")}{Profile of square of
+#' buoyancy frequency \eqn{N^2}{N^2}, calculated with \code{\link{swN2}} with
+#' an optional argument setting of \code{df=length(x[["pressure"]])/4} to do
+#' some smoothing.} \item{list("\"density+N2\"")}{Profile of sigma-theta and
+#' the square of buoyancy frequency within a single axis frame.}
+#' \item{list("\"density+dpdt\"")}{Profile of sigma-theta and dP/dt for the
+#' sensor.  The latter is useful in indicating problems with the deployment.
+#' It is calculated by first differencing pressure and then using a smoothing
+#' spline on the result (to avoid grid-point wiggles that result because the
+#' SBE software only writes 3 decimal places in pressure).  Note that dP/dt may
+#' be off by a scale factor; this should not be a problem if there is a
+#' \code{time} column in the \code{data} slot, or a \code{sample.rate} in the
+#' \code{metadata} slot. } \item{list("\"spice\"")}{Profile of spice}
+#' \item{list("\"Rrho\"")}{Profile of Rrho, defined in the diffusive sense}
+#' \item{list("\"RrhoSF\"")}{Profile of Rrho, defined in the salt-finger sense}
+#' \item{an expression}{an expression to be evaluated, in the calling
+#' environment, for some quantity; in this case, it makes sense to specify also
+#' \code{xlab}.} }
+#' @param ytype variable to use on y axis; note that \code{z} is the negative
+#' of \code{depth}.
+#' @param eos equation of state to be used, either \code{"unesco"} or
+#' \code{"gsw"}.
+#' @param xlab optional label for x axis (at top of plot).
+#' @param ylab optional label for y axis.  Set to \code{""} to prevent
+#' labelling the axis.
+#' @param lty line type for the profile.
+#' @param col colour for a general profile.
+#' @param col.salinity colour for salinity profile (see \dQuote{Details}).
+#' @param col.temperature colour for temperature (see \dQuote{Details}).
+#' @param col.rho colour for density (see \dQuote{Details}).
+#' @param col.N2 colour for square of buoyancy frequency (see
+#' \dQuote{Details}).
+#' @param col.dpdt colour for dP/dt.
+#' @param col.time colour for delta-time.
+#' @param pt.bg inside colour for symbols with \code{pch} in 21:25
+#' @param grid logical, set to \code{TRUE} to get a grid.
+#' @param col.grid colour for grid.
+#' @param lty.grid line type for grid.
+#' @param Slim Optional limit for S axis
+#' @param Clim Optional limit for conductivity axis
+#' @param Tlim Optional limit for T axis
+#' @param densitylim Optional limit for density axis
+#' @param N2lim Optional limit for N2 axis
+#' @param Rrholim Optional limit for Rrho axis
+#' @param dpdtlim Optional limit for dp/dt axis
+#' @param timelim Optional limit for delta-time axis
+#' @param plim Optional limit for pressure axis, ignored unless
+#' \code{ytype=="pressure"}, in which case it takes precedence over
+#' \code{ylim}.
+#' @param ylim Optional limit for y axis, which can apply to any plot type,
+#' although is overridden by \code{plim} if \code{ytype=="pressure"}.
+#' @param lwd lwd value for data line
+#' @param xaxs value of \code{\link{par}} \code{xaxs} to use
+#' @param yaxs value of \code{\link{par}} \code{yaxs} to use
+#' @param cex size to be used for plot symbols (see \code{\link{par}})
+#' @param pch code for plotting symbol (see \code{\link{par}}).
+#' @param useSmoothScatter boolean, set to \code{TRUE} to use
+#' \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw the plot.
+#' @param df optional argument, passed to \code{\link{swN2}} if provided, and
+#' if a plot using \eqn{N^2}{N^2} is requested.
+#' @param keepNA FALSE
+#' @param type type of plot to draw, using the same scheme as
+#' \code{\link{plot}}.
+#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
+#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' @param mar value to be used with \code{\link{par}("mar")}.
+#' @param add a flag that controls whether to add to an existing plot.  (It
+#' makes sense to use \code{add=TRUE} in the \code{panel} argument of a
+#' \code{\link{coplot}}, for example.)
+#' @param inset set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+#' effect is to prevent the present function from adjusting margins, which is
+#' necessary because margin adjustment is the basis for the method used by
+#' \code{\link{plotInset}}.
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @param \dots optional arguments passed to other functions.  A common example
+#' is to set \code{df}, for use in \link{swN2} calculations.
+#' @return None.
+#' @author Dan Kelley
+#' @seealso \code{\link{read.ctd}} scans ctd information from a file,
+#' \code{\link{plot,ctd-method}} is a general plotting function for \code{ctd}
+#' objects, and \code{\link{plotTS}} plots a temperature-salinity diagrams.
+#' @examples
+#' 
+#' library(oce)
+#' data(ctd)
+#' plotProfile(ctd, xtype="temperature")
+#'
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{ctd} data
 plotProfile <- function (x,
                          xtype="salinity+temperature",
                          ytype=c("pressure", "z", "depth", "sigmaTheta"),
@@ -4133,7 +3989,7 @@ plotProfile <- function (x,
                                 cex=1, pch=1, pt.bg="transparent",
                                 df=df, keepNA=FALSE, debug=getOption("oceDebug"))
     {
-        oceDebug(debug, "plotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type, "\", col[1:3]=\"", col[1:3], "\", ...) {\n", sep="", unindent=1)
+        oceDebug(debug, "plotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type, "\", col[1:3]=c(\"", paste(col[1:3], collapse='","'), "\"), ...) {\n", sep="", unindent=1)
         if (!keepNA) {
             keep <- !is.na(x) & !is.na(y)
             x <- x[keep]
@@ -4186,12 +4042,12 @@ plotProfile <- function (x,
                        pressure=rev(range(x@data$pressure, na.rm=TRUE)),
                        z=range(swZ(x@data$pressure), na.rm=TRUE),
                        depth=rev(range(swDepth(x), na.rm=TRUE)),
-                       sigmaTheta=rev(range(x@data$sigmaTheta, na.rm=TRUE)))
+                       sigmaTheta=rev(range(x[["sigmaTheta"]], na.rm=TRUE)))
     examineIndices <- switch(ytype,
                        pressure = (min(ylim) <= x@data$pressure & x@data$pressure <= max(ylim)),
                        z = (min(ylim) <= swZ(x@data$pressure) & swZ(x@data$pressure) <= max(ylim)),
                        depth = (min(ylim) <= swDepth(x@data$pressure) & swDepth(x@data$pressure) <= max(ylim)),
-                       sigmaTheta  = (min(ylim) <= x@data$sigmaTheta & x@data$sigmaTheta <= max(ylim)))
+                       sigmaTheta  = (min(ylim) <= x[["sigmaTheta"]] & x[["sigmaTheta"]] <= max(ylim)))
     if (0 == sum(examineIndices) && ytype == 'z' && ylim[1] >= 0 && ylim[2] >= 0) {
         warning("nothing is being plotted, because z is always negative and ylim specified a positive interval\n")
         return(invisible())
@@ -4659,7 +4515,7 @@ plotProfile <- function (x,
                             col=col, pch=pch, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
-    } else if (xtype == "density") {
+    } else if (xtype == "sigmaTheta") {
         st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) # FIXME: why not use existing column?
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
         ## FIXME: if this works, extend to other x types
@@ -4690,6 +4546,39 @@ plotProfile <- function (x,
             }
         }
         plotJustProfile(st, y, col = col, type=type, lwd=lwd, lty=lty,
+                        cex=cex, pch=pch, pt.bg=pt.bg,
+                        keepNA=keepNA, debug=debug-1)
+    } else if (xtype == "density") {
+        rho <- swRho(x@data$salinity, x@data$temperature, x@data$pressure) # NOTE: ignoring any existing column
+        look <- if (keepNA) 1:length(y) else !is.na(rho) & !is.na(y)
+        ## FIXME: if this works, extend to other x types
+        look <- look & (min(ylim) <= y & y <= max(ylim))
+        if (!add) {
+            if (densitylimGiven) {
+                plot(rho[look], y[look], xlim=densitylim, ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
+            } else {
+                plot(rho[look], y[look], xlim=range(rho[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, lty=lty, cex=cex, pch=pch, ...)
+            }
+            if (is.null(xlab)) {
+                if (getOption("oceUnitBracket") == '[') {
+                    mtext(expression(paste(rho, " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, cex=par("cex"))
+                } else {
+                    mtext(expression(paste(rho, " ( ", kg/m^3, " )")), side = 3, line = axis.name.loc, cex=par("cex"))
+                }
+            } else {
+                mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
+            }
+            axis(2)
+            axis(3)
+            box()
+            if (grid) {
+                at <- par("yaxp")
+                abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+                at <- par("xaxp")
+                abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            }
+        }
+        plotJustProfile(rho, y, col = col, type=type, lwd=lwd, lty=lty,
                         cex=cex, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "density+N2") {
@@ -4770,9 +4659,9 @@ plotProfile <- function (x,
                  xlim=N2lim, ylim=ylim, cex=cex, pch=pch,
                  type = "n", xlab = "", ylab = yname, axes = FALSE)
             if (getOption("oceUnitBracket") == '[') {
-                mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = axis.name.loc, col = col, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
+                mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
             } else {
-                mtext(expression(paste(N^2, " ( ", s^-2, " )")), side = 3, line = axis.name.loc, col = col, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
+                mtext(expression(paste(N^2, " ( ", s^-2, " )")), side = 3, line = axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
             }
             axis(2)
             axis(3)
@@ -4885,11 +4774,17 @@ plotProfile <- function (x,
         } else {
             points(x@data[[w]], y, lwd=lwd, pch=pch, col=col, lty=lty, cex=cex)
         }
+        if (grid) {
+            at <- par("xaxp")
+            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+        }
     }
     oceDebug(debug, "} # plotProfile()\n", unindent=1)
 }
 
-#' Read an ITP-type CTD file
+#' Read an ITP-type CTD File
 #' @template readCtdTemplate
 #'
 #' @details

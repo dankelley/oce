@@ -53,6 +53,16 @@ returned, using \code{\link{geodDist}}.
 If \code{i} is \code{"depth"}, then a vector containing the depths
 of the stations is returned.
 
+If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
+the potential temperatures of all the stations are returned in one 
+vector.
+
+If \code{i} is a string ending with \code{"Flag"}, then the characters
+prior to that ending are taken to be the name of a variable contained
+within the stations in the section. If this flag is available in 
+the first station of the section, then the flag values are looked
+up for every station.
+
 If none of the conditions listed above holds, the general
 method is used (see \sQuote{Details of the general method}).
 }
@@ -106,7 +116,8 @@ length(section[["latitude", "byStation"]])
 Dan Kelley
 }
 \seealso{
-Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
+Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
+  \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
   \code{\link{[[,argo-method}},
   \code{\link{[[,bremen-method}},
@@ -116,16 +127,20 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[,echosounder-method}},
   \code{\link{[[,g1sst-method}},
   \code{\link{[[,gps-method}},
+  \code{\link{[[,ladp-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
-  \code{\link{[[,odf-method}}, \code{\link{[[,rsk-method}},
+  \code{\link{[[,met-method}}, \code{\link{[[,odf-method}},
+  \code{\link{[[,rsk-method}},
   \code{\link{[[,sealevel-method}},
   \code{\link{[[,tidem-method}},
   \code{\link{[[,topo-method}},
-  \code{\link{[[,windrose-method}}
+  \code{\link{[[,windrose-method}},
+  \code{\link{[[<-,adv-method}}
 
 Other things related to \code{section} data: \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
+  \code{\link{handleFlags,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},

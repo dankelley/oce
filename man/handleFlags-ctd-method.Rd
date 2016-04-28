@@ -3,7 +3,7 @@
 \docType{methods}
 \name{handleFlags,ctd-method}
 \alias{handleFlags,ctd-method}
-\title{Handle flags in CTD objects}
+\title{Handle Flags in CTD Objects}
 \usage{
 \S4method{handleFlags}{ctd}(object, flags = list(), actions = list())
 }
@@ -28,10 +28,6 @@ with \code{object} as the single argument, and must return a
 replacement for the data item in question.}
 }
 \description{
-DEVELOPERS: please pattern functions and documentation on this, for uniformity.
-DEVELOPERS: Youi will need to change the docs, and the 3 spots in the code
-DEVELOPERS: marked '# DEVELOPER 1:', etc.
-
 Data-quality flags are stored in the \code{metadata}
 slot of \code{\link{oce-class}} objects in a 
 \code{\link{list}} named \code{flags}.
@@ -113,17 +109,24 @@ plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
 }
 \seealso{
 Other functions that handle data-quality flags: \code{\link{handleFlags,argo-method}},
+  \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}}
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
   \code{\link{ctd}}, \code{\link{gps-class}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
-  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
+  \code{\link{plotScan}}, \code{\link{plotTS}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+  \code{\link{summary,ctd-method}},
+  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
 

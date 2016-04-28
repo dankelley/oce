@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapPolygon}
 \alias{mapPolygon}
-\title{Plot a polygon on a existing map.}
+\title{Add a Polygon to a Map}
 \usage{
 mapPolygon(longitude, latitude, density = NULL, angle = 45, border = NULL,
   col = NA, lty = par("lty"), ..., fillOddEven = FALSE)
@@ -57,7 +57,8 @@ Dan Kelley
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
 
-Other functions that handle map projections: \code{\link{map2lonlat}},
+Other functions related to maps: \code{\link{lonlat2map}},
+  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
   \code{\link{mapArrows}}, \code{\link{mapAxis}},
   \code{\link{mapContour}},
   \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
@@ -67,6 +68,7 @@ Other functions that handle map projections: \code{\link{map2lonlat}},
   \code{\link{mapMeridians}}, \code{\link{mapPlot}},
   \code{\link{mapPoints}}, \code{\link{mapScalebar}},
   \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{mapZones}}
+  \code{\link{mapZones}}, \code{\link{shiftLongitude}},
+  \code{\link{utm2lonlat}}
 }
 

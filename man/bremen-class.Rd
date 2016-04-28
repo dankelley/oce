@@ -12,8 +12,7 @@ data (see \dQuote{Details}), the most common action is to read the
 data with \code{\link{read.bremen}}, and then to coerce the object to
 another storage class (e.g. using \code{\link{as.ctd}} for CTD-style
 data) so that specialized functions can be used thereafter.
-}
-\details{
+
 The main function is \code{\link{read.bremen}}.  A simple
 plotting method is provided with \code{\link{plot,bremen-method}}, and
 \code{\link{summary,bremen-method}} provides summaries. Data may be
@@ -31,8 +30,8 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{odf-class}},
   \code{\link{rsk-class}}, \code{\link{sealevel-class}},
-  \code{\link{sealevel}}, \code{\link{section-class}},
-  \code{\link{topo-class}}, \code{\link{windrose-class}}
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
 
 Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
   \code{\link{[[<-,bremen-method}},

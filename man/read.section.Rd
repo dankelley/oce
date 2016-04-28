@@ -2,7 +2,7 @@
 % Please edit documentation in R/section.R
 \name{read.section}
 \alias{read.section}
-\title{Read a section containing multiple CTD profiles}
+\title{Read a Section File}
 \usage{
 read.section(file, directory, sectionId = "", flags, ship = "",
   scientist = "", institute = "", missingValue = -999,
@@ -41,8 +41,6 @@ An object of class \code{\link{section-class}}.
 \description{
 Read a file that contains a series of \code{ctd} profiles that make up an
 oceanographic section.
-}
-\details{
 Only \emph{exchange BOT} comma-separated value format is permitted at this time,
 but other formats may be added later.  It should also be noted that the parsing
 scheme was developed after inspection of the A03 data set (see Examples). This
@@ -73,6 +71,7 @@ at this time.
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
+  \code{\link{handleFlags,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{section-class}},
   \code{\link{sectionAddStation}},

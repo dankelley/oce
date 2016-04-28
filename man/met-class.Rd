@@ -3,7 +3,7 @@
 \docType{class}
 \name{met-class}
 \alias{met-class}
-\title{Class to store meteorological data}
+\title{Class to Store Meteorological Data}
 \description{
 Class to store meteorological data, with standard slots \code{metadata},
 \code{data} and \code{processingLog}.  For objects created with
@@ -48,11 +48,12 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}}, \code{\link{sealevel}},
+  \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
-Other things related to \code{met} data: \code{\link{as.met}},
+Other things related to \code{met} data: \code{\link{[[,met-method}},
+  \code{\link{[[<-,met-method}}, \code{\link{as.met}},
   \code{\link{met}}, \code{\link{plot,met-method}},
   \code{\link{read.met}}, \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}

@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' oce: A package for Oceanographic analysis
+#' oce: A Package for Oceanographic Analysis
 #'
 #' The oce package provides functions for working with
 #' Oceanographic data, for calculations that are specific
@@ -55,9 +55,59 @@
 #' @docType package
 #' @name oce
 NULL
-#> NULL
 
-#' Coerce Something Into an oce Object
+
+#' Deprecated and Defunct Elements of package \sQuote{oce}
+#' 
+#' Certain functions and function arguments are still provided for
+#' compatibility with older versions of \sQuote{oce}, but will be removed soon.
+#' The \sQuote{oce} scheme for removing functions is the same as that used by
+#' \sQuote{Bioconductor}: items are marked as "deprecated" in one release, as
+#' "defunct" in the next, and then removed entirely. This goal is to provide a
+#' gentle migration path for users who keep their packages reasonably
+#' up-to-date.
+#' 
+#' 
+#' Several \sQuote{oce} functions are marked "deprecated" in the present
+#' release of oce. Please use the replacement functions as listed below.
+#' 
+#' \tabular{lll}{ \strong{Deprecated} \tab \strong{Replacement} \tab
+#' \strong{Notes}\cr \code{mapZones} \tab \code{\link{mapGrid}} \tab Improve
+#' name sensibility\cr \code{mapMeridians} \tab \code{\link{mapGrid}} \tab
+#' Improve name sensibility\cr }
+#' 
+#' The next CRAN release of \sQuote{oce} will have these functions flagged as
+#' "defunct", which will mean that trying to use them will generate an error
+#' and a hint as to the replacement function.
+#' 
+#' The following are marked "defunct", which means that calling them in the
+#' present version of oce will produce an error, and that they will be removed
+#' altogether in the next oce release on CRAN.
+#' 
+#' \tabular{lll}{ \strong{Defunct} \tab \strong{Replacement} \tab
+#' \strong{Notes}\cr \code{makeSection} \tab \code{\link{as.section}} \tab
+#' Improve utility and name sensibility\cr \code{columns} \tab
+#' \code{\link{read.ctd}} \tab Unnecessary, and never worked\cr }
+#' 
+#' Several \sQuote{oce} function arguments are also slated for removal but are
+#' being permitted in the present CRAN release. They are as follows.
+#' 
+#' \tabular{lll}{ \strong{Deprecated} \tab \strong{Replacement} \tab
+#' \strong{Notes}\cr \code{date} argument to \code{\link{as.ctd}} \tab - \tab
+#' Was never used, and could be confused with \code{startTime}\cr \code{fill}
+#' argument to \code{\link{mapPlot}} etc. \tab \code{col} \tab Rationalize with
+#' \code{\link{polygon}}\cr }
+#' 
+#' @aliases oce-defunct
+#' @name oce-deprecated
+#'
+#' @seealso The \sQuote{Bioconductor} scheme for removing functions is
+#' described at
+#' \url{https://www.bioconductor.org/developers/how-to/deprecation/} and it is
+#' extended here to function arguments.
+NULL
+
+#' Coerce Something Into an Oce Object
 #'
 #' @details
 #' This function is limited and not intended for common use.
@@ -105,7 +155,6 @@ NULL
 #' @examples
 #' as.oce(data.frame(salinity=c(30, 30.5), temperature=c(15, 14), pressure=c(1, 5)))
 #' as.oce(list(longitude=1:3,latitude=11:13))
-
 as.oce <- function(x, ...)
 {
     if (inherits(x, "oce"))
@@ -141,6 +190,21 @@ as.oce <- function(x, ...)
     res
 }
 
+
+#' Replace the Heading for One Instrument With That of Another
+#' 
+#' Replace the heading angles in one oce object with that from another,
+#' possibly with a constant adjustment.
+#' 
+#' @param b object holding data from an instrument whose heading is bad, but
+#' whose other data are good.
+#' @param g object holding data from an instrument whose heading is good, and
+#' should be interpolated to the time base of \code{b}.
+#' @param add an angle, in degrees, to be added to the heading.
+#' @return A copy of \code{b}, but with \code{b$data$heading} replaced with
+#' heading angles that result from linear interpolation of the headings in
+#' \code{g}, and then adding the angle \code{add}.
+#' @author Dan Kelley
 useHeading <- function(b, g, add=0)
 {
     if (!"heading" %in% names(b@data))
@@ -162,6 +226,52 @@ useHeading <- function(b, g, add=0)
     res
 }
 
+
+
+#' Window an Oce Object by Time or Distance
+#' 
+#' Windows \code{x} on either time or distance, depending on the value of
+#' \code{which}.  In each case, values of \code{start} and \code{end} may be
+#' integers, to indicate a portion of the time or distance range.  If
+#' \code{which} is \code{"time"}, then the \code{start} and \code{end} values
+#' may also be provided as POSIX times, or character strings indicating times
+#' (in time zone given by the value of \code{getOption("oceTz")}).
+#' Note that \code{\link{subset}} may be more useful than this function.
+#' 
+#' @param x an \code{oce} object.
+#' @param start the start time (or distance) of the time (or space) region of
+#' interest.  This may be a single value or a vector.
+#' @param end the end time (or distance) of the time (or space) region of
+#' interest.  This may be a single value or a vector.
+#' @param frequency not permitted yet.
+#' @param deltat not permitted yet
+#' @param extend not permitted yet
+#' @param which string containing the name of the quantity on which sampling is
+#' done.  Possibilities are \code{"time"}, which applies the windowing on the
+#' \code{time} entry of the \code{data} slot, and \code{"distance"}, for the
+#' \code{distance} entry (for those objects, such as \code{adp}, that have this
+#' entry).
+#' @param indexReturn boolean flag indicating whether to return a list of the
+#' "kept" indices for the \code{time} entry of the \code{data} slot, as well as
+#' the \code{timeSlow} entry, if there is one..  Either of these lists will be
+#' \code{NULL}, if the object lacks the relevant items.
+#' @param debug a flag that turns on debugging.
+#' @param \dots ignored
+#' @return Normally, this is new \code{oce} object.  However, if
+#' \code{indexReturn=TRUE}, the return value is two-element list containing
+#' items named \code{index} and \code{indexSlow}, which are the indices for the
+#' \code{time} entry of the \code{data} slot (and the \code{timeSlow}, if it
+#' exists).
+#' @author Dan Kelley
+#' @seealso \code{\link{subset}} provides more flexible selection of subsets.
+#' @examples
+#' library(oce)
+#' data(adp)
+#' plot(adp)
+#' early <- window(adp, start="2008-06-26 00:00:00", end="2008-06-26 12:00:00")
+#' plot(early)
+#' bottom <- window(adp, start=0, end=20, which="distance")
+#' plot(bottom)
 window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE,
                        which=c("time","distance"), indexReturn=FALSE,
                        debug=getOption("oceDebug"), ...)
@@ -263,6 +373,91 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
     res
 }
 
+
+#' Extract The Start of an Oce Object
+#'
+#' @param x An \code{oce} object of a suitable class (presently only \code{adp} is
+#' permitted).
+#' @param n Number of elements to extract.
+#' @param ... ignored
+#' @seealso \code{\link{tail.oce}}, which yields the end of an \code{oce} object.
+head.oce <- function(x, n=6L, ...)
+{
+    res <- NULL
+    if (inherits(x, "adp") || inherits(x, "adv")) {
+        numberOfProfiles <- dim(x@data$v)[1]
+        look <- if (n < 0) seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
+            else seq.int(1, min(n, numberOfProfiles))
+        res <- x
+        for (name in names(x@data)) {
+            if ("distance" == name)
+                next
+            if (is.vector(x@data[[name]])) {
+                res@data[[name]] <- x@data[[name]][look]
+            } else if (is.matrix(x@data[[name]])) {
+                res@data[[name]] <- x@data[[name]][look,]
+            } else if (is.array(x@data[[name]])) {
+                res@data[[name]] <- x@data[[name]][look,,]
+            } else {
+                res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+            }
+        }
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        res
+    } else {
+        message("not sure how to 'head' this")
+    }
+    res
+}
+
+
+#' Extract the End of an Oce Object
+#'
+#' @inheritParams head.oce
+#' @seealso \code{\link{head.oce}}, which yields the start of an \code{oce} object.
+tail.oce <- function(x, n=6L, ...)
+{
+    res <- NULL
+    if (inherits(x, "adp")) {
+        numberOfProfiles <- dim(x@data$v)[1]
+        look <- if (n < 0) seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
+            else seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
+        res <- x
+        for (name in names(x@data)) {
+            if (is.vector(x@data[[name]])) {
+                res@data[[name]] <- x@data[[name]][look]
+            } else if (is.matrix(x@data[[name]])) {
+                res@data[[name]] <- x@data[[name]][look,]
+            } else if (is.array(x@data[[name]])) {
+                res@data[[name]] <- x@data[[name]][look,,]
+            } else {
+                res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+            }
+        }
+    } else {
+        message("cannot 'tail' this")
+    } 
+    res
+}
+
+
+#' Draw a Polar Plot
+#' 
+#' Creates a crude polar plot.
+#' 
+#' @param r radii of points to plot.
+#' @param theta angles of points to plot, in degrees.
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @param \dots optional arguments passed to the lower-level plotting
+#' functions.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' r <- rnorm(50, mean=2, sd=0.1)
+#' theta <- runif(50, 0, 360)
+#' plotPolar(r, theta)
 plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 {
 
@@ -288,6 +483,95 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
     oceDebug(debug, "} # plotPolar()\n", unindent=1)
 }
 
+
+#' Interpolate 1D Data with Unesco or Reiniger-Ross Algorithm
+#' 
+#' Interpolate one-dimensional data using schemes that permit curvature but
+#' tends minimize extrema that are not well-indicated by the data.
+#' 
+#' Setting \code{method="rr"} yields the weighted-parabola algorithm of
+#' Reiniger and Ross (1968).  For procedure is as follows.  First, the
+#' interpolant for any \code{xout} value that is outside the range of \code{x}
+#' is set to NA.  Next, linear interpolation is used for any \code{xout} value
+#' that has only one smaller neighboring \code{x} value, or one larger
+#' neighboring value.  For all other values of \code{xout}, the 4 neighboring
+#' points \code{x} are sought, two smaller and two larger.  Then two parabolas
+#' are determined, one from the two smaller points plus the nearest larger
+#' point, and the other from the nearest smaller point and the two larger
+#' points.  A weighted sum of these two parabolas provides the interpolated
+#' value.  Note that, in the notation of Reiniger and Ross (1968), this
+#' algorithm uses \code{m}=2 and \code{n}=1.  (A future version of this routine
+#' might provide the ability to modify these values.)
+#' 
+#' Setting \code{method="unesco"} yields the method that is used by the U.S.
+#' National Oceanographic Data Center. It is described in pages 48-50 of
+#' reference 2; reference 3 presumably contains the same information but it is
+#' not as easily accessible.  The method works as follows.
+#' 
+#' \itemize{
+#' 
+#' \item If there are data above 5m depth, then the surface value is taken to
+#' equal to the shallowest recorded value.
+#' 
+#' \item Distance bounds are put on the four neighboring points, and the
+#' Reiniger-Ross method is used for interpolated points with sufficiently four
+#' close neighbors.  The bounds are described in table 15 of reference 2 only
+#' for so-called standard depths; in the present instance they are transformed
+#' to the following rules.  Inner neighbors must be within 5m for data above
+#' 10m, 50m above 250m 100m above 900m, 200m above 2000m, or within 1000m
+#' otherwise.  Outer neighbors must be within 200m above 500m, 400m above
+#' 1300m, or 1000m otherwise.  If two or more points meet these criteria,
+#' Lagrangian interpolation is used.  If not, \code{NA} is used as the
+#' interpolant.
+#' 
+#' }
+#' 
+#' After these rules are applied, the interpolated value is compared with the
+#' values immediately above and below it, and if it is outside the range,
+#' simple linear interpolation is used.
+#' 
+#' @param x the independent variable (z or p, usually).
+#' @param y the dependent variable.
+#' @param xout the values of the independent variable at which interpolation is
+#' to be done.
+#' @param method method to use.  See \dQuote{Details}.
+#' @return A vector of interplated values, corresponding to the \code{xout}
+#' values and equal in number.
+#' @author Dan Kelley
+#' @references
+#' 
+#' \enumerate{
+#' 
+#' \item R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
+#' application to oceanographic data.  \emph{Deep Sea Research}, \bold{15},
+#' 185-193.
+#' 
+#' \item Daphne R. Johnson, Tim P. Boyer, Hernan E. Garcia, Ricardo A.
+#' Locarnini, Olga K. Baranova, and Melissa M. Zweng, 2011. World Ocean
+#' Database 2009 Documentation.  NODC Internal report 20.  Ocean Climate
+#' Laboratory, National Oceanographic Data Center.  Silver Spring, Maryland.
+#' 
+#' \item UNESCO, 1991. Processing of oceanographic station data, 138 pp.,
+#' Imprimerie des Presses Universitaires de France, United Nations Educational,
+#' Scientific and Cultural Organization, France.
+#' 
+#' }
+#' @aliases oce.approx
+#' @examples
+#' 
+#' library(oce)
+#' if (require(ocedata)) {
+#'     data(RRprofile)
+#'     zz <- seq(0,2000,5)
+#'     plot(RRprofile$temperature, RRprofile$depth, ylim=c(500,0), xlim=c(2,11))
+#'     ## Contrast two methods
+#'     a1 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz)
+#'     a2 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, 'rr')
+#'     lines(a1, zz)
+#'     lines(a2, zz, col='red')
+#'     legend("bottomright", lwd=1, col=1:2,
+#'     legend=c("Unesco", "Reiniger-Ross"), cex=3/4)
+#' }
 oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
 {
     method <- match.arg(method)
@@ -318,6 +602,61 @@ oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
 }
 oce.approx <- oceApprox
 
+
+#' Draw a Stick Plot
+#' 
+#' The arrows are drawn with directions on the graph that match the directions
+#' indicated by the \code{u} and \code{v} components. The arrow size is set
+#' relative to the units of the \code{y} axis, according to the value of
+#' \code{yscale}, which has the unit of \code{v} divided by the unit of
+#' \code{y}.
+#' The interpretation of diagrams produced by \code{plotSticks} can be
+#' difficult, owing to overlap in the arrows.  For this reason, it It is often
+#' a good idea to smooth \code{u} and \code{v} before using this function.
+#' 
+#' @param x x coordinates of stick origins.
+#' @param y y coordinates of stick origins.  If not supplied, 0 will be used;
+#' if length is less than that of x, the first number is repeated and the rest
+#' are ignored.
+#' @param u x component of stick length.
+#' @param v y component of stick length.
+#' @param yscale scale from u and v to y (see \dQuote{Details}).
+#' @param add boolean, set \code{TRUE} to add to an existing plot.
+#' @param length value to be provided to \code{\link{arrows}}; here, we set a
+#' default that is smaller than normally used, because these plots tend to be
+#' crowded in oceanographic applications.
+#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
+#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' @param mar value to be used with \code{\link{par}("mar")}.
+#' @param \dots graphical parameters passed down to \code{\link{arrows}}.  It
+#' is common, for example, to use smaller arrow heads than \code{\link{arrows}}
+#' uses; see \dQuote{Examples}.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' 
+#' # Flow from a point source
+#' n <- 16
+#' x <- rep(0, n)
+#' y <- rep(0, n)
+#' theta <- seq(0, 2*pi, length.out=n)
+#' u <- sin(theta)
+#' v <- cos(theta)
+#' plotSticks(x, y, u, v, xlim=c(-2, 2), ylim=c(-2, 2))
+#' rm(n, x, y, theta, u, v)
+#' 
+#' # Oceanographic example
+#' if (require(ocedata)) {
+#'     data(met)
+#'     t <- ISOdatetime(met[["Year"]], met[["Month"]], met[["Day"]], 0, 0, 0, tz="UTC")
+#'     u <- met[["u"]]
+#'     v <- met[["v"]]
+#'     temperature <- met[["temperature"]]
+#'     oce.plot.ts(t, temperature, type='p', ylim=c(-5, 30))
+#'     plotSticks(t, 5, u, v, yscale=2, add=TRUE)
+#' }
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                        mgp=getOption("oceMgp"),
                        mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
@@ -359,7 +698,7 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
     options(warn=warn)
 }
 
-#' Add a grid to an existing plot, with special abilities for those created by oce
+#' Add a Grid to an Existing Oce Plot
 #'
 #' @details
 #' For plots not created by oce functions, or for missing \code{xat} and \code{yat},
@@ -402,7 +741,6 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 #' @param col colour of grid lines (see \code{\link{par}})
 #' @param lty type for grid lines (see \code{\link{par}})
 #' @param lwd width for grid lines (see \code{\link{par}})
-#' @return nothing
 oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd")) 
 {
     if (missing(xat) && missing(yat)) {
@@ -418,6 +756,78 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
     }
 }
 
+
+#' Oce Variant of plot.ts
+#' 
+#' Plot a time-series, obeying the timezone and possibly drawing the range in
+#' the top-left margin
+#' Depending on the version of R, the standard \code{\link{plot}} and
+#' \code{\link{plot.ts}} routines will not obey the time zone of the data.
+#' This routine gets around that problem.  It can also plot the time range in
+#' the top-left margin, if desired; this string includes the timezone, to
+#' remove any possible confusion.
+#' 
+#' The time axis is drawn with \code{\link{oce.axis.POSIXct}}.
+#' 
+#' @param x the times of observations.
+#' @param y the observations.
+#' @param type plot type, \code{"l"} for lines, \code{"p"} for points.
+#' @param xlim optional limit for x axis.  This has an additional effect,
+#' beyond that for conventional R functions: it effectively windows the data,
+#' so that autoscaling will yield limits for y that make sense within the
+#' window.
+#' @param ylim optional limit for y axis.
+#' @param drawTimeRange a boolean, set to \code{TRUE} to indicate the range of
+#' times in the top-left margin.
+#' @param adorn optional \code{\link{expression}} to be performed immediately
+#' after drawing the panel. (See \code{\link{plot,adp-method}} for an example.)
+#' @param fill boolean, set \code{TRUE} to fill the curve to zero (which it
+#' does incorrectly if there are missing values in \code{y}).
+#' @param xlab name for x axis; defaults to \code{""}.
+#' @param ylab name for y axis; defaults to the plotted item.
+#' @param xaxs control x axis ending; see \code{\link{par}("xaxs")}.
+#' @param yaxs control y axis ending; see \code{\link{par}("yaxs")}.
+#' @param cex size of labels on axes; see \code{\link[graphics]{par}}("cex").
+#' @param cex.axis see \code{\link[graphics]{par}}("cex.axis").
+#' @param cex.main see \code{\link[graphics]{par}}("cex.main").
+#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
+#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' @param mar value to be used with \code{\link{par}("mar")} to set margins.
+#' THe default value uses significantly tighter margins than is the norm in R,
+#' which gives more space for the data.  However, in doing this, the existing
+#' \code{par("mar")} value is ignored, which contradicts values that may have
+#' been set by a previous call to \code{\link{drawPalette}}.  To get plot with
+#' a palette, first call \code{\link{drawPalette}}, then call
+#' \code{oce.plot.ts} with \code{mar=par("mar")}.
+#' @param main title of plot.
+#' @param despike boolean flag that can turn on despiking with
+#' \code{\link{despike}}.
+#' @param axes boolean, set to \code{TRUE} to get axes plotted
+#' @param tformat optional format for labels on the time axis
+#' @param marginsAsImage boolean indicatingn whether to set the right-hand
+#' margin to the width normally taken by an image drawn with
+#' \code{\link{imagep}}.
+#' @param grid if \code{TRUE}, a grid will be drawn for each panel.  (This
+#' argument is needed, because calling \code{\link{grid}} after doing a
+#' sequence of plots will not result in useful results for the individual
+#' panels.
+#' @param grid.col colour of grid
+#' @param grid.lty line type of grid
+#' @param grid.lwd line width of grid
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @param \dots graphical parameters passed down to \code{\link{plot}}.
+#' @return A list is silently returned, containing \code{xat} and \code{yat},
+#' values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' t0 <- as.POSIXct("2008-01-01", tz="UTC")
+#' t <- seq(t0, length.out=48, by="30 min")
+#' y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
+#' oce.plot.ts(t, y, type='l', xaxs='i')
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                         drawTimeRange=getOption("oceDrawTimeRange"),
                         adorn=NULL, fill=FALSE,
@@ -536,6 +946,23 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     invisible(list(xat=xat, yat=yat))
 }
 
+
+#' Oce Variant of as.POSIXlt
+#' 
+#' Used in parsing headers, this function is built on the standard
+#' \code{\link{as.POSIXlt}} function.  the only difference is that this also
+#' recognizes dates of forms such as \code{"2002 100 1430"} (year day hhmm),
+#' \code{"Aug 23 2002"}, \code{"August 23 2002"}, \code{"2002 Aug 23"}, and
+#' \code{"2002 23 Aug"}.  (The month may appear in abbreviated form or written
+#' in full, and may be capitalized or not.)
+#' 
+#' @param x a date, as for \code{as.POSIXlt}, but also including forms in which
+#' the month name appears.
+#' @param tz the timezone, as for \code{as.POSIXlt}
+#' @return A POSIXlt object.
+#' @author Dan Kelley
+#' @seealso \code{\link{as.POSIXlt}}, from which this is derived.
+#' @family things related to time
 oce.as.POSIXlt <- function (x, tz = "")
 {
     fromchar <- function(x)
@@ -593,7 +1020,58 @@ oce.as.POSIXlt <- function (x, tz = "")
     as.POSIXlt(x, tz)
 }
 
-oce.edit <- function(x, item, value, action, reason="", person="",
+
+#' Edit an Oce Object
+#' 
+#' Edit an element of an oce object, inserting a note in the processing
+#' log of the returned object.
+#' 
+#' There are several ways to use this function.
+#' 
+#' 1. If both an \code{item} and \code{value} are supplied, then the object's
+#' metadata entry named \code{item} is updated to the supplied \code{value}.
+#' 
+#' 2. If \code{item} and \code{value} are not supplied, then \code{action} must
+#' be supplied.  This is a character string specifying some action to be
+#' performed on the object, e.g. a manipulation of a column.  The action must
+#' refer to the object as \code{x}; see Examples.
+#' 
+#' 3. Applied to an \code{adv} object (i.e. data from an acoustic velocimeter),
+#' \code{oce.edit} treats items named \code{heading}, \code{pitch}, \code{roll}
+#' appropriately, depending on the type of \code{adv} instrument used.  (This
+#' is necessary because different manufacturers produce different forms of
+#' these items, i.e. Nortek reports them on a time base that is different from
+#' the velocity reporting, while Sontek reports them on the same time base.)
+#' 
+#' In each case, a log entry is stored in the object, to document the change.
+#' Indeed, this is the main benefit to using this function, instead of altering
+#' the object directly.  The log entry will be most useful if it contains a
+#' brief note on the \code{reason} for the change, and the name of the
+#' \code{person} doing the work.
+#' 
+#' @aliases oce.edit
+#' @param x an \code{oce} object.  The exact action of \code{oce.edit} depends
+#' on the \code{\link{class}} of \code{x}; see \dQuote{Details}.
+#' @param item if supplied, a character string naming an item in the object's
+#' metadata (see \dQuote{Details}).
+#' @param value new value for item, if both supplied.
+#' @param action optional character string containing R code to carry out some
+#' action on the object.
+#' @param reason character string giving the reason for the change.
+#' @param person character string giving the name of person making the change.
+#' @param debug an integer that specifies a level of debugging, with 0 or less
+#' indicating no debugging, and 1 or more indicating debugging.
+#' @return An object of \code{\link[base]{class}} \code{"oce"}, altered
+#' appropriately, and with a log item indicating the nature of the alteration.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' data(ctd)
+#' ctd2 <- oce.edit(ctd, item="latitude", value=47.8879,
+#'                 reason="illustration", person="Dan Kelley")
+#' ctd3 <- oce.edit(ctd,action="x@data$pressure<-x@data$pressure-1")
+oceEdit <- function(x, item, value, action, reason="", person="",
                      debug=getOption("oceDebug"))
 {
     oceDebug(debug, "oce.edit() {\n", unindent=1)
@@ -682,8 +1160,29 @@ oce.edit <- function(x, item, value, action, reason="", person="",
     oceDebug(debug, "} # oce.edit()\n", unindent=1)
     x
 }
-oceEdit <- oce.edit
+oce.edit <- oceEdit
 
+
+#' Write the Data Portion of Object to a File
+#' 
+#' The output has a line containing the names of the columns in \code{x$data},
+#' each enclosed in double quotes.  After that line are lines for the data
+#' themselves.  The default is to separate data items by a single space
+#' character, but this can be altered by using a \code{sep} argument in the
+#' \code{...} list (see \code{\link[utils]{write.table}}).
+#' 
+#' This function is little more than a thin wrapper around
+#' \code{\link[utils]{write.table}}, the only difference being that row names
+#' are omitted here, making for a file format that is more conventional in
+#' Oceanography.
+#' 
+#' @param x an \code{oce} object that contains a \code{data} table.
+#' @param file file name, as passed to \code{\link[utils]{write.table}}.  Use
+#' \code{""} to get a listing in the terminal window.
+#' @param ... optional arguments passed to \code{\link[utils]{write.table}}.
+#' @return The value of \code{\link[utils]{write.table}} is returned.
+#' @author Dan Kelley
+#' @seealso \code{\link[utils]{write.table}}, which does the actual work.
 oce.write.table <- function (x, file="", ...)
 {
     if (!inherits(x, "oce"))
@@ -694,6 +1193,13 @@ oce.write.table <- function (x, file="", ...)
         write.table(x@data, file, ...)
 }
 
+
+#' Standard Oceanographic Depths
+#' 
+#' This returns so-called standard depths 0m, 10m, etc. below the sea surface.
+#' 
+#' @return A vector of depths, c(0, 10, ...).
+#' @author Dan Kelley
 standardDepths <- function()
 {
     c(0,   10,   20,   30,   50,   75,  100,  125,  150,  200,
@@ -702,18 +1208,25 @@ standardDepths <- function()
       4500, 5000, 5500)
 }
 
-summary.oce <- function(object, ...)
-{
-    if (!inherits(object, "oce"))
-        stop("method is only for oce objects")
-    cat("Data summary:\n")
-    print(summary(object@data))
-    cat("\nMetadata:\n")
-    print(object@metadata)
-    print(summary(object))
-    return(invisible(object))
-}
-
+#' Find the Type of an Oceanographic Data File
+#' 
+#' This function tries to infer the file type, based on either the data within
+#' the file or, more rarely, based on the file name.
+#' 
+#' @aliases oceMagic oce.magic
+#' @param file a connection or a character string giving the name of the file
+#' to be checked.
+#' @param debug an integer, set non-zero to turn on debugging.  Higher values
+#' indicate more debugging.
+#' @return A character string indicating the file type, or \code{"unknown"}, if
+#' the type cannot be determined. If the result contains \code{"/"} characters,
+#' these separate a list describing the file type, with the first element being
+#' the general type, the second element being the manufacturer, and the third
+#' element being the manufacturer's name for the instrument. For example,
+#' \code{"adp/nortek/aquadopp"} indicates a acoustic-doppler profiler made by
+#' NorTek, of the model type called AquaDopp.
+#' @author Dan Kelley
+#' @seealso This is used mainly by \code{\link{read.oce}}.
 oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
@@ -778,6 +1291,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 return("met") # FIXME: may be other things too ...
             } else if (1 == length(grep("Station_Name,", someLines, useBytes=TRUE))) {
                 return("sealevel")
+            } else if (1 == length(grep("CTD,", someLines, useBytes=TRUE))) {
+                return("ctd/woce/exchange")
+            } else if (1 == length(grep("BOTTLE,", someLines, useBytes=TRUE))) {
+                return("section")
             } else {
                 return("unknown")
             }
@@ -935,6 +1452,37 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
 }
 oce.magic <- oceMagic
 
+
+
+
+#' Read an Oceanographic Data File
+#' 
+#' Read an oceanographic data file, auto-discovering the file type from the
+#' first line of the file.
+#' This function tries to infer the file type from the first line, using
+#' \code{\link{oceMagic}}.  If it can be discovered, then an
+#' instrument-specific file reading function is called, with the \code{file}
+#' and with any additional arguments being supplied.
+#' 
+#' @param file a connection or a character string giving the name of the file
+#' to load.
+#' @param ... arguments to be handed to whichever instrument-specific reading
+#' function is selected, based on the header.
+#' @return An object of \code{\link{oce-class}} that is 
+#' specialized to the data type, e.g. \code{\link{ctd-class}},
+#' if the data file contains \code{ctd} data.
+#' @author Dan Kelley
+#' @seealso The file type is determined by \code{\link{oceMagic}}.  If the file
+#' type can be determined, then one of the following is called:
+#' \code{\link{read.ctd}}, \code{\link{read.coastline}}
+#' \code{\link{read.lobo}}, \code{\link{read.rsk}},
+#' \code{\link{read.sealevel}}, etc.
+#' @examples
+#' 
+#' library(oce)
+#' x <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
+#' plot(x) # summary with TS and profiles
+#' plotTS(x) # just the TS
 read.oce <- function(file, ...)
 {
     type <- oceMagic(file)
@@ -1049,7 +1597,7 @@ read.oce <- function(file, ...)
     stop("unknown file type \"", type, "\"")
 }
 
-#' Read a netcdf file
+#' Read a NetCDF File
 #'
 #' @details
 #' Read a netcdf file, trying to interpret its contents sensibly.
@@ -1127,6 +1675,154 @@ read.netcdf <- function(file, ...)
 }
 
 
+#' Create a Palette of Colours
+#' 
+#' Create a palette of colours.
+#' 
+#' \code{oce.colorsPalette} provides a variety of pre-defined palettes.
+#' \code{which}=1 yields the ColorBrewer diverging red/blue scheme while
+#' \code{which}=2 yields the ColorBrewer diverging RYB scheme [1].
+#' 
+#' A family of nine-colour schemes is as follows: \code{which="jet"} (or
+#' \code{which="9A"} or \code{which=9.01} for the Jet scheme; \code{which="9B"}
+#' or \code{which=9.02} for a scheme similar to Jet but omitting the green, and
+#' somewhat desaturating the yellow and cyan.
+#' 
+#' \code{\link{oce.colorsGebco}} provides palettes that mimic the GEBCO atlas colours,
+#' with shades of blue for water and of brown for land.  The blue values go
+#' from dark to light, and the brown ones from light to dark; in this way,
+#' topographic images have light values near sea-level, and get darker in
+#' either deeper water or higher terrain.
+#' 
+#' \code{oce.colorsJet} provides a palette similar to the Matlab \dQuote{jet}
+#' palette.
+#' 
+#' \code{oce.colorsTwo} provides a two-tone palette that fades to white at
+#' central values.
+#' 
+#' \code{oce.colorsViridis} provides a matplotlib (python) colour scheme that
+#' became the standard in 2015; see [2]. This is a blue-yellow transition that
+#' is designed to reproduce well in black-and-white, and also to be
+#' interpretable by those with certain forms of colour blindness [3,4,5].
+#' 
+#' \code{oce.colorsCDOM}, \code{oce.colorsChlorophyll},
+#' \code{oce.colorsDensity}, \code{oce.colorsFreesurface},
+#' \code{oce.colorsOxygen}, \code{oce.colorspAR}, \code{oce.colorsPhase},
+#' \code{oce.colorsSalinity}, \code{oce.colorsTemperature},
+#' \code{oce.colorsTurbidity}, \code{oce.colorsVelocity} and
+#' \code{oce.colorsVorticity} are based on RGB values set up by Kristen M.
+#' Thyng for her Python package named \code{cmcolor} [7].
+#' 
+#' @aliases oce.colors oceColors oce.colorsJet oceColorsJet 
+#' oce.colorsTwo oceColorsTwo oce.colorsPalette oceColorsPalette
+#' oce.colors9A oceColors9A oce.colors9B oceColors9B oce.colorsViridis
+#' oceColorsViridis oce.colorsCDOM oce.colorsChlorophyll oce.colorsDensity
+#' oce.colorsFreesurface oce.colorsOxygen oce.colorsPAR oce.colorsPhase
+#' oce.colorsSalinity oce.colorsTemperature oce.colorsTurbidity
+#' oce.colorsVelocity oce.colorsVorticity oceColorsCDOM oceColorsChlorophyll
+#' oceColorsDensity oceColorsFreesurface oceColorsOxygen oceColorsPAR
+#' oceColorsPhase oceColorsSalinity oceColorsTemperature oceColorsTurbidity
+#' oceColorsVelocity oceColorsVorticity
+#' @param n the number of colours (\eqn{\ge 1}{>=1}) to be in the palette.
+#' @param low the hue, in [0,1], for the low end of a \code{oce.colorsTwo}
+#' scale.
+#' @param high the hue, in [0,1], for the high end of a \code{oce.colorsTwo}
+#' scale.
+#' @param smax the maximum saturation, in [0,1], for the colours of
+#' \code{oce.colorsTwo}.
+#' @param alpha the alpha value, in [0,1], for the colours of
+#' \code{oce.colorsTwo}.
+#' @author Dan Kelley
+#' @references [1] Color Brewer. \url{http://colorbrewer2.org/}
+#' 
+#' [2] A blog item on the Viridis (and related) matplotlib colour scales is at
+#' \url{http://bids.github.io/colormap/}.
+#' 
+#' [3] Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
+#' Schemes for Improved Data Graphics. \emph{Eos Trans. AGU}, 85(40),
+#' doi:10.1029/2004EO400002.
+#' 
+#' [4] Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
+#' Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
+#' \url{http://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}
+#' 
+#' [5] Stephenson, David B., 2005. Comment on ``Color schemes for improved data
+#' graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).
+#' 
+#' [6] The Geography department at the University of Oregon has good resources
+#' on colour schemes; see e.g.
+#' \code{http://geography.uoregon.edu/datagraphics/color_scales.htm} (This URL
+#' worked prior to December 8, 2015, but was found to fail on that date; it is
+#' included here in case users want to search for themselves.)
+#' 
+#' [7] The \code{cmocean} Python package, written by Kristen M Thyng, is
+#' available at \url{https://github.com/kthyng/cmocean}.
+#' @examples
+#' 
+#' library(oce)
+#' opar <- par(no.readonly = TRUE)
+#' # 1. Show a few palettes
+#' x <- array(1:1000, dim=c(1,1000))
+#' par(mfrow=c(1,5), mar=c(1, 3, 3, 1))
+#' image(x, col=oce.colorsTwo(200), main="oce.colorsTwo")
+#' image(x, col=oce.colorsJet(200), main="oce.colorsJet")
+#' image(x, col=oce.colorsGebco(200), main="oce.colorsGebco")
+#' image(x, col=oce.colorsPalette(200), main="oce.colorsPalette")
+#' image(x, col=oce.colorsViridis(200), main="oce.colorsViridis")
+#' 
+#' # 4. Kristen M Thyng's 'cmocean' colours, specialised for oceanography.
+#' par(mfrow=c(3,4), mar=c(1, 3, 3, 1))
+#' image(x, col=oce.colorsCDOM(200), main="oce.colorsCDOM")
+#' image(x, col=oce.colorsChlorophyll(200), main="oce.colorsChlorophyll")
+#' image(x, col=oce.colorsDensity(200), main="oce.colorsDensity")
+#' image(x, col=oce.colorsFreesurface(200), main="oce.colorsFreesurface")
+#' image(x, col=oce.colorsOxygen(200), main="oce.colorsOxygen")
+#' image(x, col=oce.colorsPAR(200), main="oce.colorsPAR")
+#' image(x, col=oce.colorsPhase(200), main="oce.colorsPhase")
+#' image(x, col=oce.colorsSalinity(200), main="oce.colorsSalinity")
+#' image(x, col=oce.colorsTemperature(200), main="oce.colorsTemperature")
+#' image(x, col=oce.colorsTurbidity(200), main="oce.colorsTurbidity")
+#' image(x, col=oce.colorsVelocity(200), main="oce.colorsVelocity")
+#' image(x, col=oce.colorsVorticity(200), main="oce.colorsVorticity")
+#'  
+#' # 3. Acoustic-Doppler profiler data; note that plot,adp-method() puts makes
+#' # zlim be symmetric about zero velocity.
+#' par(mfrow=c(1,1))
+#' data(adp)
+#' plot(adp, which='u1')
+#' 
+#' # 4. Contrast Jet with Viridis, using standard Volcano dataset;
+#' # try printing the results in black and white.
+#' par(mfrow=c(2,1))
+#' imagep(volcano, col=oce.colorsJet)
+#' imagep(volcano, col=oce.colorsViridis)
+#' @family things related to colors
+oce.colorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
+{
+    ## code borrows heavily from cm.color()
+    if ((n <- as.integer(n[1])) > 0) {
+        even.n <- n%%2 == 0
+        k <- n%/%2
+        l1 <- k + 1 - even.n
+        l2 <- n - k + even.n
+        c(if (l1 > 0) hsv(h = low,
+                          s = seq.int(smax, ifelse(even.n, 0.5/k, 0), length.out = l1),
+                          v = 1, alpha = alpha),
+          if (l2 > 1) hsv(h = high,
+                          s = seq.int(0, smax, length.out = l2)[-1],
+                          v = 1, alpha = alpha))
+    }
+    else character(0)
+}
+oceColorsTwo <- oce.colorsTwo
+
+#' Gebco Colors
+#' @aliases oceColorsGebco oce.colors.gebco
+#' @param n Number of colors to return
+#' @param region String indicating application region, one of \code{"water"}, \code{"land"},
+#' or \code{"both"}.
+#' @param type String indicating the purpose, one of \code{"fill"} or \code{"line"}.
+#' @family things related to colors
 oce.colorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
 {
     region <- match.arg(region)
@@ -1168,25 +1864,6 @@ oce.colorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill
 oceColorsGebco <- oce.colorsGebco
 
 
-oce.colorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
-{
-    ## code borrows heavily from cm.color()
-    if ((n <- as.integer(n[1])) > 0) {
-        even.n <- n%%2 == 0
-        k <- n%/%2
-        l1 <- k + 1 - even.n
-        l2 <- n - k + even.n
-        c(if (l1 > 0) hsv(h = low,
-                          s = seq.int(smax, ifelse(even.n, 0.5/k, 0), length.out = l1),
-                          v = 1, alpha = alpha),
-          if (l2 > 1) hsv(h = high,
-                          s = seq.int(0, smax, length.out = l2)[-1],
-                          v = 1, alpha = alpha))
-    }
-    else character(0)
-}
-oceColorsTwo <- oce.colorsTwo
-
 oce.colorsCLOSURE <- function(colorname) {
     function(n) {
         data("colors", package="oce", envir=environment())
@@ -1212,7 +1889,7 @@ oceColorsVelocity <- oce.colorsVelocity <- oce.colorsCLOSURE("velocity")
 oceColorsVorticity <- oce.colorsVorticity <- oce.colorsCLOSURE("vorticity")
 
 
-## matlab-like scheme
+## Simulation of Matlab Jet Colors
 oce.colorsJet <- function(n)
 {
     if (missing(n) || n <= 0)
@@ -1291,6 +1968,39 @@ oce.colorsPalette <- function(n, which=1)
 }
 oceColorsPalette <- oce.colorsPalette
 
+
+#' Oce Version of axis.POSIXct
+#' 
+#' As \code{\link{axis.POSIXct}} but with axis labels obeying the timezone of
+#' \code{x}.  This will not be needed for 2.9 and later, but is included so
+#' that \code{oce} will work even with earlier versions.
+#' 
+#' @param side as for \code{\link{axis.POSIXct}}.
+#' @param x as for \code{\link{axis.POSIXct}}.
+#' @param at as for \code{\link{axis.POSIXct}}.
+#' @param tformat as \code{format} for \code{\link{axis.POSIXct}} for now, but
+#' eventually will have new features for multiline labels, e.g. day on one line
+#' and month on another.
+#' @param labels as for \code{\link{axis.POSIXct}}.
+#' @param drawTimeRange boolean, \code{TRUE} to draw a time range on the
+#' opposite side of the plot.
+#' @param drawFrequency boolean, \code{TRUE} to show the frequency of sampling
+#' in the data
+#' @param abbreviateTimeRange boolean, \code{TRUE} to abbreviate the second
+#' number in the time range, e.g. dropping the year if it is the same in the
+#' first number.
+#' @param cex size of labels on axes; see \code{\link[graphics]{par}}("cex").
+#' @param cex.axis see \code{\link[graphics]{par}}("cex.axis").
+#' @param cex.main see \code{\link[graphics]{par}}("cex.main").
+#' @param mar value for \code{par(mar)} for axis
+#' @param mgp value for \code{par(mgp)} for axis
+#' @param main title of plot
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @param \dots as for \code{\link{axis.POSIXct}}.
+#' @return A vector of times corresponding to axis ticks is returned silently.
+#' @author Dan Kelley
+#' @seealso This is used mainly by \code{\link{oce.plot.ts}}.
 oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
                               drawTimeRange=getOption("oceDrawTimeRange"),
                               abbreviateTimeRange=FALSE, drawFrequency=FALSE,
@@ -1572,6 +2282,23 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     invisible(z)                       # FIXME: or z.sub?
 }
 
+
+#' Convert a Numeric Time to Hour, Minute, and Second
+#' 
+#' @param t a vector of factors or character strings, in the format 1200 for
+#' 12:00, 0900 for 09:00, etc.
+#' @param default value to be used for the returned hour, minute and second if
+#' there is something wrong with the input value (e.g. its length exceeds 4
+#' characters, or it contains non-numeric characters)
+#' @return A list containing \code{hour}, \code{minute}, and \code{second}, the
+#' last of which is always zero.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' t <- c("0900", "1234")
+#' numberAsHMS(t)
+#' 
+#' @family things related to time
 numberAsHMS <- function(t, default=0)
 {
     if ("factor" == class(t))
@@ -1600,6 +2327,73 @@ numberAsHMS <- function(t, default=0)
     list(hour=hour, minute=minute, second=second)
 }
 
+
+#' Convert a Numeric Time to a POSIXct Time
+#' 
+#' There are many varieties, according to the value of \code{type} as defined
+#' in \sQuote{Details}.
+#' 
+#' \itemize{
+#' 
+#' \item \code{"unix"} employs Unix times, measured in seconds since the start
+#' of the year 1970.
+#' 
+#' \item \code{"matlab"} employs Matlab times, measured in days since what
+#' MathWorks [1] calls ``January 0, 0000'' (i.e.  \code{ISOdatetime(0, 1, 1, 0,
+#' 0, 0)} in R notation).
+#' 
+#' \item \code{"gps"} employs the GPS convention. For this, \code{t} is a
+#' two-column matrix, with the first column being the the GPS "week"
+#' (referenced to 1999-08-22) and the second being the GPS "second" (i.e. the
+#' second within the week).
+#' 
+#' \item \code{"argo"} employs Argo times, measured in days since the start of
+#' the year 1900.
+#' 
+#' \item \code{"ncep1"} employs NCEP times, measured in hours since the start
+#' of the year 1800.
+#' 
+#' \item \code{"ncep2"} employs NCEP times, measured in days since the start of
+#' the year 1. (Note that, for reasons that are unknown at this time, a simple
+#' R expression of this definition is out by two days compared with the UDUNITS
+#' library, which is used by NCEP. Therefore, a two-day offset is applied. See
+#' [2,3].)
+#' 
+#' \item \code{"sas"} employs SAS times, indicated by \code{type="sas"}, have
+#' origin at the start of 1960.
+#' 
+#' \item \code{"spss"} employs SPSS times, in seconds after 1582-10-14.
+#' 
+#' \item \code{"yearday"} employs a convention in which \code{t} is a
+#' two-column matrix, with the first column being the year, and the second the
+#' yearday (starting at 1 for the first second of January 1, to match the
+#' convention used by Sea-Bird CTD software).
+#' 
+#' }
+#' 
+#' @param t an integer corresponding to a time, in a way that depends on
+#' \code{type}.
+#' @param type the type of time (see \dQuote{Details}).
+#' @param tz a string indicating the time zone, used only for unix and matlab
+#' times, since GPS times are always referenced to the UTC timezone.
+#' @return A \code{\link{POSIXct}} time vector.
+#' @author Dan Kelley
+#' @seealso \code{\link{numberAsHMS}}
+#' @references [1] Matlab times:
+#' \url{http://www.mathworks.com/help/matlab/ref/datenum.html}
+#' 
+#' [2] NCEP times: \url{http://www.esrl.noaa.gov/psd/data/gridded/faq.html#3}
+#' 
+#' [3] problem with NCEP times:
+#' \url{https://github.com/dankelley/oce/issues/738}
+#' @examples
+#' 
+#' numberAsPOSIXct(0)                     # unix time 0
+#' numberAsPOSIXct(1, type="matlab")      # matlab time 1
+#' numberAsPOSIXct(cbind(566,345615), type="gps") # Canada Day
+#' numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
+#' 
+#' @family things related to time
 numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
                                       "ncep1", "ncep2",
                                       "sas", "spss", "yearday"), tz="UTC")
@@ -1650,6 +2444,50 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
     t
 }
 
+
+#' Plot an Inset Diagram
+#' 
+#' Adds an inset diagram to an existing plot.  Note that if the inset is a map
+#' or coastline, it will be necessary to supply \code{inset=TRUE} to prevent
+#' the inset diagram from occupying the whole device width.  After
+#' \code{plotInset()} has been called, any further plotting will take place
+#' within the inset, so it is essential to finish a plot before drawing an
+#' inset.
+#' 
+#' @param xleft location of left-hand of the inset diagram, in the existing
+#' plot units.  (PROVISIONAL FEATURE: this may also be \code{"bottomleft"}, to
+#' put the inset there.  Eventually, other positions may be added.)
+#' @param ybottom location of bottom side of the inset diagram, in the existing
+#' plot units.
+#' @param xright location of right-hand side of the inset diagram, in the
+#' existing plot units.
+#' @param ytop location of top side of the inset diagram, in the existing plot
+#' units.
+#' @param expr An expression that draws the inset plot.  This may be a single
+#' plot command, or a sequence of commands enclosed in curly braces.
+#' @param mar margins, in line heights, to be used at the four sides of the
+#' inset diagram.  (This is often helpful to save space.)
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' ## power law in linear and log form
+#' x <- 1:10
+#' y <- x^2
+#' plot(x, y, log='xy',type='l')
+#' plotInset(3, 1, 10, 8,
+#'           expr=plot(x,y,type='l',cex.axis=3/4,mgp=c(3/2,1/2,0)),
+#'           mar=c(2.5,2.5,1,1))
+#' 
+#' ## CTD data with location
+#' data(ctd) 
+#' plot(ctd, which="TS")
+#' plotInset(29.9, 2.7, 31, 10,
+#'           expr=plot(ctd, which='map',
+#'           coastline="coastlineWorld",
+#'           span=5000, mar=NULL, cex.axis=3/4))
 plotInset <- function(xleft, ybottom, xright, ytop, expr,
                       mar=c(2, 2, 1, 1),
                       debug=getOption("oceDebug"))
@@ -1738,6 +2576,81 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     invisible()
 }
 
+
+#' Oce Version of as.POSIXct
+#' 
+#' @details
+#' Each format in \code{timeFormats} is used in turn as the \code{format}
+#' argument to \code{\link{as.POSIXct}}, and the first that produces a
+#' non-\code{NA} result is used.  If \code{timeFormats} is missing, the
+#' following formats are tried, in the stated order:
+#'
+#' \itemize{
+#'
+#' \item \code{"\%b \%d \%Y \%H:\%M:\%S"} (e.g. \code{"Jul 1 2013 01:02:03"})
+#'
+#' \item \code{"\%b \%d \%Y"} (e.g. \code{"Jul 1 2013"})
+#'
+#' \item \code{"\%B \%d \%Y \%H:\%M:\%S"} (e.g. \code{"July 1 2013 01:02:03"})
+#'
+#' \item \code{"\%B \%d \%Y"} (e.g. \code{"July 1 2013"})
+#'
+#' \item \code{"\%d \%b \%Y \%H:\%M:\%S"} (e.g. \code{"1 Jul 2013 01:02:03"})
+#'
+#' \item \code{"\%d \%b \%Y"} (e.g. \code{"1 Jul 2013"})
+#'
+#' \item \code{"\%d \%B \%Y \%H:\%M:\%S"} (e.g. \code{"1 July 2013 01:02:03"})
+#'
+#' \item \code{"\%d \%B \%Y"} (e.g. \code{"1 July 2013"})
+#'
+#' \item \code{"\%Y-\%m-\%d \%H:\%M:\%S"} (e.g.  \code{"2013-07-01 01:02:03"})
+#'
+#' \item \code{"\%Y-\%m-\%d"} (e.g. \code{"2013-07-01"})
+#'
+#' \item \code{"\%Y-\%b-\%d \%H:\%M:\%S"} (e.g.  \code{"2013-July-01 01:02:03"})
+#'
+#' \item \code{"\%Y-\%b-\%d"} (e.g.  \code{"2013-Jul-01"})
+#'
+#' \item \code{"\%Y-\%B-\%d \%H:\%M:\%S"} (e.g. \code{"2013-July-01 01:02:03"})
+#'
+#' \item \code{"\%Y-\%B-\%d"} (e.g. \code{"2013-July-01"})
+#'
+#' \item \code{"\%d-\%b-\%Y \%H:\%M:\%S"} (e.g.  \code{"01-Jul-2013 01:02:03"})
+#'
+#' \item \code{"\%d-\%b-\%Y"} (e.g. \code{"01-Jul-2013"})
+#'
+#' \item \code{"\%d-\%B-\%Y \%H:\%M:\%S"} (e.g. \code{"01-July-2013 01:02:03"})
+#'
+#' \item \code{"\%d-\%B-\%Y"} (e.g. \code{"01-July-2013"})
+#'
+#' \item \code{"\%Y/\%b/\%d \%H:\%M:\%S"} (e.g. \code{"2013/Jul/01 01:02:03"})
+#'
+#' \item \code{"\%Y/\%b/\%d"} (e.g. \code{"2013/Jul/01"})
+#'
+#' \item \code{"\%Y/\%B/\%d \%H:\%M:\%S"} (e.g. \code{"2013/July/01 01:02:03"})
+#'
+#' \item \code{"\%Y/\%B/\%d"} (e.g. \code{"2013/July/01"})
+#'
+#' \item \code{"\%Y/\%m/\%d \%H:\%M:\%S"} (e.g. \code{"2013/07/01 01:02:03"})
+#'
+#' \item \code{"\%Y/\%m/\%d"} (e.g. \code{"2013/07/01"})
+#'
+#' }
+#' 
+#' @param time Character string with an indication of the time.
+#' @param timeFormats Optional vector of time formats to use, as for \code{\link{as.POSIXct}}.
+#' @param tz Time zone.
+#' @return A time as returned by \code{\link{as.POSIXct}}.
+#' @author Dan Kelley
+#' @examples
+#' decodeTime("July 1 2013 01:02:03")
+#' decodeTime("Jul 1 2013 01:02:03")
+#' decodeTime("1 July 2013 01:02:03")
+#' decodeTime("1 Jul 2013 01:02:03")
+#' decodeTime("2013-07-01 01:02:03")
+#' decodeTime("2013/07/01 01:02:03")
+#' decodeTime("2013/07/01")
+#' @family functions relating to time
 decodeTime <- function(time, timeFormats, tz="UTC")
 {
     if (missing(timeFormats))
@@ -1766,7 +2679,7 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 }
 
 
-#' Draw a direction field.
+#' Draw a Direction Field
 #' 
 #' The direction field is indicated variously, depending on the value of
 #' \code{type}:\itemize{  
@@ -1813,7 +2726,6 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 #' drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1,1), v=c(1, -1), scalex=0.5, add=TRUE,
 #'                    type=2)
 #' @author Dan Kelley
-
 drawDirectionField <- function(x, y, u, v, scalex, scaley, length=0.05, add=FALSE,
                                type=1, col=par("fg"), pch=1, cex=par("cex"),
                                lwd=par("lwd"), lty=par("lty"),
@@ -1867,6 +2779,46 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, length=0.05, add=FALS
     oceDebug(debug, "} # drawDirectionField\n", unindent=1)
 }
 
+
+#' Oce Variant of contour
+#' 
+#' This provides something analagous to \code{\link{contour}}, but with the
+#' ability to flip x and y.
+#' Setting \code{revy=TRUE} can be helpful if the \code{y} data represent
+#' pressure or depth below the surface.
+#' 
+#' @aliases oce.contour oceContour
+#' @param x values for x grid.
+#' @param y values for y grid.
+#' @param z matrix for values to be contoured.  The first dimension of \code{z}
+#' must equal the number of items in \code{x}, etc.
+#' @param revx set to \code{TRUE} to reverse the order in which the labels on
+#' the x axis are drawn
+#' @param revy set to \code{TRUE} to reverse the order in which the labels on
+#' the y axis are drawn
+#' @param add logical value indicating whether the contours should be added to
+#' a pre-existing plot.
+#' @param tformat time format; if not supplied, a reasonable choice will be
+#' made by \code{\link{oce.axis.POSIXct}}, which draws time axes.
+#' @param drawTimeRange logical, only used if the \code{x} axis is a time.  If
+#' \code{TRUE}, then an indication of the time range of the data (not the axis)
+#' is indicated at the top-left margin of the graph.  This is useful because
+#' the labels on time axes only indicate hours if the range is less than a day,
+#' etc.
+#' @param debug a flag that turns on debugging; set to 1 to information about
+#' the processing.
+#' @param \dots optional arguments passed to plotting functions.
+#' @author Dan Kelley
+#' @examples
+#' 
+#' library(oce)
+#' data(topoWorld)
+#' ## coastline now, and in last glacial maximum
+#' lon <- topoWorld[["longitude"]]
+#' lat <- topoWorld[["latitude"]]
+#' z <- topoWorld[["z"]]
+#' oce.contour(lon, lat, z, levels=0, drawlabels=FALSE)
+#' oce.contour(lon, lat, z, levels=-130, drawlabels=FALSE, col='blue', add=TRUE)
 oce.contour <- function(x, y, z, revx=FALSE, revy=FALSE, add=FALSE,
                        tformat, drawTimeRange=getOption("oceDrawTimeRange"),
                        debug=getOption("oceDebug"), ...)

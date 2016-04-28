@@ -2,7 +2,7 @@
 % Please edit documentation in R/echosounder.R
 \name{as.echosounder}
 \alias{as.echosounder}
-\title{Coerce data into echosounder dataset}
+\title{Coerce Data into an Echosounder Object}
 \usage{
 as.echosounder(time, depth, a, src = "", sourceLevel = 220,
   receiverSensitivity = -55.4, transmitPower = 0, pulseDuration = 400,
@@ -59,7 +59,7 @@ Dan Kelley
 Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
   \code{\link{echosounder-class}},
-  \code{\link{echosounder}},
+  \code{\link{echosounder}}, \code{\link{findBottom}},
   \code{\link{plot,echosounder-method}},
   \code{\link{read.echosounder}},
   \code{\link{subset,echosounder-method}},

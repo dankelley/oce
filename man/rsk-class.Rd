@@ -3,12 +3,11 @@
 \docType{class}
 \name{rsk-class}
 \alias{rsk-class}
-\title{Class to store RBR rsk data}
+\title{Class to Store Rsk Data}
 \description{
 Class for data stored in the ``Ruskin'' format used by RBR [1], including both
 \code{rsk} SQLite files and the ASCII \code{txt} exported files.
-}
-\details{
+
 A \code{rsk} object may be read with \code{\link{read.rsk}} or created with
 \code{\link{as.rsk}}.  Plots can be made with \code{\link{plot,rsk-method}}, while
 \code{\link{summary,rsk-method}} produces statistical summaries and \code{show}
@@ -32,7 +31,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{odf-class}},
-  \code{\link{sealevel-class}}, \code{\link{sealevel}},
+  \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/section.R
 \name{sectionSort}
 \alias{sectionSort}
-\title{Sort a section}
+\title{Sort a Section}
 \usage{
 sectionSort(section, by)
 }
@@ -49,6 +49,7 @@ Dan Kelley
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
+  \code{\link{handleFlags,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},

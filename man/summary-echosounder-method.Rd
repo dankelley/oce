@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,echosounder-method}
 \alias{summary,echosounder-method}
-\title{Summarize an echosounder object}
+\title{Summarize an Echosounder Object}
 \usage{
 \S4method{summary}{echosounder}(object, ...)
 }
@@ -25,7 +25,7 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
   \code{\link{[[<-,echosounder-method}},
   \code{\link{as.echosounder}},
   \code{\link{echosounder-class}},
-  \code{\link{echosounder}},
+  \code{\link{echosounder}}, \code{\link{findBottom}},
   \code{\link{plot,echosounder-method}},
   \code{\link{read.echosounder}},
   \code{\link{subset,echosounder-method}}

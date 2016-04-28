@@ -2,8 +2,9 @@
 
 setClass("satellite", contains="oce")
 
-#' Class to hold G1SST satellite-model data
+#' @title Class to Hold G1SST Satellite-model Data
 #'
+#' @description
 #' G1SST is an acronym for global 1-km sea surface temperature, a product
 #' that combines satellite data with the model output. It is provided by
 #' the JPO ROMS (Regional Ocean Modelling System) modelling group.
@@ -11,6 +12,7 @@ setClass("satellite", contains="oce")
 #' the \code{\link{read.g1sst}} documentation for an example
 #' of downloading and plotting.
 #'
+#' @details
 #' It is important not to regard G1SST data in the same category as,
 #' say, \code{\link{amsr-class}} data, because the two products
 #' differ greatly with respect to cloud cover. The satellite used by
@@ -22,13 +24,13 @@ setClass("satellite", contains="oce")
 #'
 #' @concept satellite
 #' @references
-#' 1. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
+#' 1. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
 #' @author Dan Kelley
 #' @family things related to satellite data
 setClass("g1sst", contains="satellite")
 
                                         
-#' @title Extract Something From a \code{g1sst} Object
+#' @title Extract Something From a G1SST Object
 #' @param x A g1sst object, i.e. one inheriting from \code{\link{g1sst-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{g1sst} data
@@ -38,7 +40,7 @@ setMethod(f="[[",
               callNextMethod()
           })
 
-#' @title Replace Parts of a \code{g1sst} Object
+#' @title Replace Parts of a G1SST Object
 #' @param x An \code{g1sst} object, i.e. inheriting from \code{\link{g1sst-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{g1sst} data
@@ -51,10 +53,12 @@ setMethod(f="[[<-",
 
 
 
-#' Read G1SST satellite data
+#' @title Read a G1SST file
 #'
-#' This works with netcdf files as provided by the ERDAPP server [1].
+#' @description
+#' Read a G1SST file in the netcdf format provided by the ERDAPP server [1].
 #'
+#' @details
 #' As noted in the documentation for \code{\link{g1sst-class}}, one
 #' must be aware of the incorporation of model simulations in the 
 #' \code{g1sst} product. For example, the code presented below
@@ -91,7 +95,7 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #' @references
 #' 1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
-#' 2. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
+#' 2. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
 #' @family things related to satellite data
 read.g1sst <- function(filename)
 {

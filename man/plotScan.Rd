@@ -2,10 +2,11 @@
 % Please edit documentation in R/ctd.R
 \name{plotScan}
 \alias{plotScan}
-\title{Plot seawater data in a low-level fashion}
+\title{Plot CTD data in a Low-Level Fashion}
 \usage{
-plotScan(x, which = 1, type = "l", mgp = getOption("oceMgp"),
-  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1], mgp[1]), ...)
+plotScan(x, which = 1, xtype = "scan", type = "l",
+  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1],
+  mgp[1]), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}.}
@@ -13,6 +14,12 @@ plotScan(x, which = 1, type = "l", mgp = getOption("oceMgp"),
 \item{which}{Numerical vector numerical codes specifying the panels to draw: 1
 for pressure vs scan, 2 for \code{diff(pressure)} vs scan, 3 for temperature vs
 scan, and 4 for salinity vs scan.}
+
+\item{xtype}{Character string indicating variable for the x axis. May be
+\code{"scan"} (the default) or \code{"time"}. In the former case, a
+\code{scan} variable will be created using \code{\link{seq_along}},
+if necessary. In the latter case, an error results if the \code{data}
+slot of \code{x} lacks a variable called \code{time}.}
 
 \item{type}{Line type.}
 
@@ -62,18 +69,25 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
+  \code{\link{plotProfile}}, \code{\link{plotTS}},
   \code{\link{tidem-class}}
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
   \code{\link{ctd}}, \code{\link{gps-class}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}},
-  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
+  \code{\link{plotTS}}, \code{\link{read.ctd.itp}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.odv}},
+  \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+  \code{\link{summary,ctd-method}},
+  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
 

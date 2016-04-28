@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,topo-method}
 \alias{plot,topo-method}
-\title{Plot topography data}
+\title{Plot a Topo Object}
 \usage{
 \S4method{plot}{topo}(x, xlab = "", ylab = "", asp, clongitude, clatitude,
   span, expand = 1.5, water.z, col.water, lty.water, lwd.water, land.z,
@@ -119,7 +119,8 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,section-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},

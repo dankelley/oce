@@ -2,7 +2,7 @@
 % Please edit documentation in R/tidem.R
 \name{predict.tidem}
 \alias{predict.tidem}
-\title{Predict a time series from a tidal model}
+\title{Predict a Time Series from a Tidem Tidal Model}
 \usage{
 \method{predict}{tidem}(object, newdata, ...)
 }
@@ -21,8 +21,6 @@ A vector of predictions.
 }
 \description{
 Predict a time series from a tidal model.
-}
-\details{
 This is a wrapper around the predict method for \code{object$model}.
 }
 \examples{
@@ -62,7 +60,8 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{[[<-,tidem-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{summary,tidem-method}},
-  \code{\link{tidem-class}}, \code{\link{tidemAstron}},
-  \code{\link{tidemVuf}}, \code{\link{tidem}}
+  \code{\link{tidedata}}, \code{\link{tidem-class}},
+  \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
+  \code{\link{tidem}}
 }
 

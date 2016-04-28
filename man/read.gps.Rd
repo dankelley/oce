@@ -2,7 +2,7 @@
 % Please edit documentation in R/gps.R
 \name{read.gps}
 \alias{read.gps}
-\title{Scan a gps data file}
+\title{Read a GPS File}
 \usage{
 read.gps(file, type = NULL, debug = getOption("oceDebug"), processingLog)
 }
@@ -23,9 +23,6 @@ better for normal calls by a user.)}
 An object of \code{\link[base]{class}} \code{"gps"}.
 }
 \description{
-Read a gps file in gpx format format.
-}
-\details{
 Reads GPX format files by simply finding all longitudes and latitudes; in
 other words, information on separate tracks, or waypoints, etc., is lost.
 }

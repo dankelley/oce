@@ -2,7 +2,7 @@
 % Please edit documentation in R/met.R
 \name{read.met}
 \alias{read.met}
-\title{Read a meteorological data file}
+\title{Read a Met File}
 \usage{
 read.met(file, type = NULL, skip, tz = getOption("oceTz"),
   debug = getOption("oceDebug"), processingLog, ...)
@@ -43,9 +43,6 @@ called \code{wind} (in km/h) and \code{direction} (in tenths of a degree),
 taken straight from the data file.
 }
 \description{
-Read a meteorological data file
-}
-\details{
 Reads a comma-separated value file in the format used by the Meteorological
 Service of Canada (MSC).  The agency does not publish a format for these
 files, so this function was based on a study of a few sample files, and it
@@ -67,7 +64,8 @@ plot(met, which=3:4)
 Dan Kelley
 }
 \seealso{
-Other things related to \code{met} data: \code{\link{as.met}},
+Other things related to \code{met} data: \code{\link{[[,met-method}},
+  \code{\link{[[<-,met-method}}, \code{\link{as.met}},
   \code{\link{met-class}}, \code{\link{met}},
   \code{\link{plot,met-method}},
   \code{\link{subset,met-method}},

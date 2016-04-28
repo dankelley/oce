@@ -2,7 +2,7 @@
 % Please edit documentation in R/section.R
 \name{makeSection}
 \alias{makeSection}
-\title{Make a section (DEFUNCT)}
+\title{Make a Section (DEFUNCT)}
 \usage{
 makeSection(item, ...)
 }

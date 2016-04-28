@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,rsk-method}
 \alias{plot,rsk-method}
-\title{Plot rsk data}
+\title{Plot Rsk Data}
 \usage{
 \S4method{plot}{rsk}(x, which = "timeseries", title = "", adorn = NULL,
   tlim, plim, Tlim, xlab, ylab, tformat,
@@ -131,7 +131,8 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
   \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},

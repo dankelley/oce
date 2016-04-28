@@ -3,7 +3,7 @@
 \docType{methods}
 \name{plot,coastline-method}
 \alias{plot,coastline-method}
-\title{Plot a coastline}
+\title{Plot a Coastline}
 \usage{
 \S4method{plot}{coastline}(x, xlab = "", ylab = "", showHemi = TRUE, asp,
   clongitude, clatitude, span, lonlabel = NULL, latlabel = NULL,
@@ -129,13 +129,27 @@ set \code{yaxp=c(-90,90,4)} for a plot extending from pole to pole.}
 None.
 }
 \description{
-Plot a coastline
-}
-\details{
 This function plots a coastline.  An attempt is made to fill the space of
 the plot, and this is done by limiting either the longitude range or the
 latitude range, as appropriate, by modifying the eastern or northern limit,
 as appropriate.
+}
+\details{
+If \code{longitudelim}, \code{latitudelim} and \code{projection} are all given,
+then these arguments are passed to \code{\link{mapPlot}} to produce the plot.
+(The call uses \code{bg} for \code{col}, and uses \code{col}, \code{fill}
+and \code{border} directly.) If the results need further customization,
+users should use \code{\link{mapPlot}} directly.
+
+If \code{projection} is provided without \code{longitudelim} or \code{latitudelim},
+then \code{\link{mapPlot}} is still called, but \code{longitudelim} and
+\code{latitudelim} are computed from \code{clongitude}, \code{clatitude} and \code{span}.
+
+If \code{projection} is not provided, much simpler plots are produced. These are 
+Cartesian, with aspect ratio set to minimize shape distortion at the central latitude.
+Although these are crude, they have the benefit of always working, which cannot
+be said of true map projections, which can be problematic in various ways owing
+to difficulties in inverting projection calculations.
 
 To get an inset map inside another map, draw the first map, do
 \code{par(new=TRUE)}, and then call \code{plot,coastline-method} with a value of
@@ -192,7 +206,8 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,tidem-method}},
   \code{\link{plot,topo-method}},
   \code{\link{plot,windrose-method}},
-  \code{\link{plotScan}}, \code{\link{tidem-class}}
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},

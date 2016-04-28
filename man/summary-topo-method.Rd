@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,topo-method}
 \alias{summary,topo-method}
-\title{Summarize a topography data object}
+\title{Summarize A Topo Object}
 \usage{
 \S4method{summary}{topo}(object, ...)
 }

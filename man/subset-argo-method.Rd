@@ -3,7 +3,7 @@
 \docType{methods}
 \name{subset,argo-method}
 \alias{subset,argo-method}
-\title{Subset an argo object}
+\title{Subset an Argo Object}
 \usage{
 \S4method{subset}{argo}(x, subset, ...)
 }
@@ -69,8 +69,9 @@ Dan Kelley
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
   \code{\link{argoGrid}}, \code{\link{argo}},
-  \code{\link{as.argo}}, \code{\link{plot,argo-method}},
-  \code{\link{read.argo}},
+  \code{\link{as.argo}},
+  \code{\link{handleFlags,argo-method}},
+  \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{summary,argo-method}}
 }
 

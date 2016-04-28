@@ -2,7 +2,7 @@
 % Please edit documentation in R/bremen.R
 \name{read.bremen}
 \alias{read.bremen}
-\title{Read a Bremen data file}
+\title{Read a Bremen File}
 \usage{
 read.bremen(file)
 }
@@ -14,7 +14,8 @@ to load.}
 An object of \code{\link{bremen-class}}.
 }
 \description{
-Read a Bremen data file
+Read a file in Bremen format, producing an object inheriting from
+\code{\link{bremen-class}}.
 }
 \section{Issues}{
  This may be renamed (or removed) without notice.

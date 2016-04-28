@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,lisst-method}
 \alias{[[<-,lisst-method}
-\title{Replace Parts of a \code{lisst} Object}
+\title{Replace Parts of a LISST Object}
 \usage{
 \S4method{[[}{lisst}(x, i, j) <- value
 }
@@ -19,6 +19,8 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
+Replace Parts of a LISST Object
+
 The \code{[[<-} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose,
 as with the related extraction method, \code{\link{[[}},
@@ -52,7 +54,8 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
-Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
+Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
+  \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
   \code{\link{[[<-,bremen-method}},
   \code{\link{[[<-,cm-method}},
@@ -62,6 +65,7 @@ Other functions that replace  parts of \code{oce} objects: \code{\link{[[<-,amsr
   \code{\link{[[<-,g1sst-method}},
   \code{\link{[[<-,gps-method}},
   \code{\link{[[<-,lobo-method}},
+  \code{\link{[[<-,met-method}},
   \code{\link{[[<-,oce-method}},
   \code{\link{[[<-,odf-method}},
   \code{\link{[[<-,rsk-method}},

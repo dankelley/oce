@@ -3,7 +3,7 @@
 \docType{class}
 \name{sealevel-class}
 \alias{sealevel-class}
-\title{Class to store sealevel data}
+\title{Class to Store Sealevel Data}
 \description{
 Class to store sealevel data, e.g. from a tide gauge, with standard slots
 \code{metadata}, \code{data} and \code{processingLog}.
@@ -33,15 +33,16 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{odf-class}},
-  \code{\link{rsk-class}}, \code{\link{sealevel}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
+  \code{\link{rsk-class}}, \code{\link{section-class}},
+  \code{\link{topo-class}}, \code{\link{windrose-class}}
 
 Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{[[<-,sealevel-method}},
   \code{\link{as.sealevel}},
   \code{\link{plot,sealevel-method}},
   \code{\link{read.sealevel}},
+  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{sealevel}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }

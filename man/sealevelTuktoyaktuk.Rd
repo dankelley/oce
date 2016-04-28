@@ -49,15 +49,23 @@ harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 Computers and Geosciences, 28, 929-937.
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
-  \code{\link{ctd}}, \code{\link{gps-class}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+Other datasets provided with \code{oce}: \code{\link{adp}},
+  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
+  \code{\link{coastlineWorld}}, \code{\link{colors}},
+  \code{\link{ctdRaw}}, \code{\link{ctd}},
+  \code{\link{echosounder}}, \code{\link{landsat}},
+  \code{\link{lisst}}, \code{\link{lobo}},
+  \code{\link{met}}, \code{\link{rsk}},
+  \code{\link{sealevel}}, \code{\link{section}},
+  \code{\link{topoWorld}}, \code{\link{wind}}
+
+Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
+  \code{\link{[[<-,sealevel-method}},
+  \code{\link{as.sealevel}},
+  \code{\link{plot,sealevel-method}},
+  \code{\link{read.sealevel}},
+  \code{\link{sealevel-class}}, \code{\link{sealevel}},
+  \code{\link{subset,sealevel-method}},
+  \code{\link{summary,sealevel-method}}
 }
 
