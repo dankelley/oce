@@ -151,6 +151,10 @@ setMethod(f="summary",
                       rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
                       colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
                       cat("* Statistics of data\n```\n")
+                      OriginalName <- object@metadata$dataNamesOriginal
+                      if (!is.null(OriginalName)) {
+                          threes <- cbind(threes, OriginalName)
+                      }
                       print(threes, quote=FALSE, indent='')
                       cat("```\n")
                   }

@@ -1117,6 +1117,8 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
     if (!replace) {
         res@metadata$names <- c(res@metadata$names, name)
         res@metadata$labels <- c(res@metadata$labels, label)
+        if ("originalDataNames" %in% names(res@metadata))
+            res@metadata$originalDataNames <- c(res@metadata$originalDataNames, "NA")
     }
     if (!is.null(unit)) {
         if (0 == length(unit)) {

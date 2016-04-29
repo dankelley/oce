@@ -18,56 +18,53 @@
 #'
 #' The table given below indicates the translation patterns used.
 #' The \code{.cnv} convention for multiple sensors is to include digits in the
-#' name, and these are indicated with \code{N} in the leftmost column of
-#' the table below. This maps to \code{M} in the second column in the following
-#' way: \code{M} is omitted if \code{N} is zero, or \code{M} equals \code{N}
-#" otherwise.
+#' name, and these are indicated with \code{_} in the table, which
+#' stands for an optional digit.
 #'
-#' \tabular{llll}{
-#'   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit, scale} \tab \strong{Notes} \cr
-#'   \code{altM}        \tab \code{altimeter}                    \tab m                    \tab                \cr
-#'   \code{cNms/cm}     \tab \code{conductivityM}                \tab ms/cm                \tab                \cr
-#'   \code{CStarAtN}    \tab \code{beamAttenuation}              \tab 1/m                  \tab                \cr
-#'   \code{CStarTrN}    \tab \code{beamTransmission}             \tab percent              \tab                \cr
-#'   \code{depS}        \tab \code{depth}                        \tab m                    \tab                \cr
-#'   \code{depSM}       \tab \code{depth}                        \tab m                    \tab                \cr
-#'   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                  \tab                \cr
-#'   \code{flag}        \tab \code{flag}                         \tab -                    \tab                \cr
-#'   \code{flC}         \tab \code{fluorescenceChelsea}          \tab ug/l                 \tab                \cr
-#'   \code{flC1}        \tab \code{fluorescenceChelseaN}         \tab ug/l                 \tab                \cr
-#'   \code{flEC-AFLM}   \tab \code{fluorescenceN}                \tab mg/m^3               \tab                \cr
-#'   \code{flsP}        \tab \code{fluorescence}                 \tab -                    \tab                \cr
-#'   \code{latitude}    \tab \code{latitude}                     \tab degN                 \tab                \cr
-#'   \code{longitude}   \tab \code{longitude}                    \tab degE                 \tab                \cr
-#'   \code{nbin}        \tab \code{nbin}                         \tab -                    \tab                \cr
-#'   \code{oxsatML/L}   \tab \code{oxygenSaturationWeiss}        \tab ml/l                 \tab                \cr
-#'   \code{oxsatMg/L}   \tab \code{oxygenSaturationWeiss}        \tab mg/l                 \tab                \cr
-#'   \code{oxsatMm/Kg}  \tab \code{oxygenSaturationWeiss}        \tab umol/kg              \tab                \cr
-#'   \code{oxsolML/L}   \tab \code{oxygenSaturationGarciaGordon} \tab ml/l                 \tab                \cr
-#'   \code{oxsolMg/L}   \tab \code{oxygenSaturationGarciaGordon} \tab mg/l                 \tab                \cr
-#'   \code{oxsolMm/Kg}  \tab \code{oxygenSaturationGarciaGordon} \tab umol/kg              \tab                \cr
-#'   \code{potempN68C}  \tab \code{thetaM}                       \tab degC, IPTS-68        \tab                \cr
-#'   \code{potempN90C}  \tab \code{thetaM}                       \tab degC, ITS-90         \tab                \cr
-#'   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab                \cr
-#'   \code{prDM}        \tab \code{pressure}                     \tab dbar                 \tab 1              \cr
-#'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC, ITS-90         \tab 2              \cr
-#'   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab                \cr
-#'   \code{salNN}       \tab \code{salinityM}                    \tab unitless, PSS-78     \tab 3              \cr
-#'   \code{sbeoxNML/L}  \tab \code{oxygenConcentrationVolumeM}   \tab ml/l                 \tab                \cr
-#'   \code{sbeoxNMm/Kg} \tab \code{oxygenConcentrationMoleM}     \tab ml/l                 \tab                \cr
-#'   \code{sbeoxNPs}    \tab \code{oxygenSaturationM}            \tab percent              \tab                \cr
-#'   \code{sbeoxNV}     \tab \code{oxygenVoltageM}               \tab ml/l                 \tab                \cr
-#'   \code{scan}        \tab \code{scan}                         \tab -                    \tab                \cr
-#'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 4              \cr
-#'   \code{spar}        \tab \code{spar}                         \tab -                    \tab                \cr
-#'   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s                  \tab                \cr
-#'   \code{tN68}        \tab \code{temperatureM}                 \tab degC, IPTS-68        \tab                \cr 
-#'   \code{tN68C}       \tab \code{temperatureM}                 \tab degC, IPTS-68        \tab                \cr 
-#'   \code{tN90c}       \tab \code{temperatureM}                 \tab degC, ITS-90         \tab                \cr
-#'   \code{upolyN}      \tab \code{upolyM}                       \tab -                    \tab                \cr 
-#'   \code{vN}          \tab \code{voltageM}                     \tab V                    \tab                \cr 
-#'   \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3               \tab                \cr 
-#' }
+#'\tabular{llll}{
+#'\strong{Key}       \tab \strong{Result}                   \tab \strong{Unit, scale}   \tab \strong{Notes} \cr
+#'\code{alt_}        \tab \code{altimeter}                  \tab m                      \tab                \cr
+#'\code{c_ms/cm}     \tab \code{conductivity}               \tab ms/cm                  \tab                \cr
+#'\code{CStarAt_}    \tab \code{beamAttenuation}            \tab 1/m                    \tab                \cr
+#'\code{CStarTr_}    \tab \code{beamTransmission}           \tab percent                \tab                \cr
+#'\code{depS}        \tab \code{depth}                      \tab m                      \tab                \cr
+#'\code{depS_}       \tab \code{depth}                      \tab m                      \tab                \cr
+#'\code{dz/dt_}      \tab \code{descentRate}                \tab m/s                    \tab                \cr
+#'\code{flag}        \tab \code{flag}                       \tab -                      \tab                \cr
+#'\code{flC}         \tab \code{fluorescenceChelsea}        \tab ug/l                   \tab                \cr
+#'\code{flEC-AFL_}   \tab \code{fluorescence}               \tab mg/m^3                 \tab                \cr
+#'\code{flsP}        \tab \code{fluorescence}               \tab -                      \tab                \cr
+#'\code{latitude}    \tab \code{latitude}                   \tab degN                   \tab                \cr
+#'\code{longitude}   \tab \code{longitude}                  \tab degE                   \tab                \cr
+#'\code{nbin}        \tab \code{nbin}                       \tab -                      \tab                \cr
+#'\code{oxsatML/L}   \tab \code{oxygen}                     \tab ml/l, Weiss            \tab                \cr
+#'\code{oxsatMg/L}   \tab \code{oxygen}                     \tab mg/l, Weiss            \tab                \cr
+#'\code{oxsatMm/Kg}  \tab \code{oxygen}                     \tab umol/kg, Weiss         \tab                \cr
+#'\code{oxsolML/L}   \tab \code{oxygen}                     \tab ml/l, Garcia-Gordon    \tab                \cr
+#'\code{oxsolMg/L}   \tab \code{oxygen}                     \tab mg/l, Garcia-Gordon    \tab                \cr
+#'\code{oxsolMm/Kg}  \tab \code{oxygen}                     \tab umol/kg, Garcia-Gordon \tab                \cr
+#'\code{potemp_68C}  \tab \code{thetaM}                     \tab degC, IPTS-68          \tab                \cr
+#'\code{potemp_90C}  \tab \code{thetaM}                     \tab degC, ITS-90           \tab                \cr
+#'\code{pr}          \tab \code{pressure}                   \tab dbar                   \tab                \cr
+#'\code{prD_}        \tab \code{pressure}                   \tab dbar                   \tab 1              \cr
+#'\code{ptempC}      \tab \code{pressureTemperature}        \tab degC, ITS-90           \tab 2              \cr
+#'\code{pumps}       \tab \code{pumpStatus}                 \tab                        \tab                \cr
+#'\code{sal__}       \tab \code{salinity}                   \tab unitless, PSS-78       \tab 3              \cr
+#'\code{sbeox_ML/L}  \tab \code{oxygen}                     \tab ml/l, SBE43            \tab                \cr
+#'\code{sbeox_Mm/Kg} \tab \code{oxygen}                     \tab mu*mol/kg, SBE43       \tab                \cr
+#'\code{sbeox_Ps}    \tab \code{oxygen}                     \tab percent, SBE43         \tab                \cr
+#'\code{sbeox_V}     \tab \code{oxygenVoltage}              \tab V, SBE43               \tab                \cr
+#'\code{scan}        \tab \code{scan}                       \tab -                      \tab                \cr
+#'\code{sigma-theta} \tab \code{sigmaTheta}                 \tab kg/m^3                 \tab 4              \cr
+#'\code{spar}        \tab \code{spar}                       \tab -                      \tab                \cr
+#'\code{svCM_}       \tab \code{soundSpeed}                 \tab m/s                    \tab                \cr
+#'\code{t_68}        \tab \code{temperature}                \tab degC, IPTS-68          \tab                \cr 
+#'\code{tN68C}       \tab \code{temperature}                \tab degC, IPTS-68          \tab                \cr 
+#'\code{tN90c}       \tab \code{temperature}                \tab degC, ITS-90           \tab                \cr
+#'\code{upolyN}      \tab \code{upoly}                      \tab -                      \tab                \cr 
+#'\code{vN}          \tab \code{voltage}                    \tab V                      \tab                \cr 
+#'\code{wetCDOM}     \tab \code{fluorescence}               \tab mg/m^3                 \tab                \cr 
+#'}
 #' Notes:
 #' \itemize{
 #' \item{1. what should be done if a file has both \code{pr} and \code{prDM}?}
@@ -78,10 +75,11 @@
 #' }
 #'
 #' @param h The header line.
+#' @template debugTemplate
 #' @return a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
 #' @author Dan Kelley
 #' @family things related to \code{ctd} data
-cnvName2oceName <- function(h)
+cnvName2oceName <- function(h, debug=getOption("oceDebug"))
 {
     if (length(h) != 1)
         stop("oceNameFromSBE() expects just 1 line of header")
@@ -92,21 +90,23 @@ cnvName2oceName <- function(h)
     ## message("h: '", h, "'")
     name <- gsub("^# name [0-9][0-9]* = (.*):.*$", "\\1", h, ignore.case=TRUE)
     nameOriginal <- name
-    ## message("name: '", name, "'")
     if (1 == length(grep("altM", name, ignore.case=TRUE))) {
         name <- "altimeter"
         unit <- list(unit=expression(m), scale="")
     } else if (1 == length(grep("c[0-9]mS/cm", name, ignore.case=TRUE))) {
-        number <- gsub("mS/cm$", "", gsub("^c", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        name <- paste("conductivity", number, sep="")
+        ##number <- gsub("mS/cm$", "", gsub("^c", "", name, ignore.case=TRUE), ignore.case=TRUE)
+        ##name <- paste("conductivity", number, sep="")
+        name <- "conductivity"
         unit <- list(unit=expression(mS/cm), scale="")
     } else if (1 == length(grep("CStarTr[0-9]", name, ignore.case=TRUE))) {
-        number <- gsub("^CStarTr", "", name, ignore.case=TRUE)
-        name <- paste("beamTransmission", number, sep="")
+        ## number <- gsub("^CStarTr", "", name, ignore.case=TRUE)
+        ## name <- paste("beamTransmission", number, sep="")
+        name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="")
     } else if (1 == length(grep("CStarAt[0-9]", name, ignore.case=TRUE))) {
-        number <- gsub("^CStarAt", "", name, ignore.case=TRUE)
-        name <- paste("beamAttenuation", number, sep="")
+        ## number <- gsub("^CStarAt", "", name, ignore.case=TRUE)
+        ## name <- paste("beamAttenuation", number, sep="")
+        name <- "beamAttenuation"
         unit <- list(unit=expression(1/m), scale="")
     } else if (1 == length(grep("depS[M]*", name, ignore.case=TRUE))) {
         name <- "depth"
@@ -117,11 +117,8 @@ cnvName2oceName <- function(h)
     } else if (1 == length(grep("flag", name, ignore.case=TRUE))) {
         name <- "flag"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("flC", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("flC[1]*", name, ignore.case=TRUE))) {
         name <- "fluorescenceChelsea"
-        unit <- list(unit=expression(mu*g/l), scale="")
-    } else if (1 == length(grep("flC1", name, ignore.case=TRUE))) {
-        name <- "fluorescenceChelsea1"
         unit <- list(unit=expression(mu*g/l), scale="")
     } else if (1 == length(grep("^flECO-AFL", name, ignore.case=TRUE))) {
         number <- gsub("^flECO-AFL", "", name, ignore.case=TRUE)
@@ -140,23 +137,23 @@ cnvName2oceName <- function(h)
         name <- "nbin"
         unit <- list(unit=expression(), scale="")
     } else if (name == "oxsatML/L") {
-        name <- "oxygenSaturationWeiss"
-        unit <- list(unit=expression(ml/l), scale="")
+        name <- "oxygen"
+        unit <- list(unit=expression(ml/l), scale="Weiss")
     } else if (name == "oxsatMg/L") {
-        name <- "oxygenSaturationWeiss"
-        unit <- list(unit=expression(mg/l), scale="")
+        name <- "oxygen"
+        unit <- list(unit=expression(mg/l), scale="Weiss")
     } else if (name == "oxsatMm/Kg") {
-        name <- "oxygenSaturationWeiss"
-        unit <- list(unit=expression(umol/kg), scale="")
+        name <- "oxygen"
+        unit <- list(unit=expression(mu*mol/kg), scale="Weiss")
     } else if (name == "oxsolML/L") {
-        name <- "oxygenSaturationGarciaGordon"
-        unit <- list(unit=expression(ml/l), scale="")
+        name <- "oxygen"
+        unit <- list(unit=expression(ml/l), scale="Garcia-Gordon")
     } else if (name == "oxsolMg/L") {
-        name <- "oxygenSaturationGarciaGordon"
-        unit <- list(unit=expression(mg/l), scale="")
+        name <- "oxygen"
+        unit <- list(unit=expression(mg/l), scale="Garcia-Gordon")
     } else if (name == "oxsolMm/Kg") {
-        name <- "oxygenSaturationGarciaGordon"
-        unit <- list(unit=expression(umol/kg), scale="")
+        name <- "oxygen"
+        unit <- list(unit=expression(umol/kg), scale="Garcia-Gordon")
     } else if (name == "par") {
         name <- "par"
         unit <- list(unit=expression(), scale="")
@@ -167,42 +164,50 @@ cnvName2oceName <- function(h)
         name <- "pressureTemperature" # temperature at the pressure sensor
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
     } else if (1 == length(grep("potemp[0-9]*68C", name, ignore.case=TRUE))) {
-        number <- gsub("68C$", "", gsub("^potemp", "", name))
-        name <- paste("theta", number, sep="")
+        ## number <- gsub("68C$", "", gsub("^potemp", "", name))
+        ## name <- paste("theta", number, sep="")
+        name <- "theta"
         unit <- list(unit=expression(degree*C), scale="ITS-68") # FIXME: guess on scale
     } else if (1 == length(grep("potemp[0-9]*90C", name, ignore.case=TRUE))) {
-        number <- gsub("90C$", "", gsub("^potemp", "", name))
-        name <- paste("theta", number, sep="")
+        ## number <- gsub("90C$", "", gsub("^potemp", "", name))
+        ## name <- paste("theta", number, sep="")
+        name <- "theta"
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
     } else if (1 == length(grep("pumps", name, ignore.case=TRUE))) {
         name <- "pumpStatus"
         unit <- list(unit=expression(), scale="")
     } else if (1 == length(grep("sal[0-9]{2}", name, ignore.case=TRUE))) {
-        number <- gsub(".$", "", gsub("^sal", "", name))
-        name <- paste("salinity", number, sep="")
+        ## number <- gsub(".$", "", gsub("^sal", "", name))
+        ## name <- paste("salinity", number, sep="")
+        name <- "salinity"
         unit <- list(unit=expression(), scale="PSS-78") # FIXME: guess on scale
     } else if (1 == length(grep("sbeox[0-9]ML/L", name, ignore.case=TRUE))) {
-        number <- gsub("ML/L$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        name <- paste("oxygenConcentrationVolume", number, sep="")
-        unit <- list(unit=expression(ml/l), scale="")
+        ## number <- gsub("ML/L$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
+        ## name <- paste("oxygen", number, sep="")
+        name <- "oxygen"
+        unit <- list(unit=expression(ml/l), scale="SBE43")
     } else if (1 == length(grep("sbeox[0-9]Mm/Kg", name, ignore.case=TRUE))) {
-        number <- gsub("Mm/Kg$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        name <- paste("oxygenConcentrationMole", number, sep="")
-        unit <- list(unit=expression(mu*mol/kg), scale="")
+        ## number <- gsub("Mm/Kg$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
+        ## name <- paste("oxygen", number, sep="")
+        name <- "oxygen"
+        unit <- list(unit=expression(mu*mol/kg), scale="SBE43")
     } else if (1 == length(grep("sbeox[0-9]PS", name, ignore.case=TRUE))) {
-        number <- gsub("PS$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        name <- paste("oxygenSaturation", number, sep="")
-        unit <- list(unit=expression(percent), scale="")
+        ## number <- gsub("PS$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
+        ## name <- paste("oxygenSaturation", number, sep="")
+        name <- "oxygenSaturation"
+        unit <- list(unit=expression(percent), scale="SBE43")
     } else if (1 == length(grep("sbeox[0-9]V", name, ignore.case=TRUE))) {
-        number <- gsub("V$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        name <- paste("oxygenVoltage", number, sep="")
-        unit <- list(unit=expression(V), scale="")
+        ## number <- gsub("V$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
+        ## name <- paste("oxygenVoltage", number, sep="")
+        name <- "oxygenVoltage"
+        unit <- list(unit=expression(V), scale="SBE43")
     } else if (1 == length(grep("scan", name, ignore.case=TRUE))) {
         name <- "scan"
         unit <- list(unit=expression(), scale="")
     } else if (1 == length(grep("sigma-.*[0-9]*", name, ignore.case=TRUE))) {
-        number <- substr(gsub(".*(\\d+).*", "\\1", name, ignore.case=TRUE), 1, 1)
-        name <- paste("sigmaTheta", number, sep="")
+        ## number <- substr(gsub(".*(\\d+).*", "\\1", name, ignore.case=TRUE), 1, 1)
+        ## name <- paste("sigmaTheta", number, sep="")
+        name <- "sigmaTheta"
         unit <- list(unit=expression(kg/m^3), scale="")
     } else if (1 == length(grep("spar", name, ignore.case=TRUE))) {
         name <- "spar"
@@ -211,16 +216,19 @@ cnvName2oceName <- function(h)
         name <- "soundSpeed"
         unit <- list(unit=expression(m/s), scale="")
     } else if (1 == length(grep("^t[0-9]68$", name, ignore.case=TRUE))) {
-        number <- gsub("68$", "", gsub("^t", "", name))
-        name <- paste("temperature", number, sep="")
+        ## number <- gsub("68$", "", gsub("^t", "", name))
+        ## name <- paste("temperature", number, sep="")
+        name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
     } else if (1 == length(grep("^t[0-9]68C$", name, ignore.case=TRUE))) {
-        number <- gsub("68C$", "", gsub("^t", "", name))
-        name <- paste("temperature", number, sep="")
+        ## number <- gsub("68C$", "", gsub("^t", "", name))
+        ## name <- paste("temperature", number, sep="")
+        name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
     } else if (1 == length(grep("^t[0-9]90C$", name, ignore.case=TRUE))) {
-        number <- gsub("90C$", "", gsub("^t", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        name <- paste("temperature", number, sep="")
+        ## number <- gsub("90C$", "", gsub("^t", "", name, ignore.case=TRUE), ignore.case=TRUE)
+        ## name <- paste("temperature", number, sep="")
+        name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (1 == length(grep("timeS", name, ignore.case=TRUE))) {
         name <- "time"
@@ -242,7 +250,8 @@ cnvName2oceName <- function(h)
     ## salinity.
     if (1 == length(grep("0$", name)))
         name <- substr(name, 1, nchar(name)-1)
-    ##message(" name: '", name, "', nameOriginal: '", nameOriginal, '"')
+    if (debug > 0)
+        message("cnvName2oceName(): '", nameOriginal, "' -> '", name, "' (", unit$scale, ")")
     list(name=name, nameOriginal=nameOriginal, unit=unit)
 }
 
@@ -265,12 +274,10 @@ cnvName2oceName <- function(h)
 #' where \code{x} is the name of the returned value.  For the details of the 
 #' mapping from \code{.cnv} names to \code{ctd} names, see \code{\link{cnvName2oceName}}.
 #'
-#' The original variable names as stored in \code{file} are stored within the \code{data}
-#' slot as attribute named \code{namesOriginal}, and so can be retrieved with e.g.
-#' \code{attr(x@data, "namesOriginal")}, if \code{x} is the object returned by
-#' this function. This feature can be helpful in detailed work.  See the Appendix
-#' VI of [2], noting that the \code{namesOriginal} values are taken from
-#' the "Short Name" column of the table spanning pages 161 through 172.
+#' The original data names as stored in \code{file} are stored within the \code{metadata}
+#' slot as \code{dataNamesOriginal}, and are displayed with \code{summary} alongside the
+#' numerical summary. See the Appendix VI of [2] for the meanings of these
+#' names (in the "Short Name" column of the table spanning pages 161 through 172).
 #'
 #' @references
 #' 1. The Sea-Bird SBE 19plus profiler is described at
@@ -343,22 +350,23 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
 
     ## Get names and units of columns in the SBE data file
     nameLines  <- grep("^# name [0-9][0-9]* = .*:.*$", lines, ignore.case=TRUE)
-    units <- list()
-    col.names.inferred <- col.names.original <- NULL
-    for (iline in nameLines) {
-        nu <- cnvName2oceName(lines[iline])
-        col.names.inferred <- c(col.names.inferred, nu$name)
-        col.names.original <- c(col.names.original, nu$nameOriginal)
-        units[[nu$name]] <- nu$unit
+    colUnits <- list()
+    colNamesInferred <- colNamesOriginal <- NULL
+    for (iline in seq_along(nameLines)) {
+        nu <- cnvName2oceName(lines[nameLines[iline]], debug=debug-1)
+        colNamesInferred <- c(colNamesInferred, nu$name)
+        colNamesOriginal <- c(colNamesOriginal, nu$nameOriginal)
+        colUnits[[iline]] <- nu$unit
+        ## message("nu$name: ", nu$name, "; scale: ", colUnits[[nu$name]]$unit$scale)
     }
-    found.scan <- "scan" %in% col.names.inferred
-    found.temperature <- "temperature" %in% col.names.inferred
-    found.pressure <- "pressure" %in% col.names.inferred
-    found.salinity <- "salinity" %in% col.names.inferred
-    found.time <- "time" %in% col.names.inferred
-    found.depth <- "depth" %in% col.names.inferred
-    found.conductivity <- "conductivity" %in% col.names.inferred
-    found.conductivity.ratio <- "conductivity.ratio" %in% col.names.inferred
+    found.scan <- "scan" %in% colNamesInferred
+    found.temperature <- "temperature" %in% colNamesInferred
+    found.pressure <- "pressure" %in% colNamesInferred
+    found.salinity <- "salinity" %in% colNamesInferred
+    found.time <- "time" %in% colNamesInferred
+    found.depth <- "depth" %in% colNamesInferred
+    found.conductivity <- "conductivity" %in% colNamesInferred
+    found.conductivity.ratio <- "conductivity.ratio" %in% colNamesInferred
     ## FIXME: should we insist on having salinity, temperature, and pressure?
 
     for (iline in seq_along(lines)) {
@@ -376,77 +384,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             break
         }
         lline <- tolower(aline)
-        ##> BUG: discovery of column names is brittle to format changes
-        ##> if (0 < (r <- regexpr("# name ", lline))) {
-        ##>     oceDebug(debug, "lline: '",lline,"'\n",sep="")
-        ##>     tokens <- strsplit(line, split=" ", useBytes=TRUE)
-        ##>     name <- tokens[[1]][6]
-        ##>     name <- gsub(",", "", name)
-        ##>     oceDebug(debug, "  name: '",name,"'\n",sep="")
-        ##>     if (0 < regexpr("scan", lline)) {
-        ##>         name <- "scan"
-        ##>         found.scan <- TRUE
-        ##>     } else if (0 < regexpr("pressure", lline)) {
-        ##>         if (0 > regexpr("deg c", lline)) {
-        ##>             ## ignore "# name 5 = ptempC: Pressure Temperature [deg C]"
-        ##>             name <- "pressure"
-        ##>             found.pressure <- TRUE
-        ##>         }
-        ##>     } else if (0 < regexpr("time", lline)) {
-        ##>         name <- "time"
-        ##>         found.time <- TRUE
-        ##>     } else if (0 < regexpr("salinity", lline)) {
-        ##>         name <- "salinity"
-        ##>         found.salinity <- TRUE
-        ##>     } else if (0 < regexpr("temperature", lline)) {
-        ##>         ## ignore "# name 5 = ptempC: Pressure Temperature [deg C]"
-        ##>         if (0 > regexpr("pressure", lline) && 0 > regexpr("potential", lline)) {
-        ##>             name <- "temperature"
-        ##>             found.temperature <- TRUE
-        ##>             unit <- gsub(":.*","",gsub(".*=[ ]*","", line))
-        ##>             if (length(grep("68", unit)))
-        ##>                 units$temperature <- list(unit=expression(degree*C), scale="IPTS-68")
-        ##>             else if (length(grep("90", unit)))
-        ##>                 units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-        ##>             oceDebug(debug, "temperatureUnit: ", as.character(units$temperature$unit$expression), "(inferred from '", unit, "')\n", sep="")
-        ##>         }
-        ##>     } else if (0 < regexpr("conductivity", lline)) {
-        ##>         if (0 < regexpr("ratio", lline)) {
-        ##>             found.conductivity.ratio <- TRUE;
-        ##>             name <- "conductivityratio"
-        ##>             units$conductivity <-list(unit=expression(), scale="")
-        ##>         } else {
-        ##>             found.conductivity <- TRUE;
-        ##>             name <- "conductivity"
-        ##>             unit <- gsub(":.*","",gsub(".*=[ ]*","", line))
-        ##>             if (length(grep("S/m", unit)))
-        ##>                 units$conductivity <- list(unit="S/m", scale="")
-        ##>             else if (length(grep("mS/cm", unit)))
-        ##>                 units$conductivity <- list(unit="mS/cm", scale="")
-        ##>         }
-        ##>     } else if (0 < regexpr("depth", lline) || 0 < regexpr("depSM", lline)) {
-        ##>         name <- "depth"
-        ##>         found.depth <- TRUE
-        ##>     } else if (0 < regexpr("fluorometer", lline)) {
-        ##>         name <- "fluorometer"
-        ##>     ## Used to have oxygen.temperature and oxygen.current here (why??)
-        ##>     } else if (0 < regexpr("oxygen", lline)) {
-        ##>         name <- "oxygen"
-        ##>     } else if (0 < regexpr("flag", lline)) {
-        ##>         name <- "flag"
-        ##>     } else if (0 < regexpr("sigma-theta", lline)) {
-        ##>         name <- "sigmaTheta"
-        ##>         ##foundSigmaTheta <- TRUE
-        ##>     } else if (0 < regexpr("sigma-t", lline)) {
-        ##>         name <- "sigmat"
-        ##>         ##foundSigmaT <- TRUE
-        ##>     } else {
-        ##>         oceDebug(debug>1, "unrecognized item\n")
-        ##>     }
-        ##>     col.names.inferred <- c(col.names.inferred, name)
-        ##> }
-        ##> oceDebug(debug>1, "col.names.inferred=c(\"", paste(col.names.inferred, collapse='","'), "\")", sep="")
-
         if (0 < regexpr(".*seacat profiler.*", lline))
             serialNumber <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
         if (length(grep("^\\* Temperature SN", lline, ignore.case=TRUE)))
@@ -588,6 +525,19 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     if (!found.pressure && !found.depth)
         stop("no column named 'pressure', 'depth' or 'depSM'")
 
+    ## Handle duplicated names
+    for (i in seq_along(colNamesInferred)) {
+        w <- which(colNamesInferred == colNamesInferred[i])
+        if (1 < length(w)) {
+            ##print(w)
+            w <- w[-1]
+            ##message("duplicated: ", colNamesInferred[i])
+            ##message("w: ", paste(w, collapse=" "))
+            ##message(paste(colNamesInferred, collapse=" "))
+            colNamesInferred[w] <- paste(colNamesInferred[i], 1+seq.int(1,length(w)), sep="")
+            ##message(paste(colNamesInferred, collapse=" "))
+        }
+    }
     res@metadata$header <- header
     res@metadata$type <- "SBE"
     res@metadata$hexfilename <- hexfilename # from instrument
@@ -595,7 +545,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     res@metadata$serialNumberTemperature <- serialNumberTemperature
     res@metadata$serialNumberConductivity <- serialNumberConductivity
     res@metadata$pressureType <- pressureType
-    res@metadata$units <- units
+    res@metadata$units <- colUnits
+    names(res@metadata$units) <- colNamesInferred
     res@metadata$systemUploadTime <- systemUploadTime
     res@metadata$ship <- ship
     res@metadata$scientist <- scientist
@@ -611,34 +562,32 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     res@metadata$recovery <- recovery
     res@metadata$waterDepth <- waterDepth # if NA, will update later
     res@metadata$sampleInterval <- sampleInterval
-    res@metadata$names <- col.names.inferred
-    res@metadata$labels <- col.names.inferred
+    res@metadata$names <- colNamesInferred
+    res@metadata$labels <- colNamesInferred
     res@metadata$filename <- filename
     ## Read the data as a table.
     ## FIXME: should we match to standardized names?
-    ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag")
+    ##colNamesForced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag")
 
     ##> ## Handle similar names by tacking numbers on the end, e.g. the first column that
     ##> ## is automatically inferred to hold temperature is called "temperature", while the
     ##> ## next one is called "temperature2", and a third would be called "temperature3".
-    ##> ## col.names.inferred <- tolower(col.names.inferred)
-    ##> for (uname in unique(col.names.inferred)) {
-    ##>     w <- which(uname == col.names.inferred)
+    ##> ## colNamesInferred <- tolower(colNamesInferred)
+    ##> for (uname in unique(colNamesInferred)) {
+    ##>     w <- which(uname == colNamesInferred)
     ##>     lw <- length(w)
     ##>     ##message("uname:", uname, ", lw: ", lw)
     ##>     if (1 != lw) {
-    ##>         col.names.inferred[w[-1]] <- paste(uname, seq.int(2, lw), sep="")
+    ##>         colNamesInferred[w[-1]] <- paste(uname, seq.int(2, lw), sep="")
     ##>     }
     ##> }
     pushBack(lines, file)
     if (is.null(columns)) {
-        oceDebug(debug, "About to read these names: c(\"", paste(col.names.inferred, collapse='","'),"\")\n", sep="")
+        oceDebug(debug, "About to read these names: c(\"", paste(colNamesInferred, collapse='","'),"\")\n", sep="")
         data <- as.list(read.table(file, skip=iline-1, header=FALSE))
-        if (length(data) != length(col.names.inferred))
+        if (length(data) != length(colNamesInferred))
             stop("Number of columns in .cnv data file does not equal number of named variables")
-        names(data) <- col.names.inferred
-        ## data <- as.list(read.table(text=lines[seq.int(iline, length(lines))],
-        ##                            header=FALSE, col.names=col.names.inferred))
+        names(data) <- colNamesInferred
         ndata <- length(data[[1]])
         if (0 < ndata) {
             haveData <- TRUE
@@ -647,20 +596,16 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             if (!found.scan) {
                 data$scan <- 1:ndata
                 names <- names(data)
-                col.names.inferred <- c(col.names.inferred, "scan")
-                col.names.original <- c(col.names.original, "scan")
+                colNamesInferred <- c(colNamesInferred, "scan")
+                colNamesOriginal <- c(colNamesOriginal, "scan")
             }
         } else {
             haveData <- FALSE
             warning("no data in CTD file \"", filename, "\"\n")
             data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
         }
-        attributes(data) <- list(names=col.names.inferred, namesOriginal=col.names.original)
-        ## FIXME: should the above attributes() call be later, also? (see next block)
     } else {
-        dataAll <- read.table(file, skip=iline-1, header=FALSE, col.names=col.names.inferred)
-        ## dataAll <- read.table(text=lines[seq.int(iline, length(lines))],
-        ##                       header=FALSE, col.names=col.names.inferred)
+        dataAll <- read.table(file, skip=iline-1, header=FALSE, col.names=colNamesInferred)
         if ("scan" %in% names(columns)) {
             data <- dataAll[, as.numeric(columns)]
             names(data) <- names(columns)
@@ -708,12 +653,14 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             }
             res <- ctdAddColumn(res, S, name="salinity", label="Salinity",
                                 unit=c(unit=expression(), scale="PSS-78"), debug=debug-1)
+            colNamesOriginal <- c(colNamesOriginal, "NA")
         }
         if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
             g <- if (found.header.latitude) gravity(latitude) else 9.8
             rho0 <- 1000 + swSigmaTheta(median(res@data$salinity), median(res@data$temperature), 0)
             res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
                                 unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
+            colNamesOriginal <- c(colNamesOriginal, "NA")
             warning("created a pressure column from the depth column\n")
         }
         ## res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
@@ -729,11 +676,17 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     ## update to temperature IPTS-90, if have an older version
     if (2 == length(res@metadata$unit$temperature) &&
         "IPTS-68" == as.character(res@metadata$units$temperature$scale)) {
-        res@data$temperature68 <- res@data$temperature
+        warning("FIXME: this should be way above ... what if we have 3 temperatures?\n")
+        warning("FIXME: mixed up badly on column original names here\n")
+        res@data$temperature68 <- res@data$temperature # makes new column; we don't want that
         res@metadata$units$temperature68 <- list(unit=expression(degree*C), scale="IPTS-68")
         res@data$temperature <- T90fromT68(res@data$temperature68)
         res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+        colNamesOriginal <- c(colNamesOriginal, "NA")
         warning("converted temperature from IPTS-68 to ITS-90")
+        ##res <- ctdAddColumn(res, T90fromT68(res@data$temperature68),
+        ##                    name="temperature", label="Temperature",
+        ##                    unit=c(unit=expression(degree*C), scale="ITS-90"), debug=debug-1)
         res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-68 to ITS-90")
     }
     if (!("salinity" %in% names(res@metadata$units))) res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
@@ -742,6 +695,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     oceDebug(debug, "} # read.ctd.sbe()\n")
     ## if (waterDepthWarning)
     ##     res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
+    ## res@metadata$dataNamesOriginal <- colNamesOriginal
     res
 }
 

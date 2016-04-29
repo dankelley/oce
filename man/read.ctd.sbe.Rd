@@ -62,12 +62,10 @@ data from the second sensor are also available as e.g. \code{x[["temperature1"]]
 where \code{x} is the name of the returned value.  For the details of the 
 mapping from \code{.cnv} names to \code{ctd} names, see \code{\link{cnvName2oceName}}.
 
-The original variable names as stored in \code{file} are stored within the \code{data}
-slot as attribute named \code{namesOriginal}, and so can be retrieved with e.g.
-\code{attr(x@data, "namesOriginal")}, if \code{x} is the object returned by
-this function. This feature can be helpful in detailed work.  See the Appendix
-VI of [2], noting that the \code{namesOriginal} values are taken from
-the "Short Name" column of the table spanning pages 161 through 172.
+The original data names as stored in \code{file} are stored within the \code{metadata}
+slot as \code{dataNamesOriginal}, and are displayed with \code{summary} alongside the
+numerical summary. See the Appendix VI of [2] for the meanings of these
+names (in the "Short Name" column of the table spanning pages 161 through 172).
 }
 \author{
 Dan Kelley
