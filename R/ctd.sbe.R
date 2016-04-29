@@ -43,7 +43,7 @@
 #'\code{oxsolML/L}   \tab \code{oxygen}                     \tab ml/l, Garcia-Gordon    \tab                \cr
 #'\code{oxsolMg/L}   \tab \code{oxygen}                     \tab mg/l, Garcia-Gordon    \tab                \cr
 #'\code{oxsolMm/Kg}  \tab \code{oxygen}                     \tab umol/kg, Garcia-Gordon \tab                \cr
-#'\code{potemp_68C}  \tab \code{thetaM}                     \tab degC, IPTS-68          \tab                \cr
+#'\code{potemp_68C}  \tab \code{theta68}                    \tab degC, IPTS-68          \tab                \cr
 #'\code{potemp_90C}  \tab \code{thetaM}                     \tab degC, ITS-90           \tab                \cr
 #'\code{pr}          \tab \code{pressure}                   \tab dbar                   \tab                \cr
 #'\code{prD_}        \tab \code{pressure}                   \tab dbar                   \tab 1              \cr
@@ -58,11 +58,11 @@
 #'\code{sigma-theta} \tab \code{sigmaTheta}                 \tab kg/m^3                 \tab 4              \cr
 #'\code{spar}        \tab \code{spar}                       \tab -                      \tab                \cr
 #'\code{svCM_}       \tab \code{soundSpeed}                 \tab m/s                    \tab                \cr
-#'\code{t_68}        \tab \code{temperature}                \tab degC, IPTS-68          \tab                \cr 
-#'\code{tN68C}       \tab \code{temperature}                \tab degC, IPTS-68          \tab                \cr 
-#'\code{tN90c}       \tab \code{temperature}                \tab degC, ITS-90           \tab                \cr
-#'\code{upolyN}      \tab \code{upoly}                      \tab -                      \tab                \cr 
-#'\code{vN}          \tab \code{voltage}                    \tab V                      \tab                \cr 
+#'\code{t_68}        \tab \code{temperature68}              \tab degC, IPTS-68          \tab                \cr 
+#'\code{t_68C}       \tab \code{temperature68               \tab degC, IPTS-68          \tab                \cr 
+#'\code{t_90c}       \tab \code{temperature}                \tab degC, ITS-90           \tab                \cr
+#'\code{upoly_}      \tab \code{upoly}                      \tab -                      \tab                \cr 
+#'\code{v_}          \tab \code{voltage}                    \tab V                      \tab                \cr 
 #'\code{wetCDOM}     \tab \code{fluorescence}               \tab mg/m^3                 \tab                \cr 
 #'}
 #' Notes:
@@ -166,7 +166,7 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
     } else if (1 == length(grep("potemp[0-9]*68C", name, ignore.case=TRUE))) {
         ## number <- gsub("68C$", "", gsub("^potemp", "", name))
         ## name <- paste("theta", number, sep="")
-        name <- "theta"
+        name <- "theta68"
         unit <- list(unit=expression(degree*C), scale="ITS-68") # FIXME: guess on scale
     } else if (1 == length(grep("potemp[0-9]*90C", name, ignore.case=TRUE))) {
         ## number <- gsub("90C$", "", gsub("^potemp", "", name))
@@ -218,12 +218,12 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^t[0-9]68$", name, ignore.case=TRUE))) {
         ## number <- gsub("68$", "", gsub("^t", "", name))
         ## name <- paste("temperature", number, sep="")
-        name <- "temperature"
+        name <- "temperature68"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
     } else if (1 == length(grep("^t[0-9]68C$", name, ignore.case=TRUE))) {
         ## number <- gsub("68C$", "", gsub("^t", "", name))
         ## name <- paste("temperature", number, sep="")
-        name <- "temperature"
+        name <- "temperature68"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
     } else if (1 == length(grep("^t[0-9]90C$", name, ignore.case=TRUE))) {
         ## number <- gsub("90C$", "", gsub("^t", "", name, ignore.case=TRUE), ignore.case=TRUE)
@@ -520,8 +520,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             warning("'** Recovery' not found in header")
     }
     ## Require p,S,T data at least
-    if (!found.temperature)
-        stop("cannot find 'temperature' in this file")
+    if (!("temperature" %in% colNamesInferred || "temperature68" %in% colNamesInferred))
+        stop("cannot find 'temperature' in this file; found SBE names: ", paste(colNamesOriginal, collapse=" "))
     if (!found.pressure && !found.depth)
         stop("no column named 'pressure', 'depth' or 'depSM'")
 
@@ -534,7 +534,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             ##message("duplicated: ", colNamesInferred[i])
             ##message("w: ", paste(w, collapse=" "))
             ##message(paste(colNamesInferred, collapse=" "))
-            colNamesInferred[w] <- paste(colNamesInferred[i], 1+seq.int(1,length(w)), sep="")
+            colNamesInferred[w] <- paste(colNamesInferred[i], "_", 1+seq.int(1,length(w)), sep="")
             ##message(paste(colNamesInferred, collapse=" "))
         }
     }
@@ -663,39 +663,21 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             colNamesOriginal <- c(colNamesOriginal, "NA")
             warning("created a pressure column from the depth column\n")
         }
-        ## res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
-        ##                 name="sigmaTheta", label="Sigma Theta", unit=list(unit=expression(kg/m^3), scale=""),
-        ##                 debug=debug-1)
     }
-    ## waterDepthWarning <- FALSE
-    ## if (is.na(res@metadata$waterDepth)) {
-    ##     res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
-    ##     waterDepthWarning <- TRUE
-    ## }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     ## update to temperature IPTS-90, if have an older version
-    if (2 == length(res@metadata$unit$temperature) &&
-        "IPTS-68" == as.character(res@metadata$units$temperature$scale)) {
-        warning("FIXME: this should be way above ... what if we have 3 temperatures?\n")
-        warning("FIXME: mixed up badly on column original names here\n")
-        res@data$temperature68 <- res@data$temperature # makes new column; we don't want that
-        res@metadata$units$temperature68 <- list(unit=expression(degree*C), scale="IPTS-68")
-        res@data$temperature <- T90fromT68(res@data$temperature68)
-        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-        colNamesOriginal <- c(colNamesOriginal, "NA")
+    if (!("temperature" %in% names(res@data)) && ("temperature68" %in% names(res@data))) {
+        res <- ctdAddColumn(res, T90fromT68(res@data$temperature68),
+                            name="temperature", label="Temperature",
+                            unit=c(unit=expression(degree*C), scale="ITS-90"), debug=debug-1)
         warning("converted temperature from IPTS-68 to ITS-90")
-        ##res <- ctdAddColumn(res, T90fromT68(res@data$temperature68),
-        ##                    name="temperature", label="Temperature",
-        ##                    unit=c(unit=expression(degree*C), scale="ITS-90"), debug=debug-1)
         res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-68 to ITS-90")
     }
+    ## FIXME(20160429): do we need/want next 3 lines?
     if (!("salinity" %in% names(res@metadata$units))) res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
     if (!("pressure" %in% names(res@metadata$units))) res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     if (!("depth" %in% names(res@metadata$units))) res@metadata$units$depth <- list(unit=expression(m), scale="")
     oceDebug(debug, "} # read.ctd.sbe()\n")
-    ## if (waterDepthWarning)
-    ##     res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
-    ## res@metadata$dataNamesOriginal <- colNamesOriginal
     res
 }
 
