@@ -51,9 +51,11 @@ function is called with an \code{oce} object as first argument), and so
 users are well-advised to rename the items as appropriate. The first
 step in doing this is to pass the object to \code{summary()}, to discover
 the SBE names in question. Then consult the SBE documentation to find
-what the data represent. Finally, either manipulate the names in the object
-data slot directly or, usually better, use 
-\code{\link{renameData}} to rename the elements.
+an appropriate name for the data, and either manipulate the names in the object
+data slot directly or use
+\code{\link{renameData}} to rename the elements. Finally, please publish
+an 'issue' on the oce Github site \url{https://github.com/dankelley/oce/issues}
+so that the developers can add the data type in question.
 
 \tabular{llll}{
   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit, scale} \tab \strong{Notes} \cr
@@ -113,9 +115,11 @@ data slot directly or, usually better, use
   \code{t38_90C}     \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
   \code{t3868C}      \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
   \code{t38_38C}     \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
-  \code{upoly_}      \tab \code{upoly}                        \tab -                    \tab                \cr 
-  \code{v_}          \tab \code{voltage}                      \tab V                    \tab                \cr 
-  \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3               \tab                \cr 
+  \code{upoly_}      \tab \code{upoly}                        \tab -                    \tab   \cr
+  \code{v_}          \tab \code{voltage}                      \tab V                    \tab   \cr
+  \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3               \tab   \cr
+  \code{xmiss}       \tab \code{beamTransmission}             \tab percent, Chelsea/Seatech\tab \cr
+  \code{xmiss_}      \tab \code{beamTransmission}             \tab percent, Chelsea/Seatech\tab \cr
 }
 Notes:
 \itemize{
