@@ -63,7 +63,7 @@
 #'   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s                  \tab                \cr
 #'   \code{tN68}        \tab \code{temperatureM}                 \tab degC, IPTS-68        \tab                \cr 
 #'   \code{tN68C}       \tab \code{temperatureM}                 \tab degC, IPTS-68        \tab                \cr 
-#'   \code{tN90c}       \tab \code{temperatureM}                 \tab degC, ITS-90         \tab                \cr
+#'   \code{tN90C}       \tab \code{temperatureM}                 \tab degC, ITS-90         \tab                \cr
 #'   \code{upolyN}      \tab \code{upolyM}                       \tab -                    \tab                \cr 
 #'   \code{vN}          \tab \code{voltageM}                     \tab V                    \tab                \cr 
 #'   \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3               \tab                \cr 
@@ -210,16 +210,20 @@ cnvName2oceName <- function(h)
     } else if (1 == length(grep("svCM", name, ignore.case=TRUE))) {
         name <- "soundSpeed"
         unit <- list(unit=expression(m/s), scale="")
-    } else if (1 == length(grep("^t[0-9]68$", name, ignore.case=TRUE))) {
-        number <- gsub("68$", "", gsub("^t", "", name))
+    } else if (1 == length(grep("^t(0)|(49)|(nc)|(v2)68C[m]{0,1}$", name, ignore.case=TRUE))) {
+        number <- 0
         name <- paste("temperature", number, sep="")
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (1 == length(grep("^t[0-9]68C$", name, ignore.case=TRUE))) {
-        number <- gsub("68C$", "", gsub("^t", "", name))
+    } else if (1 == length(grep("^t(1)|(nc2)68C[m]{0,1}$", name, ignore.case=TRUE))) {
+        number <- 2
         name <- paste("temperature", number, sep="")
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (1 == length(grep("^t[0-9]90C$", name, ignore.case=TRUE))) {
-        number <- gsub("90C$", "", gsub("^t", "", name, ignore.case=TRUE), ignore.case=TRUE)
+    } else if (1 == length(grep("^t(1)|(49)|(nc)|(v2)90C[m]{0,1}$", name, ignore.case=TRUE))) {
+        number <- 0
+        name <- paste("temperature", number, sep="")
+        unit <- list(unit=expression(degree*C), scale="ITS-90")
+    } else if (1 == length(grep("^t(1)|(nc2)90C[m]{0,1}$", name, ignore.case=TRUE))) {
+        number <- 2
         name <- paste("temperature", number, sep="")
         unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (1 == length(grep("timeS", name, ignore.case=TRUE))) {
