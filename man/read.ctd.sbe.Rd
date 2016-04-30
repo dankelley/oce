@@ -47,10 +47,10 @@ variable across data formats, because the meta-information provided
 in those formats varies widely.
 }
 \description{
-Read a Teledyne/Seabird CTD file, i.e. a file with name ending in \code{.cnv}.
+Read an Seabird CTD File
 }
 \details{
-\code{read.ctd.sbe} reads files stored in Seabird \code{.cnv} format.
+This function reads files stored in Seabird \code{.cnv} format.
 Note that these files can contain multiple sensors for a given field. For example,
 the file might contain a column named \code{t090C} for one 
 temperature sensor and \code{t190C} for a second. The first will be denoted

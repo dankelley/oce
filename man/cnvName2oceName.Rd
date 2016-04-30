@@ -25,6 +25,75 @@ files.  Lacking access to documentation on the SBE format,
 the present function is based on inspection of a suite of CNV files
 available to the \code{oce} developers.
 }
+\details{
+A few sample header lines to be decoded are as follows.
+\preformatted{
+# name 3 = t090C: Temperature [ITS-90, deg C]
+# name 4 = t190C: Temperature, 2 [ITS-90, deg C]
+}
+Examination of several CNV files suggests that it is best to
+try to infer the name from the characters between the "\code{=}"
+and "\code{:}" characters, because the material after the colon
+seems to vary more between sample files.
+
+The table given below indicates the translation patterns used.
+The \code{.cnv} convention for multiple sensors is to include digits in the
+name, and these are indicated with \code{_} in the table, which
+stands for an optional digit.
+
+\tabular{llll}{
+\strong{Key}       \tab \strong{Result}                   \tab \strong{Unit, scale}   \tab \strong{Notes} \cr
+\code{alt_}        \tab \code{altimeter}                  \tab m                      \tab                \cr
+\code{c_ms/cm}     \tab \code{conductivity}               \tab ms/cm                  \tab                \cr
+\code{CStarAt_}    \tab \code{beamAttenuation}            \tab 1/m                    \tab                \cr
+\code{CStarTr_}    \tab \code{beamTransmission}           \tab percent                \tab                \cr
+\code{depS}        \tab \code{depth}                      \tab m                      \tab                \cr
+\code{depS_}       \tab \code{depth}                      \tab m                      \tab                \cr
+\code{dz/dt_}      \tab \code{descentRate}                \tab m/s                    \tab                \cr
+\code{flag}        \tab \code{flag}                       \tab -                      \tab                \cr
+\code{flC}         \tab \code{fluorescenceChelsea}        \tab ug/l                   \tab                \cr
+\code{flEC-AFL_}   \tab \code{fluorescence}               \tab mg/m^3                 \tab                \cr
+\code{flsP}        \tab \code{fluorescence}               \tab -                      \tab                \cr
+\code{latitude}    \tab \code{latitude}                   \tab degN                   \tab                \cr
+\code{longitude}   \tab \code{longitude}                  \tab degE                   \tab                \cr
+\code{nbin}        \tab \code{nbin}                       \tab -                      \tab                \cr
+\code{oxsatML/L}   \tab \code{oxygen}                     \tab ml/l, Weiss            \tab                \cr
+\code{oxsatMg/L}   \tab \code{oxygen}                     \tab mg/l, Weiss            \tab                \cr
+\code{oxsatMm/Kg}  \tab \code{oxygen}                     \tab umol/kg, Weiss         \tab                \cr
+\code{oxsolML/L}   \tab \code{oxygen}                     \tab ml/l, Garcia-Gordon    \tab                \cr
+\code{oxsolMg/L}   \tab \code{oxygen}                     \tab mg/l, Garcia-Gordon    \tab                \cr
+\code{oxsolMm/Kg}  \tab \code{oxygen}                     \tab umol/kg, Garcia-Gordon \tab                \cr
+\code{potemp_68C}  \tab \code{theta68}                    \tab degC, IPTS-68          \tab                \cr
+\code{potemp_90C}  \tab \code{thetaM}                     \tab degC, ITS-90           \tab                \cr
+\code{pr}          \tab \code{pressure}                   \tab dbar                   \tab                \cr
+\code{prD_}        \tab \code{pressure}                   \tab dbar                   \tab 1              \cr
+\code{ptempC}      \tab \code{pressureTemperature}        \tab degC, ITS-90           \tab 2              \cr
+\code{pumps}       \tab \code{pumpStatus}                 \tab                        \tab                \cr
+\code{sal__}       \tab \code{salinity}                   \tab unitless, PSS-78       \tab 3              \cr
+\code{sbeox_ML/L}  \tab \code{oxygen}                     \tab ml/l, SBE43            \tab                \cr
+\code{sbeox_Mm/Kg} \tab \code{oxygen}                     \tab mu*mol/kg, SBE43       \tab                \cr
+\code{sbeox_Ps}    \tab \code{oxygen}                     \tab percent, SBE43         \tab                \cr
+\code{sbeox_V}     \tab \code{oxygenVoltage}              \tab V, SBE43               \tab                \cr
+\code{scan}        \tab \code{scan}                       \tab -                      \tab                \cr
+\code{sigma-theta} \tab \code{sigmaTheta}                 \tab kg/m^3                 \tab 4              \cr
+\code{spar}        \tab \code{spar}                       \tab -                      \tab                \cr
+\code{svCM_}       \tab \code{soundSpeed}                 \tab m/s                    \tab                \cr
+\code{t_68}        \tab \code{temperature}                \tab degC, IPTS-68          \tab                \cr 
+\code{t_68C}       \tab \code{temperature}                \tab degC, IPTS-68          \tab                \cr 
+\code{t_90c}       \tab \code{temperature}                \tab degC, ITS-90           \tab                \cr
+\code{upoly_}      \tab \code{upoly}                      \tab -                      \tab                \cr 
+\code{v_}          \tab \code{voltage}                    \tab V                      \tab                \cr 
+\code{wetCDOM}     \tab \code{fluorescence}               \tab mg/m^3                 \tab                \cr 
+}
+Notes:
+\itemize{
+\item{1. what should be done if a file has both \code{pr} and \code{prDM}?}
+\item{2: assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.}
+\item{3: some files have PSU for this. Should we handle that? And are there other S scales to consider?}
+\item{4: 'theta' may appear in different ways with different encoding configurations, set up
+within R or in the operating system.}
+}
+}
 \author{
 Dan Kelley
 }

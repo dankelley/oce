@@ -82,8 +82,9 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{odf-class}},
-  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
+  \code{\link{met-class}}, \code{\link{oce-class}},
+  \code{\link{odf-class}}, \code{\link{rsk-class}},
+  \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
