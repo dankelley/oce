@@ -58,8 +58,8 @@
 #'\code{sigma-theta} \tab \code{sigmaTheta}                 \tab kg/m^3                 \tab 4              \cr
 #'\code{spar}        \tab \code{spar}                       \tab -                      \tab                \cr
 #'\code{svCM_}       \tab \code{soundSpeed}                 \tab m/s                    \tab                \cr
-#'\code{t_68}        \tab \code{temperature68}              \tab degC, IPTS-68          \tab                \cr 
-#'\code{t_68C}       \tab \code{temperature68               \tab degC, IPTS-68          \tab                \cr 
+#'\code{t_68}        \tab \code{temperature}                \tab degC, IPTS-68          \tab                \cr 
+#'\code{t_68C}       \tab \code{temperature}                \tab degC, IPTS-68          \tab                \cr 
 #'\code{t_90c}       \tab \code{temperature}                \tab degC, ITS-90           \tab                \cr
 #'\code{upoly_}      \tab \code{upoly}                      \tab -                      \tab                \cr 
 #'\code{v_}          \tab \code{voltage}                    \tab V                      \tab                \cr 
@@ -218,12 +218,12 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^t[0-9]68$", name, ignore.case=TRUE))) {
         ## number <- gsub("68$", "", gsub("^t", "", name))
         ## name <- paste("temperature", number, sep="")
-        name <- "temperature68"
+        name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
     } else if (1 == length(grep("^t[0-9]68C$", name, ignore.case=TRUE))) {
         ## number <- gsub("68C$", "", gsub("^t", "", name))
         ## name <- paste("temperature", number, sep="")
-        name <- "temperature68"
+        name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
     } else if (1 == length(grep("^t[0-9]90C$", name, ignore.case=TRUE))) {
         ## number <- gsub("90C$", "", gsub("^t", "", name, ignore.case=TRUE), ignore.case=TRUE)
@@ -257,12 +257,10 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
 
 
 #' Read an Seabird CTD File
-#'
-#' Read a Teledyne/Seabird CTD file, i.e. a file with name ending in \code{.cnv}.
 #' @template readCtdTemplate
 #'
 #' @details
-#' \code{read.ctd.sbe} reads files stored in Seabird \code{.cnv} format.
+#' This function reads files stored in Seabird \code{.cnv} format.
 #' Note that these files can contain multiple sensors for a given field. For example,
 #' the file might contain a column named \code{t090C} for one 
 #' temperature sensor and \code{t190C} for a second. The first will be denoted
@@ -351,14 +349,32 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     ## Get names and units of columns in the SBE data file
     nameLines  <- grep("^# name [0-9][0-9]* = .*:.*$", lines, ignore.case=TRUE)
     colUnits <- list()
-    colNamesInferred <- colNamesOriginal <- NULL
+    colNamesInferred <- NULL
+    dataNamesOriginal <- NULL
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], debug=debug-1)
         colNamesInferred <- c(colNamesInferred, nu$name)
-        colNamesOriginal <- c(colNamesOriginal, nu$nameOriginal)
+        dataNamesOriginal <- c(dataNamesOriginal, nu$nameOriginal)
         colUnits[[iline]] <- nu$unit
         ## message("nu$name: ", nu$name, "; scale: ", colUnits[[nu$name]]$unit$scale)
     }
+    ## Handle duplicated names
+    for (i in seq_along(colNamesInferred)) {
+        w <- which(colNamesInferred == colNamesInferred[i])
+        if (1 < length(w)) {
+            ##print(w)
+            w <- w[-1]
+            ##message("duplicated: ", colNamesInferred[i])
+            ##message("w: ", paste(w, collapse=" "))
+            ##message(paste(colNamesInferred, collapse=" "))
+            colNamesInferred[w] <- paste(colNamesInferred[i], "_", 1+seq.int(1,length(w)), sep="")
+            ##message(paste(colNamesInferred, collapse=" "))
+        }
+    }
+    res@metadata$dataNamesOriginal <- dataNamesOriginal
+
+
+
     found.scan <- "scan" %in% colNamesInferred
     found.temperature <- "temperature" %in% colNamesInferred
     found.pressure <- "pressure" %in% colNamesInferred
@@ -520,24 +536,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             warning("'** Recovery' not found in header")
     }
     ## Require p,S,T data at least
-    if (!("temperature" %in% colNamesInferred || "temperature68" %in% colNamesInferred))
-        stop("cannot find 'temperature' in this file; found SBE names: ", paste(colNamesOriginal, collapse=" "))
-    if (!found.pressure && !found.depth)
-        stop("no column named 'pressure', 'depth' or 'depSM'")
+    if (!("temperature" %in% colNamesInferred))
+        stop("no 'temperature' column; hint: use summary() to find SBE names, then set 'columns' argument")
+    ## if (!("pressure" %in% colNamesInferred) && !("depth" %in% colNamesInferred))
+    ##     stop("no 'pressure' column; hint: use summary() to find SBE names, then set 'columns' argument")
 
-    ## Handle duplicated names
-    for (i in seq_along(colNamesInferred)) {
-        w <- which(colNamesInferred == colNamesInferred[i])
-        if (1 < length(w)) {
-            ##print(w)
-            w <- w[-1]
-            ##message("duplicated: ", colNamesInferred[i])
-            ##message("w: ", paste(w, collapse=" "))
-            ##message(paste(colNamesInferred, collapse=" "))
-            colNamesInferred[w] <- paste(colNamesInferred[i], "_", 1+seq.int(1,length(w)), sep="")
-            ##message(paste(colNamesInferred, collapse=" "))
-        }
-    }
     res@metadata$header <- header
     res@metadata$type <- "SBE"
     res@metadata$hexfilename <- hexfilename # from instrument
@@ -593,18 +596,19 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             haveData <- TRUE
             names <- names(data)
             ##labels <- names
-            if (!found.scan) {
-                data$scan <- 1:ndata
-                names <- names(data)
-                colNamesInferred <- c(colNamesInferred, "scan")
-                colNamesOriginal <- c(colNamesOriginal, "scan")
-            }
+            ## if (!found.scan) {
+            ##     data$scan <- 1:ndata
+            ##     names <- names(data)
+            ##     colNamesInferred <- c(colNamesInferred, "scan")
+            ##     colNamesOriginal <- c(colNamesOriginal, "scan")
+            ## }
         } else {
             haveData <- FALSE
             warning("no data in CTD file \"", filename, "\"\n")
             data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
         }
     } else {
+        warning("CAUTION: read.ctd.sbe() is not handling 'columns' argument properly (please post a GitHub issue)\n")
         dataAll <- read.table(file, skip=iline-1, header=FALSE, col.names=colNamesInferred)
         if ("scan" %in% names(columns)) {
             data <- dataAll[, as.numeric(columns)]
@@ -651,20 +655,23 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             } else {
                 stop("cannot find salinity in this file, nor conductivity or conductivity ratio")
             }
+            ## FIXME: move this to the very end, where we add 'scan' if that's not found.
             res <- ctdAddColumn(res, S, name="salinity", label="Salinity",
                                 unit=c(unit=expression(), scale="PSS-78"), debug=debug-1)
-            colNamesOriginal <- c(colNamesOriginal, "NA")
+            ## colNamesOriginal <- c(colNamesOriginal, "NA")
         }
         if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
             g <- if (found.header.latitude) gravity(latitude) else 9.8
             rho0 <- 1000 + swSigmaTheta(median(res@data$salinity), median(res@data$temperature), 0)
             res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
                                 unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
-            colNamesOriginal <- c(colNamesOriginal, "NA")
+            ## colNamesOriginal <- c(colNamesOriginal, "NA")
             warning("created a pressure column from the depth column\n")
         }
     }
+    ##res@metadata$dataNamesOriginal <- colNamesOriginal
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+
     ## update to temperature IPTS-90, if have an older version
     if (!("temperature" %in% names(res@data)) && ("temperature68" %in% names(res@data))) {
         res <- ctdAddColumn(res, T90fromT68(res@data$temperature68),
@@ -672,6 +679,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
                             unit=c(unit=expression(degree*C), scale="ITS-90"), debug=debug-1)
         warning("converted temperature from IPTS-68 to ITS-90")
         res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-68 to ITS-90")
+    }
+    if (!("scan" %in% names(res@data))) {
+        res <- ctdAddColumn(res, 1:length(res@data[[1]]), label="scan",
+                            unit=c(unit=expression(), scale=""), debug=debug-1)
     }
     ## FIXME(20160429): do we need/want next 3 lines?
     if (!("salinity" %in% names(res@metadata$units))) res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")

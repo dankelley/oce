@@ -42,14 +42,15 @@ test_that("as.ctd() with an argo object", {
 test_that("ctd subsetting and trimming", {
           ## NOTE: this is brittle to changes in data(ctd), but that's a good thing, becausing
           ## changing the dataset should be done only when really necessary, e.g. the July 2015
-          ## transition to use ITS-90 based temperature.
+          ## transition to use ITS-90 based temperature. ... and the April 2016
+          ## transition back to IPTS-68 (FIXME: do we *really* want this??)
           scanRange <- range(ctd[['scan']])
           newScanRange <- c(scanRange[1] + 20, scanRange[2] - 20)
           ctdTrimmed <- ctdTrim(ctd, "scan", parameters=newScanRange)
           expect_equal(ctdTrimmed[["scan"]][1:3], c(150,151,152))
           expect_equal(ctdTrimmed[["salinity"]][1:3], c(30.8882,30.9301,30.8928))
           expect_equal(ctdTrimmed[["pressure"]][1:3], c(6.198,6.437,6.770))
-          expect_equal(ctdTrimmed[["temperature"]][1:3], c(11.734383747900503536,11.630308725905782907,11.4245581060545475790))
+          expect_equal(ctdTrimmed[["temperature"]][1:3], c(11.7372, 11.6331, 11.4273))
           ## next is form a test for issue 669
           n <- length(ctd[["salinity"]])
           set.seed(669)
@@ -132,7 +133,7 @@ test_that("Dalhousie-produced cnv file", {
           d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
           expect_equal(d1[["temperatureUnit"]]$unit, expression(degree*C))
           ## NB. the file holds IPTS-68 but we ## store ITS-90 internally
-          expect_equal(d1[["temperatureUnit"]]$scale, "ITS-90")
+          expect_equal(d1[["temperatureUnit"]]$scale, "IPTS-68")
           expect_null(d1[["conductivityUnit"]]) # this file does not have conductivity
           expect_equal(d1[["pressureUnit"]]$unit, expression(dbar))
           expect_equal(d1[["pressureType"]], "sea")
@@ -144,8 +145,7 @@ test_that("Dalhousie-produced cnv file", {
           expect_equal(d1[['salinity']][1:3], c(29.9210, 29.9205, 29.9206))
           expect_equal(d1[['pressure']][1:3], c(1.480, 1.671, 2.052))
           ## check conversion from IPTS-68 to ITS-90 worked
-          expect_equal(d1[['temperature68']][1:3], c(14.2245, 14.2299, 14.2285))
-          expect_equal(d1[['temperature']][1:3], T90fromT68(c(14.2245, 14.2299, 14.2285)))
+          expect_equal(d1[['temperature']][1:3], c(14.2245, 14.2299, 14.2285))
 })
 
 ## A file containing CTD data acquired in the Beaufort Sea in 2003.
