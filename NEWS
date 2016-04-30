@@ -1,4 +1,6 @@
 0.9-19
+- renameData() added
+- improve support for SBE files
 - remove is.beam(), is.xyz(), is.enu() and coordinate(), since
   x[["coordinate"]] now permits these simply
 - replace several function style accessors with [[ style

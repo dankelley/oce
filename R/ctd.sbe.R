@@ -16,55 +16,87 @@
 #' and "\code{:}" characters, because the material after the colon
 #' seems to vary more between sample files.
 #'
-#' The table given below indicates the translation patterns used.
-#' The \code{.cnv} convention for multiple sensors is to include digits in the
-#' name, and these are indicated with \code{_} in the table, which
-#' stands for an optional digit.
+#' The table given below indicates the translation patterns used. These are 
+#' taken from [1]. The \code{.cnv} convention for multiple sensors is to
+#' include optional extra digits in the name, and these are indicated
+#' with \code{_} in the table; their decoding is done with \code{\link{grep}}.
 #'
-#'\tabular{llll}{
-#'\strong{Key}       \tab \strong{Result}                   \tab \strong{Unit, scale}   \tab \strong{Notes} \cr
-#'\code{alt_}        \tab \code{altimeter}                  \tab m                      \tab                \cr
-#'\code{c_ms/cm}     \tab \code{conductivity}               \tab ms/cm                  \tab                \cr
-#'\code{CStarAt_}    \tab \code{beamAttenuation}            \tab 1/m                    \tab                \cr
-#'\code{CStarTr_}    \tab \code{beamTransmission}           \tab percent                \tab                \cr
-#'\code{depS}        \tab \code{depth}                      \tab m                      \tab                \cr
-#'\code{depS_}       \tab \code{depth}                      \tab m                      \tab                \cr
-#'\code{dz/dt_}      \tab \code{descentRate}                \tab m/s                    \tab                \cr
-#'\code{flag}        \tab \code{flag}                       \tab -                      \tab                \cr
-#'\code{flC}         \tab \code{fluorescenceChelsea}        \tab ug/l                   \tab                \cr
-#'\code{flEC-AFL_}   \tab \code{fluorescence}               \tab mg/m^3                 \tab                \cr
-#'\code{flsP}        \tab \code{fluorescence}               \tab -                      \tab                \cr
-#'\code{latitude}    \tab \code{latitude}                   \tab degN                   \tab                \cr
-#'\code{longitude}   \tab \code{longitude}                  \tab degE                   \tab                \cr
-#'\code{nbin}        \tab \code{nbin}                       \tab -                      \tab                \cr
-#'\code{oxsatML/L}   \tab \code{oxygen}                     \tab ml/l, Weiss            \tab                \cr
-#'\code{oxsatMg/L}   \tab \code{oxygen}                     \tab mg/l, Weiss            \tab                \cr
-#'\code{oxsatMm/Kg}  \tab \code{oxygen}                     \tab umol/kg, Weiss         \tab                \cr
-#'\code{oxsolML/L}   \tab \code{oxygen}                     \tab ml/l, Garcia-Gordon    \tab                \cr
-#'\code{oxsolMg/L}   \tab \code{oxygen}                     \tab mg/l, Garcia-Gordon    \tab                \cr
-#'\code{oxsolMm/Kg}  \tab \code{oxygen}                     \tab umol/kg, Garcia-Gordon \tab                \cr
-#'\code{potemp_68C}  \tab \code{theta68}                    \tab degC, IPTS-68          \tab                \cr
-#'\code{potemp_90C}  \tab \code{thetaM}                     \tab degC, ITS-90           \tab                \cr
-#'\code{pr}          \tab \code{pressure}                   \tab dbar                   \tab                \cr
-#'\code{prD_}        \tab \code{pressure}                   \tab dbar                   \tab 1              \cr
-#'\code{ptempC}      \tab \code{pressureTemperature}        \tab degC, ITS-90           \tab 2              \cr
-#'\code{pumps}       \tab \code{pumpStatus}                 \tab                        \tab                \cr
-#'\code{sal__}       \tab \code{salinity}                   \tab unitless, PSS-78       \tab 3              \cr
-#'\code{sbeox_ML/L}  \tab \code{oxygen}                     \tab ml/l, SBE43            \tab                \cr
-#'\code{sbeox_Mm/Kg} \tab \code{oxygen}                     \tab mu*mol/kg, SBE43       \tab                \cr
-#'\code{sbeox_Ps}    \tab \code{oxygen}                     \tab percent, SBE43         \tab                \cr
-#'\code{sbeox_V}     \tab \code{oxygenVoltage}              \tab V, SBE43               \tab                \cr
-#'\code{scan}        \tab \code{scan}                       \tab -                      \tab                \cr
-#'\code{sigma-theta} \tab \code{sigmaTheta}                 \tab kg/m^3                 \tab 4              \cr
-#'\code{spar}        \tab \code{spar}                       \tab -                      \tab                \cr
-#'\code{svCM_}       \tab \code{soundSpeed}                 \tab m/s                    \tab                \cr
-#'\code{t_68}        \tab \code{temperature}                \tab degC, IPTS-68          \tab                \cr 
-#'\code{t_68C}       \tab \code{temperature}                \tab degC, IPTS-68          \tab                \cr 
-#'\code{t_90c}       \tab \code{temperature}                \tab degC, ITS-90           \tab                \cr
-#'\code{upoly_}      \tab \code{upoly}                      \tab -                      \tab                \cr 
-#'\code{v_}          \tab \code{voltage}                    \tab V                      \tab                \cr 
-#'\code{wetCDOM}     \tab \code{fluorescence}               \tab mg/m^3                 \tab                \cr 
-#'}
+#' It is important to note that this table is by no means complete, since there
+#' are a great many SBE names listed in their document [1], plus names 
+#' not listed there but present in data files
+#' supplied by prominent archiving agencies. If an SBE name is not recogized,
+#' then the oce name is set to that SBE name. This can cause problems in
+#' some other processing steps (e.g. if \code{\link{swRho}} or a similar
+#' function is called with an \code{oce} object as first argument), and so
+#' users are well-advised to rename the items as appropriate. The first
+#' step in doing this is to pass the object to \code{summary()}, to discover
+#' the SBE names in question. Then consult the SBE documentation to find
+#' what the data represent. Finally, either manipulate the names in the object
+#' data slot directly or, usually better, use 
+#' \code{\link{renameData}} to rename the elements.
+#'
+#' \tabular{llll}{
+#'   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit, scale} \tab \strong{Notes} \cr
+#'   \code{alt_}        \tab \code{altimeter}                    \tab m                    \tab   \cr
+#'   \code{c_ms/cm}     \tab \code{conductivity}                 \tab ms/cm                \tab   \cr
+#'   \code{CStarAt_}    \tab \code{beamAttenuation}              \tab 1/m                  \tab   \cr
+#'   \code{CStarTr_}    \tab \code{beamTransmission}             \tab percent              \tab   \cr
+#'   \code{depS}        \tab \code{depth}                        \tab m                    \tab   \cr
+#'   \code{depSM}       \tab \code{depth}                        \tab m                    \tab   \cr
+#'   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                  \tab   \cr
+#'   \code{flag}        \tab \code{flag}                         \tab -                    \tab   \cr
+#'   \code{flC}         \tab \code{fluorescence}                 \tab ug/l, Chelsea        \tab   \cr
+#'   \code{flC_}        \tab \code{fluorescence}                 \tab ug/l, Chelsea        \tab   \cr
+#'   \code{flEC-AFLM}   \tab \code{fluorescence}                 \tab mg/m^3               \tab   \cr
+#'   \code{flsP}        \tab \code{fluorescence}                 \tab -                    \tab   \cr
+#'   \code{latitude}    \tab \code{latitude}                     \tab degN                 \tab   \cr
+#'   \code{longitude}   \tab \code{longitude}                    \tab degE                 \tab   \cr
+#'   \code{nbin}        \tab \code{nbin}                         \tab -                    \tab   \cr
+#'   \code{oxsatML/L}   \tab \code{oxygen}                       \tab ml/l, Weiss          \tab   \cr
+#'   \code{oxsatMg/L}   \tab \code{oxygen}                       \tab mg/l, Weiss          \tab   \cr
+#'   \code{oxsatMm/Kg}  \tab \code{oxygen}                       \tab umol/kg, Weiss       \tab   \cr
+#'   \code{oxsolML/L}   \tab \code{oxygen}                       \tab ml/l, Garcia-Gordon  \tab   \cr
+#'   \code{oxsolMg/L}   \tab \code{oxygen}                       \tab mg/l, Garcia-Gordon  \tab   \cr
+#'   \code{oxsolMm/Kg}  \tab \code{oxygen}                       \tab umol/kg, Garcia-Gordon \tab   \cr
+#'   \code{potemp_68C}  \tab \code{thetaM}                       \tab degC, IPTS-68        \tab   \cr
+#'   \code{potemp_90C}  \tab \code{thetaM}                       \tab degC, ITS-90         \tab   \cr
+#'   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab   \cr
+#'   \code{prDM}        \tab \code{pressure}                     \tab dbar                 \tab 1 \cr
+#'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC, ITS-90         \tab 2 \cr
+#'   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
+#'   \code{sal__}       \tab \code{salinityM}                    \tab unitless, PSS-78     \tab 3 \cr
+#'   \code{sbeox_ML/L}  \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
+#'   \code{sbeox_Mm/Kg} \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
+#'   \code{sbeox_Ps}    \tab \code{oxygen}                       \tab percent              \tab   \cr
+#'   \code{sbeox_V}     \tab \code{oxygenRaw}                    \tab V                    \tab   \cr
+#'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
+#'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 4 \cr
+#'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
+#'   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s                  \tab   \cr
+#'   \code{t_68}        \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr 
+#'   \code{t_90}        \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr 
+#'   \code{t_68C}       \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr 
+#'   \code{t_90C}       \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{t090Cm}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{t4990C}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{tnc90C}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{tv290C}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{t068C}       \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{t4968C}      \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{tnc68C}      \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{tv268C}      \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{t190C}       \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{tnc290C}     \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{t168C}       \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{tnc268C}     \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{t3890C}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{t38_90C}     \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{t3868C}      \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{t38_38C}     \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{upoly_}      \tab \code{upoly}                        \tab -                    \tab                \cr 
+#'   \code{v_}          \tab \code{voltage}                      \tab V                    \tab                \cr 
+#'   \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3               \tab                \cr 
+#' }
 #' Notes:
 #' \itemize{
 #' \item{1. what should be done if a file has both \code{pr} and \code{prDM}?}
@@ -78,6 +110,9 @@
 #' @template debugTemplate
 #' @return a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
 #' @author Dan Kelley
+#' @references
+#' 1. A SBE data processing manual is at \url{http://www.seabird.com/sites/all/modules/pubdlcnt/pubdlcnt.php?file=http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.25.0.pdf&nid=1320}.
+#'
 #' @family things related to \code{ctd} data
 cnvName2oceName <- function(h, debug=getOption("oceDebug"))
 {
@@ -94,18 +129,12 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
         name <- "altimeter"
         unit <- list(unit=expression(m), scale="")
     } else if (1 == length(grep("c[0-9]mS/cm", name, ignore.case=TRUE))) {
-        ##number <- gsub("mS/cm$", "", gsub("^c", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        ##name <- paste("conductivity", number, sep="")
         name <- "conductivity"
         unit <- list(unit=expression(mS/cm), scale="")
     } else if (1 == length(grep("CStarTr[0-9]", name, ignore.case=TRUE))) {
-        ## number <- gsub("^CStarTr", "", name, ignore.case=TRUE)
-        ## name <- paste("beamTransmission", number, sep="")
         name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="")
     } else if (1 == length(grep("CStarAt[0-9]", name, ignore.case=TRUE))) {
-        ## number <- gsub("^CStarAt", "", name, ignore.case=TRUE)
-        ## name <- paste("beamAttenuation", number, sep="")
         name <- "beamAttenuation"
         unit <- list(unit=expression(1/m), scale="")
     } else if (1 == length(grep("depS[M]*", name, ignore.case=TRUE))) {
@@ -118,11 +147,10 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
         name <- "flag"
         unit <- list(unit=expression(), scale="")
     } else if (1 == length(grep("flC[1]*", name, ignore.case=TRUE))) {
-        name <- "fluorescenceChelsea"
-        unit <- list(unit=expression(mu*g/l), scale="")
+        name <- "fluorescence"
+        unit <- list(unit=expression(mu*g/l), scale="Chelsea")
     } else if (1 == length(grep("^flECO-AFL", name, ignore.case=TRUE))) {
-        number <- gsub("^flECO-AFL", "", name, ignore.case=TRUE)
-        name <- paste("fluorescence", number, sep="")
+        name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="")
     } else if (1 == length(grep("flsP", name, ignore.case=TRUE))) {
         name <- "fluorescence"
@@ -164,49 +192,33 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
         name <- "pressureTemperature" # temperature at the pressure sensor
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
     } else if (1 == length(grep("potemp[0-9]*68C", name, ignore.case=TRUE))) {
-        ## number <- gsub("68C$", "", gsub("^potemp", "", name))
-        ## name <- paste("theta", number, sep="")
         name <- "theta68"
         unit <- list(unit=expression(degree*C), scale="ITS-68") # FIXME: guess on scale
     } else if (1 == length(grep("potemp[0-9]*90C", name, ignore.case=TRUE))) {
-        ## number <- gsub("90C$", "", gsub("^potemp", "", name))
-        ## name <- paste("theta", number, sep="")
         name <- "theta"
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
     } else if (1 == length(grep("pumps", name, ignore.case=TRUE))) {
         name <- "pumpStatus"
         unit <- list(unit=expression(), scale="")
     } else if (1 == length(grep("sal[0-9]{2}", name, ignore.case=TRUE))) {
-        ## number <- gsub(".$", "", gsub("^sal", "", name))
-        ## name <- paste("salinity", number, sep="")
         name <- "salinity"
         unit <- list(unit=expression(), scale="PSS-78") # FIXME: guess on scale
     } else if (1 == length(grep("sbeox[0-9]ML/L", name, ignore.case=TRUE))) {
-        ## number <- gsub("ML/L$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        ## name <- paste("oxygen", number, sep="")
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="SBE43")
     } else if (1 == length(grep("sbeox[0-9]Mm/Kg", name, ignore.case=TRUE))) {
-        ## number <- gsub("Mm/Kg$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        ## name <- paste("oxygen", number, sep="")
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/kg), scale="SBE43")
     } else if (1 == length(grep("sbeox[0-9]PS", name, ignore.case=TRUE))) {
-        ## number <- gsub("PS$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        ## name <- paste("oxygenSaturation", number, sep="")
-        name <- "oxygenSaturation"
+        name <- "oxygen"
         unit <- list(unit=expression(percent), scale="SBE43")
     } else if (1 == length(grep("sbeox[0-9]V", name, ignore.case=TRUE))) {
-        ## number <- gsub("V$", "", gsub("^sbeox", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        ## name <- paste("oxygenVoltage", number, sep="")
-        name <- "oxygenVoltage"
+        name <- "oxygenRaw"
         unit <- list(unit=expression(V), scale="SBE43")
     } else if (1 == length(grep("scan", name, ignore.case=TRUE))) {
         name <- "scan"
         unit <- list(unit=expression(), scale="")
     } else if (1 == length(grep("sigma-.*[0-9]*", name, ignore.case=TRUE))) {
-        ## number <- substr(gsub(".*(\\d+).*", "\\1", name, ignore.case=TRUE), 1, 1)
-        ## name <- paste("sigmaTheta", number, sep="")
         name <- "sigmaTheta"
         unit <- list(unit=expression(kg/m^3), scale="")
     } else if (1 == length(grep("spar", name, ignore.case=TRUE))) {
@@ -215,19 +227,21 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
     } else if (1 == length(grep("svCM", name, ignore.case=TRUE))) {
         name <- "soundSpeed"
         unit <- list(unit=expression(m/s), scale="")
-    } else if (1 == length(grep("^t[0-9]68$", name, ignore.case=TRUE))) {
-        ## number <- gsub("68$", "", gsub("^t", "", name))
-        ## name <- paste("temperature", number, sep="")
+    } else if (1 == length(grep("^t[0-9]68C?$", name, ignore.case=TRUE))) {
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (1 == length(grep("^t[0-9]68C$", name, ignore.case=TRUE))) {
-        ## number <- gsub("68C$", "", gsub("^t", "", name))
-        ## name <- paste("temperature", number, sep="")
+    } else if (1 == length(grep("^t[0-9]90C?$", name, ignore.case=TRUE))) {
+        name <- "temperature"
+        unit <- list(unit=expression(degree*C), scale="ITS-90")
+    } else if (name %in% c("t068C", "t4968C", "tnc68C", "tv268C",
+                           "t168C", "tnc268C",
+                           "t3868C", "t38_68C")) { # [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (1 == length(grep("^t[0-9]90C$", name, ignore.case=TRUE))) {
-        ## number <- gsub("90C$", "", gsub("^t", "", name, ignore.case=TRUE), ignore.case=TRUE)
-        ## name <- paste("temperature", number, sep="")
+    } else if (name %in% c("t090C",
+                           "t090Cm", "t4990C", "tnc90C", "tv290C",
+                           "t190C", "tnc290C",
+                           "t3890C", "t38_90C")) { # [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (1 == length(grep("timeS", name, ignore.case=TRUE))) {
@@ -243,13 +257,9 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="")
     } else {
-        warning("unrecognized name '", name, "', so not setting any unit")
+        warning("unrecognized SBE name '", name, "'; consider using renameData() to set a new name")
         unit <- list(unit=expression(), scale="")
     }
-    ## Finally, drop any zero suffices, so that e.g. salinity0 becomes
-    ## salinity.
-    if (1 == length(grep("0$", name)))
-        name <- substr(name, 1, nchar(name)-1)
     if (debug > 0)
         message("cnvName2oceName(): '", nameOriginal, "' -> '", name, "' (", unit$scale, ")")
     list(name=name, nameOriginal=nameOriginal, unit=unit)
@@ -569,21 +579,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     res@metadata$labels <- colNamesInferred
     res@metadata$filename <- filename
     ## Read the data as a table.
-    ## FIXME: should we match to standardized names?
-    ##colNamesForced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag")
-
-    ##> ## Handle similar names by tacking numbers on the end, e.g. the first column that
-    ##> ## is automatically inferred to hold temperature is called "temperature", while the
-    ##> ## next one is called "temperature2", and a third would be called "temperature3".
-    ##> ## colNamesInferred <- tolower(colNamesInferred)
-    ##> for (uname in unique(colNamesInferred)) {
-    ##>     w <- which(uname == colNamesInferred)
-    ##>     lw <- length(w)
-    ##>     ##message("uname:", uname, ", lw: ", lw)
-    ##>     if (1 != lw) {
-    ##>         colNamesInferred[w[-1]] <- paste(uname, seq.int(2, lw), sep="")
-    ##>     }
-    ##> }
     pushBack(lines, file)
     if (is.null(columns)) {
         oceDebug(debug, "About to read these names: c(\"", paste(colNamesInferred, collapse='","'),"\")\n", sep="")
