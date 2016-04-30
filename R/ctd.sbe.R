@@ -676,7 +676,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
         res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-68 to ITS-90")
     }
     if (!("scan" %in% names(res@data))) {
-        res <- ctdAddColumn(res, 1:length(res@data[[1]]), label="scan",
+        res <- ctdAddColumn(res, 1:length(res@data[[1]]), name="scan", label="scan",
                             unit=c(unit=expression(), scale=""), debug=debug-1)
     }
     ## FIXME(20160429): do we need/want next 3 lines?
