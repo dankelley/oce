@@ -16,7 +16,8 @@
 #' and "\code{:}" characters, because the material after the colon
 #' seems to vary more between sample files.
 #'
-#' The table given below indicates the translation patterns used.
+#' The table given below indicates the translation patterns used. These are 
+#' taken from [1].
 #' The \code{.cnv} convention for multiple sensors is to include digits in the
 #' name, and these are indicated with \code{N} in the leftmost column of
 #' the table below. This maps to \code{M} in the second column in the following
@@ -25,45 +26,62 @@
 #'
 #' \tabular{llll}{
 #'   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit, scale} \tab \strong{Notes} \cr
-#'   \code{altM}        \tab \code{altimeter}                    \tab m                    \tab                \cr
-#'   \code{cNms/cm}     \tab \code{conductivityM}                \tab ms/cm                \tab                \cr
-#'   \code{CStarAtN}    \tab \code{beamAttenuation}              \tab 1/m                  \tab                \cr
-#'   \code{CStarTrN}    \tab \code{beamTransmission}             \tab percent              \tab                \cr
-#'   \code{depS}        \tab \code{depth}                        \tab m                    \tab                \cr
-#'   \code{depSM}       \tab \code{depth}                        \tab m                    \tab                \cr
-#'   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                  \tab                \cr
-#'   \code{flag}        \tab \code{flag}                         \tab -                    \tab                \cr
-#'   \code{flC}         \tab \code{fluorescenceChelsea}          \tab ug/l                 \tab                \cr
-#'   \code{flC1}        \tab \code{fluorescenceChelseaN}         \tab ug/l                 \tab                \cr
-#'   \code{flEC-AFLM}   \tab \code{fluorescenceN}                \tab mg/m^3               \tab                \cr
-#'   \code{flsP}        \tab \code{fluorescence}                 \tab -                    \tab                \cr
-#'   \code{latitude}    \tab \code{latitude}                     \tab degN                 \tab                \cr
-#'   \code{longitude}   \tab \code{longitude}                    \tab degE                 \tab                \cr
-#'   \code{nbin}        \tab \code{nbin}                         \tab -                    \tab                \cr
-#'   \code{oxsatML/L}   \tab \code{oxygenSaturationWeiss}        \tab ml/l                 \tab                \cr
-#'   \code{oxsatMg/L}   \tab \code{oxygenSaturationWeiss}        \tab mg/l                 \tab                \cr
-#'   \code{oxsatMm/Kg}  \tab \code{oxygenSaturationWeiss}        \tab umol/kg              \tab                \cr
-#'   \code{oxsolML/L}   \tab \code{oxygenSaturationGarciaGordon} \tab ml/l                 \tab                \cr
-#'   \code{oxsolMg/L}   \tab \code{oxygenSaturationGarciaGordon} \tab mg/l                 \tab                \cr
-#'   \code{oxsolMm/Kg}  \tab \code{oxygenSaturationGarciaGordon} \tab umol/kg              \tab                \cr
-#'   \code{potempN68C}  \tab \code{thetaM}                       \tab degC, IPTS-68        \tab                \cr
-#'   \code{potempN90C}  \tab \code{thetaM}                       \tab degC, ITS-90         \tab                \cr
-#'   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab                \cr
-#'   \code{prDM}        \tab \code{pressure}                     \tab dbar                 \tab 1              \cr
-#'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC, ITS-90         \tab 2              \cr
-#'   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab                \cr
-#'   \code{salNN}       \tab \code{salinityM}                    \tab unitless, PSS-78     \tab 3              \cr
-#'   \code{sbeoxNML/L}  \tab \code{oxygenConcentrationVolumeM}   \tab ml/l                 \tab                \cr
-#'   \code{sbeoxNMm/Kg} \tab \code{oxygenConcentrationMoleM}     \tab ml/l                 \tab                \cr
-#'   \code{sbeoxNPs}    \tab \code{oxygenSaturationM}            \tab percent              \tab                \cr
-#'   \code{sbeoxNV}     \tab \code{oxygenVoltageM}               \tab ml/l                 \tab                \cr
-#'   \code{scan}        \tab \code{scan}                         \tab -                    \tab                \cr
-#'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 4              \cr
-#'   \code{spar}        \tab \code{spar}                         \tab -                    \tab                \cr
-#'   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s                  \tab                \cr
-#'   \code{tN68}        \tab \code{temperatureM}                 \tab degC, IPTS-68        \tab                \cr 
-#'   \code{tN68C}       \tab \code{temperatureM}                 \tab degC, IPTS-68        \tab                \cr 
-#'   \code{tN90C}       \tab \code{temperatureM}                 \tab degC, ITS-90         \tab                \cr
+#'   \code{altM}        \tab \code{altimeter}                    \tab m                    \tab   \cr
+#'   \code{cNms/cm}     \tab \code{conductivityM}                \tab ms/cm                \tab   \cr
+#'   \code{CStarAtN}    \tab \code{beamAttenuation}              \tab 1/m                  \tab   \cr
+#'   \code{CStarTrN}    \tab \code{beamTransmission}             \tab percent              \tab   \cr
+#'   \code{depS}        \tab \code{depth}                        \tab m                    \tab   \cr
+#'   \code{depSM}       \tab \code{depth}                        \tab m                    \tab   \cr
+#'   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                  \tab   \cr
+#'   \code{flag}        \tab \code{flag}                         \tab -                    \tab   \cr
+#'   \code{flC}         \tab \code{fluorescenceChelsea}          \tab ug/l                 \tab   \cr
+#'   \code{flC1}        \tab \code{fluorescenceChelseaN}         \tab ug/l                 \tab   \cr
+#'   \code{flEC-AFLM}   \tab \code{fluorescenceN}                \tab mg/m^3               \tab   \cr
+#'   \code{flsP}        \tab \code{fluorescence}                 \tab -                    \tab   \cr
+#'   \code{latitude}    \tab \code{latitude}                     \tab degN                 \tab   \cr
+#'   \code{longitude}   \tab \code{longitude}                    \tab degE                 \tab   \cr
+#'   \code{nbin}        \tab \code{nbin}                         \tab -                    \tab   \cr
+#'   \code{oxsatML/L}   \tab \code{oxygenSaturationWeiss}        \tab ml/l                 \tab   \cr
+#'   \code{oxsatMg/L}   \tab \code{oxygenSaturationWeiss}        \tab mg/l                 \tab   \cr
+#'   \code{oxsatMm/Kg}  \tab \code{oxygenSaturationWeiss}        \tab umol/kg              \tab   \cr
+#'   \code{oxsolML/L}   \tab \code{oxygenSaturationGarciaGordon} \tab ml/l                 \tab   \cr
+#'   \code{oxsolMg/L}   \tab \code{oxygenSaturationGarciaGordon} \tab mg/l                 \tab   \cr
+#'   \code{oxsolMm/Kg}  \tab \code{oxygenSaturationGarciaGordon} \tab umol/kg              \tab   \cr
+#'   \code{potempN68C}  \tab \code{thetaM}                       \tab degC, IPTS-68        \tab   \cr
+#'   \code{potempN90C}  \tab \code{thetaM}                       \tab degC, ITS-90         \tab   \cr
+#'   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab   \cr
+#'   \code{prDM}        \tab \code{pressure}                     \tab dbar                 \tab 1 \cr
+#'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC, ITS-90         \tab 2 \cr
+#'   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
+#'   \code{salNN}       \tab \code{salinityM}                    \tab unitless, PSS-78     \tab 3 \cr
+#'   \code{sbeoxNML/L}  \tab \code{oxygenConcentrationVolumeM}   \tab ml/l                 \tab   \cr
+#'   \code{sbeoxNMm/Kg} \tab \code{oxygenConcentrationMoleM}     \tab ml/l                 \tab   \cr
+#'   \code{sbeoxNPs}    \tab \code{oxygenSaturationM}            \tab percent              \tab   \cr
+#'   \code{sbeoxNV}     \tab \code{oxygenVoltageM}               \tab ml/l                 \tab   \cr
+#'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
+#'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 4 \cr
+#'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
+#'   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s                  \tab   \cr
+#'   \code{tN68}        \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr 
+#'   \code{tN90}        \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr 
+#'   \code{tN68C}       \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr 
+#'   \code{tN90C}       \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{t090Cm}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{t4990C}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{tnc90C}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{tv290C}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{t068C}       \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{t4968C}      \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{tnc68C}      \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{tv268C}      \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{t190C}       \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{tnc290C}     \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{t168C}       \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{tnc268C}     \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{t3890C}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{t38_90C}     \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
+#'   \code{t3868C}      \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+#'   \code{t38_38C}     \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
 #'   \code{upolyN}      \tab \code{upolyM}                       \tab -                    \tab                \cr 
 #'   \code{vN}          \tab \code{voltageM}                     \tab V                    \tab                \cr 
 #'   \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3               \tab                \cr 
@@ -80,6 +98,9 @@
 #' @param h The header line.
 #' @return a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
 #' @author Dan Kelley
+#' @references
+#' 1. A SBE data processing manual is at \url{http://www.seabird.com/sites/all/modules/pubdlcnt/pubdlcnt.php?file=http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.25.0.pdf&nid=1320}.
+#'
 #' @family things related to \code{ctd} data
 cnvName2oceName <- function(h)
 {
@@ -210,22 +231,25 @@ cnvName2oceName <- function(h)
     } else if (1 == length(grep("svCM", name, ignore.case=TRUE))) {
         name <- "soundSpeed"
         unit <- list(unit=expression(m/s), scale="")
-    } else if (1 == length(grep("^t(0)|(49)|(nc)|(v2)68C[m]{0,1}$", name, ignore.case=TRUE))) {
-        number <- 0
-        name <- paste("temperature", number, sep="")
+
+    } else if (1 == length(grep("^(t)[0-9]68$", name, ignore.case=TRUE))) {
+        name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (1 == length(grep("^t(1)|(nc2)68C[m]{0,1}$", name, ignore.case=TRUE))) {
-        number <- 2
-        name <- paste("temperature", number, sep="")
+    } else if (1 == length(grep("^(t)[0-9]90$", name, ignore.case=TRUE))) {
+        name <- "temperature"
+        unit <- list(unit=expression(degree*C), scale="ITS-90")
+    } else if (name %in% c("t068C", "t4968C", "tnc68C", "tv268C",
+                           "t168C", "tnc268C",
+                           "t3868C", "t38_68C")) { # [1] p169-170
+        name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (1 == length(grep("^t(1)|(49)|(nc)|(v2)90C[m]{0,1}$", name, ignore.case=TRUE))) {
-        number <- 0
-        name <- paste("temperature", number, sep="")
+    } else if (name %in% c("t090C",
+                           "t090Cm", "t4990C", "tnc90C", "tv290C",
+                           "t190C", "tnc290C",
+                           "t3890C", "t38_90C")) { # [1] p169-170
+        name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
-    } else if (1 == length(grep("^t(1)|(nc2)90C[m]{0,1}$", name, ignore.case=TRUE))) {
-        number <- 2
-        name <- paste("temperature", number, sep="")
-        unit <- list(unit=expression(degree*C), scale="ITS-90")
+
     } else if (1 == length(grep("timeS", name, ignore.case=TRUE))) {
         name <- "time"
         unit <- list(unit=expression(s), scale="")
@@ -239,7 +263,7 @@ cnvName2oceName <- function(h)
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="")
     } else {
-        warning("unrecognized name '", name, "', so not setting any unit")
+        warning("unrecognized SBE name '", name, "'")
         unit <- list(unit=expression(), scale="")
     }
     ## Finally, drop any zero suffices, so that e.g. salinity0 becomes
