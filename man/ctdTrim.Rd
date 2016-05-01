@@ -8,7 +8,7 @@ ctdTrim(x, method, removeDepthInversions = FALSE, parameters = NULL,
   debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{method}{A string (or a vector of two strings) specifying the trimming method, or a function to
 be used to determine data indices to keep.  If \code{method} is not provided, \code{"downcast"} is

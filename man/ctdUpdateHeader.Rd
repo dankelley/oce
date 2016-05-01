@@ -7,7 +7,7 @@
 ctdUpdateHeader(x, debug = FALSE)
 }
 \arguments{
-\item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{debug}{An integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

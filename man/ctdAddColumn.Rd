@@ -8,7 +8,7 @@ ctdAddColumn(x, column, name, label, unit = NULL,
   debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{column}{A column of data to be inserted, in the form of a
 numeric vector, whose length matches that of columns in the

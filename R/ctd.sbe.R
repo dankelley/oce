@@ -60,6 +60,9 @@
 #'   \code{oxsolML/L}   \tab \code{oxygen}                       \tab ml/l, Garcia-Gordon  \tab   \cr
 #'   \code{oxsolMg/L}   \tab \code{oxygen}                       \tab mg/l, Garcia-Gordon  \tab   \cr
 #'   \code{oxsolMm/Kg}  \tab \code{oxygen}                       \tab umol/kg, Garcia-Gordon \tab   \cr
+#'   \code{par_}        \tab \code{PAR}                          \tab unitless, Biospherical/Licor \tab   \cr
+#'   \code{par/log}     \tab \code{PAR}                          \tab log, Satlantic       \tab   \cr
+#'   \code{ph}          \tab \code{pH}                           \tab unitless             \tab   \cr
 #'   \code{potemp_68C}  \tab \code{thetaM}                       \tab degC, IPTS-68        \tab   \cr
 #'   \code{potemp_90C}  \tab \code{thetaM}                       \tab degC, ITS-90         \tab   \cr
 #'   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab   \cr
@@ -186,8 +189,14 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
     } else if (name == "oxsolMm/Kg") {
         name <- "oxygen"
         unit <- list(unit=expression(umol/kg), scale="Garcia-Gordon")
-    } else if (name == "par") {
+    } else if (1 == length(grep("^par[0-9]?$", name))) {
         name <- "par"
+        unit <- list(unit=expression(), scale="Biospherical/Licor")
+    } else if (1 == length(grep("^par/log$", name))) {
+        name <- "par"
+        unit <- list(unit=expression(log), scale="Satlantic")
+    } else if (1 == length(grep("^ph$", name))) {
+        name <- "pH"
         unit <- list(unit=expression(), scale="")
     } else if (length(grep("pr[m]*", name, ignore.case=TRUE))) {
         name <- "pressure"

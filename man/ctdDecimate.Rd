@@ -8,7 +8,7 @@ ctdDecimate(x, p = 1, method = "boxcar", e = 1.5,
   debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{a \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{p}{pressure increment, or vector of pressures.  In the first case,
 pressures from 0dbar to the rounded maximum pressure are used, incrementing by

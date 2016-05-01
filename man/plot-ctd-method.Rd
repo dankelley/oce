@@ -19,8 +19,7 @@
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}, or a
-list containing items named \code{salinity} and \code{temperature}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{which}{List of desired plot types, as given below. If \code{which} is not
 supplied, a default will be used. This default will be \code{c(1,2,3,5)} if the

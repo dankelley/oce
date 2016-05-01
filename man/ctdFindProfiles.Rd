@@ -9,7 +9,7 @@ ctdFindProfiles(x, cutoff = 0.5, minLength = 10, minHeight = 0.1 *
   arr.ind = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{A \code{ctd} object, as read by \code{\link{read.ctd}} or created by \code{\link{as.ctd}}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{cutoff}{criterion on pressure difference; see \dQuote{Details}.}
 

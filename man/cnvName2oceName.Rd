@@ -80,6 +80,9 @@ so that the developers can add the data type in question.
   \code{oxsolML/L}   \tab \code{oxygen}                       \tab ml/l, Garcia-Gordon  \tab   \cr
   \code{oxsolMg/L}   \tab \code{oxygen}                       \tab mg/l, Garcia-Gordon  \tab   \cr
   \code{oxsolMm/Kg}  \tab \code{oxygen}                       \tab umol/kg, Garcia-Gordon \tab   \cr
+  \code{par_}        \tab \code{PAR}                          \tab unitless, Biospherical/Licor \tab   \cr
+  \code{par/log}     \tab \code{PAR}                          \tab log, Satlantic       \tab   \cr
+  \code{ph}          \tab \code{pH}                           \tab unitless             \tab   \cr
   \code{potemp_68C}  \tab \code{thetaM}                       \tab degC, IPTS-68        \tab   \cr
   \code{potemp_90C}  \tab \code{thetaM}                       \tab degC, ITS-90         \tab   \cr
   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab   \cr

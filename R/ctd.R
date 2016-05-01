@@ -503,7 +503,7 @@ setMethod(f="[[",
           })
 
 #' @title Replace Parts of a CTD Object
-#' @param x A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @template sub_subsetTemplate
 #'
 #' @examples
@@ -1070,7 +1070,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #' \code{\link{ctd-class}}, also updating the \code{metadata}
 #' slot as appropriate.
 #'
-#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @param column A column of data to be inserted, in the form of a
 #'     numeric vector, whose length matches that of columns in the
 #'     objecct.
@@ -1166,7 +1166,7 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
 #'
 #' @template flagDeletionTemplate
 #' 
-#' @param x a \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param p pressure increment, or vector of pressures.  In the first case,
 #' pressures from 0dbar to the rounded maximum pressure are used, incrementing by
@@ -1416,7 +1416,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' It is often necessary to pass the resultant profiles through \code{\link{ctdTrim}}, to remove
 #' artifacts such as an equilibration phase, etc.
 #' 
-#' @param x A \code{ctd} object, as read by \code{\link{read.ctd}} or created by \code{\link{as.ctd}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param cutoff criterion on pressure difference; see \dQuote{Details}.
 #' 
@@ -1634,7 +1634,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 #'   \dQuote{Examples}.}
 #' }
 #'
-#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param method A string (or a vector of two strings) specifying the trimming method, or a function to
 #' be used to determine data indices to keep.  If \code{method} is not provided, \code{"downcast"} is
@@ -1949,7 +1949,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 #' \code{span} of each column. This is done automatically by \code{ctdTrim}, for
 #' example.
 #' 
-#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @template debugTemplate
 #' 
@@ -2064,8 +2064,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' \code{plot,ctd-method} are left in place, so that further additions may be made to the
 #' plot.
 #' 
-#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}, or a
-#' list containing items named \code{salinity} and \code{temperature}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param which List of desired plot types, as given below. If \code{which} is not
 #' supplied, a default will be used. This default will be \code{c(1,2,3,5)} if the
@@ -2853,7 +2852,7 @@ setMethod(f="plot",
 #' repeated calls will be necessary to subset based on more than one
 #' independent variable (e.g. time and distance).
 #'
-#' @param x An object inheriting from \code{\link{ctd-class}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @param subset An expression indicating how to subset \code{x}.
 #' @param ... Ignored.
 #' @return A \code{ctd} object.
@@ -2889,7 +2888,7 @@ setMethod(f="subset",
 #' Plot CTD data as time-series against scan number, to help with trimming
 #' extraneous data from a CTD cast.
 #' 
-#' @param x A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param which Numerical vector numerical codes specifying the panels to draw: 1
 #' for pressure vs scan, 2 for \code{diff(pressure)} vs scan, 3 for temperature vs
@@ -2984,14 +2983,12 @@ plotScan <- function(x, which=1, xtype="scan",
 #'
 #' @details
 #' \code{read.ctd()} is a base function that in turn calls specialized functions, e.g.
-#' \code{\link{read.ctd.sbe}} for SBE data files.
-#'
-#' @seealso Other functions that read CTD data:
-#' \code{\link{read.ctd.itp}} for ice-tethered-profiler format,
-#' \code{\link{read.ctd.odf}} for ODF format,
-#' \code{\link{read.ctd.odv}} for ODV format,
-#' \code{\link{read.ctd.sbe}} for SBE format, and
-#' \code{\link{read.ctd.woce}} for WOCE format.
+#' \code{\link{read.ctd.odf}} for the ODF data used in Fisheries and Oceans (Canada),
+#' \code{\link{read.ctd.woce}} for data in World Ocean Circulation Experiment format,
+#' \code{\link{read.ctd.woce.other}} for a variant of WOCE data,
+#' \code{\link{read.ctd.odv}} for data stored in the format of the ODV application,
+#' \code{\link{read.ctd.itp}} for ice-tethered-profiler data, or
+#' \code{\link{read.ctd.sbe}} for Seabird data.
 read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=-999,
                      monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -3531,8 +3528,7 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 #' 
 #' Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
 #' 
-#' @param x An object containing salinity and temperature data, typically a
-#' \code{ctd} object or \code{section} object.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @param inSitu A boolean indicating whether to use in-situ temperature or
 #' (the default) potential temperature, calculated with reference pressure
 #' given by \code{referencePressure}.  This is ignored if \code{eos="gsw"},
@@ -3848,7 +3844,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' The colours (\code{col.salinity}, etc.) are ony used if two profiles appear
 #' on a plot.
 #' 
-#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @param xtype Item(s) plotted on the x axis, either a vector of length equal
 #' to that of \code{x@data$pressure} or a text code from the list below.
 #' \describe{ \item{list("\"salinity\"")}{Profile of salinity.}
