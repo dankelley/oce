@@ -86,7 +86,10 @@ so that the developers can add the data type in question.
   \code{potemp_68C}  \tab \code{thetaM}                       \tab degC, IPTS-68        \tab   \cr
   \code{potemp_90C}  \tab \code{thetaM}                       \tab degC, ITS-90         \tab   \cr
   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab   \cr
-  \code{prDM}        \tab \code{pressure}                     \tab dbar                 \tab 1 \cr
+  \code{pr50M}       \tab \code{pressure}                     \tab dbar                 \tab 1 \cr
+  \code{prSM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
+  \code{prDM}        \tab \code{pressure}                     \tab dbar, digiquartz     \tab   \cr
+  \code{prdM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC, ITS-90         \tab 2 \cr
   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
   \code{sal__}       \tab \code{salinityM}                    \tab unitless, PSS-78     \tab 3 \cr
@@ -126,7 +129,6 @@ so that the developers can add the data type in question.
 }
 Notes:
 \itemize{
-\item{1. what should be done if a file has both \code{pr} and \code{prDM}?}
 \item{2: assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.}
 \item{3: some files have PSU for this. Should we handle that? And are there other S scales to consider?}
 \item{4: 'theta' may appear in different ways with different encoding configurations, set up
