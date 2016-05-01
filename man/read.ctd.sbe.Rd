@@ -15,8 +15,10 @@ value is a vector containing CTD objects created by reading the files from
 \code{\link{list.files}} with \code{pattern} set to the specified wildcard
 pattern.}
 
-\item{columns}{Ignored, and slated for removal in April, 2016;
-see \link{oce-defunct}.}
+\item{columns}{An optional \code{\link{list}} that can be used to convert unrecognized
+data names to resultant variable names.  This is used only by
+\code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}; see
+\dQuote{Examples}.}
 
 \item{station}{Optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the
@@ -66,6 +68,15 @@ The original data names as stored in \code{file} are stored within the \code{met
 slot as \code{dataNamesOriginal}, and are displayed with \code{summary} alongside the
 numerical summary. See the Appendix VI of [2] for the meanings of these
 names (in the "Short Name" column of the table spanning pages 161 through 172).
+}
+\examples{
+f <- system.file("extdata", "ctd.cnv", package="oce")
+## Read the file in the normal way
+d <- read.ctd(f)
+## Read an imaginary file, in which salinity is named 'salt'
+d <- read.ctd(f, columns=list(
+  salinity=list(name="salt", unit=list(expression(), scale="PSS-78"))))
+
 }
 \author{
 Dan Kelley

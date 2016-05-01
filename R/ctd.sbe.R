@@ -66,19 +66,19 @@
 #'   \code{potemp_68C}  \tab \code{thetaM}                       \tab degC, IPTS-68        \tab   \cr
 #'   \code{potemp_90C}  \tab \code{thetaM}                       \tab degC, ITS-90         \tab   \cr
 #'   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab   \cr
-#'   \code{pr50M}       \tab \code{pressure}                     \tab dbar                 \tab 1 \cr
+#'   \code{pr50M}       \tab \code{pressure}                     \tab dbar                 \tab   \cr
 #'   \code{prSM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
 #'   \code{prDM}        \tab \code{pressure}                     \tab dbar, digiquartz     \tab   \cr
 #'   \code{prdM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
-#'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC, ITS-90         \tab 2 \cr
+#'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC, ITS-90         \tab 1 \cr
 #'   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
-#'   \code{sal__}       \tab \code{salinityM}                    \tab unitless, PSS-78     \tab 3 \cr
+#'   \code{sal__}       \tab \code{salinityM}                    \tab unitless, PSS-78     \tab 2 \cr
 #'   \code{sbeox_ML/L}  \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
 #'   \code{sbeox_Mm/Kg} \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
 #'   \code{sbeox_Ps}    \tab \code{oxygen}                       \tab percent              \tab   \cr
 #'   \code{sbeox_V}     \tab \code{oxygenRaw}                    \tab V                    \tab   \cr
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
-#'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 4 \cr
+#'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 3 \cr
 #'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
 #'   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s                  \tab   \cr
 #'   \code{t_68}        \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr 
@@ -109,13 +109,15 @@
 #' }
 #' Notes:
 #' \itemize{
-#' \item{2: assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.}
-#' \item{3: some files have PSU for this. Should we handle that? And are there other S scales to consider?}
-#' \item{4: 'theta' may appear in different ways with different encoding configurations, set up
+#' \item{1: assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.}
+#' \item{2: some files have PSU for this. Should we handle that? And are there other S scales to consider?}
+#' \item{3: 'theta' may appear in different ways with different encoding configurations, set up
 #' within R or in the operating system.}
 #' }
 #'
 #' @param h The header line.
+#' @param columns Optional list containing name correspondances, as described for
+#' \code{\link{read.ctd.sbe}}.
 #' @template debugTemplate
 #' @return a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
 #' @author Dan Kelley
@@ -123,7 +125,7 @@
 #' 1. A SBE data processing manual is at \url{http://www.seabird.com/sites/all/modules/pubdlcnt/pubdlcnt.php?file=http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.25.0.pdf&nid=1320}.
 #'
 #' @family things related to \code{ctd} data
-cnvName2oceName <- function(h, debug=getOption("oceDebug"))
+cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 {
     if (length(h) != 1)
         stop("oceNameFromSBE() expects just 1 line of header")
@@ -134,6 +136,23 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
     ## message("h: '", h, "'")
     name <- gsub("^# name [0-9][0-9]* = (.*):.*$", "\\1", h, ignore.case=TRUE)
     nameOriginal <- name
+
+    ## If 'name' is mentioned in columns, then use columns and ignore the lookup table.
+    if (!is.null(columns)) {
+        ##message("name:", name)
+        ## d<-read.ctd("~/src/oce/create_data/ctd/ctd.cnv",columns=list(salinity=list(name="sal00",unit=list(expression(), scale="PSS-78monkey"))))
+        cnames <- names(columns)
+        for (i in seq_along(cnames)) {
+            if (name == columns[[i]]$name) {
+                ##message("HIT; name=", cnames[i])
+                ##message("HIT; unit$scale=", columns[[i]]$unit$scale)
+                return(list(name=cnames[i], nameOriginal=name, unit=columns[[i]]$unit))
+            }
+        }
+    }
+
+    ## Since 'name' is not mentioned in 'columns', try looking it up. Some of these
+    ## tests are a bit subtle, and could be wrong.
     if (1 == length(grep("^altM$", name, ignore.case=TRUE))) {
         name <- "altimeter"
         unit <- list(unit=expression(m), scale="")
@@ -314,6 +333,14 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
 #' numerical summary. See the Appendix VI of [2] for the meanings of these
 #' names (in the "Short Name" column of the table spanning pages 161 through 172).
 #'
+#' @examples
+#' f <- system.file("extdata", "ctd.cnv", package="oce")
+#' ## Read the file in the normal way
+#' d <- read.ctd(f)
+#' ## Read an imaginary file, in which salinity is named 'salt'
+#' d <- read.ctd(f, columns=list(
+#'   salinity=list(name="salt", unit=list(expression(), scale="PSS-78"))))
+#'
 #' @references
 #' 1. The Sea-Bird SBE 19plus profiler is described at
 #' \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
@@ -324,15 +351,6 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (!is.null(columns)) {
-        warning("'columns' argument is defunct, and will be removed in the next release of oce\n")
-        ## columnsNames <- names(columns)
-        ## if (!("temperature" %in% columnsNames)) stop("'columns' must contain 'temperature'")
-        ## if (!("pressure" %in% columnsNames)) stop("'columns' must contain 'pressure'")
-        ## if (!("salinity" %in% columnsNames)) stop("'columns' must contain 'salinity'")
-        ## if (3 > length(columns)) stop("'columns' must contain three or more elements")
-    }
-
     if (length(grep("\\*", file, ignore.case=TRUE))) {
         oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read a series of files\n", unindent=1)
         files <- list.files(pattern=file)
@@ -389,7 +407,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     colNamesInferred <- NULL
     dataNamesOriginal <- NULL
     for (iline in seq_along(nameLines)) {
-        nu <- cnvName2oceName(lines[nameLines[iline]], debug=debug-1)
+        nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
         colNamesInferred <- c(colNamesInferred, nu$name)
         dataNamesOriginal <- c(dataNamesOriginal, nu$nameOriginal)
         colUnits[[iline]] <- nu$unit
@@ -559,9 +577,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     }
     ## Require p,S,T data at least
     if (!("temperature" %in% colNamesInferred))
-        stop("no 'temperature' column; hint: use summary() to find SBE names, then set 'columns' argument")
-    ## if (!("pressure" %in% colNamesInferred) && !("depth" %in% colNamesInferred))
-    ##     stop("no 'pressure' column; hint: use summary() to find SBE names, then set 'columns' argument")
+        warning("cannot find temperature in this file; try using columns argument if this is an error")
 
     res@metadata$header <- header
     res@metadata$type <- "SBE"
@@ -592,41 +608,27 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     res@metadata$filename <- filename
     ## Read the data as a table.
     pushBack(lines, file)
-    if (is.null(columns)) {
-        oceDebug(debug, "About to read these names: c(\"", paste(colNamesInferred, collapse='","'),"\")\n", sep="")
-        data <- as.list(read.table(file, skip=iline-1, header=FALSE))
-        if (length(data) != length(colNamesInferred))
-            stop("Number of columns in .cnv data file does not equal number of named variables")
-        names(data) <- colNamesInferred
-        ndata <- length(data[[1]])
-        if (0 < ndata) {
-            haveData <- TRUE
-            names <- names(data)
-            ##labels <- names
-            ## if (!found.scan) {
-            ##     data$scan <- 1:ndata
-            ##     names <- names(data)
-            ##     colNamesInferred <- c(colNamesInferred, "scan")
-            ##     colNamesOriginal <- c(colNamesOriginal, "scan")
-            ## }
-        } else {
-            haveData <- FALSE
-            warning("no data in CTD file \"", filename, "\"\n")
-            data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
-        }
+    ##if (is.null(columns)) {
+    oceDebug(debug, "About to read these names: c(\"", paste(colNamesInferred, collapse='","'),"\")\n", sep="")
+    data <- as.list(read.table(file, skip=iline-1, header=FALSE))
+    if (length(data) != length(colNamesInferred))
+        stop("Number of columns in .cnv data file does not equal number of named variables")
+    names(data) <- colNamesInferred
+    ndata <- length(data[[1]])
+    if (0 < ndata) {
+        haveData <- TRUE
+        names <- names(data)
+        ##labels <- names
+        ## if (!found.scan) {
+        ##     data$scan <- 1:ndata
+        ##     names <- names(data)
+        ##     colNamesInferred <- c(colNamesInferred, "scan")
+        ##     colNamesOriginal <- c(colNamesOriginal, "scan")
+        ## }
     } else {
-        warning("CAUTION: read.ctd.sbe() is not handling 'columns' argument properly (please post a GitHub issue)\n")
-        dataAll <- read.table(file, skip=iline-1, header=FALSE, col.names=colNamesInferred)
-        if ("scan" %in% names(columns)) {
-            data <- dataAll[, as.numeric(columns)]
-            names(data) <- names(columns)
-        } else {
-            data <- cbind(seq.int(1, dim(dataAll)[1]), dataAll[, as.numeric(columns)])
-            names(data) <- c("scan", names(columns))
-        }
-        data <- as.list(data)
-        ndata <- length(data[[1]])
-        haveData <- ndata > 0
+        haveData <- FALSE
+        warning("no data in CTD file \"", filename, "\"\n")
+        data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
     }
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
@@ -660,7 +662,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
                 }
                 S <- swSCTp(C, data$temperature, data$pressure)
             } else {
-                stop("cannot find salinity in this file, nor conductivity or conductivity ratio")
+                warning("cannot find salinity or conductivity in this file; try using columns argument if this is an error")
             }
             ## FIXME: move this to the very end, where we add 'scan' if that's not found.
             res <- ctdAddColumn(res, S, name="salinity", label="Salinity",
@@ -680,21 +682,21 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
 
     ## update to temperature IPTS-90, if have an older version
-    if (!("temperature" %in% names(res@data)) && ("temperature68" %in% names(res@data))) {
-        res <- ctdAddColumn(res, T90fromT68(res@data$temperature68),
-                            name="temperature", label="Temperature",
-                            unit=c(unit=expression(degree*C), scale="ITS-90"), debug=debug-1)
-        warning("converted temperature from IPTS-68 to ITS-90")
-        res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-68 to ITS-90")
-    }
-    if (!("scan" %in% names(res@data))) {
-        res <- ctdAddColumn(res, 1:length(res@data[[1]]), name="scan", label="scan",
-                            unit=c(unit=expression(), scale=""), debug=debug-1)
-    }
-    ## FIXME(20160429): do we need/want next 3 lines?
-    if (!("salinity" %in% names(res@metadata$units))) res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
-    if (!("pressure" %in% names(res@metadata$units))) res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    if (!("depth" %in% names(res@metadata$units))) res@metadata$units$depth <- list(unit=expression(m), scale="")
+    ## if (!("temperature" %in% names(res@data)) && ("temperature68" %in% names(res@data))) {
+    ##     res <- ctdAddColumn(res, T90fromT68(res@data$temperature68),
+    ##                         name="temperature", label="Temperature",
+    ##                         unit=c(unit=expression(degree*C), scale="ITS-90"), debug=debug-1)
+    ##     warning("converted temperature from IPTS-68 to ITS-90")
+    ##     res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-68 to ITS-90")
+    ## }
+    ## if (!("scan" %in% names(res@data))) {
+    ##     res <- ctdAddColumn(res, 1:length(res@data[[1]]), name="scan", label="scan",
+    ##                         unit=c(unit=expression(), scale=""), debug=debug-1)
+    ## }
+    ## ## FIXME(20160429): do we need/want next 3 lines?
+    ## if (!("salinity" %in% names(res@metadata$units))) res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+    ## if (!("pressure" %in% names(res@metadata$units))) res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    ## if (!("depth" %in% names(res@metadata$units))) res@metadata$units$depth <- list(unit=expression(m), scale="")
     oceDebug(debug, "} # read.ctd.sbe()\n")
     res
 }

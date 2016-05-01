@@ -4,10 +4,17 @@
 \alias{read.odf}
 \title{Read an ODF file}
 \usage{
-read.odf(file, debug = getOption("oceDebug"))
+read.odf(file, columns = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{file}{the file containing the data.}
+
+\item{columns}{An optional \code{\link{list}} that can be used to convert unrecognized
+data names to resultant variable names.  For example,
+\code{columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))}
+states that a short-name of \code{"salt"} represents salinity, and that the unit is
+as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFName2oceName}},
+as appropriate, and takes precendence over the lookup table in that function.}
 
 \item{debug}{An integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -50,9 +57,12 @@ points(odf[['salinity']][bad],odf[['temperature']][bad],col='red',pch=20)
 
 }
 \references{
-Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
+Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
+in June 2011.)
 }
 \seealso{
-\code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF} package is released by the Canadian Department of Fisheries and Oceans.
+\code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
+package is released by the Canadian Department of Fisheries and Oceans.
 }
 

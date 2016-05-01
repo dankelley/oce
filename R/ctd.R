@@ -1559,7 +1559,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 {
     oceDebug(debug, "read.ctd.odf() {")
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
-    odf <- read.odf(file)
+    odf <- read.odf(file=file, columns=columns)
     res <- as.ctd(odf)
     if (!is.null(station))
         res@metadata$station <- station
