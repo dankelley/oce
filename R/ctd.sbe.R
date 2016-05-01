@@ -173,6 +173,9 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
     } else if (name == "nbin") {
         name <- "nbin"
         unit <- list(unit=expression(), scale="")
+    } else if (name == "nbf") {
+        name <- "bottlesFired"
+        unit <- list(unit=expression(), scale="")
     } else if (name == "oxsatML/L") {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="Weiss")
@@ -206,22 +209,25 @@ cnvName2oceName <- function(h, debug=getOption("oceDebug"))
     } else if (1 == length(grep("ptempC", name, ignore.case=TRUE))) {
         name <- "pressureTemperature" # temperature at the pressure sensor
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
-    } else if (1 == length(grep("potemp[0-9]*68C", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^potemp[0-9]*68C$", name, ignore.case=TRUE))) {
         name <- "theta68"
         unit <- list(unit=expression(degree*C), scale="ITS-68") # FIXME: guess on scale
-    } else if (1 == length(grep("potemp[0-9]*90C", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^potemp[0-9]*90C$", name, ignore.case=TRUE))) {
         name <- "theta"
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
-    } else if (1 == length(grep("pumps", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^pumps$", name, ignore.case=TRUE))) {
         name <- "pumpStatus"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("sal[0-9]{2}", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^sal[0-9]{2}$", name, ignore.case=TRUE))) {
         name <- "salinity"
         unit <- list(unit=expression(), scale="PSS-78") # FIXME: guess on scale
-    } else if (1 == length(grep("sbeox[0-9]ML/L", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^sbeox[0-9]ML/L$", name, ignore.case=TRUE))) {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="SBE43")
-    } else if (1 == length(grep("sbeox[0-9]Mm/Kg", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^sbeox[0-9]Mg/L$", name, ignore.case=TRUE))) {
+        name <- "oxygen"
+        unit <- list(unit=expression(mg/l), scale="SBE43")
+    } else if (1 == length(grep("^sbeox[0-9]Mm/Kg$", name, ignore.case=TRUE))) {
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/kg), scale="SBE43")
     } else if (1 == length(grep("sbeox[0-9]PS", name, ignore.case=TRUE))) {
