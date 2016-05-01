@@ -850,8 +850,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if ("scientist" %in% mnames) res@metadata$scientist <- o@metadata$scientist
         if ("units" %in% mnames) {
             ## the usual case
-            res@metadata$units$conductivity <- o@metadata$units$conductivity
-            res@metadata$units$temperature <- o@metadata$units$temperature
+            ## res@metadata$units$conductivity <- o@metadata$units$conductivity
+            ## res@metadata$units$temperature <- o@metadata$units$temperature
+            res@metadata$units <- o@metadata$units
         } else {
             ## permit a case that existed for a few months in 2015
             if ("conductivityUnit" %in% mnames)
@@ -891,6 +892,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             res@metadata$latitude <- m$latitude
         }
         res@metadata$deploymentType <- deploymentType
+        res@metadata$dataNamesOriginal <- m$metadata$dataNamesOriginal
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
     } else if (is.list(salinity) || is.data.frame(salinity)) {
@@ -1550,9 +1552,8 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #' The ODF format, used by the Canadian Department of Fisheries and Oceans, is
 #' described to some extent in the documentation for \code{\link{read.odf}}.  It
 #' is not clear that ODF format is handled correctly in \code{read.ctd.odf}, or
-#' the more general function \code{\link{read.odf}}, because the format seems to
-#' be somewhat variable and so the R code was written in an ad-hoc way, to handle
-#' a few files being used in the author's research.
+#' the more general function \code{\link{read.odf}}, because the format 
+#' varies between some sample files the author has encountered in his research.
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -1562,8 +1563,6 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     res <- as.ctd(odf)
     if (!is.null(station))
         res@metadata$station <- station
-    res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                               conductivity=list(unit=expression(), scale="")) # FIXME just a guess for ODV
     oceDebug(debug, "} # read.ctd.odf()")
     res
 }
@@ -3022,6 +3021,8 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=
             type <- "WOCE"
         } else if ("* Sea-Bird" == substr(line, 1, 10)) {
             type <- "SBE19"
+        } else if (1 == length(grep("^ODF_HEADER,[ ]*$", line))) {
+            type <- "ODF"
         } else {
             stop("Cannot discover type in line '", line, "'\n")
         }

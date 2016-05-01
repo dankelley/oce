@@ -32,9 +32,9 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                                 \cr
     \code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                                 \cr
     \code{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                                         \cr
-    \code{COND_*.*} \tab \code{conductivity_Spm}   \tab Conductivity in S/m                                        \cr
+    \code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in S/m                                        \cr
     \code{DEPH_*.*} \tab \code{pressure}           \tab Sensor depth below sea level                               \cr
-    \code{DOXY_*.*} \tab \code{oxygen_by_volume}   \tab Used mainly in \code{ctd} objects                          \cr
+    \code{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
     \code{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                   \cr
     \code{FFFF_*.*} \tab \code{flag_archaic}       \tab Old flag name, replaced by \code{QCFF}                     \cr
@@ -43,9 +43,9 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{LATD_*.*} \tab \code{latitude}           \tab                                                            \cr
     \code{LOND_*.*} \tab \code{longitude}          \tab                                                            \cr
     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr
-    \code{OCUR_*.*} \tab \code{oxygen_by_mole}     \tab Used mainly in \code{ctd} objects                          \cr
-    \code{OTMP_*.*} \tab \code{oxygen_temperature} \tab Used mainly in \code{ctd} objects                          \cr
-    \code{OXYV_*.*} \tab \code{oxygen_voltage}     \tab Used mainly in \code{ctd} objects                          \cr
+    \code{OCUR_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
+    \code{OTMP_*.*} \tab \code{oxygenTemperature}  \tab Used mainly in \code{ctd} objects                          \cr
+    \code{OXYV_*.*} \tab \code{oxygenVoltage}      \tab Used mainly in \code{ctd} objects                          \cr
     \code{PHPH_*.*} \tab \code{pH}                 \tab                                                            \cr
     \code{POTM_*.*} \tab \code{theta}              \tab Used mainly in \code{ctd} objects                          \cr
     \code{PRES_*.*} \tab \code{pressure}           \tab Used mainly in \code{ctd} objects                          \cr

@@ -60,9 +60,8 @@ Dan Kelley
 The ODF format, used by the Canadian Department of Fisheries and Oceans, is
 described to some extent in the documentation for \code{\link{read.odf}}.  It
 is not clear that ODF format is handled correctly in \code{read.ctd.odf}, or
-the more general function \code{\link{read.odf}}, because the format seems to
-be somewhat variable and so the R code was written in an ad-hoc way, to handle
-a few files being used in the author's research.
+the more general function \code{\link{read.odf}}, because the format 
+varies between some sample files the author has encountered in his research.
 }
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},

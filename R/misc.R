@@ -1,5 +1,27 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+#' Rename duplicated items (used in reading CTD files) [local function]
+#' 
+#' @param names Vector of strings with variable names.
+#' @return names Vector of strings with numbered variable names.
+unduplicateNames <- function(names)
+{
+    ## Handle duplicated names
+    for (i in seq_along(names)) {
+        w <- which(names == names[i])
+        if (1 < length(w)) {
+            ##print(w)
+            w <- w[-1]
+            ##message("duplicated: ", names[i])
+            ##message("w: ", paste(w, collapse=" "))
+            ##message(paste(names, collapse=" "))
+            names[w] <- paste(names[i], "_", 1+seq.int(1,length(w)), sep="")
+            ##message(paste(names, collapse=" "))
+        }
+    }
+    names
+}
+ 
 
 #' Rename items in the data slot of an oce object
 #'

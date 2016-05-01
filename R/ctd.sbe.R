@@ -389,23 +389,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
         colUnits[[iline]] <- nu$unit
         ## message("nu$name: ", nu$name, "; scale: ", colUnits[[nu$name]]$unit$scale)
     }
-    ## Handle duplicated names
-    for (i in seq_along(colNamesInferred)) {
-        w <- which(colNamesInferred == colNamesInferred[i])
-        if (1 < length(w)) {
-            ##print(w)
-            w <- w[-1]
-            ##message("duplicated: ", colNamesInferred[i])
-            ##message("w: ", paste(w, collapse=" "))
-            ##message(paste(colNamesInferred, collapse=" "))
-            colNamesInferred[w] <- paste(colNamesInferred[i], "_", 1+seq.int(1,length(w)), sep="")
-            ##message(paste(colNamesInferred, collapse=" "))
-        }
-    }
+    colNamesInferred <- unduplicateNames(colNamesInferred)
     res@metadata$dataNamesOriginal <- dataNamesOriginal
-
-
-
     found.scan <- "scan" %in% colNamesInferred
     found.temperature <- "temperature" %in% colNamesInferred
     found.pressure <- "pressure" %in% colNamesInferred

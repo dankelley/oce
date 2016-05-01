@@ -199,9 +199,9 @@ findInHeader <- function(key, lines) # local
 #'     \code{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                                 \cr
 #'     \code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                                 \cr
 #'     \code{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                                         \cr
-#'     \code{COND_*.*} \tab \code{conductivity_Spm}   \tab Conductivity in S/m                                        \cr
+#'     \code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in S/m                                        \cr
 #'     \code{DEPH_*.*} \tab \code{pressure}           \tab Sensor depth below sea level                               \cr
-#'     \code{DOXY_*.*} \tab \code{oxygen_by_volume}   \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
 #'     \code{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                   \cr
 #'     \code{FFFF_*.*} \tab \code{flag_archaic}       \tab Old flag name, replaced by \code{QCFF}                     \cr
@@ -210,9 +210,9 @@ findInHeader <- function(key, lines) # local
 #'     \code{LATD_*.*} \tab \code{latitude}           \tab                                                            \cr
 #'     \code{LOND_*.*} \tab \code{longitude}          \tab                                                            \cr
 #'     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr
-#'     \code{OCUR_*.*} \tab \code{oxygen_by_mole}     \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{OTMP_*.*} \tab \code{oxygen_temperature} \tab Used mainly in \code{ctd} objects                          \cr
-#'     \code{OXYV_*.*} \tab \code{oxygen_voltage}     \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{OCUR_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{OTMP_*.*} \tab \code{oxygenTemperature}  \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{OXYV_*.*} \tab \code{oxygenVoltage}      \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{PHPH_*.*} \tab \code{pH}                 \tab                                                            \cr
 #'     \code{POTM_*.*} \tab \code{theta}              \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{PRES_*.*} \tab \code{pressure}           \tab Used mainly in \code{ctd} objects                          \cr
@@ -266,9 +266,9 @@ ODFNames2oceNames <- function(names, PARAMETER_HEADER=NULL)
     names <- gsub("BEAM", "a", names)  # FIXME: is this sensible?
     names <- gsub("CNTR", "scan", names)
     names <- gsub("CRAT", "conductivity", names)
-    names <- gsub("COND", "conductivity_Spm", names)
+    names <- gsub("COND", "conductivity", names)
     names <- gsub("DEPH", "depth", names)
-    names <- gsub("DOXY", "oxygen_by_volume", names)
+    names <- gsub("DOXY", "oxygen", names)
     names <- gsub("ERRV", "error", names)
     names <- gsub("EWCT", "u", names)
     names <- gsub("FFFF", "flag_archaic", names)
@@ -277,9 +277,9 @@ ODFNames2oceNames <- function(names, PARAMETER_HEADER=NULL)
     names <- gsub("LATD", "latitude", names)
     names <- gsub("LOND", "longitude", names)
     names <- gsub("NSCT", "v", names)
-    names <- gsub("OCUR", "oxygen_by_mole", names)
-    names <- gsub("OTMP", "oxygen_temperature", names)
-    names <- gsub("OXYV", "oxygen_voltage", names)
+    names <- gsub("OCUR", "oxygen", names)
+    names <- gsub("OTMP", "oxygenTemperature", names)
+    names <- gsub("OXYV", "oxygenVoltage", names)
     names <- gsub("PHPH", "pH", names)
     names <- gsub("POTM", "theta", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("PRES", "pressure", names)
@@ -499,13 +499,49 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     }
     options(warn=options$warn)
 
-    names <- lines[grep("^\\s*CODE\\s*=", lines)]
-    names <- gsub("\\s*$", "", gsub("^\\s*", "", names)) # trim start/end whitespace
-    names <- gsub(",", "", names) # trim commas
-    names <- gsub("'", "", names) # trim single quotes
-    names <- gsub(",\\s*$", "", gsub("^\\s*","", names)) # "  CODE=PRES_01," -> "CODE=PRES_01"
-    names <- gsub("^CODE\\s*=\\s*", "", names) # "CODE=PRES_01" -> "PRES_01"
-    names <- gsub("\\s*$", "", gsub("^\\s*", "", names)) # trim remnant start/end spaces
+    ## Decode units and names
+    ODFunits <- lines[grep("^\\s*UNITS\\s*=", lines)]
+    ##print(ODFunits)
+    ODFunits <- gsub("^[^']*'(.*)'.*$",'\\1', ODFunits) # e.g.  "  UNITS= 'none',"
+    ##print(ODFunits)
+    ODFnames <- lines[grep("^\\s*CODE\\s*=", lines)]
+    ## print(names)
+    ODFnames <- gsub("^[^']*'(.*)'.*$",'\\1', ODFnames) # e.g. "  CODE= 'CNTR_01',"
+    ## print(names)
+    oceDebug(debug, "ODFnames: ", paste(ODFnames, collapse="|"), "\n")
+    names <- ODFNames2oceNames(ODFnames, PARAMETER_HEADER=NULL)
+    oceDebug(debug, "oce names:", paste(names, collapse="|"), "\n")
+
+    if (length(ODFunits) != length(ODFnames)) {
+        warning("length of UNITS does not match length of NAMES, so ignoring UNITS")
+    } else {
+        units <- list()
+        for (i in seq_along(names)) {
+            units[[names[i]]] <- if (ODFunits[i] == "db") {
+                list(unit=expression(dbar), scale="")
+            } else if (ODFunits[i] == "IPTS-68, deg C") {
+                list(unit=expression(degree*C), scale="IPTS-68")
+            } else if (ODFunits[i] == "ITS-90, deg C") {
+                list(unit=expression(degree*C), scale="ITS-90")
+            } else if (ODFunits[i] == "mg/m^3") {
+                list(unit=expression(mg/m^3), scale="")
+            } else if (ODFunits[i] == "ml/l") {
+                list(unit=expression(ml/l), scale="")
+            } else if (ODFunits[i] == "none") {
+                list(unit=expression(), scale="")
+            } else if (ODFunits[i] == "PSU") {
+                list(unit=expression(), scale="PSU")
+            } else if (ODFunits[i] == "sigma-theta, kg/m^3") {
+                list(unit=expression(kg/m^3), scale="")
+            } else if (ODFunits[i] == "S/m") {
+                list(unit=expression(S/m), scale="")
+            } else if (ODFunits[i] == "V") {
+                list(unit=expression(V), scale="")
+            } else {
+                list(unit=as.expression(ODFunits[i]), scale=ODFunits[i])
+            }
+        }
+    }
     scientist <- findInHeader("CHIEF_SCIENTIST", lines)
     ship <- findInHeader("PLATFORM", lines) # maybe should rename, e.g. for helicopter
     institute <- findInHeader("ORGANIZATION", lines) # maybe should rename, e.g. for helicopter
@@ -543,8 +579,8 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     model <- findInHeader("MODEL", lines)
     res <- new("odf")
     res@metadata$header <- NULL
-    res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                               conductivity=list(unit=expression(), scale="")) # FIXME: guess on units
+    res@metadata$units <- units
+    res@metadata$dataNamesOriginal <- ODFnames
     res@metadata$type <- type
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber
@@ -575,9 +611,6 @@ read.odf <- function(file, debug=getOption("oceDebug"))
     if (debug>=100) oceDebug(debug, sprintf("%.2fs: after reading data table\n", Sys.time()-t0))
     if (length(data) != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
-    oceDebug(debug, "Initially, column names are:", paste(names, collapse="|"), "\n")
-    names <- ODFNames2oceNames(names, PARAMETER_HEADER=NULL)
-    oceDebug(debug, "Finally, column names are:", paste(names, collapse="|"), "\n")
     names(data) <- names
     if (!is.na(nullValue)) {
         data[data==nullValue] <- NA
