@@ -452,7 +452,7 @@ setMethod(f="subset",
                   res@metadata$stationId <- x@metadata$stationId[keep]
                   res@metadata$longitude <- x@metadata$longitude[keep]
                   res@metadata$latitude <- x@metadata$latitude[keep]
-                  res@metadata$date <- x@metadata$date[keep]
+                  res@metadata$time <- x@metadata$time[keep]
                   res@data$station <- x@data$station[keep]
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               } else {                        # subset within the stations
@@ -527,8 +527,8 @@ setMethod(f="subset",
 #' 
 #' @param by An optional string indicating how to reorder.  If not provided,
 #' \code{"stationID"} will be assumed.  Other choices are \code{"distance"}, for
-#' distance from the first station, \code{"longitude"}, for longitude, and
-#' \code{"latitude"} for latitude.
+#' distance from the first station, \code{"longitude"}, for longitude,
+#' \code{"latitude"} for latitude, and \code{"time"}, for time.
 #' 
 #' @return An object of \code{\link{section-class}} that has less lateral
 #' variation than the input section.
@@ -553,7 +553,7 @@ sectionSort <- function(section, by)
     if (missing(by)) {
         by <- "stationId"
     } else {
-        byChoices <- c("stationId", "distance", "longitude", "latitude")
+        byChoices <- c("stationId", "distance", "longitude", "latitude", "time")
         iby <- pmatch(by, byChoices, nomatch=0)
         if (0 == iby)
             stop('unknown by value "', by, '"; should be one of: ', paste(byChoices, collapse=" "))
@@ -562,12 +562,17 @@ sectionSort <- function(section, by)
     res <- section
     if (by == "stationId") {
 	o <- order(section@metadata$stationId)
+    } else if (by == "time") {
+        ## FIXME: should check to see if startTime exists first?
+        times <- unlist(lapply(section@data$station, function(x) x@metadata$startTime))
+        o <- order(times)
     } else {
 	o <- order(section[[by, "byStation"]])
     }
     res@metadata$stationId <- res@metadata$stationId[o]
     res@metadata$longitude <- res@metadata$longitude[o]
     res@metadata$latitude <- res@metadata$latitude[o]
+    res@metadata$time <- res@metadata$time[o] ## FIXME: do all sections have time?
     res@data$station <- res@data$station[o]
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -1029,7 +1034,7 @@ setMethod(f="plot",
               x@metadata$stationId <- x@metadata$stationId[haveData]
               x@metadata$latitude <- x@metadata$latitude[haveData]
               x@metadata$longitude <- x@metadata$longitude[haveData]
-              x@metadata$date <- x@metadata$date[haveData]
+              x@metadata$time <- x@metadata$time[haveData]
               ##> message("section.R:487, station 1 pressure: ",
               ##>         paste(x@data$station[[1]]@data$pressure, collapse=" "))
               plotSubsection <- function(xx, yy, zz, which.xtype, which.ytype,
@@ -2129,7 +2134,7 @@ read.section <- function(file, directory, sectionId="", flags,
     res@metadata$stationId <- stn
     res@metadata$longitude <- lon
     res@metadata$latitude <- lat
-    res@metadata$date <- numberAsPOSIXct(time)
+    res@metadata$time <- numberAsPOSIXct(time)
     res@metadata$filename <- filename
     res@data <- list(station=station)
     if (missing(processingLog))

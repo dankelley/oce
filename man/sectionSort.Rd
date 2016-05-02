@@ -12,8 +12,8 @@ are to be sorted.}
 
 \item{by}{An optional string indicating how to reorder.  If not provided,
 \code{"stationID"} will be assumed.  Other choices are \code{"distance"}, for
-distance from the first station, \code{"longitude"}, for longitude, and
-\code{"latitude"} for latitude.}
+distance from the first station, \code{"longitude"}, for longitude,
+\code{"latitude"} for latitude, and \code{"time"}, for time.}
 }
 \value{
 An object of \code{\link{section-class}} that has less lateral
