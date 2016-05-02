@@ -239,12 +239,14 @@ findInHeader <- function(key, lines) # local
 #' has unit mL/L for BIO and IML.
 #'
 #' @param names Data names in ODF format.
-#' @param PARAMETER_HEADER optional list containing information on the data variables
 #' @param columns Optional list containing name correspondances, as described for
 #' \code{\link{read.ctd.odf}}.
+#' @param PARAMETER_HEADER Optional list containing information on the data variables.
+#' @template debugTemplate
 #' @return A vector of strings.
 #' @author Dan Kelley
-ODFName2oceName <- function(names, PARAMETER_HEADER=NULL, columns=NULL)
+#' @family functions that interpret variable names from headers
+ODFName2oceName <- function(names, columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
 {
     if (!is.null(columns)) message("FIXME: ODFName2oceName: do something with columns")
     n <- length(names)
@@ -412,7 +414,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     res@data <- as.list(ODF$DATA)
     ## table relating ODF names to Oce names ... guessing on FFF and SIGP, and no idea on CRAT
     ## FIXME: be sure to record unit as conductivityRatio.
-    resNames <- ODFName2oceName(xnames, PARAMETER_HEADER=ODF$PARAMETER_HEADER)
+    resNames <- ODFName2oceName(xnames, columns=NULL, PARAMETER_HEADER=ODF$PARAMETER_HEADER, debug=debug-1)
     names(res@data) <- resNames
     ## Obey missing values ... only for numerical things (which might be everything, for all I know)
     nd <- length(resNames)
@@ -525,11 +527,17 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     options(warn=options$warn)
 
     ODFunits <- lines[grep("^\\s*UNITS\\s*=", lines)]
+    print(ODFunits)
     ODFunits <- gsub("^[^']*'(.*)'.*$",'\\1', ODFunits) # e.g.  "  UNITS= 'none',"
+
     ODFnames <- lines[grep("^\\s*CODE\\s*=", lines)]
+    print(ODFnames)
     ODFnames <- gsub("^[^']*'(.*)'.*$",'\\1', ODFnames) # e.g. "  CODE= 'CNTR_01',"
+
+    print(data.frame(ODFnames, ODFunits))
+
     oceDebug(debug, "ODFnames: ", paste(ODFnames, collapse="|"), "\n")
-    names <- ODFName2oceName(ODFnames, PARAMETER_HEADER=NULL, columns=columns)
+    names <- ODFName2oceName(ODFnames, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
     oceDebug(debug, "oce names:", paste(names, collapse="|"), "\n")
 
     if (length(ODFunits) != length(ODFnames)) {

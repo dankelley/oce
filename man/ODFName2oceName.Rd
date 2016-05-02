@@ -4,15 +4,22 @@
 \alias{ODFName2oceName}
 \title{Translate from ODF Names to Oce Names}
 \usage{
-ODFName2oceName(names, PARAMETER_HEADER = NULL, columns = NULL)
+ODFName2oceName(names, columns = NULL, PARAMETER_HEADER = NULL,
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{names}{Data names in ODF format.}
 
-\item{PARAMETER_HEADER}{optional list containing information on the data variables}
-
 \item{columns}{Optional list containing name correspondances, as described for
 \code{\link{read.ctd.odf}}.}
+
+\item{PARAMETER_HEADER}{Optional list containing information on the data variables.}
+
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 }
 \value{
 A vector of strings.
@@ -77,5 +84,9 @@ has unit mL/L for BIO and IML.
 }
 \author{
 Dan Kelley
+}
+\seealso{
+Other functions that interpret variable names from headers: \code{\link{cnvName2oceName}},
+  \code{\link{woceNames2oceNames}}
 }
 

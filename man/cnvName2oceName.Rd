@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.sbe.R
 \name{cnvName2oceName}
 \alias{cnvName2oceName}
-\title{Decode an SBE variable name from a header line}
+\title{Infer variable name, units and scale from a Seabird (.cnv) header line}
 \usage{
 cnvName2oceName(h, columns = NULL, debug = getOption("oceDebug"))
 }
@@ -145,6 +145,9 @@ Dan Kelley
 1. A SBE data processing manual is at \url{http://www.seabird.com/sites/all/modules/pubdlcnt/pubdlcnt.php?file=http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.25.0.pdf&nid=1320}.
 }
 \seealso{
+Other functions that interpret variable names from headers: \code{\link{ODFName2oceName}},
+  \code{\link{woceNames2oceNames}}
+
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},

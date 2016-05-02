@@ -833,13 +833,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             res@metadata$flags <- flags
         res@metadata$pressureType <- pressureType
         res@metadata$startTime <- startTime
-        res@data$pressure <- pressure
-        res@data$salinity <- salinity
-        res@data$temperature <- temperature
-        res@data$conductivity <- conductivity
-        ## res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
-        ##                    name="sigmaTheta", label="Sigma Theta", unit=list(unit=expression(kg/m^3), scale=""))
-        ## copy relevant metadata
+        ## copy relevant metadata.
         if ("date" %in% mnames) res@metadata$date <- o@metadata$date
         if ("deploymentType" %in% mnames) res@metadata$deploymentType <- o@metadata$deploymentType
         if ("filename" %in% mnames) res@metadata$filename <- o@metadata$filename
@@ -869,15 +863,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if ("nitrite" %in% dnames) res@data$nitrite <- d$nitrite
         if ("phosphate" %in% dnames) res@data$phosphate <- d$phosphate
         if ("silicate" %in% dnames) res@data$silicate <- d$silicate
-        ## FIXME: need to add all columns from @data in the rsk object
-        nrow <- length(res@data$temperature)
         for (field in names(d)) {
-            if (!(field %in% c('pressure', 'salinity', 'temperature', 'conductivity'))) {
-                if (nrow == length(d[[field]]))
-                    res <- ctdAddColumn(res, d[[field]], field)
-            }
+            res <- ctdAddColumn(res, column=d[[field]], name=field, label=field, log=FALSE)
         }
-        ## FIXME: next in dnames or mnames??
         if ("longitude" %in% dnames && "latitude" %in% dnames) {
             longitude <- d$longitude
             latitude <- d$latitude
@@ -892,7 +880,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             res@metadata$latitude <- m$latitude
         }
         res@metadata$deploymentType <- deploymentType
-        res@metadata$dataNamesOriginal <- m$metadata$dataNamesOriginal
+        res@metadata$dataNamesOriginal <- m$dataNamesOriginal
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
     } else if (is.list(salinity) || is.data.frame(salinity)) {
@@ -1085,6 +1073,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #'     items \code{unit}, which is an expression, and \code{scale}, which is a
 #'     character string. For example, modern measurements of temperature have
 #'     unit \code{list(name=expression(degree*C), scale="ITS-90")}.
+#' @param log Logical value indicating whether to store an entry in the processing
+#' log that indicates this insertion.
 #' @template debugTemplate
 #' @return A ctd object.
 #' @seealso The documentation for \code{\link{ctd-class}} explains the structure
@@ -1100,7 +1090,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #' @author Dan Kelley
 #'
 #' @family things related to \code{ctd} data
-ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("oceDebug"))
+ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, debug=getOption("oceDebug"))
 {
     ## FIXME: not using the units
     oceDebug(debug, "ctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="", unindent=1)
@@ -1141,7 +1131,8 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
             warning("ignoring unit since it not of length 1 or 2")
         }
     }
-    res@processingLog <- processingLogAppend(res@processingLog, paste("ctdAddColumn(..., name=\"", name, "\", ...)", sep=""))
+    if (log)
+        res@processingLog <- processingLogAppend(res@processingLog, paste("ctdAddColumn(..., name=\"", name, "\", ...)", sep=""))
     oceDebug(debug, "} # ctdAddColumn()\n", sep="", unindent=1)
     res
 }
@@ -3070,6 +3061,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=
 #' @return vector of strings holding \code{oce}-style names.
 #' @author Dan Kelley
 #' @family things related to \code{ctd} data
+#' @family functions that interpret variable names from headers
 woceNames2oceNames <- function(names)
 {
     ## FIXME: this almost certainly needs a lot more translations. The next comment lists some that

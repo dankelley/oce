@@ -1,4 +1,4 @@
-#' Decode an SBE variable name from a header line
+#' Infer variable name, units and scale from a Seabird (.cnv) header line
 #'
 #' This function is used by \code{\link{read.ctd.sbe}} to infer data names
 #' and units from the coding used by Teledyne/Seabird (SBE) \code{.cnv}
@@ -125,6 +125,7 @@
 #' 1. A SBE data processing manual is at \url{http://www.seabird.com/sites/all/modules/pubdlcnt/pubdlcnt.php?file=http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.25.0.pdf&nid=1320}.
 #'
 #' @family things related to \code{ctd} data
+#' @family functions that interpret variable names from headers
 cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 {
     if (length(h) != 1)

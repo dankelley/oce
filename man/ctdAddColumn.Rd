@@ -4,7 +4,7 @@
 \alias{ctdAddColumn}
 \title{Add a Column to the Data Slot of a CTD Object}
 \usage{
-ctdAddColumn(x, column, name, label, unit = NULL,
+ctdAddColumn(x, column, name, label, unit = NULL, log = TRUE,
   debug = getOption("oceDebug"))
 }
 \arguments{
@@ -25,6 +25,9 @@ given, \code{name} will be used.)}
 items \code{unit}, which is an expression, and \code{scale}, which is a
 character string. For example, modern measurements of temperature have
 unit \code{list(name=expression(degree*C), scale="ITS-90")}.}
+
+\item{log}{Logical value indicating whether to store an entry in the processing
+log that indicates this insertion.}
 
 \item{debug}{An integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
