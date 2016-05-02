@@ -527,8 +527,8 @@ setMethod(f="subset",
 #' 
 #' @param by An optional string indicating how to reorder.  If not provided,
 #' \code{"stationID"} will be assumed.  Other choices are \code{"distance"}, for
-#' distance from the first station, \code{"longitude"}, for longitude, and
-#' \code{"latitude"} for latitude.
+#' distance from the first station, \code{"longitude"}, for longitude,
+#' \code{"latitude"} for latitude, and \code{"time"}, for time.
 #' 
 #' @return An object of \code{\link{section-class}} that has less lateral
 #' variation than the input section.
@@ -553,7 +553,7 @@ sectionSort <- function(section, by)
     if (missing(by)) {
         by <- "stationId"
     } else {
-        byChoices <- c("stationId", "distance", "longitude", "latitude")
+        byChoices <- c("stationId", "distance", "longitude", "latitude", "time")
         iby <- pmatch(by, byChoices, nomatch=0)
         if (0 == iby)
             stop('unknown by value "', by, '"; should be one of: ', paste(byChoices, collapse=" "))
@@ -562,12 +562,17 @@ sectionSort <- function(section, by)
     res <- section
     if (by == "stationId") {
 	o <- order(section@metadata$stationId)
+    } else if (by == "time") {
+        ## FIXME: should check to see if startTime exists first?
+        times <- unlist(lapply(section@data$station, function(x) x@metadata$startTime))
+        o <- order(times)
     } else {
 	o <- order(section[[by, "byStation"]])
     }
     res@metadata$stationId <- res@metadata$stationId[o]
     res@metadata$longitude <- res@metadata$longitude[o]
     res@metadata$latitude <- res@metadata$latitude[o]
+    res@metadata$date <- res@metadata$date[o] ## FIXME: do all sections have date?
     res@data$station <- res@data$station[o]
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
