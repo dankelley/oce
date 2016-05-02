@@ -21,7 +21,7 @@ to mean \code{oxygen}.
 Dan Kelley
 }
 \seealso{
-Other functions that interpret variable names from headers: \code{\link{ODFName2oceName}},
+Other functions that interpret variable names from headers: \code{\link{ODFNames2oceNames}},
   \code{\link{cnvName2oceName}}
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},

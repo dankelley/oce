@@ -772,8 +772,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if ("PSAL" %in% dnames && !("salinity" %in% dnames)) d$salinity <- d$PSAL
         if ("TEMP" %in% dnames && !("temperature" %in% dnames)) d$temperature <- d$TEMP
         if ("PRES" %in% dnames && !("pressure" %in% dnames)) d$pressure <- d$PRES
-        temperature <- d$temperature
-        pressure <- d$pressure
+        #temperature <- d$temperature
         ## "rsk" stores total pressure, not sea pressure as "ctd" stores.
         if (inherits(o, "rsk")) {
             oceDebug(debug, "first argument is an rsk object\n")
@@ -783,7 +782,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             if (is.null(o@metadata$pressureType)) {
                 oceDebug(debug, "metadata$pressureType is NULL\n")
                 warning("rsk object lacks metadata$pressureType; assuming absolute and subtracting standard atm pressure to get sea pressure")
-                pressure <- pressure - pressureAtmosphericStandard
+                d$pressure <- d$pressure - pressureAtmosphericStandard
             } else {
                 ## subtract atm pressure, if it has not already been subtracted
                 oceDebug(debug, "metadata$pressureType is not NULL\n")
@@ -791,9 +790,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                     oceDebug(debug, "must convert from absolute pressure to sea pressure\n")
                     if (!("pressureAtmospheric" %in% mnames)) {
                         oceDebug(debug, "pressure is 'absolute'; subtracting std atm 10.1325 dbar\n")
-                        pressure <- pressure - 10.1325
+                        d$pressure <- d$pressure - 10.1325
                     } else {
-                        pressure <- pressure - m$pressureAtmospheric
+                        d$pressure <- d$pressure - m$pressureAtmospheric
                         oceDebug(debug, "pressure is 'absolute'; subtracting metadata 10.1325dbar\n")
                     }
                 } else {
@@ -805,7 +804,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             len <- length(pressureAtmospheric)
             if (1 != len && len != length(pressure))
                 stop("length(pressureAtmospheric) must be 1 or length(pressure)")
-            pressure <- pressure - pressureAtmospheric
+            d$pressure <- d$pressure - pressureAtmospheric
         }
         ## "rsk" stores conductivity (in mS/cm, not as ratio), and does not store salinity
         if ("COND" %in% names(d))
@@ -815,7 +814,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if (inherits(o, "rsk")) {
             if (is.null(conductivity))
                 stop("as.ctd() cannot coerce an rsk object that lacks conductivity")
-            salinity <- swSCTp(conductivity=conductivity/42.914, temperature=temperature, pressure=pressure)
+            salinity <- swSCTp(conductivity=d$conductivity/42.914, temperature=d$temperature, pressure=d$pressure)
             if (is.null(units)) # this lets the user over-ride
                 units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
                               salinity=list(unit=expression(), scale="PSS-78"),
@@ -1041,6 +1040,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     if (!is.null(flags))
         res@metadata$flags <- flags
 
+    ## Default some units (FIXME: this may be a bad idea)
     if ("temperature" %in% dataNames && !("temperature" %in% unitsNames))
         res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
     if ("salinity" %in% dataNames && !("salinity" %in% unitsNames))

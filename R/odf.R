@@ -238,7 +238,8 @@ findInHeader <- function(key, lines) # local
 #' indicates that \code{DOXY} has unit millmole/m^3 for NODC and MEDS, but
 #' has unit mL/L for BIO and IML.
 #'
-#' @param names Data names in ODF format.
+#' @param ODFnames Vector of strings holding ODF names.
+#' @param ODFunits Vector of strings holding ODF units.
 #' @param columns Optional list containing name correspondances, as described for
 #' \code{\link{read.ctd.odf}}.
 #' @param PARAMETER_HEADER Optional list containing information on the data variables.
@@ -246,20 +247,22 @@ findInHeader <- function(key, lines) # local
 #' @return A vector of strings.
 #' @author Dan Kelley
 #' @family functions that interpret variable names from headers
-ODFName2oceName <- function(names, columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
+ODFNames2oceNames <- function(ODFnames, ODFunits,
+                              columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
 {
-    if (!is.null(columns)) message("FIXME: ODFName2oceName: do something with columns")
-    n <- length(names)
+    n <- length(ODFnames)
+    if (n != length(ODFunits))
+        stop("length of ODFnames and ODFunits must agree but they are ", n, " and ", length(ODFunits))
+    names <- ODFnames
+    message("names: ", paste(names, collapse="|"))
     ## Capture names for UNKN_* items, and key on them.  Possibly this should be done to
     ## get all the names, but then we just transfer the problem of decoding keys
     ## to decoding strings, and that might yield problems with encoding, etc.
     if (!is.null(PARAMETER_HEADER)) {
-        for (i in 1:n) {
-            if (length(grep("^UNKN_.*", PARAMETER_HEADER[[i]]$CODE))) {
-                uname <- PARAMETER_HEADER[[i]]$NAME
-                ## message("i:", i, ", name:\"", uname)
-                names[i] <- if (length(grep("Percent Good Pings", uname ))) "g" else uname
-            }
+        if (length(grep("^UNKN_.*", PARAMETER_HEADER[[i]]$CODE))) {
+            uname <- PARAMETER_HEADER[[i]]$NAME
+            ## message("i:", i, ", name:\"", uname)
+            name <- if (length(grep("Percent Good Pings", uname ))) "g" else uname
         }
     }
     ## If 'name' is mentioned in columns, then use columns and ignore the lookup table.
@@ -268,13 +271,14 @@ ODFName2oceName <- function(names, columns=NULL, PARAMETER_HEADER=NULL, debug=ge
         ## d<-read.ctd("~/src/oce/create_data/ctd/ctd.cnv",columns=list(salinity=list(name="sal00",unit=list(expression(), scale="PSS-78monkey"))))
         cnames <- names(columns)
         for (i in seq_along(cnames)) {
-            if (name == columns[[i]]$name) {
-                ##message("HIT; name=", cnames[i])
-                ##message("HIT; unit$scale=", columns[[i]]$unit$scale)
-                ## FIXME: should emulate SBE, i.e return list(name=cnames[i], nameOriginal=name, unit=columns[[i]]$unit))
-                return(names)
+            if (name[i] == columns[[i]]$name) {
+                message("HIT; name=", cnames[i])
+                message("HIT; unit$scale=", columns[[i]]$unit$scale)
+                name[i] = names
             }
         }
+        ## do something with units too; check this block generally for new spelling
+        stop("FIXME(Kelley): code 'columns' support into ODFNames2oceNames")
     }
 
 
@@ -316,15 +320,46 @@ ODFName2oceName <- function(names, columns=NULL, PARAMETER_HEADER=NULL, debug=ge
     ## Step 3: recognize something from moving-vessel CTDs
     ## Step 4: some meanings inferred (guessed, really) from file CTD_HUD2014030_163_1_DN.ODF
     ## Finally, fix up suffixes.
-    names <- gsub("_01", "", names)
-    names <- gsub("_02", "2", names)
-    names <- gsub("_03", "3", names)
-    names <- gsub("_04", "4", names)
-    for (i in 2:length(names)) {
-        if (substr(names[i], 1, 4)=="QQQQ")
-            names[i] <- paste(names[i-1], "Flag", sep="")
+    message("names (line 324): ", paste(names, collapse="|"))
+    names <- gsub("_[0-9][0-9]", "", names)
+    message("names (line 326): ", paste(names, collapse="|"))
+    if (n > 1) {
+        for (i in 2:n) {
+            ##message("names[", i, "] = '", names[i], "'")
+            if (1 == length(grep("^QQQQ", names[i])))
+                names[i] <- paste(names[i-1], "Flag", sep="")
+        }
     }
-    names
+    message("finally, names: ", paste(names, collapse="|"))
+    ## Now deal with units
+    units <- list()
+    for (i in seq_along(names)) {
+        units[[names[i]]] <- if (ODFunits[i] == "db") {
+            list(unit=expression(dbar), scale="")
+        } else if (ODFunits[i] == "IPTS-68, deg C") {
+            list(unit=expression(degree*C), scale="IPTS-68")
+        } else if (ODFunits[i] == "ITS-90, deg C") {
+            list(unit=expression(degree*C), scale="ITS-90")
+        } else if (ODFunits[i] == "mg/m^3") {
+            list(unit=expression(mg/m^3), scale="")
+        } else if (ODFunits[i] == "ml/l") {
+            list(unit=expression(ml/l), scale="")
+        } else if (ODFunits[i] == "none") {
+            list(unit=expression(), scale="")
+        } else if (ODFunits[i] == "PSU") {
+            list(unit=expression(), scale="PSU")
+        } else if (ODFunits[i] == "sigma-theta, kg/m^3") {
+            list(unit=expression(kg/m^3), scale="")
+        } else if (ODFunits[i] == "S/m") {
+            list(unit=expression(S/m), scale="")
+        } else if (ODFunits[i] == "V") {
+            list(unit=expression(V), scale="")
+        } else {
+            warning("unable to interpret ODFunits[", i, "]='", ODFunits[i], "'\n", sep="")
+            list(unit=as.expression(ODFunits[i]), scale=ODFunits[i])
+        }
+    }
+    list(names=names, units=units)
 }
 
 
@@ -342,7 +377,7 @@ ODFName2oceName <- function(names, columns=NULL, PARAMETER_HEADER=NULL, debug=ge
 #' information into more standard names (e.g.  \code{metadata@longitude} is a
 #' copy of \code{metadata@odfHeader$EVENT_HEADER$INITIAL_LATITUDE}).  As for
 #' the \code{DATA}, they are stored in the \code{data} slot, after renaming
-#' from ODF to oce convention using \code{\link{ODFName2oceName}}.
+#' from ODF to oce convention using \code{\link{ODFNames2oceNames}}.
 #' 
 #' @param ODF A list as returned by \code{read_ODF} in the \code{ODF} package
 #' @param coerce A logical value indicating whether to coerce the return value
@@ -414,7 +449,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     res@data <- as.list(ODF$DATA)
     ## table relating ODF names to Oce names ... guessing on FFF and SIGP, and no idea on CRAT
     ## FIXME: be sure to record unit as conductivityRatio.
-    resNames <- ODFName2oceName(xnames, columns=NULL, PARAMETER_HEADER=ODF$PARAMETER_HEADER, debug=debug-1)
+    resNames <- ODFNames2oceNames(xnames, columns=NULL, PARAMETER_HEADER=ODF$PARAMETER_HEADER, debug=debug-1)
     names(res@data) <- resNames
     ## Obey missing values ... only for numerical things (which might be everything, for all I know)
     nd <- length(resNames)
@@ -480,7 +515,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' data names to resultant variable names.  For example,
 #' \code{columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))}
 #' states that a short-name of \code{"salt"} represents salinity, and that the unit is
-#' as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFName2oceName}},
+#' as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFNames2oceNames}},
 #' as appropriate, and takes precendence over the lookup table in that function.
 #' @return an object of class \code{oce}. It is up to a calling function to determine what to do with this object.
 #' @seealso \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
@@ -519,6 +554,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ## The mess below hides warnings on non-numeric missing-value codes.
     options <- options('warn')
     options(warn=-1) 
+    nullValue <- NA
     t <- try({nullValue <- as.numeric(findInHeader("NULL_VALUE", lines)[1])},
         silent=TRUE)
     if (class(t) == "try-error") {
@@ -527,49 +563,19 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     options(warn=options$warn)
 
     ODFunits <- lines[grep("^\\s*UNITS\\s*=", lines)]
-    print(ODFunits)
     ODFunits <- gsub("^[^']*'(.*)'.*$",'\\1', ODFunits) # e.g.  "  UNITS= 'none',"
+    ##message("below is ODFunits...")
+    ##print(ODFunits)
 
     ODFnames <- lines[grep("^\\s*CODE\\s*=", lines)]
-    print(ODFnames)
     ODFnames <- gsub("^[^']*'(.*)'.*$",'\\1', ODFnames) # e.g. "  CODE= 'CNTR_01',"
-
-    print(data.frame(ODFnames, ODFunits))
+    ##message("below is ODFnames...")
+    ##print(ODFnames)
 
     oceDebug(debug, "ODFnames: ", paste(ODFnames, collapse="|"), "\n")
-    names <- ODFName2oceName(ODFnames, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
-    oceDebug(debug, "oce names:", paste(names, collapse="|"), "\n")
-
-    if (length(ODFunits) != length(ODFnames)) {
-        warning("length of UNITS does not match length of NAMES, so ignoring UNITS")
-    } else {
-        units <- list()
-        for (i in seq_along(names)) {
-            units[[names[i]]] <- if (ODFunits[i] == "db") {
-                list(unit=expression(dbar), scale="")
-            } else if (ODFunits[i] == "IPTS-68, deg C") {
-                list(unit=expression(degree*C), scale="IPTS-68")
-            } else if (ODFunits[i] == "ITS-90, deg C") {
-                list(unit=expression(degree*C), scale="ITS-90")
-            } else if (ODFunits[i] == "mg/m^3") {
-                list(unit=expression(mg/m^3), scale="")
-            } else if (ODFunits[i] == "ml/l") {
-                list(unit=expression(ml/l), scale="")
-            } else if (ODFunits[i] == "none") {
-                list(unit=expression(), scale="")
-            } else if (ODFunits[i] == "PSU") {
-                list(unit=expression(), scale="PSU")
-            } else if (ODFunits[i] == "sigma-theta, kg/m^3") {
-                list(unit=expression(kg/m^3), scale="")
-            } else if (ODFunits[i] == "S/m") {
-                list(unit=expression(S/m), scale="")
-            } else if (ODFunits[i] == "V") {
-                list(unit=expression(V), scale="")
-            } else {
-                list(unit=as.expression(ODFunits[i]), scale=ODFunits[i])
-            }
-        }
-    }
+    namesUnits <- ODFNames2oceNames(ODFnames, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
+    ##names <- ODFName2oceName(ODFnames, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
+    oceDebug(debug, "oce names:", paste(namesUnits$names, collapse="|"), "\n")
     scientist <- findInHeader("CHIEF_SCIENTIST", lines)
     ship <- findInHeader("PLATFORM", lines) # maybe should rename, e.g. for helicopter
     institute <- findInHeader("ORGANIZATION", lines) # maybe should rename, e.g. for helicopter
@@ -607,7 +613,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     model <- findInHeader("MODEL", lines)
     res <- new("odf")
     res@metadata$header <- NULL
-    res@metadata$units <- units
+    res@metadata$units <- namesUnits$units
     res@metadata$dataNamesOriginal <- ODFnames
     res@metadata$type <- type
     res@metadata$model <- model
@@ -635,16 +641,16 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ##> ## fix issue 768
     ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
     data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
-    if (length(data) != length(names))
-        stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", length(data), ")")
-    names(data) <- names
+    if (length(data) != length(namesUnits$names))
+        stop("mismatch between length of data names (", length(namesUnits$names), ") and number of columns in data matrix (", length(data), ")")
+    names(data) <- namesUnits$names
     if (!is.na(nullValue)) {
         data[data==nullValue] <- NA
     }
-    if ("time" %in% names)
+    if ("time" %in% namesUnits$names)
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
-    res@metadata$names <- names
-    res@metadata$labels <- names
+    res@metadata$names <- namesUnits$names
+    res@metadata$labels <- namesUnits$names
     res@data <- as.list(data)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.odf()\n")

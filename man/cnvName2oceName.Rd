@@ -145,7 +145,7 @@ Dan Kelley
 1. A SBE data processing manual is at \url{http://www.seabird.com/sites/all/modules/pubdlcnt/pubdlcnt.php?file=http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.25.0.pdf&nid=1320}.
 }
 \seealso{
-Other functions that interpret variable names from headers: \code{\link{ODFName2oceName}},
+Other functions that interpret variable names from headers: \code{\link{ODFNames2oceNames}},
   \code{\link{woceNames2oceNames}}
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
