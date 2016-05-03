@@ -122,7 +122,30 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
             stop("cannot decode the header in this CTD file")
         header <- lines[1:headerEnd]
         oceDebug(debug, "headerEnd:", headerEnd, "\n")
-        names <- c("pressure", "temperature", "salinity", "oxygen", "fluorescence", "transmission") # may get updated
+        dataNamesOriginal <- gsub(" *$", "", strsplit(header[headerEnd-1], ",")[[1]])
+        names <- tolower(dataNamesOriginal)
+        unitsOriginal <- gsub(" *$", "", gsub("^ *", "", strsplit(header[headerEnd],",")[[1]]))
+        ## FIXME: decode to real units
+        units <- list()
+        for (i in seq_along(names)) {
+            ##message("'", unitsOriginal[i], "'")
+            if (unitsOriginal[i] == "DB")
+                units[[names[i]]] <- list(unit=expression(db), scale="")
+            else if (unitsOriginal[i] == "ITS-90 DEGC")
+                units[[names[i]]] <- list(unit=expression(degree*C), scale="ITS-90")
+            else if (unitsOriginal[i] == "IPTS-68 DEGC")
+                units[[names[i]]] <- list(unit=expression(degree*C), scale="IPTS-68")
+            else if (unitsOriginal[i] == "PSU")
+                units[[names[i]]] <- list(unit=expression(), scale="PSS-78")
+            else if (unitsOriginal[i] == "ML/L")
+                units[[names[i]]] <- list(unit=expression(ml/l), scale="")
+            else if (unitsOriginal[i] == "UG/L")
+                units[[names[i]]] <- list(unit=expression(mu*g/l), scale="")
+            else if (unitsOriginal[i] == "%")
+                units[[names[i]]] <- list(unit=expression(percent), scale="")
+            else
+                units[[names[i]]] <- list(unit=expression(), scale="")
+        }
         for (i in seq_along(header)) {
             if (length(grep("CRUISE", header[i], ignore.case=TRUE))) {
                 cruise<- sub("CRUISE[ ]*NAME[ ]*=[ ]*", "", header[i], ignore.case=TRUE)
@@ -133,8 +156,6 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                 ship <- sub(" *$", "", ship)
             } else if (length(grep("CASTNO", header[i], ignore.case=TRUE))) {
                 station <- sub("[ ]*$", "", sub("CASTNO[ ]*=[ ]*", "", header[i]))
-            } else if (length(grep("^[ ]*Pressure,", header[i]))) {
-                names <- strsplit(gsub(" *$", "", tolower(header[i])), ",")[[1]]
             } else if (length(grep("LATITUDE", header[i]))) {
                 latitude <- as.numeric(sub("LATITUDE.*=[ ]*", "", header[i]))
                 if (length(grep(".*S.*", header[i], ignore.case=TRUE)))
@@ -153,9 +174,11 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         res@metadata$filename <- filename # provided to this routine
         res@metadata$filename.orig <- filename.orig # from instrument
         res@metadata$systemUploadTime <- systemUploadTime
-        res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                   salinity=list(unit=expression(), scale="PSS-78"),
-                                   conductivity=list(unit=expression(), scale=""))
+        res@metadata$units <- units
+        ## res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+        ##                            salinity=list(unit=expression(), scale="PSS-78"),
+        ##                            conductivity=list(unit=expression(), scale=""))
+        res@metadata$dataNamesOriginal <- dataNamesOriginal
         res@metadata$pressureType <- "sea"
         res@metadata$ship <- ship
         res@metadata$scientist <- scientist
@@ -252,8 +275,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         varNames <- strsplit(line, split=",")[[1]]
         oceDebug(debug, "varNames: ", paste(varNames, sep=" "), "\n")
         oceDebug(debug, "oce names: ", paste(woceNames2oceNames(varNames), sep=" "), "\n")
-
         varNames <- gsub("^ *", "", gsub(" *$", "", varNames)) # trim whitespace
+
         ## catch some typos that have occured in files processed by oce
         oceDebug(debug, paste("before trying to correct typos, varNames=c(\"", paste(varNames, collapse="\", \""), "\")\n", sep=""))
         varNames <- gsub("FLAW", "FLAG", varNames) # Meteor39/4 cruise in Lab Sea had CTDSAL_FLAW_W for all 248 stations
@@ -299,6 +322,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         if (length(ending) == 1)
             lines <- lines[-ending]
         varNamesOce <- woceNames2oceNames(varNames)
+        ##print(data.frame(varNames, varNamesOce))
         nonflags <- grep("Flag$",varNamesOce, invert=TRUE)
         flags <- grep("Flag$",varNamesOce)
         dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=woceNames2oceNames(varNames))
