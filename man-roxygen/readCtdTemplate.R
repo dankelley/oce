@@ -16,8 +16,10 @@
 #' turns off the printing, while higher values suggest that more information
 #' be printed.
 #' 
-#' @param columns Ignored, and slated for removal in April, 2016;
-#' see \link{oce-defunct}.
+#' @param columns An optional \code{\link{list}} that can be used to convert unrecognized
+#' data names to resultant variable names.  This is used only by
+#' \code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}; see
+#' \dQuote{Examples}.
 #' 
 #' @param station Optional character string containing an identifying name or
 #' number for the station. This can be useful if the routine cannot determine the

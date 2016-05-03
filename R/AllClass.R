@@ -14,31 +14,10 @@
 #' @slot processingLog A list containing time-stamped processing steps,
 #' typically stored in the object by oce functions.
 #'
-#' @seealso
-#' Information on the classes that derive from this base class are found
-#' at the following links:
-#' \code{\link{adp-class}},
-#' \code{\link{adv-class}},
-#' \code{\link{amsr-class}},
-#' \code{\link{argo-class}},
-#' \code{\link{cm-class}},
-#' \code{\link{coastline-class}},
-#' \code{\link{ctd-class}},
-#' \code{\link{echosounder-class}},
-#' \code{\link{ladp-class}},
-#' \code{\link{landsat-class}},
-#' \code{\link{lisst-class}},
-#' \code{\link{lobo-class}},
-#' \code{\link{met-class}},
-#' \code{\link{rsk-class}},
-#' \code{\link{sealevel-class}},
-#' \code{\link{section-class}},
-#' \code{\link{tidem-class}},
-#' \code{\link{topo-class}}, and
-#' \code{\link{windrose-class}}.
-#'
 #' @examples
 #' str(new("oce"))
+#'
+#' @family classes provided by \code{oce}
 setClass("oce",
          representation(metadata="list",
                         data="list",
@@ -90,11 +69,9 @@ setMethod(f="summary",
               ndata <- length(object@data)
               threes <- NULL
               if (ndata > 0) {
-                  threes <- matrix(nrow=sum(!isTime), ncol=4)
+                  threes <- matrix(nrow=length(names), ncol=4)
                   ii <- 1
                   for (i in 1:ndata) {
-                      if (isTime[i])
-                          next
                       threes[ii,] <- threenum(object@data[[i]])
                       ii <- ii + 1
                   }
@@ -148,9 +125,20 @@ setMethod(f="summary",
                   names(units) <- unitsNames
                   ##> message("units:");str(units)
                   if (!is.null(threes)) {
-                      rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
+                      rownames(threes) <- paste("    ", dataLabel(names, units))
                       colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
                       cat("* Statistics of data\n```\n")
+                      OriginalName <- object@metadata$dataNamesOriginal
+                      ##print(OriginalName)
+                      ## I'm not sure the following will ever happen, if we always remember
+                      ## to use ctdAddColumn(), but I don't want names getting recycled, so
+                      ## the next if-block prevents that.
+                      if (length(OriginalName) < length(names))
+                          OriginalName <- c(OriginalName, rep("-", length(names)-length(OriginalName)))
+                      ##print(OriginalName)
+                      if (!is.null(OriginalName)) {
+                          threes <- cbind(threes, OriginalName)
+                      }
                       print(threes, quote=FALSE, indent='')
                       cat("```\n")
                   }

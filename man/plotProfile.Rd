@@ -18,7 +18,7 @@ plotProfile(x, xtype = "salinity+temperature", ytype = c("pressure", "z",
   mgp[1]), add = FALSE, inset = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{xtype}{Item(s) plotted on the x axis, either a vector of length equal
 to that of \code{x@data$pressure} or a text code from the list below.

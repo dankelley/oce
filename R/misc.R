@@ -1,5 +1,68 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+#' Rename duplicated items (used in reading CTD files) [local function]
+#' 
+#' @param names Vector of strings with variable names.
+#' @return names Vector of strings with numbered variable names.
+unduplicateNames <- function(names)
+{
+    ## Handle duplicated names
+    for (i in seq_along(names)) {
+        w <- which(names == names[i])
+        if (1 < length(w)) {
+            ##print(w)
+            w <- w[-1]
+            ##message("duplicated: ", names[i])
+            ##message("w: ", paste(w, collapse=" "))
+            ##message(paste(names, collapse=" "))
+            names[w] <- paste(names[i], "_", 1+seq.int(1,length(w)), sep="")
+            ##message(paste(names, collapse=" "))
+        }
+    }
+    names
+}
+ 
+
+#' Rename items in the data slot of an oce object
+#'
+#' This function may be used to rename elements within the
+#' \code{data} slot of \code{oce} objects. It also updates
+#' the processing log of the returned object, indicating
+#' the changes.
+#'
+#' @param x An \code{oce} object, i.e. one inheriting from
+#' \code{\link{oce-class}}.
+#' @param old Vector of strings, containing old names.
+#' @param new Vector of strings, containing old names.
+#'
+#' @examples
+#' data(ctd)
+#' new <- renameData(ctd, "temperature", "temperature68")
+#' new <- ctdAddColumn(new, T90fromT68(new[["temperature68"]]), 
+#'                    "temperature", "Temperature",
+#'                    list(unit=expression(degree*C),scale="ITS=90"))
+renameData <- function(x, old=NULL, new=NULL)
+{
+    if (is.null(old)) stop("need to supply old")
+    if (is.null(new)) stop("need to supply new")
+    n <- length(old)
+    if (n != length(new)) stop("lengths of old and new must match")
+    Old <- names(x@data)
+    New <- Old
+    for (i in 1:n) {
+        w <- which(Old == old[i])
+        if (length(w) == 0) stop("'", old[i], "' is not in the data slot of x")
+        if (length(w) > 1) stop("multiple matches are not permitted")
+        message("i: ", i, ", old[i]: ", old[i], ", w:", w)
+        New[w] <- new[i]
+    }
+    ## ensure unique ... this is a common user error
+    if (length(New) != length(unique(New))) stop("cannot have two columns of same name")
+    names(x@data) <- New
+    x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    x
+}
+
 #' Calculate a rounded bound, rounded up to matissa 1, 2, or 5
 #'
 #' @param x a single positive number

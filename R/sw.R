@@ -28,8 +28,15 @@ T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-tempera
 #' the other items that \code{\link{swRho}} expects to see as arguments. This
 #' shorthand is very helpful in calls to the suite of \code{sw} functions.  If
 #' this first argument is an object of this sort, then the other arguments
-#' are ignored \emph{except} for one named \code{eos}, which is copied if
-#' it is present.
+#' are ignored \emph{except} for two special cases:
+#' \itemize{
+#' \item an item named \code{eos} is copied directly from \code{list}
+#' \item if the object stores \code{temperature} defined with the IPTS-68
+#' scale, then \code{\link{T90fromT68}} is used to convert to the ITS-90 scale,
+#' because this is what is expected in most seawater functions. (For example,
+#' the RMS difference between these temperature variants is 0.002C for the 
+#' \code{\link{ctd}} dataset.)
+#' }
 #'
 #' @param list A list of elements, typically arguments that will be used in sw functions.
 #' @return A list with elements of the same names but possibly filled in from the first element.
@@ -41,16 +48,26 @@ lookWithin <- function(list)
     list1 <- list[[1]]
     if (inherits(list[[1]], "oce")) {
         for (i in 1:n) {
+            ##message("names[", i, "]: ", names[i])
             if ("eos" != names[i]) {
                 try({
                     list[[i]] <- list1[[names[i], "nowarn"]]
                 }, silent=TRUE)
+                if ("temperature" == names[i]) {
+                    scale <- list1@metadata$units[["temperature"]]$scale
+                    if (!is.null(scale) && "IPTS-68" == scale) {
+                        warning("converted temperature from IPTS-68 to ITS-90 scale")
+                        ##print(head(list[[i]], 2))
+                        list[[i]] <- T90fromT68(list[[i]])
+                        ##print(head(list[[i]], 2))
+                    }
+                }
             }
         }
         if (inherits(list1, "ctd")) {
-            nS <- length(list[[names[1]]])
-            list[["longitude"]] <- rep(list[["longitude"]][1], nS)
-            list[["latitude"]] <- rep(list[["latitude"]][1], nS)
+            nrows <- length(list[[names[1]]])
+            list[["longitude"]] <- rep(list[["longitude"]][1], nrows)
+            list[["latitude"]] <- rep(list[["latitude"]][1], nrows)
         }
         ## FIXME: should special-case some other object types
     }

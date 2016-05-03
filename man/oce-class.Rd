@@ -26,28 +26,18 @@ typically stored in the object by oce functions.}
 }}
 \examples{
 str(new("oce"))
+
 }
 \seealso{
-Information on the classes that derive from this base class are found
-at the following links:
-\code{\link{adp-class}},
-\code{\link{adv-class}},
-\code{\link{amsr-class}},
-\code{\link{argo-class}},
-\code{\link{cm-class}},
-\code{\link{coastline-class}},
-\code{\link{ctd-class}},
-\code{\link{echosounder-class}},
-\code{\link{ladp-class}},
-\code{\link{landsat-class}},
-\code{\link{lisst-class}},
-\code{\link{lobo-class}},
-\code{\link{met-class}},
-\code{\link{rsk-class}},
-\code{\link{sealevel-class}},
-\code{\link{section-class}},
-\code{\link{tidem-class}},
-\code{\link{topo-class}}, and
-\code{\link{windrose-class}}.
+Other classes provided by \code{oce}: \code{\link{adp-class}},
+  \code{\link{adv-class}}, \code{\link{argo-class}},
+  \code{\link{bremen-class}}, \code{\link{cm-class}},
+  \code{\link{coastline-class}}, \code{\link{ctd-class}},
+  \code{\link{echosounder-class}},
+  \code{\link{lisst-class}}, \code{\link{lobo-class}},
+  \code{\link{met-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
 }
 

@@ -4,11 +4,11 @@
 \alias{ctdAddColumn}
 \title{Add a Column to the Data Slot of a CTD Object}
 \usage{
-ctdAddColumn(x, column, name, label, unit = NULL,
+ctdAddColumn(x, column, name, label, unit = NULL, log = TRUE,
   debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{column}{A column of data to be inserted, in the form of a
 numeric vector, whose length matches that of columns in the
@@ -25,6 +25,9 @@ given, \code{name} will be used.)}
 items \code{unit}, which is an expression, and \code{scale}, which is a
 character string. For example, modern measurements of temperature have
 unit \code{list(name=expression(degree*C), scale="ITS-90")}.}
+
+\item{log}{Logical value indicating whether to store an entry in the processing
+log that indicates this insertion.}
 
 \item{debug}{An integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

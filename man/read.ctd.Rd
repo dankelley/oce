@@ -23,8 +23,10 @@ is assumed.  If \code{type="ITP"} then an ice-tethered profiler file is
 assumed.  If \code{type="ODF"} an ODF file is assumed.  If \code{type="ODV"} an
 ascii-ODV file is assumed.}
 
-\item{columns}{Ignored, and slated for removal in April, 2016;
-see \link{oce-defunct}.}
+\item{columns}{An optional \code{\link{list}} that can be used to convert unrecognized
+data names to resultant variable names.  This is used only by
+\code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}; see
+\dQuote{Examples}.}
 
 \item{station}{Optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the
@@ -59,19 +61,17 @@ Read a General CTD File
 }
 \details{
 \code{read.ctd()} is a base function that in turn calls specialized functions, e.g.
-\code{\link{read.ctd.sbe}} for SBE data files.
+\code{\link{read.ctd.odf}} for the ODF data used in Fisheries and Oceans (Canada),
+\code{\link{read.ctd.woce}} for data in World Ocean Circulation Experiment format,
+\code{\link{read.ctd.woce.other}} for a variant of WOCE data,
+\code{\link{read.ctd.odv}} for data stored in the format of the ODV application,
+\code{\link{read.ctd.itp}} for ice-tethered-profiler data, or
+\code{\link{read.ctd.sbe}} for Seabird data.
 }
 \author{
 Dan Kelley
 }
 \seealso{
-Other functions that read CTD data:
-\code{\link{read.ctd.itp}} for ice-tethered-profiler format,
-\code{\link{read.ctd.odf}} for ODF format,
-\code{\link{read.ctd.odv}} for ODV format,
-\code{\link{read.ctd.sbe}} for SBE format, and
-\code{\link{read.ctd.woce}} for WOCE format.
-
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},

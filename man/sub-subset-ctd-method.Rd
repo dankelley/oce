@@ -8,7 +8,7 @@
 \S4method{[[}{ctd}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{i}{The item to replace.}
 

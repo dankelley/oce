@@ -16,8 +16,7 @@ plotTS(x, inSitu = FALSE, type = "p", referencePressure = 0,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{An object containing salinity and temperature data, typically a
-\code{ctd} object or \code{section} object.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{inSitu}{A boolean indicating whether to use in-situ temperature or
 (the default) potential temperature, calculated with reference pressure

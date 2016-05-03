@@ -9,7 +9,7 @@ plotScan(x, which = 1, xtype = "scan", type = "l",
   mgp[1]), ...)
 }
 \arguments{
-\item{x}{A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{which}{Numerical vector numerical codes specifying the panels to draw: 1
 for pressure vs scan, 2 for \code{diff(pressure)} vs scan, 3 for temperature vs

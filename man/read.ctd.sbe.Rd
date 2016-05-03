@@ -15,8 +15,10 @@ value is a vector containing CTD objects created by reading the files from
 \code{\link{list.files}} with \code{pattern} set to the specified wildcard
 pattern.}
 
-\item{columns}{Ignored, and slated for removal in April, 2016;
-see \link{oce-defunct}.}
+\item{columns}{An optional \code{\link{list}} that can be used to convert unrecognized
+data names to resultant variable names.  This is used only by
+\code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}; see
+\dQuote{Examples}.}
 
 \item{station}{Optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the
@@ -47,10 +49,10 @@ variable across data formats, because the meta-information provided
 in those formats varies widely.
 }
 \description{
-Read a Teledyne/Seabird CTD file, i.e. a file with name ending in \code{.cnv}.
+Read an Seabird CTD File
 }
 \details{
-\code{read.ctd.sbe} reads files stored in Seabird \code{.cnv} format.
+This function reads files stored in Seabird \code{.cnv} format.
 Note that these files can contain multiple sensors for a given field. For example,
 the file might contain a column named \code{t090C} for one 
 temperature sensor and \code{t190C} for a second. The first will be denoted
@@ -62,12 +64,19 @@ data from the second sensor are also available as e.g. \code{x[["temperature1"]]
 where \code{x} is the name of the returned value.  For the details of the 
 mapping from \code{.cnv} names to \code{ctd} names, see \code{\link{cnvName2oceName}}.
 
-The original variable names as stored in \code{file} are stored within the \code{data}
-slot as attribute named \code{namesOriginal}, and so can be retrieved with e.g.
-\code{attr(x@data, "namesOriginal")}, if \code{x} is the object returned by
-this function. This feature can be helpful in detailed work.  See the Appendix
-VI of [2], noting that the \code{namesOriginal} values are taken from
-the "Short Name" column of the table spanning pages 161 through 172.
+The original data names as stored in \code{file} are stored within the \code{metadata}
+slot as \code{dataNamesOriginal}, and are displayed with \code{summary} alongside the
+numerical summary. See the Appendix VI of [2] for the meanings of these
+names (in the "Short Name" column of the table spanning pages 161 through 172).
+}
+\examples{
+f <- system.file("extdata", "ctd.cnv", package="oce")
+## Read the file in the normal way
+d <- read.ctd(f)
+## Read an imaginary file, in which salinity is named 'salt'
+d <- read.ctd(f, columns=list(
+  salinity=list(name="salt", unit=list(expression(), scale="PSS-78"))))
+
 }
 \author{
 Dan Kelley

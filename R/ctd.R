@@ -503,7 +503,7 @@ setMethod(f="[[",
           })
 
 #' @title Replace Parts of a CTD Object
-#' @param x A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @template sub_subsetTemplate
 #'
 #' @examples
@@ -772,8 +772,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if ("PSAL" %in% dnames && !("salinity" %in% dnames)) d$salinity <- d$PSAL
         if ("TEMP" %in% dnames && !("temperature" %in% dnames)) d$temperature <- d$TEMP
         if ("PRES" %in% dnames && !("pressure" %in% dnames)) d$pressure <- d$PRES
-        temperature <- d$temperature
-        pressure <- d$pressure
+        #temperature <- d$temperature
         ## "rsk" stores total pressure, not sea pressure as "ctd" stores.
         if (inherits(o, "rsk")) {
             oceDebug(debug, "first argument is an rsk object\n")
@@ -783,7 +782,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             if (is.null(o@metadata$pressureType)) {
                 oceDebug(debug, "metadata$pressureType is NULL\n")
                 warning("rsk object lacks metadata$pressureType; assuming absolute and subtracting standard atm pressure to get sea pressure")
-                pressure <- pressure - pressureAtmosphericStandard
+                d$pressure <- d$pressure - pressureAtmosphericStandard
             } else {
                 ## subtract atm pressure, if it has not already been subtracted
                 oceDebug(debug, "metadata$pressureType is not NULL\n")
@@ -791,9 +790,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                     oceDebug(debug, "must convert from absolute pressure to sea pressure\n")
                     if (!("pressureAtmospheric" %in% mnames)) {
                         oceDebug(debug, "pressure is 'absolute'; subtracting std atm 10.1325 dbar\n")
-                        pressure <- pressure - 10.1325
+                        d$pressure <- d$pressure - 10.1325
                     } else {
-                        pressure <- pressure - m$pressureAtmospheric
+                        d$pressure <- d$pressure - m$pressureAtmospheric
                         oceDebug(debug, "pressure is 'absolute'; subtracting metadata 10.1325dbar\n")
                     }
                 } else {
@@ -805,7 +804,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             len <- length(pressureAtmospheric)
             if (1 != len && len != length(pressure))
                 stop("length(pressureAtmospheric) must be 1 or length(pressure)")
-            pressure <- pressure - pressureAtmospheric
+            d$pressure <- d$pressure - pressureAtmospheric
         }
         ## "rsk" stores conductivity (in mS/cm, not as ratio), and does not store salinity
         if ("COND" %in% names(d))
@@ -815,7 +814,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if (inherits(o, "rsk")) {
             if (is.null(conductivity))
                 stop("as.ctd() cannot coerce an rsk object that lacks conductivity")
-            salinity <- swSCTp(conductivity=conductivity/42.914, temperature=temperature, pressure=pressure)
+            salinity <- swSCTp(conductivity=d$conductivity/42.914, temperature=d$temperature, pressure=d$pressure)
             if (is.null(units)) # this lets the user over-ride
                 units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
                               salinity=list(unit=expression(), scale="PSS-78"),
@@ -833,13 +832,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             res@metadata$flags <- flags
         res@metadata$pressureType <- pressureType
         res@metadata$startTime <- startTime
-        res@data$pressure <- pressure
-        res@data$salinity <- salinity
-        res@data$temperature <- temperature
-        res@data$conductivity <- conductivity
-        ## res <- ctdAddColumn(res, swSigmaTheta(salinity, temperature, pressure),
-        ##                    name="sigmaTheta", label="Sigma Theta", unit=list(unit=expression(kg/m^3), scale=""))
-        ## copy relevant metadata
+        ## copy relevant metadata.
         if ("date" %in% mnames) res@metadata$date <- o@metadata$date
         if ("deploymentType" %in% mnames) res@metadata$deploymentType <- o@metadata$deploymentType
         if ("filename" %in% mnames) res@metadata$filename <- o@metadata$filename
@@ -850,8 +843,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if ("scientist" %in% mnames) res@metadata$scientist <- o@metadata$scientist
         if ("units" %in% mnames) {
             ## the usual case
-            res@metadata$units$conductivity <- o@metadata$units$conductivity
-            res@metadata$units$temperature <- o@metadata$units$temperature
+            ## res@metadata$units$conductivity <- o@metadata$units$conductivity
+            ## res@metadata$units$temperature <- o@metadata$units$temperature
+            res@metadata$units <- o@metadata$units
         } else {
             ## permit a case that existed for a few months in 2015
             if ("conductivityUnit" %in% mnames)
@@ -868,15 +862,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if ("nitrite" %in% dnames) res@data$nitrite <- d$nitrite
         if ("phosphate" %in% dnames) res@data$phosphate <- d$phosphate
         if ("silicate" %in% dnames) res@data$silicate <- d$silicate
-        ## FIXME: need to add all columns from @data in the rsk object
-        nrow <- length(res@data$temperature)
         for (field in names(d)) {
-            if (!(field %in% c('pressure', 'salinity', 'temperature', 'conductivity'))) {
-                if (nrow == length(d[[field]]))
-                    res <- ctdAddColumn(res, d[[field]], field)
-            }
+            res <- ctdAddColumn(res, column=d[[field]], name=field, label=field, log=FALSE)
         }
-        ## FIXME: next in dnames or mnames??
         if ("longitude" %in% dnames && "latitude" %in% dnames) {
             longitude <- d$longitude
             latitude <- d$latitude
@@ -891,6 +879,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             res@metadata$latitude <- m$latitude
         }
         res@metadata$deploymentType <- deploymentType
+        res@metadata$dataNamesOriginal <- m$dataNamesOriginal
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
     } else if (is.list(salinity) || is.data.frame(salinity)) {
@@ -1051,6 +1040,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     if (!is.null(flags))
         res@metadata$flags <- flags
 
+    ## Default some units (FIXME: this may be a bad idea)
     if ("temperature" %in% dataNames && !("temperature" %in% unitsNames))
         res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
     if ("salinity" %in% dataNames && !("salinity" %in% unitsNames))
@@ -1070,7 +1060,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #' \code{\link{ctd-class}}, also updating the \code{metadata}
 #' slot as appropriate.
 #'
-#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @param column A column of data to be inserted, in the form of a
 #'     numeric vector, whose length matches that of columns in the
 #'     objecct.
@@ -1083,6 +1073,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #'     items \code{unit}, which is an expression, and \code{scale}, which is a
 #'     character string. For example, modern measurements of temperature have
 #'     unit \code{list(name=expression(degree*C), scale="ITS-90")}.
+#' @param log Logical value indicating whether to store an entry in the processing
+#' log that indicates this insertion.
 #' @template debugTemplate
 #' @return A ctd object.
 #' @seealso The documentation for \code{\link{ctd-class}} explains the structure
@@ -1098,7 +1090,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #' @author Dan Kelley
 #'
 #' @family things related to \code{ctd} data
-ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("oceDebug"))
+ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, debug=getOption("oceDebug"))
 {
     ## FIXME: not using the units
     oceDebug(debug, "ctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="", unindent=1)
@@ -1117,6 +1109,8 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
     if (!replace) {
         res@metadata$names <- c(res@metadata$names, name)
         res@metadata$labels <- c(res@metadata$labels, label)
+        if ("originalDataNames" %in% names(res@metadata))
+            res@metadata$originalDataNames <- c(res@metadata$originalDataNames, "NA")
     }
     if (!is.null(unit)) {
         if (0 == length(unit)) {
@@ -1137,7 +1131,8 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
             warning("ignoring unit since it not of length 1 or 2")
         }
     }
-    res@processingLog <- processingLogAppend(res@processingLog, paste("ctdAddColumn(..., name=\"", name, "\", ...)", sep=""))
+    if (log)
+        res@processingLog <- processingLogAppend(res@processingLog, paste("ctdAddColumn(..., name=\"", name, "\", ...)", sep=""))
     oceDebug(debug, "} # ctdAddColumn()\n", sep="", unindent=1)
     res
 }
@@ -1164,7 +1159,7 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, debug = getOption("
 #'
 #' @template flagDeletionTemplate
 #' 
-#' @param x a \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param p pressure increment, or vector of pressures.  In the first case,
 #' pressures from 0dbar to the rounded maximum pressure are used, incrementing by
@@ -1414,7 +1409,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' It is often necessary to pass the resultant profiles through \code{\link{ctdTrim}}, to remove
 #' artifacts such as an equilibration phase, etc.
 #' 
-#' @param x A \code{ctd} object, as read by \code{\link{read.ctd}} or created by \code{\link{as.ctd}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param cutoff criterion on pressure difference; see \dQuote{Details}.
 #' 
@@ -1548,20 +1543,17 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #' The ODF format, used by the Canadian Department of Fisheries and Oceans, is
 #' described to some extent in the documentation for \code{\link{read.odf}}.  It
 #' is not clear that ODF format is handled correctly in \code{read.ctd.odf}, or
-#' the more general function \code{\link{read.odf}}, because the format seems to
-#' be somewhat variable and so the R code was written in an ad-hoc way, to handle
-#' a few files being used in the author's research.
+#' the more general function \code{\link{read.odf}}, because the format 
+#' varies between some sample files the author has encountered in his research.
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
     oceDebug(debug, "read.ctd.odf() {")
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
-    odf <- read.odf(file)
+    odf <- read.odf(file=file, columns=columns)
     res <- as.ctd(odf)
     if (!is.null(station))
         res@metadata$station <- station
-    res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                               conductivity=list(unit=expression(), scale="")) # FIXME just a guess for ODV
     oceDebug(debug, "} # read.ctd.odf()")
     res
 }
@@ -1632,7 +1624,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 #'   \dQuote{Examples}.}
 #' }
 #'
-#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param method A string (or a vector of two strings) specifying the trimming method, or a function to
 #' be used to determine data indices to keep.  If \code{method} is not provided, \code{"downcast"} is
@@ -1947,7 +1939,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 #' \code{span} of each column. This is done automatically by \code{ctdTrim}, for
 #' example.
 #' 
-#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @template debugTemplate
 #' 
@@ -2062,8 +2054,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' \code{plot,ctd-method} are left in place, so that further additions may be made to the
 #' plot.
 #' 
-#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}, or a
-#' list containing items named \code{salinity} and \code{temperature}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param which List of desired plot types, as given below. If \code{which} is not
 #' supplied, a default will be used. This default will be \code{c(1,2,3,5)} if the
@@ -2851,7 +2842,7 @@ setMethod(f="plot",
 #' repeated calls will be necessary to subset based on more than one
 #' independent variable (e.g. time and distance).
 #'
-#' @param x An object inheriting from \code{\link{ctd-class}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @param subset An expression indicating how to subset \code{x}.
 #' @param ... Ignored.
 #' @return A \code{ctd} object.
@@ -2887,7 +2878,7 @@ setMethod(f="subset",
 #' Plot CTD data as time-series against scan number, to help with trimming
 #' extraneous data from a CTD cast.
 #' 
-#' @param x A \code{ctd} object, i.e. inheriting from \code{\link{ctd-class}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param which Numerical vector numerical codes specifying the panels to draw: 1
 #' for pressure vs scan, 2 for \code{diff(pressure)} vs scan, 3 for temperature vs
@@ -2982,14 +2973,12 @@ plotScan <- function(x, which=1, xtype="scan",
 #'
 #' @details
 #' \code{read.ctd()} is a base function that in turn calls specialized functions, e.g.
-#' \code{\link{read.ctd.sbe}} for SBE data files.
-#'
-#' @seealso Other functions that read CTD data:
-#' \code{\link{read.ctd.itp}} for ice-tethered-profiler format,
-#' \code{\link{read.ctd.odf}} for ODF format,
-#' \code{\link{read.ctd.odv}} for ODV format,
-#' \code{\link{read.ctd.sbe}} for SBE format, and
-#' \code{\link{read.ctd.woce}} for WOCE format.
+#' \code{\link{read.ctd.odf}} for the ODF data used in Fisheries and Oceans (Canada),
+#' \code{\link{read.ctd.woce}} for data in World Ocean Circulation Experiment format,
+#' \code{\link{read.ctd.woce.other}} for a variant of WOCE data,
+#' \code{\link{read.ctd.odv}} for data stored in the format of the ODV application,
+#' \code{\link{read.ctd.itp}} for ice-tethered-profiler data, or
+#' \code{\link{read.ctd.sbe}} for Seabird data.
 read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=-999,
                      monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -3023,6 +3012,8 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=
             type <- "WOCE"
         } else if ("* Sea-Bird" == substr(line, 1, 10)) {
             type <- "SBE19"
+        } else if (1 == length(grep("^ODF_HEADER,[ ]*$", line))) {
+            type <- "ODF"
         } else {
             stop("Cannot discover type in line '", line, "'\n")
         }
@@ -3070,6 +3061,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=
 #' @return vector of strings holding \code{oce}-style names.
 #' @author Dan Kelley
 #' @family things related to \code{ctd} data
+#' @family functions that interpret variable names from headers
 woceNames2oceNames <- function(names)
 {
     ## FIXME: this almost certainly needs a lot more translations. The next comment lists some that
@@ -3529,8 +3521,7 @@ read.ctd.odv <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 #' 
 #' Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
 #' 
-#' @param x An object containing salinity and temperature data, typically a
-#' \code{ctd} object or \code{section} object.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @param inSitu A boolean indicating whether to use in-situ temperature or
 #' (the default) potential temperature, calculated with reference pressure
 #' given by \code{referencePressure}.  This is ignored if \code{eos="gsw"},
@@ -3846,7 +3837,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' The colours (\code{col.salinity}, etc.) are ony used if two profiles appear
 #' on a plot.
 #' 
-#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @param xtype Item(s) plotted on the x axis, either a vector of length equal
 #' to that of \code{x@data$pressure} or a text code from the list below.
 #' \describe{ \item{list("\"salinity\"")}{Profile of salinity.}
