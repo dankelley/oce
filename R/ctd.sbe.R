@@ -86,7 +86,7 @@
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
 #'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 3 \cr
 #'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
-#'   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s                  \tab   \cr
+#'   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
 #'   \code{t_68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
 #'   \code{t_90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
 #'   \code{t_68C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
@@ -289,7 +289,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         unit <- list(unit=expression(), scale="")
     } else if (1 == length(grep("svCM", name, ignore.case=TRUE))) {
         name <- "soundSpeed"
-        unit <- list(unit=expression(m/s), scale="")
+        unit <- list(unit=expression(m/s), scale="Chen-Millero")
     } else if (1 == length(grep("^t[0-9]68C?$", name, ignore.case=TRUE))) {
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")

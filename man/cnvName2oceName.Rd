@@ -109,7 +109,7 @@ oxygen alone has over 40 variants!)
   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 3 \cr
   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
-  \code{svCM}        \tab \code{soundSpeed}                   \tab m/s                  \tab   \cr
+  \code{svCM}        \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
   \code{t_68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
   \code{t_90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
   \code{t_68C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
