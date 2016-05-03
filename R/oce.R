@@ -1442,11 +1442,11 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is section\n")
         return("section")
     }
-    if (length(grep("^//SDN_parameter_mapping", line, useBytes=TRUE)) ||
-        length(grep("^//SDN_parameter_mapping", line2, useBytes=TRUE))) {
-        oceDebug(debug, "this is ODV\n")
-        return("ctd/odv")
-    }
+    ## if (length(grep("^//SDN_parameter_mapping", line, useBytes=TRUE)) ||
+    ##     length(grep("^//SDN_parameter_mapping", line2, useBytes=TRUE))) {
+    ##     oceDebug(debug, "this is ODV\n")
+    ##     return("ctd/odv")
+    ## }
     oceDebug(debug, "this is unknown\n")
     return("unknown")
 }
@@ -1559,8 +1559,8 @@ read.oce <- function(file, ...)
         warning("The format of mtg/odf objects is likely to change throughout April, 2015")
         return(d)
     }
-    if (type == "ctd/odv")
-        return(read.ctd.odv(file, processingLog=processingLog, ...))
+    ## if (type == "ctd/odv")
+    ##     return(read.ctd.odv(file, processingLog=processingLog, ...))
     if (type == "ctd/itp")
         return(read.ctd.itp(file, processingLog=processingLog, ...))
     if (type == "gpx")

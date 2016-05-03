@@ -1532,33 +1532,6 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     }
 }
 
-#' Read a CTD file in ODF format
-#' @template readCtdTemplate
-#'
-#' @details
-#' \code{read.ctd.odf} reads files stored in Ocean Data Format, used in
-#' some Canadian hydrographic databases.
-#'
-#' @references
-#' The ODF format, used by the Canadian Department of Fisheries and Oceans, is
-#' described to some extent in the documentation for \code{\link{read.odf}}.  It
-#' is not clear that ODF format is handled correctly in \code{read.ctd.odf}, or
-#' the more general function \code{\link{read.odf}}, because the format 
-#' varies between some sample files the author has encountered in his research.
-read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
-                         debug=getOption("oceDebug"), processingLog, ...)
-{
-    oceDebug(debug, "read.ctd.odf() {")
-    if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
-    odf <- read.odf(file=file, columns=columns)
-    res <- as.ctd(odf)
-    if (!is.null(station))
-        res@metadata$station <- station
-    oceDebug(debug, "} # read.ctd.odf()")
-    res
-}
-
-
 #' Trim Beginning and Ending of a CTD cast
 #' 
 #' Often in CTD profiling, the goal is to isolate only the downcast, discarding measurements made in
@@ -2976,7 +2949,6 @@ plotScan <- function(x, which=1, xtype="scan",
 #' \code{\link{read.ctd.odf}} for the ODF data used in Fisheries and Oceans (Canada),
 #' \code{\link{read.ctd.woce}} for data in World Ocean Circulation Experiment format,
 #' \code{\link{read.ctd.woce.other}} for a variant of WOCE data,
-#' \code{\link{read.ctd.odv}} for data stored in the format of the ODV application,
 #' \code{\link{read.ctd.itp}} for ice-tethered-profiler data, or
 #' \code{\link{read.ctd.sbe}} for Seabird data.
 read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=-999,
@@ -3036,9 +3008,9 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=
                    ODF = read.ctd.odf(file, columns=columns, station=station,
                                       missing.value=missing.value, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...),
-                   ODV = read.ctd.odv(file, columns=columns, station=station,
-                                      missing.value=missing.value, monitor=monitor,
-                                      debug=debug, processingLog=processingLog, ...),
+                   ## ODV = read.ctd.odv(file, columns=columns, station=station,
+                   ##                    missing.value=missing.value, monitor=monitor,
+                   ##                    debug=debug, processingLog=processingLog, ...),
                    ITP = read.ctd.itp(file, columns=columns, station=station,
                                       missing.value=missing.value, monitor=monitor,
                                       debug=debug, processingLog=processingLog, ...))
@@ -3049,403 +3021,6 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=
     #    res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
     res
 }
-
-#' Translate WOCE Data Names to Oce Data Names
-#'
-#' Translate WOCE-style names to \code{oce} names, using \code{\link{gsub}}
-#' to match patterns. For example, the pattern \code{"CTDOXY.*"} is taken
-#' to mean \code{oxygen}.
-#'
-#' @param names vector of strings holding WOCE-style names.
-#'
-#' @return vector of strings holding \code{oce}-style names.
-#' @author Dan Kelley
-#' @family things related to \code{ctd} data
-#' @family functions that interpret variable names from headers
-woceNames2oceNames <- function(names)
-{
-    ## FIXME: this almost certainly needs a lot more translations. The next comment lists some that
-    ## FIXME: I've seen. But how are we to know, definitively? It would be great to find an official
-    ## FIXME: list, partly because the present function should be documented, and that documentation
-    ## FIXME: should list a source.
-    ## SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
-    names <- gsub("_FLAG_W", "Flag", names)
-    names <- gsub("CTDOXY", "oxygen", names)
-    names <- gsub("CTDPRS", "pressure", names)
-    names <- gsub("CTDSAL", "salinity", names)
-    names <- gsub("CTDTMP", "temperature", names)
-    names <- gsub("OXYGEN", "oxygen", names)
-    names <- gsub("SALNTY", "salinityBottle", names)
-    names <- gsub("SILCAT", "silicate", names)
-    names <- gsub("NITRIT", "nitrite", names)
-    names <- gsub("NO2+NO3", "nitrite+nitrate", names)
-    names <- gsub("PHSPHT", "phosphate", names)
-    names
-}
-
-#' Read a WOCE-type CTD file with First Word "CTD"
-#' @template readCtdTemplate
-#'
-#' @details
-#' \code{read.ctd.woce()} reads files stored in the exchange format used
-#' by the World Ocean Circulation Experiment (WOCE), in which the first 4
-#' characters are ``\code{CTD,}''. It also also in a rarer format with
-#' the first 3 characters are \code{CTD}'' followed by a blank or the end
-#' of the line.
-#'
-#' @references
-#' The WOCE-exchange format is described at
-#' \code{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
-#' and a sample file is at
-#' \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
-read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
-                          debug=getOption("oceDebug"), processingLog, ...)
-{
-    if (length(grep("\\*", file))) {
-        oceDebug(debug, "read.ctd.woce(file=\"", file, "\") { # will read a series of files\n", unindent=1)
-        files <- list.files(pattern=file)
-        nfiles <- length(files)
-        if (monitor)
-            pb <- txtProgressBar(1, nfiles, style=3)
-        res <- vector("list", nfiles)
-        for (i in 1:nfiles) {
-            res[[i]] <- read.ctd.woce(files[i], debug=debug-1)
-            if (monitor)
-                setTxtProgressBar(pb, i)
-        }
-        oceDebug(debug, "} # read.ctd.woce() {\n")
-        return(res)
-    }
-    ## FIXME: should have an argument that selects CTDSAL or SALNTY
-    oceDebug(debug, "read.ctd.woce(file=\"", file, "\", ..., debug=", debug, ", ...) {\n", sep="", unindent=1)
-    if (is.character(file)) {
-        filename <- fullFilename(file)
-        file <- file(file, "r")
-        on.exit(close(file))
-    } else {
-        filename <- ""
-    }
-    if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
-    if (!isOpen(file)) {
-        open(file, "r")
-        on.exit(close(file))
-    }
-    res <- new("ctd", pressureType="sea")
-    ## Header
-    scientist <- ship <- institute <- address <- NULL
-    filename.orig <- NULL
-    sampleInterval <- NaN
-    systemUploadTime <- NULL
-    latitude <- longitude <- NaN
-    startTime <- NULL
-    waterDepth <- NA
-    date <- recovery <- NULL
-    header <- c()
-    ##col.names.inferred <- NULL
-    ##conductivity.standard <- 4.2914
-    ## http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm
-    ## First line
-    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-    oceDebug(debug, paste("examining header line '",line,"'\n", sep=""))
-    header <- line
-    waterDepthWarning <- FALSE
-
-    ## Handle a format used in a 2003 survey of the Canada Basin
-    if (substr(line, 1, 3) == "CTD" && substr(line, 4, 4) != ",")  {
-        oceDebug(debug, "WOCE-like style used in a 2003 survey of the Arctic Canada Basin\n")
-        ##CTD
-        ##CRUISE NAME = LSSL 2003-21
-        ##AREA = Arctic Ocean, Canada Basin
-        ##SHIP = CCGS Louis S St.Laurent
-        ##CASTNO = 1
-        ##DATE = 11-Aug-2003
-        ##LATITUDE (N)= 71.391
-        ##LONGITUDE (W)= 134.001
-        ##Pressure,Temperature,Salinity,Oxygen,Fluorescence,Transmission
-        ##   DB   ,ITS-90 DEGC,   PSU  , ML/L ,     UG/L   ,      %
-        ##         1,   -1.1999,   28.4279,      8.77,     0.026,    87.679
-        lines <- readLines(file)
-        oceDebug(debug, "file has", length(lines), "lines\n")
-        headerEnd <- grep("[ ]*DB[ ]*,", lines)
-        if (is.na(headerEnd))
-            stop("cannot decode the header in this CTD file")
-        header <- lines[1:headerEnd]
-        oceDebug(debug, "headerEnd:", headerEnd, "\n")
-        names <- c("pressure", "temperature", "salinity", "oxygen", "fluorescence", "transmission") # may get updated
-        for (i in seq_along(header)) {
-            if (length(grep("CRUISE", header[i], ignore.case=TRUE))) {
-                cruise<- sub("CRUISE[ ]*NAME[ ]*=[ ]*", "", header[i], ignore.case=TRUE)
-                cruise <- sub("[ ]*$", "", cruise)
-            } else if (length(grep("SHIP", header[i], ignore.case=TRUE))) {
-                ship <- header[i]
-                ship <- sub("^[ ]*SHIP[ ]*=[ ]*", "", ship, ignore.case=TRUE)
-                ship <- sub(" *$", "", ship)
-            } else if (length(grep("CASTNO", header[i], ignore.case=TRUE))) {
-                station <- sub("[ ]*$", "", sub("CASTNO[ ]*=[ ]*", "", header[i]))
-            } else if (length(grep("^[ ]*Pressure,", header[i]))) {
-                names <- strsplit(gsub(" *$", "", tolower(header[i])), ",")[[1]]
-            } else if (length(grep("LATITUDE", header[i]))) {
-                latitude <- as.numeric(sub("LATITUDE.*=[ ]*", "", header[i]))
-                if (length(grep(".*S.*", header[i], ignore.case=TRUE)))
-                    latitude <- -latitude
-            } else if (length(grep("LONGITUDE", header[i]))) {
-                longitude <- as.numeric(sub("LONGITUDE.*=[ ]*", "", header[i]))
-                if (length(grep(".*W.*", header[i], ignore.case=TRUE)))
-                    longitude <- -longitude
-            } else if (length(grep("DATE", header[i]))) {
-                date <- decodeTime(sub("[ ]*$", "", sub("[ ]*DATE[ ]*=[ ]*", "", header[i])), "%d-%b-%Y") # e.g. 01-Jul-2013 Canada Day
-            }
-        }
-        dataLines <- lines[seq.int(headerEnd+1, length(lines)-1)]
-        data <- as.list(read.table(textConnection(dataLines), header=FALSE, sep=",", col.names=names))
-        res@metadata$header <- header
-        res@metadata$filename <- filename # provided to this routine
-        res@metadata$filename.orig <- filename.orig # from instrument
-        res@metadata$systemUploadTime <- systemUploadTime
-        res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                   salinity=list(unit=expression(), scale="PSS-78"),
-                                   conductivity=list(unit=expression(), scale=""))
-        res@metadata$pressureType <- "sea"
-        res@metadata$ship <- ship
-        res@metadata$scientist <- scientist
-        res@metadata$institute <- institute
-        res@metadata$address <- address
-        res@metadata$cruise <- NULL
-        res@metadata$station <- station
-        res@metadata$deploymentType <- "unknown"
-        res@metadata$date <- date
-        res@metadata$startTime <- startTime
-        res@metadata$latitude <- latitude
-        res@metadata$longitude <- longitude
-        res@metadata$recovery <- recovery
-        res@metadata$waterDepth <- max(abs(data$pressure), na.rm=TRUE) # not in header
-        res@metadata$sampleInterval <- sampleInterval
-        res@metadata$names <- names
-        res@metadata$labels <- labels
-        res@metadata$src <- filename
-    } else {                           # CTD, 20000718WHPOSIOSCD
-        tmp <- sub("(.*), ", "", line)
-        date <- substr(tmp, 1, 8)
-        ##cat("DATE '", date, "'\n", sep="")
-        diw <- substr(tmp, 9, nchar(tmp)) # really, divisionINSTITUTEwho
-        institute <- diw # BUG: really, it is division, institute, who, strung together
-        ## Kludge: recognize some institutes
-        if (0 < regexpr("SIO", diw))
-            institute <- "SIO"
-        gotHeader <- FALSE
-        while (TRUE) {
-            line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, for perhaps 20 lines of header
-            oceDebug(debug, paste("examining header line '",line,"'\n"))
-            if ((0 < (r<-regexpr("FILE_NAME", line)))) {
-                ##  #CTDFILE_NAME:     KB51D003.WCT
-                oceDebug(debug, "infer filename from:", line, "\n")
-                filename.orig <- sub("^.*NAME:[ ]*", "", line)
-                oceDebug(debug, " trim to '", filename.orig, "'\n", sep='')
-                filename.orig <- sub("[ ]*$", "", filename.orig)
-                oceDebug(debug, " trim to '", filename.orig, "'\n", sep='')
-            }
-            header <- c(header, line)
-            ## SAMPLE:
-            ##      EXPOCODE = 31WTTUNES_3
-            ##      SECTION_ID = P16C
-            ##      STNNBR = 221
-            ##      CAST = 1
-            ##      DATE = 19910901
-            ##      TIME = 0817
-            ##      LATITUDE = -17.5053
-            ##      LONGITUDE = -150.4812
-            ##      BOTTOM = 3600
-            if (!(0 < (r<-regexpr("^[ ]*#", line)[1]))) { # first non-hash line
-                ## NUMBER_HEADERS = 10
-                nh <- as.numeric(sub("(.*)NUMBER_HEADERS = ", "", ignore.case=TRUE, line))
-                if (is.finite(nh)) {
-                    for (i in 2:nh) {
-                        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-                        header <- c(header, line)
-                        oceDebug(debug, line, "\n")
-                        if ((0 < (r<-regexpr("LATITUDE",  line))))
-                            latitude  <- as.numeric(sub("[a-zA-Z =]*","", line))
-                        else if ((0 < (r<-regexpr("LONGITUDE", line))))
-                            longitude <- as.numeric(sub("(.*) =","", line))
-                        else if ((0 < (r<-regexpr("DATE", line))))
-                            date <- decodeTime(sub(" *$", "", sub("[ ]*DATE[ ]*=[ ]*", "", line)), "%Y%m%d") # e.g. 20130701 Canada Day
-                        else if ((0 < (r<-regexpr(pattern="DEPTH", text=line, ignore.case=TRUE))))
-                            waterDepth <- as.numeric(sub("[a-zA-Z =:]*","", line))
-                        else if ((0 < (r<-regexpr(pattern="Profondeur", text=line, ignore.case=TRUE))))
-                            waterDepth <- as.numeric(sub("[a-zA-Z =]*","", line))
-                        else if ((0 < (r<-regexpr(pattern="STNNBR", text=line, ignore.case=TRUE))))
-                            station <- as.numeric(sub("[a-zA-Z =]*","", line))
-                        else if ((0 < (r<-regexpr(pattern="Station", text=line, ignore.case=TRUE))))
-                            station <- as.numeric(sub("[a-zA-Z =]*","", line))
-                        else if ((0 < (r<-regexpr(pattern="Mission", text=line, ignore.case=TRUE))))
-                            scientist <- sub("[ ]*$", "", sub(".*:", "", line))
-                    }
-                    break
-                } else {
-                    gotHeader <- TRUE
-                    break
-                }
-            }
-        }
-        if (!gotHeader) {
-            while (TRUE) {                    # catch any remaining "#" lines
-                line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-                if (!(0 < (r<-regexpr("^#", line))))
-                    break
-                header <- c(header, line)
-            }
-        }
-        ## 2 more header lines, one giving quantities, the next units, e.g.
-        ## EXPOCODE,SECT_ID,STNNBR,CASTNO,SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
-        ## ,,,,,,,,,,,,DBAR,IPTS-68,PSS-78,,PSS-78,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,
-        varNames <- strsplit(line, split=",")[[1]]
-        oceDebug(debug, "varNames: ", paste(varNames, sep=" "), "\n")
-        oceDebug(debug, "oce names: ", paste(woceNames2oceNames(varNames), sep=" "), "\n")
-
-        varNames <- gsub("^ *", "", gsub(" *$", "", varNames)) # trim whitespace
-        ## catch some typos that have occured in files processed by oce
-        oceDebug(debug, paste("before trying to correct typos, varNames=c(\"", paste(varNames, collapse="\", \""), "\")\n", sep=""))
-        varNames <- gsub("FLAW", "FLAG", varNames) # Meteor39/4 cruise in Lab Sea had CTDSAL_FLAW_W for all 248 stations
-        oceDebug(debug, paste("after trying to correct typos, varNames=c(\"", paste(varNames, collapse="\", \""), "\")\n", sep=""))
-        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # skip the units line
-        varUnits <- strsplit(line, split=",")[[1]]
-        pcol <- pmatch("CTDPRS", varNames)
-        if (is.na(pcol)) {
-            pcol <- pmatch("DB", varNames)
-            if (is.na(pcol))
-                stop("cannot find pressure column in list c(\"", paste(varNames, '","'), "\"); need 'DB' or 'CTDPRS'")
-        }
-        Scol <- pmatch("CTDSAL", varNames)
-        if (is.na(Scol)) {
-            Scol <- pmatch("SALNTY", varNames)
-            if (is.na(Scol))
-                stop("cannot find salinity column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL' or 'SALNTY'")
-        }
-        ## FIXME: use these flags ... they are ignored at present.
-        Sflagcol <- pmatch("CTDSAL_FLAG_W", varNames)
-        if (is.na(Sflagcol)) {
-            Sflagcol <- pmatch("SALNTY_FLAG_W", varNames)
-            if (is.na(Sflagcol))
-                stop("cannot find salinity-flag column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL_FLAG_W' or 'SALNTY_FLAG_W'")
-        }
-        Tcol <- pmatch("CTDTMP", varNames)
-        if (is.na(Tcol))
-            stop("cannot find temperature column in list", paste(varNames,","))
-        Ocol <- pmatch("CTDOXY", varNames)
-        oceDebug(debug, "pcol=", pcol, "Scol=", Scol, "Tcol=", Tcol, "Ocol=", Ocol, "\n")
-        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        varUnits <- strsplit(line, split=",")[[1]]
-        lines <- readLines(file)
-        ## nlines <- length(lines)
-        ## pressure <- vector("numeric", nlines)
-        ## temperature <- vector("numeric", nlines)
-        ## salinity <- vector("numeric", nlines)
-        ## oxygen <- vector("numeric", nlines)
-        ## b <- 0
-        oceDebug(debug, "pcol:", pcol, ", Scol:", Scol, ", Tcol:", Tcol, ", Ocol:", Ocol, "\n")
-        ##m <- matrix(NA, nrow=nlines, ncol=length(varNames))
-        ending <- grep("END_DATA", lines)
-        if (length(ending) == 1)
-            lines <- lines[-ending]
-        varNamesOce <- woceNames2oceNames(varNames)
-        nonflags <- grep("Flag$",varNamesOce, invert=TRUE)
-        flags <- grep("Flag$",varNamesOce)
-        dataAndFlags <- read.csv(text=lines, header=FALSE, col.names=woceNames2oceNames(varNames))
-        data <- as.list(dataAndFlags[, nonflags])
-        flags <- as.list(dataAndFlags[, flags])
-        names(flags) <- gsub("Flag", "", names(flags))
-        names <- names(data)
-        labels <- titleCase(names)
-        if (is.na(waterDepth)) {
-            waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-            waterDepthWarning <- TRUE
-        }
-        ## catch e.g. -999 sometimes used for water depth's missing value
-        if (is.finite(waterDepth) && waterDepth <= 0)
-            waterDepth <- NA
-        res@metadata$header <- header
-        res@metadata$filename <- filename # provided to this routine
-        res@metadata$filename.orig <- filename.orig # from instrument
-        res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                   conductivity=list(unit=expression(), scale=""))
-        res@metadata$flags <- flags
-        res@metadata$pressureType <- "sea"
-        res@metadata$systemUploadTime <- systemUploadTime
-        res@metadata$ship <- ship
-        res@metadata$scientist <- scientist
-        res@metadata$institute <- institute
-        res@metadata$address <- address
-        res@metadata$cruise <- NULL
-        res@metadata$station <- station
-        res@metadata$deploymentType <- "unknown"
-        res@metadata$date <- date
-        res@metadata$startTime <- startTime
-        res@metadata$latitude <- latitude
-        res@metadata$longitude <- longitude
-        res@metadata$recovery <- recovery
-        res@metadata$waterDepth <- waterDepth
-        res@metadata$sampleInterval <- sampleInterval
-        res@metadata$names <- names
-        res@metadata$labels <- labels
-        res@metadata$src <- filename
-    }
-    res@data <- data
-    if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
-    if (waterDepthWarning)
-        res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
-    oceDebug(debug, "} # read.ctd.woce()\n" , unindent=1) # FIXME: use S4 for ctd / woce
-    res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    res
-}
-
-#' Read a WOCE-type CTD file with First Word "EXPOCODE"
-#' @template readCtdTemplate
-#'
-#' @details
-#' \code{read.ctd.woce.other()} reads files stored in the exchange format used
-#' by the World Ocean Circulation Experiment (WOCE), in which the first
-#' word in the file is \code{EXPOCODE}.
-read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
-                                debug=getOption("oceDebug"), processingLog, ...)
-{
-    ##EXPOCODE 06MT18/1      WHP-ID A1E    DATE 090591
-    ##STNNBR    558 CASTNO   1 NO.RECORDS=   83
-    ##INSTRUMENT NO. NB3 SAMPLING RATE  31.25 HZ
-    ##  CTDPRS  CTDTMP  CTDSAL  CTDOXY  NUMBER  QUALT1
-    ##    DBAR  ITS-90  PSS-78 UMOL/KG    OBS.       *
-    ## ******* ******* ******* *******               *
-    ##     4.0  6.7068 34.7032   327.8      -9    2222
-    ##     6.0  6.7059 34.7035   328.1      -9    2222
-    ##     8.0  6.6928 34.7041   328.8      -9    2222
-    examineHeaderLines <- 10
-    header <- readLines(file, n=examineHeaderLines)
-    station <- ""
-    for (i in 1: examineHeaderLines) {
-        if (1 == length(grep("STNNBR.*", header[i]))) {
-            station <- gsub(" .*", "", gsub("STNNBR[ ]*", "", header[i]))
-        } else if (1 == length(grep(".*DATE.*", header[i]))) {
-            date <- gsub(" .*", "", gsub(".*DATE[ ]*", "", header[i]))
-            month <- as.numeric(substr(date, 1, 2))
-            day <- as.numeric(substr(date, 3, 4))
-            year <- 1900 + as.numeric(substr(date, 5, 6))
-            date <- ISOdatetime(year,month,day,0,0,0, tz="UTC")
-        }
-    }
-    data <- read.table(file, skip=6, header=FALSE)
-    pressure <- data$V1
-    temperature <- data$V2
-    salinity <- data$V3
-    oxygen <- data$V4
-    salinity[salinity == missing.value] <- NA
-    temperature[temperature == missing.value] <- NA
-    pressure[pressure == missing.value] <- NA
-    oxygen[oxygen == missing.value] <- NA
-    as.ctd(salinity, temperature, pressure, oxygen=oxygen, station=station, date=date)
-}
-
 
 #' Parse a Latitude or Longitude String
 #' 
@@ -3497,23 +3072,23 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
 time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 
 
-#' Read an ODV-type CTD File
-#' @template readCtdTemplate
-#'
-#' @details
-#' \code{read.ctd.odf()} reads files stored in ODV format, used by some European data providers.
-#'
-#' @references
-#' The \code{ODV} format is described in a file stored on the website of the British
-#' Oceanographic Data Center, \code{bodc.ac.uk}, in a directory named
-#' \code{data/codes_and_formats/odv_format}. (The URL is not provided here
-#' because it is unreliable, which causes problems with CRAN submission of the
-#' oce package.)
-read.ctd.odv <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
-                         debug=getOption("oceDebug"), processingLog, ...)
-{
-    stop("FIXME: make read.ctd.odv() work")
-}
+## #' Read an ODV-type CTD File
+## #' @template readCtdTemplate
+## #'
+## #' @details
+## #' \code{read.ctd.odf()} reads files stored in ODV format, used by some European data providers.
+## #'
+## #' @references
+## #' The \code{ODV} format is described in a file stored on the website of the British
+## #' Oceanographic Data Center, \code{bodc.ac.uk}, in a directory named
+## #' \code{data/codes_and_formats/odv_format}. (The URL is not provided here
+## #' because it is unreliable, which causes problems with CRAN submission of the
+## #' oce package.)
+## read.ctd.odv <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
+##                          debug=getOption("oceDebug"), processingLog, ...)
+## {
+##     stop("FIXME: make read.ctd.odv() work")
+## }
 
 
 
@@ -4773,79 +4348,5 @@ plotProfile <- function (x,
         }
     }
     oceDebug(debug, "} # plotProfile()\n", unindent=1)
-}
-
-#' Read an ITP-type CTD File
-#' @template readCtdTemplate
-#'
-#' @details
-#' \code{read.ctd.itp()} reads files stored in ice-tethered profile format.
-#'
-#' @references
-#' Information about ice-tethered profile data is provided at
-#' \url{http://www.whoi.edu/page.do?pid=23096}, which also provides a link for
-#' downloading data.  Note that the present version only handles data in
-#' profiler-mode, not fixed-depth mode.
-read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
-                         debug=getOption("oceDebug"), processingLog, ...)
-{
-    oceDebug(debug, "read.ctd.itp() {\n", unindent=1)
-    if (is.character(file)) {
-        filename <- fullFilename(file)
-        file <- file(file, "r")
-        on.exit(close(file))
-    } else {
-        filename <- ""
-    }
-    if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
-    if (!isOpen(file)) {
-        open(file, "r")
-        on.exit(close(file))
-    }
-    lines <- readLines(file, encoding="UTF-8")
-    nlines <- length(lines)
-    if ("%endofdat" == substr(lines[nlines], 1, 9)) {
-        lines <- lines[1:(nlines-1)]
-        nlines <- nlines - 1
-    }
-    if (nlines < 2)
-        stop("file is too short; must have more than 2 lines")
-    isProfile <- '%' != substr(lines[2], 1, 1)
-    ## see e.g. http://www.whoi.edu/page.do?pid=125516
-    if (isProfile) {
-        ## %ITP 59, profile 2: year day longitude(E+) latitude(N+) ndepths
-        ## 2013  247.25002   156.2163  80.3189  371
-        ## %year day pressure(dbar) temperature(C) salinity oxygen(umol/kg)
-        ## 2013  247.25036   18   -1.6548   30.5816  366.5573
-        ## 2013  247.25043   20   -1.6523   30.7274  365.4786
-        ## 2013  247.25052   22   -1.6537   31.1021  362.6732
-        station <- gsub(":.*", "", gsub(".*profile[ ]*", "", lines[1]))
-        d <- scan(text=lines[2], quiet=TRUE)
-        year <- d[1]
-        yearday <- d[2]
-        longitude <- d[3]
-        if (longitude < 0)
-            longitude <- 360 + longitude
-        latitude <- d[4]
-        d <- read.table(text=lines[4:nlines])
-        items <- scan(text=lines[3], what="character", quiet=TRUE)
-        pcol <- grep("pressure", items)[1]
-        Scol <- grep("salinity", items)[1]
-        Tcol <- grep("temperature", items)[1]
-        Ocol <- grep("oxygen", items)[1]
-        pressure <- d[, pcol]
-        temperature <- d[, Tcol]
-        salinity <- d[, Scol]
-        oxygen <- d[, Ocol]
-        res <- as.ctd(salinity, temperature, pressure, oxygen=oxygen,
-                       longitude=longitude, latitude=latitude,
-                       startTime=ISOdate(year, 1, 1) + yearday * 3600 * 24,
-                       station=station)
-    } else {
-        stop("can only handle 'profile' data type, not (presumably) SAMI type")
-    }
-    oceDebug(debug, "} # read.ctd.itp()\n", unindent=1)
-    res
 }
 

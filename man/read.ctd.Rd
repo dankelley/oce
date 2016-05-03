@@ -64,7 +64,6 @@ Read a General CTD File
 \code{\link{read.ctd.odf}} for the ODF data used in Fisheries and Oceans (Canada),
 \code{\link{read.ctd.woce}} for data in World Ocean Circulation Experiment format,
 \code{\link{read.ctd.woce.other}} for a variant of WOCE data,
-\code{\link{read.ctd.odv}} for data stored in the format of the ODV application,
 \code{\link{read.ctd.itp}} for ice-tethered-profiler data, or
 \code{\link{read.ctd.sbe}} for Seabird data.
 }
@@ -83,7 +82,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.odv}}, \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}},
   \code{\link{subset,ctd-method}},
