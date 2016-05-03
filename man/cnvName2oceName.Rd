@@ -58,42 +58,48 @@ an appropriate name for the data, and either manipulate the names in the object
 data slot directly or use
 \code{\link{renameData}} to rename the elements. Finally, please publish
 an 'issue' on the oce Github site \url{https://github.com/dankelley/oce/issues}
-so that the developers can add the data type in question.
+so that the developers can add the data type in question. (There is no plan to add
+all data types without user interest, because there are simply so many types;
+oxygen alone has over 40 variants!)
 
 \tabular{llll}{
-  \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit, scale} \tab \strong{Notes} \cr
-  \code{alt_}        \tab \code{altimeter}                    \tab m                    \tab   \cr
-  \code{c_ms/cm}     \tab \code{conductivity}                 \tab ms/cm                \tab   \cr
-  \code{CStarAt_}    \tab \code{beamAttenuation}              \tab 1/m                  \tab   \cr
-  \code{CStarTr_}    \tab \code{beamTransmission}             \tab percent              \tab   \cr
-  \code{depS}        \tab \code{depth}                        \tab m                    \tab   \cr
-  \code{depSM}       \tab \code{depth}                        \tab m                    \tab   \cr
-  \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                  \tab   \cr
-  \code{flag}        \tab \code{flag}                         \tab -                    \tab   \cr
-  \code{flC}         \tab \code{fluorescence}                 \tab ug/l, Chelsea        \tab   \cr
-  \code{flC_}        \tab \code{fluorescence}                 \tab ug/l, Chelsea        \tab   \cr
-  \code{flEC-AFLM}   \tab \code{fluorescence}                 \tab mg/m^3               \tab   \cr
-  \code{flsP}        \tab \code{fluorescence}                 \tab -                    \tab   \cr
+  \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit;scale} \tab \strong{Notes} \cr
+  \code{alt_}        \tab \code{altimeter}                    \tab m                   \tab   \cr
+  \code{c_ms/cm}     \tab \code{conductivity}                 \tab ms/cm               \tab   \cr
+  \code{CStarAt_}    \tab \code{beamAttenuation}              \tab 1/m                 \tab   \cr
+  \code{CStarTr_}    \tab \code{beamTransmission}             \tab percent             \tab   \cr
+  \code{depS}        \tab \code{depth}                        \tab m                   \tab   \cr
+  \code{depSM}       \tab \code{depth}                        \tab m                   \tab   \cr
+  \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                 \tab   \cr
+  \code{f_}          \tab \code{frequency}                    \tab Hz                  \tab   \cr
+  \code{f__}         \tab \code{frequency}                    \tab Hz                  \tab   \cr
+  \code{flC}         \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3 \tab   \cr
+  \code{flEC-AFLM}   \tab \code{fluorescence}                 \tab mg/m^3; WET labs ECO-AFL/FL \tab   \cr
+  \code{flS}         \tab \code{fluorescence}                 \tab unitless;Seatech     \tab   \cr
+  \code{flSP}        \tab \code{fluorescence}                 \tab unitless;Seapoint    \tab   \cr
+  \code{flSPR}       \tab \code{fluorescence}                 \tab unitless;Seapoint, Rhodamine   \tab   \cr
+  \code{flSPuv}      \tab \code{fluorescence}                 \tab unitless;Seapoint, UV\tab   \cr
+  \code{flT}         \tab \code{fluorescence}                 \tab unitless;Turner      \tab   \cr
   \code{latitude}    \tab \code{latitude}                     \tab degN                 \tab   \cr
   \code{longitude}   \tab \code{longitude}                    \tab degE                 \tab   \cr
-  \code{nbin}        \tab \code{nbin}                         \tab -                    \tab   \cr
-  \code{oxsatML/L}   \tab \code{oxygen}                       \tab ml/l, Weiss          \tab   \cr
-  \code{oxsatMg/L}   \tab \code{oxygen}                       \tab mg/l, Weiss          \tab   \cr
-  \code{oxsatMm/Kg}  \tab \code{oxygen}                       \tab umol/kg, Weiss       \tab   \cr
-  \code{oxsolML/L}   \tab \code{oxygen}                       \tab ml/l, Garcia-Gordon  \tab   \cr
-  \code{oxsolMg/L}   \tab \code{oxygen}                       \tab mg/l, Garcia-Gordon  \tab   \cr
-  \code{oxsolMm/Kg}  \tab \code{oxygen}                       \tab umol/kg, Garcia-Gordon \tab   \cr
-  \code{par_}        \tab \code{PAR}                          \tab unitless, Biospherical/Licor \tab   \cr
-  \code{par/log}     \tab \code{PAR}                          \tab log, Satlantic       \tab   \cr
+  \code{nbin}        \tab \code{nbin}                         \tab                      \tab   \cr
+  \code{oxsatML/L}   \tab \code{oxygen}                       \tab ml/l; Weiss          \tab   \cr
+  \code{oxsatMg/L}   \tab \code{oxygen}                       \tab mg/l; Weiss          \tab   \cr
+  \code{oxsatMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Weiss       \tab   \cr
+  \code{oxsolML/L}   \tab \code{oxygen}                       \tab ml/l; Garcia-Gordon  \tab   \cr
+  \code{oxsolMg/L}   \tab \code{oxygen}                       \tab mg/l; Garcia-Gordon  \tab   \cr
+  \code{oxsolMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Garcia-Gordon \tab   \cr
+  \code{par_}        \tab \code{PAR}                          \tab unitless; Biospherical/Licor \tab   \cr
+  \code{par/log}     \tab \code{PAR}                          \tab log; Satlantic       \tab   \cr
   \code{ph}          \tab \code{pH}                           \tab unitless             \tab   \cr
-  \code{potemp_68C}  \tab \code{thetaM}                       \tab degC, IPTS-68        \tab   \cr
-  \code{potemp_90C}  \tab \code{thetaM}                       \tab degC, ITS-90         \tab   \cr
+  \code{potemp_68C}  \tab \code{thetaM}                       \tab degC; IPTS-68        \tab   \cr
+  \code{potemp_90C}  \tab \code{thetaM}                       \tab degC; ITS-90         \tab   \cr
   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab   \cr
   \code{pr50M}       \tab \code{pressure}                     \tab dbar                 \tab   \cr
   \code{prSM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
-  \code{prDM}        \tab \code{pressure}                     \tab dbar, digiquartz     \tab   \cr
+  \code{prDM}        \tab \code{pressure}                     \tab dbar; digiquartz     \tab   \cr
   \code{prdM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
-  \code{ptempC}      \tab \code{pressureTemperature}          \tab degC, ITS-90         \tab 1 \cr
+  \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 1 \cr
   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
   \code{sal__}       \tab \code{salinityM}                    \tab unitless, PSS-78     \tab 2 \cr
   \code{sbeox_ML/L}  \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
@@ -104,31 +110,31 @@ so that the developers can add the data type in question.
   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 3 \cr
   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s                  \tab   \cr
-  \code{t_68}        \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr 
-  \code{t_90}        \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr 
-  \code{t_68C}       \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr 
-  \code{t_90C}       \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
-  \code{t090Cm}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
-  \code{t4990C}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
-  \code{tnc90C}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
-  \code{tv290C}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
-  \code{t068C}       \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
-  \code{t4968C}      \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
-  \code{tnc68C}      \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
-  \code{tv268C}      \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
-  \code{t190C}       \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
-  \code{tnc290C}     \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
-  \code{t168C}       \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
-  \code{tnc268C}     \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
-  \code{t3890C}      \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
-  \code{t38_90C}     \tab \code{temperature}                  \tab degC, ITS-90         \tab   \cr
-  \code{t3868C}      \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
-  \code{t38_38C}     \tab \code{temperature}                  \tab degC, IPTS-68        \tab   \cr
+  \code{t_68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
+  \code{t_90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
+  \code{t_68C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
+  \code{t_90C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{t090Cm}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{t4990C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{tnc90C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{tv290C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{t068C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+  \code{t4968C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+  \code{tnc68C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+  \code{tv268C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+  \code{t190C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{tnc290C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{t168C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+  \code{tnc268C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+  \code{t3890C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{t38_90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{t3868C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+  \code{t38_38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{upoly_}      \tab \code{upoly}                        \tab -                    \tab   \cr
   \code{v_}          \tab \code{voltage}                      \tab V                    \tab   \cr
   \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3               \tab   \cr
-  \code{xmiss}       \tab \code{beamTransmission}             \tab percent, Chelsea/Seatech\tab \cr
-  \code{xmiss_}      \tab \code{beamTransmission}             \tab percent, Chelsea/Seatech\tab \cr
+  \code{xmiss}       \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
+  \code{xmiss_}      \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
 }
 Notes:
 \itemize{
