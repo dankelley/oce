@@ -171,7 +171,7 @@ the \code{which} argument.
 \item \code{which=1:4} (or \code{which="u1"} to \code{"u4"}) yield a
 distance-time image plot of a velocity component.  If \code{x} is in
 \code{beam} coordinates (signalled by
-\code{x@metadata$oce.coordinate=="beam"}), this will be the beam velocity,
+\code{metadata$oce.coordinate=="beam"}), this will be the beam velocity,
 labelled \code{b[1]} etc.  If \code{x} is in xyz coordinates (sometimes
 called frame coordinates, or ship coordinates), it will be the velocity
 component to the right of the frame or ship (labelled \code{u} etc).

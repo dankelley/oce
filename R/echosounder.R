@@ -156,20 +156,20 @@ setMethod(f="summary",
 #' If \code{i} is the string \code{"Sv"}, the return value is calculated according to
 #' \preformatted{
 #' Sv <- 20*log10(a) -
-#'   (x@metadata$sourceLevel+x@metadata$receiverSensitivity+x@metadata$transmitPower) +
+#'   (x@@metadata$sourceLevel+x@@metadata$receiverSensitivity+x@@metadata$transmitPower) +
 #'   20*log10(r) +
 #'   2*absorption*r -
-#'   x@metadata$correction +
-#'   10*log10(soundSpeed*x@metadata$pulseDuration/1e6*psi/2)
+#'   x@@metadata$correction +
+#'   10*log10(soundSpeed*x@@metadata$pulseDuration/1e6*psi/2)
 #'}
 #'
 #' If \code{i} is the string \code{"TS"}, 
 #' \preformatted{
 #' TS <- 20*log10(a) -
-#'   (x@metadata$sourceLevel+x@metadata$receiverSensitivity+x@metadata$transmitPower) +
+#'   (x@@metadata$sourceLevel+x@@metadata$receiverSensitivity+x@@metadata$transmitPower) +
 #'   40*log10(r) +
 #'   2*absorption*r +
-#'   x@metadata$correction
+#'   x@@metadata$correction
 #'}
 #'
 #' Otherwise, the generic \code{[[} is used.
@@ -322,8 +322,8 @@ setMethod(f="subset",
 #' @param depth depths of samples within pings
 #' @param a matrix of amplitudes
 #' @param src optional string indicating data source
-#' @param sourceLevel source level, in dB(uPa@1m), denoted \code{sl} in [1
-#' p15], where it is in units 0.1dB(uPa@1m)
+#' @param sourceLevel source level, in dB (uPa at 1m), denoted \code{sl} in [1
+#' p15], where it is in units 0.1dB (uPa at 1m)
 #' @param receiverSensitivity receiver sensivity of the main element, in
 #' dB(counts/uPa), denoted \code{rs} in [1 p15], where it is in units of
 #' 0.1dB(counts/uPa)

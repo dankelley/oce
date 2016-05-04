@@ -51,7 +51,7 @@ map2lonlat(xy)
 Dan Kelley
 }
 \seealso{
-{\code{\link{lonlat2map}} does the inverse operation.}
+\code{\link{lonlat2map}} does the inverse operation.
 
 A map must first have been created with \code{\link{mapPlot}}.
 

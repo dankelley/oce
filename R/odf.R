@@ -374,8 +374,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits,
 #' This involves storing the 8 headers verbatim in the
 #' \code{odfHeaders} in the \code{metadata} slot, and also
 #' copying some of the header
-#' information into more standard names (e.g.  \code{metadata@longitude} is a
-#' copy of \code{metadata@odfHeader$EVENT_HEADER$INITIAL_LATITUDE}).  As for
+#' information into more standard names (e.g.  \code{metadata@@longitude} is a
+#' copy of \code{metadata@@odfHeader$EVENT_HEADER$INITIAL_LATITUDE}).  As for
 #' the \code{DATA}, they are stored in the \code{data} slot, after renaming
 #' from ODF to oce convention using \code{\link{ODFNames2oceNames}}.
 #' 
@@ -385,6 +385,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits,
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #' @return An oce object, possibly coerced to a subtype.
+#'
 #' @section Caution: This function may change as the \code{ODF} package
 #' changes.  Since \code{ODF} has not been released yet, this should not affect
 #' any users except those involved in the development of \code{oce} and
