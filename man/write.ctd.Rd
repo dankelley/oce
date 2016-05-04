@@ -14,7 +14,8 @@ a mandatory argument.}
 }
 \description{
 Writes a comma-separated file containing the data frame stored in
-\code{object@data}.  The file is suitable for reading with a spreadsheet, or
+the \code{data} slot of the first argument.  The file is suitable
+for reading with a spreadsheet, or
 with \code{\link{read.csv}}.  Note that the output file will retain none of the
 meta-data stored in \code{object}.
 }

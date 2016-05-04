@@ -21,7 +21,8 @@ plotProfile(x, xtype = "salinity+temperature", ytype = c("pressure", "z",
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{xtype}{Item(s) plotted on the x axis, either a vector of length equal
-to that of \code{x@data$pressure} or a text code from the list below.
+to that of \code{pressure} in the \code{data} slot, 
+or a text code from the list below.
 \describe{ \item{list("\"salinity\"")}{Profile of salinity.}
 \item{list("\"conductivity\"")}{Profile of conductivity.}
 \item{list("\"temperature\"")}{Profile of \emph{in-situ} temperature.}

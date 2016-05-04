@@ -337,14 +337,13 @@ uses the `rgdal` package to calculate the details of map projections.  A wide
 group of functions is provided for plotting maps.  The first step is to call
 `mapPlot()` to construct the map, after which points can be added with
 `mapPoints()`, lines with `mapLines()`, etc. For example, the following plots a
-world coastline in the Winkel Tripel projection (used by the National
-Geographical Society, and so familiar to many readers), with the cruise track
+world coastline in the Mollweide projection, with the cruise track
 for the `section` dataset in red.
-```{r fig.cap="**Figure 5.** World in Winkel Tripel projection, with the `section` profile sites indicated.", fig.width=4, fig.height=2.6, dpi=72}
+```{r fig.cap="**Figure 5.** World in Mollweide projection, with the `section` profile sites indicated.", fig.width=4, fig.height=2.6, dpi=72}
 library(oce)
 data(coastlineWorld)
 par(mar=rep(0, 4))
-mapPlot(coastlineWorld, projection="+proj=wintri", col="lightgray")
+mapPlot(coastlineWorld, projection="+proj=moll", col="lightgray")
 data(section)
 lon <- section[["longitude", "byStation"]]
 lat <- section[["latitude", "byStation"]]
