@@ -162,7 +162,6 @@ test_that("Dalhousie-produced cnv file", {
 test_that("Beaufort sea data I (reading ctd/woce/exchange)", {
           d2 <- read.oce(system.file("extdata", "d200321-001.ctd", package="oce"))
           expect_equal(d2[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
-          expect_equal(d2[["conductivityUnit"]], list(unit=expression(), scale=""))
           expect_equal(d2[["pressureUnit"]], list(unit=expression(dbar), scale=""))
           expect_equal(d2[["pressureType"]], "sea")
           expect_equal(d2[["ship"]], "CCGS Louis S St.Laurent")
