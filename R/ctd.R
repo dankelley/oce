@@ -339,75 +339,79 @@ setMethod(f="summary",
 #' slot, so for example \code{x[["temperature"]]} will retrieve that
 #' item. By contrast, \code{x[["sigmaTheta"]]} is taken to be a
 #' request to compute \eqn{\sigma_\theta}{sigma[theta]}, and so
-#' it yields a call to \code{\link{swTheta}(x)} \emph{even if}
+#' it yields a call to \code{\link{swTheta}(x)} even if
 #' the \code{data} slot of \code{x} might happen to contain an item
 #' named \code{theta}. This can be confusing at first, but it tends
 #' to lead to fewer surprises in everyday work, for otherwise the
 #' user would be forced to check the contents of any \code{ctd}
 #' object under analysis, to determine whether that item will be looked
 #' up or computed. Nothing is lost in this scheme, since the data
-#' within the object are always accessible with a direct call, e.g.
-#' \code{x@data$sigmaTheta}, or a with \code{\link{oceGetData}}.
+#' within the object are always accessible with \code{\link{oceGetData}}.
 #'
 #' This preference for computed over stored quantities is accomplished
 #' by first checking for computed quantities, and then falling
-#' back to the general \code{\link{[[}} method if no match is found.
+#' back to the general \code{[[} method if no match is found.
 #' The computed quantities are as follows.
 #'
 #' \itemize{
 #'
-#' \item{\code{CT} or \code{Conservative Temperature}: Conservative Temperature,
-#' computed with \code{\link[gsw]{gsw_CT_from_t}} in the \code{gsw} package.}
+#' \item \code{CT} or \code{Conservative Temperature}: Conservative Temperature,
+#' computed with \code{\link[gsw]{gsw_CT_from_t}} in the \code{gsw} package.
 #'
-#' \item{\code{depth} Depth in metres below the surface, computed with \code{\link{swDepth}(x)}.}
+#' \item \code{depth}: Depth in metres below the surface, computed
+#' with \code{\link{swDepth}(x)}.
 #'
-#' \item{\code{N2} Square of Brunt-Vaisala frequency, computed  with \code{\link{swN2}(x)}.}
+#' \item \code{N2}: Square of Brunt-Vaisala frequency, computed  with
+#' \code{\link{swN2}(x)}.
 #'
-#' \item{\code{potential temperature}, potential temperature in the UNESCO formulation,
-#' computed with \code{\link{swTheta}(x)}. This is a synonym for \code{theta}.}
+#' \item \code{potential temperature}: Potential temperature in the
+#' UNESCO formulation, computed with \code{\link{swTheta}(x)}.
+#' This is a synonym for \code{theta}.
 #'
-#' \item{\code{Rrho} density ratio, computed with \code{\link{swRrho}(x)}.}
+#' \item \code{Rrho}: Density ratio, computed with \code{\link{swRrho}(x)}.
 #'
-#' \item{\code{SA} or \code{Absolute Salinity}: Absolute Salinity,
-#' computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.}
+#' \item \code{SA} or \code{Absolute Salinity}: Absolute Salinity,
+#' computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.
 #'
-#' \item{\code{sigmaTheta} a form of potential density anomaly, computed with
-#' \code{\link{swSigmaTheta}(x)}.}
+#' \item \code{sigmaTheta}: A form of potential density anomaly, computed with
+#' \code{\link{swSigmaTheta}(x)}.
 #'
-#' \item{\code{sigma0} equal to \code{sigmaTheta}, i.e. potential density anomaly
-#' referenced to a pressure of 0dbar, computed with \code{\link{swSigma0}(x)}.}
+#' \item \code{sigma0} Equal to \code{sigmaTheta}, i.e. potential density anomaly
+#' referenced to a pressure of 0dbar, computed with \code{\link{swSigma0}(x)}.
 #'
-#' \item{\code{sigma1} potential density anomaly
-#' referenced to a pressure of 1000dbar, computed with \code{\link{swSigma1}(x)}.}
+#' \item \code{sigma1}: Potential density anomaly
+#' referenced to a pressure of 1000dbar, computed with \code{\link{swSigma1}(x)}.
 #'
-#' \item{\code{sigma2} potential density anomaly
-#' referenced to a pressure of 2000dbar, computed with \code{\link{swSigma2}(x)}.}
+#' \item \code{sigma2}: Potential density anomaly
+#' referenced to a pressure of 2000dbar, computed with \code{\link{swSigma2}(x)}.
 #'
-#' \item{\code{sigma3} potential density anomaly
-#' referenced to a pressure of 3000dbar, computed with \code{\link{swSigma3}(x)}.}
+#' \item \code{sigma3}: Potential density anomaly
+#' referenced to a pressure of 3000dbar, computed with \code{\link{swSigma3}(x)}.
 #'
-#' \item{\code{sigma4} potential density anomaly
-#' referenced to a pressure of 4000dbar, computed with \code{\link{swSigma4}(x)}.}
+#' \item \code{sigma4}: potential density anomaly
+#' referenced to a pressure of 4000dbar, computed with \code{\link{swSigma4}(x)}.
 #'                                        
-#' \item{\code{SP} salinity on the Practical Salinity Scale, which is \code{x@data$salinity}.}
+#' \item \code{SP}: Salinity on the Practical Salinity Scale, which is
+#' \code{salinity} in the \code{data} slot.
 #'
-#' \item{\code{spice} a variable that is in some sense orthogonal to density, calculated
-#' with \code{\link{swSpice}(x)}.}
+#' \item \code{spice}: a variable that is in some sense orthogonal to density,
+#' calculated with \code{\link{swSpice}(x)}.
 #'
-#' \item{\code{SR} Reference Salinity computed with \code{\link[gsw]{gsw_SR_from_SP}} in
-#' the \code{gsw} package.}
+#' \item \code{SR}: Reference Salinity computed with
+#' \code{\link[gsw]{gsw_SR_from_SP}} in the \code{gsw} package.
 #'
-#' \item{\code{Sstar} Preformed Salinity computed with \code{\link[gsw]{gsw_SR_from_SP}} in
-#' the \code{gsw} package.}
+#' \item \code{Sstar}: Preformed Salinity computed with
+#' \code{\link[gsw]{gsw_SR_from_SP}} in the \code{gsw} package.
 #'
-#' \item{\code{temperature68}, temperature on the IPTS-1968 scale, computed
-#' with \code{\link{T68fromT90}(x)}.}
+#' \item \code{temperature68}: temperature on the IPTS-1968 scale, computed
+#' with \code{\link{T68fromT90}(x)}.
 #'
-#' \item{\code{theta}, potential temperature in the UNESCO formulation,
-#' computed with \code{\link{swTheta}(x)}. This is a synonym for \code{potential temperature}.}
+#' \item \code{theta}: potential temperature in the UNESCO formulation,
+#' computed with \code{\link{swTheta}(x)}. This is a synonym for
+#' \code{potential temperature}.
 #'
-#' \item{\code{z} Vertical coordinate in metres above the surface, computed with
-#' \code{\link{swZ}(x)}.}
+#' \item \code{z}: Vertical coordinate in metres above the surface, computed with
+#' \code{\link{swZ}(x)}.
 #'
 #' }
 #'
@@ -1967,7 +1971,8 @@ ctdUpdateHeader <- function (x, debug = FALSE)
 #' Write a CTD Data Object as a CSV File
 #' 
 #' Writes a comma-separated file containing the data frame stored in
-#' \code{object@data}.  The file is suitable for reading with a spreadsheet, or
+#' the \code{data} slot of the first argument.  The file is suitable
+#' for reading with a spreadsheet, or
 #' with \code{\link{read.csv}}.  Note that the output file will retain none of the
 #' meta-data stored in \code{object}.
 #' 
@@ -2031,8 +2036,9 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' 
 #' @param which List of desired plot types, as given below. If \code{which} is not
 #' supplied, a default will be used. This default will be \code{c(1,2,3,5)} if the
-#' CTD is in profiling mode (i.e.  if \code{x@metadata$deploymentType=="profile"}
-#' or if that item is non extant). If the deployment type is \code{"moored"} or
+#' CTD is in profiling mode (i.e. if \code{deploymentType} in the \code{metadata}
+#' slot equals \code{"profile"},
+#' or is missing) or
 #' \code{"thermosalinograph"}, the default will be \code{c(30, 3, 31, 5)}.  If it
 #' is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as follows.
 #' 
@@ -3414,7 +3420,8 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' 
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @param xtype Item(s) plotted on the x axis, either a vector of length equal
-#' to that of \code{x@data$pressure} or a text code from the list below.
+#' to that of \code{pressure} in the \code{data} slot, 
+#' or a text code from the list below.
 #' \describe{ \item{list("\"salinity\"")}{Profile of salinity.}
 #' \item{list("\"conductivity\"")}{Profile of conductivity.}
 #' \item{list("\"temperature\"")}{Profile of \emph{in-situ} temperature.}

@@ -1192,13 +1192,17 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 #' xyz-based coordinate system.
 #' 
 #' The coordinate transformation is done using the transformation matrix
-#' contained in \code{x@metadata$transformation.matrix}, which is normally
+#' contained in \code{transformation.matrix} in the
+#' \code{metadata} slot, which is normally
 #' inferred from the header in the binary file.  If there is no such matrix
 #' (e.g. if the data were streamed through a data logger that did not capture
 #' the header), \code{beamToXyzAdv} the user will need to store one in
 #' \code{x}, e.g. by doing something like the following:
-#' \code{x@metadata$transformation.matrix <- rbind(c(11100, -5771, -5321), c(
-#' 291, 9716, -10002), c( 1409, 1409, 1409)) / 4096} .
+#' \preformatted{
+#' x[["transformation.matrix"]] <- rbind(c(11100, -5771, -5321),
+#'                                       c( #' 291, 9716, -10002),
+#'                                       c( 1409, 1409, 1409)) / 4096
+#' }
 #' 
 #' @param x an object of class \code{"adv"}.
 #' @param debug a flag that, if non-zero, turns on debugging.  Higher values
@@ -1321,7 +1325,8 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' See \dQuote{Details}.
 #' @param sensorOrientation optional string indicating the direction in which
 #' the sensor points.  The value, which must be \code{"upward"} or
-#' \code{"downward"}, over-rides the value of \code{x@metadata$orientation},
+#' \code{"downward"}, over-rides the value of \code{orientation},
+#' in the \code{metadata} slot,
 #' which will have been set by \code{\link{read.adv}}, \emph{provided} that the
 #' data file contained the full header.  See \dQuote{Details}.
 #' @param debug a flag that, if non-zero, turns on debugging.  Higher values

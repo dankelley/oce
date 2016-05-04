@@ -2101,7 +2101,7 @@ mapLocator <- function(n=512, type='n', ...)
 #' map2lonlat(xy)
 #' }
 #'
-#' @seealso{\code{\link{lonlat2map}} does the inverse operation.}
+#' @seealso \code{\link{lonlat2map}} does the inverse operation.
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.

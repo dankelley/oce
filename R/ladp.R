@@ -12,13 +12,13 @@
 #' 
 #'     Metadata (contained in the S4 slot named \code{metadata}) may be retrieved
 #'     or set by name, \code{ladp[["longitude"]] <- ladp[["longitude"]] + 1}
-#'     corrects a one-degree error.  Use \code{names(ladp@metadata)} to find the
+#'     corrects a one-degree error.  Use \code{names(ladp@@metadata)} to find the
 #'     names of the metadata.
 #' 
 #'     Column data may be accessed by name, e.g. \code{ladp[["u"]]},
 #'     \code{ladp[["v"]]}, \code{ladp[["pressure"]]}, etc.  There may also be
 #'     columns for \code{"temperature"} and \code{"salinity"}, and possibly other
-#'     things. Use \code{names(ladp@data)} to find the names of the data.
+#'     things. Use \code{names(ladp@@data)} to find the names of the data.
 #' 
 #' @author Dan Kelley
 #' 
