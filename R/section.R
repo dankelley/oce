@@ -1200,9 +1200,9 @@ setMethod(f="plot",
                       }
                   } else {                        
                       ## not a map
-                      if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "data") {
-                          stop("this section does not contain a variable named '", variable, "'")
-                      }
+                      ## if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "data") {
+                      ##     stop("this section does not contain a variable named '", variable, "'")
+                      ## }
 
                       if (drawPoints || ztype == "image") {
                           if (is.null(zbreaks)) {
@@ -1317,7 +1317,7 @@ setMethod(f="plot",
                                   } else if (eos == "teos" && variable == "salinity") {
                                       zz[i,] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
                                   } else {
-                                      zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
+                                      zz[i,] <- rev(x@data$station[[stationIndices[i]]][[variable]])
                                   }
                               }
                           }
@@ -1911,6 +1911,7 @@ read.section <- function(file, directory, sectionId="", flags,
     header.length <- l + 1
     ccc <- textConnection(lines[header.length - 1])
     var.names <- scan(ccc, sep=",", what="", quiet=TRUE)
+    dataNamesOriginal <- var.names
     close(ccc)
     ccc <- textConnection(lines[header.length])
     var.units <- scan(ccc, sep=",", what="", quiet=TRUE)
@@ -2063,6 +2064,32 @@ read.section <- function(file, directory, sectionId="", flags,
     time <- vector("numeric", numStations) # has to be numeric
     ## tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC")
     ## trefn <- as.numeric(tref)
+
+
+    ## We will trim out metadata columns, in assembling the 'data' slot of
+    ## the ctd objects that will make up the section. The pattern below is based
+    ## on one particular file (provided with oce in inst/extdata), which has
+    ## the following column names.
+    ## "EXPOCODE" "SECT_ID" "STNNBR" "CASTNO" "SAMPNO" "BTLNBR" "BTLNBR_FLAG_W"
+    ## "DATE" "TIME" "LATITUDE" "LONGITUDE" "DEPTH" "CTDPRS" "CTDTMP"
+    ## "CTDSAL" "CTDSAL_FLAG_W" "SALNTY" "SALNTY_FLAG_W" "OXYGEN" "OXYGEN_FLAG_W" 
+    colSkip <- var.names %in% c("EXPOCODE", "SECT_ID", "STNNBR", "CASTNO", "SAMPNO",
+                                "BTLNBR", "BTLNBR_FLAG_W",
+                                "DATE", "TIME", "LATITUDE", "LONGITUDE", "DEPTH")
+    dataNamesOriginal <- var.names[!colSkip]
+    dataNames <- woceNames2oceNames(var.names)[!colSkip]
+    dataUnits <- list()
+    for (idata in seq_along(dataNames)) {
+        n <- dataNames[idata]
+        dataUnits[[dataNames[idata]]] <- unitFromString(var.units[!colSkip][idata])
+    }
+    ## print(data.frame(dataNames, dataNamesOriginal))
+    ## print(dataUnits)
+
+
+    ## print(data.frame(oceNames, dataNamesOriginal))
+    ## Names and units are the same for every station, so determine them
+    ## before going through the data.
     for (i in 1:numStations) {
 	oceDebug(debug, "reading station", i, "... ")
 	select <- which(stationId == stationList[i])
@@ -2072,60 +2099,82 @@ read.section <- function(file, directory, sectionId="", flags,
 	stn[i] <- sub("^ *", "", stationId[select[1]])
 	lon[i] <- longitude[select[1]]
 	lat[i] <- latitude[select[1]]
-        ## FIXME: chop flags up
-        flagsSelected <- flags
-        for (name in names(flagsSelected)) {
-            flagsSelected[[name]] <- flags[[name]][select]
+        ## ## FIXME: chop flags up
+        ## flagsSelected <- flags
+        ## for (name in names(flagsSelected)) {
+        ##     flagsSelected[[name]] <- flags[[name]][select]
+        ## }
+        ## ##> message("flagsSelected:"); str(flagsSelected)
+	## thisStation <- as.ctd(salinity=salinity[select],
+	## 		       temperature=temperature[select],
+	## 		       pressure=pressure[select],
+        ##                        oxygen=if(!is.null(oxygen))oxygen[select],
+        ##                        nitrate=if(!is.null(nitrate))nitrate[select],
+        ##                        nitrite=if(!is.null(nitrite))nitrite[select],
+        ##                        phosphate=if(!is.null(phosphate))phosphate[select],
+        ##                        silicate=if(!is.null(silicate))silicate[select],
+        ##                        flags=flagsSelected,
+	## 		       ship=ship,
+	## 		       startTime=numberAsPOSIXct(time[i]),
+	## 		       scientist=scientist,
+	## 		       institute=institute,
+	## 		       longitude=lon[i], latitude=lat[i],
+	## 		       cruise=stnSectionId[select[1]],
+	## 		       station=stn[i],
+	## 		       waterDepth=waterDepth[select[1]],
+	## 		       src=filename)
+        select <- which(stationId == stationList[i])
+        thisStation <- new("ctd")
+        thisStation@data <- list() # start over, then insert one by one
+        ## colNames <- oceNames[!colSkip]
+        DATA <- data[,!colSkip]
+        for (idata in seq_along(dataNames)) {
+            ## message("colNames[", idata, "]: ", colNames[idata])
+            thisStation@data[[dataNames[idata]]] <- as.numeric(DATA[select, idata])
         }
-        ##> message("flagsSelected:"); str(flagsSelected)
-	thisStation <- as.ctd(salinity=salinity[select],
-			       temperature=temperature[select],
-			       pressure=pressure[select],
-                               oxygen=if(!is.null(oxygen))oxygen[select],
-                               nitrate=if(!is.null(nitrate))nitrate[select],
-                               nitrite=if(!is.null(nitrite))nitrite[select],
-                               phosphate=if(!is.null(phosphate))phosphate[select],
-                               silicate=if(!is.null(silicate))silicate[select],
-                               flags=flagsSelected,
-			       ship=ship,
-			       startTime=numberAsPOSIXct(time[i]),
-			       scientist=scientist,
-			       institute=institute,
-			       longitude=lon[i], latitude=lat[i],
-			       cruise=stnSectionId[select[1]],
-			       station=stn[i],
-			       waterDepth=waterDepth[select[1]],
-			       src=filename)
+        thisStation@metadata$names <- dataNames
+        thisStation@metadata$labels <- dataNames
+        thisStation@metadata$dataNamesOriginal <- dataNamesOriginal
+        thisStation@metadata$src <- filename
+        thisStation@metadata$longitude <- lon[i]
+        thisStation@metadata$latitude <- lat[i]
+        thisStation@metadata$time[i] <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""), "%Y%m%d%H%M", tz="UTC"))
+        thisStation@metadata$stn[i] <- sub("^ *", "", stationId[select[1]])
+        thisStation@metadata$time <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""), "%Y%m%d%H%M", tz="UTC"))
+        thisStation@metadata$station <- sub("^ *", "", stationId[select[1]])
+        thisStation@metadata$longitude <- longitude[select[1]]
+        thisStation@metadata$latitude <- latitude[select[1]]
+        thisStation@metadata$waterDepth <- waterDepth[select[1]]
+
+        thisStation@metadata$units <- dataUnits
         if (length(salinityBottle)) {
             thisStation@metadata$units$salinityBottle <- salinityBottleUnit
             thisStation@data$salinityBottle <- salinityBottle[select]
         }
-
-        thisStation@metadata$units$temperature <- temperatureUnit
-        thisStation@metadata$units$salinity <- salinityUnit
-        thisStation@metadata$units$pressure <- pressureUnit
-        ## Nitrite and Nitrate are tricky since they can be contained 
-        ## in the file individually or in combination, with a column 
-        ## that is the sum of NO2 and NO3.
-        if (haveNO2plusNO3) {
-            if (is.null(nitriteUnit)) {
-                if (!is.null(nitrateUnit)) {
-                    thisStation@metadata$units$nitrate <- nitrateUnit
-                    thisStation@metadata$units$nitrite <- nitrateUnit
-                }
-            } else {
-                if (!is.null(nitriteUnit)) {
-                    thisStation@metadata$units$nitrate <- nitriteUnit
-                    thisStation@metadata$units$nitrite <- nitriteUnit
-                }
-            }
-        } else {
-            if (!is.null(nitrateUnit)) thisStation@metadata$units$nitrate <- nitrateUnit
-            if (!is.null(nitriteUnit)) thisStation@metadata$units$nitrite <- nitriteUnit
-        }
-        if (!is.null(oxygenUnit)) thisStation@metadata$units$oxygen <- oxygenUnit
-        if (!is.null(silicateUnit)) thisStation@metadata$units$silicate <- silicateUnit
-        if (!is.null(phosphateUnit)) thisStation@metadata$units$phosphate <- phosphateUnit
+        ## 20160504: I no longer think we should store made-up columns; an accessor
+        ## 20160504: could use the following code, though, so I'll keep it here, commented-out.
+        ## 20160504: ## Nitrite and Nitrate are tricky since they can be contained 
+        ## 20160504: ## in the file individually or in combination, with a column 
+        ## 20160504: ## that is the sum of NO2 and NO3.
+        ## 20160504: if (haveNO2plusNO3) {
+        ## 20160504:     if (is.null(nitriteUnit)) {
+        ## 20160504:         if (!is.null(nitrateUnit)) {
+        ## 20160504:             thisStation@metadata$units$nitrate <- nitrateUnit
+        ## 20160504:             thisStation@metadata$units$nitrite <- nitrateUnit
+        ## 20160504:         }
+        ## 20160504:     } else {
+        ## 20160504:         if (!is.null(nitriteUnit)) {
+        ## 20160504:             thisStation@metadata$units$nitrate <- nitriteUnit
+        ## 20160504:             thisStation@metadata$units$nitrite <- nitriteUnit
+        ## 20160504:         }
+        ## 20160504:     }
+        ## 20160504: } else {
+        ## 20160504:     if (!is.null(nitrateUnit)) thisStation@metadata$units$nitrate <- nitrateUnit
+        ## 20160504:     if (!is.null(nitriteUnit)) thisStation@metadata$units$nitrite <- nitriteUnit
+        ## 20160504: }
+        ## if (!is.null(oxygenUnit)) thisStation@metadata$units$oxygen <- oxygenUnit
+        ## if (!is.null(silicateUnit)) thisStation@metadata$units$silicate <- silicateUnit
+        ## if (!is.null(phosphateUnit)) thisStation@metadata$units$phosphate <- phosphateUnit
 	if (debug) cat(length(select), "levels @ ", lat[i], "N ", lon[i], "W\n")
 	station[[i]] <- thisStation
     }
@@ -2337,7 +2386,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
             thisStation <- res@data$station[[s]]
             temperatureMat[,s] <- thisStation@data$temperature
             salinityMat[,s] <- thisStation@data$salinity
-            sigmaThetaMat[,s] <- thisStation@data$sigmaTheta
+            sigmaThetaMat[,s] <- thisStation[["sigmaTheta"]]
         }
         ## turn off warnings about df being too small
         o <- options('warn')

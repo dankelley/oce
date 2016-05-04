@@ -11,7 +11,7 @@
 #' @return vector of strings holding \code{oce}-style names.
 #' @author Dan Kelley
 #' @family things related to \code{ctd} data
-#' @family functions that interpret variable names from headers
+#' @family functions that interpret variable names and units from headers
 woceNames2oceNames <- function(names)
 {
     ## FIXME: this almost certainly needs a lot more translations. The next comment lists some that
