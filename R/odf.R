@@ -254,7 +254,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits,
     if (n != length(ODFunits))
         stop("length of ODFnames and ODFunits must agree but they are ", n, " and ", length(ODFunits))
     names <- ODFnames
-    message("names: ", paste(names, collapse="|"))
+    ## message("names: ", paste(names, collapse="|"))
     ## Capture names for UNKN_* items, and key on them.  Possibly this should be done to
     ## get all the names, but then we just transfer the problem of decoding keys
     ## to decoding strings, and that might yield problems with encoding, etc.
@@ -272,8 +272,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits,
         cnames <- names(columns)
         for (i in seq_along(cnames)) {
             if (name[i] == columns[[i]]$name) {
-                message("HIT; name=", cnames[i])
-                message("HIT; unit$scale=", columns[[i]]$unit$scale)
+                ##message("HIT; name=", cnames[i])
+                ##message("HIT; unit$scale=", columns[[i]]$unit$scale)
                 name[i] = names
             }
         }
@@ -320,9 +320,9 @@ ODFNames2oceNames <- function(ODFnames, ODFunits,
     ## Step 3: recognize something from moving-vessel CTDs
     ## Step 4: some meanings inferred (guessed, really) from file CTD_HUD2014030_163_1_DN.ODF
     ## Finally, fix up suffixes.
-    message("names (line 324): ", paste(names, collapse="|"))
+    ##message("names (line 324): ", paste(names, collapse="|"))
     names <- gsub("_[0-9][0-9]", "", names)
-    message("names (line 326): ", paste(names, collapse="|"))
+    ##message("names (line 326): ", paste(names, collapse="|"))
     if (n > 1) {
         for (i in 2:n) {
             ##message("names[", i, "] = '", names[i], "'")
@@ -330,7 +330,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits,
                 names[i] <- paste(names[i-1], "Flag", sep="")
         }
     }
-    message("finally, names: ", paste(names, collapse="|"))
+    ##message("finally, names: ", paste(names, collapse="|"))
     ## Now deal with units
     units <- list()
     for (i in seq_along(names)) {
