@@ -1934,50 +1934,50 @@ read.section <- function(file, directory, sectionId="", flags,
 	data[l - header.length,] <- contents[col.start:nv]
 	## FIXME: maybe should just scan this thing; it might work better anyway
     }
-    salinityUnit <- NULL
-    if (1 == length(w <- which(var.names=="CTDPRS"))) {
-	pressure <- as.numeric(data[, w - col.start + 1])
-        pressureUnit <- as.unit(var.units[w], list(unit=expression(dbar), scale=""))
-        if (1 == length(wf <- which(var.names=="CTDPRS_FLAG_W")))
-            flags$pressure <- as.numeric(data[, wf - col.start + 1])
-    } else stop("no column named \"CTDPRS\"")
-    if (1==length(w <- which(var.names=="CTDTMP"))) {
-	temperature <- as.numeric(data[, w - col.start + 1])
-        temperatureUnit <- as.unit(var.units[w], list(unit=expression(degree*C), scale="ITS-90"))
-        if (1 == length(wf <- which(var.names=="CTDTMP_FLAG_W")))
-            flags$temperature <- as.numeric(data[, wf - col.start + 1])
-    } else stop("no column named \"CTDTMP\"")
+    ## salinityUnit <- NULL
+    ## if (1 == length(w <- which(var.names=="CTDPRS"))) {
+    ##     pressure <- as.numeric(data[, w - col.start + 1])
+    ##     pressureUnit <- as.unit(var.units[w], list(unit=expression(dbar), scale=""))
+    ##     if (1 == length(wf <- which(var.names=="CTDPRS_FLAG_W")))
+    ##         flags$pressure <- as.numeric(data[, wf - col.start + 1])
+    ## } else stop("no column named \"CTDPRS\"")
+    ## if (1==length(w <- which(var.names=="CTDTMP"))) {
+    ##     temperature <- as.numeric(data[, w - col.start + 1])
+    ##     temperatureUnit <- as.unit(var.units[w], list(unit=expression(degree*C), scale="ITS-90"))
+    ##     if (1 == length(wf <- which(var.names=="CTDTMP_FLAG_W")))
+    ##         flags$temperature <- as.numeric(data[, wf - col.start + 1])
+    ## } else stop("no column named \"CTDTMP\"")
 
-    oceDebug(debug, "var.names=", paste(var.names, sep=","), "\n")
-    haveSalinity <- FALSE
-    salinityUnit <- NULL
-    
-    ## For salinity, use CTDSAL if it exists, otherwise use 'SALNTY', if it exists. If 
-    ## both exist, store SALNTY as 'salinityBottle'.
-    haveTwoSalinities <- length(which(var.names=="CTDSAL")) && length(which(var.names=="CTDSAL"))
-    salinityBottle <- NULL # so we can check later
-    if (1 == length(w <- which(var.names=="CTDSAL"))) {
-        haveSalinity <- TRUE
-        salinity <- as.numeric(data[, w - col.start + 1])
-        salinityUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
-        if (1 == length(wf <- which(var.names=="CTDSAL_FLAG_W")))
-            flags$salinity <- as.numeric(data[, wf - col.start + 1])
-    } 
-    if (1 == length(w <- which(var.names=="SALNTY"))) { # spelling not a typo
-        haveSalinity <- TRUE
-        if (haveTwoSalinities) {
-            salinityBottle <- as.numeric(data[, w - col.start + 1])
-            salinityBottleUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
-            if (1 == length(wf <- which(var.names=="SALNTY_FLAG_W")))
-                flags$salinityBottle <- as.numeric(data[, wf - col.start + 1])
-        } else {
-            salinity <- as.numeric(data[, w - col.start + 1])
-            salinityUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
-            if (1 == length(wf <- which(var.names=="SALNTY_FLAG_W")))
-                flags$salinity <- as.numeric(data[, wf - col.start + 1])
-        }
-    }
-    if (!haveSalinity) stop("no column named \"CTDSAL\" or \"SALNTY\"")
+    ## ## oceDebug(debug, "var.names=", paste(var.names, sep=","), "\n")
+    ## ## haveSalinity <- FALSE
+    ## ## salinityUnit <- NULL
+    ## 
+    ## ## For salinity, use CTDSAL if it exists, otherwise use 'SALNTY', if it exists. If 
+    ## ## both exist, store SALNTY as 'salinityBottle'.
+    ## haveTwoSalinities <- length(which(var.names=="CTDSAL")) && length(which(var.names=="CTDSAL"))
+    ## salinityBottle <- NULL # so we can check later
+    ## if (1 == length(w <- which(var.names=="CTDSAL"))) {
+    ##     haveSalinity <- TRUE
+    ##     salinity <- as.numeric(data[, w - col.start + 1])
+    ##     salinityUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
+    ##     if (1 == length(wf <- which(var.names=="CTDSAL_FLAG_W")))
+    ##         flags$salinity <- as.numeric(data[, wf - col.start + 1])
+    ## } 
+    ## if (1 == length(w <- which(var.names=="SALNTY"))) { # spelling not a typo
+    ##     haveSalinity <- TRUE
+    ##     if (haveTwoSalinities) {
+    ##         salinityBottle <- as.numeric(data[, w - col.start + 1])
+    ##         salinityBottleUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
+    ##         if (1 == length(wf <- which(var.names=="SALNTY_FLAG_W")))
+    ##             flags$salinityBottle <- as.numeric(data[, wf - col.start + 1])
+    ##     } else {
+    ##         salinity <- as.numeric(data[, w - col.start + 1])
+    ##         salinityUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
+    ##         if (1 == length(wf <- which(var.names=="SALNTY_FLAG_W")))
+    ##             flags$salinity <- as.numeric(data[, wf - col.start + 1])
+    ##     }
+    ## }
+    ## if (!haveSalinity) stop("no column named \"CTDSAL\" or \"SALNTY\"")
     if (length(which(var.names=="DATE")))
 	stn.date <- as.character(data[,which(var.names=="DATE") - col.start + 1])
     else
@@ -1988,67 +1988,67 @@ read.section <- function(file, directory, sectionId="", flags,
 	stop("no column named \"TIME\"")
     ## EXPOCODE,SECT_ID,STNNBR,CASTNO,SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
 
-    oxygenUnit <- NULL
-    if (1 == length(w <- which(var.names=="OXYGEN"))) {
-        oxygen <- as.numeric(data[, w - col.start + 1])
-        oxygen[oxygen == missingValue] <- NA
-        oxygenUnit <- as.unit(var.units[w], list(unit=expression(mu*mol/kg), scale=""))
-        if (1 == length(wf <- which(var.names=="OXYGEN_FLAG_W")))
-            flags$oxygen <- as.numeric(data[, wf - col.start + 1])
-    } else oxygen <- NULL
-    silicateUnit <- NULL
-    if (1 == length(w <- which(var.names=="SILCAT"))) {
-        silicate <- as.numeric(data[, w - col.start + 1])
-        silicate[silicate == missingValue] <- NA
-        silicateUnit <- as.unit(var.units[w], list(unit=expression(mu*mol/kg), scale=""))
-        if (1 == length(wf <- which(var.names=="SILCAT_FLAG_W")))
-            flags$silicate <- as.numeric(data[, wf - col.start + 1])
-    } else silicate <- NULL
-    nitriteUnit <- NULL
-    if (1 == length(w <- which(var.names=="NITRIT"))) {
-        nitrite <- as.numeric(data[, w - col.start + 1])
-        nitrite[nitrite == missingValue] <- NA
-        nitriteUnit <- as.unit(var.units[w], expression(unit=expression(mu*mol/kg), scale=""))
-        if (1 == length(wf <- which(var.names=="NITRIT_FLAG_W")))
-            flags$nitrite <- as.numeric(data[, wf - col.start + 1])
-    } else nitrite <- NULL
-    nitrateUnit <- NULL
-    if (1 == length(w <- which(var.names=="NITRAT"))) {
-        nitrate <- as.numeric(data[,which(var.names=="NITRAT") - col.start + 1])
-        nitrate[nitrate == missingValue] <- NA
-        nitrateUnit <- as.unit(var.units[w], expression(unit=expression(mu*mol/kg), scale=""))
-        if (1 == length(wf <- which(var.names=="NITRAT_FLAG_W")))
-            flags$nitrate <- as.numeric(data[, wf - col.start + 1])
-    } else nitrate <- NULL
-    haveNO2plusNO3 <- FALSE
-    if (1 == length(w <- which(var.names=="NO2+NO3"))) {
-        haveNO2plusNO3 <- TRUE
-        no2plusno3 <- as.numeric(data[, w - col.start + 1])
-        no2plusno3[no2plusno3 == missingValue] <- NA
-        if (is.null(nitrate)) {
-            nitrate <- no2plusno3 - nitrite
-            rm(no2plusno3)
-        } else {
-            if (is.null(nitrite)) {
-                nitrite <- no2plusno3 - nitrate
-                rm(no2plusno3)
-            } else {
-                warning("cannot determine nitrate and nitrite")
-                nitrite <- nitrate <- NULL
-            }
-        }
-        if (1 == length(wf <- which(var.names=="NO2+NO3_FLAG_W")))
-            flags$nitrate <- as.numeric(data[, wf - col.start + 1])
-        ## http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm
-    }
-    phosphateUnit <- NULL
-    if (1 == length(w <- which(var.names=="PHSPHT"))) {
-        phosphate <- as.numeric(data[, w - col.start + 1])
-        phosphate[phosphate == missingValue] <- NA
-        phosphateUnit <- as.unit(var.units[w], expression(unit=expression(mu*mol/kg), scale=""))
-        if (1 == length(wf <- which(var.names=="PHSPHT_FLAG_W")))
-            flags$phosphate  <- as.numeric(data[, wf - col.start + 1])
-    } else phosphate <- NULL
+    ## oxygenUnit <- NULL
+    ## if (1 == length(w <- which(var.names=="OXYGEN"))) {
+    ##     oxygen <- as.numeric(data[, w - col.start + 1])
+    ##     oxygen[oxygen == missingValue] <- NA
+    ##     oxygenUnit <- as.unit(var.units[w], list(unit=expression(mu*mol/kg), scale=""))
+    ##     if (1 == length(wf <- which(var.names=="OXYGEN_FLAG_W")))
+    ##         flags$oxygen <- as.numeric(data[, wf - col.start + 1])
+    ## } else oxygen <- NULL
+    ## silicateUnit <- NULL
+    ## if (1 == length(w <- which(var.names=="SILCAT"))) {
+    ##     silicate <- as.numeric(data[, w - col.start + 1])
+    ##     silicate[silicate == missingValue] <- NA
+    ##     silicateUnit <- as.unit(var.units[w], list(unit=expression(mu*mol/kg), scale=""))
+    ##     if (1 == length(wf <- which(var.names=="SILCAT_FLAG_W")))
+    ##         flags$silicate <- as.numeric(data[, wf - col.start + 1])
+    ## } else silicate <- NULL
+    ## nitriteUnit <- NULL
+    ## if (1 == length(w <- which(var.names=="NITRIT"))) {
+    ##     nitrite <- as.numeric(data[, w - col.start + 1])
+    ##     nitrite[nitrite == missingValue] <- NA
+    ##     nitriteUnit <- as.unit(var.units[w], expression(unit=expression(mu*mol/kg), scale=""))
+    ##     if (1 == length(wf <- which(var.names=="NITRIT_FLAG_W")))
+    ##         flags$nitrite <- as.numeric(data[, wf - col.start + 1])
+    ## } else nitrite <- NULL
+    ## nitrateUnit <- NULL
+    ## if (1 == length(w <- which(var.names=="NITRAT"))) {
+    ##     nitrate <- as.numeric(data[,which(var.names=="NITRAT") - col.start + 1])
+    ##     nitrate[nitrate == missingValue] <- NA
+    ##     nitrateUnit <- as.unit(var.units[w], expression(unit=expression(mu*mol/kg), scale=""))
+    ##     if (1 == length(wf <- which(var.names=="NITRAT_FLAG_W")))
+    ##         flags$nitrate <- as.numeric(data[, wf - col.start + 1])
+    ## } else nitrate <- NULL
+    ## haveNO2plusNO3 <- FALSE
+    ## if (1 == length(w <- which(var.names=="NO2+NO3"))) {
+    ##     haveNO2plusNO3 <- TRUE
+    ##     no2plusno3 <- as.numeric(data[, w - col.start + 1])
+    ##     no2plusno3[no2plusno3 == missingValue] <- NA
+    ##     if (is.null(nitrate)) {
+    ##         nitrate <- no2plusno3 - nitrite
+    ##         rm(no2plusno3)
+    ##     } else {
+    ##         if (is.null(nitrite)) {
+    ##             nitrite <- no2plusno3 - nitrate
+    ##             rm(no2plusno3)
+    ##         } else {
+    ##             warning("cannot determine nitrate and nitrite")
+    ##             nitrite <- nitrate <- NULL
+    ##         }
+    ##     }
+    ##     if (1 == length(wf <- which(var.names=="NO2+NO3_FLAG_W")))
+    ##         flags$nitrate <- as.numeric(data[, wf - col.start + 1])
+    ##     ## http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm
+    ## }
+    ## phosphateUnit <- NULL
+    ## if (1 == length(w <- which(var.names=="PHSPHT"))) {
+    ##     phosphate <- as.numeric(data[, w - col.start + 1])
+    ##     phosphate[phosphate == missingValue] <- NA
+    ##     phosphateUnit <- as.unit(var.units[w], expression(unit=expression(mu*mol/kg), scale=""))
+    ##     if (1 == length(wf <- which(var.names=="PHSPHT_FLAG_W")))
+    ##         flags$phosphate  <- as.numeric(data[, wf - col.start + 1])
+    ## } else phosphate <- NULL
     waterDepth  <- as.numeric(data[,which(var.names=="DEPTH") - col.start + 1])
     ## FIXME: we have both 'latitude' and 'lat'; this is too confusing
     longitude <- as.numeric(data[,which(var.names=="LONGITUDE") - col.start + 1])
@@ -2128,13 +2128,20 @@ read.section <- function(file, directory, sectionId="", flags,
         thisStation@data <- list() # start over, then insert one by one
         ## colNames <- oceNames[!colSkip]
         DATA <- data[,!colSkip]
+        isFlag <- rep(TRUE, sum(!colSkip))
         for (idata in seq_along(dataNames)) {
-            ## message("colNames[", idata, "]: ", colNames[idata])
-            thisStation@data[[dataNames[idata]]] <- as.numeric(DATA[select, idata])
+            ## Split flags into metadata
+            isFlag[idata] <- 0 < length(grep("Flag$", dataNames[idata]))
+            if (isFlag[idata]) {
+                thisStation@metadata$flags[[gsub("Flag$", "", dataNames[idata])]] <- as.numeric(data[select, idata])
+            } else {
+                ## message("colNames[", idata, "]: ", colNames[idata])
+                thisStation@data[[dataNames[idata]]] <- as.numeric(DATA[select, idata])
+            }
         }
-        thisStation@metadata$names <- dataNames
-        thisStation@metadata$labels <- dataNames
-        thisStation@metadata$dataNamesOriginal <- dataNamesOriginal
+        thisStation@metadata$names <- dataNames[!isFlag]
+        thisStation@metadata$labels <- dataNames[!isFlag]
+        thisStation@metadata$dataNamesOriginal <- dataNamesOriginal[!isFlag]
         thisStation@metadata$src <- filename
         thisStation@metadata$longitude <- lon[i]
         thisStation@metadata$latitude <- lat[i]
@@ -2147,10 +2154,10 @@ read.section <- function(file, directory, sectionId="", flags,
         thisStation@metadata$waterDepth <- waterDepth[select[1]]
 
         thisStation@metadata$units <- dataUnits
-        if (length(salinityBottle)) {
-            thisStation@metadata$units$salinityBottle <- salinityBottleUnit
-            thisStation@data$salinityBottle <- salinityBottle[select]
-        }
+        ## if (length(salinityBottle)) {
+        ##     thisStation@metadata$units$salinityBottle <- salinityBottleUnit
+        ##     thisStation@data$salinityBottle <- salinityBottle[select]
+        ## }
         ## 20160504: I no longer think we should store made-up columns; an accessor
         ## 20160504: could use the following code, though, so I'll keep it here, commented-out.
         ## 20160504: ## Nitrite and Nitrate are tricky since they can be contained 
