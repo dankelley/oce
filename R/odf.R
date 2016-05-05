@@ -246,7 +246,7 @@ findInHeader <- function(key, lines) # local
 #' @template debugTemplate
 #' @return A vector of strings.
 #' @author Dan Kelley
-#' @family functions that interpret variable names from headers
+#' @family functions that interpret variable names and units from headers
 ODFNames2oceNames <- function(ODFnames, ODFunits,
                               columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
 {
@@ -347,7 +347,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits,
         } else if (ODFunits[i] == "none") {
             list(unit=expression(), scale="")
         } else if (ODFunits[i] == "PSU") {
-            list(unit=expression(), scale="PSU")
+            list(unit=expression(), scale="PSS-78")
         } else if (ODFunits[i] == "sigma-theta, kg/m^3") {
             list(unit=expression(kg/m^3), scale="")
         } else if (ODFunits[i] == "S/m") {

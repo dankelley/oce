@@ -56,7 +56,7 @@ lookWithin <- function(list)
                 if ("temperature" == names[i]) {
                     scale <- list1@metadata$units[["temperature"]]$scale
                     if (!is.null(scale) && "IPTS-68" == scale) {
-                        warning("converted temperature from IPTS-68 to ITS-90 scale")
+                        ## warning("converted temperature from IPTS-68 to ITS-90 scale")
                         ##print(head(list[[i]], 2))
                         list[[i]] <- T90fromT68(list[[i]])
                         ##print(head(list[[i]], 2))
@@ -273,18 +273,15 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
             if (derivs == "simple") {
                 sigmaThetaDeriv <- c(0, diff(sigmaTheta) / diff(pressure))
             } else if (derivs == "smoothing") {
-                depths <- length(pressure)
+                depths <- sum(!is.na(pressure))
                 if (missing(df)) {
-                    if (depths > 20)
-                        df <- floor(depths / 10)
-                    else if (depths > 10)
-                        df <- floor(depths / 3)
-                    else
-                        df <- floor(depths / 2)
+                    df <- if (depths > 100) f <- floor(depths / 10) # at least 10
+                        else if (depths > 20) f <- floor(depths / 3) # at least 7
+                        else if (depths > 10) f <- floor(depths / 2) # at least 5
+                        else depths
                     oceDebug(getOption("oceDebug"), "df not supplied, so set to ", df, "(note: #depths=", depths, ")\n")
                 }
-                df <- round(min(df, length(unique(pressure))/2))
-                if (depths > 4 && df > 1) {
+                if (depths > 4 && df > 5) {
                     sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
                     sigmaThetaDeriv <- rep(NA, length(pressure))
                     sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
@@ -301,6 +298,9 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
                 stop("derivs must be 'smoothing', 'simple', or a function")
             sigmaThetaDeriv <- derivs(pressure, sigmaTheta)
         }
+        ## FIXME (DK 2016-05-04) I am not sure I like the following since it
+        ## uses a standardized rho_0. But it's from some official source I think.
+        ## Must check this. (UNESCO book?)
         res <- ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
     } else if (eos == "gsw") {
         if (!inherits(pressure, "ctd"))

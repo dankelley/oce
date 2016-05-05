@@ -131,7 +131,7 @@
 #' 1. A SBE data processing manual is at \url{http://www.seabird.com/sites/all/modules/pubdlcnt/pubdlcnt.php?file=http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.25.0.pdf&nid=1320}.
 #'
 #' @family things related to \code{ctd} data
-#' @family functions that interpret variable names from headers
+#' @family functions that interpret variable names and units from headers
 cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 {
     if (length(h) != 1)
