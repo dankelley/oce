@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{unduplicateNames}
 \alias{unduplicateNames}
-\title{Rename duplicated items (used in reading CTD files) [local function]}
+\title{Rename duplicated items (used in reading CTD files)}
 \usage{
 unduplicateNames(names)
 }
@@ -13,6 +13,10 @@ unduplicateNames(names)
 names Vector of strings with numbered variable names.
 }
 \description{
-Rename duplicated items (used in reading CTD files) [local function]
+Rename items to avoid name collision, by appending a \code{2} to
+the second occurrence of a name, etc.
+}
+\examples{
+unduplicateNames(c("a", "b", "a", "c", "b"))
 }
 

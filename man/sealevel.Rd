@@ -20,6 +20,9 @@ website, the record ends on the 8th of October.
 \author{
 Dan Kelley
 }
+\references{
+1. Fisheries and Oceans Canada \url{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
+}
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},

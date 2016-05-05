@@ -34,10 +34,16 @@ unitFromString <- function(s)
     return(list(unit=as.expression(s), scale=""))
 }
 
-#' Rename duplicated items (used in reading CTD files) [local function]
+#' Rename duplicated items (used in reading CTD files)
+#'
+#' Rename items to avoid name collision, by appending a \code{2} to
+#' the second occurrence of a name, etc.
 #' 
 #' @param names Vector of strings with variable names.
 #' @return names Vector of strings with numbered variable names.
+#'
+#' @examples
+#' unduplicateNames(c("a", "b", "a", "c", "b"))
 unduplicateNames <- function(names)
 {
     ## Handle duplicated names
@@ -49,7 +55,7 @@ unduplicateNames <- function(names)
             ##message("duplicated: ", names[i])
             ##message("w: ", paste(w, collapse=" "))
             ##message(paste(names, collapse=" "))
-            names[w] <- paste(names[i], "_", 1+seq.int(1,length(w)), sep="")
+            names[w] <- paste(names[i], 1+seq.int(1,length(w)), sep="")
             ##message(paste(names, collapse=" "))
         }
     }
