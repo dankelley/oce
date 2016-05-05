@@ -12,8 +12,8 @@ testthat::expect_equal(stn2@metadata$flags$salinity, c(2,2,2,2,3,3,2,2,3,3,3,3,3
 testthat::expect_equal(stn2@metadata$flags$salinityBottle, c(2,3,2,2,2,3,2,2,2,2,2,2,2,2,2,2))
 testthat::expect_equal(stn2@metadata$flags$oxygen, twos)
 testthat::expect_equal(stn2@metadata$flags$silicate, twos)
-testthat::expect_equal(stn2@metadata$flags$nitrate, twos)
 testthat::expect_equal(stn2@metadata$flags$nitrite, twos)
+testthat::expect_equal(stn2@metadata$flags[["NO2+NO3"]], twos)
 testthat::expect_equal(stn2@metadata$flags$phosphate, c(2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2))
 
 plot(section, xtype="time")

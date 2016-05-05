@@ -2133,7 +2133,7 @@ read.section <- function(file, directory, sectionId="", flags,
             ## Split flags into metadata
             isFlag[idata] <- 0 < length(grep("Flag$", dataNames[idata]))
             if (isFlag[idata]) {
-                thisStation@metadata$flags[[gsub("Flag$", "", dataNames[idata])]] <- as.numeric(data[select, idata])
+                thisStation@metadata$flags[[gsub("Flag$", "", dataNames[idata])]] <- as.numeric(DATA[select, idata])
             } else {
                 ## message("colNames[", idata, "]: ", colNames[idata])
                 thisStation@data[[dataNames[idata]]] <- as.numeric(DATA[select, idata])
@@ -2143,6 +2143,7 @@ read.section <- function(file, directory, sectionId="", flags,
         thisStation@metadata$labels <- dataNames[!isFlag]
         thisStation@metadata$dataNamesOriginal <- dataNamesOriginal[!isFlag]
         thisStation@metadata$src <- filename
+        thisStation@metadata$startTime <- numberAsPOSIXct(time[i])
         thisStation@metadata$longitude <- lon[i]
         thisStation@metadata$latitude <- lat[i]
         thisStation@metadata$time[i] <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""), "%Y%m%d%H%M", tz="UTC"))
