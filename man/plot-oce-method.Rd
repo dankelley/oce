@@ -8,13 +8,20 @@
 \S4method{plot}{oce}(x, y, ...)
 }
 \arguments{
-\item{x}{An oce object.}
+\item{x}{A basic \code{oce} object, i.e. one inheriting from \code{\link{oce-class}},
+but not from any subclass of that (because these subclasses go to the subclass
+plot methods, e.g. a \code{\link{ctd-class}} object would go to
+\code{\link{plot,ctd-method}}.}
 
-\item{...}{Passed to \code{\link{pairs}}, which does the plotting.}
+\item{y}{Ignored; only present here because S4 object for generic \code{plot}
+need to have a second parameter before the \code{...} parameter.}
+
+\item{...}{Passed to \code{\link{hist}}, \code{\link{plot}}, or to}
 }
 \description{
 This creates a \code{\link{pairs}} plot of the elements in the \code{data}
-slot.
+slot, if there are more than 2 elements there, or a simple xy plot if 2
+elements, or a histogram if 1 element.
 }
 \examples{
 library(oce)

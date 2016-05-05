@@ -15,7 +15,6 @@ Depends:
 Suggests:
     ocedata,
     foreign,
-    mapproj,
     ncdf4,
     tiff,
     akima,

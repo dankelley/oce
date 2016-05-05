@@ -5,7 +5,7 @@ import(methods)
 import(gsw)
 importFrom("graphics", ".filled.contour", "abline", "arrows", "axis", "Axis",
            "axis.POSIXct", "box", "contour", "frame", "grid", "hist", "image",
-           "layout", "lcm", "legend", "lines", "locator", "mtext", "par",
+           "layout", "lcm", "legend", "lines", "locator", "mtext", "pairs", "par",
            "plot", "plot.new", "plot.window", "points", "polygon", "rect",
            "segments", "smoothScatter", "strwidth", "text", "title", "xinch",
            "yinch")
