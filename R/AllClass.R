@@ -22,9 +22,13 @@ setClass("oce",
          representation(metadata="list",
                         data="list",
                         processingLog="list"),
-         prototype=list(metadata=list(filename="", units=list(), flags=list()),
+         prototype=list(metadata=list(units=list(),
+                                      flags=list()),
                         data=list(),
-                        processingLog=list()))
+                        processingLog=list(time=as.POSIXct(Sys.time()),
+                                           value="Create oce object.")
+                        )
+         )
 
 #' Summarize an oce Object
 #'
