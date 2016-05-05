@@ -23,7 +23,8 @@ See \dQuote{Details}.}
 
 \item{sensorOrientation}{optional string indicating the direction in which
 the sensor points.  The value, which must be \code{"upward"} or
-\code{"downward"}, over-rides the value of \code{x@metadata$orientation},
+\code{"downward"}, over-rides the value of \code{orientation},
+in the \code{metadata} slot,
 which will have been set by \code{\link{read.adv}}, \emph{provided} that the
 data file contained the full header.  See \dQuote{Details}.}
 

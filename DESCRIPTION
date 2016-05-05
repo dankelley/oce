@@ -7,12 +7,12 @@ Authors@R: c(person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", rol
  person(given="Chantelle", family="Layton", email="chantelle.layton@dal.ca", role=c("ctb","cph"), comment="curl() coauthor"),
  person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field fortran subroutine"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends: 
+Depends:
     R (>= 2.15),
     utils,
     methods,
     gsw
-Suggests: 
+Suggests:
     ocedata,
     foreign,
     mapproj,
@@ -27,16 +27,17 @@ Suggests:
     knitr
 BugReports: https://github.com/dankelley/oce/issues
 Description: Supports the analysis of Oceanographic data, including 'ADCP'
-    measurements, measurements made with 'argo' floats, 'CTD' measurements, sectional
-    data, sea-level time series, coastline and topographic data, etc. Provides
-    specialized functions for calculating seawater properties such as potential
-    temperature in either the 'UNESCO' or 'TEOS-10' equation of state. Produces
-    graphical displays that conform to the conventions of the Oceanographic literature.
+    measurements, measurements made with 'argo' floats, 'CTD' measurements,
+    sectional data, sea-level time series, coastline and topographic data, etc.
+    Provides specialized functions for calculating seawater properties such as
+    potential temperature in either the 'UNESCO' or 'TEOS-10' equation of state.
+    Produces graphical displays that conform to the conventions of the Oceanographic
+    literature.
 License: GPL (>= 2)
 URL: http://dankelley.github.com/oce/
 LazyLoad: yes
 LazyData: no
 Packaged: Dan Kelley
 Encoding: UTF-8
-RoxygenNote: 5.0.1
+RoxygenNote: 5.0.1.9000
 VignetteBuilder: knitr

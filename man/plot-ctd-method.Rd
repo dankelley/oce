@@ -23,8 +23,9 @@
 
 \item{which}{List of desired plot types, as given below. If \code{which} is not
 supplied, a default will be used. This default will be \code{c(1,2,3,5)} if the
-CTD is in profiling mode (i.e.  if \code{x@metadata$deploymentType=="profile"}
-or if that item is non extant). If the deployment type is \code{"moored"} or
+CTD is in profiling mode (i.e. if \code{deploymentType} in the \code{metadata}
+slot equals \code{"profile"},
+or is missing) or
 \code{"thermosalinograph"}, the default will be \code{c(30, 3, 31, 5)}.  If it
 is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as follows.
 
