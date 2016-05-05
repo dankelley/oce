@@ -151,8 +151,32 @@ setMethod(f="summary",
               invisible(threes)
           })
 
+
+
 ## FIXME: move each of these to the respective .R files
 setClass("satellite", contains="oce") # both amsr and landsat stem from this
+
+
+#' Plot an oce Object
+#'
+#' @description
+#' This creates a \code{\link{pairs}} plot of the elements in the \code{data}
+#' slot.
+#'
+#' @param x An oce object.
+#' @param ... Passed to \code{\link{pairs}}, which does the plotting.
+#' @examples
+#' library(oce)
+#' o <- new("oce")
+#' o <- oceSetData(o, 'x', rnorm(10))
+#' o <- oceSetData(o, 'y', rnorm(10))
+#' o <- oceSetData(o, 'z', rnorm(10))
+#' plot(o)
+setMethod(f="plot",
+          signature="oce",
+          definition=function(x, ...) {
+              pairs(x@data, ...)
+          })
 
 #' Subset an oce Object
 #'
