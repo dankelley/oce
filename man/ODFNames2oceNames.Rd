@@ -88,7 +88,8 @@ has unit mL/L for BIO and IML.
 Dan Kelley
 }
 \seealso{
-Other functions that interpret variable names from headers: \code{\link{cnvName2oceName}},
+Other functions that interpret variable names and units from headers: \code{\link{cnvName2oceName}},
+  \code{\link{unitFromString}},
   \code{\link{woceNames2oceNames}}
 }
 

@@ -1,5 +1,39 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+#' Decode units, from strings
+#'
+#' @param s A string.
+#' @return A \code{\link{list}} of two items: \code{unit} which is an
+#' \code{\link{expression}}, and \code{scale}, which is a string.
+#' @examples
+#' unitFromString("DB") # dbar
+#' @family functions that interpret variable names and units from headers
+unitFromString <- function(s)
+{
+    ## 1. Strings that have been encountered in WOCE secton (.csv) files
+    ## ",,,,,,,,,,,,DBAR,IPTS-68,PSS-78,,PSS-78,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,"
+    ##> message("unitFromString(", s, ")")
+    if (s == "DB" || s == "DBAR")
+        return(list(unit=expression(db), scale=""))
+    if (s == "ITS-90 DEGC" || s == "ITS-90")
+        return(list(unit=expression(degree*C), scale="ITS-90"))
+    if (s == "IPTS-68 DEGC" || s == "IPTS-68")
+        return(list(unit=expression(degree*C), scale="IPTS-68"))
+    if (s == "PSS-78")
+        return(list(unit=expression(), scale="PSS-78"))
+    if (s == "PSU")
+        return(list(unit=expression(), scale="PSS-78"))
+    if (s == "ML/L")
+        return(list(unit=expression(ml/l), scale=""))
+    if (s == "UG/L")
+        return(list(unit=expression(mu*g/l), scale=""))
+    if (s == "UMOL/KG")
+        return(list(unit=expression(mu*mol/kg), scale=""))
+    if (s == "%")
+        return(list(unit=expression(percent), scale=""))
+    return(list(unit=as.expression(s), scale=""))
+}
+
 #' Rename duplicated items (used in reading CTD files) [local function]
 #' 
 #' @param names Vector of strings with variable names.
