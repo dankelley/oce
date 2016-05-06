@@ -104,40 +104,45 @@ oxygen alone has over 40 variants!)
   \code{pr50M}       \tab \code{pressure}                     \tab dbar; SBE50          \tab   \cr
   \code{prSM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
   \code{prDM}        \tab \code{pressure}                     \tab dbar; digiquartz     \tab   \cr
+  \code{prdE}        \tab \code{pressure}                     \tab psi; strain gauge    \tab 2 \cr
   \code{prdM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
   \code{prSM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
-  \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 2 \cr
+  \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 3 \cr
   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
-  \code{sal__}       \tab \code{salinity}                     \tab -, PSS-78            \tab 3 \cr
+  \code{sal__}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
   \code{seaTurbMtr_} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
   \code{sbeox_ML/L}  \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
   \code{sbeox_Mm/Kg} \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
   \code{sbeox_Ps}    \tab \code{oxygen}                       \tab percent              \tab   \cr
   \code{sbeox_V}     \tab \code{oxygenRaw}                    \tab V                    \tab   \cr
   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
-  \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 4 \cr
+  \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
   \code{t_68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
   \code{t_90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
   \code{t_68C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
   \code{t_90C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{t068C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+  \code{t168C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t090Cm}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{t4990C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{tnc90C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{tv290C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-  \code{t068C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t4968C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{tnc68C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{tv268C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t190C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{tnc290C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-  \code{t168C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{tnc268C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t3890C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{t38_90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{t3868C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t38_38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+  \code{timeS}       \tab \code{time}                         \tab second               \tab   \cr
+  \code{timeM}       \tab \code{time}                         \tab minute               \tab   \cr
+  \code{timeH}       \tab \code{time}                         \tab hour                 \tab   \cr
+  \code{timeJ}       \tab \code{time}                         \tab day                  \tab   \cr
   \code{upoly_}      \tab \code{upoly}                        \tab -                    \tab   \cr
   \code{v_}          \tab \code{voltage}                      \tab V                    \tab   \cr
   \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3               \tab   \cr
@@ -147,9 +152,12 @@ oxygen alone has over 40 variants!)
 Notes:
 \itemize{
 \item{1: 'pr' is in a Dalhousie-generated data file but seems not to be in [1].}
-\item{2: assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.}
-\item{3: some files have PSU for this. Should we handle that? And are there other S scales to consider?}
-\item{4: 'theta' may appear in different ways with different encoding configurations, set up
+\item{2: this is an odd unit, and so if \code{sw*} functions are called on an object
+containing this, a conversion will be made before performing the computation. Be
+on the lookout for errors, since this is a rare situation.}
+\item{3: assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.}
+\item{4: some files have PSU for this. Should we handle that? And are there other S scales to consider?}
+\item{5: 'theta' may appear in different ways with different encoding configurations, set up
 within R or in the operating system.}
 }
 }

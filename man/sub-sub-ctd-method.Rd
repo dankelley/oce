@@ -94,6 +94,18 @@ object under analysis, to determine whether that item will be looked
 up or computed. Nothing is lost in this scheme, since the data
 within the object are always accessible with \code{\link{oceGetData}}.
 
+It should be noted that the accessor is set up to retrieve quantities
+in conventional units. For example, it is possible that a \code{.cnv}
+(Seabird) file stores pressure in psi, and in that circumstance,
+\code{x[["pressure"]]} will first multiply by 0.689476 to convert to
+the standard decibar unit.  (The pressure as stored in PSI can
+be retrieved with \code{x@data$pressure}, if for some odd reason
+the user wishes to use that unit.) Similarly, temperature is 
+returned in the ITS-90 scale, and so a conversion is performed with
+\code{\link{T90fromT68}}, if the object has stored temperature in
+the older IPTS-68 unit.  Again, direct retrieval of the quantity is
+possible with \code{x@data$temperature}.
+
 This preference for computed over stored quantities is accomplished
 by first checking for computed quantities, and then falling
 back to the general \code{[[} method if no match is found.
@@ -148,9 +160,6 @@ calculated with \code{\link{swSpice}(x)}.
 
 \item \code{Sstar}: Preformed Salinity computed with
 \code{\link[gsw]{gsw_SR_from_SP}} in the \code{gsw} package.
-
-\item \code{temperature68}: temperature on the IPTS-1968 scale, computed
-with \code{\link{T68fromT90}(x)}.
 
 \item \code{theta}: potential temperature in the UNESCO formulation,
 computed with \code{\link{swTheta}(x)}. This is a synonym for
