@@ -41,34 +41,39 @@
 #'
 #' \tabular{llll}{
 #'   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit;scale} \tab \strong{Notes} \cr
-#'   \code{alt_}        \tab \code{altimeter}                    \tab m                   \tab   \cr
-#'   \code{c_ms/cm}     \tab \code{conductivity}                 \tab ms/cm               \tab   \cr
-#'   \code{CStarAt_}    \tab \code{beamAttenuation}              \tab 1/m                 \tab   \cr
-#'   \code{CStarTr_}    \tab \code{beamTransmission}             \tab percent             \tab   \cr
-#'   \code{depS}        \tab \code{depth}                        \tab m                   \tab   \cr
-#'   \code{depSM}       \tab \code{depth}                        \tab m                   \tab   \cr
-#'   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                 \tab   \cr
-#'   \code{f_}          \tab \code{frequency}                    \tab Hz                  \tab   \cr
-#'   \code{f__}         \tab \code{frequency}                    \tab Hz                  \tab   \cr
-#'   \code{flC}         \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3 \tab   \cr
-#'   \code{flEC-AFLM}   \tab \code{fluorescence}                 \tab mg/m^3; WET labs ECO-AFL/FL \tab   \cr
-#'   \code{flS}         \tab \code{fluorescence}                 \tab unitless;Seatech     \tab   \cr
-#'   \code{flSP}        \tab \code{fluorescence}                 \tab unitless;Seapoint    \tab   \cr
-#'   \code{flSPR}       \tab \code{fluorescence}                 \tab unitless;Seapoint, Rhodamine   \tab   \cr
-#'   \code{flSPuv}      \tab \code{fluorescence}                 \tab unitless;Seapoint, UV\tab   \cr
-#'   \code{flT}         \tab \code{fluorescence}                 \tab unitless;Turner      \tab   \cr
+#'   \code{alt_}        \tab \code{altimeter}                    \tab m                   \tab    \cr
+#'   \code{c_mS/cm}     \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
+#'   \code{c_S/m}       \tab \code{conductivity}                 \tab s/m                 \tab    \cr
+#'   \code{CStarAt_}    \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
+#'   \code{CStarTr_}    \tab \code{beamTransmission}             \tab percent             \tab    \cr
+#'   \code{density__}   \tab \code{density}                      \tab kg/m^3              \tab    \cr
+#'   \code{depS}        \tab \code{depth}                        \tab m                   \tab    \cr
+#'   \code{depSM}       \tab \code{depth}                        \tab m                   \tab    \cr
+#'   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                 \tab    \cr
+#'   \code{f_}          \tab \code{frequency}                    \tab Hz                  \tab    \cr
+#'   \code{f__}         \tab \code{frequency}                    \tab Hz                  \tab    \cr
+#'   \code{flC}         \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3\tab    \cr
+#'   \code{flEC-AFLM}   \tab \code{fluorescence}                 \tab mg/m^3; WET labs ECO-AFL/FLtab\cr
+#'   \code{flS}         \tab \code{fluorescence}                 \tab -; Seatech          \tab    \cr
+#'   \code{flSP}        \tab \code{fluorescence}                 \tab -; Seapoint         \tab    \cr
+#'   \code{flSPR}       \tab \code{fluorescence}                 \tab -; Seapoint, Rhodamine\tab  \cr
+#'   \code{flSPuv}      \tab \code{fluorescence}                 \tab -; Seapoint, UV      \tab   \cr
+#'   \code{flT}         \tab \code{fluorescence}                 \tab -; Turner            \tab   \cr
 #'   \code{latitude}    \tab \code{latitude}                     \tab degN                 \tab   \cr
 #'   \code{longitude}   \tab \code{longitude}                    \tab degE                 \tab   \cr
+#'   \code{n2satML/L}   \tab \code{nitrogenSaturation}           \tab ml/l                 \tab   \cr
+#'   \code{n2satMg/L}   \tab \code{nitrogenSaturation}           \tab mg/l                 \tab   \cr
+#'   \code{n2satumol/kg}\tab \code{nitrogenSaturation}           \tab umol/kg              \tab   \cr
 #'   \code{nbin}        \tab \code{nbin}                         \tab                      \tab   \cr
 #'   \code{oxsatML/L}   \tab \code{oxygen}                       \tab ml/l; Weiss          \tab   \cr
 #'   \code{oxsatMg/L}   \tab \code{oxygen}                       \tab mg/l; Weiss          \tab   \cr
 #'   \code{oxsatMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Weiss       \tab   \cr
 #'   \code{oxsolML/L}   \tab \code{oxygen}                       \tab ml/l; Garcia-Gordon  \tab   \cr
 #'   \code{oxsolMg/L}   \tab \code{oxygen}                       \tab mg/l; Garcia-Gordon  \tab   \cr
-#'   \code{oxsolMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Garcia-Gordon \tab   \cr
-#'   \code{par_}        \tab \code{PAR}                          \tab unitless; Biospherical/Licor \tab   \cr
+#'   \code{oxsolMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Garcia-Gordon\tab  \cr
+#'   \code{par_}        \tab \code{PAR}                          \tab -; Biospherical/Licor\tab   \cr
 #'   \code{par/log}     \tab \code{PAR}                          \tab log; Satlantic       \tab   \cr
-#'   \code{ph}          \tab \code{pH}                           \tab unitless             \tab   \cr
+#'   \code{ph}          \tab \code{pH}                           \tab -                    \tab   \cr
 #'   \code{potemp_68C}  \tab \code{thetaM}                       \tab degC; IPTS-68        \tab   \cr
 #'   \code{potemp_90C}  \tab \code{thetaM}                       \tab degC; ITS-90         \tab   \cr
 #'   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab   \cr
@@ -78,7 +83,8 @@
 #'   \code{prdM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
 #'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 1 \cr
 #'   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
-#'   \code{sal__}       \tab \code{salinityM}                    \tab unitless, PSS-78     \tab 2 \cr
+#'   \code{sal__}       \tab \code{salinity}                     \tab -, PSS-78            \tab 2 \cr
+#'   \code{seaTurbMtr_} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
 #'   \code{sbeox_ML/L}  \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
 #'   \code{sbeox_Mm/Kg} \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
 #'   \code{sbeox_Ps}    \tab \code{oxygen}                       \tab percent              \tab   \cr
@@ -166,16 +172,22 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^c[0-9]mS/cm$", name, ignore.case=TRUE))) {
         name <- "conductivity"
         unit <- list(unit=expression(mS/cm), scale="")
+    } else if (1 == length(grep("^c[0-9]S/m$", name, ignore.case=TRUE))) {
+        name <- "conductivity"
+        unit <- list(unit=expression(S/m), scale="")
     } else if (1 == length(grep("^CStarTr[0-9]$", name, ignore.case=TRUE))) {
         name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="WET Labs C-Star")
-    } else if (1 == length(grep("CStarAt[0-9]", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^CStarAt[0-9]$", name, ignore.case=TRUE))) {
         name <- "beamAttenuation"
         unit <- list(unit=expression(1/m), scale="")
-    } else if (1 == length(grep("depS[M]*", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^density[0-9]{2}$", name, ignore.case=TRUE))) {
+        name <- "density"
+        unit <- list(unit=expression(kg/m^3), scale="")
+    } else if (1 == length(grep("^depS[M]?$", name, ignore.case=TRUE))) {
         name <- "depth"
         unit <- list(unit=expression(m), scale="")
-    } else if (1 == length(grep("dz/dt[M]*", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^dz/dt[M]?$", name, ignore.case=TRUE))) {
         name <- "descentRate"
         unit <- list(unit=expression(m/s), scale="")
     } else if (1 == length(grep("^f[0-9]{1,2}$", name, ignore.case=TRUE))) {
@@ -205,13 +217,21 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^flT$", name, ignore.case=TRUE))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Turner")
-
     } else if (1 == length(grep("latitude", name, ignore.case=TRUE))) {
         name <- "latitude"
         unit <- list(unit=expression(degree*N), scale="")
     } else if (1 == length(grep("longitude", name, ignore.case=TRUE))) {
         name <- "longitude"
         unit <- list(unit=expression(degree*E), scale="")
+    } else if (1 == length(grep("n2satML/L", name, ignore.case=TRUE))) {
+        name <- "nitrogenSaturation"
+        unit <- list(unit=expression(ml/l), scale="")
+    } else if (1 == length(grep("n2satMg/L", name, ignore.case=TRUE))) {
+        name <- "nitrogenSaturation"
+        unit <- list(unit=expression(mg/l), scale="")
+    } else if (1 == length(grep("n2satumol/L", name, ignore.case=TRUE))) {
+        name <- "nitrogenSaturation"
+        unit <- list(unit=expression(mu*mol/l), scale="")
     } else if (name == "nbin") {
         name <- "nbin"
         unit <- list(unit=expression(), scale="")
@@ -281,6 +301,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("scan", name, ignore.case=TRUE))) {
         name <- "scan"
         unit <- list(unit=expression(), scale="")
+    } else if (1 == length(grep("seaTurbMtr", name, ignore.case=TRUE))) {
+        name <- "turbidity"
+        unit <- list(unit=expression(FTU), scale="SeaPoint")
     } else if (1 == length(grep("sigma-.*[0-9]*", name, ignore.case=TRUE))) {
         name <- "sigmaTheta"
         unit <- list(unit=expression(kg/m^3), scale="")
@@ -326,7 +349,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="Chelsea/Seatech")
     } else {
-        warning("unrecognized SBE name '", name, "'; consider using renameData() to set a new name")
+        warning("unrecognized SBE name '", name, "'; consider using 'columns' to define this name")
         unit <- list(unit=expression(), scale="")
     }
     if (debug > 0)
