@@ -1322,7 +1322,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
                 if (!length(x[[datumName]])) {
                     dataNew[[datumName]] <- NULL
                 } else {
-                    if (datumName != "pressure" && datumName != "scan" && datumName != "flag") {
+                    if (datumName != "pressure" && datumName != "flag") {
                         if (all(is.na(x@data[[datumName]]))) {
                             dataNew[[datumName]] <- rep(NA, pt)
                         } else {
