@@ -76,21 +76,23 @@
 #'   \code{ph}          \tab \code{pH}                           \tab -                    \tab   \cr
 #'   \code{potemp_68C}  \tab \code{thetaM}                       \tab degC; IPTS-68        \tab   \cr
 #'   \code{potemp_90C}  \tab \code{thetaM}                       \tab degC; ITS-90         \tab   \cr
-#'   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab   \cr
-#'   \code{pr50M}       \tab \code{pressure}                     \tab dbar                 \tab   \cr
+#'   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab 1 \cr
+#'   \code{prM}         \tab \code{pressure}                     \tab dbar                 \tab   \cr
+#'   \code{pr50M}       \tab \code{pressure}                     \tab dbar; SBE50          \tab   \cr
 #'   \code{prSM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
 #'   \code{prDM}        \tab \code{pressure}                     \tab dbar; digiquartz     \tab   \cr
-#'   \code{prdM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
-#'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 1 \cr
+#'   \code{prdM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
+#'   \code{prSM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
+#'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 2 \cr
 #'   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
-#'   \code{sal__}       \tab \code{salinity}                     \tab -, PSS-78            \tab 2 \cr
+#'   \code{sal__}       \tab \code{salinity}                     \tab -, PSS-78            \tab 3 \cr
 #'   \code{seaTurbMtr_} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
 #'   \code{sbeox_ML/L}  \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
 #'   \code{sbeox_Mm/Kg} \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
 #'   \code{sbeox_Ps}    \tab \code{oxygen}                       \tab percent              \tab   \cr
 #'   \code{sbeox_V}     \tab \code{oxygenRaw}                    \tab V                    \tab   \cr
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
-#'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 3 \cr
+#'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 4 \cr
 #'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
 #'   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
 #'   \code{t_68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
@@ -121,9 +123,10 @@
 #' }
 #' Notes:
 #' \itemize{
-#' \item{1: assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.}
-#' \item{2: some files have PSU for this. Should we handle that? And are there other S scales to consider?}
-#' \item{3: 'theta' may appear in different ways with different encoding configurations, set up
+#' \item{1: 'pr' is in a Dalhousie-generated data file but seems not to be in [1].}
+#' \item{2: assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.}
+#' \item{3: some files have PSU for this. Should we handle that? And are there other S scales to consider?}
+#' \item{4: 'theta' may appear in different ways with different encoding configurations, set up
 #' within R or in the operating system.}
 #' }
 #'
@@ -265,9 +268,23 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^ph$", name))) {
         name <- "pH"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^pr((50M)|(SM)|([dD][mM]))?[0-9]?$", name))) { # let users check whether digiquartz etc
+
+    } else if (1 == length(grep("^pr$", name))) {
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="")
+    } else if (1 == length(grep("^prM$", name))) {
+        name <- "pressure"
+        unit <- list(unit=expression(dbar), scale="")
+    } else if (1 == length(grep("^pr50M[0-9]?$", name))) {
+        name <- "pressure"
+        unit <- list(unit=expression(dbar), scale="SBE50")
+    } else if (1 == length(grep("^prDM$", name))) {
+        name <- "pressure"
+        unit <- list(unit=expression(dbar), scale="Digiquartz")
+    } else if (1 == length(grep("^pr[dS]M$", name))) {
+        name <- "pressure"
+        unit <- list(unit=expression(dbar), scale="Strain Gauge")
+
     } else if (1 == length(grep("ptempC", name, ignore.case=TRUE))) {
         name <- "pressureTemperature" # temperature at the pressure sensor
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale

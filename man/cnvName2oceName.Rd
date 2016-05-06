@@ -99,21 +99,23 @@ oxygen alone has over 40 variants!)
   \code{ph}          \tab \code{pH}                           \tab -                    \tab   \cr
   \code{potemp_68C}  \tab \code{thetaM}                       \tab degC; IPTS-68        \tab   \cr
   \code{potemp_90C}  \tab \code{thetaM}                       \tab degC; ITS-90         \tab   \cr
-  \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab   \cr
-  \code{pr50M}       \tab \code{pressure}                     \tab dbar                 \tab   \cr
+  \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab 1 \cr
+  \code{prM}         \tab \code{pressure}                     \tab dbar                 \tab   \cr
+  \code{pr50M}       \tab \code{pressure}                     \tab dbar; SBE50          \tab   \cr
   \code{prSM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
   \code{prDM}        \tab \code{pressure}                     \tab dbar; digiquartz     \tab   \cr
-  \code{prdM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
-  \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 1 \cr
+  \code{prdM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
+  \code{prSM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
+  \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 2 \cr
   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
-  \code{sal__}       \tab \code{salinity}                     \tab -, PSS-78            \tab 2 \cr
+  \code{sal__}       \tab \code{salinity}                     \tab -, PSS-78            \tab 3 \cr
   \code{seaTurbMtr_} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
   \code{sbeox_ML/L}  \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
   \code{sbeox_Mm/Kg} \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
   \code{sbeox_Ps}    \tab \code{oxygen}                       \tab percent              \tab   \cr
   \code{sbeox_V}     \tab \code{oxygenRaw}                    \tab V                    \tab   \cr
   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
-  \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 3 \cr
+  \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 4 \cr
   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
   \code{t_68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
@@ -144,9 +146,10 @@ oxygen alone has over 40 variants!)
 }
 Notes:
 \itemize{
-\item{1: assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.}
-\item{2: some files have PSU for this. Should we handle that? And are there other S scales to consider?}
-\item{3: 'theta' may appear in different ways with different encoding configurations, set up
+\item{1: 'pr' is in a Dalhousie-generated data file but seems not to be in [1].}
+\item{2: assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.}
+\item{3: some files have PSU for this. Should we handle that? And are there other S scales to consider?}
+\item{4: 'theta' may appear in different ways with different encoding configurations, set up
 within R or in the operating system.}
 }
 }
