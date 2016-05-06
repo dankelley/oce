@@ -6,7 +6,18 @@
 \title{Class to Store CTD (or general hydrographic) Data}
 \description{
 Class to store hydrographic data such as measured with a CTD (conductivity,
-temperature, depth) instrument.
+temperature, depth) instrument. There are other instruments that report
+similar data, though, and the user can create datasets, so this is not
+just mapped to a particular instrument.  There is also flexibility in
+the elements stored in the \code{data} slot. Any such object should
+have \code{temperature}, and that is typically stored by most instruments
+in this general category so it is likely to be present. Data
+files often record \code{salinity}, which is needed for
+many dynamically-related calculalations (e.g. of density), even 
+the instruments record \code{conductivity}. Either may be stored
+within a CTD object, or both.  A similar statement could be made
+about \code{pressure}, which in some cases may be inferred from
+\code{depth}, if only the latter is present in a data file.
 }
 \details{
 Temperature is stored in the ITS-90 scale within the object, but the IPTS-68

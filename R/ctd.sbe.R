@@ -558,7 +558,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
                     warning("ignoring unit on water depth '", look, "'")
                 }
             } else {
-                stop("cannot interpret water depth from '", lline, "'")
+                warning("cannot interpret water depth from '", lline, "'")
             }
         }
         if (0 < (r<-regexpr("^. sample rate =", lline))) {
@@ -635,7 +635,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     oceDebug(debug, "About to read these names: c(\"", paste(colNamesInferred, collapse='","'),"\")\n", sep="")
     data <- as.list(read.table(file, skip=iline-1, header=FALSE))
     if (length(data) != length(colNamesInferred))
-        stop("Number of columns in .cnv data file does not equal number of named variables")
+        stop("Number of columns in .cnv data file must match number of variables named in the header")
     names(data) <- colNamesInferred
     ndata <- length(data[[1]])
     if (0 < ndata) {
