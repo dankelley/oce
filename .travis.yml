@@ -9,6 +9,7 @@ apt_packages:
     - libnetcdf-dev
     - netcdf-bin
     - libproj-dev
+    - libhdf5-7
     - libhdf5-dev
     - libhdf5-serial-dev
     - libgdal-dev
