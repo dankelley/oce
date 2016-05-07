@@ -42,7 +42,7 @@ seems to vary more between sample files.
 The table given below indicates the translation patterns used. These are 
 taken from [1]. The \code{.cnv} convention for multiple sensors is to
 include optional extra digits in the name, and these are indicated
-with \code{_} in the table; their decoding is done with \code{\link{grep}}.
+with \code{~} in the table; their decoding is done with \code{\link{grep}}.
 
 It is important to note that this table is by no means complete, since there
 are a great many SBE names listed in their document [1], plus names 
@@ -64,17 +64,17 @@ oxygen alone has over 40 variants!)
 
 \tabular{llll}{
   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit;scale} \tab \strong{Notes} \cr
-  \code{alt_}        \tab \code{altimeter}                    \tab m                   \tab    \cr
-  \code{c_mS/cm}     \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
-  \code{c_S/m}       \tab \code{conductivity}                 \tab s/m                 \tab    \cr
-  \code{CStarAt_}    \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
-  \code{CStarTr_}    \tab \code{beamTransmission}             \tab percent             \tab    \cr
-  \code{density__}   \tab \code{density}                      \tab kg/m^3              \tab    \cr
+  \code{altM}        \tab \code{altimeter}                    \tab m                   \tab    \cr
+  \code{c~mS/cm}     \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
+  \code{c~S/m}       \tab \code{conductivity}                 \tab s/m                 \tab    \cr
+  \code{CStarAt~}    \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
+  \code{CStarTr~}    \tab \code{beamTransmission}             \tab percent             \tab    \cr
+  \code{density~~}   \tab \code{density}                      \tab kg/m^3              \tab    \cr
   \code{depS}        \tab \code{depth}                        \tab m                   \tab    \cr
   \code{depSM}       \tab \code{depth}                        \tab m                   \tab    \cr
   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                 \tab    \cr
-  \code{f_}          \tab \code{frequency}                    \tab Hz                  \tab    \cr
-  \code{f__}         \tab \code{frequency}                    \tab Hz                  \tab    \cr
+  \code{f~}          \tab \code{frequency}                    \tab Hz                  \tab    \cr
+  \code{f~~}         \tab \code{frequency}                    \tab Hz                  \tab    \cr
   \code{flC}         \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3\tab    \cr
   \code{flEC-AFLM}   \tab \code{fluorescence}                 \tab mg/m^3; WET labs ECO-AFL/FLtab\cr
   \code{flS}         \tab \code{fluorescence}                 \tab -; Seatech          \tab    \cr
@@ -94,11 +94,11 @@ oxygen alone has over 40 variants!)
   \code{oxsolML/L}   \tab \code{oxygen}                       \tab ml/l; Garcia-Gordon  \tab   \cr
   \code{oxsolMg/L}   \tab \code{oxygen}                       \tab mg/l; Garcia-Gordon  \tab   \cr
   \code{oxsolMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Garcia-Gordon\tab  \cr
-  \code{par_}        \tab \code{PAR}                          \tab -; Biospherical/Licor\tab   \cr
+  \code{par~}        \tab \code{PAR}                          \tab -; Biospherical/Licor\tab   \cr
   \code{par/log}     \tab \code{PAR}                          \tab log; Satlantic       \tab   \cr
   \code{ph}          \tab \code{pH}                           \tab -                    \tab   \cr
-  \code{potemp_68C}  \tab \code{thetaM}                       \tab degC; IPTS-68        \tab   \cr
-  \code{potemp_90C}  \tab \code{thetaM}                       \tab degC; ITS-90         \tab   \cr
+  \code{potemp~68C}  \tab \code{thetaM}                       \tab degC; IPTS-68        \tab   \cr
+  \code{potemp~90C}  \tab \code{thetaM}                       \tab degC; ITS-90         \tab   \cr
   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab 1 \cr
   \code{prM}         \tab \code{pressure}                     \tab dbar                 \tab   \cr
   \code{pr50M}       \tab \code{pressure}                     \tab dbar; SBE50          \tab   \cr
@@ -109,20 +109,21 @@ oxygen alone has over 40 variants!)
   \code{prSM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 3 \cr
   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
-  \code{sal__}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
-  \code{seaTurbMtr_} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
-  \code{sbeox_ML/L}  \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
-  \code{sbeox_Mm/Kg} \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
-  \code{sbeox_Ps}    \tab \code{oxygen}                       \tab percent              \tab   \cr
-  \code{sbeox_V}     \tab \code{oxygenRaw}                    \tab V                    \tab   \cr
+  \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
+  \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
+  \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
+  \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
+  \code{sbeox~Ps}    \tab \code{oxygen}                       \tab percent              \tab   \cr
+  \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V                    \tab   \cr
   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
+  \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
-  \code{t_68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
-  \code{t_90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
-  \code{t_68C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
-  \code{t_90C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{t~68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
+  \code{t~90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
+  \code{t~68C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
+  \code{t~90C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{t068C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t168C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t090Cm}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
@@ -136,18 +137,18 @@ oxygen alone has over 40 variants!)
   \code{tnc290C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{tnc268C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t3890C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-  \code{t38_90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{t38~90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{t3868C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-  \code{t38_38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+  \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{timeS}       \tab \code{time}                         \tab second               \tab   \cr
   \code{timeM}       \tab \code{time}                         \tab minute               \tab   \cr
   \code{timeH}       \tab \code{time}                         \tab hour                 \tab   \cr
   \code{timeJ}       \tab \code{time}                         \tab day                  \tab   \cr
-  \code{upoly_}      \tab \code{upoly}                        \tab -                    \tab   \cr
-  \code{v_}          \tab \code{voltage}                      \tab V                    \tab   \cr
+  \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
+  \code{v~}          \tab \code{voltage}                      \tab V                    \tab   \cr
   \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3               \tab   \cr
   \code{xmiss}       \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
-  \code{xmiss_}      \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
+  \code{xmiss~}      \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
 }
 Notes:
 \itemize{
