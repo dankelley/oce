@@ -714,30 +714,35 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     if (haveData) {
         if (!found.salinity) {
             if (found.conductivity.ratio) {
-                warning("cannot find 'salinity' in this file; calculating from T, conductivity ratio, and p")
                 C <- data$conductivityratio
-                cmax <- max(C, na.rm=TRUE)
-                if (cmax > 5) {
-                    warning("max(conductivity) > 5, so dividing by 42.914 before computing S. However, the original data are left in the object.")
-                    C <- C / 42.914
-                } else if (cmax > 1) {
-                    warning("max(conductivity) between 1 and 5, so dividing by 4.2914 before computing S. However, the original data are left in the object.")
-                    C <- C / 4.2914
-                }
                 S <- swSCTp(C, data$temperature, data$pressure)
-                warning("created a salinity column from temperature, conductivity-ratio and pressure")
+                warning("created a salinity data item from the temperature, conductivity-ratio and pressure items")
             } else if (found.conductivity) {
                 C <- data$conductivity
-                cmax <- max(C, na.rm=TRUE)
-                if (cmax > 5) {
-                    warning("max(conductivity) > 5, so dividing by 42.914 before computing S. However, the original data are left in the object.")
-                    C <- C / 42.914
-                } else if (cmax > 1) {
-                    warning("max(conductivity) between 1 and 5, so dividing by 4.2914 before computing S. However, the original data are left in the object.")
-                    C <- C / 4.2914
+                if (!is.null(res@metadata$units$conductivity)) {
+                    unit <- as.character(res@metadata$units$conductivity$unit)
+                    ## Conductivity Ratio is conductivity divided by 42.914 mS/cm (Culkin and Smith 1980;
+                    ## see ?read.rsk for full citation)
+                    if ("mS/cm" == unit) {
+                        C <- C / 42.914 # e.g. RSK 
+                    } else if ("S/m" == unit) {
+                        C <- C / 4.2914
+                    } else {
+                        warning("unrecognized conductivity unit '", unit, "'; assuming mS/cm for salinity calculation -- results should be used with caution")
+                    }
+                } else {
+                    warning("missing conductivity unit; guessing a unit based on maximum value")
+                    cmax <- max(C, na.rm=TRUE)
+                    if (cmax > 10) {
+                        warning("max(conductivity) > 10, so using using conductivity/42.914 as a conductivity ratio for computation of salinity")
+                        C <- C / 42.914
+                    } else if (cmax > 1) {
+                        warning("max(conductivity) between 1 and 10, so using using conductivity/4.2914 as a conductivity ratio for computation of salinity")
+                        C <- C / 4.2914
+                    }
                 }
                 S <- swSCTp(C, data$temperature, data$pressure)
-                warning("created a salinity column from temperature, conductivity and pressure")
+                warning("created a salinity data item from the temperature, conductivity and pressure items")
             } else {
                 warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items")
             }
@@ -752,7 +757,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
                                 unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
             ## colNamesOriginal <- c(colNamesOriginal, "NA")
-            warning("created a pressure column from the depth column")
+            warning("created a pressure data item from the depth item")
         }
     }
     ##res@metadata$dataNamesOriginal <- colNamesOriginal
