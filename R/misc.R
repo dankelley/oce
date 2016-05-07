@@ -3928,7 +3928,7 @@ decodeDataNames <- function(names, scheme)
     res <- names
     if (!missing(scheme)) {
         if (scheme == "ODF") {
-            res <- ODFNames2oceNames(names)
+            res <- ODFNames2oceNames(ODFnames=names, ODFunits=NULL)
         } else if (scheme == "met") {
             ## FIXME: capture the flags also
             if (1 == length(i <- grep("^Temp.*C.*$", res))) res[i] <- "temperature"

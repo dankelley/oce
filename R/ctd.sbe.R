@@ -491,11 +491,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     }
     colNamesInferred <- unduplicateNames(colNamesInferred)
     res@metadata$dataNamesOriginal <- dataNamesOriginal
-    found.scan <- "scan" %in% colNamesInferred
-    found.temperature <- "temperature" %in% colNamesInferred
+    ##found.scan <- "scan" %in% colNamesInferred
+    ##found.temperature <- "temperature" %in% colNamesInferred
     found.pressure <- "pressure" %in% colNamesInferred
     found.salinity <- "salinity" %in% colNamesInferred
-    found.time <- "time" %in% colNamesInferred
+    ##found.time <- "time" %in% colNamesInferred
     found.depth <- "depth" %in% colNamesInferred
     found.conductivity <- "conductivity" %in% colNamesInferred
     found.conductivity.ratio <- "conductivity.ratio" %in% colNamesInferred
