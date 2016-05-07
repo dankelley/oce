@@ -9,7 +9,7 @@ apt_packages:
     - libnetcdf-dev
     - netcdf-bin
     - libproj-dev
-    - librgdal-dev
+    - libgdal-dev
     - gdal-bin
 
 r_packages:
