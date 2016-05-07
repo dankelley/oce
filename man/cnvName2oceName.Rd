@@ -66,12 +66,15 @@ oxygen alone has over 40 variants!)
   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit;scale} \tab \strong{Notes} \cr
   \code{altM}        \tab \code{altimeter}                    \tab m                   \tab    \cr
   \code{c~mS/cm}     \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
-  \code{c~S/m}       \tab \code{conductivity}                 \tab s/m                 \tab    \cr
+  \code{c~S/m}       \tab \code{conductivity}                 \tab S/m                 \tab    \cr
+  \code{c~uS/cm}     \tab \code{conductivity}                 \tab uS/cm               \tab    \cr
   \code{CStarAt~}    \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
   \code{CStarTr~}    \tab \code{beamTransmission}             \tab percent             \tab    \cr
   \code{density~~}   \tab \code{density}                      \tab kg/m^3              \tab    \cr
   \code{depS}        \tab \code{depth}                        \tab m                   \tab    \cr
   \code{depSM}       \tab \code{depth}                        \tab m                   \tab    \cr
+  \code{depF}        \tab \code{depth}                        \tab m                   \tab    \cr
+  \code{depFM}       \tab \code{depth}                        \tab m                   \tab    \cr
   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                 \tab    \cr
   \code{f~}          \tab \code{frequency}                    \tab Hz                  \tab    \cr
   \code{f~~}         \tab \code{frequency}                    \tab Hz                  \tab    \cr
@@ -145,7 +148,10 @@ oxygen alone has over 40 variants!)
   \code{timeH}       \tab \code{time}                         \tab hour                 \tab   \cr
   \code{timeJ}       \tab \code{time}                         \tab day                  \tab   \cr
   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
-  \code{v~}          \tab \code{voltage}                      \tab V                    \tab   \cr
+  \code{uuser~}      \tab \code{user}                         \tab -                    \tab   \cr
+  \code{v~~}         \tab \code{voltage}                      \tab V                    \tab   \cr
+  \code{wetBAttn}    \tab \code{beamAttenuation}              \tab 1/m; WET Labs AC3    \tab   \cr
+  \code{wetBTrans}   \tab \code{beamTransmission}             \tab percent; WET Labs AC3\tab   \cr
   \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3               \tab   \cr
   \code{xmiss}       \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
   \code{xmiss~}      \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
