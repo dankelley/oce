@@ -8,6 +8,8 @@ r_check_args: --no-build-vignettes --no-manual
 apt_packages:
     - libnetcdf-dev
     - netcdf-bin
+    - libproj-dev
+    - librgdal-dev
     - gdal-bin
 
 r_packages:
