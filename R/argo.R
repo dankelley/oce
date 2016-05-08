@@ -623,7 +623,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         message("columnNames: ", paste(columnNames, collapse=" "), " (from STATION_PARAMETERS)")
         QCNames <- paste(columnNames, "_QC", sep="")
         message("QCnames: ", paste(QCNames, collapse=" "), " (inferred from above)")
-        physicalNames <- ODFNames2oceNames(columnNames)
+        physicalNames <- ODFNames2oceNames(columnNames, ODFunits=NULL)
         message("Therefore need @data items: ", paste(physicalNames, collapse=" "), " (in addition to longitude etc)")
     }
 

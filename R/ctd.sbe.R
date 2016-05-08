@@ -19,7 +19,7 @@
 #' The table given below indicates the translation patterns used. These are 
 #' taken from [1]. The \code{.cnv} convention for multiple sensors is to
 #' include optional extra digits in the name, and these are indicated
-#' with \code{_} in the table; their decoding is done with \code{\link{grep}}.
+#' with \code{~} in the table; their decoding is done with \code{\link{grep}}.
 #'
 #' It is important to note that this table is by no means complete, since there
 #' are a great many SBE names listed in their document [1], plus names 
@@ -41,83 +41,107 @@
 #'
 #' \tabular{llll}{
 #'   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit;scale} \tab \strong{Notes} \cr
-#'   \code{alt_}        \tab \code{altimeter}                    \tab m                   \tab   \cr
-#'   \code{c_ms/cm}     \tab \code{conductivity}                 \tab ms/cm               \tab   \cr
-#'   \code{CStarAt_}    \tab \code{beamAttenuation}              \tab 1/m                 \tab   \cr
-#'   \code{CStarTr_}    \tab \code{beamTransmission}             \tab percent             \tab   \cr
-#'   \code{depS}        \tab \code{depth}                        \tab m                   \tab   \cr
-#'   \code{depSM}       \tab \code{depth}                        \tab m                   \tab   \cr
-#'   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                 \tab   \cr
-#'   \code{f_}          \tab \code{frequency}                    \tab Hz                  \tab   \cr
-#'   \code{f__}         \tab \code{frequency}                    \tab Hz                  \tab   \cr
-#'   \code{flC}         \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3 \tab   \cr
-#'   \code{flEC-AFLM}   \tab \code{fluorescence}                 \tab mg/m^3; WET labs ECO-AFL/FL \tab   \cr
-#'   \code{flS}         \tab \code{fluorescence}                 \tab unitless;Seatech     \tab   \cr
-#'   \code{flSP}        \tab \code{fluorescence}                 \tab unitless;Seapoint    \tab   \cr
-#'   \code{flSPR}       \tab \code{fluorescence}                 \tab unitless;Seapoint, Rhodamine   \tab   \cr
-#'   \code{flSPuv}      \tab \code{fluorescence}                 \tab unitless;Seapoint, UV\tab   \cr
-#'   \code{flT}         \tab \code{fluorescence}                 \tab unitless;Turner      \tab   \cr
+#'   \code{altM}        \tab \code{altimeter}                    \tab m                   \tab    \cr
+#'   \code{c~mS/cm}     \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
+#'   \code{c~S/m}       \tab \code{conductivity}                 \tab S/m                 \tab    \cr
+#'   \code{c~uS/cm}     \tab \code{conductivity}                 \tab uS/cm               \tab    \cr
+#'   \code{CStarAt~}    \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
+#'   \code{CStarTr~}    \tab \code{beamTransmission}             \tab percent             \tab    \cr
+#'   \code{density~~}   \tab \code{density}                      \tab kg/m^3              \tab    \cr
+#'   \code{depS}        \tab \code{depth}                        \tab m                   \tab    \cr
+#'   \code{depSM}       \tab \code{depth}                        \tab m                   \tab    \cr
+#'   \code{depF}        \tab \code{depth}                        \tab m                   \tab    \cr
+#'   \code{depFM}       \tab \code{depth}                        \tab m                   \tab    \cr
+#'   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                 \tab    \cr
+#'   \code{f~}          \tab \code{frequency}                    \tab Hz                  \tab    \cr
+#'   \code{f~~}         \tab \code{frequency}                    \tab Hz                  \tab    \cr
+#'   \code{flC}         \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3\tab    \cr
+#'   \code{flEC-AFLM}   \tab \code{fluorescence}                 \tab mg/m^3; WET labs ECO-AFL/FLtab\cr
+#'   \code{flS}         \tab \code{fluorescence}                 \tab -; Seatech          \tab    \cr
+#'   \code{flSP}        \tab \code{fluorescence}                 \tab -; Seapoint         \tab    \cr
+#'   \code{flSPR}       \tab \code{fluorescence}                 \tab -; Seapoint, Rhodamine\tab  \cr
+#'   \code{flSPuv}      \tab \code{fluorescence}                 \tab -; Seapoint, UV      \tab   \cr
+#'   \code{flT}         \tab \code{fluorescence}                 \tab -; Turner            \tab   \cr
 #'   \code{latitude}    \tab \code{latitude}                     \tab degN                 \tab   \cr
 #'   \code{longitude}   \tab \code{longitude}                    \tab degE                 \tab   \cr
+#'   \code{n2satML/L}   \tab \code{nitrogenSaturation}           \tab ml/l                 \tab   \cr
+#'   \code{n2satMg/L}   \tab \code{nitrogenSaturation}           \tab mg/l                 \tab   \cr
+#'   \code{n2satumol/kg}\tab \code{nitrogenSaturation}           \tab umol/kg              \tab   \cr
 #'   \code{nbin}        \tab \code{nbin}                         \tab                      \tab   \cr
 #'   \code{oxsatML/L}   \tab \code{oxygen}                       \tab ml/l; Weiss          \tab   \cr
 #'   \code{oxsatMg/L}   \tab \code{oxygen}                       \tab mg/l; Weiss          \tab   \cr
 #'   \code{oxsatMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Weiss       \tab   \cr
 #'   \code{oxsolML/L}   \tab \code{oxygen}                       \tab ml/l; Garcia-Gordon  \tab   \cr
 #'   \code{oxsolMg/L}   \tab \code{oxygen}                       \tab mg/l; Garcia-Gordon  \tab   \cr
-#'   \code{oxsolMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Garcia-Gordon \tab   \cr
-#'   \code{par_}        \tab \code{PAR}                          \tab unitless; Biospherical/Licor \tab   \cr
+#'   \code{oxsolMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Garcia-Gordon\tab  \cr
+#'   \code{par~}        \tab \code{PAR}                          \tab -; Biospherical/Licor\tab   \cr
 #'   \code{par/log}     \tab \code{PAR}                          \tab log; Satlantic       \tab   \cr
-#'   \code{ph}          \tab \code{pH}                           \tab unitless             \tab   \cr
-#'   \code{potemp_68C}  \tab \code{thetaM}                       \tab degC; IPTS-68        \tab   \cr
-#'   \code{potemp_90C}  \tab \code{thetaM}                       \tab degC; ITS-90         \tab   \cr
-#'   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab   \cr
-#'   \code{pr50M}       \tab \code{pressure}                     \tab dbar                 \tab   \cr
+#'   \code{ph}          \tab \code{pH}                           \tab -                    \tab   \cr
+#'   \code{potemp~68C}  \tab \code{thetaM}                       \tab degC; IPTS-68        \tab   \cr
+#'   \code{potemp~90C}  \tab \code{thetaM}                       \tab degC; ITS-90         \tab   \cr
+#'   \code{pr}          \tab \code{pressure}                     \tab dbar                 \tab 1 \cr
+#'   \code{prM}         \tab \code{pressure}                     \tab dbar                 \tab   \cr
+#'   \code{pr50M}       \tab \code{pressure}                     \tab dbar; SBE50          \tab   \cr
 #'   \code{prSM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
 #'   \code{prDM}        \tab \code{pressure}                     \tab dbar; digiquartz     \tab   \cr
-#'   \code{prdM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
-#'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 1 \cr
+#'   \code{prdE}        \tab \code{pressure}                     \tab psi; strain gauge    \tab 2 \cr
+#'   \code{prdM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
+#'   \code{prSM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
+#'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 3 \cr
 #'   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
-#'   \code{sal__}       \tab \code{salinityM}                    \tab unitless, PSS-78     \tab 2 \cr
-#'   \code{sbeox_ML/L}  \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
-#'   \code{sbeox_Mm/Kg} \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
-#'   \code{sbeox_Ps}    \tab \code{oxygen}                       \tab percent              \tab   \cr
-#'   \code{sbeox_V}     \tab \code{oxygenRaw}                    \tab V                    \tab   \cr
+#'   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
+#'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
+#'   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
+#'   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
+#'   \code{sbeox~Ps}    \tab \code{oxygen}                       \tab percent              \tab   \cr
+#'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V                    \tab   \cr
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
-#'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 3 \cr
+#'   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
+#'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
 #'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
 #'   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
-#'   \code{t_68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
-#'   \code{t_90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
-#'   \code{t_68C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
-#'   \code{t_90C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+#'   \code{t~68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
+#'   \code{t~90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
+#'   \code{t~68C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
+#'   \code{t~90C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+#'   \code{t068C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+#'   \code{t168C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t090Cm}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{t4990C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{tnc90C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{tv290C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{t068C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t4968C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{tnc68C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{tv268C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t190C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{tnc290C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{t168C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{tnc268C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t3890C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{t38_90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+#'   \code{t38~90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{t3868C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{t38_38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{upoly_}      \tab \code{upoly}                        \tab -                    \tab   \cr
-#'   \code{v_}          \tab \code{voltage}                      \tab V                    \tab   \cr
+#'   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+#'   \code{timeS}       \tab \code{time}                         \tab second               \tab   \cr
+#'   \code{timeM}       \tab \code{time}                         \tab minute               \tab   \cr
+#'   \code{timeH}       \tab \code{time}                         \tab hour                 \tab   \cr
+#'   \code{timeJ}       \tab \code{time}                         \tab day                  \tab   \cr
+#'   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
+#'   \code{uuser~}      \tab \code{user}                         \tab -                    \tab   \cr
+#'   \code{v~~}         \tab \code{voltage}                      \tab V                    \tab   \cr
+#'   \code{wetBAttn}    \tab \code{beamAttenuation}              \tab 1/m; WET Labs AC3    \tab   \cr
+#'   \code{wetBTrans}   \tab \code{beamTransmission}             \tab percent; WET Labs AC3\tab   \cr
 #'   \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3               \tab   \cr
 #'   \code{xmiss}       \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
-#'   \code{xmiss_}      \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
+#'   \code{xmiss~}      \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
 #' }
 #' Notes:
 #' \itemize{
-#' \item{1: assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.}
-#' \item{2: some files have PSU for this. Should we handle that? And are there other S scales to consider?}
-#' \item{3: 'theta' may appear in different ways with different encoding configurations, set up
+#' \item{1: 'pr' is in a Dalhousie-generated data file but seems not to be in [1].}
+#' \item{2: this is an odd unit, and so if \code{sw*} functions are called on an object
+#' containing this, a conversion will be made before performing the computation. Be
+#' on the lookout for errors, since this is a rare situation.}
+#' \item{3: assume ITS-90 temperature scale, since sample \code{.cnv} file headers do not specify it.}
+#' \item{4: some files have PSU for this. Should we handle that? And are there other S scales to consider?}
+#' \item{5: 'theta' may appear in different ways with different encoding configurations, set up
 #' within R or in the operating system.}
 #' }
 #'
@@ -157,85 +181,107 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
             }
         }
     }
-
     ## Since 'name' is not mentioned in 'columns', try looking it up. Some of these
     ## tests are a bit subtle, and could be wrong.
-    if (1 == length(grep("^altM$", name, ignore.case=TRUE))) {
+    if (1 == length(grep("^altM$", name))) {
         name <- "altimeter"
         unit <- list(unit=expression(m), scale="")
-    } else if (1 == length(grep("^c[0-9]mS/cm$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^c((_)|([0-2]))mS/cm$", name))) {
         name <- "conductivity"
         unit <- list(unit=expression(mS/cm), scale="")
-    } else if (1 == length(grep("^CStarTr[0-9]$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^c((_)|([0-2]))S/m$", name))) {
+        name <- "conductivity"
+        unit <- list(unit=expression(S/m), scale="")
+    } else if (1 == length(grep("^c((_)|([0-2]))uS/cm$", name))) {
+        name <- "conductivity"
+        unit <- list(unit=expression(mu*S/cm), scale="")
+    } else if (1 == length(grep("^CStarTr[0-9]$", name))) {
         name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="WET Labs C-Star")
-    } else if (1 == length(grep("CStarAt[0-9]", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^CStarAt[0-9]$", name))) {
         name <- "beamAttenuation"
         unit <- list(unit=expression(1/m), scale="")
-    } else if (1 == length(grep("depS[M]*", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^density[0-9]{2}$", name))) {
+        name <- "density"
+        unit <- list(unit=expression(kg/m^3), scale="")
+    } else if (1 == length(grep("^dep[FS][M]?$", name))) {
         name <- "depth"
         unit <- list(unit=expression(m), scale="")
-    } else if (1 == length(grep("dz/dt[M]*", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^dz/dt[M]?$", name))) {
         name <- "descentRate"
         unit <- list(unit=expression(m/s), scale="")
-    } else if (1 == length(grep("^f[0-9]{1,2}$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^f[0-9][0-9]?$", name))) {
         name <- "frequency"
         unit <- list(unit=expression(Hz), scale="")
-    } else if (1 == length(grep("flag", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^flag$", name))) {
         name <- "flag"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^flC[1]?$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^flC[1]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mu*g/l), scale="Chelsea")
-    } else if (1 == length(grep("^flECO-AFL[0-9]?$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^flECO-AFL[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="WET labs")
-    } else if (1 == length(grep("^flSP[0-9]?$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^flSP[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint")
-    } else if (1 == length(grep("^flsPR$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^flsPR$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint, Rhodamine")
-    } else if (1 == length(grep("^flsPuv[0-9]?$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^flsPuv[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint, UV")
-    } else if (1 == length(grep("^flS$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^flS$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seatech")
-    } else if (1 == length(grep("^flT$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^flT$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Turner")
-
-    } else if (1 == length(grep("latitude", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^latitude$", name))) {
         name <- "latitude"
         unit <- list(unit=expression(degree*N), scale="")
-    } else if (1 == length(grep("longitude", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^longitude$", name))) {
         name <- "longitude"
         unit <- list(unit=expression(degree*E), scale="")
-    } else if (name == "nbin") {
+    } else if (1 == length(grep("^n2satML/L$", name))) {
+        name <- "nitrogenSaturation"
+        unit <- list(unit=expression(ml/l), scale="")
+    } else if (1 == length(grep("^n2satMg/L$", name))) {
+        name <- "nitrogenSaturation"
+        unit <- list(unit=expression(mg/l), scale="")
+    } else if (1 == length(grep("^n2satumol/L$", name))) {
+        name <- "nitrogenSaturation"
+        unit <- list(unit=expression(mu*mol/l), scale="")
+    } else if (1 == length(grep("^n2satumol/kg$", name))) {
+        name <- "nitrogenSaturation"
+        unit <- list(unit=expression(mu*mol/kg), scale="")
+    } else if (name == "^nbin$") {
         name <- "nbin"
         unit <- list(unit=expression(), scale="")
-    } else if (name == "nbf") {
+    } else if (name == "^nbf$") {
         name <- "bottlesFired"
         unit <- list(unit=expression(), scale="")
-    } else if (name == "oxsatML/L") {
+    } else if (name == "^oxsatML/L$") {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="Weiss")
-    } else if (name == "oxsatMg/L") {
+    } else if (name == "^oxsatMg/L$") {
         name <- "oxygen"
         unit <- list(unit=expression(mg/l), scale="Weiss")
-    } else if (name == "oxsatMm/Kg") {
+    } else if (name == "^oxsatMm/Kg$") {
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/kg), scale="Weiss")
-    } else if (name == "oxsolML/L") {
+    } else if (name == "^oxsolML/L$") {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="Garcia-Gordon")
-    } else if (name == "oxsolMg/L") {
+    } else if (name == "^oxsolMg/L$") {
         name <- "oxygen"
         unit <- list(unit=expression(mg/l), scale="Garcia-Gordon")
-    } else if (name == "oxsolMm/Kg") {
+    } else if (name == "^oxsolMm/Kg$") {
         name <- "oxygen"
         unit <- list(unit=expression(umol/kg), scale="Garcia-Gordon")
+    } else if (1 == length(grep("^cpar$", name))) {
+        name <- "CPAR/Corrected Irradience"
+        unit <- list(unit=expression(percent), scale="")
     } else if (1 == length(grep("^par[0-9]?$", name))) {
         name <- "par"
         unit <- list(unit=expression(), scale="Biospherical/Licor")
@@ -245,88 +291,121 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^ph$", name))) {
         name <- "pH"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^pr((50M)|(SM)|([dD][mM]))?[0-9]?$", name))) { # let users check whether digiquartz etc
+    } else if (1 == length(grep("^pr$", name))) {
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="")
-    } else if (1 == length(grep("ptempC", name, ignore.case=TRUE))) {
-        name <- "pressureTemperature" # temperature at the pressure sensor
+    } else if (1 == length(grep("^prdE$", name))) { # Caution: English unit
+        name <- "pressure"
+        unit <- list(unit=expression(psi), scale="")
+        warning("this .cnv file contains a pressure in PSI; be careful in using this")
+    } else if (1 == length(grep("^prM$", name))) {
+        name <- "pressure"
+        unit <- list(unit=expression(dbar), scale="")
+    } else if (1 == length(grep("^pr50M[0-9]?$", name))) {
+        name <- "pressure"
+        unit <- list(unit=expression(dbar), scale="SBE50")
+    } else if (1 == length(grep("^prDM$", name))) {
+        name <- "pressure"
+        unit <- list(unit=expression(dbar), scale="Digiquartz")
+    } else if (1 == length(grep("^pr[dS]M$", name))) {
+        name <- "pressure"
+        unit <- list(unit=expression(dbar), scale="Strain Gauge")
+    } else if (1 == length(grep("^ptempC$", name))) {
+        name <- "pressureTemperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
-    } else if (1 == length(grep("^potemp[0-9]*68C$", name, ignore.case=TRUE))) {
-        name <- "theta68"
+    } else if (1 == length(grep("^potemp[0-9]*68C$", name))) {
+        name <- "theta"
         unit <- list(unit=expression(degree*C), scale="ITS-68") # FIXME: guess on scale
-    } else if (1 == length(grep("^potemp[0-9]*90C$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^potemp[0-9]*90C$", name))) {
         name <- "theta"
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
-    } else if (1 == length(grep("^pumps$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^pumps$", name))) {
         name <- "pumpStatus"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^sal[0-9]{2}$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^sal[0-9]{2}$", name))) {
         name <- "salinity"
         unit <- list(unit=expression(), scale="PSS-78") # FIXME: guess on scale
-    } else if (1 == length(grep("^sbeox[0-9]ML/L$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^sbeox[0-9]ML/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="SBE43")
-    } else if (1 == length(grep("^sbeox[0-9]Mg/L$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^sbeox[0-9]Mg/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mg/l), scale="SBE43")
-    } else if (1 == length(grep("^sbeox[0-9]Mm/Kg$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^sbeox[0-9]Mm/Kg$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/kg), scale="SBE43")
-    } else if (1 == length(grep("sbeox[0-9]PS", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^sbeox[0-9]PS$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(percent), scale="SBE43")
-    } else if (1 == length(grep("sbeox[0-9]V", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^sbeox[0-9]V$", name))) {
         name <- "oxygenRaw"
         unit <- list(unit=expression(V), scale="SBE43")
-    } else if (1 == length(grep("scan", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^scan$", name))) {
         name <- "scan"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("sigma-.*[0-9]*", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^seaTurbMtr[1]?$", name))) {
+        name <- "turbidity"
+        unit <- list(unit=expression(FTU), scale="SeaPoint")
+    } else if (1 == length(grep("sigma-t[0-9]{2}", name))) {
+        name <- "sigmaT"
+        unit <- list(unit=expression(kg/m^3), scale="")
+    ##} else if (1 == length(grep("sigma-.*[0-9]*", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^sigma-\xfc\xbe\x8e\x96\x94\xbc[0-9]{2}$", name, useBytes=TRUE))) {
         name <- "sigmaTheta"
         unit <- list(unit=expression(kg/m^3), scale="")
-    } else if (1 == length(grep("spar", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^spar$", name))) {
         name <- "spar"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("svCM", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^svCM$", name))) {
         name <- "soundSpeed"
         unit <- list(unit=expression(m/s), scale="Chen-Millero")
-    } else if (1 == length(grep("^t[0-9]68C?$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^t[0-9]68((C)|(Cm))?$", name))) {
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (1 == length(grep("^t[0-9]90C?$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^t[0-9]90((C)|(Cm))?$", name))) {
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
-    } else if (name %in% c("t068C", "t4968C", "tnc68C", "tv268C",
-                           "t168C", "tnc268C",
-                           "t3868C", "t38_68C")) { # [1] p169-170
+    } else if (name %in% c("t4968C", "tnc68C", "tv268C", "tnc268C", "t3868C", "t38_68C")) { # [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (name %in% c("t090C",
-                           "t090Cm", "t4990C", "tnc90C", "tv290C",
-                           "t190C", "tnc290C",
-                           "t3890C", "t38_90C")) { # [1] p169-170
+    } else if (name %in% c("t4990C", "tnc90C", "tv290C", "tnc290C", "t3890C", "t38_90C")) { # [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
-    } else if (1 == length(grep("timeS", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^timeS$", name))) {
         name <- "time"
         unit <- list(unit=expression(s), scale="")
-    } else if (1 == length(grep("upoly[0-9]+", name, ignore.case=TRUE))) {
-        name <- paste("upoly", gsub("upoly", "", name), sep="")
+    } else if (1 == length(grep("^timeM$", name))) {
+        name <- "time"
+        unit <- list(unit=expression(minute), scale="")
+    } else if (1 == length(grep("^timeH$", name))) {
+        name <- "time"
+        unit <- list(unit=expression(hour), scale="")
+    } else if (1 == length(grep("^timeJ$", name))) {
+        name <- "time"
+        unit <- list(unit=expression(day), scale="")
+    } else if (1 == length(grep("^upoly[0-2]$", name))) {
+        name <- "upoly"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("v[0-9]+", name, ignore.case=TRUE))) {
-        name <- paste("v", gsub("v", "", name), sep="")
+    } else if (1 == length(grep("^user[1-5]$", name))) {
+        name <- "user"
+        unit <- list(unit=expression(), scale="")
+    } else if (1 == length(grep("^v[0-1][0-9]?$", name))) {
+        name <- "v"
         unit <- list(unit=expression(V), scale="")
-    } else if (1 == length(grep("^wetBTrans$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^wetBAttn$", name))) {
+        name <- "beamAttenuation"
+        unit <- list(unit=expression(1/m), scale="WET labs AC3")
+    } else if (1 == length(grep("^wetBTrans$", name))) {
         name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="WET labs AC3")
-    } else if (1 == length(grep("^wetCDOM$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^wetCDOM[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="")
-    } else if (1 == length(grep("^xmiss[0-9]?$", name, ignore.case=TRUE))) {
+    } else if (1 == length(grep("^xmiss[0-9]?$", name))) {
         name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="Chelsea/Seatech")
     } else {
-        warning("unrecognized SBE name '", name, "'; consider using renameData() to set a new name")
+        warning("unrecognized SBE name '", name, "'; consider using 'columns' to define this name")
         unit <- list(unit=expression(), scale="")
     }
     if (debug > 0)
@@ -438,11 +517,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     }
     colNamesInferred <- unduplicateNames(colNamesInferred)
     res@metadata$dataNamesOriginal <- dataNamesOriginal
-    found.scan <- "scan" %in% colNamesInferred
-    found.temperature <- "temperature" %in% colNamesInferred
+    ##found.scan <- "scan" %in% colNamesInferred
+    ##found.temperature <- "temperature" %in% colNamesInferred
     found.pressure <- "pressure" %in% colNamesInferred
     found.salinity <- "salinity" %in% colNamesInferred
-    found.time <- "time" %in% colNamesInferred
+    ##found.time <- "time" %in% colNamesInferred
     found.depth <- "depth" %in% colNamesInferred
     found.conductivity <- "conductivity" %in% colNamesInferred
     found.conductivity.ratio <- "conductivity.ratio" %in% colNamesInferred
@@ -558,7 +637,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
                     warning("ignoring unit on water depth '", look, "'")
                 }
             } else {
-                stop("cannot interpret water depth from '", lline, "'")
+                warning("cannot interpret water depth from '", lline, "'")
             }
         }
         if (0 < (r<-regexpr("^. sample rate =", lline))) {
@@ -635,7 +714,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     oceDebug(debug, "About to read these names: c(\"", paste(colNamesInferred, collapse='","'),"\")\n", sep="")
     data <- as.list(read.table(file, skip=iline-1, header=FALSE))
     if (length(data) != length(colNamesInferred))
-        stop("Number of columns in .cnv data file does not equal number of named variables")
+        stop("Number of columns in .cnv data file must match number of variables named in the header")
     names(data) <- colNamesInferred
     ndata <- length(data[[1]])
     if (0 < ndata) {
@@ -661,31 +740,37 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     if (haveData) {
         if (!found.salinity) {
             if (found.conductivity.ratio) {
-                warning("cannot find 'salinity' in this file; calculating from T, conductivity ratio, and p")
                 C <- data$conductivityratio
-                cmax <- max(C, na.rm=TRUE)
-                if (cmax > 5) {
-                    warning("max(conductivity) > 5, so dividing by 42.914 before computing S. However, the original data are left in the object.")
-                    C <- C / 42.914
-                } else if (cmax > 1) {
-                    warning("max(conductivity) between 1 and 5, so dividing by 4.2914 before computing S. However, the original data are left in the object.")
-                    C <- C / 4.2914
-                }
                 S <- swSCTp(C, data$temperature, data$pressure)
+                warning("created a salinity data item from the temperature, conductivity-ratio and pressure items")
             } else if (found.conductivity) {
-                warning("cannot find 'salinity' in this file; calculating from T, conductivity, and p")
                 C <- data$conductivity
-                cmax <- max(C, na.rm=TRUE)
-                if (cmax > 5) {
-                    warning("max(conductivity) > 5, so dividing by 42.914 before computing S. However, the original data are left in the object.")
-                    C <- C / 42.914
-                } else if (cmax > 1) {
-                    warning("max(conductivity) between 1 and 5, so dividing by 4.2914 before computing S. However, the original data are left in the object.")
-                    C <- C / 4.2914
+                if (!is.null(res@metadata$units$conductivity)) {
+                    unit <- as.character(res@metadata$units$conductivity$unit)
+                    ## Conductivity Ratio is conductivity divided by 42.914 mS/cm (Culkin and Smith 1980;
+                    ## see ?read.rsk for full citation)
+                    if ("mS/cm" == unit) {
+                        C <- C / 42.914 # e.g. RSK 
+                    } else if ("S/m" == unit) {
+                        C <- C / 4.2914
+                    } else {
+                        warning("unrecognized conductivity unit '", unit, "'; assuming mS/cm for salinity calculation -- results should be used with caution")
+                    }
+                } else {
+                    warning("missing conductivity unit; guessing a unit based on maximum value")
+                    cmax <- max(C, na.rm=TRUE)
+                    if (cmax > 10) {
+                        warning("max(conductivity) > 10, so using using conductivity/42.914 as a conductivity ratio for computation of salinity")
+                        C <- C / 42.914
+                    } else if (cmax > 1) {
+                        warning("max(conductivity) between 1 and 10, so using using conductivity/4.2914 as a conductivity ratio for computation of salinity")
+                        C <- C / 4.2914
+                    }
                 }
                 S <- swSCTp(C, data$temperature, data$pressure)
+                warning("created a salinity data item from the temperature, conductivity and pressure items")
             } else {
-                warning("cannot find salinity or conductivity in this file; try using columns argument if this is an error")
+                warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items")
             }
             ## FIXME: move this to the very end, where we add 'scan' if that's not found.
             res <- ctdAddColumn(res, S, name="salinity", label="Salinity",
@@ -698,7 +783,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
             res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
                                 unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
             ## colNamesOriginal <- c(colNamesOriginal, "NA")
-            warning("created a pressure column from the depth column\n")
+            warning("created a pressure data item from the depth item")
         }
     }
     ##res@metadata$dataNamesOriginal <- colNamesOriginal
