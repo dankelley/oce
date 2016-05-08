@@ -255,28 +255,28 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^n2satumol/kg$", name))) {
         name <- "nitrogenSaturation"
         unit <- list(unit=expression(mu*mol/kg), scale="")
-    } else if (name == "^nbin$") {
+    } else if (1 == length(grep("^nbin$", name))) {
         name <- "nbin"
         unit <- list(unit=expression(), scale="")
-    } else if (name == "^nbf$") {
+    } else if (1 == length(grep("^nbf$", name))) {
         name <- "bottlesFired"
         unit <- list(unit=expression(), scale="")
-    } else if (name == "^oxsatML/L$") {
+    } else if (1 == length(grep("^oxsatML/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="Weiss")
-    } else if (name == "^oxsatMg/L$") {
+    } else if (1 == length(grep("^oxsatMg/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mg/l), scale="Weiss")
-    } else if (name == "^oxsatMm/Kg$") {
+    } else if (1 == length(grep("^oxsatMm/Kg$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/kg), scale="Weiss")
-    } else if (name == "^oxsolML/L$") {
+    } else if (1 == length(grep("^oxsolML/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="Garcia-Gordon")
-    } else if (name == "^oxsolMg/L$") {
+    } else if (1 == length(grep("^oxsolMg/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mg/l), scale="Garcia-Gordon")
-    } else if (name == "^oxsolMm/Kg$") {
+    } else if (1 == length(grep("^oxsolMm/Kg$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(umol/kg), scale="Garcia-Gordon")
     } else if (1 == length(grep("^cpar$", name))) {
@@ -389,7 +389,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^user[1-5]$", name))) {
         name <- "user"
         unit <- list(unit=expression(), scale="")
-    } else if (1 == length(grep("^v[0-1][0-9]?$", name))) {
+    } else if (1 == length(grep("^v[0-9][0-9]?$", name))) {
         name <- "v"
         unit <- list(unit=expression(V), scale="")
     } else if (1 == length(grep("^wetBAttn$", name))) {
