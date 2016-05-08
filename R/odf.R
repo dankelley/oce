@@ -247,7 +247,7 @@ findInHeader <- function(key, lines) # local
 #' @return A vector of strings.
 #' @author Dan Kelley
 #' @family functions that interpret variable names and units from headers
-ODFNames2oceNames <- function(ODFnames, ODFunits,
+ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                               columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
 {
     n <- length(ODFnames)

@@ -39,6 +39,9 @@ setClass("sealevel", contains="oce")
 #' sign, which is required because the data file has no indication that this is
 #' the western hemisphere.
 #'
+#' @references
+#' 1. Fisheries and Oceans Canada \url{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
+#'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{sealevel} data
 NULL

@@ -4,7 +4,7 @@
 \alias{ODFNames2oceNames}
 \title{Translate from ODF Names to Oce Names}
 \usage{
-ODFNames2oceNames(ODFnames, ODFunits, columns = NULL,
+ODFNames2oceNames(ODFnames, ODFunits = NULL, columns = NULL,
   PARAMETER_HEADER = NULL, debug = getOption("oceDebug"))
 }
 \arguments{

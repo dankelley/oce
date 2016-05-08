@@ -50,7 +50,7 @@ test_that("ctd subsetting and trimming", {
           expect_equal(ctdTrimmed[["scan"]][1:3], c(150,151,152))
           expect_equal(ctdTrimmed[["salinity"]][1:3], c(30.8882,30.9301,30.8928))
           expect_equal(ctdTrimmed[["pressure"]][1:3], c(6.198,6.437,6.770))
-          expect_equal(ctdTrimmed[["temperature"]][1:3], c(11.7372, 11.6331, 11.4273))
+          expect_equal(ctdTrimmed[["temperature"]][1:3], c(11.73438375, 11.63030873, 11.42455811))
           ## next is form a test for issue 669
           n <- length(ctd[["salinity"]])
           set.seed(669)
@@ -144,14 +144,14 @@ test_that("Dalhousie-produced cnv file", {
           expect_equal(d1[["longitude"]], -(63+38.633/60))
           expect_equal(d1[['salinity']][1:3], c(29.9210, 29.9205, 29.9206))
           expect_equal(d1[['pressure']][1:3], c(1.480, 1.671, 2.052))
-          ## check conversion from IPTS-68 to ITS-90 worked
-          expect_equal(d1[['temperature']][1:3], c(14.2245, 14.2299, 14.2285))
+          ## FIXME: check on IPTS-68 vs ITS-90 issue (changed following numbers 2016-05-06)
+          expect_equal(d1[['temperature']][1:3], c(14.22108694, 14.22648564, 14.22508598))
 })
 
 ## A file containing CTD data acquired in the Beaufort Sea in 2003.
 ## I am not sure if this was a standardized format, but I had to work
 ## with these data so I added support for it.  The files end in .ctd, 
-## but oce.magic() recognizes them from the first line.  Note the trailing
+## but oceMagic() recognizes them from the first line.  Note the trailing
 ## space in the sample data:
 ##
 ##'SHIP = CCGS Louis S St.Laurent '

@@ -6,15 +6,27 @@
 \title{Class to Store CTD (or general hydrographic) Data}
 \description{
 Class to store hydrographic data such as measured with a CTD (conductivity,
-temperature, depth) instrument.
+temperature, depth) instrument. There are other instruments that report
+similar data, though, and the user can create datasets, so this is not
+just mapped to a particular instrument.  There is also flexibility in
+the elements stored in the \code{data} slot. Any such object should
+have \code{temperature}, and that is typically stored by most instruments
+in this general category so it is likely to be present. Data
+files often record \code{salinity}, which is needed for
+many dynamically-related calculations (e.g. of density), even 
+the instruments record \code{conductivity}. Either may be stored
+within a CTD object, or both.  A similar statement could be made
+about \code{pressure}, which in some cases may be inferred from
+\code{depth}, if only the latter is present in a data file.
 }
 \details{
-Temperature is stored in the ITS-90 scale within the object, but the IPTS-68
-value can be accessed with e.g.  \code{ctd[["temperature68"]]}, and this must
-be done in using various seawater functions, e.g. the density function
-\code{\link{swRho}}, if the UNESCO formulation is being requested.
-(See \code{\link{[[,ctd-method}} and \code{\link{[[<-,ctd-method}} for
-more on accessing and altering information within \code{ctd-class} objects.)
+Temperatures may be stored in the IPTS-68 or ITS-90 scale within the object,
+but e.g. \code{ctd[["temperature"]]} always returns a value on the ITS-90
+scale, converting with \code{\link{T90fromT68}} if necessary. Similarly,
+pressure may be stored in either dbars or PSI, but e.g. \code{ctd[["pressure"]]}
+returns a value in dbars, after multiplying by 0.689476 if the value is
+stored in PSI. Luckily, there is (as of early 2016) only one salinity scale in
+common use in data files, namely PSS-78.
 
 The TEOS-10 notation for these quantities also works, with \code{ctd[["SP"]]},
 \code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those

@@ -3,14 +3,26 @@
 #' Class to Store CTD (or general hydrographic) Data
 #'
 #' Class to store hydrographic data such as measured with a CTD (conductivity,
-#' temperature, depth) instrument.
+#' temperature, depth) instrument. There are other instruments that report
+#' similar data, though, and the user can create datasets, so this is not
+#' just mapped to a particular instrument.  There is also flexibility in
+#' the elements stored in the \code{data} slot. Any such object should
+#' have \code{temperature}, and that is typically stored by most instruments
+#' in this general category so it is likely to be present. Data
+#' files often record \code{salinity}, which is needed for
+#' many dynamically-related calculations (e.g. of density), even 
+#' the instruments record \code{conductivity}. Either may be stored
+#' within a CTD object, or both.  A similar statement could be made
+#' about \code{pressure}, which in some cases may be inferred from
+#' \code{depth}, if only the latter is present in a data file.
 #'
-#' Temperature is stored in the ITS-90 scale within the object, but the IPTS-68
-#' value can be accessed with e.g.  \code{ctd[["temperature68"]]}, and this must
-#' be done in using various seawater functions, e.g. the density function
-#' \code{\link{swRho}}, if the UNESCO formulation is being requested.
-#' (See \code{\link{[[,ctd-method}} and \code{\link{[[<-,ctd-method}} for
-#' more on accessing and altering information within \code{ctd-class} objects.)
+#' Temperatures may be stored in the IPTS-68 or ITS-90 scale within the object,
+#' but e.g. \code{ctd[["temperature"]]} always returns a value on the ITS-90
+#' scale, converting with \code{\link{T90fromT68}} if necessary. Similarly,
+#' pressure may be stored in either dbars or PSI, but e.g. \code{ctd[["pressure"]]}
+#' returns a value in dbars, after multiplying by 0.689476 if the value is
+#' stored in PSI. Luckily, there is (as of early 2016) only one salinity scale in
+#' common use in data files, namely PSS-78.
 #'
 #' The TEOS-10 notation for these quantities also works, with \code{ctd[["SP"]]},
 #' \code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those
@@ -348,6 +360,18 @@ setMethod(f="summary",
 #' up or computed. Nothing is lost in this scheme, since the data
 #' within the object are always accessible with \code{\link{oceGetData}}.
 #'
+#' It should be noted that the accessor is set up to retrieve quantities
+#' in conventional units. For example, it is possible that a \code{.cnv}
+#' (Seabird) file stores pressure in psi, and in that circumstance,
+#' \code{x[["pressure"]]} will first multiply by 0.689476 to convert to
+#' the standard decibar unit.  (The pressure as stored in PSI can
+#' be retrieved with \code{x@@data$pressure}, if for some odd reason
+#' the user wishes to use that unit.) Similarly, temperature is 
+#' returned in the ITS-90 scale, and so a conversion is performed with
+#' \code{\link{T90fromT68}}, if the object has stored temperature in
+#' the older IPTS-68 unit.  Again, direct retrieval of the quantity is
+#' possible with \code{x@@data$temperature}.
+#'
 #' This preference for computed over stored quantities is accomplished
 #' by first checking for computed quantities, and then falling
 #' back to the general \code{[[} method if no match is found.
@@ -403,9 +427,6 @@ setMethod(f="summary",
 #' \item \code{Sstar}: Preformed Salinity computed with
 #' \code{\link[gsw]{gsw_SR_from_SP}} in the \code{gsw} package.
 #'
-#' \item \code{temperature68}: temperature on the IPTS-1968 scale, computed
-#' with \code{\link{T68fromT90}(x)}.
-#'
 #' \item \code{theta}: potential temperature in the UNESCO formulation,
 #' computed with \code{\link{swTheta}(x)}. This is a synonym for
 #' \code{potential temperature}.
@@ -433,11 +454,17 @@ setMethod(f="[[",
                                          longitude=x@metadata$longitude,
                                          latitude=x@metadata$latitude)
               } else if (i == "temperature") {
-                  x@data$temperature
-              } else if (i == "temperature68") {
-                  T68fromT90(x@data$temperature)
+                  scale <- x@metadata$units[["temperature"]]$scale
+                  if (!is.null(scale) && "IPTS-68" == scale)
+                      T90fromT68(x@data$temperature)
+                  else x@data$temperature
+              ## } else if (i == "temperature68") {
+              ##     T68fromT90(x@data$temperature)
               } else if (i == "pressure") {
-                  x@data$pressure
+                  unit <- x@metadata$units[["pressure"]]$unit
+                  if (!is.null(unit) && "psi" == as.character(unit))
+                      x@data$pressure * 0.689476 # 1 psi = 6894.757 Pa
+                  else x@data$pressure
               } else if (i == "longitude") {
                   if ("longitude" %in% names(x@data)) x@data$longitude else x@metadata$longitude
               } else if (i == "latitude") {
@@ -1322,7 +1349,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
                 if (!length(x[[datumName]])) {
                     dataNew[[datumName]] <- NULL
                 } else {
-                    if (datumName != "pressure" && datumName != "scan" && datumName != "flag") {
+                    if (datumName != "pressure" && datumName != "flag") {
                         if (all(is.na(x@data[[datumName]]))) {
                             dataNew[[datumName]] <- rep(NA, pt)
                         } else {

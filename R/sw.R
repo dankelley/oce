@@ -50,18 +50,12 @@ lookWithin <- function(list)
         for (i in 1:n) {
             ##message("names[", i, "]: ", names[i])
             if ("eos" != names[i]) {
+                ## Note: the accessor [[]] will return temperature
+                ## in ITS-90 regardless of how it is stored, and similarly pressure
+                ## in dbar and salinity in FIXME: what unit to use??
                 try({
                     list[[i]] <- list1[[names[i], "nowarn"]]
                 }, silent=TRUE)
-                if ("temperature" == names[i]) {
-                    scale <- list1@metadata$units[["temperature"]]$scale
-                    if (!is.null(scale) && "IPTS-68" == scale) {
-                        ## warning("converted temperature from IPTS-68 to ITS-90 scale")
-                        ##print(head(list[[i]], 2))
-                        list[[i]] <- T90fromT68(list[[i]])
-                        ##print(head(list[[i]], 2))
-                    }
-                }
             }
         }
         if (inherits(list1, "ctd")) {

@@ -22,9 +22,13 @@ setClass("oce",
          representation(metadata="list",
                         data="list",
                         processingLog="list"),
-         prototype=list(metadata=list(filename="", units=list(), flags=list()),
+         prototype=list(metadata=list(units=list(),
+                                      flags=list()),
                         data=list(),
-                        processingLog=list()))
+                        processingLog=list(time=as.POSIXct(Sys.time()),
+                                           value="Create oce object.")
+                        )
+         )
 
 #' Summarize an oce Object
 #'
@@ -147,8 +151,47 @@ setMethod(f="summary",
               invisible(threes)
           })
 
+
+
 ## FIXME: move each of these to the respective .R files
 setClass("satellite", contains="oce") # both amsr and landsat stem from this
+
+
+#' Plot an oce Object
+#'
+#' @description
+#' This creates a \code{\link{pairs}} plot of the elements in the \code{data}
+#' slot, if there are more than 2 elements there, or a simple xy plot if 2
+#' elements, or a histogram if 1 element.
+#'
+#' @param x A basic \code{oce} object, i.e. one inheriting from \code{\link{oce-class}},
+#' but not from any subclass of that (because these subclasses go to the subclass
+#' plot methods, e.g. a \code{\link{ctd-class}} object would go to
+#' \code{\link{plot,ctd-method}}.
+#' @param y Ignored; only present here because S4 object for generic \code{plot}
+#' need to have a second parameter before the \code{...} parameter.
+#' @param ... Passed to \code{\link{hist}}, \code{\link{plot}}, or to 
+#" \code{\link{pairs}}, according to whichever does the plotting.
+#' @examples
+#' library(oce)
+#' o <- new("oce")
+#' o <- oceSetData(o, 'x', rnorm(10))
+#' o <- oceSetData(o, 'y', rnorm(10))
+#' o <- oceSetData(o, 'z', rnorm(10))
+#' plot(o)
+setMethod(f="plot",
+          signature="oce",
+          definition=function(x, y, ...) {
+              n <- length(x@data)
+              if (n == 1)
+                  hist(x@data[[1]])
+              else if (n == 2)
+                  plot(x@data[[1]], x@data[[2]])
+              else if (n > 2)
+                  pairs(x@data, ...)
+              else
+                  warning("no data to plot\n")
+          })
 
 #' Subset an oce Object
 #'
