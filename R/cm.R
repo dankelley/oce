@@ -706,9 +706,9 @@ setMethod(f="plot",
                       oce.plot.ts(x@data$time, x@data$conductivity,
                                   type=type,
                                   xlab="",
-                                  ylab=if (cu == "ratio") resizableLabel("C", "y") else
-                                      if (cu == "mS/cm") resizableLabel("conductivity mS/cm", "y") else
-                                          if (cu == "S/m") resizableLabel("conductivity S/m", "y") else
+                                  ylab=if (0 == length(cu)) resizableLabel("C", "y") else
+                                      if (cu=="mS/cm") resizableLabel("conductivity mS/cm", "y") else
+                                          if (cu=="S/m") resizableLabel("conductivity S/m", "y") else
                                               "conductivity (unknown unit",
                                               main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       tformat=tformat)

@@ -224,3 +224,38 @@ test_that("ODF file", {
           ## there are some flagged data in this file
           expect_equal(d4[['pressure']][which(d4[['flag']]!=0)], c(55.5, 60.5, 61.0 ,71.5))
 }) 
+
+test_that("pressure accessor handles psi unit", {
+          data(ctd)
+          porig <- ctd@data$pressure
+          ## fake data in psi ... [[]] should return in dbar
+          ctd@data$pressure <- porig / 0.6894757 # 1 psi=6894.757Pa=0.6894756 dbar
+          ctd@metadata$units$pressure <- list(unit=expression(psi), scale="")
+          expect_equal(porig, ctd[['pressure']])
+})
+
+test_that("pressure accessor handles missing pressure", {
+          data(ctd)
+          depth <- swDepth(ctd@data$pressure, latitude=ctd[["latitude"]], eos="unesco")
+          porig <- ctd@data$pressure
+          ## remove existing
+          ctd@data$pressure <- NULL
+          ctd@metadata$units$pressure <- NULL
+          ## add new
+          ctd <- ctdAddColumn(ctd, depth, "depth", unit=list(unit=expression(m), scale=""))
+          ## test
+          expect_equal(porig, ctd[['pressure']], tolerance=0.0001) # swDepth is approximate; sub-mm is good enough anyway
+})
+
+test_that("salinity accessor computes value from conductivity", {
+          data(ctd)
+          C <- swCSTp(ctd@data$salinity, ctd@data$temperature, ctd@data$pressure)
+          Sorig <- ctd@data$salinity
+          ## remove existing
+          ctd@data$salinity <- NULL
+          ctd@metadata$units$salinity <- NULL
+          ## add new
+          ctd <- ctdAddColumn(ctd, C, "conductivity", unit=list(unit=expression(), scale="PSS-78"))
+          expect_equal(Sorig, ctd[['salinity']], tolerance=0.0001)
+})
+
