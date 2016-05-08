@@ -749,7 +749,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
                     unit <- as.character(res@metadata$units$conductivity$unit)
                     ## Conductivity Ratio is conductivity divided by 42.914 mS/cm (Culkin and Smith 1980;
                     ## see ?read.rsk for full citation)
-                    if ("mS/cm" == unit) {
+                    if ("uS/cm" == unit) {
+                        C <- C / 429.14
+                    } else if ("mS/cm" == unit) {
                         C <- C / 42.914 # e.g. RSK 
                     } else if ("S/m" == unit) {
                         C <- C / 4.2914
@@ -779,7 +781,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
         }
         if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
             g <- if (found.header.latitude) gravity(latitude) else 9.8
-            rho0 <- 1000 + swSigmaTheta(median(res@data$salinity), median(res@data$temperature), 0)
+            rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0)
             res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
                                 unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
             ## colNamesOriginal <- c(colNamesOriginal, "NA")

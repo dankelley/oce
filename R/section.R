@@ -289,7 +289,7 @@ setMethod(f="[[",
                       } else {
                           res <- NULL
                           for (stn in seq_along(x@data$station))
-                              res <- c(res, rep(x@data$station[[stn]]@metadata[[i]], length(x@data$station[[stn]]@data$salinity)))
+                              res <- c(res, rep(x@data$station[[stn]]@metadata[[i]], length(x@data$station[[stn]][["salinity"]])))
                           return(res)
                       }
                   } else {
@@ -2393,7 +2393,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         for (s in 1:nstn) {
             thisStation <- res@data$station[[s]]
             temperatureMat[,s] <- thisStation@data$temperature
-            salinityMat[,s] <- thisStation@data$salinity
+            salinityMat[,s] <- thisStation[["salinity"]]
             sigmaThetaMat[,s] <- thisStation[["sigmaTheta"]]
         }
         ## turn off warnings about df being too small

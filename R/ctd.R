@@ -441,16 +441,47 @@ setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
           definition=function(x, i, j, ...) {
-              ##dataNames <- names(x@data)
+              dataNames <- names(x@data)
               if (i == "salinity" || i == "SP") {
-                  x@data$salinity
+                  if ("salinity" %in% dataNames) {
+                      x@data$salinity
+                  } else {
+                      C <- x@data$conductivity
+                      if (!is.null(C)) {
+                          if (is.null(x@metadata$units$conductivity)) {
+                              warning("conductivity has no unit, so guessing it is conductivity-ratio. Be cautious on calculated salinity.")
+                          } else {
+                              unit <- as.character(x@metadata$units$conductivity$unit)
+                              if (unit == "ratio") {
+                                  S <- swSCTp(C, data[["temperature"]], data[["pressure"]])
+                                  warning("constructed salinity from the temperature, conductivity-ratio and pressure")
+                              } else if (unit == "uS/cm") {
+                                  C <- C / 429.14
+                                  S <- swSCTp(C, data[["temperature"]], data[["pressure"]])
+                                  warning("constructed salinity from the temperature, conductivity and pressure")
+                              } else if (unit == "mS/cm") {
+                                  C <- C / 42.914 # e.g. RSK 
+                                  S <- swSCTp(C, data[["temperature"]], data[["pressure"]])
+                                  warning("constructed salinity from the temperature, conductivity and pressure")
+                              } else if (unit == "S/m") {
+                                  C <- C / 4.2914
+                                  S <- swSCTp(C, data[["temperature"]], data[["pressure"]])
+                                  warning("constructed salinity from the temperature, conductivity and pressure")
+                              } else {
+                                  stop("unrecognized conductivity unit '", unit, "'; only uS/cm, mS/cm and S/m are handled")
+                              }
+                          }
+                      } else {
+                          stop("the object's data slot lacks 'salinity', and it cannot be calculated since 'conductivity' is also missing")
+                      }
+                  }
               } else if (i == "SR") {
-                  gsw::gsw_SR_from_SP(SP=x@data$salinity)
+                  gsw::gsw_SR_from_SP(SP=x[["salinity"]])
               } else if (i == "Sstar") {
-                  SA <- gsw::gsw_SA_from_SP(SP=x@data$salinity, p=x@data$pressure,
+                  SA <- gsw::gsw_SA_from_SP(SP=x[["salinity"]], p=x[["pressure"]],
                                             longitude=x@metadata$longitude,
                                             latitude=x@metadata$latitude)
-                  gsw::gsw_Sstar_from_SA(SA=SA, p=x@data$pressure,
+                  gsw::gsw_Sstar_from_SA(SA=SA, p=x[["pressure"]],
                                          longitude=x@metadata$longitude,
                                          latitude=x@metadata$latitude)
               } else if (i == "temperature") {
@@ -461,10 +492,17 @@ setMethod(f="[[",
               ## } else if (i == "temperature68") {
               ##     T68fromT90(x@data$temperature)
               } else if (i == "pressure") {
-                  unit <- x@metadata$units[["pressure"]]$unit
-                  if (!is.null(unit) && "psi" == as.character(unit))
-                      x@data$pressure * 0.689476 # 1 psi = 6894.757 Pa
-                  else x@data$pressure
+                  if ("pressure" %in% dataNames) {
+                      pressure <- x@data$pressure
+                      unit <- x@metadata$units[["pressure"]]$unit
+                      if (!is.null(unit) && "psi" == as.character(unit))
+                          pressure * 0.689476 # 1 psi = 6894.757 Pa
+                      else pressure
+                  } else {
+                      if ("depth" %in% dataNames)
+                          swPressure(x@data$depth)
+                      else stop("object's data slot does not contain 'pressure' or 'depth'")
+                  }
               } else if (i == "longitude") {
                   if ("longitude" %in% names(x@data)) x@data$longitude else x@metadata$longitude
               } else if (i == "latitude") {
@@ -490,9 +528,9 @@ setMethod(f="[[",
               } else if (i == "spice") {
                   swSpice(x)
               } else if (i %in% c("absolute salinity", "SA")) {
-                  SP <- x@data$salinity
-                  t <- x@data$temperature
-                  p <- x@data$pressure
+                  SP <- x[["salinity"]]
+                  t <- x[["temperature"]]
+                  p <- x[["pressure"]]
                   n <- length(SP)
                   lon <- x@metadata$longitude
                   if (n != length(lon))
@@ -516,10 +554,7 @@ setMethod(f="[[",
                   lon[is.nan(lon)] <- NA
                   gsw::gsw_SA_from_SP(SP, p, lon, lat)
               } else if (i %in% c("conservative temperature", "CT")) {
-                  SP <- x@data$salinity
-                  t <- x@data$temperature
-                  p <- x@data$pressure
-                  gsw::gsw_CT_from_t(SP, t, p)
+                  gsw::gsw_CT_from_t(SA=x[["SA"]], t=x[["temperature"]], p=x[["pressure"]])
               } else if (i == "z") {
                   ## FIXME-gsw: permit gsw version here
                   swZ(x)
@@ -4328,7 +4363,7 @@ plotProfile <- function (x,
         box()
         ## lines(temperature, y, col = col.temperature, lwd=lwd)
         par(new = TRUE)
-        look <- if (keepNA) 1:length(y) else !is.na(x@data$salinity) & !is.na(y)
+        look <- if (keepNA) 1:length(y) else !is.na(x[["salinity"]]) & !is.na(y)
         plot(salinity[look], y[look],
              xlim=Slim, ylim=ylim, col = col.salinity, lty=lty, cex=cex, pch=pch,
              type = type, xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs)
