@@ -655,10 +655,13 @@ setMethod(f="[[<-",
 #' @param salinity There are two choices for \code{salinity}. First, it can be a
 #' vector indicating the practical salinity through the water column. In that case,
 #' \code{as.ctd} employs the other arguments listed below. The second choice is
-#' that \code{salinity} is something from which practical salinity, temperature,
-#' etc., can be inferred. In that case, the relevant information is extracted and
-#' the other arguments to \code{as.ctd} are ignored, except for
-#' \code{pressureAtmospheric}; see \dQuote{Details}.
+#' that \code{salinity} is something (a data frame or a list) from which practical
+#' salinity, temperature, etc., can be inferred. In that case, the relevant information
+#' is extracted and the other arguments to \code{as.ctd} are ignored, except for
+#' \code{pressureAtmospheric}; see \dQuote{Details}. If \code{salinity} is
+#' not provided, it is necessary to supply \code{conductivity}, \code{temperature}
+#' and \code{pressure}, so that \code{as.ctd} can calculate salinity with
+#' \code{\link{swSCTp}}.
 #' 
 #' @param temperature \emph{in-situ} temperature [\eqn{^\circ deg}C], defined on
 #' the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
@@ -842,11 +845,13 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     if (!is.null(recovery) && is.character(recovery))
         recovery <- as.POSIXct(recovery, tz="UTC")
     if (missing(salinity)) {
-        stop("must provide salinity")
-        ##if (inherits(salinity, "ctd"))
-        ##    return(salinity) # a convenience that lets us coerce without altering
-        ## 1. coerce an oce object (with special tweaks for rsk)
-    } else if (inherits(salinity, "oce")) {
+        if (!missing(conductivity) && !missing(temperature) && !missing(pressure)) {
+            salinity <- swSCTp(conductivity=conductivity, temperature=temperature, pressure=pressure)
+        } else {
+            stop("if salinity is not provided, conductivity, temperature and pressure must all be provided")
+        }
+    }
+    if (inherits(salinity, "oce")) {
         if (inherits(salinity, "ctd"))
             return(salinity)
         oceDebug(debug, "'salinity' is an oce object, so ignoring other arguments\n")
