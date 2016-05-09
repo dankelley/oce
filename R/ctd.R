@@ -3,22 +3,32 @@
 #' Class to Store CTD (or general hydrographic) Data
 #'
 #' Class to store hydrographic data such as measured with a CTD (conductivity,
-#' temperature, depth) instrument. There are other instruments that report
-#' similar data, though, and the user can create datasets, so this is not
-#' just mapped to a particular instrument.  There is also flexibility in
-#' the elements stored in the \code{data} slot. Any such object should
-#' have \code{temperature}, and that is typically stored by most instruments
-#' in this general category so it is likely to be present. Data
-#' files often record \code{salinity}, which is needed for
-#' many dynamically-related calculations (e.g. of density), even 
-#' the instruments record \code{conductivity}. Either may be stored
-#' within a CTD object, or both.  A similar statement could be made
-#' about \code{pressure}, which in some cases may be inferred from
-#' \code{depth}, if only the latter is present in a data file.
+#' temperature, depth) instrument, or with other systems that produce
+#' similar data.  Data repositories may store conductivity, temperature
+#' and depth, as in the instrument name, but it is also common to store
+#' salinity, temperature and pressure instead (or in addition). For this
+#' reason, \code{ctd} objects are required to hold \code{salinity},
+#' \code{temperature} and \code{pressure} in their \code{data} slot,
+#' with other data being optional. Formulae are available for converting
+#' between variants of these data triplets, e.g. \code{\link{swSCTp}}
+#' can calculate \code{salinity} given \code{conductivity}, \code{temperature}
+#' and \code{pressure}, and these are used by the main functions that
+#' create \code{ctd} objects. For example, if \code{\link{read.ctd.sbe}} 
+#' is used to read a Seabird file that contains only conductivity, temperature
+#' and pressure, then that function will automatically append a data
+#' item to hold salinity.  \code{\link{as.ctd}} acts similarly. The result
+#' this is that all \code{ctd} objects hold \code{salinity},
+#' \code{temperature} and \code{pressure}, which are henceforth called
+#' the three basic quantities.
 #'
-#' Temperatures may be stored in the IPTS-68 or ITS-90 scale within the object,
-#' but e.g. \code{ctd[["temperature"]]} always returns a value on the ITS-90
-#' scale, converting with \code{\link{T90fromT68}} if necessary. Similarly,
+#' Different units and scales are permitted for the three basic quantities, and 
+#' most \code{oce} functions check those units and scales before
+#' doing calculations (e.g. of seawater density), because those calculations
+#' demand certain units and scales. The way this is handled is that the 
+#' accessor function \code{\link{[[,ctd-method}} returns values in standardized
+#' form. For example, a \code{ctd} object might hold temperature defined on the
+#' IPTS-68 scale, but e.g. \code{ctd[["temperature"]]} returns a value on the ITS-90
+#' scale. (The conversion is done with \code{\link{T90fromT68}}.)  Similarly,
 #' pressure may be stored in either dbars or PSI, but e.g. \code{ctd[["pressure"]]}
 #' returns a value in dbars, after multiplying by 0.689476 if the value is
 #' stored in PSI. Luckily, there is (as of early 2016) only one salinity scale in
@@ -35,7 +45,9 @@
 #'
 #' @section Accessing data:
 #' Data may be extracted with \code{\link{[[,ctd-method}} and inserted
-#' with \code{\link{[[<-,ctd-method}}. Type \code{?"[[,ctd-method"}
+#' with \code{\link{[[<-,ctd-method}}. As noted above, \code{\link{[[,ctd-method}}
+#' returns temperature in the ITS-90 scale and pressure in dbar, regardless of the
+#' scale and unit of the data within the object. Type \code{?"[[,ctd-method"}
 #' or \code{?"[[<-,ctd-method"} to learn more.
 #'
 #' Depth is accessed with e.g. \code{ctd[["depth"]]}, while its negative, the

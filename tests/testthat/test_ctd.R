@@ -225,7 +225,6 @@ test_that("ODF file", {
           expect_equal(d4[['pressure']][which(d4[['flag']]!=0)], c(55.5, 60.5, 61.0 ,71.5))
 }) 
 
-<<<<<<< HEAD
 test_that("pressure accessor handles psi unit", {
           data(ctd)
           porig <- ctd@data$pressure
@@ -258,6 +257,8 @@ test_that("salinity accessor computes value from conductivity", {
           ## add new
           ctd <- ctdAddColumn(ctd, C, "conductivity", unit=list(unit=expression(), scale="PSS-78"))
           expect_equal(Sorig, ctd[['salinity']], tolerance=0.0001)
+})
+
 test_that("nitrate can be inferred from nitrite and NO2+NO3", {
           data(section)
           stn1 <- section[["station", 1]]
