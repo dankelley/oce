@@ -477,7 +477,7 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
 #' 
 #' @family functions that calculate seawater properties
 swSCTp <- function(conductivity, temperature=NULL, pressure=0,
-                   conductivityUnit=c("ratio", "mS/cm", "S/m"),
+                   conductivityUnit=c("", "mS/cm", "S/m"),
                    eos=getOption("oceEOS", default="gsw"))
 {
     ## FIXME-gsw add gsw version

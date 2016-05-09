@@ -1470,7 +1470,7 @@ setMethod(f="plot",
                       tlim <- range(x@data$time)
                       if (which[w] == 13) {
                           if (haveTimeImages) drawPalette(debug=debug-1)
-                          ats <- oce.plot.ts(x@data$time, x@data$salinity,
+                          ats <- oce.plot.ts(x@data$time, x[["salinity"]],
                                              xlim=if(xlimGiven) xlim[w,] else tlim,
                                              ylim=if(ylimGiven) ylim[w,],
                                              xaxs="i",
