@@ -224,3 +224,10 @@ test_that("ODF file", {
           ## there are some flagged data in this file
           expect_equal(d4[['pressure']][which(d4[['flag']]!=0)], c(55.5, 60.5, 61.0 ,71.5))
 }) 
+
+test_that("nitrate can be inferred from nitrite and NO2+NO3", {
+          data(section)
+          stn1 <- section[["station", 1]]
+          expect_equal(stn1[["nitrate"]], stn1[["NO2+NO3"]] - stn1[["nitrite"]])
+})
+

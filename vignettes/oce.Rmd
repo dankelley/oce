@@ -365,15 +365,21 @@ issue list, i.e. <https://github.com/dankelley/oce/issues/388>. In some instance
 
 ## Popular world-view projections
 
-A few common projections are worth highlighting. In addition to the Winkel
-Tripel projection shown in Figure 5, it is also common to employ Mollweide,
-Eckert IV or Robinson for world-wide views; these are achieved as follows.
+A few common projections are worth highlighting. In addition to the MollWeide
+projection shown in Figure 5, it is also common to employ Mollweide, Eckert IV
+or Robinson for world-wide views; these are achieved as follows.
 
 ```{r fig.keep="none"}
-mapPlot(coastlineWorld, projection="+proj=moll") # Molleweide
 mapPlot(coastlineWorld, projection="+proj=eck4") # Eckert IV
 mapPlot(coastlineWorld, projection="+proj=robin") # Robinson
 ```
+
+The Winkel Tripel projection (`"+proj=wintri"`) is also popular, but it
+sometimes fails in `oce` owing to a problem in computing the inverse
+projection, in the GDAL library, used by the `rgdal` package upon which `oce`
+relies for projections.  (This problem is known in the GDAL development
+community and so may disappear at some time. It should also be noted that the
+problem only occurs on certain operating systems.)
 
 Before moving on to other projections, it may be helpful to show how to plot
 gridded data with projection, illustrated in Figure 6 with bathymetry near

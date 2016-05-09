@@ -361,21 +361,34 @@ setMethod(f="summary",
 #' within the object are always accessible with \code{\link{oceGetData}}.
 #'
 #' It should be noted that the accessor is set up to retrieve quantities
-#' in conventional units. For example, it is possible that a \code{.cnv}
-#' (Seabird) file stores pressure in psi, and in that circumstance,
-#' \code{x[["pressure"]]} will first multiply by 0.689476 to convert to
-#' the standard decibar unit.  (The pressure as stored in PSI can
-#' be retrieved with \code{x@@data$pressure}, if for some odd reason
-#' the user wishes to use that unit.) Similarly, temperature is 
-#' returned in the ITS-90 scale, and so a conversion is performed with
-#' \code{\link{T90fromT68}}, if the object has stored temperature in
-#' the older IPTS-68 unit.  Again, direct retrieval of the quantity is
-#' possible with \code{x@@data$temperature}.
+#' in conventional units. For example, \code{\link{read.ctd.sbe}} is
+#' used on a \code{.cnv} file that stores pressure in psi, it will
+#' be stored in the same unit within the \code{ctd} object, but
+#' \code{x[["pressure"]]} will return a value that has been converted
+#' to decibars.  (Users who need the pressure in PSI can
+#' use \code{x@@data$pressure}.)
+#' Similarly, temperature is 
+#' returned in the ITS-90 scale, with a conversion having been performed with
+#' \code{\link{T90fromT68}}, if the object holds temperature in
+#' IPTS-68.  Again, temperature on the IPTS-68
+#' scale is returned with \code{x@@data$temperature}.
+#'
 #'
 #' This preference for computed over stored quantities is accomplished
 #' by first checking for computed quantities, and then falling
 #' back to the general \code{[[} method if no match is found.
-#' The computed quantities are as follows.
+#'
+#' Some quantities are optionally computed. For example, some data files
+#' (e.g. the one upon which the \code{\link{section}} dataset is based)
+#' store \code{nitrite} along with the sum of nitrite and nitrate, the
+#' latter with name \code{`NO2+NO3`}. In this case, e.g. \code{x[["nitrate"]]}
+#' will detect the setup, and subtract nitrite from the sum to yield
+#' nitrate.
+#'
+#' Below is a list of computed quantities, or at least quantites that are
+#' typically not stored in data files.  (This is a vague statement because
+#' Seabird software permits calculation of many of these and hence storage
+#' within \code{.cnv} files.)
 #'
 #' \itemize{
 #'
@@ -441,7 +454,7 @@ setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           ##definition=function(x, i, j=NULL, drop=NULL) {
           definition=function(x, i, j, ...) {
-              ##dataNames <- names(x@data)
+              dataNames <- names(x@data)
               if (i == "salinity" || i == "SP") {
                   x@data$salinity
               } else if (i == "SR") {
@@ -466,9 +479,9 @@ setMethod(f="[[",
                       x@data$pressure * 0.689476 # 1 psi = 6894.757 Pa
                   else x@data$pressure
               } else if (i == "longitude") {
-                  if ("longitude" %in% names(x@data)) x@data$longitude else x@metadata$longitude
+                  if ("longitude" %in% dataNames) x@data$longitude else x@metadata$longitude
               } else if (i == "latitude") {
-                  if ("latitude" %in% names(x@data)) x@data$latitude else x@metadata$latitude
+                  if ("latitude" %in% dataNames) x@data$latitude else x@metadata$latitude
               } else if (i == "N2") {
                   swN2(x)
               } else if (i == "sigmaTheta") {
@@ -520,6 +533,22 @@ setMethod(f="[[",
                   t <- x@data$temperature
                   p <- x@data$pressure
                   gsw::gsw_CT_from_t(SP, t, p)
+              } else if (i == "nitrate") {
+                  if ("nitrate" %in% dataNames) {
+                      x@data$nitrate
+                  } else {
+                      if ("nitrite" %in% dataNames && "NO2+NO3" %in% dataNames)
+                          x@data[["NO2+NO3"]] - x@data$nitrite
+                      else NULL
+                  }
+              } else if (i == "nitrite") {
+                  if ("nitrite" %in% dataNames) {
+                      x@data$nitrite
+                  } else {
+                      if ("nitrate" %in% dataNames && "NO2+NO3" %in% dataNames)
+                          x@data[["NO2+NO3"]] - x@data$nitrate
+                      else NULL
+                  }
               } else if (i == "z") {
                   ## FIXME-gsw: permit gsw version here
                   swZ(x)
