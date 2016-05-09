@@ -20,10 +20,13 @@ as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
 \item{salinity}{There are two choices for \code{salinity}. First, it can be a
 vector indicating the practical salinity through the water column. In that case,
 \code{as.ctd} employs the other arguments listed below. The second choice is
-that \code{salinity} is something from which practical salinity, temperature,
-etc., can be inferred. In that case, the relevant information is extracted and
-the other arguments to \code{as.ctd} are ignored, except for
-\code{pressureAtmospheric}; see \dQuote{Details}.}
+that \code{salinity} is something (a data frame or a list) from which practical
+salinity, temperature, etc., can be inferred. In that case, the relevant information
+is extracted and the other arguments to \code{as.ctd} are ignored, except for
+\code{pressureAtmospheric}; see \dQuote{Details}. If \code{salinity} is
+not provided, it is necessary to supply \code{conductivity}, \code{temperature}
+and \code{pressure}, so that \code{as.ctd} can calculate salinity with
+\code{\link{swSCTp}}.}
 
 \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ deg}C], defined on
 the ITS-90 scale; see \dQuote{Temperature units} in the documentation for

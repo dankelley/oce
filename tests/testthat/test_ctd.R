@@ -5,7 +5,7 @@ data("argo")
 
 context("CTD")
 
-test_that("as.ctd() with specified arguments", {
+test_that("as.ctd() with specified arguments, including salinity", {
           ctd_ctd <- as.ctd(salinity=ctd[["salinity"]], temperature=ctd[["temperature"]], pressure=ctd[["pressure"]])
           expect_equal(ctd[["salinity"]], ctd_ctd[["salinity"]])
           expect_equal(ctd[["temperature"]], ctd_ctd[["temperature"]])
@@ -14,6 +14,19 @@ test_that("as.ctd() with specified arguments", {
           expect_equal(ctd_ctd[["conductivityUnit"]], list(unit=expression(), scale=""))
           expect_equal(ctd_ctd[["pressureType"]], "sea")
 })
+
+test_that("as.ctd() with specified arguments, not including salinity", {
+          S <- ctd[["salinity"]]
+          T <- ctd[["temperature"]]
+          p <- ctd[["pressure"]]
+          C <- swCSTp(S, T, p)
+          ctdNew <- as.ctd(conductivity=C, temperature=T, pressure=p)
+          ## Test that all fields were created accurately.
+          expect_equal(S, ctdNew[["salinity"]])
+          expect_equal(T, ctdNew[["temperature"]])
+          expect_equal(p, ctdNew[["pressure"]])
+})
+
 
 test_that("as.ctd() with a data frame", {
           ctd_df <- as.ctd(data.frame(pressure=ctd[["pressure"]],temperature=ctd[["temperature"]],salinity=ctd[["salinity"]]))
