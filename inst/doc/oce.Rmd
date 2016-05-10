@@ -175,7 +175,7 @@ example, `data(ctd)` yields a CTD profile that has been trimmed to just the
 downcast portion of the sampling.  (See the next section to learn how to do
 this trimming.)  A summary and plot (Figure 2) are created as follows.
 
-```{r fig.cap="**Figure 2.** An overview of a ctd dataset.", fig.width=6, fig.height=6, dpi=72, dev.args=list(pointsize=15), message=FALSE}
+```{r fig.cap="**Figure 2.** An overview of a ctd dataset.", fig.width=4, fig.height=4, dpi=72, dev.args=list(pointsize=15), message=FALSE}
 library(oce)
 data(ctd)
 summary(ctd)
@@ -313,7 +313,7 @@ stations in total; the `stationId` value selects the last few stations of the
 section, during which the ship headed toward the northwest, crossing isobaths
 (and perhaps, the Gulf Stream) at nearly right angles.
 
-```{r fig.cap="**Figure 4.** Portion of the CTD section designated A03, showing the Gulf Sream region.  The square on the cruise track corresponds to zero distance on the section.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=12)}
+```{r fig.cap="**Figure 4.** Portion of the CTD section designated A03, showing the Gulf Sream region.  The square on the cruise track corresponds to zero distance on the section.", fig.width=4, fig.height=4, dpi=72, dev.args=list(pointsize=12)}
 library(oce)
 data(section)
 GS <- subset(section, 102 <= stationId & stationId <= 124)
@@ -374,12 +374,11 @@ mapPlot(coastlineWorld, projection="+proj=eck4") # Eckert IV
 mapPlot(coastlineWorld, projection="+proj=robin") # Robinson
 ```
 
-The Winkel Tripel projection (`"+proj=wintri"`) is also popular, but it
-sometimes fails in `oce` owing to a problem in computing the inverse
-projection, in the GDAL library, used by the `rgdal` package upon which `oce`
-relies for projections.  (This problem is known in the GDAL development
-community and so may disappear at some time. It should also be noted that the
-problem only occurs on certain operating systems.)
+The Winkel Tripel projection was provided in previous versions of `oce` but it
+was removed when R-3.3.0 was released in Spring 2016, because the `rgdal`
+package provided with that release has a problem doing the inverse of this
+projection. (Projection inverses are required to draw grid lines and position
+axis elements.)
 
 Before moving on to other projections, it may be helpful to show how to plot
 gridded data with projection, illustrated in Figure 6 with bathymetry near
@@ -423,7 +422,7 @@ mapPlot(coastlineWorld, projection="+proj=aea +lat_1=30 +lat_2=70 +lon_0=-40",
 
 High-latitude regions are often represented with stereopolar projections, e.g.
 Figure 8 was produced with the following.
-```{r fig.cap="**Figure 8.** Arctic coastlines in stereopolar projection.", fig.width=5, fig.height=5, dpi=72}
+```{r fig.cap="**Figure 8.** Arctic coastlines in stereopolar projection.", fig.width=3, fig.height=3, dpi=72}
 par(mar=c(2, 2, 1, 1))
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
         longitudelim=c(-80,0), latitudelim=c(70, 110))
@@ -444,7 +443,7 @@ possibilities for plotting, of which the cumulative spectrum can be quite
 informative.
 
 
-```{r fig.cap="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour.", fig.width=7, fig.height=5, dpi=72, dev.args=list(pointsize=16)}
+```{r fig.cap="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=16)}
 library(oce)
 data(sealevel)
 plot(sealevel)
@@ -469,7 +468,7 @@ whether Hurricane Juan is visible. (Hint: use `predict` with the results from
 The following commands produce Figure 10, showing one velocity component of
 currents measured in the St Lawrence Estuary Internal Wave Experiment. This
 plot type is just one of many provided by `plot.adp()`.
-```{r fig.cap="**Figure 10.** Measurements made with a bottom-mounted ADP in the St Lawrence Estuary. The line near the surface indicates pressure measured by the ADP.", fig.width=5, fig.height=2, dpi=72}
+```{r fig.cap="**Figure 10.** Measurements made with a bottom-mounted ADP in the St Lawrence Estuary. The line near the surface indicates pressure measured by the ADP.", fig.width=4, fig.height=2, dpi=72}
 library(oce)
 data(adp)
 plot(adp, which=1)

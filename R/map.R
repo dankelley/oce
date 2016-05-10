@@ -881,7 +881,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' Wagner VI                                 \tab \code{wag6}     \tab - \cr
 #' Werenskiold I                             \tab \code{weren}    \tab - \cr
 #' Winkel I                                  \tab \code{wink1}    \tab \code{lat_ts}\cr
-#' Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts}\cr
+## Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts}\cr
 #' }
 #'
 #' @section Available ellipse formulations:
@@ -2914,7 +2914,7 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
                 ##"gstmerc", "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups"
                 ,            "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups",
                 "urm5", "urmfps", "utm", "vandg", "vitk1", "wag1", "wag2",
-                "wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
+                "wag3", "wag4", "wag5", "wag6", "weren", "wink1") #, "wintri")
 
 
 
