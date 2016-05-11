@@ -158,6 +158,7 @@ applications, and [8] for a gallery indicating how to use every projection.
 \strong{Projection}                       \tab \strong{Code}   \tab \strong{Arguments}\cr
 Albers equal area                         \tab \code{aea}      \tab \code{lat_1}, \code{lat_2}\cr
 Azimuthal equidistant                     \tab \code{aeqd}     \tab \code{lat_0}, \code{guam}\cr
+Aitoff                                    \tab \code{aitoff}   \tab - \cr
 Mod. stererographics of Alaska            \tab \code{alsk}     \tab - \cr
 Bipolar conic of western hemisphere       \tab \code{bipc}     \tab - \cr
 Bonne Werner                              \tab \code{bonne}    \tab \code{lat_1}\cr
@@ -265,6 +266,7 @@ Wagner V                                  \tab \code{wag5}     \tab - \cr
 Wagner VI                                 \tab \code{wag6}     \tab - \cr
 Werenskiold I                             \tab \code{weren}    \tab - \cr
 Winkel I                                  \tab \code{wink1}    \tab \code{lat_ts}\cr
+Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts}\cr
 }
 }
 

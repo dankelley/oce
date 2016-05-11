@@ -773,7 +773,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' \strong{Projection}                       \tab \strong{Code}   \tab \strong{Arguments}\cr
 #' Albers equal area                         \tab \code{aea}      \tab \code{lat_1}, \code{lat_2}\cr
 #' Azimuthal equidistant                     \tab \code{aeqd}     \tab \code{lat_0}, \code{guam}\cr
-## Aitoff                                    \tab \code{aitoff}   \tab - \cr
+#' Aitoff                                    \tab \code{aitoff}   \tab - \cr
 #' Mod. stererographics of Alaska            \tab \code{alsk}     \tab - \cr
 #' Bipolar conic of western hemisphere       \tab \code{bipc}     \tab - \cr
 #' Bonne Werner                              \tab \code{bonne}    \tab \code{lat_1}\cr
@@ -881,7 +881,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' Wagner VI                                 \tab \code{wag6}     \tab - \cr
 #' Werenskiold I                             \tab \code{weren}    \tab - \cr
 #' Winkel I                                  \tab \code{wink1}    \tab \code{lat_ts}\cr
-## Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts}\cr
+#' Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts}\cr
 #' }
 #'
 #' @section Available ellipse formulations:
@@ -2916,8 +2916,11 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
                 "urm5", "urmfps", "utm", "vandg", "vitk1", "wag1", "wag2",
                 "wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
 
-knownProj4 <- knownProj4[knownProj4 != "aitoff"] # R 3.3.0 cannot handle this
-knownProj4 <- knownProj4[knownProj4 != "wintri"] # R 3.3.0 cannot handle this
+## OSX has problems with some projections:
+## 2016-05-11: in a few days, rgdal on R 3.3.0 will handle these
+## 2016-05-11: projections, so I'm putting them back in.
+## 2016-05-11 knownProj4 <- knownProj4[knownProj4 != "aitoff"] # R 3.3.0 cannot handle this
+## 2016-05-11 knownProj4 <- knownProj4[knownProj4 != "wintri"] # R 3.3.0 cannot handle this
 
 #' Convert Longitude and Latitude to X and Y
 #' 
