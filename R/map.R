@@ -881,7 +881,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' Wagner VI                                 \tab \code{wag6}     \tab - \cr
 #' Werenskiold I                             \tab \code{weren}    \tab - \cr
 #' Winkel I                                  \tab \code{wink1}    \tab \code{lat_ts}\cr
-## Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts}\cr
+#' Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts}\cr
 #' }
 #'
 #' @section Available ellipse formulations:
@@ -2123,13 +2123,13 @@ map2lonlat <- function(x, y, init=c(0,0))
     if (requireNamespace("rgdal", quietly=TRUE)) {
         owarn <- options()$warn
         options(warn=-1)
-        ## April 2016: rgdal::project will soon return named quantities
-        XY <- unname(rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE))
+        ## April 2016: rgdal::project started returning named quantities
+        ignore <- capture.output(XY <- unname(rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE)))
+        options(warn=owarn)
         ## See https://github.com/dankelley/oce/issues/653#issuecomment-107040093 for why I gave
         ## up on the idea of using rawTransform().
         ##> n <- length(x)
         ##> XY <- rgdal::rawTransform(projfom=as.character(.Projection()$projection), projto="+proj=longlat", n=n, x=x, y=y)
-        options(warn=owarn)
         return(list(longitude=XY[,1], latitude=XY[,2]))
         ## See https://github.com/dankelley/oce/issues/653#issuecomment-107040093 for why I gave
         ## up on the idea of using rawTransform().
@@ -2914,9 +2914,13 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
                 ##"gstmerc", "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups"
                 ,            "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups",
                 "urm5", "urmfps", "utm", "vandg", "vitk1", "wag1", "wag2",
-                "wag3", "wag4", "wag5", "wag6", "weren", "wink1") #, "wintri")
+                "wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
 
-
+## OSX has problems with some projections:
+## 2016-05-11: in a few days, rgdal on R 3.3.0 will handle these
+## 2016-05-11: projections, so I'm putting them back in.
+## 2016-05-11 knownProj4 <- knownProj4[knownProj4 != "aitoff"] # R 3.3.0 cannot handle this
+## 2016-05-11 knownProj4 <- knownProj4[knownProj4 != "wintri"] # R 3.3.0 cannot handle this
 
 #' Convert Longitude and Latitude to X and Y
 #' 
@@ -3048,7 +3052,7 @@ lonlat2map <- function(longitude, latitude, projection="")
     owarn <- options()$warn
     options(warn=-1)
     ## April 2016: rgdal::project will soon return named quantities
-    XY <- unname(rgdal::project(ll, proj=as.character(projection), inv=FALSE))
+    ignore <- capture.output(XY <- unname(rgdal::project(ll, proj=as.character(projection), inv=FALSE)))
     options(warn=owarn)
     xy <- list(x=XY[,1], y=XY[,2])
     ## 20150523 if (!getOption("externalProj4", FALSE)) {

@@ -266,6 +266,7 @@ Wagner V                                  \tab \code{wag5}     \tab - \cr
 Wagner VI                                 \tab \code{wag6}     \tab - \cr
 Werenskiold I                             \tab \code{weren}    \tab - \cr
 Winkel I                                  \tab \code{wink1}    \tab \code{lat_ts}\cr
+Winkel Tripel                             \tab \code{wintri}   \tab \code{lat_ts}\cr
 }
 }
 
