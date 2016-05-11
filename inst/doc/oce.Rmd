@@ -175,7 +175,7 @@ example, `data(ctd)` yields a CTD profile that has been trimmed to just the
 downcast portion of the sampling.  (See the next section to learn how to do
 this trimming.)  A summary and plot (Figure 2) are created as follows.
 
-```{r fig.cap="**Figure 2.** An overview of a ctd dataset.", fig.width=4, fig.height=4, dpi=72, dev.args=list(pointsize=15), message=FALSE}
+```{r fig.cap="**Figure 2.** An overview of a ctd dataset.", fig.width=6, fig.height=6, dpi=72, dev.args=list(pointsize=14), message=FALSE}
 library(oce)
 data(ctd)
 summary(ctd)
