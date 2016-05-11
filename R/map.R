@@ -2124,7 +2124,7 @@ map2lonlat <- function(x, y, init=c(0,0))
         owarn <- options()$warn
         options(warn=-1)
         ## April 2016: rgdal::project will soon return named quantities
-        XY <- unname(rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE))
+        try({XY <- unname(rgdal::project(cbind(x, y), proj=as.character(.Projection()$projection), inv=TRUE))}, silent=TRUE)
         ## See https://github.com/dankelley/oce/issues/653#issuecomment-107040093 for why I gave
         ## up on the idea of using rawTransform().
         ##> n <- length(x)
@@ -3052,7 +3052,7 @@ lonlat2map <- function(longitude, latitude, projection="")
     owarn <- options()$warn
     options(warn=-1)
     ## April 2016: rgdal::project will soon return named quantities
-    XY <- unname(rgdal::project(ll, proj=as.character(projection), inv=FALSE))
+    try({XY <- unname(rgdal::project(ll, proj=as.character(projection), inv=FALSE))}, silent=TRUE)
     options(warn=owarn)
     xy <- list(x=XY[,1], y=XY[,2])
     ## 20150523 if (!getOption("externalProj4", FALSE)) {
