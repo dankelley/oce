@@ -334,14 +334,6 @@ setMethod(f="summary",
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
               names <- names(object@data)
-              namesOriginal <- attr(object@data, "namesOriginal")
-              if (!is.null(namesOriginal)) {
-                  cat(sprintf("%30s %20s\n", "Oce Name", "SBE Name"))
-                  cat(sprintf("%30s %20s\n", paste(rep("-", 30), collapse=""), paste(rep("-", 20), collapse="")))
-                  for (i in seq_along(names)) {
-                      cat(sprintf("%30s %20s\n", names[i], namesOriginal[i]))
-                  }
-              }
               callNextMethod()
           })
 
@@ -1077,9 +1069,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         data <- list(scan=scan,
                      salinity=salinity,
                      temperature=temperature,
-                     pressure=pressure,
-                     sigmaTheta=swSigmaTheta(salinity, temperature, pressure)) # FIXME: what about gsw?
-        res@metadata$units$sigmaTheta <- list(unit=expression(kg/m^3), scale="")
+                     pressure=pressure)
         if (!missing(conductivity)) data$conductivity <- as.vector(conductivity)
         if (!missing(quality)) data$quality <- quality
         if (!missing(oxygen)) data$oxygen <- oxygen
@@ -1186,6 +1176,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #'     unit \code{list(name=expression(degree*C), scale="ITS-90")}.
 #' @param log Logical value indicating whether to store an entry in the processing
 #' log that indicates this insertion.
+#' @param originalName string indicating the name of the data element as it was originally. This 
+#' makes sense only for data being read from a file, where e.g. WOCE or SBE
+#' names might be used.
 #' @template debugTemplate
 #' @return A ctd object.
 #' @seealso The documentation for \code{\link{ctd-class}} explains the structure
@@ -1201,7 +1194,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #' @author Dan Kelley
 #'
 #' @family things related to \code{ctd} data
-ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, debug=getOption("oceDebug"))
+ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalName="",
+                          debug=getOption("oceDebug"))
 {
     ## FIXME: not using the units
     oceDebug(debug, "ctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="", unindent=1)
@@ -1220,8 +1214,8 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, debug=get
     if (!replace) {
         res@metadata$names <- c(res@metadata$names, name)
         res@metadata$labels <- c(res@metadata$labels, label)
-        if ("originalDataNames" %in% names(res@metadata))
-            res@metadata$originalDataNames <- c(res@metadata$originalDataNames, "NA")
+        if ("dataNamesOriginal" %in% names(res@metadata))
+            res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, originalName)
     }
     if (!is.null(unit)) {
         if (0 == length(unit)) {
@@ -2703,7 +2697,7 @@ setMethod(f="plot",
                       cex <- 3/4
                       xm <- x@metadata
                       yloc <- textItem(xloc, yloc, xm$station,         " Station:  ", cex=cex)
-                      if (!is.null(xm$filename) && nchar(xm$filename) > 0) {
+                      if (!is.null(xm$filename) && nchar(xm$filename, "bytes") > 0) {
                           yloc <- textItem(xloc, yloc, xm$filename,    " File:     ", cex=cex)
                       }
                       if (!is.null(xm$scientist))	{
@@ -2892,7 +2886,7 @@ setMethod(f="plot",
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
                               mtext(x@metadata$station,
                                     side=3, adj=0, cex=0.8*par("cex"), line=1.125)
-                          if (!is.null(x@metadata$startTime) && 4 < nchar(x@metadata$startTime))
+                          if (!is.null(x@metadata$startTime) && 4 < nchar(x@metadata$startTime, "bytes"))
                               mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%S"),
                                     side=3, adj=1, cex=0.8*par("cex"), line=1.125)
                       }
@@ -2908,7 +2902,7 @@ setMethod(f="plot",
                   } else {
                       stop("unknown value of which, ", which[w])
                   }
-                  if (w <= adorn.length && nchar(adorn[w]) > 0) {
+                  if (w <= adorn.length && nchar(adorn[w], "bytes") > 0) {
                       t <- try(eval(adorn[w]), silent=TRUE)
                       if (class(t) == "try-error")
                           warning("cannot evaluate adorn[", w, "]\n")
