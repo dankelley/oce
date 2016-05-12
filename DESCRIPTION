@@ -1,6 +1,6 @@
 Package: oce
 Version: 0.9-19
-Date: 2016-05-10
+Date: 2016-05-12
 Title: Analysis of Oceanographic Data
 Authors@R: c(person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre")),
  person(given="Clark", family="Richards", email="clark.richards@gmail.com", role=c("aut")),
@@ -20,7 +20,7 @@ Suggests:
     akima,
     RSQLite,
     DBI,
-    rgdal,
+    rgdal (>= 1.1-9),
     R.utils,
     testthat,
     knitr
@@ -38,5 +38,5 @@ LazyLoad: yes
 LazyData: no
 Packaged: Dan Kelley
 Encoding: UTF-8
-RoxygenNote: 5.0.1.9000
+RoxygenNote: 5.0.1
 VignetteBuilder: knitr
