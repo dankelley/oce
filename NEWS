@@ -1,5 +1,6 @@
 0.9-19
-- renameData() added
+- improve map projection
+- add renameData()
 - improve support for SBE files
 - remove is.beam(), is.xyz(), is.enu() and coordinate(), since
   x[["coordinate"]] now permits these simply
@@ -7,8 +8,8 @@
 - fix test-suite error relating to an rgdal change
 - add handleFlags() as generic plus specifics for ctd and argo classe
 - use S4 documentation, e.g. ?'plot,ctd-method' instead of ?plot.ctd
-- subset(argo, "adjusted") drops non-adjusted data
-- read.argo() reads all documented data and metadata fields
+- add subset(argo, "adjusted")
+- make read.argo() read all documented data and metadata fields
 - add trimString()
 
 0.9-18
