@@ -5,7 +5,7 @@
 \title{Add a Column to the Data Slot of a CTD Object}
 \usage{
 ctdAddColumn(x, column, name, label, unit = NULL, log = TRUE,
-  debug = getOption("oceDebug"))
+  originalName = "", debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -28,6 +28,10 @@ unit \code{list(name=expression(degree*C), scale="ITS-90")}.}
 
 \item{log}{Logical value indicating whether to store an entry in the processing
 log that indicates this insertion.}
+
+\item{originalName}{string indicating the name of the data element as it was originally. This 
+makes sense only for data being read from a file, where e.g. WOCE or SBE
+names might be used.}
 
 \item{debug}{An integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

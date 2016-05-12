@@ -140,6 +140,7 @@ setMethod(f="summary",
                       if (length(OriginalName) < length(names))
                           OriginalName <- c(OriginalName, rep("-", length(names)-length(OriginalName)))
                       ##print(OriginalName)
+                      OriginalName[0==nchar(OriginalName, "bytes")] <- "-"
                       if (!is.null(OriginalName)) {
                           threes <- cbind(threes, OriginalName)
                       }

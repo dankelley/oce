@@ -800,8 +800,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' General sinusoidal series                 \tab \code{gn_sinu}  \tab \code{m}, \code{n}\cr
 #' Gnomonic                                  \tab \code{gnom}     \tab - \cr
 #' Goode homolosine                          \tab \code{goode}    \tab - \cr
-#' %Mod. stererographics of 48 U.S.           \tab \code{gs48}     \tab - \cr
-#' %Mod. stererographics of 50 U.S.           \tab \code{gs50}     \tab - \cr
+## Mod. stererographics of 48 U.S.           \tab \code{gs48}     \tab - \cr
+## Mod. stererographics of 50 U.S.           \tab \code{gs50}     \tab - \cr
 #' Hatano asymmetrical equal area            \tab \code{hatano}   \tab - \cr
 #' HEALPix                                   \tab \code{healpix}  \tab - \cr
 #' rHEALPix                                  \tab \code{rhealpix} \tab \code{north_square}, \code{south_square}\cr
@@ -809,14 +809,14 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' Int'l map of the world polyconic          \tab \code{imw_p}    \tab \code{lat_1}, \code{lat_2}, \code{lon_1}\cr
 #' Kavraisky V                               \tab \code{kav5}     \tab - \cr
 #' Kavraisky VII                             \tab \code{kav7}     \tab - \cr
-#' %Krovak                                    \tab \code{krovak}   \tab - \cr
+## Krovak                                    \tab \code{krovak}   \tab - \cr
 #' Lambert azimuthal equal area              \tab \code{laea}     \tab - \cr
 #' Lat/long                                  \tab \code{lonlat}   \tab - \cr
 #' Lat/long                                  \tab \code{latlon}   \tab - \cr
 #' Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
 #' Lambert conformal conic alternative       \tab \code{lcca}     \tab \code{lat_0}\cr
 #' Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
-#' %Lee oblated stereographic                 \tab \code{lee_os}   \tab\cr
+## Lee oblated stereographic                 \tab \code{lee_os}   \tab\cr
 #' Loximuthal                                \tab \code{loxim}    \tab\cr
 #' Space oblique for Landsat                 \tab \code{lsat}     \tab \code{lsat}, \code{path}\cr
 #' McBryde-Thomas flat-polar sine, no. 1     \tab \code{mbt_s}    \tab\cr
@@ -862,7 +862,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' Swiss. oblique Mercator                   \tab \code{somerc}   \tab - \cr
 #' Stereographic                             \tab \code{stere}    \tab \code{lat_ts}\cr
 #' Oblique stereographic alternative         \tab \code{sterea}   \tab - \cr
-#' Gauss-schreiber transverse Mercator       \tab \code{gstmerc}  \tab \code{lat_0}, \code{lon_0}, \code{k_0}\cr
+## Gauss-Schreiber transverse Mercator       \tab \code{gstmerc}  \tab \code{lat_0}, \code{lon_0}, \code{k_0}\cr
 #' Transverse cylindrical equal area         \tab \code{tcea}     \tab - \cr
 #' Tissot                                    \tab \code{tissot}   \tab \code{lat_1}, \code{lat_2}\cr
 #' Transverse Mercator                       \tab \code{tmerc}    \tab - \cr
@@ -2915,12 +2915,6 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
                 ,            "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups",
                 "urm5", "urmfps", "utm", "vandg", "vitk1", "wag1", "wag2",
                 "wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
-
-## OSX has problems with some projections:
-## 2016-05-11: in a few days, rgdal on R 3.3.0 will handle these
-## 2016-05-11: projections, so I'm putting them back in.
-## 2016-05-11 knownProj4 <- knownProj4[knownProj4 != "aitoff"] # R 3.3.0 cannot handle this
-## 2016-05-11 knownProj4 <- knownProj4[knownProj4 != "wintri"] # R 3.3.0 cannot handle this
 
 #' Convert Longitude and Latitude to X and Y
 #' 
