@@ -17,7 +17,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-<!-- edit vignettest/oce.Rmd then run with -->
+<!-- edit vignettes/oce.Rmd then run with -->
 <!-- devtools::build_vignettes() -->
 <!-- in the console. -->
 
@@ -175,7 +175,7 @@ example, `data(ctd)` yields a CTD profile that has been trimmed to just the
 downcast portion of the sampling.  (See the next section to learn how to do
 this trimming.)  A summary and plot (Figure 2) are created as follows.
 
-```{r fig.cap="**Figure 2.** An overview of a ctd dataset.", fig.width=6, fig.height=6, dpi=72, dev.args=list(pointsize=15), message=FALSE}
+```{r fig.cap="**Figure 2.** An overview of a ctd dataset.", fig.width=6, fig.height=6, dpi=72, dev.args=list(pointsize=14), message=FALSE}
 library(oce)
 data(ctd)
 summary(ctd)
@@ -313,7 +313,7 @@ stations in total; the `stationId` value selects the last few stations of the
 section, during which the ship headed toward the northwest, crossing isobaths
 (and perhaps, the Gulf Stream) at nearly right angles.
 
-```{r fig.cap="**Figure 4.** Portion of the CTD section designated A03, showing the Gulf Sream region.  The square on the cruise track corresponds to zero distance on the section.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=12)}
+```{r fig.cap="**Figure 4.** Portion of the CTD section designated A03, showing the Gulf Sream region.  The square on the cruise track corresponds to zero distance on the section.", fig.width=4, fig.height=4, dpi=72, dev.args=list(pointsize=12)}
 library(oce)
 data(section)
 GS <- subset(section, 102 <= stationId & stationId <= 124)
@@ -337,8 +337,7 @@ uses the `rgdal` package to calculate the details of map projections.  A wide
 group of functions is provided for plotting maps.  The first step is to call
 `mapPlot()` to construct the map, after which points can be added with
 `mapPoints()`, lines with `mapLines()`, etc. For example, the following plots a
-world coastline in the Winkel Tripel projection (used by the National
-Geographical Society, and so familiar to many readers), with the cruise track
+world coastline in the Winkel Tripel projection, with the cruise track
 for the `section` dataset in red.
 ```{r fig.cap="**Figure 5.** World in Winkel Tripel projection, with the `section` profile sites indicated.", fig.width=4, fig.height=2.6, dpi=72}
 library(oce)
@@ -366,12 +365,12 @@ issue list, i.e. <https://github.com/dankelley/oce/issues/388>. In some instance
 
 ## Popular world-view projections
 
-A few common projections are worth highlighting. In addition to the Winkel
-Tripel projection shown in Figure 5, it is also common to employ Mollweide,
-Eckert IV or Robinson for world-wide views; these are achieved as follows.
+A few common projections are worth highlighting. In addition to the Winkel Tripel
+projection shown in Figure 5, it is also common to employ Mollweide, Eckert IV
+or Robinson for world-wide views; these are achieved as follows.
 
 ```{r fig.keep="none"}
-mapPlot(coastlineWorld, projection="+proj=moll") # Molleweide
+mapPlot(coastlineWorld, projection="+proj=moll") # Mollweide
 mapPlot(coastlineWorld, projection="+proj=eck4") # Eckert IV
 mapPlot(coastlineWorld, projection="+proj=robin") # Robinson
 ```
@@ -418,7 +417,7 @@ mapPlot(coastlineWorld, projection="+proj=aea +lat_1=30 +lat_2=70 +lon_0=-40",
 
 High-latitude regions are often represented with stereopolar projections, e.g.
 Figure 8 was produced with the following.
-```{r fig.cap="**Figure 8.** Arctic coastlines in stereopolar projection.", fig.width=5, fig.height=5, dpi=72}
+```{r fig.cap="**Figure 8.** Arctic coastlines in stereopolar projection.", fig.width=3, fig.height=3, dpi=72}
 par(mar=c(2, 2, 1, 1))
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
         longitudelim=c(-80,0), latitudelim=c(70, 110))
@@ -439,7 +438,7 @@ possibilities for plotting, of which the cumulative spectrum can be quite
 informative.
 
 
-```{r fig.cap="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour.", fig.width=7, fig.height=5, dpi=72, dev.args=list(pointsize=16)}
+```{r fig.cap="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=16)}
 library(oce)
 data(sealevel)
 plot(sealevel)
@@ -464,7 +463,7 @@ whether Hurricane Juan is visible. (Hint: use `predict` with the results from
 The following commands produce Figure 10, showing one velocity component of
 currents measured in the St Lawrence Estuary Internal Wave Experiment. This
 plot type is just one of many provided by `plot.adp()`.
-```{r fig.cap="**Figure 10.** Measurements made with a bottom-mounted ADP in the St Lawrence Estuary. The line near the surface indicates pressure measured by the ADP.", fig.width=5, fig.height=2, dpi=72}
+```{r fig.cap="**Figure 10.** Measurements made with a bottom-mounted ADP in the St Lawrence Estuary. The line near the surface indicates pressure measured by the ADP.", fig.width=4, fig.height=2, dpi=72}
 library(oce)
 data(adp)
 plot(adp, which=1)

@@ -289,16 +289,18 @@ setMethod(f="[[",
                       } else {
                           res <- NULL
                           for (stn in seq_along(x@data$station))
-                              res <- c(res, rep(x@data$station[[stn]]@metadata[[i]], length(x@data$station[[stn]]@data$salinity)))
+                              res <- c(res, rep(x@data$station[[stn]]@metadata[[i]], length(x@data$station[[stn]][["salinity"]])))
                           return(res)
                       }
                   } else {
                       return(x@metadata[[i]])
                   }
-              } else if (i %in% names(x@data$station[[1]]@data)) {
+              } else if (i %in% c("nitrite", "nitrate", names(x@data$station[[1]]@data))) {
+                  ## Note that nitrite and nitrate might be computed, not stored
                   res <- NULL
-                  for (stn in seq_along(x@data$station))
-                      res <- c(res, x@data$station[[stn]]@data[[i]])
+                  for (stn in seq_along(x@data$station)) {
+                      res <- c(res, x@data$station[[stn]][[i]])
+                  }
               } else if ("station" == i) {
                   if (missing(j)) {
                       res <- x@data$station
@@ -2393,7 +2395,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         for (s in 1:nstn) {
             thisStation <- res@data$station[[s]]
             temperatureMat[,s] <- thisStation@data$temperature
-            salinityMat[,s] <- thisStation@data$salinity
+            salinityMat[,s] <- thisStation[["salinity"]]
             sigmaThetaMat[,s] <- thisStation[["sigmaTheta"]]
         }
         ## turn off warnings about df being too small

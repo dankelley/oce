@@ -5,7 +5,7 @@
 \title{Salinity from electrical conductivity, temperature and pressure}
 \usage{
 swSCTp(conductivity, temperature = NULL, pressure = 0,
-  conductivityUnit = c("ratio", "mS/cm", "S/m"), eos = getOption("oceEOS",
+  conductivityUnit = c("", "mS/cm", "S/m"), eos = getOption("oceEOS",
   default = "gsw"))
 }
 \arguments{

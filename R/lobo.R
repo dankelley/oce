@@ -166,7 +166,7 @@ setMethod(f="subset",
 plot.lobo.timeseries.TS <- function(lobo,
                                     S.col = "blue", T.col = "darkgreen", draw.legend=FALSE, ...)
 {
-    plot(lobo@data$time, lobo@data$salinity, type='l', ylab="", axes=FALSE, ...)
+    plot(lobo@data$time, lobo[["salinity"]], type='l', ylab="", axes=FALSE, ...)
     mgp <- par("mgp")
     ##cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
     ##cat("mar=",paste(par("mar"), collapse=" "), "\n")
@@ -174,14 +174,14 @@ plot.lobo.timeseries.TS <- function(lobo,
     axis.POSIXct(1, lobo@data$time)
     mtext("S [PSU]", side=2, line=mgp[1], col=S.col, cex=par("cex"))
     box()
-    lines(lobo@data$time, lobo@data$salinity, col=S.col, ...)
+    lines(lobo@data$time, lobo[["salinity"]], col=S.col, ...)
     ## Set up scale for temperature
     usr <- par("usr")
-    range <- range(lobo@data$temperature, na.rm=TRUE)
+    range <- range(lobo[["temperature"]], na.rm=TRUE)
     usr[3:4] <- range + c(-1, 1) * 0.04 * diff(range)
     par(usr=usr)
     ##
-    lines(lobo@data$time, lobo@data$temperature, col=T.col, ...)
+    lines(lobo@data$time, lobo[["temperature"]], col=T.col, ...)
     axis(4, col=T.col)
     mtext(expression(paste("T [", degree, "C]")), side=4, line=mgp[1], col=T.col, cex=par("cex"))
     if (draw.legend)
@@ -234,7 +234,7 @@ plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.ni
 
 plot.lobo.TS <- function(lobo, ...)
 {
-    plotTS(as.ctd(lobo@data$salinity, lobo@data$temperature, 0), ...)
+    plotTS(as.ctd(lobo[["salinity"]], lobo[["temperature"]], 0), ...)
 }
 
 

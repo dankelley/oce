@@ -5,7 +5,7 @@ data("argo")
 
 context("CTD")
 
-test_that("as.ctd() with specified arguments", {
+test_that("as.ctd() with specified arguments, including salinity", {
           ctd_ctd <- as.ctd(salinity=ctd[["salinity"]], temperature=ctd[["temperature"]], pressure=ctd[["pressure"]])
           expect_equal(ctd[["salinity"]], ctd_ctd[["salinity"]])
           expect_equal(ctd[["temperature"]], ctd_ctd[["temperature"]])
@@ -14,6 +14,19 @@ test_that("as.ctd() with specified arguments", {
           expect_equal(ctd_ctd[["conductivityUnit"]], list(unit=expression(), scale=""))
           expect_equal(ctd_ctd[["pressureType"]], "sea")
 })
+
+test_that("as.ctd() with specified arguments, not including salinity", {
+          S <- ctd[["salinity"]]
+          T <- ctd[["temperature"]]
+          p <- ctd[["pressure"]]
+          C <- swCSTp(S, T, p)
+          ctdNew <- as.ctd(conductivity=C, temperature=T, pressure=p)
+          ## Test that all fields were created accurately.
+          expect_equal(S, ctdNew[["salinity"]])
+          expect_equal(T, ctdNew[["temperature"]])
+          expect_equal(p, ctdNew[["pressure"]])
+})
+
 
 test_that("as.ctd() with a data frame", {
           ctd_df <- as.ctd(data.frame(pressure=ctd[["pressure"]],temperature=ctd[["temperature"]],salinity=ctd[["salinity"]]))
@@ -224,3 +237,44 @@ test_that("ODF file", {
           ## there are some flagged data in this file
           expect_equal(d4[['pressure']][which(d4[['flag']]!=0)], c(55.5, 60.5, 61.0 ,71.5))
 }) 
+
+test_that("pressure accessor handles psi unit", {
+          data(ctd)
+          porig <- ctd@data$pressure
+          ## fake data in psi ... [[]] should return in dbar
+          ctd@data$pressure <- porig / 0.6894757 # 1 psi=6894.757Pa=0.6894756 dbar
+          ctd@metadata$units$pressure <- list(unit=expression(psi), scale="")
+          expect_equal(porig, ctd[['pressure']])
+})
+
+test_that("pressure accessor handles missing pressure", {
+          data(ctd)
+          depth <- swDepth(ctd@data$pressure, latitude=ctd[["latitude"]], eos="unesco")
+          porig <- ctd@data$pressure
+          ## remove existing
+          ctd@data$pressure <- NULL
+          ctd@metadata$units$pressure <- NULL
+          ## add new
+          ctd <- ctdAddColumn(ctd, depth, "depth", unit=list(unit=expression(m), scale=""))
+          ## test
+          expect_equal(porig, ctd[['pressure']], tolerance=0.0001) # swDepth is approximate; sub-mm is good enough anyway
+})
+
+test_that("salinity accessor computes value from conductivity", {
+          data(ctd)
+          C <- swCSTp(ctd@data$salinity, ctd@data$temperature, ctd@data$pressure)
+          Sorig <- ctd@data$salinity
+          ## remove existing
+          ctd@data$salinity <- NULL
+          ctd@metadata$units$salinity <- NULL
+          ## add new
+          ctd <- ctdAddColumn(ctd, C, "conductivity", unit=list(unit=expression(), scale="PSS-78"))
+          expect_equal(Sorig, ctd[['salinity']], tolerance=0.0001)
+})
+
+test_that("nitrate can be inferred from nitrite and NO2+NO3", {
+          data(section)
+          stn1 <- section[["station", 1]]
+          expect_equal(stn1[["nitrate"]], stn1[["NO2+NO3"]] - stn1[["nitrite"]])
+})
+
