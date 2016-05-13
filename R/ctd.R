@@ -185,7 +185,7 @@ NULL
 #' from 1 to 9, this default is equivalent to
 #' setting \code{flags=list(all=c(1, 3:9))} along with
 #' \code{action=list("NA")}.
-#' @param object An object of \code{\link{ctd-class}}.
+#' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @template handleFlagsTemplate
 #' @references
 #' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
@@ -286,8 +286,7 @@ setMethod(f="initialize",
 #' Summarizes some of the data in a \code{ctd} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
 #'
-#' @param object An object of class \code{"ctd"}, usually, a result of a call to
-#' \code{\link{read.ctd}}, \code{\link{read.oce}}, or \code{\link{as.ctd}}.
+#' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param ... Further arguments passed to or from other methods.
 #' 
@@ -2083,7 +2082,7 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #' with \code{\link{read.csv}}.  Note that the output file will retain none of the
 #' meta-data stored in \code{object}.
 #' 
-#' @param object A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param file Either a character string (the file name) or a connection.  This is
 #' a mandatory argument.
