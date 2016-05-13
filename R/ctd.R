@@ -903,12 +903,10 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 }
             }
         }
-        if (!missing(pressureAtmospheric)) {
-            len <- length(pressureAtmospheric)
-            if (1 != len && len != length(pressure))
-                stop("length(pressureAtmospheric) must be 1 or length(pressure)")
-            d$pressure <- d$pressure - pressureAtmospheric
-        }
+        len <- length(pressureAtmospheric)
+        if (1 != len && len != length(pressure))
+            stop("length(pressureAtmospheric) must be 1 or length(pressure)")
+        d$pressure <- d$pressure - pressureAtmospheric
         ## "rsk" stores conductivity (in mS/cm, not as ratio), and does not store salinity
         if ("COND" %in% names(d))
             conductivity <- d$COND
