@@ -17,16 +17,18 @@ as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
   debug = getOption("oceDebug"))
 }
 \arguments{
-\item{salinity}{There are two choices for \code{salinity}. First, it can be a
+\item{salinity}{There are three choices for \code{salinity}. (1) It can be a
 vector indicating the practical salinity through the water column. In that case,
-\code{as.ctd} employs the other arguments listed below. The second choice is
-that \code{salinity} is something (a data frame or a list) from which practical
+\code{as.ctd} employs the other arguments listed below. (2) It can be
+s something (a data frame, a list or an \code{oce}
+object) from which practical
 salinity, temperature, etc., can be inferred. In that case, the relevant information
 is extracted and the other arguments to \code{as.ctd} are ignored, except for
-\code{pressureAtmospheric}; see \dQuote{Details}. If \code{salinity} is
-not provided, it is necessary to supply \code{conductivity}, \code{temperature}
-and \code{pressure}, so that \code{as.ctd} can calculate salinity with
-\code{\link{swSCTp}}.}
+\code{pressureAtmospheric}. Note that if this first argument is an
+object of \code{\link{rsk-class}}, the present function merely passes
+it and \code{pressureAtmospheric} to \code{\link{rsk2ctd}}, which
+case \code{conductivity} becomes a mandatory argument, because it will 
+be needed for computing actual salinity, using \code{\link{swSCTp}}.}
 
 \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ deg}C], defined on
 the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
@@ -146,13 +148,11 @@ the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
 near-surface properties, or \code{"towyo"} if the device is repeatedly
 lowered and raised.}
 
-\item{pressureAtmospheric}{if \code{NA} (the default), then pressure is copied
-from the \code{pressure} argument or from the contents of the first argument
-(as described above for \code{salinity}). Otherwise, if
-\code{pressureAtmospheric} is a numerical value (a constant or a vector),
-then it is subtracted from pressure before storing it in the return value.
-See \dQuote{Details} for special considerations if \code{salinity}
-is a \code{\link{rsk-class}} object.}
+\item{pressureAtmospheric}{A numerical value (a constant or a vector),
+that is subtracted from pressure before storing it in the return value.
+(This altered pressure is also used in calculating \code{salinity}, if
+that is to be computed from \code{conductivity}, etc., using
+\code{\link{swSCTp}} (see \code{salinity} above).}
 
 \item{waterDepth}{optional numerical value indicating the water depth in
 metres. This is different from the maximum recorded pressure, although

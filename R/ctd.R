@@ -329,7 +329,7 @@ setMethod(f="summary",
                                                                    object@metadata$longitude,
                                                                    digits=5), "\n")
               } else {
-                  cat("* Mean location:      unknown\n")
+                  cat("* Mean location:       unknown\n")
               }
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
@@ -644,16 +644,19 @@ setMethod(f="[[<-",
 #' appropriate. Further alteration of the pressure can be accomplished with the
 #' \code{pressureAtmospheric} argument, as noted above.
 # 
-#' @param salinity There are two choices for \code{salinity}. First, it can be a
+#' @param salinity There are three choices for \code{salinity}. (1) It can be a
 #' vector indicating the practical salinity through the water column. In that case,
-#' \code{as.ctd} employs the other arguments listed below. The second choice is
-#' that \code{salinity} is something (a data frame or a list) from which practical
+#' \code{as.ctd} employs the other arguments listed below. (2) It can be
+#' s something (a data frame, a list or an \code{oce}
+#' object) from which practical
 #' salinity, temperature, etc., can be inferred. In that case, the relevant information
 #' is extracted and the other arguments to \code{as.ctd} are ignored, except for
-#' \code{pressureAtmospheric}; see \dQuote{Details}. If \code{salinity} is
-#' not provided, it is necessary to supply \code{conductivity}, \code{temperature}
-#' and \code{pressure}, so that \code{as.ctd} can calculate salinity with
-#' \code{\link{swSCTp}}.
+#' \code{pressureAtmospheric}. Note that if this first argument is an
+#' object of \code{\link{rsk-class}}, the present function merely passes
+#' it and \code{pressureAtmospheric} to \code{\link{rsk2ctd}}, which
+#" does the real work. (3) It can be unspecified, in which 
+#' case \code{conductivity} becomes a mandatory argument, because it will 
+#' be needed for computing actual salinity, using \code{\link{swSCTp}}.
 #' 
 #' @param temperature \emph{in-situ} temperature [\eqn{^\circ deg}C], defined on
 #' the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
@@ -773,14 +776,12 @@ setMethod(f="[[<-",
 #' near-surface properties, or \code{"towyo"} if the device is repeatedly
 #' lowered and raised.
 #' 
-#' @param pressureAtmospheric if \code{NA} (the default), then pressure is copied
-#' from the \code{pressure} argument or from the contents of the first argument
-#' (as described above for \code{salinity}). Otherwise, if
-#' \code{pressureAtmospheric} is a numerical value (a constant or a vector),
-#' then it is subtracted from pressure before storing it in the return value.
-#' See \dQuote{Details} for special considerations if \code{salinity}
-#' is a \code{\link{rsk-class}} object.
-#' 
+#' @param pressureAtmospheric A numerical value (a constant or a vector),
+#' that is subtracted from pressure before storing it in the return value.
+#' (This altered pressure is also used in calculating \code{salinity}, if
+#' that is to be computed from \code{conductivity}, etc., using
+#' \code{\link{swSCTp}} (see \code{salinity} above).
+#'
 #' @param waterDepth optional numerical value indicating the water depth in
 #' metres. This is different from the maximum recorded pressure, although
 #' the latter is used by some oce functions as a guess on water depth, the
@@ -829,6 +830,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    src="",
                    debug=getOption("oceDebug"))
 {
+    if (!missing(salinity) && inherits(salinity, "rsk"))
+        return(rsk2ctd(salinity, pressureAtmospheric=pressureAtmospheric, debug=debug-1))
     oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     res <- new('ctd')
     unitsGiven <- !is.null(units)
@@ -1174,7 +1177,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #'     items \code{unit}, which is an expression, and \code{scale}, which is a
 #'     character string. For example, modern measurements of temperature have
 #'     unit \code{list(name=expression(degree*C), scale="ITS-90")}.
-#' @param log Logical value indicating whether to store an entry in the processing
+#' @param log A logical value indicating whether to store an entry in the processing
 #' log that indicates this insertion.
 #' @param originalName string indicating the name of the data element as it was originally. This 
 #' makes sense only for data being read from a file, where e.g. WOCE or SBE
