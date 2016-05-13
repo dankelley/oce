@@ -831,7 +831,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         serialNumber <- instruments$serialID
         model <- instruments$model
         schedules <- RSQLite::dbReadTable(con, "schedules")
-        sampleInterval <- schedules$samplingPeriod
+        sampleInterval <- schedules$samplingPeriod/1000 # stored as milliseconds in rsk
         RSQLite::dbDisconnect(con)
         res <- new("rsk", time=time, filename=filename)
         for (name in names)

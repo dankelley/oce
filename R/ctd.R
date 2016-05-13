@@ -1485,6 +1485,14 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
             }
         }
     }
+    if ('scan' %in% names(dataNew)) {
+        dataNew[['scan']] <- NULL
+        warning('Removing scan field from decimated object')
+    }
+    if ('flag' %in% names(dataNew)) {
+        dataNew[['flag']] <- NULL
+        warning('Removing flag field from decimated object')
+    }
     dataNew[["pressure"]] <- pt
     ## convert any NaN to NA
     for (i in 1:length(dataNew)) {
