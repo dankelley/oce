@@ -472,16 +472,13 @@ setMethod(f="[[",
                                   S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
                                   warning("constructed salinity from temperature, conductivity-ratio and pressure")
                               } else if (unit == "uS/cm") {
-                                  C <- C / 429.14
-                                  S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
+                                  S <- swSCTp(C/429.14, x[["temperature"]], x[["pressure"]])
                                   warning("constructed salinity from temperature, conductivity and pressure")
-                              } else if (unit == "mS/cm") {
-                                  C <- C / 42.914 # e.g. RSK 
-                                  S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
+                              } else if (unit == "mS/cm") { # e.g. RSK 
+                                  S <- swSCTp(C/42.914, x[["temperature"]], x[["pressure"]])
                                   warning("constructed salinity from temperature, conductivity and pressure")
                               } else if (unit == "S/m") {
-                                  C <- C / 4.2914
-                                  S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
+                                  S <- swSCTp(C/4.2914, x[["temperature"]], x[["pressure"]])
                                   warning("constructed salinity from temperature, conductivity and pressure")
                               } else {
                                   stop("unrecognized conductivity unit '", unit, "'; only uS/cm, mS/cm and S/m are handled")

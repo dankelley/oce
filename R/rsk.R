@@ -1164,16 +1164,16 @@ rsk2ctd <- function(x, pressureAtmospheric=0, debug=getOption("oceDebug"))
             stop("objects must have salinity or conductivity to be converted to CTD form")
         unit <- as.character(x@metadata$units$conductivity$unit)
         if (0 == length(unit)) {
-            S <- swSCTp(x[["conductivity"]], x[["temperature"]], x[["pressure"]])
+            S <- swSCTp(x[["conductivity"]], x[["temperature"]], res[["pressure"]])
             res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in (assumed) ratio units")
         } else if (unit == "uS/cm") {
-            S <- swSCTp(x[["conductivity"]]/429.14, x[["temperature"]], x[["pressure"]])
+            S <- swSCTp(x[["conductivity"]]/429.14, x[["temperature"]], res[["pressure"]])
             res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in uS/cm")
         } else if (unit == "mS/cm") {
-            S <- swSCTp(x[["conductivity"]]/42.914, x[["temperature"]], x[["pressure"]])
+            S <- swSCTp(x[["conductivity"]]/42.914, x[["temperature"]], res[["pressure"]])
             res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in mS/cm")
         } else if (unit == "S/m") {
-            S <- swSCTp(x[["conductivity"]]/4.2914, x[["temperature"]], x[["pressure"]])
+            S <- swSCTp(x[["conductivity"]]/4.2914, x[["temperature"]], res[["pressure"]])
             res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in S/m")
         } else {
             stop("unrecognized conductivity unit '", unit, "'; only uS/cm, mS/cm and S/m are handled")

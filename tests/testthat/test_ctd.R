@@ -295,4 +295,7 @@ test_that("as.ctd(rsk) transfers information properly", {
                            expected.label=rsk@data[[item]],
                            info=paste("failed while checking data$", item, sep="")) 
           }
+          expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']])
+          ctd <- as.ctd(rsk, pressureAtmospheric=1)
+          expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']] - 1)
 })
