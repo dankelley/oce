@@ -20,9 +20,19 @@ argument is ignored).  If \code{longitude} is missing, both it and
 \item{latitude}{vector of latitudes of points to be plotted (ignored
 if the first argument contains both latitude and longitude).}
 
-\item{longitudelim}{optional limit of longitudes to plot.}
+\item{longitudelim}{Optional vector of length two, indicating the
+longitude limits of the plot. This value is used in the selection of
+longitude lines that are shown (and possibly
+labelled on the axes). In some cases, e.g. for polar views,
+this can lead to odd results, with some expected longitude lines
+being left out of the plot.  Altering \code{longitudelim} can
+often help in such cases, e.g. \code{longitudelim=c(-180,180)} will
+force the drawing of lines all around the globe.}
 
-\item{latitudelim}{optional limit of latitudes to plot.}
+\item{latitudelim}{Optinoal vector of length two, indicating
+the latitude limits of the plot. This, together with \code{longitudelim}
+(and, importantly, the geometry of the plot device) is used in the
+selection of map scale.}
 
 \item{grid}{either a number (or pair of numbers) indicating the spacing of
 longitude and latitude lines, in degrees, or a logical value (or pair of
