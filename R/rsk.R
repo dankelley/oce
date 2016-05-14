@@ -814,7 +814,13 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         names <- iconv(names, 'latin1', 'ASCII', sub='')
         ## if dissolvedo is a name call it oxygen
         names[which(match(names, 'dissolvedo') == 1)] <- 'oxygen'
-        isMeasured <- RSQLite::dbReadTable(con, "channels")$isMeasured == 1
+        channelsTable <- RSQLite::dbReadTable(con, "channels")
+        if ("isMeasured" %in% names(channelsTable)) {
+            isMeasured <- channelsTable$isMeasured == 1
+        } else {
+            isMeasured <- channelsTable$isDerived == 0
+            warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
+        }
         names <- names[isMeasured] # only take names of things that are in the data table
         ## Check for duplicated names, and append digits to make unique
         if (sum(duplicated(names)) > 0) {
@@ -1145,17 +1151,17 @@ rsk2ctd <- function(x, pressureAtmospheric=0, debug=getOption("oceDebug"))
     }
     ## Now we have sea pressure (if the rsk was set up correctly for the above to work right),
     ## so we can adjust a second time, if the user changed from the default of pressureAtmospheric=0.
-    message("A")
     if (pressureAtmospheric[1] != 0) {
-    message("AB")
         res@data$pressure <- res@data$pressure - pressureAtmospheric
         oceDebug(debug, "subtracted", pressureAtmospheric, "dbar from pressure")
     }
-    message("B")
     res@processingLog <- processingLogAppend(res@processingLog,
                                              paste("subtracted",
                                                    pressureAtmospheric, "dbar from sea pressure"))
     if (!("salinity" %in% names(x@data))) {
+        C <- x[["conductivity"]]
+        if (is.null(C))
+            stop("objects must have salinity or conductivity to be converted to CTD form")
         unit <- as.character(x@metadata$units$conductivity$unit)
         if (0 == length(unit)) {
             S <- swSCTp(x[["conductivity"]], x[["temperature"]], x[["pressure"]])
