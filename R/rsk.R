@@ -814,7 +814,13 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         names <- iconv(names, 'latin1', 'ASCII', sub='')
         ## if dissolvedo is a name call it oxygen
         names[which(match(names, 'dissolvedo') == 1)] <- 'oxygen'
-        isMeasured <- RSQLite::dbReadTable(con, "channels")$isMeasured == 1
+        channelsTable <- RSQLite::dbReadTable(con, "channels")
+        if ("isMeasured" %in% names(channelsTable)) {
+            isMeasured <- channelsTable$isMeasured == 1
+        } else {
+            isMeasured <- channelsTable$isDerived == 0
+            warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
+        }
         names <- names[isMeasured] # only take names of things that are in the data table
         ## Check for duplicated names, and append digits to make unique
         if (sum(duplicated(names)) > 0) {
@@ -1082,6 +1088,105 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     res
 }
 
+
+#' Create a ctd Object from an rsk Object
+#'
+#' A new \code{ctd} object is assembled from the contents of the \code{rsk} object.
+#' The data and metadata are mostly unchanged, with an important exception: the
+#' \code{pressure} item in the \code{data} slot may altered, because \code{rsk}
+#' instruments measure total pressure, not sea pressure; see \dQuote{Details}.
+#'
+#' @details
+#' The \code{pressureType} element of the 
+#' \code{metadata} of \code{rsk} objects defines the pressure type, and this controls
+#' how pressure is set up in the returned object. If \code{object@@metadata$pressureType}
+#' is \code{"absolute"} (or \code{NULL}) then the resultant pressure will be adjusted
+#' to make it into \code{"sea"} pressure. To do this, the value of
+#' \code{object@@metadata$pressureAtmospheric} is inspected. If this is present, then
+#' it is subtracted from \code{pressure}. If this is missing, then 
+#' standard pressure (10.1325 dbar) will be subtracted. At this stage, the
+#' pressure should be near zero at the ocean surface, but some additional adjustment 
+#' might be necessary, and this may be indicated by setting the argument \code{pressureAtmospheric} to 
+#' a non-zero value to be subtracted from pressure.
+#'
+#' @param x An \code{rsk} object, i.e. one inheriting from \code{\link{rsk-class}}.
+#' @param pressureAtmospheric A numerical value (a constant or a vector),
+#' that is subtracted from the pressure in \code{object} before storing it in the return value.
+#' @template debugTemplate
+rsk2ctd <- function(x, pressureAtmospheric=0, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "rsk2ctd(...) {\n", sep="", unindent=1)
+    res <- new("ctd")
+    res@metadata <- x@metadata
+    res@data <- x@data
+    if (!("pressure" %in% names(res@data)))
+        stop("there is no pressure in this rsk object, so it cannot be converted to a ctd object")
+    pressureAtmosphericStandard <- 10.1325
+    if (is.null(x@metadata$pressureType)) {
+        oceDebug(debug, "metadata$pressureType is NULL so guessing absolution pressure: be on the lookout for problems, if not\n")
+        warning("rsk object lacks metadata$pressureType; assuming absolute and subtracting standard atm pressure to get sea pressure")
+        res@data$pressure <- x@data$pressure - pressureAtmosphericStandard
+        res@processingLog <- processingLogAppend(res@processingLog,
+                                                 paste("subtracted 10.1325dbar (std atm) from pressure\n"))
+    } else {
+        ## subtract atm pressure, if it has not already been subtracted
+        oceDebug(debug, "metadata$pressureType is not NULL\n")
+        if ("sea" != substr(x@metadata$pressureType, 1, 3)) {
+            oceDebug(debug, "must convert from absolute pressure to sea pressure\n")
+            if (!("pressureAtmospheric" %in% names(x@metadata))) {
+                oceDebug(debug, "pressure is 'absolute'; subtracting std atm 10.1325 dbar\n")
+                res@data$pressure <- x@data$pressure - 10.1325
+                res@processingLog <- processingLogAppend(res@processingLog,
+                                                         paste("subtracted 10.1325dbar (std atm) from absolute pressure to get sea pressure"))
+                oceDebug(debug, "subtracted std atm pressure from pressure\n")
+            } else {
+                res@data$pressure <- x@data$pressure - x@metadata$pressureAtmospheric
+                res@processingLog <- processingLogAppend(res@processingLog,
+                                                         paste("subtracted",
+                                                               x@metadata$pressureAtmospheric,
+                                                               "dbar from absolute pressure to get sea pressure"))
+                oceDebug(debug, "subtracted", x@metadata$pressureAtmospheric, "dbar from pressure\n")
+            }
+        }
+    }
+    ## Now we have sea pressure (if the rsk was set up correctly for the above to work right),
+    ## so we can adjust a second time, if the user changed from the default of pressureAtmospheric=0.
+    if (pressureAtmospheric[1] != 0) {
+        res@data$pressure <- res@data$pressure - pressureAtmospheric
+        oceDebug(debug, "subtracted", pressureAtmospheric, "dbar from pressure")
+    }
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste("subtracted",
+                                                   pressureAtmospheric, "dbar from sea pressure"))
+    if (!("salinity" %in% names(x@data))) {
+        C <- x[["conductivity"]]
+        if (is.null(C))
+            stop("objects must have salinity or conductivity to be converted to CTD form")
+        unit <- as.character(x@metadata$units$conductivity$unit)
+        if (0 == length(unit)) {
+            S <- swSCTp(x[["conductivity"]], x[["temperature"]], x[["pressure"]])
+            res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in (assumed) ratio units")
+        } else if (unit == "uS/cm") {
+            S <- swSCTp(x[["conductivity"]]/429.14, x[["temperature"]], x[["pressure"]])
+            res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in uS/cm")
+        } else if (unit == "mS/cm") {
+            S <- swSCTp(x[["conductivity"]]/42.914, x[["temperature"]], x[["pressure"]])
+            res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in mS/cm")
+        } else if (unit == "S/m") {
+            S <- swSCTp(x[["conductivity"]]/4.2914, x[["temperature"]], x[["pressure"]])
+            res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in S/m")
+        } else {
+            stop("unrecognized conductivity unit '", unit, "'; only uS/cm, mS/cm and S/m are handled")
+        }
+        res <- ctdAddColumn(res, column=S, name="salinity", label="Salinity",
+                            unit=list(unit=expression(), scale="PSS-78"))
+    }
+    oceDebug(debug, "} # rsk2ctd()\n", sep="", unindent=1)
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste("rsk2ctd(..., pressureAtmospheric=", pressureAtmospheric, ", debug)\n",
+                                                   sep="", collapse=""))
+    res
+}
 
 
 #' @title Estimate Atmospheric Pressure in Rsk Object

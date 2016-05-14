@@ -26,7 +26,7 @@ items \code{unit}, which is an expression, and \code{scale}, which is a
 character string. For example, modern measurements of temperature have
 unit \code{list(name=expression(degree*C), scale="ITS-90")}.}
 
-\item{log}{Logical value indicating whether to store an entry in the processing
+\item{log}{A logical value indicating whether to store an entry in the processing
 log that indicates this insertion.}
 
 \item{originalName}{string indicating the name of the data element as it was originally. This 

@@ -328,7 +328,7 @@ setMethod(f="summary",
                                                                    object@metadata$longitude,
                                                                    digits=5), "\n")
               } else {
-                  cat("* Mean location:      unknown\n")
+                  cat("* Mean location:       unknown\n")
               }
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
@@ -544,7 +544,6 @@ setMethod(f="[[",
                   swSpice(x)
               } else if (i %in% c("absolute salinity", "SA")) {
                   SP <- x[["salinity"]]
-                  t <- x[["temperature"]]
                   p <- x[["pressure"]]
                   n <- length(SP)
                   lon <- x@metadata$longitude
@@ -643,16 +642,19 @@ setMethod(f="[[<-",
 #' appropriate. Further alteration of the pressure can be accomplished with the
 #' \code{pressureAtmospheric} argument, as noted above.
 # 
-#' @param salinity There are two choices for \code{salinity}. First, it can be a
+#' @param salinity There are three choices for \code{salinity}. (1) It can be a
 #' vector indicating the practical salinity through the water column. In that case,
-#' \code{as.ctd} employs the other arguments listed below. The second choice is
-#' that \code{salinity} is something (a data frame or a list) from which practical
+#' \code{as.ctd} employs the other arguments listed below. (2) It can be
+#' s something (a data frame, a list or an \code{oce}
+#' object) from which practical
 #' salinity, temperature, etc., can be inferred. In that case, the relevant information
 #' is extracted and the other arguments to \code{as.ctd} are ignored, except for
-#' \code{pressureAtmospheric}; see \dQuote{Details}. If \code{salinity} is
-#' not provided, it is necessary to supply \code{conductivity}, \code{temperature}
-#' and \code{pressure}, so that \code{as.ctd} can calculate salinity with
-#' \code{\link{swSCTp}}.
+#' \code{pressureAtmospheric}. Note that if this first argument is an
+#' object of \code{\link{rsk-class}}, the present function merely passes
+#' it and \code{pressureAtmospheric} to \code{\link{rsk2ctd}}, which
+#" does the real work. (3) It can be unspecified, in which 
+#' case \code{conductivity} becomes a mandatory argument, because it will 
+#' be needed for computing actual salinity, using \code{\link{swSCTp}}.
 #' 
 #' @param temperature \emph{in-situ} temperature [\eqn{^\circ deg}C], defined on
 #' the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
@@ -772,14 +774,12 @@ setMethod(f="[[<-",
 #' near-surface properties, or \code{"towyo"} if the device is repeatedly
 #' lowered and raised.
 #' 
-#' @param pressureAtmospheric if \code{NA} (the default), then pressure is copied
-#' from the \code{pressure} argument or from the contents of the first argument
-#' (as described above for \code{salinity}). Otherwise, if
-#' \code{pressureAtmospheric} is a numerical value (a constant or a vector),
-#' then it is subtracted from pressure before storing it in the return value.
-#' See \dQuote{Details} for special considerations if \code{salinity}
-#' is a \code{\link{rsk-class}} object.
-#' 
+#' @param pressureAtmospheric A numerical value (a constant or a vector),
+#' that is subtracted from pressure before storing it in the return value.
+#' (This altered pressure is also used in calculating \code{salinity}, if
+#' that is to be computed from \code{conductivity}, etc., using
+#' \code{\link{swSCTp}} (see \code{salinity} above).
+#'
 #' @param waterDepth optional numerical value indicating the water depth in
 #' metres. This is different from the maximum recorded pressure, although
 #' the latter is used by some oce functions as a guess on water depth, the
@@ -828,6 +828,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    src="",
                    debug=getOption("oceDebug"))
 {
+    if (!missing(salinity) && inherits(salinity, "rsk"))
+        return(rsk2ctd(salinity, pressureAtmospheric=pressureAtmospheric, debug=debug-1))
     oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     res <- new('ctd')
     unitsGiven <- !is.null(units)
@@ -874,59 +876,13 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if ("PSAL" %in% dnames && !("salinity" %in% dnames)) d$salinity <- d$PSAL
         if ("TEMP" %in% dnames && !("temperature" %in% dnames)) d$temperature <- d$TEMP
         if ("PRES" %in% dnames && !("pressure" %in% dnames)) d$pressure <- d$PRES
-        #temperature <- d$temperature
-        ## "rsk" stores total pressure, not sea pressure as "ctd" stores.
-        if (inherits(o, "rsk")) {
-            oceDebug(debug, "first argument is an rsk object\n")
-            pressureAtmosphericStandard <- 10.1325
-            ##pressureMin <- min(pressure, na.rm=TRUE)
-            ## FIXME: could examine min(pressure) to see if it's between 9 and 11.
-            if (is.null(o@metadata$pressureType)) {
-                oceDebug(debug, "metadata$pressureType is NULL\n")
-                warning("rsk object lacks metadata$pressureType; assuming absolute and subtracting standard atm pressure to get sea pressure")
-                d$pressure <- d$pressure - pressureAtmosphericStandard
-            } else {
-                ## subtract atm pressure, if it has not already been subtracted
-                oceDebug(debug, "metadata$pressureType is not NULL\n")
-                if ("sea" != substr(o@metadata$pressureType, 1, 3)) {
-                    oceDebug(debug, "must convert from absolute pressure to sea pressure\n")
-                    if (!("pressureAtmospheric" %in% mnames)) {
-                        oceDebug(debug, "pressure is 'absolute'; subtracting std atm 10.1325 dbar\n")
-                        d$pressure <- d$pressure - 10.1325
-                    } else {
-                        d$pressure <- d$pressure - m$pressureAtmospheric
-                        oceDebug(debug, "pressure is 'absolute'; subtracting metadata 10.1325dbar\n")
-                    }
-                } else {
-                    oceDebug(debug, "this rsk object contains sea pressure, so no need to remove atmospheric pressure\n")
-                }
-            }
+        if (!missing(pressureAtmospheric)) {
+            len <- length(pressureAtmospheric)
+            if (1 != len && len != length(pressure))
+                stop("length(pressureAtmospheric) must be 1 or length(pressure)")
+            d$pressure <- d$pressure - pressureAtmospheric
         }
-        len <- length(pressureAtmospheric)
-        if (1 != len && len != length(pressure))
-            stop("length(pressureAtmospheric) must be 1 or length(pressure)")
-        d$pressure <- d$pressure - pressureAtmospheric
-        ## "rsk" stores conductivity (in mS/cm, not as ratio), and does not store salinity
-        if ("COND" %in% names(d))
-            conductivity <- d$COND
-        else
-            conductivity <- d$conductivity
-        if (inherits(o, "rsk")) {
-            if (is.null(conductivity))
-                stop("as.ctd() cannot coerce an rsk object that lacks conductivity")
-            salinity <- swSCTp(conductivity=d$conductivity/42.914, temperature=d$temperature, pressure=d$pressure)
-            if (is.null(units)) # this lets the user over-ride
-                units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                              salinity=list(unit=expression(), scale="PSS-78"),
-                              conductivity=list(unit=expression(mS/cm), scale=""),
-                              pressure=list(unit=expression(dbar), scale=""))
-        } else {
-            salinity <- d$salinity # FIXME: ok for objects (e.g. rsk) that lack salinity?
-        }
-        if (inherits(o, "ctd") && missing(units)) {
-            if (missing(units)) # this lets the user over-ride
-                units <- o@metadata$units
-        }
+        salinity <- d$salinity
         res@metadata$units <- units
         if (!is.null(flags))
             res@metadata$flags <- flags
@@ -1171,7 +1127,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #'     items \code{unit}, which is an expression, and \code{scale}, which is a
 #'     character string. For example, modern measurements of temperature have
 #'     unit \code{list(name=expression(degree*C), scale="ITS-90")}.
-#' @param log Logical value indicating whether to store an entry in the processing
+#' @param log A logical value indicating whether to store an entry in the processing
 #' log that indicates this insertion.
 #' @param originalName string indicating the name of the data element as it was originally. This 
 #' makes sense only for data being read from a file, where e.g. WOCE or SBE

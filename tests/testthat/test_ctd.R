@@ -278,3 +278,21 @@ test_that("nitrate can be inferred from nitrite and NO2+NO3", {
           expect_equal(stn1[["nitrate"]], stn1[["NO2+NO3"]] - stn1[["nitrite"]])
 })
 
+test_that("as.ctd(rsk) transfers information properly", {
+          data(rsk)
+          ctd <- as.ctd(rsk)
+          for (item in names(rsk@metadata)) {
+            if (item != "units" && item != "flags")
+              expect_equal(rsk@metadata[[item]], ctd@metadata[[item]],
+                           label=paste("checking metadata$", item, sep=""),
+                           expected.label=rsk@metadata[[item]],
+                           info=paste("failed while checking metadata$", item, sep="")) 
+          }
+          for (item in names(rsk@data)) {
+            if (item != "pressure")
+              expect_equal(rsk@data[[item]], ctd@data[[item]],
+                           label=paste("checking data$", item, sep=""),
+                           expected.label=rsk@data[[item]],
+                           info=paste("failed while checking data$", item, sep="")) 
+          }
+})
