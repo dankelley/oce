@@ -8,7 +8,7 @@
 \S4method{handleFlags}{ctd}(object, flags = list(), actions = list())
 }
 \arguments{
-\item{object}{An object of \code{\link{ctd-class}}.}
+\item{object}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{flags}{An optional \code{\link{list}} containing (a)
 items with names of entries in the \code{data} slot of \code{object},

@@ -785,7 +785,6 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$manufacturer <- "nortek"
     res@metadata$instrumentType <- type #"aquadopp-hr"
     res@metadata$filename <- filename
-    res@metadata$manufacturer <- "nortek"
     res@metadata$latitude <- latitude
     res@metadata$longitude <- longitude
     res@metadata$numberOfSamples <- dim(v)[1]

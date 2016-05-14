@@ -185,7 +185,7 @@ NULL
 #' from 1 to 9, this default is equivalent to
 #' setting \code{flags=list(all=c(1, 3:9))} along with
 #' \code{action=list("NA")}.
-#' @param object An object of \code{\link{ctd-class}}.
+#' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @template handleFlagsTemplate
 #' @references
 #' 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
@@ -286,8 +286,7 @@ setMethod(f="initialize",
 #' Summarizes some of the data in a \code{ctd} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
 #'
-#' @param object An object of class \code{"ctd"}, usually, a result of a call to
-#' \code{\link{read.ctd}}, \code{\link{read.oce}}, or \code{\link{as.ctd}}.
+#' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param ... Further arguments passed to or from other methods.
 #' 
@@ -877,62 +876,13 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if ("PSAL" %in% dnames && !("salinity" %in% dnames)) d$salinity <- d$PSAL
         if ("TEMP" %in% dnames && !("temperature" %in% dnames)) d$temperature <- d$TEMP
         if ("PRES" %in% dnames && !("pressure" %in% dnames)) d$pressure <- d$PRES
-        #temperature <- d$temperature
-        ## "rsk" stores total pressure, not sea pressure as "ctd" stores.
-        ##20160514 if (inherits(o, "rsk")) {
-        ##20160514     oceDebug(debug, "first argument is an rsk object\n")
-        ##20160514     pressureAtmosphericStandard <- 10.1325
-        ##20160514     ##pressureMin <- min(pressure, na.rm=TRUE)
-        ##20160514     ## FIXME: could examine min(pressure) to see if it's between 9 and 11.
-        ##20160514     if (is.null(o@metadata$pressureType)) {
-        ##20160514         oceDebug(debug, "metadata$pressureType is NULL\n")
-        ##20160514         warning("rsk object lacks metadata$pressureType; assuming absolute and subtracting standard atm pressure to get sea pressure")
-        ##20160514         d$pressure <- d$pressure - pressureAtmosphericStandard
-        ##20160514     } else {
-        ##20160514         ## subtract atm pressure, if it has not already been subtracted
-        ##20160514         oceDebug(debug, "metadata$pressureType is not NULL\n")
-        ##20160514         if ("sea" != substr(o@metadata$pressureType, 1, 3)) {
-        ##20160514             oceDebug(debug, "must convert from absolute pressure to sea pressure\n")
-        ##20160514             if (!("pressureAtmospheric" %in% mnames)) {
-        ##20160514                 oceDebug(debug, "pressure is 'absolute'; subtracting std atm 10.1325 dbar\n")
-        ##20160514                 d$pressure <- d$pressure - 10.1325
-        ##20160514             } else {
-        ##20160514                 d$pressure <- d$pressure - m$pressureAtmospheric
-        ##20160514                 oceDebug(debug, "pressure is 'absolute'; subtracting metadata 10.1325dbar\n")
-        ##20160514             }
-        ##20160514         } else {
-        ##20160514             oceDebug(debug, "this rsk object contains sea pressure, so no need to remove atmospheric pressure\n")
-        ##20160514         }
-        ##20160514     }
-        ##20160514 }
         if (!missing(pressureAtmospheric)) {
             len <- length(pressureAtmospheric)
             if (1 != len && len != length(pressure))
                 stop("length(pressureAtmospheric) must be 1 or length(pressure)")
             d$pressure <- d$pressure - pressureAtmospheric
         }
-        ##20160514 ## "rsk" stores conductivity (in mS/cm, not as ratio), and does not store salinity
-        ##20160514 if ("COND" %in% names(d))
-        ##20160514     conductivity <- d$COND
-        ##20160514 else
-        ##20160514     conductivity <- d$conductivity
-        ##20160514 if (inherits(o, "rsk")) {
-        ##20160514     if (is.null(conductivity))
-        ##20160514         stop("as.ctd() cannot coerce an rsk object that lacks conductivity")
-        ##20160514     salinity <- swSCTp(conductivity=d$conductivity/42.914, temperature=d$temperature, pressure=d$pressure)
-        ##20160514     if (is.null(units)) # this lets the user over-ride
-        ##20160514         units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-        ##20160514                       salinity=list(unit=expression(), scale="PSS-78"),
-        ##20160514                       conductivity=list(unit=expression(mS/cm), scale=""),
-        ##20160514                       pressure=list(unit=expression(dbar), scale=""))
-        ##20160514 } else {
-        ##20160514     salinity <- d$salinity # FIXME: ok for objects (e.g. rsk) that lack salinity?
-        ##20160514 }
         salinity <- d$salinity
-        ##20160514 if (inherits(o, "ctd") && missing(units)) {
-        ##20160514     if (missing(units)) # this lets the user over-ride
-        ##20160514         units <- o@metadata$units
-        ##20160514 }
         res@metadata$units <- units
         if (!is.null(flags))
             res@metadata$flags <- flags
@@ -1487,6 +1437,14 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
                 }
             }
         }
+    }
+    if ('scan' %in% names(dataNew)) {
+        dataNew[['scan']] <- NULL
+        warning('Removing scan field from decimated object')
+    }
+    if ('flag' %in% names(dataNew)) {
+        dataNew[['flag']] <- NULL
+        warning('Removing flag field from decimated object')
     }
     dataNew[["pressure"]] <- pt
     ## convert any NaN to NA
@@ -2080,7 +2038,7 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #' with \code{\link{read.csv}}.  Note that the output file will retain none of the
 #' meta-data stored in \code{object}.
 #' 
-#' @param object A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
 #' @param file Either a character string (the file name) or a connection.  This is
 #' a mandatory argument.

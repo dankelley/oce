@@ -7,7 +7,7 @@
 write.ctd(object, file = stop("'file' must be specified"))
 }
 \arguments{
-\item{object}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
+\item{object}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{file}{Either a character string (the file name) or a connection.  This is
 a mandatory argument.}
