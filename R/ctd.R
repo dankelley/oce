@@ -545,7 +545,6 @@ setMethod(f="[[",
                   swSpice(x)
               } else if (i %in% c("absolute salinity", "SA")) {
                   SP <- x[["salinity"]]
-                  t <- x[["temperature"]]
                   p <- x[["pressure"]]
                   n <- length(SP)
                   lon <- x@metadata$longitude
