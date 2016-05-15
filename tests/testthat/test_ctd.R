@@ -255,9 +255,9 @@ test_that("pressure accessor handles missing pressure", {
           ctd@data$pressure <- NULL
           ctd@metadata$units$pressure <- NULL
           ## add new
-          ctd <- ctdAddColumn(ctd, depth, "depth", unit=list(unit=expression(m), scale=""))
+          ctd2 <- ctdAddColumn(ctd, depth, "depth", unit=list(unit=expression(m), scale=""))
           ## test
-          expect_equal(porig, ctd[['pressure']], tolerance=0.0001) # swDepth is approximate; sub-mm is good enough anyway
+          expect_equal(porig, ctd2[['pressure']], tolerance=0.0001) # swDepth is approximate; sub-mm is good enough anyway
 })
 
 test_that("salinity accessor computes value from conductivity", {
@@ -268,8 +268,8 @@ test_that("salinity accessor computes value from conductivity", {
           ctd@data$salinity <- NULL
           ctd@metadata$units$salinity <- NULL
           ## add new
-          ctd <- ctdAddColumn(ctd, C, "conductivity", unit=list(unit=expression(), scale="PSS-78"))
-          expect_equal(Sorig, ctd[['salinity']], tolerance=0.0001)
+          ctd2 <- ctdAddColumn(ctd, C, "conductivity", unit=list(unit=expression(), scale="PSS-78"))
+          expect_equal(Sorig, ctd2[['salinity']], tolerance=0.0001)
 })
 
 test_that("nitrate can be inferred from nitrite and NO2+NO3", {
