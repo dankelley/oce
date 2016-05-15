@@ -472,7 +472,7 @@ setMethod(f="[[",
                                   S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
                                   warning("constructed salinity from temperature, conductivity-ratio and pressure")
                               } else if (unit == "uS/cm") {
-                                  S <- swSCTp(C/429.14, x[["temperature"]], x[["pressure"]])
+                                  S <- swSCTp(C/42914.0, x[["temperature"]], x[["pressure"]])
                                   warning("constructed salinity from temperature, conductivity and pressure")
                               } else if (unit == "mS/cm") { # e.g. RSK 
                                   S <- swSCTp(C/42.914, x[["temperature"]], x[["pressure"]])

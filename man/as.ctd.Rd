@@ -20,7 +20,7 @@ as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
 \item{salinity}{There are three choices for \code{salinity}. (1) It can be a
 vector indicating the practical salinity through the water column. In that case,
 \code{as.ctd} employs the other arguments listed below. (2) It can be
-s something (a data frame, a list or an \code{oce}
+something (a data frame, a list or an \code{oce}
 object) from which practical
 salinity, temperature, etc., can be inferred. In that case, the relevant information
 is extracted and the other arguments to \code{as.ctd} are ignored, except for

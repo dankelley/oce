@@ -57,9 +57,13 @@ setMethod(f="initialize",
               if (!missing(temperature)) .Object@data$temperature <- temperature
               .Object@metadata$filename <- filename
               .Object@metadata$model <- NA
-              .Object@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
-              .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-              .Object@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+              ## 20160515 ## Define some things that will likely get redefined by read.rsk(), if
+              ## 20160515 ## that is used to create an rsk object.  It does no harm to define
+              ## 20160515 ## them, anyway, since they are only used in summaries, and then only
+              ## 20160515 ## if the object happens to have these quantities.
+              ## 20160515 ## .Object@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
+              ## 20160515 ## .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+              ## 20160515 ## .Object@metadata$units$pressure <- list(unit=expression(dbar), scale="")
               .Object@metadata$pressureType <- "absolute"
               .Object@metadata$pressureAtmospheric <- 10.1325
               .Object@processingLog$time <- as.POSIXct(Sys.time())
@@ -186,8 +190,37 @@ setMethod(f="subset",
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset.rsk(x, subset=", subsetString, ")", sep=""))
               res
           })
- 
 
+#' Infer Rsk units from a vector of strings
+#'
+#' This is used by \code{\link{read.rsk}} to infer the units of data, based
+#' on strings stored in \code{.rsk} files. Lacking a definitive guide
+#' to the format of these file, this function was based on visual inspection
+#' of the data contained within a few sample files; unusual sensors may
+#' not be handled properly.
+#'
+#' @param s Vector of character strings, holding the `units` entry in the
+#' \code{channels} table of the \code{.rsk} database.
+#'
+#' @return List of unit lists.
+#' @family functions that interpret variable names and units from headers
+unitFromStringRsk <- function(s)
+{
+    if (1 == length(grep("mS/cm", s, useBytes=TRUE)))
+        list(unit=expression(mS/cm), scale="")
+    else if (1 == length(grep("uS/cm", s, useBytes=TRUE)))
+        list(unit=expression(mu*S/cm), scale="")
+    else if (1 == length(grep("d[bB]ar", s, useBytes=TRUE)))
+        list(unit=expression(dbar), scale="")
+    else if (1 == length(grep("NTU", s, useBytes=TRUE)))
+        list(unit=expression(NTU), scale="")
+    else if (1 == length(grep("\xB0", s, useBytes=TRUE)))
+        list(unit=expression(degree), scale="ITS-90") # guessing on scale
+    else {
+        warning("rsk unit '", s, "' is not in the list of known units", sep="")
+        list(unit=expression(as.expression(s)), scale="")
+    }
+}
 
 #' @title Coerce Data Into a Rsk Object
 #' 
@@ -821,7 +854,9 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             isMeasured <- channelsTable$isDerived == 0
             warning("old Ruskin file detected; if problems arise, update file with Ruskin software")
         }
+        dataNamesOriginal <- c("-", channelsTable$shortName[isMeasured])
         names <- names[isMeasured] # only take names of things that are in the data table
+        unitsRsk <- channelsTable$units[isMeasured]
         ## Check for duplicated names, and append digits to make unique
         if (sum(duplicated(names)) > 0) {
             for (n in names) {
@@ -840,14 +875,22 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         sampleInterval <- schedules$samplingPeriod/1000 # stored as milliseconds in rsk
         RSQLite::dbDisconnect(con)
         res <- new("rsk", time=time, filename=filename)
-        for (name in names)
-            res@data[[name]] <- data[[name]]
+        for (iname in seq_along(names)) {
+            res@data[[names[iname]]] <- data[[names[iname]]]
+            res@metadata$units[[names[iname]]] <- unitFromStringRsk(unitsRsk[iname])
+        }
+        res@metadata$units$pressure$scale <- "absolute"
         if ("pressure" %in% names) { # possibly compute sea pressure
             if (is.logical(patm)) {
                 if (patm) {
-                    res@data$pressureOriginal <- res@data$pressure
-                    res@data$pressure <- res@data$pressure - 10.1325
-                    ## No need to check patm=FALSE case because object default is "absolute"
+                    ## This code is a bit tricky because we modify existing pressure in-place
+                    dataNames <- names(res@data)
+                    dataNames[dataNames=="pressure"] <- "pressureOriginal"
+                    names(res@data) <- dataNames
+                    res@metadata$units$pressureOriginal <- list(unit=expression(dbar), scale="absolute")
+                    res@data$pressure <- res@data$pressureOriginal - 10.1325
+                    res@metadata$units$pressure <- list(unit=expression(dbar), scale="sea")
+                    res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "")
                     res@metadata$pressureType <- "sea, assuming standard atmospheric pressure 10.1325 dbar"
                     oceDebug(debug, "patm=TRUE, so removing std atmospheric pressure, 10.1325 dbar\n")
                 }
@@ -855,9 +898,15 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
                 npatm <- length(patm)
                 if (1 < npatm && npatm != length(pressure))
                     stop("if patm is numeric, its length must equal 1, or the length(pressure).")
-                oceDebug(debug, "patm is numeric, so removing std atmospheric pressure, 10.1325 dbar\n")
-                res@data$pressureOriginal <- res@data$pressure
-                res@data$pressure <- res@data$pressure - patm
+                oceDebug(debug, "patm is numeric, so subtracting it from pressure\n")
+                ## This code is a bit tricky because we modify existing pressure in-place
+                dataNames <- names(res@data)
+                dataNames[dataNames=="pressure"] <- "pressureOriginal"
+                names(res@data) <- dataNames
+                res@metadata$units$pressureOriginal <- list(unit=expression(dbar), scale="absolute")
+                res@data$pressure <- res@data$pressureOriginal - patm
+                res@metadata$units$pressure <- list(unit=expression(dbar), scale="sea")
+                res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "")
                 if (npatm == 1)
                     res@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f", patm)
                 else 
@@ -871,6 +920,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         res@metadata$sampleInterval <- sampleInterval
         res@metadata$rskVersion <- rskVersion
         res@metadata$ruskinVersion <- ruskinVersion
+        res@metadata$dataNamesOriginal <- dataNamesOriginal
         if (hasDatasetID) res@metadata$datasetID <- datasetID
         ## There is actually no need to set the conductivity unit since new()
         ## sets it, but do it anyway, as a placeholder to show where to do
@@ -1126,6 +1176,8 @@ rsk2ctd <- function(x, pressureAtmospheric=0, debug=getOption("oceDebug"))
         oceDebug(debug, "metadata$pressureType is NULL so guessing absolute pressure: be on the lookout for problems, if not\n")
         warning("rsk object lacks metadata$pressureType; assuming absolute and subtracting standard atm pressure to get sea pressure")
         res@data$pressure <- x@data$pressure - pressureAtmosphericStandard
+        res@metadata$units$pressure$scale <- "sea"
+        res@metadata$dataNamesOriginal[substr(res@metadata$dataNamesOriginal, 1, 4) == "pres"] <- ""
         res@processingLog <- processingLogAppend(res@processingLog,
                                                  paste("subtracted 10.1325dbar (std atm) from pressure\n"))
     } else {
@@ -1136,11 +1188,15 @@ rsk2ctd <- function(x, pressureAtmospheric=0, debug=getOption("oceDebug"))
             if (!("pressureAtmospheric" %in% names(x@metadata))) {
                 oceDebug(debug, "pressure is 'absolute'; subtracting std atm 10.1325 dbar\n")
                 res@data$pressure <- x@data$pressure - pressureAtmosphericStandard
+                res@metadata$units$pressure$scale <- "sea"
+                res@metadata$dataNamesOriginal[substr(res@metadata$dataNamesOriginal, 1, 4) == "pres"] <- ""
                 res@processingLog <- processingLogAppend(res@processingLog,
                                                          paste("subtracted", pressureAtmosphericStandard, "dbar (std atm) from absolute pressure to get sea pressure"))
                 oceDebug(debug, "subtracted std atm pressure from pressure\n")
             } else {
                 res@data$pressure <- x@data$pressure - x@metadata$pressureAtmospheric
+                res@metadata$units$pressure$scale <- "sea"
+                res@metadata$dataNamesOriginal[substr(res@metadata$dataNamesOriginal, 1, 4) == "pres"] <- ""
                 res@processingLog <- processingLogAppend(res@processingLog,
                                                          paste("subtracted",
                                                                x@metadata$pressureAtmospheric,
