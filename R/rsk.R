@@ -897,7 +897,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
                     res@data$pressure <- res@data$pressureOriginal - 10.1325
                     res@metadata$units$pressure <- list(unit=expression(dbar), scale="sea")
                     res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "")
-                    res@metadata$pressureType <- "sea, assuming standard atmospheric pressure 10.1325 dbar"
+                    res@metadata$pressureType <- "sea"
                     oceDebug(debug, "patm=TRUE, so removing std atmospheric pressure, 10.1325 dbar\n")
                 }
             } else if (is.numeric(patm)) {
@@ -913,10 +913,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
                 res@data$pressure <- res@data$pressureOriginal - patm
                 res@metadata$units$pressure <- list(unit=expression(dbar), scale="sea")
                 res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, "")
-                if (npatm == 1)
-                    res@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f", patm)
-                else 
-                    res@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f, %f, ...", patm[1], patm[2])
+                res@metadata$pressureType <- "sea"
             } else {
                 stop("patm must be logical or numeric")
             }
@@ -1128,12 +1125,12 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             res@data$pressureOriginal <- res@data$pressure
             res@data$pressure <- res@data$pressure - 10.1325
             ## No need to check patm=FALSE case because object default is "absolute"
-            res@metadata$pressureType <- "sea, assuming standard atmospheric pressure 10.1325"
+            res@metadata$pressureType <- "sea"
         }
     } else if (is.numeric(patm)) {
         res@data$pressureOriginal <- res@data$pressure
         res@data$pressure <- res@data$pressure - patm[1]
-        res@metadata$pressureType <- sprintf("sea, assuming provided atmospheric pressure %f", patm[1])
+        res@metadata$pressureType <- "sea"
     } else {
         stop("patm must be logical or numeric")
     }

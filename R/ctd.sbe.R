@@ -484,7 +484,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
         open(file, "r")
         on.exit(close(file))
     }
-    res <- new("ctd", pressureType="sea")
+    res <- new("ctd")
     ## Header
     scientist <- ship <- institute <- address <- cruise <- hexfilename <- ""
     sampleInterval <- NA
