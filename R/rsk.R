@@ -206,7 +206,13 @@ setMethod(f="subset",
 #' @family functions that interpret variable names and units from headers
 unitFromStringRsk <- function(s)
 {
-    if (1 == length(grep("mS/cm", s, useBytes=TRUE)))
+    if (1 == length(grep("mg/L", s, useBytes=TRUE))) # guessing, from RBR docs
+        list(unit=expression(mg/l), scale="")
+    else if (1 == length(grep("mL/L", s, useBytes=TRUE))) # guessing, from RBR docs
+        list(unit=expression(ml/l), scale="")
+    else if (1 == length(grep("\xc2\xb5Mol/L", s, useBytes=TRUE))) # guessing, from RBR docs
+        list(unit=expression(mu*mol/l), scale="")
+    else if (1 == length(grep("mS/cm", s, useBytes=TRUE)))
         list(unit=expression(mS/cm), scale="")
     else if (1 == length(grep("uS/cm", s, useBytes=TRUE)))
         list(unit=expression(mu*S/cm), scale="")
@@ -217,8 +223,8 @@ unitFromStringRsk <- function(s)
     else if (1 == length(grep("\xB0", s, useBytes=TRUE)))
         list(unit=expression(degree), scale="ITS-90") # guessing on scale
     else {
-        warning("rsk unit '", s, "' is not in the list of known units", sep="")
-        list(unit=expression(as.expression(s)), scale="")
+        warning("'", s, "' is not in the list of known .rsk units", sep="")
+        list(unit=as.expression(s), scale="")
     }
 }
 
