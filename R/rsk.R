@@ -1123,7 +1123,7 @@ rsk2ctd <- function(x, pressureAtmospheric=0, debug=getOption("oceDebug"))
         stop("there is no pressure in this rsk object, so it cannot be converted to a ctd object")
     pressureAtmosphericStandard <- 10.1325
     if (is.null(x@metadata$pressureType)) {
-        oceDebug(debug, "metadata$pressureType is NULL so guessing absolution pressure: be on the lookout for problems, if not\n")
+        oceDebug(debug, "metadata$pressureType is NULL so guessing absolute pressure: be on the lookout for problems, if not\n")
         warning("rsk object lacks metadata$pressureType; assuming absolute and subtracting standard atm pressure to get sea pressure")
         res@data$pressure <- x@data$pressure - pressureAtmosphericStandard
         res@processingLog <- processingLogAppend(res@processingLog,
@@ -1135,9 +1135,9 @@ rsk2ctd <- function(x, pressureAtmospheric=0, debug=getOption("oceDebug"))
             oceDebug(debug, "must convert from absolute pressure to sea pressure\n")
             if (!("pressureAtmospheric" %in% names(x@metadata))) {
                 oceDebug(debug, "pressure is 'absolute'; subtracting std atm 10.1325 dbar\n")
-                res@data$pressure <- x@data$pressure - 10.1325
+                res@data$pressure <- x@data$pressure - pressureAtmosphericStandard
                 res@processingLog <- processingLogAppend(res@processingLog,
-                                                         paste("subtracted 10.1325dbar (std atm) from absolute pressure to get sea pressure"))
+                                                         paste("subtracted", pressureAtmosphericStandard, "dbar (std atm) from absolute pressure to get sea pressure"))
                 oceDebug(debug, "subtracted std atm pressure from pressure\n")
             } else {
                 res@data$pressure <- x@data$pressure - x@metadata$pressureAtmospheric
@@ -1167,7 +1167,7 @@ rsk2ctd <- function(x, pressureAtmospheric=0, debug=getOption("oceDebug"))
             S <- swSCTp(x[["conductivity"]], x[["temperature"]], res[["pressure"]])
             res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in (assumed) ratio units")
         } else if (unit == "uS/cm") {
-            S <- swSCTp(x[["conductivity"]]/429.14, x[["temperature"]], res[["pressure"]])
+            S <- swSCTp(x[["conductivity"]]/42914.0, x[["temperature"]], res[["pressure"]])
             res@processingLog <- processingLogAppend(res@processingLog, "calculating salinity based on conductivity in uS/cm")
         } else if (unit == "mS/cm") {
             S <- swSCTp(x[["conductivity"]]/42.914, x[["temperature"]], res[["pressure"]])
