@@ -472,16 +472,13 @@ setMethod(f="[[",
                                   S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
                                   warning("constructed salinity from temperature, conductivity-ratio and pressure")
                               } else if (unit == "uS/cm") {
-                                  C <- C / 429.14
-                                  S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
+                                  S <- swSCTp(C/42914.0, x[["temperature"]], x[["pressure"]])
                                   warning("constructed salinity from temperature, conductivity and pressure")
-                              } else if (unit == "mS/cm") {
-                                  C <- C / 42.914 # e.g. RSK 
-                                  S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
+                              } else if (unit == "mS/cm") { # e.g. RSK 
+                                  S <- swSCTp(C/42.914, x[["temperature"]], x[["pressure"]])
                                   warning("constructed salinity from temperature, conductivity and pressure")
                               } else if (unit == "S/m") {
-                                  C <- C / 4.2914
-                                  S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
+                                  S <- swSCTp(C/4.2914, x[["temperature"]], x[["pressure"]])
                                   warning("constructed salinity from temperature, conductivity and pressure")
                               } else {
                                   stop("unrecognized conductivity unit '", unit, "'; only uS/cm, mS/cm and S/m are handled")
@@ -645,7 +642,7 @@ setMethod(f="[[<-",
 #' @param salinity There are three choices for \code{salinity}. (1) It can be a
 #' vector indicating the practical salinity through the water column. In that case,
 #' \code{as.ctd} employs the other arguments listed below. (2) It can be
-#' s something (a data frame, a list or an \code{oce}
+#' something (a data frame, a list or an \code{oce}
 #' object) from which practical
 #' salinity, temperature, etc., can be inferred. In that case, the relevant information
 #' is extracted and the other arguments to \code{as.ctd} are ignored, except for

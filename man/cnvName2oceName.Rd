@@ -176,6 +176,7 @@ Dan Kelley
 }
 \seealso{
 Other functions that interpret variable names and units from headers: \code{\link{ODFNames2oceNames}},
+  \code{\link{unitFromStringRsk}},
   \code{\link{unitFromString}},
   \code{\link{woceNames2oceNames}}
 

@@ -280,9 +280,11 @@ test_that("nitrate can be inferred from nitrite and NO2+NO3", {
 
 test_that("as.ctd(rsk) transfers information properly", {
           data(rsk)
+          expect_equal(rsk@metadata$units$pressure$scale, "absolute")
           ctd <- as.ctd(rsk)
+          expect_equal(ctd@metadata$units$pressure$scale, "sea")
           for (item in names(rsk@metadata)) {
-            if (item != "units" && item != "flags")
+            if (item != "units" && item != "flags" && item != "dataNamesOriginal")
               expect_equal(rsk@metadata[[item]], ctd@metadata[[item]],
                            label=paste("checking metadata$", item, sep=""),
                            expected.label=rsk@metadata[[item]],
@@ -295,4 +297,7 @@ test_that("as.ctd(rsk) transfers information properly", {
                            expected.label=rsk@data[[item]],
                            info=paste("failed while checking data$", item, sep="")) 
           }
+          expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']])
+          ctd <- as.ctd(rsk, pressureAtmospheric=1)
+          expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']] - 1)
 })

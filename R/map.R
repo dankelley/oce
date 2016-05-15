@@ -566,9 +566,19 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @param latitude vector of latitudes of points to be plotted (ignored
 #' if the first argument contains both latitude and longitude).
 #'
-#' @param longitudelim optional limit of longitudes to plot.
+#' @param longitudelim Optional vector of length two, indicating the
+#' longitude limits of the plot. This value is used in the selection of
+#' longitude lines that are shown (and possibly
+#' labelled on the axes). In some cases, e.g. for polar views,
+#' this can lead to odd results, with some expected longitude lines
+#' being left out of the plot.  Altering \code{longitudelim} can
+#' often help in such cases, e.g. \code{longitudelim=c(-180,180)} will
+#' force the drawing of lines all around the globe.
 #'
-#' @param latitudelim optional limit of latitudes to plot.
+#' @param latitudelim Optinoal vector of length two, indicating
+#' the latitude limits of the plot. This, together with \code{longitudelim}
+#' (and, importantly, the geometry of the plot device) is used in the
+#' selection of map scale.
 #'
 #' @param grid either a number (or pair of numbers) indicating the spacing of
 #' longitude and latitude lines, in degrees, or a logical value (or pair of
@@ -1198,13 +1208,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 oceDebug(debug, "grid:", grid[1], "\n")
             }
         }
-        oceDebug(debug, "grid:", grid[1], " ", grid[2], "\n")
-        oceDebug(debug, "drawgrid:", drawGrid, "\n")
         if (drawGrid) {
             mapGrid(longitude=NULL, dlatitude=grid[2], polarCircle=polarCircle,
                     longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
-        }
-        if (drawGrid) {
             mapGrid(dlongitude=grid[1], latitude=NULL, polarCircle=polarCircle,
                     longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }

@@ -89,6 +89,7 @@ Dan Kelley
 }
 \seealso{
 Other functions that interpret variable names and units from headers: \code{\link{cnvName2oceName}},
+  \code{\link{unitFromStringRsk}},
   \code{\link{unitFromString}},
   \code{\link{woceNames2oceNames}}
 }

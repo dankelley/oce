@@ -23,6 +23,7 @@ Dan Kelley
 \seealso{
 Other functions that interpret variable names and units from headers: \code{\link{ODFNames2oceNames}},
   \code{\link{cnvName2oceName}},
+  \code{\link{unitFromStringRsk}},
   \code{\link{unitFromString}}
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
