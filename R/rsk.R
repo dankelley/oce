@@ -206,18 +206,29 @@ setMethod(f="subset",
 #' @family functions that interpret variable names and units from headers
 unitFromStringRsk <- function(s)
 {
-    if (1 == length(grep("mg/L", s, useBytes=TRUE))) # guessing, from RBR docs
+    ## Note: some of these use e.g. [lL] because the Ruskin GUI uses upper case,
+    ## whereas at least one file has used lower case. Another odd case is
+    ## "dbar" vs "dBar", both of which have been seen in files. Still, it
+    ## was decided not to use ignore.case=TRUE in the grep() commands,
+    ## because that seems to overly blunt the tool.
+    if (1 == length(grep("mg/[lL]", s, useBytes=TRUE)))
         list(unit=expression(mg/l), scale="")
-    else if (1 == length(grep("mL/L", s, useBytes=TRUE))) # guessing, from RBR docs
+    else if (1 == length(grep("m[lL]/[lL]", s, useBytes=TRUE)))
         list(unit=expression(ml/l), scale="")
-    else if (1 == length(grep("\xc2\xb5Mol/L", s, useBytes=TRUE))) # guessing, from RBR docs
+    else if (1 == length(grep("((u)|(\xc2\xb5))[mM]ol/[lL]", s, useBytes=TRUE)))
         list(unit=expression(mu*mol/l), scale="")
+    else if (1 == length(grep("((u)|(\xc2\xb5))g/[lL]", s, useBytes=TRUE)))
+        list(unit=expression(mu*g/l), scale="")
     else if (1 == length(grep("mS/cm", s, useBytes=TRUE)))
         list(unit=expression(mS/cm), scale="")
-    else if (1 == length(grep("uS/cm", s, useBytes=TRUE)))
+    else if (1 == length(grep("((u)|(\xc2\xb5))S/cm", s, useBytes=TRUE)))
         list(unit=expression(mu*S/cm), scale="")
     else if (1 == length(grep("d[bB]ar", s, useBytes=TRUE)))
         list(unit=expression(dbar), scale="")
+    else if (1 == length(grep("%", s, useBytes=TRUE)))
+        list(unit=expression(percent), scale="")
+    else if (1 == length(grep("pH_units", s, useBytes=TRUE)))
+        list(unit=expression(), scale="")
     else if (1 == length(grep("NTU", s, useBytes=TRUE)))
         list(unit=expression(NTU), scale="")
     else if (1 == length(grep("\xB0", s, useBytes=TRUE)))
