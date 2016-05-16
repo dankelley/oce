@@ -232,7 +232,7 @@ unitFromStringRsk <- function(s)
     else if (1 == length(grep("NTU", s, useBytes=TRUE)))
         list(unit=expression(NTU), scale="")
     else if (1 == length(grep("\xB0", s, useBytes=TRUE)))
-        list(unit=expression(degree), scale="ITS-90") # guessing on scale
+        list(unit=expression(degree*C), scale="ITS-90") # guessing on scale
     else {
         warning("'", s, "' is not in the list of known .rsk units", sep="")
         list(unit=as.expression(s), scale="")
@@ -895,6 +895,11 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         for (iname in seq_along(names)) {
             res@data[[names[iname]]] <- data[[names[iname]]]
             res@metadata$units[[names[iname]]] <- unitFromStringRsk(unitsRsk[iname])
+            if (debug > 1) {           # FIXME: developer sets this for temporary (and undocumented) debugging
+                cat("\n***\nUNIT CHECK. The rsk string", unitsRsk[iname], "yielded as follows:\n")
+                print(res@metadata$units[[names[iname]]])
+                cat("***\n")
+            }
         }
         res@metadata$units$pressure$scale <- "absolute"
         if ("pressure" %in% names) { # possibly compute sea pressure
