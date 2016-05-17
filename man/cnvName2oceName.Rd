@@ -64,7 +64,9 @@ oxygen alone has over 40 variants!)
 
 \tabular{llll}{
   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit;scale} \tab \strong{Notes} \cr
+  \code{alt}         \tab \code{altimeter}                    \tab m                   \tab    \cr
   \code{altM}        \tab \code{altimeter}                    \tab m                   \tab    \cr
+  \code{bat~}        \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
   \code{c~mS/cm}     \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
   \code{c~S/m}       \tab \code{conductivity}                 \tab S/m                 \tab    \cr
   \code{c~uS/cm}     \tab \code{conductivity}                 \tab uS/cm               \tab    \cr
@@ -79,7 +81,7 @@ oxygen alone has over 40 variants!)
   \code{f~}          \tab \code{frequency}                    \tab Hz                  \tab    \cr
   \code{f~~}         \tab \code{frequency}                    \tab Hz                  \tab    \cr
   \code{flC}         \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3\tab    \cr
-  \code{flEC-AFLM}   \tab \code{fluorescence}                 \tab mg/m^3; WET labs ECO-AFL/FLtab\cr
+  \code{flEC-AFLM}   \tab \code{fluorescence}                 \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
   \code{flS}         \tab \code{fluorescence}                 \tab -; Seatech          \tab    \cr
   \code{flSP}        \tab \code{fluorescence}                 \tab -; Seapoint         \tab    \cr
   \code{flSPR}       \tab \code{fluorescence}                 \tab -; Seapoint, Rhodamine\tab  \cr
@@ -122,6 +124,7 @@ oxygen alone has over 40 variants!)
   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
+  \code{sva}         \tab \code{specificVolumeAnomaly}        \tab 1e-8 m^3/kg;         \tab   \cr
   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
   \code{t~68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
   \code{t~90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
@@ -132,6 +135,7 @@ oxygen alone has over 40 variants!)
   \code{t090Cm}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{t4990C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{tnc90C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{tsa}         \tab \code{thermostericAnomaly}          \tab 1e-8 m^3/kg          \tab   \cr
   \code{tv290C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{t4968C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{tnc68C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
@@ -148,11 +152,12 @@ oxygen alone has over 40 variants!)
   \code{timeH}       \tab \code{time}                         \tab hour                 \tab   \cr
   \code{timeJ}       \tab \code{time}                         \tab day                  \tab   \cr
   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
-  \code{uuser~}      \tab \code{user}                         \tab -                    \tab   \cr
+  \code{user~}       \tab \code{user}                         \tab -                    \tab   \cr
   \code{v~~}         \tab \code{voltage}                      \tab V                    \tab   \cr
   \code{wetBAttn}    \tab \code{beamAttenuation}              \tab 1/m; WET Labs AC3    \tab   \cr
   \code{wetBTrans}   \tab \code{beamTransmission}             \tab percent; WET Labs AC3\tab   \cr
-  \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3               \tab   \cr
+  \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3; WET Labs CDOM\tab   \cr
+  \code{wetStar~}    \tab \code{fluorescence}                 \tab mg/m^3; WET Labs WETstar\tab   \cr
   \code{xmiss}       \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
   \code{xmiss~}      \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
 }
