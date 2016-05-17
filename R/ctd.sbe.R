@@ -365,8 +365,8 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         name <- "spar"
         unit <- list(unit=expression(), scale="")
     } else if (1 == length(grep("^sva$", name))) {
-        name <- "sva"
-        unit <- list(unit=expression(1e-8*m^3/kg), scale="")
+        name <- "specificVolumeAnomaly"
+        unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
     } else if (1 == length(grep("^svCM$", name))) {
         name <- "soundSpeed"
         unit <- list(unit=expression(m/s), scale="Chen-Millero")
@@ -396,7 +396,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         unit <- list(unit=expression(day), scale="")
     } else if (1 == length(grep("^tsa$", name))) {
         name <- "thermostericAnomaly"
-        unit <- list(unit=expression(1e-8*m^3/kg), scale="")
+        unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
     } else if (1 == length(grep("^upoly[0-2]$", name))) {
         name <- "upoly"
         unit <- list(unit=expression(), scale="")

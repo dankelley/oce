@@ -101,7 +101,7 @@ setMethod(f="summary",
                                              }
                                              res <- as.character(res)
                                              ##> message("1. res: '", res, "'")
-                                             ## Clean up notation
+                                             ## Clean up notation, by stages. (The order may matter.)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+C", "\u00B0C", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+F", "\u00B0F", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+E", "\u00B0E", res)
@@ -118,6 +118,7 @@ setMethod(f="summary",
                                              if (nchar(res)) res <- gsub("mu . ", "\u03BC", res)
                                              ##> message("4. res: '", res, "'")
                                              if (nchar(res)) res <- gsub("per . mil", "\u2030", res)
+                                             if (nchar(res)) res <- gsub("10\\^\\(-8\\)[ ]*\\*", "10\u207B\u2078", res) 
                                              ##> message("5. res: '", res, "'")
                                              if (nchar(res)) res <- gsub("\\^2", "\u00B2", res)
                                              ##> message("6. res: '", res, "'")
