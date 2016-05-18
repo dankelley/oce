@@ -3117,20 +3117,27 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
         sign <- -1
     x <- sub("[ =a-z:*]*$", "", x, ignore.case=TRUE) # trim anything not a number
     oceDebug(debug, "  step 3. \"", x, "\" (now should have no trailing text or symbols)\n", sep="")
+    ## One last pass to get rid of non-digits, so that e.d. "30d 10s'" will work
+    x <- gsub("[a-zA-Z']", "", x)
+    oceDebug(debug, "  step 4. \"", x, "\" (now should have no non-digit characters)\n", sep="")
     ## if single number, it's decimal degrees; if two numbers, degrees and then decimal minutes
     xx <- strsplit(x, '[ \\t]+')[[1]]
     if (1 == length(xx)) {
-        res <- as.numeric(xx)
-        oceDebug(debug, "  step 4a. \"", res, "\" (inferred from single #, decimal degrees)\n", sep="")
+        suppressWarnings(res <- as.numeric(xx))
+        oceDebug(debug, "  step 5. \"", res, "\" (inferred from single #, decimal degrees)\n", sep="")
     } else if (2 == length(xx)) {
-        res <- as.numeric(xx[1]) + as.numeric(xx[2]) / 60
-        oceDebug(debug, "  step 4b. \"", res, "\" (inferred from two #, degrees and decimal minutes)\n", sep="")
+        suppressWarnings(res <- as.numeric(xx[1]) + as.numeric(xx[2]) / 60)
+        oceDebug(debug, "  step 5. \"", res, "\" (inferred from two #, degrees and decimal minutes)\n", sep="")
+    } else if (3 == length(xx)) {
+        res <- suppressWarnings(as.numeric(xx[1]) + as.numeric(xx[2]) / 60 + as.numeric(xx[3]) / 3600)
+        oceDebug(debug, "  step 5. \"", res, "\" (inferred from three #, degrees, minutes, and seconds)\n", sep="")
     } else {
         ## 2014-06-17 it's annoying to see this error msg
-        ##warning("cannot decode latitude or longitude from \"", line, "\"")
         res <- NA
     }
     res <- res * sign
+    if (is.na(res))
+        warning("cannot decode longitude or latitude from '", line, "'")
     oceDebug(debug, "} # parseLatLon()\n", unindent=1)
     res
 }

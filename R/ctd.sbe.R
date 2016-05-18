@@ -35,9 +35,10 @@
 #' data slot directly or use
 #' \code{\link{renameData}} to rename the elements. Finally, please publish
 #' an 'issue' on the oce Github site \url{https://github.com/dankelley/oce/issues}
-#' so that the developers can add the data type in question. (There is no plan to add
-#' all data types without user interest, because there are simply so many types;
-#' oxygen alone has over 40 variants!)
+#' so that the developers can add the data type in question. (To save
+#' development time, there is no plan to add all possible data types without
+#' a reasonable and specific expression user interest. Oxygen alone has over forty
+#' variants.)
 #'
 #' \tabular{llll}{
 #'   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit;scale} \tab \strong{Notes} \cr
