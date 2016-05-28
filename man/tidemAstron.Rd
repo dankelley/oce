@@ -2,32 +2,35 @@
 % Please edit documentation in R/tidem.R
 \name{tidemAstron}
 \alias{tidemAstron}
-\title{Ephemeris Calculations for Tidem}
+\title{Astronomical Calculations for Tidem}
 \usage{
 tidemAstron(t)
 }
 \arguments{
-\item{t}{time in \code{POSIXct} format.  (It is \strong{very} important to
+\item{t}{The time in \code{POSIXct} format.  (It is \strong{very} important to
 use \code{tz="GMT"} in constructing \code{t}.)}
 }
 \value{
-A \code{\link[base]{data.frame}} containing
-\item{list("astro")}{(fill in later)} \item{list("ader")}{(fill in later)}
+A \code{\link[base]{list}} containing items named
+\code{astro} and \code{ader} (see \code{T_TIDE} documentation).
 }
 \description{
-Do ephemeris calculations for tidem.  This is based directly
-on \code{t_astron}, from the \code{T_TIDE} package.
+Do some astronomical calculations for \code{\link{tidem}}.  This function is based directly
+on \code{t_astron} in the \code{T_TIDE} Matlab package [1].
 }
 \examples{
 tidemAstron(as.POSIXct("2008-01-22 18:50:24"))
 }
 \author{
-Dan Kelley, based directly on \code{t_astron} from the \code{T_TIDE}
+Dan Kelley translated this from \code{t_astron} in the \code{T_TIDE}
 package.
 }
+\references{
+1. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002. Classical tidal
+harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
+Computers and Geosciences, 28, 929-937.
+}
 \seealso{
-\code{\link{tidem}}, which uses this.
-
 Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{[[<-,tidem-method}},
   \code{\link{plot,tidem-method}},

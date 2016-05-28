@@ -1,10 +1,10 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 #' @title Class to Store Tidal Models
-#' 
+#'
 #' @description
 #' Class to store tidal-constituent models.
-#' 
+#'
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{tidem} data
@@ -20,7 +20,7 @@ setMethod(f="initialize",
 
 
 #' @title Tidal Constituent Information
-#' 
+#'
 #' @description
 #' The \code{tidedata} dataset contains Tide-constituent information that is
 #' use by \code{\link{tidem}} to fit tidal models.  \code{tidedata} is a list
@@ -51,14 +51,15 @@ setMethod(f="initialize",
 #' Apart from the use of \code{d1} through \code{d6}, the naming and content
 #' follows \code{T_TIDE}.  All of this is based on Foreman (1977), to which the
 #' reader is referred for details.
-#' 
+#'
 #' @name tidedata
 #' @docType data
 #' @author Dan Kelley
-#' @references Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
+#' @references
+#' Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
 #' prediction.  Pacific Marine Science Report 77-10, Institute of Ocean
 #' Sciences, Patricia Bay, Sidney, BC, 58pp.
-#' 
+#'
 #' Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
 #' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 #' Computers and Geosciences, 28, 929-937.
@@ -72,14 +73,14 @@ NULL
 
 
 #' @title Summarize a Tidem Object
-#' 
+#'
 #' @description
 #' By default, all fitted constituents are plotted, but it is quite useful to
 #' set e.g. p=0.05 To see just those constituents that are significant at the 5
 #' percent level.
 #' Note that the p values are estimated as the average of the p values for the
 #' sine and cosine components at a given frequency.
-#' 
+#'
 #' @param object an object of class \code{"tidem"}, usually, a result of a call
 #' to \code{tidem}.
 #' @param p optional value of the maximum p value for the display of an
@@ -95,7 +96,7 @@ NULL
 #' tide <- tidem(sealevel)
 #' summary(tide)
 #' }
-#' 
+#'
 #' @family things related to \code{tidem} data
 setMethod(f="summary",
           signature="tidem",
@@ -164,10 +165,10 @@ setMethod(f="[[<-",
 
 
 #' @title Plot a Tidem Prediction
-#' 
+#'
 #' @description
 #' Plot a summary diagram for a tidal fit.
-#' 
+#'
 #' @param x A \code{tidem} object, i.e. one inheriting from
 #' \code{\link{tidem-class}}.
 #' @param which integer flag indicating plot type, 1 for stair-case spectral, 2
@@ -189,7 +190,7 @@ setMethod(f="[[<-",
 #' plot(tide)
 #' }
 #' @author Dan Kelley
-#' 
+#'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{tidem} data
 setMethod(f="plot",
@@ -258,27 +259,29 @@ setMethod(f="plot",
           })
 
 
-#' @title Ephemeris Calculations for Tidem
-#' 
+#' @title Nodal Modulation Calculations for Tidem
+#'
 #' @description
-#' Do ephemeris calculations for tidem. This is based directly
-#' on \code{t_vuf}, from the \code{T_TIDE} package.
-#' 
-#' @param t time in \code{POSIXct} format.  (It is \strong{very} important to
+#' Do nodal modulation calculations for \code{\link{tidem}}. This function is based directly
+#' on \code{t_vuf} in the \code{T_TIDE} Matlab package [1].
+#'
+#' @param t The time in \code{POSIXct} format.  (It is \strong{very} important to
 #' use \code{tz="GMT"} in constructing \code{t}.)
-#' @param j indices of tidal constituents to use
-#' @param lat latitude (if missing, something is done for that)
-#' @return A \code{\link[base]{data.frame}} containing
-#' \item{list("astro")}{(fill in later)} \item{list("ader")}{(fill in later)}
-#' @author Dan Kelley, based directly on \code{t_vuf} from the \code{T_TIDE}
+#' @param j Indices of tidal constituents to use.
+#' @param latitude Optional numerical value continaing the latitude in degrees North.
+#' @return A \code{\link[base]{list}} containing
+#' items named \code{v}, \code{u} and \code{f} (see the \code{T_TIDE}
+#' documentation).
+#' @author Dan Kelley translated this from \code{t_astron} from the \code{T_TIDE}
 #' package.
-#' @seealso \code{\link{tidem}}, which uses this.
 #' @examples
-#' 
 #' tidemVuf(as.POSIXct("2008-01-22 18:50:24"), 43, 45.0)
-#' 
 #' @family things related to \code{tidem} data
-tidemVuf <- function(t, j, lat=NULL)
+#' @references
+#' 1. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+#' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
+#' Computers and Geosciences, 28, 929-937.
+tidemVuf <- function(t, j, latitude=NULL)
 {
     debug <- 0
     data("tidedata", package="oce", envir=environment())
@@ -304,9 +307,9 @@ tidemVuf <- function(t, j, lat=NULL)
     oceDebug(debug, "tidedata$const$semi[",j,"]=",tidedata$const$semi[j],"\n")
     v <- v - trunc(v)
     oceDebug(debug, "v[1:3]=",v[1:3],"\n")
-    if (!is.null(lat) && !is.na(lat)) {
-        if (abs(lat) < 5) lat <- sign(lat) * 5
-        slat <- sin(pi * lat / 180)
+    if (!is.null(latitude) && !is.na(latitude)) {
+        if (abs(latitude) < 5) latitude <- sign(latitude) * 5
+        slat <- sin(pi * latitude / 180)
         k <- which(tidedata$sat$ilatfac == 1)
         rr    <- tidedata$sat$amprat
         rr[k] <- rr[k] * 0.36309 * (1.0 - 5.0 * slat * slat) / slat
@@ -369,137 +372,26 @@ tidemVuf <- function(t, j, lat=NULL)
     list(v=v, u=u, f=f)
 }
 
-                                        #function [v,u,f]=tVuf(ctime,ju,lat);
-                                        #% T_VUF Computes nodal modulation corrections.
-                                        #% [V,U,F]=T_VUF(DATE,JU,LAT) returns the astronomical phase V, the
-                                        #% nodal phase modulation U, and the nodal amplitude correction F at
-                                        #% a decimal date DATE for the components specified by index JU (into
-                                        #% the CONST structure returned by T_GETCONSTS) at a latitude LAT.
-                                        #%
-                                        #% If LAT is not specified, then the Greenwich phase V is computed with
-                                        #% U=0 and F=1.
-                                        #%
-                                        #% Note that V and U are in 'cycles', not degrees or radians (i.e.,
-                                        #% multiply by 360 to get degrees).
-                                        #%
-                                        #% If LAT is set to NaN, then the nodal corrections are computed for all
-                                        #% satellites that do *not* have a "latitude-dependent" correction
-                                        #% factor. This is for compatibility with the ways things are done in
-                                        #% the xtide package. (The latitude-dependent corrections were zeroed
-                                        #% out there partly because it was convenient, but this was rationalized
-                                        #% by saying that since the forcing of tides can occur at latitudes
-                                        #% other than where they are observed, the idea that observations have
-                                        #% the equilibrium latitude-dependence is possibly bogus anyway).
-                                        #
-                                        #% R. Pawlowicz 11/8/99
-                                        #%               1/5/00 - Changed to allow for no LAT setting.
-                                        #%              11/8/00 - Added the LAT=NaN option.
-                                        #% Version 1.0
-                                        #
-                                        #% Get all the info about constituents.
-                                        #
-                                        #[const,sat,shallow]=t_getconsts(ctime);
-                                        #
-                                        #% Calculate astronomical arguments at mid-point of data time series.
-                                        #[astro,ader]=t_astron(ctime);
-                                        #
-                                        #
-                                        #% Phase relative to Greenwich (in units of cycles, presumeably).
-                                        #% (This only returns values when we have doodson#s, i.e., not for the
-                                        #% shallow water components, but these will be computed later.)
-                                        #v=rem( const.doodson*astro+const.semi, 1);
-                                        #
-                                        #if nargin==3, % If we have a latitude, get nodal corrections.
-                                        #
-                                        #  % Apparently the second-order terms in the tidal potential go to zero
-                                        #  % at the equator, but the third-order terms do not. Hence when trying
-                                        #  % to infer the third-order terms from the second-order terms, the
-                                        #  % nodal correction factors blow up. In order to prevent this, it is
-                                        #  % assumed that the equatorial forcing is due to second-order forcing
-                                        #  % OFF the equator, from about the 5 degree location. Latitudes are
-                                        #  % hence (somewhat arbitrarily) forced to be no closer than 5 deg to
-                                        #  % the equator.
-                                        #
-                                        #  if finite(lat) & (abs(lat)<5); lat=sign(lat).*5; end
-                                        #
-                                        #  slat=sin(pi.*lat./180);
-                                        #  % Satellite amplitude ratio adjustment for latitude.
-                                        #
-                                        #  rr=sat.amprat;           % no amplitude correction
-                                        #
-                                        #  if finite(lat),
-                                        #    j=find(sat.ilatfac==1); % latitude correction for diurnal constituents
-                                        #    rr(j)=rr(j).*0.36309.*(1.0-5.0.*slat.*slat)./slat;
-                                        #
-                                        #    j=find(sat.ilatfac==2); % latitude correction for semi-diurnal constituents
-                                        #    rr(j)=rr(j).*2.59808.*slat;
-                                        #  else
-                                        #    rr(sat.ilatfac>0)=0;
-                                        #  end;
-                                        #
-                                        #  % Calculate nodal amplitude and phase corrections.
-                                        #
-                                        #  uu=rem( sat.deldood*astro(4:6)+sat.phcorr, 1);
-                                        #
-                                        #  %%uu=uudbl-round(uudbl);  <_ I think this was wrong. The original
-                                        #  %                         FORTRAN code is:  IUU=UUDBL
-                                        #  %                                           UU=UUDBL-IUU
-                                        #  %                         which is truncation.
-                                        #
-                                        #
-                                        #  % Sum up all of the satellite factors for all satellites.
-                                        #
-                                        #  nsat=length(sat.iconst);
-                                        #  nfreq=length(const.isat);
-                                        #
-                                        #  fsum=1+sum(sparse([1:nsat],sat.iconst,rr.*exp(i*2*pi*uu),nsat,nfreq)).';
-                                        #
-                                        #  f=abs(fsum);
-                                        #  u=angle(fsum)./(2.*pi);
-                                        #
-                                        #  % Compute amplitude and phase corrections for shallow water constituents.
-                                        #
-                                        #  for k=find(finite(const.ishallow))',
-                                        #    ik=const.ishallow(k)+[0:const.nshallow(k)-1];
-                                        #    f(k)=prod(f(shallow.iname(ik)).^abs(shallow.coef(ik)));
-                                        #    u(k)=sum( u(shallow.iname(ik)).*shallow.coef(ik) );
-                                        #    v(k)=sum( v(shallow.iname(ik)).*shallow.coef(ik) );
-                                        #  end;
-                                        #
-                                        #  f=f(ju);
-                                        #  u=u(ju);
-                                        #  v=v(ju);
-                                        #
-                                        #else % Astronomical arguments only.
-                                        #
-                                        #  % Compute for shallow water constituents.
-                                        #  for k=find(finite(const.ishallow))',
-                                        #    ik=const.ishallow(k)+[0:const.nshallow(k)-1];
-                                        #    v(k)=sum( v(shallow.iname(ik)).*shallow.coef(ik) );
-                                        #  end;
-                                        #  v=v(ju);
-                                        #  f=ones(size(v));
-                                        #  u=zeros(size(v));
-                                        #end;
 
-
-
-#' @title Ephemeris Calculations for Tidem
-#' 
+#' @title Astronomical Calculations for Tidem
+#'
 #' @description
-#' Do ephemeris calculations for tidem.  This is based directly
-#' on \code{t_astron}, from the \code{T_TIDE} package.
-#' 
-#' @param t time in \code{POSIXct} format.  (It is \strong{very} important to
+#' Do some astronomical calculations for \code{\link{tidem}}.  This function is based directly
+#' on \code{t_astron} in the \code{T_TIDE} Matlab package [1].
+#'
+#' @param t The time in \code{POSIXct} format.  (It is \strong{very} important to
 #' use \code{tz="GMT"} in constructing \code{t}.)
-#' @return A \code{\link[base]{data.frame}} containing
-#' \item{list("astro")}{(fill in later)} \item{list("ader")}{(fill in later)}
-#' @author Dan Kelley, based directly on \code{t_astron} from the \code{T_TIDE}
+#' @return A \code{\link[base]{list}} containing items named
+#' \code{astro} and \code{ader} (see \code{T_TIDE} documentation).
+#' @author Dan Kelley translated this from \code{t_astron} in the \code{T_TIDE}
 #' package.
-#' @seealso \code{\link{tidem}}, which uses this.
 #' @examples
 #' tidemAstron(as.POSIXct("2008-01-22 18:50:24"))
 #' @family things related to \code{tidem} data
+#' @references
+#' 1. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002. Classical tidal
+#' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
+#' Computers and Geosciences, 28, 929-937.
 tidemAstron <- function(t)
 {
                                         # Code mimics t_astron in t_tide
@@ -531,22 +423,22 @@ tidemAstron <- function(t)
     ader <- (sc.hc.pc.np.pp %*% da) / 360
     dtau <- 1 + ader[2,1] - ader[1,1]
     ader <- c(dtau, ader)
-    data.frame(astro=astro, ader=ader)
+    list(astro=astro, ader=ader)
 }
 
 
 #' @title Fit a Tidem (Tidal Model) to a Timeseries
-#' 
+#'
 #' @description
 #' The fit is done in terms of sine and cosine components at the indicated
 #' tidal frequencies, with the amplitude and phase being calculated from the
 #' resultant coefficients on the sine and cosine terms.
-#' 
+#'
 #' @details
 #' The tidal constituents to be used in the analysis are specified as follows.
-#' 
+#'
 #' \enumerate{
-#' 
+#'
 #' \item Case 1. If \code{constituents} is not provided, then the constituent
 #' list will be made up of the 69 constituents regarded by Foreman as standard.
 #' These include astronomical frequencies and some shallow-water frequencies,
@@ -557,7 +449,7 @@ tidemAstron <- function(t)
 #' "LDA2", "L2", "T2", "S2", "R2", "K2", "MSN2", "ETA2", "MO3", "M3", "SO3",
 #' "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4", "2MK5", "2SK5",
 #' "2MN6", "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")}.
-#' 
+#'
 #' \item Case 2. If the first item in \code{constituents} is the string
 #' \code{"standard"}, then a provisional list is set up as in Case 1, and then
 #' the (optional) rest of the elements of \code{constituents} are examined, in
@@ -569,31 +461,31 @@ tidemAstron <- function(t)
 #' from the list (if it is already there).  Thus, for example,
 #' \code{constituents=c("standard", "-M2", "ST32")} would remove the M2
 #' constituent and add the ST32 constituent.
-#' 
+#'
 #' \item Case 3. If the first item is not \code{"standard"}, then the list of
 #' constituents is processed as in Case 2, but without starting with the
 #' standard list. As an example, \code{constituents=c("K1", "M2")} would fit
 #' for just the K1 and M2 components. (It would be strange to use a minus sign
 #' to remove items from the list, but the function allows that.)
-#' 
+#'
 #' In each of the above cases, the list is reordered in frequency prior to the
 #' analysis, so that the results of \code{\link{summary,tidem-method}} will be in a
 #' familiar form.
-#' 
+#'
 #' Once the constituent list is determined, \code{tidem} prunes the elements of
 #' the list by using the Rayleigh criterion, according to which two
 #' constituents of frequencies \eqn{f_1}{f1} and \eqn{f_2}{f2} cannot be
 #' resolved unless the time series spans a time interval of at least
 #' \eqn{rc/(f_1-f_2)}{rc/(f1-f2)}. The value \code{rc=1} yields nominal
 #' resolution.
-#' 
+#'
 #' A list of constituent names is created by the following: \preformatted{
 #' data(tidedata) print(tidedata$const$name) }
-#' 
+#'
 #' \strong{The text should include discussion of the (not yet performed) nodal
 #' correction treatement.}
 #' }
-#' 
+#'
 #' @param t Either a \code{sealevel} object (e.g. produced by
 #' \code{\link{read.sealevel}} or \code{\link{as.sealevel}}) or a vector of
 #' times. In the former case, time is part of the object, so \code{t} may not
@@ -624,35 +516,35 @@ tidemAstron <- function(t)
 #' sine() and cosine() portions used in fitting; whether it makes any sense is
 #' an open question.}
 #' @section Bugs:
-#' 
+#'
 #' \enumerate{
 #' \item 1.This function is not fully developed yet, and both the
 #' form of the call and the results of the calculation may change.
-#' 
+#'
 #' \item 2.Nodal correction is not done.
-#' 
+#'
 #' \item 3.The reported \code{p} value may make no sense at all, and it might be
 #' removed in a future version of this function. Perhaps a significance level
 #' should be presented, as in the software developed by both Foreman and
 #' Pawlowicz.
-#' 
+#'
 #' }
 #' @author Dan Kelley
 #' @references
 #' 1. Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
 #' prediction.  Pacific Marine Science Report 77-10, Institute of Ocean
 #' Sciences, Patricia Bay, Sidney, BC, 58pp.
-#' 
+#'
 #' 2. Foreman, M. G. G., Neufeld, E. T., 1991.  Harmonic tidal analyses of long
 #' time series.  International Hydrographic Review, 68 (1), 95-108.
-#' 
+#'
 #' 3. Leffler, K. E. and D. A. Jay, 2009.  Enhancing tidal harmonic analysis:
 #' Robust (hybrid) solutions.  Continental Shelf Research, 29(1):78-88.
-#' 
+#'
 #' 4. Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
 #' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
 #' Computers and Geosciences, 28, 929-937.
-#' 
+#'
 #' @examples
 #' library(oce)
 #' # The demonstration time series from Foreman (1977),
@@ -660,17 +552,17 @@ tidemAstron <- function(t)
 #' data(sealevelTuktoyaktuk)
 #' tide <- tidem(sealevelTuktoyaktuk)
 #' summary(tide)
-#' 
+#'
 #' # AIC analysis
 #' extractAIC(tide[["model"]])
-#' 
+#'
 #' # Fake data at M2
 #' t <- seq(0, 10*86400, 3600)
 #' eta <- sin(0.080511401 * t * 2 * pi / 3600)
 #' sl <- as.sealevel(eta)
 #' m <- tidem(sl)
 #' summary(m)
-#' 
+#'
 #' @family things related to \code{tidem} data
 tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
                   debug=getOption("oceDebug"))
@@ -862,7 +754,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
         phase[i] <- atan2(s, c)
         ## Adjust amplitude phase, as in ~/src/foreman/tide12_r2.f:405
         j <- which(tidedata$const$name==name[i-1])
-        vuf <- tidemVuf(tRef, j=j, lat=latitude)
+        vuf <- tidemVuf(tRef, j=j, latitude=latitude)
         amplitude[i] <- amplitude[i] / vuf$f
         phaseOffset <- (vuf$u + vuf$v) * 360 * pi / 180 # the 360 is because tidemVuf returns in cycles
         phase[i] <- phase[i] + phaseOffset 
@@ -895,11 +787,11 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
 
 
 #' @title Predict a Time Series from a Tidem Tidal Model
-#' 
+#'
 #' @description
 #' Predict a time series from a tidal model.
 #' This is a wrapper around the predict method for \code{object$model}.
-#' 
+#'
 #' @param object A \code{tidem} object, i.e. one inheriting from
 #' \code{\link{tidem-class}}.
 #' @param newdata optional vector of POSIXt times at which to make the
@@ -908,7 +800,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
 #' @param \dots optional arguments passed on to children.
 #' @return A vector of predictions.
 #' @examples
-#' 
+#'
 #' \dontrun{
 #' library(oce)
 #' # 1. tidal anomaly
@@ -919,7 +811,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
 #' tide <- tidem(sealevelTuktoyaktuk)
 #' lines(time, elevation - predict(tide), col="red")
 #' abline(h=0, col="red")
-#' 
+#'
 #' # 2. prediction at specified times
 #' data(sealevel)
 #' m <- tidem(sealevel)
@@ -934,7 +826,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
 #' legend("topright", col=c("black","red"),
 #' legend=c("data","model"),lwd=1)
 #' }
-#' 
+#'
 #' @author Dan Kelley
 #' @family things related to \code{tidem} data
 predict.tidem <- function(object, newdata, ...)
@@ -971,10 +863,10 @@ predict.tidem <- function(object, newdata, ...)
 
 
 #' @title Get a Tidal Prediction from a WebTide Database
-#' 
+#'
 #' @description
 #' Get a tidal prediction from a WebTide database.
-#' 
+#'
 #' If \code{action="map"} then a map is drawn, with a dot for the lower-left
 #' corner of each triangle used in the finite-element tidal simulation upon
 #' which WebTide predictions are based.  If \code{node} is missing, then
@@ -983,17 +875,17 @@ predict.tidem <- function(object, newdata, ...)
 #' return value).  If \code{node} is provided, however, the point is indicated
 #' but \code{\link{locator}} is not called.  (This second style is of use in
 #' documenting interactive work after the fact.)
-#' 
+#'
 #' If \code{action="predict"} then either a node number or the longitude and
 #' latitude must be specified.  If \code{plot=TRUE} (the default) then a plot
 #' is drawn, but no plot is produced otherwise.  In either case, the (silent)
 #' return value is a list as described in the next section.  The times used for
 #' prediction are specified with the \code{time} argument, and if this is not
 #' specified then a week following the present time is used.
-#' 
+#'
 #' Naturally, \code{webtide} will not work unless WebTide has been installed on
 #' the computer.
-#' 
+#'
 #' @param action An indication of the action, either \code{action="map"} to
 #' draw a map or \code{action="predict"} to get a prediction; see
 #' \sQuote{Details}.
@@ -1022,7 +914,7 @@ predict.tidem <- function(object, newdata, ...)
 #' \code{latitude} and \code{longitude} of that node.  If \code{action="map"}
 #' and \code{plot=FALSE}, the return value is a list of all nodes, longitude,
 #' and latitudes.
-#' 
+#'
 #' If \code{action="predict"}, the return value is a list containing a vector
 #' of times (\code{time}), as well as vectors of the predicted \code{elevation}
 #' in metres and the predicted horizontal components of velocity, \code{u} and
@@ -1165,7 +1057,7 @@ webtide <- function(action=c("map", "predict"),
         for (i in 1:nconstituents) {
             twoLetter <- substr(constituentse[i], 1, 2)
             C <- which(twoLetter == tidedata$const$name)
-            vuf <- tidemVuf(tRef, j=C, lat=latitude)
+            vuf <- tidemVuf(tRef, j=C, latitude=latitude)
             phaseOffset <- (vuf$u + vuf$v) * 360
             ## NOTE: phase is *subtracted* here, but *added* in tidem()
             elevation <- elevation + ampe[i] * cos((360 * h / period[i] - phasee[i] + phaseOffset) * pi / 180)
