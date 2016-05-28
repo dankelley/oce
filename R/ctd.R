@@ -267,7 +267,7 @@ setMethod(f="initialize",
                                                  pressure=list(unit=expression(dbar), scale=""),
                                                  depth=list(unit=expression(m), scale=""))
               } else {
-                  .Object@metadata$units <- units # FIXME: but what if spelled wrong etc
+                  .Object@metadata$units <- units # CAUTION: we are being quite trusting here
               }
               .Object@metadata$pressureType <- if (!missing(pressureType)) pressureType else "sea" # guess on the unit
               .Object@metadata$deploymentType <- if (!missing(deploymentType)) deploymentType else "unknown" # "profile" "mooring" "towyo" "thermosalinograph"
@@ -583,11 +583,9 @@ setMethod(f="[[",
                       else NULL
                   }
               } else if (i == "z") {
-                  ## FIXME-gsw: permit gsw version here
-                  swZ(x)
+                  swZ(x) # FIXME-gsw: permit gsw version here
               } else if (i == "depth") {
-                  ## FIXME-gsw: permit gsw version here
-                  swDepth(x)
+                  swDepth(x) # FIXME-gsw: permit gsw version here
               } else if (i == "N2") {
                   swN2(x)
               } else {
