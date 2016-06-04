@@ -45,6 +45,9 @@
 #'   \code{alt}         \tab \code{altimeter}                    \tab m                   \tab    \cr
 #'   \code{altM}        \tab \code{altimeter}                    \tab m                   \tab    \cr
 #'   \code{bat~}        \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
+#'   \code{C2-C1S/m}    \tab \code{conductivityDifference}       \tab S/m                 \tab    \cr
+#'   \code{C2-C1mS/cm}  \tab \code{conductivityDifference}       \tab mS/cm               \tab    \cr
+#'   \code{C2-C1uS/cm}  \tab \code{conductivityDifference}       \tab uS/cm               \tab    \cr
 #'   \code{c~mS/cm}     \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
 #'   \code{c~S/m}       \tab \code{conductivity}                 \tab S/m                 \tab    \cr
 #'   \code{c~uS/cm}     \tab \code{conductivity}                 \tab uS/cm               \tab    \cr
@@ -66,7 +69,8 @@
 #'   \code{flSP}        \tab \code{fluorescence}                 \tab -; Seapoint         \tab    \cr
 #'   \code{flSPR}       \tab \code{fluorescence}                 \tab -; Seapoint, Rhodamine\tab  \cr
 #'   \code{flSPuv}      \tab \code{fluorescence}                 \tab -; Seapoint, UV      \tab   \cr
-#'   \code{flT}         \tab \code{fluorescence}                 \tab -; Turner            \tab   \cr
+#'   \code{flT}         \tab \code{fluorescence}                 \tab -; Turneri 10-005 flT\tab   \cr
+#'   \code{gpa}         \tab \code{geopotentialAnomaly}          \tab -; J/kg              \tab   \cr
 #'   \code{latitude}    \tab \code{latitude}                     \tab degN                 \tab   \cr
 #'   \code{longitude}   \tab \code{longitude}                    \tab degE                 \tab   \cr
 #'   \code{n2satML/L}   \tab \code{nitrogenSaturation}           \tab ml/l                 \tab   \cr
@@ -105,13 +109,13 @@
 #'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
 #'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
 #'   \code{sva}         \tab \code{specificVolumeAnomaly}        \tab 1e-8 m^3/kg;         \tab   \cr
-#'   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
+#'   \code{svCM~}       \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
+#'   \code{T2~68C}      \tab \code{temperatureDifference}        \tab degC; IPTS-68        \tab   \cr 
+#'   \code{T2~90C}      \tab \code{temperatureDifference}        \tab degC; ITS-90         \tab   \cr 
 #'   \code{t~68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
 #'   \code{t~90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
-#'   \code{t~68C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
+#'   \code{t~68C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t~90C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{t068C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{t168C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t090Cm}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{t4990C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{tnc90C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
@@ -197,6 +201,17 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^bat[0-9]?$", name))) {
         name <- "beamAttenuation"
         unit <- list(unit=expression(1/m), scale="Chelsea/Seatech")
+
+    } else if (1 == length(grep("^C2-C1S/m$", name))) {
+        name <- "conductivityDifference"
+        unit <- list(unit=expression(S/m), scale="")
+    } else if (1 == length(grep("^C2-C1mS/cm$", name))) {
+        name <- "conductivityDifference"
+        unit <- list(unit=expression(mS/cm), scale="")
+    } else if (1 == length(grep("^C2-C1uS/cm$", name))) {
+        name <- "conductivityDifference"
+        unit <- list(unit=expression(mu*S/cm), scale="")
+
     } else if (1 == length(grep("^c((_)|([0-2]))mS/cm$", name))) {
         name <- "conductivity"
         unit <- list(unit=expression(mS/cm), scale="")
@@ -254,6 +269,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^flT$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Turner")
+    } else if (1 == length(grep("^gpa$", name))) {
+        name <- "geopotentialAnomaly"
+        unit <- list(unit=expression(J/kg), scale="")
     } else if (1 == length(grep("^latitude$", name))) {
         name <- "latitude"
         unit <- list(unit=expression(degree*N), scale="")
@@ -376,9 +394,15 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^sva$", name))) {
         name <- "specificVolumeAnomaly"
         unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
-    } else if (1 == length(grep("^svCM$", name))) {
+    } else if (1 == length(grep("^svCM[0-9]?$", name))) {
         name <- "soundSpeed"
         unit <- list(unit=expression(m/s), scale="Chen-Millero")
+    } else if (1 == length(grep("^T2-T[01]68C$", name))) {
+        name <- "temperatureDifference"
+        unit <- list(unit=expression(degree*C), scale="IPTS-68")
+    } else if (1 == length(grep("^T2-T[01]90C$", name))) {
+        name <- "temperatureDifference"
+        unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (1 == length(grep("^t[0-9]68((C)|(Cm))?$", name))) {
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
