@@ -58,8 +58,10 @@
 #'   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                 \tab    \cr
 #'   \code{f~}          \tab \code{frequency}                    \tab Hz                  \tab    \cr
 #'   \code{f~~}         \tab \code{frequency}                    \tab Hz                  \tab    \cr
-#'   \code{flC}         \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3\tab    \cr
-#'   \code{flEC-AFLM}   \tab \code{fluorescence}                 \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
+#'   \code{flC~}        \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3\tab    \cr
+#'   \code{flCM}        \tab \code{fluorescence}                 \tab ug/l; Chelsea Mini Chl Con\tab\cr
+#'   \code{flCUVA~}     \tab \code{fluorescence}                 \tab ug/l; Chelsea UV Aquatracka\tab\cr
+#'   \code{flEC-AFL~}   \tab \code{fluorescence}                 \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
 #'   \code{flS}         \tab \code{fluorescence}                 \tab -; Seatech          \tab    \cr
 #'   \code{flSP}        \tab \code{fluorescence}                 \tab -; Seapoint         \tab    \cr
 #'   \code{flSPR}       \tab \code{fluorescence}                 \tab -; Seapoint, Rhodamine\tab  \cr
@@ -228,6 +230,12 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^flC[1]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mu*g/l), scale="Chelsea")
+    } else if (1 == length(grep("^flCM[1]?$", name))) {
+        name <- "fluorescence"
+        unit <- list(unit=expression(mu*g/l), scale="Chelsea Mini Chl Con")
+    } else if (1 == length(grep("^flCUVA[12]?$", name))) {
+        name <- "fluorescence"
+        unit <- list(unit=expression(mu*g/l), scale="Chelsea UV Aquatracka")
     } else if (1 == length(grep("^flECO-AFL[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs")

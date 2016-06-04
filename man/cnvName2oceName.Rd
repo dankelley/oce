@@ -81,8 +81,10 @@ variants.)
   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                 \tab    \cr
   \code{f~}          \tab \code{frequency}                    \tab Hz                  \tab    \cr
   \code{f~~}         \tab \code{frequency}                    \tab Hz                  \tab    \cr
-  \code{flC}         \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3\tab    \cr
-  \code{flEC-AFLM}   \tab \code{fluorescence}                 \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
+  \code{flC~}        \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3\tab    \cr
+  \code{flCM}        \tab \code{fluorescence}                 \tab ug/l; Chelsea Mini Chl Con\tab\cr
+  \code{flCUVA~}     \tab \code{fluorescence}                 \tab ug/l; Chelsea UV Aquatracka\tab\cr
+  \code{flEC-AFL~}   \tab \code{fluorescence}                 \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
   \code{flS}         \tab \code{fluorescence}                 \tab -; Seatech          \tab    \cr
   \code{flSP}        \tab \code{fluorescence}                 \tab -; Seapoint         \tab    \cr
   \code{flSPR}       \tab \code{fluorescence}                 \tab -; Seapoint, Rhodamine\tab  \cr
