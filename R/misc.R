@@ -1492,7 +1492,7 @@ despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, 
     na <- is.na(x)
     if (sum(na) > 0) {
         i <- 1:nx
-        x.gapless <- approx(i[!na], x[!na], i)$y
+        x.gapless <- approx(i[!na], x[!na], i, rule=2)$y
     } else {
         x.gapless <- x
     }
