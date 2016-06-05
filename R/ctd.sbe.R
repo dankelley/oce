@@ -77,6 +77,10 @@
 #'   \code{n2satMg/L}   \tab \code{nitrogenSaturation}           \tab mg/l                 \tab   \cr
 #'   \code{n2satumol/kg}\tab \code{nitrogenSaturation}           \tab umol/kg              \tab   \cr
 #'   \code{nbin}        \tab \code{nbin}                         \tab                      \tab   \cr
+#'   \code{opoxMg/L}    \tab \code{oxygen}                       \tab mg/l; Optode, Anderaa\tab   \cr
+#'   \code{opoxML/L}    \tab \code{oxygen}                       \tab ml/l; Optode, Anderaa\tab   \cr
+#'   \code{opoxMm/L}    \tab \code{oxygen}                       \tab umol/l; Optode, Anderaa\tab \cr
+#'   \code{opoxPS}      \tab \code{oxygen}                       \tab %; Optode, Anderaa   \tab   \cr
 #'   \code{oxsatML/L}   \tab \code{oxygen}                       \tab ml/l; Weiss          \tab   \cr
 #'   \code{oxsatMg/L}   \tab \code{oxygen}                       \tab mg/l; Weiss          \tab   \cr
 #'   \code{oxsatMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Weiss       \tab   \cr
@@ -131,19 +135,20 @@
 #'   \code{t38~90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{t3868C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{timeH}       \tab \code{time}                         \tab hour, elapsed        \tab   \cr
-#'   \code{timeJ}       \tab \code{time}                         \tab day, elapsed         \tab   \cr
-#'   \code{timeK}       \tab \code{time}                         \tab s, since Jan 1, 2000 \tab\cr
-#'   \code{timeM}       \tab \code{time}                         \tab minute, elapsed      \tab   \cr
-#'   \code{timeN}       \tab \code{time}                         \tab s, NMEA since Jan 1, 1970\tab\cr
-#'   \code{timeQ}       \tab \code{time}                         \tab s, NMEA since Jan 1, 2000\tab\cr
-#'   \code{timeS}       \tab \code{time}                         \tab s, elapsed           \tab   \cr
+#'   \code{timeH}       \tab \code{time}                         \tab hour; elapsed        \tab   \cr
+#'   \code{timeJ}       \tab \code{time}                         \tab day; elapsed         \tab   \cr
+#'   \code{timeK}       \tab \code{time}                         \tab s; since Jan 1, 2000 \tab\cr
+#'   \code{timeM}       \tab \code{time}                         \tab minute; elapsed      \tab   \cr
+#'   \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr
+#'   \code{timeQ}       \tab \code{time}                         \tab s; NMEA since Jan 1, 2000\tab\cr
+#'   \code{timeS}       \tab \code{time}                         \tab s; elapsed           \tab   \cr
 #'   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
 #'   \code{user~}       \tab \code{user}                         \tab -                    \tab   \cr
 #'   \code{v~~}         \tab \code{voltage}                      \tab V                    \tab   \cr
 #'   \code{wetBAttn}    \tab \code{beamAttenuation}              \tab 1/m; WET Labs AC3    \tab   \cr
 #'   \code{wetBTrans}   \tab \code{beamTransmission}             \tab percent; WET Labs AC3\tab   \cr
 #'   \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3; WET Labs CDOM\tab   \cr
+#'   \code{wetChAbs}    \tab \code{fluorescence}                 \tab 1/m; WET Labs AC3 absorption\tab   \cr
 #'   \code{wetStar~}    \tab \code{fluorescence}                 \tab mg/m^3; WET Labs WETstar\tab   \cr
 #'   \code{xmiss}       \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
 #'   \code{xmiss~}      \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
@@ -299,6 +304,18 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^nbf$", name))) {
         name <- "bottlesFired"
         unit <- list(unit=expression(), scale="")
+    } else if (1 == length(grep("^opoxMg/L$", name))) {
+        name <- "oxygen"
+        unit <- list(unit=expression(mg/l), scale="Optode, Anderaa")
+    } else if (1 == length(grep("^opoxML/L$", name))) {
+        name <- "oxygen"
+        unit <- list(unit=expression(ml/l), scale="Optode, Anderaa")
+    } else if (1 == length(grep("^opoxMm/L$", name))) {
+        name <- "oxygen"
+        unit <- list(unit=expression(mu*mol/l), scale="Optode, Anderaa")
+    } else if (1 == length(grep("^opoxPS$", name))) {
+        name <- "oxygenSaturation"
+        unit <- list(unit=expression(percent), scale="Optode, Anderaa")
     } else if (1 == length(grep("^oxsatML/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="Weiss")
@@ -460,12 +477,12 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^wetCDOM[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs CDOM")
+    } else if (1 == length(grep("^wetChAbs$", name))) {
+        name <- "fluorescence"
+        unit <- list(unit=expression(1/m), scale="WET Labs AC3 absorption")
     } else if (1 == length(grep("^wetStar[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs WETstar")
-
-
-
     } else if (1 == length(grep("^xmiss[0-9]?$", name))) {
         name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="Chelsea/Seatech")
