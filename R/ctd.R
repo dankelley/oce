@@ -3685,7 +3685,8 @@ plotProfile <- function (x,
         warning("nothing is being plotted, because z is always negative and ylim specified a positive interval\n")
         return(invisible())
     }
-    x@data <- as.list(x@data)
+    if (!is.list(x@data))
+        x@data <- as.list(x@data)
     dataNames <- names(x@data)
     if (length(xtype) == length(x[["pressure"]]))
         xtype <- xtype[examineIndices]
@@ -3711,7 +3712,7 @@ plotProfile <- function (x,
 
     if (!add)
         par(mar=mar, mgp=mgp)
-    if (length(xtype) == length(y)) {
+    if (length(xtype) == length(y) && length(y) > 1) {
         if ('axes' %in% names(list(...))) {
             plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, cex=cex, pch=pch, ...)
             if (list(...)$axes) {
