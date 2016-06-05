@@ -80,7 +80,7 @@
 #'   \code{opoxMg/L}    \tab \code{oxygen}                       \tab mg/l; Optode, Anderaa\tab   \cr
 #'   \code{opoxML/L}    \tab \code{oxygen}                       \tab ml/l; Optode, Anderaa\tab   \cr
 #'   \code{opoxMm/L}    \tab \code{oxygen}                       \tab umol/l; Optode, Anderaa\tab \cr
-#'   \code{opoxPS}      \tab \code{oxygen}                       \tab %; Optode, Anderaa   \tab   \cr
+#'   \code{opoxPS}      \tab \code{oxygen}                       \tab percent; Optode, Anderaa\tab   \cr
 #'   \code{oxsatML/L}   \tab \code{oxygen}                       \tab ml/l; Weiss          \tab   \cr
 #'   \code{oxsatMg/L}   \tab \code{oxygen}                       \tab mg/l; Weiss          \tab   \cr
 #'   \code{oxsatMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Weiss       \tab   \cr
@@ -104,10 +104,10 @@
 #'   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
 #'   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
 #'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
-#'   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
-#'   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
-#'   \code{sbeox~Ps}    \tab \code{oxygen}                       \tab percent              \tab   \cr
-#'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V                    \tab   \cr
+#'   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
+#'   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
+#'   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
+#'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
 #'   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
 #'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
