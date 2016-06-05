@@ -131,10 +131,13 @@
 #'   \code{t38~90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{t3868C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{timeS}       \tab \code{time}                         \tab second               \tab   \cr
-#'   \code{timeM}       \tab \code{time}                         \tab minute               \tab   \cr
-#'   \code{timeH}       \tab \code{time}                         \tab hour                 \tab   \cr
-#'   \code{timeJ}       \tab \code{time}                         \tab day                  \tab   \cr
+#'   \code{timeH}       \tab \code{time}                         \tab hour, elapsed        \tab   \cr
+#'   \code{timeJ}       \tab \code{time}                         \tab day, elapsed         \tab   \cr
+#'   \code{timeK}       \tab \code{time}                         \tab s, since Jan 1, 2000 \tab\cr
+#'   \code{timeM}       \tab \code{time}                         \tab minute, elapsed      \tab   \cr
+#'   \code{timeN}       \tab \code{time}                         \tab s, NMEA since Jan 1, 1970\tab\cr
+#'   \code{timeQ}       \tab \code{time}                         \tab s, NMEA since Jan 1, 2000\tab\cr
+#'   \code{timeS}       \tab \code{time}                         \tab s, elapsed           \tab   \cr
 #'   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
 #'   \code{user~}       \tab \code{user}                         \tab -                    \tab   \cr
 #'   \code{v~~}         \tab \code{voltage}                      \tab V                    \tab   \cr
@@ -415,18 +418,27 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (name %in% c("t4990C", "tnc90C", "tv290C", "tnc290C", "t3890C", "t38_90C")) { # [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
-    } else if (1 == length(grep("^timeS$", name))) {
-        name <- "time"
-        unit <- list(unit=expression(s), scale="")
-    } else if (1 == length(grep("^timeM$", name))) {
-        name <- "time"
-        unit <- list(unit=expression(minute), scale="")
     } else if (1 == length(grep("^timeH$", name))) {
         name <- "time"
-        unit <- list(unit=expression(hour), scale="")
+        unit <- list(unit=expression(hour), scale="elapsed")
     } else if (1 == length(grep("^timeJ$", name))) {
         name <- "time"
-        unit <- list(unit=expression(day), scale="")
+        unit <- list(unit=expression(day), scale="elapsed")
+    } else if (1 == length(grep("^timeK$", name))) {
+        name <- "time"
+        unit <- list(unit=expression(s), scale="since Jan 1, 2000")
+    } else if (1 == length(grep("^timeM$", name))) {
+        name <- "time"
+        unit <- list(unit=expression(minute), scale="elapsed")
+    } else if (1 == length(grep("^timeN$", name))) {
+        name <- "time"
+        unit <- list(unit=expression(s), scale="NMEA since Jan 1, 1970")
+    } else if (1 == length(grep("^timeQ$", name))) {
+        name <- "time"
+        unit <- list(unit=expression(s), scale="NMEA since Jan 1, 2000")
+    } else if (1 == length(grep("^timeS$", name))) {
+        name <- "time"
+        unit <- list(unit=expression(s), scale="elapsed")
     } else if (1 == length(grep("^tsa$", name))) {
         name <- "thermostericAnomaly"
         unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")

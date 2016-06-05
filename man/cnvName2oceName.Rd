@@ -154,10 +154,13 @@ variants.)
   \code{t38~90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{t3868C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-  \code{timeS}       \tab \code{time}                         \tab second               \tab   \cr
-  \code{timeM}       \tab \code{time}                         \tab minute               \tab   \cr
-  \code{timeH}       \tab \code{time}                         \tab hour                 \tab   \cr
-  \code{timeJ}       \tab \code{time}                         \tab day                  \tab   \cr
+  \code{timeH}       \tab \code{time}                         \tab hour, elapsed        \tab   \cr
+  \code{timeJ}       \tab \code{time}                         \tab day, elapsed         \tab   \cr
+  \code{timeK}       \tab \code{time}                         \tab s, since Jan 1, 2000 \tab\cr
+  \code{timeM}       \tab \code{time}                         \tab minute, elapsed      \tab   \cr
+  \code{timeN}       \tab \code{time}                         \tab s, NMEA since Jan 1, 1970\tab\cr
+  \code{timeQ}       \tab \code{time}                         \tab s, NMEA since Jan 1, 2000\tab\cr
+  \code{timeS}       \tab \code{time}                         \tab s, elapsed           \tab   \cr
   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
   \code{user~}       \tab \code{user}                         \tab -                    \tab   \cr
   \code{v~~}         \tab \code{voltage}                      \tab V                    \tab   \cr
