@@ -1871,9 +1871,11 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
                      "v", "w", "speed", "direction", "eastward", "northward",
                      "depth", "elevation", "latitude", "longitude", "frequency cph",
                      "spectral density m2/cph")
+    message("resizableLabel initially has unit:");print(unit)
     if (!missing(unit)) {
-        unit <- unit[[1]] # removes the expression() from the bquote
+        unit <- unit[[1]] # focus on just the unit (which is an expression)
     }
+    message("resizableLabel later has unit:");print(unit)
     iitem <- pmatch(item, itemAllowed)
     if (is.na(iitem))
         stop("item=\"", item, "\" is not allowed; try one of: \"",
@@ -1931,11 +1933,23 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
         abbreviated <- bquote(N*O[3]*.(L)*mu*mol/kg*.(R))
     } else if (item ==  "nitrite") {
         var <- gettext("Nitrite", domain="R-oce")
-        full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
-        abbreviated <- bquote(N*O[2]*.(L)*mu*mol/kg*.(R))
+        message("FIXME: nitrite; below is var:");print(var)
+        message("FIXME: nitrite; below is unit:");print(unit)
+        if (FALSE&&is.null(unit)) {
+            message("unknown unit")
+            full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
+            abbreviated <- bquote(N*O[2]*.(L)*mu*mol/kg*.(R))
+        } else {
+            message("specified unit")
+            UNIT <- as.character(unit)
+            UNIT <- bquote(.(unit))
+            full <- bquote(.(var)*.(L)*.(UNIT)*.(R))
+            abbreviated <- bquote(N*O[2]*.(L)*.(UNIT)*.(R))
+        }
+        message("FIXME: nitrite; below is full:");print(full)
+        message("FIXME: nitrite; below is abbreviated:");print(abbreviated)
     } else if (item ==  "oxygen") {
         ## Until 2015-12-12 the default unit was umol/kg
-        var <- gettext("Oxygen", domain="R-oce")
         full <- bquote(.(var))
         abbreviated <- bquote(O[2])
     } else if (item ==  "oxygen saturation") {

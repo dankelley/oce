@@ -3991,6 +3991,8 @@ plotProfile <- function (x,
         }
     } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium",
                             "u" ,"v")) {
+        message("unit--")
+        print(x@metadata$units[[xtype]])
         if (!(xtype %in% names(x@data)))
             stop("no ", xtype, " in this station")
         if (!any(!is.na(x@data[[xtype]])))
@@ -4013,7 +4015,12 @@ plotProfile <- function (x,
                          ylim=rev(range(y[look])), lty=lty,
                          type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 }
-                mtext(resizableLabel(xtype, "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                message("DANDANDAN")
+                unit <- x@metadata$units[[xtype]]
+                message("unit:", unit); print(unit)
+                mtext(resizableLabel(xtype, "x", unit=unit), side=3, line=axis.name.loc, cex=par("cex"))
+                dan <<- resizableLabel(xtype, "x", unit=unit)
+                message("xlabel: "); print(resizableLabel(xtype, "x", unit=unit))
                 axis(2)
                 axis(3)
                 box()
