@@ -17,7 +17,7 @@ Read a G1SST file in the netcdf format provided by the ERDAPP server [1].
 }
 \details{
 As noted in the documentation for \code{\link{g1sst-class}}, one
-must be aware of the incorporation of model simulations in the 
+must be aware of the incorporation of model simulations in the
 \code{g1sst} product. For example, the code presented below
 might lead one to believe that the mapped field represents
 observatins, whereas in fact it can be verified by

@@ -18,7 +18,7 @@ say, \code{\link{amsr-class}} data, because the two products
 differ greatly with respect to cloud cover. The satellite used by
 \code{\link{amsr-class}} has the ability to sense water temperature
 even if there is cloud cover, whereas \code{g1sst} fills in cloud
-gaps with model simulations.  It can be helpful to consult 
+gaps with model simulations.  It can be helpful to consult
 [1] for a given time, clicking and then unclicking the radio button
 that turns off the model-based filling of cloud gaps.
 }

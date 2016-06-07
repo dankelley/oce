@@ -8,7 +8,7 @@
 \S4method{[[}{g1sst}(x, i, j) <- value
 }
 \arguments{
-\item{x}{An \code{g1sst} object, i.e. inheriting from \code{\link{g1sst-class}}}
+\item{x}{An \code{g1sst} object, i.e. one inheriting from \code{\link{g1sst-class}}}
 
 \item{i}{The item to replace.}
 

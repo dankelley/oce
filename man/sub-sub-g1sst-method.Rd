@@ -8,7 +8,7 @@
 \S4method{[[}{g1sst}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A g1sst object, i.e. one inheriting from \code{\link{g1sst-class}}.}
+\item{x}{A \code{g1sst} object, i.e. one inheriting from \code{\link{g1sst-class}}.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
