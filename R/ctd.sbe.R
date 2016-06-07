@@ -35,15 +35,19 @@
 #' data slot directly or use
 #' \code{\link{renameData}} to rename the elements. Finally, please publish
 #' an 'issue' on the oce Github site \url{https://github.com/dankelley/oce/issues}
-#' so that the developers can add the data type in question. (There is no plan to add
-#' all data types without user interest, because there are simply so many types;
-#' oxygen alone has over 40 variants!)
+#' so that the developers can add the data type in question. (To save
+#' development time, there is no plan to add all possible data types without
+#' a reasonable and specific expression user interest. Oxygen alone has over forty
+#' variants.)
 #'
 #' \tabular{llll}{
 #'   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit;scale} \tab \strong{Notes} \cr
 #'   \code{alt}         \tab \code{altimeter}                    \tab m                   \tab    \cr
 #'   \code{altM}        \tab \code{altimeter}                    \tab m                   \tab    \cr
 #'   \code{bat~}        \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
+#'   \code{C2-C1S/m}    \tab \code{conductivityDifference}       \tab S/m                 \tab    \cr
+#'   \code{C2-C1mS/cm}  \tab \code{conductivityDifference}       \tab mS/cm               \tab    \cr
+#'   \code{C2-C1uS/cm}  \tab \code{conductivityDifference}       \tab uS/cm               \tab    \cr
 #'   \code{c~mS/cm}     \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
 #'   \code{c~S/m}       \tab \code{conductivity}                 \tab S/m                 \tab    \cr
 #'   \code{c~uS/cm}     \tab \code{conductivity}                 \tab uS/cm               \tab    \cr
@@ -57,19 +61,26 @@
 #'   \code{dz/dtM}      \tab \code{descentRate}                  \tab m/s                 \tab    \cr
 #'   \code{f~}          \tab \code{frequency}                    \tab Hz                  \tab    \cr
 #'   \code{f~~}         \tab \code{frequency}                    \tab Hz                  \tab    \cr
-#'   \code{flC}         \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3\tab    \cr
-#'   \code{flEC-AFLM}   \tab \code{fluorescence}                 \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
+#'   \code{flC~}        \tab \code{fluorescence}                 \tab ug/l; Chelsea Aqua 3\tab    \cr
+#'   \code{flCM}        \tab \code{fluorescence}                 \tab ug/l; Chelsea Mini Chl Con\tab\cr
+#'   \code{flCUVA~}     \tab \code{fluorescence}                 \tab ug/l; Chelsea UV Aquatracka\tab\cr
+#'   \code{flEC-AFL~}   \tab \code{fluorescence}                 \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
 #'   \code{flS}         \tab \code{fluorescence}                 \tab -; Seatech          \tab    \cr
 #'   \code{flSP}        \tab \code{fluorescence}                 \tab -; Seapoint         \tab    \cr
 #'   \code{flSPR}       \tab \code{fluorescence}                 \tab -; Seapoint, Rhodamine\tab  \cr
 #'   \code{flSPuv}      \tab \code{fluorescence}                 \tab -; Seapoint, UV      \tab   \cr
-#'   \code{flT}         \tab \code{fluorescence}                 \tab -; Turner            \tab   \cr
+#'   \code{flT}         \tab \code{fluorescence}                 \tab -; Turneri 10-005 flT\tab   \cr
+#'   \code{gpa}         \tab \code{geopotentialAnomaly}          \tab -; J/kg              \tab   \cr
 #'   \code{latitude}    \tab \code{latitude}                     \tab degN                 \tab   \cr
 #'   \code{longitude}   \tab \code{longitude}                    \tab degE                 \tab   \cr
 #'   \code{n2satML/L}   \tab \code{nitrogenSaturation}           \tab ml/l                 \tab   \cr
 #'   \code{n2satMg/L}   \tab \code{nitrogenSaturation}           \tab mg/l                 \tab   \cr
 #'   \code{n2satumol/kg}\tab \code{nitrogenSaturation}           \tab umol/kg              \tab   \cr
 #'   \code{nbin}        \tab \code{nbin}                         \tab                      \tab   \cr
+#'   \code{opoxMg/L}    \tab \code{oxygen}                       \tab mg/l; Optode, Anderaa\tab   \cr
+#'   \code{opoxML/L}    \tab \code{oxygen}                       \tab ml/l; Optode, Anderaa\tab   \cr
+#'   \code{opoxMm/L}    \tab \code{oxygen}                       \tab umol/l; Optode, Anderaa\tab \cr
+#'   \code{opoxPS}      \tab \code{oxygen}                       \tab percent; Optode, Anderaa\tab   \cr
 #'   \code{oxsatML/L}   \tab \code{oxygen}                       \tab ml/l; Weiss          \tab   \cr
 #'   \code{oxsatMg/L}   \tab \code{oxygen}                       \tab mg/l; Weiss          \tab   \cr
 #'   \code{oxsatMm/Kg}  \tab \code{oxygen}                       \tab umol/kg; Weiss       \tab   \cr
@@ -93,22 +104,22 @@
 #'   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
 #'   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
 #'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
-#'   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
-#'   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab ml/l                 \tab   \cr
-#'   \code{sbeox~Ps}    \tab \code{oxygen}                       \tab percent              \tab   \cr
-#'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V                    \tab   \cr
+#'   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
+#'   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
+#'   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
+#'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
 #'   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
 #'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
 #'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
 #'   \code{sva}         \tab \code{specificVolumeAnomaly}        \tab 1e-8 m^3/kg;         \tab   \cr
-#'   \code{svCM}        \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
+#'   \code{svCM~}       \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
+#'   \code{T2~68C}      \tab \code{temperatureDifference}        \tab degC; IPTS-68        \tab   \cr 
+#'   \code{T2~90C}      \tab \code{temperatureDifference}        \tab degC; ITS-90         \tab   \cr 
 #'   \code{t~68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
 #'   \code{t~90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
-#'   \code{t~68C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
+#'   \code{t~68C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t~90C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{t068C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{t168C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t090Cm}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{t4990C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{tnc90C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
@@ -124,16 +135,20 @@
 #'   \code{t38~90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{t3868C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{timeS}       \tab \code{time}                         \tab second               \tab   \cr
-#'   \code{timeM}       \tab \code{time}                         \tab minute               \tab   \cr
-#'   \code{timeH}       \tab \code{time}                         \tab hour                 \tab   \cr
-#'   \code{timeJ}       \tab \code{time}                         \tab day                  \tab   \cr
+#'   \code{timeH}       \tab \code{time}                         \tab hour; elapsed        \tab   \cr
+#'   \code{timeJ}       \tab \code{time}                         \tab day; elapsed         \tab   \cr
+#'   \code{timeK}       \tab \code{time}                         \tab s; since Jan 1, 2000 \tab\cr
+#'   \code{timeM}       \tab \code{time}                         \tab minute; elapsed      \tab   \cr
+#'   \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr
+#'   \code{timeQ}       \tab \code{time}                         \tab s; NMEA since Jan 1, 2000\tab\cr
+#'   \code{timeS}       \tab \code{time}                         \tab s; elapsed           \tab   \cr
 #'   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
 #'   \code{user~}       \tab \code{user}                         \tab -                    \tab   \cr
 #'   \code{v~~}         \tab \code{voltage}                      \tab V                    \tab   \cr
 #'   \code{wetBAttn}    \tab \code{beamAttenuation}              \tab 1/m; WET Labs AC3    \tab   \cr
 #'   \code{wetBTrans}   \tab \code{beamTransmission}             \tab percent; WET Labs AC3\tab   \cr
 #'   \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3; WET Labs CDOM\tab   \cr
+#'   \code{wetChAbs}    \tab \code{fluorescence}                 \tab 1/m; WET Labs AC3 absorption\tab   \cr
 #'   \code{wetStar~}    \tab \code{fluorescence}                 \tab mg/m^3; WET Labs WETstar\tab   \cr
 #'   \code{xmiss}       \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
 #'   \code{xmiss~}      \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
@@ -194,6 +209,17 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^bat[0-9]?$", name))) {
         name <- "beamAttenuation"
         unit <- list(unit=expression(1/m), scale="Chelsea/Seatech")
+
+    } else if (1 == length(grep("^C2-C1S/m$", name))) {
+        name <- "conductivityDifference"
+        unit <- list(unit=expression(S/m), scale="")
+    } else if (1 == length(grep("^C2-C1mS/cm$", name))) {
+        name <- "conductivityDifference"
+        unit <- list(unit=expression(mS/cm), scale="")
+    } else if (1 == length(grep("^C2-C1uS/cm$", name))) {
+        name <- "conductivityDifference"
+        unit <- list(unit=expression(mu*S/cm), scale="")
+
     } else if (1 == length(grep("^c((_)|([0-2]))mS/cm$", name))) {
         name <- "conductivity"
         unit <- list(unit=expression(mS/cm), scale="")
@@ -227,6 +253,12 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^flC[1]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mu*g/l), scale="Chelsea")
+    } else if (1 == length(grep("^flCM[1]?$", name))) {
+        name <- "fluorescence"
+        unit <- list(unit=expression(mu*g/l), scale="Chelsea Mini Chl Con")
+    } else if (1 == length(grep("^flCUVA[12]?$", name))) {
+        name <- "fluorescence"
+        unit <- list(unit=expression(mu*g/l), scale="Chelsea UV Aquatracka")
     } else if (1 == length(grep("^flECO-AFL[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs")
@@ -245,6 +277,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^flT$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Turner")
+    } else if (1 == length(grep("^gpa$", name))) {
+        name <- "geopotentialAnomaly"
+        unit <- list(unit=expression(J/kg), scale="")
     } else if (1 == length(grep("^latitude$", name))) {
         name <- "latitude"
         unit <- list(unit=expression(degree*N), scale="")
@@ -269,6 +304,18 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^nbf$", name))) {
         name <- "bottlesFired"
         unit <- list(unit=expression(), scale="")
+    } else if (1 == length(grep("^opoxMg/L$", name))) {
+        name <- "oxygen"
+        unit <- list(unit=expression(mg/l), scale="Optode, Anderaa")
+    } else if (1 == length(grep("^opoxML/L$", name))) {
+        name <- "oxygen"
+        unit <- list(unit=expression(ml/l), scale="Optode, Anderaa")
+    } else if (1 == length(grep("^opoxMm/L$", name))) {
+        name <- "oxygen"
+        unit <- list(unit=expression(mu*mol/l), scale="Optode, Anderaa")
+    } else if (1 == length(grep("^opoxPS$", name))) {
+        name <- "oxygenSaturation"
+        unit <- list(unit=expression(percent), scale="Optode, Anderaa")
     } else if (1 == length(grep("^oxsatML/L$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="Weiss")
@@ -367,9 +414,15 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^sva$", name))) {
         name <- "specificVolumeAnomaly"
         unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
-    } else if (1 == length(grep("^svCM$", name))) {
+    } else if (1 == length(grep("^svCM[0-9]?$", name))) {
         name <- "soundSpeed"
         unit <- list(unit=expression(m/s), scale="Chen-Millero")
+    } else if (1 == length(grep("^T2-T[01]68C$", name))) {
+        name <- "temperatureDifference"
+        unit <- list(unit=expression(degree*C), scale="IPTS-68")
+    } else if (1 == length(grep("^T2-T[01]90C$", name))) {
+        name <- "temperatureDifference"
+        unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (1 == length(grep("^t[0-9]68((C)|(Cm))?$", name))) {
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
@@ -382,18 +435,27 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (name %in% c("t4990C", "tnc90C", "tv290C", "tnc290C", "t3890C", "t38_90C")) { # [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
-    } else if (1 == length(grep("^timeS$", name))) {
-        name <- "time"
-        unit <- list(unit=expression(s), scale="")
-    } else if (1 == length(grep("^timeM$", name))) {
-        name <- "time"
-        unit <- list(unit=expression(minute), scale="")
     } else if (1 == length(grep("^timeH$", name))) {
         name <- "time"
-        unit <- list(unit=expression(hour), scale="")
+        unit <- list(unit=expression(hour), scale="elapsed")
     } else if (1 == length(grep("^timeJ$", name))) {
         name <- "time"
-        unit <- list(unit=expression(day), scale="")
+        unit <- list(unit=expression(day), scale="elapsed")
+    } else if (1 == length(grep("^timeK$", name))) {
+        name <- "time"
+        unit <- list(unit=expression(s), scale="since Jan 1, 2000")
+    } else if (1 == length(grep("^timeM$", name))) {
+        name <- "time"
+        unit <- list(unit=expression(minute), scale="elapsed")
+    } else if (1 == length(grep("^timeN$", name))) {
+        name <- "time"
+        unit <- list(unit=expression(s), scale="NMEA since Jan 1, 1970")
+    } else if (1 == length(grep("^timeQ$", name))) {
+        name <- "time"
+        unit <- list(unit=expression(s), scale="NMEA since Jan 1, 2000")
+    } else if (1 == length(grep("^timeS$", name))) {
+        name <- "time"
+        unit <- list(unit=expression(s), scale="elapsed")
     } else if (1 == length(grep("^tsa$", name))) {
         name <- "thermostericAnomaly"
         unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
@@ -415,12 +477,12 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^wetCDOM[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs CDOM")
+    } else if (1 == length(grep("^wetChAbs$", name))) {
+        name <- "fluorescence"
+        unit <- list(unit=expression(1/m), scale="WET Labs AC3 absorption")
     } else if (1 == length(grep("^wetStar[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs WETstar")
-
-
-
     } else if (1 == length(grep("^xmiss[0-9]?$", name))) {
         name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="Chelsea/Seatech")

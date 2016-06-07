@@ -18,7 +18,7 @@ setClass("satellite", contains="oce")
 #' differ greatly with respect to cloud cover. The satellite used by
 #' \code{\link{amsr-class}} has the ability to sense water temperature
 #' even if there is cloud cover, whereas \code{g1sst} fills in cloud
-#' gaps with model simulations.  It can be helpful to consult 
+#' gaps with model simulations.  It can be helpful to consult
 #' [1] for a given time, clicking and then unclicking the radio button
 #' that turns off the model-based filling of cloud gaps.
 #'
@@ -29,9 +29,9 @@ setClass("satellite", contains="oce")
 #' @family things related to satellite data
 setClass("g1sst", contains="satellite")
 
-                                        
+
 #' @title Extract Something From a G1SST Object
-#' @param x A g1sst object, i.e. one inheriting from \code{\link{g1sst-class}}.
+#' @param x A \code{g1sst} object, i.e. one inheriting from \code{\link{g1sst-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{g1sst} data
 setMethod(f="[[",
@@ -41,7 +41,7 @@ setMethod(f="[[",
           })
 
 #' @title Replace Parts of a G1SST Object
-#' @param x An \code{g1sst} object, i.e. inheriting from \code{\link{g1sst-class}}
+#' @param x An \code{g1sst} object, i.e. one inheriting from \code{\link{g1sst-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{g1sst} data
 setMethod(f="[[<-",
@@ -60,7 +60,7 @@ setMethod(f="[[<-",
 #'
 #' @details
 #' As noted in the documentation for \code{\link{g1sst-class}}, one
-#' must be aware of the incorporation of model simulations in the 
+#' must be aware of the incorporation of model simulations in the
 #' \code{g1sst} product. For example, the code presented below
 #' might lead one to believe that the mapped field represents
 #' observatins, whereas in fact it can be verified by
@@ -111,4 +111,3 @@ read.g1sst <- function(filename)
     res@data$SST <- ncdf4::ncvar_get(f, "SST")
     res
 }
-
