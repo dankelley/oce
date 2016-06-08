@@ -19,17 +19,29 @@
 #' Otherwise, if the string value of \code{i} ends in \code{Unit}, then the
 #' characters preceding that are taken as the name of a variable, and
 #' the \code{metadata} slot of \code{x} is updated to store that unit, e.g.
-#' \preformatted{x[["temperatureUnits"]] <- list(unit=expression(degree*F),scale="")}
+#' \preformatted{    x[["temperatureUnits"]] <- list(unit=expression(degree*F),scale="")}
 #'
 #' Similarly, if \code{i} ends in \code{Flag}, then quality-control
 #' flags are set up as defined by \code{result}, e.g.
-#' \preformatted{x[["temperatureFlags"]] <- c(2,4,2,2)}
+#' \preformatted{    x[["temperatureFlags"]] <- c(2,4,2,2)}
 #'
 #' Otherwise, a partial string match is sought among the names of items
 #' in the \code{data} slot of \code{x}. (This is done with \code{\link{pmatch}}.)
 #' The first item found (if any) is then updated to hold the value \code{result}.
 #'
 #' If none of these conditions is met, a warning is issued.
+#'
+#' At the moment, this scheme only works at the "top" level, e.g.
+#' \preformatted{    ctd[['metadata']]$filename <- "FILE"}
+#' does not work, instead yielding the following warning:
+#' \preformatted{    there is no item named "metadata" in this ctd object}
+#' If the goal is to descend just one level, then
+#" \code{\link{oceSetMetadata}} can be used, e.g.
+#' \preformatted{    ctd<-oceSetMetadata(ctd,"filename","FILE")}
+#' However, if multiple levels are to be descended, the only solution
+#' is to address the \code{metadata} slot specifically using the
+#' \code{@@} notation, e.g. \code{ctd@metadata$ETC} instead of
+#' \code{ctd[["metadata"]]$ETC} in the left-hand side of an assignment.
 #'
 #' @param i The item to replace.
 #' @param j Optional additional information on the \code{i} item.
