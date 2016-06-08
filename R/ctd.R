@@ -3994,7 +3994,6 @@ plotProfile <- function (x,
         unit <- x@metadata$units[[xtype]][[1]]
         message("unit--")
         print(unit)
-        DAN <<- unit
         if (!(xtype %in% names(x@data)))
             stop("no ", xtype, " in this station")
         if (!any(!is.na(x@data[[xtype]])))
