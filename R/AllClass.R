@@ -290,9 +290,12 @@ setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),
           function(x, i, j, ..., value) { # FIXME: use j for e.g. times
               ## message("in base [[<-")
+              ## message("i: ", as.character(i))
               ## message("value: ", paste(value, collapse=" "))
               ## metadata must match exactly but data can be partially matched
-              if (i %in% names(x@metadata)) {
+              if (i == "metadata") {
+                  x@metadata <- value
+              } else if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
               } else {
                   if (length(grep("Unit$", i))) {

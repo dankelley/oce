@@ -16,3 +16,9 @@ test_that("retrieve units", {
           expect_equal(ctd[["pressure scale"]], "")
 })
 
+test_that("alter units", {
+          data("ctd")
+          ctd[["metadata"]]$units$salinity <- list(unit=expression(foo), scale="bar")
+          expect_equal(ctd[["salinityUnit"]], list(unit=expression(foo), scale="bar"))
+})
+
