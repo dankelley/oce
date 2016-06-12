@@ -192,7 +192,7 @@ within R or in the operating system.}
 Dan Kelley
 }
 \references{
-1. A SBE data processing manual is at \url{http://www.seabird.com/software/sbe-data-processing}.
+1. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.
 }
 \seealso{
 Other functions that interpret variable names and units from headers: \code{\link{ODFNames2oceNames}},
