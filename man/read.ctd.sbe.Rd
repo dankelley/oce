@@ -85,9 +85,9 @@ Dan Kelley
 1. The Sea-Bird SBE 19plus profiler is described at
 \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
 information is given in the Sea-Bird data-processing manaual
-\url{http://www.seabird.com/old-manuals/Software_Manuals/SBE_Data_Processing/SBEDataProcessing_7.20g.pdf}.
+\url{http://www.seabird.com/software/sbe-data-processing}.
 
-2. A SBE data processing manual is at \url{http://www.seabird.com/sites/all/modules/pubdlcnt/pubdlcnt.php?file=http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.25.0.pdf&nid=1320}.
+2. A SBE data processing manual is at \url{http://www.seabird.com/software/sbe-data-processing}.
 }
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
