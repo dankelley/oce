@@ -93,7 +93,7 @@ renameData <- function(x, old=NULL, new=NULL)
         w <- which(Old == old[i])
         if (length(w) == 0) stop("'", old[i], "' is not in the data slot of x")
         if (length(w) > 1) stop("multiple matches are not permitted")
-        message("i: ", i, ", old[i]: ", old[i], ", w:", w)
+        ## message("i: ", i, ", old[i]: ", old[i], ", w:", w)
         New[w] <- new[i]
     }
     ## ensure unique ... this is a common user error
@@ -1872,13 +1872,15 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
                      "depth", "elevation", "latitude", "longitude", "frequency cph",
                      "spectral density m2/cph")
     if (!missing(unit)) {
-        unit <- unit[[1]] # removes the expression() from the bquote
+        if (is.list(unit)) { 
+            unit <- unit[[1]] # second item is a scale
+        }
+        unit <- unit[[1]] # focus on just the unit (which is an expression)
     }
-    iitem <- pmatch(item, itemAllowed)
-    if (is.na(iitem))
-        stop("item=\"", item, "\" is not allowed; try one of: \"",
-             paste(itemAllowed, collapse="\", \""), "\"", sep="")
-    item <- itemAllowed[iitem[1]]
+    ## Previous to 2016-06-11, an error was reported if there was no match.
+    itemAllowedMatch <- pmatch(item, itemAllowed)
+    if (!is.na(itemAllowedMatch))
+        item <- itemAllowed[itemAllowedMatch[1]]
     if (getOption("oceUnitBracket") == "[") {
         L <- " [" 
         R <- "]" 
@@ -1892,10 +1894,17 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
     }
     L <- paste(L, sep, sep="")
     R <- paste(sep, R, sep="")
-    if (item == "T") {
+    if (item == "T" || item == "temperature") {
         var <- gettext("Temperature", domain="R-oce")
-        full <- bquote(.(var)*.(L)*degree*"C"*.(R))
-        abbreviated <- bquote("T"*.(L)*degree*"C"*.(R))
+        if (is.null(unit)) {
+            ##message("no unit given for temperature")
+            full <- bquote(.(var)*.(L)*degree*"C"*.(R))
+            abbreviated <- bquote("T"*.(L)*degree*"C"*.(R))
+        } else {
+            ##message("unit given for temperature")
+            full <- bquote(.(var)*.(L)*.(unit)*.(R))
+            abbreviated <- bquote("T"*.(L)*.(unit)*.(R))
+        }
     } else if (item == "conductivity mS/cm") {
         var <- gettext("Conductivity", domain="R-oce")
         full <- bquote(.(var)*.(L)*mS/cm*.(R))
@@ -1923,22 +1932,41 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
         abbreviated <- bquote(theta*.(L)*degree*"C"*.(R))
     } else if (item == "tritium") {
         var <- gettext("Tritium", domain="R-oce")
-        full <- bquote(.(var)*.(L)*Tu*.(R))
-        abbreviated <- bquote(phantom()^3*H*.(L)*Tu*.(R))
-    } else if (item ==  "nitrate") {
+        if (is.null(unit)) {
+            full <- bquote(.(var)*.(L)*Tu*.(R))
+            abbreviated <- bquote(phantom()^3*H*.(L)*Tu*.(R))
+        } else {
+            full <- bquote(.(var)*.(L)*.(unit)*.(R))
+            abbreviated <- bquote(phantom()^3*H*.(L)*.(unit)*.(R))
+        }
+    } else if (item == "nitrate") {
         var <- gettext("Nitrate", domain="R-oce")
-        full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
-        abbreviated <- bquote(N*O[3]*.(L)*mu*mol/kg*.(R))
-    } else if (item ==  "nitrite") {
+        if (is.null(unit)) {
+            full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
+            abbreviated <- bquote(N*O[3]*.(L)*mu*mol/kg*.(R))
+        } else {
+            full <- bquote(.(var)*.(L)*.(unit)*.(R))
+            abbreviated <- bquote(N*O[3]*.(L)*.(unit)*.(R))
+        }
+    } else if (item == "nitrite") {
         var <- gettext("Nitrite", domain="R-oce")
-        full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
-        abbreviated <- bquote(N*O[2]*.(L)*mu*mol/kg*.(R))
-    } else if (item ==  "oxygen") {
-        ## Until 2015-12-12 the default unit was umol/kg
-        var <- gettext("Oxygen", domain="R-oce")
-        full <- bquote(.(var))
-        abbreviated <- bquote(O[2])
-    } else if (item ==  "oxygen saturation") {
+        if (is.null(unit)) {
+            full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
+            abbreviated <- bquote(N*O[2]*.(L)*mu*mol/kg*.(R))
+        } else {
+            full <- bquote(.(var)*.(L)*.(unit)*.(R))
+            abbreviated <- bquote(N*O[2]*.(L)*.(unit)*.(R))
+        }
+    } else if (item == "oxygen") {
+        var <- gettext("oxygen", domain="R-oce")
+        if (is.null(unit)) {
+            full <- bquote(.(var))
+            abbreviated <- bquote(O[2])
+        } else {
+            full <- bquote(.(var)*.(L)*.(unit)*.(R))
+            abbreviated <- bquote(O[2]*.(L)*.(unit)*.(R))
+        }
+    } else if (item == "oxygen saturation") {
         var <- gettext("Oxygen saturation", domain="R-oce")
         full <- bquote(.(var))
         abbreviated <- bquote(O[2]*.(L)*percent*saturation*.(R))
@@ -1946,29 +1974,51 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
         var <- gettext("Oxygen", domain="R-oce")
         full <- bquote(.(var)*.(L)*mL/L*.(R))
         abbreviated <- bquote(O[2]*.(L)*mL/L*.(R))
-    } else if (item ==  "oxygen umol/L") {
+    } else if (item == "oxygen umol/L") {
         var <- gettext("Oxygen", domain="R-oce")
         full <- bquote(.(var)*.(L)*mu*mol/L*.(R))
         abbreviated <- bquote(O[2]*.(L)*mu*mol/L*.(R))
-    } else if (item ==  "oxygen umol/kg") {
+    } else if (item == "oxygen umol/kg") {
         var <- gettext("Oxygen", domain="R-oce")
         full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
         abbreviated <- bquote(O[2]*.(L)*mu*mol/kg*.(R))
-    } else if (item ==  "phosphate") {
+    } else if (item == "phosphate") {
         var <- gettext("Phosphate", domain="R-oce")
-        full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
-        abbreviated <- bquote(P*O[4]*.(L)*mu*mol/kg*.(R))
-    } else if (item ==  "silicate") {
+        if (is.null(unit)) {
+            full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
+            abbreviated <- bquote(P*O[4]*.(L)*mu*mol/kg*.(R))
+        } else {
+            full <- bquote(.(var)*.(L)*.(unit)*.(R))
+            abbreviated <- bquote(P*O[4]*.(L)*.(unit)*.(R))
+        }
+    } else if (item == "silicate") {
         var <- gettext("Silicate", domain="R-oce")
-        full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
-        abbreviated <- bquote(Si*O[4]*.(L)*mu*mol/kg*.(R))
+        if (is.null(unit)) {
+            full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
+            abbreviated <- bquote(Si*O[4]*.(L)*mu*mol/kg*.(R))
+        } else {
+            full <- bquote(.(var)*.(L)*.(unit)*.(R))
+            abbreviated <- bquote(Si*O[4]*.(L)*.(unit)*.(R))
+        }
     } else if (item == "fluorescence") {
         var <- gettext("Fluorescence", domain="R-oce")
-        ## FIXME: need to consider units
-        abbreviated <- full <- bquote(.(var))
+        if (is.null(unit)) {
+            ## I've no idea what a 'standard' unit might be
+            full <- bquote(.(var))
+            abbreviated <- full
+        } else {
+            full <- bquote(.(var)*.(L)*.(unit)*.(R))
+            abbreviated <- bquote("Fluor."*.(L)*.(unit)*.(R))
+        }
     } else if (item == "spice") {
         var <- gettext("Spice", domain="R-oce")
-        abbreviated <- full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        if (is.null(unit)) {
+            full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+            abbreviated <- full
+        } else {
+            full <- bquote(.(var)*.(L)*.(unit)*.(R))
+            abbreviated <- full
+        }
     } else if (item == "S") {
         full <- gettext("Practical Salinity", domain="R-oce")
         abbreviated <- expression(S)
@@ -2035,6 +2085,17 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
         full <- bquote(.(var)*.(L)*m^2/cph*.(R))
         var <- gettext("Spec. dens.", domain="R-oce")
         abbreviated <- bquote(.(var)*.(L)*m^2/cph*.(R))
+    } else {
+        ##message("unknown quantity")
+        if (is.null(unit)) {
+            ##message("no unit given")
+            full <- item
+            abbreviated <- full
+        } else {
+            ##message("unit given")
+            full <- bquote(.(item)*.(L)*.(unit)*.(R))
+            abbreviated <- full
+        }
     }
     spaceNeeded <- strwidth(paste(full, collapse=""), "inches")
     whichAxis <- if (axis == "x") 1 else 2

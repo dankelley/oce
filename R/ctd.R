@@ -3616,6 +3616,8 @@ plotProfile <- function (x,
 {
     oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
              "\", debug=", debug, ", ...) {\n", sep="", unindent=1)
+    if (xtype %in% names(x@data))
+        mar[1] <- 1 # the bottom margin is wrong for e.g. NO2+NO3
     eos <- match.arg(eos, c("unesco", "gsw"))
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
                                 lwd=par("lwd"),
@@ -3736,7 +3738,7 @@ plotProfile <- function (x,
         } else {
             plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, lty=lty, cex=cex, pch=pch, ...)
             axis(3)
-            mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
+            mtext(xlab, side=3, line=axis.name.loc, cex=par("cex")) # no unit is provided
             axis(2)
             box()
             if (grid) {
@@ -3991,6 +3993,7 @@ plotProfile <- function (x,
         }
     } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium",
                             "u" ,"v")) {
+        unit <- x@metadata$units[[xtype]][[1]]
         if (!(xtype %in% names(x@data)))
             stop("no ", xtype, " in this station")
         if (!any(!is.na(x@data[[xtype]])))
@@ -4000,7 +4003,9 @@ plotProfile <- function (x,
             axis(2)
             axis(3)
             box()
-            mtext(resizableLabel(xtype, "x"), side=3, line=axis.name.loc, cex=par("cex"))
+            ##mtext(resizableLabel(xtype, "x"), side=3, line=axis.name.loc, cex=par("cex"))
+            unit <- x@metadata$units[[xtype]]
+            mtext(resizableLabel(xtype, "x", unit=unit), side=3, line=axis.name.loc, cex=par("cex"))
         } else {
             look <- if (keepNA) 1:length(y) else !is.na(x@data[[xtype]]) & !is.na(y)
             if (!add) {
@@ -4013,7 +4018,7 @@ plotProfile <- function (x,
                          ylim=rev(range(y[look])), lty=lty,
                          type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 }
-                mtext(resizableLabel(xtype, "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                mtext(resizableLabel(xtype, "x", unit=unit), side=3, line=axis.name.loc, cex=par("cex"))
                 axis(2)
                 axis(3)
                 box()
@@ -4059,6 +4064,7 @@ plotProfile <- function (x,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "T" || xtype == "temperature") {
         temperature <- if (eos == "gsw") swConservativeTemperature(x) else x[["temperature"]]
+        unit <- x@metadata$units[["temperature"]]
         if (!any(is.finite(temperature))) {
             warning("no valid temperature data")
             return(invisible())
@@ -4072,9 +4078,9 @@ plotProfile <- function (x,
             axis(3)
             box()
             if (eos == "gsw")
-                mtext(resizableLabel("conservative temperature", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                mtext(resizableLabel("conservative temperature", "x", unit=unit), side=3, line=axis.name.loc, cex=par("cex"))
             else
-                mtext(resizableLabel("T", "x"), side=3, line=axis.name.loc, cex=par("cex"))
+                mtext(resizableLabel("T", "x", unit=unit), side=3, line=axis.name.loc, cex=par("cex"))
         } else {
             look <- if (keepNA) 1:length(y) else !is.na(x[["temperature"]]) & !is.na(y)
             if (!add) {
@@ -4082,10 +4088,10 @@ plotProfile <- function (x,
                      xlim=Tlim, ylim=ylim, cex=cex, pch=pch,
                      type="n", xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 if (eos == "gsw") {
-                    mtext(resizableLabel("conservative temperature", "x"),
+                    mtext(resizableLabel("conservative temperature", "x", unit=unit),
                           side=3, line=axis.name.loc, cex=par("cex"))
                 } else {
-                    mtext(resizableLabel("T", "x"),
+                    mtext(resizableLabel("T", "x", unit=unit),
                           side=3, line=axis.name.loc, cex=par("cex"))
                 }
                 mtext(yname, side=2, line=axis.name.loc, cex=par("cex"))
@@ -4383,15 +4389,18 @@ plotProfile <- function (x,
             stop("unknown xtype value (\"", xtype, "\")")
         look <- if (keepNA) 1:length(y) else !is.na(x@data[[xtype]]) & !is.na(y)
         if (!add) {
+            par(mar=mar, mgp=mgp)
             plot(x@data[[xtype]][look], y[look],
                  ylim=ylim, lty=lty, cex=cex, pch=pch,
                  type="n", xlab="", ylab="",axes=FALSE, xaxs=xaxs, yaxs=yaxs)
             axis(3)
-            mtext(resizableLabel("p"), side=2, line=axis.name.loc, cex=par("cex"))
+            #mtext(resizableLabel("pressure", "y"), side=2, line=axis.name.loc, cex=par("cex"))
+            mtext(yname, side=2, line=axis.name.loc, cex=par("cex"))
             label <- if (w <= length(x@metadata$labels)) x@metadata$labels[w] else
                 as.character(xtype)
             if (is.character(label) && label == "sigmaTheta")
                 label <- resizableLabel("sigmaTheta", "x")
+            label <- resizableLabel(label, "x", unit=x@metadata$units[[label]])
             mtext(label, side=3, line=axis.name.loc, cex=par("cex"))
             axis(2)
             box()

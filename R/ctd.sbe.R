@@ -172,7 +172,7 @@
 #' @return a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
 #' @author Dan Kelley
 #' @references
-#' 1. A SBE data processing manual is at \url{http://www.seabird.com/sites/all/modules/pubdlcnt/pubdlcnt.php?file=http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.25.0.pdf&nid=1320}.
+#' 1. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.
 #'
 #' @family things related to \code{ctd} data
 #' @family functions that interpret variable names and units from headers
@@ -529,9 +529,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' 1. The Sea-Bird SBE 19plus profiler is described at
 #' \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
 #' information is given in the Sea-Bird data-processing manaual
-#' \url{http://www.seabird.com/old-manuals/Software_Manuals/SBE_Data_Processing/SBEDataProcessing_7.20g.pdf}.
+#' \url{http://www.seabird.com/document/sbe-data-processing-manual}.
 #'
-#' 2. A SBE data processing manual is at \url{http://www.seabird.com/sites/all/modules/pubdlcnt/pubdlcnt.php?file=http://www.seabird.com/sites/default/files/documents/SBEDataProcessing_7.25.0.pdf&nid=1320}.
+#' 2. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {

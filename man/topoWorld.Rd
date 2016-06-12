@@ -6,9 +6,10 @@
 \title{Global Topographic Dataset at Half-degree Resolution}
 \source{
 The binary ETOPO5 dataset was downloaded in late 2009 from the NOAA website,
-\url{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5/}, decoded,
-decimated from 1/12th degree resolution to 1/2 degree resolution, and shifted so
-that longitude runs from negative to positive instead of from 0 to 360.
+\samp{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5} (link last checked 2016-06-12),
+decoded, decimated from 1/12th degree resolution to 1/2 degree resolution, and
+passed through \code{\link{matrixShiftLongitude}} so that longitude is
+between -180 and 180 degrees.
 }
 \usage{
 data(topoWorld)
