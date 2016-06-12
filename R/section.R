@@ -2138,7 +2138,9 @@ read.section <- function(file, directory, sectionId="", flags,
                 thisStation@metadata$flags[[gsub("Flag$", "", dataNames[idata])]] <- as.numeric(DATA[select, idata])
             } else {
                 ## message("colNames[", idata, "]: ", colNames[idata])
-                thisStation@data[[dataNames[idata]]] <- as.numeric(DATA[select, idata])
+                tmp <- as.numeric(DATA[select, idata])
+                tmp[tmp == missingValue] <- NA
+                thisStation@data[[dataNames[idata]]] <- tmp
             }
         }
         thisStation@metadata$names <- dataNames[!isFlag]
