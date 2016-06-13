@@ -1508,7 +1508,7 @@ setMethod(f="plot",
                               }
                           }
                       }
-                      vtitle <- bquote(.(vtitle)*.(L)*.(unit[[1]])*.(R))
+                      vtitle <- if (length(unit) == 0) vtitle else bquote(.(vtitle)*.(L)*.(unit[[1]])*.(R))
                       if (nchar(legend.loc))
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                       ##lines(xx, -waterDepth[ox], col='red')
@@ -1649,16 +1649,16 @@ setMethod(f="plot",
                       }
                    } else {
                       if (which[w] == "temperature") {
-                          ##> message("*** temperature ***")
+                          ##message("*** temperature ***")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == "salinity") {
-                          ##> message("*** salinity ***")
+                          ##message("*** salinity ***")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos,
+                                         "salinity", if (eos == "unesco") "S" else expression(S[A]), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
