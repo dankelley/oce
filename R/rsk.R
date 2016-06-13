@@ -16,7 +16,7 @@
 #' \code{\link{[[<-,rsk-method}}.
 #' 
 #' @references
-#' 1. \href{http://www.rbr-global.com/products}{RBR website: www.rbr-global.com/products}
+#' 1. \href{https://www.rbr-global.com/products}{RBR website: www.rbr-global.com/products}
 #' 
 #' @author Dan Kelley and Clark Richards
 #' 

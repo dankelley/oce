@@ -21,7 +21,7 @@ may be retrieved with \code{\link{[[,rsk-method}} or replaced with
 Dan Kelley and Clark Richards
 }
 \references{
-1. \href{http://www.rbr-global.com/products}{RBR website: www.rbr-global.com/products}
+1. \href{https://www.rbr-global.com/products}{RBR website: www.rbr-global.com/products}
 }
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
