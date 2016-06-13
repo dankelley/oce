@@ -993,36 +993,44 @@ setMethod(f="plot",
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
               lw <- length(which)
               whichOriginal <- which
-              which <- oce.pmatch(which,
-                                  list(temperature=1, salinity=2, 
-                                       sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
-                                       phosphate=7, silicate=8, 
-                                       u=9, uz=10, v=11, vz=12, # lowered adcp
-                                       data=20, map=99))
-              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
+              ##which <- oce.pmatch(which,
+              ##                    list(temperature=1, salinity=2, 
+              ##                         sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
+              ##                         phosphate=7, silicate=8, 
+              ##                         u=9, uz=10, v=11, vz=12, # lowered adcp
+              ##                         data=20, map=99))
+              if (is.numeric(which)) {
+                  which[which==1] <- "temperature"
+                  which[which==2] <- "salinity"
+                  which[which==3] <- "sigmaTheta"
+                  which[which==4] <- "nitrate"
+                  which[which==5] <- "nitrite"
+                  which[which==6] <- "oxygen"
+                  which[which==7] <- "phosphate"
+                  which[which==8] <- "silicate"
+                  which[which==9] <- "u"
+                  which[which==10] <- "uz"
+                  which[which==11] <- "v"
+                  which[which==12] <- "vz"
+                  which[which==20] <- "data"
+                  which[which==99] <- "map"
+              }
+              ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
               oceDebug(debug, "plot.section(, ..., which=c(",
                        paste(which, collapse=","), "), eos=\"", eos,
                        "\", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
-              ##> message("section.R:456, station 1 pressure: ",
-              ##>         paste(x@data$station[[1]]@data$pressure, collapse=" "))
-              ##> message("!is.na(which[1]): ", !is.na(which[1]))
-              ##> message("which!='data'", which!='data')
-              ##> message("which!='map'", which!='map')
               ## Ensure data on levels, for plots requiring pressure (e.g. sections)
               if (is.na(which[1]) || which != "data" || which != 'map') {
                   p1 <- x[["station", 1]][["pressure"]]
                   np1 <- length(p1)
                   numStations <- length(x@data$station)
                   for (ix in 2:numStations) {
-                      ##> message("ix: ", ix)
                       thisStation <- x@data$station[[ix]]
                       thisPressure <- thisStation[["pressure"]]
                       if ("points" != ztype && 
                           np1 != length(thisPressure) ||
                           any(p1 != x[["station", ix]][["pressure"]])) {
-                          ##> message("before gridding: p: ", paste(x@data$station[[1]]@data$pressure, collapse=" "))
                           x <- sectionGrid(x, debug=debug-1)
-                          ##> message("after gridding: p: ", paste(x@data$station[[1]]@data$pressure, collapse=" "))
                           ##warning("plot.section() gridded the data for plotting", call.=FALSE)
                           break
                       }
@@ -1037,8 +1045,6 @@ setMethod(f="plot",
               x@metadata$latitude <- x@metadata$latitude[haveData]
               x@metadata$longitude <- x@metadata$longitude[haveData]
               x@metadata$time <- x@metadata$time[haveData]
-              ##> message("section.R:487, station 1 pressure: ",
-              ##>         paste(x@data$station[[1]]@data$pressure, collapse=" "))
               plotSubsection <- function(xx, yy, zz, which.xtype, which.ytype,
                                          variable="temperature", vtitle="T",
                                          eos=getOption("oceEOS", default="gsw"),
@@ -1081,7 +1087,6 @@ setMethod(f="plot",
                           ## FIXME: the sqrt(2) below helps in a test case ... not sure it make sense though --DK
                           lonr <- lonm + span / 111.1 * c(-0.5, 0.5) / cos(2*pi/180*latm) / sqrt(2)
                           latr <- latm + span / 111.1 * c(-0.5, 0.5) / sqrt(2)
-                          ##message("latr:");print(latr)
                       }
 
                       ## FIXME: this coastline code is reproduced in section.R; it should be DRY
@@ -1159,8 +1164,6 @@ setMethod(f="plot",
                                    xlab=gettext("Longitude", domain="R-oce"),
                                    ylab=gettext("Latitude", domain="R-oce"))
                           } else {
-                              ## message("about to plot; lonr=");print(lonr)
-                              ## message("about to plot; latr=");print(latr)
                               plot(lonr, latr, asp=asp, type='n',
                                    xlab=gettext("Longitude", domain="R-oce"),
                                    ylab=gettext("Latitude", domain="R-oce"))
@@ -1439,7 +1442,6 @@ setMethod(f="plot",
                               oceDebug(debug, "automatically-calculated contourLevels\n")
                               if (is.null(dots$labcex)) {
                                   if (ztype == 'contour') {
-                                      ##> message("yy: ", paste(round(yy), collapse=" "), " (section.R near line 865); length=", length(yy))
                                       contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                               labcex=0.8, add=TRUE, col=col, ...)
                                   } else if (ztype == "image") {
@@ -1506,6 +1508,7 @@ setMethod(f="plot",
                               }
                           }
                       }
+                      vtitle <- if (length(unit) == 0) vtitle else bquote(.(vtitle)*.(L)*.(unit[[1]])*.(R))
                       if (nchar(legend.loc))
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                       ##lines(xx, -waterDepth[ox], col='red')
@@ -1517,14 +1520,13 @@ setMethod(f="plot",
                   par(mar=omar)
                   oceDebug(debug, "} # plotSubsection()\n", unindent=1)
               }                        # plotSubsection()
-              if (!inherits(x, "section"))
-                  stop("method is only for objects of class '", "section", "'")
+              ##if (!inherits(x, "section"))
+              ##    stop("method is only for objects of class '", "section", "'")
               opar <- par(no.readonly = TRUE)
               if (length(which) > 1) on.exit(par(opar))
               which.xtype <- pmatch(xtype, c("distance", "track", "longitude", "latitude", "time"), nomatch=0)
               if (0 == which.xtype)
                   stop('xtype must be one of: "distance", "track", "longitude", "latitude" or "time"')
-              xtype <- c("distance", "track", "longitude", "latitude", "time")[which.xtype]
               which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
               if (missing(stationIndices)) {
                   numStations <- length(x@data$station)
@@ -1534,23 +1536,8 @@ setMethod(f="plot",
               }
               if (numStations < 2)
                   stop("cannot plot a section containing fewer than 2 stations")
-
               firstStation <- x@data$station[[stationIndices[1]]]
               num.depths <- length(firstStation@data$pressure)
-
-              ## Ensure data on levels, for plot types requiring that
-              ##if (length(which) > 1 || (which != "data" && which != 'map')) { ## FIXME: why the length here?
-              ##    p1 <- firstStation@data$pressure
-              ##    np1 <- length(p1)
-              ##    for (ix in 2:numStations) {
-              ##        thisStation <- x@data$station[[stationIndices[ix]]]
-              ##        thisPressure <- thisStation[["pressure"]]
-              ##        if ("points" != ztype && (np1 != length(thisPressure) || any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))) {
-              ##            stop("plot.section() requires stations to have identical pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you will be able to plot the section.", call.=FALSE)
-              ##        }
-              ##    }
-              ##}
-
               zz <- matrix(nrow=numStations, ncol=num.depths)
               xx <- array(NA_real_, numStations)
               yy <- array(NA_real_, num.depths)
@@ -1631,154 +1618,55 @@ setMethod(f="plot",
                   adorn <- rep(adorn, lw)
                   adorn.length <- lw
               }
+              dataNames <- names(x[["station", 1]][["data"]])
+              L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
+              R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
               for (w in 1:lw) {
+                  ## See whether we have this item in station 1 (directly, or by calculation)
+                  station1 <- x[["station",1]]
+                  haveWhich <- length(station1[[which[w]]]) || which[w] == "map"
+                  unit <- station1[[paste(which[w], "Unit", sep="")]][[1]]
+                  if (!haveWhich) 
+                      stop("in plot(section) : no '", which[w], "' in data; try one of c(\"", paste(names(station1[["data"]]), collapse="\",\""),
+                           "\") or something that can be calculated from these", call.=FALSE)
                   if (!missing(contourLevels)) {
                       contourLabels <- format(contourLevels)
-                      if (is.na(which[w])) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         whichOriginal[w], whichOriginal[w], eos=eos, ylab="",
-                                         levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 1) {
+                      if (which[w] == "temperature") {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "temperature", if (eos=="unesco") "T" else expression(Theta), eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
                                          axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 2) {
+                      } else if (which[w] == "salinity") {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "salinity", if (eos=="unesco") "S" else expression(S[A]), eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 3) {
+                      } else {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "sigmaTheta", expression(sigma[theta]),
-                                         levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
+                                         whichOriginal[w], whichOriginal[w], eos=eos, ylab="",
+                                         levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
                                          axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 4) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "nitrate", "nitrate",
-                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 5) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "nitrite", "nitrite",
-                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 6) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "oxygen", "oxygen",
-                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 7) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "phosphate", "phosphate",
-                                         levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 8) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "silicate", "silicate",
-                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...) 
-                      } else if (which[w] == 9) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "u", "u",
-                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...) 
-                      } else if (which[w] == 10) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "uz", "du/dz",
-                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...) 
-                      } else if (which[w] == 11) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "v", "v",
-                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...) 
-                      } else if (which[w] == 12) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "vz", "dv/dz",
-                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...) 
                       }
-                  } else {
-                      ##> message("**CHECK(section.R:1107)**")
-                      if (is.na(which[w])) {
-                          ##> message("*** ", whichOriginal[w], " ***")
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         whichOriginal[w], whichOriginal[w], eos=eos,
-                                         xlim=xlim, ylim=ylim, ztype=ztype,
-                                         zbreaks=zbreaks, zcol=zcol,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 1) {
-                          ##> message("*** temperature ***")
+                   } else {
+                      if (which[w] == "temperature") {
+                          ##message("*** temperature ***")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 2) {
-                          ##> message("*** salinity ***")
+                      } else if (which[w] == "salinity") {
+                          ##message("*** salinity ***")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos,
+                                         "salinity", if (eos == "unesco") "S" else expression(S[A]), eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 3) {
+                      } else {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "sigmaTheta", expression(sigma[theta]),
+                                         which[w], which[w], eos=eos, ylab="",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
-                                         zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 4) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "nitrate",     "nitrate",
-                                         xlim=xlim, ylim=ylim, ztype=ztype,
-                                         zbreaks=zbreaks, zcol=zcol,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 5) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "nitrite",     "nitrite",
-                                         xlim=xlim, ylim=ylim, ztype=ztype,
-                                         zbreaks=zbreaks, zcol=zcol,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 6) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "oxygen",      "oxygen",
-                                         xlim=xlim, ylim=ylim, ztype=ztype,
-                                         zbreaks=zbreaks, zcol=zcol,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 7) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "phosphate",   "phosphate",
-                                         xlim=xlim, ylim=ylim, ztype=ztype,
-                                         zbreaks=zbreaks, zcol=zcol,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 8) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "silicate",    "silicate",
-                                         xlim=xlim, ylim=ylim, ztype=ztype,
-                                         zbreaks=zbreaks, zcol=zcol,
-                                         axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == 9) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "u", "u",
-                                         xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...) 
-                      } else if (which[w] == 10) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "uz", "du/dz",
-                                         xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...) 
-                      } else if (which[w] == 11) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "v", "v",
-                                         xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...) 
-                      } else if (which[w] == 12) {
-                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "vz", "dv/dz",
-                                         xlim=xlim, ylim=ylim,
-                                         axes=axes, col=col, debug=debug-1, ...) 
                       }
                   }
                   if (!is.na(which[w]) && which[w] == 20)
