@@ -2379,12 +2379,13 @@ setMethod(f="plot",
                   stop("in plot,ctd-method() : 'xlim' argument not allowed; use Slim for a salinity profile, Tlim for a temperature profile, etc", call.=FALSE)
               if ("ylim" %in% dotsNames)
                   stop("in plot,ctd-method() : 'ylim' argument not allowed; use plim for a profile, Tlim for a TS plot, etc", call.=FALSE)
-              opar <- par(no.readonly=TRUE)
+              parOriginal <- par(no.readonly=TRUE)
+              on.exit(par(parOriginal))
               if (add && lw > 1) {
                   warning("ignoring add=TRUE because length(which) > 1")
                   add <- FALSE
               }
-              if (lw > 1) on.exit(par(opar))
+              ##if (lw > 1) on.exit(par(opar))
               if (length(type) < lw)
                   type <- rep(type, lw) # FIXME: recycle more sensibly
               if (length(pch) < lw)
@@ -2953,6 +2954,8 @@ plotScan <- function(x, which=1, xtype="scan",
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
     nw <- length(which)
+    parOriginal <- par(no.readonly=TRUE)
+    on.exit(par(parOriginal))
     if (nw > 1)
         par(mfrow=c(nw,1))
     par(mar=mar)
@@ -3713,10 +3716,10 @@ plotProfile <- function (x,
         else if (ytype == "sigmaTheta") x[["sigmaTheta"]]
 
     if (!add) {
-        opar <- par(no.readonly=TRUE)
-        on.exit(par(opar))
+        marOriginal <- par('mar')
+        mgpOriginal <- par('mgp')
         par(mar=mar, mgp=mgp)
-
+        on.exit(par(mar=marOriginal, mgp=mgpOriginal))
     }
 
     if (length(xtype) == length(y) && length(y) > 1) {
