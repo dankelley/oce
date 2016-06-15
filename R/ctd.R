@@ -2076,18 +2076,22 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' frequency, (c) a TS diagram and (d) a coastline diagram indicating the station
 #' location.
 #' 
-#' Creates a multi-panel summary plot of data measured in a CTD cast. The panels
-#' are controlled by the \code{which} argument.  Normally, 4 panels are specified
-#' with the \code{which}, but it can also be useful to specify less than 4 panels,
-#' and then to draw other panels after this call.
+#' @details
+#' Creates a multi-panel summary plot of data measured in a CTD cast. The
+#' default values of \code{which} and other arguments are chosen to be useful
+#' for quick overviews of data. However, for detailed work it is common 
+#' to call the present function with just a single value of \code{which}, e.g.
+#' with four calls to get four panels. The advantage of this is that it provides
+#' much more control over the display, and also it permits the addition of extra
+#' display elements (lines, points, margin notes, etc.) to the individual panels.
 #' 
-#' If only 2 panels are requested, they will be drawn side by side.
-#' 
-#' If more than one panel is drawn, then on exit from \code{plot,ctd-method}, the value
-#' of \code{par} will be reset to the value it had before the function call.
-#' However, if only one panel is drawn, the adjustments to \code{par} made within
-#' \code{plot,ctd-method} are left in place, so that further additions may be made to the
-#' plot.
+#' Note that panels that draw more than one curve (e.g. \code{which="salinity+temperature"}
+#' draws temperature and salinity profiles in one graph), the value of \code{\link{par}("usr")}
+#' is established by the second profile to have been drawn. Some experimentation will
+#' reveal what this profile is, for each permitted \code{which} case, although 
+#' it seems unlikely that this will help much ... the simple fact is that drawing two
+#' profiles in one graph is useful for a quick overview, but not useful for e.g. interactive
+#' analysis with \code{\link{locator}} to flag bad data, etc.
 #' 
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
@@ -2255,11 +2259,13 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' bottom-right.   If only a single expression is provided, it is used for all
 #' panels.  (See \dQuote{Examples}.)
 #' 
-#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
-#' \code{par(mar)}, computed from this.  The default is tighter than the R
-#' default, in order to use more space for the data and less for the axes.
+#' @param mgp Three-element numerical vector specifying axis-label geometry,
+#' passed to \code{\link{par}}.
+#' The default establishes tighter margins than in the usual R setup.
 #' 
-#' @param mar Value to be used with \code{\link{par}("mar")}.
+#' @param mar Four-element numerical vector specifying margin geometry,
+#' passed to \code{\link{par}}.
+#' The default establishes tighter margins than in the usual R setup.
 #' 
 #' @param inset Set to \code{TRUE} for use within \code{\link{plotInset}}.  The
 #' effect is to prevent the present function from adjusting margins, which is
