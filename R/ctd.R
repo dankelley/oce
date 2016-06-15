@@ -3712,8 +3712,13 @@ plotProfile <- function (x,
         else if (ytype == "depth") x[["depth"]]
         else if (ytype == "sigmaTheta") x[["sigmaTheta"]]
 
-    if (!add)
+    if (!add) {
+        opar <- par(no.readonly=TRUE)
+        on.exit(par(opar))
         par(mar=mar, mgp=mgp)
+
+    }
+
     if (length(xtype) == length(y) && length(y) > 1) {
         if ('axes' %in% names(list(...))) {
             plot(xtype, y, xlab="", ylab=yname, type=type, xaxs=xaxs, yaxs=yaxs, ylim=ylim, col=col, lty=lty, cex=cex, pch=pch, ...)
