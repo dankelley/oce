@@ -1480,7 +1480,8 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' 
 #' @param smoother The smoothing method to use for identifying down/up
 #'     casts. Default is to use \code{smooth.spline}, but will also
-#'     accept a function that takes a vector as argument.
+#'     accept a function that takes a vector as argument and outputs a
+#'     vector of the same length (see examples).
 #' 
 #' @param direction String indicating the travel direction to be selected.
 #' 
@@ -1509,9 +1510,19 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #'   plotProfile(cast, "temperature")
 #'   plotTS(cast, type='o')
 #' }
+#'
+#' ## Using a different smoothing method, i.e. the smooth() function
+#' casts <- ctdFindProfiles(towyow, smoother=smooth)
+#' ## Use a moving average
+#' movingAverage <- function (x, n = 11, ...) 
+#' {
+#'    f <- rep(1/n, n)
+#'    xf <- as.numeric(stats::filter(x, f, ...))
+#' }
+#' casts <- ctdFindProfiles(towyo, smoother=movingAverage)
 #' }
 #' 
-#' @author Dan Kelley
+#' @author Dan Kelley and Clark Richards
 #' 
 #' @family things related to \code{ctd} data
 ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
