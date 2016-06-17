@@ -1459,16 +1459,21 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' either indices to these events or a vector of CTD records containing the events.
 #' 
 #' The method works by examining the pressure record.  First, this is smoothed using
-#' \code{\link{smooth.spline}}, which is provided with any extra arguments as supplied to the present
-#' function, e.g. \code{ctdFindProfiles(..., df=10)} uses a spline with 10 degrees of freedom.  The
-#' spline is then first differenced with \code{\link{diff}}.  Median values of the positive and
+#' \code{smoother()} (see \dQuote{Arguments}), and then the result is first-differenced
+#' using \code{\link{diff}}.  Median values of the positive and
 #' negative first-difference values are then multiplied by \code{cutoff}.  This establishes criteria
 #' for any given point to be in an ascending profile, a descending profile, or a non-profile.
 #' Contiguous regions are then found, and those that have fewer than \code{minLength} points are
 #' discarded.  Then, those that have pressure ranges less than \code{minHeight} are discarded.
 #' 
-#' It is often necessary to pass the resultant profiles through \code{\link{ctdTrim}}, to remove
-#' artifacts such as an equilibration phase, etc.
+#' Caution: this method is not well-suited to all datasets. For example, the default
+#' value of \code{smoother} is \code{\link{smooth.spline}}, and this works well for just a few
+#' profiles, but poorly for a tow-yo with a long sequence of profiles; in the latter case,
+#' it can be preferable to use simpler smoothers (see \dQuote{Examples}). Also, depending
+#' on the sampling protocol, it is often necessary to pass the resultant profiles through
+#' \code{\link{ctdTrim}}, to remove artifacts such as an equilibration phase, etc.
+#' Generally, one is well-advised to use the present function for a quick look at the data,
+#' relying on e.g. \code{\link{plotScan}} to identify profiles visually, for a final product.
 #' 
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #'
@@ -1478,18 +1483,20 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' 
 #' @param minHeight lower limit on height of candidate profiles.
 #' 
-#' @param smoother The smoothing method to use for identifying down/up
-#'     casts. Default is to use \code{smooth.spline}, but will also
-#'     accept a function that takes a vector as argument and outputs a
-#'     vector of the same length (see examples).
+#' @param smoother The smoothing function to use for identifying down/up
+#' casts. The default is \code{smooth.spline}, which performs well for 
+#' a small number of cycles; see \dQuote{Examples} for a method that is
+#' better for a long tow-yo. The return value from \code{smoother} must either
+#' be a vector or a list containing an element named \code{y}.
 #' 
 #' @param direction String indicating the travel direction to be selected.
 #' 
-#' @param arr.ind Should array indices be returned, or a vector of ctd objects?
+#' @param arr.ind Logical indicating whether the array indices should be returned;
+#' the alternative is to return a vector of ctd objects.
 #' 
 #' @template debugTemplate
 #' 
-#' @param ... Optional extra arguments that are passed to the smoothing function.
+#' @param ... Optional extra arguments that are passed to the smoothing function, \code{smoother}.
 #' 
 #' @return If \code{arr.ind=TRUE}, a data frame with columns \code{start} and \code{end}, the indices
 #' of the downcasts.  Otherwise, a vector of \code{ctd} objects.
@@ -1511,13 +1518,15 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #'   plotTS(cast, type='o')
 #' }
 #'
-#' ## Using a different smoothing method, i.e. the smooth() function
-#' casts <- ctdFindProfiles(towyow, smoother=smooth)
-#' ## Use a moving average
-#' movingAverage <- function (x, n = 11, ...) 
+#' ## Using a moving average to smooth pressure, instead of the default
+#' ## smooth.spline() method. This avoids a tendency of smooth.spline()
+#' ## to smooth out the profiles in a tow-yo with many (dozens or more) cycles.
+#' movingAverage <- function(x, n = 11, ...) 
 #' {
 #'    f <- rep(1/n, n)
-#'    xf <- as.numeric(stats::filter(x, f, ...))
+#'    ## Note the use of as.numeric(), to discard the "ts" class
+#'    ## of the result from stats::filter().
+#'    as.numeric(stats::filter(x, f, ...))
 #' }
 #' casts <- ctdFindProfiles(towyo, smoother=movingAverage)
 #' }
@@ -1544,7 +1553,11 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     dp <- c(dp[1], dp)
     if (direction == "descending") {
         ps <- smoother(pressure, ...)
-        if (inherits(ps, 'smooth.spline')) ps <- ps$y
+        if (is.list(ps) && "y" %in% names(ps)) {
+            ps <- ps$y
+        } else if (!is.vector(ps)) {
+            stop("'smoother' must be a function returning a vector, or returning a list containing 'y'")
+        }
         dp <- diff(ps)
         dp <- c(dp[1], dp)
         look <- dp > cutoff * median(dp[dp>0], na.rm=TRUE)
@@ -1558,7 +1571,11 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
             start <- start[-1]
     } else if (direction == "ascending") {
         ps <- smoother(pressure, ...)
-        if (inherits(ps, 'smooth.spline')) ps <- ps$y
+        if (is.list(ps) && "y" %in% names(ps)) {
+            ps <- ps$y
+        } else if (!is.vector(ps)) {
+            stop("'smoother' must be a function returning a vector, or returning a list containing 'y'")
+        }
         dp <- diff(ps)
         dp <- c(dp[1], dp)
         look <- dp < cutoff * median(dp[dp<0], na.rm=TRUE)
