@@ -4070,7 +4070,8 @@ plotProfile <- function (x,
                          type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 } else {
                     plot(x@data[[xtype]][look], y[look],
-                         ylim=rev(range(y[look])), lty=lty,
+                         #ylim=rev(range(y[look])), lty=lty,
+                         ylim=ylim, lty=lty,
                          type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 }
                 mtext(resizableLabel(xtype, "x", unit=unit), side=3, line=axis.name.loc, cex=par("cex"))
