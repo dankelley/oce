@@ -1471,12 +1471,17 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' artifacts such as an equilibration phase, etc.
 #' 
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
-#' 
+#'
 #' @param cutoff criterion on pressure difference; see \dQuote{Details}.
 #' 
 #' @param minLength lower limit on number of points in candidate profiles.
 #' 
 #' @param minHeight lower limit on height of candidate profiles.
+#' 
+#' @param smoother The smoothing method to use for identifying down/up
+#'     casts. Default is to use \code{smooth.spline}, but will also
+#'     accept a function that takes a vector as argument and outputs a
+#'     vector of the same length (see examples).
 #' 
 #' @param direction String indicating the travel direction to be selected.
 #' 
@@ -1484,7 +1489,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' 
 #' @template debugTemplate
 #' 
-#' @param ... Optional extra arguments that are passed to \code{\link{smooth.spline}}.
+#' @param ... Optional extra arguments that are passed to the smoothing function.
 #' 
 #' @return If \code{arr.ind=TRUE}, a data frame with columns \code{start} and \code{end}, the indices
 #' of the downcasts.  Otherwise, a vector of \code{ctd} objects.
@@ -1505,12 +1510,23 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #'   plotProfile(cast, "temperature")
 #'   plotTS(cast, type='o')
 #' }
+#'
+#' ## Using a different smoothing method, i.e. the smooth() function
+#' casts <- ctdFindProfiles(towyow, smoother=smooth)
+#' ## Use a moving average
+#' movingAverage <- function (x, n = 11, ...) 
+#' {
+#'    f <- rep(1/n, n)
+#'    xf <- as.numeric(stats::filter(x, f, ...))
+#' }
+#' casts <- ctdFindProfiles(towyo, smoother=movingAverage)
 #' }
 #' 
-#' @author Dan Kelley
+#' @author Dan Kelley and Clark Richards
 #' 
 #' @family things related to \code{ctd} data
 ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
+                            smoother=smooth.spline, 
                             direction=c("descending", "ascending"),
                             arr.ind=FALSE,
                             debug=getOption("oceDebug"), ...)
@@ -1527,10 +1543,11 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     dp <- diff(pressure)
     dp <- c(dp[1], dp)
     if (direction == "descending") {
-        ps <- smooth.spline(pressure, ...)
-        dp <- diff(ps$y)
+        ps <- smoother(pressure, ...)
+        if (inherits(ps, 'smooth.spline')) ps <- ps$y
+        dp <- diff(ps)
         dp <- c(dp[1], dp)
-        look <- dp > cutoff * median(dp[dp>0])
+        look <- dp > cutoff * median(dp[dp>0], na.rm=TRUE)
         start <- which(diff(look) == 1)
         if (0 == length(start))
             start <- 1
@@ -1540,10 +1557,11 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
         if (start[1] > end[1])
             start <- start[-1]
     } else if (direction == "ascending") {
-        ps <- smooth.spline(pressure, ...)
-        dp <- diff(ps$y)
+        ps <- smoother(pressure, ...)
+        if (inherits(ps, 'smooth.spline')) ps <- ps$y
+        dp <- diff(ps)
         dp <- c(dp[1], dp)
-        look <- dp < cutoff * median(dp[dp<0])
+        look <- dp < cutoff * median(dp[dp<0], na.rm=TRUE)
         start <- which(diff(look) == 1)
         if (0 == length(start))
             start <- 1
@@ -1568,8 +1586,8 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     keep <- abs(end - start) >= minLength
     oceDebug(debug, "start:", start[keep], "(using minLength)\n")
     oceDebug(debug, "end:", end[keep], "(using minLength)\n")
-    keep <- keep & (abs(ps$y[end] - ps$y[start]) >= minHeight)
-    oceDebug(debug, "heights:", ps$y[end]-ps$y[start], "; compare with minHeight=", minHeight, "\n")
+    keep <- keep & (abs(ps[end] - ps[start]) >= minHeight)
+    oceDebug(debug, "heights:", ps[end]-ps[start], "; compare with minHeight=", minHeight, "\n")
     oceDebug(debug, "start:", start[keep], "(using minHeight)\n")
     oceDebug(debug, "end:", end[keep], "(using minHeight)\n")
     indices <- data.frame(start=start[keep], end=end[keep])
