@@ -13,13 +13,18 @@
 \item{...}{Extra arguments (ignored)}
 }
 \description{
-Provide a summary of some pertinent aspects of the object, including
-important elements of its \code{metadata} slot and \code{data} slot,
+Provide a textual summary of some pertinent aspects of the object, including
+selected components of its \code{metadata} slot, statistical and
+dimensional information on the entries in the \code{data} slot,
 and a listing of the contents of its \code{processingLog} slot.
-}
-\details{
-The output is tailored to the object. This is not the way to learn
-everything about the object; programmers, for example, will often
-use \code{\link{str}} to get more details of the object structure.
+The details depend on the class of the object, especially for
+the \code{metadata} slot, so it can help to consult the specialized
+documentation, e.g. \code{\link{summary,ctd-method}} for CTD objects
+(i.e. objects inheriting from \code{\link{ctd-class}}.)
+It is important to note that this is not
+a good way to learn the details of the object contents. Instead,
+for an object named \code{object}, say, one might use \code{\link{str}(object)}
+to learn about all the contents, or \code{\link{str}(object[["metadata"]])}
+to learn about the \code{metadata}, etc.
 }
 

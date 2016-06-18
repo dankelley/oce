@@ -284,7 +284,10 @@ setMethod(f="initialize",
 #' Summarize a CTD Object
 #' 
 #' Summarizes some of the data in a \code{ctd} object, presenting such information
-#' as the station name, sampling location, data ranges, etc.
+#' as the station name, sampling location, data ranges, etc. If the object was read
+#' from a \code{.cnv} file or a \code{.rsk} file, then the \code{OriginalName}
+#' column for the data summary will contain the original names of data within
+#' the source file.
 #'
 #' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
