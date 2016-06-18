@@ -1551,7 +1551,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
     direction <- match.arg(direction)
-    pressure <- x[["pressure"]]
+    pressure <- fillGap(x[["pressure"]], rule=2)
     dp <- diff(pressure)
     dp <- c(dp[1], dp)
     if (direction == "descending") {
@@ -1742,7 +1742,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
     methodIsFunction <- !missing(method) && is.function(method)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
-    pressure <- x[["pressure"]]
+    pressure <- fillGap(x[["pressure"]], rule=2)
     if (1 == length(unique(diff(pressure)))) {
         oceDebug(debug, "diff(p) is constant, so return input unaltered\n", unindent=1)
         oceDebug(debug, "} # ctdTrim()\n", unindent=1)
