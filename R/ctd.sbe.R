@@ -821,6 +821,12 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     ##hitem <- processingLogItem(processingLog)
+    ## replace any missing.value with NA
+    if (!missing(missing.value)) {
+        for (item in names(data)) {
+            data[[item]] <- ifelse(data[[item]]==missing.value, NA, data[[item]])
+        }
+    }
     res@data <- data
     ## Add standard things, if missing
     if (haveData) {
