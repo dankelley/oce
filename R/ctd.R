@@ -284,7 +284,10 @@ setMethod(f="initialize",
 #' Summarize a CTD Object
 #' 
 #' Summarizes some of the data in a \code{ctd} object, presenting such information
-#' as the station name, sampling location, data ranges, etc.
+#' as the station name, sampling location, data ranges, etc. If the object was read
+#' from a \code{.cnv} file or a \code{.rsk} file, then the \code{OriginalName}
+#' column for the data summary will contain the original names of data within
+#' the source file.
 #'
 #' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
@@ -1459,32 +1462,44 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' either indices to these events or a vector of CTD records containing the events.
 #' 
 #' The method works by examining the pressure record.  First, this is smoothed using
-#' \code{\link{smooth.spline}}, which is provided with any extra arguments as supplied to the present
-#' function, e.g. \code{ctdFindProfiles(..., df=10)} uses a spline with 10 degrees of freedom.  The
-#' spline is then first differenced with \code{\link{diff}}.  Median values of the positive and
+#' \code{smoother()} (see \dQuote{Arguments}), and then the result is first-differenced
+#' using \code{\link{diff}}.  Median values of the positive and
 #' negative first-difference values are then multiplied by \code{cutoff}.  This establishes criteria
 #' for any given point to be in an ascending profile, a descending profile, or a non-profile.
 #' Contiguous regions are then found, and those that have fewer than \code{minLength} points are
 #' discarded.  Then, those that have pressure ranges less than \code{minHeight} are discarded.
 #' 
-#' It is often necessary to pass the resultant profiles through \code{\link{ctdTrim}}, to remove
-#' artifacts such as an equilibration phase, etc.
+#' Caution: this method is not well-suited to all datasets. For example, the default
+#' value of \code{smoother} is \code{\link{smooth.spline}}, and this works well for just a few
+#' profiles, but poorly for a tow-yo with a long sequence of profiles; in the latter case,
+#' it can be preferable to use simpler smoothers (see \dQuote{Examples}). Also, depending
+#' on the sampling protocol, it is often necessary to pass the resultant profiles through
+#' \code{\link{ctdTrim}}, to remove artifacts such as an equilibration phase, etc.
+#' Generally, one is well-advised to use the present function for a quick look at the data,
+#' relying on e.g. \code{\link{plotScan}} to identify profiles visually, for a final product.
 #' 
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
-#' 
+#'
 #' @param cutoff criterion on pressure difference; see \dQuote{Details}.
 #' 
 #' @param minLength lower limit on number of points in candidate profiles.
 #' 
 #' @param minHeight lower limit on height of candidate profiles.
 #' 
+#' @param smoother The smoothing function to use for identifying down/up
+#' casts. The default is \code{smooth.spline}, which performs well for 
+#' a small number of cycles; see \dQuote{Examples} for a method that is
+#' better for a long tow-yo. The return value from \code{smoother} must either
+#' be a vector or a list containing an element named \code{y}.
+#' 
 #' @param direction String indicating the travel direction to be selected.
 #' 
-#' @param arr.ind Should array indices be returned, or a vector of ctd objects?
+#' @param arr.ind Logical indicating whether the array indices should be returned;
+#' the alternative is to return a vector of ctd objects.
 #' 
 #' @template debugTemplate
 #' 
-#' @param ... Optional extra arguments that are passed to \code{\link{smooth.spline}}.
+#' @param ... Optional extra arguments that are passed to the smoothing function, \code{smoother}.
 #' 
 #' @return If \code{arr.ind=TRUE}, a data frame with columns \code{start} and \code{end}, the indices
 #' of the downcasts.  Otherwise, a vector of \code{ctd} objects.
@@ -1505,12 +1520,25 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #'   plotProfile(cast, "temperature")
 #'   plotTS(cast, type='o')
 #' }
+#'
+#' ## Using a moving average to smooth pressure, instead of the default
+#' ## smooth.spline() method. This avoids a tendency of smooth.spline()
+#' ## to smooth out the profiles in a tow-yo with many (dozens or more) cycles.
+#' movingAverage <- function(x, n = 11, ...) 
+#' {
+#'    f <- rep(1/n, n)
+#'    ## Note the use of as.numeric(), to discard the "ts" class
+#'    ## of the result from stats::filter().
+#'    as.numeric(stats::filter(x, f, ...))
+#' }
+#' casts <- ctdFindProfiles(towyo, smoother=movingAverage)
 #' }
 #' 
-#' @author Dan Kelley
+#' @author Dan Kelley and Clark Richards
 #' 
 #' @family things related to \code{ctd} data
 ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
+                            smoother=smooth.spline, 
                             direction=c("descending", "ascending"),
                             arr.ind=FALSE,
                             debug=getOption("oceDebug"), ...)
@@ -1527,10 +1555,15 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     dp <- diff(pressure)
     dp <- c(dp[1], dp)
     if (direction == "descending") {
-        ps <- smooth.spline(pressure, ...)
-        dp <- diff(ps$y)
+        ps <- smoother(pressure, ...)
+        if (is.list(ps) && "y" %in% names(ps)) {
+            ps <- ps$y
+        } else if (!is.vector(ps)) {
+            stop("'smoother' must be a function returning a vector, or returning a list containing 'y'")
+        }
+        dp <- diff(ps)
         dp <- c(dp[1], dp)
-        look <- dp > cutoff * median(dp[dp>0])
+        look <- dp > cutoff * median(dp[dp>0], na.rm=TRUE)
         start <- which(diff(look) == 1)
         if (0 == length(start))
             start <- 1
@@ -1540,10 +1573,15 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
         if (start[1] > end[1])
             start <- start[-1]
     } else if (direction == "ascending") {
-        ps <- smooth.spline(pressure, ...)
-        dp <- diff(ps$y)
+        ps <- smoother(pressure, ...)
+        if (is.list(ps) && "y" %in% names(ps)) {
+            ps <- ps$y
+        } else if (!is.vector(ps)) {
+            stop("'smoother' must be a function returning a vector, or returning a list containing 'y'")
+        }
+        dp <- diff(ps)
         dp <- c(dp[1], dp)
-        look <- dp < cutoff * median(dp[dp<0])
+        look <- dp < cutoff * median(dp[dp<0], na.rm=TRUE)
         start <- which(diff(look) == 1)
         if (0 == length(start))
             start <- 1
@@ -1568,8 +1606,8 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     keep <- abs(end - start) >= minLength
     oceDebug(debug, "start:", start[keep], "(using minLength)\n")
     oceDebug(debug, "end:", end[keep], "(using minLength)\n")
-    keep <- keep & (abs(ps$y[end] - ps$y[start]) >= minHeight)
-    oceDebug(debug, "heights:", ps$y[end]-ps$y[start], "; compare with minHeight=", minHeight, "\n")
+    keep <- keep & (abs(ps[end] - ps[start]) >= minHeight)
+    oceDebug(debug, "heights:", ps[end]-ps[start], "; compare with minHeight=", minHeight, "\n")
     oceDebug(debug, "start:", start[keep], "(using minHeight)\n")
     oceDebug(debug, "end:", end[keep], "(using minHeight)\n")
     indices <- data.frame(start=start[keep], end=end[keep])
@@ -2076,18 +2114,22 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' frequency, (c) a TS diagram and (d) a coastline diagram indicating the station
 #' location.
 #' 
-#' Creates a multi-panel summary plot of data measured in a CTD cast. The panels
-#' are controlled by the \code{which} argument.  Normally, 4 panels are specified
-#' with the \code{which}, but it can also be useful to specify less than 4 panels,
-#' and then to draw other panels after this call.
+#' @details
+#' Creates a multi-panel summary plot of data measured in a CTD cast. The
+#' default values of \code{which} and other arguments are chosen to be useful
+#' for quick overviews of data. However, for detailed work it is common 
+#' to call the present function with just a single value of \code{which}, e.g.
+#' with four calls to get four panels. The advantage of this is that it provides
+#' much more control over the display, and also it permits the addition of extra
+#' display elements (lines, points, margin notes, etc.) to the individual panels.
 #' 
-#' If only 2 panels are requested, they will be drawn side by side.
-#' 
-#' If more than one panel is drawn, then on exit from \code{plot,ctd-method}, the value
-#' of \code{par} will be reset to the value it had before the function call.
-#' However, if only one panel is drawn, the adjustments to \code{par} made within
-#' \code{plot,ctd-method} are left in place, so that further additions may be made to the
-#' plot.
+#' Note that panels that draw more than one curve (e.g. \code{which="salinity+temperature"}
+#' draws temperature and salinity profiles in one graph), the value of \code{\link{par}("usr")}
+#' is established by the second profile to have been drawn. Some experimentation will
+#' reveal what this profile is, for each permitted \code{which} case, although 
+#' it seems unlikely that this will help much ... the simple fact is that drawing two
+#' profiles in one graph is useful for a quick overview, but not useful for e.g. interactive
+#' analysis with \code{\link{locator}} to flag bad data, etc.
 #' 
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' 
@@ -2255,11 +2297,13 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' bottom-right.   If only a single expression is provided, it is used for all
 #' panels.  (See \dQuote{Examples}.)
 #' 
-#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
-#' \code{par(mar)}, computed from this.  The default is tighter than the R
-#' default, in order to use more space for the data and less for the axes.
+#' @param mgp Three-element numerical vector specifying axis-label geometry,
+#' passed to \code{\link{par}}.
+#' The default establishes tighter margins than in the usual R setup.
 #' 
-#' @param mar Value to be used with \code{\link{par}("mar")}.
+#' @param mar Four-element numerical vector specifying margin geometry,
+#' passed to \code{\link{par}}.
+#' The default establishes tighter margins than in the usual R setup.
 #' 
 #' @param inset Set to \code{TRUE} for use within \code{\link{plotInset}}.  The
 #' effect is to prevent the present function from adjusting margins, which is
@@ -4029,7 +4073,8 @@ plotProfile <- function (x,
                          type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 } else {
                     plot(x@data[[xtype]][look], y[look],
-                         ylim=rev(range(y[look])), lty=lty,
+                         #ylim=rev(range(y[look])), lty=lty,
+                         ylim=ylim, lty=lty,
                          type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 }
                 mtext(resizableLabel(xtype, "x", unit=unit), side=3, line=axis.name.loc, cex=par("cex"))

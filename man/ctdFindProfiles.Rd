@@ -5,8 +5,9 @@
 \title{Find Profiles within a Tow-Yow CTD Record}
 \usage{
 ctdFindProfiles(x, cutoff = 0.5, minLength = 10, minHeight = 0.1 *
-  diff(range(x[["pressure"]])), direction = c("descending", "ascending"),
-  arr.ind = FALSE, debug = getOption("oceDebug"), ...)
+  diff(range(x[["pressure"]])), smoother = smooth.spline,
+  direction = c("descending", "ascending"), arr.ind = FALSE,
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -17,9 +18,16 @@ ctdFindProfiles(x, cutoff = 0.5, minLength = 10, minHeight = 0.1 *
 
 \item{minHeight}{lower limit on height of candidate profiles.}
 
+\item{smoother}{The smoothing function to use for identifying down/up
+casts. The default is \code{smooth.spline}, which performs well for 
+a small number of cycles; see \dQuote{Examples} for a method that is
+better for a long tow-yo. The return value from \code{smoother} must either
+be a vector or a list containing an element named \code{y}.}
+
 \item{direction}{String indicating the travel direction to be selected.}
 
-\item{arr.ind}{Should array indices be returned, or a vector of ctd objects?}
+\item{arr.ind}{Logical indicating whether the array indices should be returned;
+the alternative is to return a vector of ctd objects.}
 
 \item{debug}{An integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -27,7 +35,7 @@ is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
 be printed.}
 
-\item{...}{Optional extra arguments that are passed to \code{\link{smooth.spline}}.}
+\item{...}{Optional extra arguments that are passed to the smoothing function, \code{smoother}.}
 }
 \value{
 If \code{arr.ind=TRUE}, a data frame with columns \code{start} and \code{end}, the indices
@@ -39,16 +47,21 @@ either indices to these events or a vector of CTD records containing the events.
 }
 \details{
 The method works by examining the pressure record.  First, this is smoothed using
-\code{\link{smooth.spline}}, which is provided with any extra arguments as supplied to the present
-function, e.g. \code{ctdFindProfiles(..., df=10)} uses a spline with 10 degrees of freedom.  The
-spline is then first differenced with \code{\link{diff}}.  Median values of the positive and
+\code{smoother()} (see \dQuote{Arguments}), and then the result is first-differenced
+using \code{\link{diff}}.  Median values of the positive and
 negative first-difference values are then multiplied by \code{cutoff}.  This establishes criteria
 for any given point to be in an ascending profile, a descending profile, or a non-profile.
 Contiguous regions are then found, and those that have fewer than \code{minLength} points are
 discarded.  Then, those that have pressure ranges less than \code{minHeight} are discarded.
 
-It is often necessary to pass the resultant profiles through \code{\link{ctdTrim}}, to remove
-artifacts such as an equilibration phase, etc.
+Caution: this method is not well-suited to all datasets. For example, the default
+value of \code{smoother} is \code{\link{smooth.spline}}, and this works well for just a few
+profiles, but poorly for a tow-yo with a long sequence of profiles; in the latter case,
+it can be preferable to use simpler smoothers (see \dQuote{Examples}). Also, depending
+on the sampling protocol, it is often necessary to pass the resultant profiles through
+\code{\link{ctdTrim}}, to remove artifacts such as an equilibration phase, etc.
+Generally, one is well-advised to use the present function for a quick look at the data,
+relying on e.g. \code{\link{plotScan}} to identify profiles visually, for a final product.
 }
 \examples{
 \dontrun{
@@ -63,11 +76,23 @@ for (cast in casts) {
   plotProfile(cast, "temperature")
   plotTS(cast, type='o')
 }
+
+## Using a moving average to smooth pressure, instead of the default
+## smooth.spline() method. This avoids a tendency of smooth.spline()
+## to smooth out the profiles in a tow-yo with many (dozens or more) cycles.
+movingAverage <- function(x, n = 11, ...) 
+{
+   f <- rep(1/n, n)
+   ## Note the use of as.numeric(), to discard the "ts" class
+   ## of the result from stats::filter().
+   as.numeric(stats::filter(x, f, ...))
+}
+casts <- ctdFindProfiles(towyo, smoother=movingAverage)
 }
 
 }
 \author{
-Dan Kelley
+Dan Kelley and Clark Richards
 }
 \seealso{
 The documentation for \code{\link{ctd-class}} explains the structure
