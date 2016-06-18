@@ -109,6 +109,7 @@
 #'   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
 #'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
+#'   \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
 #'   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
 #'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
 #'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
@@ -398,6 +399,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^scan$", name))) {
         name <- "scan"
         unit <- list(unit=expression(), scale="")
+    } else if (1 == length(grep("^secS-priS$", name))) {
+        name <- "salinityDifference"
+        unit <- list(unit=expression(), scale="PSS-78")
     } else if (1 == length(grep("^seaTurbMtr[1]?$", name))) {
         name <- "turbidity"
         unit <- list(unit=expression(FTU), scale="SeaPoint")
