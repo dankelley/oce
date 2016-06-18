@@ -3059,7 +3059,7 @@ plotScan <- function(x, which=1, xtype="scan",
 #' \code{\link{read.ctd.woce.other}} for a variant of WOCE data,
 #' \code{\link{read.ctd.itp}} for ice-tethered-profiler data, or
 #' \code{\link{read.ctd.sbe}} for Seabird data.
-read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=-999,
+read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value,
                      monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     ## Special case: ruskin files are handled by read.rsk()
@@ -3116,17 +3116,9 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value=
                   ODF=read.ctd.odf(file, columns=columns, station=station,
                                    missing.value=missing.value, monitor=monitor,
                                    debug=debug, processingLog=processingLog, ...),
-                   ## ODV=read.ctd.odv(file, columns=columns, station=station,
-                   ##                    missing.value=missing.value, monitor=monitor,
-                   ##                    debug=debug, processingLog=processingLog, ...),
                   ITP=read.ctd.itp(file, columns=columns, station=station,
                                    missing.value=missing.value, monitor=monitor,
                                    debug=debug, processingLog=processingLog, ...))
-    ## water depth is sometimes zero, which is a hassle in section plots, so make a guess
-    #if (!"waterDepth" %in% names(res@metadata)) # may be entirely missing
-    #    res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
-    #if (res@metadata$waterDepth < 1)   # may be silly
-    #    res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
     res
 }
 
@@ -3199,7 +3191,7 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 ## #' \code{data/codes_and_formats/odv_format}. (The URL is not provided here
 ## #' because it is unreliable, which causes problems with CRAN submission of the
 ## #' oce package.)
-## read.ctd.odv <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
+## read.ctd.odv <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE,
 ##                          debug=getOption("oceDebug"), processingLog, ...)
 ## {
 ##     stop("FIXME: make read.ctd.odv() work")

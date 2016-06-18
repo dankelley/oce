@@ -4,7 +4,7 @@
 \alias{read.ctd.itp}
 \title{Read an ITP-type CTD File}
 \usage{
-read.ctd.itp(file, columns = NULL, station = NULL, missing.value = -999,
+read.ctd.itp(file, columns = NULL, station = NULL, missing.value,
   monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
 }
 \arguments{

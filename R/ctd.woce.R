@@ -48,7 +48,7 @@ woceNames2oceNames <- function(names)
 #' \code{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
 #' and a sample file is at
 #' \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
-read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
+read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE,
                           debug=getOption("oceDebug"), processingLog, ...)
 {
     if (length(grep("\\*", file))) {
@@ -365,6 +365,12 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         res@metadata$src <- filename
     }
     res@data <- data
+    ## replace any missing.value with NA
+    if (!missing(missing.value)) {
+        for (item in names(data)) {
+            data[[item]] <- ifelse(data[[item]]==missing.value, NA, data[[item]])
+        }
+    }
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
@@ -382,7 +388,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
 #' \code{read.ctd.woce.other()} reads files stored in the exchange format used
 #' by the World Ocean Circulation Experiment (WOCE), in which the first
 #' word in the file is \code{EXPOCODE}.
-read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
+read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE,
                                 debug=getOption("oceDebug"), processingLog, ...)
 {
     ##EXPOCODE 06MT18/1      WHP-ID A1E    DATE 090591
@@ -413,10 +419,13 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missing.value=
     temperature <- data$V2
     salinity <- data$V3
     oxygen <- data$V4
-    salinity[salinity == missing.value] <- NA
-    temperature[temperature == missing.value] <- NA
-    pressure[pressure == missing.value] <- NA
-    oxygen[oxygen == missing.value] <- NA
+    ## replace any missing.value with NA
+    if (!missing(missing.value)) {
+        salinity[salinity == missing.value] <- NA
+        temperature[temperature == missing.value] <- NA
+        pressure[pressure == missing.value] <- NA
+        oxygen[oxygen == missing.value] <- NA
+    }
     as.ctd(salinity, temperature, pressure, oxygen=oxygen, station=station, date=date)
 }
 

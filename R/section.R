@@ -1046,7 +1046,7 @@ setMethod(f="plot",
               x@metadata$longitude <- x@metadata$longitude[haveData]
               x@metadata$time <- x@metadata$time[haveData]
               plotSubsection <- function(xx, yy, zz, which.xtype, which.ytype,
-                                         variable="temperature", vtitle="T",
+                                         variable="temperature", vtitle="T", unit=NULL,
                                          eos=getOption("oceEOS", default="gsw"),
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
@@ -1508,6 +1508,8 @@ setMethod(f="plot",
                               }
                           }
                       }
+                      L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
+                      R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
                       vtitle <- if (length(unit) == 0) vtitle else bquote(.(vtitle)*.(L)*.(unit[[1]])*.(R))
                       if (nchar(legend.loc))
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
@@ -1618,7 +1620,7 @@ setMethod(f="plot",
                   adorn <- rep(adorn, lw)
                   adorn.length <- lw
               }
-              dataNames <- names(x[["station", 1]][["data"]])
+              ## dataNames <- names(x[["station", 1]][["data"]])
               L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
               R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
               for (w in 1:lw) {
@@ -1633,17 +1635,20 @@ setMethod(f="plot",
                       contourLabels <- format(contourLevels)
                       if (which[w] == "temperature") {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "temperature", if (eos=="unesco") "T" else expression(Theta), eos=eos, ylab="",
+                                         "temperature", if (eos=="unesco") "T" else expression(Theta), unit=unit,
+                                         eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == "salinity") {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "salinity", if (eos=="unesco") "S" else expression(S[A]), eos=eos, ylab="",
+                                         "salinity", if (eos=="unesco") "S" else expression(S[A]), unit=unit,
+                                         eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         whichOriginal[w], whichOriginal[w], eos=eos, ylab="",
+                                         whichOriginal[w], whichOriginal[w], unit=unit,
+                                         eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
                                          axes=axes, col=col, debug=debug-1, ...)
                       }
@@ -1651,14 +1656,16 @@ setMethod(f="plot",
                       if (which[w] == "temperature") {
                           ##message("*** temperature ***")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos,
+                                         "temperature", if (eos == "unesco") "T" else expression(Theta), unit=unit,
+                                         eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else if (which[w] == "salinity") {
                           ##message("*** salinity ***")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "salinity", if (eos == "unesco") "S" else expression(S[A]), eos=eos,
+                                         "salinity", if (eos == "unesco") "S" else expression(S[A]), unit=unit,
+                                         eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
@@ -1670,14 +1677,14 @@ setMethod(f="plot",
                       }
                   }
                   if (!is.na(which[w]) && which[w] == 20)
-                      plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                     "data", "", xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
+                      plotSubsection(xx, yy, zz, which.xtype, which.ytype, "data", "", unit=unit,
+                                     xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
                   if (!is.na(which[w]) && which[w] == 99) {
-                      plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                     "map", indicate.stations=FALSE,
-                                         clongitude=clongitude, clatitude=clatitude, span=span,
-                                         projection=projection,
-                                         debug=debug-1, ...)
+                      plotSubsection(xx, yy, zz, which.xtype, which.ytype, "map", unit=unit,
+                                     indicate.stations=FALSE,
+                                     clongitude=clongitude, clatitude=clatitude, span=span,
+                                     projection=projection,
+                                     debug=debug-1, ...)
                   }
                   if (w <= adorn.length) {
                       t <- try(eval(adorn[w]), silent=TRUE)
