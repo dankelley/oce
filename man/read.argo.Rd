@@ -157,9 +157,12 @@ Dan Kelley
 \references{
 1. \url{http://www.argo.ucsd.edu/}
 
-2. \url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf} documents the codes used in the netCDF files.
+2. \samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+(link last checked 2016-06-18)
+documents the codes used in the netCDF files.
 
-3. \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
+3. \samp{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
+(link last checked 2016-06-18)
 is the main document describing argo data.
 }
 \seealso{
