@@ -109,6 +109,7 @@
 #'   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
 #'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
+#'   \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
 #'   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
 #'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
 #'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
@@ -398,6 +399,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^scan$", name))) {
         name <- "scan"
         unit <- list(unit=expression(), scale="")
+    } else if (1 == length(grep("^secS-priS$", name))) {
+        name <- "salinityDifference"
+        unit <- list(unit=expression(), scale="PSS-78")
     } else if (1 == length(grep("^seaTurbMtr[1]?$", name))) {
         name <- "turbidity"
         unit <- list(unit=expression(FTU), scale="SeaPoint")
@@ -583,7 +587,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     ## units$temperature <- list(unit=expression(degree*C), scale="ITS-90") # guess; other option is IPTS-68
     pressureType = "sea"               # guess; other option is "absolute"
 
+    ## Silence warnings because binary files have 'NUL' characters that spew many warnings
+    warn <- options("warn")$warn
+    options(warn=-1)
     lines <- readLines(file, encoding="UTF-8")
+    options(warn=warn)
 
     ## Get names and units of columns in the SBE data file
     nameLines  <- grep("^# name [0-9][0-9]* = .*:.*$", lines, ignore.case=TRUE)
@@ -608,6 +616,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     found.conductivity <- "conductivity" %in% colNamesInferred
     found.conductivity.ratio <- "conductivity.ratio" %in% colNamesInferred
     ## FIXME: should we insist on having salinity, temperature, and pressure?
+    fileType <- "unknown"
 
     for (iline in seq_along(lines)) {
         line <- lines[iline]
@@ -633,6 +642,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
         if (0 < (r<-regexpr("date:", lline))) {
             d <- sub("(.*)date:([ ])*", "", lline)
             date <- decodeTime(d, "%Y%m%d") # e.g. 20130701 Canada Day
+        }
+        if (length(grep("^#[ \t]*file_type[ \t]*=[ \t]*", lline))) {
+            ## file_type = ascii
+            ## file_type = binary
+            fileType <- gsub("[ \t\n]+$", "", gsub(".*=[ \t]*", "", lline))
+            ##> message("fileType='", fileType, "'")
+            ##> message("lline='", lline, "'")
         }
         ##* NMEA UTC (Time) = Jul 28 2011  04:17:53
         ##* system upload time = jan 26 2010 13:02:57
@@ -790,6 +806,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     res@metadata$names <- colNamesInferred
     res@metadata$labels <- colNamesInferred
     res@metadata$filename <- filename
+    if (fileType == "binary") {
+        warning("can only read the header of binary .cnv files")
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        return(res)
+    }
     ## Read the data as a table.
     pushBack(lines, file)
     ##if (is.null(columns)) {
@@ -817,6 +838,12 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     ##hitem <- processingLogItem(processingLog)
+    ## replace any missing.value with NA
+    if (!missing(missing.value)) {
+        for (item in names(data)) {
+            data[[item]] <- ifelse(data[[item]]==missing.value, NA, data[[item]])
+        }
+    }
     res@data <- data
     ## Add standard things, if missing
     if (haveData) {

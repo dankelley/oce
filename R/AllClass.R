@@ -151,7 +151,10 @@ setMethod(f="summary",
                       if (!is.null(OriginalName)) {
                           threes <- cbind(threes, OriginalName)
                       }
+                      owidth <- options('width')
+                      options(width=150) # make wide to avoid line breaks
                       print(threes, quote=FALSE, indent='')
+                      options(width=owidth$width)
                       cat("```\n")
                   }
               }

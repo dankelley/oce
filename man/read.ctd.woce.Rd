@@ -4,7 +4,7 @@
 \alias{read.ctd.woce}
 \title{Read a WOCE-type CTD file with First Word "CTD"}
 \usage{
-read.ctd.woce(file, columns = NULL, station = NULL, missing.value = -999,
+read.ctd.woce(file, columns = NULL, station = NULL, missing.value,
   monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
 }
 \arguments{

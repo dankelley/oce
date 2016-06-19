@@ -4,9 +4,8 @@
 \alias{read.ctd}
 \title{Read a General CTD File}
 \usage{
-read.ctd(file, type = NULL, columns = NULL, station = NULL,
-  missing.value = -999, monitor = FALSE, debug = getOption("oceDebug"),
-  processingLog, ...)
+read.ctd(file, type = NULL, columns = NULL, station = NULL, missing.value,
+  monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
 }
 \arguments{
 \item{file}{A connection or a character string giving the name of the file to

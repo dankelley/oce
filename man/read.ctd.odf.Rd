@@ -4,7 +4,7 @@
 \alias{read.ctd.odf}
 \title{Read a CTD file in ODF format}
 \usage{
-read.ctd.odf(file, columns = NULL, station = NULL, missing.value = -999,
+read.ctd.odf(file, columns = NULL, station = NULL, missing.value,
   monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
 }
 \arguments{

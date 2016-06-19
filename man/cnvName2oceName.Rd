@@ -132,6 +132,7 @@ variants.)
   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
+  \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
