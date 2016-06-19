@@ -24,6 +24,11 @@ test_that("as.section() data-quality flags", {
           expect_equal(stn2@metadata$flags$nitrite, twos)
           expect_equal(stn2@metadata$flags[["NO2+NO3"]], twos)
           expect_equal(stn2@metadata$flags$phosphate, c(2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2))
+          ## The next ensures the correct interpretation of the missing value
+          ## numbers in the file.
+          expect_equal(section[['station',15]][['nitrite']],
+                       c(0.00, 0.00, 0.05, 0.00, 0.00, 0.00, NA, NA, NA, NA, NA, NA, NA,
+                         NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA))
 })
 
 test_that("section station extraction", {
