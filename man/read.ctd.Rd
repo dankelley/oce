@@ -4,7 +4,7 @@
 \alias{read.ctd}
 \title{Read a General CTD File}
 \usage{
-read.ctd(file, type = NULL, columns = NULL, station = NULL, missing.value,
+read.ctd(file, type = NULL, columns = NULL, station = NULL, missingValue,
   monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
 }
 \arguments{
@@ -31,7 +31,7 @@ data names to resultant variable names.  This is used only by
 number for the station. This can be useful if the routine cannot determine the
 name automatically, or if another name is preferred.}
 
-\item{missing.value}{Optional missing-value flag; data matching this value will
+\item{missingValue}{Optional missing-value flag; data matching this value will
 be set to \code{NA} upon reading.}
 
 \item{monitor}{Boolean, set to \code{TRUE} to provide an indication of

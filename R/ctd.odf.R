@@ -13,17 +13,17 @@
 #' is not clear that ODF format is handled correctly in \code{read.ctd.odf}, or
 #' the more general function \code{\link{read.odf}}, because the format 
 #' varies between some sample files the author has encountered in his research.
-read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE,
+read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
     oceDebug(debug, "read.ctd.odf() {")
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
     odf <- read.odf(file=file, columns=columns)
     res <- as.ctd(odf)
-    ## replace any missing.value with NA
-    if (!missing(missing.value)) {
+    ## replace any missingValue with NA
+    if (!missing(missingValue)) {
         for (item in names(res@data)) {
-            res@data[[item]] <- ifelse(res@data[[item]]==missing.value, NA, res@data[[item]])
+            res@data[[item]] <- ifelse(res@data[[item]]==missingValue, NA, res@data[[item]])
         }
     }
     if (!is.null(station))
