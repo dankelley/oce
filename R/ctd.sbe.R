@@ -536,7 +536,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' \url{http://www.seabird.com/document/sbe-data-processing-manual}.
 #'
 #' 2. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.
-read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
+read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (length(grep("\\*", file, ignore.case=TRUE))) {
@@ -838,10 +838,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value,
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     ##hitem <- processingLogItem(processingLog)
-    ## replace any missing.value with NA
-    if (!missing(missing.value)) {
+    ## replace any missingValue with NA
+    if (!missing(missingValue)) {
         for (item in names(data)) {
-            data[[item]] <- ifelse(data[[item]]==missing.value, NA, data[[item]])
+            data[[item]] <- ifelse(data[[item]]==missingValue, NA, data[[item]])
         }
     }
     res@data <- data

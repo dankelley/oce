@@ -9,7 +9,7 @@
 #' \url{http://www.whoi.edu/page.do?pid=23096}, which also provides a link for
 #' downloading data.  Note that the present version only handles data in
 #' profiler-mode, not fixed-depth mode.
-read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE,
+read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
     oceDebug(debug, "read.ctd.itp() {\n", unindent=1)
@@ -61,12 +61,12 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missing.value, monito
         temperature <- d[, Tcol]
         salinity <- d[, Scol]
         oxygen <- d[, Ocol]
-        ## replace any missing.value with NA
-        if (!missing(missing.value)) {
-            pressure <- ifelse(pressure==missing.value, NA, pressure)
-            temperature <- ifelse(temperature==missing.value, NA, temperature)
-            salinity <- ifelse(salinity==missing.value, NA, salinity)
-            oxygen <- ifelse(oxygen==missing.value, NA, oxygen)
+        ## replace any missingValue with NA
+        if (!missing(missingValue)) {
+            pressure <- ifelse(pressure==missingValue, NA, pressure)
+            temperature <- ifelse(temperature==missingValue, NA, temperature)
+            salinity <- ifelse(salinity==missingValue, NA, salinity)
+            oxygen <- ifelse(oxygen==missingValue, NA, oxygen)
         }
         res <- as.ctd(salinity, temperature, pressure, oxygen=oxygen,
                       longitude=longitude, latitude=latitude,

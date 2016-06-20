@@ -3059,7 +3059,7 @@ plotScan <- function(x, which=1, xtype="scan",
 #' \code{\link{read.ctd.woce.other}} for a variant of WOCE data,
 #' \code{\link{read.ctd.itp}} for ice-tethered-profiler data, or
 #' \code{\link{read.ctd.sbe}} for Seabird data.
-read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value,
+read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue,
                      monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     ## Special case: ruskin files are handled by read.rsk()
@@ -3108,16 +3108,16 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missing.value,
     }                                   # FIXME: should just use oce.magic() here
     res <- switch(type,
                   SBE19=read.ctd.sbe(file, columns=columns, station=station,
-                                     missing.value=missing.value, monitor=monitor,
+                                     missingValue=missingValue, monitor=monitor,
                                      debug=debug, processingLog=processingLog, ...),
                   WOCE=read.ctd.woce(file, columns=columns, station=station,
-                                     missing.value=missing.value, monitor=monitor,
+                                     missingValue=missingValue, monitor=monitor,
                                      debug=debug, processingLog=processingLog, ...),
                   ODF=read.ctd.odf(file, columns=columns, station=station,
-                                   missing.value=missing.value, monitor=monitor,
+                                   missingValue=missingValue, monitor=monitor,
                                    debug=debug, processingLog=processingLog, ...),
                   ITP=read.ctd.itp(file, columns=columns, station=station,
-                                   missing.value=missing.value, monitor=monitor,
+                                   missingValue=missingValue, monitor=monitor,
                                    debug=debug, processingLog=processingLog, ...))
     res
 }
@@ -3191,7 +3191,7 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 ## #' \code{data/codes_and_formats/odv_format}. (The URL is not provided here
 ## #' because it is unreliable, which causes problems with CRAN submission of the
 ## #' oce package.)
-## read.ctd.odv <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE,
+## read.ctd.odv <- function(file, columns=NULL, station=NULL, missingValue, monitor=FALSE,
 ##                          debug=getOption("oceDebug"), processingLog, ...)
 ## {
 ##     stop("FIXME: make read.ctd.odv() work")

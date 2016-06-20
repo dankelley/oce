@@ -25,7 +25,7 @@
 #' number for the station. This can be useful if the routine cannot determine the
 #' name automatically, or if another name is preferred.
 #' 
-#' @param missing.value Optional missing-value flag; data matching this value will
+#' @param missingValue Optional missing-value flag; data matching this value will
 #' be set to \code{NA} upon reading.
 #' 
 #' @param monitor Boolean, set to \code{TRUE} to provide an indication of
