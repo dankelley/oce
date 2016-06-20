@@ -21,7 +21,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, monitor
     odf <- read.odf(file=file, columns=columns)
     res <- as.ctd(odf)
     ## replace any missingValue with NA
-    if (!missing(missingValue)) {
+    if (!missing(missingValue) && !is.null(missingValue)) {
         for (item in names(res@data)) {
             res@data[[item]] <- ifelse(res@data[[item]]==missingValue, NA, res@data[[item]])
         }
