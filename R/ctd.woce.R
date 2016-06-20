@@ -366,7 +366,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
     }
     res@data <- data
     ## replace any missingValue with NA
-    if (!missing(missingValue)) {
+    if (!missing(missingValue) && !is.null(missingValue)) {
         for (item in names(data)) {
             data[[item]] <- ifelse(data[[item]]==missingValue, NA, data[[item]])
         }

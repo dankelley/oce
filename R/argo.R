@@ -809,7 +809,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 #' \code{"dbar"} for \code{pressure}.
 #' @param id identifier.
 #' @param filename source filename.
-#' @param missingValue Optional missing value, indicating data that should be
+#' @param missingValue Optional missing value, indicating data values that should be
 #' taken as \code{NA}.
 #' 
 #' @return

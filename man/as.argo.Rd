@@ -31,7 +31,7 @@ then \code{"degree east"} is used for \code{longitude},
 
 \item{filename}{source filename.}
 
-\item{missingValue}{Optional missing value, indicating data that should be
+\item{missingValue}{Optional missing value, indicating data values that should be
 taken as \code{NA}.}
 }
 \value{

@@ -62,7 +62,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
         salinity <- d[, Scol]
         oxygen <- d[, Ocol]
         ## replace any missingValue with NA
-        if (!missing(missingValue)) {
+        if (!missing(missingValue) && !is.null(missingValue)) {
             pressure <- ifelse(pressure==missingValue, NA, pressure)
             temperature <- ifelse(temperature==missingValue, NA, temperature)
             salinity <- ifelse(salinity==missingValue, NA, salinity)

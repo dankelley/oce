@@ -705,6 +705,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         }
         if (0 < (r<-regexpr("recovery:", lline)))
             recovery <- sub("(.*)recovery:([ ])*", "", lline)
+
+        if (length(grep("^#[ \t]+bad_flag[ \t]*=", lline))) {
+            ## bad_flag = -9.990e-29
+            bad_flag <- sub("#[ \t]*bad_flag[ \t]*=[ \t]*", "", lline)
+            if (missing(missingValue))
+                missingValue <- as.numeric(bad_flag)
+        }
         if (0 < (r<-regexpr("depth", lline))) { # "** Depth (m): 3447 "
             look <- sub("[a-z:()]*", "", lline, ignore.case=TRUE)
             look <- gsub("^[*a-zA-Z\\(\\) :]*", "", lline, ignore.case=TRUE)
@@ -839,7 +846,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     ##hitem <- processingLogItem(processingLog)
     ## replace any missingValue with NA
-    if (!missing(missingValue)) {
+    if (!missing(missingValue) && !is.null(missingValue)) {
         for (item in names(data)) {
             data[[item]] <- ifelse(data[[item]]==missingValue, NA, data[[item]])
         }

@@ -26,7 +26,12 @@
 #' name automatically, or if another name is preferred.
 #' 
 #' @param missingValue Optional missing-value flag; data matching this value will
-#' be set to \code{NA} upon reading.
+#' be set to \code{NA} upon reading. If this is provided, then it overrules any
+#' missing-value flag found in the data. For Seabird (\code{.cnv}) files, there is
+#' usually no need to set \code{missingValue}, because it can be inferred from the
+#' header (typically as -9.990e-29). Set \code{missingValue=NULL} to turn off
+#' missing-value detection, even in \code{.cnv} files that contain missing-value
+#' codes in their headers.
 #' 
 #' @param monitor Boolean, set to \code{TRUE} to provide an indication of
 #' progress.  This is useful if \code{filename} is a wildcard.
