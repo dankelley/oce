@@ -86,9 +86,7 @@ for (cast in casts) {
 movingAverage <- function(x, n = 11, ...) 
 {
    f <- rep(1/n, n)
-   ## Note the use of as.numeric(), to discard the "ts" class
-   ## of the result from stats::filter().
-   as.numeric(stats::filter(x, f, ...))
+   stats::filter(x, f, ...)
 }
 casts <- ctdFindProfiles(towyo, smoother=movingAverage)
 }

@@ -32,7 +32,8 @@ SEXP fillgap1d(SEXP x, SEXP rule)
     isna[i] = (unsigned char)ISNA(xp[i]);
   for (i = 0; i < xlen; i++)
     resp[i] = xp[i];
-  int first_good=0, last_good=xlen-1;
+  // End points: keep NA or set constant, according to 'rule' value.
+  int first_good=-1, last_good=xlen; // set to values we can never get
   if (the_rule == 1) {
     ;
   } else if (the_rule == 2) {
@@ -45,7 +46,7 @@ SEXP fillgap1d(SEXP x, SEXP rule)
       }
       if (first_good == -1) {
 	UNPROTECT(3);
-	return(res); // FIXME: what should we do if *all* are NA?
+	return(res); // whole vector is NA
       }
       for (i = 0; i < first_good; i++) {
 	//Rprintf("setting resp[%d] with %f\n", i, resp[first_good]);
@@ -59,16 +60,18 @@ SEXP fillgap1d(SEXP x, SEXP rule)
 	  break;
 	}
       }
-      if (last_good == -1) {
+      if (last_good == xlen) {
 	UNPROTECT(3);
-	return(res); // FIXME: what should we do if *all* are NA?
+	return(res); // no good data (cannot happen; would be caught already)
       }
-      for (i = xlen - 1; i > last_good; i--)
+      for (i = xlen - 1; i > last_good; i--) {
 	resp[i] = resp[last_good];
+      }
     }
   } else {
     error("'rule' must be 1 or 2");
   }
+  // Interior points: linear interpolation
   //Rprintf("first_good=%d last_good=%d\n", first_good, last_good);
   for (i = first_good + 1; i < last_good - 1; i++) {
     //Rprintf("main loop isna[%d] = %d\n", i, isna[i]);
