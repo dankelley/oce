@@ -1560,8 +1560,10 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     if (is.list(ps) && "y" %in% names(ps))
         ps <- ps$y
     ps <- as.numeric(ps) # discard return class of e.g. smooth()
+    nps <- length(ps)
     dp <- diff(ps)
     dp <- c(dp[1], dp)
+    dp <- fillGap(dp, rule=2)
     if (direction == "descending") {
         look <- dp > cutoff * median(dp[dp>0], na.rm=TRUE)
     } else if (direction == "ascending") {
@@ -1569,31 +1571,53 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     } else {
         stop("direction must be either \"ascending\" or \"descending\"") # cannot reach here
     }
+    if (debug>100) {
+        par(mar=c(3,3,1,1),mgp=c(2,0.7,0))
+        plot(pressure,type='l')
+        lines(ps,col=3, lty='dotted')
+        mtext(direction, side=3, adj=1, line=0)
+    }
+
     start <- which(diff(look) == 1)
+    ## the first data are often a downcast, after all!
+    if (look[1] && length(start) > 0 && start[1] != 1)
+        start <- c(1, start)
     if (0 == length(start))
         start <- 1
     end <- which(diff(look) == -1)
+    if (look[nps] && length(end) > 0 && end[length(end)] != 1)
+        end <- c(end, nps)
+
     if (0 == length(end))
         end <- length(pressure)
     if (start[1] > end[1])
         start <- start[-1]
-    oceDebug(debug, "start:", start, "(before trimming)\n")
-    oceDebug(debug, "end:", end, "(before trimming)\n")
+    oceDebug(debug, "start:", head(start), "... (before trimming)\n")
+    oceDebug(debug, "end:", head(end), "... (before trimming)\n")
     start <- subset(start, start<max(end))
     end <- subset(end, end>min(start))
-    oceDebug(debug, "start:", start, "(after trimming)\n")
-    oceDebug(debug, "end:", end, "(after trimming)\n")
+    oceDebug(debug, "start:", head(start), "... (after trimming)\n")
+    oceDebug(debug, "end:", head(end), "... (after trimming)\n")
     if (length(end) > length(start))
         end <- end[1:length(start)]
     keep <- abs(end - start) >= minLength
-    oceDebug(debug, "start:", start[keep], "(using minLength)\n")
-    oceDebug(debug, "end:", end[keep], "(using minLength)\n")
-    keep <- keep & (abs(ps[end] - ps[start]) >= minHeight)
-    oceDebug(debug, "heights:", ps[end]-ps[start], "; compare with minHeight=", minHeight, "\n")
-    oceDebug(debug, "start:", start[keep], "(using minHeight)\n")
-    oceDebug(debug, "end:", end[keep], "(using minHeight)\n")
+    oceDebug(debug, "start:", head(start[keep]), "... (using minLength)\n")
+    oceDebug(debug, "end:", head(end[keep]), "... (using minLength)\n")
+    psfilled <- fillGap(ps, rule=2)
+    keep <- keep & (abs(psfilled[end] - psfilled[start]) >= minHeight)
+    oceDebug(debug, "heights:", head(psfilled[end]-psfilled[start]), "...; compare with minHeight=", head(minHeight), "...\n")
+    oceDebug(debug, "start:", head(start[keep]), "... (using minHeight)\n")
+    oceDebug(debug, "end:", head(end[keep]), "... (using minHeight)\n")
     indices <- data.frame(start=start[keep], end=end[keep])
-    if (debug) print(indices)
+
+    if (debug>100) {
+        abline(v=start, col='green', lwd=2)
+        abline(v=end, col='red', lwd=2) 
+    }
+
+    if (debug) print(head(indices))
+
+
     if (is.logical(arr.ind) && arr.ind) {
         oceDebug(debug, "} # ctdFindProfiles()\n", sep="", unindent=1)
         return(indices)
@@ -1602,6 +1626,10 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
         casts <- vector("list", ncasts)
         for (i in 1:ncasts) {
             oceDebug(debug, "profile #", i, "of", ncasts, "\n")
+            if (debug>100) {
+                message("indices$start: ", paste(head(indices$start), collapse=" "))
+                message("indices$end: ", paste(head(indices$end), collapse=" "))
+            }
             cast <- ctdTrim(x, "index", parameters=c(indices$start[i], indices$end[i]))
             cast@processingLog <- processingLogAppend(cast@processingLog,
                                                       paste(paste(deparse(match.call()), sep="", collapse=""),
