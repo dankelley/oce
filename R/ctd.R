@@ -1489,8 +1489,11 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' @param smoother The smoothing function to use for identifying down/up
 #' casts. The default is \code{smooth.spline}, which performs well for 
 #' a small number of cycles; see \dQuote{Examples} for a method that is
-#' better for a long tow-yo. The return value from \code{smoother} must either
-#' be a vector or a list containing an element named \code{y}.
+#' better for a long tow-yo. The return value from \code{smoother} must 
+#' be either a list containing an element named \code{y} or something
+#' that can be coerced to a vector with \code{\link{as.vector}}. To
+#' turn smoothing off, so that cycles in pressure are determined by
+#' simple first difference, set \code{smoother} to \code{NULL}.
 #' 
 #' @param direction String indicating the travel direction to be selected.
 #' 
@@ -1552,49 +1555,28 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
         stop("method is only for objects of class '", "ctd", "'")
     direction <- match.arg(direction)
     pressure <- fillGap(x[["pressure"]], rule=2)
-    dp <- diff(pressure)
+    if (!is.null(smoother))
+        ps  <- smoother(pressure, ...)
+    if (is.list(ps) && "y" %in% names(ps))
+        ps <- ps$y
+    ps <- as.numeric(ps) # discard return class of e.g. smooth()
+    dp <- diff(ps)
     dp <- c(dp[1], dp)
     if (direction == "descending") {
-        ps <- smoother(pressure, ...)
-        if (is.list(ps) && "y" %in% names(ps)) {
-            ps <- ps$y
-        } else if (!is.vector(ps)) {
-            stop("'smoother' must be a function returning a vector, or returning a list containing 'y'")
-        }
-        dp <- diff(ps)
-        dp <- c(dp[1], dp)
         look <- dp > cutoff * median(dp[dp>0], na.rm=TRUE)
-        start <- which(diff(look) == 1)
-        if (0 == length(start))
-            start <- 1
-        end <- which(diff(look) == -1)
-        if (0 == length(end))
-            end <- length(pressure)
-        if (start[1] > end[1])
-            start <- start[-1]
     } else if (direction == "ascending") {
-        ps <- smoother(pressure, ...)
-        if (is.list(ps) && "y" %in% names(ps)) {
-            ps <- ps$y
-        } else if (!is.vector(ps)) {
-            stop("'smoother' must be a function returning a vector, or returning a list containing 'y'")
-        }
-        dp <- diff(ps)
-        dp <- c(dp[1], dp)
         look <- dp < cutoff * median(dp[dp<0], na.rm=TRUE)
-        start <- which(diff(look) == 1)
-        if (0 == length(start))
-            start <- 1
-        if (0 == length(end))
-            end <- length(pressure)
-        end <- which(diff(look) == -1)
-        if (0 == length(end))
-            end <- length(pressure)
-        if (start[1] > end[1])
-            start <- start[-1]
     } else {
         stop("direction must be either \"ascending\" or \"descending\"") # cannot reach here
     }
+    start <- which(diff(look) == 1)
+    if (0 == length(start))
+        start <- 1
+    end <- which(diff(look) == -1)
+    if (0 == length(end))
+        end <- length(pressure)
+    if (start[1] > end[1])
+        start <- start[-1]
     oceDebug(debug, "start:", start, "(before trimming)\n")
     oceDebug(debug, "end:", end, "(before trimming)\n")
     start <- subset(start, start<max(end))
