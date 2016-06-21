@@ -1558,9 +1558,8 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
         ps <- smoother(pressure, ...)
         if (is.list(ps) && "y" %in% names(ps)) {
             ps <- ps$y
-        } else if (!is.vector(ps)) {
-            stop("'smoother' must be a function returning a vector, or returning a list containing 'y'")
         }
+        ps <- as.numeric(ps)
         dp <- diff(ps)
         dp <- c(dp[1], dp)
         look <- dp > cutoff * median(dp[dp>0], na.rm=TRUE)
