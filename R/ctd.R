@@ -1530,9 +1530,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' movingAverage <- function(x, n = 11, ...) 
 #' {
 #'    f <- rep(1/n, n)
-#'    ## Note the use of as.numeric(), to discard the "ts" class
-#'    ## of the result from stats::filter().
-#'    as.numeric(stats::filter(x, f, ...))
+#'    stats::filter(x, f, ...)
 #' }
 #' casts <- ctdFindProfiles(towyo, smoother=movingAverage)
 #' }
@@ -1571,7 +1569,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     } else {
         stop("direction must be either \"ascending\" or \"descending\"") # cannot reach here
     }
-    if (debug>100) {
+    if (debug>100) {                   # HIDDEN feature, may be removed at any time
         par(mar=c(3,3,1,1),mgp=c(2,0.7,0))
         plot(pressure,type='l')
         lines(ps,col=3, lty='dotted')
@@ -1610,13 +1608,10 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     oceDebug(debug, "end:", head(end[keep]), "... (using minHeight)\n")
     indices <- data.frame(start=start[keep], end=end[keep])
 
-    if (debug>100) {
+    if (debug>100) {                   # HIDDEN feature, may be removed at any time
         abline(v=start, col='green', lwd=2)
         abline(v=end, col='red', lwd=2) 
     }
-
-    if (debug) print(head(indices))
-
 
     if (is.logical(arr.ind) && arr.ind) {
         oceDebug(debug, "} # ctdFindProfiles()\n", sep="", unindent=1)
@@ -1624,13 +1619,16 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     } else {
         ncasts <- length(indices$start)
         casts <- vector("list", ncasts)
+        npts <- length(x@data$pressure)
         for (i in 1:ncasts) {
             oceDebug(debug, "profile #", i, "of", ncasts, "\n")
-            if (debug>100) {
-                message("indices$start: ", paste(head(indices$start), collapse=" "))
-                message("indices$end: ", paste(head(indices$end), collapse=" "))
-            }
-            cast <- ctdTrim(x, "index", parameters=c(indices$start[i], indices$end[i]))
+            oceDebug(debug, "indices$start: ", paste(head(indices$start), collapse=" "))
+            oceDebug(debug, "indices$end: ", paste(head(indices$end), collapse=" "))
+            ## extend indices to catch turnaround spots
+            e <- 1
+            iStart <- max(1L, indices$start[i] - e)
+            iEnd <- min(npts, indices$end[i] + e)
+            cast <- ctdTrim(x, "index", parameters=c(iStart, iEnd))
             cast@processingLog <- processingLogAppend(cast@processingLog,
                                                       paste(paste(deparse(match.call()), sep="", collapse=""),
                                                             " # profile ", i, " of ", ncasts))
