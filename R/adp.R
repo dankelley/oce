@@ -1,6 +1,6 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
-#' Class to Hold adp (adcp) Data
+#' Class to Hold ADP (ADCP) Data
 #'
 #' This class stores data from acoustic Doppler profilers. Some manufacturers
 #' call these ADCPs, while others call them ADPs; here the shorter form is
@@ -141,7 +141,7 @@
 #' 
 #' The \code{processingLog} slot is in standard form and needs little comment.
 #' 
-#' @section methods:
+#' @section Accessing and altering information within \code{adp-class} objects:
 #' \emph{Extracting values} Matrix data may be accessed as illustrated
 #' above, e.g.  or an adp object named \code{adv}, the data are provided by
 #' \code{adp[["v"]]}, \code{adp[["a"]]}, and \code{adp[["q"]]}.  As a
@@ -182,7 +182,7 @@
 #' \code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}} or
 #' \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
 #' 
-#' ADP data may be plotted with \code{\link{plot.adp}} function, which is a
+#' ADP data may be plotted with \code{\link{plot,adp-method}}, which is a
 #' generic function so it may be called simply as \code{plot}.
 #' 
 #' Statistical summaries of ADP data are provided by the generic function
@@ -193,7 +193,41 @@
 #' with \code{\link{xyzToEnuAdp}}.  \code{\link{toEnuAdp}} may be used to
 #' transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 #' (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
+#'
+#' @family classes provided by \code{oce}
+#' @family things related to \code{adp} data
 setClass("adp", contains="oce")
+
+#' ADP (acoustic-doppler profiler) dataset
+#' 
+#' This is degraded subsample of measurements that were made with an
+#' upward-pointing ADP manufactured by Teledyne-RDI, as part of the St Lawrence
+#' Internal Wave Experiment (SLEIWEX).
+#' 
+#' @name adp
+#' 
+#' @docType data
+#' 
+#' @usage data(adp)
+#' 
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' data(adp)
+#' 
+#' # Velocity components.  (Note: we should probably trim some bins at top.)
+#' plot(adp)
+#' 
+#' # Note that tides have moved the mooring.
+#' plot(adp, which=15:18)
+#' }
+#' 
+#' 
+#' @source This file came from the SLEIWEX-2008 experiment.
+#'
+#' @family datasets provided with \code{oce}
+#' @family things related to \code{adp} data
+NULL
 
 setMethod(f="initialize",
           signature="adp",
@@ -219,6 +253,23 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
+#' Summarize an ADP Object
+#' 
+#' Summarize data in an \code{adp} object.
+#' 
+#' Pertinent summary information is presented.
+#' 
+#' @aliases summary.adp summary,adp,missing-method summary,adp-method
+#' @param object an object of class \code{"adp"}, usually, a result of a call
+#' to \code{\link{read.oce}}, \code{\link{read.adp.rdi}}, or
+#' \code{\link{read.adp.nortek}}.
+#' @param \dots further arguments passed to or from other methods.
+#' @return A matrix containing statistics of the elements of the \code{data}
+#' slot.
+#' @author Dan Kelley
+#' 
+#' @family things related to \code{adp} data
 setMethod(f="summary",
           signature="adp",
           definition=function(object, ...) {
@@ -320,22 +371,29 @@ setMethod(f="summary",
           })
 
 
-#' Extract Something From an adp Object
+#' @title Extract Parts of an ADP Object
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
-#' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
+#' are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
 #' for the other velocity components. The \code{a} and \code{q}
-#' data can be retrived in \code{\link{raw}} form or numeric
-#' form; see examples.
+#' data can be retrieved in \code{\link{raw}} form or numeric
+#' form (see examples). The coordinate system may be 
+#' retrieved with e.g. \code{x[["coordinate"]]}.
 #' 
-#' @param x An adp object, i.e. one inheriting from \code{\link{adp-class}}.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @template sub_subTemplate
 #'
 #' @examples
 #' data(adp)
-#' head(adp[["v"]][,,1])
+#' # Tests for beam 1, distance bin 1, first 5 observation times
+#' adp[["v"]][1:5,1,1]
+#' adp[["a"]][1:5,1,1]
+#' adp[["a", "numeric"]][1:5,1,1]
+#' as.numeric(adp[["a"]][1:5,1,1]) # same as above
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{adp} data
 setMethod(f="[[",
           signature(x="adp", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -369,21 +427,24 @@ setMethod(f="[[",
                       res <- x@data$g
                   }
                   res
+              } else if (i == "coordinate") {
+                  res <- x@metadata$oceCoordinate
               } else {
                   callNextMethod()
               }
           })
 
-#' Change Something Within an adp Object
+#' @title Replace Parts of an ADP Object
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @template sub_subsetTemplate
 #'
+#' @details
 #' In addition to the usual insertion of elements by name, note
 #' that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 #' 
-#' @param x An adp object
-#' @param i The item to insert
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#' @param value The value to be inserted into \code{x}.
+#' @author Dan Kelley
+#'
+#' @family things related to \code{adp} data
 setMethod(f="[[<-",
           signature="adp",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
@@ -392,7 +453,7 @@ setMethod(f="[[<-",
               } else if (i %in% names(x@data)) {
                   x@data[[i]] <- value
               } else {
-                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+                  x <- callNextMethod()
               }
               ## Not checking validity because user may want to shorten items one by one, and check validity later.
               ## validObject(x)
@@ -436,6 +497,31 @@ setValidity("adp",
             })
 
 
+#' Subset an ADP Object
+#' 
+#' Subset an adp (acoustic Doppler profile) object, in a manner that is function
+#' is somewhat analogous to \code{\link{subset.data.frame}}.  Subsetting can be by
+#' \code{time} or \code{distance}, but these may not be combined; use a sequence
+#' of calls to subset by both.
+#' 
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' 
+#' @param subset A condition to be applied to the \code{data} portion of
+#' \code{x}.  See \sQuote{Details}.
+#' 
+#' @param ... Ignored.
+#' 
+#' @return A new \code{\link{adp-class}} object.
+#' 
+#' @examples
+#' library(oce)
+#' data(adp)
+#' # First part of time series
+#' plot(subset(adp, time < mean(range(adp[['time']]))))
+#' 
+#' @author Dan Kelley
+#' 
+#' @family things related to \code{adp} data
 setMethod(f="subset",
           signature="adp",
           definition=function(x, subset, ...) {
@@ -540,7 +626,7 @@ setMethod(f="subset",
               res
           })
 
-#' Create an adp Object
+#' Create an ADP Object
 #'
 #' @details
 #' Construct an object of \code{\link{adp-class}}.  Only a basic
@@ -550,8 +636,6 @@ setMethod(f="subset",
 #' slot of which is then inserted.  However, in some testing situations it
 #' can be useful to set up artificial \code{adp} objects, so the other
 #' arguments may be useful.
-#'
-#' A few defaults are set for some 
 #'
 #' @param time of observations in POSIXct format
 #' @param distance to centre of bins
@@ -571,6 +655,10 @@ setMethod(f="subset",
 #' \dontrun{
 #' plot(a)
 #' }
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{adp} data
 as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coordinate="enu")
 {
     res <- new("adp", time=time, distance=distance, v=v, a=a, q=q)
@@ -586,93 +674,69 @@ as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coor
 }
 
 
-head.adp <- function(x, n=6L, ...)
-{
-    numberOfProfiles <- dim(x@data$v)[1]
-    if (n < 0)
-        look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
-    else
-        look <- seq.int(1, min(n, numberOfProfiles))
-    res <- x
-    for (name in names(x@data)) {
-        if ("distance" == name)
-            next
-        if (is.vector(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look]
-        } else if (is.matrix(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look,]
-        } else if (is.array(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look,,]
-        } else {
-            res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
-        }
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    res
-}
+## head.adp <- function(x, n=6L, ...)
+## {
+##     numberOfProfiles <- dim(x@data$v)[1]
+##     if (n < 0)
+##         look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
+##     else
+##         look <- seq.int(1, min(n, numberOfProfiles))
+##     res <- x
+##     for (name in names(x@data)) {
+##         if ("distance" == name)
+##             next
+##         if (is.vector(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look]
+##         } else if (is.matrix(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look,]
+##         } else if (is.array(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look,,]
+##         } else {
+##             res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+##         }
+##     }
+##     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+##     res
+## }
 
-tail.adp <- function(x, n = 6L, ...)
-{
-    numberOfProfiles <- dim(x@data$v)[1]
-    if (n < 0)
-        look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
-    else
-        look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
-    res <- x
-    for (name in names(x@data)) {
-        if (is.vector(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look]
-        } else if (is.matrix(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look,]
-        } else if (is.array(x@data[[name]])) {
-            res@data[[name]] <- x@data[[name]][look,,]
-        } else {
-            res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
-        }
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    res 
-}
+## tail.adp <- function(x, n = 6L, ...)
+## {
+##     numberOfProfiles <- dim(x@data$v)[1]
+##     if (n < 0)
+##         look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
+##     else
+##         look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
+##     res <- x
+##     for (name in names(x@data)) {
+##         if (is.vector(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look]
+##         } else if (is.matrix(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look,]
+##         } else if (is.array(x@data[[name]])) {
+##             res@data[[name]] <- x@data[[name]][look,,]
+##         } else {
+##             res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+##         }
+##     }
+##     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+##     res 
+## }
 
-coordinate <- function(x)
-{
-    if (inherits(x, "adp") || inherits(x, "adv"))
-        x@metadata$oceCoordinate
-    else {
-        warning("unknown object type; it must inherit from either \"adv\" or \"adp\"")
-        NULL
-    }
-}
 
-is.beam <- function(x)
-{
-    if (inherits(x, "adp") || inherits(x, "adv"))
-        return(x@metadata$oceCoordinate == "beam")
-    else {
-        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
-        return(FALSE)
-    }
-}
 
-is.xyz <- function(x)
-{
-    if (inherits(x, "adp") || inherits(x, "adv"))
-        return(x@metadata$oceCoordinate == "xyz")
-    else {
-        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
-        return(FALSE)
-    }
-}
-is.enu <- function(x)
-{
-    if (inherits(x, "adp") || inherits(x, "adv"))
-        return(x@metadata$oceCoordinate == "enu")
-    else {
-        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
-        return(FALSE)
-    }
-}
-
+#' Get names of Acoustic-Doppler Beams
+#' 
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param which an integer indicating beam number.
+#' @return A character string containing a reasonable name for the beam, of the
+#' form \code{"beam 1"}, etc., for beam coordinates, \code{"east"}, etc. for
+#' enu coordinates, \code{"u"}, etc. for \code{"xyz"}, or \code{"u'"}, etc.,
+#' for \code{"other"} coordinates.  The coordinate system is determined
+#' with \code{x[["coordinate"]]}.
+#' @author Dan Kelley
+#' @seealso This is used by \code{\link{read.oce}}.
+#' @family things related to \code{adp} data
+#' @family things related to \code{adv} data
 beamName <- function(x, which)
 {
     if (x@metadata$oceCoordinate == "beam") {
@@ -691,6 +755,29 @@ beamName <- function(x, which)
     }
 }
 
+
+#' Read an ADP File
+#' 
+#' Read an ADP data file, producing an \code{adp} object, i.e. one inheriting
+#' from \code{\link{adp-class}}.
+#' 
+#' Several file types can be handled.  Some of
+#' these functions are wrappers that map to device names, e.g.
+#' \code{read.aquadoppProfiler} does its work by calling
+#' \code{read.adp.nortek}; in this context, it is worth noting that the
+#' ``aquadopp'' instrument is a one-cell profiler that might just as well have
+#' been documented under the heading \code{\link{read.adv}}.
+#'
+#' @param manufacturer a character string indicating the manufacturer, used by
+#' the general function \code{read.adp} to select a subsidiary function to use,
+#' such as \code{read.adp.nortek}.
+#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' anomalous spikes in heading, etc.
+#' @template adpTemplate
+#'
+#' @author Dan Kelley and Clark Richards
+#'
+#' @family things related to \code{adp} data
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      longitude=NA, latitude=NA, 
                      manufacturer=c("rdi", "nortek", "sontek"),
@@ -723,6 +810,275 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 
+#' Plot ADP Data
+#' 
+#' Create a summary plot of data measured by an acoustic doppler profiler.
+#' 
+#' The plot may have one or more panels, with the content being controlled by
+#' the \code{which} argument.
+#' 
+#' \itemize{
+#' 
+#' \item \code{which=1:4} (or \code{which="u1"} to \code{"u4"}) yield a
+#' distance-time image plot of a velocity component.  If \code{x} is in
+#' \code{beam} coordinates (signalled by
+#' \code{metadata$oce.coordinate=="beam"}), this will be the beam velocity,
+#' labelled \code{b[1]} etc.  If \code{x} is in xyz coordinates (sometimes
+#' called frame coordinates, or ship coordinates), it will be the velocity
+#' component to the right of the frame or ship (labelled \code{u} etc).
+#' Finally, if \code{x} is in \code{"enu"} coordinates, the image will show the
+#' the eastward component (labelled \code{east}).  If \code{x} is in
+#' \code{"other"} coordinates, it will be component corresponding to east,
+#' after rotation (labelled \code{u\'}).  Note that the coordinate is set by
+#' \code{\link{read.adp}}, or by \code{\link{beamToXyzAdp}},
+#' \code{\link{xyzToEnuAdp}}, or \code{\link{enuToOtherAdp}}.
+#' 
+#' \item \code{which=5:8} (or \code{which="a1"} to \code{"a4"}) yield
+#' distance-time images of backscatter intensity of the respective beams.  (For
+#' data derived from Teledyn-RDI instruments, this is the item called ``echo
+#' intensity.'')
+#' 
+#' \item \code{which=9:12} (or \code{which="q1"} to \code{"q4"}) yield
+#' distance-time images of signal quality for the respective beams.  (For RDI
+#' data derived from instruments, this is the item called ``correlation
+#' magnitude.'')
+#' 
+#' \item \code{which=60} or \code{which="map"} draw a map of location(s).
+#' 
+#' \item \code{which=70:73} (or \code{which="g1"} to \code{"g4"}) yield
+#' distance-time images of percent-good for the respective beams.  (For data
+#' derived from Teledyne-RDI instruments, which are the only instruments that
+#' yield this item, it is called ``percent good.'')
+#' 
+#' \item \code{which=13} (or \code{which="salinity"}) yields a time-series plot
+#' of salinity.
+#' 
+#' \item \code{which=14} (or \code{which="temperature"}) yields a time-series
+#' plot of temperature.
+#' 
+#' \item \code{which=15} (or \code{which="pressure"}) yields a time-series plot
+#' of pressure.
+#' 
+#' \item \code{which=16} (or \code{which="heading"}) yields a time-series plot
+#' of instrument heading.
+#' 
+#' \item \code{which=17} (or \code{which="pitch"}) yields a time-series plot of
+#' instrument pitch.
+#' 
+#' \item \code{which=18} (or \code{which="roll"}) yields a time-series plot of
+#' instrument roll.
+#' 
+#' \item \code{which=19} yields a time-series plot of distance-averaged
+#' velocity for beam 1, rightward velocity, eastward velocity, or
+#' rotated-eastward velocity, depending on the coordinate system.
+#' 
+#' \item \code{which=20} yields a time-series of distance-averaged velocity for
+#' beam 2, foreward velocity, northward velocity, or rotated-northward
+#' velocity, depending on the coordinate system.
+#' 
+#' \item \code{which=21} yields a time-series of distance-averaged velocity for
+#' beam 3, up-frame velocity, upward velocity, or rotated-upward velocity,
+#' depending on the coordinate system.
+#' 
+#' \item \code{which=22} yields a time-series of distance-averaged velocity for
+#' beam 4, for \code{beam} coordinates, or velocity estimate, for other
+#' coordinates.  (This is ignored for 3-beam data.)
+#' 
+#' \item \code{which=23} yields a progressive-vector diagram in the horizontal
+#' plane, plotted with \code{asp=1}.  Normally, the depth-averaged velocity
+#' components are used, but if the \code{control} list contains an item named
+#' \code{bin}, then the depth bin will be used (with an error resulting if the
+#' bin is out of range).
+#' 
+#' \item \code{which=24} yields a time-averaged profile of the first component
+#' of velocity (see \code{which=19} for the meaning of the component, in
+#' various coordinate systems).
+#' 
+#' \item \code{which=25} as for 24, but the second component.
+#' 
+#' \item \code{which=26} as for 24, but the third component.
+#' 
+#' \item \code{which=27} as for 24, but the fourth component (if that makes
+#' sense, for the given instrument).
+#' 
+#' \item \code{which=28} or \code{"uv"} yields velocity plot in the horizontal
+#' plane, i.e. u[2] versus u[1].  If the number of data points is small, a
+#' scattergraph is used, but if it is large, \code{\link{smoothScatter}} is
+#' used.
+#' 
+#' \item \code{which=29} or \code{"uv+ellipse"} as the \code{"uv"} case, but
+#' with an added indication of the tidal ellipse, calculated from the eigen
+#' vectors of the covariance matrix.
+#' 
+#' \item \code{which=30} or \code{"uv+ellipse+arrow"} as the
+#' \code{"uv+ellipse"} case, but with an added arrow indicating the mean
+#' current.
+#' 
+#' \item \code{which=40} or \code{"bottomRange"} for average bottom range from
+#' all beams of the instrument.
+#' 
+#' \item \code{which=41} to \code{44} (or \code{"bottomRange1"} to
+#' \code{"bottomRange4"}) for bottom range from beams 1 to 4.
+#' 
+#' \item \code{which=50} or \code{"bottomVelocity"} for average bottom velocity
+#' from all beams of the instrument.
+#' 
+#' \item \code{which=51} to \code{54} (or \code{"bottomVelocity1"} to
+#' \code{"bottomVelocity4"}) for bottom velocity from beams 1 to 4.
+#' 
+#' \item \code{which=55} (or \code{"heaving"}) for time-integrated,
+#' depth-averaged, vertical velocity, i.e. a time series of heaving.
+#' 
+#' \item \code{which=100} (or \code{"soundSpeed"}) for a time series of sound
+#' speed.
+#' 
+#' } In addition to the above, there are some groupings defined: \itemize{
+#' \item \code{which="velocity"} equivalent to \code{which=1:3} (velocity
+#' components) \item \code{which="amplitude"} equivalent to \code{which=5:7}
+#' (backscatter intensity components) \item \code{which="quality"} equivalent
+#' to \code{which=9:11} (quality components) \item \code{which="hydrography"}
+#' equivalent to \code{which=14:15} (temperature and pressure) \item
+#' \code{which="angles"} equivalent to \code{which=16:18} (heading, pitch and
+#' roll) }
+#' 
+#' The colour scheme for image plots (\code{which} in 1:12) is provided by the
+#' \code{col} argument, which is passed to \code{\link{image}} to do the actual
+#' plotting.  See \dQuote{Examples} for some comparisons.
+#' 
+#' A common quick-look plot to assess mooring movement is to use
+#' \code{which=15:18} (pressure being included to signal the tide, and tidal
+#' currents may dislodge a mooring or cause it to settle).
+#' 
+#' By default, \code{plot,adp-method} uses a \code{zlim} value for the
+#' \code{\link{image}} that is constructed to contain all the data, but to be
+#' symmetric about zero.  This is done on a per-panel basis, and the scale is
+#' plotted at the top-right corner, along with the name of the variable being
+#' plotted. You may also supply \code{zlim} as one of the \dots{} arguments,
+#' but be aware that a reasonable limit on horizontal velocity components is
+#' unlikely to be of much use for the vertical component.
+#' 
+#' A good first step in the analysis of measurements made from a moored device
+#' (stored in \code{d}, say) is to do \code{plot(d, which=14:18)}.  This shows
+#' time series of water properties and sensor orientation, which is helpful in
+#' deciding which data to trim at the start and end of the deployment, because
+#' they were measured on the dock or on the ship as it travelled to the mooring
+#' site.
+#' 
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param which list of desired plot types.  These are graphed in panels
+#' running down from the top of the page.  See \dQuote{Details} for the
+#' meanings of various values of \code{which}.
+#' @param mode a string indicating whether to plot the conventional signal
+#' (\code{normal}) or or, in the special case of Aquadopp single-bin profilers,
+#' possibly the \code{diagnostic} signal.  This argument is ignored except in
+#' the case of Aquadopp instruments.  Perhaps a third option will become
+#' available in the future, for the \code{burst} mode that some instruments
+#' provide.
+#' @param col optional indication of colour(s) to use.  If not provided, the
+#' default for images is \code{oce.colorsPalette(128,1)}, and for lines and
+#' points is black.
+#' @param breaks optional breaks for colour scheme
+#' @param zlim a range to be used as the \code{zlim} parameter to the
+#' \code{\link{imagep}} call that is used to create the image.  If omitted,
+#' \code{zlim} is set for each panel individually, to encompass the data of the
+#' panel and to be centred around zero.  If provided as a two-element vector,
+#' then that is used for each panel.  If provided as a two-column matrix, then
+#' each panel of the graph uses the corresponding row of the matrix; for
+#' example, setting \code{zlim=rbind(c(-1,1),c(-1,1),c(-.1,.1))} might make
+#' sense for \code{which=1:3}, so that the two horizontal velocities have one
+#' scale, and the smaller vertical velocity has another.
+#' @param titles optional vector of character strings to be used as labels for
+#' the plot panels.  For images, these strings will be placed in the right hand
+#' side of the top margin.  For timeseries, these strings are ignored.  If this
+#' is provided, its length must equal that of \code{which}.
+#' @param lwd if the plot is of a time-series or scattergraph format with
+#' lines, this is used in the usual way; otherwise, e.g. for image formats,
+#' this is ignored.
+#' @param type if the plot is of a time-series or scattergraph format, this is
+#' used in the usual way, e.g. \code{"l"} for lines, etc.; otherwise, as for
+#' image formats, this is ignored.
+#' @param ytype character string controlling the type of the y axis for images
+#' (ignored for time series).  If \code{"distance"}, then the y axis will be
+#' distance from the sensor head, with smaller distances nearer the bottom of
+#' the graph.  If \code{"profile"}, then this will still be true for
+#' upward-looking instruments, but the y axis will be flipped for
+#' downward-looking instruments, so that in either case, the top of the graph
+#' will represent the sample nearest the sea surface.
+#' @param adorn list of expressions to be executed for the panels in turn, e.g.
+#' to adorn the plots.  If the number matches the number of panels, then the
+#' strings are applied to the appropriate panels, as they are drawn from
+#' top-left to bottom-right.  If only a single expression is provided, it is
+#' used for all panels.  (See \dQuote{Examples}.)
+#' @param drawTimeRange boolean that applies to panels with time as the
+#' horizontal axis, indicating whether to draw the time range in the top-left
+#' margin of the plot.
+#' @param useSmoothScatter boolean that indicates whether to use
+#' \code{\link{smoothScatter}} in various plots, such as \code{which="uv"}.  If
+#' not provided a default is used, with \code{\link{smoothScatter}} being used
+#' if there are more than 2000 points to plot.
+#' @param missingColor colour used to indicate \code{NA} values in images (see
+#' \code{\link{imagep}}); set to \code{NULL} to avoid this indication.
+#' @template mgpTemplate
+#' @template marTemplate
+#' @param mai.palette margins, in inches, to be added to those calculated for
+#' the palette; alter from the default only with caution
+#' @param tformat optional argument passed to \code{\link{oce.plot.ts}}, for
+#' plot types that call that function.  (See \code{\link{strptime}} for the
+#' format used.)
+#' @param marginsAsImage boolean, \code{TRUE} to put a wide margin to the right
+#' of time-series plots, even if there are no images in the \code{which} list.
+#' (The margin is made wide if there are some images in the sequence.)
+#' @param cex size of labels on axes; see \code{\link[graphics]{par}}("cex").
+#' @param cex.axis see \code{\link[graphics]{par}}("cex.axis").
+#' @param cex.main see \code{\link[graphics]{par}}("cex.main").
+#' @param xlim optional 2-element list for \code{xlim}, or 2-column matrix, in
+#' which case the rows are used, in order, for the panels of the graph.
+#' @param ylim optional 2-element list for \code{ylim}, or 2-column matrix, in
+#' which case the rows are used, in order, for the panels of the graph.
+#' @param control optional list of parameters that may be used for different
+#' plot types.  Possibilities are \code{drawBottom} (a boolean that indicates
+#' whether to draw the bottom) and \code{bin} (a numeric giving the index of
+#' the bin on which to act, as explained in \dQuote{Details}).
+#' @param useLayout set to \code{FALSE} to prevent using \code{\link{layout}}
+#' to set up the plot.  This is needed if the call is to be part of a sequence
+#' set up by e.g. \code{par(mfrow)}.
+#' @param coastline a \code{coastline} object, or a character string naming
+#' one.  This is used only for \code{which="map"}.  See notes at
+#' \code{\link{plot,ctd-method}} for more information on built-in coastlines.
+#' @param span approximate span of map in km
+#' @param main main title for plot, used just on the top panel, if there are
+#' several panels.
+#' @param grid if \code{TRUE}, a grid will be drawn for each panel.  (This
+#' argument is needed, because calling \code{\link{grid}} after doing a
+#' sequence of plots will not result in useful results for the individual
+#' panels.
+#' @param grid.col colour of grid
+#' @param grid.lty line type of grid
+#' @param grid.lwd line width of grid
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @param \dots optional arguments passed to plotting functions.  For example,
+#' supplying \code{despike=TRUE} will cause time-series panels to be de-spiked
+#' with \code{\link{despike}}.  Another common action is to set the colour for
+#' missing values on image plots, with the argument \code{missingColor} (see
+#' \code{\link{imagep}}).  Note that it is an error to give \code{breaks} in
+#' \dots{}, if the formal argument \code{zlim} was also given, because they
+#' could contradict each other.
+#' @return A list is silently returned, containing \code{xat} and \code{yat},
+#' values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
+#' @examples
+#' library(oce)
+#' data(adp)
+#' plot(adp, which=1:3)
+#' plot(adp, which=5, missingColor='gray',
+#' adorn=expression({
+#'     lines(x[["time"]], x[["pressure"]], lwd=3, col='blue')
+#'     }))
+#' plot(adp, which='temperature', tformat='%H:%M')
+#' 
+#' @author Dan Kelley
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{adp} data
 setMethod(f="plot",
           signature=signature("adp"),
           definition=function(x, which=1:dim(x@data$v)[3], mode=c("normal", "diagnostic"),
@@ -772,7 +1128,7 @@ setMethod(f="plot",
                       mode <- 'normal'
                   }
               }
-              oceDebug(debug, "plot.adp(x, which=\"", paste(which, collapse=","),
+              oceDebug(debug, "plot,adp-method(x, which=\"", paste(which, collapse=","),
                        "\", breaks=", if (missing(breaks)) "(missing)" else 
                            paste("c(", paste(breaks, collapse=", "), ")", sep=""),
                        ", mode=\"", mode, "\", ...) {\n", sep="", unindent=1)
@@ -875,7 +1231,7 @@ setMethod(f="plot",
                   main <- rep('', length.out=nw)
               else
                   main <- rep(main, length.out=nw)
-              oceDebug(debug, "later on in plot.adp:\n")
+              oceDebug(debug, "later on in plot,adp-method:\n")
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
 
@@ -1114,7 +1470,7 @@ setMethod(f="plot",
                       tlim <- range(x@data$time)
                       if (which[w] == 13) {
                           if (haveTimeImages) drawPalette(debug=debug-1)
-                          ats <- oce.plot.ts(x@data$time, x@data$salinity,
+                          ats <- oce.plot.ts(x@data$time, x[["salinity"]],
                                              xlim=if(xlimGiven) xlim[w,] else tlim,
                                              ylim=if(ylimGiven) ylim[w,],
                                              xaxs="i",
@@ -1779,7 +2135,7 @@ setMethod(f="plot",
                   }
               }
               par(cex=opar$cex)
-              oceDebug(debug, "} # plot.adp()\n", unindent=1)
+              oceDebug(debug, "} # plot,adp-method()\n", unindent=1)
               if (exists("ats")) {
                   res$xat <- ats$xat
                   res$yat <- ats$yat
@@ -1787,6 +2143,21 @@ setMethod(f="plot",
               invisible(res)
           })
 
+
+
+#' Convert an ADP Object to ENU Coordinates
+#' 
+#' @param x an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param declination magnetic declination to be added to the heading, to get
+#' ENU with N as "true" north.
+#' @template debugTemplate
+#' @author Dan Kelley
+#' @seealso See \code{\link{read.adp}} for notes on functions relating to
+#' \code{"adp"} objects.  Also, see \code{\link{beamToXyzAdp}} and
+#' \code{\link{xyzToEnuAdp}}.
+#' @references
+#' \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+#' @family things related to \code{adp} data
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "toEnuAdp() {\n", unindent=1)
@@ -1804,6 +2175,48 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     x
 }
 
+
+#' Adjust ADP Signal for Spherical Spreading
+#' 
+#' Compensate ADP signal strength for spherical spreading.
+#' 
+#' First, beam echo intensity is converted from counts to decibels, by
+#' multiplying by \code{count2db}.  Then, the signal decrease owing to
+#' spherical spreading is compensated for by adding the term
+#' \eqn{20\log10(r)}{20*log10(r)}, where \eqn{r}{r} is the distance from the
+#' sensor head to the water from which scattering is occuring.  \eqn{r}{r} is
+#' given by \code{x[["distance"]]}.
+#' 
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param count2db a set of coefficients, one per beam, to convert from beam
+#' echo intensity to decibels.
+#' @param asMatrix a boolean that indicates whether to return a numeric matrix,
+#' as opposed to returning an updated object (in which the matrix is cast to a
+#' raw value).
+#' @template debugTemplate
+#' @return An object of \code{\link[base]{class}} \code{"adp"}.
+#' @author Dan Kelley
+#' @references The coefficient to convert to decibels is a personal
+#' communication.  The logarithmic term is explained in textbooks on acoustics,
+#' optics, etc.
+#' @examples
+#' 
+#' library(oce)
+#' data(adp)
+#' plot(adp, which=5) # beam 1 echo intensity
+#' adp.att <- beamUnspreadAdp(adp)
+#' plot(adp.att, which=5) # beam 1 echo intensity
+#' ## Profiles
+#' par(mar=c(4, 4, 1, 1))
+#' a <- adp[["a", "numeric"]]             # second arg yields matrix return value
+#' distance <- adp[["distance"]]
+#' plot(apply(a,2,mean), distance, type='l', xlim=c(0,256))
+#' lines(apply(a,2,median), distance, type='l',col='red')
+#' legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
+#' ## Image
+#' plot(adp.att, which="amplitude",col=oce.colorsJet(100))
+#' 
+#' @family things related to \code{adp} data
 beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALSE, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "beamUnspreadAdp(...) {\n", unindent=1)
@@ -1844,6 +2257,58 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
     res
 }
 
+
+#' Convert ADP From Beam to XYZ Coordinates
+#' 
+#' Convert ADP velocity components from a beam-based coordinate system to a
+#' xyz-based coordinate system.
+#' 
+#' The action depends on the type of object.
+#' 
+#' For a 3-beam \code{aquadopp} object, the beams are transformed into
+#' velocities using the matrix stored in the header.
+#' 
+#' For 4-beam \code{rdi} object, the beams are converted to velocity components
+#' using formulae from section 5.5 of \emph{RD Instruments} (1998), viz. the
+#' along-beam velocity components \eqn{B_1}{B1}, \eqn{B_2}{B2}, \eqn{B_3}{B3},
+#' and \eqn{B_4}{B4} are used to calculate velocity components in a cartesian
+#' system referenced to the instrument using the following formulae:
+#' \eqn{u=ca(B_1-B_2)}{u=c*a*(B1-B2)}, \eqn{v=ca(B_4-B_3)}{v=c*a*(B4-B3)},
+#' \eqn{w=-b(B_1+B_2+B_3+B_4)}{w=-b*(B1+B2+B3+B4)}, and an estimate of the
+#' error in velocity is calculated using \eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1 +
+#' B2 - B3 - B4)}
+#' 
+#' (Note that the multiplier on \eqn{e}{e} is subject to discussion; RDI
+#' suggests one multiplier, but some oceanographers favour another.)
+#' 
+#' In the above, \eqn{c=1}{c=1} if the beam geometry is convex, and
+#' \eqn{c=-1}{c=-1} if the beam geometry is concave,
+#' \eqn{a=1/(2\sin\theta)}{a=1/(2*sin(theta))},
+#' \eqn{b=1/(4\cos\theta)}{b=1/(4*cos(theta))} and
+#' \eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}, where \eqn{\theta}{theta} is the angle the
+#' beams make to the instrument \dQuote{vertical}.
+#' 
+#' @param x an object of class \code{"adp"}.
+#' @param debug a debugging flag, 0 for no debugging, and higher values for
+#' more and more debugging.
+#' @return An object with the first 3 velocitiy indices having been altered to
+#' represent velocity components in xyz (or instrument) coordinates.  (For
+#' \code{rdi} data, the values at the 4th velocity index are changed to
+#' represent the "error" velocity.)
+#' 
+#' To indicate the change, the value of \code{metadata$oce.orientation} is
+#' changed from \code{beam} to \code{xyz}.
+#' @author Dan Kelley
+#' @seealso See \code{\link{read.adp}} for other functions that relate to
+#' objects of class \code{"adp"}.
+#' @references
+#' 
+#' 1. R D Instruments, 1998. \emph{ADP Coordinate Transformation, formulas and
+#' calculations.} P/N 951-6079-00 (July 1998).
+#' 
+#' 2. WHOI/USGS-provided Matlab code for beam-enu transformation
+#' \url{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
+#' @family things related to \code{adp} data
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 {
     debug <- if (debug > 0) 1 else 0
@@ -1931,6 +2396,81 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
     res
 }
 
+
+#' Convert ADP From XYZ to ENU Coordinates
+#'
+#' Convert ADP velocity components from a xyz-based coordinate system to
+#' an enu-based coordinate system, by using the instrument's recording of
+#' heading, pitch, and roll.
+#'
+#' The first step is to convert the (x,y,z) velocity components (stored in the
+#' three columns of \code{x[["v"]][,,1:3]}) into what RDI [1, pages 11 and 12]
+#' calls "ship" (or "righted") components.  For example, the z coordinate,
+#' which may point upwards or downwards depending on instrument orientation, is
+#' mapped onto a "mast" coordinate that points more nearly upwards than
+#' downward.  The other ship coordinates are called "starboard" and "forward",
+#' the meanings of which will be clear to mariners.  Once the (x,y,z)
+#' velocities are converted to ship velocities, the orientation of the
+#' instrument is extracted from heading, pitch, and roll vectors stored in the
+#' object.  These angles are defined differently for RDI and Sontek profilers.
+#'
+#' The code handles every case individually, based on the table given below.
+#' The table comes from Clark Richards, a former PhD student at Dalhousie
+#' University [2], who developed it based on instrument documentation,
+#' discussion on user groups, and analysis of measurements acquired with RDI
+#' and Sontek acoustic current profilers in the SLEIWEX experiment [3].  In the
+#' table, (X, Y, Z) denote instrument-coordinate velocities, (S, F, M) denote
+#' ship-coordinate velocities, and (H, P, R) denote heading, pitch, and roll.
+#'
+#' \tabular{rrrrrrrrrrrr}{ \strong{Case} \tab \strong{Mfr.} \tab
+#' \strong{Instr.} \strong{Orient.} \tab \strong{H} \tab \strong{P} \tab
+#' \strong{R} \tab \strong{S} \tab \strong{F} \tab \strong{M}\cr 1 \tab RDI
+#' \tab ADCP \tab up \tab H \tab arctan(tan(P)*cos(R)) \tab R \tab -X \tab Y
+#' \tab -Z\cr 2 \tab RDI \tab ADCP \tab down \tab H \tab arctan(tan(P)*cos(R))
+#' \tab -R \tab X \tab Y \tab Z\cr 3 \tab Nortek \tab ADP \tab up \tab H-90
+#' \tab R \tab -P \tab X \tab Y \tab Z\cr 4 \tab Nortek \tab ADP \tab down \tab
+#' H-90 \tab R \tab -P \tab X \tab -Y \tab -Z\cr 5 \tab Sontek \tab ADP \tab up
+#' \tab H-90 \tab -P \tab -R \tab X \tab Y \tab Z\cr 6 \tab Sontek \tab ADP
+#' \tab down \tab H-90 \tab -P \tab -R \tab X \tab Y \tab Z\cr 7 \tab Sontek
+#' \tab PCADP \tab up \tab H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr 8 \tab
+#' Sontek \tab PCADP \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab Z\cr
+#' }
+#'
+#' Finally, a standardized rotation matrix is used to convert from ship
+#' coordinates to earth coordinates.  As described in the RDI coordinate
+#' transformation manual [1, pages 13 and 14], this matrix is based on sines
+#' and cosines of heading, pitch, and roll If \code{CH} and \code{SH} denote
+#' cosine and sine of heading (after adjusting for declination), with similar
+#' terms for pitch and roll using second letters \code{P} and \code{R}, the
+#' rotation matrix is
+#'
+#' \preformatted{ rbind(c( CH*CR + SH*SP*SR, SH*CP, CH*SR - SH*SP*CR), c(-SH*CR
+#' + CH*SP*SR, CH*CP, -SH*SR - CH*SP*CR), c( -CP*SR, SP, CP*CR)) }
+#'
+#' This matrix is left-multiplied by a matrix with three rows, the top a vector
+#' of "starboard" values, the middle a vector of "forward" values, and the
+#' bottom a vector of "mast" values.  Finally, the columns of
+#' \code{data$v[,,1:3]} are filled in with the result of the matrix
+#' multiplication.
+#'
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param declination magnetic declination to be added to the heading after
+#' "righting" (see below), to get ENU with N as "true" north.
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @return An object with \code{data$v[,,1:3]} altered appropriately, and
+#' \code{metadata$oce.orientation} changed from \code{xyz} to \code{enu}.
+#' @author Dan Kelley
+#' @references
+#' 1. RD Instruments, 1998.  \emph{ADCP Coordinate
+#' Transformation, formulas and calculations.} P/N 951-6079-00 (July 1998).
+#'
+#' 2. Clark Richards, 2012, PhD Dalhousie University Department of
+#' Oceanography.
+#'
+#' 3. The SLEIWEX experiment (\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}).
+#'
+#' @family things related to \code{adp} data
 xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
     ##cat("adp.R:xyzToEnuAdp(): called as", paste(deparse(match.call()), sep="", collapse=""), "\n")
@@ -2099,6 +2639,43 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     res
 }
 
+
+#' Convert ADP ENU to Rotated Coordinate
+#' 
+#' Convert ADP velocity components from an enu-based coordinate system to
+#' another system, perhaps to align axes with the coastline.
+#' 
+#' The supplied angles specify rotations to be made around the axes for which
+#' heading, pitch, and roll are defined.  For example, an eastward current will
+#' point southeast if \code{heading=45} is used.
+#' 
+#' The returned value has heading, pitch, and roll matching those of \code{x},
+#' so these angles retain their meaning as the instrument orientation.
+#' 
+#' NOTE: this function works similarly to \code{\link{xyzToEnuAdp}}, except
+#' that in the present function, it makes no difference whether the instrument
+#' points up or down, etc.
+#' 
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param heading number or vector of numbers, giving the angle, in degrees, to
+#' be added to the heading.  See \dQuote{Details}.
+#' @param pitch as \code{heading} but for pitch.
+#' @param roll as \code{heading} but for roll.
+#' @return An object with \code{data$v[,1:3,]} altered appropriately, and
+#' \code{metadata$oce.coordinate} changed from \code{enu} to \code{other}.
+#' @author Dan Kelley
+#' @seealso See \code{\link{read.adp}} for other functions that relate to
+#' objects of class \code{"adp"}.
+#' @references RD Instruments, 1998. \emph{ADP Coordinate Transformation,
+#' formulas and calculations.} P/N 951-6079-00 (July 1998)
+#' @examples
+#' 
+#' library(oce)
+#' data(adp)
+#' o <- enuToOtherAdp(adp, heading=-31.5)
+#' plot(o, which=1:3)
+#' 
+#' @family things related to \code{adp} data
 enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adp"))
@@ -2167,6 +2744,22 @@ display.bytes <- function(b, label="", ...)
     print(b, ...)
 }
 
+
+#' Subtract Bottom Velocity from ADP
+#' 
+#' Subtracts bottom tracking velocities from an \code{"adp"} object. Works for
+#' all coordinate systems (\code{beam}, \code{xyz}, and \code{enu}).
+#' 
+#' @param x an object of class \code{"adp"}, which contains bottom tracking
+#' velocities.
+#' @param debug a flag that, if non-zero, turns on debugging.  Higher values
+#' yield more extensive debugging.  This is passed to called functions, after
+#' subtracting 1.
+#' @author Dan Kelley and Clark Richards
+#' @seealso See \code{\link{read.adp}} for notes on functions relating to
+#' \code{"adp"} objects, and \code{\link{adp-class}} for notes on the ADP
+#' object class.
+## @family things related to \code{adp} data
 subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "subtractBottomVelocity(x) {\n", unindent=1)
@@ -2185,6 +2778,40 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
     res
 }
 
+
+#' Bin-map an ADP object
+#' 
+#' Bin-map an ADP object, by interpolating velocities, backscatter amplitudes,
+#' etc., to uniform depth bins, thus compensating for the pitch and roll of the
+#' instrument.  This only makes sense for ADP objects that are in beam
+#' coordinates.
+#' 
+#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @return An object of \code{\link[base]{class}} \code{"adp"}.
+#' @section Bugs: This only works for 4-beam RDI ADP objects.
+#' @author Dan Kelley and Clark Richards
+#' @seealso See \code{\link{adp-class}} for a discussion of \code{adp} objects
+#' and notes on the many functions dealing with them.
+#' @references The method was devised by Clark Richards for use in his PhD work
+#' at Department of Oceanography at Dalhousie University.
+#' @examples
+#' 
+#' \dontrun{
+#' library(oce)    
+#' beam <- read.oce("adp_rdi_2615.000",
+#'                  from=as.POSIXct("2008-06-26", tz="UTC"),
+#'                  to=as.POSIXct("2008-06-26 00:10:00", tz="UTC"),
+#'                  longitude=-69.73433, latitude=47.88126)
+#' beam2 <- binmapAdp(beam)
+#' plot(enuToOther(toEnu(beam), heading=-31.5))
+#' plot(enuToOther(toEnu(beam2), heading=-31.5))
+#' plot(beam, which=5:8) # backscatter amplitude
+#' plot(beam2, which=5:8)
+#' }
+#' 
+#' @family things related to \code{adp} data
 binmapAdp <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "binmap(x, debug) {\n", unindent=1)

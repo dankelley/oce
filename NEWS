@@ -1,3 +1,18 @@
+0.9-19
+- read.ctd() now obeys missingValue (renamed)
+- improve map projections
+- add renameData()
+- improve support for SBE files
+- remove is.beam(), is.xyz(), is.enu() and coordinate(), since
+  x[["coordinate"]] now permits these simply
+- replace several function-style accessors with [[ style
+- fix test-suite error relating to an rgdal change
+- add handleFlags() as generic plus specifics for ctd and argo classes
+- use S4 documentation, e.g. ?'plot,ctd-method' instead of ?plot.ctd
+- add subset(argo, "adjusted")
+- make read.argo() read all documented data and metadata fields
+- add trimString()
+
 0.9-18
 - improve plot.coastline() and mapPlot()
 - add support for G1SST satellite

@@ -1,4 +1,23 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+
+#' Read a Sontek ADP File
+#'
+#' Read a Sontek acoustic-Dopplerprofiler file [1].
+#"
+#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' anomalous spikes in heading, etc.
+#' @param type A character string indicating the type of instrument.
+#'
+#' @template adpTemplate
+#'
+#' @references
+#' 1. Information about Sontek profilers is available at
+#'
+#' \url{http://www.sontek.com}.
+#'
+#' @author Dan Kelley and Clark Richards
+#'
+#' @family things related to \code{adp} data
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
                             type=c("adp", "pcadp"),
@@ -9,7 +28,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     missing.to <- missing(to)
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
-    bisectSontekAdp <- function(buf, t.find, add=0, debug=0) {
+    bisectSontekAdp<- function(buf, t.find, add=0, debug=0) {
         oceDebug(debug, "bisectSontekAdp(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
         len <- length(profileStart)
         lower <- 1
@@ -388,6 +407,23 @@ sontek.time <- function(t, tz=getOption("oceTz"))
     ISOdatetime(year, month, day, hour, minute, second+milliseconds/1000, tz=tz)
 }
 
+#' Read a serial Sontek ADP file
+#'
+#' Read a Sontek acoustic-Dopplerprofiler file, in a serial form that
+#' is possibly unique to Dalhousie University.
+#'
+#' @param beamAngle angle between instrument axis and beams, in degrees.
+#' @param type A character string indicating the type of instrument.
+#' @param orientation Ooptional character string specifying the orientation of the
+#' sensor, provided for those cases in which it cannot be inferred from the
+#' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
+#' \code{"sideward"}.
+#'
+#' @template adpTemplate
+#'
+#' @author Dan Kelley and Clark Richards
+#'
+#' @family things related to \code{adp} data
 read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                    longitude=NA, latitude=NA,
                                    type=c("adp", "pcadp"),

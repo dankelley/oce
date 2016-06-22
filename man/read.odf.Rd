@@ -2,22 +2,30 @@
 % Please edit documentation in R/odf.R
 \name{read.odf}
 \alias{read.odf}
-\title{Read an ODF file, producing an oce object}
+\title{Read an ODF file}
 \usage{
-read.odf(file, debug = getOption("oceDebug"))
+read.odf(file, columns = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{file}{the file containing the data.}
 
-\item{debug}{a debugging flag, 0 for none, 1 for some debugging}
+\item{columns}{An optional \code{\link{list}} that can be used to convert unrecognized
+data names to resultant variable names.  For example,
+\code{columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))}
+states that a short-name of \code{"salt"} represents salinity, and that the unit is
+as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFNames2oceNames}},
+as appropriate, and takes precendence over the lookup table in that function.}
+
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 }
 \value{
 an object of class \code{oce}. It is up to a calling function to determine what to do with this object.
 }
 \description{
-Read an ODF file, producing an oce object
-}
-\details{
 ODF (Ocean Data Format) is a 
 format developed at the Bedford Institute of Oceanography and also used
 at other Canadian Department of Fisheries and Oceans (DFO) facilities.
@@ -26,7 +34,8 @@ of instrument types. Thus, \code{read.odf}
 is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2015,
 \code{read.odf} is still in development, with features being added as  a 
 project with DFO makes available more files.
-
+}
+\details{
 Note that some elements of the metadata are particular to ODF objects,
 e.g. \code{depthMin}, \code{depthMax} and \code{sounding}, which
 are inferred from ODF items named \code{MIN_DEPTH}, \code{MAX_DEPTH}
@@ -48,9 +57,12 @@ points(odf[['salinity']][bad],odf[['temperature']][bad],col='red',pch=20)
 
 }
 \references{
-Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
+Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
+in June 2011.)
 }
 \seealso{
-\code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF} package is released by the Canadian Department of Fisheries and Oceans.
+\code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
+package is released by the Canadian Department of Fisheries and Oceans.
 }
 

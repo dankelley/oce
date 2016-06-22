@@ -138,13 +138,15 @@ SEXP landsat_numeric_to_bytes(SEXP m, SEXP bits)
   int n = nrow * ncol;
   if (two_byte) {
     if (little_endian) {
+      unsigned int mij_int;
+      unsigned char ms, ls;
       for (int i = 0; i < n; i++) {
-	double mij = mp[i];
-	unsigned int mij_int = (unsigned int)(65535*mij);
-	unsigned char ms = (mij_int & 0xFF00) >> 8;
-	unsigned char ls = mij_int & 0x00FF;
+	//double mij = mp[i];
+	mij_int = (unsigned int)(65535*mp[i]);
+	ms = (mij_int & 0xFF00) >> 8;
+	ls = mij_int & 0x00FF;
 #ifdef DEBUG
-	Rprintf("i %d, m: %f -> %d -> msb 0x%02x lsb 0x%02x (little endian two-byte)\n", i, mij, mij_int, ms, ls);
+	Rprintf("i %d, m: %f -> %d -> msb 0x%02x lsb 0x%02x (little endian two-byte)\n", i, m[i], mij_int, ms, ls);
 #endif
 	lsbp[i] = ls;
 	msbp[i] = ms;
@@ -177,12 +179,14 @@ SEXP landsat_numeric_to_bytes(SEXP m, SEXP bits)
       }
     } else {
       // big endian
+      unsigned int mij_int;
+      unsigned char ls;
       for (int i = 0; i < n; i++) {
-	double mij = mp[i];
-	unsigned int mij_int = (unsigned int)(255*mij);
-	unsigned char ls = mij_int; // & 0x00FF;
+	//double mij = mp[i];
+	mij_int = (unsigned int)(255*mp[i]);
+	ls = mij_int; // & 0x00FF;
 #ifdef DEBUG
-	Rprintf("i=%d   %f -> %d -> lsb 0x%02x (big endian one-byte)\n", i, mij, mij_int, ls);
+	Rprintf("i=%d   %f -> %d -> lsb 0x%02x (big endian one-byte)\n", i, m[i], mij_int, ls);
 #endif
 	lsbp[i] = ls;
       }

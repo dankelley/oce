@@ -31,6 +31,7 @@ or \code{?"[[<-,adv-method"} to learn more.
 \examples{
 data(adv)
 adv[["v"]] <- 0.001 + adv[["v"]] # add 1mm/s to all velocity components
+
 }
 \seealso{
 A file containing ADV data is usually recognized by Oce, and so
@@ -39,12 +40,12 @@ A file containing ADV data is usually recognized by Oce, and so
     \code{\link{read.adv.nortek}}, \code{\link{read.adv.sontek.adr}} or
     \code{\link{read.adv.sontek.text}}.
 
-    ADV data may be plotted with \code{\link{plot.adv}} function, which is a
+    ADV data may be plotted with \code{\link{plot,adv-method}} function, which is a
     generic function so it may be called simply as \code{plot(x)}, where
     \code{x} is an object inheriting from \code{\link{adv-class}}.
 
     Statistical summaries of ADV data are provided by the generic function
-    \code{\link{summary.adv}}.
+    \code{\link{summary,adv-method}}.
 
     Conversion from beam to xyz coordinates may be done with
     \code{\link{beamToXyzAdv}}, and from xyz to enu (east north up) may be done
@@ -52,5 +53,30 @@ A file containing ADV data is usually recognized by Oce, and so
     transfer either beam or xyz to enu.  Enu may be converted to other
     coordinates (e.g. aligned with a coastline) with
     \code{\link{enuToOtherAdv}}.
+
+Other classes provided by \code{oce}: \code{\link{adp-class}},
+  \code{\link{argo-class}}, \code{\link{bremen-class}},
+  \code{\link{cm-class}}, \code{\link{coastline-class}},
+  \code{\link{ctd-class}}, \code{\link{echosounder-class}},
+  \code{\link{lisst-class}}, \code{\link{lobo-class}},
+  \code{\link{met-class}}, \code{\link{oce-class}},
+  \code{\link{odf-class}}, \code{\link{rsk-class}},
+  \code{\link{sealevel-class}},
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
+
+Other things related to \code{adv} data: \code{\link{[[,adv-method}},
+  \code{\link{[[<-,adv-method}}, \code{\link{adv}},
+  \code{\link{beamName}}, \code{\link{beamToXyz}},
+  \code{\link{enuToOtherAdv}}, \code{\link{enuToOther}},
+  \code{\link{plot,adv-method}},
+  \code{\link{read.adv.nortek}},
+  \code{\link{read.adv.sontek.adr}},
+  \code{\link{read.adv.sontek.serial}},
+  \code{\link{read.adv.sontek.text}},
+  \code{\link{read.adv}}, \code{\link{subset,adv-method}},
+  \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
 

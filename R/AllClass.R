@@ -7,51 +7,44 @@
 #' @slot metadata A list containing information about the data. The 
 #' contents vary across sub-classes, e.g. an \code{\link{adp-class}}
 #' object has information about beam patterns, which obviously would
-#' not make sense for a \code{\link{ctd-class}} object.
+#' not make sense for a \code{\link{ctd-class}} object. In addition,
+#' all classes have items named \code{units} and \code{flags}, used
+#' to store information on the units of the data, and the data quality.
 #' @slot data A list containing the data.
 #' @slot processingLog A list containing time-stamped processing steps,
 #' typically stored in the object by oce functions.
 #'
-#' @seealso
-#' Information on the classes that derive from this base class are found
-#' at the following links:
-#' \code{\link{adp-class}},
-#' \code{\link{adv-class}},
-#' \code{\link{argo-class}},
-#' \code{\link{cm-class}},
-#' \code{\link{coastline-class}},
-#' \code{\link{ctd-class}},
-#' \code{\link{echosounder-class}},
-#' \code{\link{lisst-class}},
-#' \code{\link{lobo-class}},
-#' \code{\link{met-class}},
-#' \code{\link{rsk-class}},
-#' \code{\link{sealevel-class}},
-#' \code{\link{section-class}},
-#' \code{\link{tidem-class}},
-#' \code{\link{topo-class}}, and
-#' \code{\link{windrose-class}}.
-#'
 #' @examples
 #' str(new("oce"))
-#' @keywords classes oce
+#'
+#' @family classes provided by \code{oce}
 setClass("oce",
          representation(metadata="list",
                         data="list",
                         processingLog="list"),
-         prototype=list(metadata=list(filename="", units=list(), flags=list()),
+         prototype=list(metadata=list(units=list(),
+                                      flags=list()),
                         data=list(),
-                        processingLog=list()))
+                        processingLog=list(time=as.POSIXct(Sys.time()),
+                                           value="Create oce object.")
+                        )
+         )
 
 #' Summarize an oce Object
 #'
-#' Provide a summary of some pertinent aspects of the object, including
-#' important elements of its \code{metadata} slot and \code{data} slot,
+#' Provide a textual summary of some pertinent aspects of the object, including
+#' selected components of its \code{metadata} slot, statistical and
+#' dimensional information on the entries in the \code{data} slot,
 #' and a listing of the contents of its \code{processingLog} slot.
-#'
-#' The output is tailored to the object. This is not the way to learn
-#' everything about the object; programmers, for example, will often
-#' use \code{\link{str}} to get more details of the object structure.
+#' The details depend on the class of the object, especially for
+#' the \code{metadata} slot, so it can help to consult the specialized
+#' documentation, e.g. \code{\link{summary,ctd-method}} for CTD objects
+#' (i.e. objects inheriting from \code{\link{ctd-class}}.)
+#' It is important to note that this is not
+#' a good way to learn the details of the object contents. Instead,
+#' for an object named \code{object}, say, one might use \code{\link{str}(object)}
+#' to learn about all the contents, or \code{\link{str}(object[["metadata"]])}
+#' to learn about the \code{metadata}, etc.
 #'
 #' @param object The object to be summarized.
 #' @param ... Extra arguments (ignored)
@@ -59,38 +52,37 @@ setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
               names <- names(object@data)
-              isTime <- grepl("^time", names, ignore.case=TRUE)
+              isTime <- grepl("^time", names, ignore.case=TRUE) # pass timestampIMU
               if (any(isTime)) {
                   time <- object@data[[which(isTime)[1]]]
+                  ## Times are always in POSIXct, so the length() does something useful
                   if (inherits(time, "POSIXt") && length(time) > 0) {
                       from <- min(time, na.rm=TRUE)
                       to <- max(time, na.rm=TRUE)
+                      nt <- length(time)
                       deltat <- mean(diff(as.numeric(time)), na.rm=TRUE)
                       if (is.na(deltat)) {
                           cat("* Time:               ", format(from), "\n")
                       } else {
                           if (deltat < 60) {
-                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat, "s\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean step", deltat, "s\n")
                           } else if (deltat < 3600) {
-                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/60, "min\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean step", deltat/60, "min\n")
                           } else if (deltat < 24*3600) {
-                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600, "hours\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean step", deltat/3600, "hours\n")
                           } else {
-                              cat("* Time ranges from", format(from), "to", format(to), "with mean increment", deltat/3600/24, "days\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean step", deltat/3600/24, "days\n")
                           }
                       }
                   }
               }
               ndata <- length(object@data)
+              threes <- NULL
               if (ndata > 0) {
-                  threes <- matrix(nrow=sum(!isTime), ncol=3)
+                  threes <- matrix(nrow=length(names), ncol=4)
                   ii <- 1
                   for (i in 1:ndata) {
-                      ##message("i: ", i, ", name: ", names(object@data)[i])
-                      if (isTime[i])
-                          next
-                      if (any(is.finite(object@data[[i]])))
-                          threes[ii,] <- threenum(object@data[[i]])
+                      threes[ii,] <- threenum(object@data[[i]])
                       ii <- ii + 1
                   }
                   ##rownames(threes) <- paste("   ", names[!isTime])
@@ -115,13 +107,14 @@ setMethod(f="summary",
                                              }
                                              res <- as.character(res)
                                              ##> message("1. res: '", res, "'")
-                                             ## Clean up notation
+                                             ## Clean up notation, by stages. (The order may matter.)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+C", "\u00B0C", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+F", "\u00B0F", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+E", "\u00B0E", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+W", "\u00B0W", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+N", "\u00B0N", res)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+S", "\u00B0S", res)
+                                             if (nchar(res)) res <- gsub("percent", "%", res)
                                              ##> message("res: '", res, "'")
                                              if (nchar(res)) res <- gsub("degree", "\u00B0", res)
                                              ##> message("res: '", res, "'")
@@ -131,8 +124,9 @@ setMethod(f="summary",
                                              if (nchar(res)) res <- gsub("mu . ", "\u03BC", res)
                                              ##> message("4. res: '", res, "'")
                                              if (nchar(res)) res <- gsub("per . mil", "\u2030", res)
+                                             if (nchar(res)) res <- gsub("10\\^\\(-8\\)[ ]*\\*", "10\u207B\u2078", res) 
                                              ##> message("5. res: '", res, "'")
-                                             if (nchar(res)) res <- gsub("\\^2", "\u00B3", res)
+                                             if (nchar(res)) res <- gsub("\\^2", "\u00B2", res)
                                              ##> message("6. res: '", res, "'")
                                              if (nchar(res)) res <- gsub("\\^3", "\u00B3", res)
                                              ##> message("7. res: '", res, "'")
@@ -141,49 +135,83 @@ setMethod(f="summary",
                                          }))
                   names(units) <- unitsNames
                   ##> message("units:");str(units)
-                  rownames(threes) <- paste("    ", dataLabel(names[!isTime], units))
-                  colnames(threes) <- c("Min.", "Mean", "Max.")
-                  cat("* Statistics of data\n```\n")
-                  print(threes, indent='')
-                  cat("```\n")
+                  if (!is.null(threes)) {
+                      rownames(threes) <- paste("    ", dataLabel(names, units))
+                      colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
+                      cat("* Statistics of data\n```\n")
+                      OriginalName <- object@metadata$dataNamesOriginal
+                      ##print(OriginalName)
+                      ## I'm not sure the following will ever happen, if we always remember
+                      ## to use ctdAddColumn(), but I don't want names getting recycled, so
+                      ## the next if-block prevents that.
+                      if (length(OriginalName) < length(names))
+                          OriginalName <- c(OriginalName, rep("-", length(names)-length(OriginalName)))
+                      ##print(OriginalName)
+                      OriginalName[0==nchar(OriginalName, "bytes")] <- "-"
+                      if (!is.null(OriginalName)) {
+                          threes <- cbind(threes, OriginalName)
+                      }
+                      owidth <- options('width')
+                      options(width=150) # make wide to avoid line breaks
+                      print(threes, quote=FALSE, indent='')
+                      options(width=owidth$width)
+                      cat("```\n")
+                  }
               }
               processingLogShow(object)
               invisible(threes)
           })
 
-setClass("bremen", contains="oce") # 20150528 may be called "geomar" or something later
-setClass("cm", contains="oce")
-setClass("coastline", contains="oce")
-setClass("ctd", contains="oce")
-setClass("echosounder", contains="oce")
-setClass("gps", contains="oce")
-setClass("ladp", contains="oce")
-setClass("landsat", contains="oce")
-setClass("lisst", contains="oce")
-setClass("lobo", contains="oce")
-setClass("met", contains="oce")
-setClass("odf", contains="oce")
-setClass("rsk", contains="oce")
-setClass("sealevel", contains="oce")
-setClass("section", contains="oce")
-setClass("tidem", contains="oce")
-setClass("topo", contains="oce")
-setClass("windrose", contains="oce")
 
+
+setClass("satellite", contains="oce") # both amsr and landsat stem from this
+
+
+#' Plot an oce Object
+#'
+#' @description
+#' This creates a \code{\link{pairs}} plot of the elements in the \code{data}
+#' slot, if there are more than 2 elements there, or a simple xy plot if 2
+#' elements, or a histogram if 1 element.
+#'
+#' @param x A basic \code{oce} object, i.e. one inheriting from \code{\link{oce-class}},
+#' but not from any subclass of that (because these subclasses go to the subclass
+#' plot methods, e.g. a \code{\link{ctd-class}} object would go to
+#' \code{\link{plot,ctd-method}}.
+#' @param y Ignored; only present here because S4 object for generic \code{plot}
+#' need to have a second parameter before the \code{...} parameter.
+#' @param ... Passed to \code{\link{hist}}, \code{\link{plot}}, or to 
+#" \code{\link{pairs}}, according to whichever does the plotting.
+#' @examples
+#' library(oce)
+#' o <- new("oce")
+#' o <- oceSetData(o, 'x', rnorm(10))
+#' o <- oceSetData(o, 'y', rnorm(10))
+#' o <- oceSetData(o, 'z', rnorm(10))
+#' plot(o)
+setMethod(f="plot",
+          signature="oce",
+          definition=function(x, y, ...) {
+              n <- length(x@data)
+              if (n == 1)
+                  hist(x@data[[1]])
+              else if (n == 2)
+                  plot(x@data[[1]], x@data[[2]])
+              else if (n > 2)
+                  pairs(x@data, ...)
+              else
+                  warning("no data to plot\n")
+          })
 
 #' Subset an oce Object
 #'
+#' @description
 #' This is a basic class for general oce objects.  It has specialised
-#' versions for most sub-classes, e.g. \code{\link{subset.ctd}} will
-#' be used if \code{subset} is called for an object that inherits from
-#' \code{ctd}; type \code{showMethods('subset')} to see a list of objects
-#' that have specialized methods, and then e.g. type \code{?subset.ctd}
-#' to get help on the method for objects inheriting from the
-#' \code{\link{ctd-class}}.
+#' versions for most sub-classes, e.g. \code{\link{subset,ctd-method}} 
+#' for \code{ctd} objects.
 #'
-#' @aliases subset.oce
 #' @param x An oce object.
-#' @param subset A logical expression indicating how to take the subset (depends on the sub-class).
+#' @param subset A logical expression indicating how to take the subset; the form depends on the sub-class.
 #' @param ... Ignored.
 #' @return An oce object.
 #' @examples
@@ -212,6 +240,7 @@ setMethod(f="subset",
 
 #' Extract Something From an oce Object
 #'
+#' @description
 #' The named item is sought first in
 #' \code{metadata}, where an exact match to the name is required. If
 #' it is not present in the \code{metadata} slot, then a partial-name
@@ -237,16 +266,18 @@ setMethod(f="[[",
           definition=function(x, i, j, ...) {
               if (i == "metadata") {
                   return(x@metadata)
-              } else if (length(grep("Unit$", i))) { # returns a list
+              } else if (i == "data") {
+                  return(x@data)
+              } else if (i == "processingLog") {
+                  return(x@processingLog)
+               } else if (length(grep("Unit$", i))) { # returns a list
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$","",i)]] else x@metadata[[i]])
               } else if (length(grep(" unit$", i))) { # returns just the unit, an expression
                   return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub(" unit$","",i)]][[1]] else "")
               } else if (length(grep(" scale$", i))) { # returns just the scale, a character string
                   return(if ("units" %in% names(x@metadata)) as.character(x@metadata$units[[gsub(" scale$","",i)]][[2]]) else "")
-              } else if (i == "data") {
-                  return(x@data)
-              } else if (i == "processingLog") {
-                  return(x@processingLog)
+              } else if (length(grep("Flag$", i))) { # returns a list
+                  return(if ("flags" %in% names(x@metadata)) x@metadata$flags[[gsub("Flag$","",i)]] else NULL)
               } else {
                   ## metadata must match exactly but data can be partially matched
                   if (i %in% names(x@metadata))
@@ -261,59 +292,36 @@ setMethod(f="[[",
               }
           })
 
-#' Change Something Within an oce Object
-#'
-#' @description
-#' This is a base function that can be used to change items
-#' in the \code{metadata} or \code{data} slot of an
-#' object of the \code{\link{oce-class}}. See 
-#' \dQuote{Details} for the case in which both slots
-#' contain an item of the given name.
-#'
-#' The first step is to an item of the indicated name. First,
-#' it is sought in the \code{metadata} slot, and if it is found
-#' there, then that value is altered. If it is not found there,
-#' it is sought in the \code{data} slot and modified there.
-#'
-#'
-#' @param x An oce object.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#' @param value The value to be inserted into \code{x}.
-#'
-#' @examples
-#' data(ctd)
-#' summary(ctd)
-#' # Move the CTD profile a nautical mile north,
-#' ctd[["latitude"]] <- 1/60 + ctd[["latitude"]] # in metadata
-#' # Increase the salinity by 0.01.
-#' ctd[["salinity"]] <- 0.01 + ctd[["salinity"]] # in data
-#' summary(ctd)
+#' @title Replace Parts of an Oce Object
+#' @param x An \code{oce} object, i.e. inheriting from \code{\link{oce-class}}.
+#' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="oce", i="ANY", j="ANY"),
           function(x, i, j, ..., value) { # FIXME: use j for e.g. times
+              ## message("in base [[<-")
+              ## message("i: ", as.character(i))
+              ## message("value: ", paste(value, collapse=" "))
               ## metadata must match exactly but data can be partially matched
-              if (i %in% names(x@metadata)) {
+              if (i == "metadata") {
+                  x@metadata <- value
+              } else if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
               } else {
-                  index <- pmatch(i, names(x@data))
-                  if (!is.na(index[1])) {
-                      x@data[[index]] <- value
-                  } else if (length(grep("Unit$", i))) {
-                      if ("units" %in% names(x@metadata))
-                          x@metadata$units[[gsub("Unit$", "", i)]] <- value
-                      else
-                          x@metadata[[i]] <- value
-                  } else if (i == "processingLog") {
-                      if (0 == length(x@processingLog)) {
-                          x@processingLog <- list(time=as.POSIXct(Sys.time(), tz="UTC"), value=value)
-                      } else {
-                          x@processingLog$time <- c(x@processingLog$time, as.POSIXct(Sys.time(), tz="UTC"))
-                          x@processingLog$value <- c(x@processingLog$value, value)
-                      }
+                  if (length(grep("Unit$", i))) {
+                      if (!("units" %in% names(x@metadata)))
+                          x@metadata$units <- list()
+                      x@metadata$units[[gsub("Unit$", "", i)]] <- value
+                  } else if (length(grep("Flag$", i))) {
+                      if (!("flags" %in% names(x@metadata)))
+                          x@metadata$flags <- list()
+                      x@metadata$flags[[gsub("Flag$", "", i)]] <- value
                   } else {
-                      warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
+                      index <- pmatch(i, names(x@data))
+                      if (!is.na(index[1])) {
+                          x@data[[index]] <- value
+                      } else {
+                          warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
+                      }
                   }
               }
               validObject(x)
@@ -323,8 +331,9 @@ setMethod(f="[[<-",
 setValidity("oce",
             function(object) {
                 slotNames <- slotNames(object)
-                if (length(slotNames) != 3) {
-                    cat("should be 3 slots, but there are", length(slotNames), "\n")
+                nslots <- length(slotNames)
+                if (nslots !=3) {
+                    cat("should be 3 slots, but there are", nslots, "\n")
                     return(FALSE)
                 }
                 for (name in c("metadata", "data", "processingLog")) {
@@ -384,4 +393,100 @@ setMethod(f="show",
               }
           })
 
+#' @title Handle flags in oce objects
+#' @details
+#' Each specialized variant of this function has its own defaults
+#' for \code{flags} and \code{actions}.
+#' @param object An object of \code{\link{oce}}.
+#' @template handleFlagsTemplate
+setGeneric("handleFlags", function(object, flags, actions) {
+           standardGeneric("handleFlags")
+         })
 
+#' Signal erroneous application to non-oce objects
+#' @param object A vector, which cannot be the case for \code{oce} objects.
+#' @param flags Ignored.
+#' @param actions Ignored.
+setMethod("handleFlags",
+          c(object="vector", flags="ANY", actions="ANY"),
+          function(object, flags=list(), actions=list()) {
+              stop("handleFlags() can only be applied to objects inheriting from \"oce\"")
+          })
+
+handleFlagsInternal <- function(object, flags, actions) {
+    debug <- options('oceDebug')$oceDebug # avoid an arg for this
+    if (missing(flags)) {
+        warning("no flags supplied (internal error; report to developer)\n")
+        return(object)
+    }
+    if (missing(actions)) {
+        warning("no actions supplied (internal error; report to developer)\n")
+        return(object)
+    }
+    if (any(names(flags)!=names(actions)))
+        stop("names of flags must match those of actions")
+    if (debug > 1) {
+        cat("in handleFlagsInternal, flags=\n")
+        str(flags)
+        cat("in handleFlagsInternal, actions=\n")
+        str(actions)
+    }
+    if (debug > 1) {
+        cat("flags follows...\n")
+        print(flags)
+        cat("actions follows...\n")
+        print(actions)
+    }
+    if (!is.null(object@metadata$flags) && length(object@metadata$flags)) {
+        all <- is.null(names(flags)) # "ALL" %in% names(flags)
+        if (all && length(flags) > 1)
+            stop("if first flag is unnamed, no other flags can be specified")
+        if (all && (length(actions) > 1 || !is.null(names(actions))))
+            stop("if flags is a list of a single unnamed item, actions must be similar")
+        if (debug > 1)
+            message("all: ", all)
+        for (name in names(object@data)) {
+            if (debug > 1)
+                cat(" ", name)
+            flagsObject <- object@metadata$flags[[name]]
+            if (!is.null(flagsObject)) {
+                ##> message("name: ", name, ", flags: ", paste(object@metadata$flags[[name]], collapse=" "))
+                flagsThis<- if (all) flags[[1]] else flags[[name]]
+                actionsThis <- if (all) actions[[1]] else actions[[name]]
+                ##> message("flagsThis:");print(flagsThis)
+                if (name %in% names(object@metadata$flags)) {
+                    actionNeeded <- object@metadata$flags[[name]] %in% flagsThis
+                    if (debug > 0)
+                        print(data.frame(flagsObject=flagsObject, actionNeeded=actionNeeded))
+                    if (any(actionNeeded)) {
+                        if (debug > 1) {
+                            message("\nactionsThis follows...")
+                            print(actionsThis)
+                        }
+                        if (is.function(actionsThis)) {
+                            object@data[[name]][actionNeeded] <- actionsThis(object)[actionNeeded]
+                        } else if (is.character(actionsThis)) {
+                            if (actionsThis == "NA") {
+                                object@data[[name]][actionNeeded] <- NA
+                            } else {
+                                stop("the only permitted character action is 'NA'")
+                            }
+                        } else {
+                            stop("action must be a character string or a function")
+                        }
+                    } else {
+                        if (debug > 0)
+                            message("\nno action needed")
+                    }
+                }
+            }
+        }
+    }
+    object@processingLog <- processingLogAppend(object@processingLog,
+                                                paste("handleFlags(flags=",
+                                                      substitute(flags, parent.frame()),
+                                                      ", actions=",
+                                                      substitute(actions, parent.frame()),
+                                                      ")", collapse=" ", sep=""))
+    object
+}

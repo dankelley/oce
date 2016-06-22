@@ -2,28 +2,34 @@
 % Please edit documentation in R/oce.R
 \name{as.oce}
 \alias{as.oce}
-\title{Coerce Something Into an oce Object}
+\title{Coerce Something Into an Oce Object}
 \usage{
-as.oce(x)
+as.oce(x, ...)
 }
 \arguments{
 \item{x}{an item containing data. This may be data frame, list, or an oce object.}
+
+\item{\dots}{optional extra arguments, passed to conversion functions \code{\link{as.coastline}} or \code{\link{ODF2oce}}, if these are used.}
 }
 \value{
-an object inherting from \code{\link{oce-class}}.
+\code{as.oce} returns an object inheriting from \code{\link{oce-class}}.
 }
 \description{
-Coerce Something Into an oce Object
+Coerce Something Into an Oce Object
 }
 \details{
 This function is limited and not intended for common use.
 In most circumstances, users should employ a function such
 as \code{\link{as.ctd}} to construct specialized oce sub-classes.
 
-\code{as.ctd} creates an oce object from data contained within its
+\code{as.oce} creates an oce object from data contained within its
 first argument, which may be a list, a data frame, or an object
 of \code{\link{oce-class}}.  (In the last case, \code{x} is 
 simply returned, without modification.)
+
+If \code{x} is a list containing items named \code{longitude} and
+\code{latitude}, then \code{\link{as.coastline}} is called (with
+the specified \dots value) to create a coastline object.
 
 If \code{x} is a list created by \code{read_odf} from the (as
 yet unreleased) ODF package developed by the Bedford Institute of

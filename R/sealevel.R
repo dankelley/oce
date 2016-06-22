@@ -1,3 +1,97 @@
+#' @title Class to Store Sealevel Data
+#' 
+#' @description
+#' Class to store sealevel data, e.g. from a tide gauge, with standard slots
+#' \code{metadata}, \code{data} and \code{processingLog}.
+#' 
+#' @section Methods: Data may be accessed as e.g.  \code{sealevel[["time"]]},
+#' where the string could also be e.g.  \code{"elevation"} for the
+#' corresponding sea-level elevation, or e.g.  \code{"longitude"} or
+#' \code{"latitude"} for scalars.  Items in \code{metadata} must be specifield
+#' by full name, but those in \code{data} may be abbreviated, so long as the
+#' abbreviation is unique.
+#' 
+#' Everything that may be accessed may also be assigned, e.g.
+#' \code{sealevel[["elevation"]] <- value}.
+#' 
+#' The \code{show} method displays information about the object, while
+#' \code{\link{summary,sealevel-method}} provides a statistical summary.
+#' @author Dan Kelley
+#' @family classes provided by \code{oce}
+#' @family things related to \code{sealevel} data
+setClass("sealevel", contains="oce")
+
+
+#' @title Sealevel data for Halifax Harbour
+#' 
+#' @description
+#' This sample sea-level dataset is the 2003 record from Halifax Harbour in
+#' Nova Scotia, Canada.  For reasons that are not mentioned on the data archive
+#' website, the record ends on the 8th of October.
+#' 
+#' @name sealevel
+#' @docType data
+#' @author Dan Kelley
+#' @source The data were created as \preformatted{ sealevel <-
+#' read.oce("490-01-JAN-2003_slev.csv") sealevel <- oce.edit(sealevel,
+#' "longitude", -sealevel[["longitude"]], reason="Fix longitude hemisphere") }
+#' where the csv file was downloaded from [1]. Note the correction of longitude
+#' sign, which is required because the data file has no indication that this is
+#' the western hemisphere.
+#'
+#' @references
+#' 1. Fisheries and Oceans Canada \url{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
+#'
+#' @family datasets provided with \code{oce}
+#' @family things related to \code{sealevel} data
+NULL
+
+#' Sea-level data set acquired in 1975 at Tuktoyaktuk
+#' 
+#' This sea-level dataset is provided with in Appendix 7.2 of Foreman (1977)
+#' and also with the \code{T_TIDE} package (Pawlowicz et al., 2002). It results
+#' from measurements made in 1975 at Tuktoyaktuk, Northwest Territories,
+#' Canada.
+#' 
+#' The data set contains 1584 points, some of which have NA for sea-level
+#' height.
+#' 
+#' Although Foreman's Appendix 7.2 states that times are in Mountain standard
+#' time, the timezone is set to \code{UTC} in the present case, so that the
+#' results will be similar to those he provides in his Appendix 7.3.
+#' 
+#' @name sealevelTuktoyaktuk
+#' @docType data
+
+#' @references Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
+#' prediction.  Pacific Marine Science Report 77-10, Institute of Ocean
+#' Sciences, Patricia Bay, Sidney, BC, 58pp.
+#' 
+#' Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.  Classical tidal
+#' harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
+#' Computers and Geosciences, 28, 929-937.
+#' @source The data were based on the \code{T_TIDE} dataset, which in turn
+#' seems to be based on Appendix 7.2 of Foreman (1977).  Minor editing was on
+#' file format, and then the \code{sealevelTuktoyaktuk} object was created
+#' using \code{\link{as.sealevel}}.
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' data(sealevelTuktoyaktuk)
+#' time <- sealevelTuktoyaktuk[["time"]]
+#' elevation <- sealevelTuktoyaktuk[["elevation"]]
+#' oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2,6))
+#' legend("topleft", legend=c("Tuktoyaktuk (1975)","Detided"),
+#'        col=c("black","red"),lwd=1)
+#' tide <- tidem(sealevelTuktoyaktuk)
+#' detided <- elevation - predict(tide)
+#' lines(time, detided, col="red")
+#' }
+#' 
+#' @family datasets provided with \code{oce}
+#' @family things related to \code{sealevel} data
+NULL
+
 setMethod(f="initialize",
           signature="sealevel",
           definition=function(.Object, elevation, time) {
@@ -11,6 +105,23 @@ setMethod(f="initialize",
           })
 
 
+
+#' @title Summarize a Sealevel Object
+#' 
+#' @description
+#' Summarizes some of the data in a sealevel object.
+#' 
+#' @param object A \code{sealevel} object, i.e. one inheriting from \code{\link{sealevel-class}}.
+#' @param \dots further arguments passed to or from other methods.
+#' @return A matrix containing statistics of the elements of the \code{data}
+#' slot.
+#' @author Dan Kelley
+#' @examples
+#' library(oce)
+#' data(sealevel)
+#' summary(sealevel)
+#' 
+#' @family things related to \code{sealevel} data
 setMethod(f="summary",
           signature="sealevel",
           definition=function(object, ...) {
@@ -30,6 +141,27 @@ setMethod(f="summary",
               callNextMethod()
           })
 
+
+
+#' @title Subset a Sealevel Object
+#' 
+#' @description
+#' This function is somewhat analogous to \code{\link{subset.data.frame}}, but
+#' subsetting is only permitted by time.
+#' 
+#' @param x A \code{sealevel} object, i.e. one inheriting from \code{\link{sealevel-class}}.
+#' @param subset a condition to be applied to the \code{data} portion of
+#' \code{x}.
+#' @param \dots ignored.
+#' @return A new \code{sealevel} object.
+#' @author Dan Kelley
+#' @examples
+#' library(oce)
+#' data(sealevel)
+#' plot(sealevel)
+#' plot(subset(sealevel, time < mean(range(sealevel[['time']]))))
+#' 
+#' @family things related to \code{sealevel} data
 setMethod(f="subset",
           signature="sealevel",
           definition=function(x, subset, ...) {
@@ -48,20 +180,25 @@ setMethod(f="subset",
           })
  
 
+
+#' @title Extract Something From a Sealevel Object
+#' @param x A sealevel object, i.e. one inheriting from \code{\link{sealevel-class}}.
+#' @template sub_subTemplate
+#' @family things related to \code{sealevel} data
 setMethod(f="[[",
           signature(x="sealevel", i="ANY", j="ANY"),
-          definition=function(x, i, j, ...) { # FIXME: use j for e.g. times
+          definition=function(x, i, j, ...) {
               callNextMethod()
           })
 
+#' @title Replace Parts of a Sealevel Object
+#' @param x An \code{sealevel} object, i.e. inheriting from \code{\link{sealevel-class}}
+#' @template sub_subsetTemplate
+#' @family things related to \code{sealevel} data
 setMethod(f="[[<-",
-          signature="sealevel",
-          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
-              if (i %in% names(x@metadata)) x@metadata[[i]] <- value
-              else if (i %in% names(x@data)) x@data[[i]] <- value
-              else stop("there is no item named \"", i, "\" in this sealevel object")
-              validObject(x)
-              invisible(x)
+          signature(x="sealevel", i="ANY", j="ANY"),
+          definition=function(x, i, j, value) {
+              callNextMethod(x=x, i=i, j=j, value=value)
           })
 
 setValidity("sealevel",
@@ -78,6 +215,66 @@ setValidity("sealevel",
             })
 
 
+
+#' @title Coerce Data Into a Sealevel Object
+#' 
+#' @description
+#' Coerces a dataset (minimally, a sequence of times and heights) into a
+#' sealevel dataset.
+#' The arguments are based on the standard data format, as were described in a
+#' file formerly available at [1].
+#' 
+#' @param elevation a list of sea-level heights in metres, in an hourly
+#' sequence.
+#' @param time optional list of times, in POSIXct format.  If missing, the list
+#' will be constructed assuming hourly samples, starting at 0000-01-01
+#' 00:00:00.
+#' @param header a character string as read from first line of a standard data
+#' file.
+#' @param stationNumber three-character string giving station number.
+#' @param stationVersion single character for version of station.
+#' @param stationName the name of station (at most 18 characters).
+#' @param region the name of the region or country of station (at most 19
+#' characters).
+#' @param year the year of observation.
+#' @param longitude the longitude in decimal degrees, positive east of
+#' Greenwich.
+#' @param latitude the latitude in decimal degrees, positive north of the
+#' equator.
+#' @param GMTOffset offset from GMT, in hours.
+#' @param decimationMethod a coded value, with 1 meaning filtered, 2 meaning a
+#' simple average of all samples, 3 meaning spot readings, and 4 meaning some
+#' other method.
+#' @param referenceOffset ?
+#' @param referenceCode ?
+#' @param deltat optional interval between samples, in hours (as for the
+#' \code{\link{ts}} timeseries function). If this is not provided, and \code{t}
+#' can be understood as a time, then the difference between the first two times
+#' is used.  If this is not provided, and \code{t} cannot be understood as a
+#' time, then 1 hour is assumed.
+#' @return An object of \code{\link[base]{class}} \code{"sealevel"} (for
+#' details, see \code{\link{read.sealevel}}).
+#' @author Dan Kelley
+#' @seealso The documentation for \code{\link{sealevel-class}} explains the
+#' structure of sealevel objects, and also outlines the other functions dealing
+#' with them.
+#' @references \code{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (this link
+#' worked for years but failed at least temporarily on December 4, 2016).
+#' @examples
+#' library(oce)
+#' 
+#' # Construct a year of M2 tide, starting at the default time
+#' # 0000-01-01T00:00:00.
+#' h <- seq(0, 24*365)
+#' elevation <- 2.0 * sin(2*pi*h/12.4172)
+#' sl <- as.sealevel(elevation)
+#' summary(sl)
+#' 
+#' # As above, but start at the Y2K time.
+#' time <- as.POSIXct("2000-01-01") + h * 3600
+#' sl <- as.sealevel(elevation, time)
+#' summary(sl)
+#' @family things related to \code{sealevel} data
 as.sealevel <- function(elevation,
                         time,
                         header=NULL,
@@ -131,6 +328,67 @@ as.sealevel <- function(elevation,
     res
 }
 
+
+#' @title Plot Sealevel Data
+#' 
+#' @description
+#' Creates a plot for a sea-level dataset, in one of two varieties.  Depending
+#' on the length of \code{which}, either a single-panel or multi-panel plot is
+#' drawn.  If there is just one panel, then the value of \code{par} used in
+#' \code{plot,sealevel-method} is retained upon exit, making it convenient to add to
+#' the plot.  For multi-panel plots, \code{par} is returned to the value it had
+#' before the call, and so \code{adorn} must be used to add to individual
+#' panels.
+#' 
+#' @param x an object of class \code{"sealevel"}, e.g. as read by
+#' \code{\link{read.sealevel}}.
+#' @param which a numerical or string vector indicating desired plot types,
+#' with possibilities 1 or \code{"all"} for a time-series of all the data, 2 or
+#' \code{"month"} for a time-series of just the first month, 3 or
+#' \code{"spectrum"} for a power spectrum (truncated to frequencies below 0.1
+#' cycles per hour, or 4 or \code{"cumulativespectrum"} for a cumulative
+#' integral of the power spectrum.
+#' @param adorn vector of expressions to be executed for the panels in turn,
+#' e.g. to adorn the plots.  If the number matches the number of panels, then
+#' the strings are applied to the appropriate panels, as they are drawn from
+#' top-left to bottom-right.  If only a single expression is provided, it is
+#' used for all panels. (See \dQuote{Examples}.)
+#' @param drawTimeRange boolean that applies to panels with time as the
+#' horizontal axis, indicating whether to draw the time range in the top-left
+#' margin of the plot.
+#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
+#' for \code{par(mar)}, computed from this.  The default is tighter than the R
+#' default, in order to use more space for the data and less for the axes.
+#' @param mar value to be used with \code{\link{par}("mar")}.
+#' @param marginsAsImage boolean, \code{TRUE} to put a wide margin to the right
+#' of time-series plots, matching the space used up by a palette in an
+#' \code{\link{imagep}} plot.
+#' @param debug a flag that turns on debugging, if it exceeds 0.
+#' @param \dots optional arguments passed to plotting functions.
+#' @return None.
+#' @author Dan Kelley
+#' @seealso The documentation for \code{\link{sealevel-class}} explains the
+#' structure of sealevel objects, and also outlines the other functions dealing
+#' with them.
+#' @references The example refers to Hurricane Juan, which caused a great deal
+#' of damage to Halifax in 2003.  Since this was in the era of the digital
+#' photo, a casual web search will uncover some spectacular images of damage,
+#' from both wind and storm surge. A map of the path of Hurricane Juan across
+#' Nova Scotia is at
+#' \url{http://ec.gc.ca/ouragans-hurricanes/default.asp?lang=En&n=222F51F7-1}
+#' (link checked April 15, 2015). Landfall, very near the site of this sealevel
+#' gauge, was between 00:10 and 00:20 Halifax local time on Monday, Sept 29,
+#' 2003.
+#' @examples
+#' library(oce)
+#' data(sealevel)
+#' ## local Halifax time is UTC + 4h; see [2] on timing
+#' juan <- as.POSIXct("2003-09-29 00:15:00", tz="UTC")+4*3600
+#' plot(sealevel, which=1, xlim=juan+86400*c(-7,7))
+#' abline(v=juan, col='red')
+#' 
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{sealevel} data
 setMethod(f="plot",
           signature=signature("sealevel"),
           definition=function(x, which=1:3,
@@ -144,7 +402,7 @@ setMethod(f="plot",
           {
               oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="", unindent=1)
               dots <- list(...)
-              titlePlot <- function(x)
+              titlePlot<-function(x)
               {
                   title <- ""
                   if (!is.null(x@metadata$stationNumber) || !is.null(x@metadata$stationName) || !is.null(x@metadata$region))
@@ -160,12 +418,12 @@ setMethod(f="plot",
                   if (nchar(title) > 0)
                       mtext(side=3, title, adj=1, cex=2/3)
               }
-              drawConstituent <- function(frequency=0.0805114007,label="M2",col="darkred",side=1)
+              drawConstituent<-function(frequency=0.0805114007,label="M2",col="darkred",side=1)
               {
                   abline(v=frequency, col=col)
                   mtext(label, side=side, at=frequency, col=col, cex=3/4*par("cex"))
               }
-              drawConstituents <- function()
+              drawConstituents<-function()
               {
                   drawConstituent(0.0387306544, "O1", side=1)
                   ##draw.constituent(0.0416666721, "S1", side=3)
@@ -321,6 +579,54 @@ setMethod(f="plot",
           })
 
 
+
+#' @title Read a Sealevel File
+#' 
+#' @description
+#' Read a data file holding sea level data.  BUG: the time vector assumes GMT,
+#' regardless of the GMT.offset value.
+#' 
+#' @details
+#' This function starts by scanning the first line of the file, from which it
+#' determines whether the file is in one of two known formats: type 1, the
+#' format used at the Hawaii archive centre, and type 2, the
+#' comma-separated-value format used by the Marine Environmental Data Service.
+#' (The file type is inferred by checking for the existence of the string
+#' \code{Station_Name} on the first line of the file, indicating type 2.) If
+#' the file is in neither of these formats, the user might wish to scan it
+#' directly, and then to use \code{\link{as.sealevel}} to create a
+#' \code{sealevel} object.
+#' 
+#' @param file a connection or a character string giving the name of the file
+#' to load.  See Details for the types of files that are recognized.
+#' @param tz time zone.  The default value, \code{oceTz}, is set to \code{UTC}
+#' at setup.  (If a time zone is present in the file header, this will
+#' supercede the value given here.)
+#' @param processingLog if provided, the action item to be stored in the log.
+#' (Typically only provided for internal calls; the default that it provides is
+#' better for normal calls by a user.)
+#' @template debugTemplate
+#' @return An object of \code{\link{sealevel-class}}.
+#' @author Dan Kelley
+#' @references The Hawaii archive site at
+#' \code{http://ilikai.soest.hawaii.edu/uhslc/datai.html} provides a graphical
+#' interface for downloading sealevel data in Type 1, with format as described
+#' at \code{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (this link worked
+#' for years but failed at least temporarily on December 4, 2016).  The MEDS
+#' repository (\url{http://www.isdm-gdsi.gc.ca/isdm-gdsi/index-eng.html})
+#' provides Type 2 data.
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' # this yields the sealevel dataset
+#' sl <- read.oce("h275a96.dat")
+#' summary(sl)
+#' plot(sl)
+#' m <- tidem(sl)
+#' plot(m)
+#' }
+#' 
+#' @family things related to \code{sealevel} data
 read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getOption("oceDebug"))
 {
     if (!is.character(file))
@@ -474,5 +780,4 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
                                               paste('read.sealevel(file="', fileOrig, '", tz="', tz, '")', sep="", collapse=""))
     res
 }
-
 

@@ -2,13 +2,13 @@
 % Please edit documentation in R/ctd.R
 \name{ctdAddColumn}
 \alias{ctdAddColumn}
-\title{Add a column to the data slot of a ctd object}
+\title{Add a Column to the Data Slot of a CTD Object}
 \usage{
-ctdAddColumn(x, column, name, label, unit = NULL,
-  debug = getOption("oceDebug"))
+ctdAddColumn(x, column, name, label, unit = NULL, log = TRUE,
+  originalName = "", debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{column}{A column of data to be inserted, in the form of a
 numeric vector, whose length matches that of columns in the
@@ -26,8 +26,18 @@ items \code{unit}, which is an expression, and \code{scale}, which is a
 character string. For example, modern measurements of temperature have
 unit \code{list(name=expression(degree*C), scale="ITS-90")}.}
 
-\item{debug}{A debugging flag; set this to a positive value to get debugging
-information during processing.}
+\item{log}{A logical value indicating whether to store an entry in the processing
+log that indicates this insertion.}
+
+\item{originalName}{string indicating the name of the data element as it was originally. This 
+makes sense only for data being read from a file, where e.g. WOCE or SBE
+names might be used.}
+
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 }
 \value{
 A ctd object.
@@ -39,13 +49,35 @@ slot as appropriate.
 }
 \examples{
 library(oce)
-data(ctd) 
-F <- 32 + (9/5)*ctd[["temperature"]] 
-ctdNew <- ctdAddColumn(ctd, F, "temperatureF", 
+data(ctd)
+F <- 32 + (9/5)*ctd[["temperature"]]
+ctdNew <- ctdAddColumn(ctd, F, "temperatureF",
     unit=list(unit=expression(degree*F), scale="ITS-90"))
+
+}
+\author{
+Dan Kelley
 }
 \seealso{
 The documentation for \code{\link{ctd-class}} explains the structure
    of CTD objects, and also outlines the other functions dealing with them.
+
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
+  \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
+  \code{\link{gps-class}},
+  \code{\link{handleFlags,ctd-method}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
+  \code{\link{plotScan}}, \code{\link{plotTS}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{summary,ctd-method}},
+  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
 

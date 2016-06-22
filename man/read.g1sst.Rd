@@ -2,7 +2,7 @@
 % Please edit documentation in R/g1sst.R
 \name{read.g1sst}
 \alias{read.g1sst}
-\title{Read G1SST satellite data}
+\title{Read a G1SST file}
 \usage{
 read.g1sst(filename)
 }
@@ -13,11 +13,11 @@ read.g1sst(filename)
 An object of \code{\link{g1sst-class}}.
 }
 \description{
-This works with netcdf files as provided by the ERDAPP server [1].
+Read a G1SST file in the netcdf format provided by the ERDAPP server [1].
 }
 \details{
 As noted in the documentation for \code{\link{g1sst-class}}, one
-must be aware of the incorporation of model simulations in the 
+must be aware of the incorporation of model simulations in the
 \code{g1sst} product. For example, the code presented below
 might lead one to believe that the mapped field represents
 observatins, whereas in fact it can be verified by
@@ -52,19 +52,12 @@ Dan Kelley
 }
 \references{
 1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
-2. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
+2. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
 }
 \seealso{
-Other functions dealing with satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{g1sst-class}},
-  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,landsat-method}},
+Other things related to satellite data: \code{\link{g1sst-class}},
   \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.landsat}},
   \code{\link{satellite-class}},
-  \code{\link{summary,amsr-method}},
-  \code{\link{summary,landsat-method}},
   \code{\link{summary,satellite-method}}
 }
 

@@ -1,3 +1,8 @@
+#' @template readAdvTemplate
+#' @param start the time of the first sample, typically created with
+#' \code{\link{as.POSIXct}}.  This may be a vector of times,
+#' if \code{filename} is a vector of file names.
+#' @param deltat the time between samples.
 read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                    longitude=NA, latitude=NA,
                                    start, deltat,
@@ -140,7 +145,11 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     res
 }
 
-read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),      # FIXME (twoTimescales)
+#' @template readAdvTemplate
+#' @param header A logical value indicating whether the file starts with a header.
+#' (This will not be the case for files that are created by data loggers that
+#' chop the raw data up into a series of sub-files, e.g. once per hour.)
+read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 header=TRUE,
                                 longitude=NA, latitude=NA,
                                 debug=getOption("oceDebug"), monitor=FALSE, processingLog)
@@ -607,7 +616,20 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     res
 }
 
-read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz"),
+#' @template readAdvTemplate
+#' @param originalCoordinate character string indicating coordinate system, one
+#' of \code{"beam"}, \code{"xyz"}, \code{"enu"} or \code{"other"}.  (This is
+#' needed for the case of multiple files that were created by a data logger,
+#' because the header information is normally lost in such instances.)
+#' @param transformationMatrix transformation matrix to use in converting beam
+#' coordinates to xyz coordinates.  This will over-ride the matrix in the file
+#' header, if there is one.  An example is \code{rbind(c(2.710, -1.409,
+#' -1.299), c(0.071, 2.372, -2.442), c(0.344, 0.344, 0.344))}.
+#' @section Note on file name:
+#' The \code{file} argument does not actually name a file. It names a basename
+#' for a file. The actual file names are created by appending suffix
+#' \code{.hd1} for one file and \code{.ts1} for another.
+read.adv.sontek.text <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                  originalCoordinate="xyz", transformationMatrix,
                                  longitude=NA, latitude=NA,
                                  debug=getOption("oceDebug"), monitor=FALSE,
@@ -620,9 +642,9 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
         stop("must have \"by\"=1, in this version of the package")
     suffices <- c("hd1", "ts1")
     itemsPerSample <- 16
-    if (missing(basefile))
-        stop("need to supply a basefile, e.g. \"A\" to read \"A.hd1\" and \"A.ts1\"")
-
+    if (missing(file))
+        stop("need to supply a file, e.g. \"A\" to read \"A.hd1\" and \"A.ts1\"")
+    basefile <- file
     hd <- paste(basefile, suffices[1], sep=".")
     ts <- paste(basefile, suffices[2], sep=".")
 

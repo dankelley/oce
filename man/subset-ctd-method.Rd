@@ -3,20 +3,19 @@
 \docType{methods}
 \name{subset,ctd-method}
 \alias{subset,ctd-method}
-\alias{subset.ctd}
-\title{Subset a CTD object}
+\title{Subset a CTD Object}
 \usage{
 \S4method{subset}{ctd}(x, subset, ...)
 }
 \arguments{
-\item{x}{An object inheriting from \code{\link{ctd-class}}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{subset}{An expression indicating how to subset \code{x}.}
 
 \item{...}{Ignored.}
 }
 \value{
-A ctd object.
+A \code{ctd} object.
 }
 \description{
 This function is somewhat analogous to
@@ -30,5 +29,27 @@ library(oce)
 data(ctd)
 plot(ctd)
 plot(subset(ctd, pressure<10))
+
+}
+\author{
+Dan Kelley
+}
+\seealso{
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
+  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
+  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{ctd}}, \code{\link{gps-class}},
+  \code{\link{handleFlags,ctd-method}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
+  \code{\link{plotScan}}, \code{\link{plotTS}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{summary,ctd-method}},
+  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
 

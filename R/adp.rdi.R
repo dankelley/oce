@@ -333,6 +333,44 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     res
 }                                       # decodeHeaderRDI
 
+
+#' Read a Teledyne/RDI ADP File
+#'
+#' Read a Teledyne/RDI ADCP file (called 'adp' in oce).
+#'
+#' If a heading bias had been set with the \code{EB} command during the setup
+#' for the deployment, then a heading bias will have been stored in the file's
+#' header.  This value is stored in the object's metadata as
+#' \code{metadata$heading.bias}.  \strong{Importantly}, this value is
+#' subtracted from the headings stored in the file, and the result of this
+#' subtraction is stored in the objects heading value (in \code{data$heading}).
+#' It should be noted that \code{read.adp.rdi()} was tested for firmware
+#' version 16.30.  For other versions, there may be problems.  For example, the
+#' serial number is not recognized properly for version 16.28.
+#'
+#' In Teledyne/RDI ADP data files, velocities are coded to signed 2-byte integers, with a
+#' scale factor being used to convert to velocity in metres per second.  These
+#' two facts control the maximum recordable velocity and the velocity
+#' resolution, values that may be retrieved for an ADP object name \code{d}
+#' with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
+#' @param testing Logical value, indicating whether 
+#' the time-varying device orientation is to be inferred from the
+#' per-profile header information, and the boolean result is stored in an
+#' integer vector named \code{upward} within the \code{data} slot.
+#' @param type A character string indicating the type of instrument.
+#' @template adpTemplate
+#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' anomalous spikes in heading, etc.
+#' @author Dan Kelley and Clark Richards
+#' @references
+#' 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
+#' format.} P/N 957-6156-00 (November 2007).  (Section 5.3 h details the binary
+#' format, e.g. the file should start with the byte \code{0x7f} repeated twice,
+#' and each profile starts with the bytes \code{0x80}, followed by \code{0x00},
+#' followed by the sequence number of the profile, represented as a
+#' little-endian two-byte short integer.  \code{read.adp.rdi()} uses these
+#' sequences to interpret data files.)
+#' @family things related to \code{adp} data
 read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          longitude=NA, latitude=NA,
                          type=c("workhorse"),

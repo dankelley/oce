@@ -21,8 +21,15 @@ call like \code{\link{swRho}(ctd)}, in which the first argument, which is
 normally \code{salinity} may be an object that contains salinity plus
 the other items that \code{\link{swRho}} expects to see as arguments. This
 shorthand is very helpful in calls to the suite of \code{sw} functions.  If
-this first argument is an object of this sort, then the other arguments 
-are ignored \emph{except} for one named \code{eos}, which is copied if
-it is present.
+this first argument is an object of this sort, then the other arguments
+are ignored \emph{except} for two special cases:
+\itemize{
+\item an item named \code{eos} is copied directly from \code{list}
+\item if the object stores \code{temperature} defined with the IPTS-68
+scale, then \code{\link{T90fromT68}} is used to convert to the ITS-90 scale,
+because this is what is expected in most seawater functions. (For example,
+the RMS difference between these temperature variants is 0.002C for the 
+\code{\link{ctd}} dataset.)
+}
 }
 

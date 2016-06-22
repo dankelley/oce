@@ -19,6 +19,42 @@
 ## 7. the C code suggests the velocityScale is in the second bit of conf.hMode
 ##    but the docs suggest the fifth bit (page 31)
 
+
+
+#' Decode a Nortek Header
+#' 
+#' Decode data in a Nortek ADV or ADP header.
+#' 
+#' Decodes the header in a binary-format Nortek ADV/ADP file.  This function is
+#' designed to be used by \code{\link{read.adp}} and \code{\link{read.adv}},
+#' but can be used directly as well.  The code is based on information in the
+#' Nortek System Integrator Guide (2008) and on postings on the Nortek
+#' ``knowledge center'' discussion board.  One might assume that the latter is
+#' less authorative than the former.  For example, the inference of cell size
+#' follows advice found at
+#' \url{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
+#' (downloaded June 2012)), which contains a typo in an early posting that is
+#' corrected later on.
+#' 
+#' @param buf a ``raw'' buffer containing the header
+#' @param type type of device
+#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
+#' amount of debugging information, or to 2 to get more.
+#' @param \dots additional arguments, passed to called routines.
+#' @return A list containing elements \code{hardware}, \code{head}, \code{user}
+#' and \code{offset}.  The easiest way to find the contents of these is to run
+#' this function with \code{debug=3}.
+#' @author Dan Kelley and Clark Richards
+#' @seealso Most users should employ the functions \code{\link{read.adp}} and
+#' \code{\link{read.adv}} instead of this one.
+#' @references 1. Information on Nortek profilers (including the System
+#' Integrator Guide, which explains the data format byte-by-byte) is available
+#' at \url{http://www.nortekusa.com/}.  (One must join the site to see the
+#' manuals.)
+#' 
+#' 2. The Nortek Knowledge Center
+#' \url{http://www.nortekusa.com/en/knowledge-center} may be of help if
+#' problems arise in dealing with data from Nortek instruments.
 decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aquadopp", "vector"), debug=getOption("oceDebug"), ...)
 {
     type <- match.arg(type)
@@ -272,6 +308,45 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
     list(hardware=hardware, head=head, user=user, offset=o+1)
 }
 
+#' Read a Nortek Aquadopp File
+#'
+#' The R code is based on information in
+#' the Nortek System Integrator Guide (2008) and on postings on the Nortek
+#' ``knowledge center'' discussion board.  One might assume that the latter is
+#' less authoritative than the former.  For example, the inference of cell size
+#' follows advice found at
+#' \url{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
+#' (downloaded June 2012), which contains a typo in an early posting that is
+#' corrected later on.
+#'
+#' @param orientation Optional character string specifying the orientation of the
+#' sensor, provided for those cases in which it cannot be inferred from the
+#' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
+#' \code{"sideward"}.
+#' @param distance Optional vector holding the distances of bin centres from the
+#' sensor.  This argument is ignored except for Nortek profilers, and need not
+#' be given if the function determines the distances correctly from the data.
+#' The problem is that the distance is poorly documented in the Nortek System
+#' Integrator Guide (2008 edition, page 31), so the function must rely on
+#' word-of-mouth formulae that do not work in all cases.
+#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' anomalous spikes in heading, etc.
+#'
+#' @references
+#' 1. Information on Nortek profilers (including the System Integrator Guide,
+#' which explains the data format byte-by-byte) is available at
+#' \url{http://www.nortekusa.com/}.  (One must join the site to see the
+#' manuals.)
+#' 
+#' 2. The Nortek Knowledge Center
+#' \url{http://www.nortekusa.com/en/knowledge-center} may be of help if
+#' problems arise in dealing with data from Nortek instruments.
+#'
+#' @template adpTemplate
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{adp} data
 read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                           longitude=NA, latitude=NA,
                           orientation, distance,
@@ -280,12 +355,51 @@ read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
                            longitude=longitude, latitude=latitude,
-                           type="aquadopp",
-                           orientation=orientation, distance=distance,
+                           type="aquadopp", orientation=orientation, distance=distance,
                            monitor=monitor, despike=despike, processingLog=processingLog,
                            debug=debug, ...))
 }
 
+
+#' Read Nortek Aquadopp-HR File
+#'
+#' The R code is based on information in
+#' the Nortek System Integrator Guide (2008) and on postings on the Nortek
+#' ``knowledge center'' discussion board.  One might assume that the latter is
+#' less authoritative than the former.  For example, the inference of cell size
+#' follows advice found at
+#' \url{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
+#' (downloaded June 2012)), which contains a typo in an early posting that is
+#' corrected later on.
+#'
+#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' anomalous spikes in heading, etc.
+#' @param orientation Optional character string specifying the orientation of the
+#' sensor, provided for those cases in which it cannot be inferred from the
+#' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
+#' \code{"sideward"}.
+#' @param distance Optional vector holding the distances of bin centres from the
+#' sensor.  This argument is ignored except for Nortek profilers, and need not
+#' be given if the function determines the distances correctly from the data.
+#' The problem is that the distance is poorly documented in the Nortek System
+#' Integrator Guide (2008 edition, page 31), so the function must rely on
+#' word-of-mouth formulae that do not work in all cases.
+#'
+#' @references
+#' 1. Information on Nortek profilers (including the System Integrator Guide,
+#' which explains the data format byte-by-byte) is available at
+#' \url{http://www.nortekusa.com/}.  (One must join the site to see the
+#' manuals.)
+#' 
+#' 2. The Nortek Knowledge Center
+#' \url{http://www.nortekusa.com/en/knowledge-center} may be of help if
+#' problems arise in dealing with data from Nortek instruments.
+#'
+#' @template adpTemplate
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{adp} data
 read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
                             orientation=orientation, distance,
@@ -300,6 +414,46 @@ read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                            debug=debug, ...))
 }
 
+
+#' Read a Nortek Aquadopp-Profiler File
+#'
+#' The R code is based on information in
+#' the Nortek System Integrator Guide (2008) and on postings on the Nortek
+#' ``knowledge center'' discussion board.  One might assume that the latter is
+#' less authoritative than the former.  For example, the inference of cell size
+#' follows advice found at
+#' \url{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
+#' (downloaded June 2012)), which contains a typo in an early posting that is
+#' corrected later on.
+#'
+#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' anomalous spikes in heading, etc.
+#' @param orientation Optional character string specifying the orientation of the
+#' sensor, provided for those cases in which it cannot be inferred from the
+#' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
+#' \code{"sideward"}.
+#' @param distance Optional vector holding the distances of bin centres from the
+#' sensor.  This argument is ignored except for Nortek profilers, and need not
+#' be given if the function determines the distances correctly from the data.
+#' The problem is that the distance is poorly documented in the Nortek System
+#' Integrator Guide (2008 edition, page 31), so the function must rely on
+#' word-of-mouth formulae that do not work in all cases.
+#'
+#' @references
+#' 1. Information on Nortek profilers (including the System Integrator Guide,
+#' which explains the data format byte-by-byte) is available at
+#' \url{http://www.nortekusa.com/}.  (One must join the site to see the
+#' manuals.)
+#' 
+#' 2. The Nortek Knowledge Center
+#' \url{http://www.nortekusa.com/en/knowledge-center} may be of help if
+#' problems arise in dealing with data from Nortek instruments.
+#'
+#' @template adpTemplate
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{adp} data
 read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                   longitude=NA, latitude=NA,
                                   orientation, distance,
@@ -314,7 +468,37 @@ read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                            debug=getOption("oceDebug"), ...))
 }
 
-
+#' Read a Nortek ADP File
+#'
+#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' anomalous spikes in heading, etc.
+#' @param type a character string indicating the type of instrument.
+#' @param orientation optional character string specifying the orientation of
+#' the sensor, provided for those cases in which it cannot be inferred from the
+#' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
+#' \code{"sideward"}.
+#' @param distance optional vector holding the distances of bin centres from
+#' the sensor.  This argument is ignored except for Nortek profilers, and need
+#' not be given if the function determines the distances correctly from the
+#' data.  The problem is that the distance is poorly documented in the Nortek
+#' System Integrator Guide (2008 edition, page 31), so the function must rely
+#' on word-of-mouth formulae that do not work in all cases.
+#'
+#' @references
+#' 1. Information on Nortek profilers (including the System Integrator Guide,
+#' which explains the data format byte-by-byte) is available at
+#' \url{http://www.nortekusa.com/}.  (One must join the site to see the
+#' manuals.)
+#' 
+#' 2. The Nortek Knowledge Center
+#' \url{http://www.nortekusa.com/en/knowledge-center} may be of help if
+#' problems arise in dealing with data from Nortek instruments.
+#'
+#' @template adpTemplate
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{adp} data
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
                             type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"),
@@ -598,13 +782,12 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     } else {
         orientation <- match.arg(orientation, c("sideward", "upward", "downward"))
     }
-    res@manufacturer <- "nortek"
-    res@instrumentType <- type #"aquadopp-hr"
-    res@filename <- filename
-    res@manufacturer <- "nortek"
-    res@latitude <- latitude
-    res@longitude <- longitude
-    res@numberOfSamples <- dim(v)[1]
+    res@metadata$manufacturer <- "nortek"
+    res@metadata$instrumentType <- type #"aquadopp-hr"
+    res@metadata$filename <- filename
+    res@metadata$latitude <- latitude
+    res@metadata$longitude <- longitude
+    res@metadata$numberOfSamples <- dim(v)[1]
     res@metadata$numberOfCells <- dim(v)[2]
     res@metadata$numberOfBeams <- dim(v)[3]
     res@metadata$numberOfBeamSequencesPerBurst <- header$user$numberOfBeamSequencesPerBurst

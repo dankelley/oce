@@ -1,7 +1,5 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-setClass("satellite", contains="oce")
-
 #' Class to Hold amsr Data
 #'
 #' The Advanced Microwave Scanning Radiometer (AMSR-2) is in current operation on
@@ -20,16 +18,17 @@ setClass("satellite", contains="oce")
 #' @details
 #' The bands are stored in \code{\link{raw}} form, to save storage. The accessor
 #' function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
-#' form or in physical units; \code{\link{plot.amsr}}, and
-#' \code{\link{summary.amsr}} work with physical units.
+#' form or in physical units; \code{\link{plot,amsr-method}}, and
+#' \code{\link{summary,amsr-method}} work with physical units.
 #'
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
-#' @family functions dealing with satellite data
 #' @references
 #' 1. \url{http://www.remss.com/missions/amsre}
-#' @aliases amsr-class
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
+#'
+#' @family things related to \code{amsr} data
+#' @family things related to \code{amsr} data
 setClass("amsr", contains="satellite")
 
 setMethod(f="initialize",
@@ -54,7 +53,7 @@ setMethod(f="show",
           })
 
 
-#' Summarize an amsr Object
+#' Summarize an AMSR Object
 #'
 #' Although the data are stored in \code{\link{raw}} form, the summary
 #' presents results in physical units.
@@ -62,9 +61,8 @@ setMethod(f="show",
 #' @param object The object to be summarized.
 #' @param ... Ignored.
 #' @author Dan Kelley
-#' @aliases summary.amsr
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family things related to \code{amsr} data
 setMethod(f="summary",
           signature="amsr",
           definition=function(object, ...) {
@@ -108,13 +106,10 @@ setMethod(f="summary",
 #' indicate sea ice (coded to \code{0xfc}),
 #' are are faulty owing to high rain (coded to \code{0xfb}).
 #'
-#' @param x An amsr object, i.e. one inheriting from \code{\link{amsr-class}}.
-#' @param i The item to extract; see \dQuote{Details}
-#' @param j Optional additional information on the \code{i} item (ignored).
-#' @param ... Optional additional information (ignored).
+#' @param x An \code{amsr} object, i.e. one inheriting from \code{\link{amsr-class}}.
 #' @author Dan Kelley
-#' @concept satellite
-#' @family functions dealing with satellite data
+#' @template sub_subTemplate
+#' @family things related to \code{amsr} data
 setMethod(f="[[",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -134,7 +129,7 @@ setMethod(f="[[",
                   stop("band '", i, "' is not available in this object; try one of: ",
                        paste(namesAllowed, collapse=" "))
               #' get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
-              getBand <- function(b) {
+              getBand<-function(b) {
                   bad <- b == as.raw(0xff)| # land mass
                   b == as.raw(0xfe)| # no observations
                   b == as.raw(0xfd)| # bad observations
@@ -196,6 +191,16 @@ setMethod(f="[[",
               res
           })
 
+#' @title Replace Parts of an AMSR Object
+#' @param x An \code{amsr} object, i.e. inheriting from \code{\link{amsr-class}}
+#' @family things related to \code{amsr} data
+#' @template sub_subsetTemplate
+setMethod(f="[[<-",
+          signature(x="amsr", i="ANY", j="ANY"),
+          definition=function(x, i, j, value) {
+              callNextMethod(x=x, i=i, j=j, value=value)
+          })
+
 #' Plot an amsr Object
 #'
 #' @param x An object inherting from \code{\link{amsr-class}}.
@@ -206,9 +211,7 @@ setMethod(f="[[",
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
 #' \code{col} to control colours.
 #'
-#' @aliases plot.amsr
 #' @concept satellite
-#' @family functions dealing with satellite data
 #'
 #' @examples
 #' \dontrun{
@@ -220,6 +223,9 @@ setMethod(f="[[",
 #' }
 #'
 #' @author Dan Kelley
+#'
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{amsr} data
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
@@ -250,16 +256,12 @@ setMethod(f="plot",
 #'
 #' @param file Sting indicating the name of a compressed file.
 #' @param debug A debugging flag, integer.
-#' @author Dan Kelley and Chantelle Layton
+#'
 #' @concept satellite
-#' @family functions dealing with satellite data
-#' @seealso \code{\link{plot.amsr}} for an example.
-#' @examples
-#' \dontrun{
-#' d <- read.amsr("f34_20160102v7.2.gz")
-#' summary(d)
-#' plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
-#' }
+#' @seealso \code{\link{plot,amsr-method}} for an example.
+#' @author Dan Kelley and Chantelle Layton
+#'
+#' @family things related to \code{amsr} data
 read.amsr <- function(file, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.amsr(file=\"", file, "\",",

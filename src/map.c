@@ -24,19 +24,6 @@
    SST <- get.var.ncdf(con, "t_an")[,,1]
    Tlim <- c(-2, 30)
 
-   system("R CMD SHLIB map.c") 
-   dyn.load("map.so")
-   poly <- .Call("map_assemble_polygons", lon, lat)
-   drawPalette(Tlim, col=oce.colorsJet)
-   mapPlot(coastlineWorld, projection='mollweide', grid=FALSE)
-   xy <- mapproj::mapproject(poly$longitude, poly$latitude)
-   pal <- oce.colorsJet(100)
-   plot(range(xy$x, na.rm=TRUE), range(xy$y, na.rm=TRUE), type='n', asp=1, xlab="", ylab="", axes=FALSE)
-   ok <- .Call("map_repair_polygons", xy$x, xy$y, diff(par('usr'))[1:2]/5)
-   i<-20702+seq(-10,10); data.frame(i=i,ok=ok[i],x=xy$x[i],y=xy$y[i])
-   polygon(ok, xy$y, col=pal[rescale(as.vector(SST),Tlim[1],Tlim[2],1,100)],border=NA)
-
-
 
 */
 
