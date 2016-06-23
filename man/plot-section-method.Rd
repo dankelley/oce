@@ -14,10 +14,10 @@
   span, projection = NULL, xtype = c("distance", "track", "longitude",
   "latitude", "time"), ytype = c("depth", "pressure"), ztype = c("contour",
   "image", "points"), zbreaks = NULL, zcol = NULL,
-  legend.loc = "bottomright", adorn = NULL, showStations = FALSE,
-  showStart = TRUE, showBottom = TRUE, axes = TRUE,
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, mgp[2] + 1,
-  mgp[2] + 0.5), col = par("col"), cex = par("cex"), pch = par("pch"),
+  legend.loc = "bottomright", showStations = FALSE, showStart = TRUE,
+  showBottom = TRUE, axes = TRUE, mgp = getOption("oceMgp"),
+  mar = c(mgp[1] + 1, mgp[1] + 1, mgp[2] + 1, mgp[2] + 0.5),
+  col = par("col"), cex = par("cex"), pch = par("pch"),
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -92,12 +92,6 @@ vector of length 200, with values spanning the data range.}
 
 \item{legend.loc}{Location of legend, as supplied to \code{\link{legend}}, or
 set to the empty string to avoid plotting a legend.}
-
-\item{adorn}{List of expressions to be executed for the panels in turn, e.g. to
-adorn the plots.  If the number matches the number of panels, then the strings
-are applied to the appropriate panels, as they are drawn from top-left to
-bottom-right.   If only a single expression is provided, it is used for all
-panels.  (See \dQuote{Examples}.)}
 
 \item{showStations}{Logical indicating whether to draw station numbers on maps.}
 
