@@ -871,11 +871,7 @@ sectionAddCtd <- sectionAddStation
 #' @param legend.loc Location of legend, as supplied to \code{\link{legend}}, or
 #' set to the empty string to avoid plotting a legend.
 #' 
-##20160623 #' @param adorn List of expressions to be executed for the panels in turn, e.g. to
-##20160623 #' adorn the plots.  If the number matches the number of panels, then the strings
-##20160623 #' are applied to the appropriate panels, as they are drawn from top-left to
-##20160623 #' bottom-right.   If only a single expression is provided, it is used for all
-##20160623 #' panels.  (See \dQuote{Examples}.)
+#' @template adornTemplate
 #' 
 #' @param showStations Logical indicating whether to draw station numbers on maps.
 #' 
@@ -969,7 +965,7 @@ setMethod(f="plot",
                               ztype=c("contour", "image", "points"),
                               zbreaks=NULL, zcol=NULL,
                               legend.loc="bottomright",
-                              ##20160623 adorn=NULL,
+                              adorn=NULL,
                               showStations=FALSE,
                               showStart=TRUE,
                               showBottom=TRUE,
@@ -1615,11 +1611,11 @@ setMethod(f="plot",
                   else
                       layout(matrix(1:2, nrow=2, byrow=TRUE))
               }
-              ##20160623 adorn.length <- length(adorn)
-              ##20160623 if (adorn.length == 1) {
-              ##20160623     adorn <- rep(adorn, lw)
-              ##20160623     adorn.length <- lw
-              ##20160623 }
+              adorn.length <- length(adorn)
+              if (adorn.length == 1) {
+                  adorn <- rep(adorn, lw)
+                  adorn.length <- lw
+              }
               ## dataNames <- names(x[["station", 1]][["data"]])
               L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
               R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
@@ -1686,10 +1682,10 @@ setMethod(f="plot",
                                      projection=projection,
                                      debug=debug-1, ...)
                   }
-                  ##20160623 if (w <= adorn.length) {
-                  ##20160623     t <- try(eval(adorn[w]), silent=TRUE)
-                  ##20160623     if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
-                  ##20160623 }
+                  if (w <= adorn.length) {
+                      t <- try(eval(adorn[w]), silent=TRUE)
+                      if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+                  }
               }
               oceDebug(debug, "} # plot.section()\n", unindent=1)
               invisible()

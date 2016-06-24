@@ -7,7 +7,7 @@
 \description{
 Certain functions and function arguments are still provided for
 compatibility with older versions of \sQuote{oce}, but will be removed soon.
-The \sQuote{oce} scheme for removing functions is the same as that used by
+The \sQuote{oce} scheme for removing functions is similar to that used by
 \sQuote{Bioconductor}: items are marked as "deprecated" in one release, as
 "defunct" in the next, and then removed entirely. This goal is to provide a
 gentle migration path for users who keep their packages reasonably
@@ -35,14 +35,32 @@ altogether in the next oce release on CRAN.
 Improve utility and name sensibility\cr \code{columns} \tab
 \code{\link{read.ctd}} \tab Unnecessary, and never worked\cr }
 
-Several \sQuote{oce} function arguments are also slated for removal but are
+Several \sQuote{oce} function arguments are considered defunct but are
 being permitted in the present CRAN release. They are as follows.
 
-\tabular{lll}{ \strong{Deprecated} \tab \strong{Replacement} \tab
-\strong{Notes}\cr \code{date} argument to \code{\link{as.ctd}} \tab - \tab
-Was never used, and could be confused with \code{startTime}\cr \code{fill}
-argument to \code{\link{mapPlot}} etc. \tab \code{col} \tab Rationalize with
-\code{\link{polygon}}\cr }
+\tabular{lll}{
+
+\strong{Item}
+\tab \strong{Issue}
+\tab \strong{Alterative}
+\cr
+
+\code{date} in \code{\link{as.ctd}}
+\tab Unused, easily confused with \code{startTime}
+\tab NA
+\cr
+
+\code{fill} in \code{\link{mapPlot}} etc. 
+\tab Confusion with \code{col}
+\tab Use \code{col}
+\cr
+
+\code{adorn} in \code{\link{plot,ctd-method}} etc.
+\tab Potential to disrupt plotting.
+\tab Draw panels individually, adding graphical elements with conventional R functions. 
+\cr
+
+}
 }
 \seealso{
 The \sQuote{Bioconductor} scheme for removing functions is
