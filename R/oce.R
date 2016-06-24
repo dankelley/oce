@@ -91,27 +91,33 @@ NULL
 #' Several \sQuote{oce} function arguments are considered defunct but are
 #' being permitted in the present CRAN release. They are as follows.
 #' 
-#' \tabular{lll}{
+#' \itemize{
 #'
-#' \strong{Item}
-#' \tab \strong{Issue}
-#' \tab \strong{Alterative}
-#' \cr
+#' \item The \code{date} argument of \code{\link{as.ctd}}
+#' was discovered to have been unused in early 2016. Since
+#' the \code{startTime} actually fills its role, \code{date}
+#' was considered to be deprecated in June 2016.
 #'
-#' \code{date} in \code{\link{as.ctd}}
-#' \tab Unused, easily confused with \code{startTime}
-#' \tab NA
-#' \cr
+#' \item The \code{quality} flag of \code{\link{as.ctd}} was
+#' marked as deprecated in March 2016.
 #'
-#' \code{fill} in \code{\link{mapPlot}} etc. 
-#' \tab Confusion with \code{col}
-#' \tab Use \code{col}
-#' \cr
+#' \item The \code{fill} argument of \code{\link{mapPlot}} was confusing
+#' to users, so it was designated as deprecated in June 2016.
+#' (The confusion stemmed from subtle differences between
+#' \code{\link{plot}} and \code{\link{polygon}}, and the problem is that
+#' \code{\link{mapPlot}} can use either of these functions, according
+#' to whether coastlines are to be filled.)
+#' The functionality is preserved, in the \code{col} argument.
 #'
-#' \code{adorn} in \code{\link{plot,ctd-method}} etc.
-#' \tab Potential to disrupt plotting.
-#' \tab Draw panels individually, adding graphical elements with conventional R functions. 
-#' \cr
+#' \item The \code{adorn} argument of \code{\link{plot,ctd-method}} and
+#' other functions was realized in June 2016 to be dangerous. (If the
+#' adornment code contained assignments to temporary variables, there
+#' could be conflicts with the plotting code. The only way to be sure
+#' of not overriding an important variable would be to understand the
+#' full plotting code, which is far too demanding to justify.)
+#' The solution is for users to draw panels individually, adding
+#' graphical elements with conventional R functions such as \code{\link{lines}},
+#' etc.
 #'
 #' }
 #' 
@@ -796,8 +802,9 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' @param ylim optional limit for y axis.
 #' @param drawTimeRange a boolean, set to \code{TRUE} to indicate the range of
 #' times in the top-left margin.
-#' @param adorn optional \code{\link{expression}} to be performed immediately
-#' after drawing the panel. (See \code{\link{plot,adp-method}} for an example.)
+#
+#' @template adornTemplate
+#
 #' @param fill boolean, set \code{TRUE} to fill the curve to zero (which it
 #' does incorrectly if there are missing values in \code{y}).
 #' @param xlab name for x axis; defaults to \code{""}.
@@ -862,6 +869,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
 {
     if (is.function(x))
         stop("x cannot be a function")
+    if (!is.null(adorn))
+        warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
     if (missing(xlab))
         xlab <- ""
     if (missing(ylab))

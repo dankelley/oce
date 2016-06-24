@@ -180,9 +180,9 @@ which will yield breaks in the lines.}
 \code{\link{plot}}.}
 
 \item{adorn}{(\strong{Defunct})
-An \code{\link{expression}} or list of expressions that contain
-R code that will be executed immediately after each panel of the plot.
-If the number of expressoins matches the number of panels, then the 
+An \code{\link{expression}} or vector of expressions that contain
+R code that is to be executed immediately after each panel of the plot.
+If the number of expressions matches the number of panels, then the 
 expressions are used for the corresponding panels; otherwise, the
 expression list is extended to match the number of panels (i.e.
 to obtain \code{length(which)} elements). Note that \code{adorn}

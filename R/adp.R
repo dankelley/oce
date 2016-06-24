@@ -1004,11 +1004,9 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' upward-looking instruments, but the y axis will be flipped for
 #' downward-looking instruments, so that in either case, the top of the graph
 #' will represent the sample nearest the sea surface.
-#' @param adorn list of expressions to be executed for the panels in turn, e.g.
-#' to adorn the plots.  If the number matches the number of panels, then the
-#' strings are applied to the appropriate panels, as they are drawn from
-#' top-left to bottom-right.  If only a single expression is provided, it is
-#' used for all panels.  (See \dQuote{Examples}.)
+#'
+#' @template adornTemplate
+#
 #' @param drawTimeRange boolean that applies to panels with time as the
 #' horizontal axis, indicating whether to draw the time range in the top-left
 #' margin of the plot.
@@ -1070,10 +1068,6 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' library(oce)
 #' data(adp)
 #' plot(adp, which=1:3)
-#' plot(adp, which=5, missingColor='gray',
-#' adorn=expression({
-#'     lines(x[["time"]], x[["pressure"]], lwd=3, col='blue')
-#'     }))
 #' plot(adp, which='temperature', tformat='%H:%M')
 #' 
 #' @author Dan Kelley
@@ -1107,6 +1101,8 @@ setMethod(f="plot",
                               ...)
           {
               debug <- max(0, min(debug, 4))
+              if (!is.null(adorn))
+                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
               colGiven <- !missing(col)
               breaksGiven <- !missing(breaks)
               zlimGiven <- !missing(zlim)

@@ -984,6 +984,8 @@ setMethod(f="plot",
               ztype <- match.arg(ztype)
               drawPoints <- ztype == "points"
               coastline <- match.arg(coastline)
+              if (!is.null(adorn))
+                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
 
               ## Make 'which' be numeric, to simplify following code
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")

@@ -86,10 +86,10 @@ and sea pressure, or \code{"sea"}.}
 \item{missingValue}{optional missing value, indicating data that should be
 taken as \code{NA}.}
 
-\item{quality}{optional quality flag, e.g. from the salinity quality flag in WOCE data.
+\item{quality}{\strong{(deprecated)} optional quality flag, e.g. from the salinity quality flag in WOCE data.
 (In WOCE, \code{quality=2} indicates good data, \code{quality=3} means
-questionable data, and \code{quality=4} means bad data. (NOTE: this is deprecated
-as of March 2016 and will be removed soon.)}
+questionable data, and \code{quality=4} means bad data. 
+This was deprecated in March 2016; see \link{oce-deprecated}.}
 
 \item{filename}{optional source filename to be stored in the object}
 

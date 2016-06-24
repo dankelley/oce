@@ -10,8 +10,9 @@ imagep(x, y, z, xlim, ylim, zlim, zclip = FALSE, flipy = FALSE, xlab = "",
   drawContours = FALSE, drawPalette = TRUE, drawTriangles = FALSE,
   tformat, drawTimeRange = getOption("oceDrawTimeRange"),
   filledContour = FALSE, missingColor = NULL, mgp = getOption("oceMgp"),
-  mar, mai.palette, xaxs = "i", yaxs = "i", cex = par("cex"), adorn,
-  axes = TRUE, main = "", axisPalette, debug = getOption("oceDebug"), ...)
+  mar, mai.palette, xaxs = "i", yaxs = "i", cex = par("cex"),
+  adorn = NULL, axes = TRUE, main = "", axisPalette,
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x, y}{These have different meanings in different modes of operation.
@@ -155,8 +156,23 @@ of x axis (with value \code{"i"}) or not; see
 
 \item{cex}{Size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").}
 
-\item{adorn}{Optional \code{\link{expression}} to be performed immediately after
-drawing the data panel.}
+\item{adorn}{(\strong{Defunct})
+An \code{\link{expression}} or vector of expressions that contain
+R code that is to be executed immediately after each panel of the plot.
+If the number of expressions matches the number of panels, then the 
+expressions are used for the corresponding panels; otherwise, the
+expression list is extended to match the number of panels (i.e.
+to obtain \code{length(which)} elements). Note that \code{adorn}
+is a dangerous argument, because if the expressions contained
+therein set up local storage, there is a chance of entirely
+disrupting the plotting. \strong{For this reason, \code{adorn} was
+marked as defunct in June 2016, and will be removed entirely 
+after the July CRAN release.} Users with existing code that uses
+\code{adorn} should simply plot the panels individually, and
+use conventional R functions, e.g. \code{\link{lines}} etc.,
+after each panel, to achieve the desired effect.  (See
+\code{\link{oce-defunct}} for notes on other deprecated or
+defunct \code{oce} features.)}
 
 \item{axes}{Logical, set \code{TRUE} to get axes on the main image.}
 
@@ -191,9 +207,6 @@ coincide with the colour transitions, in the case of coarse images.
 Note that this does not use \code{\link{layout}} or any of the other screen
 splitting methods.  It simply manipulates margins, and draws two plots
 together.  This lets users employ their favourite layout schemes.
-
-The palette is drawn before the image, so that further drawing can be done on
-the image if desired, if the user prefers not to use the \code{adorn} argument.
 
 NOTE: \code{imagep} is an analogue of \code{\link{image}}, and from that
 it borrows a the convention that the number of rows in the matrix corresponds to
