@@ -350,12 +350,8 @@ as.rsk <- function(time, columns,
 #' 
 #' @param title character string to be used in the text-summary panel
 #' (\code{which}=2).
-#' 
-#' @param adorn list of expressions to be executed for the panels in turn, e.g. to
-#' adorn the plots.  If the number matches the number of panels, then the strings
-#' are applied to the appropriate panels, as they are drawn from top-left to
-#' bottom-right.   If only a single expression is provided, it is used for all
-#' panels.  (See \dQuote{Examples}).
+#'
+#' @template adornTemplate
 #' 
 #' @param tlim optional limits for time axis.  If not provided, the value will be
 #' inferred from the data.
@@ -432,8 +428,8 @@ setMethod(f="plot",
                               ...)
           {
               oceDebug(debug, "plot.rsk(..., which=", which, ", ...) {\n", unindent=1)
-              if (!inherits(x, "rsk"))
-                  stop("method is only for objects of class '", "rsk", "'")
+              if (!is.null(adorn))
+                  warning("In plot() : the 'adorn' argument is deprecated, and will be removed soon",call.=FALSE)
               dotsNames <- names(list(...))
               ## FIXME: In the below, we could be more clever for single-panel plots
               ## but it may be better to get users out of the habit of supplying xlim

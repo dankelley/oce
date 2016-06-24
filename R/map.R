@@ -591,9 +591,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @param bg colour of the background (ignored).
 #'
-#' @param fill included only for compatibility with the previous version of
-#' \code{mapPlot}. \strong{This argument will be removed in the upcoming
-#' CRAN release.}
+#' @param fill \strong{(deprecated)} is a deprecated argument; see
+#' \link{oce-deprecated}.
 #'
 #' @param border colour of coastlines and international borders. The default,
 #' \code{NULL}, means to use \code{\link{par}("fg")}; see

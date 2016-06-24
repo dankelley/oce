@@ -487,9 +487,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' 
 #' @param type Type of plot, as for \code{\link{plot}}.
 #' 
-#' @param adorn Optional list of \code{\link{expression}}s to be performed
-#' immediately after drawing the panels. (See \code{\link{plot,adp-method}}
-#' for an example.)
+#' @template adornTemplate
 #' 
 #' @param drawTimeRange Boolean that applies to panels with time as the horizontal
 #' axis, indicating whether to draw the time range in the top-left margin of the
@@ -587,8 +585,8 @@ setMethod(f="plot",
               oceDebug(debug, "brushCorrelation", if (have.brushCorrelation) brushCorrelation else "not given", "\n")
               oceDebug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
               oceDebug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
-              if (!inherits(x, "adv"))
-                  stop("method is only for objects of class '", "adv", "'")
+              if (!is.null(adorn))
+                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
               opar <- par(no.readonly = TRUE)
               dots <- names(list(...))
               ##if (!all(which %in% c(1:3,5:7,9:11,14:21,23)))

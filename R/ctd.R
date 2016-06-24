@@ -710,10 +710,10 @@ setMethod(f="[[<-",
 #' @param missingValue optional missing value, indicating data that should be
 #' taken as \code{NA}.
 #' 
-#' @param quality optional quality flag, e.g. from the salinity quality flag in WOCE data.
+#' @param quality \strong{(deprecated)} optional quality flag, e.g. from the salinity quality flag in WOCE data.
 #' (In WOCE, \code{quality=2} indicates good data, \code{quality=3} means
-#' questionable data, and \code{quality=4} means bad data. (NOTE: this is deprecated
-#' as of March 2016 and will be removed soon.)
+#' questionable data, and \code{quality=4} means bad data. 
+#' This was deprecated in March 2016; see \link{oce-deprecated}.
 #' 
 #' @param filename optional source filename to be stored in the object
 #' 
@@ -2299,12 +2299,8 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' @param type The type of plot to draw, using the same scheme as
 #' \code{\link{plot}}.
 #' 
-#' @param adorn List of expressions to be executed for the panels in turn, e.g. to
-#' adorn the plots.  If the number matches the number of panels, then the strings
-#' are applied to the appropriate panels, as they are drawn from top-left to
-#' bottom-right.   If only a single expression is provided, it is used for all
-#' panels.  (See \dQuote{Examples}.)
-#' 
+#' @template adornTemplate
+#'
 #' @param mgp Three-element numerical vector specifying axis-label geometry,
 #' passed to \code{\link{par}}.
 #' The default establishes tighter margins than in the usual R setup.
@@ -2377,6 +2373,8 @@ setMethod(f="plot",
                               ...)
           {
               eos <- match.arg(eos, c("unesco", "gsw"))
+              if (!is.null(adorn))
+                  warning("In plot() : the 'adorn' argument is deprecated, and will be removed soon",call.=FALSE)
               if (!missing(fill)) {
                   ## permit call as documented before 2016-02-03
                   ## Note: the code permitted fill=TRUE but this was never documented

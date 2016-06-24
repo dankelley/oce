@@ -533,9 +533,6 @@ drawPalette <- function(zlim, zlab="",
 #' splitting methods.  It simply manipulates margins, and draws two plots
 #' together.  This lets users employ their favourite layout schemes.
 #' 
-#' The palette is drawn before the image, so that further drawing can be done on
-#' the image if desired, if the user prefers not to use the \code{adorn} argument.
-#' 
 #' NOTE: \code{imagep} is an analogue of \code{\link{image}}, and from that
 #' it borrows a the convention that the number of rows in the matrix corresponds to
 #' to \code{x} axis, not the \code{y} axis.  (Actually, \code{\link{image}} permits
@@ -657,8 +654,9 @@ drawPalette <- function(zlim, zlab="",
 #'         \code{\link[graphics]{par}}("xaxs").
 #' @param  yaxs As \code{xaxs} but for y axis.
 #' @param  cex Size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").
-#' @param  adorn Optional \code{\link{expression}} to be performed immediately after
-#'         drawing the data panel.
+#'
+#' @template adornTemplate
+#'
 #' @param  axes Logical, set \code{TRUE} to get axes on the main image.
 #' @param  main Title for plot.
 #' @param  axisPalette Optional replacement function for \code{axis()}, passed to
@@ -741,9 +739,9 @@ imagep <- function(x, y, z,
                    missingColor=NULL,
                    mgp=getOption("oceMgp"),
                    mar, mai.palette,
-                   xaxs = "i", yaxs = "i",
+                   xaxs="i", yaxs="i",
                    cex=par("cex"),
-                   adorn,
+                   adorn=NULL,
                    axes=TRUE,
                    main="",
                    axisPalette,
@@ -768,6 +766,8 @@ imagep <- function(x, y, z,
              "...) {\n", sep="", unindent=1)
     oceDebug(debug, "par('mai'):", paste(format(par('mai'), digits=2)), "\n")
     oceDebug(debug, "par('mar'):", paste(format(par('mar'), digits=2)), "\n")
+    if (!is.null(adorn))
+        warning("In imagep() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
     xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
     zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot,adp-method

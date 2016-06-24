@@ -337,8 +337,7 @@ as.sealevel <- function(elevation,
 #' drawn.  If there is just one panel, then the value of \code{par} used in
 #' \code{plot,sealevel-method} is retained upon exit, making it convenient to add to
 #' the plot.  For multi-panel plots, \code{par} is returned to the value it had
-#' before the call, and so \code{adorn} must be used to add to individual
-#' panels.
+#' before the call.
 #' 
 #' @param x an object of class \code{"sealevel"}, e.g. as read by
 #' \code{\link{read.sealevel}}.
@@ -348,11 +347,9 @@ as.sealevel <- function(elevation,
 #' \code{"spectrum"} for a power spectrum (truncated to frequencies below 0.1
 #' cycles per hour, or 4 or \code{"cumulativespectrum"} for a cumulative
 #' integral of the power spectrum.
-#' @param adorn vector of expressions to be executed for the panels in turn,
-#' e.g. to adorn the plots.  If the number matches the number of panels, then
-#' the strings are applied to the appropriate panels, as they are drawn from
-#' top-left to bottom-right.  If only a single expression is provided, it is
-#' used for all panels. (See \dQuote{Examples}.)
+#'
+#' @template adornTemplate
+#'
 #' @param drawTimeRange boolean that applies to panels with time as the
 #' horizontal axis, indicating whether to draw the time range in the top-left
 #' margin of the plot.
@@ -401,6 +398,8 @@ setMethod(f="plot",
                               ...)
           {
               oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="", unindent=1)
+              if (!is.null(adorn))
+                  warning("In plot() : the 'adorn' argument is deprecated, and will be removed soon",call.=FALSE)
               dots <- list(...)
               titlePlot<-function(x)
               {
