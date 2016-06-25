@@ -63,6 +63,12 @@ within the stations in the section. If this flag is available in
 the first station of the section, then the flag values are looked
 up for every station.
 
+If \code{j} is \code{"grid:distance-pressure"}, then a gridded
+representation of \code{i} is returned, as a list with elements
+\code{distance} (in km), \code{pressure} (in dbar) and 
+\code{field} (in whatever unit is used for \code{i}). See Example
+for in the documentation for \code{\link{plot,section-method}}.
+
 If none of the conditions listed above holds, the general
 method is used (see \sQuote{Details of the general method}).
 }
