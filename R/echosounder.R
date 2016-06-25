@@ -474,11 +474,9 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' \code{which="map"}.
 #' @param coastline coastline to use for maps; ignored unless \code{which=3} or
 #' \code{which="map"}.
-#' @param adorn list of expressions to be executed for the panels in turn, e.g.
-#' to adorn the plots.  If the number matches the number of panels, then the
-#' strings are applied to the appropriate panels, as they are drawn from
-#' top-left to bottom-right.  If only a single expression is provided, it is
-#' used for all panels.  (See \dQuote{Examples}.)
+#'
+#' @template adornTemplate
+#'
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
@@ -523,6 +521,8 @@ setMethod(f="plot",
               res <- list(xat=NULL, yat=NULL)
               dotsNames <- names(dots)
               oceDebug(debug, "plot() { # for echosounder\n", unindent=1)
+              if (!is.null(adorn))
+                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
               if (length(beam) < lw)

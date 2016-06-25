@@ -31,7 +31,7 @@ brightness temperature, computed from the \code{tirs1} band, and
 \code{band="terralook"} will plot a sort of natural colour by combining
 the \code{red}, \code{green}, \code{blue} and \code{nir} bands
 according to the formula provided at
-\url{http://terralook.cr.usgs.gov/what_is_terralook.php}}
+\url{https://lta.cr.usgs.gov/terralook/what_is_terralook}}
 
 \item{which}{Desired plot type; 1=image, 2=histogram.}
 
@@ -122,7 +122,7 @@ of at-satellite brightness temperature, computed from the
 \item Setting \code{band="terralook"} will plot a sort of natural
 colour by combining the \code{red}, \code{green}, \code{blue} and
 \code{nir} bands according to the formula provided at
-\url{http://terralook.cr.usgs.gov/what_is_terralook.php}, namely
+\url{https://lta.cr.usgs.gov/terralook/what_is_terralook}, namely
 that the \code{red}-band data are provided as the \code{red}
 argument of the \code{\link{rgb}} function, while
 the \code{green} argument is computed as

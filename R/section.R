@@ -871,11 +871,7 @@ sectionAddCtd <- sectionAddStation
 #' @param legend.loc Location of legend, as supplied to \code{\link{legend}}, or
 #' set to the empty string to avoid plotting a legend.
 #' 
-#' @param adorn List of expressions to be executed for the panels in turn, e.g. to
-#' adorn the plots.  If the number matches the number of panels, then the strings
-#' are applied to the appropriate panels, as they are drawn from top-left to
-#' bottom-right.   If only a single expression is provided, it is used for all
-#' panels.  (See \dQuote{Examples}.)
+#' @template adornTemplate
 #' 
 #' @param showStations Logical indicating whether to draw station numbers on maps.
 #' 
@@ -988,6 +984,8 @@ setMethod(f="plot",
               ztype <- match.arg(ztype)
               drawPoints <- ztype == "points"
               coastline <- match.arg(coastline)
+              if (!is.null(adorn))
+                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
 
               ## Make 'which' be numeric, to simplify following code
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")

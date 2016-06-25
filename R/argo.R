@@ -909,11 +909,7 @@ as.argo <- function(time, longitude, latitude,
 #' light-gray, or a colour name.  Owing to problems with some projections, the
 #' default is not to fill.
 #' 
-#' @param adorn list of expressions to be executed for the panels in turn, e.g. to
-#' adorn the plots.  If the number matches the number of panels, then the strings
-#' are applied to the appropriate panels, as they are drawn from top-left to
-#' bottom-right.   If only a single expression is provided, it is used for all
-#' panels. (See \dQuote{Examples}.)
+#' @template adornTemplate
 #' 
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
 #' \code{par(mar)}, computed from this.  The default is tighter than the R
@@ -973,6 +969,8 @@ setMethod(f="plot",
                       " mgp=c(", paste(mgp, collapse=","), "),",
                       " mar=c(", paste(mar, collapse=","), "),",
                       " ...) {\n", sep="", unindent=1)
+              if (!is.null(adorn))
+                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
               coastline <- match.arg(coastline)
               #opar <- par(no.readonly = TRUE)
               lw <- length(which)

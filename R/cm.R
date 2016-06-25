@@ -513,10 +513,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' values of \code{which}.
 #' 
 #' @param type type of plot, as for \code{\link{plot}}.
-#' 
-#' @param adorn optional list of \code{\link{expression}}s to be performed
-#' immediately after drawing the panels. (See \code{\link{plot,adp-method}}
-#' for an example.)
+#'
+#' @template adornTemplate
 #' 
 #' @param drawTimeRange boolean that applies to panels with time as the horizontal
 #' axis, indicating whether to draw the time range in the top-left margin of the
@@ -577,8 +575,8 @@ setMethod(f="plot",
               oceDebug(debug, "plot.cm() {\n", unindent=1)
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
-              if (!inherits(x, "cm"))
-                  stop("method is only for objects of class '", "cm", "'")
+              if (!is.null(adorn))
+                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
               if (!(is.null(x@metadata$have.actual.data) || x@metadata$have.actual.data)) {
                   warning("there are no profiles in this dataset")
                   return

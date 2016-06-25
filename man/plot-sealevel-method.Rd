@@ -21,11 +21,23 @@ with possibilities 1 or \code{"all"} for a time-series of all the data, 2 or
 cycles per hour, or 4 or \code{"cumulativespectrum"} for a cumulative
 integral of the power spectrum.}
 
-\item{adorn}{vector of expressions to be executed for the panels in turn,
-e.g. to adorn the plots.  If the number matches the number of panels, then
-the strings are applied to the appropriate panels, as they are drawn from
-top-left to bottom-right.  If only a single expression is provided, it is
-used for all panels. (See \dQuote{Examples}.)}
+\item{adorn}{(\strong{Defunct})
+An \code{\link{expression}} or vector of expressions that contain
+R code that is to be executed immediately after each panel of the plot.
+If the number of expressions matches the number of panels, then the 
+expressions are used for the corresponding panels; otherwise, the
+expression list is extended to match the number of panels (i.e.
+to obtain \code{length(which)} elements). Note that \code{adorn}
+is a dangerous argument, because if the expressions contained
+therein set up local storage, there is a chance of entirely
+disrupting the plotting. \strong{For this reason, \code{adorn} was
+marked as defunct in June 2016, and will be removed entirely 
+after the July CRAN release.} Users with existing code that uses
+\code{adorn} should simply plot the panels individually, and
+use conventional R functions, e.g. \code{\link{lines}} etc.,
+after each panel, to achieve the desired effect.  (See
+\code{\link{oce-defunct}} for notes on other deprecated or
+defunct \code{oce} features.)}
 
 \item{drawTimeRange}{boolean that applies to panels with time as the
 horizontal axis, indicating whether to draw the time range in the top-left
@@ -54,8 +66,7 @@ on the length of \code{which}, either a single-panel or multi-panel plot is
 drawn.  If there is just one panel, then the value of \code{par} used in
 \code{plot,sealevel-method} is retained upon exit, making it convenient to add to
 the plot.  For multi-panel plots, \code{par} is returned to the value it had
-before the call, and so \code{adorn} must be used to add to individual
-panels.
+before the call.
 }
 \examples{
 library(oce)

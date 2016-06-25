@@ -7,7 +7,7 @@
 \description{
 Certain functions and function arguments are still provided for
 compatibility with older versions of \sQuote{oce}, but will be removed soon.
-The \sQuote{oce} scheme for removing functions is the same as that used by
+The \sQuote{oce} scheme for removing functions is similar to that used by
 \sQuote{Bioconductor}: items are marked as "deprecated" in one release, as
 "defunct" in the next, and then removed entirely. This goal is to provide a
 gentle migration path for users who keep their packages reasonably
@@ -35,14 +35,38 @@ altogether in the next oce release on CRAN.
 Improve utility and name sensibility\cr \code{columns} \tab
 \code{\link{read.ctd}} \tab Unnecessary, and never worked\cr }
 
-Several \sQuote{oce} function arguments are also slated for removal but are
+Several \sQuote{oce} function arguments are considered defunct but are
 being permitted in the present CRAN release. They are as follows.
 
-\tabular{lll}{ \strong{Deprecated} \tab \strong{Replacement} \tab
-\strong{Notes}\cr \code{date} argument to \code{\link{as.ctd}} \tab - \tab
-Was never used, and could be confused with \code{startTime}\cr \code{fill}
-argument to \code{\link{mapPlot}} etc. \tab \code{col} \tab Rationalize with
-\code{\link{polygon}}\cr }
+\itemize{
+
+\item The \code{date} argument of \code{\link{as.ctd}}
+was discovered to have been unused in early 2016. Since
+the \code{startTime} actually fills its role, \code{date}
+was considered to be deprecated in June 2016.
+
+\item The \code{quality} flag of \code{\link{as.ctd}} was
+marked as deprecated in March 2016.
+
+\item The \code{fill} argument of \code{\link{mapPlot}} was confusing
+to users, so it was designated as deprecated in June 2016.
+(The confusion stemmed from subtle differences between
+\code{\link{plot}} and \code{\link{polygon}}, and the problem is that
+\code{\link{mapPlot}} can use either of these functions, according
+to whether coastlines are to be filled.)
+The functionality is preserved, in the \code{col} argument.
+
+\item The \code{adorn} argument of \code{\link{plot,ctd-method}} and
+other functions was realized in June 2016 to be dangerous. (If the
+adornment code contained assignments to temporary variables, there
+could be conflicts with the plotting code. The only way to be sure
+of not overriding an important variable would be to understand the
+full plotting code, which is far too demanding to justify.)
+The solution is for users to draw panels individually, adding
+graphical elements with conventional R functions such as \code{\link{lines}},
+etc.
+
+}
 }
 \seealso{
 The \sQuote{Bioconductor} scheme for removing functions is

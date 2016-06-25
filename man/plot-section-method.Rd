@@ -93,11 +93,23 @@ vector of length 200, with values spanning the data range.}
 \item{legend.loc}{Location of legend, as supplied to \code{\link{legend}}, or
 set to the empty string to avoid plotting a legend.}
 
-\item{adorn}{List of expressions to be executed for the panels in turn, e.g. to
-adorn the plots.  If the number matches the number of panels, then the strings
-are applied to the appropriate panels, as they are drawn from top-left to
-bottom-right.   If only a single expression is provided, it is used for all
-panels.  (See \dQuote{Examples}.)}
+\item{adorn}{(\strong{Defunct})
+An \code{\link{expression}} or vector of expressions that contain
+R code that is to be executed immediately after each panel of the plot.
+If the number of expressions matches the number of panels, then the 
+expressions are used for the corresponding panels; otherwise, the
+expression list is extended to match the number of panels (i.e.
+to obtain \code{length(which)} elements). Note that \code{adorn}
+is a dangerous argument, because if the expressions contained
+therein set up local storage, there is a chance of entirely
+disrupting the plotting. \strong{For this reason, \code{adorn} was
+marked as defunct in June 2016, and will be removed entirely 
+after the July CRAN release.} Users with existing code that uses
+\code{adorn} should simply plot the panels individually, and
+use conventional R functions, e.g. \code{\link{lines}} etc.,
+after each panel, to achieve the desired effect.  (See
+\code{\link{oce-defunct}} for notes on other deprecated or
+defunct \code{oce} features.)}
 
 \item{showStations}{Logical indicating whether to draw station numbers on maps.}
 

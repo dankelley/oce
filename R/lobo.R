@@ -253,11 +253,9 @@ plot.lobo.TS <- function(lobo, ...)
 #' timeseries of the v component of velocity; \code{6} or \code{"nitrate"} for
 #' a timeseries of nitrate concentration; \code{7} or \code{"fluorescence"} for
 #' a timeseries of fluorescence value.
-#' @param adorn list of expressions to be executed for the panels in turn, e.g.
-#' to adorn the plots.  If the number matches the number of panels, then the
-#' strings are applied to the appropriate panels, as they are drawn from
-#' top-left to bottom-right.  If only a single expression is provided, it is
-#' used for all panels. (See \dQuote{Examples}.)
+#'
+#' @template adornTemplate
+#'
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
@@ -278,9 +276,9 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
-              if (!inherits(x, "lobo"))
-                  stop("method is only for objects of class '", "lobo", "'")
               oceDebug(debug, "plot.lobo(...)\n", sep="")
+              if (!is.null(adorn))
+                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
               oceDebug(debug, "which:", which, "\n")
