@@ -1,5 +1,6 @@
 0.9-19
-- read.ctd() now obeys missingValue (renamed)
+- deprecate 'adorn' in plot functions
+- make read.ctd() obey missingValue (renamed)
 - improve map projections
 - add renameData()
 - improve support for SBE files
