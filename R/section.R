@@ -245,7 +245,8 @@ setMethod(f="summary",
 #'
 #' If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
 #' the potential temperatures of all the stations are returned in one 
-#' vector.
+#' vector.  Similarly, \code{"spice"} returns the property known
+#' as spice, using \code{\link{swSpice}}.
 #'
 #' If \code{i} is a string ending with \code{"Flag"}, then the characters
 #' prior to that ending are taken to be the name of a variable contained
@@ -287,6 +288,9 @@ setMethod(f="[[",
               if (i == "theta" || i == "potential temperature") {
                   res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
                   return(res)
+              }
+              if (i == "spice") {
+                  return(swSpice(x))
               }
               if (i %in% names(x@metadata)) {
                   if (i %in% c("longitude", "latitude")) {
@@ -984,6 +988,14 @@ sectionAddCtd <- sectionAddStation
 #' sec <- plot(section, which='temperature', ztype='image')
 #' S <- sec[["salinity", "grid:distance-pressure"]]
 #' contour(S$distance, S$pressure, S$field, level=35.8, lwd=3, add=TRUE)
+#'
+#' ## 5. Contours of salinity, with dots for high pressure and spice
+#' plot(section, which='salinity')
+#' distance <- section[["distance"]]
+#' depth <- section[["depth"]]
+#' spice <- section[["spice"]]
+#' look <- spice > 1.8 & depth > 500
+#' points(distance[look], depth[look], col='red')
 #' 
 #' @author Dan Kelley
 #' 

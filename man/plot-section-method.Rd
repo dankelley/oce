@@ -218,6 +218,14 @@ sec <- plot(section, which='temperature', ztype='image')
 S <- sec[["salinity", "grid:distance-pressure"]]
 contour(S$distance, S$pressure, S$field, level=35.8, lwd=3, add=TRUE)
 
+## 5. Contours of salinity, with dots for high pressure and spice
+plot(section, which='salinity')
+distance <- section[["distance"]]
+depth <- section[["depth"]]
+spice <- section[["spice"]]
+look <- spice > 1.8 & depth > 500
+points(distance[look], depth[look], col='red')
+
 }
 \author{
 Dan Kelley
