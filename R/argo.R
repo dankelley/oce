@@ -866,7 +866,11 @@ as.argo <- function(time, longitude, latitude,
 #' 
 #' @param x object inheriting from \code{\link{argo-class}}.
 #' 
-#' @param which list of desired plot types, one of the following.
+#' @param which list of desired plot types, one of the following. Note
+#' that \code{\link{oce.pmatch}} is used to try to complete partial
+#' character matches, and that an error will occur if the match is
+#' not complete (e.g. \code{"salinity"} matches to both
+#' \code{"salinity ts"} and \code{"salinity profile"}.).
 #' \itemize{
 #'     \item \code{which=1} or \code{which="trajectory"} gives a 
 #'     plot of the argo trajectory, with the coastline, if one is provided.
@@ -997,11 +1001,13 @@ setMethod(f="plot",
                                        conductivity=list(list=expression(), scale=""))) # guess on units
               which <- oce.pmatch(which,
                                   list(trajectory=1,
-                                       "salinity"=2,
-                                       "temperature"=3,
+                                       "salinity ts"=2,
+                                       "temperature ts"=3,
                                        "TS"=4,
                                        "salinity profile"=5,
                                        "temperature profile"=6))
+              if (is.na(which))
+                  stop("In plot,argo-method() :\n  unrecognized value of which", call.=FALSE)
               for (w in 1:nw) {
                   if (which[w] == 1) {
                       oceDebug(debug, "which[", w, "] ==1, so plotting a map\n")
