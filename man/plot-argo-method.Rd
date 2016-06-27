@@ -14,7 +14,11 @@
 \arguments{
 \item{x}{object inheriting from \code{\link{argo-class}}.}
 
-\item{which}{list of desired plot types, one of the following.
+\item{which}{list of desired plot types, one of the following. Note
+that \code{\link{oce.pmatch}} is used to try to complete partial
+character matches, and that an error will occur if the match is
+not complete (e.g. \code{"salinity"} matches to both
+\code{"salinity ts"} and \code{"salinity profile"}.).
 \itemize{
     \item \code{which=1} or \code{which="trajectory"} gives a 
     plot of the argo trajectory, with the coastline, if one is provided.
