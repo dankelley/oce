@@ -23,9 +23,9 @@
 #' @family things related to \code{argo} data
 setClass("argo", contains="oce")
 
-#' ARGO drifter dataset
+#' ARGO float dataset
 #' 
-#' This is an ARGO drifter data object, for drifter 6900388, downloaded as
+#' This is an ARGO float data object, for float 6900388, downloaded as
 #' \code{6900388_prof.nc} from \code{usgodae.org} in March 2012.
 #' @name argo
 #' @docType data
@@ -335,9 +335,9 @@ ncdfFixMatrix <- function(x)
     x
 }
 
-#' Grid a Argo Drifter Path
+#' Grid Argo float data
 #' 
-#' Grid a Argo drifter, by interpolating to fixed pressure levels.
+#' Grid an Argo float, by interpolating to fixed pressure levels.
 #' The gridding is done with \code{\link{approx}}.  If there is
 #' sufficient user demand, other methods may be added, by analogy to
 #' \code{\link{sectionGrid}}.
@@ -997,8 +997,8 @@ setMethod(f="plot",
                                        conductivity=list(list=expression(), scale=""))) # guess on units
               which <- oce.pmatch(which,
                                   list(trajectory=1,
-                                       "salinity ts"=2,
-                                       "temperature ts"=3,
+                                       "salinity"=2,
+                                       "temperature"=3,
                                        "TS"=4,
                                        "salinity profile"=5,
                                        "temperature profile"=6))
@@ -1144,7 +1144,7 @@ setMethod(f="plot",
                            ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
                            col=if (missing(col)) "black" else col, type=type)
                   } else {
-                      stop("plot.difter() given unknown value of which=", which[w], "\n", call.=FALSE)
+                      stop("Unknown value of which=", which[w], "\n", call.=FALSE)
                   }
               }
               oceDebug(debug, "} # plot.argo()\n", unindent=1)
