@@ -437,8 +437,8 @@ setMethod(f="subset",
                   for (i in 1:n) {
                       ii <- indices[i]
                       stn[i] <- x@metadata$stationId[ii]
-                      lat[i] <- x@metadata$latitude[ii]
-                      lon[i] <- x@metadata$longitude[ii]
+                      lat[i] <- x@metadata$latitude[ii][1]
+                      lon[i] <- x@metadata$longitude[ii][1]
                       station[[i]] <- x@data$station[[ii]]
                   }
                   data <- list(station=station)
