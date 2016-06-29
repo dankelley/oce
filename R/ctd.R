@@ -1436,13 +1436,14 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
             }
         }
     }
+    warningMessages <- NULL
     if ('scan' %in% names(dataNew)) {
         dataNew[['scan']] <- NULL
-        warning('Removing scan field from decimated object')
+        warningMessages <- c(warningMessages, "Removed scan field from decimated object")
     }
     if ('flag' %in% names(dataNew)) {
         dataNew[['flag']] <- NULL
-        warning('Removing flag field from decimated object')
+        warningMessages <- c(warningMessages, "Removed flag field from decimated object")
     }
     dataNew[["pressure"]] <- pt
     ## convert any NaN to NA
@@ -1452,6 +1453,8 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
     ##message("ctd.R:733 dataNew[['pressure']]: ", paste(dataNew[['pressure']], collapse=" "))
     res@data <- dataNew
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    for (w in warningMessages)
+        res@processingLog <- processingLogAppend(res@processingLog, w)
     oceDebug(debug, "} # ctdDecimate()\n", unindent=1)
     res
 }
