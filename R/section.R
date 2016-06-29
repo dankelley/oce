@@ -278,7 +278,7 @@ setMethod(f="[[",
                   }
               }
               ## some derived things (not all ... be sure to document when adding things!)
-              if (i == "theta" || i == "potential temperature") {
+              if (i %in% c("theta", "potential temperature", "sigmaTheta")) {
                   res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
                   return(res)
               }
