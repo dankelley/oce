@@ -158,9 +158,11 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
     ha <- ha + ifelse (ha < (-pi), 2 * pi, 0)
     ha <- ha - ifelse (ha > pi, 2 * pi, 0)
     el <- asin(sin(dec) * sin(latitude * rpd) + cos(dec) * cos(latitude*rpd)*cos(ha))
-    ## test the arg (issue 1004)
-    asinArg <- -cos(dec) * sin(ha) / cos(el)
-    az <- ifelse(abs(asinArg) >= 1, pi/2, asin(asinArg))
+    ## pin the arg to range -1 to 1 (issue 1004)
+    sinAz <- -cos(dec) * sin(ha) / cos(el)
+    az <- ifelse(sinAz < (-1), -pi/2,
+                 ifelse(sinAz > 1, pi/2,
+                        asin(sinAz)))
     az <-  ifelse(sin(dec) - sin(el) * sin(latitude * rpd ) > 0,
                   ifelse (sin(az) < 0, az + 2 * pi, az),
                   pi - az)
