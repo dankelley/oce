@@ -23,9 +23,9 @@
 #' @family things related to \code{argo} data
 setClass("argo", contains="oce")
 
-#' ARGO drifter dataset
+#' ARGO float dataset
 #' 
-#' This is an ARGO drifter data object, for drifter 6900388, downloaded as
+#' This is an ARGO float data object, for float 6900388, downloaded as
 #' \code{6900388_prof.nc} from \code{usgodae.org} in March 2012.
 #' @name argo
 #' @docType data
@@ -335,9 +335,9 @@ ncdfFixMatrix <- function(x)
     x
 }
 
-#' Grid a Argo Drifter Path
+#' Grid Argo float data
 #' 
-#' Grid a Argo drifter, by interpolating to fixed pressure levels.
+#' Grid an Argo float, by interpolating to fixed pressure levels.
 #' The gridding is done with \code{\link{approx}}.  If there is
 #' sufficient user demand, other methods may be added, by analogy to
 #' \code{\link{sectionGrid}}.
@@ -381,13 +381,15 @@ ncdfFixMatrix <- function(x)
 argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "argoGrid() {\n", sep="", unindent=1)
+    warningMessages <- NULL
     dim <- dim(argo@data$pressure)
     ## ndepth <- dim[1]
     nprofile <- dim[2]
     ## FIXME: modify sal, temp, and pre.  In the end, pre constant along first index
     res <- argo
     res[["flags"]] <- NULL
-    warning("Data flags are omitted from the gridded object. Use handleFlags() first to remove bad data.")
+    warningMessages <- c(warningMessages,
+                         "Data flags are omitted from the gridded argo object. Use handleFlags() first to remove bad data.")
     pressure <- argo[["pressure"]]
     if (missing(p)) {
         pt <- apply(pressure, 1, median, na.rm=TRUE)
@@ -423,6 +425,8 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste("Grid to regular pressures with: ", deparse(match.call()), sep="", collapse=""))
+    for (w in warningMessages)
+        res@processingLog <- processingLogAppend(res@processingLog, w)
     res
 }
 
@@ -866,7 +870,11 @@ as.argo <- function(time, longitude, latitude,
 #' 
 #' @param x object inheriting from \code{\link{argo-class}}.
 #' 
-#' @param which list of desired plot types, one of the following.
+#' @param which list of desired plot types, one of the following. Note
+#' that \code{\link{oce.pmatch}} is used to try to complete partial
+#' character matches, and that an error will occur if the match is
+#' not complete (e.g. \code{"salinity"} matches to both
+#' \code{"salinity ts"} and \code{"salinity profile"}.).
 #' \itemize{
 #'     \item \code{which=1} or \code{which="trajectory"} gives a 
 #'     plot of the argo trajectory, with the coastline, if one is provided.
@@ -1002,6 +1010,8 @@ setMethod(f="plot",
                                        "TS"=4,
                                        "salinity profile"=5,
                                        "temperature profile"=6))
+              if (is.na(which))
+                  stop("In plot,argo-method() :\n  unrecognized value of which", call.=FALSE)
               for (w in 1:nw) {
                   if (which[w] == 1) {
                       oceDebug(debug, "which[", w, "] ==1, so plotting a map\n")
@@ -1144,7 +1154,7 @@ setMethod(f="plot",
                            ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
                            col=if (missing(col)) "black" else col, type=type)
                   } else {
-                      stop("plot.difter() given unknown value of which=", which[w], "\n", call.=FALSE)
+                      stop("Unknown value of which=", which[w], "\n", call.=FALSE)
                   }
               }
               oceDebug(debug, "} # plot.argo()\n", unindent=1)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/argo.R
 \name{argoGrid}
 \alias{argoGrid}
-\title{Grid a Argo Drifter Path}
+\title{Grid Argo float data}
 \usage{
 argoGrid(argo, p, debug = getOption("oceDebug"), ...)
 }
@@ -30,7 +30,7 @@ An object of \code{\link{argo-class}} that contains a pressure matrix
 with constant values along the first index.
 }
 \description{
-Grid a Argo drifter, by interpolating to fixed pressure levels.
+Grid an Argo float, by interpolating to fixed pressure levels.
 The gridding is done with \code{\link{approx}}.  If there is
 sufficient user demand, other methods may be added, by analogy to
 \code{\link{sectionGrid}}.

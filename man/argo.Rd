@@ -3,13 +3,13 @@
 \docType{data}
 \name{argo}
 \alias{argo}
-\title{ARGO drifter dataset}
+\title{ARGO float dataset}
 \source{
 This is the profile stored in the file \code{6900388_prof.nc}
 downloaded from the \code{usgodae.org} website in March 2012.
 }
 \description{
-This is an ARGO drifter data object, for drifter 6900388, downloaded as
+This is an ARGO float data object, for float 6900388, downloaded as
 \code{6900388_prof.nc} from \code{usgodae.org} in March 2012.
 }
 \examples{
