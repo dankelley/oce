@@ -476,8 +476,9 @@ setMethod(f="subset",
                   for (i in 1:n) {
                       ii <- indices[i]
                       stn[i] <- x@metadata$stationId[ii]
-                      lat[i] <- x@metadata$latitude[ii][1]
-                      lon[i] <- x@metadata$longitude[ii][1]
+                      ## FIXME is median best? Using this in case first value (used before 2016-06-29) is NA.
+                      lat[i] <- median(x@metadata$latitude[ii], na.rm=TRUE)
+                      lon[i] <- median(x@metadata$longitude[ii], na.rm=TRUE)
                       station[[i]] <- x@data$station[[ii]]
                   }
                   data <- list(station=station)
@@ -1080,12 +1081,16 @@ setMethod(f="plot",
                   p1 <- x[["station", 1]][["pressure"]]
                   np1 <- length(p1)
                   numStations <- length(x@data$station)
+                  message("numStations=", numStations)
                   for (ix in 2:numStations) {
+                      message("ix=", ix)
                       thisStation <- x@data$station[[ix]]
                       thisPressure <- thisStation[["pressure"]]
-                      if ("points" != ztype && 
-                          np1 != length(thisPressure) ||
-                          any(p1 != x[["station", ix]][["pressure"]])) {
+                      print(thisPressure)
+                      print(p1)
+                      print(identical(p1, p1))
+                      if ("points" != ztype && !identical(p1, thisPressure)) {
+                          ## any(p1 != x[["station", ix]][["pressure"]])) {
                           x <- sectionGrid(x, debug=debug-1)
                           ##warning("plot.section() gridded the data for plotting", call.=FALSE)
                           break
@@ -1269,6 +1274,7 @@ setMethod(f="plot",
                       if (drawPoints || ztype == "image") {
                           if (is.null(zbreaks)) {
                               zRANGE <- range(x[[variable]], na.rm=TRUE)
+                              message("zRANGE: ", paste(zRANGE, collapse=" to "))
                               if (is.null(zcol) || is.function(zcol)) {
                                   zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
                               } else {
