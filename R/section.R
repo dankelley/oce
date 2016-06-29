@@ -1081,14 +1081,9 @@ setMethod(f="plot",
                   p1 <- x[["station", 1]][["pressure"]]
                   np1 <- length(p1)
                   numStations <- length(x@data$station)
-                  message("numStations=", numStations)
                   for (ix in 2:numStations) {
-                      message("ix=", ix)
                       thisStation <- x@data$station[[ix]]
                       thisPressure <- thisStation[["pressure"]]
-                      print(thisPressure)
-                      print(p1)
-                      print(identical(p1, p1))
                       if ("points" != ztype && !identical(p1, thisPressure)) {
                           ## any(p1 != x[["station", ix]][["pressure"]])) {
                           x <- sectionGrid(x, debug=debug-1)
@@ -1129,6 +1124,8 @@ setMethod(f="plot",
                   drawPoints <- "points" == ztype
                   omar <- par('mar')
                   xIsTime <- inherits(xx, "POSIXt")
+
+                  canPlot <- TRUE      # assume we can plot; use this instead of nested 'break's
 
                   if (variable == "map") {
                       lat <- array(NA_real_, numStations)
@@ -1267,27 +1264,37 @@ setMethod(f="plot",
                       }
                   } else {                        
                       ## not a map
-                      ## if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "data") {
-                      ##     stop("this section does not contain a variable named '", variable, "'")
-                      ## }
-
                       if (drawPoints || ztype == "image") {
                           if (is.null(zbreaks)) {
-                              zRANGE <- range(x[[variable]], na.rm=TRUE)
-                              message("zRANGE: ", paste(zRANGE, collapse=" to "))
-                              if (is.null(zcol) || is.function(zcol)) {
-                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
+                              ## Use try() to quiet warnings if all data are NA
+                              zRANGE <- try(range(x[[variable]], na.rm=TRUE), silent=TRUE)
+                              if (all(!is.finite(zRANGE))) {
+                                  if (nchar(legend.loc)) {
+                                      if (vtitle == "sigmaTheta")
+                                          vtitle <- expression(sigma[theta])
+                                      legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
+                                  }
+                                  return()
+                              }
+                              if (canPlot) {
+                                  if (is.null(zcol) || is.function(zcol)) {
+                                      zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
+                                  } else {
+                                      zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=length(zcol) + 1)
+                                  }
                               } else {
-                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=length(zcol) + 1)
+                                  zbreaks <- NULL
                               }
                           }
                           nbreaks <- length(zbreaks)
-                          if (is.null(zcol)) 
-                              zcol <- oce.colorsJet(nbreaks - 1)
-                          if (is.function(zcol))
-                              zcol <- zcol(nbreaks - 1)
-                          zlim <- range(zbreaks)
-                          drawPalette(zlim=range(zbreaks), breaks=zbreaks, col=zcol)
+                          if (nbreaks > 0) {
+                              if (is.null(zcol)) 
+                                  zcol <- oce.colorsJet(nbreaks - 1)
+                              if (is.function(zcol))
+                                  zcol <- zcol(nbreaks - 1)
+                              zlim <- range(zbreaks)
+                              drawPalette(zlim=range(zbreaks), breaks=zbreaks, col=zcol)
+                          }
                       }
 
 
@@ -1461,7 +1468,16 @@ setMethod(f="plot",
                               }
                           }
                       } else if (!drawPoints) {
-                          zrange <- range(zz[xx.unique,yy.unique], na.rm=TRUE)
+                          ## Use try() to quiet warnings if all data are NA
+                          zrange <- try(range(zz[xx.unique,yy.unique], na.rm=TRUE), silent=TRUE)
+                          if (!all(is.finite(zrange))) {
+                              if (nchar(legend.loc)) {
+                                  if (vtitle == "sigmaTheta")
+                                      vtitle <- expression(sigma[theta])
+                                  legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
+                              }
+                              return()
+                          }
                           if (!is.null(contourLevels) && !is.null(contourLabels)) {
                               oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
                               if (!("labcex" %in% dots$labcex)) {
@@ -1503,6 +1519,11 @@ setMethod(f="plot",
                               }
                           } else {
                               oceDebug(debug, "automatically-calculated contourLevels\n")
+                              zrange <- range(zz[xx.unique,yy.unique], na.rm=TRUE)
+                              if (!all(is.finite(zrange))) {
+                                  warning("plot(section, ..., which=\"", which[w], "\"): nothing to plot")
+                                  return()
+                              }
                               if (is.null(dots$labcex)) {
                                   if (ztype == 'contour') {
                                       contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
@@ -1573,9 +1594,13 @@ setMethod(f="plot",
                       }
                       L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
                       R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
+                      if (vtitle == "sigmaTheta")
+                          vtitle <- expression(sigma[theta])
                       vtitle <- if (length(unit) == 0) vtitle else bquote(.(vtitle)*.(L)*.(unit[[1]])*.(R))
-                      if (nchar(legend.loc))
+                      if (nchar(legend.loc)) {
+
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
+                      }
                       ##lines(xx, -waterDepth[ox], col='red')
 
                       ## undo negation of the y coordinate, so further can can make sense
