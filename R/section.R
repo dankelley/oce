@@ -2155,6 +2155,7 @@ read.section <- function(file, directory, sectionId="", flags,
 sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "sectionGrid(section, p, method=\"", if (is.function(method)) "(function)" else method, "\", ...) {\n", sep="", unindent=1)
+    warningMessages <- NULL
     n <- length(section@data$station)
     oceDebug(debug, "have", n, "stations in this section\n")
     dp.list <- NULL
@@ -2188,7 +2189,8 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
     }
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
-    warning("Data flags are omitted from the gridded section object. Use handleFlags() first to remove bad data.")
+    warningMessages <- c(warningMessages,
+                         "Removed flags from gridded section object. Use handleFlags() first to remove bad data.")
     for (i in 1:n) {
         ##message("i: ", i, ", p before decimation: ", paste(section@data$station[[i]]@data$pressure, " "))
 	suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...))
@@ -2196,6 +2198,8 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
         ##message("i: ", i, ", p after decimation: ", paste(res@data$station[[i]]@data$pressure, " "))
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    for (w in warningMessages)
+        res@processingLog <- processingLogAppend(res@processingLog, w)
     oceDebug(debug, "} # sectionGrid\n", unindent=1)
     res
 }

@@ -381,13 +381,15 @@ ncdfFixMatrix <- function(x)
 argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "argoGrid() {\n", sep="", unindent=1)
+    warningMessages <- NULL
     dim <- dim(argo@data$pressure)
     ## ndepth <- dim[1]
     nprofile <- dim[2]
     ## FIXME: modify sal, temp, and pre.  In the end, pre constant along first index
     res <- argo
     res[["flags"]] <- NULL
-    warning("Data flags are omitted from the gridded object. Use handleFlags() first to remove bad data.")
+    warningMessages <- c(warningMessages,
+                         "Data flags are omitted from the gridded argo object. Use handleFlags() first to remove bad data.")
     pressure <- argo[["pressure"]]
     if (missing(p)) {
         pt <- apply(pressure, 1, median, na.rm=TRUE)
@@ -423,6 +425,8 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste("Grid to regular pressures with: ", deparse(match.call()), sep="", collapse=""))
+    for (w in warningMessages)
+        res@processingLog <- processingLogAppend(res@processingLog, w)
     res
 }
 
