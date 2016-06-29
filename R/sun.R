@@ -158,7 +158,9 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
     ha <- ha + ifelse (ha < (-pi), 2 * pi, 0)
     ha <- ha - ifelse (ha > pi, 2 * pi, 0)
     el <- asin(sin(dec) * sin(latitude * rpd) + cos(dec) * cos(latitude*rpd)*cos(ha))
-    az <- asin(-cos(dec) * sin(ha) / cos(el))
+    ## test the arg (issue 1004)
+    asinArg <- -cos(dec) * sin(ha) / cos(el)
+    az <- ifelse(abs(asinArg) >= 1, pi/2, asin(asinArg))
     az <-  ifelse(sin(dec) - sin(el) * sin(latitude * rpd ) > 0,
                   ifelse (sin(az) < 0, az + 2 * pi, az),
                   pi - az)
@@ -174,9 +176,9 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
     }
     soldst <- 1.00014 - 0.01671 * cos(mnanom) - 0.00014 * cos(2 * mnanom)
     soldia <- 0.5332 / soldst
-    if (any(el < (-90.0)) || any(el > 90))
+    if (is.na(el) || any(el < (-90.0)) || any(el > 90))
         stop("output argument el out of range")
-    if (any(az < 0) || any(az > 360))
+    if (is.na(az) || any(az < 0) || any(az > 360))
         stop("output argument az out of range")
     azOut[ok] <- az
     elOut[ok] <- el
