@@ -245,13 +245,20 @@ setMethod(f="summary",
 #'
 #' If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
 #' the potential temperatures of all the stations are returned in one 
-#' vector.
+#' vector.  Similarly, \code{"spice"} returns the property known
+#' as spice, using \code{\link{swSpice}}.
 #'
 #' If \code{i} is a string ending with \code{"Flag"}, then the characters
 #' prior to that ending are taken to be the name of a variable contained
 #' within the stations in the section. If this flag is available in 
 #' the first station of the section, then the flag values are looked
 #' up for every station.
+#'
+#' If \code{j} is \code{"grid:distance-pressure"}, then a gridded
+#' representation of \code{i} is returned, as a list with elements
+#' \code{distance} (in km), \code{pressure} (in dbar) and 
+#' \code{field} (in whatever unit is used for \code{i}). See Example
+#' for in the documentation for \code{\link{plot,section-method}}.
 #'
 #' If none of the conditions listed above holds, the general
 #' method is used (see \sQuote{Details of the general method}).
@@ -282,9 +289,12 @@ setMethod(f="[[",
                   res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
                   return(res)
               }
+              if (i == "spice") {
+                  return(swSpice(x))
+              }
               if (i %in% names(x@metadata)) {
                   if (i %in% c("longitude", "latitude")) {
-                      if (!missing(j) && "byStation" == j) {
+                      if (!missing(j) && j == "byStation") {
                           return(x@metadata[[i]])
                       } else {
                           res <- NULL
@@ -296,12 +306,41 @@ setMethod(f="[[",
                       return(x@metadata[[i]])
                   }
               } else if (i %in% c("nitrite", "nitrate", names(x@data$station[[1]]@data))) {
-                  ## Note that nitrite and nitrate might be computed, not stored
-                  res <- NULL
-                  for (stn in seq_along(x@data$station)) {
-                      res <- c(res, x@data$station[[stn]][[i]])
+                  if (!missing(j) && substr(j, 1, 4) == "grid") {
+                      if (j == "grid:distance-pressure") {
+                          numStations <- length(x@data$station)
+                          p1 <- x[["station", 1]][["pressure"]]
+                          np1 <- length(p1)
+                          field <- matrix(NA, nrow=numStations, ncol=np1)
+                          if (numStations > 1) {
+                              field[1,] <- x[["station", 1]][[i]]
+                              for (istn in 2:numStations) {
+                                  pi <- x[["station", istn]][["pressure"]]
+                                  if (length(pi) != np1 || any(pi != p1)) {
+                                      warning("returning NULL because this section is not gridded")
+                                      return(NULL)
+                                  }
+                                  field[istn,] <- x[["station", istn]][[i]]
+                              }
+                              res <- list(distance=x[['distance','byStation']], pressure=p1, field=field)
+                              return(res)
+                          } else {
+                              warning("returning NULL because this section contains only 1 station")
+                              return(NULL)
+                          }
+                      } else {
+                          warning("returning NULL because only grid:distance-pressure is permitted")
+                          return(NULL)
+                      }
+                  } else {
+                      ## Note that nitrite and nitrate might be computed, not stored
+                      res <- NULL
+                      for (stn in seq_along(x@data$station)) {
+                          res <- c(res, x@data$station[[stn]][[i]])
+                      }
+                      return(res)
                   }
-              } else if ("station" == i) {
+              } else if (i == "station") {
                   if (missing(j)) {
                       res <- x@data$station
                   } else {
@@ -437,8 +476,9 @@ setMethod(f="subset",
                   for (i in 1:n) {
                       ii <- indices[i]
                       stn[i] <- x@metadata$stationId[ii]
-                      lat[i] <- x@metadata$latitude[ii][1]
-                      lon[i] <- x@metadata$longitude[ii][1]
+                      ## FIXME is median best? Using this in case first value (used before 2016-06-29) is NA.
+                      lat[i] <- median(x@metadata$latitude[ii], na.rm=TRUE)
+                      lon[i] <- median(x@metadata$longitude[ii], na.rm=TRUE)
                       station[[i]] <- x@data$station[[ii]]
                   }
                   data <- list(station=station)
@@ -907,7 +947,11 @@ sectionAddCtd <- sectionAddStation
 #' \code{labcex=1} will increase the size of contour labels.
 #' 
 #' 
-#' @return None.
+#' @return If the original section was gridded, the return value is that section.
+#' Otherwise, the gridded section that was constructed for the plot is returned.
+#' In both cases, the value is returned silently. The
+#' purpose of returning the section is to enable subsequent addition of contours to an existing
+#' plot (see \dQuote{Examples}, number 4).
 #' 
 #' @seealso The documentation for \code{\link{section-class}} explains the
 #' structure of section objects, and also outlines the other functions dealing
@@ -919,25 +963,40 @@ sectionAddCtd <- sectionAddStation
 #' data(section)
 #' sg <- sectionGrid(section)
 #' 
-#' ## AO3 section
-#' plot(sg, which="salinity", ztype="points", pch=20, cex=1.5) 
+#' ## 1. AO3 section, default fields.
+#' plot(section)
 #' 
-#' ## Gulf Stream
+#' ## 2. Gulf Stream
 #' GS <- subset(section, 109<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0,2000,100))
 #' plot(GSg, which=c(1,99), map.ylim=c(34,42))
-#' 
 #' par(mfrow=c(2,1))
 #' plot(GS, which=1, ylim=c(2000, 0), ztype='points',
-#' zbreaks=seq(0,30,2), pch=20, cex=3)
+#'      zbreaks=seq(0,30,2), pch=20, cex=3)
 #' plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
 #' 
-#' ## image, with coloured dots to show if grid smoothing was OK
+#' par(mfrow=c(1,1))
+#'
+#' ## 3. Image, with coloured dots to indicate grid-data mismatch.
 #' plot(GSg, which=1, ztype='image')
 #' T <- GS[['temperature']]
 #' col <- oce.colorsJet(100)[rescale(T, rlow=1, rhigh=100)]
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
+#'
+#' ## 4. Image of temperature, with a high-salinity contour on top;
+#' ##    note the Mediterranean water.
+#' sec <- plot(section, which='temperature', ztype='image')
+#' S <- sec[["salinity", "grid:distance-pressure"]]
+#' contour(S$distance, S$pressure, S$field, level=35.8, lwd=3, add=TRUE)
+#'
+#' ## 5. Contours of salinity, with dots for high pressure and spice
+#' plot(section, which='salinity')
+#' distance <- section[["distance"]]
+#' depth <- section[["depth"]]
+#' spice <- section[["spice"]]
+#' look <- spice > 1.8 & depth > 500
+#' points(distance[look], depth[look], col='red')
 #' 
 #' @author Dan Kelley
 #' 
@@ -1020,20 +1079,19 @@ setMethod(f="plot",
               ## Ensure data on levels, for plots requiring pressure (e.g. sections)
               if (is.na(which[1]) || which != "data" || which != 'map') {
                   p1 <- x[["station", 1]][["pressure"]]
-                  np1 <- length(p1)
                   numStations <- length(x@data$station)
                   for (ix in 2:numStations) {
                       thisStation <- x@data$station[[ix]]
                       thisPressure <- thisStation[["pressure"]]
-                      if ("points" != ztype && 
-                          np1 != length(thisPressure) ||
-                          any(p1 != x[["station", ix]][["pressure"]])) {
+                      if ("points" != ztype && !identical(p1, thisPressure)) {
+                          ## any(p1 != x[["station", ix]][["pressure"]])) {
                           x <- sectionGrid(x, debug=debug-1)
                           ##warning("plot.section() gridded the data for plotting", call.=FALSE)
                           break
                       }
                   }
               }
+              res <- x # will now be gridded (either originally or through above code)
 
               ## Trim stations that have zero good data FIXME: brittle to addition of new metadata
               haveData <- sapply(x@data$station,
@@ -1065,6 +1123,8 @@ setMethod(f="plot",
                   drawPoints <- "points" == ztype
                   omar <- par('mar')
                   xIsTime <- inherits(xx, "POSIXt")
+
+                  canPlot <- TRUE      # assume we can plot; use this instead of nested 'break's
 
                   if (variable == "map") {
                       lat <- array(NA_real_, numStations)
@@ -1203,13 +1263,15 @@ setMethod(f="plot",
                       }
                   } else {                        
                       ## not a map
-                      ## if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "data") {
-                      ##     stop("this section does not contain a variable named '", variable, "'")
-                      ## }
-
-                      if (drawPoints || ztype == "image") {
+                      zAllMissing <- all(is.na(x[[variable]]))
+                      ##> message("zAllMissing=", zAllMissing)
+                      ##> message("drawPoints=", drawPoints)
+                      ##> message("ztype='", ztype, "'")
+                      if ((drawPoints || ztype == "image") && !zAllMissing) {
+                          ##> message("is.null(zbreaks)=", is.null(zbreaks))
                           if (is.null(zbreaks)) {
-                              zRANGE <- range(x[[variable]], na.rm=TRUE)
+                              ## Use try() to quiet warnings if all data are NA
+                              zRANGE <- try(range(x[[variable]], na.rm=TRUE), silent=TRUE)
                               if (is.null(zcol) || is.function(zcol)) {
                                   zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
                               } else {
@@ -1217,12 +1279,14 @@ setMethod(f="plot",
                               }
                           }
                           nbreaks <- length(zbreaks)
-                          if (is.null(zcol)) 
-                              zcol <- oce.colorsJet(nbreaks - 1)
-                          if (is.function(zcol))
-                              zcol <- zcol(nbreaks - 1)
-                          zlim <- range(zbreaks)
-                          drawPalette(zlim=range(zbreaks), breaks=zbreaks, col=zcol)
+                          if (nbreaks > 0) {
+                              if (is.null(zcol)) 
+                                  zcol <- oce.colorsJet(nbreaks - 1)
+                              if (is.function(zcol))
+                                  zcol <- zcol(nbreaks - 1)
+                              zlim <- range(zbreaks)
+                              drawPalette(zlim=range(zbreaks), breaks=zbreaks, col=zcol)
+                          }
                       }
 
 
@@ -1396,7 +1460,16 @@ setMethod(f="plot",
                               }
                           }
                       } else if (!drawPoints) {
-                          zrange <- range(zz[xx.unique,yy.unique], na.rm=TRUE)
+                          ## Use try() to quiet warnings if all data are NA
+                          if (zAllMissing) {
+                              if (nchar(legend.loc)) {
+                                  if (vtitle == "sigmaTheta")
+                                      vtitle <- expression(sigma[theta])
+                                  legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
+                              }
+                              return()
+                          }
+                          zrange <- try(range(zz[xx.unique,yy.unique], na.rm=TRUE), silent=TRUE)
                           if (!is.null(contourLevels) && !is.null(contourLabels)) {
                               oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
                               if (!("labcex" %in% dots$labcex)) {
@@ -1438,6 +1511,7 @@ setMethod(f="plot",
                               }
                           } else {
                               oceDebug(debug, "automatically-calculated contourLevels\n")
+                              zrange <- range(zz[xx.unique,yy.unique], na.rm=TRUE)
                               if (is.null(dots$labcex)) {
                                   if (ztype == 'contour') {
                                       contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
@@ -1508,9 +1582,13 @@ setMethod(f="plot",
                       }
                       L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
                       R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
+                      if (vtitle == "sigmaTheta")
+                          vtitle <- expression(sigma[theta])
                       vtitle <- if (length(unit) == 0) vtitle else bquote(.(vtitle)*.(L)*.(unit[[1]])*.(R))
-                      if (nchar(legend.loc))
+                      if (nchar(legend.loc)) {
+
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
+                      }
                       ##lines(xx, -waterDepth[ox], col='red')
 
                       ## undo negation of the y coordinate, so further can can make sense
@@ -1690,7 +1768,7 @@ setMethod(f="plot",
                   }
               }
               oceDebug(debug, "} # plot.section()\n", unindent=1)
-              invisible()
+              invisible(res)
           })
 
 

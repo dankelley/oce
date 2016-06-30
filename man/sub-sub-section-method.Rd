@@ -55,13 +55,20 @@ of the stations is returned.
 
 If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
 the potential temperatures of all the stations are returned in one 
-vector.
+vector.  Similarly, \code{"spice"} returns the property known
+as spice, using \code{\link{swSpice}}.
 
 If \code{i} is a string ending with \code{"Flag"}, then the characters
 prior to that ending are taken to be the name of a variable contained
 within the stations in the section. If this flag is available in 
 the first station of the section, then the flag values are looked
 up for every station.
+
+If \code{j} is \code{"grid:distance-pressure"}, then a gridded
+representation of \code{i} is returned, as a list with elements
+\code{distance} (in km), \code{pressure} (in dbar) and 
+\code{field} (in whatever unit is used for \code{i}). See Example
+for in the documentation for \code{\link{plot,section-method}}.
 
 If none of the conditions listed above holds, the general
 method is used (see \sQuote{Details of the general method}).
