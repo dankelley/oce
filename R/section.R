@@ -1079,7 +1079,6 @@ setMethod(f="plot",
               ## Ensure data on levels, for plots requiring pressure (e.g. sections)
               if (is.na(which[1]) || which != "data" || which != 'map') {
                   p1 <- x[["station", 1]][["pressure"]]
-                  np1 <- length(p1)
                   numStations <- length(x@data$station)
                   for (ix in 2:numStations) {
                       thisStation <- x@data$station[[ix]]
@@ -1264,26 +1263,19 @@ setMethod(f="plot",
                       }
                   } else {                        
                       ## not a map
-                      if (drawPoints || ztype == "image") {
+                      zAllMissing <- all(is.na(x[[variable]]))
+                      ##> message("zAllMissing=", zAllMissing)
+                      ##> message("drawPoints=", drawPoints)
+                      ##> message("ztype='", ztype, "'")
+                      if ((drawPoints || ztype == "image") && !zAllMissing) {
+                          ##> message("is.null(zbreaks)=", is.null(zbreaks))
                           if (is.null(zbreaks)) {
                               ## Use try() to quiet warnings if all data are NA
                               zRANGE <- try(range(x[[variable]], na.rm=TRUE), silent=TRUE)
-                              if (all(!is.finite(zRANGE))) {
-                                  if (nchar(legend.loc)) {
-                                      if (vtitle == "sigmaTheta")
-                                          vtitle <- expression(sigma[theta])
-                                      legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
-                                  }
-                                  return()
-                              }
-                              if (canPlot) {
-                                  if (is.null(zcol) || is.function(zcol)) {
-                                      zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
-                                  } else {
-                                      zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=length(zcol) + 1)
-                                  }
+                              if (is.null(zcol) || is.function(zcol)) {
+                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
                               } else {
-                                  zbreaks <- NULL
+                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=length(zcol) + 1)
                               }
                           }
                           nbreaks <- length(zbreaks)
@@ -1469,8 +1461,7 @@ setMethod(f="plot",
                           }
                       } else if (!drawPoints) {
                           ## Use try() to quiet warnings if all data are NA
-                          zrange <- try(range(zz[xx.unique,yy.unique], na.rm=TRUE), silent=TRUE)
-                          if (!all(is.finite(zrange))) {
+                          if (zAllMissing) {
                               if (nchar(legend.loc)) {
                                   if (vtitle == "sigmaTheta")
                                       vtitle <- expression(sigma[theta])
@@ -1478,6 +1469,7 @@ setMethod(f="plot",
                               }
                               return()
                           }
+                          zrange <- try(range(zz[xx.unique,yy.unique], na.rm=TRUE), silent=TRUE)
                           if (!is.null(contourLevels) && !is.null(contourLabels)) {
                               oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
                               if (!("labcex" %in% dots$labcex)) {
@@ -1520,10 +1512,6 @@ setMethod(f="plot",
                           } else {
                               oceDebug(debug, "automatically-calculated contourLevels\n")
                               zrange <- range(zz[xx.unique,yy.unique], na.rm=TRUE)
-                              if (!all(is.finite(zrange))) {
-                                  warning("plot(section, ..., which=\"", which[w], "\"): nothing to plot")
-                                  return()
-                              }
                               if (is.null(dots$labcex)) {
                                   if (ztype == 'contour') {
                                       contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
