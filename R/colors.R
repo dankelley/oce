@@ -594,6 +594,10 @@ colormap <- function(z=NULL,
 {
     oceDebug(debug, "colormap() {\n", unindent=1)
     zKnown <- !is.null(z)
+    if (zKnown) {
+        zOrig <- z
+        z <- z[is.finite(z)]
+    }
     zlimKnown <- !missing(zlim)
     breaksKnown <- !missing(breaks)
     nameKnown <- !missing(name)
