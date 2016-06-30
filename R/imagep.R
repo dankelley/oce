@@ -319,7 +319,7 @@ drawPalette <- function(zlim, zlab="",
         breaksGiven <- TRUE
         ##colGiven <- TRUE
         if (!zlimGiven)
-            zlim <- range(breaks)
+            zlim <- range(breaks, na.rm=TRUE)
         zlimGiven <- TRUE
         breaksOrig <- breaks
         contours <- breaks

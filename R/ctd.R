@@ -1282,6 +1282,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
         if (imethod > 0) method <- methods[imethod] else
             stop('unknown method "', method, '"')
     }
+    warningMessages <- NULL
     oceDebug(debug, "ctdDecimate(x, p, method=\"",
              if (methodFunction) "(a function)" else method,
              "\", ...) {\n", sep="", unindent=1)
@@ -1289,7 +1290,8 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
     ##     stop("method is only for objects of class '", "ctd", "'")
     res <- x
     res[["flags"]] <- NULL
-    warning("Data flags are omitted from the decimated ctd object. Use handleFlags() first to remove bad data.")
+    warningMessages <- c(warningMessages,
+                         "Removed flags from decimated ctd object")
     n <- length(x[["pressure"]])
     if (n < 2) {
         warning("too few data to ctdDecimate()")
@@ -1438,11 +1440,11 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
     }
     if ('scan' %in% names(dataNew)) {
         dataNew[['scan']] <- NULL
-        warning('Removing scan field from decimated object')
+        warningMessages <- c(warningMessages, "Removed scan field from decimated ctd object")
     }
     if ('flag' %in% names(dataNew)) {
         dataNew[['flag']] <- NULL
-        warning('Removing flag field from decimated object')
+        warningMessages <- c(warningMessages, "Removed flag field from decimated ctd object")
     }
     dataNew[["pressure"]] <- pt
     ## convert any NaN to NA
@@ -1452,6 +1454,8 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
     ##message("ctd.R:733 dataNew[['pressure']]: ", paste(dataNew[['pressure']], collapse=" "))
     res@data <- dataNew
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    for (w in warningMessages)
+        res@processingLog <- processingLogAppend(res@processingLog, w)
     oceDebug(debug, "} # ctdDecimate()\n", unindent=1)
     res
 }
