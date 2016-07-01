@@ -4445,13 +4445,17 @@ plotProfile <- function (x,
         }
         ## lines(salinity, y, col=col.salinity, lwd=if (length(lwd)>1)lwd[2] else lwd[1])
     } else {
+        ## Not a special case.
         w <- which(names(x@data) == xtype)
         if (length(w) < 1)
             stop("unknown xtype value (\"", xtype, "\")")
         look <- if (keepNA) 1:length(y) else !is.na(x@data[[xtype]]) & !is.na(y)
+        dots <- list(...)
+        ## message("names(dots)=", paste(names(dots), collapse=" "))
         if (!add) {
             par(mar=mar, mgp=mgp)
             plot(x@data[[xtype]][look], y[look],
+                 xlim=if("xlim" %in% names(dots)) dots$xlim,
                  ylim=ylim, lty=lty, cex=cex, pch=pch,
                  type="n", xlab="", ylab="",axes=FALSE, xaxs=xaxs, yaxs=yaxs)
             axis(3)
