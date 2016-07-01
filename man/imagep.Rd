@@ -10,7 +10,7 @@ imagep(x, y, z, xlim, ylim, zlim, zclip = FALSE, flipy = FALSE, xlab = "",
   drawContours = FALSE, drawPalette = TRUE, drawTriangles = FALSE,
   tformat, drawTimeRange = getOption("oceDrawTimeRange"),
   filledContour = FALSE, missingColor = NULL, mgp = getOption("oceMgp"),
-  mar, mai.palette, xaxs = "i", yaxs = "i", cex = par("cex"),
+  mar, mai.palette, xaxs = "i", yaxs = "i", asp = NA, cex = par("cex"),
   adorn = NULL, axes = TRUE, main = "", axisPalette,
   debug = getOption("oceDebug"), ...)
 }
@@ -153,6 +153,10 @@ of x axis (with value \code{"i"}) or not; see
 \code{\link[graphics]{par}}("xaxs").}
 
 \item{yaxs}{As \code{xaxs} but for y axis.}
+
+\item{asp}{Aspect ratio of the plot, as for \code{\link{plot.default}}. If
+\code{x} inherits from \code{\link{topo-class}}, then the provided value of
+\code{asp} is ignored, and instead the plot aspect ratio is set to the}
 
 \item{cex}{Size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").}
 

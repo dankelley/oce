@@ -653,6 +653,10 @@ drawPalette <- function(zlim, zlab="",
 #'         of x axis (with value \code{"i"}) or not; see
 #'         \code{\link[graphics]{par}}("xaxs").
 #' @param  yaxs As \code{xaxs} but for y axis.
+#' @param asp Aspect ratio of the plot, as for \code{\link{plot.default}}. If
+#'        \code{x} inherits from \code{\link{topo-class}}, then the provided value of
+#'        \code{asp} is ignored, and instead the plot aspect ratio is set to the
+#"        reciprocal of the mean latitude within \code{x}.
 #' @param  cex Size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").
 #'
 #' @template adornTemplate
@@ -740,6 +744,7 @@ imagep <- function(x, y, z,
                    mgp=getOption("oceMgp"),
                    mar, mai.palette,
                    xaxs="i", yaxs="i",
+                   asp=NA,
                    cex=par("cex"),
                    adorn=NULL,
                    axes=TRUE,
@@ -814,6 +819,7 @@ imagep <- function(x, y, z,
         x <- x[["longitude"]]
         if (missing(xlab)) xlab <- "Longitude"
         if (missing(ylab)) ylab <- "Latitude"
+        asp <- 1 / cos(mean(y * pi / 180))
     } else if (!missing(z) && is.matrix(z) && missing(x) && missing(y)) {
         ##x <- seq(0, 1, length.out=nrow(z))
         ##y <- seq(0, 1, length.out=ncol(z))
@@ -1137,7 +1143,7 @@ imagep <- function(x, y, z,
             if (!is.double(z))
                 storage.mode(z) <- "double"
             plot.new()
-            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
+            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, asp=asp, ...)
             ## Filled contours became official in version 2.15.0 of R.
             ## issue 489: use breaks/col instead of breaks2/col2
             #.filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
@@ -1147,12 +1153,12 @@ imagep <- function(x, y, z,
             oceDebug(debug, "not doing filled contours [2]\n")
             if (zlimHistogram) {
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col2,
-                      xlim=xlim, ylim=ylim, zlim=c(0,1), ...)
+                      xlim=xlim, ylim=ylim, zlim=c(0,1), asp=asp, ...)
             } else {
                 ## issue 489: use breaks/col instead of breaks2/col2
                 ##image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks2, col=col2,
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, ...)
+                  xlim=xlim, ylim=ylim, zlim=zlim, asp=asp, ...)
             }
         }
         if (axes) {
@@ -1168,7 +1174,7 @@ imagep <- function(x, y, z,
             oceDebug(debug, "doing filled contours [3]\n")
             storage.mode(z) <- "double"
             plot.new()
-            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, ...)
+            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs, asp=asp, ...)
             ## Filled contours became official in version 2.15.0 of R.
             ## issue 489: use breaks/col instead of breaks2/col2
             ##.filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks2), col=col2)
@@ -1186,7 +1192,7 @@ imagep <- function(x, y, z,
             ## issue 489: use breaks/col instead of breaks2/col2
             ##image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks2, col=col2,
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
-                  xlim=xlim, ylim=ylim, ...)
+                  xlim=xlim, ylim=ylim, asp=asp, ...)
         }
         if (axes) {
             box()
