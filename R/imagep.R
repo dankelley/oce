@@ -269,6 +269,10 @@ drawPalette <- function(zlim, zlab="",
                         debug=getOption("oceDebug"), ...)
 {
     zlimGiven <- !missing(zlim)
+    if (zlimGiven && length(zlim) != 2)
+        stop("'zlim' must be of length 2")
+    if (zlimGiven && zlim[2] < zlim[1])
+        stop("'zlim' must be ordered")
     colormapGiven <- !missing(colormap)
     oceDebug(debug, "colormapGiven =", colormapGiven, "\n")
     ##message("missing(col) ", missing(col))
@@ -299,6 +303,8 @@ drawPalette <- function(zlim, zlab="",
     if (colormapGiven && !zlimGiven) {
         zlim <- colormap$zlim
         zlimGiven <- TRUE
+        if (zlim[2] <= zlim[1])
+            stop("colormap zlim values must be ordered and distinct")
     }
     zIsTime <- zlimGiven && inherits(zlim[1], "POSIXt")
     if (zIsTime) {

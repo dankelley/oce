@@ -598,6 +598,14 @@ colormap <- function(z=NULL,
         z <- z[is.finite(z)]
     }
     zlimKnown <- !missing(zlim)
+    if (zlimKnown) {
+        if (length(zlim) != 2)
+            stop("length of 'zlim' must be 2")
+        if (zlim[2] < zlim[1])
+            stop("'zlim' values must be ordered")
+        if (zlim[2] == zlim[1])
+            stop("'zlim' values must be distinct")
+    }
     breaksKnown <- !missing(breaks)
     nameKnown <- !missing(name)
     missingColorKnown <- !missing(missingColor)
