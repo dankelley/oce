@@ -654,9 +654,10 @@ drawPalette <- function(zlim, zlab="",
 #'         \code{\link[graphics]{par}}("xaxs").
 #' @param  yaxs As \code{xaxs} but for y axis.
 #' @param asp Aspect ratio of the plot, as for \code{\link{plot.default}}. If
-#'        \code{x} inherits from \code{\link{topo-class}}, then the provided value of
-#'        \code{asp} is ignored, and instead the plot aspect ratio is set to the
-#"        reciprocal of the mean latitude within \code{x}.
+#'        \code{x} inherits from \code{\link{topo-class}} and \code{asp=NA} (the
+#'        default) then \code{asp} is redefined to be the reciprocal of the
+#'        mean latitude in \code{x}, as a way to reduce geographical distortion.
+#'        Otherwise, if \code{asp} is not \code{NA}, then it is used directly.
 #' @param  cex Size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").
 #'
 #' @template adornTemplate
@@ -819,7 +820,8 @@ imagep <- function(x, y, z,
         x <- x[["longitude"]]
         if (missing(xlab)) xlab <- "Longitude"
         if (missing(ylab)) ylab <- "Latitude"
-        asp <- 1 / cos(mean(y * pi / 180))
+        if (is.na(asp))
+            asp <- 1 / cos(mean(y * pi / 180))
     } else if (!missing(z) && is.matrix(z) && missing(x) && missing(y)) {
         ##x <- seq(0, 1, length.out=nrow(z))
         ##y <- seq(0, 1, length.out=ncol(z))
