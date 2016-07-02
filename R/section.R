@@ -476,9 +476,8 @@ setMethod(f="subset",
                   for (i in 1:n) {
                       ii <- indices[i]
                       stn[i] <- x@metadata$stationId[ii]
-                      ## FIXME is median best? Using this in case first value (used before 2016-06-29) is NA.
-                      lat[i] <- median(x@metadata$latitude[ii], na.rm=TRUE)
-                      lon[i] <- median(x@metadata$longitude[ii], na.rm=TRUE)
+                      lat[i] <- firstFinite(x@metadata$latitude[ii])
+                      lon[i] <- firstFinite(x@metadata$longitude[ii])
                       station[[i]] <- x@data$station[[ii]]
                   }
                   data <- list(station=station)
