@@ -1,5 +1,15 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+#' Get first finite value in a vector or array, or NULL if none
+#' @param v A numerical vector or array.
+firstFinite <- function(v)
+{
+    if (!is.vector(v))
+        v <- as.vector(v)
+    first <- which(is.finite(v))
+    if (length(first) > 0) v[first[1]] else NULL
+}
+
 #' Decode units, from strings
 #'
 #' @param s A string.
