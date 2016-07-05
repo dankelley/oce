@@ -254,11 +254,11 @@ setMethod(f="summary",
 #' the first station of the section, then the flag values are looked
 #' up for every station.
 #'
-#' If \code{j} is \code{"grid:distance-pressure"}, then a gridded
-#' representation of \code{i} is returned, as a list with elements
-#' \code{distance} (in km), \code{pressure} (in dbar) and 
-#' \code{field} (in whatever unit is used for \code{i}). See Example
-#' for in the documentation for \code{\link{plot,section-method}}.
+## #' If \code{j} is \code{"grid:distance-pressure"}, then a gridded
+## #' representation of \code{i} is returned, as a list with elements
+## #' \code{distance} (in km), \code{pressure} (in dbar) and 
+## #' \code{field} (in whatever unit is used for \code{i}). See Example
+## #' for in the documentation for \code{\link{plot,section-method}}.
 #'
 #' If none of the conditions listed above holds, the general
 #' method is used (see \sQuote{Details of the general method}).
@@ -949,8 +949,8 @@ sectionAddCtd <- sectionAddStation
 #' @return If the original section was gridded, the return value is that section.
 #' Otherwise, the gridded section that was constructed for the plot is returned.
 #' In both cases, the value is returned silently. The
-#' purpose of returning the section is to enable subsequent addition of contours to an existing
-#' plot (see \dQuote{Examples}, number 4).
+#' purpose of returning the section is to enable subsequent processing
+#' of the grid, including adding elements to the plot.
 #' 
 #' @seealso The documentation for \code{\link{section-class}} explains the
 #' structure of section objects, and also outlines the other functions dealing
@@ -983,19 +983,19 @@ sectionAddCtd <- sectionAddStation
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 #'
-#' ## 4. Image of temperature, with a high-salinity contour on top;
-#' ##    note the Mediterranean water.
-#' sec <- plot(section, which='temperature', ztype='image')
-#' S <- sec[["salinity", "grid:distance-pressure"]]
-#' contour(S$distance, S$pressure, S$field, level=35.8, lwd=3, add=TRUE)
-#'
-#' ## 5. Contours of salinity, with dots for high pressure and spice
-#' plot(section, which='salinity')
-#' distance <- section[["distance"]]
-#' depth <- section[["depth"]]
-#' spice <- section[["spice"]]
-#' look <- spice > 1.8 & depth > 500
-#' points(distance[look], depth[look], col='red')
+## #' ## 4. Image of temperature, with a high-salinity contour on top;
+## #' ##    note the Mediterranean water.
+## #' sec <- plot(section, which='temperature', ztype='image')
+## #' S <- sec[["salinity", "grid:distance-pressure"]]
+## #' contour(S$distance, S$pressure, S$field, level=35.8, lwd=3, add=TRUE)
+## #'
+## #' ## 5. Contours of salinity, with dots for high pressure and spice
+## #' plot(section, which='salinity')
+## #' distance <- section[["distance"]]
+## #' depth <- section[["depth"]]
+## #' spice <- section[["spice"]]
+## #' look <- spice > 1.8 & depth > 500
+## #' points(distance[look], depth[look], col='red')
 #' 
 #' @author Dan Kelley
 #' 

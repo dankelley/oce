@@ -148,8 +148,8 @@ of debugging information, or to 2 to get more.}
 If the original section was gridded, the return value is that section.
 Otherwise, the gridded section that was constructed for the plot is returned.
 In both cases, the value is returned silently. The
-purpose of returning the section is to enable subsequent addition of contours to an existing
-plot (see \dQuote{Examples}, number 4).
+purpose of returning the section is to enable subsequent processing
+of the grid, including adding elements to the plot.
 }
 \description{
 Creates a summary plot for a CTD section, with one panel for each value of
@@ -212,19 +212,6 @@ col <- oce.colorsJet(100)[rescale(T, rlow=1, rhigh=100)]
 points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 
-## 4. Image of temperature, with a high-salinity contour on top;
-##    note the Mediterranean water.
-sec <- plot(section, which='temperature', ztype='image')
-S <- sec[["salinity", "grid:distance-pressure"]]
-contour(S$distance, S$pressure, S$field, level=35.8, lwd=3, add=TRUE)
-
-## 5. Contours of salinity, with dots for high pressure and spice
-plot(section, which='salinity')
-distance <- section[["distance"]]
-depth <- section[["depth"]]
-spice <- section[["spice"]]
-look <- spice > 1.8 & depth > 500
-points(distance[look], depth[look], col='red')
 
 }
 \author{
