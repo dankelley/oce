@@ -415,7 +415,8 @@ argoGrid <- function(argo, p, debug=getOption("oceDebug"), ...)
             res@data[[field]] <- matrix(NA, ncol=nprofile, nrow=npt)
             for (profile in 1:nprofile) {
                 ndata <- sum(!is.na(argo@data[[field]][,profile]))
-                if (ndata > 2 && 0 < max(abs(diff(pressure[,profile])),na.rm=TRUE)) {
+                if (ndata > 2 && sum(is.finite(diff(pressure[,profile])))
+                    && 0 < max(abs(diff(pressure[,profile])),na.rm=TRUE)) {
                     res@data[[field]][,profile] <- approx(pressure[,profile], argo@data[[field]][,profile], pt, ...)$y
                 } else {
                     res@data[[field]][,profile] <- rep(NA, npt)
