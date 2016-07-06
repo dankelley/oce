@@ -1462,7 +1462,7 @@ setMethod(f="plot",
                           ## Use try() to quiet warnings if all data are NA
                           if (zAllMissing) {
                               if (nchar(legend.loc)) {
-                                  if (vtitle == "sigmaTheta")
+                                  if (is.character(vtitle) && vtitle == "sigmaTheta")
                                       vtitle <- expression(sigma[theta])
                                   legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                               }
@@ -1581,7 +1581,7 @@ setMethod(f="plot",
                       }
                       L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
                       R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
-                      if (vtitle == "sigmaTheta")
+                      if (is.character(vtitle) && vtitle == "sigmaTheta")
                           vtitle <- expression(sigma[theta])
                       vtitle <- if (length(unit) == 0) vtitle else bquote(.(vtitle)*.(L)*.(unit[[1]])*.(R))
                       if (nchar(legend.loc)) {
