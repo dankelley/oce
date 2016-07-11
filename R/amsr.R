@@ -68,6 +68,8 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("Amsr Summary\n------------\n\n")
               showMetadataItem(object, "filename",   "Data file:           ")
+              cat(sprintf("* Longitude range:      %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude,1))) 
+              cat(sprintf("* Latitude range:       %.4fE to %.4fE\n", object@metadata$latitude[1], tail(object@metadata$latitude,1))) 
               for (name in names(object@data)) {
                   object@data[[name]] <- object[[name]] # translate to science units
               }
@@ -99,7 +101,7 @@ setMethod(f="summary",
 #'
 #' @return
 #' In all cases, the returned value is a matrix with 
-#' with dimension 1440 by 720, with \code{NA} values if the 
+#' with \code{NA} values if the 
 #' satellite data are over land (coded to \code{0x255}),
 #' have no observations (coded to \code{0xfe}),
 #' are bad observations (coded to \code{0xfd}),
@@ -129,7 +131,7 @@ setMethod(f="[[",
                   stop("band '", i, "' is not available in this object; try one of: ",
                        paste(namesAllowed, collapse=" "))
               #' get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
-              getBand<-function(b) {
+              getBand<-function(b, dim) {
                   bad <- b == as.raw(0xff)| # land mass
                   b == as.raw(0xfe)| # no observations
                   b == as.raw(0xfd)| # bad observations
@@ -137,38 +139,39 @@ setMethod(f="[[",
                   b == as.raw(0xfb) # missing SST or wind due to rain, or missing water vapour due to heavy rain
                   b <- as.numeric(b)
                   b[bad] <- NA
-                  dim(b) <- c(1440, 720)
+                  dim(b) <- dim
                   b
               }
               if (missing(j) || j != "raw") {
                   ## Apply units; see http://www.remss.com/missions/amsre
                   ## FIXME: the table at above link has two factors for time; I've no idea
                   ## what that means, and am extracting what seems to be seconds in the day.
-                  if      (i == "timeDay") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
-                  else if (i == "timeNight") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
-                  else if (i == "time") res <- 60*6*getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]))
-                  else if (i == "SSTDay") res <- -3 + 0.15 * getBand(x@data[[i]])
-                  else if (i == "SSTNight") res <- -3 + 0.15 * getBand(x@data[[i]])
-                  else if (i == "SST") res <- -3 + 0.15 * getBand(.Call("amsr_average", x@data[["SSTDay"]], x@data[["SSTNight"]]))
-                  else if (i == "LFwindDay") res <- 0.2 * getBand(x@data[[i]])
-                  else if (i == "LFwindNight") res <- 0.2 * getBand(x@data[[i]])
-                  else if (i == "LFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["LFwindDay"]], x@data[["LFwindNight"]]))
-                  else if (i == "MFwindDay") res <- 0.2 * getBand(x@data[[i]])
-                  else if (i == "MFwindNight") res <- 0.2 * getBand(x@data[[i]])
-                  else if (i == "MFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["MFwindDay"]], x@data[["MFwindNight"]]))
-                  else if (i == "vaporDay") res <- 0.3 * getBand(x@data[[i]])
-                  else if (i == "vaporNight") res <- 0.3 * getBand(x@data[[i]])
-                  else if (i == "vapor") res <- 0.3 * getBand(.Call("amsr_average", x@data[["vaporDay"]], x@data[["vaporNight"]]))
-                  else if (i == "cloudDay") res <- -0.05 + 0.01 * getBand(x@data[[i]])
-                  else if (i == "cloudNight") res <- -0.05 + 0.01 * getBand(x@data[[i]])
-                  else if (i == "cloud") res <- -0.05 + 0.01 * getBand(.Call("amsr_average", x@data[["cloudDay"]], x@data[["cloudNight"]]))
-                  else if (i == "rainDay") res <- 0.01 * getBand(x@data[[i]])
-                  else if (i == "rainNight") res <- 0.01 * getBand(x@data[[i]])
-                  else if (i == "rain") res <- 0.01 * getBand(.Call("amsr_average", x@data[["rainDay"]], x@data[["rainNight"]]))
+                  dim <- c(length(x@metadata$longitude), length(x@metadata$latitude))
+                  if      (i == "timeDay") res <- 60*6*getBand(x@data[[i]], dim) # FIXME: guessing on amsr time units
+                  else if (i == "timeNight") res <- 60*6*getBand(x@data[[i]], dim) # FIXME: guessing on amsr time units
+                  else if (i == "time") res <- 60*6*getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]), dim)
+                  else if (i == "SSTDay") res <- -3 + 0.15 * getBand(x@data[[i]], dim)
+                  else if (i == "SSTNight") res <- -3 + 0.15 * getBand(x@data[[i]], dim)
+                  else if (i == "SST") res <- -3 + 0.15 * getBand(.Call("amsr_average", x@data[["SSTDay"]], x@data[["SSTNight"]]), dim)
+                  else if (i == "LFwindDay") res <- 0.2 * getBand(x@data[[i]], dim)
+                  else if (i == "LFwindNight") res <- 0.2 * getBand(x@data[[i]], dim)
+                  else if (i == "LFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["LFwindDay"]], x@data[["LFwindNight"]]), dim)
+                  else if (i == "MFwindDay") res <- 0.2 * getBand(x@data[[i]], dim)
+                  else if (i == "MFwindNight") res <- 0.2 * getBand(x@data[[i]], dim)
+                  else if (i == "MFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["MFwindDay"]], x@data[["MFwindNight"]]), dim)
+                  else if (i == "vaporDay") res <- 0.3 * getBand(x@data[[i]], dim)
+                  else if (i == "vaporNight") res <- 0.3 * getBand(x@data[[i]], dim)
+                  else if (i == "vapor") res <- 0.3 * getBand(.Call("amsr_average", x@data[["vaporDay"]], x@data[["vaporNight"]]), dim)
+                  else if (i == "cloudDay") res <- -0.05 + 0.01 * getBand(x@data[[i]], dim)
+                  else if (i == "cloudNight") res <- -0.05 + 0.01 * getBand(x@data[[i]], dim)
+                  else if (i == "cloud") res <- -0.05 + 0.01 * getBand(.Call("amsr_average", x@data[["cloudDay"]], x@data[["cloudNight"]]), dim)
+                  else if (i == "rainDay") res <- 0.01 * getBand(x@data[[i]], dim)
+                  else if (i == "rainNight") res <- 0.01 * getBand(x@data[[i]], dim)
+                  else if (i == "rain") res <- 0.01 * getBand(.Call("amsr_average", x@data[["rainDay"]], x@data[["rainNight"]]), dim)
               } else {
                   if      (i == "timeDay") res <- x@data[[i]]
                   else if (i == "timeNight") res <- x@data[[i]]
-                  else if (i == "time") res <- getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]))
+                  else if (i == "time") res <- getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]), dim)
                   else if (i == "SSTDay") res <- x@data[[i]]
                   else if (i == "SSTNight") res <- x@data[[i]]
                   else if (i == "SST") res <- .Call("amsr_average", x@data[["SSTDay"]], x@data[["SSTNight"]])
@@ -200,6 +203,57 @@ setMethod(f="[[<-",
           definition=function(x, i, j, value) {
               callNextMethod(x=x, i=i, j=j, value=value)
           })
+
+#' Subset an amsr Object
+#'
+#' @description
+#' This function is somewhat analogous to
+#' \code{\link{subset.data.frame}}, but only one independent variable may be
+#' used in \code{subset} in any call to the function, which means that
+#' repeated calls will be necessary to subset based on more than one
+#' independent variable (e.g. latitude and longitude).
+#'
+#' @param x A \code{amsr} object, i.e. one inheriting from \code{\link{amsr-class}}.
+#' @param subset An expression indicating how to subset \code{x}.
+#' @param ... Ignored.
+#' @return An \code{amsr} object.
+#' @examples
+#' \dontrun{
+#' library(oce)
+#' earth <- read.amsr("f34_20160102v7.2.gz") # not provided with oce
+#' fclat <- subset(earth , 45<=latitude & latitude <= 49)
+#' fc <- subset(fclat , longitude <= -47 & longitude <= -43)
+#' plot(fc)
+#' }
+#' @author Dan Kelley
+#'
+#' @family things related to \code{amsr} data
+setMethod(f="subset",
+          signature="amsr",
+          definition=function(x, subset, ...) {
+              res <- x
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              if (length(grep("longitude", subsetString))) {
+                  if (length(grep("latitude", subsetString)))
+                      stop("the subset must not contain both longitude and latitude. Call this twice, to combine these")
+                  keep <- eval(substitute(subset),
+                               envir=data.frame(longitude=x@metadata$longitude))
+                  for (name in names(res@data))
+                      res@data[[name]] <- res@data[[name]][keep,]
+                  res@metadata$longitude <- x@metadata$longitude[keep]
+              } else if (length(grep("latitude", subsetString))) {
+                  keep <- eval(substitute(subset),
+                               envir=data.frame(latitude=x@metadata$latitude))
+                  for (name in names(res@data))
+                      res@data[[name]] <- res@data[[name]][,keep]
+                  res@metadata$latitude <- res@metadata$latitude[keep]
+              } else {
+                  stop("may only subset by longitude or latitude")
+              }
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+              res
+          })
+ 
 
 #' Plot an amsr Object
 #'
@@ -348,7 +402,7 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
     } else {
         stop("Can only handle 14-chunk data.")
     }
-    res@metadata$satellite <- "amsr"
+    res@metadata$spacecraft <- "amsr"
     res@processingLog <- processingLogAppend(res@processingLog,
                                         paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.amsr()\n", unindent=1)

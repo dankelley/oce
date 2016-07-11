@@ -1,5 +1,5 @@
 0.9-20
-- TBA
+- subset(amsr) added; various other amsr improvements
 
 0.9-19
 - deprecate 'adorn' in plot functions

@@ -24,6 +24,7 @@ Dan Kelley and Chantelle Layton
 
 Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{amsr-class}}, \code{\link{plot,amsr-method}},
+  \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}
 }
 \concept{

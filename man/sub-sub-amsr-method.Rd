@@ -18,7 +18,7 @@
 }
 \value{
 In all cases, the returned value is a matrix with 
-with dimension 1440 by 720, with \code{NA} values if the 
+with \code{NA} values if the 
 satellite data are over land (coded to \code{0x255}),
 have no observations (coded to \code{0xfe}),
 are bad observations (coded to \code{0xfd}),
