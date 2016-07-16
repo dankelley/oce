@@ -1,4 +1,5 @@
 0.9-20
+- mapPlot() and mapAxis() get cex.axis parameter
 - subset(amsr) added; various other amsr improvements
 
 0.9-19

@@ -5,10 +5,10 @@
 \title{Draw a Map}
 \usage{
 mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg, fill,
-  border = NULL, col = NA, type = "l", axes = TRUE, drawBox = TRUE,
-  showHemi = TRUE, polarCircle = 0, lonlabel = NULL, latlabel = NULL,
-  sides = NULL, projection = "+proj=moll", tissot = FALSE, trim = TRUE,
-  debug = getOption("oceDebug"), ...)
+  border = NULL, col = NA, type = "l", axes = TRUE, cex.axis = 1,
+  drawBox = TRUE, showHemi = TRUE, polarCircle = 0, lonlabel = NULL,
+  latlabel = NULL, sides = NULL, projection = "+proj=moll",
+  tissot = FALSE, trim = TRUE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{longitude}{either a vector of longitudes of points to be plotted, or
@@ -61,6 +61,8 @@ most projections this works quite well.  If not, one may set
 \item{axes}{logical value indicating whether to draw longitude and latitude
 values in the lower and left margin, respectively.  This may not work well
 for some projections or scales.}
+
+\item{cex.axis}{axis-label expansion factor (see \code{\link{par}}).}
 
 \item{drawBox}{logical value indicating whether to draw a box around the plot.
 This is helpful for many projections at sub-global scale.}

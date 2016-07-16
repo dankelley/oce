@@ -7,7 +7,7 @@
 mapAxis(side = 1:2, longitude = NULL, latitude = NULL, tick = TRUE,
   line = NA, pos = NA, outer = FALSE, font = NA, lty = "solid",
   lwd = 1, lwd.ticks = lwd, col = NULL, col.ticks = NULL, hadj = NA,
-  padj = NA, tcl = -0.3, debug = getOption("oceDebug"))
+  padj = NA, tcl = -0.3, cex.axis = 1, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{side}{the side at which labels are to be drawn.  If not provided,
@@ -21,31 +21,33 @@ interesections of the grid lines with the plotting box.}
 grid has already been drawn, then the labels will be at the
 interesections of the grid lines with the plotting box.}
 
-\item{tick}{an argument that is transmitted to code{ink{axis}}.}
+\item{tick}{parameter passed to \code{\link{axis}}.}
 
-\item{line}{an argument that is transmitted to code{ink{axis}}.}
+\item{line}{parameter passed to \code{\link{axis}}.}
 
-\item{pos}{an argument that is transmitted to code{ink{axis}}.}
+\item{pos}{parameter passed to \code{\link{axis}}.}
 
-\item{outer}{an argument that is transmitted to code{ink{axis}}.}
+\item{outer}{parameter passed to \code{\link{axis}}.}
 
-\item{font}{an argument that is transmitted to code{ink{axis}}.}
+\item{font}{axis font, passed to \code{\link{axis}}.}
 
-\item{lty}{an argument that is transmitted to code{ink{axis}}.}
+\item{lty}{axis line type, passed to \code{\link{axis}}.}
 
-\item{lwd}{an argument that is transmitted to code{ink{axis}}.}
+\item{lwd}{axis line width, passed to \code{\link{axis}}).}
 
-\item{lwd.ticks}{an argument that is transmitted to code{ink{axis}}.}
+\item{lwd.ticks}{tick line width, passed to \code{\link{axis}}.}
 
-\item{col}{an argument that is transmitted to code{ink{axis}}.}
+\item{col}{axis colour, passed to \code{\link{axis}}.}
 
-\item{col.ticks}{an argument that is transmitted to code{ink{axis}}.}
+\item{col.ticks}{axis tick colour, passed to \code{\link{axis}}.}
 
-\item{hadj}{an argument that is transmitted to code{ink{axis}}.}
+\item{hadj}{an argument that is transmitted to \code{\link{axis}}.}
 
-\item{padj}{an argument that is transmitted to code{ink{axis}}.}
+\item{padj}{an argument that is transmitted to \code{\link{axis}}.}
 
-\item{tcl}{an argument that is transmitted to code{ink{axis}}.}
+\item{tcl}{axis-tick size (see \code{\link{par}}).}
+
+\item{cex.axis}{axis-label expansion factor (see \code{\link{par}}).}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}

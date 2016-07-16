@@ -115,31 +115,33 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #' grid has already been drawn, then the labels will be at the
 #' interesections of the grid lines with the plotting box.
 #'
-#' @param tick an argument that is transmitted to code{ink{axis}}.
+#' @param tick parameter passed to \code{\link{axis}}.
 #'
-#' @param line an argument that is transmitted to code{ink{axis}}.
+#' @param line parameter passed to \code{\link{axis}}.
 #'
-#' @param pos an argument that is transmitted to code{ink{axis}}.
+#' @param pos parameter passed to \code{\link{axis}}.
 #'
-#' @param outer an argument that is transmitted to code{ink{axis}}.
+#' @param outer parameter passed to \code{\link{axis}}.
 #'
-#' @param font an argument that is transmitted to code{ink{axis}}.
+#' @param font axis font, passed to \code{\link{axis}}.
 #'
-#' @param lty an argument that is transmitted to code{ink{axis}}.
+#' @param lty axis line type, passed to \code{\link{axis}}.
 #'
-#' @param lwd an argument that is transmitted to code{ink{axis}}.
+#' @param lwd axis line width, passed to \code{\link{axis}}).
 #'
-#' @param lwd.ticks an argument that is transmitted to code{ink{axis}}.
+#' @param lwd.ticks tick line width, passed to \code{\link{axis}}.
 #'
-#' @param col an argument that is transmitted to code{ink{axis}}.
+#' @param col axis colour, passed to \code{\link{axis}}.
 #'
-#' @param col.ticks an argument that is transmitted to code{ink{axis}}.
+#' @param col.ticks axis tick colour, passed to \code{\link{axis}}.
 #'
-#' @param hadj an argument that is transmitted to code{ink{axis}}.
+#' @param hadj an argument that is transmitted to \code{\link{axis}}.
 #'
-#' @param padj an argument that is transmitted to code{ink{axis}}.
+#' @param padj an argument that is transmitted to \code{\link{axis}}.
 #'
-#' @param tcl an argument that is transmitted to code{ink{axis}}.
+#' @param tcl axis-tick size (see \code{\link{par}}).
+#'
+#' @param cex.axis axis-label expansion factor (see \code{\link{par}}).
 #'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
@@ -170,7 +172,8 @@ badFillFix2 <- function(x, y, xorig, yorig)
 mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
                     tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
                     lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
-                    hadj=NA, padj=NA, tcl=-0.3, debug=getOption("oceDebug"))
+                    hadj=NA, padj=NA, tcl=-0.3, cex.axis=1,
+                    debug=getOption("oceDebug"))
 {
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
@@ -229,7 +232,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
             axis(side=1, at=AT, labels=fixneg(LAB), mgp=MGP,
                  tick=tick, line=line, pos=pos, outer=outer, font=font,
                  lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
-                 hadj=hadj, padj=padj, tcl=tcl)
+                 hadj=hadj, padj=padj, tcl=tcl, cex.axis=cex.axis)
         }
         if (length(latitude)) {
             warning("mapAxis(side=1) cannot draw latitude labels yet; contact author if you need this\n")
@@ -288,7 +291,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
             axis(side=2, at=AT, labels=fixneg(LAB), mgp=MGP,
                  tick=tick, line=line, pos=pos, outer=outer, font=font,
                  lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
-                 hadj=hadj, padj=padj, tcl=tcl)
+                 hadj=hadj, padj=padj, tcl=tcl, cex.axis=cex.axis)
         }
         if (length(longitude)) {
             warning("mapAxis(side=2) cannot draw longitude labels yet; contact author if you need this\n")
@@ -607,6 +610,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @param axes logical value indicating whether to draw longitude and latitude
 #' values in the lower and left margin, respectively.  This may not work well
 #' for some projections or scales.
+#'
+#' @param cex.axis axis-label expansion factor (see \code{\link{par}}).
 #'
 #' @param drawBox logical value indicating whether to draw a box around the plot.
 #' This is helpful for many projections at sub-global scale.
@@ -978,7 +983,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill,
                     border=NULL, col=NA, # 'col' default differs from plot.coastline(), owing to ugly-horiz.-line issue
-                    type='l', axes=TRUE, drawBox=TRUE, showHemi=TRUE,
+                    type='l', axes=TRUE, cex.axis=1, drawBox=TRUE, showHemi=TRUE,
                     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
                     projection="+proj=moll", tissot=FALSE, trim=TRUE,
                     debug=getOption("oceDebug"),
@@ -1214,8 +1219,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }
         if (axes) {
-            mapAxis(side=1, longitude=.axis()$longitude, debug=debug-1)
-            mapAxis(side=2, latitude=.axis()$latitude, debug=debug-1)
+            mapAxis(side=1, longitude=.axis()$longitude, cex.axis=cex.axis, debug=debug-1)
+            mapAxis(side=2, latitude=.axis()$latitude, cex.axis=cex.axis, debug=debug-1)
         }
         if (tissot)
             mapTissot(grid, col='red', debug=debug-1)
