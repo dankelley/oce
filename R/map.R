@@ -143,6 +143,10 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'
 #' @param cex.axis axis-label expansion factor (see \code{\link{par}}).
 #'
+#' @param mgp three-element numerical vector describing axis-label
+#' placement (see \code{\link{par}}). It usually makes sense to set
+#' the first and third elements to zero.
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
 #'
@@ -173,6 +177,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
                     tick=TRUE, line=NA, pos=NA, outer=FALSE, font=NA,
                     lty="solid", lwd=1, lwd.ticks=lwd, col=NULL, col.ticks=NULL,
                     hadj=NA, padj=NA, tcl=-0.3, cex.axis=1,
+                    mgp=c(0, 0.5, 0),
                     debug=getOption("oceDebug"))
 {
     if ("none" == .Projection()$type)
@@ -197,7 +202,6 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
         side <- 1:2
     usr <- par('usr')
     axisSpan <- max(usr[2]-usr[1], usr[4]-usr[3])
-    MGP <- c(2, 0.5, 0)            # first item ignored since not writing "longitude" etc
     if (1 %in% side) {
         oceDebug(debug, "drawing axis on side 1\n")
         AT <- NULL
@@ -229,7 +233,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
             }
         }
         if (!is.null(AT)) {
-            axis(side=1, at=AT, labels=fixneg(LAB), mgp=MGP,
+            axis(side=1, at=AT, labels=fixneg(LAB), mgp=mgp,
                  tick=tick, line=line, pos=pos, outer=outer, font=font,
                  lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
                  hadj=hadj, padj=padj, tcl=tcl, cex.axis=cex.axis)
@@ -288,7 +292,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
             }
         }
         if (!is.null(AT)) {
-            axis(side=2, at=AT, labels=fixneg(LAB), mgp=MGP,
+            axis(side=2, at=AT, labels=fixneg(LAB), mgp=mgp,
                  tick=tick, line=line, pos=pos, outer=outer, font=font,
                  lty=lty, lwd=lwd, lwd.ticks=lwd.ticks, col=col, col.ticks=col.ticks,
                  hadj=hadj, padj=padj, tcl=tcl, cex.axis=cex.axis)
@@ -612,6 +616,9 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' for some projections or scales.
 #'
 #' @param cex.axis axis-label expansion factor (see \code{\link{par}}).
+#'
+#' @param mgp three-element numerical vector describing axis-label
+#' placement, passed to \code{\link{mapAxis}}.
 #'
 #' @param drawBox logical value indicating whether to draw a box around the plot.
 #' This is helpful for many projections at sub-global scale.
@@ -983,7 +990,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill,
                     border=NULL, col=NA, # 'col' default differs from plot.coastline(), owing to ugly-horiz.-line issue
-                    type='l', axes=TRUE, cex.axis=1, drawBox=TRUE, showHemi=TRUE,
+                    type='l', axes=TRUE, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
                     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
                     projection="+proj=moll", tissot=FALSE, trim=TRUE,
                     debug=getOption("oceDebug"),
@@ -1219,8 +1226,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }
         if (axes) {
-            mapAxis(side=1, longitude=.axis()$longitude, cex.axis=cex.axis, debug=debug-1)
-            mapAxis(side=2, latitude=.axis()$latitude, cex.axis=cex.axis, debug=debug-1)
+            mapAxis(side=1, longitude=.axis()$longitude, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
+            mapAxis(side=2, latitude=.axis()$latitude, cex.axis=cex.axis, mgp=mgp, debug=debug-1)
         }
         if (tissot)
             mapTissot(grid, col='red', debug=debug-1)

@@ -7,7 +7,8 @@
 mapAxis(side = 1:2, longitude = NULL, latitude = NULL, tick = TRUE,
   line = NA, pos = NA, outer = FALSE, font = NA, lty = "solid",
   lwd = 1, lwd.ticks = lwd, col = NULL, col.ticks = NULL, hadj = NA,
-  padj = NA, tcl = -0.3, cex.axis = 1, debug = getOption("oceDebug"))
+  padj = NA, tcl = -0.3, cex.axis = 1, mgp = c(0, 0.5, 0),
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{side}{the side at which labels are to be drawn.  If not provided,
@@ -48,6 +49,10 @@ interesections of the grid lines with the plotting box.}
 \item{tcl}{axis-tick size (see \code{\link{par}}).}
 
 \item{cex.axis}{axis-label expansion factor (see \code{\link{par}}).}
+
+\item{mgp}{three-element numerical vector describing axis-label
+placement (see \code{\link{par}}). It usually makes sense to set
+the first and third elements to zero.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}

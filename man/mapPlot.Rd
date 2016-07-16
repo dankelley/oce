@@ -6,9 +6,10 @@
 \usage{
 mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg, fill,
   border = NULL, col = NA, type = "l", axes = TRUE, cex.axis = 1,
-  drawBox = TRUE, showHemi = TRUE, polarCircle = 0, lonlabel = NULL,
-  latlabel = NULL, sides = NULL, projection = "+proj=moll",
-  tissot = FALSE, trim = TRUE, debug = getOption("oceDebug"), ...)
+  mgp = c(0, 0.5, 0), drawBox = TRUE, showHemi = TRUE, polarCircle = 0,
+  lonlabel = NULL, latlabel = NULL, sides = NULL,
+  projection = "+proj=moll", tissot = FALSE, trim = TRUE,
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{longitude}{either a vector of longitudes of points to be plotted, or
@@ -63,6 +64,9 @@ values in the lower and left margin, respectively.  This may not work well
 for some projections or scales.}
 
 \item{cex.axis}{axis-label expansion factor (see \code{\link{par}}).}
+
+\item{mgp}{three-element numerical vector describing axis-label
+placement, passed to \code{\link{mapAxis}}.}
 
 \item{drawBox}{logical value indicating whether to draw a box around the plot.
 This is helpful for many projections at sub-global scale.}
