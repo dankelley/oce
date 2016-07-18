@@ -615,6 +615,9 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' values in the lower and left margin, respectively.  This may not work well
 #' for some projections or scales.
 #'
+#' @param cex character expansion factor for plot symbols, 
+#' used if \code{type='p'} or any other value that yields symbols.
+#'
 #' @param cex.axis axis-label expansion factor (see \code{\link{par}}).
 #'
 #' @param mgp three-element numerical vector describing axis-label
@@ -990,7 +993,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill,
                     border=NULL, col=NA, # 'col' default differs from plot.coastline(), owing to ugly-horiz.-line issue
-                    type='l', axes=TRUE, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
+                    type='l', axes=TRUE, cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
                     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
                     projection="+proj=moll", tissot=FALSE, trim=TRUE,
                     debug=getOption("oceDebug"),
