@@ -40,11 +40,6 @@ means they will be removed in the next CRAN release. They are as follows.
 
 \itemize{
 
-\item The \code{labelIf} argument of \code{\link{plot,tidem-method}}
-was discovered not to work in July 2016. Since the new argument
-\code{constituents} is expected to be of much more use in practical
-work, \code{labelIf} was marked as deprecated in July 2016.
-
 \item The \code{date} argument of \code{\link{as.ctd}}
 was discovered to have been unused in early 2016. Since
 the \code{startTime} actually fills its role, \code{date}

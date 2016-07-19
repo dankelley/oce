@@ -5,10 +5,10 @@
 \alias{plot,tidem-method}
 \title{Plot a Tidem Prediction}
 \usage{
-\S4method{plot}{tidem}(x, which = 1, labelIf = NULL,
-  constituents = c("SA", "O1", "K1", "M2", "S2", "M4"), sides = NULL,
-  col = "blue", log = "", mgp = getOption("oceMgp"), mar = c(mgp[1] + 1,
-  mgp[1] + 1, mgp[2] + 0.25, mgp[2] + 1), ...)
+\S4method{plot}{tidem}(x, which = 1, constituents = c("SA", "O1", "K1",
+  "M2", "S2", "M4"), sides = NULL, col = "blue", log = "",
+  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, mgp[2] + 0.25,
+  mgp[2] + 1), ...)
 }
 \arguments{
 \item{x}{A \code{tidem} object, i.e. one inheriting from
@@ -16,9 +16,6 @@
 
 \item{which}{integer flag indicating plot type, 1 for stair-case spectral, 2
 for spike spectral.}
-
-\item{labelIf}{ignored (it seems never to have worked) and deprecated;
-see \link{oce-deprecated}.}
 
 \item{constituents}{a character vector of constituents that are
 to be drawn and label. If \code{NULL}, then no constituents will be shown.
@@ -49,6 +46,12 @@ default, in order to use more space for the data and less for the axes.}
 \description{
 Plot a summary diagram for a tidal fit.
 }
+\section{Historical note}{
+
+An argument named \code{labelIf} was removed in July 2016,
+because it was discovered never to have worked as documented, and
+because the more useful argument \code{constituents} had been added.
+}
 \examples{
 \dontrun{
 library(oce)
@@ -56,6 +59,7 @@ data(sealevel)
 tide <- tidem(sealevel)
 plot(tide)
 }
+
 }
 \author{
 Dan Kelley

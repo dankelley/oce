@@ -174,9 +174,6 @@ setMethod(f="[[<-",
 #' @param which integer flag indicating plot type, 1 for stair-case spectral, 2
 #' for spike spectral.
 #'
-#' @param labelIf ignored (it seems never to have worked) and deprecated;
-#' see \link{oce-deprecated}.
-#'
 #' @param constituents a character vector of constituents that are
 #' to be drawn and label. If \code{NULL}, then no constituents will be shown.
 #' Consult the built-in dataset \code{\link{tidedata}} for the permissible
@@ -206,6 +203,12 @@ setMethod(f="[[<-",
 #' tide <- tidem(sealevel)
 #' plot(tide)
 #' }
+#'
+#' @section Historical note:
+#' An argument named \code{labelIf} was removed in July 2016,
+#' because it was discovered never to have worked as documented, and
+#' because the more useful argument \code{constituents} had been added.
+#'
 #' @author Dan Kelley
 #'
 #' @family functions that plot \code{oce} data
@@ -214,7 +217,6 @@ setMethod(f="plot",
           signature=signature("tidem"),
           definition=function(x,
                               which=1,
-                              labelIf=NULL,
                               constituents=c("SA", "O1", "K1", "M2", "S2", "M4"),
                               sides=NULL,
                               col="blue",
@@ -244,29 +246,6 @@ setMethod(f="plot",
                           mtext(name, side=side, at=frequency, col=col, cex=0.8, adj=adj)
                   }
               }
-              ## drawConstituents<-function(amplitude, type="standard", col="blue")
-              ## {
-              ##     if (type == "standard") {
-              ##         drawConstituent("SA", 0.0001140741, side=3)
-              ##         drawConstituent("O1", 0.0387306544, side=3, adj=1)
-              ##         drawConstituent("K1", 0.0417807462, side=1, adj=0)
-              ##         drawConstituent("M2", 0.0805114007, side=3, adj=1)
-              ##         drawConstituent("S2", 0.0833333333, side=1, adj=0)
-              ##         drawConstituent("M4", 0.1610228013, side=3)
-              ##     } else {
-              ##         ## if (is.null(labelIf))
-              ##         ##     labelIf <- amplitude[order(amplitude, decreasing=TRUE)[3]]
-              ##         for (i in 1:nc) {
-              ##             message("i=", i)
-              ##             ##if (amplitude[i] >= labelIf) {
-              ##             abline(v=frequency[i], col=col, lty="dotted")
-              ##             mtext(name[i], side=3, at=frequency[i], col=col)
-              ##             ##}
-              ##         }
-              ##     }
-              ## }
-              if (!is.null(labelIf))
-                  warning("the 'labelIf' argument is deprecated; see help(\"oce-deprecated\")")
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
               if (lw > 1) on.exit(par(opar))
