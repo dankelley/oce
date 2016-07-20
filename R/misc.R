@@ -2390,6 +2390,8 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' @examples
 #' 
 #' library(oce)
+#'
+#' # 1. Demonstrate step-function response
 #' y <- c(rep(1,10), rep(-1,10))
 #' x <- seq_along(y)
 #' plot(x, y, type='o', ylim=c(-1.05, 1.05))
@@ -2401,6 +2403,39 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' points(yH, col=3, type='o')
 #' legend("topright", col=1:3, cex=2/3, pch=1,
 #'        legend=c("input", "Blackman Harris", "Hamming"))
+#'
+#' # 2. Show theoretical and practical filter gain, where
+#' #    the latter is based on random white noise, and
+#' #    includes a particular value for the spans
+#' #    argument of spectrum(), etc.
+#' \dontrun{ # need signal package for this example
+#' r <- rnorm(2048)
+#' rh <- stats::filter(r, H)
+#' rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
+#' sR <- spectrum(r, plot=FALSE, spans=c(11,5,3))
+#' sRH <- spectrum(rh, plot=FALSE, spans=c(11,5,3))
+#' par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+#' plot(sR$freq, sRH$spec/sR$spec, xlab="Frequency", ylab="Power Transfer",
+#'      type='l', lwd=5, col='gray')
+#' theory <- freqz(H, n=seq(0,pi,length.out=100))
+#' # Note we must square the modulus for the power spectrum
+#' lines(theory$f/pi/2, Mod(theory$h)^2, lwd=1, col='red')
+#' grid()
+#' legend("topright", col=c("gray", "red"), lwd=c(5,1), cex=2/3,
+#'        legend=c("Practical", "Theory"), bg="white")
+#' plot(log10(sR$freq), log10(sRH$spec/sR$spec),
+#'      xlab="log10 Frequency", ylab="log10 Power Transfer",
+#'      type='l', lwd=5, col='gray')
+#' theory <- freqz(H, n=seq(0,pi,length.out=100))
+#' # Note we must square the modulus for the power spectrum
+#' lines(log10(theory$f/pi/2), log10(Mod(theory$h)^2), lwd=1, col='red')
+#' grid()
+#' legend("topright", col=c("gray", "red"), lwd=c(5,1), cex=2/3,
+#'        legend=c("Practical", "Theory"), bg="white")
+#
+
+
+#' }
 makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
 {
     type <- match.arg(type)
