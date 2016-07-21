@@ -2140,8 +2140,8 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     } else if (d <= 60 * 60 * 24 * 3) {        # under 3 days: label day; show 1-hour subticks
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
-        z <- seq(t.start, t.end, by="hour")
-        z.sub <- seq(t.start, t.end, by="hour")
+        z <- seq(t.start, t.end, by="6 hour")
+        z.sub <- seq(t.start, t.end, by="1 hour")
         oceDebug(debug, vectorShow(z, "Time range is under 3 days; z="))
         oceDebug(debug, vectorShow(z.sub, "Time range is under 3 days; z.sub="))
         if (missing(tformat))
