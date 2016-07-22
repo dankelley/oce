@@ -207,6 +207,9 @@ findInHeader <- function(key, lines) # local
 #'     \code{FFFF_*.*} \tab \code{flag_archaic}       \tab Old flag name, replaced by \code{QCFF}                     \cr
 #'     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
+#'     \code{HCDM}     \tab \code{directionMagnetic}  \tab                                                            \cr
+#'     \code{HCDT}     \tab \code{directionTrue}      \tab                                                            \cr
+#'     \code{HCSP}     \tab \code{speedHorizontal}    \tab                                                            \cr
 #'     \code{LATD_*.*} \tab \code{latitude}           \tab                                                            \cr
 #'     \code{LOND_*.*} \tab \code{longitude}          \tab                                                            \cr
 #'     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr
@@ -299,6 +302,9 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("FFFF", "flag_archaic", names)
     names <- gsub("FLOR", "fluorometer", names)
     names <- gsub("FWETLABS", "fwetlabs", names) # FIXME: what is this?
+    names <- gsub("HCSP", "speedHorizontal", names)
+    names <- gsub("HCDM", "directionMagnetic", names)
+    names <- gsub("HCDT", "directionTrue", names)
     names <- gsub("LATD", "latitude", names)
     names <- gsub("LOND", "longitude", names)
     names <- gsub("NSCT", "v", names)
@@ -334,7 +340,6 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     ## Now deal with units
     units <- list()
     for (i in seq_along(names)) {
-        message("ODFunits[", i, "] = '", ODFunits[i], "'")
         units[[names[i]]] <- if (ODFunits[i] == "db") {
             list(unit=expression(dbar), scale="")
         } else if (ODFunits[i] == "decibars") {
@@ -368,6 +373,19 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         } else {
             warning("unable to interpret ODFunits[", i, "]='", ODFunits[i], "'\n", sep="")
             list(unit=as.expression(ODFunits[i]), scale=ODFunits[i])
+        }
+    }
+    ## Catch some problems I've seen in data
+    directionVariables <- names == "directionMagnetic" | names == "directionTrue"
+    for (directionVariable in directionVariables) {
+        unit <- units[[directionVariable]]$unit
+        if (is.null(unit)) {
+            warning("no unit for a direction variable; setting to degrees")
+            units[[directionVariable]]$unit <- expression(degree)
+        } else if ("degree" != as.character(unit)) {
+            warning("odd unit (", as.character(unit), ") for data column named '",
+                    names[directionVariable], "'; setting to degrees")
+            units[[directionVariable]]$unit <- expression(degree)
         }
     }
     list(names=names, units=units)
@@ -580,6 +598,8 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ##print(ODFunits)
 
     ODFnames <- lines[grep("^\\s*CODE\\s*=", lines)]
+    ODFnames <- gsub("^.*CODE=", "", ODFnames)
+    ODFnames <- gsub(",", "", ODFnames)
     ODFnames <- gsub("^[^']*'(.*)'.*$",'\\1', ODFnames) # e.g. "  CODE= 'CNTR_01',"
     ##message("below is ODFnames...")
     ##print(ODFnames)
