@@ -334,16 +334,27 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     ## Now deal with units
     units <- list()
     for (i in seq_along(names)) {
+        message("ODFunits[", i, "] = '", ODFunits[i], "'")
         units[[names[i]]] <- if (ODFunits[i] == "db") {
             list(unit=expression(dbar), scale="")
+        } else if (ODFunits[i] == "decibars") {
+            list(unit=expression(dbar), scale="")
+        } else if (ODFunits[i] == "degrees") {
+            list(unit=expression(degree), scale="")
         } else if (ODFunits[i] == "IPTS-68, deg C") {
             list(unit=expression(degree*C), scale="IPTS-68")
+        } else if (ODFunits[i] == "degrees C") { # guess on scale
+            list(unit=expression(degree*C), scale="ITS-90")
         } else if (ODFunits[i] == "ITS-90, deg C") {
             list(unit=expression(degree*C), scale="ITS-90")
         } else if (ODFunits[i] == "mg/m^3") {
             list(unit=expression(mg/m^3), scale="")
         } else if (ODFunits[i] == "ml/l") {
             list(unit=expression(ml/l), scale="")
+        } else if (ODFunits[i] == "m/s") {
+            list(unit=expression(m/s), scale="")
+        } else if (ODFunits[i] == "mmho/cm") {
+            list(unit=expression(mmho/cm), scale="")
         } else if (ODFunits[i] == "none") {
             list(unit=expression(), scale="")
         } else if (ODFunits[i] == "PSU") {
