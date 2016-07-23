@@ -617,7 +617,7 @@ setMethod(f="[[<-",
           })
 
 
-#' Coerce data into CTD dataset
+#' Coerce data into CTD object
 #' 
 #' Assemble data into a \code{\link{ctd-class}} dataset.
 #' 

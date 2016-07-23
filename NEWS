@@ -1,4 +1,6 @@
 0.9-20
+- as.cm() added
+- read.odf() handles Aanderaa current meter data
 - mapPlot() and mapAxis() get cex.axis parameter
 - subset(amsr) added; various other amsr improvements
 

@@ -104,7 +104,7 @@ The panels are controlled by the \code{which} argument, as follows.
 
 \item \code{which=11} or \code{"conductivity"} for conductivity
 
-\item \code{which=20} or \code{"heading"} for compass heading
+\item \code{which=20} or \code{"direction"} for the direction of flow
 
 }
 }
@@ -143,9 +143,9 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{cm} data: \code{\link{[[,cm-method}},
-  \code{\link{[[<-,cm-method}}, \code{\link{cm-class}},
-  \code{\link{cm}}, \code{\link{read.cm}},
-  \code{\link{subset,cm-method}},
+  \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
+  \code{\link{cm-class}}, \code{\link{cm}},
+  \code{\link{read.cm}}, \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
 

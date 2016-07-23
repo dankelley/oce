@@ -253,7 +253,6 @@ setMethod(f="plot",
               frequency <- x@data$freq[-1] # trim z0
               amplitude <- x@data$amplitude[-1]
               name      <- x@data$name[-1]
-              nc <- length(frequency)
               if (!is.null(constituents)) {
                   sides <- if (is.null(sides)) rep(3, length(constituents))
                   else rep(sides, length.out=length(constituents))

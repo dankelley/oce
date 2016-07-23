@@ -57,7 +57,7 @@ should be), \code{temperature} (temperature, assumed in-situ), and
 \code{pressure} (pressure, calculated with \code{\link{swPressure}} based on the
 \code{"Depth"} column in the file).
 
-\code{Caution.} The value in the \code{"Hdg"} file is stored as \code{heading}
+\code{Caution.} The value in the \code{"Hdg"} file is stored as \code{direction}
 in the data, but this is just a guess.
 
 See \dQuote{Details} for an explanation of why other columns are ignored.
@@ -106,6 +106,13 @@ Based on such considerations, \code{read.cm.s4()} reads only the columns that
 were reasonably well-understood based on the sample file. Users who need more
 columns should contact the author.
 }
+\section{Historical note}{
+
+Until late July, 2016, the direction of current flow was called 
+\code{heading} in the returned object's \code{data} slot. This was changed
+to \code{direction} to avoid confusion with the use of the word
+"heading" to indicate the orientation of a ship or a fared instrument.
+}
 \examples{
 \dontrun{
   library(oce)
@@ -127,8 +134,9 @@ infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
 }
 \seealso{
 Other things related to \code{cm} data: \code{\link{[[,cm-method}},
-  \code{\link{[[<-,cm-method}}, \code{\link{cm-class}},
-  \code{\link{cm}}, \code{\link{plot,cm-method}},
+  \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
+  \code{\link{cm-class}}, \code{\link{cm}},
+  \code{\link{plot,cm-method}},
   \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }

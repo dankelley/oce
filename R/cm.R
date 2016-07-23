@@ -4,8 +4,9 @@
 #' @title Class to Store Current Meter (CM) Data
 #' 
 #' @description
-#' Class to store current meter data from an interocean S4 device.  A file
-#' containing CM profile data may be read with \code{\link{read.cm}}. The results
+#' Class to store current meter data, e.g. from an Interocean S4 device
+#' or an Aanderaa RCM device.  A file
+#' containing Interocean S4 data may be read with \code{\link{read.cm}}. The results
 #' may be plotted with \code{\link{plot,cm-method}} or summarized with
 #' \code{\link{summary,cm-method}}.  Data may be retrieved with
 #' \code{\link{[[,cm-method}} or replaced with \ \code{\link{[[<-,cm-method}}.
@@ -63,7 +64,7 @@ setMethod(f="[[<-",
 setMethod(f="initialize",
           signature="cm",
           definition=function(.Object, filename="(unknown)", sample, time,
-                              u, v, heading,
+                              u, v, direction,
                               conductivity, salinity, temperature, pressure) {
               .Object@metadata$filename <- filename
               .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90") # guess on the unit
@@ -72,7 +73,7 @@ setMethod(f="initialize",
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@data$u <- if (missing(u)) NULL else u
               .Object@data$v <- if (missing(v)) NULL else v
-              .Object@data$heading <- if (missing(heading)) NULL else heading
+              .Object@data$direction <- if (missing(direction)) NULL else direction
               .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
               .Object@data$salinity <- if (missing(salinity)) NULL else salinity
               .Object@data$temperature <- if (missing(temperature)) NULL else temperature
@@ -171,6 +172,96 @@ setMethod(f="subset",
           })
 
 
+#' Coerce data into a CM object
+#' @param time A vector of times of observation, or an \code{oce} object that holds \code{time},
+#' in addition to either both \code{u} and \code{v}, or both \code{directionTrue}
+#' and \code{speedHorizontal}.
+#' @param u either a numerical vector containing the eastward component of velocity, in m/s,
+#' or an \code{oce} object that can can be coerced into a \code{cm} object. In the second
+#' case, the other arguments to the present function are ignored.
+#' @param v vector containing the northward component of velocity in m/s.
+#' @param pressure vector containing pressure in dbar. Ignored if the first argument
+#' contains an \code{oce} object holding pressure.
+#' @param conductivity Optional vector of conductivity.
+#' Ignored if the first argument contains an \code{oce} object holding pressure.
+#' @param salinity Optional vector of salinity, assumed to be Practical Salinity. 
+#' Ignored if the first argument contains an \code{oce} object holding saliity
+#' @param temperature Optional vector of temperature.
+#' Ignored if the first argument contains an \code{oce} object holding temperature
+#' @param longitude Optional longitude in degrees East.
+#' Ignored if the first argument contains an \code{oce} object holding longitude.
+#' @param latitude Latitude in degrees North.
+#' Ignored if the first argument contains an \code{oce} object holding latitude.
+#' @param filename Optional source file name
+#' @template debugTemplate
+#' @family things related to \code{cm} data
+as.cm <- function(time, u=NULL, v=NULL,
+                  pressure=NULL, conductivity=NULL, temperature=NULL, salinity=NULL,
+                  longitude=NA, latitude=NA, filename="", debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "as.ctd() {\n", unindent=1)
+    rpd <- atan2(1, 1) / 45            # radians per degree (avoid 'pi')
+    ## Catch special cases
+    if (inherits(time, "oce")) {
+        x <- time
+        print(names(x@data))
+        dnames <- names(x@data)
+        mnames <- names(x@metadata)
+        if (!("time" %in% dnames))
+            stop("first argument is an oce object, but it does not hold time")
+        time <- x@data$time
+        if ("pressure" %in% dnames)
+            pressure <- x@data$pressure
+        if ("conductivity" %in% dnames)
+            conductivity <- x@data$conductivity
+        if ("temperature" %in% dnames)
+            temperature <- x@data$temperature
+        if ("salinity" %in% dnames)
+            salinity <- x@data$salinity
+        if ("longitude" %in% mnames)
+            longitude <- x@metadata$longitude
+        if ("latitude" %in% mnames)
+            latitude <- x@metadata$latitude
+        if ("filename" %in% mnames)
+            filename <- x@metadata$filename
+        if ("u" %in% dnames && "v" %in% dnames) {
+            u <- x@data$u
+            v <- x@data$v
+        } else if ("speedHorizontal" %in% dnames && "directionTrue" %in% dnames) {
+            ## NOTE: this can be generalized later to take e.g. 'speed', if some objects have that
+            u <- x@data$speedHorizontal * cos(rpd * x@data$directionTrue)
+            v <- x@data$speedHorizontal * sin(rpd * x@data$directionTrue)
+        } else if ("speedHorizontal" %in% dnames && "direction" %in% dnames) {
+            u <- x@data$speedHorizontal * cos(rpd * x@data$direction)
+            v <- x@data$speedHorizontal * sin(rpd * x@data$direction)
+        } else {
+            stop("first argument must hold either 'u' plus 'v' or 'speed' plus 'directionTrue' or 'direction'")
+        }
+    }
+    direction <- atan2(v, u) / rpd
+    direction <- ifelse(direction < 0, 360+direction, direction) # put in range 0 to 360
+    res <- new("cm", sample=NULL, time=time, u=u, v=v, direction=direction, 
+               conductivity=conductivity, salinity=salinity, temperature=temperature,
+               pressure=pressure)
+    res@metadata$filename <- filename
+    res@metadata$longitude <- longitude
+    res@metadata$latitude <- latitude
+    res@metadata$units$u <- list(unit=expression(m/s), scale="")
+    res@metadata$units$v <- list(unit=expression(m/s), scale="")
+    if (!is.null(salinity))
+        res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+    if (!is.null(temperature))
+        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+    if (!is.null(pressure))
+        res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    res@metadata$units$direction <- list(unit=expression(degree), scale="")
+    #res$processingLog <- processingLogAppend(res@processingLog, 
+    #                                         paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # as.cm()\n", unindent=1)
+    res
+}
+
+
 #' @title Read a CM file
 #' 
 #' @description
@@ -265,10 +356,16 @@ setMethod(f="subset",
 #' \code{pressure} (pressure, calculated with \code{\link{swPressure}} based on the
 #' \code{"Depth"} column in the file).
 #' 
-#' \code{Caution.} The value in the \code{"Hdg"} file is stored as \code{heading}
+#' \code{Caution.} The value in the \code{"Hdg"} file is stored as \code{direction}
 #' in the data, but this is just a guess.
 #' 
 #' See \dQuote{Details} for an explanation of why other columns are ignored.
+#'
+#' @section Historical note:
+#' Until late July, 2016, the direction of current flow was called 
+#' \code{heading} in the returned object's \code{data} slot. This was changed
+#' to \code{direction} to avoid confusion with the use of the word
+#' "heading" to indicate the orientation of a ship or a fared instrument.
 #' 
 #' @examples
 #' \dontrun{
@@ -373,7 +470,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     col.conductivity <- 13
     col.temperature <- 13
     col.depth <- 14
-    col.heading <- 17
+    col.direction <- 17
     col.salinity <- 19
     if (foundNames) {
         names <- names[1:dim(d)[2]]
@@ -383,9 +480,9 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         col.north <- which(names == "Vnorth")
         if (length(col.north) > 0)
             col.north <- col.north[1]
-        col.heading <- which(names == "Hdg")
-        if (length(col.heading) > 0)
-            col.heading <- col.heading[1]
+        col.direction <- which(names == "Hdg")
+        if (length(col.direction) > 0)
+            col.direction <- col.direction[1]
         col.conductivity <- which(names == "Cond")
         if (length(col.conductivity) > 0)
             col.conductivity <- col.conductivity[1]
@@ -405,7 +502,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     d <- d[-trimLines,]
     u <- d[, col.east] / 100
     v <- d[, col.north] / 100
-    heading <- d[, col.heading]
+    direction <- d[, col.direction]
     ## the 42.91754 value is electrical conductivity at SP=35, t=15, p=0
     conductivity <- d[, col.conductivity]
     temperature <- d[, col.temperature]
@@ -443,7 +540,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     keep <- keep[1 <= keep]
     keep <- keep[keep <= n]
     res <- new("cm", sample=as.numeric(sample[keep]), time=time[keep],
-               u=u[keep], v=v[keep], heading=heading[keep],
+               u=u[keep], v=v[keep], direction=direction[keep],
                conductivity=conductivity[keep],
                salinity=salinity[keep], temperature=temperature[keep], pressure=pressure[keep])
     res@metadata$filename <- filename
@@ -457,7 +554,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
     res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    res@metadata$units$heading <- list(unit=expression(degree), scale="")
+    res@metadata$units$direction <- list(unit=expression(degree), scale="")
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.cm()\n", unindent=1)
@@ -502,7 +599,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' 
 #'   \item \code{which=11} or \code{"conductivity"} for conductivity
 #' 
-#'   \item \code{which=20} or \code{"heading"} for compass heading
+#'   \item \code{which=20} or \code{"direction"} for the direction of flow
 #' 
 #' }
 #' 
@@ -599,7 +696,7 @@ setMethod(f="plot",
                                   list(u=1, v=2, "progressive vector"=3,
                                        "uv"=4, "uv+ellipse"=5, "uv+ellipse+arrow"=6,
                                        pressure=7, salinity=8, temperature=9, TS=10, conductivity=11,
-                                       heading=20))
+                                       direction=20))
               oceDebug(debug, "which:", which, "\n")
               adorn.length <- length(adorn)
               if (adorn.length == 1) {
@@ -634,10 +731,16 @@ setMethod(f="plot",
                       m.per.km <- 1000
                       u <- x@data$u
                       v <- x@data$v
+                      message("head(u): ", paste(head(u), collapse=" "))
+                      message("head(v): ", paste(head(v), collapse=" "))
+                      message("dt: ", dt)
                       u[is.na(u)] <- 0        # zero out missing
                       v[is.na(v)] <- 0
                       x.dist <- cumsum(u) * dt / m.per.km
                       y.dist <- cumsum(v) * dt / m.per.km
+                      message("head(x.dist): ", paste(head(x.dist), collapse=" "))
+                      message("head(y.dist): ", paste(head(y.dist), collapse=" "))
+
                       plot(x.dist, y.dist,
                            xlab=resizableLabel("distance km"), ylab=resizableLabel("distance km"),
                            type='l', asp=1, ...)
@@ -711,9 +814,9 @@ setMethod(f="plot",
                                               main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       tformat=tformat)
                   } else if (which[w] == 20) {
-                      oce.plot.ts(x@data$time, x@data$heading,
+                      oce.plot.ts(x@data$time, x@data$direction,
                                   type=type,
-                                  xlab="", ylab=resizableLabel("heading"),
+                                  xlab="", ylab=resizableLabel("direction"),
                                   main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else {

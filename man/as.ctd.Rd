@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{as.ctd}
 \alias{as.ctd}
-\title{Coerce data into CTD dataset}
+\title{Coerce data into CTD object}
 \usage{
 as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
   SA = NULL, CT = NULL, oxygen = NULL, nitrate = NULL, nitrite = NULL,

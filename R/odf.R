@@ -376,16 +376,18 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         }
     }
     ## Catch some problems I've seen in data
-    directionVariables <- names == "directionMagnetic" | names == "directionTrue"
+    directionVariables <- which(names == "directionMagnetic" | names == "directionTrue")
     for (directionVariable in directionVariables) {
+        ## message("directionVariable=",directionVariable)
         unit <- units[[directionVariable]]$unit
         if (is.null(unit)) {
-            warning("no unit for a direction variable; setting to degrees")
-            units[[directionVariable]]$unit <- expression(degree)
+            warning("no unit found for '", 
+                    names[[directionVariable]], "'; this will not affect calculations, though")
+            ## units[[directionVariable]]$unit <- expression(degree)
         } else if ("degree" != as.character(unit)) {
-            warning("odd unit (", as.character(unit), ") for data column named '",
-                    names[directionVariable], "'; setting to degrees")
-            units[[directionVariable]]$unit <- expression(degree)
+            warning("odd unit (", as.character(unit), ") for '",
+                    names[directionVariable], "'; this will not affect calculations, though")
+            ## units[[directionVariable]]$unit <- expression(degree)
         }
     }
     list(names=names, units=units)
