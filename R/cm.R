@@ -105,6 +105,7 @@ setMethod(f="summary",
               cat("Cm summary\n----------\n\n", ...)
               showMetadataItem(object, "filename",      "File source:        ", quote=TRUE)
               showMetadataItem(object, "type",          "Instrument type:    ")
+              showMetadataItem(object, "model",         "Instrument model:   ")
               showMetadataItem(object, "serialNumber",  "Serial Number:      ")
               showMetadataItem(object, "version",       "Version:            ")
               callNextMethod()
@@ -202,9 +203,9 @@ as.cm <- function(time, u=NULL, v=NULL,
     oceDebug(debug, "as.ctd() {\n", unindent=1)
     rpd <- atan2(1, 1) / 45            # radians per degree (avoid 'pi')
     ## Catch special cases
-    if (inherits(time, "oce")) {
+    firstArgIsOce <- inherits(time, "oce")
+    if (firstArgIsOce) {
         x <- time
-        print(names(x@data))
         dnames <- names(x@data)
         mnames <- names(x@metadata)
         if (!("time" %in% dnames))
@@ -237,6 +238,7 @@ as.cm <- function(time, u=NULL, v=NULL,
         } else {
             stop("first argument must hold either 'u' plus 'v' or 'speed' plus 'directionTrue' or 'direction'")
         }
+
     }
     direction <- atan2(v, u) / rpd
     direction <- ifelse(direction < 0, 360+direction, direction) # put in range 0 to 360
@@ -255,8 +257,30 @@ as.cm <- function(time, u=NULL, v=NULL,
     if (!is.null(pressure))
         res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     res@metadata$units$direction <- list(unit=expression(degree), scale="")
-    #res$processingLog <- processingLogAppend(res@processingLog, 
-    #                                         paste(deparse(match.call()), sep="", collapse=""))
+
+    if (firstArgIsOce) {
+        ## Copy some metadata that are used sometimes (esp. ODF files)
+        if ("type" %in% mnames)
+            res@metadata$type <- x@metadata$type
+        if ("model" %in% mnames)
+            res@metadata$model <- x@metadata$model
+        if ("serialNumber" %in% mnames)
+            res@metadata$serialNumber <- x@metadata$serialNumber
+        if ("ship" %in% mnames)
+            res@metadata$ship <- x@metadata$ship
+        if ("scientist" %in% mnames)
+            res@metadata$scientist <- x@metadata$scientist
+        if ("cruise" %in% mnames)
+            res@metadata$cruise <- x@metadata$cruise
+        if ("station" %in% mnames)
+            res@metadata$station <- x@metadata$station
+        if ("countryInstituteCode" %in% mnames)
+            res@metadata$countryInstituteCode <- x@metadata$countryInstituteCode
+        if ("cruiseNumber" %in% mnames)
+            res@metadata$cruiseNumber <- x@metadata$cruiseNumber
+        if ("waterDepth" %in% mnames)
+            res@metadata$waterDepth <- x@metadata$waterDepth
+    }
     oceDebug(debug, "} # as.cm()\n", unindent=1)
     res
 }
