@@ -5,10 +5,12 @@
 \alias{cm-class}
 \title{Class to Store Current Meter (CM) Data}
 \description{
-Class to store current meter data, e.g. from an Interocean S4 device
-or an Aanderaa RCM device.  A file
-containing Interocean S4 data may be read with \code{\link{read.cm}}. The results
-may be plotted with \code{\link{plot,cm-method}} or summarized with
+Class to store current meter data, e.g. from an Interocean/S4 device
+or an Aanderaa/RCM device.  A file
+containing Interocean/S4 data may be read with \code{\link{read.cm}}.
+Alternatively, \code{\link{as.cm}} can be used to create \code{cm} objects.
+Objects of this class can be
+plotted with \code{\link{plot,cm-method}} or summarized with
 \code{\link{summary,cm-method}}.  Data may be retrieved with
 \code{\link{[[,cm-method}} or replaced with \ \code{\link{[[<-,cm-method}}.
 }

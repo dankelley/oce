@@ -2,28 +2,30 @@
 
 
 #' @title Class to Store Current Meter (CM) Data
-#' 
+#'
 #' @description
-#' Class to store current meter data, e.g. from an Interocean S4 device
-#' or an Aanderaa RCM device.  A file
-#' containing Interocean S4 data may be read with \code{\link{read.cm}}. The results
-#' may be plotted with \code{\link{plot,cm-method}} or summarized with
+#' Class to store current meter data, e.g. from an Interocean/S4 device
+#' or an Aanderaa/RCM device.  A file
+#' containing Interocean/S4 data may be read with \code{\link{read.cm}}.
+#' Alternatively, \code{\link{as.cm}} can be used to create \code{cm} objects.
+#' Objects of this class can be
+#' plotted with \code{\link{plot,cm-method}} or summarized with
 #' \code{\link{summary,cm-method}}.  Data may be retrieved with
 #' \code{\link{[[,cm-method}} or replaced with \ \code{\link{[[<-,cm-method}}.
-#' 
+#'
 #' @author Dan Kelley
-#' 
-#' @family classes provided by \code{oce}
+#'
 #' @family things related to \code{cm} data
+#' @family classes provided by \code{oce}
 setClass("cm", contains="oce")
 
 #' @title A CM Record
-#' 
+#'
 #' @description
 #' The result of using \code{\link{read.cm}} on a current meter file holding measurements made with an
 #' InterOcean S4 device.  See \code{\link{read.cm}} for some general cautionary notes on reading such
-#' files, and be aware that the salinities in this sample dataset are known to be incorrect, for
-#' unknown reasons perhaps related to lack of calibration of an old instrument that is seldom used.
+#' files. Note that the salinities in this sample dataset are known to be incorrect, perhaps
+#' owing to a lack of calibration of an old instrument that had not been used in a long time.
 #'
 #' @name cm
 #' @docType data
@@ -63,41 +65,52 @@ setMethod(f="[[<-",
 
 setMethod(f="initialize",
           signature="cm",
-          definition=function(.Object, filename="(unknown)", sample, time,
-                              u, v, direction,
-                              conductivity, salinity, temperature, pressure) {
+          definition=function(.Object,
+                              time=NULL, u=NULL, v=NULL, units,
+                              filename="(unknown)",
+                              sample, direction, conductivity, salinity, temperature, pressure) {
+              if (missing(units)) {
+                  .Object@metadata$units <- list(u=list(unit=expression(m/s), scale=""),
+                                                 v=list(unit=expression(m/s), scale=""))
+                  ## salinity=list(unit=expression(), scale="PSS-78"),
+                  ##                                conductivity=list(unit=expression(), scale=""),
+                  ##                                pressure=list(unit=expression(dbar), scale=""),
+                  ##                                depth=list(unit=expression(m), scale=""))
+              } else {
+                  .Object@metadata$units <- units # CAUTION: we are being quite trusting here
+              }
               .Object@metadata$filename <- filename
-              .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90") # guess on the unit
-              .Object@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
-              .Object@data$sample <- if (missing(sample)) NULL else sample
-              .Object@data$time <- if (missing(time)) NULL else time
-              .Object@data$u <- if (missing(u)) NULL else u
-              .Object@data$v <- if (missing(v)) NULL else v
-              .Object@data$direction <- if (missing(direction)) NULL else direction
-              .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
-              .Object@data$salinity <- if (missing(salinity)) NULL else salinity
-              .Object@data$temperature <- if (missing(temperature)) NULL else temperature
-              .Object@data$pressure <- if (missing(pressure)) NULL else pressure
+              ##.Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90") # guess on the unit
+              ##.Object@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
+              ## .Object@data$sample <- if (missing(sample)) NULL else sample
+              .Object@data$time <- time
+              .Object@data$u <- u
+              .Object@data$v <- v
+              ## .Object@data$direction <- if (missing(direction)) NULL else direction
+              ## .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
+              ## .Object@data$salinity <- if (missing(salinity)) NULL else salinity
+              ## .Object@data$temperature <- if (missing(temperature)) NULL else temperature
+              ## .Object@data$pressure <- if (missing(pressure)) NULL else pressure
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'cm' object"
               return(.Object)
           })
 
 #' @title Summarize a CM Object
-#' 
+#'
 #' @description
 #' Summarizes some of the data in a \code{cm} object, presenting such information
 #' as the station name, sampling location, data ranges, etc.
 #'
 #' @param object A \code{cm} object, i.e. one inheriting from \code{\link{cm-class}}.
-#' 
+#'
 #' @param ... Further arguments passed to or from other methods.
-#' 
+#'
 #' @seealso The documentation for \code{\link{cm-class}} explains the structure
 #' of \code{cm} objects, and also outlines the other functions dealing with them.
-#' 
+#'
 #' @author Dan Kelley
-#' 
+#'
 #' @family things related to \code{cm} data
 setMethod(f="summary",
           signature="cm",
@@ -113,25 +126,25 @@ setMethod(f="summary",
 
 
 #' @title Subset a CM Object
-#' 
+#'
 #' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
-#' 
+#'
 #' @param x a \code{cm} object, i.e. inheriting from \code{\link{cm-class}}.
-#' 
+#'
 #' @param subset a condition to be applied to the \code{data} portion of \code{x}.
 #' See \sQuote{Details}.
-#' 
+#'
 #' @param ... ignored.
-#' 
+#'
 #' @return A new \code{cm} object.
-#' 
+#'
 #' @examples
 #' library(oce)
 #' data(cm)
 #' plot(cm)
 #' plot(subset(cm, time < mean(range(cm[['time']]))))
-#' 
+#'
 #' @author Dan Kelley
 #' @family things related to \code{cm} data
 setMethod(f="subset",
@@ -168,7 +181,7 @@ setMethod(f="subset",
                       }
                   }
               }
-              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.cm(x, subset=", subsetString, ")", sep=""))
               res
           })
 
@@ -185,7 +198,7 @@ setMethod(f="subset",
 #' contains an \code{oce} object holding pressure.
 #' @param conductivity Optional vector of conductivity.
 #' Ignored if the first argument contains an \code{oce} object holding pressure.
-#' @param salinity Optional vector of salinity, assumed to be Practical Salinity. 
+#' @param salinity Optional vector of salinity, assumed to be Practical Salinity.
 #' Ignored if the first argument contains an \code{oce} object holding saliity
 #' @param temperature Optional vector of temperature.
 #' Ignored if the first argument contains an \code{oce} object holding temperature
@@ -242,7 +255,7 @@ as.cm <- function(time, u=NULL, v=NULL,
     }
     direction <- 90 - atan2(v, u) / rpd
     direction <- ifelse(direction < 0, 360+direction, direction) # put in range 0 to 360
-    res <- new("cm", sample=NULL, time=time, u=u, v=v, direction=direction, 
+    res <- new("cm", sample=NULL, time=time, u=u, v=v, direction=direction,
                conductivity=conductivity, salinity=salinity, temperature=temperature,
                pressure=pressure)
     res@metadata$filename <- filename
@@ -287,62 +300,60 @@ as.cm <- function(time, u=NULL, v=NULL,
 
 
 #' @title Read a CM file
-#' 
+#'
 #' @description
-#' Read a current-meter data file, producing an object of type \code{cm}.
-#' 
+#' Read a current-meter data file, producing an object of \code{\link{cm-class}}.
+#'
 #' @details
-#' There is function has been tested on only a single file, and the data-scanning
+#' There function has been tested on only a single file, and the data-scanning
 #' algorithm was based on visual inspection of that file.  Whether it will work
 #' generally is an open question. It should be noted that the sample file had
 #' several odd characteristics, some of which are listed below.
 #' \itemize{
-#' 
+#'
 #'   \item  The file contained two columns named \code{"Cond"}, which was guessed
 #'   to stand for conductivity. Since only the first contained data, the second was
-#'   ignored, but this may not be the case for all files.  
-#' 
+#'   ignored, but this may not be the case for all files.
+#'
 #'   \item The unit for \code{"Cond"} was stated in the file to be \code{"mS"},
-#'   which makes no sense, so the unit was assumed to be mS/cm, and the value was
-#'   divided by the standard value 42.914mS/cm (see Culkin and Smith, 1980), to
-#'   estimate the conductivity ratio.
-#' 
+#'   which makes no sense, so the unit was assumed to be mS/cm.
+#'
 #'   \item The file contained a column named \code{"T-Temp"}, which is not
 #'   something the author has seen in his career. It was assumed to stand for
 #'   in-situ temperature.
-#' 
+#'
 #'   \item The file contained a column named \code{"Depth"}, which is not something
 #'   an instrument can measure. Presumably it was calculated from pressure (with
 #'   what atmospheric offset, though?) and so pressure was inferred from it using
 #'   \code{\link{swPressure}}.
-#' 
+#'
 #'   \item The file contained several columns that lacked names. These were
 #'   ignored.
-#' 
+#'
 #'   \item The file contained several columns that seem to be derived from the
 #'   actual measured data, such as \code{"Speed"}, \code{"Dir"}, \code{"N-S Dist"},
 #'   etc. These are ignored.
-#' 
+#'
 #'   \item The file contained several columns that were basically a mystery to the
 #'   author, e.g. \code{"Hx"}, \code{"Hy"}, \code{"Vref"}, etc. These were ignored.
-#' 
+#'
 #' }
-#' 
+#'
 #' Based on such considerations, \code{read.cm.s4()} reads only the columns that
 #' were reasonably well-understood based on the sample file. Users who need more
-#' columns should contact the author.
-#' 
-#' 
+#' columns should contact the author. And a user who could produce a document
+#' explaining the data format would be especially appreciated!
+#'
 #' @param file a connection or a character string giving the name of the file to
 #' load.
-#' 
+#'
 #' @param from index number of the first measurement to be read, or the time of
 #' that measurement, as created with \code{\link{as.POSIXct}} (hint: use
 #' \code{tz="UTC"}).
-#' 
+#'
 #' @param to indication of the last measurement to read, in a format matching that
 #' of \code{from}.
-#' 
+#'
 #' @param by an indication of the stride length to use while walking through the
 #' file. If this is an integer, then \code{by-1} measurements are skipped between
 #' each pair of profiles that is read. This may not make much sense, if the data
@@ -350,47 +361,43 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' interval, in colon-separated format, then this interval is divided by the
 #' sampling interval, to get the stride length. \emph{BUG:} if the data are not
 #' equi-spaced, then odd results will occur.
-#' 
+#'
 #' @param longitude optional signed number indicating the longitude in degrees
 #' East.
-#' 
+#'
 #' @param latitude optional signed number indicating the latitude in degrees North.
-#' 
+#'
 #' @param type character string indicating type of file (ignored at present).
-#' 
+#'
 #' @param tz character string indicating time zone to be assumed in the data.
-#' 
+#'
 #' @param debug a flag that turns on debugging.  The value indicates the depth
 #' within the call stack to which debugging applies.
-#' 
+#'
 #' @param monitor ignored at present.
-#' 
+#'
 #' @param processingLog if provided, the action item to be stored in the log.  This
 #' parameter is typically only provided for internal calls; the default that it
 #' provides is better for normal calls by a user.
-#' 
+#'
 #' @param ... Optional arguments passed to plotting functions.
-#' 
-#' @return An object of \code{\link[base]{class}} \code{"cm"}, which contains measurements
-#' made with a current-meter device.  The \code{data} slot will contain
-#' \code{time}, \code{u} (eastward velocity, converted from cm/s to m/s), \code{v}
-#' (northward velocity, converted from cm/s to m/s) \code{salinity} (salinity, with
-#' the caution that the values in the sample file seem about 6PSU higher than they
-#' should be), \code{temperature} (temperature, assumed in-situ), and
-#' \code{pressure} (pressure, calculated with \code{\link{swPressure}} based on the
-#' \code{"Depth"} column in the file).
-#' 
-#' \code{Caution.} The value in the \code{"Hdg"} file is stored as \code{direction}
-#' in the data, but this is just a guess.
-#' 
+#'
+#' @return An object of \code{\link{cm-class}}.
+#' The \code{data} slot will contain
+#' \code{time}, \code{u} (eastward velocity, converted from cm/s in
+#' an Interocean/S4 file to m/s), \code{v}
+#' (northward velocity, again, in m/s) \code{salinity},
+#' \code{temperature} (assumed to be in-situ), and
+#' \code{pressure} (calculated with \code{\link{swPressure}} based on the
+#' \code{"Depth"} column in an Interocean/S4 file).
+#'
 #' See \dQuote{Details} for an explanation of why other columns are ignored.
 #'
 #' @section Historical note:
-#' Until late July, 2016, the direction of current flow was called 
-#' \code{heading} in the returned object's \code{data} slot. This was changed
-#' to \code{direction} to avoid confusion with the use of the word
-#' "heading" to indicate the orientation of a ship or a fared instrument.
-#' 
+#' Prior to late July, 2016, the direction of current flow was stored in the
+#' return value, but it is no longer stored, since it can be derived from the
+#' \code{u} and \code{v} values.
+#'
 #' @examples
 #' \dontrun{
 #'   library(oce)
@@ -398,16 +405,16 @@ as.cm <- function(time, u=NULL, v=NULL,
 #'   summary(cm)
 #'   plot(cm)
 #' }
-#' 
-#' 
+#'
+#'
 #' @author Dan Kelley
-#' 
-#' @references
-#' Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
-#' potassium chloride solution having the same electrical conductivity, at 15 C and
-#' infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
-#' 19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \bold{5}, pp 22-23.
 #' @family things related to \code{cm} data
+##
+## @references
+## Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
+## potassium chloride solution having the same electrical conductivity, at 15 C and
+## infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
+## 19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \bold{5}, pp 22-23.
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     type=c("s4"),
                     longitude=NA, latitude=NA,
@@ -489,6 +496,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Now try to guess the meanings of column names. This really is guesswork, since I have no documentation that
     ## explains these things. See the help page for this function for some more thoughts on the problem.
     d <- read.table(file, skip=headerStart+1, sep='\t', stringsAsFactors=FALSE, fill=TRUE)
+    res <- new("cm") # will fill in later
     col.north <- 5
     col.east <- 6
     col.conductivity <- 13
@@ -504,9 +512,15 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         col.north <- which(names == "Vnorth")
         if (length(col.north) > 0)
             col.north <- col.north[1]
-        col.direction <- which(names == "Hdg")
-        if (length(col.direction) > 0)
-            col.direction <- col.direction[1]
+        col.heading <- which(names == "Hdg")
+        if (length(col.heading) > 0)
+            col.heading <- col.heading[1]
+        col.Hx <- which(names == "Hx")
+        if (length(col.Hx) > 0)
+            col.Hx <- col.Hx[1]
+        col.Hy <- which(names == "Hy")
+        if (length(col.Hy) > 0)
+            col.Hy <- col.Hy[1]
         col.conductivity <- which(names == "Cond")
         if (length(col.conductivity) > 0)
             col.conductivity <- col.conductivity[1]
@@ -555,30 +569,39 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     } else {
         if (!is.numeric(from))
             stop("'from' must be either POSIXt or numeric")
-        
-            to <- n
+        to <- n
         if (!is.numeric(to))
             stop("'to' must be either POSIXt or numeric")
         keep <- seq(from, to)
     }
     keep <- keep[1 <= keep]
     keep <- keep[keep <= n]
-    res <- new("cm", sample=as.numeric(sample[keep]), time=time[keep],
-               u=u[keep], v=v[keep], direction=direction[keep],
-               conductivity=conductivity[keep],
-               salinity=salinity[keep], temperature=temperature[keep], pressure=pressure[keep])
+    res@data$time <- time[keep]
+    res@data$u <- u[keep]
+    res@data$v <- v[keep]
+    res@data$conductivity <- conductivity[keep]
+    res@data$salinity <- salinity[keep]
+    res@data$temperature <- temperature[keep]
+    res@data$pressure <- pressure[keep]
+
+    ## res <- new("cm", sample=as.numeric(sample[keep]), time=time[keep],
+    ##            u=u[keep], v=v[keep], direction=direction[keep],
+    ##            conductivity=conductivity[keep],
+    ##            salinity=salinity[keep], temperature=temperature[keep], pressure=pressure[keep])
     res@metadata$filename <- filename
     res@metadata$serialNumber <- serialNumber
     res@metadata$version <- version
     res@metadata$type <- type
     res@metadata$longitude <- longitude
     res@metadata$latitude <- latitude
-    res@metadata$units$u <- list(unit=expression(m/s), scale="")
-    res@metadata$units$v <- list(unit=expression(m/s), scale="")
+    ## res@metadata$units$u <- list(unit=expression(m/s), scale="")
+    ## res@metadata$units$v <- list(unit=expression(m/s), scale="")
+    res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
     res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
     res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    res@metadata$units$direction <- list(unit=expression(degree), scale="")
+    ## res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    ## res@metadata$units$direction <- list(unit=expression(degree), scale="")
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
     oceDebug(debug, "} # read.cm()\n", unindent=1)
@@ -587,94 +610,92 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
 
 #' Plot CM data
-#' 
+#'
 #' Creates a multi-panel summary plot of data measured by a current meter.
-#' 
+#'
 #' The panels are controlled by the \code{which} argument, as follows.
-#' 
-#' \itemize{ 
-#' 
+#'
+#' \itemize{
+#'
 #'   \item \code{which=1} or \code{which="u"} for a time-series graph of eastward
 #'   velocity, \code{u}, as a function of time.
-#' 
+#'
 #'   \item \code{which=2} or \code{which="v"} for a time-series graph of
 #'   northward velocity, \code{u}, as a function of time.
-#' 
+#'
 #'   \item \code{which=3} or \code{"progressive vector"} for progressive-vector
 #'   plot
-#' 
+#'
 #'   \item \code{which=4} or \code{"uv"} for a plot of \code{v} versus \code{u}.
 #'   (Dots are used for small datasets, and smoothScatter for large ones.)
-#' 
+#'
 #'   \item \code{which=5} or \code{"uv+ellipse"} as the \code{"uv"} case, but
 #'   with an added indication of the tidal ellipse, calculated from the eigen
 #'   vectors of the covariance matrix.
-#' 
+#'
 #'   \item \code{which=6} or \code{"uv+ellipse+arrow"} as the \code{"uv+ellipse"}
 #'   case, but with an added arrow indicating the mean current.
-#' 
+#'
 #'   \item \code{which=7} or \code{"pressure"} for pressure
-#' 
+#'
 #'   \item \code{which=8} or \code{"salinity"} for salinity
-#' 
+#'
 #'   \item \code{which=9} or \code{"temperature"} for temperature
-#' 
+#'
 #'   \item \code{which=10} or \code{"TS"} for a TS diagram
-#' 
+#'
 #'   \item \code{which=11} or \code{"conductivity"} for conductivity
-#' 
+#'
 #'   \item \code{which=20} or \code{"direction"} for the direction of flow
-#' 
+#'
 #' }
-#' 
+#'
 #' @param x an \code{cm} object, e.g. as read by \code{\link{read.cm}}.
-#' 
+#'
 #' @param which list of desired plot types.  These are graphed in panels running
 #' down from the top of the page.  See \dQuote{Details} for the meanings of various
 #' values of \code{which}.
-#' 
+#'
 #' @param type type of plot, as for \code{\link{plot}}.
 #'
-#' @template adornTemplate
-#' 
 #' @param drawTimeRange boolean that applies to panels with time as the horizontal
 #' axis, indicating whether to draw the time range in the top-left margin of the
 #' plot.
-#' 
+#'
 #' @param drawZeroLine boolean that indicates whether to draw zero lines on
 #' velocities.
-#' 
+#'
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
 #' \code{par(mar)}, computed from this.  The default is tighter than the R default,
 #' in order to use more space for the data and less for the axes.
-#' 
+#'
 #' @param mar value to be used with \code{\link{par}("mar")}.
-#' 
+#'
 #' @param small an integer indicating the size of data set to be considered
 #' "small", to be plotted with points or lines using the standard
 #' \code{\link{plot}} function.  Data sets with more than \code{small} points will
 #' be plotted with \code{\link{smoothScatter}} instead.
-#' 
+#'
 #' @param main main title for plot, used just on the top panel, if there are
 #' several panels.
-#' 
+#'
 #' @param tformat optional argument passed to \code{\link{oce.plot.ts}}, for plot
 #' types that call that function.  (See \code{\link{strptime}} for the format
 #' used.)
-#' 
+#'
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
-#' 
+#'
 #' @param ... Optional arguments passed to plotting functions.
-#' 
+#'
 #' @examples
 #'   library(oce)
 #'   data(cm)
 #'   summary(cm)
 #'   plot(cm)
-#' 
+#'
 #' @author Dan Kelley
-#' 
+#'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{cm} data
 setMethod(f="plot",
@@ -682,7 +703,7 @@ setMethod(f="plot",
           definition=function(x,
                               which=c(1:2, 7:9),
                               type="l",
-                              adorn=NULL,
+                              ##adorn=NULL,
                               drawTimeRange=getOption("oceDrawTimeRange"),
                               drawZeroLine=FALSE,
                               mgp=getOption("oceMgp"),
@@ -696,8 +717,12 @@ setMethod(f="plot",
               oceDebug(debug, "plot.cm() {\n", unindent=1)
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
+              if (3 != sum(c("time", "u", "v") %in% names(x@data))) {
+                  warning("In plot,cm-method() :\n  cannot plot a cm object unless its 'data' slot contains 'time', 'u' and 'v'", call.=FALSE)
+                  return(invisible(NULL))
+              }
+              ## if (!is.null(adorn))
+              ##     warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
               if (!(is.null(x@metadata$have.actual.data) || x@metadata$have.actual.data)) {
                   warning("there are no profiles in this dataset")
                   return
@@ -712,7 +737,7 @@ setMethod(f="plot",
               ##gave.ylim <- "ylim" %in% names(dots)
               ##ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
-              oceDebug(debug, "later on in plot,adp-method:\n")
+              oceDebug(debug, "later on in plot,cm-method:\n")
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
               oceDebug(debug, "which:", which, "\n")
@@ -722,11 +747,11 @@ setMethod(f="plot",
                                        pressure=7, salinity=8, temperature=9, TS=10, conductivity=11,
                                        direction=20))
               oceDebug(debug, "which:", which, "\n")
-              adorn.length <- length(adorn)
-              if (adorn.length == 1) {
-                  adorn <- rep(adorn, lw)
-                  adorn.length <- lw
-              }
+              ##adorn.length <- length(adorn)
+              ##if (adorn.length == 1) {
+              ##    adorn <- rep(adorn, lw)
+              ##    adorn.length <- lw
+              ##}
 
               tt <- x@data$time
               class(tt) <- "POSIXct"              # otherwise image() gives warnings
@@ -755,16 +780,15 @@ setMethod(f="plot",
                       m.per.km <- 1000
                       u <- x@data$u
                       v <- x@data$v
-                      message("head(u): ", paste(head(u), collapse=" "))
-                      message("head(v): ", paste(head(v), collapse=" "))
-                      message("dt: ", dt)
+                      ## message("head(u): ", paste(head(u), collapse=" "))
+                      ## message("head(v): ", paste(head(v), collapse=" "))
+                      ## message("dt: ", dt)
                       u[is.na(u)] <- 0        # zero out missing
                       v[is.na(v)] <- 0
                       x.dist <- cumsum(u) * dt / m.per.km
                       y.dist <- cumsum(v) * dt / m.per.km
-                      message("head(x.dist): ", paste(head(x.dist), collapse=" "))
-                      message("head(y.dist): ", paste(head(y.dist), collapse=" "))
-
+                      ## message("head(x.dist): ", paste(head(x.dist), collapse=" "))
+                      ## message("head(y.dist): ", paste(head(y.dist), collapse=" "))
                       plot(x.dist, y.dist,
                            xlab=resizableLabel("distance km"), ylab=resizableLabel("distance km"),
                            type='l', asp=1, ...)
@@ -823,7 +847,7 @@ setMethod(f="plot",
                                   main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
                   } else if (which[w] == 10) {
-                      plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), main=main, ...) 
+                      plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), main=main, ...)
                   } else if (which[w] == 11) {
                       cu <- x[["conductivityUnit"]]
                       if (is.list(cu))
@@ -846,11 +870,11 @@ setMethod(f="plot",
                   } else {
                       stop("unknown value of which (", which[w], ")")
                   }
-                  if (w <= adorn.length) {
-                      t <- try(eval(adorn[w]), silent=TRUE)
-                      if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]\n")
-                  }
+                  ## if (w <= adorn.length) {
+                  ##     t <- try(eval(adorn[w]), silent=TRUE)
+                  ##     if (class(t) == "try-error")
+                  ##         warning("cannot evaluate adorn[", w, "]\n")
+                  ## }
               }
               oceDebug(debug, "} # plot.cm()\n", unindent=1)
               invisible()

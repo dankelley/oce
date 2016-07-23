@@ -48,25 +48,22 @@ provides is better for normal calls by a user.}
 \item{...}{Optional arguments passed to plotting functions.}
 }
 \value{
-An object of \code{\link[base]{class}} \code{"cm"}, which contains measurements
-made with a current-meter device.  The \code{data} slot will contain
-\code{time}, \code{u} (eastward velocity, converted from cm/s to m/s), \code{v}
-(northward velocity, converted from cm/s to m/s) \code{salinity} (salinity, with
-the caution that the values in the sample file seem about 6PSU higher than they
-should be), \code{temperature} (temperature, assumed in-situ), and
-\code{pressure} (pressure, calculated with \code{\link{swPressure}} based on the
-\code{"Depth"} column in the file).
-
-\code{Caution.} The value in the \code{"Hdg"} file is stored as \code{direction}
-in the data, but this is just a guess.
+An object of \code{\link{cm-class}}.
+The \code{data} slot will contain
+\code{time}, \code{u} (eastward velocity, converted from cm/s in
+an Interocean/S4 file to m/s), \code{v}
+(northward velocity, again, in m/s) \code{salinity},
+\code{temperature} (assumed to be in-situ), and
+\code{pressure} (calculated with \code{\link{swPressure}} based on the
+\code{"Depth"} column in an Interocean/S4 file).
 
 See \dQuote{Details} for an explanation of why other columns are ignored.
 }
 \description{
-Read a current-meter data file, producing an object of type \code{cm}.
+Read a current-meter data file, producing an object of \code{\link{cm-class}}.
 }
 \details{
-There is function has been tested on only a single file, and the data-scanning
+There function has been tested on only a single file, and the data-scanning
 algorithm was based on visual inspection of that file.  Whether it will work
 generally is an open question. It should be noted that the sample file had
 several odd characteristics, some of which are listed below.
@@ -74,12 +71,10 @@ several odd characteristics, some of which are listed below.
 
   \item  The file contained two columns named \code{"Cond"}, which was guessed
   to stand for conductivity. Since only the first contained data, the second was
-  ignored, but this may not be the case for all files.  
+  ignored, but this may not be the case for all files.
 
   \item The unit for \code{"Cond"} was stated in the file to be \code{"mS"},
-  which makes no sense, so the unit was assumed to be mS/cm, and the value was
-  divided by the standard value 42.914mS/cm (see Culkin and Smith, 1980), to
-  estimate the conductivity ratio.
+  which makes no sense, so the unit was assumed to be mS/cm.
 
   \item The file contained a column named \code{"T-Temp"}, which is not
   something the author has seen in his career. It was assumed to stand for
@@ -104,14 +99,14 @@ several odd characteristics, some of which are listed below.
 
 Based on such considerations, \code{read.cm.s4()} reads only the columns that
 were reasonably well-understood based on the sample file. Users who need more
-columns should contact the author.
+columns should contact the author. And a user who could produce a document
+explaining the data format would be especially appreciated!
 }
 \section{Historical note}{
 
-Until late July, 2016, the direction of current flow was called 
-\code{heading} in the returned object's \code{data} slot. This was changed
-to \code{direction} to avoid confusion with the use of the word
-"heading" to indicate the orientation of a ship or a fared instrument.
+Prior to late July, 2016, the direction of current flow was stored in the
+return value, but it is no longer stored, since it can be derived from the
+\code{u} and \code{v} values.
 }
 \examples{
 \dontrun{
@@ -125,12 +120,6 @@ to \code{direction} to avoid confusion with the use of the word
 }
 \author{
 Dan Kelley
-}
-\references{
-Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
-potassium chloride solution having the same electrical conductivity, at 15 C and
-infinite frequency, as standard seawater of salinity 35.0000 ppt (Chlorinity
-19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering}, \bold{5}, pp 22-23.
 }
 \seealso{
 Other things related to \code{cm} data: \code{\link{[[,cm-method}},
