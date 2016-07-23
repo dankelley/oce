@@ -230,17 +230,17 @@ as.cm <- function(time, u=NULL, v=NULL,
             v <- x@data$v
         } else if ("speedHorizontal" %in% dnames && "directionTrue" %in% dnames) {
             ## NOTE: this can be generalized later to take e.g. 'speed', if some objects have that
-            u <- x@data$speedHorizontal * cos(rpd * x@data$directionTrue)
-            v <- x@data$speedHorizontal * sin(rpd * x@data$directionTrue)
+            u <- x@data$speedHorizontal * cos(rpd * (90-x@data$directionTrue))
+            v <- x@data$speedHorizontal * sin(rpd * (90-x@data$directionTrue))
         } else if ("speedHorizontal" %in% dnames && "direction" %in% dnames) {
-            u <- x@data$speedHorizontal * cos(rpd * x@data$direction)
-            v <- x@data$speedHorizontal * sin(rpd * x@data$direction)
+            u <- x@data$speedHorizontal * cos(rpd * (90-x@data$direction))
+            v <- x@data$speedHorizontal * sin(rpd * (90-x@data$direction))
         } else {
             stop("first argument must hold either 'u' plus 'v' or 'speed' plus 'directionTrue' or 'direction'")
         }
 
     }
-    direction <- atan2(v, u) / rpd
+    direction <- 90 - atan2(v, u) / rpd
     direction <- ifelse(direction < 0, 360+direction, direction) # put in range 0 to 360
     res <- new("cm", sample=NULL, time=time, u=u, v=v, direction=direction, 
                conductivity=conductivity, salinity=salinity, temperature=temperature,
