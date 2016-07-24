@@ -708,7 +708,7 @@ setMethod(f="[[<-",
 #' and sea pressure, or \code{"sea"}.
 #' 
 #' @param missingValue optional missing value, indicating data that should be
-#' taken as \code{NA}.
+#' taken as \code{NA}. Set to \code{NULL} to turn off this feature.
 #' 
 #' @param quality \strong{(deprecated)} optional quality flag, e.g. from the salinity quality flag in WOCE data.
 #' (In WOCE, \code{quality=2} indicates good data, \code{quality=3} means
@@ -815,7 +815,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    scan=NULL, time=NULL, other=NULL,
                    units=NULL, flags=NULL,
                    pressureType="sea",
-                   missingValue=NA, quality=NULL,
+                   missingValue=NULL, quality=NULL,
                    filename="", type="", model="", serialNumber="",
                    ship="", scientist="", institute="", address="", cruise="", station="",
                    date=NULL, startTime=NULL, recovery=NULL,
@@ -1039,8 +1039,12 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 }
             }
         }
-        if (!missing(missingValue)) {
-            data[data==missingValue] <- NA
+        ## Handle missing value code (changes on July 24, 2016 fix issue 1028)
+        if (!is.null(missingValue)) {
+            for (dname in names(data)) {
+                bad <- data[[dname]] == missingValue
+                data[[dname]][bad] <- NA
+            }
         }
         ##20150712 if (is.na(waterDepth)) {
         ##20150712     waterDepth <- max(abs(data$pressure), na.rm=TRUE)
