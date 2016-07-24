@@ -44,8 +44,10 @@ oceDeleteData <- function(object, name)
 #' named \code{units} that is an \code{\link{expression}}, and a string named
 #' \code{scale} that describes the scale used. For example, modern temperatures
 #' have \code{unit=list(unit=expression(degree*C), scale="ITS-90")}.
+#' @param originalName Optional character string giving an 'original' name (e.g.
+#' as stored in the header of a data file.
 #' @param note A note to be stored in the processing log.
-oceSetData <- function(object, name, value, units, note="")
+oceSetData <- function(object, name, value, units, originalName, note="")
 {
     if (!inherits(object, "oce"))
         stop("oceSetData() only works for oce objects")
@@ -59,6 +61,23 @@ oceSetData <- function(object, name, value, units, note="")
         if (!is.expression(units$unit)) stop("'units$unit' must be an expression")
         if (!is.character(units$scale)) stop("'units$scale' must be a character string")
         object@metadata$units[[name]] <- units
+    }
+    ## Handle originalName, if provided. Note that we have some code
+    ## here to cover two types of storage.
+    if (!missing(originalName)) {
+        if ("dataNamesOriginal" %in% names(object@metadata)) {
+            if (is.list(object@metadata$dataNamesOriginal)) { 
+                ## After 2016-07-24 (issue 1017) we use a list.
+                object@metadata$dataNamesOriginal[[name]] <- originalName
+            } else {
+                ## Before 2016-07-24 (issue 1017) we used a character vector.
+                object@metadata$dataNamesOriginal <- as.list(object@metadata$dataNamesOriginal)
+                names(object@metadata$dataNamesOriginal) <- names(object@data)
+            }
+        } else {
+            object@metadata$dataNamesOriginal <- list()
+            object@metadata$dataNamesOriginal[[name]] <- originalName
+        }
     }
     object
 }

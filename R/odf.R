@@ -648,7 +648,9 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     res <- new("odf")
     res@metadata$header <- NULL
     res@metadata$units <- namesUnits$units
-    res@metadata$dataNamesOriginal <- ODFnames
+    ## res@metadata$dataNamesOriginal <- ODFnames
+    res@metadata$dataNamesOriginal <- as.list(ODFnames)
+    names(res@metadata$dataNamesOriginal) <- namesUnits$names
     res@metadata$type <- type
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber

@@ -66,9 +66,9 @@ setMethod(f="[[<-",
 setMethod(f="initialize",
           signature="cm",
           definition=function(.Object,
-                              time=NULL, u=NULL, v=NULL, units,
-                              filename="(unknown)",
-                              sample, direction, conductivity, salinity, temperature, pressure) {
+                              time=NULL, u=NULL, v=NULL, units) {
+                              ## filename="(unknown)",
+                              ## sample, direction, conductivity, salinity, temperature, pressure) {
               if (missing(units)) {
                   .Object@metadata$units <- list(u=list(unit=expression(m/s), scale=""),
                                                  v=list(unit=expression(m/s), scale=""))
@@ -79,7 +79,7 @@ setMethod(f="initialize",
               } else {
                   .Object@metadata$units <- units # CAUTION: we are being quite trusting here
               }
-              .Object@metadata$filename <- filename
+              ##.Object@metadata$filename <- filename
               ##.Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90") # guess on the unit
               ##.Object@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="")
               ## .Object@data$sample <- if (missing(sample)) NULL else sample
@@ -219,8 +219,8 @@ as.cm <- function(time, u=NULL, v=NULL,
     firstArgIsOce <- inherits(time, "oce")
     if (firstArgIsOce) {
         x <- time
-        dnames <- names(x@data)
         mnames <- names(x@metadata)
+        dnames <- names(x@data)
         if (!("time" %in% dnames))
             stop("first argument is an oce object, but it does not hold time")
         time <- x@data$time
@@ -251,25 +251,29 @@ as.cm <- function(time, u=NULL, v=NULL,
         } else {
             stop("first argument must hold either 'u' plus 'v' or 'speed' plus 'directionTrue' or 'direction'")
         }
-
     }
     direction <- 90 - atan2(v, u) / rpd
     direction <- ifelse(direction < 0, 360+direction, direction) # put in range 0 to 360
-    res <- new("cm", sample=NULL, time=time, u=u, v=v, direction=direction,
-               conductivity=conductivity, salinity=salinity, temperature=temperature,
-               pressure=pressure)
+    res <- new("cm", time=time, u=u, v=v)
     res@metadata$filename <- filename
     res@metadata$longitude <- longitude
     res@metadata$latitude <- latitude
-    res@metadata$units$u <- list(unit=expression(m/s), scale="")
-    res@metadata$units$v <- list(unit=expression(m/s), scale="")
-    if (!is.null(salinity))
+    if (!is.null(conductivity)) {
+        res@data$conductivity <- conductivity
+        res@metadata$units$conductivity <- list(unit=expression(mS/cm), scale="") # guessing on unit
+    }
+    if (!is.null(salinity)) {
+        res@data$salinity <- salinity
         res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
-    if (!is.null(temperature))
+    }
+    if (!is.null(temperature)) {
+        res@data$temperature <- temperature
         res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-    if (!is.null(pressure))
+    }
+    if (!is.null(pressure)) {
+        res@data$pressure <- pressure
         res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    res@metadata$units$direction <- list(unit=expression(degree), scale="")
+    }
 
     if (firstArgIsOce) {
         ## Copy some metadata that are used sometimes (esp. ODF files)
@@ -293,6 +297,18 @@ as.cm <- function(time, u=NULL, v=NULL,
             res@metadata$cruiseNumber <- x@metadata$cruiseNumber
         if ("waterDepth" %in% mnames)
             res@metadata$waterDepth <- x@metadata$waterDepth
+        ## determine original names, where known
+        if ("dataNamesOriginal" %in% mnames) {
+            if (is.list(x@metadata$dataNamesOriginal)) {
+                res@metadata$dataNamesOriginal <- x@metadata$dataNamesOriginal
+            } else {
+                nameMapping <- as.list(x@metadata$dataNamesOriginal)
+                names(nameMapping) <- names(x@data)
+                res@metadata$dataNamesOriginal <- lapply(names(res@data), function(name) if (is.null(nameMapping[[name]])) "-" else nameMapping[[name]])
+            }
+        } else {
+            res@metadata$dataNamesOriginal <- NULL
+        }
     }
     oceDebug(debug, "} # as.cm()\n", unindent=1)
     res
@@ -504,14 +520,19 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     col.depth <- 14
     col.direction <- 17
     col.salinity <- 19
+    dataNamesOriginal <- list()
     if (foundNames) {
         names <- names[1:dim(d)[2]]
         col.east <- which(names == "Veast")
-        if (length(col.east) > 0)
+        if (length(col.east) > 0) {
+            dataNamesOriginal$u <- "Veast"
             col.east <- col.east[1]
+        }
         col.north <- which(names == "Vnorth")
-        if (length(col.north) > 0)
+        if (length(col.north) > 0) {
+            dataNamesOriginal$v <- "Vnorth"
             col.north <- col.north[1]
+        }
         col.heading <- which(names == "Hdg")
         if (length(col.heading) > 0)
             col.heading <- col.heading[1]
@@ -522,17 +543,25 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (length(col.Hy) > 0)
             col.Hy <- col.Hy[1]
         col.conductivity <- which(names == "Cond")
-        if (length(col.conductivity) > 0)
+        if (length(col.conductivity) > 0) {
+            dataNamesOriginal$conductivity <- "Cond"
             col.conductivity <- col.conductivity[1]
+        }
         col.salinity <- which(names == "Sal")
-        if (length(col.salinity) > 0)
+        if (length(col.salinity) > 0) {
+            dataNamesOriginal$salinity <- "Sal"
             col.salinity <- col.salinity[1]
+        }
         col.temperature <- which(names == "T-Temp")
-        if (length(col.temperature) > 0)
+        if (length(col.temperature) > 0) {
+            dataNamesOriginal$temperature <- "T-Temp"
             col.temperature <- col.temperature[1]
+        }
         col.depth <- which(names == "Depth")
-        if (length(col.depth) > 0)
+        if (length(col.depth) > 0) {
+            dataNamesOriginal$pressure <- "-"
             col.depth <- col.depth[1]
+        }
     }
     trimLines <- grep("[ a-zA-Z]+", d[,1])
     oceDebug(debug, "Trimming the following lines, which seem not to be data lines: ",
@@ -549,7 +578,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     salinity <- d[, col.salinity]
 
     ## The sample file has lines at the end that contain statistical summaries. Recognize these as non-numeric samples.
-    sample <- as.numeric(d[, 1])
+    ##sample <- as.numeric(d[, 1])
     n <- length(u)
     time <- seq(t0, by=deltat, length.out=n)
     if (inherits(from, "POSIXt")) {
@@ -600,6 +629,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
     res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    res@metadata$dataNamesOriginal <- dataNamesOriginal
     ## res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     ## res@metadata$units$direction <- list(unit=expression(degree), scale="")
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")

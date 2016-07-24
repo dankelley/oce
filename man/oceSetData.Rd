@@ -4,7 +4,7 @@
 \alias{oceSetData}
 \title{Set something in the \code{data} slot of an \code{oce} object}
 \usage{
-oceSetData(object, name, value, units, note = "")
+oceSetData(object, name, value, units, originalName, note = "")
 }
 \arguments{
 \item{object}{an \code{oce} object}
@@ -17,6 +17,9 @@ oceSetData(object, name, value, units, note = "")
 named \code{units} that is an \code{\link{expression}}, and a string named
 \code{scale} that describes the scale used. For example, modern temperatures
 have \code{unit=list(unit=expression(degree*C), scale="ITS-90")}.}
+
+\item{originalName}{Optional character string giving an 'original' name (e.g.
+as stored in the header of a data file.}
 
 \item{note}{A note to be stored in the processing log.}
 }

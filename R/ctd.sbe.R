@@ -597,11 +597,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     nameLines  <- grep("^# name [0-9][0-9]* = .*:.*$", lines, ignore.case=TRUE)
     colUnits <- list()
     colNamesInferred <- NULL
-    dataNamesOriginal <- NULL
+    dataNamesOriginal <- list()
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
         colNamesInferred <- c(colNamesInferred, nu$name)
-        dataNamesOriginal <- c(dataNamesOriginal, nu$nameOriginal)
+        dataNamesOriginal[[nu$name]] <- nu$nameOriginal
         colUnits[[iline]] <- nu$unit
         ## message("nu$name: ", nu$name, "; scale: ", colUnits[[nu$name]]$unit$scale)
     }
