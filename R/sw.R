@@ -427,7 +427,7 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (eos == "unesco") {
         n <- length(salinity)
-        res <- .C("sw_CSTp", as.integer(n), as.double(salinity), T68fromT90(as.double(temperature)), as.double(pressure), C=double(n))$C
+        res <- .C("sw_CSTp", as.integer(n), as.double(salinity), T68fromT90(as.double(temperature)), as.double(pressure), C=double(n), NAOK=TRUE, PACKAGE="oce")$C
     } else {
         ## for the use of a constant, as opposed to a function call with (35,15,0), see
         ## https://github.com/dankelley/oce/issues/746
