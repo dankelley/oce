@@ -39,7 +39,7 @@ East.}
 \item{debug}{a flag that turns on debugging.  The value indicates the depth
 within the call stack to which debugging applies.}
 
-\item{monitor}{ignored at present.}
+\item{monitor}{ignored.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.  This
 parameter is typically only provided for internal calls; the default that it
@@ -49,15 +49,21 @@ provides is better for normal calls by a user.}
 }
 \value{
 An object of \code{\link{cm-class}}.
-The \code{data} slot will contain
-\code{time}, \code{u} (eastward velocity, converted from cm/s in
-an Interocean/S4 file to m/s), \code{v}
-(northward velocity, again, in m/s) \code{salinity},
-\code{temperature} (assumed to be in-situ), and
-\code{pressure} (calculated with \code{\link{swPressure}} based on the
-\code{"Depth"} column in an Interocean/S4 file).
-
-See \dQuote{Details} for an explanation of why other columns are ignored.
+The \code{data} slot will contain all the data in the file, with names
+determined from the tokens in line 3 in that file, passed through
+\code{\link{make.names}}, except that 
+\code{Vnorth} is renamed \code{v} (after conversion from cm/s to m/s),
+\code{Veast} is renamed \code{u} (after conversion from cm/s to m/s),
+\code{Cond} is renamed \code{conductivity},
+\code{T.Temp} is renamed \code{temperature}
+and
+\code{Sal} is renamed \code{salinity}, and a new
+column named \code{time} (a POSIX time) is constructed
+from the information in the file header, and another named
+\code{pressure} is constructed from the column named \code{Depth}.
+At least in the single file studied in the creation of this function,
+there are some columns that are unnamed in line 3 of the header;
+these yield data items with names \code{X}, \code{X.1}, etc.
 }
 \description{
 Read a current-meter data file, producing an object of \code{\link{cm-class}}.

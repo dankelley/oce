@@ -9,9 +9,9 @@ swSCTp(conductivity, temperature = NULL, pressure = 0,
   default = "gsw"))
 }
 \arguments{
-\item{conductivity}{conductivity ratio, or a CTD object. If a CTD object,
-then the next 3 arguments are ignored, since the information can be gleaned
-from the object.}
+\item{conductivity}{a measure of conductivity (see also \code{conductivityUnit})
+or an \code{oce} object holding hydrographic information. In the second case,
+all the other arguments to \code{swSCTp} are ignored.}
 
 \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
 on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
@@ -19,9 +19,11 @@ on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
 
 \item{pressure}{pressure [dbar]}
 
-\item{conductivityUnit}{string indicating the unit used for conductivity;
-\code{ratio} means actual conductivity divided by standard conductivity
-(4.2914 S/m).}
+\item{conductivityUnit}{string indicating the unit used for conductivity.
+This may be \code{"ratio"} or \code{""} (meaning conductivity ratio),
+\code{"mS/cm"} or \code{"S/m"}.  Note that the ratio mode assumes that
+measured conductivity has been divided by the standard conductivity
+of 4.2914 S/m.}
 
 \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
 }

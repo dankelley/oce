@@ -390,7 +390,7 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' @param debug a flag that turns on debugging.  The value indicates the depth
 #' within the call stack to which debugging applies.
 #'
-#' @param monitor ignored at present.
+#' @param monitor ignored.
 #'
 #' @param processingLog if provided, the action item to be stored in the log.  This
 #' parameter is typically only provided for internal calls; the default that it
@@ -399,15 +399,21 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' @param ... Optional arguments passed to plotting functions.
 #'
 #' @return An object of \code{\link{cm-class}}.
-#' The \code{data} slot will contain
-#' \code{time}, \code{u} (eastward velocity, converted from cm/s in
-#' an Interocean/S4 file to m/s), \code{v}
-#' (northward velocity, again, in m/s) \code{salinity},
-#' \code{temperature} (assumed to be in-situ), and
-#' \code{pressure} (calculated with \code{\link{swPressure}} based on the
-#' \code{"Depth"} column in an Interocean/S4 file).
-#'
-#' See \dQuote{Details} for an explanation of why other columns are ignored.
+#' The \code{data} slot will contain all the data in the file, with names
+#' determined from the tokens in line 3 in that file, passed through
+#' \code{\link{make.names}}, except that 
+#' \code{Vnorth} is renamed \code{v} (after conversion from cm/s to m/s),
+#' \code{Veast} is renamed \code{u} (after conversion from cm/s to m/s),
+#' \code{Cond} is renamed \code{conductivity},
+#' \code{T.Temp} is renamed \code{temperature}
+#' and
+#' \code{Sal} is renamed \code{salinity}, and a new
+#' column named \code{time} (a POSIX time) is constructed
+#' from the information in the file header, and another named
+#' \code{pressure} is constructed from the column named \code{Depth}.
+#' At least in the single file studied in the creation of this function,
+#' there are some columns that are unnamed in line 3 of the header;
+#' these yield data items with names \code{X}, \code{X.1}, etc.
 #'
 #' @section Historical note:
 #' Prior to late July, 2016, the direction of current flow was stored in the
@@ -493,9 +499,9 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         items <- strsplit(lines[i], "\t")[[1]]
         oceDebug(debug, "line", i, "contains: ", paste(items, collapse=" "), "\n")
         if (items[1] == "Sample #") {
-            names <- sub('[ ]+$', '', sub('^[ ]+','', items))
-            names <- ifelse(0 == nchar(names), paste("column", 1:length(names), sep=""), names)
-            foundNames <- TRUE
+            ## names <- sub('[ ]+$', '', sub('^[ ]+','', items))
+            ## names <- ifelse(0 == nchar(names), paste("column", 1:length(names), sep=""), names)
+            ## foundNames <- TRUE
             headerStart <- i
         } else if (items[1] == "1") {
             start.day <- items[2]
@@ -508,78 +514,60 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             break
         }
     }
-    pushBack(lines, file)
-    ## Now try to guess the meanings of column names. This really is guesswork, since I have no documentation that
-    ## explains these things. See the help page for this function for some more thoughts on the problem.
-    d <- read.table(file, skip=headerStart+1, sep='\t', stringsAsFactors=FALSE, fill=TRUE)
-    res <- new("cm") # will fill in later
-    col.north <- 5
-    col.east <- 6
-    col.conductivity <- 13
-    col.temperature <- 13
-    col.depth <- 14
-    col.direction <- 17
-    col.salinity <- 19
-    dataNamesOriginal <- list()
-    if (foundNames) {
-        names <- names[1:dim(d)[2]]
-        col.east <- which(names == "Veast")
-        if (length(col.east) > 0) {
-            dataNamesOriginal$u <- "Veast"
-            col.east <- col.east[1]
-        }
-        col.north <- which(names == "Vnorth")
-        if (length(col.north) > 0) {
-            dataNamesOriginal$v <- "Vnorth"
-            col.north <- col.north[1]
-        }
-        col.heading <- which(names == "Hdg")
-        if (length(col.heading) > 0)
-            col.heading <- col.heading[1]
-        col.Hx <- which(names == "Hx")
-        if (length(col.Hx) > 0)
-            col.Hx <- col.Hx[1]
-        col.Hy <- which(names == "Hy")
-        if (length(col.Hy) > 0)
-            col.Hy <- col.Hy[1]
-        col.conductivity <- which(names == "Cond")
-        if (length(col.conductivity) > 0) {
-            dataNamesOriginal$conductivity <- "Cond"
-            col.conductivity <- col.conductivity[1]
-        }
-        col.salinity <- which(names == "Sal")
-        if (length(col.salinity) > 0) {
-            dataNamesOriginal$salinity <- "Sal"
-            col.salinity <- col.salinity[1]
-        }
-        col.temperature <- which(names == "T-Temp")
-        if (length(col.temperature) > 0) {
-            dataNamesOriginal$temperature <- "T-Temp"
-            col.temperature <- col.temperature[1]
-        }
-        col.depth <- which(names == "Depth")
-        if (length(col.depth) > 0) {
-            dataNamesOriginal$pressure <- "-"
-            col.depth <- col.depth[1]
-        }
-    }
-    trimLines <- grep("[ a-zA-Z]+", d[,1])
-    oceDebug(debug, "Trimming the following lines, which seem not to be data lines: ",
-             paste(trimLines, collapse=" "), "\n")
-    d <- d[-trimLines,]
-    u <- d[, col.east] / 100
-    v <- d[, col.north] / 100
-    direction <- d[, col.direction]
-    ## the 42.91754 value is electrical conductivity at SP=35, t=15, p=0
-    conductivity <- d[, col.conductivity]
-    temperature <- d[, col.temperature]
-    depth <- d[, col.depth]
-    pressure <- swPressure(depth, eos="gsw") # gsw is faster than unesco with essentially same results
-    salinity <- d[, col.salinity]
+    ## Change names of known items to oce-style names, but leave others
+    ## as they are, in case the user knows what they mean
+    dnames <- strsplit(lines[3], '\t')[[1]]
+    dnames <- gsub(" *$", "", gsub("^ *", "", dnames)) # remove leading/trailing blanks
+    namesOriginal <- dnames
+    dnames <- make.names(dnames, unique=TRUE)       # handle duplicated names
+    ##dnames[dnames=="Sample.."] <- "sample"
+    ##dnames[dnames=="Date"] <- "date"
+    ##dnames[dnames=="Time"] <- "time"
+    dnames[dnames=="decS"] <- "decS"
+    dnames[dnames=="Vnorth"] <- "v"
+    dnames[dnames=="Veast"] <- "u"
+    ##dnames[dnames=="Speed"] <- "speed"
+    ##dnames[dnames=="Dir"] <- "direction"
+    ##dnames[dnames=="Vref"] <- "Vref"
+    ##dnames[dnames=="Hx"] <- "hx"
+    ##dnames[dnames=="Hy"] <- "hy"
+    dnames[dnames=="Cond"] <- "conductivity"
+    dnames[dnames=="T.Temp"] <- "temperature"
+    ##dnames[dnames=="Depth"] <- "depth"
+    ##dnames[dnames=="Hdg"] <- "heading"
+    dnames[dnames=="Sal"] <- "salinity"
+    ##dnames[dnames=="Dens"] <- "density"
+    ##dnames[dnames=="SV"] <- "soundVelocity"
+    ##dnames[dnames=="N.S.Dist"] <- "NSDist"
+    ##dnames[dnames=="E.W.Dist"] <- "EWDist"
+    ##dnames[dnames=="SRB.Date"] <- "SRBDate"
+    ##dnames[dnames=="SRB.Time"] <- "SRBTime"
+    ##dnames[dnames=="Vref.1"] <- "Vref2"
+    ##dnames[dnames=="Hx.1"] <- "Hx2"
+    ##dnames[dnames=="Hy.1"] <- "Hy2"
+    ##dnames[dnames=="Cond.1"] <- "conductivity2"
+    ##dnames[dnames=="T-Temp.1"] <- "temperature2"
+    ##dnames[dnames=="Depth.1"] <- "depth2"
+    ##dnames[dnames=="Sal.1"] <- "salinity2"
+    ##dnames[dnames=="Dens.1"] <- "density2"
+    ##dnames[dnames=="SV.1"] <- "soundVelocity2"
 
-    ## The sample file has lines at the end that contain statistical summaries. Recognize these as non-numeric samples.
-    ##sample <- as.numeric(d[, 1])
-    n <- length(u)
+    # Finally, read the data and chop last 2 lines (which contain footer info
+    pushBack(lines, file)
+    d <- read.delim(file, skip=5, sep='\t', col.names=dnames, stringsAsFactors=FALSE)
+    d <- d[seq.int(1L, dim(d)[1]-2),]
+
+    res <- new("cm") # will fill in later
+    ## namesOriginal[namesOriginal==""] <- "-"
+    dataNamesOriginal <- as.list(namesOriginal)
+    names(dataNamesOriginal) <- dnames
+    res@metadata$dataNamesOriginal <- dataNamesOriginal
+    d$u <- d$u / 100
+    d$v <- d$v / 100
+    d$pressure <- swPressure(d$Depth, eos="gsw") # gsw is faster than unesco with essentially same results
+    res@metadata$dataNamesOriginal$pressure <- "-"
+
+    n <- length(d$u)
     time <- seq(t0, by=deltat, length.out=n)
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt"))
@@ -605,14 +593,21 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     keep <- keep[1 <= keep]
     keep <- keep[keep <= n]
-    res@data$time <- time[keep]
-    res@data$u <- u[keep]
-    res@data$v <- v[keep]
-    res@data$conductivity <- conductivity[keep]
-    res@data$salinity <- salinity[keep]
-    res@data$temperature <- temperature[keep]
-    res@data$pressure <- pressure[keep]
-
+    d$time <- time
+    d <- d[keep,]
+    d <- as.list(d)
+    for (dname in names(d)) {
+        ##message("dname: ", dname)
+        if (dname != "Date" && dname != "Time" && dname != "time") {
+            ##message("  dname: ", dname, " needs transform")
+            ##message("    is.numeric=", is.numeric(d[[dname]]), " BEFORE")
+            d[[dname]] <- as.numeric(d[[dname]])
+            ##message("    is.numeric=", is.numeric(d[[dname]]), " AFTER")
+        }
+        if (length(grep("^X[.0-9]*$", dname)))
+            res@metadata$dataNamesOriginal[[dname]] <- "-"
+    }
+    res@data <- d
     ## res <- new("cm", sample=as.numeric(sample[keep]), time=time[keep],
     ##            u=u[keep], v=v[keep], direction=direction[keep],
     ##            conductivity=conductivity[keep],
@@ -629,7 +624,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
     res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
     res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    res@metadata$dataNamesOriginal <- dataNamesOriginal
     ## res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     ## res@metadata$units$direction <- list(unit=expression(degree), scale="")
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
