@@ -56,7 +56,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
             hline <- gsub("%", "", lines[namesLine])
             tokens <- strsplit(hline, " ")[[1]]
             names <- gsub("\\(.*\\)", "", tokens)
-            unitGiven <- grep("\\(", tokens)
+            ## unitGiven <- grep("\\(", tokens)
             units <- list()
             for (i in seq_along(names)) {
                 if (names[i] == "temperature") {

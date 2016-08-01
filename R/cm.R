@@ -492,7 +492,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Skip through the rest of the header, and start paying attention when
     ## row number is 1, 2, and then 3.  These first rows give us the time
     ## sequence.
-    foundNames <- FALSE
     headerStart <- 0
     lines <- readLines(file, n=20)
     for (i in 2:20) {
@@ -501,7 +500,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (items[1] == "Sample #") {
             ## names <- sub('[ ]+$', '', sub('^[ ]+','', items))
             ## names <- ifelse(0 == nchar(names), paste("column", 1:length(names), sep=""), names)
-            ## foundNames <- TRUE
             headerStart <- i
         } else if (items[1] == "1") {
             start.day <- items[2]

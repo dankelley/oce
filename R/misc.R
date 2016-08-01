@@ -44,6 +44,31 @@ unitFromString <- function(s)
     return(list(unit=as.expression(s), scale=""))
 }
 
+#' Rename a duplicated item (used in reading CTD files)
+#'
+#' Determine a new name for an item that is already in a list of names. This is
+#' done by e.g. appending a \code{2} to the second occurrence of a name, etc.
+#' The purpose is to create distinct variable names for
+#' \code{\link{read.ctd.sbe}}.
+#' 
+#' @param existingNames Vector of strings with names already processed.
+#' @param name String with a candidate name.
+#' @return names String with an unduplicated name.
+#' @seealso \code{\link{unduplicateNames}} is similar, but considers
+#' a vector of names.
+#'
+#' @examples
+#' unduplicateName("a", c("a", "b", "a")) # returns "a3"
+unduplicateName <- function(name, existingNames)
+{
+    counter <- 0
+    for (i in seq_along(existingNames)) {
+        if (name == existingNames[i])
+            counter <- counter + 1
+    }
+    if (counter > 0) paste(name, counter+1, sep="") else name
+}
+
 #' Rename duplicated items (used in reading CTD files)
 #'
 #' Rename items to avoid name collision, by appending a \code{2} to
@@ -51,6 +76,8 @@ unitFromString <- function(s)
 #' 
 #' @param names Vector of strings with variable names.
 #' @return names Vector of strings with numbered variable names.
+#' @seealso \code{\link{unduplicateName}} is similar, but considers
+#' just a single name.
 #'
 #' @examples
 #' unduplicateNames(c("a", "b", "a", "c", "b"))

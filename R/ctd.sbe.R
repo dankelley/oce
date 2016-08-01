@@ -609,12 +609,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     dataNamesOriginal <- list()
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
-        colNamesInferred <- c(colNamesInferred, nu$name)
-        dataNamesOriginal[[nu$name]] <- nu$nameOriginal
+        newname <- unduplicateName(nu$name, colNamesInferred)
+        colNamesInferred <- c(colNamesInferred, newname)
+        dataNamesOriginal[[newname]] <- nu$nameOriginal
         colUnits[[iline]] <- nu$unit
-        ## message("nu$name: ", nu$name, "; scale: ", colUnits[[nu$name]]$unit$scale)
+        message("SBE name=", nu$name, "; newname=", newname, "; nameOriginal=", nu$nameOriginal)
     }
-    colNamesInferred <- unduplicateNames(colNamesInferred)
+    ##colNamesInferred <- unduplicateNames(colNamesInferred)
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     ##found.scan <- "scan" %in% colNamesInferred
     ##found.temperature <- "temperature" %in% colNamesInferred
