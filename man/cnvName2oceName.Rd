@@ -121,6 +121,7 @@ variants.)
   \code{prSM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
   \code{prDM}        \tab \code{pressure}                     \tab dbar; digiquartz     \tab   \cr
   \code{prdE}        \tab \code{pressure}                     \tab psi; strain gauge    \tab 2 \cr
+  \code{prDE}        \tab \code{pressure}                     \tab psi; digiquartz      \tab 2 \cr
   \code{prdM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
   \code{prSM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 3 \cr
@@ -136,6 +137,7 @@ variants.)
   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
+  \code{specc}       \tab \code{conductivity}                 \tab uS/cm                \tab   \cr
   \code{sva}         \tab \code{specificVolumeAnomaly}        \tab 1e-8 m^3/kg;         \tab   \cr
   \code{svCM~}       \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
   \code{T2~68C}      \tab \code{temperatureDifference}        \tab degC; IPTS-68        \tab   \cr 

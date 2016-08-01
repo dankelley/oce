@@ -98,6 +98,7 @@
 #'   \code{prSM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
 #'   \code{prDM}        \tab \code{pressure}                     \tab dbar; digiquartz     \tab   \cr
 #'   \code{prdE}        \tab \code{pressure}                     \tab psi; strain gauge    \tab 2 \cr
+#'   \code{prDE}        \tab \code{pressure}                     \tab psi; digiquartz      \tab 2 \cr
 #'   \code{prdM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
 #'   \code{prSM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
 #'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 3 \cr
@@ -113,6 +114,7 @@
 #'   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
 #'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
 #'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
+#'   \code{specc}       \tab \code{conductivity}                 \tab uS/cm                \tab   \cr
 #'   \code{sva}         \tab \code{specificVolumeAnomaly}        \tab 1e-8 m^3/kg;         \tab   \cr
 #'   \code{svCM~}       \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
 #'   \code{T2~68C}      \tab \code{temperatureDifference}        \tab degC; IPTS-68        \tab   \cr 
@@ -354,6 +356,10 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         name <- "pressure"
         unit <- list(unit=expression(psi), scale="")
         warning("this .cnv file contains pressure in PSI, but [[\"pressure\"]] will return in dbar")
+    } else if (1 == length(grep("^prDE$", name))) { # Caution: English unit
+        name <- "pressure"
+        unit <- list(unit=expression(psi), scale="")
+        warning("this .cnv file contains pressure in PSI, but [[\"pressure\"]] will return in dbar")
     } else if (1 == length(grep("^prM$", name))) {
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="")
@@ -415,6 +421,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^spar$", name))) {
         name <- "spar"
         unit <- list(unit=expression(), scale="")
+    } else if (1 == length(grep("^specc$", name))) {
+        name <- "conductivity"
+        unit <- list(unit=expression(uS/cm), scale="")
     } else if (1 == length(grep("^sva$", name))) {
         name <- "specificVolumeAnomaly"
         unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
