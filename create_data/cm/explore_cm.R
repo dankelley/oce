@@ -64,13 +64,13 @@ rval <- new("cm",
             time=time,
             u=d$Veast/100, v=d$Vnorth/100)
 rval <- oceSetData(rval, name="salinity", value=d$Sal,
-                   unit=list(unit=expression(), scale="PSS-78"),
+                   units=list(unit=expression(), scale="PSS-78"),
                    originalName="Sal")
 rval <- oceSetData(rval, name="temperature", value=d[["T-Temp"]],
-                   unit=list(unit=expression(degree*C), scale="IPTS-68"),
+                   units=list(unit=expression(degree*C), scale="IPTS-68"),
                    originalName="T-Temp")
 rval <- oceSetData(rval, name="pressure", value=swPressure(d$Depth, eos="unesco"),
-                   unit=list(unit=expression(dbar), scale=""),
+                   units=list(unit=expression(dbar), scale=""),
                    originalName="-")
 rval <- oceSetMetadata(rval, "filename", filename)
 rval <- oceSetMetadata(rval, "type", type)
