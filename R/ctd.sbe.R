@@ -613,7 +613,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         colNamesInferred <- c(colNamesInferred, newname)
         dataNamesOriginal[[newname]] <- nu$nameOriginal
         colUnits[[iline]] <- nu$unit
-        message("SBE name=", nu$name, "; newname=", newname, "; nameOriginal=", nu$nameOriginal)
+        ##message("SBE name=", nu$name, "; newname=", newname, "; nameOriginal=", nu$nameOriginal)
     }
     ##colNamesInferred <- unduplicateNames(colNamesInferred)
     res@metadata$dataNamesOriginal <- dataNamesOriginal
