@@ -1074,6 +1074,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@metadata$model <- model
         res@metadata$serialNumber <- serialNumber
         res@metadata$src <- src
+        res@metadata$deploymentType <- deploymentType
         ## If lon and lat are vectors, place in data, with averages in metadata.
         if (length(latitude) == 1) {
             res@metadata$longitude <- longitude[1]
