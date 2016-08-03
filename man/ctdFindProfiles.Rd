@@ -6,7 +6,7 @@
 \usage{
 ctdFindProfiles(x, cutoff = 0.5, minLength = 10, minHeight = 0.1 *
   diff(range(x[["pressure"]])), smoother = smooth.spline,
-  direction = c("descending", "ascending"), arr.ind = FALSE,
+  direction = c("descending", "ascending"), breaks, arr.ind = FALSE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -28,6 +28,12 @@ turn smoothing off, so that cycles in pressure are determined by
 simple first difference, set \code{smoother} to \code{NULL}.}
 
 \item{direction}{String indicating the travel direction to be selected.}
+
+\item{breaks}{optional logical vector indicating the indices of data
+at the edges of profiles. If this is given, then the preceding arguments
+\code{cutoff} through \code{direction} are ignored. This argument
+can be handy when the other scheme fails, because it gives complete
+control to the user (example 3).}
 
 \item{arr.ind}{Logical indicating whether the array indices should be returned;
 the alternative is to return a vector of ctd objects.}
@@ -69,6 +75,7 @@ relying on e.g. \code{\link{plotScan}} to identify profiles visually, for a fina
 \examples{
 \dontrun{
 library(oce)
+## Example 1.
 d <- read.csv("towyow.csv", header=TRUE)
 towyow <- as.ctd(d$salinity, d$temperature, d$pressure)
 
@@ -80,6 +87,7 @@ for (cast in casts) {
   plotTS(cast, type='o')
 }
 
+## Example 2.
 ## Using a moving average to smooth pressure, instead of the default
 ## smooth.spline() method. This avoids a tendency of smooth.spline()
 ## to smooth out the profiles in a tow-yo with many (dozens or more) cycles.
@@ -89,6 +97,10 @@ movingAverage <- function(x, n = 11, ...)
    stats::filter(x, f, ...)
 }
 casts <- ctdFindProfiles(towyo, smoother=movingAverage)
+
+## Example 3: glider data, with profiles separated by >10dbar jump.
+breaks <- which(diff(ctd[["pressure"]]) > 10))
+profiles <- ctdFindProfiles(ctd, breaks=breaks)
 }
 
 }
