@@ -66,7 +66,9 @@ unduplicateName <- function(name, existingNames)
         if (name == existingNames[i])
             counter <- counter + 1
     }
-    if (counter > 0) paste(name, counter+1, sep="") else name
+    res <- if (counter > 0) paste(name, counter+1, sep="") else name
+    ## message("name '", name, "' ... existingNames '", paste(existingNames, collapse="' '"))
+    res
 }
 
 #' Rename duplicated items (used in reading CTD files)
@@ -224,18 +226,20 @@ argShow <- function(x, nshow=2, last=FALSE, sep="=")
 dataLabel <- function(names, units)
 {
     res <- names
-    ##message("in dataLabel()")
+    ## message("in dataLabel()")
     if (!missing(units)) {
         ## message("  dataLabel(); next line is names")
         ## print(names)
         ## message("  dataLabel(); next line is units")
         ## print(units)
         unitsNames <- names(units)
+        ## message("  dataLabel(); next line is unitsNames")
+        ## print(unitsNames)
         for (i in seq_along(names)) {
-            ##> message("  i: ", i, ", name: ", names[i])
+            ## message("  i: ", i, ", name: ", names[i])
             w <- which(unitsNames == names[i])
             if (length(w)) {
-                ## message("  we match a unit at index w=",  w)
+                ## message("  we match a unit at index w=",  paste(w, collapse=" "))
                 u <- units[w]
                 if (!is.null(u)) {
                     if (is.character(u)) {

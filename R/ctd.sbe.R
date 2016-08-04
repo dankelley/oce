@@ -479,7 +479,6 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         name <- "user"
         unit <- list(unit=expression(), scale="")
     } else if (1 == length(grep("^v[0-9][0-9]?$", name))) {
-        name <- "v"
         unit <- list(unit=expression(V), scale="")
     } else if (1 == length(grep("^wetBAttn$", name))) {
         name <- "beamAttenuation"
