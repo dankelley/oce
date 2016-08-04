@@ -603,18 +603,24 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
 
     ## Get names and units of columns in the SBE data file
     nameLines  <- grep("^# name [0-9][0-9]* = .*:.*$", lines, ignore.case=TRUE)
-    colUnits <- list()
+    colUnits <- vector("list", length(nameLines))
     colNamesInferred <- NULL
-    dataNamesOriginal <- list()
+    dataNamesOriginal <- NULL
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
-        newname <- unduplicateName(nu$name, colNamesInferred)
-        colNamesInferred <- c(colNamesInferred, newname)
-        dataNamesOriginal[[newname]] <- nu$nameOriginal
+        ##newname <- unduplicateName(nu$name, colNamesInferred)
+        ##colNamesInferred <- c(colNamesInferred, newname)
+        colNamesInferred <- c(colNamesInferred, nu$name)
+        ## dataNamesOriginal[[newname]] <- nu$nameOriginal
+        dataNamesOriginal <- c(dataNamesOriginal, nu$nameOriginal)
+        ##colUnits[[iline]] <- nu$unit
         colUnits[[iline]] <- nu$unit
-        ##message("SBE name=", nu$name, "; newname=", newname, "; nameOriginal=", nu$nameOriginal)
+        ##message("SBE name=", nu$name, "; nameOriginal=", nu$nameOriginal, "; unit='", as.character(nu$unit$unit),"'")
     }
-    ##colNamesInferred <- unduplicateNames(colNamesInferred)
+    colNamesInferred <- unduplicateNames(colNamesInferred)
+    names(colUnits) <- colNamesInferred
+    ##print(colUnits)
+    names(dataNamesOriginal) <- colNamesInferred
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     ##found.scan <- "scan" %in% colNamesInferred
     ##found.temperature <- "temperature" %in% colNamesInferred
@@ -628,19 +634,23 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     fileType <- "unknown"
 
     for (iline in seq_along(lines)) {
+        ##message("** scan at iline ", iline)
         line <- lines[iline]
+        ##message(line)
         #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         oceDebug(debug, paste("Examining header line '",line,"'\n", sep=""))
         header <- c(header, line)
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
-        if (length(grep("^\\*END\\*$", aline, perl=TRUE, useBytes=TRUE))) {
+        if (length(grep("^\\s*\\*END\\*\\s*$", aline, perl=TRUE, useBytes=TRUE))) {
+            ##message("got *END* at line ", iline)
             ## Sometimes SBE files have a header line after the *END* line.
             iline <- iline + 1
             if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
                 iline <- iline + 1
             break
         }
+        ##if (iline>129) browser()
         lline <- tolower(aline)
         if (0 < regexpr(".*seacat profiler.*", lline))
             serialNumber <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
@@ -831,6 +841,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     pushBack(lines, file)
     ##if (is.null(columns)) {
     oceDebug(debug, "About to read these names: c(\"", paste(colNamesInferred, collapse='","'),"\")\n", sep="")
+    ##message("skipping ", iline-1, " lines at top of file")
     data <- as.list(read.table(file, skip=iline-1, header=FALSE))
     if (length(data) != length(colNamesInferred))
         stop("Number of columns in .cnv data file must match number of variables named in the header")

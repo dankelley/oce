@@ -44,32 +44,34 @@ unitFromString <- function(s)
     return(list(unit=as.expression(s), scale=""))
 }
 
-#' Rename a duplicated item (used in reading CTD files)
-#'
-#' Determine a new name for an item that is already in a list of names. This is
-#' done by e.g. appending a \code{2} to the second occurrence of a name, etc.
-#' The purpose is to create distinct variable names for
-#' \code{\link{read.ctd.sbe}}.
-#' 
-#' @param existingNames Vector of strings with names already processed.
-#' @param name String with a candidate name.
-#' @return names String with an unduplicated name.
-#' @seealso \code{\link{unduplicateNames}} is similar, but considers
-#' a vector of names.
-#'
-#' @examples
-#' unduplicateName("a", c("a", "b", "a")) # returns "a3"
-unduplicateName <- function(name, existingNames)
-{
-    counter <- 0
-    for (i in seq_along(existingNames)) {
-        if (name == existingNames[i])
-            counter <- counter + 1
-    }
-    res <- if (counter > 0) paste(name, counter+1, sep="") else name
-    ## message("name '", name, "' ... existingNames '", paste(existingNames, collapse="' '"))
-    res
-}
+## #' Rename a duplicated item (used in reading CTD files)
+## #'
+## #' Determine a new name for an item that is already in a list of names. This is
+## #' done by e.g. appending a \code{2} to the second occurrence of a name, etc.
+## #' The purpose is to create distinct variable names for
+## #' \code{\link{read.ctd.sbe}}.
+## #' 
+## #' @param existingNames Vector of strings with names already processed.
+## #' @param name String with a candidate name.
+## #' @return names String with an unduplicated name.
+## #' @seealso \code{\link{unduplicateNames}} is similar, but considers
+## #' a vector of names.
+## #'
+## #' @examples
+## #' unduplicateName("a", c("a", "b", "a")) # returns "a3"
+## unduplicateName <- function(name, existingNames)
+## {
+##     counter <- 0
+##     for (i in seq_along(existingNames)) {
+##         if (name == existingNames[i])
+##             counter <- counter + 1
+##     }
+##     res <- if (counter > 0) paste(name, counter+1, sep="") else name
+##     ## message("unduplicateName() name: '", name, "'")
+##     ## message("         existingNames '", paste(existingNames, collapse="' '"))
+##     ## message("         returning '", res, "'")
+##     res
+## }
 
 #' Rename duplicated items (used in reading CTD files)
 #'
@@ -78,8 +80,7 @@ unduplicateName <- function(name, existingNames)
 #' 
 #' @param names Vector of strings with variable names.
 #' @return names Vector of strings with numbered variable names.
-#' @seealso \code{\link{unduplicateName}} is similar, but considers
-#' just a single name.
+#' @seealso used by \code{\link{read.ctd.sbe}}.
 #'
 #' @examples
 #' unduplicateNames(c("a", "b", "a", "c", "b"))
@@ -233,13 +234,13 @@ dataLabel <- function(names, units)
         ## message("  dataLabel(); next line is units")
         ## print(units)
         unitsNames <- names(units)
-        ## message("  dataLabel(); next line is unitsNames")
-        ## print(unitsNames)
+        ##message("  dataLabel(); next line is unitsNames")
+        ##print(unitsNames)
         for (i in seq_along(names)) {
-            ## message("  i: ", i, ", name: ", names[i])
+            ##message("  i: ", i, ", name: ", names[i])
             w <- which(unitsNames == names[i])
             if (length(w)) {
-                ## message("  we match a unit at index w=",  paste(w, collapse=" "))
+                ##message("  we match a unit at index w=",  paste(w, collapse=" "))
                 u <- units[w]
                 if (!is.null(u)) {
                     if (is.character(u)) {

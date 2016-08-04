@@ -20,7 +20,6 @@ the second occurrence of a name, etc.
 unduplicateNames(c("a", "b", "a", "c", "b"))
 }
 \seealso{
-\code{\link{unduplicateName}} is similar, but considers
-just a single name.
+used by \code{\link{read.ctd.sbe}}.
 }
 
