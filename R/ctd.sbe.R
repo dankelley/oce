@@ -631,11 +631,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     for (iline in seq_along(lines)) {
         line <- lines[iline]
         #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        oceDebug(debug>1, paste("Examining header line '",line,"'\n", sep=""))
+        oceDebug(debug, paste("Examining header line '",line,"'\n", sep=""))
         header <- c(header, line)
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
-        if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) {
+        if (length(grep("^\\*END\\*$", aline, perl=TRUE, useBytes=TRUE))) {
             ## Sometimes SBE files have a header line after the *END* line.
             iline <- iline + 1
             if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
