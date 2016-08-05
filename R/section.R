@@ -2306,14 +2306,30 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' 
 #' For the (much slower) \code{method="barnes"} method, smoothing is done across
 #' both horizontal and vertical coordinates, using \code{\link{interpBarnes}}.
-#' Any arguments in \code{\dots} being passed to that function; see
-#' \sQuote{Examples}.
+#' The stations are changed to lie on the grid supplied defined \code{xg} and
+#' \code{yg}, or by \code{xgl} and \code{ygl} (see those arguments)
 #' 
 #' @param section A \code{section} object containing the section to be smoothed.
 #' For \code{method="spline"}, the pressure levels must match for each station in
 #' the section.
 #' 
 #' @param method Specifies the method to use; see \sQuote{Details}.
+#'
+#' @param xg,xgl passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.
+#' If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant "stations".
+#' Alternatively, if \code{xgl} is supplied, the x grid is established using \code{\link{seq}},
+#' to span the data with \code{xgl} elements. If neither of these is supplied, the output
+#' x grid will equal the input x grid.
+#'
+#' @param yg,ygl similar to \code{xg} and \code{xgl}.
+#'
+#' @param gamma passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
+#'
+#' @param iterations passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
+#'
+#' @param trim passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
+#'
+#' @param pregrid passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
 #' 
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
@@ -2336,7 +2352,9 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' @author Dan Kelley
 #' 
 #' @family things related to \code{section} data
-sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption("oceDebug"), ...)
+sectionSmooth <- function(section, method=c("spline", "barnes"), 
+                          xg, yg, xgl, ygl, xr, yr, gamma=0.5, iterations=2, trim=0, pregrid=FALSE,
+                          debug=getOption("oceDebug"), ...)
 {
     method <- match.arg(method)
     ## bugs: should ensure that every station has identical pressures
@@ -2368,6 +2386,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         res@metadata$stationId <- section@metadata$stationId[o]
         res@data$station <- section@data$station[o]
         x <- geodDist(res)
+        ## FIXME 20160905 DEK: allow general sections here
         temperatureMat <- array(double(), dim=c(npressure, nstn))
         salinityMat <- array(double(), dim=c(npressure, nstn))
         sigmaThetaMat <- array(double(), dim=c(npressure, nstn))
@@ -2424,7 +2443,23 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         }
         P <- rep(stn1pressure, nstn)
         X <- rep(x, each=npressure)
+        if (missing(xg))
+            xg <- if (missing(xgl)) x else pretty(x, xgl)
+        if (missing(yg))
+            yg <- if (missing(ygl)) y else pretty(stn1pressure, ygl)
+        ## "stations" will go to new places
+        res@data$station <- vector("list", length(xg))
+        longitudeOriginal <- section[["longitude", "byStation"]]
+        latitudeOriginal <- section[["latitude", "byStation"]]
+        longitudeNew <- approx(x, longitudeOriginal, xg, rule=2)$y
+        latitudeNew <- approx(x, latitudeOriginal, xg, rule=2)$y
+        for (istn in seq_along(xg)) {
+            message("istn=", istn, " whilst making up long and lat")
+            res@data$station@metadata$longitude <- longitudeNew[istn]
+            res@data$station@metadata$latitude <- latitudeNew[istn]
+        }
         for (var in vars) {
+            message("var='", var, "'")
             if (var == "scan" || var == "time" || var == "pressure"
                 || var == "depth" || var == "flag" || var == "quality")
                 next
@@ -2440,11 +2475,15 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
             }
             ## grid overall, then deposit into stations (trimming for NA)
             v <- section[[var]]
-            smu <- interpBarnes(X, P, v, xg=x, yg=stn1pressure, ..., debug=debug-1)
-            for (istn in 1:nstn) {
+            smu <- interpBarnes(X, P, v,
+                                xg=xg, yg=yg, xgl=xgl, ygl=ygl, xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
+                                debug=debug-1)
+            for (istn in seq_along(xg)) {
+                message("istn=", istn)
                 res@data$station[[istn]]@data[[var]] <- smu$zg[istn,]
                 na <- is.na(section@data$station[[istn]][[var]])
                 res@data$station[[istn]]@data[[var]][na] <- NA
+                message(" ... ok")
             }
         }
     } else {
@@ -2461,7 +2500,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
 #' 
 #' @description
 #' Create a section based on columnar data, or a set of \code{\link{oce-class}}
-#' objects that can be coerced to CTD form with \code{\link{as.ctd}}.
+#' objects that can be coerced to a section.
 #' 
 #' If the first argument is a numerical vector, then it is taken to be the
 #' salinity, and \code{\link{factor}} is applied to \code{station} to break the
@@ -2472,11 +2511,11 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
 #' mode is preferred, because it permits the storage of much more data and metadata
 #' in the CTD object.
 #' 
-#' If the first argument is a list containing oce objects that can be coerced into
-#' CTD form with \code{\link{as.ctd}} -- or a character vector containing the names
-#' of such objects that are defined in the calling environment -- then those
-#' objects are combined to form the station, and all other arguments are ignored.
-#' This is the best way to call \code{as.section}.
+#' If the first argument is a list containing oce objects, then those
+#' objects are taken as profiles of something.  The only requirement for this
+#' to work are that every element of the list must contain both \code{longitude}
+#' and latitude in its \code{metadata} slot and that every element also contains
+#' \code{pressure} in its \code{data} slot.
 #' 
 #' If the first argument is a \code{\link{argo-class}} object, then the profiles it
 #' contains are turned into \code{\link{ctd-class}} object, and these are assembled
@@ -2586,12 +2625,19 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
             }
         }
     } else if (inherits(salinity, "list")) {
-        ##if (!inherits(salinity[[1]], "ctd")) stop("list must contain ctd objects")
-        nstation <- length(salinity)
-        ctds <- vector("list", nstation)
-        for (i in 1:nstation) {
-            ##message("CTD-LIST CASE. i: ", i, ", name:", salinity[[i]][["station"]])
-            ctds[[i]] <- as.ctd(salinity[[i]])
+        thelist <- salinity            # prevent accidental overwriting
+        if (!length(thelist))
+            stop("no data in this list")
+        if (inherits(thelist[[1]], "oce")) {
+            nstation <- length(salinity)
+            ctds <- vector("list", nstation)
+            for (i in 1:nstation) {
+                if (!("pressure" %in% names(thelist[[i]]@data)))
+                    stop("cannot create a section from this list because element number ", i, " lacks pressure")
+                ctds[[i]] <- thelist[[i]]
+            }
+        } else {
+            stop("first argument must be a salinity vector, or a list of oce objects")
         }
     } else if (is.character(salinity) && length(salinity) > 1) {
         ## vector of names of CTD objects

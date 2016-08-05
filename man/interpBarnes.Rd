@@ -65,9 +65,6 @@ interpolation at its final iteration; and \code{zd}, a vector of the same
 length as \code{x}, which holds the interpolated values at the data points.
 }
 \description{
-Grid data using Barnes algorithm.
-}
-\details{
 The algorithm follows that described by Koch et al. (1983), with the
 addition of the ability to blank out the grid in spots where data are
 sparse, using the \code{trim} argument, and the ability to pre-grid, with

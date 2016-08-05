@@ -31,7 +31,7 @@ An object of \code{\link{section-class}}.
 }
 \description{
 Create a section based on columnar data, or a set of \code{\link{oce-class}}
-objects that can be coerced to CTD form with \code{\link{as.ctd}}.
+objects that can be coerced to a section.
 
 If the first argument is a numerical vector, then it is taken to be the
 salinity, and \code{\link{factor}} is applied to \code{station} to break the
@@ -42,11 +42,11 @@ that are already partly processed; if original CTD data are available, the next
 mode is preferred, because it permits the storage of much more data and metadata
 in the CTD object.
 
-If the first argument is a list containing oce objects that can be coerced into
-CTD form with \code{\link{as.ctd}} -- or a character vector containing the names
-of such objects that are defined in the calling environment -- then those
-objects are combined to form the station, and all other arguments are ignored.
-This is the best way to call \code{as.section}.
+If the first argument is a list containing oce objects, then those
+objects are taken as profiles of something.  The only requirement for this
+to work are that every element of the list must contain both \code{longitude}
+and latitude in its \code{metadata} slot and that every element also contains
+\code{pressure} in its \code{data} slot.
 
 If the first argument is a \code{\link{argo-class}} object, then the profiles it
 contains are turned into \code{\link{ctd-class}} object, and these are assembled
