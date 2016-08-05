@@ -1104,8 +1104,7 @@ setMethod(f="plot",
                                          variable="temperature", vtitle="T", unit=NULL,
                                          eos=getOption("oceEOS", default="gsw"),
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
-                                         xlim=NULL,
-                                         ylim=NULL,
+                                         xlim=NULL, ylim=NULL,
                                          clongitude, clatitude, span,
                                          projection=NULL,
                                          zbreaks=NULL, zcol=NULL,
@@ -1748,6 +1747,7 @@ setMethod(f="plot",
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          which[w], which[w], eos=eos, ylab="",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
+                                         zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       }
                   }
@@ -2323,9 +2323,14 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #'
 #' @param yg,ygl similar to \code{xg} and \code{xgl}.
 #'
-#' @param gamma passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
+#' @param xr,yr influence ranges in x and y, passed to \code{\link{interpBarnes}} if
+#' \code{method="barnes"}; ignored otherwise.
 #'
-#' @param iterations passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
+#' @param gamma scale-reduction parameter, passed to \code{\link{interpBarnes}},
+#' if \code{method="barnes"}; ignored otherwise.
+#'
+#' @param iterations number of interations of Barnes algorithm, passed to
+#' \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.
 #'
 #' @param trim passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
 #'
@@ -2346,8 +2351,10 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
 #' gss1 <- sectionSmooth(gsg, "spline", df=16)
 #' plot(gss1)
+#' \dontrun{ # debugging Aug 5, 2016
 #' gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
 #' plot(gss2)
+#' }
 #' 
 #' @author Dan Kelley
 #' 
