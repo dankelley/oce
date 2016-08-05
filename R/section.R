@@ -2306,14 +2306,30 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' 
 #' For the (much slower) \code{method="barnes"} method, smoothing is done across
 #' both horizontal and vertical coordinates, using \code{\link{interpBarnes}}.
-#' Any arguments in \code{\dots} being passed to that function; see
-#' \sQuote{Examples}.
+#' The stations are changed to lie on the grid supplied defined \code{xg} and
+#' \code{yg}, or by \code{xgl} and \code{ygl} (see those arguments)
 #' 
 #' @param section A \code{section} object containing the section to be smoothed.
 #' For \code{method="spline"}, the pressure levels must match for each station in
 #' the section.
 #' 
 #' @param method Specifies the method to use; see \sQuote{Details}.
+#'
+#' @param xg,xgl passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.
+#' If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant "stations".
+#' Alternatively, if \code{xgl} is supplied, the x grid is established using \code{\link{seq}},
+#' to span the data with \code{xgl} elements. If neither of these is supplied, the output
+#' x grid will equal the input x grid.
+#'
+#' @param yg,ygl similar to \code{xg} and \code{xgl}.
+#'
+#' @param gamma passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
+#'
+#' @param iterations passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
+#'
+#' @param trim passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
+#'
+#' @param pregrid passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
 #' 
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
@@ -2336,7 +2352,9 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' @author Dan Kelley
 #' 
 #' @family things related to \code{section} data
-sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption("oceDebug"), ...)
+sectionSmooth <- function(section, method=c("spline", "barnes"), 
+                          xg, yg, xgl, ygl, xr, yr, gamma=0.5, iterations=2, trim=0, pregrid=FALSE,
+                          debug=getOption("oceDebug"), ...)
 {
     method <- match.arg(method)
     ## bugs: should ensure that every station has identical pressures
@@ -2368,6 +2386,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         res@metadata$stationId <- section@metadata$stationId[o]
         res@data$station <- section@data$station[o]
         x <- geodDist(res)
+        ## FIXME 20160905 DEK: allow general sections here
         temperatureMat <- array(double(), dim=c(npressure, nstn))
         salinityMat <- array(double(), dim=c(npressure, nstn))
         sigmaThetaMat <- array(double(), dim=c(npressure, nstn))
@@ -2424,7 +2443,23 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
         }
         P <- rep(stn1pressure, nstn)
         X <- rep(x, each=npressure)
+        if (missing(xg))
+            xg <- if (missing(xgl)) x else pretty(x, xgl)
+        if (missing(yg))
+            yg <- if (missing(ygl)) y else pretty(stn1pressure, ygl)
+        ## "stations" will go to new places
+        res@data$station <- vector("list", length(xg))
+        longitudeOriginal <- section[["longitude", "byStation"]]
+        latitudeOriginal <- section[["latitude", "byStation"]]
+        longitudeNew <- approx(x, longitudeOriginal, xg, rule=2)$y
+        latitudeNew <- approx(x, latitudeOriginal, xg, rule=2)$y
+        for (istn in seq_along(xg)) {
+            message("istn=", istn, " whilst making up long and lat")
+            res@data$station@metadata$longitude <- longitudeNew[istn]
+            res@data$station@metadata$latitude <- latitudeNew[istn]
+        }
         for (var in vars) {
+            message("var='", var, "'")
             if (var == "scan" || var == "time" || var == "pressure"
                 || var == "depth" || var == "flag" || var == "quality")
                 next
@@ -2440,11 +2475,15 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
             }
             ## grid overall, then deposit into stations (trimming for NA)
             v <- section[[var]]
-            smu <- interpBarnes(X, P, v, xg=x, yg=stn1pressure, ..., debug=debug-1)
-            for (istn in 1:nstn) {
+            smu <- interpBarnes(X, P, v,
+                                xg=xg, yg=yg, xgl=xgl, ygl=ygl, xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
+                                debug=debug-1)
+            for (istn in seq_along(xg)) {
+                message("istn=", istn)
                 res@data$station[[istn]]@data[[var]] <- smu$zg[istn,]
                 na <- is.na(section@data$station[[istn]][[var]])
                 res@data$station[[istn]]@data[[var]][na] <- NA
+                message(" ... ok")
             }
         }
     } else {

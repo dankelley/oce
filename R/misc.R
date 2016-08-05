@@ -2577,8 +2577,6 @@ oce.filter <- oceFilter
 
 #' Grid data using Barnes algorithm
 #' 
-#' Grid data using Barnes algorithm.
-#' 
 #' The algorithm follows that described by Koch et al. (1983), with the
 #' addition of the ability to blank out the grid in spots where data are
 #' sparse, using the \code{trim} argument, and the ability to pre-grid, with
@@ -2691,9 +2689,11 @@ interpBarnes <- function(x, y, z, w,
                 xg <- x[1]
             } else {
                 xg <- pretty(x, n=50)
+                message("FIXME case 1: xg= ", paste(xg, collapse=" "))
             }
         } else {
             xg <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=xgl)
+            message("FIXME case 2: xg= ", paste(xg, collapse=" "))
         }
     }
     if (missing(yg)) {
