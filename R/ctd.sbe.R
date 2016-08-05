@@ -98,6 +98,7 @@
 #'   \code{prSM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
 #'   \code{prDM}        \tab \code{pressure}                     \tab dbar; digiquartz     \tab   \cr
 #'   \code{prdE}        \tab \code{pressure}                     \tab psi; strain gauge    \tab 2 \cr
+#'   \code{prDE}        \tab \code{pressure}                     \tab psi; digiquartz      \tab 2 \cr
 #'   \code{prdM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
 #'   \code{prSM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
 #'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 3 \cr
@@ -113,6 +114,7 @@
 #'   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
 #'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
 #'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
+#'   \code{specc}       \tab \code{conductivity}                 \tab uS/cm                \tab   \cr
 #'   \code{sva}         \tab \code{specificVolumeAnomaly}        \tab 1e-8 m^3/kg;         \tab   \cr
 #'   \code{svCM~}       \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
 #'   \code{T2~68C}      \tab \code{temperatureDifference}        \tab degC; IPTS-68        \tab   \cr 
@@ -354,6 +356,10 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         name <- "pressure"
         unit <- list(unit=expression(psi), scale="")
         warning("this .cnv file contains pressure in PSI, but [[\"pressure\"]] will return in dbar")
+    } else if (1 == length(grep("^prDE$", name))) { # Caution: English unit
+        name <- "pressure"
+        unit <- list(unit=expression(psi), scale="")
+        warning("this .cnv file contains pressure in PSI, but [[\"pressure\"]] will return in dbar")
     } else if (1 == length(grep("^prM$", name))) {
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="")
@@ -415,6 +421,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^spar$", name))) {
         name <- "spar"
         unit <- list(unit=expression(), scale="")
+    } else if (1 == length(grep("^specc$", name))) {
+        name <- "conductivity"
+        unit <- list(unit=expression(uS/cm), scale="")
     } else if (1 == length(grep("^sva$", name))) {
         name <- "specificVolumeAnomaly"
         unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
@@ -470,7 +479,6 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         name <- "user"
         unit <- list(unit=expression(), scale="")
     } else if (1 == length(grep("^v[0-9][0-9]?$", name))) {
-        name <- "v"
         unit <- list(unit=expression(V), scale="")
     } else if (1 == length(grep("^wetBAttn$", name))) {
         name <- "beamAttenuation"
@@ -595,17 +603,24 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
 
     ## Get names and units of columns in the SBE data file
     nameLines  <- grep("^# name [0-9][0-9]* = .*:.*$", lines, ignore.case=TRUE)
-    colUnits <- list()
+    colUnits <- vector("list", length(nameLines))
     colNamesInferred <- NULL
     dataNamesOriginal <- NULL
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
+        ##newname <- unduplicateName(nu$name, colNamesInferred)
+        ##colNamesInferred <- c(colNamesInferred, newname)
         colNamesInferred <- c(colNamesInferred, nu$name)
+        ## dataNamesOriginal[[newname]] <- nu$nameOriginal
         dataNamesOriginal <- c(dataNamesOriginal, nu$nameOriginal)
+        ##colUnits[[iline]] <- nu$unit
         colUnits[[iline]] <- nu$unit
-        ## message("nu$name: ", nu$name, "; scale: ", colUnits[[nu$name]]$unit$scale)
+        ##message("SBE name=", nu$name, "; nameOriginal=", nu$nameOriginal, "; unit='", as.character(nu$unit$unit),"'")
     }
     colNamesInferred <- unduplicateNames(colNamesInferred)
+    names(colUnits) <- colNamesInferred
+    ##print(colUnits)
+    names(dataNamesOriginal) <- colNamesInferred
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     ##found.scan <- "scan" %in% colNamesInferred
     ##found.temperature <- "temperature" %in% colNamesInferred
@@ -619,19 +634,23 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     fileType <- "unknown"
 
     for (iline in seq_along(lines)) {
+        ##message("** scan at iline ", iline)
         line <- lines[iline]
+        ##message(line)
         #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        oceDebug(debug>1, paste("Examining header line '",line,"'\n", sep=""))
+        oceDebug(debug, paste("Examining header line '",line,"'\n", sep=""))
         header <- c(header, line)
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
-        if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) {
+        if (length(grep("^\\s*\\*END\\*\\s*$", aline, perl=TRUE, useBytes=TRUE))) {
+            ##message("got *END* at line ", iline)
             ## Sometimes SBE files have a header line after the *END* line.
             iline <- iline + 1
             if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
                 iline <- iline + 1
             break
         }
+        ##if (iline>129) browser()
         lline <- tolower(aline)
         if (0 < regexpr(".*seacat profiler.*", lline))
             serialNumber <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
@@ -822,6 +841,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     pushBack(lines, file)
     ##if (is.null(columns)) {
     oceDebug(debug, "About to read these names: c(\"", paste(colNamesInferred, collapse='","'),"\")\n", sep="")
+    ##message("skipping ", iline-1, " lines at top of file")
     data <- as.list(read.table(file, skip=iline-1, header=FALSE))
     if (length(data) != length(colNamesInferred))
         stop("Number of columns in .cnv data file must match number of variables named in the header")

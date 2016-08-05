@@ -8,7 +8,7 @@ processingLogAppend(h, value = "")
 }
 \arguments{
 \item{h}{either the \code{processingLog} slot of an object, or
-an object from which the processingLog will be extracted}
+an \code{oce} object from which the processingLog will be extracted}
 
 \item{value}{A string indicating the text of the log entry.}
 }

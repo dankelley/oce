@@ -935,7 +935,8 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         res@metadata$sampleInterval <- sampleInterval
         res@metadata$rskVersion <- rskVersion
         res@metadata$ruskinVersion <- ruskinVersion
-        res@metadata$dataNamesOriginal <- dataNamesOriginal
+        res@metadata$dataNamesOriginal <- as.list(dataNamesOriginal)
+        names(res@metadata$dataNamesOriginal) <- names(res@data)
         if (hasDatasetID) res@metadata$datasetID <- datasetID
         ## There is actually no need to set the conductivity unit since new()
         ## sets it, but do it anyway, as a placeholder to show where to do

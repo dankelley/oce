@@ -5,9 +5,10 @@
 \title{Draw a Map}
 \usage{
 mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg, fill,
-  border = NULL, col = NA, type = "l", axes = TRUE, drawBox = TRUE,
-  showHemi = TRUE, polarCircle = 0, lonlabel = NULL, latlabel = NULL,
-  sides = NULL, projection = "+proj=moll", tissot = FALSE, trim = TRUE,
+  border = NULL, col = NA, type = "l", axes = TRUE, cex, cex.axis = 1,
+  mgp = c(0, 0.5, 0), drawBox = TRUE, showHemi = TRUE, polarCircle = 0,
+  lonlabel = NULL, latlabel = NULL, sides = NULL,
+  projection = "+proj=moll", tissot = FALSE, trim = TRUE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -61,6 +62,14 @@ most projections this works quite well.  If not, one may set
 \item{axes}{logical value indicating whether to draw longitude and latitude
 values in the lower and left margin, respectively.  This may not work well
 for some projections or scales.}
+
+\item{cex}{character expansion factor for plot symbols, 
+used if \code{type='p'} or any other value that yields symbols.}
+
+\item{cex.axis}{axis-label expansion factor (see \code{\link{par}}).}
+
+\item{mgp}{three-element numerical vector describing axis-label
+placement, passed to \code{\link{mapAxis}}.}
 
 \item{drawBox}{logical value indicating whether to draw a box around the plot.
 This is helpful for many projections at sub-global scale.}

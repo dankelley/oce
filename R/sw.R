@@ -427,7 +427,7 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (eos == "unesco") {
         n <- length(salinity)
-        res <- .C("sw_CSTp", as.integer(n), as.double(salinity), T68fromT90(as.double(temperature)), as.double(pressure), C=double(n))$C
+        res <- .C("sw_CSTp", as.integer(n), as.double(salinity), T68fromT90(as.double(temperature)), as.double(pressure), C=double(n), NAOK=TRUE, PACKAGE="oce")$C
     } else {
         ## for the use of a constant, as opposed to a function call with (35,15,0), see
         ## https://github.com/dankelley/oce/issues/746
@@ -452,16 +452,18 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
 #' \code{"gsw"} then the Gibbs-SeaWater formulation is used, via
 #' \code{\link{gsw_SP_from_C}}.
 #'
-#' @param conductivity conductivity ratio, or a CTD object. If a CTD object,
-#' then the next 3 arguments are ignored, since the information can be gleaned
-#' from the object.
+#' @param conductivity a measure of conductivity (see also \code{conductivityUnit})
+#' or an \code{oce} object holding hydrographic information. In the second case,
+#' all the other arguments to \code{swSCTp} are ignored.
 #' @param temperature \emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
 #' on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
 #' \code{\link{swRho}}.
 #' @param pressure pressure [dbar]
-#' @param conductivityUnit string indicating the unit used for conductivity;
-#' \code{ratio} means actual conductivity divided by standard conductivity
-#' (4.2914 S/m).
+#' @param conductivityUnit string indicating the unit used for conductivity.
+#' This may be \code{"ratio"} or \code{""} (meaning conductivity ratio),
+#' \code{"mS/cm"} or \code{"S/m"}.  Note that the ratio mode assumes that
+#' measured conductivity has been divided by the standard conductivity
+#' of 4.2914 S/m.
 #' @param eos equation of state, either \code{"unesco"} or \code{"gsw"}.
 #' @return Practical salinity.
 #' @author Dan Kelley

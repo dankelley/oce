@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{addColumn}
 \alias{addColumn}
-\title{Add a Column to the Data Slot of an Oce object}
+\title{Add a Column to the Data Slot of an Oce object [DEPRECATED]}
 \usage{
 addColumn(x, data, name)
 }
@@ -19,20 +19,18 @@ An object of \code{\link[base]{class}} \code{oce}, with a new
 column.
 }
 \description{
+\strong{Warning:} this function will be removed soon;
+see \link{oce-deprecated}. The more powerful function
+\code{\link{oceSetData}} should be used instead.
+}
+\details{
 If there is already a column with the given name, its contents are replaced
 by the new value.
-}
-\examples{
-library(oce)
-data(ctd) 
-st <- swSigmaTheta(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]])
-new <- addColumn(ctd, st, "sigmaTheta")
 }
 \author{
 Dan Kelley
 }
 \seealso{
-\code{\link{ctdAddColumn}} does a similar thing for \code{ctd}
-objects, and is in fact called, if \code{x} is of class \code{ctd}.
+Please use \code{\link{oceSetData}} instead of the present function.
 }
 

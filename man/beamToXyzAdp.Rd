@@ -59,7 +59,8 @@ Dan Kelley
 calculations.} P/N 951-6079-00 (July 1998).
 
 2. WHOI/USGS-provided Matlab code for beam-enu transformation
-\url{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
+\samp{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
+(link last checked 2016-08-05)
 }
 \seealso{
 See \code{\link{read.adp}} for other functions that relate to

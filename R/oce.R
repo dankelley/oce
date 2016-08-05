@@ -70,10 +70,12 @@ NULL
 #' Several \sQuote{oce} functions are marked "deprecated" in the present
 #' release of oce. Please use the replacement functions as listed below.
 #' 
-#' \tabular{lll}{ \strong{Deprecated} \tab \strong{Replacement} \tab
-#' \strong{Notes}\cr \code{mapZones} \tab \code{\link{mapGrid}} \tab Improve
-#' name sensibility\cr \code{mapMeridians} \tab \code{\link{mapGrid}} \tab
-#' Improve name sensibility\cr }
+#' \tabular{lll}{
+#' \strong{Deprecated} \tab \strong{Replacement}     \tab \strong{Notes}\cr
+#' \code{mapZones}     \tab \code{\link{mapGrid}}    \tab Improve name sensibility\cr
+#' \code{mapMeridians} \tab \code{\link{mapGrid}}    \tab Improve name sensibility\cr
+#' \code{addColumn}    \tab \code{\link{oceSetData}} \tab Deprecated 2016-08-01\cr
+#' }
 #' 
 #' The next CRAN release of \sQuote{oce} will have these functions flagged as
 #' "defunct", which will mean that trying to use them will generate an error
@@ -88,8 +90,8 @@ NULL
 #' Improve utility and name sensibility\cr \code{columns} \tab
 #' \code{\link{read.ctd}} \tab Unnecessary, and never worked\cr }
 #' 
-#' Several \sQuote{oce} function arguments are considered defunct but are
-#' being permitted in the present CRAN release. They are as follows.
+#' Several \sQuote{oce} function arguments are considered defunct, which
+#' means they will be removed in the next CRAN release. They are as follows.
 #' 
 #' \itemize{
 #'
@@ -2140,8 +2142,8 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     } else if (d <= 60 * 60 * 24 * 3) {        # under 3 days: label day; show 1-hour subticks
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
-        z <- seq(t.start, t.end, by="hour")
-        z.sub <- seq(t.start, t.end, by="hour")
+        z <- seq(t.start, t.end, by="6 hour")
+        z.sub <- seq(t.start, t.end, by="1 hour")
         oceDebug(debug, vectorShow(z, "Time range is under 3 days; z="))
         oceDebug(debug, vectorShow(z.sub, "Time range is under 3 days; z.sub="))
         if (missing(tformat))

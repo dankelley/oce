@@ -5,7 +5,7 @@
 \alias{plot,cm-method}
 \title{Plot CM data}
 \usage{
-\S4method{plot}{cm}(x, which = c(1:2, 7:9), type = "l", adorn = NULL,
+\S4method{plot}{cm}(x, which = c(1:2, 7:9), type = "l",
   drawTimeRange = getOption("oceDrawTimeRange"), drawZeroLine = FALSE,
   mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5, 1.5, 1.5),
   small = 2000, main = "", tformat, debug = getOption("oceDebug"), ...)
@@ -18,24 +18,6 @@ down from the top of the page.  See \dQuote{Details} for the meanings of various
 values of \code{which}.}
 
 \item{type}{type of plot, as for \code{\link{plot}}.}
-
-\item{adorn}{(\strong{Defunct})
-An \code{\link{expression}} or vector of expressions that contain
-R code that is to be executed immediately after each panel of the plot.
-If the number of expressions matches the number of panels, then the 
-expressions are used for the corresponding panels; otherwise, the
-expression list is extended to match the number of panels (i.e.
-to obtain \code{length(which)} elements). Note that \code{adorn}
-is a dangerous argument, because if the expressions contained
-therein set up local storage, there is a chance of entirely
-disrupting the plotting. \strong{For this reason, \code{adorn} was
-marked as defunct in June 2016, and will be removed entirely 
-after the July CRAN release.} Users with existing code that uses
-\code{adorn} should simply plot the panels individually, and
-use conventional R functions, e.g. \code{\link{lines}} etc.,
-after each panel, to achieve the desired effect.  (See
-\code{\link{oce-defunct}} for notes on other deprecated or
-defunct \code{oce} features.)}
 
 \item{drawTimeRange}{boolean that applies to panels with time as the horizontal
 axis, indicating whether to draw the time range in the top-left margin of the
@@ -104,7 +86,7 @@ The panels are controlled by the \code{which} argument, as follows.
 
 \item \code{which=11} or \code{"conductivity"} for conductivity
 
-\item \code{which=20} or \code{"heading"} for compass heading
+\item \code{which=20} or \code{"direction"} for the direction of flow
 
 }
 }
@@ -143,9 +125,9 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{cm} data: \code{\link{[[,cm-method}},
-  \code{\link{[[<-,cm-method}}, \code{\link{cm-class}},
-  \code{\link{cm}}, \code{\link{read.cm}},
-  \code{\link{subset,cm-method}},
+  \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
+  \code{\link{cm-class}}, \code{\link{cm}},
+  \code{\link{read.cm}}, \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
 

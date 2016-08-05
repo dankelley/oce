@@ -194,14 +194,19 @@ void geod_xy(int *n,
 {
   //Rprintf("%3s %10s %10s %10s %10s [geod_xy]\n", "i", "lon", "lat", "lon.ref", "lat.ref");
   for (int i = 0; i < *n; i++) {
-    //Rprintf("%3d %10.3f %10.3f %10.2f %10.2f [geod_xy]\n", i, lon[i], lat[i], *lonr, *latr);
-    double faz, baz, s; /* only s used here */
-    geoddist_core(lat+i, lonr, latr, lonr, a, f, &faz, &baz, &s);
-    double Y = s;
-    geoddist_core(latr, lon+i, latr, lonr, a, f, &faz, &baz, &s);
-    double X = s;
-    if (*(lon+i)>(*lonr)) x[i] = X; else x[i] = -X;
-    if (*(lat+i)>(*latr)) y[i] = Y; else y[i] = -Y;
+    if (ISNA(lat[i]) || ISNA(lon[i])) {
+      x[i] = NA_REAL;
+      y[i] = NA_REAL;
+    } else {
+      //Rprintf("%3d %10.3f %10.3f %10.2f %10.2f [geod_xy]\n", i, lon[i], lat[i], *lonr, *latr);
+      double faz, baz, s; /* only s used here */
+      geoddist_core(lat+i, lonr, latr, lonr, a, f, &faz, &baz, &s);
+      double Y = s;
+      geoddist_core(latr, lon+i, latr, lonr, a, f, &faz, &baz, &s);
+      double X = s;
+      if (*(lon+i)>(*lonr)) x[i] = X; else x[i] = -X;
+      if (*(lat+i)>(*latr)) y[i] = Y; else y[i] = -Y;
+    }
   }
 }
 
@@ -244,31 +249,36 @@ void geod_xy_inverse(int *n,
 {
   //Rprintf("%3s %10s %10s %10s %10s %10s %10s [geod_xy_inverse]\n", "i", "x", "y", "lon.ref", "lat.ref", "xin[0]", "xin[1]");
   for (int i = 0; i < *n; i++) {
-    double xin[2];
-    double ex[4]; // x, y, lonr, latr
-    ex[0] = x[i];
-    ex[1] = y[i];
-    ex[2] = *lonr;
-    ex[3] = *latr;
-    int fail=0;
-    // Re the two tolerances: 1e-5 in lat or lon is 1m in space
-    double abstol=1.0e-6;
-    double intol=1.0e-6;
-    xin[1] = y[i] / 111e3;
-    xin[0] = x[i] / 111e3 / cos(xin[1]*M_PI/180.0);
-    //Rprintf("%3d %10.0f %10.0f %10.2f %10.2f %10.2f %10.2f [geod_xy_inverse]\n", i, ex[0], ex[1], ex[2], ex[3], xin[0], xin[1]);
-    double alpha=1.0, beta=0.5, gamma=2.0;
-    double xout[2];
-    double Fmin=0.0;
-    int trace=0, fncount=0, maxit=500;
-    int nn=2;
-    nmmin(nn, xin, xout, &Fmin, 
-	lonlat_misfit,
-	&fail, abstol, intol, (void*)ex,
-	alpha, beta, gamma, trace,
-	&fncount, maxit);
-    longitude[i] = xout[0];
-    latitude[i] = xout[1];
-    //Rprintf("  ... fncount=%d Fmin=%f\n", fncount, Fmin);
+    if (ISNA(x[i]) || ISNA(y[i])) {
+      longitude[i] = NA_REAL;
+      latitude[i] = NA_REAL;
+    } else {
+      double xin[2];
+      double ex[4]; // x, y, lonr, latr
+      ex[0] = x[i];
+      ex[1] = y[i];
+      ex[2] = *lonr;
+      ex[3] = *latr;
+      int fail=0;
+      // Re the two tolerances: 1e-5 in lat or lon is 1m in space
+      double abstol=1.0e-6;
+      double intol=1.0e-6;
+      xin[1] = y[i] / 111e3;
+      xin[0] = x[i] / 111e3 / cos(xin[1]*M_PI/180.0);
+      //Rprintf("%3d %10.0f %10.0f %10.2f %10.2f %10.2f %10.2f [geod_xy_inverse]\n", i, ex[0], ex[1], ex[2], ex[3], xin[0], xin[1]);
+      double alpha=1.0, beta=0.5, gamma=2.0;
+      double xout[2];
+      double Fmin=0.0;
+      int trace=0, fncount=0, maxit=500;
+      int nn=2;
+      nmmin(nn, xin, xout, &Fmin, 
+	  lonlat_misfit,
+	  &fail, abstol, intol, (void*)ex,
+	  alpha, beta, gamma, trace,
+	  &fncount, maxit);
+      longitude[i] = xout[0];
+      latitude[i] = xout[1];
+      //Rprintf("  ... fncount=%d Fmin=%f\n", fncount, Fmin);
+    }
   }
 }

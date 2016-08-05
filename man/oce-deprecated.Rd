@@ -17,10 +17,12 @@ up-to-date.
 Several \sQuote{oce} functions are marked "deprecated" in the present
 release of oce. Please use the replacement functions as listed below.
 
-\tabular{lll}{ \strong{Deprecated} \tab \strong{Replacement} \tab
-\strong{Notes}\cr \code{mapZones} \tab \code{\link{mapGrid}} \tab Improve
-name sensibility\cr \code{mapMeridians} \tab \code{\link{mapGrid}} \tab
-Improve name sensibility\cr }
+\tabular{lll}{
+\strong{Deprecated} \tab \strong{Replacement}     \tab \strong{Notes}\cr
+\code{mapZones}     \tab \code{\link{mapGrid}}    \tab Improve name sensibility\cr
+\code{mapMeridians} \tab \code{\link{mapGrid}}    \tab Improve name sensibility\cr
+\code{addColumn}    \tab \code{\link{oceSetData}} \tab Deprecated 2016-08-01\cr
+}
 
 The next CRAN release of \sQuote{oce} will have these functions flagged as
 "defunct", which will mean that trying to use them will generate an error
@@ -35,8 +37,8 @@ altogether in the next oce release on CRAN.
 Improve utility and name sensibility\cr \code{columns} \tab
 \code{\link{read.ctd}} \tab Unnecessary, and never worked\cr }
 
-Several \sQuote{oce} function arguments are considered defunct but are
-being permitted in the present CRAN release. They are as follows.
+Several \sQuote{oce} function arguments are considered defunct, which
+means they will be removed in the next CRAN release. They are as follows.
 
 \itemize{
 

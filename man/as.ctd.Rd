@@ -2,13 +2,13 @@
 % Please edit documentation in R/ctd.R
 \name{as.ctd}
 \alias{as.ctd}
-\title{Coerce data into CTD dataset}
+\title{Coerce data into CTD object}
 \usage{
 as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
   SA = NULL, CT = NULL, oxygen = NULL, nitrate = NULL, nitrite = NULL,
   phosphate = NULL, silicate = NULL, scan = NULL, time = NULL,
   other = NULL, units = NULL, flags = NULL, pressureType = "sea",
-  missingValue = NA, quality = NULL, filename = "", type = "",
+  missingValue = NULL, quality = NULL, filename = "", type = "",
   model = "", serialNumber = "", ship = "", scientist = "",
   institute = "", address = "", cruise = "", station = "",
   date = NULL, startTime = NULL, recovery = NULL, longitude = NA,
@@ -84,7 +84,7 @@ provided to the object.}
 and sea pressure, or \code{"sea"}.}
 
 \item{missingValue}{optional missing value, indicating data that should be
-taken as \code{NA}.}
+taken as \code{NA}. Set to \code{NULL} to turn off this feature.}
 
 \item{quality}{\strong{(deprecated)} optional quality flag, e.g. from the salinity quality flag in WOCE data.
 (In WOCE, \code{quality=2} indicates good data, \code{quality=3} means

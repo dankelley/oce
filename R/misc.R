@@ -44,6 +44,35 @@ unitFromString <- function(s)
     return(list(unit=as.expression(s), scale=""))
 }
 
+## #' Rename a duplicated item (used in reading CTD files)
+## #'
+## #' Determine a new name for an item that is already in a list of names. This is
+## #' done by e.g. appending a \code{2} to the second occurrence of a name, etc.
+## #' The purpose is to create distinct variable names for
+## #' \code{\link{read.ctd.sbe}}.
+## #' 
+## #' @param existingNames Vector of strings with names already processed.
+## #' @param name String with a candidate name.
+## #' @return names String with an unduplicated name.
+## #' @seealso \code{\link{unduplicateNames}} is similar, but considers
+## #' a vector of names.
+## #'
+## #' @examples
+## #' unduplicateName("a", c("a", "b", "a")) # returns "a3"
+## unduplicateName <- function(name, existingNames)
+## {
+##     counter <- 0
+##     for (i in seq_along(existingNames)) {
+##         if (name == existingNames[i])
+##             counter <- counter + 1
+##     }
+##     res <- if (counter > 0) paste(name, counter+1, sep="") else name
+##     ## message("unduplicateName() name: '", name, "'")
+##     ## message("         existingNames '", paste(existingNames, collapse="' '"))
+##     ## message("         returning '", res, "'")
+##     res
+## }
+
 #' Rename duplicated items (used in reading CTD files)
 #'
 #' Rename items to avoid name collision, by appending a \code{2} to
@@ -51,6 +80,7 @@ unitFromString <- function(s)
 #' 
 #' @param names Vector of strings with variable names.
 #' @return names Vector of strings with numbered variable names.
+#' @seealso used by \code{\link{read.ctd.sbe}}.
 #'
 #' @examples
 #' unduplicateNames(c("a", "b", "a", "c", "b"))
@@ -197,18 +227,20 @@ argShow <- function(x, nshow=2, last=FALSE, sep="=")
 dataLabel <- function(names, units)
 {
     res <- names
-    ##message("in dataLabel()")
+    ## message("in dataLabel()")
     if (!missing(units)) {
         ## message("  dataLabel(); next line is names")
         ## print(names)
         ## message("  dataLabel(); next line is units")
         ## print(units)
         unitsNames <- names(units)
+        ##message("  dataLabel(); next line is unitsNames")
+        ##print(unitsNames)
         for (i in seq_along(names)) {
-            ##> message("  i: ", i, ", name: ", names[i])
+            ##message("  i: ", i, ", name: ", names[i])
             w <- which(unitsNames == names[i])
             if (length(w)) {
-                ## message("  we match a unit at index w=",  w)
+                ##message("  we match a unit at index w=",  paste(w, collapse=" "))
                 u <- units[w]
                 if (!is.null(u)) {
                     if (is.character(u)) {
@@ -2390,6 +2422,8 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' @examples
 #' 
 #' library(oce)
+#'
+#' # 1. Demonstrate step-function response
 #' y <- c(rep(1,10), rep(-1,10))
 #' x <- seq_along(y)
 #' plot(x, y, type='o', ylim=c(-1.05, 1.05))
@@ -2401,6 +2435,39 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' points(yH, col=3, type='o')
 #' legend("topright", col=1:3, cex=2/3, pch=1,
 #'        legend=c("input", "Blackman Harris", "Hamming"))
+#'
+#' # 2. Show theoretical and practical filter gain, where
+#' #    the latter is based on random white noise, and
+#' #    includes a particular value for the spans
+#' #    argument of spectrum(), etc.
+#' \dontrun{ # need signal package for this example
+#' r <- rnorm(2048)
+#' rh <- stats::filter(r, H)
+#' rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
+#' sR <- spectrum(r, plot=FALSE, spans=c(11,5,3))
+#' sRH <- spectrum(rh, plot=FALSE, spans=c(11,5,3))
+#' par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+#' plot(sR$freq, sRH$spec/sR$spec, xlab="Frequency", ylab="Power Transfer",
+#'      type='l', lwd=5, col='gray')
+#' theory <- freqz(H, n=seq(0,pi,length.out=100))
+#' # Note we must square the modulus for the power spectrum
+#' lines(theory$f/pi/2, Mod(theory$h)^2, lwd=1, col='red')
+#' grid()
+#' legend("topright", col=c("gray", "red"), lwd=c(5,1), cex=2/3,
+#'        legend=c("Practical", "Theory"), bg="white")
+#' plot(log10(sR$freq), log10(sRH$spec/sR$spec),
+#'      xlab="log10 Frequency", ylab="log10 Power Transfer",
+#'      type='l', lwd=5, col='gray')
+#' theory <- freqz(H, n=seq(0,pi,length.out=100))
+#' # Note we must square the modulus for the power spectrum
+#' lines(log10(theory$f/pi/2), log10(Mod(theory$h)^2), lwd=1, col='red')
+#' grid()
+#' legend("topright", col=c("gray", "red"), lwd=c(5,1), cex=2/3,
+#'        legend=c("Practical", "Theory"), bg="white")
+#
+
+
+#' }
 makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
 {
     type <- match.arg(type)
@@ -2840,7 +2907,11 @@ fillGap <- function(x, method=c("linear"), rule=1)
 }
 
 
-#' Add a Column to the Data Slot of an Oce object
+#' Add a Column to the Data Slot of an Oce object [DEPRECATED]
+#'
+#' \strong{Warning:} this function will be removed soon;
+#' see \link{oce-deprecated}. The more powerful function
+#' \code{\link{oceSetData}} should be used instead.
 #'
 #' If there is already a column with the given name, its contents are replaced
 #' by the new value.
@@ -2852,15 +2923,11 @@ fillGap <- function(x, method=c("linear"), rule=1)
 #' @return An object of \code{\link[base]{class}} \code{oce}, with a new
 #' column.
 #' @author Dan Kelley
-#' @seealso \code{\link{ctdAddColumn}} does a similar thing for \code{ctd}
-#' objects, and is in fact called, if \code{x} is of class \code{ctd}.
-#' @examples
-#' library(oce)
-#' data(ctd) 
-#' st <- swSigmaTheta(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]])
-#' new <- addColumn(ctd, st, "sigmaTheta")
+#' @seealso Please use \code{\link{oceSetData}} instead of the present function.
 addColumn <- function (x, data, name)
 {
+    .Deprecated("oceSetData",
+                msg="addColumn() will be removed soon; use oceSetData() instead. See ?'oce-deprecated'.")
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (missing(data))

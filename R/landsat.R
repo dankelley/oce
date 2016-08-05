@@ -233,6 +233,9 @@ setMethod(f="summary",
               cat(sprintf("* Lower right:         %fE %fN\n", object@metadata$lrlon, object@metadata$lrlat)) 
               cat(sprintf("* Upper right:         %fE %fN\n", object@metadata$urlon, object@metadata$urlat)) 
               cat(sprintf("* Upper left:          %fE %fN\n", object@metadata$ullon, object@metadata$ullat)) 
+              for (name in names(object@data)) {
+                  object@data[[name]] <- object[[name]] # translate to science units
+              }
               callNextMethod()
           })
 

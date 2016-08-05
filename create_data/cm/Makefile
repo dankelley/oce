@@ -1,9 +1,10 @@
-what=cm
-all: create_$(what).out
+SOURCES=$(wildcard *.R)
+OBJECTS=$(SOURCES:.R=.out)
+all: $(OBJECTS)
 %.out: %.R
 	R --no-save < $< > $@
 clean:
 	-rm *~ *.rda *.out
 install:
-	cp $(what).rda ../../data
+	cp cm.rda ../../data
 

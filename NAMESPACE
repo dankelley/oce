@@ -11,7 +11,7 @@ importFrom("graphics", ".filled.contour", "abline", "arrows", "axis", "Axis",
            "yinch")
 importFrom("grDevices", "adjustcolor", "col2rgb", "colorRamp",
            "colorRampPalette", "contourLines", "gray", "hsv", "rgb")
-importFrom("utils", "capture.output")
+importFrom("utils", "capture.output", "read.delim")
 importFrom("stats", "approx", "approxfun", "coef", "confint", "cor", "cov",
            "fivenum", "frequency", "integrate", "is.ts", "kernel", "lm",
            "median", "na.exclude", "nls", "optim", "optimize", "predict",
@@ -38,6 +38,7 @@ export(abbreviateTimeLabels,
        argoGrid,
        as.adp,
        as.argo,
+       as.cm,
        as.coastline,
        as.ctd,
        as.echosounder,

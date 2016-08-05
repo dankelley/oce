@@ -18,11 +18,12 @@
 }
 \value{
 In all cases, the returned value is a matrix with 
-with dimension 1440 by 720, with \code{NA} values if the 
-satellite data are over land (coded to \code{0x255}),
-have no observations (coded to \code{0xfe}),
-are bad observations (coded to \code{0xfd}),
-indicate sea ice (coded to \code{0xfc}),
+with \code{NA} values if the 
+satellite data are over land (indicated with a binary
+value of \code{0x255} in the raw data),
+have no observations (indicated with \code{0xfe}),
+are bad observations (indicated with \code{0xfd}),
+indicate sea ice (indicated with \code{0xfc}),
 are are faulty owing to high rain (coded to \code{0xfb}).
 }
 \description{
@@ -48,21 +49,24 @@ method can locates the requested item, \code{NULL} is returned.
 }
 \details{
 Partial matches for \code{i}
-are permitted for \code{metadata}, and \code{j} is ignored.
+are permitted for \code{metadata}, and \code{j} is ignored for
+\code{metadata}.
 
-Data within the \code{data} slot must be matched exactly by name,
-and may be retrieved with units (the default) or as raw bytes (if
-\code{j="raw"}.)  The available items are:
-seconds from the start of day (\code{time}),
-temperature in degC (\code{SST});
-wind speed in m/s (\code{LFwind} and \code{MFwindDay});
-water vapor content (\code{vaporDay});
-cloudiness (\code{cloud}),
-and rainfall in mm/h (\code{rain}).  Each of these is
-an average across day-time and night-time passes; to get
-the day/night data separately, use e.g. \code{SSTDay}
-\code{SSTNight}, and similarly-named versions of all
-bands.
+Data within the \code{data} slot may be found directly, e.g.
+\code{j="SSTDay"} will yield sea-surface temperature in the daytime
+satellite, and \code{j="SSTNight"} is used to access the nighttime data. In
+addition, \code{j="SST"} yields an average of the night and day values (
+using just one of these, if the other is missing). This scheme works for
+all the data stored in \code{amsr} objects, namely:
+\code{time}, \code{SST}, \code{LFwind}, \code{MFwind},
+\code{vapor}, \code{cloud} and \code{rain}.  In each case, the default
+is to calculate values in scientific units, unless \code{j="raw"}, in
+which case the raw data are returned. The \code{"raw"} mode can be useful
+in decoding the various types of missing value that are used by \code{amsr}
+data, namely \code{as.raw(0xff)} for land, \code{as.raw(0xfe)} for
+a missing observation, \code{as.raw(0xfd)} for a bad observation,
+\code{as.raw(0xfc)} for sea ice, or \code{as.raw(0xfb)} fo missing SST
+due to rain or missing water vapour due to heavy rain.
 }
 \section{Details of the general method}{
 
@@ -102,6 +106,24 @@ an item with the name indicated by \code{i}. In this case, a partial
 match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
+}
+\examples{
+\dontrun{
+# Show a daytime SST image, along with an indication of whether
+# the NA values are from rain.
+library(oce)
+earth <- read.amsr("f34_20160102v7.2.gz")
+fclat <- subset(earth , 35 <= latitude & latitude <= 55)
+fc <- subset(fclat , -70 <= longitude & longitude <= -30)
+par(mfrow=c(2,1))
+plot(fc, "SSTDay")
+rainy <- fc[["SSTDay", "raw"]] == as.raw(0xfb)
+lon <- fc[["longitude"]]
+lat <- fc[["latitude"]]
+asp <- 1 / cos(pi*mean(lat)/180)
+imagep(lon, lat, rainy, asp=asp)
+mtext("red: too rainy to sense SSTDay")
+}
 }
 \author{
 Dan Kelley

@@ -74,9 +74,9 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,windrose-method}}
 
 Other things related to \code{cm} data: \code{\link{[[,cm-method}},
-  \code{\link{cm-class}}, \code{\link{cm}},
-  \code{\link{plot,cm-method}}, \code{\link{read.cm}},
-  \code{\link{subset,cm-method}},
+  \code{\link{as.cm}}, \code{\link{cm-class}},
+  \code{\link{cm}}, \code{\link{plot,cm-method}},
+  \code{\link{read.cm}}, \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
 

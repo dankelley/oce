@@ -122,8 +122,9 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
             stop("cannot decode the header in this CTD file")
         header <- lines[1:headerEnd]
         oceDebug(debug, "headerEnd:", headerEnd, "\n")
-        dataNamesOriginal <- gsub(" *$", "", strsplit(header[headerEnd-1], ",")[[1]])
+        dataNamesOriginal <- as.list(gsub(" *$", "", strsplit(header[headerEnd-1], ",")[[1]]))
         names <- tolower(dataNamesOriginal)
+        names(dataNamesOriginal) <- names
         unitsOriginal <- gsub(" *$", "", gsub("^ *", "", strsplit(header[headerEnd],",")[[1]]))
         ## FIXME: decode to real units
         units <- list()
@@ -178,7 +179,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         ## res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
         ##                            salinity=list(unit=expression(), scale="PSS-78"),
         ##                            conductivity=list(unit=expression(), scale=""))
-        res@metadata$dataNamesOriginal <- dataNamesOriginal
+        res@metadata$dataNamesOriginal <- as.list(dataNamesOriginal)
+        names(res@metadata$dataNamesOriginal) <- names
         res@metadata$pressureType <- "sea"
         res@metadata$ship <- ship
         res@metadata$scientist <- scientist
@@ -426,7 +428,10 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, 
         pressure[pressure == missingValue] <- NA
         oxygen[oxygen == missingValue] <- NA
     }
-    as.ctd(salinity, temperature, pressure, oxygen=oxygen, station=station, date=date)
+    res <- as.ctd(salinity, temperature, pressure, oxygen=oxygen, station=station, date=date)
+    res@metadata$dataNamesOriginal <- list(pressure="CTDPRS", temperature="CTDTMP", 
+                                           salinity="CTDSAL", oxygen="CTDOXY")
+    res
 }
 
 

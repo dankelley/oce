@@ -617,7 +617,7 @@ setMethod(f="[[<-",
           })
 
 
-#' Coerce data into CTD dataset
+#' Coerce data into CTD object
 #' 
 #' Assemble data into a \code{\link{ctd-class}} dataset.
 #' 
@@ -708,7 +708,7 @@ setMethod(f="[[<-",
 #' and sea pressure, or \code{"sea"}.
 #' 
 #' @param missingValue optional missing value, indicating data that should be
-#' taken as \code{NA}.
+#' taken as \code{NA}. Set to \code{NULL} to turn off this feature.
 #' 
 #' @param quality \strong{(deprecated)} optional quality flag, e.g. from the salinity quality flag in WOCE data.
 #' (In WOCE, \code{quality=2} indicates good data, \code{quality=3} means
@@ -815,7 +815,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    scan=NULL, time=NULL, other=NULL,
                    units=NULL, flags=NULL,
                    pressureType="sea",
-                   missingValue=NA, quality=NULL,
+                   missingValue=NULL, quality=NULL,
                    filename="", type="", model="", serialNumber="",
                    ship="", scientist="", institute="", address="", cruise="", station="",
                    date=NULL, startTime=NULL, recovery=NULL,
@@ -1039,8 +1039,12 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 }
             }
         }
-        if (!missing(missingValue)) {
-            data[data==missingValue] <- NA
+        ## Handle missing value code (changes on July 24, 2016 fix issue 1028)
+        if (!is.null(missingValue)) {
+            for (dname in names(data)) {
+                bad <- data[[dname]] == missingValue
+                data[[dname]][bad] <- NA
+            }
         }
         ##20150712 if (is.na(waterDepth)) {
         ##20150712     waterDepth <- max(abs(data$pressure), na.rm=TRUE)
@@ -1070,6 +1074,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@metadata$model <- model
         res@metadata$serialNumber <- serialNumber
         res@metadata$src <- src
+        res@metadata$deploymentType <- deploymentType
         ## If lon and lat are vectors, place in data, with averages in metadata.
         if (length(latitude) == 1) {
             res@metadata$longitude <- longitude[1]
@@ -1500,6 +1505,12 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' simple first difference, set \code{smoother} to \code{NULL}.
 #' 
 #' @param direction String indicating the travel direction to be selected.
+#'
+#' @param breaks optional logical vector indicating the indices of data
+#' at the edges of profiles. If this is given, then the preceding arguments
+#' \code{cutoff} through \code{direction} are ignored. This argument
+#' can be handy when the other scheme fails, because it gives complete
+#' control to the user (example 3).
 #' 
 #' @param arr.ind Logical indicating whether the array indices should be returned;
 #' the alternative is to return a vector of ctd objects.
@@ -1517,6 +1528,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' @examples
 #' \dontrun{
 #' library(oce)
+#' ## Example 1.
 #' d <- read.csv("towyow.csv", header=TRUE)
 #' towyow <- as.ctd(d$salinity, d$temperature, d$pressure)
 #' 
@@ -1528,6 +1540,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #'   plotTS(cast, type='o')
 #' }
 #'
+#' ## Example 2.
 #' ## Using a moving average to smooth pressure, instead of the default
 #' ## smooth.spline() method. This avoids a tendency of smooth.spline()
 #' ## to smooth out the profiles in a tow-yo with many (dozens or more) cycles.
@@ -1537,6 +1550,10 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #'    stats::filter(x, f, ...)
 #' }
 #' casts <- ctdFindProfiles(towyo, smoother=movingAverage)
+#'
+#' ## Example 3: glider data, with profiles separated by >10dbar jump.
+#' breaks <- which(diff(ctd[["pressure"]]) > 10))
+#' profiles <- ctdFindProfiles(ctd, breaks=breaks)
 #' }
 #' 
 #' @author Dan Kelley and Clark Richards
@@ -1545,6 +1562,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(range(x[["pressure"]])),
                             smoother=smooth.spline, 
                             direction=c("descending", "ascending"),
+                            breaks,
                             arr.ind=FALSE,
                             debug=getOption("oceDebug"), ...)
 {
@@ -1552,70 +1570,74 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
              ", minLength=", minLength,
              ", minHeight=", minHeight,
              ", direction=\"", direction, "\"",
+             ", breaks=", if(missing(breaks)) "unspecified" else "specified",
              ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
-    direction <- match.arg(direction)
-    pressure <- fillGap(x[["pressure"]], rule=2)
-    if (!is.null(smoother))
-        ps  <- smoother(pressure, ...)
-    if (is.list(ps) && "y" %in% names(ps))
-        ps <- ps$y
-    ps <- as.numeric(ps) # discard return class of e.g. smooth()
-    nps <- length(ps)
-    dp <- diff(ps)
-    dp <- c(dp[1], dp)
-    dp <- fillGap(dp, rule=2)
-    if (direction == "descending") {
-        look <- dp > cutoff * median(dp[dp>0], na.rm=TRUE)
-    } else if (direction == "ascending") {
-        look <- dp < cutoff * median(dp[dp<0], na.rm=TRUE)
-    } else {
-        stop("direction must be either \"ascending\" or \"descending\"") # cannot reach here
-    }
-    if (debug>100) {                   # HIDDEN feature, may be removed at any time
-        par(mar=c(3,3,1,1),mgp=c(2,0.7,0))
-        plot(pressure,type='l')
-        lines(ps,col=3, lty='dotted')
-        mtext(direction, side=3, adj=1, line=0)
-    }
+    if (missing(breaks)) { # handle case where 'breaks' was not given
+        direction <- match.arg(direction)
+        pressure <- fillGap(x[["pressure"]], rule=2)
+        if (!is.null(smoother))
+            ps  <- smoother(pressure, ...)
+        if (is.list(ps) && "y" %in% names(ps))
+            ps <- ps$y
+        ps <- as.numeric(ps) # discard return class of e.g. smooth()
+        nps <- length(ps)
+        dp <- diff(ps)
+        dp <- c(dp[1], dp)
+        dp <- fillGap(dp, rule=2)
+        if (direction == "descending") {
+            look <- dp > cutoff * median(dp[dp>0], na.rm=TRUE)
+        } else if (direction == "ascending") {
+            look <- dp < cutoff * median(dp[dp<0], na.rm=TRUE)
+        } else {
+            stop("direction must be either \"ascending\" or \"descending\"") # cannot reach here
+        }
+        ### if (debug>100) {                   # HIDDEN feature, may be removed at any time
+        ###     par(mar=c(3,3,1,1),mgp=c(2,0.7,0))
+        ###     plot(pressure,type='l')
+        ###     lines(ps,col=3, lty='dotted')
+        ###     mtext(direction, side=3, adj=1, line=0)
+        ### }
 
-    start <- which(diff(look) == 1)
-    ## the first data are often a downcast, after all!
-    if (look[1] && length(start) > 0 && start[1] != 1)
-        start <- c(1, start)
-    if (0 == length(start))
-        start <- 1
-    end <- which(diff(look) == -1)
-    if (look[nps] && length(end) > 0 && end[length(end)] != 1)
-        end <- c(end, nps)
+        start <- which(diff(look) == 1)
+        ## the first data are often a downcast, after all!
+        if (look[1] && length(start) > 0 && start[1] != 1)
+            start <- c(1, start)
+        if (0 == length(start))
+            start <- 1
+        end <- which(diff(look) == -1)
+        if (look[nps] && length(end) > 0 && end[length(end)] != 1)
+            end <- c(end, nps)
 
-    if (0 == length(end))
-        end <- length(pressure)
-    if (start[1] > end[1])
-        start <- start[-1]
-    oceDebug(debug, "start:", head(start), "... (before trimming)\n")
-    oceDebug(debug, "end:", head(end), "... (before trimming)\n")
-    start <- subset(start, start<max(end))
-    end <- subset(end, end>min(start))
-    oceDebug(debug, "start:", head(start), "... (after trimming)\n")
-    oceDebug(debug, "end:", head(end), "... (after trimming)\n")
-    if (length(end) > length(start))
-        end <- end[1:length(start)]
-    keep <- abs(end - start) >= minLength
-    oceDebug(debug, "start:", head(start[keep]), "... (using minLength)\n")
-    oceDebug(debug, "end:", head(end[keep]), "... (using minLength)\n")
-    psfilled <- fillGap(ps, rule=2)
-    keep <- keep & (abs(psfilled[end] - psfilled[start]) >= minHeight)
-    oceDebug(debug, "heights:", head(psfilled[end]-psfilled[start]), "...; compare with minHeight=", head(minHeight), "...\n")
-    oceDebug(debug, "start:", head(start[keep]), "... (using minHeight)\n")
-    oceDebug(debug, "end:", head(end[keep]), "... (using minHeight)\n")
-    indices <- data.frame(start=start[keep], end=end[keep])
-
-    if (debug>100) {                   # HIDDEN feature, may be removed at any time
-        abline(v=start, col='green', lwd=2)
-        abline(v=end, col='red', lwd=2) 
+        if (0 == length(end))
+            end <- length(pressure)
+        if (start[1] > end[1])
+            start <- start[-1]
+        oceDebug(debug, "start:", head(start), "... (before trimming)\n")
+        oceDebug(debug, "end:", head(end), "... (before trimming)\n")
+        start <- subset(start, start<max(end))
+        end <- subset(end, end>min(start))
+        oceDebug(debug, "start:", head(start), "... (after trimming)\n")
+        oceDebug(debug, "end:", head(end), "... (after trimming)\n")
+        if (length(end) > length(start))
+            end <- end[1:length(start)]
+        keep <- abs(end - start) >= minLength
+        oceDebug(debug, "start:", head(start[keep]), "... (using minLength)\n")
+        oceDebug(debug, "end:", head(end[keep]), "... (using minLength)\n")
+        psfilled <- fillGap(ps, rule=2)
+        keep <- keep & (abs(psfilled[end] - psfilled[start]) >= minHeight)
+        oceDebug(debug, "heights:", head(psfilled[end]-psfilled[start]), "...; compare with minHeight=", head(minHeight), "...\n")
+        oceDebug(debug, "start:", head(start[keep]), "... (using minHeight)\n")
+        oceDebug(debug, "end:", head(end[keep]), "... (using minHeight)\n")
+        indices <- data.frame(start=start[keep], end=end[keep])
+    } else { # handle case where 'breaks' was given
+        indices <- data.frame(start=c(1, breaks+1), end=c(breaks-1, length(x[['pressure']])))
     }
+    ## if (debug>100) {                   # HIDDEN feature, may be removed at any time
+    ##     abline(v=start, col='green', lwd=2)
+    ##     abline(v=end, col='red', lwd=2) 
+    ## }
 
     if (is.logical(arr.ind) && arr.ind) {
         oceDebug(debug, "} # ctdFindProfiles()\n", sep="", unindent=1)
@@ -1625,9 +1647,9 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
         casts <- vector("list", ncasts)
         npts <- length(x@data$pressure)
         for (i in 1:ncasts) {
-            oceDebug(debug, "profile #", i, "of", ncasts, "\n")
-            oceDebug(debug, "indices$start: ", paste(head(indices$start), collapse=" "))
-            oceDebug(debug, "indices$end: ", paste(head(indices$end), collapse=" "))
+            oceDebug(debug, "profile", i, "of", ncasts, "\n")
+            ## oceDebug(debug, "indices$start: ", paste(head(indices$start), collapse=" "))
+            ## oceDebug(debug, "indices$end: ", paste(head(indices$end), collapse=" "))
             ## extend indices to catch turnaround spots
             e <- 1
             iStart <- max(1L, indices$start[i] - e)
@@ -2898,6 +2920,9 @@ setMethod(f="plot",
                                     side=3, adj=0, cex=0.8*par("cex"), line=1.125)
                           if (!is.null(x@metadata$startTime) && 4 < nchar(x@metadata$startTime, "bytes"))
                               mtext(format(x@metadata$startTime, "%Y-%m-%d %H:%S"),
+                                    side=3, adj=1, cex=0.8*par("cex"), line=1.125)
+                          else if (!is.null(x@data$time))
+                              mtext(format(x@data$time[1], "%Y-%m-%d %H:%S"),
                                     side=3, adj=1, cex=0.8*par("cex"), line=1.125)
                       }
                       oceDebug(debug, "} # plot(ctd, ...) of type \"map\"\n", unindent=1)

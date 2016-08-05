@@ -139,7 +139,15 @@ setMethod(f="summary",
                       rownames(threes) <- paste("    ", dataLabel(names, units))
                       colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
                       cat("* Statistics of data\n```\n")
-                      OriginalName <- object@metadata$dataNamesOriginal
+                      if ("dataNamesOriginal" %in% names(object@metadata)) {
+                          if (is.list(object@metadata$dataNamesOriginal)) {
+                              OriginalName <- unlist(lapply(names, function(n) if (n %in% names(object@metadata$dataNamesOriginal)) object@metadata$dataNamesOriginal[[n]] else "-"))
+                          } else {
+                              OriginalName <- object@metadata$dataNamesOriginal
+                          }
+                      } else {
+                          OriginalName <- NULL
+                      }
                       ##print(OriginalName)
                       ## I'm not sure the following will ever happen, if we always remember
                       ## to use ctdAddColumn(), but I don't want names getting recycled, so

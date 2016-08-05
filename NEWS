@@ -1,3 +1,11 @@
+0.9-20
+- addColumn() marked as deprecated
+- read.cm.s4() reads all data in file
+- as.cm() added
+- read.odf() handles Aanderaa current meter data
+- mapPlot() and mapAxis() get cex.axis parameter
+- subset(amsr) added; various other amsr improvements
+
 0.9-19
 - deprecate 'adorn' in plot functions
 - make read.ctd() obey missingValue (renamed)
