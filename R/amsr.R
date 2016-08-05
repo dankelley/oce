@@ -327,9 +327,25 @@ setMethod(f="plot",
 #'
 #' Read a compressed amsr file, generating an object that inherits from
 #' \code{\link{amsr-class}}.  Note that only compressed files are read in
-#' this version
+#' this version.
 #'
-#' @param file Sting indicating the name of a compressed file.
+#' @section File sources:
+#' AMSR files are provided at the FTP site
+#' \code{ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/} and login as "guest",
+#' enter a year-based directory (e.g. \code{y2016} for the year 2016),
+#' then enter a month-based directory (e.g. \code{m08} for August, the 8th
+#' month), and then download a file for the present date, e.g.
+#' \code{f34_20160803v7.2.gz} for August 3rd, 2016. Do not uncompress
+#' this file, since \code{read.amsr} can only read uncompressed files.
+#' If \code{read.amsr} reports an error on the number of chunks, try
+#' downloading a similarly-named file (e.g. in the present example,
+#' \code{read.amsr("f34_20160803v7.2_d3d.gz")} will report an error
+#' about inability to read a 6-chunk file, but 
+#' \code{read.amsr("f34_20160803v7.2.gz")} will work properly.
+#'
+#' @param file String indicating the name of a compressed file. See
+#' \dQuote{File sources}.
+#'
 #' @param debug A debugging flag, integer.
 #'
 #' @concept satellite
@@ -419,9 +435,9 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
         }
         res@metadata$longitude <- t$longitude
     } else if (nchunks == 6) {
-        stop("Cannot (yet) read 6-chunk data. Contact developers if you need this.")
+        stop("Cannot (yet) read 6-chunk data. Please contact the developers if you need this file (and be sure to send the file to them).")
     } else {
-        stop("Can only handle 14-chunk data.")
+        stop("Can only handle 14-chunk data; this file has ", nchunks, " chunks. Please contact the developers if you need to read this file (and be sure to send the file to them).")
     }
     res@metadata$spacecraft <- "amsr"
     res@processingLog <- processingLogAppend(res@processingLog,
