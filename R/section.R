@@ -2461,7 +2461,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
 #' 
 #' @description
 #' Create a section based on columnar data, or a set of \code{\link{oce-class}}
-#' objects that can be coerced to CTD form with \code{\link{as.ctd}}.
+#' objects that can be coerced to a section.
 #' 
 #' If the first argument is a numerical vector, then it is taken to be the
 #' salinity, and \code{\link{factor}} is applied to \code{station} to break the
@@ -2472,11 +2472,11 @@ sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption
 #' mode is preferred, because it permits the storage of much more data and metadata
 #' in the CTD object.
 #' 
-#' If the first argument is a list containing oce objects that can be coerced into
-#' CTD form with \code{\link{as.ctd}} -- or a character vector containing the names
-#' of such objects that are defined in the calling environment -- then those
-#' objects are combined to form the station, and all other arguments are ignored.
-#' This is the best way to call \code{as.section}.
+#' If the first argument is a list containing oce objects, then those
+#' objects are taken as profiles of something.  The only requirement for this
+#' to work are that every element of the list must contain both \code{longitude}
+#' and latitude in its \code{metadata} slot and that every element also contains
+#' \code{pressure} in its \code{data} slot.
 #' 
 #' If the first argument is a \code{\link{argo-class}} object, then the profiles it
 #' contains are turned into \code{\link{ctd-class}} object, and these are assembled
@@ -2586,12 +2586,19 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
             }
         }
     } else if (inherits(salinity, "list")) {
-        ##if (!inherits(salinity[[1]], "ctd")) stop("list must contain ctd objects")
-        nstation <- length(salinity)
-        ctds <- vector("list", nstation)
-        for (i in 1:nstation) {
-            ##message("CTD-LIST CASE. i: ", i, ", name:", salinity[[i]][["station"]])
-            ctds[[i]] <- as.ctd(salinity[[i]])
+        thelist <- salinity            # prevent accidental overwriting
+        if (!length(thelist))
+            stop("no data in this list")
+        if (inherits(thelist[[1]], "oce")) {
+            nstation <- length(salinity)
+            ctds <- vector("list", nstation)
+            for (i in 1:nstation) {
+                if (!("pressure" %in% names(thelist[[i]]@data)))
+                    stop("cannot create a section from this list because element number ", i, " lacks pressure")
+                ctds[[i]] <- thelist[[i]]
+            }
+        } else {
+            stop("first argument must be a salinity vector, or a list of oce objects")
         }
     } else if (is.character(salinity) && length(salinity) > 1) {
         ## vector of names of CTD objects
