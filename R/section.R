@@ -2446,7 +2446,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
         if (missing(xg))
             xg <- if (missing(xgl)) x else pretty(x, xgl)
         if (missing(yg))
-            yg <- if (missing(ygl)) y else pretty(stn1pressure, ygl)
+            yg <- if (missing(ygl)) p else pretty(stn1pressure, ygl)
         ## "stations" will go to new places
         res@data$station <- vector("list", length(xg))
         longitudeOriginal <- section[["longitude", "byStation"]]
@@ -2455,8 +2455,9 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
         latitudeNew <- approx(x, latitudeOriginal, xg, rule=2)$y
         for (istn in seq_along(xg)) {
             message("istn=", istn, " whilst making up long and lat")
-            res@data$station@metadata$longitude <- longitudeNew[istn]
-            res@data$station@metadata$latitude <- latitudeNew[istn]
+            res@data$station[[istn]] <- new('oce')
+            res@data$station[[istn]]@metadata$longitude <- longitudeNew[istn]
+            res@data$station[[istn]]@metadata$latitude <- latitudeNew[istn]
         }
         for (var in vars) {
             message("var='", var, "'")
