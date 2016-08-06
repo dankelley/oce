@@ -207,11 +207,8 @@ setMethod(f="summary",
                       }
                       stn.sum[i, 5] <- geodDist(lon1, lat1, stn@metadata$longitude, stn@metadata$latitude)
                   }
-                  message("111")
                   colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
-                  message("222")
                   rownames(stn.sum) <- object@metadata$stationId
-                  message("333")
                   print(stn.sum, indent="    ")
               } else {
                   cat("* No stations\n")
