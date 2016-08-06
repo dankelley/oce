@@ -291,21 +291,13 @@ setMethod(f="subset",
 #' @param y String indicating the name of the band to plot; if not provided,
 #' \code{SST} is used; see \code{\link{amsr-class}} for a list of bands.
 #' @param asp Optional aspect ratio for plot.
-## #' @param missingCode Vector of codes for bad data. These are detected
-## #' in the raw form of the data (see \code{\link{[[,amsr-method}}). The
-## #' possible values (as defined by the data provider) are:
-## #' \code{255} if the measurement is over land,
-## #' \code{254} if there are no observations,
-## #' \code{253} if the observations are bad,
-## #' \code{252} if sea ice prevents measurement,
-## #' and
-## #' \code{251} if or rain prevents measurement. Each value of
-## #' \code{missingValueCode} is matched with a colour defined in
-## #' \code{missingColor}.
 #'
 #' @param missingColor List of colours for problem cases. The names of the
 #' elements in this list must be as in the default, but the colours may
-#' be changed to any desired values.
+#' be changed to any desired values. These default values work reasonably
+#' well for SST images, which are the default image, and which employ a
+#' blue-white-red blend of colours, no mixture of which matches the
+#' default values in \code{missingColor}.
 #'
 #' @param debug A debugging flag, integer.
 #'
@@ -331,7 +323,7 @@ setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
           definition=function(x, y, asp,
-                              missingColor=list(land='gray',none='gray',bad='yellow',ice='darkblue',rain='green'),
+                              missingColor=list(land='papayawhip',none='gray',bad='orange',ice='plum',rain='mediumseagreen'),
                               debug=getOption("oceDebug"), ...)
           {
               oceDebug(debug, "plot.amsr(..., y=c(",

@@ -5,8 +5,8 @@
 \alias{plot,amsr-method}
 \title{Plot an amsr Object}
 \usage{
-\S4method{plot}{amsr}(x, y, asp, missingColor = list(land = "gray", none =
-  "gray", bad = "yellow", ice = "darkblue", rain = "green"),
+\S4method{plot}{amsr}(x, y, asp, missingColor = list(land = "papayawhip", none
+  = "gray", bad = "orange", ice = "plum", rain = "mediumseagreen"),
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -19,7 +19,10 @@
 
 \item{missingColor}{List of colours for problem cases. The names of the
 elements in this list must be as in the default, but the colours may
-be changed to any desired values.}
+be changed to any desired values. These default values work reasonably
+well for SST images, which are the default image, and which employ a
+blue-white-red blend of colours, no mixture of which matches the
+default values in \code{missingColor}.}
 
 \item{debug}{A debugging flag, integer.}
 
