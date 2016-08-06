@@ -18,13 +18,9 @@
 }
 \value{
 In all cases, the returned value is a matrix with 
-with \code{NA} values if the 
-satellite data are over land (indicated with a binary
-value of \code{0x255} in the raw data),
-have no observations (indicated with \code{0xfe}),
-are bad observations (indicated with \code{0xfd}),
-indicate sea ice (indicated with \code{0xfc}),
-are are faulty owing to high rain (coded to \code{0xfb}).
+with \code{NA} values inserted at locations where
+the raw data equal \code{as.raw(251:255)}, as explained
+in \dQuote{Details}.
 }
 \description{
 Extract something from the \code{metadata} or \code{data} slot of an
@@ -55,18 +51,31 @@ are permitted for \code{metadata}, and \code{j} is ignored for
 Data within the \code{data} slot may be found directly, e.g.
 \code{j="SSTDay"} will yield sea-surface temperature in the daytime
 satellite, and \code{j="SSTNight"} is used to access the nighttime data. In
-addition, \code{j="SST"} yields an average of the night and day values (
-using just one of these, if the other is missing). This scheme works for
+addition, \code{j="SST"} yields an average of the night and day values
+(using just one of these, if the other is missing). This scheme works for
 all the data stored in \code{amsr} objects, namely:
 \code{time}, \code{SST}, \code{LFwind}, \code{MFwind},
 \code{vapor}, \code{cloud} and \code{rain}.  In each case, the default
 is to calculate values in scientific units, unless \code{j="raw"}, in
-which case the raw data are returned. The \code{"raw"} mode can be useful
+which case the raw data are returned.
+
+The \code{"raw"} mode can be useful
 in decoding the various types of missing value that are used by \code{amsr}
-data, namely \code{as.raw(0xff)} for land, \code{as.raw(0xfe)} for
-a missing observation, \code{as.raw(0xfd)} for a bad observation,
-\code{as.raw(0xfc)} for sea ice, or \code{as.raw(0xfb)} fo missing SST
-due to rain or missing water vapour due to heavy rain.
+data, namely \code{as.raw(255)} for land, \code{as.raw(254)} for
+a missing observation, \code{as.raw(253)} for a bad observation,
+\code{as.raw(252)} for sea ice, or \code{as.raw(251)} for missing SST
+due to rain or missing water vapour due to heavy rain. Note that
+something special has to be done for e.g. \code{d[["SST", "raw"]]}
+because the idea is that this syntax (as opposed to specifying
+\code{"SSTDay"}) is a request to try to find good
+data by looking at both the Day and Night measurements. The scheme
+employed is quite detailed. Denote by "A" the raw value of the desired field
+in the daytime pass, and by "B" the corresponding value in the 
+nighttime pass. If either A or B is 255, the code for land, then the
+result will be 255. If A is 254 (i.e. there is no observation),
+then B is returned, and the reverse holds also. Similarly, if either
+A or B equals 253 (bad observation), then the other is returned.
+The same is done for code 252 (ice) and code 251 (rain).
 }
 \section{Details of the general method}{
 

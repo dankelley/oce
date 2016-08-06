@@ -673,6 +673,12 @@ drawPalette <- function(zlim, zlab="",
 #' @param  main Title for plot.
 #' @param  axisPalette Optional replacement function for \code{axis()}, passed to
 #'         \code{\link{drawPalette}}.
+#'
+#' @param add Logical value indicating whether to add to an existing plot.
+#' The default value, \code{FALSE} indicates that a new plot is to be created.
+#' Several other arguments are ignored if \code{add=TRUE}, e.g. palette
+#' specification. 
+#'
 #' @param  debug A flag that turns on debugging.  Set to 1 to get a
 #'         moderate amount of debugging information, or to 2 to get more.
 #' @param  \dots Optional arguments passed to plotting functions.
@@ -758,6 +764,7 @@ imagep <- function(x, y, z,
                    axes=TRUE,
                    main="",
                    axisPalette,
+                   add=FALSE,
                    debug=getOption("oceDebug"),
                    ...)
 {
@@ -1162,12 +1169,12 @@ imagep <- function(x, y, z,
             oceDebug(debug, "not doing filled contours [2]\n")
             if (zlimHistogram) {
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col2,
-                      xlim=xlim, ylim=ylim, zlim=c(0,1), asp=asp, ...)
+                      xlim=xlim, ylim=ylim, zlim=c(0,1), asp=asp, add=add, ...)
             } else {
                 ## issue 489: use breaks/col instead of breaks2/col2
                 ##image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks2, col=col2,
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, asp=asp, ...)
+                  xlim=xlim, ylim=ylim, zlim=zlim, asp=asp, add=add, ...)
             }
         }
         if (axes) {
@@ -1233,5 +1240,5 @@ imagep <- function(x, y, z,
              paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
              paste(format(par('mar'), digits=2), collapse=","), ")\n", sep='')
     oceDebug(debug, "} # imagep()\n", unindent=1)
-    invisible(list(xat=xat, yat=yat))
+    invisible(list(xat=xat, yat=yat, decimate=decimate))
 }

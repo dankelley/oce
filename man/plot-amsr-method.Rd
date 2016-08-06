@@ -5,7 +5,9 @@
 \alias{plot,amsr-method}
 \title{Plot an amsr Object}
 \usage{
-\S4method{plot}{amsr}(x, y, asp, debug = getOption("oceDebug"), ...)
+\S4method{plot}{amsr}(x, y, asp, missingColor = list(land = "gray", none =
+  "gray", bad = "yellow", ice = "darkblue", rain = "green"),
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{An object inherting from \code{\link{amsr-class}}.}
@@ -14,6 +16,10 @@
 \code{SST} is used; see \code{\link{amsr-class}} for a list of bands.}
 
 \item{asp}{Optional aspect ratio for plot.}
+
+\item{missingColor}{List of colours for problem cases. The names of the
+elements in this list must be as in the default, but the colours may
+be changed to any desired values.}
 
 \item{debug}{A debugging flag, integer.}
 

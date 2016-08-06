@@ -11,7 +11,7 @@ imagep(x, y, z, xlim, ylim, zlim, zclip = FALSE, flipy = FALSE, xlab = "",
   tformat, drawTimeRange = getOption("oceDrawTimeRange"),
   filledContour = FALSE, missingColor = NULL, mgp = getOption("oceMgp"),
   mar, mai.palette, xaxs = "i", yaxs = "i", asp = NA, cex = par("cex"),
-  adorn = NULL, axes = TRUE, main = "", axisPalette,
+  adorn = NULL, axes = TRUE, main = "", axisPalette, add = FALSE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -187,6 +187,11 @@ defunct \code{oce} features.)}
 
 \item{axisPalette}{Optional replacement function for \code{axis()}, passed to
 \code{\link{drawPalette}}.}
+
+\item{add}{Logical value indicating whether to add to an existing plot.
+The default value, \code{FALSE} indicates that a new plot is to be created.
+Several other arguments are ignored if \code{add=TRUE}, e.g. palette
+specification.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a
 moderate amount of debugging information, or to 2 to get more.}
