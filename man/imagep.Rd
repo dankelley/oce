@@ -134,7 +134,8 @@ hours if the range is less than a day, etc.}
 contours to plot the image.}
 
 \item{missingColor}{A colour to be used to indicate missing data, or
-\code{NULL} to avoid making the indication.}
+\code{NULL} for transparent (to see this, try setting
+\code{par("bg")<-"red"}).}
 
 \item{mgp}{A 3-element numerical vector to use for \code{par(mgp)}, and
 also for \code{par(mar)}, computed from this.  The default is

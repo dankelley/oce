@@ -645,7 +645,8 @@ drawPalette <- function(zlim, zlab="",
 #' @param  filledContour Boolean value indicating whether to use filled
 #'         contours to plot the image.
 #' @param  missingColor A colour to be used to indicate missing data, or
-#'         \code{NULL} to avoid making the indication.
+#'         \code{NULL} for transparent (to see this, try setting
+#'         \code{par("bg")<-"red"}).
 #' @param  mgp A 3-element numerical vector to use for \code{par(mgp)}, and
 #'         also for \code{par(mar)}, computed from this.  The default is
 #'         tighter than the R default, in order to use more space for the
