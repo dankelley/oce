@@ -207,8 +207,11 @@ setMethod(f="summary",
                       }
                       stn.sum[i, 5] <- geodDist(lon1, lat1, stn@metadata$longitude, stn@metadata$latitude)
                   }
+                  message("111")
                   colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
+                  message("222")
                   rownames(stn.sum) <- object@metadata$stationId
+                  message("333")
                   print(stn.sum, indent="    ")
               } else {
                   cat("* No stations\n")
@@ -2461,13 +2464,13 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
         longitudeNew <- approx(x, longitudeOriginal, xg, rule=2)$y
         latitudeNew <- approx(x, latitudeOriginal, xg, rule=2)$y
         for (istn in seq_along(xg)) {
-            message("istn=", istn, " whilst making up long and lat")
+            ## message("istn=", istn, " whilst making up long and lat")
             res@data$station[[istn]] <- new('oce')
             res@data$station[[istn]]@metadata$longitude <- longitudeNew[istn]
             res@data$station[[istn]]@metadata$latitude <- latitudeNew[istn]
         }
         for (var in vars) {
-            message("var='", var, "'")
+            ##message("var='", var, "'")
             if (var == "scan" || var == "time" || var == "pressure"
                 || var == "depth" || var == "flag" || var == "quality")
                 next
@@ -2487,12 +2490,15 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
                                 xg=xg, yg=yg, xgl=xgl, ygl=ygl, xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
                                 debug=debug-1)
             for (istn in seq_along(xg)) {
-                message("istn=", istn)
                 res@data$station[[istn]]@data[[var]] <- smu$zg[istn,]
-                na <- is.na(section@data$station[[istn]][[var]])
-                res@data$station[[istn]]@data[[var]][na] <- NA
-                message(" ... ok")
+                res@data$station[[istn]]@data[["pressure"]] <- yg
+                ## na <- is.na(section@data$station[[istn]][[var]])
+                ## message("A/3")
+                ## res@data$station[[istn]]@data[[var]][na] <- NA
             }
+            res@metadata$stationId <- paste("interpolated_", seq_along(xg), sep="")
+            res@metadata$longitude <- longitudeNew
+            res@metadata$latitude <- latitudeNew
         }
     } else {
         stop("unknown method \"", method, "\"") # cannot reach here
