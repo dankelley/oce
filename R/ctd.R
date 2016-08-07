@@ -3856,11 +3856,11 @@ plotProfile <- function (x,
         ## FIXME: do next with resizable label; also for the N2
         ##br <- if (getOption("oceUnitBracket") == '[') c("[", "]") else c("(", ")")
         if (getOption("oceUnitBracket") == '[') {
-            label <- if (eos == "unesco") expression(paste(sigma[theta], " [ ", kg/m^3, " ]")) else
-                expression(paste(sigma[1], " [ ", kg/m^3, " ]"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " [", kg/m^3, "]")) else
+                expression(paste(sigma[1], " [", kg/m^3, "]"))
         } else {
-            label <- if (eos == "unesco") expression(paste(sigma[theta], " ( ", kg/m^3, " )")) else
-                expression(paste(sigma[1], " ( ", kg/m^3, " )"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " (", kg/m^3, ")")) else
+                expression(paste(sigma[1], " (", kg/m^3, ")"))
         }
         mtext(label, side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
         axis(2)
@@ -3873,15 +3873,15 @@ plotProfile <- function (x,
         ## lines(time, y, lwd=lwd, col=col.time)
         if (know.time.unit) {
             if (getOption("oceUnitBracket") == '[') {
-                mtext(expression(paste(Delta*t, " [ s ]")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
+                mtext(expression(paste(Delta*t, " [s]")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
             } else {
-                mtext(expression(paste(Delta*t, " ( s )")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
+                mtext(expression(paste(Delta*t, " (s)")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
             }
         } else {
             if (getOption("oceUnitBracket") == '[') {
-                mtext(expression(paste(Delta*t, " [ unknown unit ]")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
+                mtext(expression(paste(Delta*t, " [unknown unit]")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
             } else {
-                mtext(expression(paste(Delta*t, " ( unknown unit )")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
+                mtext(expression(paste(Delta*t, " (unknown unit)")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
             }
         }
         box()
@@ -3901,9 +3901,9 @@ plotProfile <- function (x,
              type=type, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col=col.rho, col.axis=col.rho, col.lab=col.rho)
         if (getOption("oceUnitBracket") == '[') {
-            mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
+            mtext(expression(paste(sigma[theta], " [", kg/m^3, "] ")), side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
         } else {
-            mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
+            mtext(expression(paste(sigma[theta], " (", kg/m^3, ") ")), side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
         }
         axis(2)
         box()
@@ -3922,18 +3922,18 @@ plotProfile <- function (x,
         ## lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
         if (getOption("oceUnitBracket") == '[') {
             if (know.time.unit) {
-                mtext(expression(dp/dt * " [ dbar / s ]"),
+                mtext(expression(dp/dt * " [dbar/s]"),
                       side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
             } else {
-                mtext(expression(dp/dt * " [ dbar / (time unit) ]"),
+                mtext(expression(dp/dt * " [dbar/(time unit)]"),
                       side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
             }
         } else {
             if (know.time.unit) {
-                mtext(expression(dp/dt * " ( dbar / s )"),
+                mtext(expression(dp/dt * " (dbar/s)"),
                       side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
             } else {
-                mtext(expression(dp/dt * " ( dbar / (time unit) )"),
+                mtext(expression(dp/dt * " (dbar/(time unit))"),
                       side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
             }
         }
@@ -4252,9 +4252,9 @@ plotProfile <- function (x,
             }
             if (is.null(xlab)) {
                 if (getOption("oceUnitBracket") == '[') {
-                    mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side=3, line=axis.name.loc, cex=par("cex"))
+                    mtext(expression(paste(sigma[theta], " [", kg/m^3, "]")), side=3, line=axis.name.loc, cex=par("cex"))
                 } else {
-                    mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side=3, line=axis.name.loc, cex=par("cex"))
+                    mtext(expression(paste(sigma[theta], " (", kg/m^3, ")")), side=3, line=axis.name.loc, cex=par("cex"))
                 }
             } else {
                 mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
@@ -4285,9 +4285,9 @@ plotProfile <- function (x,
             }
             if (is.null(xlab)) {
                 if (getOption("oceUnitBracket") == '[') {
-                    mtext(expression(paste(rho, " [ ", kg/m^3, " ]")), side=3, line=axis.name.loc, cex=par("cex"))
+                    mtext(expression(paste(rho, " [", kg/m^3, "]")), side=3, line=axis.name.loc, cex=par("cex"))
                 } else {
-                    mtext(expression(paste(rho, " ( ", kg/m^3, " )")), side=3, line=axis.name.loc, cex=par("cex"))
+                    mtext(expression(paste(rho, " (", kg/m^3, ")")), side=3, line=axis.name.loc, cex=par("cex"))
                 }
             } else {
                 mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
@@ -4364,9 +4364,9 @@ plotProfile <- function (x,
             lines(N2, y, col=col.N2, lwd=lwd, lty=lty)
         }
         if (getOption("oceUnitBracket") == '[') {
-            mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side=1, line=axis.name.loc, col=col.N2, cex=par("cex"))
+            mtext(expression(paste(N^2, " [", s^-2, "]")), side=1, line=axis.name.loc, col=col.N2, cex=par("cex"))
         } else {
-            mtext(expression(paste(N^2, " ( ", s^-2, " )")), side=1, line=axis.name.loc, col=col.N2, cex=par("cex"))
+            mtext(expression(paste(N^2, " (", s^-2, ")")), side=1, line=axis.name.loc, col=col.N2, cex=par("cex"))
         }
         box()
         if (grid) {
@@ -4383,9 +4383,9 @@ plotProfile <- function (x,
                  xlim=N2lim, ylim=ylim, cex=cex, pch=pch,
                  type="n", xlab="", ylab=yname, axes=FALSE)
             if (getOption("oceUnitBracket") == '[') {
-                mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side=3, line=axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
+                mtext(expression(paste(N^2, " [", s^-2, "]")), side=3, line=axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
             } else {
-                mtext(expression(paste(N^2, " ( ", s^-2, " )")), side=3, line=axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
+                mtext(expression(paste(N^2, " (", s^-2, ")")), side=3, line=axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
             }
             axis(2)
             axis(3)
