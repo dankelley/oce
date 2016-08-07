@@ -11,7 +11,6 @@
 #' @docType class
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ctd} data
 #' @family things related to \code{gps} data
 setClass("gps", contains="oce")
 
