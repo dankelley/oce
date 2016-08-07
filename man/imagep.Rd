@@ -195,7 +195,8 @@ its palette or its axes) to an existing plot. Clearly, then, arguments
 such \code{xlim} are to be ignored. Indeed, if \code{add=TRUE}, the only
 arguments examined are \code{x} (which must be a vector; the mode of providing
 a matrix or \code{oce} object does not work), \code{y}, \code{z},
-\code{decimate}, \code{breaks} and \code{col}.}
+\code{decimate}, plus either \code{colormap} or
+both \code{breaks} and \code{col}.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a
 moderate amount of debugging information, or to 2 to get more.}

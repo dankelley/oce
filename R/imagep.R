@@ -681,7 +681,8 @@ drawPalette <- function(zlim, zlab="",
 #' such \code{xlim} are to be ignored. Indeed, if \code{add=TRUE}, the only
 #' arguments examined are \code{x} (which must be a vector; the mode of providing
 #' a matrix or \code{oce} object does not work), \code{y}, \code{z},
-#' \code{decimate}, \code{breaks} and \code{col}.
+#' \code{decimate}, plus either \code{colormap} or
+#' both \code{breaks} and \code{col}.
 #'
 #' @param  debug A flag that turns on debugging.  Set to 1 to get a
 #'         moderate amount of debugging information, or to 2 to get more.
@@ -796,8 +797,13 @@ imagep <- function(x, y, z,
             if (missing(x)) stop("must give 'x'")
             if (missing(y)) stop("must give 'y'")
             if (missing(z)) stop("must give 'z'")
-            if (missing(breaks)) stop("must give 'breaks'")
-            if (missing(col)) stop("must give 'col'")
+            if (missing(colormap)) {
+                if (missing(breaks)) stop("must give 'breaks'")
+                if (missing(col)) stop("must give 'col'")
+            } else {
+                breaks <- colormap$breaks
+                col <- colormap$col
+            }
             oceDebug(debug, "decimate: ", paste(decimate, collapse=" "), " (before calculation)\n")
             if (is.logical(decimate)) {
                 decimate <- as.integer(dim(z) / 400)
