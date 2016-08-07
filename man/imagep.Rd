@@ -190,8 +190,12 @@ defunct \code{oce} features.)}
 
 \item{add}{Logical value indicating whether to add to an existing plot.
 The default value, \code{FALSE} indicates that a new plot is to be created.
-Several other arguments are ignored if \code{add=TRUE}, e.g. palette
-specification.}
+However, if \code{add} is \code{TRUE}, the idea is to add an image (but not
+its palette or its axes) to an existing plot. Clearly, then, arguments
+such \code{xlim} are to be ignored. Indeed, if \code{add=TRUE}, the only
+arguments examined are \code{x} (which must be a vector; the mode of providing
+a matrix or \code{oce} object does not work), \code{y}, \code{z},
+\code{decimate}, \code{breaks} and \code{col}.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a
 moderate amount of debugging information, or to 2 to get more.}

@@ -676,8 +676,12 @@ drawPalette <- function(zlim, zlab="",
 #'
 #' @param add Logical value indicating whether to add to an existing plot.
 #' The default value, \code{FALSE} indicates that a new plot is to be created.
-#' Several other arguments are ignored if \code{add=TRUE}, e.g. palette
-#' specification. 
+#' However, if \code{add} is \code{TRUE}, the idea is to add an image (but not
+#' its palette or its axes) to an existing plot. Clearly, then, arguments
+#' such \code{xlim} are to be ignored. Indeed, if \code{add=TRUE}, the only
+#' arguments examined are \code{x} (which must be a vector; the mode of providing
+#' a matrix or \code{oce} object does not work), \code{y}, \code{z},
+#' \code{decimate}, \code{breaks} and \code{col}.
 #'
 #' @param  debug A flag that turns on debugging.  Set to 1 to get a
 #'         moderate amount of debugging information, or to 2 to get more.
@@ -786,6 +790,33 @@ imagep <- function(x, y, z,
              "...) {\n", sep="", unindent=1)
     oceDebug(debug, "par('mai'):", paste(format(par('mai'), digits=2)), "\n")
     oceDebug(debug, "par('mar'):", paste(format(par('mar'), digits=2)), "\n")
+
+    if (is.logical(add)) {
+        if (add) {
+            if (missing(x)) stop("must give 'x'")
+            if (missing(y)) stop("must give 'y'")
+            if (missing(z)) stop("must give 'z'")
+            if (missing(breaks)) stop("must give 'breaks'")
+            if (missing(col)) stop("must give 'col'")
+            oceDebug(debug, "decimate: ", paste(decimate, collapse=" "), " (before calculation)\n")
+            if (is.logical(decimate)) {
+                decimate <- as.integer(dim(z) / 400)
+                decimate <- ifelse(decimate < 1, 1, decimate)
+            } else {
+                decimate <- rep(as.numeric(decimate), length.out=2)
+            }
+            oceDebug(debug, "decimate: ", paste(decimate, collapse=" "), " (after calculation)\n")
+            ix <- seq(1L, length(x), by=decimate[1])
+            iy <- seq(1L, length(y), by=decimate[2])
+            if (is.function(col))
+                col <- col(n=length(breaks)-1)
+            image(x[ix], y[iy], z[ix,iy], breaks=breaks, col=col, add=TRUE)
+            return(invisible(list(xat=NULL, yat=NULL, decimate=decimate)))
+        }
+    } else {
+        stop("'add' must be a logical value")
+    }
+
     if (!is.null(adorn))
         warning("In imagep() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
     xlimGiven <- !missing(xlim)
