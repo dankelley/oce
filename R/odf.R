@@ -340,18 +340,26 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     ## Now deal with units
     units <- list()
     for (i in seq_along(names)) {
+        ## NOTE: this was originally coded with ==, but as errors in ODF
+        ## formatting have been found, I've moved to grep() instead; for
+        ## example, the sigma-theta case is done that way, because the
+        ## original code expected kg/m^3 but then (issue 1051) I ran
+        ## across an ODF file that wrote density as Kg/m^3.
         units[[names[i]]] <- if (ODFunits[i] == "db") {
             list(unit=expression(dbar), scale="")
         } else if (ODFunits[i] == "decibars") {
             list(unit=expression(dbar), scale="")
-        } else if (ODFunits[i] == "degrees") {
+        } else if (1 == length(grep("^deg(ree){0,1}$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(degree), scale="")
-        } else if (ODFunits[i] == "IPTS-68, deg C") {
+        } else if (1 == length(grep("^IT[P]{0,1}S-68, deg C$", ODFunits[i], ignore.case=TRUE))) {
+            ## handles both the correct IPTS and the incorrect ITS.
             list(unit=expression(degree*C), scale="IPTS-68")
         } else if (ODFunits[i] == "degrees C") { # guess on scale
             list(unit=expression(degree*C), scale="ITS-90")
         } else if (ODFunits[i] == "ITS-90, deg C") {
             list(unit=expression(degree*C), scale="ITS-90")
+        } else if (1 == length(grep("^m$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(m), scale="")
         } else if (ODFunits[i] == "mg/m^3") {
             list(unit=expression(mg/m^3), scale="")
         } else if (ODFunits[i] == "ml/l") {
@@ -364,14 +372,20 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(), scale="")
         } else if (ODFunits[i] == "PSU") {
             list(unit=expression(), scale="PSS-78")
-        } else if (ODFunits[i] == "sigma-theta, kg/m^3") {
+        } else if (1 == length(grep("^sigma-theta,\\s*kg/m\\^3$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(kg/m^3), scale="")
+        } else if (1 == length(grep("^seconds$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(s), scale="")
         } else if (ODFunits[i] == "S/m") {
             list(unit=expression(S/m), scale="")
         } else if (ODFunits[i] == "V") {
             list(unit=expression(V), scale="")
+        } else if (1 == length(grep("^ug/l$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(ug/l), scale="")
+        } else if (nchar(ODFunits[i]) == 0) {
+            list(unit=expression(), scale="")
         } else {
-            warning("unable to interpret ODFunits[", i, "]='", ODFunits[i], "'\n", sep="")
+            warning("unable to interpret ODFunits[", i, "]='", ODFunits[i], "', for item named '", names[i], "'\n", sep="")
             list(unit=as.expression(ODFunits[i]), scale=ODFunits[i])
         }
     }
