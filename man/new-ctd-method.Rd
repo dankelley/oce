@@ -5,7 +5,8 @@
 \alias{new,ctd-method}
 \title{Initialize storage for a ctd object}
 \usage{
-new(Class, pressure, salinity, temperature, conductivity, units, pressureType, deploymentType)
+new(Class,pressure,salinity,temperature,conductivity,units,
+pressureType,deploymentType)
 }
 \arguments{
 \item{pressure}{optional vector of pressures.}
