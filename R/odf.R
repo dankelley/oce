@@ -614,6 +614,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     scientist <- findInHeader("CHIEF_SCIENTIST", lines)
     ship <- findInHeader("PLATFORM", lines) # maybe should rename, e.g. for helicopter
     institute <- findInHeader("ORGANIZATION", lines) # maybe should rename, e.g. for helicopter
+    station <- findInHeader("EVENT_NUMBER", lines)
     latitude <- as.numeric(findInHeader("INITIAL_LATITUDE", lines))
     longitude <- as.numeric(findInHeader("INITIAL_LONGITUDE", lines))
     cruise <- findInHeader("CRUISE_NAME", lines)
@@ -628,17 +629,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     sounding <- as.numeric(findInHeader("SOUNDING", lines))
-    waterDepth <- ifelse(sounding!=NAvalue, sounding, ifelse(depthMax!=NAvalue,depthMax,NA))
-    station <- findInHeader("EVENT_NUMBER", lines)
-
-    ## water depth could be missing or e.g. -999
-    waterDepthWarning <- FALSE
-    if (is.na(waterDepth)) {
-        waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-        waterDepthWarning <- TRUE
-    }
-    if (!is.na(waterDepth) && waterDepth < 0)
-        waterDepth <- NA
+    waterDepth <- ifelse(sounding!=NAvalue, sounding, ifelse(depthMax!=NAvalue,depthMax,NA)) # also see later
 
     type <- findInHeader("INST_TYPE", lines)
     if (length(grep("sea", type, ignore.case=TRUE)))
@@ -688,6 +679,14 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     res@metadata$names <- namesUnits$names
     res@metadata$labels <- namesUnits$names
     res@data <- as.list(data)
+
+    ## Return to water depth issue. In a BIO file, I found that the missing-value code was
+    ## -99, but that a SOUNDING was given as -99.9, so this is an extra check.
+    if (is.na(waterDepth) || waterDepth < 0) {
+        res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
+        warning("estimating waterDepth from maximum pressure\n")
+    }
+
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.odf()\n")
     res
