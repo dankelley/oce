@@ -238,14 +238,48 @@ setMethod("handleFlags",
               handleFlagsInternal(object, flags, actions)
           })
 
-## To save storage, this new() function has arguments only for quantities that are present in almost all cases. For example, not
-## all data files will have oxygen, so that's not present here. Similarly, not all files have data-quality columns, so they are
-## not present either. Columnar data should be added after the object is created, using ctdAddColumn(), which updates metadata
-## as needed. As for adding metadata, do that directly. Examples of these things are seen throughout this file.  Note that
-## normal users should employ read.ctd() or as.ctd() to create ctd objects ... this function is intended for internal use, and
-## may be changed at any moment.
-
-
+## Initialize storage for a ctd object
+##
+## This function creates \code{oce} objects of \code{\link{ctd-class}}. It is mainly
+## used by \code{oce} functions such as \code{\link{read.ctd}} and \code{\link{as.ctd}},
+## and it is not intended for novice users, so it may change at any time, without 
+## following the usual rules for transitioning to deprecated and defunct status 
+## (see \link{oce-deprecated}).
+##
+## @details
+## To save storage, this function has arguments only for quantities that are often present in data
+## files all cases. For example, not
+## all data files will have oxygen, so that's not present here.
+## Extra data should be added after the object is created, using \code{\link{oceSetData}}.
+## Similarly, use \code{\link{oceSetMetadata}} to add metadata (station ID, etc)
+## to a \code{ctd} object, but be aware that other functions will be looking for such information
+## in particular places (e.g. the station ID is expected to be in a string named \code{station}
+## that is stored in the \code{metadata} slot). See \code{\link{ctd-class}} for more information
+## on elements stored in \code{ctd} objects.
+##
+## @param Class the string \code{"ctd"}
+## @param pressure optional vector of pressures.
+## @param salinity optional vector of salinities.
+## @param temperature optional vector of temperatures.
+## @param conductivity optional vector of conductivities.
+## @param units list indicating units for the quantities specified in the previous arguments. If this
+## is not supplied, it is set to
+## \code{list(temperature=list(unit=expression(degree*C),scale="ITS-90"),ETC)},
+## where "ETC" stands for entries for \code{salinity},
+## \code{conductivity}, \code{pressure}, and \code{depth}. An easy way to learn how
+## to define such values is to examine the output from
+## \code{str(new("ctd")[["units"]])}.
+## @param pressureType optional character string indicating the type of pressure
+## (typically, \code{"sea"}, meaning the excess of
+## pressure over the atmospheric value, in dbar).
+## @param deploymentType optional character string indicating the type of deployment, which may
+## be \code{"unknown"}, \code{"profile"}, \code{"towyo"}, or \code{"thermosalinograph"}.
+##
+## @name new,ctd-method
+## @aliases new,ctd-method
+## @usage new(Class,pressure,salinity,temperature,conductivity,units,
+##pressureType,deploymentType)
+## @family things related to \code{ctd} data
 setMethod(f="initialize",
           signature="ctd",
           definition=function(.Object, pressure, salinity, temperature, conductivity,
@@ -3856,11 +3890,11 @@ plotProfile <- function (x,
         ## FIXME: do next with resizable label; also for the N2
         ##br <- if (getOption("oceUnitBracket") == '[') c("[", "]") else c("(", ")")
         if (getOption("oceUnitBracket") == '[') {
-            label <- if (eos == "unesco") expression(paste(sigma[theta], " [ ", kg/m^3, " ]")) else
-                expression(paste(sigma[1], " [ ", kg/m^3, " ]"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " [", kg/m^3, "]")) else
+                expression(paste(sigma[1], " [", kg/m^3, "]"))
         } else {
-            label <- if (eos == "unesco") expression(paste(sigma[theta], " ( ", kg/m^3, " )")) else
-                expression(paste(sigma[1], " ( ", kg/m^3, " )"))
+            label <- if (eos == "unesco") expression(paste(sigma[theta], " (", kg/m^3, ")")) else
+                expression(paste(sigma[1], " (", kg/m^3, ")"))
         }
         mtext(label, side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
         axis(2)
@@ -3873,15 +3907,15 @@ plotProfile <- function (x,
         ## lines(time, y, lwd=lwd, col=col.time)
         if (know.time.unit) {
             if (getOption("oceUnitBracket") == '[') {
-                mtext(expression(paste(Delta*t, " [ s ]")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
+                mtext(expression(paste(Delta*t, " [s]")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
             } else {
-                mtext(expression(paste(Delta*t, " ( s )")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
+                mtext(expression(paste(Delta*t, " (s)")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
             }
         } else {
             if (getOption("oceUnitBracket") == '[') {
-                mtext(expression(paste(Delta*t, " [ unknown unit ]")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
+                mtext(expression(paste(Delta*t, " [unknown unit]")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
             } else {
-                mtext(expression(paste(Delta*t, " ( unknown unit )")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
+                mtext(expression(paste(Delta*t, " (unknown unit)")), side=1, line=axis.name.loc, cex=par("cex"), col=col.time)
             }
         }
         box()
@@ -3901,9 +3935,9 @@ plotProfile <- function (x,
              type=type, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col=col.rho, col.axis=col.rho, col.lab=col.rho)
         if (getOption("oceUnitBracket") == '[') {
-            mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
+            mtext(expression(paste(sigma[theta], " [", kg/m^3, "] ")), side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
         } else {
-            mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
+            mtext(expression(paste(sigma[theta], " (", kg/m^3, ") ")), side=3, line=axis.name.loc, col=col.rho, cex=par("cex"))
         }
         axis(2)
         box()
@@ -3922,18 +3956,18 @@ plotProfile <- function (x,
         ## lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
         if (getOption("oceUnitBracket") == '[') {
             if (know.time.unit) {
-                mtext(expression(dp/dt * " [ dbar / s ]"),
+                mtext(expression(dp/dt * " [dbar/s]"),
                       side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
             } else {
-                mtext(expression(dp/dt * " [ dbar / (time unit) ]"),
+                mtext(expression(dp/dt * " [dbar/(time unit)]"),
                       side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
             }
         } else {
             if (know.time.unit) {
-                mtext(expression(dp/dt * " ( dbar / s )"),
+                mtext(expression(dp/dt * " (dbar/s)"),
                       side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
             } else {
-                mtext(expression(dp/dt * " ( dbar / (time unit) )"),
+                mtext(expression(dp/dt * " (dbar/(time unit))"),
                       side=1, line=axis.name.loc, cex=par("cex"), col=col.dpdt)
             }
         }
@@ -4252,9 +4286,9 @@ plotProfile <- function (x,
             }
             if (is.null(xlab)) {
                 if (getOption("oceUnitBracket") == '[') {
-                    mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side=3, line=axis.name.loc, cex=par("cex"))
+                    mtext(expression(paste(sigma[theta], " [", kg/m^3, "]")), side=3, line=axis.name.loc, cex=par("cex"))
                 } else {
-                    mtext(expression(paste(sigma[theta], " ( ", kg/m^3, " )")), side=3, line=axis.name.loc, cex=par("cex"))
+                    mtext(expression(paste(sigma[theta], " (", kg/m^3, ")")), side=3, line=axis.name.loc, cex=par("cex"))
                 }
             } else {
                 mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
@@ -4285,9 +4319,9 @@ plotProfile <- function (x,
             }
             if (is.null(xlab)) {
                 if (getOption("oceUnitBracket") == '[') {
-                    mtext(expression(paste(rho, " [ ", kg/m^3, " ]")), side=3, line=axis.name.loc, cex=par("cex"))
+                    mtext(expression(paste(rho, " [", kg/m^3, "]")), side=3, line=axis.name.loc, cex=par("cex"))
                 } else {
-                    mtext(expression(paste(rho, " ( ", kg/m^3, " )")), side=3, line=axis.name.loc, cex=par("cex"))
+                    mtext(expression(paste(rho, " (", kg/m^3, ")")), side=3, line=axis.name.loc, cex=par("cex"))
                 }
             } else {
                 mtext(xlab, side=3, line=axis.name.loc, cex=par("cex"))
@@ -4364,9 +4398,9 @@ plotProfile <- function (x,
             lines(N2, y, col=col.N2, lwd=lwd, lty=lty)
         }
         if (getOption("oceUnitBracket") == '[') {
-            mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side=1, line=axis.name.loc, col=col.N2, cex=par("cex"))
+            mtext(expression(paste(N^2, " [", s^-2, "]")), side=1, line=axis.name.loc, col=col.N2, cex=par("cex"))
         } else {
-            mtext(expression(paste(N^2, " ( ", s^-2, " )")), side=1, line=axis.name.loc, col=col.N2, cex=par("cex"))
+            mtext(expression(paste(N^2, " (", s^-2, ")")), side=1, line=axis.name.loc, col=col.N2, cex=par("cex"))
         }
         box()
         if (grid) {
@@ -4383,9 +4417,9 @@ plotProfile <- function (x,
                  xlim=N2lim, ylim=ylim, cex=cex, pch=pch,
                  type="n", xlab="", ylab=yname, axes=FALSE)
             if (getOption("oceUnitBracket") == '[') {
-                mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side=3, line=axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
+                mtext(expression(paste(N^2, " [", s^-2, "]")), side=3, line=axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
             } else {
-                mtext(expression(paste(N^2, " ( ", s^-2, " )")), side=3, line=axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
+                mtext(expression(paste(N^2, " (", s^-2, ")")), side=3, line=axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
             }
             axis(2)
             axis(3)

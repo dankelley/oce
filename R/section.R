@@ -1104,8 +1104,7 @@ setMethod(f="plot",
                                          variable="temperature", vtitle="T", unit=NULL,
                                          eos=getOption("oceEOS", default="gsw"),
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
-                                         xlim=NULL,
-                                         ylim=NULL,
+                                         xlim=NULL, ylim=NULL,
                                          clongitude, clatitude, span,
                                          projection=NULL,
                                          zbreaks=NULL, zcol=NULL,
@@ -1748,6 +1747,7 @@ setMethod(f="plot",
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          which[w], which[w], eos=eos, ylab="",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
+                                         zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
                       }
                   }
@@ -2323,9 +2323,14 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #'
 #' @param yg,ygl similar to \code{xg} and \code{xgl}.
 #'
-#' @param gamma passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
+#' @param xr,yr influence ranges in x and y, passed to \code{\link{interpBarnes}} if
+#' \code{method="barnes"}; ignored otherwise.
 #'
-#' @param iterations passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
+#' @param gamma scale-reduction parameter, passed to \code{\link{interpBarnes}},
+#' if \code{method="barnes"}; ignored otherwise.
+#'
+#' @param iterations number of interations of Barnes algorithm, passed to
+#' \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.
 #'
 #' @param trim passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
 #'
@@ -2346,8 +2351,10 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
 #' gss1 <- sectionSmooth(gsg, "spline", df=16)
 #' plot(gss1)
+#' \dontrun{
 #' gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
 #' plot(gss2)
+#' }
 #' 
 #' @author Dan Kelley
 #' 
@@ -2454,13 +2461,13 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
         longitudeNew <- approx(x, longitudeOriginal, xg, rule=2)$y
         latitudeNew <- approx(x, latitudeOriginal, xg, rule=2)$y
         for (istn in seq_along(xg)) {
-            message("istn=", istn, " whilst making up long and lat")
+            ## message("istn=", istn, " whilst making up long and lat")
             res@data$station[[istn]] <- new('oce')
             res@data$station[[istn]]@metadata$longitude <- longitudeNew[istn]
             res@data$station[[istn]]@metadata$latitude <- latitudeNew[istn]
         }
         for (var in vars) {
-            message("var='", var, "'")
+            ##message("var='", var, "'")
             if (var == "scan" || var == "time" || var == "pressure"
                 || var == "depth" || var == "flag" || var == "quality")
                 next
@@ -2480,12 +2487,15 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
                                 xg=xg, yg=yg, xgl=xgl, ygl=ygl, xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
                                 debug=debug-1)
             for (istn in seq_along(xg)) {
-                message("istn=", istn)
                 res@data$station[[istn]]@data[[var]] <- smu$zg[istn,]
-                na <- is.na(section@data$station[[istn]][[var]])
-                res@data$station[[istn]]@data[[var]][na] <- NA
-                message(" ... ok")
+                res@data$station[[istn]]@data[["pressure"]] <- yg
+                ## na <- is.na(section@data$station[[istn]][[var]])
+                ## message("A/3")
+                ## res@data$station[[istn]]@data[[var]][na] <- NA
             }
+            res@metadata$stationId <- paste("interpolated_", seq_along(xg), sep="")
+            res@metadata$longitude <- longitudeNew
+            res@metadata$latitude <- latitudeNew
         }
     } else {
         stop("unknown method \"", method, "\"") # cannot reach here

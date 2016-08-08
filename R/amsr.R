@@ -80,7 +80,7 @@ setMethod(f="summary",
 #'
 #' Extract something from the \code{metadata} or \code{data} slot of an
 #' \code{\link{amsr-class}} object.
-
+#'
 #' @details
 #' Partial matches for \code{i}
 #' are permitted for \code{metadata}, and \code{j} is ignored for
@@ -89,28 +89,37 @@ setMethod(f="summary",
 #' Data within the \code{data} slot may be found directly, e.g.
 #' \code{j="SSTDay"} will yield sea-surface temperature in the daytime
 #' satellite, and \code{j="SSTNight"} is used to access the nighttime data. In
-#' addition, \code{j="SST"} yields an average of the night and day values (
-#' using just one of these, if the other is missing). This scheme works for
+#' addition, \code{j="SST"} yields an average of the night and day values
+#' (using just one of these, if the other is missing). This scheme works for
 #' all the data stored in \code{amsr} objects, namely:
 #' \code{time}, \code{SST}, \code{LFwind}, \code{MFwind},
 #' \code{vapor}, \code{cloud} and \code{rain}.  In each case, the default
 #' is to calculate values in scientific units, unless \code{j="raw"}, in
-#' which case the raw data are returned. The \code{"raw"} mode can be useful
+#' which case the raw data are returned.
+#'
+#' The \code{"raw"} mode can be useful
 #' in decoding the various types of missing value that are used by \code{amsr}
-#' data, namely \code{as.raw(0xff)} for land, \code{as.raw(0xfe)} for
-#' a missing observation, \code{as.raw(0xfd)} for a bad observation,
-#' \code{as.raw(0xfc)} for sea ice, or \code{as.raw(0xfb)} fo missing SST
-#' due to rain or missing water vapour due to heavy rain.
+#' data, namely \code{as.raw(255)} for land, \code{as.raw(254)} for
+#' a missing observation, \code{as.raw(253)} for a bad observation,
+#' \code{as.raw(252)} for sea ice, or \code{as.raw(251)} for missing SST
+#' due to rain or missing water vapour due to heavy rain. Note that
+#' something special has to be done for e.g. \code{d[["SST", "raw"]]}
+#' because the idea is that this syntax (as opposed to specifying
+#' \code{"SSTDay"}) is a request to try to find good
+#' data by looking at both the Day and Night measurements. The scheme
+#' employed is quite detailed. Denote by "A" the raw value of the desired field
+#' in the daytime pass, and by "B" the corresponding value in the 
+#' nighttime pass. If either A or B is 255, the code for land, then the
+#' result will be 255. If A is 254 (i.e. there is no observation),
+#' then B is returned, and the reverse holds also. Similarly, if either
+#' A or B equals 253 (bad observation), then the other is returned.
+#' The same is done for code 252 (ice) and code 251 (rain).
 #'
 #' @return
 #' In all cases, the returned value is a matrix with 
-#' with \code{NA} values if the 
-#' satellite data are over land (indicated with a binary
-#' value of \code{0x255} in the raw data),
-#' have no observations (indicated with \code{0xfe}),
-#' are bad observations (indicated with \code{0xfd}),
-#' indicate sea ice (indicated with \code{0xfc}),
-#' are are faulty owing to high rain (coded to \code{0xfb}).
+#' with \code{NA} values inserted at locations where
+#' the raw data equal \code{as.raw(251:255)}, as explained
+#' in \dQuote{Details}.
 #'
 #' @param x An \code{amsr} object, i.e. one inheriting from \code{\link{amsr-class}}.
 #' @author Dan Kelley
@@ -152,7 +161,7 @@ setMethod(f="[[",
                   stop("band '", i, "' is not available in this object; try one of: ",
                        paste(namesAllowed, collapse=" "))
               #' get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA
-              getBand<-function(b, dim) {
+              getBand<-function(b) {
                   bad <- b == as.raw(0xff)| # land mass
                   b == as.raw(0xfe)| # no observations
                   b == as.raw(0xfd)| # bad observations
@@ -160,39 +169,38 @@ setMethod(f="[[",
                   b == as.raw(0xfb) # missing SST or wind due to rain, or missing water vapour due to heavy rain
                   b <- as.numeric(b)
                   b[bad] <- NA
-                  dim(b) <- dim
                   b
               }
+              dim <- c(length(x@metadata$longitude), length(x@metadata$latitude))
               if (missing(j) || j != "raw") {
                   ## Apply units; see http://www.remss.com/missions/amsre
                   ## FIXME: the table at above link has two factors for time; I've no idea
                   ## what that means, and am extracting what seems to be seconds in the day.
-                  dim <- c(length(x@metadata$longitude), length(x@metadata$latitude))
-                  if      (i == "timeDay") res <- 60*6*getBand(x@data[[i]], dim) # FIXME: guessing on amsr time units
-                  else if (i == "timeNight") res <- 60*6*getBand(x@data[[i]], dim) # FIXME: guessing on amsr time units
-                  else if (i == "time") res <- 60*6*getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]), dim)
-                  else if (i == "SSTDay") res <- -3 + 0.15 * getBand(x@data[[i]], dim)
-                  else if (i == "SSTNight") res <- -3 + 0.15 * getBand(x@data[[i]], dim)
-                  else if (i == "SST") res <- -3 + 0.15 * getBand(.Call("amsr_average", x@data[["SSTDay"]], x@data[["SSTNight"]]), dim)
-                  else if (i == "LFwindDay") res <- 0.2 * getBand(x@data[[i]], dim)
-                  else if (i == "LFwindNight") res <- 0.2 * getBand(x@data[[i]], dim)
-                  else if (i == "LFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["LFwindDay"]], x@data[["LFwindNight"]]), dim)
-                  else if (i == "MFwindDay") res <- 0.2 * getBand(x@data[[i]], dim)
-                  else if (i == "MFwindNight") res <- 0.2 * getBand(x@data[[i]], dim)
-                  else if (i == "MFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["MFwindDay"]], x@data[["MFwindNight"]]), dim)
-                  else if (i == "vaporDay") res <- 0.3 * getBand(x@data[[i]], dim)
-                  else if (i == "vaporNight") res <- 0.3 * getBand(x@data[[i]], dim)
-                  else if (i == "vapor") res <- 0.3 * getBand(.Call("amsr_average", x@data[["vaporDay"]], x@data[["vaporNight"]]), dim)
-                  else if (i == "cloudDay") res <- -0.05 + 0.01 * getBand(x@data[[i]], dim)
-                  else if (i == "cloudNight") res <- -0.05 + 0.01 * getBand(x@data[[i]], dim)
-                  else if (i == "cloud") res <- -0.05 + 0.01 * getBand(.Call("amsr_average", x@data[["cloudDay"]], x@data[["cloudNight"]]), dim)
-                  else if (i == "rainDay") res <- 0.01 * getBand(x@data[[i]], dim)
-                  else if (i == "rainNight") res <- 0.01 * getBand(x@data[[i]], dim)
-                  else if (i == "rain") res <- 0.01 * getBand(.Call("amsr_average", x@data[["rainDay"]], x@data[["rainNight"]]), dim)
+                  if      (i == "timeDay") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
+                  else if (i == "timeNight") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
+                  else if (i == "time") res <- 60*6*getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]))
+                  else if (i == "SSTDay") res <- -3 + 0.15 * getBand(x@data[[i]])
+                  else if (i == "SSTNight") res <- -3 + 0.15 * getBand(x@data[[i]])
+                  else if (i == "SST") res <- -3 + 0.15 * getBand(.Call("amsr_average", x@data[["SSTDay"]], x@data[["SSTNight"]]))
+                  else if (i == "LFwindDay") res <- 0.2 * getBand(x@data[[i]])
+                  else if (i == "LFwindNight") res <- 0.2 * getBand(x@data[[i]])
+                  else if (i == "LFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["LFwindDay"]], x@data[["LFwindNight"]]))
+                  else if (i == "MFwindDay") res <- 0.2 * getBand(x@data[[i]])
+                  else if (i == "MFwindNight") res <- 0.2 * getBand(x@data[[i]])
+                  else if (i == "MFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["MFwindDay"]], x@data[["MFwindNight"]]))
+                  else if (i == "vaporDay") res <- 0.3 * getBand(x@data[[i]])
+                  else if (i == "vaporNight") res <- 0.3 * getBand(x@data[[i]])
+                  else if (i == "vapor") res <- 0.3 * getBand(.Call("amsr_average", x@data[["vaporDay"]], x@data[["vaporNight"]]))
+                  else if (i == "cloudDay") res <- -0.05 + 0.01 * getBand(x@data[[i]])
+                  else if (i == "cloudNight") res <- -0.05 + 0.01 * getBand(x@data[[i]])
+                  else if (i == "cloud") res <- -0.05 + 0.01 * getBand(.Call("amsr_average", x@data[["cloudDay"]], x@data[["cloudNight"]]))
+                  else if (i == "rainDay") res <- 0.01 * getBand(x@data[[i]])
+                  else if (i == "rainNight") res <- 0.01 * getBand(x@data[[i]])
+                  else if (i == "rain") res <- 0.01 * getBand(.Call("amsr_average", x@data[["rainDay"]], x@data[["rainNight"]]))
               } else {
                   if      (i == "timeDay") res <- x@data[[i]]
                   else if (i == "timeNight") res <- x@data[[i]]
-                  else if (i == "time") res <- getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]), dim)
+                  else if (i == "time") res <- getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]))
                   else if (i == "SSTDay") res <- x@data[[i]]
                   else if (i == "SSTNight") res <- x@data[[i]]
                   else if (i == "SST") res <- .Call("amsr_average", x@data[["SSTDay"]], x@data[["SSTNight"]])
@@ -212,6 +220,7 @@ setMethod(f="[[",
                   else if (i == "rainNight") res <- x@data[[i]]
                   else if (i == "rain") res <- .Call("amsr_average", x@data[["rainDay"]], x@data[["rainNight"]])
               }
+              dim(res) <- dim
               res
           })
 
@@ -282,7 +291,16 @@ setMethod(f="subset",
 #' @param y String indicating the name of the band to plot; if not provided,
 #' \code{SST} is used; see \code{\link{amsr-class}} for a list of bands.
 #' @param asp Optional aspect ratio for plot.
+#'
+#' @param missingColor List of colours for problem cases. The names of the
+#' elements in this list must be as in the default, but the colours may
+#' be changed to any desired values. These default values work reasonably
+#' well for SST images, which are the default image, and which employ a
+#' blue-white-red blend of colours, no mixture of which matches the
+#' default values in \code{missingColor}.
+#'
 #' @param debug A debugging flag, integer.
+#'
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
 #' \code{col} to control colours.
 #'
@@ -304,7 +322,9 @@ setMethod(f="subset",
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
-          definition=function(x, y, asp, debug=getOption("oceDebug"), ...)
+          definition=function(x, y, asp,
+                              missingColor=list(land='papayawhip',none='gray',bad='orange',ice='plum',rain='mediumseagreen'),
+                              debug=getOption("oceDebug"), ...)
           {
               oceDebug(debug, "plot.amsr(..., y=c(",
                        if (missing(y)) "(missing)" else y, ", ...) {\n", sep="", unindent=1)
@@ -317,8 +337,36 @@ setMethod(f="plot",
               } else {
                   if (missing(asp)) asp <- 1/cos(pi/180*abs(mean(lat, na.rm=TRUE)))
               }
-              if ("zlab" %in% names(list(...))) imagep(lon, lat, x[[y]], asp=asp, ...)
-              else imagep(lon, lat, x[[y]], zlab=y, asp=asp, ...)
+              z <- x[[y]]
+              i <- if ("zlab" %in% names(list(...))) imagep(lon, lat, z, asp=asp, ...)
+                  else imagep(lon, lat, z, zlab=y, asp=asp, ...)
+              ## Handle missing-data codes by redrawing the (decimate) image.
+              ## Perhaps imagep() should be able to do this, but imagep() is a
+              ## long function with a lot of interlocking arguments so I'll
+              ## start by doing this manually here, and, if I like it, I'll
+              ## extend imagep() later. Note that I added a new element of the
+              ## return value of imagep(), to get the decimation factor.
+              missingColorLength <- length(missingColor)
+              if (5 != missingColorLength) {
+                  stop("must have 5 elements in the missingColor argument")
+              }
+              if (!all(sort(names(missingColor))==sort(c("land","none","bad","ice","rain"))))
+                  stop("missingColor names must be: 'land', 'none', 'bad', 'ice' and 'rain'")
+              lonDecIndices <- seq(1L, length(lon), by=i$decimate[1])
+              latDecIndices <- seq(1L, length(lat), by=i$decimate[2])
+              lon <- lon[lonDecIndices]
+              lat <- lat[latDecIndices]
+              codes <- list(land=as.raw(255), # land
+                            none=as.raw(254), # missing data
+                            bad=as.raw(253), # bad observation
+                            ice=as.raw(252), # sea ice
+                            rain=as.raw(251)) # heavy rain
+              for (codeName in names(codes)) {
+                  bad <- x[[y, "raw"]][lonDecIndices, latDecIndices] == as.raw(codes[[codeName]])
+                  image(lon, lat, bad,
+                        col=c("transparent", missingColor[[codeName]]), add=TRUE)
+                  ##message("did code ", codes[[codeName]], " (colour ", missingColor[[codeName]], ")")
+              }
               oceDebug(debug, "} # plot.amsr()\n", unindent=1)
           })
 
@@ -327,9 +375,25 @@ setMethod(f="plot",
 #'
 #' Read a compressed amsr file, generating an object that inherits from
 #' \code{\link{amsr-class}}.  Note that only compressed files are read in
-#' this version
+#' this version.
 #'
-#' @param file Sting indicating the name of a compressed file.
+#' @section File sources:
+#' AMSR files are provided at the FTP site
+#' \code{ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/} and login as "guest",
+#' enter a year-based directory (e.g. \code{y2016} for the year 2016),
+#' then enter a month-based directory (e.g. \code{m08} for August, the 8th
+#' month), and then download a file for the present date, e.g.
+#' \code{f34_20160803v7.2.gz} for August 3rd, 2016. Do not uncompress
+#' this file, since \code{read.amsr} can only read uncompressed files.
+#' If \code{read.amsr} reports an error on the number of chunks, try
+#' downloading a similarly-named file (e.g. in the present example,
+#' \code{read.amsr("f34_20160803v7.2_d3d.gz")} will report an error
+#' about inability to read a 6-chunk file, but 
+#' \code{read.amsr("f34_20160803v7.2.gz")} will work properly.
+#'
+#' @param file String indicating the name of a compressed file. See
+#' \dQuote{File sources}.
+#'
 #' @param debug A debugging flag, integer.
 #'
 #' @concept satellite
@@ -419,9 +483,9 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
         }
         res@metadata$longitude <- t$longitude
     } else if (nchunks == 6) {
-        stop("Cannot (yet) read 6-chunk data. Contact developers if you need this.")
+        stop("Cannot (yet) read 6-chunk data. Please contact the developers if you need this file (and be sure to send the file to them).")
     } else {
-        stop("Can only handle 14-chunk data.")
+        stop("Can only handle 14-chunk data; this file has ", nchunks, " chunks. Please contact the developers if you need to read this file (and be sure to send the file to them).")
     }
     res@metadata$spacecraft <- "amsr"
     res@processingLog <- processingLogAppend(res@processingLog,

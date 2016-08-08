@@ -23,9 +23,14 @@ x grid will equal the input x grid.}
 
 \item{yg, ygl}{similar to \code{xg} and \code{xgl}.}
 
-\item{gamma}{passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise}
+\item{xr, yr}{influence ranges in x and y, passed to \code{\link{interpBarnes}} if
+\code{method="barnes"}; ignored otherwise.}
 
-\item{iterations}{passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise}
+\item{gamma}{scale-reduction parameter, passed to \code{\link{interpBarnes}},
+if \code{method="barnes"}; ignored otherwise.}
+
+\item{iterations}{number of interations of Barnes algorithm, passed to
+\code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.}
 
 \item{trim}{passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise}
 
@@ -69,8 +74,10 @@ gs <- subset(section, 109<=stationId&stationId<=129)
 gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
 gss1 <- sectionSmooth(gsg, "spline", df=16)
 plot(gss1)
+\dontrun{
 gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
 plot(gss2)
+}
 
 }
 \author{

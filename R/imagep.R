@@ -645,7 +645,8 @@ drawPalette <- function(zlim, zlab="",
 #' @param  filledContour Boolean value indicating whether to use filled
 #'         contours to plot the image.
 #' @param  missingColor A colour to be used to indicate missing data, or
-#'         \code{NULL} to avoid making the indication.
+#'         \code{NULL} for transparent (to see this, try setting
+#'         \code{par("bg")<-"red"}).
 #' @param  mgp A 3-element numerical vector to use for \code{par(mgp)}, and
 #'         also for \code{par(mar)}, computed from this.  The default is
 #'         tighter than the R default, in order to use more space for the
@@ -672,6 +673,17 @@ drawPalette <- function(zlim, zlab="",
 #' @param  main Title for plot.
 #' @param  axisPalette Optional replacement function for \code{axis()}, passed to
 #'         \code{\link{drawPalette}}.
+#'
+#' @param add Logical value indicating whether to add to an existing plot.
+#' The default value, \code{FALSE} indicates that a new plot is to be created.
+#' However, if \code{add} is \code{TRUE}, the idea is to add an image (but not
+#' its palette or its axes) to an existing plot. Clearly, then, arguments
+#' such \code{xlim} are to be ignored. Indeed, if \code{add=TRUE}, the only
+#' arguments examined are \code{x} (which must be a vector; the mode of providing
+#' a matrix or \code{oce} object does not work), \code{y}, \code{z},
+#' \code{decimate}, plus either \code{colormap} or
+#' both \code{breaks} and \code{col}.
+#'
 #' @param  debug A flag that turns on debugging.  Set to 1 to get a
 #'         moderate amount of debugging information, or to 2 to get more.
 #' @param  \dots Optional arguments passed to plotting functions.
@@ -757,6 +769,7 @@ imagep <- function(x, y, z,
                    axes=TRUE,
                    main="",
                    axisPalette,
+                   add=FALSE,
                    debug=getOption("oceDebug"),
                    ...)
 {
@@ -778,6 +791,38 @@ imagep <- function(x, y, z,
              "...) {\n", sep="", unindent=1)
     oceDebug(debug, "par('mai'):", paste(format(par('mai'), digits=2)), "\n")
     oceDebug(debug, "par('mar'):", paste(format(par('mar'), digits=2)), "\n")
+
+    if (is.logical(add)) {
+        if (add) {
+            if (missing(x)) stop("must give 'x'")
+            if (missing(y)) stop("must give 'y'")
+            if (missing(z)) stop("must give 'z'")
+            if (missing(colormap)) {
+                if (missing(breaks)) stop("must give 'breaks'")
+                if (missing(col)) stop("must give 'col'")
+            } else {
+                breaks <- colormap$breaks
+                col <- colormap$col
+            }
+            oceDebug(debug, "decimate: ", paste(decimate, collapse=" "), " (before calculation)\n")
+            if (is.logical(decimate)) {
+                decimate <- as.integer(dim(z) / 400)
+                decimate <- ifelse(decimate < 1, 1, decimate)
+            } else {
+                decimate <- rep(as.numeric(decimate), length.out=2)
+            }
+            oceDebug(debug, "decimate: ", paste(decimate, collapse=" "), " (after calculation)\n")
+            ix <- seq(1L, length(x), by=decimate[1])
+            iy <- seq(1L, length(y), by=decimate[2])
+            if (is.function(col))
+                col <- col(n=length(breaks)-1)
+            image(x[ix], y[iy], z[ix,iy], breaks=breaks, col=col, add=TRUE)
+            return(invisible(list(xat=NULL, yat=NULL, decimate=decimate)))
+        }
+    } else {
+        stop("'add' must be a logical value")
+    }
+
     if (!is.null(adorn))
         warning("In imagep() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
     xlimGiven <- !missing(xlim)
@@ -1161,12 +1206,12 @@ imagep <- function(x, y, z,
             oceDebug(debug, "not doing filled contours [2]\n")
             if (zlimHistogram) {
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col2,
-                      xlim=xlim, ylim=ylim, zlim=c(0,1), asp=asp, ...)
+                      xlim=xlim, ylim=ylim, zlim=c(0,1), asp=asp, add=add, ...)
             } else {
                 ## issue 489: use breaks/col instead of breaks2/col2
                 ##image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks2, col=col2,
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, asp=asp, ...)
+                  xlim=xlim, ylim=ylim, zlim=zlim, asp=asp, add=add, ...)
             }
         }
         if (axes) {
@@ -1232,5 +1277,5 @@ imagep <- function(x, y, z,
              paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
              paste(format(par('mar'), digits=2), collapse=","), ")\n", sep='')
     oceDebug(debug, "} # imagep()\n", unindent=1)
-    invisible(list(xat=xat, yat=yat))
+    invisible(list(xat=xat, yat=yat, decimate=decimate))
 }

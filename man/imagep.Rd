@@ -11,7 +11,7 @@ imagep(x, y, z, xlim, ylim, zlim, zclip = FALSE, flipy = FALSE, xlab = "",
   tformat, drawTimeRange = getOption("oceDrawTimeRange"),
   filledContour = FALSE, missingColor = NULL, mgp = getOption("oceMgp"),
   mar, mai.palette, xaxs = "i", yaxs = "i", asp = NA, cex = par("cex"),
-  adorn = NULL, axes = TRUE, main = "", axisPalette,
+  adorn = NULL, axes = TRUE, main = "", axisPalette, add = FALSE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -134,7 +134,8 @@ hours if the range is less than a day, etc.}
 contours to plot the image.}
 
 \item{missingColor}{A colour to be used to indicate missing data, or
-\code{NULL} to avoid making the indication.}
+\code{NULL} for transparent (to see this, try setting
+\code{par("bg")<-"red"}).}
 
 \item{mgp}{A 3-element numerical vector to use for \code{par(mgp)}, and
 also for \code{par(mar)}, computed from this.  The default is
@@ -186,6 +187,16 @@ defunct \code{oce} features.)}
 
 \item{axisPalette}{Optional replacement function for \code{axis()}, passed to
 \code{\link{drawPalette}}.}
+
+\item{add}{Logical value indicating whether to add to an existing plot.
+The default value, \code{FALSE} indicates that a new plot is to be created.
+However, if \code{add} is \code{TRUE}, the idea is to add an image (but not
+its palette or its axes) to an existing plot. Clearly, then, arguments
+such \code{xlim} are to be ignored. Indeed, if \code{add=TRUE}, the only
+arguments examined are \code{x} (which must be a vector; the mode of providing
+a matrix or \code{oce} object does not work), \code{y}, \code{z},
+\code{decimate}, plus either \code{colormap} or
+both \code{breaks} and \code{col}.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a
 moderate amount of debugging information, or to 2 to get more.}

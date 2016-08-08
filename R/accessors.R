@@ -46,15 +46,18 @@ oceDeleteData <- function(object, name)
 #' have \code{unit=list(unit=expression(degree*C), scale="ITS-90")}.
 #' @param originalName Optional character string giving an 'original' name (e.g.
 #' as stored in the header of a data file.
-#' @param note A note to be stored in the processing log.
+#' @param note A note to be stored in the processing log. If an empty string
+#' (the default) then an entry will be constructed from the function call. If
+#' \code{NULL}, then no entry will be added to the processing log.
 oceSetData <- function(object, name, value, units, originalName, note="")
 {
     if (!inherits(object, "oce"))
         stop("oceSetData() only works for oce objects")
     object@data[[name]] <- value
-    object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (nchar(note) > 0)
         object@processingLog <- processingLogAppend(object@processingLog, note)
+    else if (!is.null(note))
+        object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     if (!missing(units) && "units" %in% names(object@metadata)) {
         if (!is.list(units)||2!=length(units)) stop("'units' must be a list of length 2")
         if (2 != sum(c("unit", "scale") %in% names(units))) stop("'units' must contain 'unit' and 'scale'")

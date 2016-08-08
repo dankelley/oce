@@ -21,7 +21,9 @@ have \code{unit=list(unit=expression(degree*C), scale="ITS-90")}.}
 \item{originalName}{Optional character string giving an 'original' name (e.g.
 as stored in the header of a data file.}
 
-\item{note}{A note to be stored in the processing log.}
+\item{note}{A note to be stored in the processing log. If an empty string
+(the default) then an entry will be constructed from the function call. If
+\code{NULL}, then no entry will be added to the processing log.}
 }
 \description{
 Set something in the \code{data} slot of an \code{oce} object
