@@ -3812,7 +3812,7 @@ plotProfile <- function (x,
     if (length(xtype) == length(x[["pressure"]]))
         xtype <- xtype[examineIndices]
     if (is.data.frame(x@data)) {
-        x@data <- x$data[examineIndices,]
+        x@data <- x@data[examineIndices,]
     } else {
         for (dataName in dataNames) {
             x@data[[dataName]] <- x@data[[dataName]][examineIndices]
