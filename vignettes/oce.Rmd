@@ -92,7 +92,7 @@ time-distance variation in each of the measured velocity components.
    Depending on the file contents, `d` will also have an additional class, e.g.
    if the file contains CTD data, then the object would have two classes, `oce`
    and `ctd`, with the second being used to tailor the graphics by 
-   passing control to `plot.ctd()`.
+   passing control to the `plot()` ctd method (see `?plot,ctd-method`).
 
 2. Generally, `oce` functions employ a "camel case" naming convention, in which
    a function that is described by several words is named by stringing the
