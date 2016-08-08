@@ -3811,8 +3811,12 @@ plotProfile <- function (x,
     dataNames <- names(x@data)
     if (length(xtype) == length(x[["pressure"]]))
         xtype <- xtype[examineIndices]
-    for (dataName in dataNames) {
-        x@data[[dataName]] <- x@data[[dataName]][examineIndices]
+    if (is.data.frame(x@data)) {
+        x@data <- x$data[examineIndices,]
+    } else {
+        for (dataName in dataNames) {
+            x@data[[dataName]] <- x@data[[dataName]][examineIndices]
+        }
     }
     axis.name.loc <- mgp[1]
     know.time.unit <- FALSE
