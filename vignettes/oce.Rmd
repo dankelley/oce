@@ -90,9 +90,10 @@ time-distance variation in each of the measured velocity components.
 1. As just illustrated, the general function to read a dataset ends in `.oce`,
    and the name is a signal that the returned object is of class `oce`.
    Depending on the file contents, `d` will also have an additional class, e.g.
-   if the file contains CTD data, then the object would have two classes, `oce`
+   if the file contains CTD data, then the object would inherit from two classes, `oce`
    and `ctd`, with the second being used to tailor the graphics by 
-   passing control to the `plot()` ctd method (see `?plot,ctd-method`).
+   passing control to the `ctd` variant of the generic `plot` function
+   (use `help("plot,ctd-method")` to learn more).
 
 2. Generally, `oce` functions employ a "camel case" naming convention, in which
    a function that is described by several words is named by stringing the
@@ -314,8 +315,9 @@ plot(section, which=c(1, 2, 3, 99))
 ```
 will plot a summary diagram containing sections of $T$, $S$, and
 $\sigma_\theta$, along with a chart indicating station locations. In addition
-to such overview diagrams, `plot.section()`, which is called by `plot()`, can
-also create individual plots of individual properties.
+to such overview diagrams, the `section` variant of the generic
+`plot` function can also create individual plots of individual properties
+(use `help("plot,section-method")` to learn more).
 
 Some section datasets are supplied in a pre-gridded format, but it is also
 common to have different pressure levels at each station.  For such cases,
@@ -445,10 +447,11 @@ The following code graphs a built-in dataset of sea-level time series (Figure
 9).  The top panel provides an overview of the entire data set. The second
 panel is narrowed to the most recent month, which should reveal spring-neap
 cycles if the tide is mixed. The third panel is a log spectrum, with a few
-tidal constituents indicated. The `plot.sealevel()` function provides other
-possibilities for plotting, of which the cumulative spectrum can be quite
-informative.
-
+tidal constituents indicated. The `section` variant of
+the generic `plot` function provides other
+possibilities for plotting, including a cumulative spectrum that can be quite
+informative
+(use `help("plot,sealevel-method")` to learn more).
 
 ```{r fig.cap="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=16)}
 library(oce)
@@ -474,7 +477,9 @@ whether Hurricane Juan is visible. (Hint: use `predict` with the results from
 
 The following commands produce Figure 10, showing one velocity component of
 currents measured in the St Lawrence Estuary Internal Wave Experiment. This
-plot type is just one of many provided by `plot.adp()`.
+plot type is just one of many provided by the `adp` variant of the
+generic `plot` function
+(use `help("plot,adp-method")` to learn more).
 ```{r fig.cap="**Figure 10.** Measurements made with a bottom-mounted ADP in the St Lawrence Estuary. The line near the surface indicates pressure measured by the ADP.", fig.width=4, fig.height=2, dpi=72}
 library(oce)
 data(adp)
