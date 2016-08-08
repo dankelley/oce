@@ -41,7 +41,8 @@ e.g. \code{depthMin}, \code{depthMax} and \code{sounding}, which
 are inferred from ODF items named \code{MIN_DEPTH}, \code{MAX_DEPTH}
 and \code{SOUNDING}, respectively. In addition, the more common metadata
 item \code{waterDepth}, which is used in \code{ctd} objects to refer to
-the total water depth, is here identical to \code{sounding}.
+the total water depth, is set to \code{sounding} if that is finite,
+or to \code{maxDepth} otherwise.
 }
 \examples{
 library(oce)

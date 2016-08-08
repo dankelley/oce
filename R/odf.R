@@ -527,7 +527,8 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' are inferred from ODF items named \code{MIN_DEPTH}, \code{MAX_DEPTH}
 #' and \code{SOUNDING}, respectively. In addition, the more common metadata
 #' item \code{waterDepth}, which is used in \code{ctd} objects to refer to
-#' the total water depth, is here identical to \code{sounding}.
+#' the total water depth, is set to \code{sounding} if that is finite,
+#' or to \code{maxDepth} otherwise.
 #'
 #' @examples
 #' library(oce)
@@ -623,12 +624,11 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ## date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
     startTime <- strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
     ## endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
+    NAvalue <- as.numeric(findInHeader("NULL_VALUE", lines))
     depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     sounding <- as.numeric(findInHeader("SOUNDING", lines))
-    waterDepth <- as.numeric(findInHeader("SOUNDING", lines))
-    if (is.null(waterDepth))
-        waterDepth <- NA
+    waterDepth <- ifelse(sounding!=NAvalue, sounding, ifelse(depthMax!=NAvalue,depthMax,NA))
     station <- findInHeader("EVENT_NUMBER", lines)
 
     ## water depth could be missing or e.g. -999
