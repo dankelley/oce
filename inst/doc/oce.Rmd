@@ -92,7 +92,7 @@ time-distance variation in each of the measured velocity components.
    Depending on the file contents, `d` will also have an additional class, e.g.
    if the file contains CTD data, then the object would have two classes, `oce`
    and `ctd`, with the second being used to tailor the graphics by 
-   passing control to `plot.ctd()`.
+   passing control to the `plot()` ctd method (see `?plot,ctd-method`).
 
 2. Generally, `oce` functions employ a "camel case" naming convention, in which
    a function that is described by several words is named by stringing the
@@ -105,6 +105,18 @@ time-distance variation in each of the measured velocity components.
    in conflict with a function in the base R system or a package commonly used
    by Oceanographers.  For example, `oceContour()` is a function that provides
    an alternative to `contour()` in the `graphics` package.
+
+# Accessing values within an object
+
+While the object orientation of R, combined with the classes defined by the `oce` package, make simple use cases easy by using "generic" functions (e.g. `plot()`, `subset()`, etc) in detailed analysis users will frequently want to access data *within* the object. While it is possible to descend through the object using the "slot" and "list" notation (e.g. to get the salinity out of the `data` slot, one would do `d@data$salinity`), this approach is not recommended in general. The best approach is to use the `[[` oce method, which derives from the generic "Extract" method for accessing parts of an object. To see the full help file, type:
+```{r extract, eval=FALSE}
+?`[[,oce-method`
+```
+For example, to access the `salinity` field in an `oce` object, instead of the slot/list notation above, one could type:
+```{r extractExample, eval=FALSE}
+S <- d[['salinity']]
+```
+Advantages to the above syntax are that it doesn't require knowledge of where the `salinity` field is contained in the object, and that it is consistent with the generic R method of extracting parts of an object.
 
 # Calculation of seawater properties
 
