@@ -2317,7 +2317,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' set to \code{NULL}, the contours are added with \code{\link{contour}}
 #' and otherwise \code{\link{mapContour}} is used. To customize
 #' the resultant contours, e.g. setting particular line types or colours,
-#' users should call these functions directly.
+#' users should call these functions directly (see e.g. Example 2).
 #'
 #' @param clongitude Center longitude.
 #' 
@@ -2409,9 +2409,25 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' boundaries, with \code{borderCoastline}.
 #' 
 #' @examples
+#' ## 1. simple plot
 #' library(oce)
 #' data(ctd) 
 #' plot(ctd)
+#'
+#' ## 2. how to customize depth contours
+#' par(mfrow=c(1,2))
+#' data(section)
+#' stn <- section[["station", 105]]
+#' plot(stn, which='map', drawIsobaths=TRUE)
+#' plot(stn, which='map')
+#' data(topoWorld)
+#' tlon <- topoWorld[["longitude"]]
+#' tlat <- topoWorld[["latitude"]]
+#' tdep <- -topoWorld[["z"]]
+#' contour(tlon, tlat, tdep, drawlabels=FALSE,
+#'         levels=seq(1000,6000,1000), col='lightblue', add=TRUE)
+#' contour(tlon, tlat, tdep, vfont=c("sans serif", "bold"),
+#'         levels=stn[['waterDepth']], col='red', lwd=2, add=TRUE)
 #' 
 #' @author Dan Kelley
 #' 
@@ -2429,7 +2445,7 @@ setMethod(f="plot",
                               Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim,
                               dpdtlim, timelim,
                               lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
-                              drawIsobaths=TRUE, clongitude, clatitude, span, showHemi=TRUE,
+                              drawIsobaths=FALSE, clongitude, clatitude, span, showHemi=TRUE,
                               lonlabel=NULL, latlabel=NULL, sides=NULL,
                               projection=NULL, parameters=NULL, orientation=NULL,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
@@ -2972,8 +2988,13 @@ setMethod(f="plot",
                               oceDebug(debug, "itopoLat=", itopoLat, ", lon=", topoLat[itopoLat], "\n")
                               stationDep <- topoDep[itopoLon, itopoLat]
                               oceDebug(debug, "stationDep=", stationDep, "\n")
-                              ## choose shelf-type levels if the station is shallow
-                              levels <- if (stationDep < 100) pretty(c(0, 300)) else pretty(c(0, 5500))
+                              ## Auto-select depths differently for stations on the shelf or in 
+                              ## the deap sea. (Notice that the first level, which will be 0m, is
+                              ## trimmed, to avoid messing up the coastline with a contour from
+                              ## coarse topography.
+                              levels <- if (is.logical(drawIsobaths))
+                                  if (stationDep < 100) pretty(c(0, 500))[-1] else pretty(c(0, 5500))[-1]
+                                  else drawIsobaths
                               if (is.null(projection)) {
                                   contour(topoLon, topoLat, topoDep, col='gray', vfont=c("sans serif", "bold"),
                                           levels=levels, add=TRUE)
