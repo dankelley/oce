@@ -9,14 +9,14 @@
   colCoastline = "lightgray", eos = getOption("oceEOS", default = "gsw"),
   ref.lat = NaN, ref.lon = NaN, grid = TRUE, coastline = "best", Slim,
   Clim, Tlim, plim, densitylim, N2lim, Rrholim, dpdtlim, timelim, lonlim,
-  latlim, clongitude, clatitude, span, showHemi = TRUE, lonlabel = NULL,
-  latlabel = NULL, sides = NULL, projection = NULL, parameters = NULL,
-  orientation = NULL, latlon.pch = 20, latlon.cex = 1.5,
-  latlon.col = "red", cex = 1, cex.axis = par("cex.axis"), pch = 1,
-  useSmoothScatter = FALSE, df, keepNA = FALSE, type = "l",
-  adorn = NULL, mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] +
-  1.5, mgp[1] + 1.5, mgp[1] + 1), inset = FALSE, add = FALSE,
-  debug = getOption("oceDebug"), ...)
+  latlim, drawIsobaths = FALSE, clongitude, clatitude, span,
+  showHemi = TRUE, lonlabel = NULL, latlabel = NULL, sides = NULL,
+  projection = NULL, parameters = NULL, orientation = NULL,
+  latlon.pch = 20, latlon.cex = 1.5, latlon.col = "red", cex = 1,
+  cex.axis = par("cex.axis"), pch = 1, useSmoothScatter = FALSE, df,
+  keepNA = FALSE, type = "l", adorn = NULL, mgp = getOption("oceMgp"),
+  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1),
+  inset = FALSE, add = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -123,6 +123,21 @@ plotted) DEPRECATED 2014-01-07.}
 
 \item{latlim}{Optional limits of latitude axis of map (ignored if no map
 plotted) DEPRECATED 2014-01-07.}
+
+\item{drawIsobaths}{An indication of whether to draw depth contours on
+maps, in addition to the coastline. The argument has no effect except
+for panels in which the value of \code{which} equals \code{"map"} or
+the equivalent numerical code, \code{5}. If \code{drawIsobaths} is
+\code{FALSE}, then no contours are drawn. If \code{drawIsobaths}
+is \code{TRUE}, then contours are selected automatically,
+using \code{\link{pretty}(c(0,300))} if the station depth is 
+under 100m or \code{\link{pretty}(c(0,5500))} otherwise.
+If \code{drawIsobaths} is a numerical vector,
+then the indicated depths are drawn. For plots drawn with \code{projection}
+set to \code{NULL}, the contours are added with \code{\link{contour}}
+and otherwise \code{\link{mapContour}} is used. To customize
+the resultant contours, e.g. setting particular line types or colours,
+users should call these functions directly.}
 
 \item{clongitude}{Center longitude.}
 

@@ -2304,6 +2304,21 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' @param latlim Optional limits of latitude axis of map (ignored if no map
 #' plotted) DEPRECATED 2014-01-07. 
 #' 
+#' @param drawIsobaths An indication of whether to draw depth contours on
+#' maps, in addition to the coastline. The argument has no effect except
+#' for panels in which the value of \code{which} equals \code{"map"} or
+#' the equivalent numerical code, \code{5}. If \code{drawIsobaths} is
+#' \code{FALSE}, then no contours are drawn. If \code{drawIsobaths}
+#' is \code{TRUE}, then contours are selected automatically,
+#' using \code{\link{pretty}(c(0,300))} if the station depth is 
+#' under 100m or \code{\link{pretty}(c(0,5500))} otherwise.
+#' If \code{drawIsobaths} is a numerical vector,
+#' then the indicated depths are drawn. For plots drawn with \code{projection}
+#' set to \code{NULL}, the contours are added with \code{\link{contour}}
+#' and otherwise \code{\link{mapContour}} is used. To customize
+#' the resultant contours, e.g. setting particular line types or colours,
+#' users should call these functions directly.
+#'
 #' @param clongitude Center longitude.
 #' 
 #' @param clatitude Center latitude.
@@ -2414,7 +2429,7 @@ setMethod(f="plot",
                               Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim,
                               dpdtlim, timelim,
                               lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
-                              clongitude, clatitude, span, showHemi=TRUE,
+                              drawIsobaths=FALSE, clongitude, clatitude, span, showHemi=TRUE,
                               lonlabel=NULL, latlabel=NULL, sides=NULL,
                               projection=NULL, parameters=NULL, orientation=NULL,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
@@ -2941,14 +2956,39 @@ setMethod(f="plot",
                                        debug=debug-1)
                               }
                           }
+                          ## draw isobaths
+                          stationLon <- standardizeLongitude(x[["longitude"]][1])
+                          stationLat <- x[["latitude"]][1]
+                          if (is.numeric(drawIsobaths) || (is.logical(drawIsobaths) && drawIsobaths)) {
+                              data("topoWorld", package="oce", envir=environment())
+                              topoWorld <- get("topoWorld")
+                              topoLon <- topoWorld[["longitude"]]
+                              topoLat <- topoWorld[["latitude"]]
+                              topoDep <- -topoWorld[["z"]]
+                              topoDep[topoDep < -1] <- -1 # don't want land contours
+                              itopoLon <- which.min(abs(topoLon - stationLon))
+                              itopoLat <- which.min(abs(topoLat - stationLat))
+                              oceDebug(debug, "itopoLon=", itopoLon, ", lon=", topoLon[itopoLon], "\n")
+                              oceDebug(debug, "itopoLat=", itopoLat, ", lon=", topoLat[itopoLat], "\n")
+                              stationDep <- topoDep[itopoLon, itopoLat]
+                              oceDebug(debug, "stationDep=", stationDep, "\n")
+                              ## choose shelf-type levels if the station is shallow
+                              levels <- if (stationDep < 100) pretty(c(0, 300)) else pretty(c(0, 5500))
+                              if (is.null(projection)) {
+                                  contour(topoLon, topoLat, topoDep, col='lightgray', levels=levels, add=TRUE)
+                              } else {
+                                  mapContour(topoLon, topoLat, topoDep, col='lightgray', levels=levels)
+                              }
+                          }
+                          ## draw station location
                           if (is.null(projection)) {
-                              points(standardizeLongitude(x[["longitude"]]), x[["latitude"]],
-                                     cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+                              points(stationLon, stationLat, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           } else {
                               mapScalebar()
-                              mapPoints(x[["longitude"]], x[["latitude"]],
-                                     cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+                              ## FIXME: used to be non-standardized lon below.
+                              mapPoints(stationLon, stationLat, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           }
+                          ## draw some text in top margin
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
                               mtext(x@metadata$station,
                                     side=3, adj=0, cex=0.8*par("cex"), line=1.125)
