@@ -3776,7 +3776,7 @@ plotProfile <- function (x,
 {
     oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
              "\", debug=", debug, ", ...) {\n", sep="", unindent=1)
-    if (xtype %in% names(x@data))
+    if (length(xtype) == 1 && xtype %in% names(x@data))
         mar[1] <- 1 # the bottom margin is wrong for e.g. NO2+NO3
     eos <- match.arg(eos, c("unesco", "gsw"))
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
