@@ -2975,9 +2975,10 @@ setMethod(f="plot",
                               ## choose shelf-type levels if the station is shallow
                               levels <- if (stationDep < 100) pretty(c(0, 300)) else pretty(c(0, 5500))
                               if (is.null(projection)) {
-                                  contour(topoLon, topoLat, topoDep, col='lightgray', levels=levels, add=TRUE)
+                                  contour(topoLon, topoLat, topoDep, col='gray', vfont=c("sans serif", "bold"),
+                                          levels=levels, add=TRUE)
                               } else {
-                                  mapContour(topoLon, topoLat, topoDep, col='lightgray', levels=levels)
+                                  mapContour(topoLon, topoLat, topoDep, col='gray', levels=levels)
                               }
                           }
                           ## draw station location
