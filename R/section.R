@@ -192,24 +192,19 @@ setMethod(f="summary",
               cat("* ID:     \"", object@metadata$sectionId, "\"\n",sep="")
               stn.sum <- matrix(nrow=numStations, ncol=5)
               if (numStations > 0) {
-                  cat("* Summary of", numStations, "stations (first column is station ID)\n")
+                  cat("Overview of stations\n```\n")
+                  cat(sprintf("%5s %5s %7s %7s %5s\n", "Index", "ID", "Lon", "Lat", "Depth"))
                   for (i in 1:numStations) {
                       stn <- object@data$station[[i]]
-                      stn.sum[i, 1] <- stn@metadata$longitude
-                      stn.sum[i, 2] <- stn@metadata$latitude
-                      stn.sum[i, 3] <- length(stn@data$pressure)
-                      if (!is.null(stn@metadata$waterDepth) && is.finite(stn@metadata$waterDepth)) {
-                          stn.sum[i, 4] <- stn@metadata$waterDepth
-                      } else {
-                          temp <- stn@data$temperature
-                          wdi <- length(temp) - which(!is.na(rev(temp)))[1] + 1
-                          stn.sum[i, 4] <- stn@data$pressure[wdi]
-                      }
-                      stn.sum[i, 5] <- geodDist(lon1, lat1, stn@metadata$longitude, stn@metadata$latitude)
+                      thisStn <- object@data$station[[i]]
+                      id <- if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
+                          thisStn@metadata$station else ""
+                      depth <- if (is.null(thisStn@metadata$waterDepth))
+                          max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
+                      cat(sprintf("%5d %5s %7.2f %7.2f %5.0f\n",
+                                  i, id, thisStn@metadata$longitude[1], thisStn@metadata$latitude[1], depth))
                   }
-                  colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
-                  rownames(stn.sum) <- object@metadata$stationId
-                  print(stn.sum, indent="    ")
+                  cat("```\n")
               } else {
                   cat("* No stations\n")
               }
@@ -413,20 +408,25 @@ setMethod(f="show",
           signature="section",
           definition=function(object) {
               id <- object@metadata$sectionId
-              if (id == "")
-                  cat("Section has stations:\n", sep="")
-              else
-                  cat("Section named '", id, "' has stations:\n", sep="")
-              for (i in seq_along(object@data$station)) {
-                  thisStn <- object@data$station[[i]]
-                  cat("    ")
-                  if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
-                      cat(thisStn@metadata$station, " ")
-                  waterDepth <- if (is.null(thisStn@metadata$waterDepth)) max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
-                  cat(sprintf("%.5f N   %.5f E   %.0f m", thisStn@metadata$latitude,
-                              thisStn@metadata$longitude,
-                              waterDepth))
-                  cat("\n")
+              n <- length(object@data$station)
+              if (n == 0) {
+                  cat("Section has no stations\n")
+              } else {
+                  if (id == "")
+                      cat("Unnamed section has ", n, " stations:\n", sep="")
+                  else
+                      cat("Section '", id, "' has ", n, " stations:\n", sep="")
+                  cat(sprintf("%5s %5s %7s %7s %5s\n", "Index", "ID", "Lon", "Lat", "Depth"))
+                  ##cat(sprintf("%4s %5s %10.2f %10.2f %10.0f\n", "Index", "ID", "Lon", "Lat", "Depth\n"))
+                  for (i in 1:n) {
+                      thisStn <- object@data$station[[i]]
+                      id <- if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
+                          thisStn@metadata$station else ""
+                      depth <- if (is.null(thisStn@metadata$waterDepth))
+                          max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
+                      cat(sprintf("%5d %5s %7.2f %7.2f %5.0f\n",
+                                  i, id, thisStn@metadata$longitude[1], thisStn@metadata$latitude[1], depth))
+                  }
               }
           })
 
