@@ -285,12 +285,19 @@ setMethod(f="[[",
                   }
               }
               ## some derived things (not all ... be sure to document when adding things!)
-              if (i %in% c("theta", "potential temperature", "sigmaTheta")) {
-                  res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
-                  return(res)
-              }
+              ##20160809 if (i %in% c("theta", "potential temperature", "sigmaTheta")) {
+              ##20160809     res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
+              ##20160809     return(res)
+              ##20160809 }
               if (i == "spice") {
-                  return(swSpice(x))
+                  spice <- swSpice(x)
+                  return(spice)
+              } else if (i == "sigmaTheta") {
+                  sigmaTheta <- swSigmaTheta(x)
+                  return(sigmaTheta)
+              } else if (i == "theta" || i == "potential temperature") {
+                  theta <- swTheta(x)
+                  return(theta)
               }
               if (i %in% names(x@metadata)) {
                   if (i %in% c("longitude", "latitude")) {
