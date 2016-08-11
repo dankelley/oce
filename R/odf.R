@@ -591,12 +591,12 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     pushBack(lines, file) # we used to read.table(text=lines, ...) but it is VERY slow
     dataStart <- grep("-- DATA --", lines)
     if (!length(dataStart)) {
-        pushBack(lines, file)
         lines <- readLines(file, encoding="UTF-8")
         dataStart <- grep("-- DATA --", lines)
         if (!length(dataStart)) {
             stop("cannot locate a line containing '-- DATA --'")
         }
+        pushBack(lines, file)
     }
 
     parameterStart <- grep("PARAMETER_HEADER", lines)
