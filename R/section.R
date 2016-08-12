@@ -883,7 +883,11 @@ sectionAddCtd <- sectionAddStation
 #' @param xlim Optional limit for x axis (only in sections, not map).
 #' 
 #' @param ylim Optional limit for y axis (only in sections, not map)
-#' 
+#'
+#' @param zlim Optional two-element numerical vector specifying the
+#' limit on the plotted field. This is used only if \code{ztype="image"};
+#' see also \code{zbreaks} and \code{zcol}.
+#'
 #' @param map.xlim,map.ylim Optional limits for station map; \code{map.ylim} is
 #' ignored if \code{map.xlim} is provided.
 #' 
@@ -908,11 +912,12 @@ sectionAddCtd <- sectionAddStation
 #' In the first two cases, the data must be gridded, with identical pressures at
 #' each station.
 #'     
-#' @param zbreaks,zcol Breaks and colours to be used if \code{ztype="points"} or
-#' \code{"image"}.  If not provided, a reasonable default is chosen.  If
-#' \code{zcol} is a function, it will be invoked with an argument equal to
-#' \code{1+length(zbreaks)}.  If \code{zbreaks} is not given, it defaults to a
-#' vector of length 200, with values spanning the data range.
+#' @param zbreaks,zcol Indication of breaks and colours to be used if \code{ztype="points"} or
+#' \code{"image"}. If not provided, reasonable default are used. If \code{zlim}
+#' is given but \code{breaks} is not given, then \code{breaks} is computed to
+#' run from \code{zlim[1]} to \code{zlim[2]}. If \code{zcol} is a function,
+#' it will be invoked with an argument equal to
+#' \code{1+length(zbreaks)}.
 #' 
 #' @param legend.loc Location of legend, as supplied to \code{\link{legend}}, or
 #' set to the empty string to avoid plotting a legend.
@@ -1021,7 +1026,7 @@ setMethod(f="plot",
                               stationIndices,
                               coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
                                           "coastlineWorldFine", "none"),
-                              xlim=NULL, ylim=NULL,
+                              xlim=NULL, ylim=NULL, zlim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
                               clongitude, clatitude, span,
                               projection=NULL,
@@ -1136,8 +1141,8 @@ setMethod(f="plot",
                       lon <- array(NA_real_, numStations)
                       for (i in 1:numStations) {
                           thisStation <- x[["station", stationIndices[i]]]
-                          lon[i] <- thisStation[["longitude"]]
-                          lat[i] <- thisStation[["latitude"]]
+                          lon[i] <- thisStation[["longitude"]][1]
+                          lat[i] <- thisStation[["latitude"]][1]
                       }
                       lon[lon<0] <- lon[lon<0] + 360
                       asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
@@ -1275,12 +1280,16 @@ setMethod(f="plot",
                       if ((drawPoints || ztype == "image") && !zAllMissing) {
                           ##> message("is.null(zbreaks)=", is.null(zbreaks))
                           if (is.null(zbreaks)) {
-                              ## Use try() to quiet warnings if all data are NA
-                              zRANGE <- try(range(x[[variable]], na.rm=TRUE), silent=TRUE)
-                              if (is.null(zcol) || is.function(zcol)) {
-                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
+                              if (is.null(zlim)) {
+                                  ## Use try() to quiet warnings if all data are NA
+                                  zRANGE <- try(range(x[[variable]], na.rm=TRUE), silent=TRUE)
+                                  if (is.null(zcol) || is.function(zcol)) {
+                                      zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
+                                  } else {
+                                      zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=length(zcol) + 1)
+                                  }
                               } else {
-                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=length(zcol) + 1)
+                                  zbreaks <- seq(zlim[1], zlim[2], length.out=200)
                               }
                           }
                           nbreaks <- length(zbreaks)
@@ -1457,7 +1466,7 @@ setMethod(f="plot",
                               thisStation <- x[["station", i]]
                               pressure <- thisStation[["pressure"]]
                               if (which.xtype == 4) {
-                                  longitude <- thisStation[["longitude"]]
+                                  longitude <- thisStation[["longitude"]][1]
                                   points(rep(longitude, length(pressure)), -pressure, cex=cex, pch=pch, col=col)
                               } else {
                                   ## FIXME: shouldn't the next line work for all types??
@@ -1625,27 +1634,27 @@ setMethod(f="plot",
               xx <- array(NA_real_, numStations)
               yy <- array(NA_real_, num.depths)
               if (is.null(at)) {
-                  lon0 <- firstStation@metadata$longitude
-                  lat0 <- firstStation@metadata$latitude
+                  lon0 <- firstStation[["longitude"]][1]
+                  lat0 <- firstStation[["latitude"]][1]
                   for (ix in 1:numStations) {
                       j <- stationIndices[ix]
                       if (which.xtype == 1) {
                           xx[ix] <- geodDist(lon0, lat0,
-                                             x@data$station[[j]]@metadata$longitude,
-                                             x@data$station[[j]]@metadata$latitude)
+                                             x@data$station[[j]][["longitude"]][1],
+                                             x@data$station[[j]][["latitude"]][1])
                       } else if (which.xtype == 2) {
                           if (ix == 1) {
                               xx[ix] <- 0
                           } else {
-                              xx[ix] <- xx[ix-1] + geodDist(x@data$station[[stationIndices[ix-1]]]@metadata$longitude,
-                                                            x@data$station[[stationIndices[ix-1]]]@metadata$latitude,
-                                                            x@data$station[[j]]@metadata$longitude,
-                                                            x@data$station[[j]]@metadata$latitude)
+                              xx[ix] <- xx[ix-1] + geodDist(x@data$station[[stationIndices[ix-1]]][["longitude"]][1],
+                                                            x@data$station[[stationIndices[ix-1]]][["latitude"]][1],
+                                                            x@data$station[[j]][["longitude"]][1],
+                                                            x@data$station[[j]][["latitude"]][1])
                           }
                       } else if (which.xtype == 3) {
-                          xx[ix] <- x@data$station[[j]]@metadata$longitude
+                          xx[ix] <- x@data$station[[j]][["longitude"]][1]
                       } else if (which.xtype == 4) {
-                          xx[ix] <- x@data$station[[j]]@metadata$latitude
+                          xx[ix] <- x@data$station[[j]][["latitude"]][1]
                       } else if (which.xtype == 5) {
                           ## use ix as a desparate last measure, if there are no times.
                           if (is.null(x@data$station[[j]]@metadata$startTime)) {
