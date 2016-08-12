@@ -291,8 +291,8 @@ setMethod(f="initialize",
               .Object@data$salinity <- if (missing(salinity)) NULL else salinity
               .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
               names <- names(.Object@data)
-              .Object@metadata$names <- names
-              .Object@metadata$labels <- titleCase(names) # paste(toupper(substring(names,1,1)), substring(names,2),sep="")
+              ##.Object@metadata$names <- names
+              ##.Object@metadata$labels <- titleCase(names) # paste(toupper(substring(names,1,1)), substring(names,2),sep="")
               ##.Object@metadata$filename <- filename
               if (missing(units)) {
                   .Object@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
@@ -1092,8 +1092,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if (1 < length(longitude) && length(longitude) != length(salinity))
             stop("lengths of salinity and longitude must match")
         ## FIXME: should sampleInterval be a default?
-        res@metadata$names <- names
-        res@metadata$labels <- labels
+        ##res@metadata$names <- names
+        ##res@metadata$labels <- labels
         res@metadata$filename <- filename
         res@metadata$ship <- ship
         res@metadata$scientist <- scientist
@@ -1202,8 +1202,8 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
     ##r <- range(column)
     res@data[[name]] <- column
     if (!replace) {
-        res@metadata$names <- c(res@metadata$names, name)
-        res@metadata$labels <- c(res@metadata$labels, label)
+        ##res@metadata$names <- c(res@metadata$names, name)
+        ##res@metadata$labels <- c(res@metadata$labels, label)
         if ("dataNamesOriginal" %in% names(res@metadata))
             res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, originalName)
     }
@@ -4586,8 +4586,9 @@ plotProfile <- function (x,
             axis(3)
             #mtext(resizableLabel("pressure", "y"), side=2, line=axis.name.loc, cex=par("cex"))
             mtext(yname, side=2, line=axis.name.loc, cex=par("cex"))
-            label <- if (w <= length(x@metadata$labels)) x@metadata$labels[w] else
-                as.character(xtype)
+            ## label <- if (w <= length(x@metadata$labels)) x@metadata$labels[w] else
+            ##     as.character(xtype)
+            label <- as.character(xtype)
             if (is.character(label) && label == "sigmaTheta")
                 label <- resizableLabel("sigmaTheta", "x")
             label <- resizableLabel(label, "x", unit=x@metadata$units[[label]])

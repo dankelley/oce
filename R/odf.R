@@ -697,8 +697,8 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     }
     if ("time" %in% namesUnits$names)
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
-    res@metadata$names <- namesUnits$names
-    res@metadata$labels <- namesUnits$names
+    ##res@metadata$names <- namesUnits$names
+    ##res@metadata$labels <- namesUnits$names
     res@data <- as.list(data)
 
     ## Return to water depth issue. In a BIO file, I found that the missing-value code was

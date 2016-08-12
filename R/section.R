@@ -2131,8 +2131,8 @@ read.section <- function(file, directory, sectionId="", flags,
                 thisStation@data[[dataNames[idata]]] <- tmp
             }
         }
-        thisStation@metadata$names <- dataNames[!isFlag]
-        thisStation@metadata$labels <- dataNames[!isFlag]
+        ##thisStation@metadata$names <- dataNames[!isFlag]
+        ##thisStation@metadata$labels <- dataNames[!isFlag]
         ##thisStation@metadata$dataNamesOriginal <- dataNamesOriginal[!isFlag]
         thisStation@metadata$dataNamesOriginal <- dataNamesOriginal
         thisStation@metadata$src <- filename

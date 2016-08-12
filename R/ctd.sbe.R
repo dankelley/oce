@@ -829,8 +829,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$recovery <- recovery
     res@metadata$waterDepth <- waterDepth # if NA, will update later
     res@metadata$sampleInterval <- sampleInterval
-    res@metadata$names <- colNamesInferred
-    res@metadata$labels <- colNamesInferred
+    ##res@metadata$names <- colNamesInferred
+    ##res@metadata$labels <- colNamesInferred
     res@metadata$filename <- filename
     if (fileType == "binary") {
         warning("can only read the header of binary .cnv files")

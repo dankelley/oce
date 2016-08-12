@@ -196,8 +196,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         res@metadata$recovery <- recovery
         res@metadata$waterDepth <- max(abs(data$pressure), na.rm=TRUE) # not in header
         res@metadata$sampleInterval <- sampleInterval
-        res@metadata$names <- names
-        res@metadata$labels <- labels
+        ##res@metadata$names <- names
+        ##res@metadata$labels <- labels
         res@metadata$src <- filename
     } else {                           # CTD, 20000718WHPOSIOSCD
         tmp <- sub("(.*), ", "", line)
@@ -362,8 +362,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         res@metadata$recovery <- recovery
         res@metadata$waterDepth <- waterDepth
         res@metadata$sampleInterval <- sampleInterval
-        res@metadata$names <- names
-        res@metadata$labels <- labels
+        ##res@metadata$names <- names
+        ##res@metadata$labels <- labels
         res@metadata$src <- filename
     }
     res@data <- data
