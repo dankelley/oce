@@ -10,10 +10,10 @@
   grid = FALSE, contourLevels = NULL, contourLabels = NULL,
   stationIndices, coastline = c("best", "coastlineWorld",
   "coastlineWorldMedium", "coastlineWorldFine", "none"), xlim = NULL,
-  ylim = NULL, map.xlim = NULL, map.ylim = NULL, clongitude, clatitude,
-  span, projection = NULL, xtype = c("distance", "track", "longitude",
-  "latitude", "time"), ytype = c("depth", "pressure"), ztype = c("contour",
-  "image", "points"), zbreaks = NULL, zcol = NULL,
+  ylim = NULL, zlim = NULL, map.xlim = NULL, map.ylim = NULL,
+  clongitude, clatitude, span, projection = NULL, xtype = c("distance",
+  "track", "longitude", "latitude", "time"), ytype = c("depth", "pressure"),
+  ztype = c("contour", "image", "points"), zbreaks = NULL, zcol = NULL,
   legend.loc = "bottomright", adorn = NULL, showStations = FALSE,
   showStart = TRUE, showBottom = TRUE, axes = TRUE,
   mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, mgp[2] + 1,
@@ -60,6 +60,10 @@ avoid drawing the coastline.}
 
 \item{ylim}{Optional limit for y axis (only in sections, not map)}
 
+\item{zlim}{Optional two-element numerical vector specifying the
+limit on the plotted field. This is used only if \code{ztype="image"};
+see also \code{zbreaks} and \code{zcol}.}
+
 \item{map.xlim, map.ylim}{Optional limits for station map; \code{map.ylim} is
 ignored if \code{map.xlim} is provided.}
 
@@ -84,11 +88,12 @@ below the surface, calculated from pressure with \code{\link{swDepth}}).}
 In the first two cases, the data must be gridded, with identical pressures at
 each station.}
 
-\item{zbreaks, zcol}{Breaks and colours to be used if \code{ztype="points"} or
-\code{"image"}.  If not provided, a reasonable default is chosen.  If
-\code{zcol} is a function, it will be invoked with an argument equal to
-\code{1+length(zbreaks)}.  If \code{zbreaks} is not given, it defaults to a
-vector of length 200, with values spanning the data range.}
+\item{zbreaks, zcol}{Indication of breaks and colours to be used if \code{ztype="points"} or
+\code{"image"}. If not provided, reasonable default are used. If \code{zlim}
+is given but \code{breaks} is not given, then \code{breaks} is computed to
+run from \code{zlim[1]} to \code{zlim[2]}. If \code{zcol} is a function,
+it will be invoked with an argument equal to
+\code{1+length(zbreaks)}.}
 
 \item{legend.loc}{Location of legend, as supplied to \code{\link{legend}}, or
 set to the empty string to avoid plotting a legend.}

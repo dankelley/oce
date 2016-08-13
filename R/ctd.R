@@ -291,8 +291,8 @@ setMethod(f="initialize",
               .Object@data$salinity <- if (missing(salinity)) NULL else salinity
               .Object@data$conductivity <- if (missing(conductivity)) NULL else conductivity
               names <- names(.Object@data)
-              .Object@metadata$names <- names
-              .Object@metadata$labels <- titleCase(names) # paste(toupper(substring(names,1,1)), substring(names,2),sep="")
+              ##.Object@metadata$names <- names
+              ##.Object@metadata$labels <- titleCase(names) # paste(toupper(substring(names,1,1)), substring(names,2),sep="")
               ##.Object@metadata$filename <- filename
               if (missing(units)) {
                   .Object@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
@@ -1092,8 +1092,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if (1 < length(longitude) && length(longitude) != length(salinity))
             stop("lengths of salinity and longitude must match")
         ## FIXME: should sampleInterval be a default?
-        res@metadata$names <- names
-        res@metadata$labels <- labels
+        ##res@metadata$names <- names
+        ##res@metadata$labels <- labels
         res@metadata$filename <- filename
         res@metadata$ship <- ship
         res@metadata$scientist <- scientist
@@ -1202,8 +1202,8 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
     ##r <- range(column)
     res@data[[name]] <- column
     if (!replace) {
-        res@metadata$names <- c(res@metadata$names, name)
-        res@metadata$labels <- c(res@metadata$labels, label)
+        ##res@metadata$names <- c(res@metadata$names, name)
+        ##res@metadata$labels <- c(res@metadata$labels, label)
         if ("dataNamesOriginal" %in% names(res@metadata))
             res@metadata$dataNamesOriginal <- c(res@metadata$dataNamesOriginal, originalName)
     }
@@ -2304,6 +2304,21 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' @param latlim Optional limits of latitude axis of map (ignored if no map
 #' plotted) DEPRECATED 2014-01-07. 
 #' 
+#' @param drawIsobaths An indication of whether to draw depth contours on
+#' maps, in addition to the coastline. The argument has no effect except
+#' for panels in which the value of \code{which} equals \code{"map"} or
+#' the equivalent numerical code, \code{5}. If \code{drawIsobaths} is
+#' \code{FALSE}, then no contours are drawn. If \code{drawIsobaths}
+#' is \code{TRUE}, then contours are selected automatically,
+#' using \code{\link{pretty}(c(0,300))} if the station depth is 
+#' under 100m or \code{\link{pretty}(c(0,5500))} otherwise.
+#' If \code{drawIsobaths} is a numerical vector,
+#' then the indicated depths are drawn. For plots drawn with \code{projection}
+#' set to \code{NULL}, the contours are added with \code{\link{contour}}
+#' and otherwise \code{\link{mapContour}} is used. To customize
+#' the resultant contours, e.g. setting particular line types or colours,
+#' users should call these functions directly (see e.g. Example 2).
+#'
 #' @param clongitude Center longitude.
 #' 
 #' @param clatitude Center latitude.
@@ -2394,9 +2409,25 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' boundaries, with \code{borderCoastline}.
 #' 
 #' @examples
+#' ## 1. simple plot
 #' library(oce)
 #' data(ctd) 
 #' plot(ctd)
+#'
+#' ## 2. how to customize depth contours
+#' par(mfrow=c(1,2))
+#' data(section)
+#' stn <- section[["station", 105]]
+#' plot(stn, which='map', drawIsobaths=TRUE)
+#' plot(stn, which='map')
+#' data(topoWorld)
+#' tlon <- topoWorld[["longitude"]]
+#' tlat <- topoWorld[["latitude"]]
+#' tdep <- -topoWorld[["z"]]
+#' contour(tlon, tlat, tdep, drawlabels=FALSE,
+#'         levels=seq(1000,6000,1000), col='lightblue', add=TRUE)
+#' contour(tlon, tlat, tdep, vfont=c("sans serif", "bold"),
+#'         levels=stn[['waterDepth']], col='red', lwd=2, add=TRUE)
 #' 
 #' @author Dan Kelley
 #' 
@@ -2414,7 +2445,7 @@ setMethod(f="plot",
                               Slim, Clim, Tlim, plim, densitylim, N2lim, Rrholim,
                               dpdtlim, timelim,
                               lonlim, latlim, # FIXME: maybe should be deprecated 2014-01-07
-                              clongitude, clatitude, span, showHemi=TRUE,
+                              drawIsobaths=FALSE, clongitude, clatitude, span, showHemi=TRUE,
                               lonlabel=NULL, latlabel=NULL, sides=NULL,
                               projection=NULL, parameters=NULL, orientation=NULL,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
@@ -2941,14 +2972,45 @@ setMethod(f="plot",
                                        debug=debug-1)
                               }
                           }
+                          ## draw isobaths
+                          stationLon <- standardizeLongitude(x[["longitude"]][1])
+                          stationLat <- x[["latitude"]][1]
+                          if (is.numeric(drawIsobaths) || (is.logical(drawIsobaths) && drawIsobaths)) {
+                              data("topoWorld", package="oce", envir=environment())
+                              topoWorld <- get("topoWorld")
+                              topoLon <- topoWorld[["longitude"]]
+                              topoLat <- topoWorld[["latitude"]]
+                              topoDep <- -topoWorld[["z"]]
+                              topoDep[topoDep < -1] <- -1 # don't want land contours
+                              itopoLon <- which.min(abs(topoLon - stationLon))
+                              itopoLat <- which.min(abs(topoLat - stationLat))
+                              oceDebug(debug, "itopoLon=", itopoLon, ", lon=", topoLon[itopoLon], "\n")
+                              oceDebug(debug, "itopoLat=", itopoLat, ", lon=", topoLat[itopoLat], "\n")
+                              stationDep <- topoDep[itopoLon, itopoLat]
+                              oceDebug(debug, "stationDep=", stationDep, "\n")
+                              ## Auto-select depths differently for stations on the shelf or in 
+                              ## the deap sea. (Notice that the first level, which will be 0m, is
+                              ## trimmed, to avoid messing up the coastline with a contour from
+                              ## coarse topography.
+                              levels <- if (is.logical(drawIsobaths))
+                                  if (stationDep < 100) pretty(c(0, 500))[-1] else pretty(c(0, 5500))[-1]
+                                  else drawIsobaths
+                              if (is.null(projection)) {
+                                  contour(topoLon, topoLat, topoDep, col='gray', vfont=c("sans serif", "bold"),
+                                          levels=levels, add=TRUE)
+                              } else {
+                                  mapContour(topoLon, topoLat, topoDep, col='gray', levels=levels)
+                              }
+                          }
+                          ## draw station location
                           if (is.null(projection)) {
-                              points(standardizeLongitude(x[["longitude"]]), x[["latitude"]],
-                                     cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+                              points(stationLon, stationLat, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           } else {
                               mapScalebar()
-                              mapPoints(x[["longitude"]], x[["latitude"]],
-                                     cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+                              ## FIXME: used to be non-standardized lon below.
+                              mapPoints(stationLon, stationLat, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                           }
+                          ## draw some text in top margin
                           if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
                               mtext(x@metadata$station,
                                     side=3, adj=0, cex=0.8*par("cex"), line=1.125)
@@ -3735,7 +3797,7 @@ plotProfile <- function (x,
 {
     oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
              "\", debug=", debug, ", ...) {\n", sep="", unindent=1)
-    if (xtype %in% names(x@data))
+    if (length(xtype) == 1 && xtype %in% names(x@data))
         mar[1] <- 1 # the bottom margin is wrong for e.g. NO2+NO3
     eos <- match.arg(eos, c("unesco", "gsw"))
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
@@ -3811,8 +3873,12 @@ plotProfile <- function (x,
     dataNames <- names(x@data)
     if (length(xtype) == length(x[["pressure"]]))
         xtype <- xtype[examineIndices]
-    for (dataName in dataNames) {
-        x@data[[dataName]] <- x@data[[dataName]][examineIndices]
+    if (is.data.frame(x@data)) {
+        x@data <- x@data[examineIndices,]
+    } else {
+        for (dataName in dataNames) {
+            x@data[[dataName]] <- x@data[[dataName]][examineIndices]
+        }
     }
     axis.name.loc <- mgp[1]
     know.time.unit <- FALSE
@@ -4520,8 +4586,9 @@ plotProfile <- function (x,
             axis(3)
             #mtext(resizableLabel("pressure", "y"), side=2, line=axis.name.loc, cex=par("cex"))
             mtext(yname, side=2, line=axis.name.loc, cex=par("cex"))
-            label <- if (w <= length(x@metadata$labels)) x@metadata$labels[w] else
-                as.character(xtype)
+            ## label <- if (w <= length(x@metadata$labels)) x@metadata$labels[w] else
+            ##     as.character(xtype)
+            label <- as.character(xtype)
             if (is.character(label) && label == "sigmaTheta")
                 label <- resizableLabel("sigmaTheta", "x")
             label <- resizableLabel(label, "x", unit=x@metadata$units[[label]])

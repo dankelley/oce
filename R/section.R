@@ -192,24 +192,19 @@ setMethod(f="summary",
               cat("* ID:     \"", object@metadata$sectionId, "\"\n",sep="")
               stn.sum <- matrix(nrow=numStations, ncol=5)
               if (numStations > 0) {
-                  cat("* Summary of", numStations, "stations (first column is station ID)\n")
+                  cat("Overview of stations\n```\n")
+                  cat(sprintf("%5s %5s %7s %7s %5s\n", "Index", "ID", "Lon", "Lat", "Depth"))
                   for (i in 1:numStations) {
                       stn <- object@data$station[[i]]
-                      stn.sum[i, 1] <- stn@metadata$longitude
-                      stn.sum[i, 2] <- stn@metadata$latitude
-                      stn.sum[i, 3] <- length(stn@data$pressure)
-                      if (!is.null(stn@metadata$waterDepth) && is.finite(stn@metadata$waterDepth)) {
-                          stn.sum[i, 4] <- stn@metadata$waterDepth
-                      } else {
-                          temp <- stn@data$temperature
-                          wdi <- length(temp) - which(!is.na(rev(temp)))[1] + 1
-                          stn.sum[i, 4] <- stn@data$pressure[wdi]
-                      }
-                      stn.sum[i, 5] <- geodDist(lon1, lat1, stn@metadata$longitude, stn@metadata$latitude)
+                      thisStn <- object@data$station[[i]]
+                      id <- if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
+                          thisStn@metadata$station else ""
+                      depth <- if (is.null(thisStn@metadata$waterDepth))
+                          max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
+                      cat(sprintf("%5d %5s %7.2f %7.2f %5.0f\n",
+                                  i, id, thisStn@metadata$longitude[1], thisStn@metadata$latitude[1], depth))
                   }
-                  colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
-                  rownames(stn.sum) <- object@metadata$stationId
-                  print(stn.sum, indent="    ")
+                  cat("```\n")
               } else {
                   cat("* No stations\n")
               }
@@ -285,12 +280,19 @@ setMethod(f="[[",
                   }
               }
               ## some derived things (not all ... be sure to document when adding things!)
-              if (i %in% c("theta", "potential temperature", "sigmaTheta")) {
-                  res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
-                  return(res)
-              }
+              ##20160809 if (i %in% c("theta", "potential temperature", "sigmaTheta")) {
+              ##20160809     res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
+              ##20160809     return(res)
+              ##20160809 }
               if (i == "spice") {
-                  return(swSpice(x))
+                  spice <- swSpice(x)
+                  return(spice)
+              } else if (i == "sigmaTheta") {
+                  sigmaTheta <- swSigmaTheta(x)
+                  return(sigmaTheta)
+              } else if (i == "theta" || i == "potential temperature") {
+                  theta <- swTheta(x)
+                  return(theta)
               }
               if (i %in% names(x@metadata)) {
                   if (i %in% c("longitude", "latitude")) {
@@ -406,20 +408,25 @@ setMethod(f="show",
           signature="section",
           definition=function(object) {
               id <- object@metadata$sectionId
-              if (id == "")
-                  cat("Section has stations:\n", sep="")
-              else
-                  cat("Section named '", id, "' has stations:\n", sep="")
-              for (i in seq_along(object@data$station)) {
-                  thisStn <- object@data$station[[i]]
-                  cat("    ")
-                  if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
-                      cat(thisStn@metadata$station, " ")
-                  waterDepth <- if (is.null(thisStn@metadata$waterDepth)) max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
-                  cat(sprintf("%.5f N   %.5f E   %.0f m", thisStn@metadata$latitude,
-                              thisStn@metadata$longitude,
-                              waterDepth))
-                  cat("\n")
+              n <- length(object@data$station)
+              if (n == 0) {
+                  cat("Section has no stations\n")
+              } else {
+                  if (id == "")
+                      cat("Unnamed section has ", n, " stations:\n", sep="")
+                  else
+                      cat("Section '", id, "' has ", n, " stations:\n", sep="")
+                  cat(sprintf("%5s %5s %7s %7s %5s\n", "Index", "ID", "Lon", "Lat", "Depth"))
+                  ##cat(sprintf("%4s %5s %10.2f %10.2f %10.0f\n", "Index", "ID", "Lon", "Lat", "Depth\n"))
+                  for (i in 1:n) {
+                      thisStn <- object@data$station[[i]]
+                      id <- if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
+                          thisStn@metadata$station else ""
+                      depth <- if (is.null(thisStn@metadata$waterDepth))
+                          max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
+                      cat(sprintf("%5d %5s %7.2f %7.2f %5.0f\n",
+                                  i, id, thisStn@metadata$longitude[1], thisStn@metadata$latitude[1], depth))
+                  }
               }
           })
 
@@ -876,7 +883,11 @@ sectionAddCtd <- sectionAddStation
 #' @param xlim Optional limit for x axis (only in sections, not map).
 #' 
 #' @param ylim Optional limit for y axis (only in sections, not map)
-#' 
+#'
+#' @param zlim Optional two-element numerical vector specifying the
+#' limit on the plotted field. This is used only if \code{ztype="image"};
+#' see also \code{zbreaks} and \code{zcol}.
+#'
 #' @param map.xlim,map.ylim Optional limits for station map; \code{map.ylim} is
 #' ignored if \code{map.xlim} is provided.
 #' 
@@ -901,11 +912,12 @@ sectionAddCtd <- sectionAddStation
 #' In the first two cases, the data must be gridded, with identical pressures at
 #' each station.
 #'     
-#' @param zbreaks,zcol Breaks and colours to be used if \code{ztype="points"} or
-#' \code{"image"}.  If not provided, a reasonable default is chosen.  If
-#' \code{zcol} is a function, it will be invoked with an argument equal to
-#' \code{1+length(zbreaks)}.  If \code{zbreaks} is not given, it defaults to a
-#' vector of length 200, with values spanning the data range.
+#' @param zbreaks,zcol Indication of breaks and colours to be used if \code{ztype="points"} or
+#' \code{"image"}. If not provided, reasonable default are used. If \code{zlim}
+#' is given but \code{breaks} is not given, then \code{breaks} is computed to
+#' run from \code{zlim[1]} to \code{zlim[2]}. If \code{zcol} is a function,
+#' it will be invoked with an argument equal to
+#' \code{1+length(zbreaks)}.
 #' 
 #' @param legend.loc Location of legend, as supplied to \code{\link{legend}}, or
 #' set to the empty string to avoid plotting a legend.
@@ -1014,7 +1026,7 @@ setMethod(f="plot",
                               stationIndices,
                               coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
                                           "coastlineWorldFine", "none"),
-                              xlim=NULL, ylim=NULL,
+                              xlim=NULL, ylim=NULL, zlim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
                               clongitude, clatitude, span,
                               projection=NULL,
@@ -1129,8 +1141,8 @@ setMethod(f="plot",
                       lon <- array(NA_real_, numStations)
                       for (i in 1:numStations) {
                           thisStation <- x[["station", stationIndices[i]]]
-                          lon[i] <- thisStation[["longitude"]]
-                          lat[i] <- thisStation[["latitude"]]
+                          lon[i] <- thisStation[["longitude"]][1]
+                          lat[i] <- thisStation[["latitude"]][1]
                       }
                       lon[lon<0] <- lon[lon<0] + 360
                       asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
@@ -1268,12 +1280,16 @@ setMethod(f="plot",
                       if ((drawPoints || ztype == "image") && !zAllMissing) {
                           ##> message("is.null(zbreaks)=", is.null(zbreaks))
                           if (is.null(zbreaks)) {
-                              ## Use try() to quiet warnings if all data are NA
-                              zRANGE <- try(range(x[[variable]], na.rm=TRUE), silent=TRUE)
-                              if (is.null(zcol) || is.function(zcol)) {
-                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
+                              if (is.null(zlim)) {
+                                  ## Use try() to quiet warnings if all data are NA
+                                  zRANGE <- try(range(x[[variable]], na.rm=TRUE), silent=TRUE)
+                                  if (is.null(zcol) || is.function(zcol)) {
+                                      zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=200)
+                                  } else {
+                                      zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=length(zcol) + 1)
+                                  }
                               } else {
-                                  zbreaks <- seq(zRANGE[1], zRANGE[2], length.out=length(zcol) + 1)
+                                  zbreaks <- seq(zlim[1], zlim[2], length.out=200)
                               }
                           }
                           nbreaks <- length(zbreaks)
@@ -1450,7 +1466,7 @@ setMethod(f="plot",
                               thisStation <- x[["station", i]]
                               pressure <- thisStation[["pressure"]]
                               if (which.xtype == 4) {
-                                  longitude <- thisStation[["longitude"]]
+                                  longitude <- thisStation[["longitude"]][1]
                                   points(rep(longitude, length(pressure)), -pressure, cex=cex, pch=pch, col=col)
                               } else {
                                   ## FIXME: shouldn't the next line work for all types??
@@ -1618,27 +1634,27 @@ setMethod(f="plot",
               xx <- array(NA_real_, numStations)
               yy <- array(NA_real_, num.depths)
               if (is.null(at)) {
-                  lon0 <- firstStation@metadata$longitude
-                  lat0 <- firstStation@metadata$latitude
+                  lon0 <- firstStation[["longitude"]][1]
+                  lat0 <- firstStation[["latitude"]][1]
                   for (ix in 1:numStations) {
                       j <- stationIndices[ix]
                       if (which.xtype == 1) {
                           xx[ix] <- geodDist(lon0, lat0,
-                                             x@data$station[[j]]@metadata$longitude,
-                                             x@data$station[[j]]@metadata$latitude)
+                                             x@data$station[[j]][["longitude"]][1],
+                                             x@data$station[[j]][["latitude"]][1])
                       } else if (which.xtype == 2) {
                           if (ix == 1) {
                               xx[ix] <- 0
                           } else {
-                              xx[ix] <- xx[ix-1] + geodDist(x@data$station[[stationIndices[ix-1]]]@metadata$longitude,
-                                                            x@data$station[[stationIndices[ix-1]]]@metadata$latitude,
-                                                            x@data$station[[j]]@metadata$longitude,
-                                                            x@data$station[[j]]@metadata$latitude)
+                              xx[ix] <- xx[ix-1] + geodDist(x@data$station[[stationIndices[ix-1]]][["longitude"]][1],
+                                                            x@data$station[[stationIndices[ix-1]]][["latitude"]][1],
+                                                            x@data$station[[j]][["longitude"]][1],
+                                                            x@data$station[[j]][["latitude"]][1])
                           }
                       } else if (which.xtype == 3) {
-                          xx[ix] <- x@data$station[[j]]@metadata$longitude
+                          xx[ix] <- x@data$station[[j]][["longitude"]][1]
                       } else if (which.xtype == 4) {
-                          xx[ix] <- x@data$station[[j]]@metadata$latitude
+                          xx[ix] <- x@data$station[[j]][["latitude"]][1]
                       } else if (which.xtype == 5) {
                           ## use ix as a desparate last measure, if there are no times.
                           if (is.null(x@data$station[[j]]@metadata$startTime)) {
@@ -2115,8 +2131,8 @@ read.section <- function(file, directory, sectionId="", flags,
                 thisStation@data[[dataNames[idata]]] <- tmp
             }
         }
-        thisStation@metadata$names <- dataNames[!isFlag]
-        thisStation@metadata$labels <- dataNames[!isFlag]
+        ##thisStation@metadata$names <- dataNames[!isFlag]
+        ##thisStation@metadata$labels <- dataNames[!isFlag]
         ##thisStation@metadata$dataNamesOriginal <- dataNamesOriginal[!isFlag]
         thisStation@metadata$dataNamesOriginal <- dataNamesOriginal
         thisStation@metadata$src <- filename

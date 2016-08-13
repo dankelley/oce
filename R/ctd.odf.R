@@ -16,7 +16,7 @@
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
-    oceDebug(debug, "read.ctd.odf() {")
+    oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {")
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
     odf <- read.odf(file=file, columns=columns)
     res <- as.ctd(odf)
