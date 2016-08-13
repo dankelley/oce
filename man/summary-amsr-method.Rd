@@ -21,8 +21,10 @@ Dan Kelley
 }
 \seealso{
 Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
-  \code{\link{amsr-class}}, \code{\link{plot,amsr-method}},
-  \code{\link{read.amsr}}, \code{\link{subset,amsr-method}}
+  \code{\link{amsr-class}},
+  \code{\link{composite,amsr-method}},
+  \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
+  \code{\link{subset,amsr-method}}
 }
 \concept{
 satellite

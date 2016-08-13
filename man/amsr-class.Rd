@@ -34,11 +34,7 @@ Dan Kelley and Chantelle Layton
 \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 
 Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
-  \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
-  \code{\link{subset,amsr-method}},
-  \code{\link{summary,amsr-method}}
-
-Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
+  \code{\link{composite,amsr-method}},
   \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
   \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}

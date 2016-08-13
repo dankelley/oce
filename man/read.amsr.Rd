@@ -39,7 +39,9 @@ Dan Kelley and Chantelle Layton
 \code{\link{plot,amsr-method}} for an example.
 
 Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
-  \code{\link{amsr-class}}, \code{\link{plot,amsr-method}},
+  \code{\link{amsr-class}},
+  \code{\link{composite,amsr-method}},
+  \code{\link{plot,amsr-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}
 }

@@ -28,7 +28,6 @@
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 #'
 #' @family things related to \code{amsr} data
-#' @family things related to \code{amsr} data
 setClass("amsr", contains="satellite")
 
 setMethod(f="initialize",
@@ -68,8 +67,8 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("Amsr Summary\n------------\n\n")
               showMetadataItem(object, "filename",   "Data file:           ")
-              cat(sprintf("* Longitude range:      %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude,1))) 
-              cat(sprintf("* Latitude range:       %.4fE to %.4fE\n", object@metadata$latitude[1], tail(object@metadata$latitude,1))) 
+              cat(sprintf("* Longitude range:     %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude,1))) 
+              cat(sprintf("* Latitude range:      %.4fN to %.4fN\n", object@metadata$latitude[1], tail(object@metadata$latitude,1))) 
               for (name in names(object@data)) {
                   object@data[[name]] <- object[[name]] # translate to science units
               }
@@ -367,6 +366,7 @@ setMethod(f="plot",
                         col=c("transparent", missingColor[[codeName]]), add=TRUE)
                   ##message("did code ", codes[[codeName]], " (colour ", missingColor[[codeName]], ")")
               }
+              box()
               oceDebug(debug, "} # plot.amsr()\n", unindent=1)
           })
 
@@ -494,3 +494,50 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
     res
 }
 
+#' @title Average objects to create a composite
+#' @details
+#' Form averages for each item in the \code{data} slot of the supplied objects,
+#' taking into account the bad-data codes. If none of the objects has good
+#' data at any particular pixel (i.e. particular latitude and longitude),
+#' the resultant will have the bad-data code of the last item in the argument
+#' list.
+#' The metadata in the result are taken directly from the metadata of the
+#' final argument, except that the filename is set to a comma-separated list
+#' of the component filenames.
+#' @family things related to \code{amsr} data
+#' @family functions that create composite objects
+#' @template compositeTemplate
+setMethod("composite",
+          c(object="amsr"),
+          function(object, ...) {
+              dots <- list(...)
+              ndots <- length(dots)
+              if (ndots < 2)
+                  stop("need more than one argument")
+              for (idot in 1:ndots)
+                  if (!inherits(dots[[idot]], "amsr")) stop("argument ", 1+idot, " does not inherit from 'amsr'")
+              ## inherit most of the metadata from the last argument
+              res <- dots[[ndots]]
+              filenames <- object[["filename"]]
+              for (idot in 1:ndots)
+                  filenames <- paste(filenames, ",", dots[[idot]][["filename"]], sep="")
+              n <- 1 + ndots
+              dim <- c(dim(object@data[[1]]), n)
+              for (name in names(object@data)) {
+                  a <- array(as.raw(0xff), dim=dim)
+                  ##message("A name='", name, "'")
+                  a[,,1] <- object@data[[name]]
+                  ##message("B")
+                  for (idot in 1:ndots) {
+                      ##message("C idot=", idot)
+                      a[,,1+idot] <- dots[[idot]]@data[[name]]
+                      ##message("D idot=", idot)
+                  }
+                  ##message("E")
+                  A <- .Call("amsr_composite", a)
+                  ##message("F")
+                  res@data[[name]] <- A
+              }
+              res@metadata$filename <- filenames
+              res
+          })
