@@ -8,7 +8,6 @@
 \S4method{composite}{ANY}(object, ...)
 }
 \arguments{
-<<<<<<< HEAD
 \item{object}{An object inheriting from \link{oce-class}.}
 
 \item{...}{Other oce objects of the same inheritance as \code{object}.}
@@ -24,11 +23,5 @@ the particular bad-data codes of that particular class.
 \seealso{
 Other functions that create composite objects: \code{\link{composite,amsr-method}},
   \code{\link{composite}}
-=======
-\item{object}{Any object.}
-}
-\description{
-Combine several oce objects into a composite
->>>>>>> 8fbff8a36b48d85c0e9d20ebed94172b929524d5
 }
 

@@ -21,6 +21,7 @@ the particular bad-data codes of that particular class.
 This only works for objects inheriting from \code{\link{amsr-class}}.
 }
 \seealso{
-Other functions that create composite objects: \code{\link{composite,amsr-method}}
+Other functions that create composite objects: \code{\link{composite,ANY-method}},
+  \code{\link{composite,amsr-method}}
 }
 

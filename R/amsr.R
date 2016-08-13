@@ -506,15 +506,11 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
 #' of the component filenames.
 #' @family things related to \code{amsr} data
 #' @family functions that create composite objects
-<<<<<<< HEAD
 #' @template compositeTemplate
-=======
->>>>>>> 8fbff8a36b48d85c0e9d20ebed94172b929524d5
 setMethod("composite",
           c(object="amsr"),
           function(object, ...) {
               dots <- list(...)
-<<<<<<< HEAD
               ndots <- length(dots)
               if (ndots < 2)
                   stop("need more than one argument")
@@ -544,7 +540,4 @@ setMethod("composite",
               }
               res@metadata$filename <- filenames
               res
-=======
-              message("in composite for AMSR, with ", 1+length(dots), " elements")
->>>>>>> 8fbff8a36b48d85c0e9d20ebed94172b929524d5
           })
