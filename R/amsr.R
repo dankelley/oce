@@ -28,7 +28,6 @@
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 #'
 #' @family things related to \code{amsr} data
-#' @family things related to \code{amsr} data
 setClass("amsr", contains="satellite")
 
 setMethod(f="initialize",
@@ -495,3 +494,21 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
     res
 }
 
+#' @title Average objects to create a composite
+#' @details
+#' Form averages for each item in the \code{data} slot of the supplied objects,
+#' taking into account the bad-data codes. If none of the objects has good
+#' data at any particular pixel (i.e. particular latitude and longitude),
+#' the resultant will have the bad-data code of the last item in the argument
+#' list.
+#' The metadata in the result are taken directly from the metadata of the
+#' final argument, except that the filename is set to a comma-separated list
+#' of the component filenames.
+#' @family things related to \code{amsr} data
+#' @family functions that create composite objects
+setMethod("composite",
+          c(object="amsr"),
+          function(object, ...) {
+              dots <- list(...)
+              message("in composite for AMSR, with ", 1+length(dots), " elements")
+          })

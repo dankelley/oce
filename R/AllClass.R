@@ -401,6 +401,29 @@ setMethod(f="show",
               }
           })
 
+#' @title Create a composite object by averaging across good data
+#' @details
+#' This only works for objects inheriting from \code{\link{amsr-class}}.
+#' @template compositeTemplate
+setGeneric("composite", function(object, ...) {
+           standardGeneric("composite")
+         })
+
+
+#' Combine several oce objects into a composite
+#' @param object Any object.
+setMethod("composite",
+          c(object="ANY"),
+          function(object, ...) {
+              if (inherits(object, "amsr")) {
+                  message("should do the AMSR composite now")
+              } else {
+                  message("can only handle AMSR objects so far")
+              }
+          })
+
+
+
 #' @title Handle flags in oce objects
 #' @details
 #' Each specialized variant of this function has its own defaults
