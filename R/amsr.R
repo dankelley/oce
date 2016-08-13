@@ -367,6 +367,7 @@ setMethod(f="plot",
                         col=c("transparent", missingColor[[codeName]]), add=TRUE)
                   ##message("did code ", codes[[codeName]], " (colour ", missingColor[[codeName]], ")")
               }
+              box()
               oceDebug(debug, "} # plot.amsr()\n", unindent=1)
           })
 

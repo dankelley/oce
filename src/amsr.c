@@ -86,3 +86,66 @@ SEXP amsr_average(SEXP a, SEXP b)
   UNPROTECT(3);
   return(res);
 }
+
+// R-exts.pdf sec 5.9.6, page 117
+SEXP getListElement(SEXP list, const char *str)
+{
+  SEXP elmt = R_NilValue, names = getAttrib(list, R_NamesSymbol);
+  for (int i = 0; i < length(list); i++) {
+    if (strcmp(CHAR(STRING_ELT(names, i)), str) == 0) {
+      elmt = VECTOR_ELT(list, i);
+      break;
+    }
+  }
+  return elmt;
+}
+
+/*
+ 
+   system("R CMD shlib amsr.c")
+   dyn.load("amsr.so")
+   a <- array(as.raw(0:255), dim=c(20,20,3))
+   A <- .Call("amsr_composite", a)
+
+*/
+
+
+// a is an array with e.g. a[,,1] being a matrix of data in the first image
+SEXP amsr_composite(SEXP a)
+{
+  Rprintf("amsr_composite ...\n");
+  PROTECT(a = AS_RAW(a));
+  unsigned char *ap = RAW_POINTER(a);
+  unsigned int n1 = INTEGER(GET_DIM(a))[0];
+  unsigned int n2 = INTEGER(GET_DIM(a))[1];
+  unsigned int n3 = INTEGER(GET_DIM(a))[2];
+  unsigned int n12 = n1 * n2;
+  Rprintf("amsr_composite n1=%d n2=%d n3=%d n12=%d\n", n1, n2, n3, n12);
+  SEXP res;
+  PROTECT(res = NEW_RAW(n12));
+  unsigned char *resp = RAW_POINTER(res);
+  unsigned char A;
+  for (int i = 0; i < n12; i++) {
+    double sum = 0.0;
+    int nsum = 0;
+    if (i < 300) Rprintf("i=%d:\n", i);
+    for (int i3 = 0; i3 < n3; i3++) {
+      A = ap[i + n12*i3];
+      if (A < 0xfb) {
+	sum += A;
+	nsum++;
+	if (i < 300) Rprintf("    i3=%3d A=%3d=0x%02x sum=%5.1f nsum=%d\n", i3, (int)A, A, sum, nsum);
+      } else {
+	if (i < 300) Rprintf("    i3=%3d A=%3d=0x%02x SKIPPED\n", i3, (int)A, A);
+      }
+    }
+    if (nsum)
+      resp[i] = (unsigned char)floor(0.5 + sum/nsum);
+    else
+      resp[i] = A; // will be >= 0xfb ... we inherit the NA type from last image
+    if (i < 300) Rprintf("    resp=%d=0x%02x\n", (int)resp[i], resp[i]);
+  }
+  UNPROTECT(2);
+  return res;
+}
+
