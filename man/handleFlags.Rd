@@ -56,15 +56,10 @@ for \code{flags} and \code{actions}.
 }
 \section{Implementation status}{
  \code{handleFlags} is a new function as of March 2016,
-and it will probably change through the Spring of 2016.
-Almost nothing works yet, and users should not be doing
-any more than looking at the documentation and telling the developers
+and it will probably continue to evolve through the rest of 2016.
+Users are asked to be patient, and to provide help by
+looking at the documentation and telling the developers
 whether the planned functioning seems reasonable.
-The hope is to get trial code working for \code{ctd}
-and \code{argo} data types by the end of April. After that, there
-will likely  be a month or more of testing with real-world
-work, with possible changes to the user interface. Then other
-types will be added, as needed.
 }
 \seealso{
 Other functions that handle data-quality flags: \code{\link{handleFlags,argo-method}},
