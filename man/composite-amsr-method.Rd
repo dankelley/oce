@@ -7,6 +7,7 @@
 \usage{
 \S4method{composite}{amsr}(object, ...)
 }
+<<<<<<< HEAD
 \arguments{
 \item{object}{An object inheriting from \link{oce-class}.}
 
@@ -18,6 +19,8 @@ objects that are supplied as arguments are averaged in a way that
 makes sense for the object class, i.e. taking into account
 the particular bad-data codes of that particular class.
 }
+=======
+>>>>>>> 8fbff8a36b48d85c0e9d20ebed94172b929524d5
 \details{
 Form averages for each item in the \code{data} slot of the supplied objects,
 taking into account the bad-data codes. If none of the objects has good
@@ -29,11 +32,15 @@ final argument, except that the filename is set to a comma-separated list
 of the component filenames.
 }
 \seealso{
+<<<<<<< HEAD
 Other functions that create composite objects: \code{\link{composite,ANY-method}},
   \code{\link{composite}}
 
 Other functions that create composite objects: \code{\link{composite,ANY-method}},
   \code{\link{composite}}
+=======
+Other functions that create composite objects: \code{\link{composite}}
+>>>>>>> 8fbff8a36b48d85c0e9d20ebed94172b929524d5
 
 Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{amsr-class}}, \code{\link{plot,amsr-method}},
