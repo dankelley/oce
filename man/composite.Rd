@@ -7,9 +7,13 @@
 composite(object, ...)
 }
 \arguments{
-\item{object}{An object inheriting from \link{oce-class}.}
+\item{object}{Either a \code{\link{list}} of \link{oce-class} objects, in
+which case this is the only argument, or a single \link{oce-class} object,
+in which case at least one other argument (an object of the size)
+must be supplied.}
 
-\item{...}{Other oce objects of the same inheritance as \code{object}.}
+\item{...}{Ignored, if \code{object} is a list. Otherwise, one or more
+\code{oce-class} objects of the same sub-class as the first argument.}
 }
 \description{
 Items within the \code{data} slots of the
@@ -21,7 +25,7 @@ the particular bad-data codes of that particular class.
 This only works for objects inheriting from \code{\link{amsr-class}}.
 }
 \seealso{
-Other functions that create composite objects: \code{\link{composite,ANY-method}},
-  \code{\link{composite,amsr-method}}
+Other functions that create composite objects: \code{\link{composite,amsr-method}},
+  \code{\link{composite,list-method}}
 }
 

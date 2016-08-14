@@ -3,14 +3,14 @@
 \docType{methods}
 \name{composite,amsr-method}
 \alias{composite,amsr-method}
-\title{Average objects to create a composite}
+\title{Create a composite of amsr satellite data}
 \usage{
 \S4method{composite}{amsr}(object, ...)
 }
 \arguments{
-\item{object}{An object inheriting from \link{oce-class}.}
+\item{object}{An object inheriting from \link{amsr-class}.}
 
-\item{...}{Other oce objects of the same inheritance as \code{object}.}
+\item{...}{Other amsr objects.}
 }
 \description{
 Items within the \code{data} slots of the
@@ -29,10 +29,7 @@ final argument, except that the filename is set to a comma-separated list
 of the component filenames.
 }
 \seealso{
-Other functions that create composite objects: \code{\link{composite,ANY-method}},
-  \code{\link{composite}}
-
-Other functions that create composite objects: \code{\link{composite,ANY-method}},
+Other functions that create composite objects: \code{\link{composite,list-method}},
   \code{\link{composite}}
 
 Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
