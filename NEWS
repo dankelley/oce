@@ -1,4 +1,5 @@
 0.9-20
+- composite() added
 - addColumn() marked as deprecated
 - read.cm.s4() reads all data in file
 - as.cm() added
