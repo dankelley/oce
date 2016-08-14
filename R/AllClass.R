@@ -404,21 +404,35 @@ setMethod(f="show",
 #' @title Create a composite object by averaging across good data
 #' @details
 #' This only works for objects inheriting from \code{\link{amsr-class}}.
+#' @param object Either a \code{\link{list}} of \link{oce-class} objects, in
+#' which case this is the only argument, or a single \link{oce-class} object,
+#' in which case at least one other argument (an object of the size)
+#' must be supplied.
+#' @param ... Ignored, if \code{object} is a list. Otherwise, one or more
+#' \code{oce-class} objects of the same sub-class as the first argument.
 #' @template compositeTemplate
 setGeneric("composite", function(object, ...) {
            standardGeneric("composite")
          })
 
 
-#' Combine several oce objects into a composite
+#' @title Create a composite object by averaging across good data stored in a list
+#' @param object A \code{\link{list}} of \link{oce-class} objects. This is done
+#' by calling a specialized version of the function defined in the given
+#' class. In the present
+#' version, the objects must inherit from \link{amsr-class}, so the
+#' action is to call
+#' \code{\link{composite,amsr-method}}.
 #' @template compositeTemplate
 setMethod("composite",
-          c(object="ANY"),
-          function(object, ...) {
-              if (inherits(object, "amsr")) {
-                  message("should do the AMSR composite now")
+          c(object="list"),
+          function(object) {
+              if (length(object) < 2)
+                  object
+              if (inherits(object[[1]], "amsr")) {
+                  do.call("composite", object)
               } else {
-                  message("can only handle AMSR objects so far")
+                  stop("In composite(list) : only AMSR objects are handled")
               }
           })
 

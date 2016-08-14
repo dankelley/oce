@@ -494,7 +494,7 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
     res
 }
 
-#' @title Average objects to create a composite
+#' @title Create a composite of amsr satellite data
 #' @details
 #' Form averages for each item in the \code{data} slot of the supplied objects,
 #' taking into account the bad-data codes. If none of the objects has good
@@ -504,8 +504,11 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
 #' The metadata in the result are taken directly from the metadata of the
 #' final argument, except that the filename is set to a comma-separated list
 #' of the component filenames.
+#'
+#' @param object An object inheriting from \link{amsr-class}.
+#' @param ... Other amsr objects.
+#'
 #' @family things related to \code{amsr} data
-#' @family functions that create composite objects
 #' @template compositeTemplate
 setMethod("composite",
           c(object="amsr"),
