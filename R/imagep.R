@@ -552,7 +552,7 @@ drawPalette <- function(zlim, zlab="",
 #'         must be supplied and, within each, the values must be finite and
 #'         distinct; if values are out of order, they (and \code{z}) will be
 #'         transformed to put them in order.
-#'         ordered in a matching way).  \strong{Mode 2.}
+#'         ordered in a matching way).  \emph{Mode 2.}
 #'         If \code{z} is provided but not \code{x} and \code{y}, then the latter
 #'         are constructed to 
 #'         indicate the indices of the matrix, in contrast
