@@ -836,7 +836,7 @@ imagep <- function(x, y, z,
     zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot,adp-method
     xlimGiven <- !missing(xlim)
     if (zlimGiven && is.character(zlim)) {
-        if ("symmetrical" == zlim) {
+        if ("symmetric" == zlim) {
             zlim <- c(-1, 1) * max(abs(z), na.rm=TRUE)
         }
     }
