@@ -1086,7 +1086,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ##20150712                                              "inferred water depth from maximum pressure")
         ##20150712 }
         names <- names(data)
-        labels <- titleCase(names) # paste(toupper(substring(names,1,1)),substring(names,2),sep="")
+        ##labels <- titleCase(names) # paste(toupper(substring(names,1,1)),substring(names,2),sep="")
         if (length(longitude) != length(latitude))
             stop("lengths of longitude and latitude must match")
         if (1 < length(longitude) && length(longitude) != length(salinity))

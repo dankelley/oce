@@ -185,17 +185,17 @@ setMethod(f="summary",
           signature="section",
           definition=function(object, ...) {
               numStations <- length(object@data$station)
-              lat1 <- object@data$station[[1]]@metadata$latitude
-              lon1 <- object@data$station[[1]]@metadata$longitude
+              ##lat1 <- object@data$station[[1]]@metadata$latitude
+              ##lon1 <- object@data$station[[1]]@metadata$longitude
               cat("Section Summary\n---------------\n\n")
               cat("* Source: \"", object@metadata$filename, "\"\n", sep="")
               cat("* ID:     \"", object@metadata$sectionId, "\"\n",sep="")
-              stn.sum <- matrix(nrow=numStations, ncol=5)
+              ##stn.sum <- matrix(nrow=numStations, ncol=5)
               if (numStations > 0) {
                   cat("Overview of stations\n```\n")
                   cat(sprintf("%5s %5s %7s %7s %5s\n", "Index", "ID", "Lon", "Lat", "Depth"))
                   for (i in 1:numStations) {
-                      stn <- object@data$station[[i]]
+                      ##stn <- object@data$station[[i]]
                       thisStn <- object@data$station[[i]]
                       id <- if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
                           thisStn@metadata$station else ""

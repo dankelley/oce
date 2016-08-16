@@ -332,7 +332,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         flags <- as.list(dataAndFlags[, flags])
         names(flags) <- gsub("Flag", "", names(flags))
         names <- names(data)
-        labels <- titleCase(names)
+        ##labels <- titleCase(names)
         if (is.na(waterDepth)) {
             waterDepth <- max(abs(data$pressure), na.rm=TRUE)
             waterDepthWarning <- TRUE
