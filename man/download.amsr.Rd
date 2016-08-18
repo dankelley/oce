@@ -2,36 +2,40 @@
 % Please edit documentation in R/amsr.R
 \name{download.amsr}
 \alias{download.amsr}
-\title{Download an AMSR2 file from the server, caching result in destdir}
+\title{Download and Cache an amsr File}
 \usage{
 download.amsr(year, month, day, destdir = ".",
   server = "ftp.ssmi.com/amsr2/bmaps_v07.2")
 }
 \arguments{
-\item{year, month, day}{Numerical values of the year, month, and day.
-If the first two of these are missing and the third is negative, 
-\code{download.amsr} will seek data relative to the present date, e.g.
-specifying \code{day=-3} will seek an image from three days ago (which
-may be the most recent image that is available, depending on the timezone
-and the time the function is called).}
+\item{year, month, day}{Numerical values of the year, month, and day
+of the desired dataset. Note that one file is archived per day, 
+so these three values uniquely identify a dataset.
+If \code{day} and \code{month} are not provided but \code{day} is,
+then the time is provided in a relative sense, based on the present
+date, with \code{day} indicating the number of days in the past.
+Owing to issues with timezones and the time when the data
+are uploaded to the server, \code{day=3} may yield the
+most recent available data. For this reason, there is a 
+third option, which is to leave \code{day} unspecified, which
+works as though \code{day=3} had been given.}
 
-\item{destdir}{Character value of the directory in which to cache resultant files}
+\item{destdir}{String naming the directory in which to cache resultant files.}
 
-\item{sever}{Character value of the server}
+\item{server}{String naming the server from which data are to be acquired.}
+}
+\value{
+A character value indicating the filename of the result; if
+there is a problem of any kind, the result will be the empty
+string.
 }
 \description{
 If the file is already present in \code{destdir}, then it is not
 downloaded again. The default \code{destdir} is the present directory,
 but it probably makes more sense to use something like \code{"~/data/amsr"}
-or something of that nature, so that other scripts can also use the
-cached data.
+to make it easy for scripts in other directories to use the cached data.
 }
 \details{
-Messages are printed to indicate the progress of the download, or to
-indicate that a cached value is being used.
-}
-\section{Limitation}{
-
 This function relies on the system utility \code{ftp}, and also on local directories
 being separated by forward slashes in the file system. That means it will probably
 only work on unix-like systems.

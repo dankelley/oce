@@ -371,46 +371,50 @@ setMethod(f="plot",
           })
 
 
-#' Download an AMSR2 file from the server, caching result in destdir
+#' Download and Cache an amsr File
 #'
 #' If the file is already present in \code{destdir}, then it is not
 #' downloaded again. The default \code{destdir} is the present directory,
 #' but it probably makes more sense to use something like \code{"~/data/amsr"}
-#' or something of that nature, so that other scripts can also use the
-#' cached data.
+#' to make it easy for scripts in other directories to use the cached data.
 #'
-#' Messages are printed to indicate the progress of the download, or to
-#' indicate that a cached value is being used.
-#'
-#' @param year,month,day  Numerical values of the year, month, and day.
-#' If the first two of these are missing and the third is negative, 
-#' \code{download.amsr} will seek data relative to the present date, e.g.
-#' specifying \code{day=-3} will seek an image from three days ago (which
-#' may be the most recent image that is available, depending on the timezone
-#' and the time the function is called).
-#'
-#' @param destdir Character value of the directory in which to cache resultant files
-#' @param sever Character value of the server
-#'
-#' @value A character value indicating the filename of the result.
-#'
-#' @section Limitation:
+#' @details
 #' This function relies on the system utility \code{ftp}, and also on local directories
 #' being separated by forward slashes in the file system. That means it will probably
 #' only work on unix-like systems.
+#'
+#' @param year,month,day Numerical values of the year, month, and day
+#' of the desired dataset. Note that one file is archived per day, 
+#' so these three values uniquely identify a dataset.
+#' If \code{day} and \code{month} are not provided but \code{day} is,
+#' then the time is provided in a relative sense, based on the present
+#' date, with \code{day} indicating the number of days in the past.
+#' Owing to issues with timezones and the time when the data
+#' are uploaded to the server, \code{day=3} may yield the
+#' most recent available data. For this reason, there is a 
+#' third option, which is to leave \code{day} unspecified, which
+#' works as though \code{day=3} had been given.
+#' @param destdir String naming the directory in which to cache resultant files.
+#' @param server String naming the server from which data are to be acquired.
+#'
+#' @return A character value indicating the filename of the result; if
+#' there is a problem of any kind, the result will be the empty
+#' string.
 download.amsr <- function(year, month, day, destdir=".", server="ftp.ssmi.com/amsr2/bmaps_v07.2")
 {
     ## ftp ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/y2016/m08/f34_20160804v7.2.gz
     if (missing(year) && missing(month)) {
-        if (day < 0) {
-            today <- as.POSIXlt(Sys.Date() - day)
-            year <- 1900 + today$year
-            month <- 1 + today$mon
-            day <- today$mday
-        } else {
-            stop("if 'year' and 'month' are not supplied, 'day' must be negative")
-        }
+        if (missing(day))
+            day <- 3
+        day <- abs(day)
+        today <- as.POSIXlt(Sys.Date() - day)
+        year <- 1900 + today$year
+        month <- 1 + today$mon
+        day <- today$mday
     }
+    year <- as.integer(year)
+    month <- as.integer(month)
+    day <- as.integer(day)
     destfile <- sprintf("f34_%4d%02d%02dv7.2.gz", year, month, day)
     destpath <- paste(destdir, destfile, sep="/")
     res <- destfile
