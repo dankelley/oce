@@ -322,7 +322,11 @@ setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
           definition=function(x, y, asp,
-                              missingColor=list(land='papayawhip',none='gray',bad='orange',ice='plum',rain='mediumseagreen'),
+                              missingColor=list(land='papayaWhip',
+                                                none='lightGray',
+                                                bad='gray',
+                                                rain='plum',
+                                                ice='mediumVioletRed'),
                               debug=getOption("oceDebug"), ...)
           {
               oceDebug(debug, "plot.amsr(..., y=c(",

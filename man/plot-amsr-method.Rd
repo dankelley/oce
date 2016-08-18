@@ -5,8 +5,8 @@
 \alias{plot,amsr-method}
 \title{Plot an amsr Object}
 \usage{
-\S4method{plot}{amsr}(x, y, asp, missingColor = list(land = "papayawhip", none
-  = "gray", bad = "orange", ice = "plum", rain = "mediumseagreen"),
+\S4method{plot}{amsr}(x, y, asp, missingColor = list(land = "papayaWhip", none
+  = "lightGray", bad = "gray", rain = "plum", ice = "mediumVioletRed"),
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
