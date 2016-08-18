@@ -1,4 +1,5 @@
 0.9-20
+- download.amsr() added
 - composite() added
 - addColumn() marked as deprecated
 - read.cm.s4() reads all data in file

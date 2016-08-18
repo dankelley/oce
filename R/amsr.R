@@ -371,6 +371,64 @@ setMethod(f="plot",
           })
 
 
+#' Download an AMSR2 file from the server, caching result in destdir
+#'
+#' If the file is already present in \code{destdir}, then it is not
+#' downloaded again. The default \code{destdir} is the present directory,
+#' but it probably makes more sense to use something like \code{"~/data/amsr"}
+#' or something of that nature, so that other scripts can also use the
+#' cached data.
+#'
+#' Messages are printed to indicate the progress of the download, or to
+#' indicate that a cached value is being used.
+#'
+#' @param year,month,day  Numerical values of the year, month, and day.
+#' If the first two of these are missing and the third is negative, 
+#' \code{download.amsr} will seek data relative to the present date, e.g.
+#' specifying \code{day=-3} will seek an image from three days ago (which
+#' may be the most recent image that is available, depending on the timezone
+#' and the time the function is called).
+#'
+#' @param destdir Character value of the directory in which to cache resultant files
+#' @param sever Character value of the server
+#'
+#' @value A character value indicating the filename of the result.
+#'
+#' @section Limitation:
+#' This function relies on the system utility \code{ftp}, and also on local directories
+#' being separated by forward slashes in the file system. That means it will probably
+#' only work on unix-like systems.
+download.amsr <- function(year, month, day, destdir=".", server="ftp.ssmi.com/amsr2/bmaps_v07.2")
+{
+    ## ftp ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/y2016/m08/f34_20160804v7.2.gz
+    if (missing(year) && missing(month)) {
+        if (day < 0) {
+            today <- as.POSIXlt(Sys.Date() - day)
+            year <- 1900 + today$year
+            month <- 1 + today$mon
+            day <- today$mday
+        } else {
+            stop("if 'year' and 'month' are not supplied, 'day' must be negative")
+        }
+    }
+    destfile <- sprintf("f34_%4d%02d%02dv7.2.gz", year, month, day)
+    destpath <- paste(destdir, destfile, sep="/")
+    res <- destfile
+    if (0 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
+        cmd <- sprintf("ftp ftp://%s/y%4d/m%02d/%s", server, year, month, destfile)
+        message("Downloading ", destfile)
+        message("    ", cmd)
+        system(cmd)
+        if (destdir != ".")
+            system(paste("mv", destfile, destpath))
+    } else {
+        message("Not downloading ", destfile, " because it is already present in ", destdir)
+    }
+    if (destdir == ".") destfile else destpath
+}
+
+
+
 #' Read an amsr File
 #'
 #' Read a compressed amsr file, generating an object that inherits from
