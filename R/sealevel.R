@@ -550,7 +550,7 @@ setMethod(f="plot",
                                type='l',xlim=c(0,0.1))
                           if (adornLength > 3) {
                               t <- try(eval(adorn[4]), silent=TRUE)
-                              if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
+                              if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]")
                           }
                           grid()
                           drawConstituents()
@@ -570,7 +570,7 @@ setMethod(f="plot",
                   if (adornLength > 1) {
                       t <- try(eval(adorn[w]), silent=TRUE)
                       if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]\n")
+                          warning("cannot evaluate adorn[", w, "]")
                   }
               }
               oceDebug(debug, "} # plot.sealevel()\n", unindent=1)

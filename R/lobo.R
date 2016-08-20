@@ -314,7 +314,7 @@ setMethod(f="plot",
                   }
                   if (adornLength > 0) {
                       t <- try(eval(adorn[1]), silent=TRUE)
-                      if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
+                      if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]")
                   }
               }
 
@@ -323,7 +323,7 @@ setMethod(f="plot",
 #                  plot.lobo.timeseries.uv(x, ...)
 #                  if (adornLength > 0) {
 #                      t <- try(eval(adorn[2]), silent=TRUE)
-#                      if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]\n")
+#                      if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]")
 #                  }
 #              }
 #
@@ -331,14 +331,14 @@ setMethod(f="plot",
 #              plot.lobo.timeseries.biology(x, ...)
 #              if (adornLength > 0) {
 #                  t <- try(eval(adorn[3]), silent=TRUE)
-#                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 3, "]\n")
+#                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 3, "]")
 #              }
 #
 #              par(mar=c(mgp[1]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
 #              plot.lobo.TS(x, ...)
 #              if (adornLength > 0) {
 #                  t <- try(eval(adorn[4]), silent=TRUE)
-#                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
+#                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]")
 #              }
           })
 

@@ -239,7 +239,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
                  hadj=hadj, padj=padj, tcl=tcl, cex.axis=cex.axis)
         }
         if (length(latitude)) {
-            warning("mapAxis(side=1) cannot draw latitude labels yet; contact author if you need this\n")
+            warning("mapAxis(side=1) cannot draw latitude labels yet; contact author if you need this")
         }
     }
     if (2 %in% side) {
@@ -298,7 +298,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
                  hadj=hadj, padj=padj, tcl=tcl, cex.axis=cex.axis)
         }
         if (length(longitude)) {
-            warning("mapAxis(side=2) cannot draw longitude labels yet; contact author if you need this\n")
+            warning("mapAxis(side=2) cannot draw longitude labels yet; contact author if you need this")
         }
     }
     if (3 %in% side) {
@@ -2598,7 +2598,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                   NAOK=TRUE, PACKAGE="oce")
     ## The docs on mapproject say it needs -ve longitude for degW, but it works ok without that
     ##if (max(poly$longitude, na.rm=TRUE) > 180) {
-    ##    warning("shifting longitude\n")
+    ##    warning("shifting longitude")
     ##    poly$longitude <- ifelse(poly$longitude > 180, poly$longitude - 360, poly$longitude)
     ##}
 
@@ -3043,7 +3043,7 @@ lonlat2map <- function(longitude, latitude, projection="")
     ## 20150612     }, silent=!TRUE)
     ## 20150612     if (is.null(xy)) {
     ## 20150612         xy <- list(x=NA, y=NA)
-    ## 20150612         warning("problem with mapproj-style projection. Please use PROJ.4 style\n")
+    ## 20150612         warning("problem with mapproj-style projection. Please use PROJ.4 style")
     ## 20150612     }
     ## 20150612     #message("xy:")
     ## 20150612     #str(xy)

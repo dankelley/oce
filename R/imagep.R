@@ -434,7 +434,7 @@ drawPalette <- function(zlim, zlab="",
             oceDebug(debug, "triangleHeight=", triangleHeight, "(user units)\n")
             if (drawTriangles[2]) {
                 if (pos == 1 || pos == 3) {
-                    warning("horizontal triangles not working yet\n")
+                    warning("horizontal triangles not working yet")
                 } else if (pos == 2 || pos == 4) {
                     polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
                             usr[4] + c(0, triangleHeight, 0), col=col[length(col)], 
@@ -446,7 +446,7 @@ drawPalette <- function(zlim, zlab="",
             }
             if (drawTriangles[1]) {
                 if (pos == 1 || pos == 3) {
-                    warning("horizontal triangles not working yet\n")
+                    warning("horizontal triangles not working yet")
                 } else if (pos == 2 || pos == 4) {
                     polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
                             usr[3] + c(0, -triangleHeight, 0), col=col[1], 
@@ -947,7 +947,7 @@ imagep <- function(x, y, z,
         z <- z[ilook,]
         oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
         if (decimateLogical)
-            warning("auto-decimating first index of large image by ", decimate[1], "; use decimate=FALSE to prevent this\n")
+            warning("auto-decimating first index of large image by ", decimate[1], "; use decimate=FALSE to prevent this")
     }
     if (decimate[2] > 1) {
         jlook <- seq.int(1, dim[2], by=decimate[2])
@@ -955,7 +955,7 @@ imagep <- function(x, y, z,
         z <- z[, jlook]
         oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
         if (decimateLogical)
-            warning("auto-decimating second index of large image by ", decimate[2], "; use decimate=FALSE to prevent this\n")
+            warning("auto-decimating second index of large image by ", decimate[2], "; use decimate=FALSE to prevent this")
     }
     ##> message("dim(z): ", paste(dim(z), collapse=" "))
     if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
@@ -1282,7 +1282,7 @@ imagep <- function(x, y, z,
     if (!missing(adorn)) {
         t <- try(eval.parent(adorn), silent=!TRUE)
         if (class(t) == "try-error")
-            warning("cannot evaluate adorn='", adorn, "'\n")
+            warning("cannot evaluate adorn='", adorn, "'")
     }
     par(cex=ocex)
     oceDebug(debug, "par('mai')=c(",

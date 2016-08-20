@@ -967,7 +967,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     if (!is.null(adorn)) {
         t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
         if (class(t) == "try-error")
-            warning("cannot evaluate adorn {", format(adorn), "}\n")
+            warning("cannot evaluate adorn {", format(adorn), "}")
     }
     ##par(cex=ocex)
     oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
@@ -1670,7 +1670,7 @@ read.netcdf <- function(file, ...)
             if ("seconds since 1970-01-01 UTC" == u) {
                 data[[name]] <- numberAsPOSIXct(item)
             } else {
-                warning("time unit is not understood, so it remains simply numeric\n")
+                warning("time unit is not understood, so it remains simply numeric")
             }
         }
     }

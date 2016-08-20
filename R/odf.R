@@ -717,7 +717,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ## -99, but that a SOUNDING was given as -99.9, so this is an extra check.
     if (is.na(waterDepth) || waterDepth < 0) {
         res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
-        warning("estimating waterDepth from maximum pressure\n")
+        warning("estimating waterDepth from maximum pressure")
     }
 
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))

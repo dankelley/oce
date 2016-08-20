@@ -3733,7 +3733,7 @@ matrixSmooth <- function(m, passes=1)
             m <- .Call("matrix_smooth", m)
         }
     } else {
-        warning("matrixSmooth given passes<=0, so returning matrix unmodified\n")
+        warning("matrixSmooth given passes<=0, so returning matrix unmodified")
     }
     m
 }

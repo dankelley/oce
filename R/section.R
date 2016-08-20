@@ -1779,7 +1779,7 @@ setMethod(f="plot",
                   }
                   if (w <= adorn.length) {
                       t <- try(eval(adorn[w]), silent=TRUE)
-                      if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+                      if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]")
                   }
               }
               oceDebug(debug, "} # plot.section()\n", unindent=1)

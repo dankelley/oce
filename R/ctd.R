@@ -3036,7 +3036,7 @@ setMethod(f="plot",
                   if (w <= adorn.length && nchar(adorn[w], "bytes") > 0) {
                       t <- try(eval(adorn[w]), silent=TRUE)
                       if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]\n")
+                          warning("cannot evaluate adorn[", w, "]")
                   }
               }
               oceDebug(debug, "} # plot,ctd-method()\n", unindent=1)
@@ -3865,7 +3865,7 @@ plotProfile <- function (x,
                        depth=(min(ylim) <= x[["depth"]] & x[["depth"]] <= max(ylim)),
                        sigmaTheta=(min(ylim) <= x[["sigmaTheta"]] & x[["sigmaTheta"]] <= max(ylim)))
     if (0 == sum(examineIndices) && ytype == 'z' && ylim[1] >= 0 && ylim[2] >= 0) {
-        warning("nothing is being plotted, because z is always negative and ylim specified a positive interval\n")
+        warning("nothing is being plotted, because z is always negative and ylim specified a positive interval")
         return(invisible())
     }
     if (!is.list(x@data))

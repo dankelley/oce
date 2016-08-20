@@ -1981,7 +1981,7 @@ setMethod(f="plot",
                       }
                       if (w <= adorn.length) {
                           t <- try(eval(adorn[w]), silent=TRUE)
-                          if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+                          if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]")
                       }
                   } else if (which[w] %in% 28:30) { # "uv", "uv+ellipse", or "uv+ellipse+arrow"
                       par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
@@ -2126,10 +2126,10 @@ setMethod(f="plot",
                                   plot(coastline, clatitude=lat, clongitude=lon, span=50)
                                   points(x[["longitude"]], x[["latitude"]], cex=2*par('cex'))
                               } else {
-                                  warning("nothing to map\n")
+                                  warning("nothing to map")
                               }
                           } else {
-                              warning("nothing to map\n")
+                              warning("nothing to map")
                           }
                       }
                   } else {
@@ -2140,7 +2140,7 @@ setMethod(f="plot",
                   if (w <= adorn.length) {
                       t <- try(eval(adorn[w]), silent=TRUE)
                       if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]\n")
+                          warning("cannot evaluate adorn[", w, "]")
                   }
               }
               par(cex=opar$cex)

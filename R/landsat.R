@@ -1039,7 +1039,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
         band <- c("red", "green", "nir")
     decimateGiven <- !missing(decimate)
     if (decimateGiven && decimate < 1)
-        warning("invalid value of decimate (", decimate, ") being ignored\n")
+        warning("invalid value of decimate (", decimate, ") being ignored")
     if (!requireNamespace("tiff", quietly=TRUE))
         stop('must install.packages("tiff") to read landsat data')
     res <- new("landsat")
