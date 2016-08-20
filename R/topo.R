@@ -180,6 +180,164 @@ setMethod(f="subset",
               res
           })
 
+
+#' Download and Cache a topo File
+#'
+#' Data are downloaded (from \code{http://maps.ngdc.noaa.gov/viewers/wcs-client/}, by 
+#' default) and a string containing the full path to the downloaded file is returned.
+#' Typically, this return value is used with \code{\link{read.topo}} to read the
+#' data. Subsequent calls to \code{download.topo}
+#' with identical parameters will simply return the name of the cached file,
+#' assuming the user has not deleted it in the meantime.
+#' For convenience, if \code{destfile} is not
+#' given, then \code{download.topo} will construct a filename from the other arguments.
+#'
+#' @details
+#' The data are downloaded with \code{\link[utils]{download.file}}, using a URL
+#' devised after reverse engineering the queries constructed by
+#' the default \code{server} used here. Note that the data source is "etopo1",
+#' which is a 1 arc-second file [1,2].
+#'
+#' Three values are permitted for \code{format},
+#' each named after the
+#' targets of menu items on the
+#' NOAA website (as of August 2016): (1) \code{"aaigrid"} (for
+#' the menu item "ArcGIS ASCII Grid"), which
+#' yields a text file, (2) \code{"netcdf"} (the default,
+#' for the menu item named
+#' "NetCDF"), which yields a NetCDF file
+#' and (3) \code{"gmt"} (for the menu item named
+#' "GMT NetCDF"), which yields a NetCDF file in
+#' another format. All of these file formats are
+#' recognized by \code{\link{read.topo}}.
+#' (The NOAA server has more options, and if
+#' \code{\link{read.topo}} is extended to handle them, they will
+#' also be added here.)
+#'
+#' @param west,east Longitudes of the western and eastern sides of the box.
+#'
+#' @param south,north Latitudes of the southern and northern sides of the box.
+#'
+#' @param resolution Optional grid spacing, in minutes. If not supplied, 
+#' a default value of 4 (corresponding to 7.4km, or 4 nautical
+#' miles) is used. Note that (as of August 2016) the original data are on
+#' a 1-minute grid, which limits the possibilities for \code{resolution}.
+#'
+#' @param destdir Optional string indicating the directory in which to store downloaded files.
+#' If not supplied, \code{"."} is used, i.e. the data file is stored
+#' in the present working directory.
+#'
+#' @param destfile Optional name of the file. If not supplied, this is constructed
+#' from \code{west}, \code{east}, etc., so that a second call with the same
+#' parameters will yield the same \code{destfile}; this is the key to how
+#' caching is done. 
+#'
+#' @param format Optional string indicating the type of file to download. If
+#' not supplied, this defaults to \code{"gmt"}. See \dQuote{Details}.
+#'
+#' @param server Optional string indicating the server from which to get the data.
+#' If not supplied, the humorously-named default
+#' \code{"http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"}
+#' will be used.
+#'
+#' @template debugTemplate
+#'
+#' @return String indicating the full pathname to the downloaded file.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
+#'\dontrun{
+#' library(oce)
+#' topoFile <- download.topo(west=-64, east=-60, south=43, north=46, 
+#'                           resolution=1, destdir="~/data/topo")
+#' topo <- read.topo(topoFile)
+#' imagep(topo, zlim=c(-400, 400), drawTriangles=TRUE)
+#' data(coastlineWorldFine, package="ocedata")
+#' lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
+#'}
+#'
+#' @seealso The work is done with \code{\link{download.file}}, with the
+#' \code{quiet} argument set to \code{TRUE}.
+#'
+#' @template downloadWarningTemplate
+#'
+#' @references
+#' 1. \url{http://www.ngdc.noaa.gov/mgg/global/global.html}
+#'
+#' 2. Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
+#' Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
+#' NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
+#' [access date: Aug 20, 2016].
+#'
+#' @family functions that download files
+#' @family things related to \code{topo} data
+download.topo <- function(west, east, south, north, resolution,
+                           destdir, destfile, format,
+                           server, debug=getOption("oceDebug"))
+{
+    if (missing(server))
+        server <- "http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"
+    if (missing(destdir))
+        destdir <- "."
+    if (missing(format))
+        format <- "gmt"
+    if (missing(resolution))
+        resolution <- 4
+    res <- resolution / 60
+    if (west > 180) 
+        west <- west - 360
+    if (east > 180) 
+        east <- east - 360
+    wName <- paste(abs(west), if (west <= 0) "W" else "E", sep="")
+    eName <- paste(abs(east), if (east <= 0) "W" else "E", sep="")
+    sName <- paste(abs(south), if (south <= 0) "S" else "N", sep="")
+    nName <- paste(abs(north), if (north <= 0) "S" else "N", sep="")
+    resolutionName <- paste(resolution, "min", sep="")
+    if (missing(destfile))
+        destfile <- paste("topo", wName, eName, sName, nName, resolutionName, sep="_")
+    formatChoices <- c("aaigrid", "gmt", "netcdf")
+    formatId <- pmatch(format, formatChoices)
+    if (is.na(formatId))
+        stop("'format' must be one of the following: '", paste(formatChoices, collapse="' '"), "', but it is '", format, "'")
+    format <- formatChoices[formatId]
+    filename <- ""
+    if (format=="netcdf") {
+        destfile <- paste(destfile, "_netcdf.nc", sep="")
+        filename <- "etopo1.nc"
+    } else if (format=="gmt") {
+        destfile <- paste(destfile, "_gmt.nc", sep="")
+        filename <- "etopo1.grd"
+    } else if (format=="aiagrid") {
+        destfile <- paste(destfile, "_aiagrid.asc", sep="")
+        filename <- "etopo1.asc"
+    } else {
+        stop("unrecognized file format")
+    }
+    destination <- paste(destdir, destfile, sep="/")
+    ## The URLS are reverse engineered from the website
+    ##
+    ## Menu item 'ArcGIS ASCII Grid'
+    ## http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy?filename=etopo1.asc&request=getcoverage&version=1.0.0&service=wcs&coverage=etopo1&CRS=EPSG:4326&format=aaigrid&resx=0.016666666666666667&resy=0.016666666666666667&bbox=-66.26953124998283,42.03297433243247,-57.788085937485086,46.95026224217615
+
+    ## Menu item 'NetCDF' yields format="netcdf", as below
+    ## http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy?filename=etopo1.nc&request=getcoverage&version=1.0.0&service=wcs&coverage=etopo1&CRS=EPSG:4326&format=netcdf&resx=0.016666666666666667&resy=0.016666666666666667&bbox=-63.69873046873296,44.824708282290764,-62.3803710937333,45.259422036342194
+    ##
+    ## Menu item 'GMT NetCDF' yields format="gmt", as below
+    ## http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy?filename=etopo1.grd&request=getcoverage&version=1.0.0&service=wcs&coverage=etopo1&CRS=EPSG:4326&format=gmt&resx=0.016666666666666667&resy=0.016666666666666667&bbox=-66.26953124998283,42.03297433243247,-57.788085937485086,46.95026224217615
+    ## http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy?filename=etopo1.grd&request=getcoverage&version=1.0.0&service=wcs&coverage=etopo1&CRS=EPSG:4326&format=gmt&resx=0.016666666666666667&resy=0.016666666666666667&bbox=-63.69873046873296,44.824708282290764,-62.3803710937333,45.259422036342194
+    url <- sprintf("%s?filename=%s&request=getcoverage&version=1.0.0&service=wcs&coverage=etopo1&CRS=EPSG:4326&format=%s&resx=%f&resy=%f&bbox=%f,%f,%f,%f",
+                   server, filename, format, res, res, west, south, east, north)
+    oceDebug(debug, "source url:", url, "\n")
+    if (1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
+        oceDebug(debug, "Not downloading", destfile, "because it is already present in", destdir, "\n")
+    } else {
+        oceDebug(debug, "Downloading ", destfile)
+        download.file(url, destination, quiet=TRUE)
+    }
+    destination
+}
+
 #' @title Interpolate Within a Topo Object
 #' 
 #' @description
@@ -418,6 +576,14 @@ setMethod(f="plot",
               X <- x[["longitude"]]
               Y <- x[["latitude"]]
               Z <- x[["z"]]
+              ## Handle repeats modulo 180
+              if (X[1] == -180 && X[length(X)] == 180) {
+                  ## warning("In plot() : trimming a longitude of 180 since longitude -180 is present",
+                  ##         call.=FALSE)
+                  keep <- seq.int(1L, length(X)-1)
+                  X <- X[keep]
+                  Z <- Z[keep,]
+              }
               ## check for prime meridian
               if (sign(prod(xr)) < 0) {
                   Z <- rbind(Z, Z)
@@ -495,7 +661,6 @@ setMethod(f="plot",
               ##zz <- x[["z"]][!xclip, !yclip]
               zz <- Z[!xclip, !yclip]
               zr <- range(zz)
-
               contour(xx, yy, zz,
                       levels=0, drawlabels=FALSE, add=TRUE,
                       col="black")                # coastline is always black
@@ -580,11 +745,21 @@ setMethod(f="plot",
 #' 
 #' @description
 #' Read a file that contains topographic data in the ETOPO dataset, as provided by
-#' the NOAA website [1].
+#' the NOAA website (see \code{\link{download.topo}} for a good server for such
+#' files.
+#'
+#' @details
+#' The three permitted file types are as follows: (1) an ascii type described
+#' by NOAA as "?"; (2) a NetCDF format described by NOAA as "GMT NetCDF" 
+#' (recognized by the presence of a variable named \code{}), and
+#' (3) another NetCDF format described by NOAA as "NetCDF" (recognized
+#' by the presence of a variable called \code{}). Files in each of these formatss
+#' can be downloaded with \code{\link{download.topo}}.
 #' 
-#' @param file Name of a file containing an ETOPO-format dataset.
+#' @param file Name of a file containing an ETOPO-format dataset. Three
+#' types are permitted; see \dQuote{Details}.
 #' 
-#' @param \dots Additional arguments, passed to called routines.
+#' @template debugTemplate
 #' 
 #' @return
 #' An object of type \code{\link{topo-class}} that which has the following slots.
@@ -601,33 +776,50 @@ setMethod(f="plot",
 #' plot(topographyMaritimes)
 #' }
 #' 
-#' @references
-#' 1. NOAA website that provides datasets:
-#' \url{http://maps.ngdc.noaa.gov/viewers/wcs-client} with the \code{ArcGIS ASCII
-#'   Grid} menu item selected.
-#' 
 #' @author Dan Kelley
 #' @family things related to \code{topo} data
-read.topo <- function(file, ...)
+read.topo <- function(file, debug=getOption("oceDebug"))
 {
     ## handle GEBCO netcdf files or an ascii format
+    dataNamesOriginal <- list()
     if (is.character(file) && length(grep(".nc$", file))) {
         if (!requireNamespace("ncdf4", quietly=TRUE)) {
             stop('must install.packages("ncdf4") to read topo data from a netCDF file')
         } else {
-            ## GEBCO netcdf
+            ##message("file: '", file, "'")
+            ## "GEBCO NetCDF" (NOT the same as "NetCDF")
             ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
             ncdf <- ncdf4::nc_open(file)
-            xrange <- ncdf4::ncvar_get(ncdf, "x_range")
-            yrange <- ncdf4::ncvar_get(ncdf, "y_range")
-            ##zrange <- ncdf4::ncvar_get(ncdf, "z_range")
-            spacing <- ncdf4::ncvar_get(ncdf, "spacing")
-            longitude <- seq(xrange[1], xrange[2], by=spacing[1])
-            latitude <- seq(yrange[1], yrange[2], by=spacing[2])
-            z <- ncdf4::ncvar_get(ncdf, "z")
-            dim <- ncdf4::ncvar_get(ncdf, "dimension")
-            z <- t(matrix(z, nrow=dim[2], ncol=dim[1], byrow=TRUE))
-            z <- z[,dim[2]:1]
+            dataNamesOriginal <- list()
+            if ("Band1" %in% names(ncdf$var)) {
+                z <- ncdf4::ncvar_get(ncdf, "Band1")
+                longitude <- ncdf4::ncvar_get(ncdf, "lon")
+                latitude <- ncdf4::ncvar_get(ncdf, "lat")
+                dataNamesOriginal <- list(longitude="lon", latitude="lat", z="Band1")
+                ##cat(vectorShow(longitude, "longitude in reading Band1"))
+            } else {
+                xrange <- ncdf4::ncvar_get(ncdf, "x_range")
+                yrange <- ncdf4::ncvar_get(ncdf, "y_range")
+                ##zrange <- ncdf4::ncvar_get(ncdf, "z_range")
+                spacing <- ncdf4::ncvar_get(ncdf, "spacing")
+                longitude <- seq(xrange[1], xrange[2], by=spacing[1])
+                latitude <- seq(yrange[1], yrange[2], by=spacing[2])
+                z <- ncdf4::ncvar_get(ncdf, "z")
+                dim <- ncdf4::ncvar_get(ncdf, "dimension")
+                z <- t(matrix(z, nrow=dim[2], ncol=dim[1], byrow=TRUE))
+                z <- z[,dim[2]:1]
+                dataNamesOriginal <- list(longitude="-", latitude="-", z="-")
+            }
+            ## FIXME(DK 2016-08-20): Sometimes length is off by 1. I'm not sure why, and
+            ## FIXME(DK 2016-08-20): this should be figured out by inspection of files.
+            if (length(longitude) == dim(z)[1]+1) {
+                warning("offsetting longitude of a netcdf topo file by half a step")
+                longitude <- longitude[-1] - diff(longitude[1:2])/2
+            }
+            if (length(latitude) == dim(z)[2]+1) {
+                warning("offsetting latitude of a netcdf topo file by half a step")
+                latitude <- latitude[-1] - diff(latitude[1:2])/2
+            }
             res <- as.topo(longitude, latitude, z, filename=file)
         }
     } else {
@@ -664,6 +856,7 @@ read.topo <- function(file, ...)
             z[z == missingValue] <- NA
         res <- as.topo(longitude, latitude, z, filename=file) # FIXME: add units here
     }
+    res@metadata$dataNamesOriginal <- dataNamesOriginal 
     res@processingLog <- processingLogAppend(res@processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))
     res

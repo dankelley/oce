@@ -1,4 +1,5 @@
 0.9-20
+- download.topo() added and read.topo() updated to handle new formats
 - download.amsr() added
 - composite() added
 - addColumn() marked as deprecated

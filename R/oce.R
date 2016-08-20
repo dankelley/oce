@@ -1602,7 +1602,7 @@ read.oce <- function(file, ...)
     if (type == "sealevel")
         return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")
-        return(read.topo(file, processingLog=processingLog, ...))
+        return(read.topo(file))
     if (type == "RBR/dat") # FIXME: obsolete; to be removed by Fall 2015
         return(read.rsk(file, processingLog=processingLog, ...))
     if (type == "RBR/rsk")

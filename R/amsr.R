@@ -404,6 +404,11 @@ setMethod(f="plot",
 #' @return A character value indicating the filename of the result; if
 #' there is a problem of any kind, the result will be the empty
 #' string.
+#'
+#' @template downloadWarningTemplate
+#'
+#' @family functions that download files
+#' @family things related to \code{amsr} data
 download.amsr <- function(year, month, day, destdir=".", server="ftp.ssmi.com/amsr2/bmaps_v07.2")
 {
     ## ftp ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/y2016/m08/f34_20160804v7.2.gz
@@ -421,7 +426,6 @@ download.amsr <- function(year, month, day, destdir=".", server="ftp.ssmi.com/am
     day <- as.integer(day)
     destfile <- sprintf("f34_%4d%02d%02dv7.2.gz", year, month, day)
     destpath <- paste(destdir, destfile, sep="/")
-    res <- destfile
     if (0 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
         cmd <- sprintf("ftp ftp://%s/y%4d/m%02d/%s", server, year, month, destfile)
         message("Downloading ", destfile)
