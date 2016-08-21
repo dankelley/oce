@@ -5,20 +5,15 @@
 \alias{plot,section-method}
 \title{Plot a Section}
 \usage{
-\S4method{plot}{section}(x, which = c(1, 2, 3, 99),
-  eos = getOption("oceEOS", default = "gsw"), at = NULL, labels = TRUE,
-  grid = FALSE, contourLevels = NULL, contourLabels = NULL,
-  stationIndices, coastline = c("best", "coastlineWorld",
-  "coastlineWorldMedium", "coastlineWorldFine", "none"), xlim = NULL,
+\S4method{plot}{section}(x, which = c(1, 2, 3, 99), eos, at = NULL,
+  labels = TRUE, grid = FALSE, contourLevels = NULL,
+  contourLabels = NULL, stationIndices, coastline = "best", xlim = NULL,
   ylim = NULL, zlim = NULL, map.xlim = NULL, map.ylim = NULL,
-  clongitude, clatitude, span, projection = NULL, xtype = c("distance",
-  "track", "longitude", "latitude", "time"), ytype = c("depth", "pressure"),
-  ztype = c("contour", "image", "points"), zbreaks = NULL, zcol = NULL,
+  clongitude, clatitude, span, projection = NULL, xtype = "distance",
+  ytype = "depth", ztype = "contour", zbreaks = NULL, zcol = NULL,
   legend.loc = "bottomright", adorn = NULL, showStations = FALSE,
-  showStart = TRUE, showBottom = TRUE, axes = TRUE,
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, mgp[2] + 1,
-  mgp[2] + 0.5), col = par("col"), cex = par("cex"), pch = par("pch"),
-  debug = getOption("oceDebug"), ...)
+  showStart = TRUE, showBottom = TRUE, axes = TRUE, mgp, mar, col, cex,
+  pch, debug, ...)
 }
 \arguments{
 \item{x}{a \code{section} object, e.g. as created by \code{\link{as.section}}
@@ -30,8 +25,10 @@ these panels, in reading order.  If only one panel is plotted, \code{par} is
 not adjusted, which makes it easy to add to the plot with subsequent plotting
 commands.}
 
-\item{eos}{Character string indicating the equation of state to be used, either
-\code{"unesco"} or \code{"gsw"}.}
+\item{eos}{Character indication of the seawater equation of state
+to use. The permitted choices are \code{"gsw"} and \code{"unesco"}.
+If \code{eos} is not supplied, it defaults to
+\code{getOption("oceEOS", default="gsw")}.}
 
 \item{at}{If \code{NULL} (the default), the x axis will indicate the distance
 of the stations from the first in the section.  (This may give errors in the
@@ -52,9 +49,13 @@ by \code{at}.}
 that an index is \emph{not} a station number, e.g. to show the first 4
 stations, use \code{station.indices=1:4}.}
 
-\item{coastline}{String giving the coastline to be used in a station map, or
-\code{"best"} to pick the one with highest resolution, or \code{"none"} to
-avoid drawing the coastline.}
+\item{coastline}{String giving the coastline to be used in a station map
+The permitted choices are \code{"best"} (the default) to pick
+a variant that suits the scale, \code{"coastlineWorld"} for the coarse
+version that is provided by \CRANpkg{oce},
+\code{"coastlineWorldMedium"} or \code{"coastlineWorldFine"} for two 
+coastlines provided by the \CRANpkg{ocedata} package, or \code{"none"}, to avoid 
+drawing a coastline.}
 
 \item{xlim}{Optional limit for x axis (only in sections, not map).}
 
@@ -84,7 +85,11 @@ order (which may make no sense) and a warning will be printed.}
 pressure (in dbar, with zero at the surface) or \code{"depth"} for depth (in m
 below the surface, calculated from pressure with \code{\link{swDepth}}).}
 
-\item{ztype}{String indicating whether to use contours, an image, or points.
+\item{ztype}{String indicating whether to how to indicate the "z"
+data (in the R sense, i.e. this could be salinity, temperature, etc; it does
+not mean the vertical coordinate) The choices are: \code{"contour"} for
+contours, \code{"image"} for an image (drawn with \code{\link{imagep}} with
+\code{filledContours=TRUE}), or \code{"points"} to draw points.
 In the first two cases, the data must be gridded, with identical pressures at
 each station.}
 
@@ -129,22 +134,25 @@ at the bottom.}
 
 \item{axes}{Logical value indicating whether to draw axes.}
 
-\item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also for
-\code{par(mar)}, computed from this.  The default is tighter than the R
-default, in order to use more space for the data and less for the axes.}
+\item{mgp}{A 3-element numerical vector to use for \code{par(mgp)}, and also for
+\code{par(mar)}, computed from this. If not provided, this defaults to
+\code{getOption("oceMgp")}.}
 
-\item{mar}{Value to be used with \code{\link{par}("mar")}.}
+\item{mar}{Value to be used with \code{\link{par}("mar")}. If not provided,
+this is computed as \code{c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2]+0.5)}.}
 
-\item{col}{Colour, as in \code{\link{par}("col")}.}
+\item{col}{Colour, which defaults to \code{\link{par}("col")}.}
 
-\item{cex}{Value to be used with \code{\link{par}("cex")}, for any use of
-\code{\link{points}}, e.g. for \code{which="data"}.}
+\item{cex}{Numerical character-expansion factor, which defaults to \code{\link{par}("cex")}.}
 
-\item{pch}{Value to be used with \code{\link{par}("pch")} (see \code{cex},
-above.)}
+\item{pch}{Indication of symbol type; defaults to \code{\link{par}("pch")}.}
 
-\item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate amount
-of debugging information, or to 2 to get more.}
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If \code{debug} is not supplied, it defaults to
+\code{\link{getOption}("oceDebug")}.}
 
 \item{...}{Optional arguments passed to the contouring function, e.g. using
 \code{labcex=1} will increase the size of contour labels.}
