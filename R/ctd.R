@@ -943,7 +943,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         }
         if ("pressureType" %in% mnames) res@metadata$pressureType <- pressureType
         if ("scan" %in% dnames) res@data$scan <- d$scan
-        if ("time" %in% dnames) res@data$time <- d$time
+        ## FIXME: time goes into metadata or data ... does that make sense?
+        if ("time" %in% dnames) if (length(d$time) > 1) res@data$time <- d$time else res@metadata$time <- d$time 
         if ("quality" %in% dnames) res@data$quality <- d$quality
         if ("oxygen" %in% dnames) res@data$oxygen <- d$oxygen
         if ("nitrate" %in% dnames) res@data$nitrate <- d$nitrate
@@ -961,6 +962,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             if (length(longitude) == length(temperature)) {
                 res@data$longitude <- longitude
                 res@data$latitude <- latitude
+            } else {
+                res@metadata$longitude <- longitude[1]
+                res@metadata$latitude <- latitude[1]
             }
         } else if ("longitude" %in% mnames && "latitude" %in% mnames) {
             res@metadata$longitude <- m$longitude
@@ -1191,8 +1195,10 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
     oceDebug(debug, "ctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="", unindent=1)
     if (missing(column))
         stop("must supply column data")
-    if (length(column) != length(x@data[[1]]))
-        stop("column has ", length(column), " data but it must have ", length(x@data[[1]]), " data to match existing object")
+    ## if (length(x@data) > 0 && length(column) != length(x@data[[1]])) {
+    ##     browser()
+    ##     stop("column has ", length(column), " data but it must have ", length(x@data[[1]]), " data to match existing object")
+    ## }
     if (missing(name))
         stop("must supply \"name\"")
     if (missing(label))
