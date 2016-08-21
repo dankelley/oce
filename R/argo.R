@@ -633,7 +633,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
             message("This netcdf file contains the following $var: ", paste(names(file$var), collapse=" "))
         columnNames <- gsub(" *$", "",
                             unique(as.vector(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc)))))
-        message("columnNames: ", paste(columnNames, collapse=" "), " (from ", maybeLC("STATION_PARAMETERS", lc), ")")
+        message("columnNames: '", paste(columnNames, collapse="' '"), "' (from ", maybeLC("STATION_PARAMETERS", lc), ")")
         QCNames <- paste(columnNames, "_QC",  sep="")
         message("QCnames: ", paste(QCNames, collapse=" "), " (inferred from above)")
         ## browser()
@@ -712,6 +712,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 
     stationParameters <- unique(as.vector(res@metadata$stationParameters)) # will be PRES, TEMP etc
     for (item in stationParameters) {
+        if (!nchar(item)) ## some files have unnamed variables, so we skip them 
+            next
         n <- item
         d <- getData(file, maybeLC(n, lc))
         res@data[[argoDataNames(n)]] <- if (!is.null(d)) d else NULL
