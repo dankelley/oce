@@ -181,7 +181,10 @@ NULL
 #' default is to use WHP (World Hydrographic Program) flags [1], in which the
 #' value 2 indicates good data, and other values indicate either unchecked,
 #' suspicious, or bad data. Any data not flagged as good are set
-#' to \code{NA} in the returned value. Since WHP flag codes run
+#' to \code{NA} in the returned value. (An exception is for salinity:
+#' if the item named \code{salinity} has a bad flag but \code{salinityBottle}
+#' has a good flag, then the bottle value is substituted, and a 
+#' warning is issued.) Since WHP flag codes run
 #' from 1 to 9, this default is equivalent to
 #' setting \code{flags=list(all=c(1, 3:9))} along with
 #' \code{action=list("NA")}.
@@ -235,7 +238,17 @@ setMethod("handleFlags",
               if (any(names(actions)!=names(flags))) {
                   stop("names of flags and actions must match")
               }
-              handleFlagsInternal(object, flags, actions)
+              res <- handleFlagsInternal(object, flags, actions)
+              if ("salinity" %in% names(res@data) && "salinityBottle" %in% names(res@data)) {
+                  nbadOrig <- sum(is.na(res@data$salinity))
+                  if (nbadOrig > 0) {
+                      res@data$salinity <- ifelse(is.na(res@data$salinity), res@data$salinityBottle, res@data$salinity)
+                      nbadLater <- sum(is.na(res@data$salinity))
+                      if (nbadLater < nbadOrig)
+                          warning("Substituted bottle salinities for ", nbadOrig-nbadLater, " levels")
+                  }
+              }
+              res
           })
 
 ## Initialize storage for a ctd object
