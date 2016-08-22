@@ -2053,8 +2053,8 @@ setMethod(f="plot",
                           rotate <- rbind(c(cos(theta0), -sin(theta0)),
                                           c(sin(theta0), cos(theta0)))
                           xxyy <- rotate %*% rbind(xx, yy)
-                          col <- if (colGiven) col else "darkblue"
-                          lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
+                          col <- if (colGiven) col else "black"
+                          lines(xxyy[1,], xxyy[2,], lwd=4, col="white")
                           lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
                           res$ellipseMajor <- major
                           res$ellipseMinor <- minor
@@ -2074,7 +2074,7 @@ setMethod(f="plot",
                               }
                               res$meanU <- umean
                               res$meanV <- vmean
-                              arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
+                              arrows(0, 0, umean, vmean, lwd=4, length=1/10, col="white")
                               arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                           }
                       }
