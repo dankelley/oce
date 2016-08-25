@@ -1401,7 +1401,7 @@ setMethod(f="plot",
                                   else if (eos == "teos" && variable == "salinity")
                                       v <- swAbsoluteSalinity(x@data$station[[stationIndices[i]]])
                                   else
-                                      v <- x@data$station[[stationIndices[i]]]@data[[variable]]
+                                      v <- x@data$station[[stationIndices[i]]][[variable]]
                                   points(rep(xx[i], length(p)), -p,
                                          pch=pch, cex=cex,
                                          col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
