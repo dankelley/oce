@@ -1374,9 +1374,13 @@ normalize <- function(x)
 #' Detrend a set of observations
 #' 
 #' Detrends \code{y} by subtracting a linear trend in \code{x}, to create
-#' \code{Y} that has \code{Y[1]=0} and \code{Y[length(Y)]=0}.  If \code{y} is
-#' not given, then y is taken from x, and x is set to the series of integers
-#' from 1 to \code{length{x}}.
+#' a vector that is zero for its first and last finite value.
+#' If the second parameter (\code{y}) is missing, then \code{x} is
+#' taken to be \code{y}, and a new \code{x} is constructed with
+#' \code{\link{seq_along}}.  Any \code{NA} values are left as-is.
+#'
+#' A common application is to bring the end points of a time series
+#' down to zero, prior to applying a digital filter. (See examples.)
 #' 
 #' @param x a vector of numerical values.  If \code{y} is not given, then
 #' \code{x} is taken for \code{y}.
@@ -1389,11 +1393,13 @@ normalize <- function(x)
 #' 
 #' x <- seq(0, 0.9 * pi, length.out=50)
 #' y <- sin(x)
-#' plot(x, y)
+#' y[1] <- NA
+#' y[10] <- NA
+#' plot(x, y, ylim=c(0,1))
 #' d <- detrend(x, y)
 #' points(x, d$Y, pch=20)
-#' abline(h=0, lty='dotted')
-#' abline(d$a, d$b, col='red')
+#' abline(d$a, d$b, col='blue')
+#' abline(h=0)
 #' points(x, d$Y + d$a + d$b * x, col='blue', pch='+')
 detrend <- function(x, y)
 {
@@ -1407,10 +1413,12 @@ detrend <- function(x, y)
         if (length(y) != n)
             stop("x and y must be of same length, but they are ", n, " and ", length(y))
     }
-    if (x[1] == x[n])
-        stop("cannot have x[1] == x[n]")
-    b <- (y[1] - y[n]) / (x[1] - x[n])
-    a <- y[1] - b * x[1]
+    first <- which(is.finite(y))[1]
+    last <- 1 + length(y) - which(is.finite(rev(y)))[1]
+    if (x[first] == x[last])
+        stop("the first and last x values must be distinct")
+    b <- (y[first] - y[[last]]) / (x[first] - x[[last]])
+    a <- y[first] - b * x[first]
     list(Y=y-(a+b*x), a=a, b=b)
 }
 
