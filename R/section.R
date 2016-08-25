@@ -1157,7 +1157,7 @@ setMethod(f="plot",
                           lon[i] <- thisStation[["longitude"]][1]
                           lat[i] <- thisStation[["latitude"]][1]
                       }
-                      lon[lon<0] <- lon[lon<0] + 360
+                      ## lon[lon<0] <- lon[lon<0] + 360
                       asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
                       latm <- mean(lat, na.rm=TRUE)
                       lonm <- mean(lon, na.rm=TRUE)
@@ -1279,10 +1279,10 @@ setMethod(f="plot",
                           dx <- 5 * mean(diff(sort(x@metadata$longitude)),na.rm=TRUE)
                           ylab <- x@metadata$latitude[1]  - dy * sign(x@metadata$latitude[2]  - x@metadata$latitude[1])
                           xlab <- x@metadata$longitude[1] - dx * sign(x@metadata$longitude[2] - x@metadata$longitude[1])
-                          text(xlab, ylab, x@metadata$stationId[1])
+                          ## text(xlab, ylab, x@metadata$stationId[1])
                           xlab <- x@metadata$longitude[numStations] - dx * sign(x@metadata$longitude[numStations-1] - x@metadata$longitude[numStations])
                           ylab <- x@metadata$latitude[numStations]  - dy * sign(x@metadata$latitude[numStations-1]  - x@metadata$latitude[numStations])
-                          text(xlab, ylab, x@metadata$stationId[numStations])
+                          ## text(xlab, ylab, x@metadata$stationId[numStations])
                       }
                   } else {                        
                       ## not a map
@@ -1320,7 +1320,6 @@ setMethod(f="plot",
                       ## FIXME: contours don't get to plot edges
                       xxrange <- range(xx, na.rm=TRUE)
                       yyrange <- range(yy, na.rm=TRUE)
-                      ##yyrange[1] <- -1
 
                       ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
                       par(xaxs="i", yaxs="i")
@@ -1620,6 +1619,7 @@ setMethod(f="plot",
 
                       ## undo negation of the y coordinate, so further can can make sense
                       usr <- par('usr')
+                      ##message("usr=", paste(par('usr'), collapse=" "))
                       par('usr'=c(usr[1], usr[2], -usr[3], usr[4]))
                   }
                   par(mar=omar)
@@ -1640,7 +1640,8 @@ setMethod(f="plot",
                   numStations <- length(stationIndices)
               }
               if (numStations < 2)
-                  stop("cannot plot a section containing fewer than 2 stations")
+                  stop("In plot() :\n  cannot plot a section containing fewer than 2 stations",
+                       call.=FALSE)
               firstStation <- x@data$station[[stationIndices[1]]]
               num.depths <- length(firstStation@data$pressure)
               zz <- matrix(nrow=numStations, ncol=num.depths)
@@ -1698,7 +1699,7 @@ setMethod(f="plot",
                   }
               } else if (which.ytype == 2) {
                   if (!is.na(which[1]) && which[1] == "data" || ztype == "points") {
-                      yy <- c(-max(x[["pressure"]]), 0)
+                      yy <- c(-max(x[["pressure"]], na.rm=TRUE), 0)
                   } else {
                       ##> message("stationIndices[1]: ", stationIndices[1])
                       ##> message("station 1 pressure before setting yy: ",
@@ -2464,25 +2465,29 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
             res@data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[,s]
         }
     } else if (method == "barnes") {
+        message("barnes method")
         vars <- names(section[["station", 1]]@data)
+        message("names(vars)= '", paste(vars, collapse=' '), "'")
         res <- section
         x <- geodDist(section)
-        X <- p <- NULL
         stn1pressure <- section[["station", 1]][["pressure"]]
         npressure <- length(stn1pressure)
+        maxPressure <- 0
         for (istn in 1:nstn) {
             stn <- section[["station", istn]]
-            if (length(stn[["pressure"]]) != npressure)
+            stnPressure <- stn[["pressure"]]
+            if (length(stnPressure) != npressure)
                 stop("pressure mismatch between station 1 and station", istn)
-            if (any(stn[["pressure"]] != stn1pressure))
+            if (any(stnPressure != stn1pressure))
                 stop("pressure mismatch between station 1 and station.", istn)
+            maxPressure <- max(maxPressure, max(stnPressure, na.rm=TRUE))
         }
-        P <- rep(stn1pressure, nstn)
+        P <- rep(stn1pressure, nstn) # FIXME: p or P?
         X <- rep(x, each=npressure)
         if (missing(xg))
             xg <- if (missing(xgl)) x else pretty(x, xgl)
         if (missing(yg))
-            yg <- if (missing(ygl)) p else pretty(stn1pressure, ygl)
+            yg <- seq(0, maxPressure, length.out=if (missing(ygl)) 50 else ygl)
         ## "stations" will go to new places
         res@data$station <- vector("list", length(xg))
         longitudeOriginal <- section[["longitude", "byStation"]]

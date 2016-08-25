@@ -291,10 +291,15 @@ setMethod(f="[[",
                   if (i %in% names(x@metadata))
                       return(x@metadata[[i]])
                   index <- pmatch(i, names(x@data))
-                  if (!is.na(index[1]))
+                  if (!is.na(index[1])) {
                       return(x@data[[index]])
-                  else
-                      return(NULL)
+                  } else {
+                      ## some special cases
+                      if (i == "sigmaTheta")
+                          return(swSigmaTheta(x))
+                      else
+                          return(NULL)
+                  }
                   ## if (missing(j) || j != "nowarn")
                   ##     warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
               }
