@@ -208,7 +208,7 @@ setMethod(f="plot",
               else if (n > 2)
                   pairs(x@data, ...)
               else
-                  warning("no data to plot\n")
+                  warning("no data to plot")
           })
 
 #' Subset an oce Object
@@ -291,10 +291,15 @@ setMethod(f="[[",
                   if (i %in% names(x@metadata))
                       return(x@metadata[[i]])
                   index <- pmatch(i, names(x@data))
-                  if (!is.na(index[1]))
+                  if (!is.na(index[1])) {
                       return(x@data[[index]])
-                  else
-                      return(NULL)
+                  } else {
+                      ## some special cases
+                      if (i == "sigmaTheta")
+                          return(swSigmaTheta(x))
+                      else
+                          return(NULL)
+                  }
                   ## if (missing(j) || j != "nowarn")
                   ##     warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
               }
@@ -461,11 +466,11 @@ setMethod("handleFlags",
 handleFlagsInternal <- function(object, flags, actions) {
     debug <- options('oceDebug')$oceDebug # avoid an arg for this
     if (missing(flags)) {
-        warning("no flags supplied (internal error; report to developer)\n")
+        warning("no flags supplied (internal error; report to developer)")
         return(object)
     }
     if (missing(actions)) {
-        warning("no actions supplied (internal error; report to developer)\n")
+        warning("no actions supplied (internal error; report to developer)")
         return(object)
     }
     if (any(names(flags)!=names(actions)))

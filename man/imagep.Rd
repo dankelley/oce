@@ -22,7 +22,7 @@ matrix \code{z} are defined. In this case, both \code{x} and \code{y}
 must be supplied and, within each, the values must be finite and
 distinct; if values are out of order, they (and \code{z}) will be
 transformed to put them in order.
-ordered in a matching way).  \strong{Mode 2.}
+ordered in a matching way).  \emph{Mode 2.}
 If \code{z} is provided but not \code{x} and \code{y}, then the latter
 are constructed to 
 indicate the indices of the matrix, in contrast
@@ -44,9 +44,15 @@ description here.)}
 
 \item{xlim, ylim}{Limits on x and y axes.}
 
-\item{zlim}{Either a pair of numbers giving the limits for the colour scale,
-or \code{"histogram"} to have a flattened histogram (i.e. to maximally
-increase contrast throughout the domain.)}
+\item{zlim}{If missing, the z scale is determined by the range of the data.
+If provided, \code{zlim} may take several forms. First, it may be a pair
+of numbers that specify the limits for the colour scale.  Second,
+it could be the string \code{"histogram"}, to yield a flattened
+histogram (i.e. to increase contrast). Third, it could be the 
+string \code{"symmetric"}, to yield limits that are symmetric
+about zero, which can be helpful in drawing velocity fields,
+for which a zero value has a particular meaning (in which case,
+a good colour scheme might be \code{col=\link{oceColorsTwo}}).}
 
 \item{zclip}{Logical, indicating whether to clip the colours to those
 corresponding to \code{zlim}. This only works if \code{zlim} is

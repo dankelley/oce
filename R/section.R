@@ -185,17 +185,17 @@ setMethod(f="summary",
           signature="section",
           definition=function(object, ...) {
               numStations <- length(object@data$station)
-              lat1 <- object@data$station[[1]]@metadata$latitude
-              lon1 <- object@data$station[[1]]@metadata$longitude
+              ##lat1 <- object@data$station[[1]]@metadata$latitude
+              ##lon1 <- object@data$station[[1]]@metadata$longitude
               cat("Section Summary\n---------------\n\n")
               cat("* Source: \"", object@metadata$filename, "\"\n", sep="")
               cat("* ID:     \"", object@metadata$sectionId, "\"\n",sep="")
-              stn.sum <- matrix(nrow=numStations, ncol=5)
+              ##stn.sum <- matrix(nrow=numStations, ncol=5)
               if (numStations > 0) {
                   cat("Overview of stations\n```\n")
                   cat(sprintf("%5s %5s %7s %7s %5s\n", "Index", "ID", "Lon", "Lat", "Depth"))
                   for (i in 1:numStations) {
-                      stn <- object@data$station[[i]]
+                      ##stn <- object@data$station[[i]]
                       thisStn <- object@data$station[[i]]
                       id <- if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
                           thisStn@metadata$station else ""
@@ -854,8 +854,7 @@ sectionAddCtd <- sectionAddStation
 #' not adjusted, which makes it easy to add to the plot with subsequent plotting
 #' commands.
 #' 
-#' @param eos Character string indicating the equation of state to be used, either
-#' \code{"unesco"} or \code{"gsw"}.
+#' @template eosTemplate
 #' 
 #' @param at If \code{NULL} (the default), the x axis will indicate the distance
 #' of the stations from the first in the section.  (This may give errors in the
@@ -876,9 +875,13 @@ sectionAddCtd <- sectionAddStation
 #' that an index is \emph{not} a station number, e.g. to show the first 4
 #' stations, use \code{station.indices=1:4}.
 #' 
-#' @param coastline String giving the coastline to be used in a station map, or
-#' \code{"best"} to pick the one with highest resolution, or \code{"none"} to
-#' avoid drawing the coastline.
+#' @param coastline String giving the coastline to be used in a station map
+#' The permitted choices are \code{"best"} (the default) to pick
+#' a variant that suits the scale, \code{"coastlineWorld"} for the coarse
+#' version that is provided by \CRANpkg{oce},
+#' \code{"coastlineWorldMedium"} or \code{"coastlineWorldFine"} for two 
+#' coastlines provided by the \CRANpkg{ocedata} package, or \code{"none"}, to avoid 
+#' drawing a coastline.
 #' 
 #' @param xlim Optional limit for x axis (only in sections, not map).
 #' 
@@ -908,7 +911,11 @@ sectionAddCtd <- sectionAddStation
 #' pressure (in dbar, with zero at the surface) or \code{"depth"} for depth (in m
 #' below the surface, calculated from pressure with \code{\link{swDepth}}).
 #' 
-#' @param ztype String indicating whether to use contours, an image, or points.
+#' @param ztype String indicating whether to how to indicate the "z"
+#' data (in the R sense, i.e. this could be salinity, temperature, etc; it does
+#' not mean the vertical coordinate) The choices are: \code{"contour"} for
+#' contours, \code{"image"} for an image (drawn with \code{\link{imagep}} with
+#' \code{filledContours=TRUE}), or \code{"points"} to draw points.
 #' In the first two cases, the data must be gridded, with identical pressures at
 #' each station.
 #'     
@@ -937,22 +944,20 @@ sectionAddCtd <- sectionAddStation
 #' 
 #' @param axes Logical value indicating whether to draw axes.
 #' 
-#' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
-#' \code{par(mar)}, computed from this.  The default is tighter than the R
-#' default, in order to use more space for the data and less for the axes.
+#' @param mgp A 3-element numerical vector to use for \code{par(mgp)}, and also for
+#' \code{par(mar)}, computed from this. If not provided, this defaults to
+#' \code{getOption("oceMgp")}.
 #' 
-#' @param mar Value to be used with \code{\link{par}("mar")}.
+#' @param mar Value to be used with \code{\link{par}("mar")}. If not provided,
+#' this is computed as \code{c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2]+0.5)}.
 #' 
-#' @param col Colour, as in \code{\link{par}("col")}.
+#' @param col Colour, which defaults to \code{\link{par}("col")}.
 #' 
-#' @param cex Value to be used with \code{\link{par}("cex")}, for any use of
-#' \code{\link{points}}, e.g. for \code{which="data"}.
+#' @param cex Numerical character-expansion factor, which defaults to \code{\link{par}("cex")}.
 #' 
-#' @param pch Value to be used with \code{\link{par}("pch")} (see \code{cex},
-#' above.)
+#' @param pch Indication of symbol type; defaults to \code{\link{par}("pch")}.
 #' 
-#' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
-#' of debugging information, or to 2 to get more.
+#' @template debugShortTemplate
 #' 
 #' @param ... Optional arguments passed to the contouring function, e.g. using
 #' \code{labcex=1} will increase the size of contour labels.
@@ -1017,43 +1022,51 @@ setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
                               which=c(1, 2, 3, 99),
-                              eos=getOption("oceEOS", default="gsw"),
+                              eos,
                               at=NULL,
                               labels=TRUE,
                               grid=FALSE,
                               contourLevels=NULL,
                               contourLabels=NULL,
                               stationIndices,
-                              coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
-                                          "coastlineWorldFine", "none"),
+                              coastline="best",
                               xlim=NULL, ylim=NULL, zlim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
                               clongitude, clatitude, span,
                               projection=NULL,
-                              xtype=c("distance", "track", "longitude", "latitude", "time"),
-                              ytype=c("depth", "pressure"),
-                              ztype=c("contour", "image", "points"),
+                              xtype="distance", ytype="depth", ztype="contour",
                               zbreaks=NULL, zcol=NULL,
                               legend.loc="bottomright",
                               adorn=NULL,
                               showStations=FALSE,
                               showStart=TRUE,
                               showBottom=TRUE,
-                              axes=TRUE,
-                              mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2]+0.5),
-                              col=par("col"), cex=par("cex"), pch=par("pch"),
-                              debug=getOption("oceDebug"),
-                              ...)
+                              axes=TRUE, mgp, mar,
+                              col, cex, pch,
+                              debug, ...)
           {
+              if (missing(debug))
+                  debug <- getOption("oceDebug")
               debug <- if (debug > 4) 4 else floor(0.5 + debug)
-              ##> message("section.R:434, station 1 pressure: ",
-              ##>         paste(x@data$station[[1]]@data$pressure, collapse=" "))
-              xtype <- match.arg(xtype)
-              ytype <- match.arg(ytype)
-              ztype <- match.arg(ztype)
+              if (missing(eos))
+                  eos <- getOption("oceEOS", default="gsw")
+              xtype <- match.arg(xtype, c("distance", "track", "longitude", "latitude", "time"))
+              ytype <- match.arg(ytype, c("depth", "pressure"))
+              ztype <- match.arg(ztype, c("contour", "image", "points"))
               drawPoints <- ztype == "points"
-              coastline <- match.arg(coastline)
+              coastline <- match.arg(coastline,
+                                     c("best", "coastlineWorld", "coastlineWorldMedium",
+                                       "coastlineWorldFine", "none"))
+              if (missing(mgp))
+                  mgp <- getOption("oceMgp")
+              if (missing(mar))
+                  mar <- c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2]+0.5)
+              if (missing(col))
+                  col <- par("col")
+              if (missing(cex))
+                  cex <- par("cex")
+              if (missing(pch))
+                  pch <- par("pch")
               if (!is.null(adorn))
                   warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
 
@@ -1144,7 +1157,7 @@ setMethod(f="plot",
                           lon[i] <- thisStation[["longitude"]][1]
                           lat[i] <- thisStation[["latitude"]][1]
                       }
-                      lon[lon<0] <- lon[lon<0] + 360
+                      ## lon[lon<0] <- lon[lon<0] + 360
                       asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
                       latm <- mean(lat, na.rm=TRUE)
                       lonm <- mean(lon, na.rm=TRUE)
@@ -1266,10 +1279,10 @@ setMethod(f="plot",
                           dx <- 5 * mean(diff(sort(x@metadata$longitude)),na.rm=TRUE)
                           ylab <- x@metadata$latitude[1]  - dy * sign(x@metadata$latitude[2]  - x@metadata$latitude[1])
                           xlab <- x@metadata$longitude[1] - dx * sign(x@metadata$longitude[2] - x@metadata$longitude[1])
-                          text(xlab, ylab, x@metadata$stationId[1])
+                          ## text(xlab, ylab, x@metadata$stationId[1])
                           xlab <- x@metadata$longitude[numStations] - dx * sign(x@metadata$longitude[numStations-1] - x@metadata$longitude[numStations])
                           ylab <- x@metadata$latitude[numStations]  - dy * sign(x@metadata$latitude[numStations-1]  - x@metadata$latitude[numStations])
-                          text(xlab, ylab, x@metadata$stationId[numStations])
+                          ## text(xlab, ylab, x@metadata$stationId[numStations])
                       }
                   } else {                        
                       ## not a map
@@ -1307,7 +1320,6 @@ setMethod(f="plot",
                       ## FIXME: contours don't get to plot edges
                       xxrange <- range(xx, na.rm=TRUE)
                       yyrange <- range(yy, na.rm=TRUE)
-                      ##yyrange[1] <- -1
 
                       ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
                       par(xaxs="i", yaxs="i")
@@ -1388,7 +1400,7 @@ setMethod(f="plot",
                                   else if (eos == "teos" && variable == "salinity")
                                       v <- swAbsoluteSalinity(x@data$station[[stationIndices[i]]])
                                   else
-                                      v <- x@data$station[[stationIndices[i]]]@data[[variable]]
+                                      v <- x@data$station[[stationIndices[i]]][[variable]]
                                   points(rep(xx[i], length(p)), -p,
                                          pch=pch, cex=cex,
                                          col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
@@ -1607,6 +1619,7 @@ setMethod(f="plot",
 
                       ## undo negation of the y coordinate, so further can can make sense
                       usr <- par('usr')
+                      ##message("usr=", paste(par('usr'), collapse=" "))
                       par('usr'=c(usr[1], usr[2], -usr[3], usr[4]))
                   }
                   par(mar=omar)
@@ -1627,7 +1640,8 @@ setMethod(f="plot",
                   numStations <- length(stationIndices)
               }
               if (numStations < 2)
-                  stop("cannot plot a section containing fewer than 2 stations")
+                  stop("In plot() :\n  cannot plot a section containing fewer than 2 stations",
+                       call.=FALSE)
               firstStation <- x@data$station[[stationIndices[1]]]
               num.depths <- length(firstStation@data$pressure)
               zz <- matrix(nrow=numStations, ncol=num.depths)
@@ -1685,7 +1699,7 @@ setMethod(f="plot",
                   }
               } else if (which.ytype == 2) {
                   if (!is.na(which[1]) && which[1] == "data" || ztype == "points") {
-                      yy <- c(-max(x[["pressure"]]), 0)
+                      yy <- c(-max(x[["pressure"]], na.rm=TRUE), 0)
                   } else {
                       ##> message("stationIndices[1]: ", stationIndices[1])
                       ##> message("station 1 pressure before setting yy: ",
@@ -1779,7 +1793,7 @@ setMethod(f="plot",
                   }
                   if (w <= adorn.length) {
                       t <- try(eval(adorn[w]), silent=TRUE)
-                      if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+                      if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]")
                   }
               }
               oceDebug(debug, "} # plot.section()\n", unindent=1)
@@ -2451,25 +2465,29 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
             res@data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[,s]
         }
     } else if (method == "barnes") {
+        message("barnes method")
         vars <- names(section[["station", 1]]@data)
+        message("names(vars)= '", paste(vars, collapse=' '), "'")
         res <- section
         x <- geodDist(section)
-        X <- p <- NULL
         stn1pressure <- section[["station", 1]][["pressure"]]
         npressure <- length(stn1pressure)
+        maxPressure <- 0
         for (istn in 1:nstn) {
             stn <- section[["station", istn]]
-            if (length(stn[["pressure"]]) != npressure)
+            stnPressure <- stn[["pressure"]]
+            if (length(stnPressure) != npressure)
                 stop("pressure mismatch between station 1 and station", istn)
-            if (any(stn[["pressure"]] != stn1pressure))
+            if (any(stnPressure != stn1pressure))
                 stop("pressure mismatch between station 1 and station.", istn)
+            maxPressure <- max(maxPressure, max(stnPressure, na.rm=TRUE))
         }
-        P <- rep(stn1pressure, nstn)
+        P <- rep(stn1pressure, nstn) # FIXME: p or P?
         X <- rep(x, each=npressure)
         if (missing(xg))
             xg <- if (missing(xgl)) x else pretty(x, xgl)
         if (missing(yg))
-            yg <- if (missing(ygl)) p else pretty(stn1pressure, ygl)
+            yg <- seq(0, maxPressure, length.out=if (missing(ygl)) 50 else ygl)
         ## "stations" will go to new places
         res@data$station <- vector("list", length(xg))
         longitudeOriginal <- section[["longitude", "byStation"]]

@@ -352,7 +352,7 @@ setMethod(f="plot",
               if (is.character(col)) {
                   if (!("fillable" %in% names(x@metadata) && x@metadata$fillable)) {
                       col <- NULL
-                      warning("setting col=NULL because the coastline is not fillable\n")
+                      warning("setting col=NULL because the coastline is not fillable")
                   }
               }
               if (inherits(x, "coastline") && !missing(longitudelim) && !missing(latitudelim) && !missing(projection)) {

@@ -322,7 +322,11 @@ setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
           definition=function(x, y, asp,
-                              missingColor=list(land='papayawhip',none='gray',bad='orange',ice='plum',rain='mediumseagreen'),
+                              missingColor=list(land='papayaWhip',
+                                                none='lightGray',
+                                                bad='gray',
+                                                rain='plum',
+                                                ice='mediumVioletRed'),
                               debug=getOption("oceDebug"), ...)
           {
               oceDebug(debug, "plot.amsr(..., y=c(",
@@ -369,6 +373,72 @@ setMethod(f="plot",
               box()
               oceDebug(debug, "} # plot.amsr()\n", unindent=1)
           })
+
+
+#' Download and Cache an amsr File
+#'
+#' If the file is already present in \code{destdir}, then it is not
+#' downloaded again. The default \code{destdir} is the present directory,
+#' but it probably makes more sense to use something like \code{"~/data/amsr"}
+#' to make it easy for scripts in other directories to use the cached data.
+#'
+#' @details
+#' This function relies on the system utility \code{ftp}, and also on local directories
+#' being separated by forward slashes in the file system. That means it will probably
+#' only work on unix-like systems.
+#'
+#' @param year,month,day Numerical values of the year, month, and day
+#' of the desired dataset. Note that one file is archived per day, 
+#' so these three values uniquely identify a dataset.
+#' If \code{day} and \code{month} are not provided but \code{day} is,
+#' then the time is provided in a relative sense, based on the present
+#' date, with \code{day} indicating the number of days in the past.
+#' Owing to issues with timezones and the time when the data
+#' are uploaded to the server, \code{day=3} may yield the
+#' most recent available data. For this reason, there is a 
+#' third option, which is to leave \code{day} unspecified, which
+#' works as though \code{day=3} had been given.
+#' @param destdir String naming the directory in which to cache resultant files.
+#' @param server String naming the server from which data are to be acquired.
+#'
+#' @return A character value indicating the filename of the result; if
+#' there is a problem of any kind, the result will be the empty
+#' string.
+#'
+#' @template downloadWarningTemplate
+#'
+#' @family functions that download files
+#' @family things related to \code{amsr} data
+download.amsr <- function(year, month, day, destdir=".", server="ftp.ssmi.com/amsr2/bmaps_v07.2")
+{
+    ## ftp ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/y2016/m08/f34_20160804v7.2.gz
+    if (missing(year) && missing(month)) {
+        if (missing(day))
+            day <- 3
+        day <- abs(day)
+        today <- as.POSIXlt(Sys.Date() - day)
+        year <- 1900 + today$year
+        month <- 1 + today$mon
+        day <- today$mday
+    }
+    year <- as.integer(year)
+    month <- as.integer(month)
+    day <- as.integer(day)
+    destfile <- sprintf("f34_%4d%02d%02dv7.2.gz", year, month, day)
+    destpath <- paste(destdir, destfile, sep="/")
+    if (0 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
+        cmd <- sprintf("ftp ftp://%s/y%4d/m%02d/%s", server, year, month, destfile)
+        message("Downloading ", destfile)
+        message("    ", cmd)
+        system(cmd)
+        if (destdir != ".")
+            system(paste("mv", destfile, destpath))
+    } else {
+        message("Not downloading ", destfile, " because it is already present in ", destdir)
+    }
+    if (destdir == ".") destfile else destpath
+}
+
 
 
 #' Read an amsr File

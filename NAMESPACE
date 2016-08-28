@@ -11,7 +11,7 @@ importFrom("graphics", ".filled.contour", "abline", "arrows", "axis", "Axis",
            "yinch")
 importFrom("grDevices", "adjustcolor", "col2rgb", "colorRamp",
            "colorRampPalette", "contourLines", "gray", "hsv", "rgb")
-importFrom("utils", "capture.output", "read.delim")
+importFrom("utils", "capture.output", "download.file", "read.delim")
 importFrom("stats", "approx", "approxfun", "coef", "confint", "cor", "cov",
            "fivenum", "frequency", "integrate", "is.ts", "kernel", "lm",
            "median", "na.exclude", "nls", "optim", "optimize", "predict",
@@ -88,6 +88,8 @@ export(abbreviateTimeLabels,
        decodeTime,
        despike,
        detrend,
+       download.amsr,
+       download.topo,
        drawDirectionField,
        drawIsopycnals,
        drawPalette,

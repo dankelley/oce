@@ -434,7 +434,7 @@ drawPalette <- function(zlim, zlab="",
             oceDebug(debug, "triangleHeight=", triangleHeight, "(user units)\n")
             if (drawTriangles[2]) {
                 if (pos == 1 || pos == 3) {
-                    warning("horizontal triangles not working yet\n")
+                    warning("horizontal triangles not working yet")
                 } else if (pos == 2 || pos == 4) {
                     polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
                             usr[4] + c(0, triangleHeight, 0), col=col[length(col)], 
@@ -446,7 +446,7 @@ drawPalette <- function(zlim, zlab="",
             }
             if (drawTriangles[1]) {
                 if (pos == 1 || pos == 3) {
-                    warning("horizontal triangles not working yet\n")
+                    warning("horizontal triangles not working yet")
                 } else if (pos == 2 || pos == 4) {
                     polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
                             usr[3] + c(0, -triangleHeight, 0), col=col[1], 
@@ -552,7 +552,7 @@ drawPalette <- function(zlim, zlab="",
 #'         must be supplied and, within each, the values must be finite and
 #'         distinct; if values are out of order, they (and \code{z}) will be
 #'         transformed to put them in order.
-#'         ordered in a matching way).  \strong{Mode 2.}
+#'         ordered in a matching way).  \emph{Mode 2.}
 #'         If \code{z} is provided but not \code{x} and \code{y}, then the latter
 #'         are constructed to 
 #'         indicate the indices of the matrix, in contrast
@@ -572,9 +572,15 @@ drawPalette <- function(zlim, zlab="",
 #'         are meant to mimic those of \code{\link{image}}, which explains the same
 #'         description here.) 
 #' @param  xlim,ylim Limits on x and y axes.
-#' @param  zlim Either a pair of numbers giving the limits for the colour scale,
-#'         or \code{"histogram"} to have a flattened histogram (i.e. to maximally
-#'         increase contrast throughout the domain.)
+#' @param  zlim If missing, the z scale is determined by the range of the data.
+#'         If provided, \code{zlim} may take several forms. First, it may be a pair
+#'         of numbers that specify the limits for the colour scale.  Second,
+#'         it could be the string \code{"histogram"}, to yield a flattened
+#'         histogram (i.e. to increase contrast). Third, it could be the 
+#'         string \code{"symmetric"}, to yield limits that are symmetric
+#'         about zero, which can be helpful in drawing velocity fields,
+#'         for which a zero value has a particular meaning (in which case,
+#'         a good colour scheme might be \code{col=\link{oceColorsTwo}}).
 #' @param  zclip Logical, indicating whether to clip the colours to those
 #'         corresponding to \code{zlim}. This only works if \code{zlim} is
 #'         provided. Clipped regions will be coloured with \code{missingColor}.
@@ -828,6 +834,12 @@ imagep <- function(x, y, z,
     xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
     zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot,adp-method
+    xlimGiven <- !missing(xlim)
+    if (zlimGiven && is.character(zlim)) {
+        if ("symmetric" == zlim) {
+            zlim <- c(-1, 1) * max(abs(z), na.rm=TRUE)
+        }
+    }
     breaksGiven <- !missing(breaks)
     if (zlimGiven && breaksGiven && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
@@ -935,7 +947,7 @@ imagep <- function(x, y, z,
         z <- z[ilook,]
         oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
         if (decimateLogical)
-            warning("auto-decimating first index of large image by ", decimate[1], "; use decimate=FALSE to prevent this\n")
+            warning("auto-decimating first index of large image by ", decimate[1], "; use decimate=FALSE to prevent this")
     }
     if (decimate[2] > 1) {
         jlook <- seq.int(1, dim[2], by=decimate[2])
@@ -943,7 +955,7 @@ imagep <- function(x, y, z,
         z <- z[, jlook]
         oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
         if (decimateLogical)
-            warning("auto-decimating second index of large image by ", decimate[2], "; use decimate=FALSE to prevent this\n")
+            warning("auto-decimating second index of large image by ", decimate[2], "; use decimate=FALSE to prevent this")
     }
     ##> message("dim(z): ", paste(dim(z), collapse=" "))
     if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
@@ -1270,7 +1282,7 @@ imagep <- function(x, y, z,
     if (!missing(adorn)) {
         t <- try(eval.parent(adorn), silent=!TRUE)
         if (class(t) == "try-error")
-            warning("cannot evaluate adorn='", adorn, "'\n")
+            warning("cannot evaluate adorn='", adorn, "'")
     }
     par(cex=ocex)
     oceDebug(debug, "par('mai')=c(",

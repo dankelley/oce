@@ -1374,9 +1374,13 @@ normalize <- function(x)
 #' Detrend a set of observations
 #' 
 #' Detrends \code{y} by subtracting a linear trend in \code{x}, to create
-#' \code{Y} that has \code{Y[1]=0} and \code{Y[length(Y)]=0}.  If \code{y} is
-#' not given, then y is taken from x, and x is set to the series of integers
-#' from 1 to \code{length{x}}.
+#' a vector that is zero for its first and last finite value.
+#' If the second parameter (\code{y}) is missing, then \code{x} is
+#' taken to be \code{y}, and a new \code{x} is constructed with
+#' \code{\link{seq_along}}.  Any \code{NA} values are left as-is.
+#'
+#' A common application is to bring the end points of a time series
+#' down to zero, prior to applying a digital filter. (See examples.)
 #' 
 #' @param x a vector of numerical values.  If \code{y} is not given, then
 #' \code{x} is taken for \code{y}.
@@ -1389,11 +1393,13 @@ normalize <- function(x)
 #' 
 #' x <- seq(0, 0.9 * pi, length.out=50)
 #' y <- sin(x)
-#' plot(x, y)
+#' y[1] <- NA
+#' y[10] <- NA
+#' plot(x, y, ylim=c(0,1))
 #' d <- detrend(x, y)
 #' points(x, d$Y, pch=20)
-#' abline(h=0, lty='dotted')
-#' abline(d$a, d$b, col='red')
+#' abline(d$a, d$b, col='blue')
+#' abline(h=0)
 #' points(x, d$Y + d$a + d$b * x, col='blue', pch='+')
 detrend <- function(x, y)
 {
@@ -1407,10 +1413,12 @@ detrend <- function(x, y)
         if (length(y) != n)
             stop("x and y must be of same length, but they are ", n, " and ", length(y))
     }
-    if (x[1] == x[n])
-        stop("cannot have x[1] == x[n]")
-    b <- (y[1] - y[n]) / (x[1] - x[n])
-    a <- y[1] - b * x[1]
+    first <- which(is.finite(y))[1]
+    last <- 1 + length(y) - which(is.finite(rev(y)))[1]
+    if (x[first] == x[last])
+        stop("the first and last x values must be distinct")
+    b <- (y[first] - y[[last]]) / (x[first] - x[[last]])
+    a <- y[first] - b * x[first]
     list(Y=y-(a+b*x), a=a, b=b)
 }
 
@@ -1422,26 +1430,37 @@ detrend <- function(x, y)
 #' replaces these spikes with the reference value, or with \code{NA} according
 #' to the value of \code{action}; see \dQuote{Details}.
 #' 
-#' For \code{reference="median"}, the first step is to linearly interpolate
-#' across any gaps, in which \code{x==NA}.  Then the reference time series is
-#' constructed using \code{\link{runmed}} as a running median of \code{k}
-#' elements.  Then, the standard deviation of the difference between \code{x}
-#' and the reference is calculated.  Any \code{x} values that differ from the
-#' reference by more than \code{n} times this standard deviation are considered
-#' to be spikes.  If \code{replace="reference"}, these \code{x} values are
-#' replaced with the reference series, and the resultant time series is
-#' returned.  If \code{replace="NA"}, the spikes are replaced with \code{NA} in
-#' the returned time series.
+#' @details
+#' Three modes of operation are permitted, depending on the value of
+#' \code{reference}.
+#'
+#'\itemize{
+#'
+#'\item For \code{reference="median"}, the first step is to linearly interpolate
+#' across any gaps (spots where \code{x==NA}), using \code{\link{approx}} with
+#' \code{rule=2}. The second step is to pass this through
+#' \code{\link{runmed}} to get a running median spanning \code{k}
+#' elements. The result of these two steps is the "reference" time-series.
+#' Then, the standard deviation of the difference between \code{x}
+#' and the reference is calculated.  Any \code{x} values that differ from 
+#' the reference by more than \code{n} times this standard deviation are considered
+#' to be spikes.  If \code{replace="reference"}, the spike values are
+#' replaced with the reference, and the resultant time series is
+#' returned.  If \code{replace="NA"}, the spikes are replaced with \code{NA},
+#' and that result is returned.
 #' 
-#' For \code{reference="smooth"}, the processing is the same as for
+#'\item For \code{reference="smooth"}, the processing is the same as for
 #' \code{"median"}, except that \code{\link{smooth}} is used to calculate the
 #' reference time series.
 #' 
-#' For \code{reference="trim"}, the reference time series is constructed by
+#'\item For \code{reference="trim"}, the reference time series is constructed by
 #' linear interpolation across any regions in which \code{x<min} or
-#' \code{x>max}.  In this case, the value of \code{n} is ignored, and the
-#' return value either uses the reference time series for spikes, or \code{NA},
-#' according to the value of \code{replace}.
+#' \code{x>max}.  (Again, this is done with \code{\link{approx}} with
+#' \code{rule=2}.) In this case, the value of \code{n} is ignored, and the
+#' return value is the same as \code{x}, except that spikes are replaced
+#' with the reference series (if \code{replace="reference"} or with
+#' \code{NA}, if \code{replace="NA"}.
+#'}
 #' 
 #' @param x a vector of (time-series) values, a list of vectors, a data frame,
 #' or an object that inherits from class \code{oce}.
@@ -1560,10 +1579,11 @@ despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, 
         nbad <- length(bad)
         if (nbad > 0) {
             i <- 1:nx
-            if (replace == "reference")
-                x[bad] <- approx(i[!bad], x.gapless[!bad], i[bad])$y
-            else
-                x[bad] <- rep(NA, nbad)
+            if (replace == "reference") {
+                x[bad] <- approx(i[!bad], x.gapless[!bad], i[bad], rule=2)$y
+            } else {
+                x[bad] <- NA
+            }
         }
     } else {
         stop("unknown reference ", reference)
@@ -3733,7 +3753,7 @@ matrixSmooth <- function(m, passes=1)
             m <- .Call("matrix_smooth", m)
         }
     } else {
-        warning("matrixSmooth given passes<=0, so returning matrix unmodified\n")
+        warning("matrixSmooth given passes<=0, so returning matrix unmodified")
     }
     m
 }

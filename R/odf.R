@@ -345,11 +345,13 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         ## example, the sigma-theta case is done that way, because the
         ## original code expected kg/m^3 but then (issue 1051) I ran
         ## across an ODF file that wrote density as Kg/m^3.
-        units[[names[i]]] <- if (ODFunits[i] == "db") {
+        units[[names[i]]] <- if (ODFunits[i] == "counts") {
+            list(unit=expression(), scale="")
+        } else if (ODFunits[i] == "db") {
             list(unit=expression(dbar), scale="")
         } else if (ODFunits[i] == "decibars") {
             list(unit=expression(dbar), scale="")
-        } else if (1 == length(grep("^deg(ree){0,1}$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (1 == length(grep("^deg(ree){0,1}(s){0,1}$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(degree), scale="")
         } else if (1 == length(grep("^IT[P]{0,1}S-68, deg C$", ODFunits[i], ignore.case=TRUE))) {
             ## handles both the correct IPTS and the incorrect ITS.
@@ -364,14 +366,24 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(mg/m^3), scale="")
         } else if (ODFunits[i] == "ml/l") {
             list(unit=expression(ml/l), scale="")
-        } else if (ODFunits[i] == "m/s") {
+        ##} else if (ODFunits[i] == "m/s") {
+        } else if (1 == length(grep("^\\s*m/s\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(m/s), scale="")
+        #} else if (ODFunits[i] == "mho/m") {
+        } else if (1 == length(grep("^\\mho(s){0,1}/m\\s*$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(mho/m), scale="")
         } else if (ODFunits[i] == "mmho/cm") {
             list(unit=expression(mmho/cm), scale="")
-        } else if (ODFunits[i] == "none") {
+        ##} else if (ODFunits[i] == "[(]*none[)]$") {
+        } else if (1 == length(grep("^[(]*none[)]*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(), scale="")
-        } else if (ODFunits[i] == "PSU") {
+        ##} else if (ODFunits[i] == "PSU") {
+        } else if (1 == length(grep("^psu$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(), scale="PSS-78")
+        } else if (1 == length(grep("^\\s*kg/m\\^3$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(kg/m^3), scale="")
+        } else if (1 == length(grep("^\\s*kg/m\\*\\*3\\s*$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(kg/m^3), scale="")
         } else if (1 == length(grep("^sigma-theta,\\s*kg/m\\^3$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(kg/m^3), scale="")
         } else if (1 == length(grep("^seconds$", ODFunits[i], ignore.case=TRUE))) {
@@ -385,7 +397,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         } else if (nchar(ODFunits[i]) == 0) {
             list(unit=expression(), scale="")
         } else {
-            warning("unable to interpret ODFunits[", i, "]='", ODFunits[i], "', for item named '", names[i], "'\n", sep="")
+            warning("unable to interpret ODFunits[", i, "]='", ODFunits[i], "', for item named '", names[i], "'", sep="")
             list(unit=as.expression(ODFunits[i]), scale=ODFunits[i])
         }
     }
@@ -399,7 +411,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                     names[[directionVariable]], "'; this will not affect calculations, though")
             ## units[[directionVariable]]$unit <- expression(degree)
         } else if ("degree" != as.character(unit)) {
-            warning("odd unit (", as.character(unit), ") for '",
+            warning("odd unit, '", as.character(unit), "', for '",
                     names[directionVariable], "'; this will not affect calculations, though")
             ## units[[directionVariable]]$unit <- expression(degree)
         }
@@ -705,7 +717,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ## -99, but that a SOUNDING was given as -99.9, so this is an extra check.
     if (is.na(waterDepth) || waterDepth < 0) {
         res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
-        warning("estimating waterDepth from maximum pressure\n")
+        warning("estimating waterDepth from maximum pressure")
     }
 
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))

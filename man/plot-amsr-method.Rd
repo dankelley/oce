@@ -5,8 +5,8 @@
 \alias{plot,amsr-method}
 \title{Plot an amsr Object}
 \usage{
-\S4method{plot}{amsr}(x, y, asp, missingColor = list(land = "papayawhip", none
-  = "gray", bad = "orange", ice = "plum", rain = "mediumseagreen"),
+\S4method{plot}{amsr}(x, y, asp, missingColor = list(land = "papayaWhip", none
+  = "lightGray", bad = "gray", rain = "plum", ice = "mediumVioletRed"),
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -72,7 +72,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{amsr-class}},
   \code{\link{composite,amsr-method}},
-  \code{\link{read.amsr}},
+  \code{\link{download.amsr}}, \code{\link{read.amsr}},
   \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}
 }

@@ -574,7 +574,7 @@ setMethod(f="plot",
                       if (w <= adorn.length) {
                           t <- try(eval(adorn[w]), silent=TRUE)
                           if (class(t) == "try-error")
-                              warning("cannot evaluate adorn[", w, "]\n")
+                              warning("cannot evaluate adorn[", w, "]")
                       }
                   }
               }
@@ -796,7 +796,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             warn <- TRUE
         }, silent=TRUE)
         if (warn)
-            warning("non-standard pressureAtmospheric value: ", pressureAtmospheric, "\n")
+            warning("non-standard pressureAtmospheric value: ", pressureAtmospheric)
         ##message("NEW: pressureAtmospheric:", pressureAtmospheric)
         oceDebug(debug, "after studying the RSK file, now have pressureAtmospheric=", pressureAtmospheric, "\n")
 

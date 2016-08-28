@@ -1981,7 +1981,7 @@ setMethod(f="plot",
                       }
                       if (w <= adorn.length) {
                           t <- try(eval(adorn[w]), silent=TRUE)
-                          if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+                          if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]")
                       }
                   } else if (which[w] %in% 28:30) { # "uv", "uv+ellipse", or "uv+ellipse+arrow"
                       par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
@@ -2053,8 +2053,8 @@ setMethod(f="plot",
                           rotate <- rbind(c(cos(theta0), -sin(theta0)),
                                           c(sin(theta0), cos(theta0)))
                           xxyy <- rotate %*% rbind(xx, yy)
-                          col <- if (colGiven) col else "darkblue"
-                          lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
+                          col <- if (colGiven) col else "black"
+                          lines(xxyy[1,], xxyy[2,], lwd=4, col="white")
                           lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
                           res$ellipseMajor <- major
                           res$ellipseMinor <- minor
@@ -2074,7 +2074,7 @@ setMethod(f="plot",
                               }
                               res$meanU <- umean
                               res$meanV <- vmean
-                              arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
+                              arrows(0, 0, umean, vmean, lwd=4, length=1/10, col="white")
                               arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                           }
                       }
@@ -2126,10 +2126,10 @@ setMethod(f="plot",
                                   plot(coastline, clatitude=lat, clongitude=lon, span=50)
                                   points(x[["longitude"]], x[["latitude"]], cex=2*par('cex'))
                               } else {
-                                  warning("nothing to map\n")
+                                  warning("nothing to map")
                               }
                           } else {
-                              warning("nothing to map\n")
+                              warning("nothing to map")
                           }
                       }
                   } else {
@@ -2140,7 +2140,7 @@ setMethod(f="plot",
                   if (w <= adorn.length) {
                       t <- try(eval(adorn[w]), silent=TRUE)
                       if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]\n")
+                          warning("cannot evaluate adorn[", w, "]")
                   }
               }
               par(cex=opar$cex)

@@ -181,7 +181,10 @@ NULL
 #' default is to use WHP (World Hydrographic Program) flags [1], in which the
 #' value 2 indicates good data, and other values indicate either unchecked,
 #' suspicious, or bad data. Any data not flagged as good are set
-#' to \code{NA} in the returned value. Since WHP flag codes run
+#' to \code{NA} in the returned value. (An exception is for salinity:
+#' if the item named \code{salinity} has a bad flag but \code{salinityBottle}
+#' has a good flag, then the bottle value is substituted, and a 
+#' warning is issued.) Since WHP flag codes run
 #' from 1 to 9, this default is equivalent to
 #' setting \code{flags=list(all=c(1, 3:9))} along with
 #' \code{action=list("NA")}.
@@ -235,7 +238,17 @@ setMethod("handleFlags",
               if (any(names(actions)!=names(flags))) {
                   stop("names of flags and actions must match")
               }
-              handleFlagsInternal(object, flags, actions)
+              res <- handleFlagsInternal(object, flags, actions)
+              if ("salinity" %in% names(res@data) && "salinityBottle" %in% names(res@data)) {
+                  nbadOrig <- sum(is.na(res@data$salinity))
+                  if (nbadOrig > 0) {
+                      res@data$salinity <- ifelse(is.na(res@data$salinity), res@data$salinityBottle, res@data$salinity)
+                      nbadLater <- sum(is.na(res@data$salinity))
+                      if (nbadLater < nbadOrig)
+                          warning("Substituted bottle salinities for ", nbadOrig-nbadLater, " levels")
+                  }
+              }
+              res
           })
 
 ## Initialize storage for a ctd object
@@ -943,7 +956,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         }
         if ("pressureType" %in% mnames) res@metadata$pressureType <- pressureType
         if ("scan" %in% dnames) res@data$scan <- d$scan
-        if ("time" %in% dnames) res@data$time <- d$time
+        ## FIXME: time goes into metadata or data ... does that make sense?
+        if ("time" %in% dnames) if (length(d$time) > 1) res@data$time <- d$time else res@metadata$time <- d$time 
         if ("quality" %in% dnames) res@data$quality <- d$quality
         if ("oxygen" %in% dnames) res@data$oxygen <- d$oxygen
         if ("nitrate" %in% dnames) res@data$nitrate <- d$nitrate
@@ -961,6 +975,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             if (length(longitude) == length(temperature)) {
                 res@data$longitude <- longitude
                 res@data$latitude <- latitude
+            } else {
+                res@metadata$longitude <- longitude[1]
+                res@metadata$latitude <- latitude[1]
             }
         } else if ("longitude" %in% mnames && "latitude" %in% mnames) {
             res@metadata$longitude <- m$longitude
@@ -1086,7 +1103,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ##20150712                                              "inferred water depth from maximum pressure")
         ##20150712 }
         names <- names(data)
-        labels <- titleCase(names) # paste(toupper(substring(names,1,1)),substring(names,2),sep="")
+        ##labels <- titleCase(names) # paste(toupper(substring(names,1,1)),substring(names,2),sep="")
         if (length(longitude) != length(latitude))
             stop("lengths of longitude and latitude must match")
         if (1 < length(longitude) && length(longitude) != length(salinity))
@@ -1191,8 +1208,10 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
     oceDebug(debug, "ctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="", unindent=1)
     if (missing(column))
         stop("must supply column data")
-    if (length(column) != length(x@data[[1]]))
-        stop("column has ", length(column), " data but it must have ", length(x@data[[1]]), " data to match existing object")
+    ## if (length(x@data) > 0 && length(column) != length(x@data[[1]])) {
+    ##     browser()
+    ##     stop("column has ", length(column), " data but it must have ", length(x@data[[1]]), " data to match existing object")
+    ## }
     if (missing(name))
         stop("must supply \"name\"")
     if (missing(label))
@@ -3036,7 +3055,7 @@ setMethod(f="plot",
                   if (w <= adorn.length && nchar(adorn[w], "bytes") > 0) {
                       t <- try(eval(adorn[w]), silent=TRUE)
                       if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]\n")
+                          warning("cannot evaluate adorn[", w, "]")
                   }
               }
               oceDebug(debug, "} # plot,ctd-method()\n", unindent=1)
@@ -3865,7 +3884,7 @@ plotProfile <- function (x,
                        depth=(min(ylim) <= x[["depth"]] & x[["depth"]] <= max(ylim)),
                        sigmaTheta=(min(ylim) <= x[["sigmaTheta"]] & x[["sigmaTheta"]] <= max(ylim)))
     if (0 == sum(examineIndices) && ytype == 'z' && ylim[1] >= 0 && ylim[2] >= 0) {
-        warning("nothing is being plotted, because z is always negative and ylim specified a positive interval\n")
+        warning("nothing is being plotted, because z is always negative and ylim specified a positive interval")
         return(invisible())
     }
     if (!is.list(x@data))

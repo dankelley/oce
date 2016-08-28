@@ -79,7 +79,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "haveActualData=", haveActualData, "\n")
     dataOffset <- readBin(buf[7+0:(2*numberOfDataTypes)], "integer", n=numberOfDataTypes, size=2, endian="little", signed=FALSE)
     if (dataOffset[1]!=6+2*numberOfDataTypes)
-        warning("dataOffset and numberOfDataTypes are inconsistent -- this dataset seems damaged\n")
+        warning("dataOffset and numberOfDataTypes are inconsistent -- this dataset seems damaged")
     oceDebug(debug, "dataOffset=", paste(dataOffset, sep=" "), "\n")
     ##
     ## Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
@@ -911,7 +911,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else if (buf[o+1] == 0x30) { # FIXED ATTITUDE
                         message("FIXED ATTITUDE")
                         o <- o + 41 ## FIXED ATTITUDE data chunk is always 41 bytes (Fig 46, p145 teledyne2014ostm)
-                        warning("skipping BINARY FIXED ATTITUDE data chunk, profile ", i, "\n")
+                        warning("skipping BINARY FIXED ATTITUDE data chunk, profile ", i)
                     } else {
                         message("0x", buf[o+1], " flag... unknown. FIXME: handle 0x40-0xF0 0x30 (p146 teledynRDI 2014)")
                         message("also, how far should we skip forward???")
@@ -1106,9 +1106,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 time <- fillGap(as.numeric(time) - as.numeric(t0)) + t0
                 nbad <- length(badProfiles)
                 if (nbad == 1)
-                    warning("Interpolated across a bad profile at time ", format(time[badProfiles]), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)\n")
+                    warning("Interpolated across a bad profile at time ", format(time[badProfiles]), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)")
                 else
-                    warning("Interpolated across ", length(badProfiles), " bad profile(s) at times: ", paste(format(time[badProfiles]), collapse=", "), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)\n")
+                    warning("Interpolated across ", length(badProfiles), " bad profile(s) at times: ", paste(format(time[badProfiles]), collapse=", "), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)")
             }
 
             profileStart2 <- sort(c(profileStart, profileStart + 1)) # lets us index two-byte chunks
@@ -1224,9 +1224,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
            nbadVMDAS <- length(badVMDAS)
            if (nbadVMDAS > 0) {
                if (1==nbadVMDAS) {
-                   warning("erroneous VMDAS flag in profile ", badVMDAS, "\n")
+                   warning("erroneous VMDAS flag in profile ", badVMDAS)
                } else if (nbadVMDAS < 4) {
-                   warning("erroneous VMDAS flag in profiles: ", paste(badVMDAS, collapse=" "), "\n")
+                   warning("erroneous VMDAS flag in profiles: ", paste(badVMDAS, collapse=" "))
                } else {
                    warning("erroneous VMDAS flag in ", nbadVMDAS, " profiles, including: ", badVMDAS[1], " ",
                            badVMDAS[2], " ... ", badVMDAS[nbadVMDAS-1], " ",

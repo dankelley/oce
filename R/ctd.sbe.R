@@ -859,7 +859,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         ## }
     } else {
         haveData <- FALSE
-        warning("no data in CTD file \"", filename, "\"\n")
+        warning("no data in CTD file \"", filename, "\"")
         data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
     }
     if (missing(processingLog))

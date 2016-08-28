@@ -601,7 +601,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
         if (missing(x))
             stop("must supply 'x', since the first argument is not a sealevel object")
         if (inherits(x, "POSIXt")) {
-            warning("tidem() switching first 2 args to permit old-style usage\n")
+            warning("tidem() switching first 2 args to permit old-style usage")
             tmp <- x
             x <- t
             t <- tmp

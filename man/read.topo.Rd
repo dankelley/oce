@@ -4,12 +4,17 @@
 \alias{read.topo}
 \title{Read a Topo File}
 \usage{
-read.topo(file, ...)
+read.topo(file, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{file}{Name of a file containing an ETOPO-format dataset.}
+\item{file}{Name of a file containing an ETOPO-format dataset. Three
+types are permitted; see \dQuote{Details}.}
 
-\item{\dots}{Additional arguments, passed to called routines.}
+\item{debug}{An integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed.}
 }
 \value{
 An object of type \code{\link{topo-class}} that which has the following slots.
@@ -20,7 +25,16 @@ An object of type \code{\link{topo-class}} that which has the following slots.
 }
 \description{
 Read a file that contains topographic data in the ETOPO dataset, as provided by
-the NOAA website [1].
+the NOAA website (see \code{\link{download.topo}} for a good server for such
+files.
+}
+\details{
+The three permitted file types are as follows: (1) an ascii type described
+by NOAA as "?"; (2) a NetCDF format described by NOAA as "GMT NetCDF" 
+(recognized by the presence of a variable named \code{}), and
+(3) another NetCDF format described by NOAA as "NetCDF" (recognized
+by the presence of a variable called \code{}). Files in each of these formatss
+can be downloaded with \code{\link{download.topo}}.
 }
 \examples{
 \dontrun{
@@ -33,14 +47,10 @@ plot(topographyMaritimes)
 \author{
 Dan Kelley
 }
-\references{
-1. NOAA website that provides datasets:
-\url{http://maps.ngdc.noaa.gov/viewers/wcs-client} with the \code{ArcGIS ASCII
-  Grid} menu item selected.
-}
 \seealso{
 Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
+  \code{\link{download.topo}},
   \code{\link{plot,topo-method}},
   \code{\link{subset,topo-method}},
   \code{\link{summary,topo-method}},
