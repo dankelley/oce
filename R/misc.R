@@ -1,5 +1,33 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+shortenTimeString <- function(t)
+{
+    tc <- as.character(t)
+    cat("shortenTimeString() {\n")
+    cat("  A: '", paste(t, collapse="' '"), "'\n")
+    tc <- gsub(" [A-Z]{3}$", "", tc) # remove timezone
+    if (all(grepl("^[0-9]{4}", tc))) { # leading years
+        years <- substr(tc, 1, 4)
+        if (1 == length(unique(years))) {
+            tc <- gsub("^[0-9]{4}", "", tc)
+            tc <- gsub("^-", "", tc) # works for ISO dates
+            cat("  B: '", paste(tc, collapse="' '"), "'\n", sep='')
+        }
+    } else if (any(grepl("[a-zA-Z]", tc))) {
+        ## Change e.g. 'Jul 01' to 'Jul' if all labels end in 01
+        if (all(grepl("01\\s*$", tc))) {
+            tc <- gsub(" 01\\s*$", "", tc)
+            cat("  B: '", paste(tc, collapse="' '"), "'\n", sep='')
+        }
+    }
+    cat("  C: '", paste(tc, collapse="' '"), "'\n", sep='')
+    tc <- gsub("^\\s*", "", tc)
+    tc <- gsub("\\s*$", "", tc)
+    cat("  D: '", paste(tc, collapse="' '"), "'\n", sep='')
+    cat("}\n")
+    tc
+}
+
 #' Get first finite value in a vector or array, or NULL if none
 #' @param v A numerical vector or array.
 firstFinite <- function(v)
@@ -1861,11 +1889,11 @@ vectorShow <- function(v, msg, digits=5, n=2L)
             }
         } else {
             if (showAll) {
-                paste(msg, ": ", paste(format(v, digits=digits), collapse=", "),
+                paste(msg, ": ", paste(v, collapse=", "),
                       " (length ", nv, ")\n", sep="")
             } else {
-                paste(msg, ": ", paste(format(v[1:n], digits=digits), collapse=", "),
-                      ", ..., ", paste(format(v[nv-seq.int(n-1,0)], digits=digits), collapse=", "),
+                paste(msg, ": ", paste(v[1:n], collapse=", "),
+                      ", ..., ", paste(v[nv-seq.int(n-1,0)], collapse=", "),
                       " (length ", nv, ")\n", sep="")
             }
         }
