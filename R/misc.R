@@ -1823,37 +1823,50 @@ oce.spectrum <- oceSpectrum
 #' Show some values from a vector
 #' 
 #' This is similar to \code{\link{str}}, but it shows data at the first and
-#' last of the vector, which is quite helpful in debugging.
+#' last of the vector, which can be quite helpful in debugging.
 #' 
 #' @param v the vector.
 #' @param msg a message to show, introducing the vector.  If not provided, then
-#' a label is created from \code{v}.
+#' a message is created from \code{v}.
 #' @param digits for numerical values of \code{v}, this is the number of digits
 #' to use, in formatting the numbers with \code{\link{format}}; otherwise,
 #' \code{digits} is ignored.
+#' @param n number of elements to at start and end. If \code{n}
+#' is negative, then all the elements are shown.
 #' @return A string, suitable for using in \code{\link{cat}} or
 #' \code{\link{oceDebug}}.
 #' @author Dan Kelley
-vectorShow <- function(v, msg, digits=5)
+vectorShow <- function(v, msg, digits=5, n=2L)
 {
-    n <- length(v)
+    nv <- length(v)
     if (missing(msg))
         msg <- deparse(substitute(v))
-    if (n == 0) {
+    if (nv == 0) {
         paste(msg, "(empty vector)\n")
     } else {
+        if (n < 0 || nv <= 2*n) {
+            showAll <- TRUE
+        } else {
+            n <- floor(min(n, nv/2))
+            showAll <- FALSE
+        }
         if (is.numeric(v)) {
-            if (n > 4) {
-                vv <- format(v[c(1, 2, n-1, n)], digits=digits)
-                paste(msg, ": ", vv[1], ", ", vv[2], ", ..., ", vv[3], ", ", vv[4], " (length ", n, ")\n", sep="")
+            if (showAll) {
+                paste(msg, ": ", paste(format(v, digits=digits), collapse=", "),
+                      " (length ", nv, ")\n", sep="")
             } else {
-                paste(msg, ": ", paste(format(v, digits=digits), collapse=", "), "\n", sep="")
+                paste(msg, ": ", paste(format(v[1:n], digits=digits), collapse=", "),
+                      ", ..., ", paste(format(v[nv-seq.int(n-1,0)], digits=digits), collapse=", "),
+                      " (length ", nv, ")\n", sep="")
             }
         } else {
-            if (n > 4) {
-                paste(msg, ": ", v[1], ", ", v[2], ", ..., ", v[n-1], ", ", v[n], " (length ", n, ")\n", sep="")
+            if (showAll) {
+                paste(msg, ": ", paste(format(v, digits=digits), collapse=", "),
+                      " (length ", nv, ")\n", sep="")
             } else {
-                paste(msg, ": ", paste(v, collapse=", "), "\n", sep="")
+                paste(msg, ": ", paste(format(v[1:n], digits=digits), collapse=", "),
+                      ", ..., ", paste(format(v[nv-seq.int(n-1,0)], digits=digits), collapse=", "),
+                      " (length ", nv, ")\n", sep="")
             }
         }
     }
