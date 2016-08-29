@@ -129,7 +129,8 @@ variants.)
   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
-  \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
+  \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
+  \code{sbeox~Mm/L}  \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
@@ -168,6 +169,7 @@ variants.)
   \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr
   \code{timeQ}       \tab \code{time}                         \tab s; NMEA since Jan 1, 2000\tab\cr
   \code{timeS}       \tab \code{time}                         \tab s; elapsed           \tab   \cr
+  \code{turbWETntu~} \tab \code{turbidity}                    \tab NTU                  \tab   \cr
   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
   \code{user~}       \tab \code{user}                         \tab -                    \tab   \cr
   \code{v~~}         \tab \code{voltage}                      \tab V                    \tab   \cr

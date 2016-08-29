@@ -106,7 +106,8 @@
 #'   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
 #'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
 #'   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
-#'   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
+#'   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
+#'   \code{sbeox~Mm/L}  \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
 #'   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
 #'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
@@ -145,6 +146,7 @@
 #'   \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr
 #'   \code{timeQ}       \tab \code{time}                         \tab s; NMEA since Jan 1, 2000\tab\cr
 #'   \code{timeS}       \tab \code{time}                         \tab s; elapsed           \tab   \cr
+#'   \code{turbWETntu~} \tab \code{turbidity}                    \tab NTU                  \tab   \cr
 #'   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
 #'   \code{user~}       \tab \code{user}                         \tab -                    \tab   \cr
 #'   \code{v~~}         \tab \code{voltage}                      \tab V                    \tab   \cr
@@ -396,6 +398,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^sbeox[0-9]Mm/Kg$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/kg), scale="SBE43")
+    } else if (1 == length(grep("^sbeox[0-9]Mm/L$", name))) {
+        name <- "oxygen"
+        unit <- list(unit=expression(mu*mol/l), scale="SBE43")
     } else if (1 == length(grep("^sbeox[0-9]PS$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(percent), scale="SBE43")
@@ -472,9 +477,13 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^tsa$", name))) {
         name <- "thermostericAnomaly"
         unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
+    } else if (1 == length(grep("^turbWETntu[0-2]$", name))) {
+        name <- "turbidity"
+        unit <- list(unit=expression(NTU), scale="")
     } else if (1 == length(grep("^upoly[0-2]$", name))) {
         name <- "upoly"
         unit <- list(unit=expression(), scale="")
+
     } else if (1 == length(grep("^user[1-5]$", name))) {
         name <- "user"
         unit <- list(unit=expression(), scale="")
