@@ -1,30 +1,30 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-shortenTimeString <- function(t)
+shortenTimeString <- function(t, debug=getOption("oceDebug"))
 {
     tc <- as.character(t)
-    cat("shortenTimeString() {\n")
-    cat("  A: '", paste(t, collapse="' '"), "'\n")
+    oceDebug(debug, "shortenTimeString() {\n", sep="", unindent=1)
+    oceDebug(debug, "A: '", paste(t, collapse="' '"), "'\n")
     tc <- gsub(" [A-Z]{3}$", "", tc) # remove timezone
     if (all(grepl("^[0-9]{4}", tc))) { # leading years
         years <- substr(tc, 1, 4)
         if (1 == length(unique(years))) {
             tc <- gsub("^[0-9]{4}", "", tc)
             tc <- gsub("^-", "", tc) # works for ISO dates
-            cat("  B: '", paste(tc, collapse="' '"), "'\n", sep='')
+            oceDebug(debug, "B: '", paste(tc, collapse="' '"), "'\n", sep='')
         }
     } else if (any(grepl("[a-zA-Z]", tc))) {
         ## Change e.g. 'Jul 01' to 'Jul' if all labels end in 01
         if (all(grepl("01\\s*$", tc))) {
             tc <- gsub(" 01\\s*$", "", tc)
-            cat("  B: '", paste(tc, collapse="' '"), "'\n", sep='')
+            oceDebug(debug, "B: '", paste(tc, collapse="' '"), "'\n", sep='')
         }
     }
-    cat("  C: '", paste(tc, collapse="' '"), "'\n", sep='')
+    oceDebug(debug, "C: '", paste(tc, collapse="' '"), "'\n", sep='')
     tc <- gsub("^\\s*", "", tc)
     tc <- gsub("\\s*$", "", tc)
-    cat("  D: '", paste(tc, collapse="' '"), "'\n", sep='')
-    cat("}\n")
+    oceDebug(debug, "D: '", paste(tc, collapse="' '"), "'\n", sep='')
+    oceDebug(debug, "}\n", unindent=1)
     tc
 }
 

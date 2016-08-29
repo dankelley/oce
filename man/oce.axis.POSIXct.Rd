@@ -19,7 +19,7 @@ oce.axis.POSIXct(side, x, at, tformat, labels = TRUE,
 \item{at}{as for \code{\link{axis.POSIXct}}.}
 
 \item{tformat}{as \code{format} for \code{\link{axis.POSIXct}} for now, but
-eventually will have new features for multiline labels, e.g. day on one line
+may eventually have new features for multiline labels, e.g. day on one line
 and month on another.}
 
 \item{labels}{as for \code{\link{axis.POSIXct}}.}
@@ -55,9 +55,46 @@ amount of debugging information, or to 2 to get more.}
 A vector of times corresponding to axis ticks is returned silently.
 }
 \description{
-As \code{\link{axis.POSIXct}} but with axis labels obeying the timezone of
-\code{x}.  This will not be needed for 2.9 and later, but is included so
-that \code{oce} will work even with earlier versions.
+A specialized variant of \code{\link{axis.POSIXct}} that produces
+results with less ambiguity in axis labels.
+}
+\details{
+The tick marks are set automatically based on examination of the time range on
+the axis. The scheme was devised by constructing test cases with a typical plot
+size and font size, and over a wide range of time scales. In some categories,
+both small tick marks are interspersed between large ones.
+
+The user may set the format of axis numbers with the \code{tformat} argument.
+If this is not supplied, the format is set based on the time span of the axis:
+
+\itemize{
+
+\item If this time span is less than a minute, the time axis labels are in
+seconds (fractional seconds, if the interval is less than 2 seconds), with
+leading zeros on small integers. (Fractional seconds are enabled with a trick:
+the usual R format \code{"\%S"} is supplemented with a new format e.g.
+\code{"\%.2S"}, meaning to use two digits after the decimal.)
+
+\item If the time span exceeds a minute but is less than 1.5 days, the label
+format is \code{"\%H:\%M:\%S"}.
+
+\item If the time span exceeds 1.5 days but is less than 1 year, the format is
+\code{"\%b \%d"} (e.g. Jul 15) and, again, the tick marks are set up for several
+subcategories.
+
+\item If the time span exceeds a year, the format is \code{"\%Y"}, i.e. the year
+is displayed with 4 digits.
+
+}
+
+It should be noted that this scheme differs from the R approach in several
+ways. First, R writes day names for some time ranges, in a convention that is
+seldom seen in the literature. Second, R will write nn:mm for both HH:MM and
+MM:SS, an ambiguity that might confuse readers. Third, the use of both large
+and small tick marks is not something that R does.
+
+Bear in mind that \code{tformat} may be set to alter the number format, but
+that the tick mark scheme cannot (presently) be controlled.
 }
 \author{
 Dan Kelley
