@@ -252,7 +252,10 @@ setMethod(f="subset",
 #' The named item is sought first in
 #' \code{metadata}, where an exact match to the name is required. If
 #' it is not present in the \code{metadata} slot, then a partial-name
-#' match is sought in the \code{data} slot. 
+#' match is sought in the \code{data} slot. Failing both 
+#' tests, an exact-name match is sought in a field named
+#' \code{dataNamesOriginal} in the object's \code{metadata}
+#' slot, if that field exists. Failing that, \code{NULL} is returned.
 #'
 #' To get information on the specialized variants of this function, 
 #' type e.g. \code{?"[[,adv-method"} for information on extracting
@@ -287,7 +290,7 @@ setMethod(f="[[",
               } else if (length(grep("Flag$", i))) { # returns a list
                   return(if ("flags" %in% names(x@metadata)) x@metadata$flags[[gsub("Flag$","",i)]] else NULL)
               } else {
-                  ## metadata must match exactly but data can be partially matched
+                  ## Check metadata
                   if (i %in% names(x@metadata))
                       return(x@metadata[[i]])
                   index <- pmatch(i, names(x@data))
@@ -295,10 +298,15 @@ setMethod(f="[[",
                       return(x@data[[index]])
                   } else {
                       ## some special cases
-                      if (i == "sigmaTheta")
+                      if (i == "sigmaTheta") {
                           return(swSigmaTheta(x))
-                      else
+                      } else {
+                          ## Check original data names
+                          if (i %in% x@metadata$dataNamesOriginal)
+                              return(x@data[[which(i==x@metadata$dataNamesOriginal)[1]]])
+                          ## Give up
                           return(NULL)
+                      }
                   }
                   ## if (missing(j) || j != "nowarn")
                   ##     warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
