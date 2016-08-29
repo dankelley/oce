@@ -635,7 +635,7 @@ setMethod(f="[[",
               } else if (i == "z") {
                   swZ(x) # FIXME-gsw: permit gsw version here
               } else if (i == "depth") {
-                  swDepth(x) # FIXME-gsw: permit gsw version here
+                  if ("depth" %in% names(x@data)) x@data$depth else swDepth(x) # FIXME-gsw: permit gsw version here
               } else if (i == "N2") {
                   swN2(x)
               } else {
