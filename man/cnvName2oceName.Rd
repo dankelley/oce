@@ -126,14 +126,15 @@ variants.)
   \code{prSM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 3 \cr
   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
+  \code{rhodflTC~}   \tab \code{Rhodamine}                    \tab ppb; Turner Cyclops  \tab   \cr
   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
-  \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
   \code{sbeox~Mm/L}  \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
+  \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
   \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
@@ -158,9 +159,9 @@ variants.)
   \code{t190C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{tnc290C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{tnc268C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-  \code{t3890C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{t3890C~}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{t38~90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-  \code{t3868C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+  \code{t3868C~}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{timeH}       \tab \code{time}                         \tab hour; elapsed        \tab   \cr
   \code{timeJ}       \tab \code{time}                         \tab day; elapsed         \tab   \cr
@@ -169,17 +170,22 @@ variants.)
   \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr
   \code{timeQ}       \tab \code{time}                         \tab s; NMEA since Jan 1, 2000\tab\cr
   \code{timeS}       \tab \code{time}                         \tab s; elapsed           \tab   \cr
-  \code{turbflCL~}   \tab \code{turbidity}                    \tab NTU                  \tab   \cr
-  \code{turbWETbb~}  \tab \code{turbidity}                    \tab 1/(m*sr)             \tab   \cr
-  \code{turbWETntu~} \tab \code{turbidity}                    \tab NTU                  \tab   \cr
+  \code{turbflTC~}   \tab \code{turbidity}                    \tab NTU; Turner Cyclops  \tab   \cr
+  \code{turbflTCdiff}\tab \code{turbidityDifference}          \tab NTU; Turner Cyclops  \tab   \cr
+  \code{turbWETbb~}  \tab \code{turbidity}                    \tab 1/(m*sr); WET Labs ECO\tab   \cr
+  \code{turbWETbbdiff}\tab \code{turbidityDifference}         \tab 1/(m*sr); WET Labs ECO\tab   \cr
+  \code{turbWETntu~} \tab \code{turbidity}                    \tab NTU; WET Labs ECO    \tab   \cr
+  \code{turbWETntudiff}\tab \code{turbidityDifference}        \tab NTU; WET Labs ECO    \tab   \cr
   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
   \code{user~}       \tab \code{user}                         \tab -                    \tab   \cr
   \code{v~~}         \tab \code{voltage}                      \tab V                    \tab   \cr
   \code{wetBAttn}    \tab \code{beamAttenuation}              \tab 1/m; WET Labs AC3    \tab   \cr
   \code{wetBTrans}   \tab \code{beamTransmission}             \tab percent; WET Labs AC3\tab   \cr
-  \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3; WET Labs CDOM\tab   \cr
+  \code{wetCDOM~}    \tab \code{fluorescence}                 \tab mg/m^3; WET Labs CDOM\tab   \cr
+  \code{wetCDOMdiff} \tab \code{fluorescenceDifference}       \tab mg/m^3; WET Labs CDOM\tab   \cr
   \code{wetChAbs}    \tab \code{fluorescence}                 \tab 1/m; WET Labs AC3 absorption\tab   \cr
   \code{wetStar~}    \tab \code{fluorescence}                 \tab mg/m^3; WET Labs WETstar\tab   \cr
+  \code{wetStardiff} \tab \code{fluorescenceDifference}       \tab mg/m^3; WET Labs WETstar\tab   \cr
   \code{xmiss}       \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
   \code{xmiss~}      \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
 }

@@ -103,14 +103,15 @@
 #'   \code{prSM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
 #'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 3 \cr
 #'   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
+#'   \code{rhodflTC~}   \tab \code{Rhodamine}                    \tab ppb; Turner Cyclops  \tab   \cr
 #'   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
-#'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
 #'   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
 #'   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
 #'   \code{sbeox~Mm/L}  \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
 #'   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
 #'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
+#'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
 #'   \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
 #'   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
 #'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
@@ -135,9 +136,9 @@
 #'   \code{t190C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{tnc290C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{tnc268C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{t3890C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+#'   \code{t3890C~}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{t38~90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{t3868C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+#'   \code{t3868C~}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{timeH}       \tab \code{time}                         \tab hour; elapsed        \tab   \cr
 #'   \code{timeJ}       \tab \code{time}                         \tab day; elapsed         \tab   \cr
@@ -146,17 +147,22 @@
 #'   \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr
 #'   \code{timeQ}       \tab \code{time}                         \tab s; NMEA since Jan 1, 2000\tab\cr
 #'   \code{timeS}       \tab \code{time}                         \tab s; elapsed           \tab   \cr
-#'   \code{turbflCL~}   \tab \code{turbidity}                    \tab NTU                  \tab   \cr
-#'   \code{turbWETbb~}  \tab \code{turbidity}                    \tab 1/(m*sr)             \tab   \cr
-#'   \code{turbWETntu~} \tab \code{turbidity}                    \tab NTU                  \tab   \cr
+#'   \code{turbflTC~}   \tab \code{turbidity}                    \tab NTU; Turner Cyclops  \tab   \cr
+#'   \code{turbflTCdiff}\tab \code{turbidityDifference}          \tab NTU; Turner Cyclops  \tab   \cr
+#'   \code{turbWETbb~}  \tab \code{turbidity}                    \tab 1/(m*sr); WET Labs ECO\tab   \cr
+#'   \code{turbWETbbdiff}\tab \code{turbidityDifference}         \tab 1/(m*sr); WET Labs ECO\tab   \cr
+#'   \code{turbWETntu~} \tab \code{turbidity}                    \tab NTU; WET Labs ECO    \tab   \cr
+#'   \code{turbWETntudiff}\tab \code{turbidityDifference}        \tab NTU; WET Labs ECO    \tab   \cr
 #'   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
 #'   \code{user~}       \tab \code{user}                         \tab -                    \tab   \cr
 #'   \code{v~~}         \tab \code{voltage}                      \tab V                    \tab   \cr
 #'   \code{wetBAttn}    \tab \code{beamAttenuation}              \tab 1/m; WET Labs AC3    \tab   \cr
 #'   \code{wetBTrans}   \tab \code{beamTransmission}             \tab percent; WET Labs AC3\tab   \cr
-#'   \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3; WET Labs CDOM\tab   \cr
+#'   \code{wetCDOM~}    \tab \code{fluorescence}                 \tab mg/m^3; WET Labs CDOM\tab   \cr
+#'   \code{wetCDOMdiff} \tab \code{fluorescenceDifference}       \tab mg/m^3; WET Labs CDOM\tab   \cr
 #'   \code{wetChAbs}    \tab \code{fluorescence}                 \tab 1/m; WET Labs AC3 absorption\tab   \cr
 #'   \code{wetStar~}    \tab \code{fluorescence}                 \tab mg/m^3; WET Labs WETstar\tab   \cr
+#'   \code{wetStardiff} \tab \code{fluorescenceDifference}       \tab mg/m^3; WET Labs WETstar\tab   \cr
 #'   \code{xmiss}       \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
 #'   \code{xmiss~}      \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
 #' }
@@ -269,6 +275,14 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^flECO-AFL[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs")
+
+    } else if (1 == length(grep("^flflTC[0-1]{1}$", name))) {
+        name <- "fluorescein"
+        unit <- list(unit=expression(ppb), scale="Turner Cyclops")
+    } else if (1 == length(grep("^flflTCdiff$", name))) {
+        name <- "fluoresceinDifference"
+        unit <- list(unit=expression(ppb), scale="Turner Cyclops")
+
     } else if (1 == length(grep("^flSP[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint")
@@ -388,6 +402,12 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^pumps$", name))) {
         name <- "pumpStatus"
         unit <- list(unit=expression(), scale="")
+    } else if (1 == length(grep("^rhodflTC[0-1]{1}$", name))) {
+        name <- "Rhodamine"
+        unit <- list(unit=expression(ppb), scale="Turner Cyclops")
+    } else if (1 == length(grep("^rhodflTCdiff$", name))) {
+        name <- "RhodamineDifference"
+        unit <- list(unit=expression(ppb), scale="Turner Cyclops")
     } else if (1 == length(grep("^sal[0-9]{2}$", name))) {
         name <- "salinity"
         unit <- list(unit=expression(), scale="PSS-78") # FIXME: guess on scale
@@ -449,10 +469,10 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^t[0-9]90((C)|(Cm))?$", name))) {
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
-    } else if (name %in% c("t4968C", "tnc68C", "tv268C", "tnc268C", "t3868C", "t38_68C")) { # [1] p169-170
+    } else if (name %in% c("t4968C", "tnc68C", "tv268C", "tnc268C", "t3868C", "t3836C1", "t38_68C")) { # [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (name %in% c("t4990C", "tnc90C", "tv290C", "tnc290C", "t3890C", "t38_90C")) { # [1] p169-170
+    } else if (name %in% c("t4990C", "tnc90C", "tv290C", "tnc290C", "t3890C", "t3890C1", "t38_90C")) { # [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (1 == length(grep("^timeH$", name))) {
@@ -481,17 +501,25 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
     } else if (1 == length(grep("^turbflTC[0-1]$", name))) {
         name <- "turbidity"
-        unit <- list(unit=expression(NTU), scale="")
+        unit <- list(unit=expression(NTU), scale="Turner Cyclops")
+    } else if (1 == length(grep("^turbflTCdiff$", name))) {
+        name <- "turbidityDifference"
+        unit <- list(unit=expression(NTU), scale="Turner Cyclops")
     } else if (1 == length(grep("^turbWETbb[0-4]$", name))) {
         name <- "turbidity"
-        unit <- list(unit=expression(1/(m*sr)), scale="")
+        unit <- list(unit=expression(1/(m*sr)), scale="WET Labs ECO")
+    } else if (1 == length(grep("^turbWETbbdiff$", name))) {
+        name <- "turbidityDifference"
+        unit <- list(unit=expression(1/(m*sr)), scale="WET Labs ECO")
     } else if (1 == length(grep("^turbWETntu[0-5]$", name))) {
         name <- "turbidity"
-        unit <- list(unit=expression(NTU), scale="")
+        unit <- list(unit=expression(NTU), scale="WET Labs ECO")
+    } else if (1 == length(grep("^turbWETntudiff$", name))) {
+        name <- "turbidityDifference"
+        unit <- list(unit=expression(NTU), scale="WET Labs ECO")
     } else if (1 == length(grep("^upoly[0-2]$", name))) {
         name <- "upoly"
         unit <- list(unit=expression(), scale="")
-
     } else if (1 == length(grep("^user[1-5]$", name))) {
         name <- "user"
         unit <- list(unit=expression(), scale="")
@@ -503,14 +531,20 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^wetBTrans$", name))) {
         name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="WET Labs AC3")
-    } else if (1 == length(grep("^wetCDOM[0-9]?$", name))) {
+    } else if (1 == length(grep("^wetCDOM[0-5]{0,1}$", name))) {
         name <- "fluorescence"
+        unit <- list(unit=expression(mg/m^3), scale="WET Labs CDOM")
+    } else if (1 == length(grep("^wetCDOMdiff$", name))) {
+        name <- "fluorescenceDifference"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs CDOM")
     } else if (1 == length(grep("^wetChAbs$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(1/m), scale="WET Labs AC3 absorption")
     } else if (1 == length(grep("^wetStar[0-9]?$", name))) {
         name <- "fluorescence"
+        unit <- list(unit=expression(mg/m^3), scale="WET Labs WETstar")
+    } else if (1 == length(grep("^wetStardiff$", name))) {
+        name <- "fluorescenceDifference"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs WETstar")
     } else if (1 == length(grep("^xmiss[0-9]?$", name))) {
         name <- "beamTransmission"
