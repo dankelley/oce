@@ -146,6 +146,7 @@
 #'   \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr
 #'   \code{timeQ}       \tab \code{time}                         \tab s; NMEA since Jan 1, 2000\tab\cr
 #'   \code{timeS}       \tab \code{time}                         \tab s; elapsed           \tab   \cr
+#'   \code{turbflCL~}   \tab \code{turbidity}                    \tab NTU                  \tab   \cr
 #'   \code{turbWETbb~}  \tab \code{turbidity}                    \tab 1/(m*sr)             \tab   \cr
 #'   \code{turbWETntu~} \tab \code{turbidity}                    \tab NTU                  \tab   \cr
 #'   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
@@ -478,10 +479,13 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^tsa$", name))) {
         name <- "thermostericAnomaly"
         unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
-    } else if (1 == length(grep("^turbWETbb[0-2]$", name))) {
+    } else if (1 == length(grep("^turbflTC[0-1]$", name))) {
+        name <- "turbidity"
+        unit <- list(unit=expression(NTU), scale="")
+    } else if (1 == length(grep("^turbWETbb[0-4]$", name))) {
         name <- "turbidity"
         unit <- list(unit=expression(1/(m*sr)), scale="")
-    } else if (1 == length(grep("^turbWETntu[0-2]$", name))) {
+    } else if (1 == length(grep("^turbWETntu[0-5]$", name))) {
         name <- "turbidity"
         unit <- list(unit=expression(NTU), scale="")
     } else if (1 == length(grep("^upoly[0-2]$", name))) {
