@@ -1,5 +1,33 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+shortenTimeString <- function(t, debug=getOption("oceDebug"))
+{
+    tc <- as.character(t)
+    oceDebug(debug, "shortenTimeString() {\n", sep="", unindent=1)
+    oceDebug(debug, "A: '", paste(t, collapse="' '"), "'\n")
+    tc <- gsub(" [A-Z]{3}$", "", tc) # remove timezone
+    if (all(grepl("^[0-9]{4}", tc))) { # leading years
+        years <- substr(tc, 1, 4)
+        if (1 == length(unique(years))) {
+            tc <- gsub("^[0-9]{4}", "", tc)
+            tc <- gsub("^-", "", tc) # works for ISO dates
+            oceDebug(debug, "B: '", paste(tc, collapse="' '"), "'\n", sep='')
+        }
+    } else if (any(grepl("[a-zA-Z]", tc))) {
+        ## Change e.g. 'Jul 01' to 'Jul' if all labels end in 01
+        if (all(grepl("01\\s*$", tc))) {
+            tc <- gsub(" 01\\s*$", "", tc)
+            oceDebug(debug, "B: '", paste(tc, collapse="' '"), "'\n", sep='')
+        }
+    }
+    oceDebug(debug, "C: '", paste(tc, collapse="' '"), "'\n", sep='')
+    tc <- gsub("^\\s*", "", tc)
+    tc <- gsub("\\s*$", "", tc)
+    oceDebug(debug, "D: '", paste(tc, collapse="' '"), "'\n", sep='')
+    oceDebug(debug, "}\n", unindent=1)
+    tc
+}
+
 #' Get first finite value in a vector or array, or NULL if none
 #' @param v A numerical vector or array.
 firstFinite <- function(v)
@@ -1823,37 +1851,50 @@ oce.spectrum <- oceSpectrum
 #' Show some values from a vector
 #' 
 #' This is similar to \code{\link{str}}, but it shows data at the first and
-#' last of the vector, which is quite helpful in debugging.
+#' last of the vector, which can be quite helpful in debugging.
 #' 
 #' @param v the vector.
 #' @param msg a message to show, introducing the vector.  If not provided, then
-#' a label is created from \code{v}.
+#' a message is created from \code{v}.
 #' @param digits for numerical values of \code{v}, this is the number of digits
 #' to use, in formatting the numbers with \code{\link{format}}; otherwise,
 #' \code{digits} is ignored.
+#' @param n number of elements to at start and end. If \code{n}
+#' is negative, then all the elements are shown.
 #' @return A string, suitable for using in \code{\link{cat}} or
 #' \code{\link{oceDebug}}.
 #' @author Dan Kelley
-vectorShow <- function(v, msg, digits=5)
+vectorShow <- function(v, msg, digits=5, n=2L)
 {
-    n <- length(v)
+    nv <- length(v)
     if (missing(msg))
         msg <- deparse(substitute(v))
-    if (n == 0) {
+    if (nv == 0) {
         paste(msg, "(empty vector)\n")
     } else {
+        if (n < 0 || nv <= 2*n) {
+            showAll <- TRUE
+        } else {
+            n <- floor(min(n, nv/2))
+            showAll <- FALSE
+        }
         if (is.numeric(v)) {
-            if (n > 4) {
-                vv <- format(v[c(1, 2, n-1, n)], digits=digits)
-                paste(msg, ": ", vv[1], ", ", vv[2], ", ..., ", vv[3], ", ", vv[4], " (length ", n, ")\n", sep="")
+            if (showAll) {
+                paste(msg, ": ", paste(format(v, digits=digits), collapse=", "),
+                      " (length ", nv, ")\n", sep="")
             } else {
-                paste(msg, ": ", paste(format(v, digits=digits), collapse=", "), "\n", sep="")
+                paste(msg, ": ", paste(format(v[1:n], digits=digits), collapse=", "),
+                      ", ..., ", paste(format(v[nv-seq.int(n-1,0)], digits=digits), collapse=", "),
+                      " (length ", nv, ")\n", sep="")
             }
         } else {
-            if (n > 4) {
-                paste(msg, ": ", v[1], ", ", v[2], ", ..., ", v[n-1], ", ", v[n], " (length ", n, ")\n", sep="")
+            if (showAll) {
+                paste(msg, ": ", paste(v, collapse=", "),
+                      " (length ", nv, ")\n", sep="")
             } else {
-                paste(msg, ": ", paste(v, collapse=", "), "\n", sep="")
+                paste(msg, ": ", paste(v[1:n], collapse=", "),
+                      ", ..., ", paste(v[nv-seq.int(n-1,0)], collapse=", "),
+                      " (length ", nv, ")\n", sep="")
             }
         }
     }

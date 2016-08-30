@@ -113,14 +113,14 @@ values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
 }
 \description{
 Plot a time-series, obeying the timezone and possibly drawing the range in
-the top-left margin
+the top-left margin.
+}
+\details{
 Depending on the version of R, the standard \code{\link{plot}} and
 \code{\link{plot.ts}} routines will not obey the time zone of the data.
 This routine gets around that problem.  It can also plot the time range in
 the top-left margin, if desired; this string includes the timezone, to
 remove any possible confusion.
-}
-\details{
 The time axis is drawn with \code{\link{oce.axis.POSIXct}}.
 }
 \examples{

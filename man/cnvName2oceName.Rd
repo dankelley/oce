@@ -169,6 +169,8 @@ variants.)
   \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr
   \code{timeQ}       \tab \code{time}                         \tab s; NMEA since Jan 1, 2000\tab\cr
   \code{timeS}       \tab \code{time}                         \tab s; elapsed           \tab   \cr
+  \code{turbflCL~}   \tab \code{turbidity}                    \tab NTU                  \tab   \cr
+  \code{turbWETbb~}  \tab \code{turbidity}                    \tab 1/(m*sr)             \tab   \cr
   \code{turbWETntu~} \tab \code{turbidity}                    \tab NTU                  \tab   \cr
   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
   \code{user~}       \tab \code{user}                         \tab -                    \tab   \cr
