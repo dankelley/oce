@@ -699,10 +699,15 @@ read.coastline <- function(file,
 #' @description
 #' Read coastline data stored in the shapefile format [1].
 #' 
-#' @param file name of file containing coastline data.
-#' @param latlim range of (signed) latitudes, used only for shapefiles.
-#' Regions that do not intersect this range are skipped.
-#' @param lonlim as \code{latlim}, but a signed longitude.
+#' @param file name of file containing coastline data (a file ending in \code{.shp})
+#' or a zipfile that contains such a file, with a corresponding name.
+#' The second scheme is useful for files downloaded from the NaturalEarth
+#' website [2].
+#' @param lonlim,latlim numerical vectors specifying the
+#' west and east edges (and south and north edges) of a focus window.
+#' Coastline polygons that do not intersect the defined box are
+#' skipped, which can be useful in narrowing high-resolution world-scale
+#' data to a local application.
 #' @param debug set to TRUE to print information about the header, etc.
 #' @param monitor Logical indicating whether to print an indication of progress through
 #' the file.
@@ -716,9 +721,15 @@ read.coastline <- function(file,
 #' constructed, of which coastlines could be a subset.
 #' @author Dan Kelley
 #' @references
-#' 1. The ``shapefile'' format is described in \emph{ESRI Shapefile
+#'\itemize{
+#' \item 1. The ``shapefile'' format is described in \emph{ESRI Shapefile
 #' Technical Description}, March 1998, available at
 #' \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
+#'
+#' \item 2. The NaturalEarth website \url{http://www.naturalearthdata.com/downloads}
+#' provides coastline datasets in three resolutions, along with similar files
+#' lakes and rivers, for borders, etc. It is highly recommended.
+#'}
 #' @family things related to \code{coastline} data
 read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
                                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
@@ -761,9 +772,17 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     latlim <- sort(latlim)
 
     if (is.character(file)) {
-        filename <- fullFilename(file)
-        file <- file(file, "rb")
-        on.exit(close(file))
+        if (1 == length(grep(".zip$", file))) {
+            shapefile <- gsub(".zip$", ".shp", file)
+            unzip(file, shapefile)
+            filename <- fullFilename(shapefile)
+            file <- file(shapefile, "rb")
+            on.exit({file.remove(shapefile); close(file)})
+        } else {
+            filename <- fullFilename(file)
+            file <- file(file, "rb")
+            on.exit(close(file))
+        }
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")

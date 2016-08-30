@@ -8,12 +8,16 @@ read.coastline.shapefile(file, lonlim = c(-180, 180), latlim = c(-90, 90),
   debug = getOption("oceDebug"), monitor = FALSE, processingLog)
 }
 \arguments{
-\item{file}{name of file containing coastline data.}
+\item{file}{name of file containing coastline data (a file ending in \code{.shp})
+or a zipfile that contains such a file, with a corresponding name.
+The second scheme is useful for files downloaded from the NaturalEarth
+website [2].}
 
-\item{lonlim}{as \code{latlim}, but a signed longitude.}
-
-\item{latlim}{range of (signed) latitudes, used only for shapefiles.
-Regions that do not intersect this range are skipped.}
+\item{lonlim, latlim}{numerical vectors specifying the
+west and east edges (and south and north edges) of a focus window.
+Coastline polygons that do not intersect the defined box are
+skipped, which can be useful in narrowing high-resolution world-scale
+data to a local application.}
 
 \item{debug}{set to TRUE to print information about the header, etc.}
 
@@ -40,9 +44,15 @@ constructed, of which coastlines could be a subset.
 Dan Kelley
 }
 \references{
-1. The ``shapefile'' format is described in \emph{ESRI Shapefile
+\itemize{
+\item 1. The ``shapefile'' format is described in \emph{ESRI Shapefile
 Technical Description}, March 1998, available at
 \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}.
+
+\item 2. The NaturalEarth website \url{http://www.naturalearthdata.com/downloads}
+provides coastline datasets in three resolutions, along with similar files
+lakes and rivers, for borders, etc. It is highly recommended.
+}
 }
 \seealso{
 Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
