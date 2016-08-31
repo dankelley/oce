@@ -588,6 +588,17 @@ setMethod(f="plot",
               if (sign(prod(xr)) < 0) {
                   Z <- rbind(Z, Z)
                   X <- c(X - 360, X)
+                  ## If X runs from -180 to 180, then subtracting 360 will duplicate the -180 value,
+                  ## so we test for repeats. We don't test for a diff of exactly zero, for numerical
+                  ## reasons, and the test for 0.001 times the mean is quite arbitrary, since we
+                  ## are likely looking for a value of 1e-14 or so, which is FAR below the difference
+                  ## we would get in realistic topographic data.
+                  dX <- diff(X)
+                  if (any(dX < 0.001*mean(dX))) {
+                      delete <- which(dX < 0.001 * mean(dX))[1]
+                      X <- X[-delete]
+                      Z <- Z[-delete,]
+                  }
               }
 
               ## Data may not extend across plot region
