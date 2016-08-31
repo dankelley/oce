@@ -2,7 +2,7 @@ plot <- FALSE
 library(oce)
 library(testthat)
 
-topoFile <- download.topo(west=-180, east=180, south=-90, north=90, 
+topoFile <- download.topo(west=-179.5, east=180, south=-89.5, north=90, 
                           resolution=30, format="netcdf", destdir="~/data/topo")
 topoWorldNew <- read.topo(topoFile)
 imagep(topoWorldNew)
