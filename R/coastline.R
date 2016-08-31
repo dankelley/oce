@@ -600,6 +600,74 @@ setMethod(f="plot",
               invisible()
           })
 
+#' Download a coastline File
+#'
+#' Constructs a query to the NaturalEarth server [1] to download coastline
+#' data (or lake data, river data, etc) in any of three resolutions.
+#'
+#' @param resolution A character value specifying the desired resolution. The permitted
+#' choices are \code{"10m"} (for 1:10M resolution, the most detailed),
+#' \code{"50m"} (for 1:50M resolution)
+#' and \code{"110m"} (for 1:110M resolution). If \code{resolution} is not supplied,
+#' \code{"50m"} will be used.
+#'
+#' @param item A character value indicating the quantity to be downloaded.
+#' This is normally one of \code{"coastline"}, \code{"land"}, \code{"ocean"},
+#' \code{"rivers_lakes_centerlines"}, or \code{"lakes"}, but the NaturalEarth
+#' server has other types, and advanced users can discover their names by inspecting
+#' the URLs of links on the NaturalEarth site, and use them for \code{item}.
+#' If \code{item} is not supplied, it defaults to \code{"coastline"}.
+#'
+#' @template downloadDestTemplate
+#'
+#' @param server A character value specifying the server that is to suppply
+#' the data. At the moment, the only permitted value is \code{"naturalearth"},
+#' which is the default if \code{server} is not supplied.
+#'
+#' @template debugTemplate
+#'
+#' @return A character value indicating the filename of the result; if
+#' there is a problem of any kind, the result will be the empty
+#' string.
+#'
+#' @seealso The work is done with \code{\link{download.file}}, with the
+#' \code{quiet} argument set to \code{TRUE}.
+#'
+#' @template downloadWarningTemplate
+#'
+#' @references
+#' 1. The NaturalEarth server is at \url{http://www.naturalearthdata.com}
+#' @family functions that download files
+#' @family things related to \code{coastline} data
+download.coastline <- function(resolution, item="coastline", 
+                           destdir=".", destfile,
+                           server="naturalearth",
+                           debug=getOption("oceDebug"))
+{
+    if (missing(resolution))
+        resolution <- "50m"
+    resolutionChoices <- c("10m", "50m", "110m")
+    if (!(resolution %in% resolutionChoices))
+        stop("'resolution' must be one of: '", paste(resolutionChoices, collapse="' '"), "'")
+    if (server == "naturalearth")
+        urlBase <- "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download"
+    else
+        stop("the only server that works is naturalearth")
+    filename <- paste("ne_", resolution, "_", item, ".zip", sep="")
+    if (missing(destfile))
+        destfile <- filename
+    url <- paste(urlBase, "/", resolution, "/physical/", filename, sep="")
+    destination <- paste(destdir, destfile, sep="/")
+    if (1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
+        oceDebug(debug, "Not downloading", destfile, "because it is already present in", destdir, "\n")
+    } else {
+        oceDebug(debug, "Downloading ", destfile)
+        download.file(url, destination, quiet=TRUE)
+    }
+    ## The following is a sample URL, from which I reverse-engineered the URL construction.
+    ##    http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/physical/ne_50m_lakes.zip
+    destination
+}
 
 #' @title Read a Coastline File
 #' 
@@ -631,7 +699,10 @@ read.coastline <- function(file,
     oceDebug(debug, "read.coastline(file=\"", file, "\", type=\"", type, "\", ...) {\n", sep="", unindent=1)
     file <- fullFilename(file)
     if (is.character(file)) {
-        filename <- file
+        if (1 == length(grep(".zip$", file)))
+            return(read.coastline.shapefile(file, debug=debug))
+        else
+            filename <- file
     } else {
         filename <- "(unknown)"
     }
@@ -772,11 +843,19 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     latlim <- sort(latlim)
 
     if (is.character(file)) {
+        message("file '", file, "'")
         if (1 == length(grep(".zip$", file))) {
+            message("is a zipfile")
             shapefile <- gsub(".zip$", ".shp", file)
-            unzip(file, shapefile)
-            filename <- fullFilename(shapefile)
+            shapefile <- gsub(".*/", "", shapefile) # remove directory path
+            message("file='", file, "'")
+            message("shapefile='", shapefile, "'")
+            unzip(file, shapefile) ## FIXME: should set exdir from a tempfile()
+            message("unzip was ok")
+            filename <- fullFilename(file)
+            message("A")
             file <- file(shapefile, "rb")
+            message("B")
             on.exit({file.remove(shapefile); close(file)})
         } else {
             filename <- fullFilename(file)

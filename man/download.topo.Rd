@@ -17,14 +17,15 @@ a default value of 4 (corresponding to 7.4km, or 4 nautical
 miles) is used. Note that (as of August 2016) the original data are on
 a 1-minute grid, which limits the possibilities for \code{resolution}.}
 
-\item{destdir}{Optional string indicating the directory in which to store downloaded files.
-If not supplied, \code{"."} is used, i.e. the data file is stored
-in the present working directory.}
+\item{destdir}{Optional string indicating the directory in which to store
+downloaded files. If not supplied, \code{"."} is used, i.e. the data file
+is stored in the present working directory.}
 
-\item{destfile}{Optional name of the file. If not supplied, this is constructed
-from \code{west}, \code{east}, etc., so that a second call with the same
-parameters will yield the same \code{destfile}; this is the key to how
-caching is done.}
+\item{destfile}{Optional string indicating the name of the file.
+If not supplied, the file name is constructed from the other
+parameters of the function call, so subsequent calls with the same
+parameters will yield the same result, thus providing the key
+to the caching scheme.}
 
 \item{format}{Optional string indicating the type of file to download. If
 not supplied, this defaults to \code{"gmt"}. See \dQuote{Details}.}
@@ -113,7 +114,8 @@ NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
 The work is done with \code{\link{download.file}}, with the
 \code{quiet} argument set to \code{TRUE}.
 
-Other functions that download files: \code{\link{download.amsr}}
+Other functions that download files: \code{\link{download.amsr}},
+  \code{\link{download.coastline}}
 
 Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},

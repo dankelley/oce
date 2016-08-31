@@ -223,14 +223,7 @@ setMethod(f="subset",
 #' miles) is used. Note that (as of August 2016) the original data are on
 #' a 1-minute grid, which limits the possibilities for \code{resolution}.
 #'
-#' @param destdir Optional string indicating the directory in which to store downloaded files.
-#' If not supplied, \code{"."} is used, i.e. the data file is stored
-#' in the present working directory.
-#'
-#' @param destfile Optional name of the file. If not supplied, this is constructed
-#' from \code{west}, \code{east}, etc., so that a second call with the same
-#' parameters will yield the same \code{destfile}; this is the key to how
-#' caching is done. 
+#' @template downloadDestTemplate
 #'
 #' @param format Optional string indicating the type of file to download. If
 #' not supplied, this defaults to \code{"gmt"}. See \dQuote{Details}.
