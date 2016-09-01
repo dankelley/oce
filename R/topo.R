@@ -223,14 +223,7 @@ setMethod(f="subset",
 #' miles) is used. Note that (as of August 2016) the original data are on
 #' a 1-minute grid, which limits the possibilities for \code{resolution}.
 #'
-#' @param destdir Optional string indicating the directory in which to store downloaded files.
-#' If not supplied, \code{"."} is used, i.e. the data file is stored
-#' in the present working directory.
-#'
-#' @param destfile Optional name of the file. If not supplied, this is constructed
-#' from \code{west}, \code{east}, etc., so that a second call with the same
-#' parameters will yield the same \code{destfile}; this is the key to how
-#' caching is done. 
+#' @template downloadDestTemplate
 #'
 #' @param format Optional string indicating the type of file to download. If
 #' not supplied, this defaults to \code{"gmt"}. See \dQuote{Details}.
@@ -588,6 +581,17 @@ setMethod(f="plot",
               if (sign(prod(xr)) < 0) {
                   Z <- rbind(Z, Z)
                   X <- c(X - 360, X)
+                  ## If X runs from -180 to 180, then subtracting 360 will duplicate the -180 value,
+                  ## so we test for repeats. We don't test for a diff of exactly zero, for numerical
+                  ## reasons, and the test for 0.001 times the mean is quite arbitrary, since we
+                  ## are likely looking for a value of 1e-14 or so, which is FAR below the difference
+                  ## we would get in realistic topographic data.
+                  dX <- diff(X)
+                  if (any(dX < 0.001*mean(dX))) {
+                      delete <- which(dX < 0.001 * mean(dX))[1]
+                      X <- X[-delete]
+                      Z <- Z[-delete,]
+                  }
               }
 
               ## Data may not extend across plot region

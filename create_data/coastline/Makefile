@@ -4,6 +4,8 @@ all: create_$(what).out check_$(what).out
 	R --no-save < $< > $@
 clean:
 	-rm *~ *.rda *.out
+view:
+	-open *png
 install:
 	cp $(what).rda ../../data
 

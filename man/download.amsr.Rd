@@ -52,7 +52,8 @@ i.e. not to rely on their order, and they are asked for patience,
 because argument names and defaults may vary through the early development.
 }
 \seealso{
-Other functions that download files: \code{\link{download.topo}}
+Other functions that download files: \code{\link{download.coastline}},
+  \code{\link{download.topo}}
 
 Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{amsr-class}},

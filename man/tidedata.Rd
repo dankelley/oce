@@ -14,33 +14,45 @@ reference.
 \description{
 The \code{tidedata} dataset contains Tide-constituent information that is
 use by \code{\link{tidem}} to fit tidal models.  \code{tidedata} is a list
-containing \describe{ \item{const}{a list containing vectors \describe{
-\item{list("name")}{a string with constituent name} \item{list("freq")}{the
-frequency, in cycles per hour} \item{list("kmpr")}{a string naming the
-comparison constituent, blank if there is none} \item{list("ikmpr")}{index
-of comparison constituent, or \code{0} if there is none}
-\item{list("df")}{frequency difference betwee constituent and its
-comparison, used in the Rayleigh criterion} \item{list("d1")}{first Doodson
-number} \item{list("d2")}{second Doodson number} \item{list("d3")}{third
-Doodson number} \item{list("d4")}{fourth Doodson number}
-\item{list("d5")}{fifth Doodson number} \item{list("d6")}{sixth Doodson
-number} \item{list("semi")}{(fill in some info later)}
-\item{list("nsat")}{number of satellite constituents}
-\item{list("ishallow")}{(fill in some info later)}
-\item{list("nshallow")}{(fill in some info later)}
-\item{list("doodsonamp")}{(fill in some info later)}
-\item{list("doodsonspecies")}{(fill in some info later)} } }
-\item{list("sat")}{a list containing vectors \describe{
-\item{list("deldood")}{(fill in some info later)}
-\item{list("phcorr")}{(fill in some info later)} \item{list("amprat")}{(fill
-in some info later)} \item{list("ilatfac")}{(fill in some info later)}
-\item{list("iconst")}{(fill in some info later)} } }
-\item{list("shallow")}{a list containing vectors \describe{
-\item{list("iconst")}{(fill in some info later)} \item{list("coef")}{(fill
-in some info later)} \item{list("iname")}{(fill in some info later)} } } }
+containing
+\describe{
+\item{\code{const}}{
+a list containing vectors
+\code{name} (a string with constituent name),
+\code{freq} (the frequency, in cycles per hour),
+\code{kmpr} (a string naming the comparison constituent, blank if there is none),
+\code{ikmpr} (index of comparison constituent, or \code{0} if there is none),
+\code{df} (frequency difference between constituent and its
+comparison, used in the Rayleigh criterion),
+\code{d1} through \code{d6} (the first through sixth Doodson numbers),
+\code{semi},
+\code{nsat} (number of satellite constituents),
+\code{ishallow},
+\code{nshallow},
+\code{doodsonamp},
+and
+\code{doodsonspecies}.
+}
+\item{\code{sat}}{
+a list containing vectors
+\code{deldood},
+\code{phcorr},
+\code{amprat},
+\code{ilatfac},
+and
+\code{iconst}.
+}
+\item{\code{shallow}}{
+a list containing vectors
+\code{iconst},
+\code{coef},
+and
+\code{iname}.
+}
+}
 Apart from the use of \code{d1} through \code{d6}, the naming and content
-follows \code{T_TIDE}.  All of this is based on Foreman (1977), to which the
-reader is referred for details.
+follows \code{T_TIDE} (see Pawlowicz et al. 2002), which in turn builds upon
+the analysis of Foreman (1977).
 }
 \author{
 Dan Kelley

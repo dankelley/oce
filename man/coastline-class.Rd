@@ -31,6 +31,7 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{[[<-,coastline-method}},
   \code{\link{as.coastline}}, \code{\link{coastlineBest}},
   \code{\link{coastlineCut}}, \code{\link{coastlineWorld}},
+  \code{\link{download.coastline}},
   \code{\link{plot,coastline-method}},
   \code{\link{read.coastline.openstreetmap}},
   \code{\link{read.coastline.shapefile}},

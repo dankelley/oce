@@ -600,6 +600,74 @@ setMethod(f="plot",
               invisible()
           })
 
+#' Download a coastline File
+#'
+#' Constructs a query to the NaturalEarth server [1] to download coastline
+#' data (or lake data, river data, etc) in any of three resolutions.
+#'
+#' @param resolution A character value specifying the desired resolution. The permitted
+#' choices are \code{"10m"} (for 1:10M resolution, the most detailed),
+#' \code{"50m"} (for 1:50M resolution)
+#' and \code{"110m"} (for 1:110M resolution). If \code{resolution} is not supplied,
+#' \code{"50m"} will be used.
+#'
+#' @param item A character value indicating the quantity to be downloaded.
+#' This is normally one of \code{"coastline"}, \code{"land"}, \code{"ocean"},
+#' \code{"rivers_lakes_centerlines"}, or \code{"lakes"}, but the NaturalEarth
+#' server has other types, and advanced users can discover their names by inspecting
+#' the URLs of links on the NaturalEarth site, and use them for \code{item}.
+#' If \code{item} is not supplied, it defaults to \code{"coastline"}.
+#'
+#' @template downloadDestTemplate
+#'
+#' @param server A character value specifying the server that is to suppply
+#' the data. At the moment, the only permitted value is \code{"naturalearth"},
+#' which is the default if \code{server} is not supplied.
+#'
+#' @template debugTemplate
+#'
+#' @return A character value indicating the filename of the result; if
+#' there is a problem of any kind, the result will be the empty
+#' string.
+#'
+#' @seealso The work is done with \code{\link{download.file}}, with the
+#' \code{quiet} argument set to \code{TRUE}.
+#'
+#' @template downloadWarningTemplate
+#'
+#' @references
+#' 1. The NaturalEarth server is at \url{http://www.naturalearthdata.com}
+#' @family functions that download files
+#' @family things related to \code{coastline} data
+download.coastline <- function(resolution, item="coastline", 
+                           destdir=".", destfile,
+                           server="naturalearth",
+                           debug=getOption("oceDebug"))
+{
+    if (missing(resolution))
+        resolution <- "50m"
+    resolutionChoices <- c("10m", "50m", "110m")
+    if (!(resolution %in% resolutionChoices))
+        stop("'resolution' must be one of: '", paste(resolutionChoices, collapse="' '"), "'")
+    if (server == "naturalearth")
+        urlBase <- "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download"
+    else
+        stop("the only server that works is naturalearth")
+    filename <- paste("ne_", resolution, "_", item, ".zip", sep="")
+    if (missing(destfile))
+        destfile <- filename
+    url <- paste(urlBase, "/", resolution, "/physical/", filename, sep="")
+    destination <- paste(destdir, destfile, sep="/")
+    if (1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
+        oceDebug(debug, "Not downloading", destfile, "because it is already present in", destdir, "\n")
+    } else {
+        oceDebug(debug, url, " being downloaded as ", destination, "\n", sep="")
+        download.file(url, destination, quiet=TRUE)
+    }
+    ## The following is a sample URL, from which I reverse-engineered the URL construction.
+    ##    http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/physical/ne_50m_lakes.zip
+    destination
+}
 
 #' @title Read a Coastline File
 #' 
@@ -631,7 +699,10 @@ read.coastline <- function(file,
     oceDebug(debug, "read.coastline(file=\"", file, "\", type=\"", type, "\", ...) {\n", sep="", unindent=1)
     file <- fullFilename(file)
     if (is.character(file)) {
-        filename <- file
+        if (1 == length(grep(".zip$", file)))
+            return(read.coastline.shapefile(file, debug=debug))
+        else
+            filename <- file
     } else {
         filename <- "(unknown)"
     }
@@ -772,12 +843,34 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     latlim <- sort(latlim)
 
     if (is.character(file)) {
+        oceDebug(debug, "file '", file, "'\n", sep="")
         if (1 == length(grep(".zip$", file))) {
-            shapefile <- gsub(".zip$", ".shp", file)
-            unzip(file, shapefile)
-            filename <- fullFilename(shapefile)
-            file <- file(shapefile, "rb")
-            on.exit({file.remove(shapefile); close(file)})
+            ## Handle zipfiles. Note that this code might come in handy
+            ## in other contexts, so it is being written in a step-by-step
+            ## way. Importantly, the extracted file is saved in a temporary
+            ## directory to avoid overwriting something (or otherwise 
+            ## disrupting) the working directory.
+            zipfile <- file
+            ## filename <- fullFilename(zipfile)
+            file <- gsub(".zip$", ".shp", file)
+            file <- gsub(".*/", "", file) # remove directory path
+            oceDebug(debug, "   zip   file:     '", zipfile, "'\n", sep="")
+            oceDebug(debug, "   shape file:     '", file, "'\n", sep="")
+            oceDebug(debug, "metadata filename: '", file, "'\n", sep="")
+            tdir <- tempdir()
+            oceDebug(debug, "             tdir: '", tdir, "'\n", sep="")
+            oceDebug(debug, "about to unzip ...\n")
+            unzip(zipfile, exdir=tdir) # unzips all the files (we need .shp and .dbf)
+            oceDebug(debug, "... the unzip completed without error\n")
+            tfile <- paste(tdir, file, sep="/")
+            oceDebug(debug, "            tfile: '", tfile, "'\n", sep="")
+            filename <- tfile
+            file <- file(tfile, "rb")
+            oceDebug(debug, "using shapefile temporarily at '", tfile, "'\n", sep="")
+            on.exit({
+                close(file)
+                unlink(tdir)
+            })
         } else {
             filename <- fullFilename(file)
             file <- file(file, "rb")
@@ -793,7 +886,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     }
     seek(file, 0, "end")
     fileSize <- seek(file, 0, "start")
-    oceDebug(debug, "file.size:", fileSize, "as determined from the operating system\n")
+    oceDebug(debug, "fileSize:", fileSize, "as determined from the operating system\n")
     buf <- readBin(file, "raw", fileSize)
     ## main header is always 100 bytes [ESRI White paper page 3]
     header <- buf[1:100]
