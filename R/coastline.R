@@ -661,7 +661,7 @@ download.coastline <- function(resolution, item="coastline",
     if (1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
         oceDebug(debug, "Not downloading", destfile, "because it is already present in", destdir, "\n")
     } else {
-        oceDebug(debug, "Downloading ", destfile)
+        oceDebug(debug, url, " being downloaded as ", destination, "\n", sep="")
         download.file(url, destination, quiet=TRUE)
     }
     ## The following is a sample URL, from which I reverse-engineered the URL construction.
@@ -843,20 +843,34 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     latlim <- sort(latlim)
 
     if (is.character(file)) {
-        message("file '", file, "'")
+        oceDebug(debug, "file '", file, "'\n", sep="")
         if (1 == length(grep(".zip$", file))) {
-            message("is a zipfile")
-            shapefile <- gsub(".zip$", ".shp", file)
-            shapefile <- gsub(".*/", "", shapefile) # remove directory path
-            message("file='", file, "'")
-            message("shapefile='", shapefile, "'")
-            unzip(file, shapefile) ## FIXME: should set exdir from a tempfile()
-            message("unzip was ok")
-            filename <- fullFilename(file)
-            message("A")
-            file <- file(shapefile, "rb")
-            message("B")
-            on.exit({file.remove(shapefile); close(file)})
+            ## Handle zipfiles. Note that this code might come in handy
+            ## in other contexts, so it is being written in a step-by-step
+            ## way. Importantly, the extracted file is saved in a temporary
+            ## directory to avoid overwriting something (or otherwise 
+            ## disrupting) the working directory.
+            zipfile <- file
+            ## filename <- fullFilename(zipfile)
+            file <- gsub(".zip$", ".shp", file)
+            file <- gsub(".*/", "", file) # remove directory path
+            oceDebug(debug, "   zip   file:     '", zipfile, "'\n", sep="")
+            oceDebug(debug, "   shape file:     '", file, "'\n", sep="")
+            oceDebug(debug, "metadata filename: '", file, "'\n", sep="")
+            tdir <- tempdir()
+            oceDebug(debug, "             tdir: '", tdir, "'\n", sep="")
+            oceDebug(debug, "about to unzip ...\n")
+            unzip(zipfile, exdir=tdir) # unzips all the files (we need .shp and .dbf)
+            oceDebug(debug, "... the unzip completed without error\n")
+            tfile <- paste(tdir, file, sep="/")
+            oceDebug(debug, "            tfile: '", tfile, "'\n", sep="")
+            filename <- tfile
+            file <- file(tfile, "rb")
+            oceDebug(debug, "using shapefile temporarily at '", tfile, "'\n", sep="")
+            on.exit({
+                close(file)
+                unlink(tdir)
+            })
         } else {
             filename <- fullFilename(file)
             file <- file(file, "rb")
@@ -872,7 +886,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     }
     seek(file, 0, "end")
     fileSize <- seek(file, 0, "start")
-    oceDebug(debug, "file.size:", fileSize, "as determined from the operating system\n")
+    oceDebug(debug, "fileSize:", fileSize, "as determined from the operating system\n")
     buf <- readBin(file, "raw", fileSize)
     ## main header is always 100 bytes [ESRI White paper page 3]
     header <- buf[1:100]
