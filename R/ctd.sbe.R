@@ -884,7 +884,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     ##res@metadata$labels <- colNamesInferred
     res@metadata$filename <- filename
     if (fileType == "binary") {
-        warning("can only read the header of binary .cnv files")
+        warning("can only handle non-binary .cnv files")
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         return(res)
     }

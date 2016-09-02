@@ -24,8 +24,13 @@ element being the manufacturer's name for the instrument. For example,
 NorTek, of the model type called AquaDopp.
 }
 \description{
-This function tries to infer the file type, based on either the data within
-the file or, more rarely, based on the file name.
+\code{oceMagic} tries to infer the file type, based on the data
+within the file, the file name, or a combination of the two.
+}
+\details{
+\code{oceMagic} was previously called \code{oce.magic}, but that
+alias will be removed towards the end of the year 2016; see
+\link{oce-deprecated}.
 }
 \author{
 Dan Kelley
