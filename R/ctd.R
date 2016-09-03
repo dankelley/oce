@@ -1630,8 +1630,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
     if (missing(breaks)) { # handle case where 'breaks' was not given
         direction <- match.arg(direction)
         pressure <- fillGap(x[["pressure"]], rule=2)
-        if (!is.null(smoother))
-            ps  <- smoother(pressure, ...)
+        ps <- if (is.null(smoother)) pressure else smoother(pressure, ...)
         if (is.list(ps) && "y" %in% names(ps))
             ps <- ps$y
         ps <- as.numeric(ps) # discard return class of e.g. smooth()
