@@ -1294,7 +1294,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         if (length(grep(".tsv$", filename))) {
             firstLine <- readLines(file, n=1, encoding="UTF-8")
             if (substr(firstLine, 1, 2) == "/*")
-                return("pangea")
+                return("pangaea")
         }
         if (length(grep(".ODF$", filename, ignore.case=TRUE))) {
             ## in BIO files, the data type seems to be on line 14.  Read more, for safety.
@@ -1620,8 +1620,8 @@ read.oce <- function(file, ...)
         return(read.argo(file))
     if (type == "lisst")
         return(read.lisst(file))
-    if (type == "pangea")
-        return(read.pangea(file, debug=debug-1))
+    if (type == "pangaea")
+        return(read.pangaea(file, debug=debug-1))
     if (type == "sealevel")
         return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")

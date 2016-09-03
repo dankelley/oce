@@ -7,7 +7,7 @@
 ctdFindProfiles(x, cutoff = 0.5, minLength = 10, minHeight = 0.1 *
   diff(range(x[["pressure"]])), smoother = smooth.spline,
   direction = c("descending", "ascending"), breaks, arr.ind = FALSE,
-  debug = getOption("oceDebug"), ...)
+  by = "pressure", debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -37,6 +37,11 @@ control to the user (example 3).}
 
 \item{arr.ind}{Logical indicating whether the array indices should be returned;
 the alternative is to return a vector of ctd objects.}
+
+\item{by}{string indicating how to find the profiles. Use \code{"location"}
+to identify profiles by a change in longitude and latitude (in which
+case all other arguments except \code{x} are ignored), or \code{"pressure"}
+to identify them by changes in pressure.}
 
 \item{debug}{An integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

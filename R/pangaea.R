@@ -9,8 +9,8 @@
 #' @template debugTemplate
 #' @author Dan Kelley
 #' @references
-#' 1. PANGEA website \url{https://www.pangaea.de}
-read.pangea <- function(file, debug=getOption("oceDebug"))
+#' 1. PANGAEA website \url{https://www.pangaea.de}
+read.pangaea <- function(file, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.pangea() {\n", unindent=1)
     filename <- NULL

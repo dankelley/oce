@@ -1567,6 +1567,11 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
 #' 
 #' @param arr.ind Logical indicating whether the array indices should be returned;
 #' the alternative is to return a vector of ctd objects.
+#'
+#' @param by string indicating how to find the profiles. Use \code{"location"}
+#' to identify profiles by a change in longitude and latitude (in which
+#' case all other arguments except \code{x} are ignored), or \code{"pressure"}
+#' to identify them by changes in pressure.
 #' 
 #' @template debugTemplate
 #' 
@@ -1617,9 +1622,10 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
                             direction=c("descending", "ascending"),
                             breaks,
                             arr.ind=FALSE,
+                            by="pressure",
                             debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "ctdFindProfiles(x, cutoff=", cutoff,
+    oceDebug(debug, "ctdFindProfiles(x, by=\"", by, "\", cutoff=", cutoff,
              ", minLength=", minLength,
              ", minHeight=", minHeight,
              ", direction=\"", direction, "\"",
@@ -1627,6 +1633,30 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
              ", arr.ind=", arr.ind, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!inherits(x, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
+    byChoices <- c("pressure", "location")
+    iby <- pmatch(by, byChoices, nomatch=0)
+    if (0 == iby)
+        stop('unknown by value "', by, '"; should be one of: "', paste(byChoices, collapse='" "'), '"')
+    by <- byChoices[iby]
+    if (by == "location" ) {
+        lon <- x[["longitude"]]
+        lat <- x[["latitude"]]
+        dist <- geodDist(lon, lat, alongPath=TRUE)
+        i <- seq_along(x[["salinity"]])
+        stni <- split(i, factor(dist))
+        ncasts <- length(stni)
+        if (!ncasts) {
+            oceDebug(debug, "no profiles found\n")
+            return(NULL)
+        }
+        casts <- vector("list", ncasts)
+        for (i in 1:ncasts) {
+            casts[[i]] <- ctdTrim(x, "index", parameters=range(stni[i]))
+        }
+        oceDebug(debug, "} # ctdFindProfiles()\n", sep="", unindent=1)
+        return(casts)
+    } # else rest of code
+
     if (missing(breaks)) { # handle case where 'breaks' was not given
         direction <- match.arg(direction)
         pressure <- fillGap(x[["pressure"]], rule=2)
