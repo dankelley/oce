@@ -58,7 +58,7 @@ value 2 indicates good data, and other values indicate either unchecked,
 suspicious, or bad data. Any data not flagged as good are set
 to \code{NA} in the returned value. (An exception is for salinity:
 if the item named \code{salinity} has a bad flag but \code{salinityBottle}
-has a good flag, then the bottle value is substituted, and a 
+has a good flag, then the bottle value is substituted, and a
 warning is issued.) Since WHP flag codes run
 from 1 to 9, this default is equivalent to
 setting \code{flags=list(all=c(1, 3:9))} along with

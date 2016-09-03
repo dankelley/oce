@@ -39,7 +39,7 @@ extraneous data from a CTD cast.
 }
 \examples{
 library(oce)
-data(ctdRaw) 
+data(ctdRaw)
 plotScan(ctdRaw)
 abline(v=c(130, 350), col='red') # useful for ctdTrim()
 

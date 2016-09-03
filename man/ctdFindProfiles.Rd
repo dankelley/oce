@@ -7,7 +7,7 @@
 ctdFindProfiles(x, cutoff = 0.5, minLength = 10, minHeight = 0.1 *
   diff(range(x[["pressure"]])), smoother = smooth.spline,
   direction = c("descending", "ascending"), breaks, arr.ind = FALSE,
-  by = "pressure", debug = getOption("oceDebug"), ...)
+  distinct, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -19,9 +19,9 @@ ctdFindProfiles(x, cutoff = 0.5, minLength = 10, minHeight = 0.1 *
 \item{minHeight}{lower limit on height of candidate profiles.}
 
 \item{smoother}{The smoothing function to use for identifying down/up
-casts. The default is \code{smooth.spline}, which performs well for 
+casts. The default is \code{smooth.spline}, which performs well for
 a small number of cycles; see \dQuote{Examples} for a method that is
-better for a long tow-yo. The return value from \code{smoother} must 
+better for a long tow-yo. The return value from \code{smoother} must
 be either a list containing an element named \code{y} or something
 that can be coerced to a vector with \code{\link{as.vector}}. To
 turn smoothing off, so that cycles in pressure are determined by
@@ -38,10 +38,12 @@ control to the user (example 3).}
 \item{arr.ind}{Logical indicating whether the array indices should be returned;
 the alternative is to return a vector of ctd objects.}
 
-\item{by}{string indicating how to find the profiles. Use \code{"location"}
-to identify profiles by a change in longitude and latitude (in which
-case all other arguments except \code{x} are ignored), or \code{"pressure"}
-to identify them by changes in pressure.}
+\item{distinct}{An optional string indicating how to identify profiles
+by unique values. Use \code{"location"}
+to find profiles by a change in longitude and latitude, or use the name of any
+of item in the \code{data} slot in \code{x}. In these cases, all the
+other arguments except \code{x} are ignored. However, if \code{distinct}
+is not supplied, the other arguments are handled as described above.}
 
 \item{debug}{An integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -96,7 +98,7 @@ for (cast in casts) {
 ## Using a moving average to smooth pressure, instead of the default
 ## smooth.spline() method. This avoids a tendency of smooth.spline()
 ## to smooth out the profiles in a tow-yo with many (dozens or more) cycles.
-movingAverage <- function(x, n = 11, ...) 
+movingAverage <- function(x, n = 11, ...)
 {
    f <- rep(1/n, n)
    stats::filter(x, f, ...)

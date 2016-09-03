@@ -57,8 +57,18 @@ read.pangaea <- function(file, debug=getOption("oceDebug"))
         res@metadata$dataNamesOriginal$depth <- "Depth water"
         res@metadata$units$depth <- list(unit=expression(m), scale="")
     }
+    if (length(n <- grep("^Event\\s*$", names))) {
+        names[n[1]] <- "event"
+        res@metadata$dataNamesOriginal$event <- "Event"
+        res@metadata$units$event <- list(unit=expression(), scale="")
+    }
+    if (length(n <- grep("^Event 2\\s*$", names))) {
+        names[n[1]] <- "event2"
+        res@metadata$dataNamesOriginal$event2 <- "Event 2"
+        res@metadata$units$event2 <- list(unit=expression(), scale="")
+    }
     if (length(n <- grep("^Elevation \\[m\\]\\s*$", names))) {
-        names[n[1]] <- "elevation" # FIXME: what is this?
+        names[n[1]] <- "elevation" # I think this is -1 times water depth
         res@metadata$dataNamesOriginal$elevation <- "Elevation"
         res@metadata$units$elevation <- list(unit=expression(m), scale="")
     }

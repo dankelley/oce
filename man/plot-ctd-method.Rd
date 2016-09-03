@@ -91,7 +91,7 @@ to \code{\link{plot,coastline-method}} if a map is included in \code{which}. Set
 supplied by the user, or a character string.  If the later, it may be the
 name of a built-in coastline (\code{"coastlineWorld"},
 \code{"coastlineWorldFine"}, or
-\code{"coastlineWorldCoarse"}), or \code{"best"}, to choose 
+\code{"coastlineWorldCoarse"}), or \code{"best"}, to choose
 a suitable coastline for the locale, or \code{"none"} to prevent
 the drawing of a coastline.  There is a speed penalty for providing
 \code{coastline} as a character string, because it forces
@@ -130,7 +130,7 @@ for panels in which the value of \code{which} equals \code{"map"} or
 the equivalent numerical code, \code{5}. If \code{drawIsobaths} is
 \code{FALSE}, then no contours are drawn. If \code{drawIsobaths}
 is \code{TRUE}, then contours are selected automatically,
-using \code{\link{pretty}(c(0,300))} if the station depth is 
+using \code{\link{pretty}(c(0,300))} if the station depth is
 under 100m or \code{\link{pretty}(c(0,5500))} otherwise.
 If \code{drawIsobaths} is a numerical vector,
 then the indicated depths are drawn. For plots drawn with \code{projection}
@@ -247,7 +247,7 @@ location.
 \details{
 Creates a multi-panel summary plot of data measured in a CTD cast. The
 default values of \code{which} and other arguments are chosen to be useful
-for quick overviews of data. However, for detailed work it is common 
+for quick overviews of data. However, for detailed work it is common
 to call the present function with just a single value of \code{which}, e.g.
 with four calls to get four panels. The advantage of this is that it provides
 much more control over the display, and also it permits the addition of extra
@@ -256,7 +256,7 @@ display elements (lines, points, margin notes, etc.) to the individual panels.
 Note that panels that draw more than one curve (e.g. \code{which="salinity+temperature"}
 draws temperature and salinity profiles in one graph), the value of \code{\link{par}("usr")}
 is established by the second profile to have been drawn. Some experimentation will
-reveal what this profile is, for each permitted \code{which} case, although 
+reveal what this profile is, for each permitted \code{which} case, although
 it seems unlikely that this will help much ... the simple fact is that drawing two
 profiles in one graph is useful for a quick overview, but not useful for e.g. interactive
 analysis with \code{\link{locator}} to flag bad data, etc.
@@ -271,7 +271,7 @@ boundaries, with \code{borderCoastline}.
 \examples{
 ## 1. simple plot
 library(oce)
-data(ctd) 
+data(ctd)
 plot(ctd)
 
 ## 2. how to customize depth contours
