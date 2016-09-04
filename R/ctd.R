@@ -353,22 +353,33 @@ setMethod(f="summary",
           definition=function(object, ...) {
               ##mnames <- names(object@metadata)
               cat("CTD Summary\n-----------\n\n")
-              showMetadataItem(object, "type",                      "Instrument:          ")
-              showMetadataItem(object, "model",                     "Instrument model:    ")
-              showMetadataItem(object, "serialNumber",              "Instr. serial no.:   ")
+              type <- object@metadata$type
+              model <- object@metadata$model
+              if (!is.null(type)) {
+                  if (is.null(model)) {
+                      cat("* Instrument:         ", type, "\n")
+                  } else {
+                      cat("* Instrument:         ", type, model, "\n")
+                  }
+              }
+              ##showMetadataItem(object, "type",                      "Instrument:          ")
+              ##showMetadataItem(object, "model",                     "Instrument model:    ")
+              ##showMetadataItem(object, "serialNumber",              "Instr. serial no.:   ")
               showMetadataItem(object, "serialNumberTemperature",   "Temp. serial no.:    ")
               showMetadataItem(object, "serialNumberConductivity",  "Cond. serial no.:    ")
               showMetadataItem(object, "filename",                  "File:                ")
               showMetadataItem(object, "hexfilename",               "Original file:       ")
               showMetadataItem(object, "institute",                 "Institute:           ")
               showMetadataItem(object, "scientist",                 "Chief scientist:     ")
-              showMetadataItem(object, "date",                      "Date:                ", isdate=TRUE)
+              ##showMetadataItem(object, "date",                      "Date:                ", isdate=TRUE)
               showMetadataItem(object, "startTime",                 "Start time:          ", isdate=TRUE)
-              showMetadataItem(object, "systemUploadTime",          "System upload time:  ", isdate=TRUE)
+              ##showMetadataItem(object, "systemUploadTime",          "System upload time:  ", isdate=TRUE)
               showMetadataItem(object, "cruise",                    "Cruise:              ")
               showMetadataItem(object, "ship",                      "Vessel:              ")
               showMetadataItem(object, "station",                   "Station:             ")
-              showMetadataItem(object, "deploymentType",            "Deployment type:     ")
+              deploymentType <- object@metadata$deploymentType
+              if (!is.null(deploymentType) && deploymentType != "unknown")
+                  showMetadataItem(object, "deploymentType",            "Deployment type:     ")
               if ("longitude" %in% names(object@data)) {
                   cat("* Mean location:      ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
                                                                    mean(object@data$longitude, na.rm=TRUE),

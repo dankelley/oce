@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.sbe.R
 \name{read.ctd.sbe}
 \alias{read.ctd.sbe}
-\title{Read an Seabird CTD File}
+\title{Read a Seabird CTD File}
 \usage{
 read.ctd.sbe(file, columns = NULL, station = NULL, missingValue,
   monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
@@ -54,7 +54,7 @@ variable across data formats, because the meta-information provided
 in those formats varies widely.
 }
 \description{
-Read an Seabird CTD File
+Read a Seabird CTD File
 }
 \details{
 This function reads files stored in Seabird \code{.cnv} format.
