@@ -27,7 +27,7 @@ is extracted and the other arguments to \code{as.ctd} are ignored, except for
 \code{pressureAtmospheric}. Note that if this first argument is an
 object of \code{\link{rsk-class}}, the present function merely passes
 it and \code{pressureAtmospheric} to \code{\link{rsk2ctd}}, which
-case \code{conductivity} becomes a mandatory argument, because it will 
+case \code{conductivity} becomes a mandatory argument, because it will
 be needed for computing actual salinity, using \code{\link{swSCTp}}.}
 
 \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ deg}C], defined on
@@ -72,7 +72,7 @@ list}
   salinity=list(unit=expression(), scale="",
   pressure=list(unit=expression(dbar), scale="")} is used. This is quite
 typical of archived datasets, but for some instrumental files it will make
-sense to use \code{salinity=list(unit=expression(uS/cm), scale="")} or 
+sense to use \code{salinity=list(unit=expression(uS/cm), scale="")} or
 \code{salinity=list(unit=expression(S/m), scale="")}.}
 
 \item{flags}{if supplied, this is a \code{\link{list}} containing data-quality
@@ -88,7 +88,7 @@ taken as \code{NA}. Set to \code{NULL} to turn off this feature.}
 
 \item{quality}{\strong{(deprecated)} optional quality flag, e.g. from the salinity quality flag in WOCE data.
 (In WOCE, \code{quality=2} indicates good data, \code{quality=3} means
-questionable data, and \code{quality=4} means bad data. 
+questionable data, and \code{quality=4} means bad data.
 This was deprecated in March 2016; see \link{oce-deprecated}.}
 
 \item{filename}{optional source filename to be stored in the object}
@@ -118,8 +118,8 @@ it serves no purpose, this argument is deprecated as of April 2016,
 and will be marked 'defunct' in an upcoming CRAN release;
 see \link{oce-deprecated}.}
 
-\item{startTime}{optional indication of the start time for the profile, 
-which is used in some several plotting functions.  This is best given as a 
+\item{startTime}{optional indication of the start time for the profile,
+which is used in some several plotting functions.  This is best given as a
 \code{\link{POSIXt}} time, but it may also be a character string
 that can be converted to a time with \code{\link{as.POSIXct}},
 using \code{UTC} as the timezone.}

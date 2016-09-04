@@ -21,7 +21,7 @@ plotProfile(x, xtype = "salinity+temperature", ytype = c("pressure", "z",
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{xtype}{Item(s) plotted on the x axis, either a vector of length equal
-to that of \code{pressure} in the \code{data} slot, 
+to that of \code{pressure} in the \code{data} slot,
 or a text code from the list below.
 \describe{
 \item{list("salinity")}{Profile of salinity.}
@@ -154,7 +154,7 @@ makes sense to use \code{add=TRUE} in the \code{panel} argument of a
 \code{\link{coplot}}, for example.)}
 
 \item{inset}{A logical value indicating whether to draw an inset plot.
-Setting this to \code{TRUE} will prevent the present function from adjusting 
+Setting this to \code{TRUE} will prevent the present function from adjusting
 the margins, which is
 necessary because margin adjustment is the basis for the method used by
 \code{\link{plotInset}}.}

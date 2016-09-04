@@ -635,8 +635,20 @@ setMethod(f="plot",
 #'
 #' @template downloadWarningTemplate
 #'
+#' @examples
+#'\dontrun{
+#' library(oce)
+#' # User must create directory ~/data/coastline first.
+#' # As of September 2016, the downloaded file, named
+#' # "ne_50m_coastline.zip", occupies 443K bytes.
+#' filename <- download.coastline(destdir="~/data/coastline")
+#' coastline <- read.coastline(filename)
+#' plot(coastline)
+#'}
+#'
 #' @references
 #' 1. The NaturalEarth server is at \url{http://www.naturalearthdata.com}
+#'
 #' @family functions that download files
 #' @family things related to \code{coastline} data
 download.coastline <- function(resolution, item="coastline", 

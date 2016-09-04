@@ -59,16 +59,16 @@ varies, a variety of approaches are taken to trimming the dataset.
   by a regression of pressure on scan number.  There are three variants to this, depending on the
   value of the second \code{method} element. If it is \code{"A"} (or not given), the procedure is to
   call \code{\link{nls}} to fit a piecewise linear model of pressure as a function of scan,
-  in which pressure is 
+  in which pressure is
   constant for scan less than a critical value, and then linearly varying for with scan. This is
-  meant to handle the common situation in which the CTD is held at roughly constant depth (typically 
+  meant to handle the common situation in which the CTD is held at roughly constant depth (typically
   a metre or so) to equilibrate, before it is lowered through the water column.
   Case \code{"B"} is the same,
   except that the pressure in the surface region is taken to be zero (this does not make
   much sense, but it might help in some cases). Note that, prior to early 2016, method \code{"B"} was
   called method \code{"C"}; the old \code{"B"} method was judged useless and was removed.}
-  
-  \item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
+
+\item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
   value of \code{parameters}. If the latter is a logical vector of length matching data column
   length, then it is used directly for subsetting. If \code{parameters} is a numerical vector with
   two elements, then the index or scan values that lie between \code{parameters[1]}
@@ -77,8 +77,8 @@ varies, a variety of approaches are taken to trimming the dataset.
   inspection of the results of \code{\link{plotScan}}. While this may take a minute or two, the
   analyst should bear in mind that a deep-water CTD profile might take 6 hours, corresponding to
   ship-time costs exceeding a week of salary.}
-  
-  \item{If \code{method="range"} then data are selected based on the value of the column named
+
+\item{If \code{method="range"} then data are selected based on the value of the column named
   \code{parameters$item}.  This may be by range or by critical value.  By range: select values
   between \code{parameters$from} (the lower limit) and \code{parameters$to} (the upper limit) By
   critical value: select if the named column exceeds the value.  For example, \code{ctd2 <-
@@ -97,7 +97,7 @@ varies, a variety of approaches are taken to trimming the dataset.
 \examples{
 \dontrun{
 library(oce)
-data(ctdRaw) 
+data(ctdRaw)
 plot(ctdRaw) # barely recognizable, due to pre- and post-cast junk
 plot(ctdTrim(ctdRaw)) # looks like a real profile ...
 plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed

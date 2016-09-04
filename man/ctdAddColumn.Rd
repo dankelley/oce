@@ -29,7 +29,7 @@ unit \code{list(name=expression(degree*C), scale="ITS-90")}.}
 \item{log}{A logical value indicating whether to store an entry in the processing
 log that indicates this insertion.}
 
-\item{originalName}{string indicating the name of the data element as it was originally. This 
+\item{originalName}{string indicating the name of the data element as it was originally. This
 makes sense only for data being read from a file, where e.g. WOCE or SBE
 names might be used.}
 

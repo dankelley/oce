@@ -75,6 +75,7 @@ NULL
 #' \code{mapZones}     \tab \code{\link{mapGrid}}    \tab Improve name sensibility\cr
 #' \code{mapMeridians} \tab \code{\link{mapGrid}}    \tab Improve name sensibility\cr
 #' \code{addColumn}    \tab \code{\link{oceSetData}} \tab Deprecated 2016-08-01\cr
+#' \code{oce.magic}    \tab \code{\link{oceMagic}}   \tab Deprecated 2016-09-01\cr
 #' }
 #' 
 #' The next CRAN release of \sQuote{oce} will have these functions flagged as
@@ -1239,8 +1240,12 @@ standardDepths <- function()
 
 #' Find the Type of an Oceanographic Data File
 #' 
-#' This function tries to infer the file type, based on either the data within
-#' the file or, more rarely, based on the file name.
+#' \code{oceMagic} tries to infer the file type, based on the data
+#' within the file, the file name, or a combination of the two.
+#'
+#' \code{oceMagic} was previously called \code{oce.magic}, but that
+#' alias will be removed towards the end of the year 2016; see
+#' \link{oce-deprecated}.
 #' 
 #' @aliases oceMagic oce.magic
 #' @param file a connection or a character string giving the name of the file
@@ -1273,16 +1278,25 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             someLines <- readLines(file, encoding="UTF-8", n=1)
             if (42 == length(strsplit(someLines[1], ' ')[[1]]))
                 return("lisst")
-        } else if (length(grep(".adr$", filename))) {
+        } 
+        if (length(grep(".adr$", filename))) {
             oceDebug(debug, "file names ends in .adr, so this is an adv/sontek/adr file.\n")
             return("adv/sontek/adr")
-        } else if (length(grep(".rsk$", filename))) {
+        }
+        if (length(grep(".rsk$", filename))) {
             oceDebug(debug, "file names ends with \".rsk\", so this is an RBR/rsk file.\n")
             return("RBR/rsk")
-        } else if (length(grep(".s4a.", filename))) {
+        }
+        if (length(grep(".s4a.", filename))) {
             oceDebug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
             return("interocean/s4")
-        } else if (length(grep(".ODF$", filename, ignore.case=TRUE))) {
+        }
+        if (length(grep(".tsv$", filename))) {
+            firstLine <- readLines(file, n=1, encoding="UTF-8")
+            if (substr(firstLine, 1, 2) == "/*")
+                return("pangaea")
+        }
+        if (length(grep(".ODF$", filename, ignore.case=TRUE))) {
             ## in BIO files, the data type seems to be on line 14.  Read more, for safety.
             someLines <- readLines(file, n=100, encoding="UTF-8")
             dt <- grep("DATA_TYPE=", someLines)
@@ -1294,9 +1308,11 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             res <- paste(subtype, "odf", sep="/")
             oceDebug(debug, "file type:", res, "\n")
             return(res)
-        } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
+        }
+        if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
-        } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo?
+        }
+        if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo?
             if (requireNamespace("ncdf4", quietly=TRUE)) {
                 if (substr(filename, 1, 5) == "http:") {
                     stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
@@ -1308,13 +1324,17 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             } else {
                 stop('must install.packages("ncdf4") to read a netCDF file')
             }
-        } else if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) { # openstreetmap
+        }
+        if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) { # openstreetmap
             return("openstreetmap")
-        } else if (length(grep(".osm$", filename, ignore.case=TRUE))) { # openstreetmap
+        }
+        if (length(grep(".osm$", filename, ignore.case=TRUE))) { # openstreetmap
             return("openstreetmap")
-        } else if (length(grep(".gpx$", filename, ignore.case=TRUE))) { # gpx (e.g. Garmin GPS)
+        }
+        if (length(grep(".gpx$", filename, ignore.case=TRUE))) { # gpx (e.g. Garmin GPS)
             return("gpx")
-        } else if (length(grep(".csv$", filename, ignore.case=TRUE))) {
+        }
+        if (length(grep(".csv$", filename, ignore.case=TRUE))) {
             someLines <- readLines(filename, 30)
             if (1 == length(grep("WMO Identifier", someLines, useBytes=TRUE))) {
                 return("met") # FIXME: may be other things too ...
@@ -1600,6 +1620,8 @@ read.oce <- function(file, ...)
         return(read.argo(file))
     if (type == "lisst")
         return(read.lisst(file))
+    if (type == "pangaea")
+        return(read.pangaea(file, debug=debug-1))
     if (type == "sealevel")
         return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")

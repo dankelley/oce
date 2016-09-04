@@ -22,6 +22,7 @@ release of oce. Please use the replacement functions as listed below.
 \code{mapZones}     \tab \code{\link{mapGrid}}    \tab Improve name sensibility\cr
 \code{mapMeridians} \tab \code{\link{mapGrid}}    \tab Improve name sensibility\cr
 \code{addColumn}    \tab \code{\link{oceSetData}} \tab Deprecated 2016-08-01\cr
+\code{oce.magic}    \tab \code{\link{oceMagic}}   \tab Deprecated 2016-09-01\cr
 }
 
 The next CRAN release of \sQuote{oce} will have these functions flagged as
