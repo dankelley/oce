@@ -559,7 +559,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 }
 
 
-#' Read an Seabird CTD File
+#' Read a Seabird CTD File
 #' @template readCtdTemplate
 #'
 #' @details
@@ -729,6 +729,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                 d <- sub(" *$", "", d)
                 date <- decodeTime(d)
             }
+        }
+        if (length(grep("^\\* Sea-Bird SBE (.*) Data File:$", lline, ignore.case=TRUE))) {
+            model <- gsub("^\\* sea-bird sbe (.*) data file:$", "\\1", lline)
+            res@metadata$model <- model
         }
         if (0 < (r<-regexpr("filename", lline)))
             hexfilename <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline)
