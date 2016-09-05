@@ -37,7 +37,7 @@ bin is of the same pressure range as the first inside bin.  For other values of
 \code{"lm"} method produces warnings about "prediction from a rank-deficient
 fit", a larger value of \code{"e"} should be used.}
 
-\item{debug}{An integer specifying whether debugging information is
+\item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
