@@ -124,7 +124,7 @@ SEXP amsr_composite(SEXP a)
   SEXP res;
   PROTECT(res = NEW_RAW(n12));
   unsigned char *resp = RAW_POINTER(res);
-  unsigned char A;
+  unsigned char A = 'a'; // assignment prevents compiler warning at line 145
   for (int i = 0; i < n12; i++) {
     double sum = 0.0;
     int nsum = 0;

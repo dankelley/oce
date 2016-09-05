@@ -2,7 +2,7 @@
 % Please edit documentation in R/pangaea.R
 \name{read.pangaea}
 \alias{read.pangaea}
-\title{Read a tab-separated file from the PANGEA website [1]}
+\title{Read tab-separated files from the PANGAEA server}
 \usage{
 read.pangaea(file, debug = getOption("oceDebug"))
 }
@@ -10,16 +10,21 @@ read.pangaea(file, debug = getOption("oceDebug"))
 \item{file}{a connection or a character string giving the name of the file
 to load.}
 
-\item{debug}{An integer specifying whether debugging information is
+\item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
 be printed.}
 }
 \description{
-This is a preliminary version of this function, and everything
-may change through the Autumn of 2016. Indeed, the function could
-be deleted.
+This is a crude function to read data files provided at the
+Pangaea website [1]. It was written by reverse-engineering two data files
+that were downloaded in September, 2016 from [1]. A private
+email at that time confirmed that there are no documents describing
+the Pangaea format, and suggested an expectation that users
+interpret the metadata by eye. For these reasons, users may find
+it necessary to modify the present function to work with their
+data.
 }
 \author{
 Dan Kelley
