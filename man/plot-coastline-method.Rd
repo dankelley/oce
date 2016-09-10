@@ -56,7 +56,8 @@ simple customization.  If they are are not provided, reasonable defaults
 will be used.}
 
 \item{projection}{optional map projection to use (see
-\code{\link{mapPlot}}).  If set to \code{FALSE} then no projection is used,
+the \code{\link{mapPlot}} argument of the same name).
+If set to \code{FALSE} then no projection is used,
 and the data are plotted in a cartesion frame, with aspect ratio set to
 reduce distortion near the middle of the plot.  This option is useful if the
 coastline produces spurious horizontal lines owing to islands crossing the

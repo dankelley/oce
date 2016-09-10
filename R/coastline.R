@@ -225,7 +225,8 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' simple customization.  If they are are not provided, reasonable defaults
 #' will be used.
 #' @param projection optional map projection to use (see
-#' \code{\link{mapPlot}}).  If set to \code{FALSE} then no projection is used,
+#' the \code{\link{mapPlot}} argument of the same name).
+#' If set to \code{FALSE} then no projection is used,
 #' and the data are plotted in a cartesion frame, with aspect ratio set to
 #' reduce distortion near the middle of the plot.  This option is useful if the
 #' coastline produces spurious horizontal lines owing to islands crossing the
@@ -323,12 +324,14 @@ setMethod(f="plot",
                                debug=getOption("oceDebug"),
                                ...)
           {
+              if (!missing(projection) && inherits(projection, "CRS"))
+                  projection <- projection@projargs
               oceDebug(debug, "plot(...",
                        ", clongitude=", if(missing(clongitude)) "(missing)" else clongitude,
                        ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
                        ", span=", if(missing(span)) "(missing)" else span,
                        ", geographical=", geographical,
-                       ", projection=", if (is.null(projection)) "NULL" else projection,
+                       ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
                        ", cex.axis=", cex.axis, 
                        ", inset=", inset, 
                        ", ...) {\n", sep="", unindent=1)
