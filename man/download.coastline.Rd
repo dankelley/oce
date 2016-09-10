@@ -77,8 +77,7 @@ plot(coastline)
 1. The NaturalEarth server is at \url{http://www.naturalearthdata.com}
 }
 \seealso{
-The work is done with \code{\link{download.file}}, with the
-\code{quiet} argument set to \code{TRUE}.
+The work is done with \code{\link[utils]{download.file}}.
 
 Other functions that download files: \code{\link{download.amsr}},
   \code{\link{download.topo}}

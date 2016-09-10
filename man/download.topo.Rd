@@ -56,7 +56,7 @@ given, then \code{download.topo} will construct a filename from the other argume
 }
 \details{
 The data are downloaded with \code{\link[utils]{download.file}}, using a URL
-devised after reverse engineering the queries constructed by
+devised from reverse engineering web-based queries constructed by
 the default \code{server} used here. Note that the data source is "etopo1",
 which is a 1 arc-second file [1,2].
 
@@ -111,8 +111,7 @@ NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
 [access date: Aug 20, 2016].
 }
 \seealso{
-The work is done with \code{\link{download.file}}, with the
-\code{quiet} argument set to \code{TRUE}.
+The work is done with \code{\link[utils]{download.file}}.
 
 Other functions that download files: \code{\link{download.amsr}},
   \code{\link{download.coastline}}

@@ -86,10 +86,14 @@ to label on the indicated sides of plot, passed to
 simple customization.  If they are are not provided, reasonable defaults
 will be used.}
 
-\item{projection}{optional indication of projection, a character string that
-in the format used by the \code{rgdal} package (and in much of computer
+\item{projection}{optional indication of projection, in one of two
+forms. First, it may be a character string in the "CRS" format that is
+used by the \code{rgdal} package (and in much of modern computer-based
 cartography). For example, \code{projection="+proj=merc"} specifies a
-Mercator projection. See \dQuote{Details}.)}
+Mercator projection. The second format is the output from 
+\code{\link[cran]{CRS}} in the \code{sp} package, which is an object
+with a slot named \code{projarg} that gets used as a projection string.
+See \dQuote{Details}.}
 
 \item{tissot}{logical value indicating whether to use \code{\link{mapTissot}}
 to plot Tissot indicatrices, i.e. ellipses at grid intersection points, which

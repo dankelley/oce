@@ -638,10 +638,14 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' simple customization.  If they are are not provided, reasonable defaults
 #' will be used.
 #'
-#' @param projection optional indication of projection, a character string that
-#' in the format used by the \code{rgdal} package (and in much of computer
+#' @param projection optional indication of projection, in one of two
+#' forms. First, it may be a character string in the "CRS" format that is
+#' used by the \code{rgdal} package (and in much of modern computer-based
 #' cartography). For example, \code{projection="+proj=merc"} specifies a
-#' Mercator projection. See \dQuote{Details}.)
+#' Mercator projection. The second format is the output from 
+#' \code{\link[cran]{CRS}} in the \code{sp} package, which is an object
+#' with a slot named \code{projarg} that gets used as a projection string.
+#' See \dQuote{Details}.
 #'
 #' @param trim logical value indicating whether to trim islands or lakes
 #' containing only points that are off-scale of the current plot box.  This
@@ -1003,10 +1007,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     gridOrig <- grid
     if (1 == length(gridOrig))
         gridOrig <- rep(gridOrig, 2)
+    if (!missing(projection) && inherits(projection, "CRS"))
+        projection <- projection@projargs
     oceDebug(debug, "mapPlot(longitude, latitude",
              ", longitudelim=", if (missing(longitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
              ", longitudelim=", if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
-             ", projection=\"", projection, "\"",
+             ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
              ", grid=", grid,
              ", ...) {\n", sep="", unindent=1)
     if (missing(longitude)) {
@@ -2984,73 +2990,13 @@ lonlat2map <- function(longitude, latitude, projection="")
     if (n != length(latitude))
         stop("lengths of longitude and latitude must match but they are ", n, " and ", length(latitude))
     ## Use proj4 if it has been set up (and still exists).
-    #message("projection=", projection)
     if ("" == projection) projection <- .Projection()$projection # FIXME
-    ##cat("  projection='", projection, "'\n", sep='')
-    ## 20150612 if ('+' != substr(projection, 1, 1)) {
-    ## 20150612     ## message("lonlat2map (mapproj case)")
-    ## 20150612     ## mapproj case
-    ## 20150612     if (!requireNamespace("mapproj", quietly=TRUE))
-    ## 20150612         stop("must install 'mapproj' package to use mapproj-style map projections")
-    ## 20150612     xy <- NULL
-    ## 20150612     #message("parameters:")
-    ## 20150612     #str(parameters)
-    ## 20150612     #message("orientation:")
-    ## 20150612     #str(orientation)
-    ## 20150612     try({
-    ## 20150612         #message("lon and lat:");
-    ## 20150612         #str(data.frame(longitude, latitude))
-    ## 20150612         if (is.null(parameters)) {
-    ## 20150612             xy <- mapproj::mapproject(longitude, latitude)
-    ## 20150612         } else {
-    ## 20150612             xy <- mapproj::mapproject(longitude, latitude,
-    ## 20150612                                       projection=projection, parameters=parameters, orientation=orientation)
-    ## 20150612         }
-    ## 20150612         #message("xy:")
-    ## 20150612         #str(xy)
-    ## 20150612         .Projection(list(type="mapproj", projection=projection))     # turn proj4 off, in case it was on
-    ## 20150612         ## if (nchar(projection) > 1 && (is.null(orientation) || (orientation[1] == 90 && orientation[3] == 0))) {
-    ## 20150612         ##     cmd <- "+proj="
-    ## 20150612         ##     proj <- "?"
-    ## 20150612         ##     ## See http://www.remotesensing.org/geotiff/proj_list
-    ## 20150612         ##     ## After the conversion there may be a comment listing corequisites
-    ## 20150612         ##     if (projection == "aitoff") proj <- "(no equivalent)"
-    ## 20150612         ##     if (projection == "albers") proj <- "aea" # needs lat0 lat1
-    ## 20150612         ##     if (projection == "bonne") proj <- "bonne" # needs lat0
-    ## 20150612         ##     if (projection == "gall") proj <- "gall"
-    ## 20150612         ##     ## if (projection == "lambert") proj <- "laea" ## ??
-    ## 20150612         ##     if (projection == "lambert") proj <- "lcc"
-    ## 20150612         ##     if (projection == "mercator") proj <- "merc"
-    ## 20150612         ##     if (projection == "mollweide") proj <- "moll"
-    ## 20150612         ##     if (projection == "orthographic") proj <- "ortho"
-    ## 20150612         ##     if (projection == "polyconic") proj <- "pconic"
-    ## 20150612         ##     if (projection == "robin") proj <- "robin"
-    ## 20150612         ##     ## FIXME: what about sterea?
-    ## 20150612         ##     if (projection == "stereographic") proj <- "stere"
-    ## 20150612         ##     if (projection == "wintri") proj <- "wintri"
-    ## 20150612         ##     cmd <- paste("+proj=", proj, sep="")
-    ## 20150612         ##     if (!is.null(parameters)) {
-    ## 20150612         ##         names <- names(parameters)
-    ## 20150612         ##         if ("lat0" %in% names) cmd <- paste(cmd, " +lat_0=", parameters[["lat0"]], sep="")
-    ## 20150612         ##         if ("lat1" %in% names) cmd <- paste(cmd, " +lat_1=", parameters[["lat1"]], sep="")
-    ## 20150612         ##     }
-    ## 20150612         ##     if (!is.null(orientation))
-    ## 20150612         ##         cmd <- paste(cmd, " +lon_0=", orientation[2], sep="")
-    ## 20150612         ##     if (projection == "stereographic")
-    ## 20150612         ##         cmd <- paste(cmd, " +lat_0=90", sep="")
-    ## 20150612         ##     message("mapPlot() suggestion: try using projection=\"", cmd, "\"")
-    ## 20150612         ## }
-    ## 20150612     }, silent=!TRUE)
-    ## 20150612     if (is.null(xy)) {
-    ## 20150612         xy <- list(x=NA, y=NA)
-    ## 20150612         warning("problem with mapproj-style projection. Please use PROJ.4 style")
-    ## 20150612     }
-    ## 20150612     #message("xy:")
-    ## 20150612     #str(xy)
-    ## 20150612 } else {
-    ##message("PROJ.4 case")
-    ## proj4 case
-    pr <- gsub(" .*$", "", gsub("^\\+proj=", "", projection))
+    if (inherits(projection, "CRS")) {
+        projection <- projection@projargs
+        message("converted")
+    }
+    pr <- gsub(".*\\+proj=([^ ]*).*", "\\1", gsub("^\\+proj=", "", projection))
+    #gsub(" .*$", "", gsub("^\\+proj=", "", projection))
     if (!(pr %in% knownProj4))
         stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
                                         #if (length(grep("aitoff", pr))) stop("+proj=aitoff cannot be used")

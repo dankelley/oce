@@ -194,7 +194,7 @@ setMethod(f="subset",
 #'
 #' @details
 #' The data are downloaded with \code{\link[utils]{download.file}}, using a URL
-#' devised after reverse engineering the queries constructed by
+#' devised from reverse engineering web-based queries constructed by
 #' the default \code{server} used here. Note that the data source is "etopo1",
 #' which is a 1 arc-second file [1,2].
 #'
@@ -250,8 +250,7 @@ setMethod(f="subset",
 #' lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
 #'}
 #'
-#' @seealso The work is done with \code{\link{download.file}}, with the
-#' \code{quiet} argument set to \code{TRUE}.
+#' @seealso The work is done with \code{\link[utils]{download.file}}.
 #'
 #' @template downloadWarningTemplate
 #'
@@ -325,8 +324,8 @@ download.topo <- function(west, east, south, north, resolution,
     if (1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
         oceDebug(debug, "Not downloading", destfile, "because it is already present in", destdir, "\n")
     } else {
-        oceDebug(debug, "Downloading ", destfile)
-        download.file(url, destination, quiet=TRUE)
+        download.file(url, destination)
+        oceDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
     }
     destination
 }
