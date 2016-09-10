@@ -91,7 +91,7 @@ forms. First, it may be a character string in the "CRS" format that is
 used by the \code{rgdal} package (and in much of modern computer-based
 cartography). For example, \code{projection="+proj=merc"} specifies a
 Mercator projection. The second format is the output from 
-\code{\link[cran]{CRS}} in the \code{sp} package, which is an object
+\code{\link[sp]{CRS}} in the \CRANpkg{sp} package, which is an object
 with a slot named \code{projarg} that gets used as a projection string.
 See \dQuote{Details}.}
 

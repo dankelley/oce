@@ -33,13 +33,16 @@ near the centre latitude on the plot. Often, it makes sense to set
 \code{asp=1/cos(45*pi/180)}.  Note that the land mass is not symmetric about
 the equator, so to get good world views you should set \code{asp=1} or set
 \code{ylim} to be symmetric about zero. Any given value of \code{asp} is
-ignored, if \code{clongitude} and \code{clatitude} are given.}
+ignored, if \code{clongitude} and \code{clatitude} are given (or
+if the latter two are inferred from \code{projection}.}
 
 \item{clongitude, clatitude}{optional center latitude of map, in decimal
-degrees.  If both \code{clongitude} and \code{clatitude} are provided, then
+degrees.  If both \code{clongitude} and \code{clatitude} are provided,
+or alternatively if they can be inferred from substrings \code{+lon_0}
+and \code{+lat_0} in \code{projection}, then
 any provided value of \code{asp} is ignored, and instead the plot aspect
 ratio is computed based on the center latitude.  If \code{clongitude} and
-\code{clatitude} are provided, then \code{span} must also be provided, and
+\code{clatitude} are known, then \code{span} must also be provided, and
 in this case, it is not permitted to also specify \code{longitudelim} and
 \code{latitudelim}.}
 
@@ -47,7 +50,7 @@ in this case, it is not permitted to also specify \code{longitudelim} and
 The plotted span is usually close to the suggestion, although the details
 depend on the plot aspect ratio and other factors, so some adjustment may be
 required to fine-tune a plot.  A value for \code{span} must be supplied, if
-\code{clongitude} and \code{clatitude} are supplied.}
+\code{clongitude} and \code{clatitude} are supplied (or inferred from \code{projection}).}
 
 \item{lonlabel, latlabel, sides}{optional vectors of longitude and latitude to
 label on the indicated sides of plot, passed to

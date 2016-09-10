@@ -1,10 +1,3 @@
-## Author notes on PROJ.4:
-## 1. http://stackoverflow.com/questions/tagged/proj4
-## 2. PROJ.4 is used by the following R packages:
-##    1. openstreetmap
-##    2. proj4
-##    3. rgdal
-
 .axis <- local({
     val <- list(longitude=NULL, latitude=NULL)
     function(new) if (!missing(new)) val <<- new else val
@@ -643,7 +636,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' used by the \code{rgdal} package (and in much of modern computer-based
 #' cartography). For example, \code{projection="+proj=merc"} specifies a
 #' Mercator projection. The second format is the output from 
-#' \code{\link[cran]{CRS}} in the \code{sp} package, which is an object
+#' \code{\link[sp]{CRS}} in the \CRANpkg{sp} package, which is an object
 #' with a slot named \code{projarg} that gets used as a projection string.
 #' See \dQuote{Details}.
 #'
@@ -1007,8 +1000,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     gridOrig <- grid
     if (1 == length(gridOrig))
         gridOrig <- rep(gridOrig, 2)
-    if (!missing(projection) && inherits(projection, "CRS"))
+    if (!missing(projection) && inherits(projection, "CRS")) {
         projection <- projection@projargs
+    }
     oceDebug(debug, "mapPlot(longitude, latitude",
              ", longitudelim=", if (missing(longitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
              ", longitudelim=", if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
@@ -2995,7 +2989,7 @@ lonlat2map <- function(longitude, latitude, projection="")
         projection <- projection@projargs
         message("converted")
     }
-    pr <- gsub(".*\\+proj=([^ ]*).*", "\\1", gsub("^\\+proj=", "", projection))
+    pr <- gsub(".*\\+proj=([^ ]*).*", "\\1", projection)
     #gsub(" .*$", "", gsub("^\\+proj=", "", projection))
     if (!(pr %in% knownProj4))
         stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
