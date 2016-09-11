@@ -21,7 +21,7 @@ argument is ignored).  If \code{longitude} is missing, both it and
 \item{latitude}{vector of latitudes of points to be plotted (ignored
 if the first argument contains both latitude and longitude).}
 
-\item{longitudelim}{Optional vector of length two, indicating the
+\item{longitudelim}{optional vector of length two, indicating the
 longitude limits of the plot. This value is used in the selection of
 longitude lines that are shown (and possibly
 labelled on the axes). In some cases, e.g. for polar views,
@@ -30,7 +30,7 @@ being left out of the plot.  Altering \code{longitudelim} can
 often help in such cases, e.g. \code{longitudelim=c(-180,180)} will
 force the drawing of lines all around the globe.}
 
-\item{latitudelim}{Optinoal vector of length two, indicating
+\item{latitudelim}{optional vector of length two, indicating
 the latitude limits of the plot. This, together with \code{longitudelim}
 (and, importantly, the geometry of the plot device) is used in the
 selection of map scale.}
@@ -215,8 +215,9 @@ Int'l map of the world polyconic          \tab \code{imw_p}    \tab \code{lat_1}
 Kavraisky V                               \tab \code{kav5}     \tab - \cr
 Kavraisky VII                             \tab \code{kav7}     \tab - \cr
 Lambert azimuthal equal area              \tab \code{laea}     \tab - \cr
-Lat/long                                  \tab \code{lonlat}   \tab - \cr
-Lat/long                                  \tab \code{latlon}   \tab - \cr
+Longitude and latitude                    \tab \code{lonlat}   \tab - \cr
+Longitude and latitude                    \tab \code{longlat}   \tab - \cr
+Longitude and latitude                    \tab \code{latlon}   \tab - \cr
 Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
 Lambert conformal conic alternative       \tab \code{lcca}     \tab \code{lat_0}\cr
 Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
@@ -323,8 +324,7 @@ appropriate to most oceanographic applications.
 
 \section{Choosing a projection}{
 
-The use of the PROJ.4 scheme is greatly
-encouraged. The best choice of projection depends on the application.
+The best choice of projection depends on the application.
 Readers may find \code{projection="+proj=moll"} useful for world-wide
 plots, \code{ortho} for hemispheres viewed from the equator, \code{stere}
 for polar views, \code{lcc} for wide meridional ranges in mid latitudes,
@@ -462,7 +462,7 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapMeridians}}, \code{\link{mapPoints}},
   \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
   \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{mapZones}}, \code{\link{shiftLongitude}},
-  \code{\link{utm2lonlat}}
+  \code{\link{mapZones}}, \code{\link{oceCRS}},
+  \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
 

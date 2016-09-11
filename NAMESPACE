@@ -178,6 +178,8 @@ export(abbreviateTimeLabels,
        oceColorsFreesurface, oceColorsOxygen, oceColorsPAR, oceColorsPhase,
        oceColorsSalinity, oceColorsTemperature, oceColorsTurbidity,
        oceColorsVelocity, oceColorsVorticity,
+
+       oceCRS,
  
        oceGetData, oceDeleteData, oceSetData,
        oceGetMetadata, oceDeleteMetadata, oceSetMetadata,
