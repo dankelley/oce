@@ -5,9 +5,8 @@
 \alias{plot,rsk-method}
 \title{Plot Rsk Data}
 \usage{
-\S4method{plot}{rsk}(x, which = "timeseries", title = "", adorn = NULL,
-  tlim, plim, Tlim, xlab, ylab, tformat,
-  drawTimeRange = getOption("oceDrawTimeRange"),
+\S4method{plot}{rsk}(x, which = "timeseries", adorn = NULL, tlim, ylim,
+  xlab, ylab, tformat, drawTimeRange = getOption("oceDrawTimeRange"),
   abbreviateTimeRange = getOption("oceAbbreviateTimeRange"),
   useSmoothScatter = FALSE, mgp = getOption("oceMgp"), mar = c(mgp[1] +
   1.5, mgp[1] + 1.5, 1.5, 1.5), main = "", debug = getOption("oceDebug"),
@@ -16,12 +15,10 @@
 \arguments{
 \item{x}{\code{rsk} object, typically result of \code{\link{read.rsk}}.}
 
-\item{which}{list of desired plot types.  These are graphed in panels running
-down from the top of the page.  See \dQuote{Details} for the meanings of
-various values of \code{which}.}
-
-\item{title}{character string to be used in the text-summary panel
-(\code{which}=2).}
+\item{which}{character indicating desired plot types.  These are
+graphed in panels running down from the top of the page.  See
+\dQuote{Details} for the meanings of various values of
+\code{which}.}
 
 \item{adorn}{(\strong{Defunct})
 An \code{\link{expression}} or vector of expressions that contain
@@ -44,14 +41,9 @@ defunct \code{oce} features.)}
 \item{tlim}{optional limits for time axis.  If not provided, the value will be
 inferred from the data.}
 
-\item{plim}{optional limits for pressure axis.  If not provided, the value will
+\item{ylim}{optional limits for the y axis.  If not provided, the value will
 be inferred from the data.  (It is helpful to specify this, if the auto-scaled
 value will be inappropriate, e.g. if more lines are to be added later.)}
-
-\item{Tlim}{optional limits for temperature axis.  If not provided, the value
-will be inferred from the data.  (It is helpful to specify this, if the
-auto-scaled value will be inappropriate, e.g. if more lines are to be added
-later.)}
 
 \item{xlab}{optional label for x axis.}
 
@@ -100,24 +92,22 @@ time-series plots, because the one thing that is definitely known about
 \code{data} slot.
 }
 \details{
-Several plots are available.  \itemize{
-    \item \code{which=0} or \code{"timeseries"} for time-series plots of each variable;
-    this over-rides any other specification
-    \item \code{which=1} or \code{"temperature"} for a time-series plot of temperature
-    \item \code{which=2} or \code{"text"} for textual information about the dataset
-    \item \code{which=3} or \code{"pressure"} for a time-series plot of pressure
-    \item \code{which=4} or \code{"profile"} for a temperature profile
-}
+Plots produced are time series plots of the data in the
+    object. The default, \code{which="timeseries"} plots all data
+    fields, and over-rides any other specification. Specific fields
+    can be plotted by naming the field,
+    e.g. \code{which="temperature"} to plot a time series of just
+    the temperature field.
 }
 \examples{
 library(oce)
 data(rsk)
-plot(rsk, which=c(1,3))
+plot(rsk, which=c("pressure", "temperature"))
 
 
 }
 \author{
-Dan Kelley
+Dan Kelley and Clark Richards
 }
 \seealso{
 The documentation for \code{\link{rsk-class}} explains the structure of
