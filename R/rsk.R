@@ -425,7 +425,6 @@ setMethod(f="plot",
               ## etc (which will yield errors in plot.lm(), for example).
               if ("xlim" %in% dotsNames)
                   stop("in plot.rsk() : 'xlim' not allowed; use tlim", call.=FALSE)
-              whichOk <- c("timeseries", names(x@data))
               if (any(which=="timeseries"))
                   which <- "timeseries" # "timeseries" overrides any others
               opar <- par(no.readonly = TRUE)
@@ -443,6 +442,7 @@ setMethod(f="plot",
                   ## individual panels
                   ## Trim out plots that we cannot do.
                   names <- names(x@data)
+                  names <- names[-(names=="time")]
                   nw <- length(which)
                   opar <- par(no.readonly = TRUE)
                   par(mfrow=c(nw, 1))
@@ -473,6 +473,8 @@ setMethod(f="plot",
                                       mgp=mgp, mar=mar, main=main[w], ...)
                           drawTimeRange <- FALSE    # only the first time panel gets the time indication
                           axis(2)
+                      } else {
+                          stop("Unrecognized value for \"which\". Must be \"timeseries\" or the name of any field from the data slot.")
                       }
                       if (w <= adorn.length) {
                           t <- try(eval(adorn[w]), silent=TRUE)
