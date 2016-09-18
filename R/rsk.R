@@ -403,7 +403,6 @@ as.rsk <- function(time, columns,
 #' @family things related to \code{rsk} data
 setMethod(f="plot",
           signature=signature("rsk"),
-          ##definition=function(x, which=c(1, 3, 4), title="", adorn=NULL,
           definition=function(x, which="timeseries", adorn=NULL,
                               tlim, ylim,
                               xlab, ylab,
@@ -425,9 +424,7 @@ setMethod(f="plot",
               ## but it may be better to get users out of the habit of supplying xlim
               ## etc (which will yield errors in plot.lm(), for example).
               if ("xlim" %in% dotsNames)
-                  stop("in plot.rsk() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for type=4) ", call.=FALSE)
-              if ("ylim" %in% dotsNames)
-                  stop("in plot.rsk() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for type=3) ", call.=FALSE)
+                  stop("in plot.rsk() : 'xlim' not allowed; use tlim", call.=FALSE)
               whichOk <- c("timeseries", names(x@data))
               if (any(which=="timeseries"))
                   which <- "timeseries" # "timeseries" overrides any others
