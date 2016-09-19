@@ -594,9 +594,6 @@ colormap <- function(z=NULL,
 {
     oceDebug(debug, "colormap() {\n", unindent=1)
     zKnown <- !is.null(z)
-    if (zKnown) {
-        z <- z[is.finite(z)]
-    }
     zlimKnown <- !missing(zlim)
     if (zlimKnown) {
         if (length(zlim) != 2)
@@ -678,7 +675,7 @@ colormap <- function(z=NULL,
             zlimKnown <- TRUE
         } else if (zKnown) {
             oceDebug(debug, "zlimKnown=", zlimKnown, ", so inferring zlim from z\n", sep="")
-            zlim <- rangeExtended(z)
+            zlim <- rangeExtended(z[is.finite(z)])
             zlimKnown <- TRUE
         ##} else if (x0Known) {
         ##    oceDebug(debug, "zlimKnown=", zlimKnown, ", so inferring zlim from x0 and x1\n", sep="")
