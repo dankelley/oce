@@ -41,9 +41,15 @@ defunct \code{oce} features.)}
 \item{tlim}{optional limits for time axis.  If not provided, the value will be
 inferred from the data.}
 
-\item{ylim}{optional limits for the y axis.  If not provided, the value will
-be inferred from the data.  (It is helpful to specify this, if the auto-scaled
-value will be inappropriate, e.g. if more lines are to be added later.)}
+\item{ylim}{optional limits for the y axis.  If not provided, the
+value will be inferred from the data.  (It is helpful to
+specify this, if the auto-scaled value will be inappropriate,
+e.g. if more lines are to be added later). Note that this is
+ignored, unless \code{length(which) == 1} and \code{which}
+corresponds to one of the data fields. If a multipanel plot of
+a specific subset of the data fields is desired with
+\code{ylim} control, it should be done panel by panel (see
+Examples).}
 
 \item{xlab}{optional label for x axis.}
 
@@ -102,8 +108,12 @@ Plots produced are time series plots of the data in the
 \examples{
 library(oce)
 data(rsk)
-plot(rsk, which=c("pressure", "temperature"))
+plot(rsk) # default timeseries plot of all data fields
 
+## A multipanel plot of just pressure and temperature with ylim
+par(mfrow=c(2, 1))
+plot(rsk, which="pressure", ylim=c(10, 30))
+plot(rsk, which="temperature", ylim=c(2, 4))
 
 }
 \author{
