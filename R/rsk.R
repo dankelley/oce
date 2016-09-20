@@ -351,9 +351,15 @@ as.rsk <- function(time, columns,
 #' @param tlim optional limits for time axis.  If not provided, the value will be
 #' inferred from the data.
 #' 
-#' @param ylim optional limits for the y axis.  If not provided, the value will
-#' be inferred from the data.  (It is helpful to specify this, if the auto-scaled
-#' value will be inappropriate, e.g. if more lines are to be added later.)
+#' @param ylim optional limits for the y axis.  If not provided, the
+#'     value will be inferred from the data.  (It is helpful to
+#'     specify this, if the auto-scaled value will be inappropriate,
+#'     e.g. if more lines are to be added later). Note that this is
+#'     ignored, unless \code{length(which) == 1} and \code{which}
+#'     corresponds to one of the data fields. If a multipanel plot of
+#'     a specific subset of the data fields is desired with
+#'     \code{ylim} control, it should be done panel by panel (see
+#'     Examples).
 #' 
 #' @param xlab optional label for x axis.
 #' 
@@ -390,8 +396,12 @@ as.rsk <- function(time, columns,
 #' @examples
 #' library(oce)
 #' data(rsk)
-#' plot(rsk, which=c("pressure", "temperature"))
-#' 
+#' plot(rsk) # default timeseries plot of all data fields
+#'
+#' ## A multipanel plot of just pressure and temperature with ylim
+#' par(mfrow=c(2, 1))
+#' plot(rsk, which="pressure", ylim=c(10, 30))
+#' plot(rsk, which="temperature", ylim=c(2, 4))
 #' 
 #' @seealso
 #' The documentation for \code{\link{rsk-class}} explains the structure of
@@ -427,16 +437,23 @@ setMethod(f="plot",
                   stop("in plot.rsk() : 'xlim' not allowed; use tlim", call.=FALSE)
               if (any(which=="timeseries"))
                   which <- "timeseries" # "timeseries" overrides any others
-              opar <- par(no.readonly = TRUE)
-              on.exit(par(opar))
               lw <- length(which)
               if (lw == 1 && which=="timeseries") {
+                  opar <- par(no.readonly = TRUE)
+                  on.exit(par(opar))
                   names <- names(x@data)
                   if (!"time" %in% names) stop("plot.rsk() cannot plot timeseries, since no \"time\" data", call.=FALSE)
                   names <- names[names != "time"]
                   par(mfrow=c(length(names), 1))
                   for (name in names) {
-                      oce.plot.ts(x[["time"]], x[[name]], ylab=name, ...)
+                      if (!is.null(x[['units']])) {
+                          unit <- x[['units']][[name]]$unit
+                          tmp <- c(name, '~"["*', as.character(unit), '*"]"')
+                          label <- bquote(.(parse(text=paste0(tmp, collapse=''))))
+                      } else {
+                          label <- name
+                      }
+                      oce.plot.ts(x[["time"]], x[[name]], ylab=label, ...)
                   }
               } else {
                   ## individual panels
@@ -444,10 +461,11 @@ setMethod(f="plot",
                   names <- names(x@data)
                   names <- names[-(names=="time")]
                   nw <- length(which)
-                  opar <- par(no.readonly = TRUE)
-                  par(mfrow=c(nw, 1))
-                  if (nw > 1)
-                      on.exit(par(opar))
+                  ## opar <- par(no.readonly = TRUE)
+                  ## if (nw > 1) {
+                  ##     par(mfrow=c(nw, 1))
+                  ##     on.exit(par(opar))
+                  ## }
                   adorn.length <- length(adorn)
                   if (adorn.length == 1) {
                       adorn <- rep(adorn, nw)
@@ -462,9 +480,16 @@ setMethod(f="plot",
                       oceDebug(debug, "which[", w, "]=", which[w], "\n")
                       haveField <- (which[w] %in% names) && any(is.finite(x[[which[w]]]))
                       if (haveField) {
+                          if (!is.null(x[['units']])) {
+                              unit <- x[['units']][[which[w]]]$unit
+                              tmp <- c(which[w], '~"["*', as.character(unit), '*"]"')
+                              label <- bquote(.(parse(text=paste0(tmp, collapse=''))))
+                          } else {
+                              label <- which[w]
+                          }
                           oce.plot.ts(x@data$time, x[[which[w]]],
-                                      xlab=if (!missing(xlab))xlab else "",
-                                      ylab=if (missing(ylab)) which[w] else ylab,
+                                      xlab=if (!missing(xlab)) xlab else "",
+                                      ylab=if (missing(ylab)) label else  ylab,
                                       type='l',
                                       xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
                                       ylim=if (missing(ylim)) range(x[[which[w]]], na.rm=TRUE) else ylim,
