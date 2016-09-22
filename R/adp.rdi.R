@@ -1704,6 +1704,7 @@ read.adp.rdi.sentinel <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                   debug=getOption("oceDebug"),
                                   ...)
 {
+    isVMDAS <- FALSE # FIXME
     oceDebug(debug, "read.adp.rdi(...,from=",format(from),
              ",to=",if(missing(to)) "missing" else format(to), "...) {\n", unindent=1)
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
@@ -1780,9 +1781,9 @@ read.adp.rdi.sentinel <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         xmitPulseLength <- header$xmitPulseLength
         cellSize <- header$cellSize
         ## oceDebug(debug, "about to call ldc_rdi\n")
-        ## ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
-        ## oceDebug(debug, "successfully called ldc_rdi\n")
-        ensembleStart <- .Call("match2bytes", buf, 0x7f, 0x7f, !TRUE)
+        ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
+        oceDebug(debug, "successfully called ldc_rdi\n")
+        ##ensembleStart <- .Call("match2bytes", buf, 0x7f, 0x7f, !TRUE)
         bytes.in.ensemble <- as.numeric(buf[ensembleStart[1]+2]) + 256*as.numeric(buf[ensembleStart[1]+3])
         
         ## Profiles start at the VARIABLE LEADER DATA, since there is no point in
@@ -2076,6 +2077,7 @@ read.adp.rdi.sentinel <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             avgMagnitudeVelocityNorth <- avgMagnitudeVelocityEast <- NULL
                             primaryFlags <- NULL
                         } else {
+                            message("DAN 1")
                             if (!isVMDAS)
                                 badVMDAS <- c(badVMDAS, i)
                         }
@@ -2162,6 +2164,8 @@ read.adp.rdi.sentinel <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 as.integer(buf[profileStart+8]),      # minute
                                 as.integer(buf[profileStart+9])+0.01*as.integer(buf[profileStart+10]), # decimal second
                                 tz=tz)
+            message("DAN 2") 
+            isVMDAS <- FALSE # FIXME FIXME
             if (isVMDAS) {
                 #navTime <- as.POSIXct(navTime, origin='1970-01-01', tz=tz)
                 firstTime <- firstTime + as.POSIXct("1970-01-01 00:00:00", tz=tz)
@@ -2288,6 +2292,7 @@ read.adp.rdi.sentinel <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
            ## Sometimes a non-VMDAS file will have some profiles that have the VMDAS flag.
            ## It is not clear why this happens, but in any case, provide a warning.
+           badVMDAS <- NULL # FIXME FIXME
            nbadVMDAS <- length(badVMDAS)
            if (nbadVMDAS > 0) {
                if (1==nbadVMDAS) {
@@ -2302,6 +2307,7 @@ read.adp.rdi.sentinel <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
            }
            class(time) <- c("POSIXt", "POSIXct")
            attr(time, "tzone") <- getOption("oceTz")
+            message("DAN 3")
            if (bFound && !isVMDAS) {
                br[br == 0.0] <- NA    # clean up (not sure if needed)
                res@data <- list(v=v, q=q, a=a, g=g,

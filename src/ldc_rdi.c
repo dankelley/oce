@@ -3,7 +3,7 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-//#define DEBUG
+#define DEBUG
 
 /* 
 
@@ -65,32 +65,26 @@ SEXP ldc_rdi(SEXP buf, SEXP max)
 #endif
   for (int i = 0; i < lbuf - 1; i++) { /* note that we don't look to the very end */
     if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
-      if (matches == 0) {
+      //if (matches == 0) {
 	bytes_to_check = pbuf[i+2] + 256 * pbuf[i+3];
-      }
+      //}
       if ((i + bytes_to_check) < lbuf) {
 	check_sum = 0;
 	for (int c = 0; c < bytes_to_check; c++) {
-#ifdef DEBUG
-	  if (i >= 5722000) Rprintf("check byte at i+c=%d (max_lres: %d)\n", i+c, max_lres);
-#endif
 	  check_sum += (unsigned short int)pbuf[i + c];
-#ifdef DEBUG
-	  if (i >= 5722000) Rprintf("check_sum is now %d\n", check_sum);
-#endif
 	}
-	desired_check_sum = ((unsigned short)pbuf[i+bytes_to_check+0]) | ((unsigned short)pbuf[i+bytes_to_check+1] << 8);
+	desired_check_sum = ((unsigned short int)pbuf[i+bytes_to_check+0]) | ((unsigned short int)pbuf[i+bytes_to_check+1] << 8);
 	if (check_sum == desired_check_sum) {
 	  matches++;
 #ifdef DEBUG
-	  Rprintf("buf[%d] ok\n", i);
+	  //if (matches < 30) Rprintf("matches=%d; buf[%d] correct checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
 #endif
 	  if (max_lres != 0 && matches >= max_lres) {
 	    break;
 	  }
 	} else {
 #ifdef DEBUG
-	  Rprintf("buf[%d] checksum %d (needed %d)\n", i, check_sum, desired_check_sum);
+	  if (matches > -1) Rprintf("matches=%d; buf[%d] incorrect checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
 #endif
 	}
       }
