@@ -343,8 +343,8 @@ setMethod(f="[[",
                   ilook <- seq.int(1L, dim[1], by=1L)
                   jlook <- seq.int(1L, dim[2], by=1L)
                   if (!missing(j)) {
-                      if (is.logical(j) && j) {
-                          decimate <- max(as.integer(round(maxdim / 800)), 1)
+                      if (is.logical(j)) {
+                         decimate <- if (j) max(as.integer(round(maxdim / 800)), 1) else 1
                       } else {
                           if (round(j) < 1) stop("cannot decimate by a step smaller than 1, but got ", j)
                           decimate <- as.integer(round(j))

@@ -206,19 +206,22 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' \code{asp=1/cos(45*pi/180)}.  Note that the land mass is not symmetric about
 #' the equator, so to get good world views you should set \code{asp=1} or set
 #' \code{ylim} to be symmetric about zero. Any given value of \code{asp} is
-#' ignored, if \code{clongitude} and \code{clatitude} are given.
+#' ignored, if \code{clongitude} and \code{clatitude} are given (or
+#' if the latter two are inferred from \code{projection}.
 #' @param clongitude,clatitude optional center latitude of map, in decimal
-#' degrees.  If both \code{clongitude} and \code{clatitude} are provided, then
+#' degrees.  If both \code{clongitude} and \code{clatitude} are provided,
+#' or alternatively if they can be inferred from substrings \code{+lon_0}
+#' and \code{+lat_0} in \code{projection}, then
 #' any provided value of \code{asp} is ignored, and instead the plot aspect
 #' ratio is computed based on the center latitude.  If \code{clongitude} and
-#' \code{clatitude} are provided, then \code{span} must also be provided, and
+#' \code{clatitude} are known, then \code{span} must also be provided, and
 #' in this case, it is not permitted to also specify \code{longitudelim} and
 #' \code{latitudelim}.
 #' @param span optional suggested diagonal span of the plot, in kilometers.
 #' The plotted span is usually close to the suggestion, although the details
 #' depend on the plot aspect ratio and other factors, so some adjustment may be
 #' required to fine-tune a plot.  A value for \code{span} must be supplied, if
-#' \code{clongitude} and \code{clatitude} are supplied.
+#' \code{clongitude} and \code{clatitude} are supplied (or inferred from \code{projection}).
 #' @param lonlabel,latlabel,sides optional vectors of longitude and latitude to
 #' label on the indicated sides of plot, passed to
 #' \code{\link{plot,coastline-method}}.  Using these arguments permits reasonably
@@ -326,7 +329,7 @@ setMethod(f="plot",
           {
               if (!missing(projection) && inherits(projection, "CRS"))
                   projection <- projection@projargs
-              oceDebug(debug, "plot(...",
+              oceDebug(debug, "plot,coastline-method(...",
                        ", clongitude=", if(missing(clongitude)) "(missing)" else clongitude,
                        ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
                        ", span=", if(missing(span)) "(missing)" else span,
@@ -335,6 +338,14 @@ setMethod(f="plot",
                        ", cex.axis=", cex.axis, 
                        ", inset=", inset, 
                        ", ...) {\n", sep="", unindent=1)
+              if (missing(clongitude) && !missing(projection) && length(grep("+lon_0", projection))) {
+                  clongitude <- as.numeric(gsub(".*\\+lon_0=([^ ]*).*", "\\1", projection))
+                  oceDebug(debug, "inferred clongitude=", clongitude, " from projection\n")
+              }
+              if (missing(clatitude) && !missing(projection) && length(grep("+lat_0", projection))) {
+                  clatitude <- as.numeric(gsub(".*\\+lat_0=([^ ]*).*", "\\1", projection))
+                  oceDebug(debug, "inferred clatitude=", clatitude, " from projection\n")
+              }
               dots <- list(...)
               ##> message("fill: ", if(missing(fill)) "MISSING" else fill)
               ##> message("col: ", if(missing(col)) "MISSING" else col)
@@ -348,20 +359,21 @@ setMethod(f="plot",
                           col <- NULL
                       }
                   }
-                  warning("In plot.coastline() : 'fill' being accepted for backwards compatibility; please use 'col' instead", call.=FALSE)
+                  warning("In plot,coastline-method() : 'fill' being accepted for backwards compatibility; please use 'col' instead", call.=FALSE)
               }
               ##> message("fill: ", if(missing(fill)) "MISSING" else fill)
               ##> message("col: ", if(missing(col)) "MISSING" else col)
               if (is.character(col)) {
                   if (!("fillable" %in% names(x@metadata) && x@metadata$fillable)) {
                       col <- NULL
-                      warning("setting col=NULL because the coastline is not fillable")
+                      warning("In plot,coastlinemethod() : setting col=NULL because the coastline is not fillable", call.=FALSE)
                   }
               }
               if (inherits(x, "coastline") && !missing(longitudelim) && !missing(latitudelim) && !missing(projection)) {
+                  oceDebug(debug, "plot,coastline-method calling mapPlot (code location 1)\n")
                   mapPlot(x[["longitude"]], x[["latitude"]], projection=projection,
                           longitudelim=longitudelim, latitudelim=latitudelim, 
-                          bg=col, col=col, fill=fill, border=border)
+                          bg=col, col=col, fill=fill, border=border, debug=debug-1)
                   return(invisible())
               }
               if (!missing(clongitude))
@@ -384,12 +396,24 @@ setMethod(f="plot",
                       span <- 1000
                   if (missing(clongitude))
                       longitudelim <- c(-180, 180)
-                  else
-                      longitudelim <- clongitude + c(-1, 1) * span / 111 / 2
+                  else {
+                      if (abs(clatitude) > 80)
+                          longitudelim <- c(-180, 180)
+                      else {
+                          longitudelim <- clongitude + c(-1, 1) * span / 111 / 2 / cos(abs(clatitude)*pi/180) # FIXME: makes no sense
+                          #browser()
+                      }
+                  }
+                  ## if (longitudelim[1] < -180) longitudelim[1] <- -180
+                  ## if (longitudelim[2] >  180) longitudelim[2] <- 180
                   if (missing(clatitude))
                       latitudelim <- c(-90, 90)
                   else
                       latitudelim <- clatitude + c(-1, 1) * span / 111 / 2
+                  oceDebug(debug, "longitudelim=", paste(longitudelim, collapse=" "), "\n")
+                  oceDebug(debug, "latitudelim=", paste(latitudelim, collapse=" "), "\n")
+                  oceDebug(debug, "plot,coastline-method calling mapPlot (code location 2)\n")
+                  ## BOOKMARK 1: can we longitudelim better?
                   mapPlot(x[['longitude']], x[['latitude']], longitudelim, latitudelim,
                           showHemi=showHemi,
                           mgp=mgp, mar=mar,
