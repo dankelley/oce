@@ -81,7 +81,7 @@ SEXP ldc_rdi(SEXP buf, SEXP max)
 	  matches++;
 #ifdef DEBUG
 	  //if (matches < 30) Rprintf("matches=%d; buf[%d] correct checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
-	  if (matches < 30) Rprintf("i=%d;\n", i);
+	  if (matches < 30) Rprintf("i=%d; bytes_to_check=%d\n", i, bytes_to_check);
 #endif
 	  if (max_lres != 0 && matches >= max_lres) {
 	    break;
