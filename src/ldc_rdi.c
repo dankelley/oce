@@ -67,7 +67,10 @@ SEXP ldc_rdi(SEXP buf, SEXP max)
     if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
       //if (matches == 0) {
 	bytes_to_check = pbuf[i+2] + 256 * pbuf[i+3];
-      //}
+#ifdef DEBUG
+	//if (matches < 30) Rprintf("matches=%d; buf[%d] bytes_to_check %d\n", matches, i, bytes_to_check);
+#endif
+	//}
       if ((i + bytes_to_check) < lbuf) {
 	check_sum = 0;
 	for (int c = 0; c < bytes_to_check; c++) {
@@ -78,13 +81,14 @@ SEXP ldc_rdi(SEXP buf, SEXP max)
 	  matches++;
 #ifdef DEBUG
 	  //if (matches < 30) Rprintf("matches=%d; buf[%d] correct checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
+	  if (matches < 30) Rprintf("i=%d;\n", i);
 #endif
 	  if (max_lres != 0 && matches >= max_lres) {
 	    break;
 	  }
 	} else {
 #ifdef DEBUG
-	  if (matches > -1) Rprintf("matches=%d; buf[%d] incorrect checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
+	  //if (matches < 30) Rprintf("matches=%d; buf[%d] incorrect checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
 #endif
 	}
       }
@@ -101,6 +105,7 @@ SEXP ldc_rdi(SEXP buf, SEXP max)
 #endif
     unsigned int ires = 0;
     for (int i = 0; i < lbuf - 1; i++) { /* note that we don't look to the very end */
+      bytes_to_check = pbuf[i+2] + 256 * pbuf[i+3];
       if ((i + bytes_to_check) < lbuf) {
 #ifdef DEBUG
 	if ((bytes_to_check + i) >= (lbuf - 10)) Rprintf("CAUTION will get close to buffer end; space= %d\n", lbuf - (bytes_to_check + i));
@@ -109,7 +114,7 @@ SEXP ldc_rdi(SEXP buf, SEXP max)
 	if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
 	  for (int c = 0; c < bytes_to_check; c++)
 	    check_sum += (unsigned short int)pbuf[i + c];
-	  desired_check_sum = ((unsigned short)pbuf[i+bytes_to_check]) | ((unsigned short)pbuf[i+bytes_to_check+1] << 8);
+	  desired_check_sum = ((unsigned short int)pbuf[i+bytes_to_check]) | ((unsigned short int)pbuf[i+bytes_to_check+1] << 8);
 	  if (check_sum == desired_check_sum)
 	    pres[ires++] = i + 1; /* the +1 is to get R pointers */
 	}

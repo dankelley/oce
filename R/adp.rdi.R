@@ -1784,7 +1784,8 @@ read.adp.rdi.sentinel <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
         oceDebug(debug, "successfully called ldc_rdi\n")
         ##ensembleStart <- .Call("match2bytes", buf, 0x7f, 0x7f, !TRUE)
-        bytes.in.ensemble <- as.numeric(buf[ensembleStart[1]+2]) + 256*as.numeric(buf[ensembleStart[1]+3])
+        ## bytes.in.ensemble <- as.numeric(buf[ensembleStart[1]+2]) + 256*as.numeric(buf[ensembleStart[1]+3])
+        browser()
         
         ## Profiles start at the VARIABLE LEADER DATA, since there is no point in
         ## re-interpreting the HEADER and the FIXED LEADER DATA over and over,
@@ -1965,11 +1966,9 @@ read.adp.rdi.sentinel <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, "header$numberOfDataTypes: ", header$numberOfDataTypes, "\n")
 
             profilesToShow <- 3 # only if debug>0
-            browser()            
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
                 ## for (chunk in 1:header$numberOfDataTypes) {
-                for (chunk in 1:5) { ## FIXME: temporary fix to try to
-                    ## figure out profile spacing
+                for (chunk in 1:5) { ## FIXME
 
                     ## FIXME: it looks like maybe the variable fixed
                     ## leader length means that the header has to be
