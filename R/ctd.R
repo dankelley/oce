@@ -2905,6 +2905,7 @@ setMethod(f="plot",
                           oceDebug(debug, "plot(ctd, ...) { # of type MAP\n")
                           ## Calculate span, if not given
                           if (missing(span)) {
+                              oceDebug(debug, "'span' not given\n")
                               if (requireNamespace("ocedata", quietly=TRUE)) {
                                   data("coastlineWorldMedium", package="ocedata", envir=environment())
                                   mcoastline <- get("coastlineWorldMedium")
@@ -2975,6 +2976,9 @@ setMethod(f="plot",
                                   data("coastlineWorld", package="oce", envir=environment())
                                   coastline <- get("coastlineWorld")
                               }
+                          } else {
+                              if (!inherits(coastline, "coastline"))
+                                  stop("'coastline' must be a coastline object, or a string naming one")
                           }
                           if (missing(lonlim)) {
                               mlon <- mean(x[["longitude"]], na.rm=TRUE)
@@ -2992,7 +2996,6 @@ setMethod(f="plot",
                                   oceDebug(debug, "span=", span, "\n")
                                   oceDebug(debug, "projection=", projection, "\n")
                                   oceDebug(debug, "parameters=", parameters, "\n")
-                                  oceDebug(debug, "orientation=", orientation, "\n")
                                   oceDebug(debug, "ok, about to call plot(coastline)\n")
                                   plot(coastline,
                                        clongitude=standardizeLongitude(clon), clatitude=mean(latlim.c), span=span,
