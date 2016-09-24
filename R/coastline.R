@@ -607,7 +607,7 @@ setMethod(f="plot",
                       ##> if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
                       polygon(x[["longitude"]], x[["latitude"]], border=border, col=col, ...)
                       ##> } else {
-                      ##>     lines(x[["longitude"]], x[["latitude"]], ...)
+                      lines(x[["longitude"]], x[["latitude"]], ...)
                       ##> }
                   } else {
                       ##> if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
@@ -615,7 +615,7 @@ setMethod(f="plot",
                       if (axes)
                           rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
                       ##> } else {
-                      ##>     lines(longitude, latitude, ...)
+                      lines(longitude, latitude, ...)
                       ##>     if (axes)
                       ##>         rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
                       ##> }
