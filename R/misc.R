@@ -718,7 +718,11 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 #' \code{number}.
 #' @param fill Logical value indicating whether to fill \code{NA}-value gaps in
 #' the matrix. Gaps will be filled as the average of linear interpolations
-#' across rows and columns.
+#' across rows and columns. See \code{fillgap}, which works together with this.
+#' @param fillgap Integer controlling the size of gap that can be filled
+#' across. If this is negative (as in the default), gaps will be filled
+#' regardless of their size. If it is positive, then gaps exceeding this
+#' number of indices will not be filled.
 #'
 #' @return A list with the following elements: the midpoints (renamed as
 #' \code{x} and \code{y}), the count (\code{number}) of \code{f(x,y)} values
@@ -739,10 +743,11 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 #'
 #' @author Dan Kelley
 #' @family bin-related functions
-binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE)
+binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fillgap=-1)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
+    if (fillgap == 0) stop("cannot have a negative 'fillgap' value")
     fGiven <- !missing(f)
     if (!fGiven)
         f <- rep(1, length(x))
@@ -757,7 +762,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE)
     M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
             length(xbreaks), as.double(xbreaks),
             length(ybreaks), as.double(ybreaks),
-            as.integer(fill), 
+            as.integer(fill), as.integer(fillgap),
             number=integer((nxbreaks-1)*(nybreaks-1)),
             mean=double((nxbreaks-1)*(nybreaks-1)),
             NAOK=TRUE, PACKAGE="oce")
