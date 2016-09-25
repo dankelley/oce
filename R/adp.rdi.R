@@ -19,6 +19,10 @@
 ## teledyne2014ostm: Ocean Surveyor / Ocean Observer technical manual
 ## Teledyne RD Instruments, 2014.
 ## ("OS_TM_Apr14.pdf" in Dan Kelley's collection)
+##
+## teledyne2015vsod: V Series output data format
+## Teledyne RD Instruments, 2015.
+## ("SV_ODF_May15.pdf")
 
 ## The following information is from Table 33, p 146 teledyne2014ostm. Note that
 ## 'i' refers to a byte number offset, with 'i+1' the subsequent byte; this avoid
@@ -391,6 +395,11 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'
 #' Read a Teledyne/RDI ADCP file (called 'adp' in oce).
 #'
+#' As of 2016-09-25, this function has provisional functionality to
+#' read data from the new "SentinelV" series ADCP -- essentially a
+#' combination of a 4 beam workhorse with an additional vertical
+#' centre beam.
+#'
 #' If a heading bias had been set with the \code{EB} command during the setup
 #' for the deployment, then a heading bias will have been stored in the file's
 #' header.  This value is stored in the object's metadata as
@@ -423,6 +432,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' followed by the sequence number of the profile, represented as a
 #' little-endian two-byte short integer.  \code{read.adp.rdi()} uses these
 #' sequences to interpret data files.)
+#' 2. Teledyne-RDI, 2015. \emph{V Series output data format.} P/N 95D-6022-00 (May 2015).
 #' @family things related to \code{adp} data
 read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          longitude=NA, latitude=NA,
@@ -511,6 +521,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "about to call ldc_rdi\n")
         ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
         oceDebug(debug, "successfully called ldc_rdi\n")
+        if (header$instrumentSubtype == 'sentinelV') {
+            oceDebug(debug, "SentinelV type detected, skipping first ensemble\n")
+            ensembleStart <- ensembleStart[-1] # remove the first ensemble to simplify parsing
+            ## re-read the numberOfDataTypes and dataOffsets from the second ensemble
+            header$numberOfDataTypes <- readBin(buf[ensembleStart[1]+5], "integer", n=1, size=1)
+            header$dataOffset <- readBin(buf[ensembleStart[1]+6+0:(2*header$numberOfDataTypes)], "integer", n=header$numberOfDataTypes, size=2, endian="little", signed=FALSE)
+        }
 
         ## Profiles start at the VARIABLE LEADER DATA, since there is no point in
         ## re-interpreting the HEADER and the FIXED LEADER DATA over and over,
