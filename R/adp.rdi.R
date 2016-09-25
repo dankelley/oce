@@ -68,6 +68,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "decodeHeaderRDI() {\n", unindent=1)
     if (buf[1] != 0x7f || buf[2] != 0x7f)
         stop("first two bytes in file must be 0x7f 0x7f, but they are 0x", buf[1], " 0x", buf[2])
+    ## FIXME: for sentinel files bytesPerEnsemble isn't the same for all ensembles
     bytesPerEnsemble <- readBin(buf[3:4], "integer", n=1, size=2, endian="little", signed=FALSE)
     oceDebug(debug, "bytesPerEnsemble=", bytesPerEnsemble, "\n")
     ## byte5 not used
@@ -81,6 +82,16 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     if (dataOffset[1]!=6+2*numberOfDataTypes)
         warning("dataOffset and numberOfDataTypes are inconsistent -- this dataset seems damaged")
     oceDebug(debug, "dataOffset=", paste(dataOffset, sep=" "), "\n")
+    ##
+    ## See if this is a sentinel file by looking for dataType ID bytes
+    ## of 0x00 and 0x70 (V series system configuration)
+    codes <- cbind(buf[1 + c(0, dataOffset)], buf[1+c(0, dataOffset) + 1])
+    if (any(codes[,1] == 0x00 & codes[,2] == 0x70)) {
+        message('Detected dataType 0x00 0x70 for Sentinel V series configuration')
+        isSentinel <- TRUE
+    } else {
+        isSentinel <- FALSE
+    }
     ##
     ## Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
     FLD <- buf[dataOffset[1]+1:(dataOffset[2] - dataOffset[1])]
@@ -112,33 +123,59 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "FLD[7]=", byteToBinary(FLD[7], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
     bits <- substr(systemConfiguration, 6, 8)
     ## NOTE: the nearby code should perhaps use .Call("get_bit", ...) for speed and clarity
-    if (bits == "000") frequency <- 75        # kHz
-    else if (bits == "001") frequency <-  150
-    else if (bits == "010") frequency <-  300
-    else if (bits == "011") frequency <-  600
-    else if (bits == "100") frequency <- 1200
-    else if (bits == "101") frequency <- 2400
-    else stop("unknown freq. bit code:", bits, " (expect 000 for 75kHz, 001 for 150kHz, etc)")
+    if (isSentinel) {
+        if (bits == "010") frequency <- 250        # kHz
+        else if (bits == "011") frequency <-  500
+        else if (bits == "100") frequency <-  1000
+        else stop("unknown freq. bit code:", bits, " (expect 010 for 250kHz, 010 for 500kHz, etc)")
+    } else {
+        if (bits == "000") frequency <- 75        # kHz
+        else if (bits == "001") frequency <-  150
+        else if (bits == "010") frequency <-  300
+        else if (bits == "011") frequency <-  600
+        else if (bits == "100") frequency <- 1200
+        else if (bits == "101") frequency <- 2400
+        else stop("unknown freq. bit code:", bits, " (expect 000 for 75kHz, 001 for 150kHz, etc)")
+    }
     oceDebug(debug, "bits:", bits, "so frequency=", frequency, "\n")
     bits <- substr(systemConfiguration, 16, 17)
-    oceDebug(debug, "systemConfiguration:", systemConfiguration,"\n")
-    oceDebug(debug, "bits:", bits, "00 is 15deg, 01 is 20deg, 02 is 30deg, 11 is 'other'\n")
-    if (bits == "00") beamAngle <- 15
-    else if (bits == "01") beamAngle <- 20
-    else if (bits == "10") beamAngle <- 30
-    else if (bits == "11") beamAngle <- NA # means 'other'
+    if (isSentinel) {
+        oceDebug(debug, "systemConfiguration:", systemConfiguration,"\n")
+        oceDebug(debug, "bits:", bits, "Expect 111 for 25 degrees\n")
+        bits <- substr(systemConfiguration, 15, 17)
+        if (bits != "111") message("Assuming beam angle of 25deg, but SysCon bits aren't 111")
+        beamAngle <- 25
+    } else {
+        oceDebug(debug, "systemConfiguration:", systemConfiguration,"\n")
+        oceDebug(debug, "bits:", bits, "00 is 15deg, 01 is 20deg, 02 is 30deg, 11 is 'other'\n")
+        if (bits == "00") beamAngle <- 15
+        else if (bits == "01") beamAngle <- 20
+        else if (bits == "10") beamAngle <- 30
+        else if (bits == "11") beamAngle <- NA # means 'other'
+    }
     oceDebug(debug, "bits=", bits, "so beamAngle=", beamAngle, "\n")
     ## if (beamAngle < 19 || 21 < beamAngle)
     ##     warning("expecting a beamAngle of 20 deg [more-or-less standard for RDI] but got ", beamAngle, "deg; using the latter in the transformationMatrix")
     bits <- substr(systemConfiguration, 5, 5)
-    if (bits == "0") beamPattern <- "concave"
-    else beamPattern <- "convex"
+    if (isSentinel) {
+        beamPattern <- "convex" # is always convex for a SentinelV
+    } else {
+        if (bits == "0") beamPattern <- "concave"
+        else beamPattern <- "convex"
+    }
     oceDebug(debug, "bits=", bits, "so beamPattern=", beamPattern, "\n")
     beamConfig <- "?"
     bits <- substr(systemConfiguration, 10, 13)
-    if (bits == "0100") beamConfig <- "janus"
-    else if (bits == "0101") beamConfig <- "janus demod"
-    else if (bits == "1111") beamConfig <- "janus 2 demd"
+    if (isSentinel) {
+        if (bits == "0100") beamConfig <- "4 beam janus"
+        else if (bits == "0101") beamConfig <- "5 beam janus"
+        else beamConfig <- "unknown"
+    } else {
+        if (bits == "0100") beamConfig <- "janus"
+        else if (bits == "0101") beamConfig <- "janus demod"
+        else if (bits == "1111") beamConfig <- "janus 2 demd"
+        else beamConfig <- "unknown"
+    }
     bits <- substr(systemConfiguration, 1, 1)
     if (bits == "1") orientation <- "upward"
     else orientation <- "downward"
@@ -169,6 +206,17 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     else if (bits == "01") originalCoordinate <- "instrument"
     else if (bits == "10") originalCoordinate <- "xyz"
     else if (bits == "11") originalCoordinate <- "enu"
+    if (isSentinel) { ## FIXME: does this apply to a workhorse instrument too?
+        bits <- substr(byteToBinary(FLD[26], endian="big"), 6, 6)
+        if (bits == "1") tiltUsed <- TRUE
+        else tiltUsed <- FALSE
+        bits <- substr(byteToBinary(FLD[26], endian="big"), 7, 7)
+        if (bits == "1") threeBeamUsed <- TRUE
+        else threeBeamUsed <- FALSE
+        bits <- substr(byteToBinary(FLD[26], endian="big"), 8, 8)
+        if (bits == "1") binMappingUsed <- TRUE
+        else binMappingUsed <- FALSE
+    }
     headingAlignment <- 0.01 * readBin(FLD[27:28], "integer", n=1, size=2, endian="little") # WCODF p 130
     headingBias <- 0.01 * readBin(FLD[29:30], "integer", n=1, size=2, endian="little") # WCODF p 130
     oceDebug(debug, "headingAlignment=", headingAlignment, "; headingBias=", headingBias, "\n")
@@ -236,6 +284,9 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         instrumentSubtype <- "surveyor/observer"
         ## "Ocean Surveyor Technical Manual.pdf" table D-3 on page D-5 (pdf-page 139)
         ## also teledyne2014ostm page 144 says could be Surveyor or Observer
+    } else if (isSentinel) {
+        instrumentSubtype <- 'sentinelV'
+        ## 5 beam (4 beam workhorse + a vertical centre beam)
     } else {
         instrumentSubtype <- "unknown"
         ## FIXME: I think this is a poor way to determine the intrument type. Why do we even try?
@@ -273,7 +324,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "transducerDepth = ", transducerDepth, "\n")
     if (soundSpeed < 1400 || soundSpeed > 1600)
         warning("soundSpeed is ", soundSpeed, ", which is outside the permitted range of 1400 m/s to
-                1600 m/s.  Something went wrong in decoding the data.")
+                1600 m/s.  Something may be wrong in decoding the data.")
     oceDebug(debug, "about to create the list to be returned\n")
     res <- list(instrumentType="adcp",
                 instrumentSubtype=instrumentSubtype,
@@ -303,6 +354,9 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
                 ##tpp.seconds=tpp.seconds,
                 ##tpp.hundredths=tpp.hundredths,
                 originalCoordinate=originalCoordinate,
+                ## FIXME: tiltUsed?
+                ## FIXME: threeBeamUsed?
+                ## FIXME: binMappingUsed?
                 headingAlignment=headingAlignment,
                 headingBias=headingBias,
                 sensorSource=sensorSource,
@@ -1786,7 +1840,7 @@ read.adp.rdi.sentinel <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "file.size=", file.size, "\n")
     buf <- readBin(file, what="raw", n=file.size, endian="little")
     ## decode header
-    header <- decodeHeaderRDIsentinel(buf, debug=debug-1)
+    header <- decodeHeaderRDI(buf, debug=debug-1)
     if (header$haveActualData) {
         numberOfBeams <- header$numberOfBeams
         numberOfCells <- header$numberOfCells
@@ -2028,7 +2082,6 @@ read.adp.rdi.sentinel <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 as.integer(buf[profileStart+8]),      # minute
                                 as.integer(buf[profileStart+9])+0.01*as.integer(buf[profileStart+10]), # decimal second
                                 tz=tz)
-            message("DAN 2") 
             isVMDAS <- FALSE # FIXME FIXME
             if (isVMDAS) {
                 #navTime <- as.POSIXct(navTime, origin='1970-01-01', tz=tz)
@@ -2171,7 +2224,6 @@ read.adp.rdi.sentinel <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
            }
            class(time) <- c("POSIXt", "POSIXct")
            attr(time, "tzone") <- getOption("oceTz")
-            message("DAN 3")
            if (bFound && !isVMDAS) {
                br[br == 0.0] <- NA    # clean up (not sure if needed)
                res@data <- list(v=v, q=q, a=a, g=g,

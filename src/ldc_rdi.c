@@ -3,7 +3,7 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-#define DEBUG
+//#define DEBUG
 
 /* 
 
