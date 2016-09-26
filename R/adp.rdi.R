@@ -518,10 +518,11 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         bin1Distance <- header$bin1Distance
         xmitPulseLength <- header$xmitPulseLength
         cellSize <- header$cellSize
+        isSentinel <- header$instrumentSubtype == "sentinelV"
         oceDebug(debug, "about to call ldc_rdi\n")
         ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
         oceDebug(debug, "successfully called ldc_rdi\n")
-        if (header$instrumentSubtype == 'sentinelV') {
+        if (isSentinel) {
             oceDebug(debug, "SentinelV type detected, skipping first ensemble\n")
             ensembleStart <- ensembleStart[-1] # remove the first ensemble to simplify parsing
             ## re-read the numberOfDataTypes and dataOffsets from the second ensemble
@@ -675,6 +676,19 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             } else {
                 g <- NULL
             }
+            if (isSentinel) { ## Look for sentinel-related codes
+                ## FIXME: Fields to look for:
+                ## 0x00 0x70: V series Config
+                ## 0x01 0x70: V series ping setup
+                ## 0x02 0x70: V series ADC data
+                ## 0x04 0x70: V series event log
+                ## 0x01 0x0f: V beam data
+                ## 0x00 0x0a: V beam data format
+                ## 0x00 0x0b: V beam correlation
+                ## 0x00 0x0c: V beam amplitude
+                ## 0x00 0x32: Transformation Matrix
+                tmFound <- sum(codes[,1]==0x00 & codes[,2]==0x32) # transformation matrix
+            }
             if (bFound) {
                 br <- array(double(), dim=c(profilesToRead, numberOfBeams))
                 bv <- array(double(), dim=c(profilesToRead, numberOfBeams))
@@ -686,7 +700,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             } else {
                 br <- bv <- bc <- ba <- bg <- NULL
             }
-
+            if (tmFound) {
+                tmx <- tmy <- tmz <- tme <- rep(NA, 4)
+                oceDebug(debug, "set up 'transformationMatrix' storage for", profilesToRead, "profiles\n")
+            }
 
             badProfiles <- NULL
             ##haveBottomTrack <- FALSE          # FIXME maybe we can determine this from the header
@@ -838,6 +855,20 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         if (i <= profilesToShow) oceDebug(debug, "Fixed attitude, profile", i, "\n")
                     } else if (buf[1+o] == 0x30) { ## fixme need to check first byte
                         if (i <= profilesToShow) oceDebug(debug, "Variable attitude, profile", i, "\n")
+                    } else if (buf[o] == 0x00 & buf[1+o] == 0x32) { # sentinel transformation matrix
+                        ## FIXME: START HERE
+                        tmx <- as.numeric(buf[o+2:9])
+                        tmy <- as.numeric(buf[o+10:17])
+                        tmy <- as.numeric(buf[o+18:25])
+                        tmy <- as.numeric(buf[o+26:33])
+                        if (debug && i <= profilesToShow) {
+                            cat('Transformation matrix:\n')
+                            cat(vectorShow(tmx, paste("tmx[", i, "]", sep="")))
+                            cat(vectorShow(tmy, paste("tmy[", i, "]", sep="")))
+                            cat(vectorShow(tmz, paste("tmz[", i, "]", sep="")))
+                            cat(vectorShow(tme, paste("tme[", i, "]", sep="")))
+                        }
+                        browser()
                     }
                 }
                 if (FALSE) { ### FIXME
