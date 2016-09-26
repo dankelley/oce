@@ -856,11 +856,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else if (buf[1+o] == 0x30) { ## fixme need to check first byte
                         if (i <= profilesToShow) oceDebug(debug, "Variable attitude, profile", i, "\n")
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x32) { # sentinel transformation matrix
-                        ## FIXME: START HERE
-                        tmx <- as.numeric(buf[o+2:9])
-                        tmy <- as.numeric(buf[o+10:17])
-                        tmy <- as.numeric(buf[o+18:25])
-                        tmy <- as.numeric(buf[o+26:33])
+                        tmx <- 0.0001 * readBin(buf[o+0:7+2], "integer", n=4, size=2, signed=TRUE, endian="little")
+                        tmy <- 0.0001 * readBin(buf[o+0:7+10], "integer", n=4, size=2, signed=TRUE, endian="little")
+                        tmz <- 0.0001 * readBin(buf[o+0:7+18], "integer", n=4, size=2, signed=TRUE, endian="little")
+                        tme <- 0.0001 * readBin(buf[o+0:7+26], "integer", n=4, size=2, signed=TRUE, endian="little")
+                        transformationMatrix <- matrix(c(tmx, tmy, tmz, tme),
+                                                       nrow=4, byrow=TRUE)
                         if (debug && i <= profilesToShow) {
                             cat('Transformation matrix:\n')
                             cat(vectorShow(tmx, paste("tmx[", i, "]", sep="")))
@@ -868,7 +869,6 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             cat(vectorShow(tmz, paste("tmz[", i, "]", sep="")))
                             cat(vectorShow(tme, paste("tme[", i, "]", sep="")))
                         }
-                        browser()
                     }
                 }
                 if (FALSE) { ### FIXME
@@ -1277,47 +1277,55 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             res@metadata$oceBeamUnspreaded <- FALSE
             res@metadata$oceCoordinate <- header$originalCoordinate
             res@metadata$depthMean <- mean(depth, na.rm=TRUE)
-            ## Transformation matrix
-            ## FIXME Dal people use 'a' in last row of matrix, but both
-            ## RDI and CODAS use as we have here.  (And I think RDI
-            ## may have two definitions...)
-            ##
-            ## Notes on coordinate transformationMatrix.
-            ## From figure 3 on page 12 of ACT (adcp coordinate transformation.pdf)
-            ## we have
-            ##
-            ##    x defined to run from beam 1 to beam 2
-            ##    y defined to run from beam 4 to beam 3
-            ##    z right-handed from these.
-            ##
-            ## and the upward-looking orientation (viewed from above) is
-            ##
-            ##        B3
-            ##    B2      B1
-            ##        B4
-            ##
-            ## so we have coords
-            ##
-            ##            y
-            ##            ^
-            ##            |
-            ##            |
-            ##    x <-----*   (z into page, or downward)
-            ##
-            ## The matrix below is from section 5.3 of the ACT.
-            ##
-            ## As a check on coding, see the python software at
-            ##   http://currents.soest.hawaii.edu/hg/pycurrents/file/3175207488bb/adcp/transform.py
-            tm.c <- if (res@metadata$beamPattern == "convex") 1 else -1; # control sign of first 2 rows of transformationMatrix
-            tm.a <- 1 / (2 * sin(res@metadata$beamAngle * pi / 180))
-            tm.b <- 1 / (4 * cos(res@metadata$beamAngle * pi / 180))
-            tm.d <- tm.a / sqrt(2)
-            res@metadata$transformationMatrix <- matrix(c(tm.c*tm.a, -tm.c*tm.a,          0,         0,
-                                                          0        ,          0, -tm.c*tm.a, tm.c*tm.a,
-                                                          tm.b     ,       tm.b,       tm.b,      tm.b,
-                                                          tm.d     ,       tm.d,      -tm.d,     -tm.d),
-                                                        nrow=4, byrow=TRUE)
-           if (monitor)
+            if (isSentinel) {
+                if (exists('transformationMatrix')) {
+                    res@metadata$transformationMatrix <- transformationMatrix
+                } else {
+                    warning('Sentinel file detected but no transformation matrix found.')
+                }
+            } else {
+                ## Transformation matrix
+                ## FIXME Dal people use 'a' in last row of matrix, but both
+                ## RDI and CODAS use as we have here.  (And I think RDI
+                ## may have two definitions...)
+                ##
+                ## Notes on coordinate transformationMatrix.
+                ## From figure 3 on page 12 of ACT (adcp coordinate transformation.pdf)
+                ## we have
+                ##
+                ##    x defined to run from beam 1 to beam 2
+                ##    y defined to run from beam 4 to beam 3
+                ##    z right-handed from these.
+                ##
+                ## and the upward-looking orientation (viewed from above) is
+                ##
+                ##        B3
+                ##    B2      B1
+                ##        B4
+                ##
+                ## so we have coords
+                ##
+                ##            y
+                ##            ^
+                ##            |
+                ##            |
+                ##    x <-----*   (z into page, or downward)
+                ##
+                ## The matrix below is from section 5.3 of the ACT.
+                ##
+                ## As a check on coding, see the python software at
+                ##   http://currents.soest.hawaii.edu/hg/pycurrents/file/3175207488bb/adcp/transform.py
+                tm.c <- if (res@metadata$beamPattern == "convex") 1 else -1; # control sign of first 2 rows of transformationMatrix
+                tm.a <- 1 / (2 * sin(res@metadata$beamAngle * pi / 180))
+                tm.b <- 1 / (4 * cos(res@metadata$beamAngle * pi / 180))
+                tm.d <- tm.a / sqrt(2)
+                res@metadata$transformationMatrix <- matrix(c(tm.c*tm.a, -tm.c*tm.a,          0,         0,
+                                                              0        ,          0, -tm.c*tm.a, tm.c*tm.a,
+                                                              tm.b     ,       tm.b,       tm.b,      tm.b,
+                                                              tm.d     ,       tm.d,      -tm.d,     -tm.d),
+                                                            nrow=4, byrow=TRUE)
+            }
+            if (monitor)
                 cat("\nRead", profilesToRead,  "profiles, out of a total of",profilesInFile,"profiles in", filename, "\n", ...)
 
            ## Sometimes a non-VMDAS file will have some profiles that have the VMDAS flag.
