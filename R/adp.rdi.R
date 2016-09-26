@@ -689,7 +689,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 ## 0x00 0x0d: V beam percent good
                 ## 0x00 0x32: Transformation Matrix
                 tmFound <- sum(codes[,1]==0x00 & codes[,2]==0x32) # transformation matrix
-                vbFound <- sum(codes[,1]==0x01 & codes[,2]==0x0f) # v beam data
+                vvFound <- sum(codes[,1]==0x01 & codes[,2]==0x0f) # v beam data
                 vaFound <- sum(codes[,1]==0x01 & codes[,2]==0x0c) # v beam amplitude
                 vqFound <- sum(codes[,1]==0x01 & codes[,2]==0x0b) # v beam correlation
                 vgFound <- sum(codes[,1]==0x01 & codes[,2]==0x0d) # v beam percent good
@@ -698,6 +698,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 ## remove the first row from codes (7f7f) because it is the header (always has to be there)
                 codes <- codes[-1,]
                 ii <- which(codes[,1]==0x00 & codes[,2]==0x70)
+                if (length(ii) < 1) stop("Didn't find V series Configuration data ID")
+                oceDebug(debug, 'Reading V series configuration\n')
                 firmwareVersionPrimary <- as.numeric(buf[ensembleStart[1]+header$dataOffset[ii]+2])
                 firmwareVersionSecondary <- as.numeric(buf[ensembleStart[1]+header$dataOffset[ii]+3])
                 firmwareVersionBuild <- as.numeric(buf[ensembleStart[1]+header$dataOffset[ii]+4])
@@ -715,6 +717,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                       schemaMajor, schemaMinor, schemaRev)
                 ## Read V series ping setup
                 ii <- which(codes[,1]==0x01 & codes[,2]==0x70)
+                if (length(ii) < 1) stop("Didn't find V series ping setup data ID")
+                oceDebug(debug, 'Reading V series ping setup\n')
                 ensembleInterval <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 4:7], 'integer', endian='little')
                 numberOfPings <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 8:9], 'integer', size=2, endian='little')
                 timeBetweenPings <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 10:13], 'integer', endian='little')
@@ -736,13 +740,23 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 deploymentStart <- ISOdatetime(deploymentStartCentury*100+deploymentStartYear,
                                                deploymentStartMonth, deploymentStartDay, deploymentStartHour,
                                                deploymentStartMinute, deploymentStartSecond + deploymentStartHundredths / 100, tz=tz)
-                browser()
-
-                if (vbFound) {
+                vSeriesPingSetup <- list(ensembleInterval, numberOfPings, timeBetweenPings, offsetBetweenPingGroups,
+                                         pingsPerEnsemble, ambiquityVelocity, rxGain, rxBeamMask, txBeamMask, ensembleCount,
+                                         deploymentStart)
+                if (vvFound) {
                     v <- array(numeric(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
-                    oceDebug(debug, "set up 'v' (velocity) storage for", profilesToRead, "profiles,",
-                             numberOfCells, "cells, and", numberOfBeams, "beams\n")
-                    vb <- array()
+                    vv <- array(numeric(), dim=c(profilesToRead, numberOfCells))
+                    oceDebug(debug, "set up 'vv' (vertical velocity) storage for", profilesToRead, "profiles, and",
+                             numberOfCells, "cells.\n")
+                }
+                if (vaFound) {
+
+                }
+                if (vqFound) {
+
+                }
+                if (vgFound) {
+
                 }
             }
             if (bFound) {
