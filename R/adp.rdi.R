@@ -686,8 +686,64 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 ## 0x00 0x0a: V beam data format
                 ## 0x00 0x0b: V beam correlation
                 ## 0x00 0x0c: V beam amplitude
+                ## 0x00 0x0d: V beam percent good
                 ## 0x00 0x32: Transformation Matrix
                 tmFound <- sum(codes[,1]==0x00 & codes[,2]==0x32) # transformation matrix
+                vbFound <- sum(codes[,1]==0x01 & codes[,2]==0x0f) # v beam data
+                vaFound <- sum(codes[,1]==0x01 & codes[,2]==0x0c) # v beam amplitude
+                vqFound <- sum(codes[,1]==0x01 & codes[,2]==0x0b) # v beam correlation
+                vgFound <- sum(codes[,1]==0x01 & codes[,2]==0x0d) # v beam percent good
+                ## Read the relevant V series metadata
+                ## V series config
+                ## remove the first row from codes (7f7f) because it is the header (always has to be there)
+                codes <- codes[-1,]
+                ii <- which(codes[,1]==0x00 & codes[,2]==0x70)
+                firmwareVersionPrimary <- as.numeric(buf[ensembleStart[1]+header$dataOffset[ii]+2])
+                firmwareVersionSecondary <- as.numeric(buf[ensembleStart[1]+header$dataOffset[ii]+3])
+                firmwareVersionBuild <- as.numeric(buf[ensembleStart[1]+header$dataOffset[ii]+4])
+                firmwareVersionService <- as.numeric(buf[ensembleStart[1]+header$dataOffset[ii]+5])
+                firmwareVersion <- paste(firmwareVersionPrimary, firmwareVersionSecondary,
+                                         firmwareVersionBuild, firmwareVersionService,
+                                         sep='.')
+                oceDebug(debug, "V series firmware version", firmwareVersion, "\n")
+                systemFrequency <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 6:9], 'integer', endian='little')
+                pressureRating <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 10:11], 'integer', size=2, endian='little')
+                schemaMajor <- as.numeric(buf[ensembleStart[1] + header$dataOffset[ii] + 12])
+                schemaMinor <- as.numeric(buf[ensembleStart[1] + header$dataOffset[ii] + 13])
+                schemaRev <- as.numeric(buf[ensembleStart[1] + header$dataOffset[ii] + 14])
+                vSeriesConfig <- list(firmwareVersion, systemFrequency, pressureRating,
+                                      schemaMajor, schemaMinor, schemaRev)
+                ## Read V series ping setup
+                ii <- which(codes[,1]==0x01 & codes[,2]==0x70)
+                ensembleInterval <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 4:7], 'integer', endian='little')
+                numberOfPings <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 8:9], 'integer', size=2, endian='little')
+                timeBetweenPings <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 10:13], 'integer', endian='little')
+                offsetBetweenPingGroups <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 14:17], 'integer', endian='little')
+                pingSequenceNumber <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 22:23], 'integer', size=2, endian='little')
+                ambiquityVelocity <- 0.001*readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 24:25], 'integer', size=2, endian='little')
+                rxGain <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 26], 'integer', size=1, endian='little')
+                rxBeamMask <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 27], 'integer', size=1, endian='little')
+                txBeamMask <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 28], 'integer', size=1, endian='little')
+                ensembleCount <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 34:35], 'integer', size=2, endian='little')
+                deploymentStartCentury <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 36], 'integer', size=1, endian='little')
+                deploymentStartYear <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 37], 'integer', size=1, endian='little')
+                deploymentStartMonth <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 38], 'integer', size=1, endian='little')
+                deploymentStartDay <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 39], 'integer', size=1, endian='little')
+                deploymentStartHour <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 40], 'integer', size=1, endian='little')
+                deploymentStartMinute <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 41], 'integer', size=1, endian='little')
+                deploymentStartSecond <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 42], 'integer', size=1, endian='little')
+                deploymentStartHundredths <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 43], 'integer', size=1, endian='little')
+                deploymentStart <- ISOdatetime(deploymentStartCentury*100+deploymentStartYear,
+                                               deploymentStartMonth, deploymentStartDay, deploymentStartHour,
+                                               deploymentStartMinute, deploymentStartSecond + deploymentStartHundredths / 100, tz=tz)
+                browser()
+
+                if (vbFound) {
+                    v <- array(numeric(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
+                    oceDebug(debug, "set up 'v' (velocity) storage for", profilesToRead, "profiles,",
+                             numberOfCells, "cells, and", numberOfBeams, "beams\n")
+                    vb <- array()
+                }
             }
             if (bFound) {
                 br <- array(double(), dim=c(profilesToRead, numberOfBeams))
@@ -701,8 +757,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 br <- bv <- bc <- ba <- bg <- NULL
             }
             if (tmFound) {
-                tmx <- tmy <- tmz <- tme <- rep(NA, 4)
-                oceDebug(debug, "set up 'transformationMatrix' storage for", profilesToRead, "profiles\n")
+                oceDebug(debug, "Found 'transformationMatrix' data ID code.\n")
             }
 
             badProfiles <- NULL
@@ -869,6 +924,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             cat(vectorShow(tmz, paste("tmz[", i, "]", sep="")))
                             cat(vectorShow(tme, paste("tme[", i, "]", sep="")))
                         }
+                    } else if (buf[o] == 0x00 & buf[1+o] == 0x70) { # sentinel system configuration
+                        
                     }
                 }
                 if (FALSE) { ### FIXME
