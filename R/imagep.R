@@ -1271,8 +1271,11 @@ imagep <- function(x, y, z,
         if (axes)
             box()
     }
-    if (!(is.character(main) && main == ""))
+    if (is.na(main)) {
+        mtext("", at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))        
+    } else if (!(is.character(main) && main == "")) {
         mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
+    }
     if (drawContours) {
         oceDebug(debug, "adding contours\n")
         contour(x=xorig, y=yorig, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
