@@ -1301,10 +1301,11 @@ setMethod(f="plot",
                                        amplitude=5:7,
                                        quality=9:11,
                                        hydrography=14:15,
-                                       angles=16:18))
+                                       angles=16:18,
+                                       vertical=80:81))
               nw <- length(which) # may be longer with e.g. which='velocity'
               oceDebug(debug, "which:", which, "(after conversion to numerical codes)\n")
-              images <- c(1:12, 70:73)
+              images <- c(1:12, 70:73, 80:83)
               timeseries <- c(13:22, 40:44, 50:54, 55, 100)
               spatial <- 23:27
               #speed <- 28
@@ -1417,6 +1418,59 @@ setMethod(f="plot",
                               zlab <- c(expression(g[1]),expression(g[2]),expression(g[3]))[which[w]-8]
                           } else {
                               warning("ADP object lacks a 'g' data item")
+                          }
+                      } else if (which[w] == 80) { # vertical beam velocity
+                          if ("vv" %in% names(x@data)) {
+                              oceDebug(debug, "vertical beam velocity\n")
+                              z <- x@data$vv
+                              zlab <- if (missing(titles)) expression(w[vert]) else titles[w]
+                              y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= x@data$distance & x@data$distance <= ylimAsGiven[w, 2] else rep(TRUE, length(x@data$distance))
+                              if (0 == sum(y.look))
+                                  stop("no data in the provided ylim=c(", paste(ylimAsGiven[w,], collapse=","), ")")
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else {
+                                  if (breaksGiven) NULL else c(-1,1)
+                              }
+                          } else {
+                              warning("ADP object lacks a 'vv' data item")
+                          }
+                      } else if (which[w] == 81) { # vertical beam amplitude
+                          if ("va" %in% names(x@data)) {
+                              oceDebug(debug, "vertical beam amplitude\n")
+                              z <- as.numeric(x@data$va)
+                              dim(z) <- dim(x@data$va)
+                              y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else {
+                                  if (breaksGiven) NULL else range(as.numeric(x@data$va[,y.look]), na.rm=TRUE) 
+                              }
+                              zlab <- expression(a[vert])
+                          } else {
+                              warning("ADP object lacks a 'va' data item")
+                          }
+                      } else if (which[w] == 82) { # vertical beam correlation
+                          if ("vq" %in% names(x@data)) {
+                              oceDebug(debug, "vertical beam correlation\n")
+                              z <- as.numeric(x@data$vq)
+                              dim(z) <- dim(x@data$vq)
+                              y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else {
+                                  if (breaksGiven) NULL else range(as.numeric(x@data$vq[,y.look]), na.rm=TRUE) 
+                              }
+                              zlab <- expression(q[vert])
+                          } else {
+                              warning("ADP object lacks a 'vq' data item")
+                          }
+                      } else if (which[w] == 83) { # vertical beam percent good
+                          if ("vg" %in% names(x@data)) {
+                              oceDebug(debug, "vertical beam percent good\n")
+                              z <- as.numeric(x@data$vg)
+                              dim(z) <- dim(x@data$vg)
+                              y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else {
+                                  if (breaksGiven) NULL else range(as.numeric(x@data$vg[,y.look]), na.rm=TRUE) 
+                              }
+                              zlab <- expression(g[vert])
+                          } else {
+                              warning("ADP object lacks a 'vq' data item")
                           }
                       } else {
                           skip <- TRUE
