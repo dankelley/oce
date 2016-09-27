@@ -153,6 +153,13 @@
 #' \code{dim(adp[["v"]])[2]}.
 #' 
 #' The \code{processingLog} slot is in standard form and needs little comment.
+#'
+#' @section Teledyne-RDI Sentinel V ADCPs: As of 2016-09-27 there is
+#'     provisional support for the TRDI "SentinelV" ADCPs, which are 5
+#'     beam ADCPs with a vertical centre beam. Relevant vertical beam
+#'     fields are called \code{adp[["vv"]]}, \code{adp[["va"]]},
+#'     \code{adp[["vq"]]}, and \code{adp[["vg"]]} in analogy with the
+#'     standard 4-beam fields.
 #' 
 #' @section Accessing and altering information within \code{adp-class} objects:
 #' \emph{Extracting values} Matrix data may be accessed as illustrated
@@ -892,6 +899,14 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' distance-time images of percent-good for the respective beams.  (For data
 #' derived from Teledyne-RDI instruments, which are the only instruments that
 #' yield this item, it is called ``percent good.'')
+#'
+#' \item \code{which=80:83} (or \code{which="vv"}, \code{which="va"},
+#' \code{which="vq"}, and \code{which="vg"}) yield distance-time
+#' images of the vertical beam fields for a 5 beam "SentinelV" ADCP
+#' from Teledyne RDI.
+#'
+#' \item \code{which="vertical"} yields a two panel distance-time
+#' image of vertical beam velocity and amplitude.
 #' 
 #' \item \code{which=13} (or \code{which="salinity"}) yields a time-series plot
 #' of salinity.
@@ -1302,7 +1317,8 @@ setMethod(f="plot",
                                        quality=9:11,
                                        hydrography=14:15,
                                        angles=16:18,
-                                       vertical=80:81))
+                                       vertical=80:81,
+                                       vv=80, va=81, vq=82, vg=83))
               nw <- length(which) # may be longer with e.g. which='velocity'
               oceDebug(debug, "which:", which, "(after conversion to numerical codes)\n")
               images <- c(1:12, 70:73, 80:83)
