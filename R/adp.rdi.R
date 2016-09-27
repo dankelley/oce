@@ -648,6 +648,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ##sFound <- sum(codes[,1]==0x00 & codes[,2]==0x05) # status
             bFound <- sum(codes[,1]==0x00 & codes[,2]==0x06) # bottom-track
             ##nFound <- sum(codes[,1]==0x00 & codes[,2]==0x20) # navigation
+            tmFound <- sum(codes[,1]==0x00 & codes[,2]==0x32) # transformation matrix
             if (vFound) {
                 v <- array(numeric(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
                 oceDebug(debug, "set up 'v' (velocity) storage for", profilesToRead, "profiles,",
@@ -676,6 +677,11 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             } else {
                 g <- NULL
             }
+            ii <- which(codes[,1]==0x01 & codes[,2]==0x0f)
+            if (length(ii) < 1) {
+              warning("Didn't find V series leader data ID, treating as a 4 beam ADCP")
+              isSentinel <- FALSE
+            }
             if (isSentinel) { ## Look for sentinel-related codes
                 ## FIXME: Fields to look for:
                 ## 0x00 0x70: V series Config
@@ -688,7 +694,6 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 ## 0x00 0x0c: V beam amplitude
                 ## 0x00 0x0d: V beam percent good
                 ## 0x00 0x32: Transformation Matrix
-                tmFound <- sum(codes[,1]==0x00 & codes[,2]==0x32) # transformation matrix
                 vvFound <- sum(codes[,1]==0x00 & codes[,2]==0x0a) # v beam data
                 vaFound <- sum(codes[,1]==0x00 & codes[,2]==0x0c) # v beam amplitude
                 vqFound <- sum(codes[,1]==0x00 & codes[,2]==0x0b) # v beam correlation
@@ -699,7 +704,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 ## 
                 ## Read the V beam data leader
                 ii <- which(codes[,1]==0x01 & codes[,2]==0x0f)
-                if (length(ii) < 1) stop("Didn't find V series leader data ID")
+                if (length(ii) < 1) {
+                  warning("Didn't find V series leader data ID, treating as a 4 beam ADCP")
+                }
                 oceDebug(debug, 'Reading V series data leader\n')                
                 numberOfVCells <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+2:3], "integer", size=2, endian="little")
                 verticalPings <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+4:5], "integer", size=2, endian="little")
