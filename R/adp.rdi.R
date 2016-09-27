@@ -694,6 +694,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 ## 0x00 0x0c: V beam amplitude
                 ## 0x00 0x0d: V beam percent good
                 ## 0x00 0x32: Transformation Matrix
+                tmFound <- sum(codes[,1]==0x00 & codes[,2]==0x32) # transformation matrix
                 vvFound <- sum(codes[,1]==0x00 & codes[,2]==0x0a) # v beam data
                 vaFound <- sum(codes[,1]==0x00 & codes[,2]==0x0c) # v beam amplitude
                 vqFound <- sum(codes[,1]==0x00 & codes[,2]==0x0b) # v beam correlation
@@ -701,12 +702,28 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 ## Read the relevant V series metadata
                 ## remove the first row from codes (7f7f) because it is the header (always has to be there)
                 codes <- codes[-1,]
+                ##
+                ## transformation matrix
+                if (tmFound) {
+                    ii <- which(codes[,1]==0x00 & codes[,2]==0x32)
+                    oceDebug(debug, 'Reading transformation matrix\n')
+                    tmx <- 0.0001 * readBin(buf[ensembleStart[1]+header$dataOffset[ii]+0:7+2], "integer", n=4, size=2, signed=TRUE, endian="little")
+                    tmy <- 0.0001 * readBin(buf[ensembleStart[1]+header$dataOffset[ii]+0:7+10], "integer", n=4, size=2, signed=TRUE, endian="little")
+                    tmz <- 0.0001 * readBin(buf[ensembleStart[1]+header$dataOffset[ii]+0:7+18], "integer", n=4, size=2, signed=TRUE, endian="little")
+                    tme <- 0.0001 * readBin(buf[ensembleStart[1]+header$dataOffset[ii]+0:7+26], "integer", n=4, size=2, signed=TRUE, endian="little")
+                    transformationMatrix <- matrix(c(tmx, tmy, tmz, tme),
+                                                   nrow=4, byrow=TRUE)
+                    if (debug > 0) {
+                        cat('Transformation matrix:\n')
+                        cat(vectorShow(tmx, paste("tmx", sep="")))
+                        cat(vectorShow(tmy, paste("tmy", sep="")))
+                        cat(vectorShow(tmz, paste("tmz", sep="")))
+                        cat(vectorShow(tme, paste("tme", sep="")))
+                    }
+                }
                 ## 
                 ## Read the V beam data leader
                 ii <- which(codes[,1]==0x01 & codes[,2]==0x0f)
-                if (length(ii) < 1) {
-                  warning("Didn't find V series leader data ID, treating as a 4 beam ADCP")
-                }
                 oceDebug(debug, 'Reading V series data leader\n')                
                 numberOfVCells <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+2:3], "integer", size=2, endian="little")
                 verticalPings <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+4:5], "integer", size=2, endian="little")
@@ -848,9 +865,6 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          numberOfCells, "cells, and", numberOfBeams, "beams\n")
             } else {
                 br <- bv <- bc <- ba <- bg <- NULL
-            }
-            if (tmFound) {
-                oceDebug(debug, "Found 'transformationMatrix' data ID code.\n")
             }
 
             badProfiles <- NULL
@@ -1003,20 +1017,6 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         if (i <= profilesToShow) oceDebug(debug, "Fixed attitude, profile", i, "\n")
                     } else if (buf[1+o] == 0x30) { ## fixme need to check first byte
                         if (i <= profilesToShow) oceDebug(debug, "Variable attitude, profile", i, "\n")
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x32) { # sentinel transformation matrix
-                        tmx <- 0.0001 * readBin(buf[o+0:7+2], "integer", n=4, size=2, signed=TRUE, endian="little")
-                        tmy <- 0.0001 * readBin(buf[o+0:7+10], "integer", n=4, size=2, signed=TRUE, endian="little")
-                        tmz <- 0.0001 * readBin(buf[o+0:7+18], "integer", n=4, size=2, signed=TRUE, endian="little")
-                        tme <- 0.0001 * readBin(buf[o+0:7+26], "integer", n=4, size=2, signed=TRUE, endian="little")
-                        transformationMatrix <- matrix(c(tmx, tmy, tmz, tme),
-                                                       nrow=4, byrow=TRUE)
-                        if (debug && i <= profilesToShow) {
-                            cat('Transformation matrix:\n')
-                            cat(vectorShow(tmx, paste("tmx[", i, "]", sep="")))
-                            cat(vectorShow(tmy, paste("tmy[", i, "]", sep="")))
-                            cat(vectorShow(tmz, paste("tmz[", i, "]", sep="")))
-                            cat(vectorShow(tme, paste("tme[", i, "]", sep="")))
-                        }
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0a) { # vertical beam data
                         vtmp <- readBin(buf[o + 1 + seq(1, 2*vItems)], "integer", n=vItems, size=2, endian="little", signed=TRUE)
                         vtmp[vtmp==(-32768)] <- NA       # blank out bad data
