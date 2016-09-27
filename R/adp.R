@@ -440,6 +440,36 @@ setMethod(f="[[",
                       res <- x@data$g
                   }
                   res
+              } else if (i == "va") {
+                  if (!missing(j) && j == "numeric") {
+                      res <- x@data$va
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
+                  } else {
+                      res <- x@data$va
+                  }
+                  res
+              } else if (i == "vq") {
+                  if (!missing(j) && j == "numeric") {
+                      res <- x@data$vq
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
+                  } else {
+                      res <- x@data$vq
+                  }
+                  res
+              } else if (i == "vg") {
+                  if (!missing(j) && j == "numeric") {
+                      res <- x@data$vg
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
+                  } else {
+                      res <- x@data$vg
+                  }
+                  res
               } else if (i == "coordinate") {
                   res <- x@metadata$oceCoordinate
               } else {
