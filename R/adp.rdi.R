@@ -682,21 +682,67 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 ## 0x01 0x70: V series ping setup
                 ## 0x02 0x70: V series ADC data
                 ## 0x04 0x70: V series event log
-                ## 0x01 0x0f: V beam data
-                ## 0x00 0x0a: V beam data format
+                ## 0x01 0x0f: V beam data leader
+                ## 0x00 0x0a: V beam data
                 ## 0x00 0x0b: V beam correlation
                 ## 0x00 0x0c: V beam amplitude
                 ## 0x00 0x0d: V beam percent good
                 ## 0x00 0x32: Transformation Matrix
                 tmFound <- sum(codes[,1]==0x00 & codes[,2]==0x32) # transformation matrix
-                vvFound <- sum(codes[,1]==0x01 & codes[,2]==0x0f) # v beam data
-                vaFound <- sum(codes[,1]==0x01 & codes[,2]==0x0c) # v beam amplitude
-                vqFound <- sum(codes[,1]==0x01 & codes[,2]==0x0b) # v beam correlation
-                vgFound <- sum(codes[,1]==0x01 & codes[,2]==0x0d) # v beam percent good
+                vvFound <- sum(codes[,1]==0x00 & codes[,2]==0x0a) # v beam data
+                vaFound <- sum(codes[,1]==0x00 & codes[,2]==0x0c) # v beam amplitude
+                vqFound <- sum(codes[,1]==0x00 & codes[,2]==0x0b) # v beam correlation
+                vgFound <- sum(codes[,1]==0x00 & codes[,2]==0x0d) # v beam percent good
                 ## Read the relevant V series metadata
-                ## V series config
                 ## remove the first row from codes (7f7f) because it is the header (always has to be there)
                 codes <- codes[-1,]
+                ## 
+                ## Read the V beam data leader
+                ii <- which(codes[,1]==0x01 & codes[,2]==0x0f)
+                if (length(ii) < 1) stop("Didn't find V series leader data ID")
+                oceDebug(debug, 'Reading V series data leader\n')                
+                numberOfVCells <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+2:3], "integer", size=2, endian="little")
+                verticalPings <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+4:5], "integer", size=2, endian="little")
+                depthCellSize <- 0.01*readBin(buf[ensembleStart[1] + header$dataOffset[ii]+6:7], "integer", size=2, endian="little")
+                firstCellRange <- 0.01*readBin(buf[ensembleStart[1] + header$dataOffset[ii]+8:9], "integer", size=2, endian="little")
+                verticalMode <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+10:11], "integer", size=2, endian="little")
+                verticalTransmit <- 0.01*readBin(buf[ensembleStart[1] + header$dataOffset[ii]+12:13], "integer", size=2, endian="little")
+                verticalLagLength <- 0.01*readBin(buf[ensembleStart[1] + header$dataOffset[ii]+14:15], "integer", size=2, endian="little")
+                transmitCodeElements <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+16:17], "integer", size=2, endian="little")
+                verticalRssiThreshold <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+18:19], "integer", size=2, endian="little")
+                verticalShallowBin <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+20:21], "integer", size=2, endian="little")
+                verticalStartBin <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+22:23], "integer", size=2, endian="little")
+                verticalShallowRssiBin <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+24:25], "integer", size=2, endian="little")
+                maxCoreThreshold <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+26:27], "integer", size=2, endian="little")
+                minCoreThreshold <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+28:29], "integer", size=2, endian="little")
+                pingOffsetTime <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+30:31], "integer", size=2, endian="little")
+                surfSpare1 <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+32:33], "integer", size=2, endian="little")
+                depthScreen <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+34:35], "integer", size=2, endian="little")
+                percentGoodThreshold <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+36:37], "integer", size=2, endian="little")
+                verticalDOproofing <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+38:39], "integer", size=2, endian="little")
+                vBeamHeader <- list(numberOfVCells=numberOfVCells,
+                                    verticalPings=verticalPings,
+                                    depthCellSize=depthCellSize,
+                                    firstCellRange=firstCellRange,
+                                    verticalMode=verticalMode,
+                                    verticalTransmit=verticalTransmit,
+                                    verticalLagLength=verticalLagLength,
+                                    transmitCodeElements=transmitCodeElements,
+                                    verticalRssiThreshold=verticalRssiThreshold,
+                                    verticalShallowBin=verticalShallowBin,
+                                    verticalStartBin=verticalStartBin,
+                                    verticalShallowRssiBin=verticalShallowRssiBin,
+                                    maxCoreThreshold=maxCoreThreshold,
+                                    minCoreThreshold=minCoreThreshold,
+                                    minCoreThreshold=minCoreThreshold,
+                                    pingOffsetTime=pingOffsetTime,
+                                    surfSpare1=surfSpare1,
+                                    depthScreen=depthScreen,
+                                    percentGoodThreshold=percentGoodThreshold,
+                                    verticalDOproofing=verticalDOproofing)
+                vItems <- numberOfVCells
+                
+                ## V series config
                 ii <- which(codes[,1]==0x00 & codes[,2]==0x70)
                 if (length(ii) < 1) stop("Didn't find V series Configuration data ID")
                 oceDebug(debug, 'Reading V series configuration\n')
@@ -713,8 +759,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 schemaMajor <- as.numeric(buf[ensembleStart[1] + header$dataOffset[ii] + 12])
                 schemaMinor <- as.numeric(buf[ensembleStart[1] + header$dataOffset[ii] + 13])
                 schemaRev <- as.numeric(buf[ensembleStart[1] + header$dataOffset[ii] + 14])
-                vSeriesConfig <- list(firmwareVersion, systemFrequency, pressureRating,
-                                      schemaMajor, schemaMinor, schemaRev)
+                vBeamHeader$vSeriesConfig <- list(firmwareVersion=firmwareVersion,
+                                                  systemFrequency=systemFrequency,
+                                                  pressureRating=pressureRating,
+                                                  schemaMajor=schemaMajor,
+                                                  schemaMinor=schemaMinor,
+                                                  schemaRev=schemaRev)
                 ## Read V series ping setup
                 ii <- which(codes[,1]==0x01 & codes[,2]==0x70)
                 if (length(ii) < 1) stop("Didn't find V series ping setup data ID")
@@ -740,23 +790,45 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 deploymentStart <- ISOdatetime(deploymentStartCentury*100+deploymentStartYear,
                                                deploymentStartMonth, deploymentStartDay, deploymentStartHour,
                                                deploymentStartMinute, deploymentStartSecond + deploymentStartHundredths / 100, tz=tz)
-                vSeriesPingSetup <- list(ensembleInterval, numberOfPings, timeBetweenPings, offsetBetweenPingGroups,
-                                         pingsPerEnsemble, ambiquityVelocity, rxGain, rxBeamMask, txBeamMask, ensembleCount,
-                                         deploymentStart)
+                vBeamHeader$vSeriesPingSetup <- list(ensembleInterval=ensembleInterval,
+                                                     numberOfPings=numberOfPings,
+                                                     timeBetweenPings=timeBetweenPings,
+                                                     offsetBetweenPingGroups=offsetBetweenPingGroups,
+                                                     pingSequenceNumber=pingSequenceNumber,
+                                                     ambiquityVelocity=ambiquityVelocity,
+                                                     rxGain=rxGain,
+                                                     rxBeamMask=rxBeamMask,
+                                                     txBeamMask=txBeamMask,
+                                                     ensembleCount=ensembleCount,
+                                                     deploymentStart=deploymentStart)
+                header$vBeamHeader <- vBeamHeader
                 if (vvFound) {
-                    v <- array(numeric(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
-                    vv <- array(numeric(), dim=c(profilesToRead, numberOfCells))
+                    vv <- array(numeric(), dim=c(profilesToRead, numberOfVCells))
                     oceDebug(debug, "set up 'vv' (vertical velocity) storage for", profilesToRead, "profiles, and",
-                             numberOfCells, "cells.\n")
+                             numberOfVCells, "cells.\n")
+                } else {
+                    vv <- NULL
                 }
                 if (vaFound) {
-
+                    va <- array(raw(), dim=c(profilesToRead, numberOfVCells))
+                    oceDebug(debug, "set up 'va' (vertical backscatter amplitude) storage for", profilesToRead, "profiles, and",
+                             numberOfVCells, "cells.\n")
+                } else {
+                    va <- NULL
                 }
                 if (vqFound) {
-
+                    vq <- array(raw(), dim=c(profilesToRead, numberOfVCells))
+                    oceDebug(debug, "set up 'vq' (vertical correlation) storage for", profilesToRead, "profiles, and",
+                             numberOfVCells, "cells.\n")
+                } else {
+                    vq <- NULL
                 }
                 if (vgFound) {
-
+                    vg <- array(raw(), dim=c(profilesToRead, numberOfVCells))
+                    oceDebug(debug, "set up 'vg' (vertical percent good) storage for", profilesToRead, "profiles, and",
+                             numberOfVCells, "cells.\n")
+                } else {
+                    vg <- NULL
                 }
             }
             if (bFound) {
@@ -809,9 +881,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else if (buf[o] == 0x80 & buf[1+o] == 0x00) {
                         if (i <= profilesToShow) oceDebug(debug, "Variable leader skipped\n")
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x01) {
-                        vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
-                        vv[vv==(-32768)] <- NA       # blank out bad data
-                        v[i,,] <- matrix(velocityScale * vv, ncol=numberOfBeams, byrow=TRUE)
+                        vtmp <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
+                        vtmp[vtmp==(-32768)] <- NA       # blank out bad data
+                        v[i,,] <- matrix(velocityScale * vtmp, ncol=numberOfBeams, byrow=TRUE)
                         if (debug && i <= profilesToShow) cat(vectorShow(v[i,,1], paste("v[", i, ",,1]", sep="")))
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x02) {
                         q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
@@ -938,8 +1010,20 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             cat(vectorShow(tmz, paste("tmz[", i, "]", sep="")))
                             cat(vectorShow(tme, paste("tme[", i, "]", sep="")))
                         }
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x70) { # sentinel system configuration
-                        
+                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0a) { # vertical beam data
+                        vtmp <- readBin(buf[o + 1 + seq(1, 2*vItems)], "integer", n=vItems, size=2, endian="little", signed=TRUE)
+                        vtmp[vtmp==(-32768)] <- NA       # blank out bad data
+                        vv[i,] <- velocityScale * vtmp
+                        if (debug && i <= profilesToShow) cat(vectorShow(vv[i,], paste("vv[", i, ",]", sep="")))
+                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0c) { # vertical beam amplitude
+                        va[i,] <- buf[o + 1 + seq(1, vItems)]
+                        if (debug && i <= profilesToShow) cat(vectorShow(va[i,], paste("va[", i, ",]", sep="")))
+                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0b) { # vertical beam correlation
+                        vq[i,] <- buf[o + 1 + seq(1, vItems)]
+                        if (debug && i <= profilesToShow) cat(vectorShow(vq[i,], paste("vq[", i, ",]", sep="")))
+                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0d) { # vertical beam percent good
+                        vg[i,] <- buf[o + 1 + seq(1, vItems)]
+                        if (debug && i <= profilesToShow) cat(vectorShow(vg[i,], paste("vg[", i, ",]", sep="")))
                     }
                 }
                 if (FALSE) { ### FIXME
@@ -1494,6 +1578,32 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 speedMadeGood=speedMadeGood,
                                 speedMadeGoodEast=speedMadeGoodEast,
                                 speedMadeGoodNorth=speedMadeGoodNorth)
+           } else if (isSentinel) {
+               res@data <- list(v=v, q=q, a=a, g=g,
+                                vv=vv, vq=vq, va=va, vg=vg,
+                                vdistance=seq(firstCellRange, b=depthCellSize, length.out=numberOfVCells),
+                                distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                                time=time,
+                                pressure=pressure,
+                                temperature=temperature,
+                                salinity=salinity,
+                                depth=depth,
+                                soundSpeed=soundSpeed,
+                                heading=heading,
+                                pitch=pitch,
+                                roll=roll,
+                                headingStd=headingStd,
+                                pitchStd=pitchStd,
+                                rollStd=rollStd,
+                                pressureStd=pressureStd,
+                                xmitCurrent=xmitCurrent,
+                                xmitVoltage=xmitVoltage,
+                                ambientTemp=ambientTemp,
+                                pressurePlus=pressurePlus,
+                                pressureMinus=pressureMinus,
+                                attitudeTemp=attitudeTemp,
+                                attitude=attitude,
+                                contaminationSensor=contaminationSensor)
            } else {
                res@data <- list(v=v, q=q, a=a, g=g,
                                 distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
