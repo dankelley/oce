@@ -1517,12 +1517,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         njunk <- length(junkProfiles)
         if (njunk == 1)
             warning("Removed a junk profile at time ",
-                    format(time[junkProfiles]),
+                    format(time[junkProfiles-1]),
                     ".  (\"Junk\" means that the decoded time was NA and all data fields were garbage)")
         else
             warning("Removed ", length(junkProfiles),
                     " junk profile(s) at times: ",
-                    paste(format(time[junkProfiles]), collapse=", "),
+                    paste(format(time[junkProfiles-1]), collapse=", "),
                     ".  (\"Junk\" means that the decoded time was NA and all data fields were garbage)")
     }
     
