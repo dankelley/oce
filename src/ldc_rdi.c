@@ -132,3 +132,136 @@ SEXP ldc_rdi(SEXP buf, SEXP max)
   UNPROTECT(3);
   return(res);
 }
+
+/*
+
+system("R CMD SHLIB ldc_rdi.c")
+dyn.load('ldc_rdi.so')
+filename <- "ldc_rdi.c"
+.Call("ldc_rdi_2", filename)
+ 
+*/
+
+
+SEXP ldc_rdi_2(SEXP filename)
+{
+  /* Locate Data Chunk for RDI
+   *   buf = buffer
+   *   max = 0 in normal use, but can be >0 to test things manually
+   *
+   * Ref: WorkHorse Commands and Output Data Format_Nov07.pdf
+   * p124: header structure (note that 'number of bytes in ensemble'
+   *       does *not* count the first 2 bytes; it's really an offset to the
+   *       checksum)
+   * p158 (section 5.8) checksum
+   */
+  //PROTECT(filename = AS_CHARACTER(filename));
+  //unsigned char *pfilename = CHARACTER_POINTER(filename); //*CHAR(STRING_ELT(filename, 0));
+  const char *dan = CHAR(STRING_ELT(filename, 0));
+  Rprintf("1. try to open file named '%s'\n", dan);
+  //FILE *fp = R_fopen(pfilename, "rb");
+  FILE *fp = fopen(dan, "rb");
+  Rprintf("2. success\n");
+  SEXP res;
+  PROTECT(res = NEW_INTEGER(3));
+  int *pres = INTEGER_POINTER(res);
+  pres[0] = 1;
+  pres[1] = 2;
+  pres[2] = 3;
+  UNPROTECT(1); // res
+  fclose(fp);
+  return(res);
+}
+#if 0
+
+  PROTECT(max = AS_INTEGER(max));
+  /* FIXME: check lengths of match and key */
+  int max_lres = *INTEGER_POINTER(max);
+  if (max_lres < 0)
+    error("'max' must be positive");
+  int lres;
+  int lbuf = LENGTH(buf);
+  SEXP res;
+#ifdef DEBUG
+  Rprintf("lbuf=%d\n", lbuf);
+#endif
+  /* Count matches, so we can allocate the right length */
+  unsigned char byte1 = 0x7f;
+  unsigned char byte2 = 0x7f; /* this equal 22 base 10, i.e. the number of bytes in record */
+  unsigned int matches = 0;
+  unsigned short int check_sum, desired_check_sum;
+  unsigned int bytes_to_check = 0;
+#ifdef DEBUG
+  Rprintf("max_lres %d (this is the 'max' given as an arg -- it is used only in some manual debugging and will be zero normally)\n", max_lres);
+#endif
+  for (int i = 0; i < lbuf - 1; i++) { /* note that we don't look to the very end */
+    if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
+      //if (matches == 0) {
+	bytes_to_check = pbuf[i+2] + 256 * pbuf[i+3];
+      //}
+      if ((i + bytes_to_check) < lbuf) {
+	check_sum = 0;
+	for (int c = 0; c < bytes_to_check; c++) {
+	  check_sum += (unsigned short int)pbuf[i + c];
+	}
+	desired_check_sum = ((unsigned short int)pbuf[i+bytes_to_check+0]) | ((unsigned short int)pbuf[i+bytes_to_check+1] << 8);
+	if (check_sum == desired_check_sum) {
+	  matches++;
+#ifdef DEBUG
+	  //if (matches < 30) Rprintf("matches=%d; buf[%d] correct checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
+#endif
+	  if (max_lres != 0 && matches >= max_lres) {
+	    break;
+	  }
+	} else {
+#ifdef DEBUG
+	  if (matches > -1) Rprintf("matches=%d; buf[%d] incorrect checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
+#endif
+	}
+      }
+    }
+  }
+  R_CheckUserInterrupt();
+  /* allocate space, then run through whole buffer again, noting the matches */
+  lres = matches;
+  if (lres > 0) {
+    PROTECT(res = NEW_INTEGER(lres));
+    int *pres = INTEGER_POINTER(res);
+#ifdef DEBUG
+    Rprintf("getting space for %d matches\n", lres);
+#endif
+    unsigned int ires = 0;
+    for (int i = 0; i < lbuf - 1; i++) { /* note that we don't look to the very end */
+      if ((i + bytes_to_check) < lbuf) {
+#ifdef DEBUG
+	if ((bytes_to_check + i) >= (lbuf - 10)) Rprintf("CAUTION will get close to buffer end; space= %d\n", lbuf - (bytes_to_check + i));
+#endif
+	check_sum = 0;
+	if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
+	  for (int c = 0; c < bytes_to_check; c++)
+	    check_sum += (unsigned short int)pbuf[i + c];
+	  desired_check_sum = ((unsigned short)pbuf[i+bytes_to_check]) | ((unsigned short)pbuf[i+bytes_to_check+1] << 8);
+	  if (check_sum == desired_check_sum)
+	    pres[ires++] = i + 1; /* the +1 is to get R pointers */
+	}
+	if (ires >= lres) {
+#ifdef DEBUG
+	  Rprintf("got to end of pres buffer, breaking now: DOES THIS EXIT LOOP?\n");
+#endif
+	  break;
+	}
+      }
+    }
+  } else {
+    PROTECT(res = NEW_INTEGER(1));
+    int *pres = INTEGER_POINTER(res);
+#ifdef DEBUG
+    Rprintf("lres <= 0; setting pres to 0 (does that get checked?)\n");
+#endif
+    pres[0] = 0;
+  }
+  UNPROTECT(3);
+  return(res);
+}
+#endif
+
