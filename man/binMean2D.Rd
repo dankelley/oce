@@ -4,7 +4,8 @@
 \alias{binMean2D}
 \title{Bin-average f=f(x,y)}
 \usage{
-binMean2D(x, y, f, xbreaks, ybreaks, flatten = FALSE, fill = FALSE)
+binMean2D(x, y, f, xbreaks, ybreaks, flatten = FALSE, fill = FALSE,
+  fillgap = -1)
 }
 \arguments{
 \item{x}{Vector of numerical values.}
@@ -27,7 +28,12 @@ representation of \code{xmids}, \code{ymids}, \code{result} and
 
 \item{fill}{Logical value indicating whether to fill \code{NA}-value gaps in
 the matrix. Gaps will be filled as the average of linear interpolations
-across rows and columns.}
+across rows and columns. See \code{fillgap}, which works together with this.}
+
+\item{fillgap}{Integer controlling the size of gap that can be filled
+across. If this is negative (as in the default), gaps will be filled
+regardless of their size. If it is positive, then gaps exceeding this
+number of indices will not be filled.}
 }
 \value{
 A list with the following elements: the midpoints (renamed as
