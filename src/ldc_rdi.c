@@ -160,7 +160,7 @@ SEXP ldc_rdi_2(SEXP filename)
   const char *dan = CHAR(STRING_ELT(filename, 0));
   Rprintf("1. try to open file named '%s'\n", dan);
   //FILE *fp = R_fopen(pfilename, "rb");
-  FILE *fp = R_fopen(dan, "rb");
+  FILE *fp = fopen(dan, "rb");
   Rprintf("2. success\n");
   SEXP res;
   PROTECT(res = NEW_INTEGER(3));
@@ -168,7 +168,8 @@ SEXP ldc_rdi_2(SEXP filename)
   pres[0] = 1;
   pres[1] = 2;
   pres[2] = 3;
-  UNPROTECT(2);
+  UNPROTECT(1); // res
+  fclose(fp);
   return(res);
 }
 #if 0
