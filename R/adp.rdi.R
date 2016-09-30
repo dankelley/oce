@@ -457,6 +457,14 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         cellSize <- header$cellSize
         oceDebug(debug, "about to call ldc_rdi\n")
         ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
+        if (!TRUE) {
+            ensembleStart2 <- .Call("ldc_rdi_2",filename) # testing
+            minlen <- pmin(length(ensembleStart), length(ensembleStart2))
+            expect_equal(ensembleStart[seq_len(minlen)], ensembleStart2[seq_len(minlen)])
+            message("old ensemble has 1 extra element, at the end. It is '1', which makes no sense,
+                    so I think it is uninitialized")
+            browser()
+        }
         oceDebug(debug, "successfully called ldc_rdi\n")
 
         ## Profiles start at the VARIABLE LEADER DATA, since there is no point in

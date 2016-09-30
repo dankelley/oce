@@ -1,4 +1,18 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+
+
+/*
+
+ TEMPORARY SANDBOX OF DK NOTES -- CONTINUALLY UPDATED< AND WILL BE REMOVED WHEN 
+ NOT LONGER NEEDED
+
+ 2016-09-30/fri ldc_rdi is giving a 1 at the last entry. And there is
+ 1 more entry than with ldc_rdi_2. So I suspect that ldc_rdi has
+ matches wrong.  I'll look into this on the upcoming weekend.
+ 
+
+ */
+
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -107,7 +121,7 @@ SEXP ldc_rdi_2(SEXP filename) // FIXME: add from,to args so we can look within
 	  nebuf = bytes_to_read + 1000;
       }
       fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
-      cindex += bytes_to_check;
+      cindex += bytes_to_read;
       if (feof(fp)) {
 	Free(ensembles);
 	Free(ebuf);
