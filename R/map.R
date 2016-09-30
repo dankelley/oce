@@ -1279,18 +1279,22 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 dx <- (usr[2] - usr[1]) / ntick
                 dy <- (usr[4] - usr[3]) / ntick
                 ll <- map2lonlat(x0-dx, y0-dy)
-                cat(vectorShow(ll))
                 ur <- map2lonlat(x0+dx, y0+dy)
-                cat(vectorShow(ur))
+                if (debug > 0) {
+                    cat(vectorShow(ll))
+                    cat(vectorShow(ur))
+                }
                 ls <- geodDist(ll$longitude, ll$latitude, ll$longitude, ur$latitude)
                 rs <- geodDist(ur$longitude, ll$latitude, ur$longitude, ur$latitude)
                 ts <- geodDist(ll$longitude, ur$latitude, ur$longitude, ur$latitude)
                 bs <- geodDist(ll$longitude, ll$latitude, ur$longitude, ll$latitude)
                 t <- median(c(ls, rs, ts, bs)) / 111 # tick, in degrees
-                cat(vectorShow(ls))
-                cat(vectorShow(rs))
-                cat(vectorShow(ts))
-                cat(vectorShow(ts))
+                if (debug > 0)  {
+                    cat(vectorShow(ls))
+                    cat(vectorShow(rs))
+                    cat(vectorShow(ts))
+                    cat(vectorShow(ts))
+                }
                 oceDebug(debug, "t: ", t, "(scale between ticks, in deg)\n")
                 ## message("tickEW: ", tickEW)
                 ## message("tickNS: ", tickNS)
