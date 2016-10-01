@@ -1,4 +1,9 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+//#define SHOW(iensemble) (4 > abs((int)iensemble-29555))
+
+#include <R.h>
+#include <Rdefines.h>
+#include <Rinternals.h>
 
 
 /*
@@ -45,10 +50,6 @@ read.adp.rdi(): subtracted a headingBias of  -45  degrees
  
 
  */
-
-#include <R.h>
-#include <Rdefines.h>
-#include <Rinternals.h>
 
 //#define DEBUG
 
@@ -145,6 +146,8 @@ SEXP ldc_rdi_2(SEXP filename) // FIXME: add from,to args so we can look within
       // those 4 bytes of the ensemble (i.e. those 4 bytes are include
       // in the bytes_to_check value that we now calculate).
       bytes_to_check = (unsigned int)b1 + 256 * (unsigned int)b2;
+      //if (SHOW(iensemble)) Rprintf("NEW cindex=%d iensemble=%d bytes_to_check=%d\n",
+      // cindex, iensemble, bytes_to_check);
       if (bytes_to_check < 5) { // this will only happen in error; we check so bytes_to_read won't be crazy
 	Free(ensembles);
 	Free(ebuf);
@@ -163,12 +166,13 @@ SEXP ldc_rdi_2(SEXP filename) // FIXME: add from,to args so we can look within
       if (feof(fp)) {
 	//Free(ensembles);
 	//Free(ebuf);
-	Rprintf("Warning: end of file while reading ensemble number %d, at byte %d\n", iensemble+1, cindex);
+	//Rprintf("NEW: end of file while reading ensemble number %d, at byte %d\n", iensemble+1, cindex);
 	break;
       }
       cindex += bytes_to_read;
       for (int ib = 0; ib < bytes_to_read; ib++) {
 	check_sum += (unsigned short int)ebuf[ib];
+	//if (SHOW(iensemble)) Rprintf("NEW iensemble=%d ib=%d check_sum=%d\n", iensemble, ib, check_sum);
       }
       int cs1, cs2;
       cs1 = fgetc(fp);
@@ -178,8 +182,8 @@ SEXP ldc_rdi_2(SEXP filename) // FIXME: add from,to args so we can look within
       if (cs2 == EOF) break;
       cindex++;
       desired_check_sum = ((unsigned short int)cs1) | ((unsigned short int)(cs2 << 8));
-      if (FIXME < 3) Rprintf("  icindex=%d, cs1=%d cs2=%d check_sum %d; desired_check_sum=%d\n",
-	  cindex, cs1, cs2, check_sum, desired_check_sum);
+      //if (SHOW(iensemble)) Rprintf("NEW iensemble=%d icindex=%d check_sum %d desired_check_sum=%d b1=%d b2=%d bytes_to_check=%d\n",
+      // iensemble, cindex, check_sum, desired_check_sum, b1, b2, bytes_to_check);
       if (check_sum == desired_check_sum) {
 	if (iensemble >= nensembles) {
 	  //Rprintf("iensemble=%d : present  storage starts at 0x%x and can contain %d elements...\n", iensemble, ensembles, nensembles);

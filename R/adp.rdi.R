@@ -456,11 +456,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         xmitPulseLength <- header$xmitPulseLength
         cellSize <- header$cellSize
         oceDebug(debug, "about to call ldc_rdi\n")
-        ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
-        if (TRUE) {
-            ## filename <- "/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
-            ## d <- read.oce(filename)
-            ensembleStart2 <- .Call("ldc_rdi_2",filename) # testing
+        ensembleStart <- .Call("ldc_rdi", buf, 0)
+        if (TRUE) { # testing
+            ensembleStart2 <- .Call("ldc_rdi_2",filename)
             lensembleStart <- length(ensembleStart)
             lensembleStart2 <- length(ensembleStart2)
             if (abs(lensembleStart - lensembleStart2) > 1) {
@@ -479,9 +477,6 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 cat("    ensembleStart2      : ", paste(ensembleStart2[look], collapse=" "), "\n")
                 cat("    diff(ensembleStart) : ", paste(diff(ensembleStart[look]), collapse=" "), "\n")
                 cat("    diff(ensembleStart2): ", paste(diff(ensembleStart2[look]), collapse=" "), "\n")
-                e <<- ensembleStart
-                e2 <<- ensembleStart2
-                cat("NOTE: exporting e and e2 for testing (FIXME: remove export when ok)\n")
             }
         }
         oceDebug(debug, "successfully called ldc_rdi\n")
@@ -716,7 +711,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         ## On the first profile, we set up space.
                         if (!VMDASStorageInitialized) {
                             VMDASStorageInitialized <- TRUE
-                            oceDebug(debug+10, "This is a VMDAS file\n")
+                            oceDebug(debug, "This is a VMDAS file\n")
                             isVMDAS <- TRUE
                             ## FIXME: set up space; this c() method is slow and ugly
                             firstTime <- firstLongitude <- firstLatitude <- NULL
