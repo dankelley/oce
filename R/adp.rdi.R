@@ -457,13 +457,32 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         cellSize <- header$cellSize
         oceDebug(debug, "about to call ldc_rdi\n")
         ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
-        if (!TRUE) {
+        if (TRUE) {
+            ## filename <- "/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
+            ## d <- read.oce(filename)
             ensembleStart2 <- .Call("ldc_rdi_2",filename) # testing
+            lensembleStart <- length(ensembleStart)
+            lensembleStart2 <- length(ensembleStart2)
+            if (abs(lensembleStart - lensembleStart2) > 1) {
+                cat("ERROR: >1 mismatch in lengths:\n")
+                cat("    length(ensembleStart)  = ", lensembleStart, "\n")
+                cat("    length(ensembleStart2) = ", lensembleStart2, "\n")
+            }
             minlen <- pmin(length(ensembleStart), length(ensembleStart2))
-            expect_equal(ensembleStart[seq_len(minlen)], ensembleStart2[seq_len(minlen)])
-            message("old ensemble has 1 extra element, at the end. It is '1', which makes no sense,
-                    so I think it is uninitialized")
-            browser()
+            firstMismatch <- which(ensembleStart[1:minlen]!=ensembleStart2[1:minlen])[1]
+            if (!is.na(firstMismatch)) {
+                cat("ERROR: found difference when comparing first ", minlen, " entries of ensembleStart and ensembleStart2", "\n")
+                cat("    firstMismatch=", firstMismatch, " (note: there may be more later ... not checked, though)", "\n")
+                look <- seq(pmax(1, firstMismatch - 5), pmin(length(ensembleStart2), firstMismatch+5))
+                cat("    following are some values in the mismatch neighborhood:\n")
+                cat("    ensembleStart       : ", paste(ensembleStart[look], collapse=" "), "\n")
+                cat("    ensembleStart2      : ", paste(ensembleStart2[look], collapse=" "), "\n")
+                cat("    diff(ensembleStart) : ", paste(diff(ensembleStart[look]), collapse=" "), "\n")
+                cat("    diff(ensembleStart2): ", paste(diff(ensembleStart2[look]), collapse=" "), "\n")
+                e <<- ensembleStart
+                e2 <<- ensembleStart2
+                cat("NOTE: exporting e and e2 for testing (FIXME: remove export when ok)\n")
+            }
         }
         oceDebug(debug, "successfully called ldc_rdi\n")
 
@@ -473,6 +492,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ## location for these, based on the "Always Output" indication in Fig 46
         ## on page 145 of teledyne2014ostm.
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
+        if (any(profileStart < 1))
+            stop("difficulty detecting ensemble (profile) start indices")
         # offset for data type 1 (velocity)
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming:"))
         profilesInFile <- length(profileStart)
@@ -650,6 +671,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, "header$numberOfDataTypes: ", header$numberOfDataTypes, "\n")
 
             profilesToShow <- 2 # only if debug>0
+            VMDASStorageInitialized <- FALSE
 
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
                 for (chunk in 1:header$numberOfDataTypes) {
@@ -692,8 +714,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x20) {
                         ## message("navigation")
                         ## On the first profile, we set up space.
-                        if (i == 1) {
-                            oceDebug(debug, "This is a VMDAS file\n")
+                        if (!VMDASStorageInitialized) {
+                            VMDASStorageInitialized <- TRUE
+                            oceDebug(debug+10, "This is a VMDAS file\n")
                             isVMDAS <- TRUE
                             ## FIXME: set up space; this c() method is slow and ugly
                             firstTime <- firstLongitude <- firstLatitude <- NULL
@@ -1271,7 +1294,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 contaminationSensor=contaminationSensor)
            } else if (bFound && isVMDAS) {
                br[br == 0.0] <- NA    # clean up (not sure if needed)
-               res$data <- list(v=v, q=q, a=a, g=g,
+               res@data <- list(v=v, q=q, a=a, g=g,
                                 br=br, bv=bv,
                                 distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                                 time=time,

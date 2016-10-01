@@ -7,11 +7,10 @@
 
 /* 
 
-   This code was based on similar for sontek.  But, the best plan is
-   always to figure out the algorithm (how many bytes to skip, etc.)
-   using R.  Below are some notes on how I did that; I'll retain them in
-   the code as a guide.  All of the below is in R (but some comments are
-   instructions).
+   Below are some notes on how I tested out some of the ideas in R.
+   They are probably not very useful in understanding the C code, and
+   are very unlikely to be as robust as that C code ... so they will likely
+   be removed at some time.
 
    library(oce)
 # Temporarily instrument read.adp.rdi() to output ''b'' for ''buf'' in the code.
@@ -57,69 +56,69 @@ SEXP ldc_rdi(SEXP buf, SEXP max)
   /* Count matches, so we can allocate the right length */
   unsigned char byte1 = 0x7f;
   unsigned char byte2 = 0x7f; /* this equal 22 base 10, i.e. the number of bytes in record */
-  unsigned int matches = 0;
+  int matches = 0;
   unsigned short int check_sum, desired_check_sum;
   unsigned int bytes_to_check = 0;
 #ifdef DEBUG
   Rprintf("max_lres %d (this is the 'max' given as an arg -- it is used only in some manual debugging and will be zero normally)\n", max_lres);
 #endif
+  // Step 1: count matches (i.e. determine lres)
   for (int i = 0; i < lbuf - 1; i++) { /* note that we don't look to the very end */
     if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
-      //if (matches == 0) {
-	bytes_to_check = pbuf[i+2] + 256 * pbuf[i+3];
-      //}
-      if ((i + bytes_to_check) < lbuf) { // OLD step 1
+      R_CheckUserInterrupt();
+      bytes_to_check = pbuf[i+2] + 256 * pbuf[i+3];
+      if ((i + bytes_to_check) < lbuf) {
 	check_sum = 0;
 	for (int ic = 0; ic < bytes_to_check; ic++) {
 	  check_sum += (unsigned short int)pbuf[i + ic];
-	  if (matches < 1 && (ic < 5 || ic > (bytes_to_check-10)))
-	    Rprintf("  ic %d, byte 0x%02x, check_sum %d [OLD METHOD]\n", ic, pbuf[i+ic], check_sum);
+	  //if (matches < 1 && (ic < 5 || ic > (bytes_to_check-10)))
+	  //  Rprintf("  ic %d, byte 0x%02x, check_sum %d [OLD METHOD]\n", ic, pbuf[i+ic], check_sum);
 	}
-	desired_check_sum = ((unsigned short int)pbuf[i+bytes_to_check+0]) | ((unsigned short int)pbuf[i+bytes_to_check+1] << 8);
-	if (matches < 3) Rprintf("matches=%d bytes_to_check=%d check_sum %d; desired_check_sum=%d [OLD METHOD]\n", matches, bytes_to_check, check_sum, desired_check_sum);
+	desired_check_sum = ((unsigned short int)pbuf[i+bytes_to_check]) | ((unsigned short int)pbuf[i+bytes_to_check+1] << 8);
+	if (matches < 3) Rprintf("i=%d matches=%d bytes_to_check=%d check_sum %d; desired_check_sum=%d [phase 1]\n", i, matches, bytes_to_check, check_sum, desired_check_sum);
 	if (check_sum == desired_check_sum) {
 	  matches++;
-#ifdef DEBUG
-	  //if (matches < 30) Rprintf("matches=%d; buf[%d] correct checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
-#endif
+	  if (matches < 3) Rprintf("matches=%d; buf[%d] correct checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
 	  if (max_lres != 0 && matches >= max_lres) {
 	    break;
 	  }
 	} else {
-#ifdef DEBUG
-	  if (matches > -1) Rprintf("matches=%d; buf[%d] incorrect checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
-#endif
+	  if (matches < 3) Rprintf("matches=%d; buf[%d] incorrect checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
 	}
       }
     }
   }
-  R_CheckUserInterrupt();
-  /* allocate space, then run through whole buffer again, noting the matches */
+  // Step 2: allocate space, then run through whole buffer again, noting the matches
   lres = matches;
   if (lres > 0) {
     PROTECT(res = NEW_INTEGER(lres));
     int *pres = INTEGER_POINTER(res);
+    for (int i = 0; i < lres; i++)
+      pres[i] = 0; // set to zero as a check
 #ifdef DEBUG
     Rprintf("getting space for %d matches\n", lres);
 #endif
-    unsigned int ires = 0;
+    int ires = 0;
     for (int i = 0; i < lbuf - 1; i++) { /* note that we don't look to the very end */
-      if ((i + bytes_to_check) < lbuf) {
-#ifdef DEBUG
-	if ((bytes_to_check + i) >= (lbuf - 10)) Rprintf("CAUTION will get close to buffer end; space= %d\n", lbuf - (bytes_to_check + i));
-#endif
-	check_sum = 0; // OLD step 2
-	if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
-	  for (int ic = 0; ic < bytes_to_check; ic++)
+      if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
+	R_CheckUserInterrupt();
+	bytes_to_check = pbuf[i+2] + 256 * pbuf[i+3];
+	if ((i + bytes_to_check) < lbuf) {
+	  check_sum = 0; // OLD step 2
+	  for (int ic = 0; ic < bytes_to_check; ic++) {
 	    check_sum += (unsigned short int)pbuf[i + ic];
-	  desired_check_sum = ((unsigned short)pbuf[i+bytes_to_check]) | ((unsigned short)pbuf[i+bytes_to_check+1] << 8);
-	  if (check_sum == desired_check_sum)
+	  }
+	  desired_check_sum = ((unsigned short int)pbuf[i+bytes_to_check]) | ((unsigned short int)pbuf[i+bytes_to_check+1] << 8);
+	  if (check_sum == desired_check_sum) {
 	    pres[ires++] = i + 1; /* the +1 is to get R pointers */
+	    if (ires < 3)
+	      Rprintf("MATCH at i=%d; pres[ires=%d] = %d\n", i, ires-1, i+1);
+	  } else {
+	    ; // Rprintf("no match at i=%d\n", i);
+	  }
 	}
 	if (ires >= lres) {
-#ifdef DEBUG
-	  Rprintf("got to end of pres buffer, breaking now: DOES THIS EXIT LOOP?\n");
-#endif
+	  Rprintf("Warning: got to end of pres buffer, breaking now\n");
 	  break;
 	}
       }
@@ -133,7 +132,6 @@ SEXP ldc_rdi(SEXP buf, SEXP max)
     pres[0] = 0;
   }
   UNPROTECT(3);
-  Rprintf("OLD METHOD GOT %d PROFILES\n", matches);
   return(res);
 }
 
