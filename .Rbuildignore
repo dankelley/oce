@@ -25,3 +25,4 @@ man/figures/Makefile
 man/figures/*.R
 vignettes
 
+tests_private
