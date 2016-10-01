@@ -1443,51 +1443,57 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     }
 
     ##if (substr(line, 1, 2) == "\177\177")            return("adp")
-    if (substr(line, 1, 3) == "CTD") {
+    if (1 == length(grep("^CTD", line, useBytes=TRUE))) { #substr(line, 1, 3) == "CTD") {
         oceDebug(debug, "this is ctd/woce/exchange\n")
         return("ctd/woce/exchange")
     }
-    if ("* Sea-Bird" == substr(line, 1, 10))  {
+    if (1 == length(grep("^\\* Sea-Bird", line, useBytes=TRUE))) {
         oceDebug(debug, "this is ctd/sbe/19\n")
         return("ctd/sbe/19")
     }
-    if ("%ITP" == substr(line, 1, 4)) {
+    if (1 == length(grep("^%ITP", line, useBytes=TRUE))) { #"%ITP" == substr(line, 1, 4)) {
         oceDebug(debug, "this is ice-tethered profile\n")
         return("ctd/itp")
     }
-    if ("# -b" == substr(line, 1, 4)) {
+    ##if ("# -b" == substr(line, 1, 4)) {
+    if (1 == length(grep("^# -b", line, useBytes=TRUE))) {
         oceDebug(debug, "this is coastline\n")
         return("coastline")
     }
-    if ("# Station_Name," == substr(line, 1, 15)) {
+    ## if ("# Station_Name," == substr(line, 1, 15)) {
+    if (1 == length(grep("^# Station_Name,", line, useBytes=TRUE))) {
         oceDebug(debug, "this is sealevel\n")
         return("sealevel")
     }
-    if ("Station_Name," == substr(line, 1, 13)) {
+    ##if ("Station_Name," == substr(line, 1, 13)) {
+    if (1 == length(grep("^Station_Name,", line, useBytes=TRUE))) {
         oceDebug(debug, "this is sealevel\n")
         return("sealevel")
     }
-    if ("%" == line && length(line2) && regexpr("^Observatory", line2)) {
+    if (1 == length(grep("^%$", line, useBytes=TRUE)) && 1 == length(grep("^Observatory", line2, useBytes=TRUE))) {
         oceDebug(debug, "this is observatory\n")
         return("observatory")
     }
-    if (0 < regexpr("^[0-9][0-9][0-9][A-Z] ", line)) {
+    if (1 == length(grep("^[0-9][0-9][0-9][A-Z] ", line, useBytes=TRUE))) {
         oceDebug(debug, "this is sealevel\n")
         return("sealevel")
     }
-    if (0 < regexpr("^NCOLS[ ]*[0-9]*[ ]*$", line, ignore.case=TRUE)) {
+    if (1 == length(grep("^NCOLS[ ]*[0-9]*[ ]*$", line, useBytes=TRUE, ignore.case=TRUE))) {
         oceDebug(debug, "this is topo\n")
         return("topo")
     }
-    if ("RBR TDR" == substr(line, 1, 7))  { ## FIXME: obsolete; to be removed Fall 2015
+    ##if ("RBR TDR" == substr(line, 1, 7))  { ## FIXME: obsolete; to be removed Fall 2015
+    if (1 == length(grep("^RBR TDR", line, useBytes=TRUE))) { ## FIXME: obsolete; to be removed Fall 2015
         oceDebug(debug, "this is RBR/dat\n")
         return("RBR/dat")
     }
-    if ("Model=" == substr(line, 1, 6))  {
+    ## if ("Model=" == substr(line, 1, 6))  {
+    if (1 == length(grep("^Model=", line, useBytes=TRUE))) {
         oceDebug(debug, "this is RBR/txt\n")
         return("RBR/txt")
     }
-    if ("BOTTLE"  == substr(line, 1, 6))  {
+    ## if ("BOTTLE"  == substr(line, 1, 6))  {
+    if (1 == length(grep("^BOTTLE", line, useBytes=TRUE)))  {
         oceDebug(debug, "this is section\n")
         return("section")
     }
