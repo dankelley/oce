@@ -2214,7 +2214,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         oceDebug(debug, "Time range is between 6 hours and 1.5 days\n")
         t.start <- trunc(rr[1], "hour")
         t.end <- trunc(rr[2] + 86400, "hour")
-        z <- seq(t.start, t.end, by="6 hour")
+        z <- seq(t.start, t.end, by="2 hour")
         z.sub <- seq(t.start, t.end, by="hour")
         oceDebug(debug, vectorShow(z))
         if (missing(tformat)) {
@@ -2433,7 +2433,10 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     par(cex.axis=ocex.axis, cex.main=ocex.main, mgp=omgp)
     oceDebug(debug, "} # oce.axis.ts()\n", unindent=1)
     zzz <- as.numeric(z)
-    par(xaxp=c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz)))
+    if (1 < length(zzz)) {
+        xaxp <- c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz))
+        par(xaxp=xaxp)
+    }
     invisible(z)                       # FIXME: or z.sub?
 }
 
