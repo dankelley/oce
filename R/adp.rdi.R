@@ -456,7 +456,29 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         xmitPulseLength <- header$xmitPulseLength
         cellSize <- header$cellSize
         oceDebug(debug, "about to call ldc_rdi\n")
-        ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
+        ensembleStart <- .Call("ldc_rdi", buf, 0)
+        if (TRUE) { # testing
+            ensembleStart2 <- .Call("ldc_rdi_2",filename)
+            lensembleStart <- length(ensembleStart)
+            lensembleStart2 <- length(ensembleStart2)
+            if (abs(lensembleStart - lensembleStart2) > 1) {
+                cat("ERROR: >1 mismatch in lengths:\n")
+                cat("    length(ensembleStart)  = ", lensembleStart, "\n")
+                cat("    length(ensembleStart2) = ", lensembleStart2, "\n")
+            }
+            minlen <- pmin(length(ensembleStart), length(ensembleStart2))
+            firstMismatch <- which(ensembleStart[1:minlen]!=ensembleStart2[1:minlen])[1]
+            if (!is.na(firstMismatch)) {
+                cat("ERROR: found difference when comparing first ", minlen, " entries of ensembleStart and ensembleStart2", "\n")
+                cat("    firstMismatch=", firstMismatch, " (note: there may be more later ... not checked, though)", "\n")
+                look <- seq(pmax(1, firstMismatch - 5), pmin(length(ensembleStart2), firstMismatch+5))
+                cat("    following are some values in the mismatch neighborhood:\n")
+                cat("    ensembleStart       : ", paste(ensembleStart[look], collapse=" "), "\n")
+                cat("    ensembleStart2      : ", paste(ensembleStart2[look], collapse=" "), "\n")
+                cat("    diff(ensembleStart) : ", paste(diff(ensembleStart[look]), collapse=" "), "\n")
+                cat("    diff(ensembleStart2): ", paste(diff(ensembleStart2[look]), collapse=" "), "\n")
+            }
+        }
         oceDebug(debug, "successfully called ldc_rdi\n")
 
         ## Profiles start at the VARIABLE LEADER DATA, since there is no point in
@@ -465,6 +487,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ## location for these, based on the "Always Output" indication in Fig 46
         ## on page 145 of teledyne2014ostm.
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
+        if (any(profileStart < 1))
+            stop("difficulty detecting ensemble (profile) start indices")
         # offset for data type 1 (velocity)
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming:"))
         profilesInFile <- length(profileStart)
@@ -642,6 +666,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, "header$numberOfDataTypes: ", header$numberOfDataTypes, "\n")
 
             profilesToShow <- 2 # only if debug>0
+            VMDASStorageInitialized <- FALSE
 
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
                 for (chunk in 1:header$numberOfDataTypes) {
@@ -684,7 +709,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x20) {
                         ## message("navigation")
                         ## On the first profile, we set up space.
-                        if (i == 1) {
+                        if (!VMDASStorageInitialized) {
+                            VMDASStorageInitialized <- TRUE
                             oceDebug(debug, "This is a VMDAS file\n")
                             isVMDAS <- TRUE
                             ## FIXME: set up space; this c() method is slow and ugly
@@ -1263,7 +1289,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 contaminationSensor=contaminationSensor)
            } else if (bFound && isVMDAS) {
                br[br == 0.0] <- NA    # clean up (not sure if needed)
-               res$data <- list(v=v, q=q, a=a, g=g,
+               res@data <- list(v=v, q=q, a=a, g=g,
                                 br=br, bv=bv,
                                 distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                                 time=time,
