@@ -8,7 +8,7 @@ files <- list.files(path=path, pattern=".cnv", full=TRUE)
 nfiles <- length(files)
 if (!interactive()) png('ctd_sleiwex_coriolisII_%03d.png')
 par(oma=c(0, 0, 1, 0))
-for (i in 1:nfiles) {
+for (i in seq_along(files)) {
     cat("\n##\n# file[", i, "]= '",  files[i], "'\n", sep="")
     d <- read.oce(files[i])
     expect_false(is.na(d[['latitude']])[1])

@@ -7,7 +7,7 @@ path <- paste("/data/arctic/beaufort/", years, sep="")
 files <- list.files(path=path, pattern=".cnv", full=TRUE)
 nfiles <- length(files)
 if (!interactive()) png('ctd_beaufort_sea_%03d.png')
-for (i in seq_along(nfiles)) {
+for (i in seq_along(files)) {
     cat("\n##\n# file[", i, "]= '",  files[i], "'\n", sep="")
     d <- read.oce(files[i])
     expect_false(is.na(d[['latitude']][1]))
