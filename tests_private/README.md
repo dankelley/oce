@@ -13,3 +13,13 @@ read without error. In other cases, `summary` and `plot` are used, on the
 expectation that the person running tests will scan the files visually to look
 for problems (e.g. missing units for some SBE data types).
 
+Files:
+
+* README.md this file
+* Makefile use this to run tests
+* adp_rdi_01.R tests some adp datasets of the RDI variety
+* ctd_beaufort_sea.R tests CTD data from Beaufort Sea (private data in DK possession)
+* ctd_flemish_cap.R tests some CTD data from Flemish Cap (private data in DK possession)
+* ctd_sleiwex_coriolissII.R tests some CTD data from SLEIWEX experiment (private data in DK and CR possession)
+* odf_01.R tests various ODF datasets (private data in DK possession)
+
