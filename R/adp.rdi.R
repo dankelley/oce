@@ -625,9 +625,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 stop("no profilesToRead")
             velocityScale <- 1e-3
 
-            ## Next line sets up empty vectors for VMDAS
             isVMDAS <- FALSE           # see below where we check bytes in first profile
             badVMDAS <- NULL           # erroneous VMDAS profiles
+            VMDASStorageInitialized <- FALSE # flag for whether we have VMDAS storage set up yet
 
             ##> We do some things differently based on the firmware.
             ##> if (header$firmwareVersionMajor == 23 && header$firmwareVersionMinor >= 12) {
@@ -642,7 +642,6 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, "header$numberOfDataTypes: ", header$numberOfDataTypes, "\n")
 
             profilesToShow <- 2 # only if debug>0
-            VMDASSStorageInitialized <- FALSE
 
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
                 for (chunk in 1:header$numberOfDataTypes) {
@@ -685,8 +684,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x20) {
                         ## message("navigation")
                         ## On the first profile, we set up space.
-                        if (!VMDASSStorageInitialized) {
-                            VMDASSStorageInitialized <- TRUE
+                        if (!VMDASStorageInitialized) {
+                            VMDASStorageInitialized <- TRUE
                             oceDebug(debug, "This is a VMDAS file\n")
                             isVMDAS <- TRUE
                             ## FIXME: set up space; this c() method is slow and ugly
@@ -830,8 +829,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else if (buf[o+1] == 0x20) { # navigation
                         message("NAVIGATION")
                         ## On the first profile, we set up space.
-                        if (!VMDASSStorageInitialized) {
-                            VMDASSStorageInitialized <- TRUE
+                        if (!VMDASStorageInitialized) {
+                            VMDASStorageInitialized <- TRUE
                             oceDebug(debug, "This is a VMDAS file\n")
                             isVMDAS <- TRUE
                             ## FIXME: set up space; this c() method is slow and ugly
@@ -1266,7 +1265,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 contaminationSensor=contaminationSensor)
            } else if (bFound && isVMDAS) {
                br[br == 0.0] <- NA    # clean up (not sure if needed)
-               res$data <- list(v=v, q=q, a=a, g=g,
+               res@data <- list(v=v, q=q, a=a, g=g,
                                 br=br, bv=bv,
                                 distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                                 time=time,
