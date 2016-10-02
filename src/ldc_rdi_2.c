@@ -5,90 +5,44 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-
-/*
-
- TEMPORARY SANDBOX OF DK NOTES -- CONTINUALLY UPDATED< AND WILL BE REMOVED WHEN 
- NOT LONGER NEEDED
-
- There are 2 files in the test suite where ensembleStart (old method,
- from ldc_rdi.c) and ensemebleStart2 (new method, from present code)
- disagree. In both cases, diff(ensembleStart2) is uniform and
- diff(ensembleStart) varies, which suggests that ensembleStart2 is
- more accurate. Still, I want to get to the bottom of why they differ.
- Below is some of the output from the heavily instrumented (and
- varying) code
-
-
---- bad case 1 ---
-
-file 'moored_workhorse_1200kHz/adp_rdi_1997.000' is adp/rdi
-ERROR: >1 mismatch in lengths:
-    length(ensembleStart)  =  81321 
-    length(ensembleStart2) =  81319 
-ERROR: found difference when comparing first  81319  entries of ensembleStart and ensembleStart2 
-    firstMismatch= 29555  (note: there may be more later ... not checked, though) 
-    following are some values in the mismatch neighborhood:
-    ensembleStart       :  21688967 21689701 21690435 21691169 21691903 21692322 21692637 21693371 21694105 21694839 21695573 
-    ensembleStart2      :  21688967 21689701 21690435 21691169 21691903 21692637 21693371 21694105 21694839 21695573 21696307 
-    diff(ensembleStart) :  734 734 734 734 419 315 734 734 734 734 
-    diff(ensembleStart2):  734 734 734 734 734 734 734 734 734 734 
-read.adp.rdi(): subtracted a headingBias of  -18.1  degrees
-
---- bad case 2 ---
-
-
-file 'vmdas_workhorse_300kHz_01/ADCP061_000000.ENR' is adp/rdi
-ERROR: found difference when comparing first  2506  entries of ensembleStart and ensembleStart2 
-    firstMismatch= 1944  (note: there may be more later ... not checked, though) 
-    following are some values in the mismatch neighborhood:
-    ensembleStart       :  2405059 2406300 2407541 2408782 2410023 2410610 2411264 2412505 2413746 2414987 2416228 
-    ensembleStart2      :  2405059 2406300 2407541 2408782 2410023 2411264 2412505 2413746 2414987 2416228 2417469 
-    diff(ensembleStart) :  1241 1241 1241 1241 587 654 1241 1241 1241 1241 
-    diff(ensembleStart2):  1241 1241 1241 1241 1241 1241 1241 1241 1241 1241 
-read.adp.rdi(): subtracted a headingBias of  -45  degrees
- 
-
- */
-
 //#define DEBUG
 
-/*
-
-library(testthat)
-system("R CMD SHLIB ldc_rdi_2.c")
-dyn.load('ldc_rdi_2.so')
-filename <- "/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
-## next is 1.6s
-system.time(d <- read.adp(filename, 1, 10))
-# next is  < 0.2s (was 15.2s before some speedup work)
-system.time(p <- .Call("ldc_rdi_2", filename))
-expect_equal(length(p), 79134)
-f <- file(filename, "rb")
-buf<-readBin(f, "raw", 500000)
-close(f)
-
-*/
-
 
 /*
- * old method, for the file used for data(adp): 1.6s elapsed
+ * Locate Data Chunk for RDI
  *
- * this method, same file, simply scanning: 5.5s elapsed [but I have
- * some ideas for speedup, albeit with more alloc() complications.
+ * @details
+ * Given the name of an RDI adp file, return a vector of indices where
+ * enembles start. Note that this is different from the old scheme, in
+ * which the first argument was a buffer containing the contents of
+ * the file. The reason for the change is to permit working with large files,
+ * because R will not permit the creation of a 'raw' vector of size
+ * exceeding 2^32-1 bytes (roughly 4.2Gb).
+ *
+ * @value a vector of indices where enembles start, in R notation,
+ * i.e. if the file starts with an ensemble (flagged by the first two
+ * bytes being 0x7f) then the first value in the returned result is 1.
+ *
+ * @references
+ *
+ * 1. WorkHorse Commands and Output Data Format_Nov07.pdf
+ *
+ * 2. p124 of [1]: header structure (note that 'number of bytes in
+ * ensemble' does *not* count the first 2 bytes; it's really an offset
+ * to the checksum)
+ *
+ * 3. p158 (section 5.8) of [1] defines how to handle checksums
+ *
+ * @seealso
+ * The previous method worked with a buffer, and that was called
+ * `ldc_rdi`, defined in `ldc_rdi.c` ... BUT NOTE that the present
+ * file will soon be folded into the old filename, as the code is
+ * used in the calling R function named `read.adp.rdi`.
+ *
  */
+
 SEXP ldc_rdi_2(SEXP filename) // FIXME: add from,to args so we can look within
 {
-  /* Locate Data Chunk for RDI
-   *   buf = buffer
-   *   max = 0 in normal use, but can be >0 to test things manually
-   *
-   * Ref: WorkHorse Commands and Output Data Format_Nov07.pdf
-   * p124: header structure (note that 'number of bytes in ensemble'
-   *       does *not* count the first 2 bytes; it's really an offset to the
-   *       checksum)
-   * p158 (section 5.8) checksum
-   */
   const char *filenamestring = CHAR(STRING_ELT(filename, 0));
   FILE *fp = fopen(filenamestring, "rb");
   if (!fp)
@@ -123,7 +77,7 @@ SEXP ldc_rdi_2(SEXP filename) // FIXME: add from,to args so we can look within
   long int last_start = 0;
 
   while (1) {
-    c = fgetc(fp); 
+    c = fgetc(fp);
     if (c == EOF) break;
     cindex++;
     if (clast == byte1 && c == byte2) {
@@ -201,7 +155,7 @@ SEXP ldc_rdi_2(SEXP filename) // FIXME: add from,to args so we can look within
       FIXME++;
     }
     clast = c;
-    c = fgetc(fp); 
+    c = fgetc(fp);
     if (c == EOF) break;
     cindex++;
   }
