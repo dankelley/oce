@@ -642,6 +642,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, "header$numberOfDataTypes: ", header$numberOfDataTypes, "\n")
 
             profilesToShow <- 2 # only if debug>0
+            VMDASStorageInitialized <- FALSE
 
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
                 for (chunk in 1:header$numberOfDataTypes) {
@@ -684,7 +685,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x20) {
                         ## message("navigation")
                         ## On the first profile, we set up space.
-                        if (i == 1) {
+                        if (!VMDASSStorageInitialized) {
+                            VMDASSStorageInitialized <- TRUE
                             oceDebug(debug, "This is a VMDAS file\n")
                             isVMDAS <- TRUE
                             ## FIXME: set up space; this c() method is slow and ugly
@@ -828,7 +830,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else if (buf[o+1] == 0x20) { # navigation
                         message("NAVIGATION")
                         ## On the first profile, we set up space.
-                        if (i == 1) {
+                        if (!VMDASSStorageInitialized) {
+                            VMDASSStorageInitialized <- TRUE
                             oceDebug(debug, "This is a VMDAS file\n")
                             isVMDAS <- TRUE
                             ## FIXME: set up space; this c() method is slow and ugly
