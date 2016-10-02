@@ -642,7 +642,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, "header$numberOfDataTypes: ", header$numberOfDataTypes, "\n")
 
             profilesToShow <- 2 # only if debug>0
-            VMDASStorageInitialized <- FALSE
+            VMDASSStorageInitialized <- FALSE
 
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
                 for (chunk in 1:header$numberOfDataTypes) {
