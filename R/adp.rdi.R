@@ -678,9 +678,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 g <- NULL
             }
             ii <- which(codes[,1]==0x01 & codes[,2]==0x0f)
-            if (length(ii) < 1) {
-              warning("Didn't find V series leader data ID, treating as a 4 beam ADCP")
-              isSentinel <- FALSE
+            if (isSentinel & length(ii) < 1) {
+                warning("Didn't find V series leader data ID, treating as a 4 beam ADCP")
+                isSentinel <- FALSE
             }
             if (isSentinel) { ## Look for sentinel-related codes
                 ## FIXME: Fields to look for:
