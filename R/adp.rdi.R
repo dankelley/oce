@@ -458,7 +458,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "about to call ldc_rdi\n")
         ensembleStart <- .Call("ldc_rdi", buf, 0)
         if (TRUE) { # testing
-            ensembleStart2 <- .Call("ldc_rdi_2",filename)
+            ensembleStart2 <- .Call("ldc_rdi_2", filename, 1, 0) # 1,0 means read whole file
             lensembleStart <- length(ensembleStart)
             lensembleStart2 <- length(ensembleStart2)
             if (abs(lensembleStart - lensembleStart2) > 1) {
@@ -498,6 +498,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             to <- profilesInFile
         }
         if (profilesInFile > 0)  {
+            oceDebug(debug, "profileStart[1]=", profileStart[1],
+                     " year-100=", as.integer(buf[profileStart[1]+4]),
+                     " month=", as.integer(buf[profileStart[1]+5]),
+                     " day=", as.integer(buf[profileStart[1]+6]),
+                     " hour=", as.integer(buf[profileStart[1]+7]),
+                     " min=", as.integer(buf[profileStart[1]+8]),
+                     " sec=", as.integer(buf[profileStart[1]+9]))
             measurementStart <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart[1]+4])),
                                             as.integer(buf[profileStart[1]+5]), # month
                                             as.integer(buf[profileStart[1]+6]), # day
