@@ -1441,9 +1441,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                       " from RDI, please send them to dan.kelley@dal.ca so the format can be added."))
         return("possibly RDI CTD")
     }
-
-    ##if (substr(line, 1, 2) == "\177\177")            return("adp")
-    if (substr(line, 1, 3) == "CTD") {
+    ## if (substr(line, 1, 3) == "CTD")) {
+    if (1 == length(grep("^CTD", line, useBytes=TRUE))) { #substr(line, 1, 3) == "CTD") {
         oceDebug(debug, "this is ctd/woce/exchange\n")
         return("ctd/woce/exchange")
     }
@@ -1451,7 +1450,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is ctd/sbe/19\n")
         return("ctd/sbe/19")
     }
-    if ("%ITP" == substr(line, 1, 4)) {
+    ## if ("%ITP" == substr(line, 1, 4)) {
+    if (1 == length(grep("^%ITP", line, useBytes=TRUE))) {
         oceDebug(debug, "this is ice-tethered profile\n")
         return("ctd/itp")
     }
