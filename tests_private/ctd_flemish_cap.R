@@ -4,7 +4,11 @@ options(width=100)                     # makes summaries easier to read
 options(warn=2)                        # die to reveal unknown SBE names
 years <- 2011:2014
 path <- paste("/data/flemishCap/CTD/", years, sep="")
+<<<<<<< HEAD
 files <- list.files(path=path, pattern=".cnv", full=TRUE)
+=======
+files <- list.files(path=path, pattern=".cnv", full.names=TRUE)
+>>>>>>> develop
 cat("have ", length(files), "files\n")
 nfiles <- length(files)
 if (!interactive()) png('flemish_cap_%03d.png')

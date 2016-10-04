@@ -426,6 +426,8 @@ download.amsr <- function(year, month, day, destdir=".", server="ftp.ssmi.com/am
     day <- as.integer(day)
     destfile <- sprintf("f34_%4d%02d%02dv7.2.gz", year, month, day)
     destpath <- paste(destdir, destfile, sep="/")
+    if (tail(destpath,1)=="/") # remove trailing slash
+        destpath <- substr(destpath, 1, length(destpath)-1)
     if (0 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
         cmd <- sprintf("ftp ftp://%s/y%4d/m%02d/%s", server, year, month, destfile)
         message("Downloading ", destfile)
@@ -585,7 +587,7 @@ setMethod("composite",
           function(object, ...) {
               dots <- list(...)
               ndots <- length(dots)
-              if (ndots < 2)
+              if (ndots < 1)
                   stop("need more than one argument")
               for (idot in 1:ndots)
                   if (!inherits(dots[[idot]], "amsr")) stop("argument ", 1+idot, " does not inherit from 'amsr'")
