@@ -1019,19 +1019,35 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else if (buf[1+o] == 0x30) { ## fixme need to check first byte
                         if (i <= profilesToShow) oceDebug(debug, "Variable attitude, profile", i, "\n")
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0a) { # vertical beam data
-                        vtmp <- readBin(buf[o + 1 + seq(1, 2*vItems)], "integer", n=vItems, size=2, endian="little", signed=TRUE)
-                        vtmp[vtmp==(-32768)] <- NA       # blank out bad data
-                        vv[i,] <- velocityScale * vtmp
-                        if (debug && i <= profilesToShow) cat(vectorShow(vv[i,], paste("vv[", i, ",]", sep="")))
+                        if (isSentinel) {
+                            vtmp <- readBin(buf[o + 1 + seq(1, 2*vItems)], "integer", n=vItems, size=2, endian="little", signed=TRUE)
+                            vtmp[vtmp==(-32768)] <- NA       # blank out bad data
+                            vv[i,] <- velocityScale * vtmp
+                            if (debug && i <= profilesToShow) cat(vectorShow(vv[i,], paste("vv[", i, ",]", sep="")))
+                        } else {
+                            oceDebug(debug, "**Detected vertical beam data chunk, but this is not a SentinelV\n")
+                        }
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0c) { # vertical beam amplitude
-                        va[i,] <- buf[o + 1 + seq(1, vItems)]
-                        if (debug && i <= profilesToShow) cat(vectorShow(va[i,], paste("va[", i, ",]", sep="")))
+                        if (isSentinel) {
+                            va[i,] <- buf[o + 1 + seq(1, vItems)]
+                            if (debug && i <= profilesToShow) cat(vectorShow(va[i,], paste("va[", i, ",]", sep="")))
+                        } else {
+                            oceDebug(debug, "**Detected vertical beam amplitude chunk, but this is not a SentinelV\n")
+                        }
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0b) { # vertical beam correlation
-                        vq[i,] <- buf[o + 1 + seq(1, vItems)]
-                        if (debug && i <= profilesToShow) cat(vectorShow(vq[i,], paste("vq[", i, ",]", sep="")))
+                        if (isSentinel) {
+                            vq[i,] <- buf[o + 1 + seq(1, vItems)]
+                            if (debug && i <= profilesToShow) cat(vectorShow(vq[i,], paste("vq[", i, ",]", sep="")))
+                        } else {
+                            oceDebug(debug, "**Detected vertical beam correlation chunk, but this is not a SentinelV\n")
+                        }
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0d) { # vertical beam percent good
-                        vg[i,] <- buf[o + 1 + seq(1, vItems)]
-                        if (debug && i <= profilesToShow) cat(vectorShow(vg[i,], paste("vg[", i, ",]", sep="")))
+                        if (isSentinel) {
+                            vg[i,] <- buf[o + 1 + seq(1, vItems)]
+                            if (debug && i <= profilesToShow) cat(vectorShow(vg[i,], paste("vg[", i, ",]", sep="")))
+                        } else {
+                            oceDebug(debug, "**Detected vertical beam percent good chunk, but this is not a SentinelV\n")
+                        }
                     }
                 }
                 if (FALSE) { ### FIXME
