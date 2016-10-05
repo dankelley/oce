@@ -44,6 +44,7 @@
 #'   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit;scale} \tab \strong{Notes} \cr
 #'   \code{alt}         \tab \code{altimeter}                    \tab m                   \tab    \cr
 #'   \code{altM}        \tab \code{altimeter}                    \tab m                   \tab    \cr
+#'   \code{accM}        \tab \code{acceleration}                 \tab m/s^2               \tab    \cr
 #'   \code{bat~}        \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
 #'   \code{C2-C1S/m}    \tab \code{conductivityDifference}       \tab S/m                 \tab    \cr
 #'   \code{C2-C1mS/cm}  \tab \code{conductivityDifference}       \tab mS/cm               \tab    \cr
@@ -219,10 +220,12 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     if (1 == length(grep("^alt[M]?$", name))) {
         name <- "altimeter"
         unit <- list(unit=expression(m), scale="")
+    } else if (1 == length(grep("^acc[M]?$", name))) {
+        name <- "acceleration"
+        unit <- list(unit=expression(m/s^2), scale="")
     } else if (1 == length(grep("^bat[0-9]?$", name))) {
         name <- "beamAttenuation"
         unit <- list(unit=expression(1/m), scale="Chelsea/Seatech")
-
     } else if (1 == length(grep("^C2-C1S/m$", name))) {
         name <- "conductivityDifference"
         unit <- list(unit=expression(S/m), scale="")
@@ -232,7 +235,6 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^C2-C1uS/cm$", name))) {
         name <- "conductivityDifference"
         unit <- list(unit=expression(mu*S/cm), scale="")
-
     } else if (1 == length(grep("^c((_)|([0-2]))mS/cm$", name))) {
         name <- "conductivity"
         unit <- list(unit=expression(mS/cm), scale="")
@@ -275,14 +277,12 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^flECO-AFL[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs")
-
     } else if (1 == length(grep("^flflTC[0-1]{1}$", name))) {
         name <- "fluorescein"
         unit <- list(unit=expression(ppb), scale="Turner Cyclops")
     } else if (1 == length(grep("^flflTCdiff$", name))) {
         name <- "fluoresceinDifference"
         unit <- list(unit=expression(ppb), scale="Turner Cyclops")
-
     } else if (1 == length(grep("^flSP[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint")
