@@ -211,6 +211,14 @@ distance-time images of percent-good for the respective beams.  (For data
 derived from Teledyne-RDI instruments, which are the only instruments that
 yield this item, it is called ``percent good.'')
 
+\item \code{which=80:83} (or \code{which="vv"}, \code{which="va"},
+\code{which="vq"}, and \code{which="vg"}) yield distance-time
+images of the vertical beam fields for a 5 beam "SentinelV" ADCP
+from Teledyne RDI.
+
+\item \code{which="vertical"} yields a two panel distance-time
+image of vertical beam velocity and amplitude.
+
 \item \code{which=13} (or \code{which="salinity"}) yields a time-series plot
 of salinity.
 
@@ -367,7 +375,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
   \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
   \code{\link{read.adp.nortek}},
-  \code{\link{read.adp.rdi.sentinel}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
   \code{\link{read.adp.sontek}}, \code{\link{read.adp}},

@@ -520,9 +520,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         cellSize <- header$cellSize
         isSentinel <- header$instrumentSubtype == "sentinelV"
         oceDebug(debug, "about to call ldc_rdi\n")
-        ensembleStart <- .Call("ldc_rdi", buf, 0)
+        ensembleStart <- .Call("ldc_rdi_2", filename, 1, 0)
         if (TRUE) { # testing
-            ensembleStart2 <- .Call("ldc_rdi_2", filename, 1, 0) # 1,0 means read whole file
+            ensembleStart2 <- .Call("ldc_rdi", buf, 0)
             lensembleStart <- length(ensembleStart)
             lensembleStart2 <- length(ensembleStart2)
             if (abs(lensembleStart - lensembleStart2) > 1) {

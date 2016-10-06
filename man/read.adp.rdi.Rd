@@ -67,6 +67,11 @@ An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 Read a Teledyne/RDI ADCP file (called 'adp' in oce).
 }
 \details{
+As of 2016-09-25, this function has provisional functionality to
+read data from the new "SentinelV" series ADCP -- essentially a
+combination of a 4 beam workhorse with an additional vertical
+centre beam.
+
 If a heading bias had been set with the \code{EB} command during the setup
 for the deployment, then a heading bias will have been stored in the file's
 header.  This value is stored in the object's metadata as
@@ -94,6 +99,7 @@ and each profile starts with the bytes \code{0x80}, followed by \code{0x00},
 followed by the sequence number of the profile, represented as a
 little-endian two-byte short integer.  \code{read.adp.rdi()} uses these
 sequences to interpret data files.)
+2. Teledyne-RDI, 2015. \emph{V Series output data format.} P/N 95D-6022-00 (May 2015).
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
@@ -105,7 +111,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
   \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
-  \code{\link{read.adp.rdi.sentinel}},
   \code{\link{read.adp.sontek.serial}},
   \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
   \code{\link{read.aquadoppHR}},
