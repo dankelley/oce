@@ -456,7 +456,29 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         xmitPulseLength <- header$xmitPulseLength
         cellSize <- header$cellSize
         oceDebug(debug, "about to call ldc_rdi\n")
-        ensembleStart <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
+        ensembleStart <- .Call("ldc_rdi", buf, 0)
+        if (TRUE) { # testing
+            ensembleStart2 <- .Call("ldc_rdi_2", filename, 1, 0) # 1,0 means read whole file
+            lensembleStart <- length(ensembleStart)
+            lensembleStart2 <- length(ensembleStart2)
+            if (abs(lensembleStart - lensembleStart2) > 1) {
+                cat("ERROR: >1 mismatch in lengths:\n")
+                cat("    length(ensembleStart)  = ", lensembleStart, "\n")
+                cat("    length(ensembleStart2) = ", lensembleStart2, "\n")
+            }
+            minlen <- pmin(length(ensembleStart), length(ensembleStart2))
+            firstMismatch <- which(ensembleStart[1:minlen]!=ensembleStart2[1:minlen])[1]
+            if (!is.na(firstMismatch)) {
+                cat("ERROR: found difference when comparing first ", minlen, " entries of ensembleStart and ensembleStart2", "\n")
+                cat("    firstMismatch=", firstMismatch, " (note: there may be more later ... not checked, though)", "\n")
+                look <- seq(pmax(1, firstMismatch - 5), pmin(length(ensembleStart2), firstMismatch+5))
+                cat("    following are some values in the mismatch neighborhood:\n")
+                cat("    ensembleStart       : ", paste(ensembleStart[look], collapse=" "), "\n")
+                cat("    ensembleStart2      : ", paste(ensembleStart2[look], collapse=" "), "\n")
+                cat("    diff(ensembleStart) : ", paste(diff(ensembleStart[look]), collapse=" "), "\n")
+                cat("    diff(ensembleStart2): ", paste(diff(ensembleStart2[look]), collapse=" "), "\n")
+            }
+        }
         oceDebug(debug, "successfully called ldc_rdi\n")
 
         ## Profiles start at the VARIABLE LEADER DATA, since there is no point in
@@ -465,6 +487,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ## location for these, based on the "Always Output" indication in Fig 46
         ## on page 145 of teledyne2014ostm.
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
+        if (any(profileStart < 1))
+            stop("difficulty detecting ensemble (profile) start indices")
         # offset for data type 1 (velocity)
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming:"))
         profilesInFile <- length(profileStart)
@@ -474,6 +498,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             to <- profilesInFile
         }
         if (profilesInFile > 0)  {
+            oceDebug(debug, "profileStart[1]=", profileStart[1],
+                     " year-100=", as.integer(buf[profileStart[1]+4]),
+                     " month=", as.integer(buf[profileStart[1]+5]),
+                     " day=", as.integer(buf[profileStart[1]+6]),
+                     " hour=", as.integer(buf[profileStart[1]+7]),
+                     " min=", as.integer(buf[profileStart[1]+8]),
+                     " sec=", as.integer(buf[profileStart[1]+9]))
             measurementStart <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart[1]+4])),
                                             as.integer(buf[profileStart[1]+5]), # month
                                             as.integer(buf[profileStart[1]+6]), # day
@@ -625,7 +656,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 stop("no profilesToRead")
             velocityScale <- 1e-3
 
-            isVMDAS <- FALSE           # see below where we check bytes in first profile
+            isVMDAS <- FALSE           # flag for file type
             badVMDAS <- NULL           # erroneous VMDAS profiles
             VMDASStorageInitialized <- FALSE # flag for whether we have VMDAS storage set up yet
 

@@ -4,7 +4,11 @@ options(width=100)                     # makes summaries easier to read
 options(warn=2)                        # die on warning, to catch unrecognized SBE names
 
 path <- "/data/archive/sleiwex/2008/ships/coriolisii/ctd/01-cnv"
+<<<<<<< HEAD
+files <- list.files(path=path, pattern=".cnv", full=TRUE)
+=======
 files <- list.files(path=path, pattern=".cnv", full.names=TRUE)
+>>>>>>> develop
 nfiles <- length(files)
 if (!interactive()) png('ctd_sleiwex_coriolisII_%03d.png')
 par(oma=c(0, 0, 1, 0))
