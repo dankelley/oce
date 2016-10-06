@@ -158,6 +158,15 @@ line bisecting beam pairs.  The length of this vector equals
 
 The \code{processingLog} slot is in standard form and needs little comment.
 }
+\section{Teledyne-RDI Sentinel V ADCPs}{
+ As of 2016-09-27 there is
+    provisional support for the TRDI "SentinelV" ADCPs, which are 5
+    beam ADCPs with a vertical centre beam. Relevant vertical beam
+    fields are called \code{adp[["vv"]]}, \code{adp[["va"]]},
+    \code{adp[["vq"]]}, and \code{adp[["vg"]]} in analogy with the
+    standard 4-beam fields.
+}
+
 \section{Accessing and altering information within \code{adp-class} objects}{
 
 \emph{Extracting values} Matrix data may be accessed as illustrated

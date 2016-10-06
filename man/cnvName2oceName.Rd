@@ -67,6 +67,7 @@ variants.)
   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit;scale} \tab \strong{Notes} \cr
   \code{alt}         \tab \code{altimeter}                    \tab m                   \tab    \cr
   \code{altM}        \tab \code{altimeter}                    \tab m                   \tab    \cr
+  \code{accM}        \tab \code{acceleration}                 \tab m/s^2               \tab    \cr
   \code{bat~}        \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
   \code{C2-C1S/m}    \tab \code{conductivityDifference}       \tab S/m                 \tab    \cr
   \code{C2-C1mS/cm}  \tab \code{conductivityDifference}       \tab mS/cm               \tab    \cr
