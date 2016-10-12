@@ -29,6 +29,7 @@ with the results being very likely to change through the autumn of 2016,
 guided by real-world usage.
 }
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorld)
 par(mar=c(2, 2, 1, 1))
@@ -43,6 +44,7 @@ pacific <- coastlineCut(coastlineWorld, -180)
 plot(pacific, proj=oceCRS("Pacific"), span=15000, col=NULL)
 plot(pacific, proj=oceCRS("North Pacific"), span=12000, col=NULL)
 plot(pacific, proj=oceCRS("South Pacific"), span=12000, col=NULL)
+}
 }
 \author{
 Dan Kelley
