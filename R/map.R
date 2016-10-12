@@ -31,6 +31,7 @@
 #' @author Dan Kelley
 #' @family functions related to maps
 #' @examples
+#' \dontrun{
 #' library(oce)
 #' data(coastlineWorld)
 #' par(mar=c(2, 2, 1, 1))
@@ -45,6 +46,7 @@
 #' plot(pacific, proj=oceCRS("Pacific"), span=15000, col=NULL)
 #' plot(pacific, proj=oceCRS("North Pacific"), span=12000, col=NULL)
 #' plot(pacific, proj=oceCRS("South Pacific"), span=12000, col=NULL)
+#' }
 oceCRS <- function(region)
 {
     regionChoices <- c("North Atlantic", "South Atlantic", "Atlantic", "Arctic", "Antarctic",
