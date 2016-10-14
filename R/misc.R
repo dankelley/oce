@@ -2755,11 +2755,9 @@ interpBarnes <- function(x, y, z, w,
                 xg <- x[1]
             } else {
                 xg <- pretty(x, n=50)
-                message("FIXME case 1: xg= ", paste(xg, collapse=" "))
             }
         } else {
             xg <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=xgl)
-            message("FIXME case 2: xg= ", paste(xg, collapse=" "))
         }
     }
     if (missing(yg)) {
