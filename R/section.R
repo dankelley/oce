@@ -41,7 +41,7 @@
 #' \code{\link{plot,section-method}}.  
 #'     
 #' Statistical summaries are provided by \code{\link{summary,section-method}}, while
-#' overviews are provided by \code{show.section}.  
+#' overviews are provided by \code{\link{show,section-method}}.  
 #'     
 #' The sample dataset \code{\link{section}} contains data along WOCE line A03.
 #'
