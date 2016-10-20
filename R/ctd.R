@@ -3801,14 +3801,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar Four-element numerical value to be used to set the plot
 #' margins, with a call to \code{\link{par}(mar)} prior to the plot.
-#' Note that the default value has enough margin space at the top
-#' for an axis (in the oceanographic convention) but the bottom margin will
-#' be too thin for an axis, if the value of \code{which} indicates a univariate
-#' plot (e.g. \code{which="salinity"}, as opposed to
-#' \code{which="salinity+temperature"}). In such cases, any subsequent plots
-#' will have a \code{\link{par}(mar)[1]} value that will be too small to fit an
-#' an axis. A good solution is to simply transfer the existing (presumed
-#' acceptable) \code{mar} value, by using \code{mar=par("mar")}.
+#' If this is not supplied, a reasonable default will be set up.
 #' @param add A logical value that controls whether to add to an existing plot.  (It
 #' makes sense to use \code{add=TRUE} in the \code{panel} argument of a
 #' \code{\link{coplot}}, for example.)
@@ -3861,7 +3854,7 @@ plotProfile <- function (x,
                          keepNA=FALSE,
                          type='l',
                          mgp=getOption("oceMgp"),
-                         mar=c(1 + if (length(grep('\\+', xtype))) mgp[1] else 0, mgp[1]+1.5, mgp[1]+1.5, mgp[1]),
+                         mar,#c(1 + if (length(grep('\\+', xtype))) mgp[1] else 0, mgp[1]+1.5, mgp[1]+1.5, mgp[1]),
                          add=FALSE,
                          inset=FALSE,
                          debug=getOption("oceDebug"),
@@ -3869,9 +3862,13 @@ plotProfile <- function (x,
 {
     oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
              "\", debug=", debug, ", ...) {\n", sep="", unindent=1)
-    if (length(xtype) == 1 && xtype %in% names(x@data))
-        mar[1] <- 1 # the bottom margin is wrong for e.g. NO2+NO3
     eos <- match.arg(eos, c("unesco", "gsw"))
+    if (missing(mar)) {                # default behaviour changed 20161020 for issue #1103
+        mar <- c(1 + if (length(grep('\\+', xtype))) mgp[1] else 0, mgp[1]+1.5, mgp[1]+1.5, mgp[1])
+        if (length(xtype) == 1 && xtype %in% names(x@data))
+            mar[1] <- 1 # the bottom margin is wrong for e.g. NO2+NO3
+    }
+
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
                                 lwd=par("lwd"),
                                 cex=1, pch=1, pt.bg="transparent",
