@@ -1987,6 +1987,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             ##2015-04-04 max.location <- trim.top + max.spot
             ##2015-04-04 keep[max.location:n] <- FALSE
             max.location <- which.max(smooth(pressure, kind="3R"))
+            max.pressure <- smooth(pressure, kind="3R")[max.location]
             keep[max.location:n] <- FALSE
             oceDebug(debug, "removed data at indices from ", max.location,
                      " (where pressure is ", pressure[max.location], ") to the end of the data\n", sep="")
@@ -2036,8 +2037,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 pp <- pressure[keep]
                 pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
                 ss <- x[["scan"]][keep]
-                ##look <- smooth(pp) < 20 # smooth because in-air can sometimes be crazy high
-                end <- which(smooth(pp) > 20)[1]
+                end <- which(smooth(pp) > 1/2*max.pressure)[1]
                 if (!is.na(end)) {
                     pp <- pp[1:end]
                     ss <- ss[1:end]
