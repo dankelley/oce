@@ -1900,7 +1900,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             submethod <- "A"
         } else {
             if (length(method) == 1) {
-                submethod <- method[1]
+                method <- method[1]
                 submethod <- "A"
             } else if (length(method) == 2) {
                 submethod <- method[2]
