@@ -2133,8 +2133,12 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             n <- length(pp)
             imin <- which(pp > minSoak & pp < maxSoak)[1]
             imax <- which(pp > maxSoak)[1]
-            istart <- which.min(pp[(imin+1):imax])
-            keep <- keep & (x[["scan"]] > istart)
+            if (any(is.na(c(imin, imax)))) {
+                stop("Trim parameters for \"sbe\" method not appropriate. Try different parameters or a different method")
+            } else {
+                istart <- which.min(pp[(imin+1):imax])
+                keep <- keep & (x[["scan"]] > istart)
+            }
         } else {
             stop("'method' not recognized; must be 'index', 'downcast', 'scan', 'range', or 'sbe'")
         }
