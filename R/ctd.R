@@ -1909,7 +1909,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 stop("if provided, 'method' must be of length 1 or 2")
             }
         }
-        method <- match.arg(method, c("downcast", "index", "scan", "range"))
+        method <- match.arg(method, c("downcast", "index", "scan", "range", "sbe"))
         oceDebug(debug, paste("ctdTrim() using method \"", method, "\"\n", sep=""))
         keep <- rep(TRUE, n)
         if (method == "index") {
@@ -2103,8 +2103,40 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 keep <- keep & (x@data[[item]] >= parameters$from)
             if ("to" %in% names(parameters))
                 keep <- keep & (x@data[[item]] <= parameters$to)
+        } else if (method == "sbe") {
+            oceDebug(debug, "Using method \"sbe\" for removing soak\n")
+            if (!missing(parameters)) {
+                if ("minSoak" %in% names(parameters)) {
+                    minSoak <- parameters$minSoak
+                } else {
+                    minSoak <- 1
+                }
+                if ("maxSoak" %in% names(parameters)) {
+                    maxSoak <- parameters$maxSoak
+                } else {
+                    maxSoak <- 20
+                }
+            } else {
+                minSoak <- 1
+                maxSoak <- 20
+            }
+            oceDebug(debug-1, "Using minSoak of ", minSoak, "\n")
+            oceDebug(debug-1, "Using maxSoak of ", maxSoak, "\n")
+            max.location <- which.max(smooth(pressure, kind="3R"))
+            max.pressure <- smooth(pressure, kind="3R")[max.location]
+            keep[max.location:n] <- FALSE
+            oceDebug(debug, "removed data at indices from ", max.location,
+                     " (where pressure is ", pressure[max.location], ") to the end of the data\n", sep="")
+            pp <- pressure[keep]
+            pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
+            ss <- x[["scan"]][keep]
+            n <- length(pp)
+            imin <- which(pp > minSoak & pp < maxSoak)[1]
+            imax <- which(pp > maxSoak)[1]
+            istart <- which.min(pp[(imin+1):imax])
+            keep <- keep & (x[["scan"]] > istart)
         } else {
-            stop("'method' not recognized; must be 'index', 'downcast', 'scan', or 'range'")
+            stop("'method' not recognized; must be 'index', 'downcast', 'scan', 'range', or 'sbe'")
         }
     } else {
         keep <- method(data=x@data, parameters=parameters)
