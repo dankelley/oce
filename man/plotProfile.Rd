@@ -13,9 +13,8 @@ plotProfile(x, xtype = "salinity+temperature", ytype = c("pressure", "z",
   lty.grid = "dotted", Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim,
   timelim, plim, ylim, lwd = par("lwd"), xaxs = "r", yaxs = "r",
   cex = 1, pch = 1, useSmoothScatter = FALSE, df, keepNA = FALSE,
-  type = "l", mgp = getOption("oceMgp"), mar = c(1 + if
-  (length(grep("\\\\+", xtype))) mgp[1] else 0, mgp[1] + 1.5, mgp[1] + 1.5,
-  mgp[1]), add = FALSE, inset = FALSE, debug = getOption("oceDebug"), ...)
+  type = "l", mgp = getOption("oceMgp"), mar, add = FALSE,
+  inset = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -140,14 +139,7 @@ default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{Four-element numerical value to be used to set the plot
 margins, with a call to \code{\link{par}(mar)} prior to the plot.
-Note that the default value has enough margin space at the top
-for an axis (in the oceanographic convention) but the bottom margin will
-be too thin for an axis, if the value of \code{which} indicates a univariate
-plot (e.g. \code{which="salinity"}, as opposed to
-\code{which="salinity+temperature"}). In such cases, any subsequent plots
-will have a \code{\link{par}(mar)[1]} value that will be too small to fit an
-an axis. A good solution is to simply transfer the existing (presumed
-acceptable) \code{mar} value, by using \code{mar=par("mar")}.}
+If this is not supplied, a reasonable default will be set up.}
 
 \item{add}{A logical value that controls whether to add to an existing plot.  (It
 makes sense to use \code{add=TRUE} in the \code{panel} argument of a

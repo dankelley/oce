@@ -1,5 +1,5 @@
 library(oce)
-library(testthat)
+require(testthat)
 options(width=100)                     # makes summaries easier to read
 options(warn=2)                        # die to reveal unknown SBE names
 years <- 2011:2014
@@ -11,9 +11,9 @@ if (!interactive()) png('flemish_cap_%03d.png')
 for (i in seq_along(files)) {
     cat("\n##\n# file[", i, "]= '",  files[i], "'\n", sep="")
     d <- read.oce(files[i])
-    expect_false(is.na(d[['latitude']][1]))
-    expect_false(is.na(d[['longitude']][1]))
-    expect_true("temperature" %in% names(d[['data']]))
+    testthat::expect_false(is.na(d[['latitude']][1]))
+    testthat::expect_false(is.na(d[['longitude']][1]))
+    testthat::expect_true("temperature" %in% names(d[['data']]))
     summary(d)                         # so we can look ... hard to do, though
     plot(d)
 }
