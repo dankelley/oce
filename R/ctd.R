@@ -1784,7 +1784,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' \itemize{
 #'   \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to only data for
-#'   which the CTD is descending.  This is done in stages, with variants based on \code{method[1]}, if
+#'   which the CTD is descending.  This is done in stages, with variants based on \code{method[2]}, if
 #'   supplied.  \emph{Step 1.} The pressure data are despiked with a smooth() filter with method "3R".
 #'   This removes wild spikes that arise from poor instrument connections, etc.  \emph{Step 2.} If no
 #'   \code{parameters} are given, then any data with negative pressures are deleted.  If there is a
@@ -1807,6 +1807,23 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'   much sense, but it might help in some cases). Note that, prior to early 2016, method \code{"B"} was
 #'   called method \code{"C"}; the old \code{"B"} method was judged useless and was removed.}
 #'
+#'   \item{If \code{method="sbe"}, a method similar to that described
+#'   in the SBE Data Processing manual is used to remove the "soak"
+#'   period at the beginning of a cast (see Section 6 under subsection
+#'   "Loop Edit"). The method is based on the soak procedure whereby
+#'   the instrument sits at a fixed depth for a period of time, after
+#'   which it is raised toward the surface before beginning the actual
+#'   downcast. This enables equilibration of the sensors while still
+#'   permitting reasonably good near-surface data. Parameters for the
+#'   method can be passed using the \code{parameters} argument, which
+#'   include \code{minSoak} (the minimum depth for the soak) and
+#'   \code{maxSoak} the maximum depth of the soak. The method finds
+#'   the minimum pressure prior to the \code{maxSoak} value being
+#'   passed, each of which occuring after the scan in which the
+#'   \code{minSoak} value was reached. For the method to work, the
+#'   pre-cast pressure minimum must be less than the \code{minSoak}
+#'   value.}
+#'   
 #'   \item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
 #'   value of \code{parameters}. If the latter is a logical vector of length matching data column
 #'   length, then it is used directly for subsetting. If \code{parameters} is a numerical vector with
@@ -1869,7 +1886,9 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #' The Seabird CTD instrument is described at
 #' \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 #'
-#' @author Dan Kelley
+#' Seasoft V2: SBE Data Processing, SeaBird Scientific, 05/26/2016
+#'
+#' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to \code{ctd} data
 ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
