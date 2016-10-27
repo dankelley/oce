@@ -2156,7 +2156,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             if (any(is.na(c(imin, imax)))) {
                 stop("Trim parameters for \"sbe\" method not appropriate. Try different parameters or a different method")
             } else {
-                istart <- which(pp == min(pp[imin:imax]))
+                istart <- which(pp == min(pp[imin:imax]))[1] # the [1] is handle cases where digitization of the pressure channel gives more than one match
                 keep <- keep & (x[["scan"]] > istart)
             }
         } else {
