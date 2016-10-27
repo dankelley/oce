@@ -83,7 +83,8 @@ varies, a variety of approaches are taken to trimming the dataset.
   passed, each of which occuring after the scan in which the
   \code{minSoak} value was reached. For the method to work, the
   pre-cast pressure minimum must be less than the \code{minSoak}
-  value.}
+  value. The default values of \code{minSoak} and \code{maxSoak}
+  are 1 and 20 dbar, respectively.}
   
   \item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
   value of \code{parameters}. If the latter is a logical vector of length matching data column

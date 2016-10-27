@@ -1822,7 +1822,8 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'   passed, each of which occuring after the scan in which the
 #'   \code{minSoak} value was reached. For the method to work, the
 #'   pre-cast pressure minimum must be less than the \code{minSoak}
-#'   value.}
+#'   value. The default values of \code{minSoak} and \code{maxSoak}
+#'   are 1 and 20 dbar, respectively.}
 #'   
 #'   \item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
 #'   value of \code{parameters}. If the latter is a logical vector of length matching data column
@@ -2155,7 +2156,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             if (any(is.na(c(imin, imax)))) {
                 stop("Trim parameters for \"sbe\" method not appropriate. Try different parameters or a different method")
             } else {
-                istart <- which.min(pp[(imin+1):imax])
+                istart <- which(pp == min(pp[imin:imax]))
                 keep <- keep & (x[["scan"]] > istart)
             }
         } else {
