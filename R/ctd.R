@@ -1784,7 +1784,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' \itemize{
 #'   \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to only data for
-#'   which the CTD is descending.  This is done in stages, with variants based on \code{method[1]}, if
+#'   which the CTD is descending.  This is done in stages, with variants based on \code{method[2]}, if
 #'   supplied.  \emph{Step 1.} The pressure data are despiked with a smooth() filter with method "3R".
 #'   This removes wild spikes that arise from poor instrument connections, etc.  \emph{Step 2.} If no
 #'   \code{parameters} are given, then any data with negative pressures are deleted.  If there is a
@@ -1807,6 +1807,24 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'   much sense, but it might help in some cases). Note that, prior to early 2016, method \code{"B"} was
 #'   called method \code{"C"}; the old \code{"B"} method was judged useless and was removed.}
 #'
+#'   \item{If \code{method="sbe"}, a method similar to that described
+#'   in the SBE Data Processing manual is used to remove the "soak"
+#'   period at the beginning of a cast (see Section 6 under subsection
+#'   "Loop Edit"). The method is based on the soak procedure whereby
+#'   the instrument sits at a fixed depth for a period of time, after
+#'   which it is raised toward the surface before beginning the actual
+#'   downcast. This enables equilibration of the sensors while still
+#'   permitting reasonably good near-surface data. Parameters for the
+#'   method can be passed using the \code{parameters} argument, which
+#'   include \code{minSoak} (the minimum depth for the soak) and
+#'   \code{maxSoak} the maximum depth of the soak. The method finds
+#'   the minimum pressure prior to the \code{maxSoak} value being
+#'   passed, each of which occuring after the scan in which the
+#'   \code{minSoak} value was reached. For the method to work, the
+#'   pre-cast pressure minimum must be less than the \code{minSoak}
+#'   value. The default values of \code{minSoak} and \code{maxSoak}
+#'   are 1 and 20 dbar, respectively.}
+#'   
 #'   \item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
 #'   value of \code{parameters}. If the latter is a logical vector of length matching data column
 #'   length, then it is used directly for subsetting. If \code{parameters} is a numerical vector with
@@ -1869,7 +1887,9 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #' The Seabird CTD instrument is described at
 #' \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 #'
-#' @author Dan Kelley
+#' Seasoft V2: SBE Data Processing, SeaBird Scientific, 05/26/2016
+#'
+#' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to \code{ctd} data
 ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
@@ -1900,7 +1920,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             submethod <- "A"
         } else {
             if (length(method) == 1) {
-                submethod <- method[1]
+                method <- method[1]
                 submethod <- "A"
             } else if (length(method) == 2) {
                 submethod <- method[2]
@@ -1909,7 +1929,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 stop("if provided, 'method' must be of length 1 or 2")
             }
         }
-        method <- match.arg(method, c("downcast", "index", "scan", "range"))
+        method <- match.arg(method, c("downcast", "index", "scan", "range", "sbe"))
         oceDebug(debug, paste("ctdTrim() using method \"", method, "\"\n", sep=""))
         keep <- rep(TRUE, n)
         if (method == "index") {
@@ -1987,6 +2007,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
             ##2015-04-04 max.location <- trim.top + max.spot
             ##2015-04-04 keep[max.location:n] <- FALSE
             max.location <- which.max(smooth(pressure, kind="3R"))
+            max.pressure <- smooth(pressure, kind="3R")[max.location]
             keep[max.location:n] <- FALSE
             oceDebug(debug, "removed data at indices from ", max.location,
                      " (where pressure is ", pressure[max.location], ") to the end of the data\n", sep="")
@@ -2036,8 +2057,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 pp <- pressure[keep]
                 pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
                 ss <- x[["scan"]][keep]
-                ##look <- smooth(pp) < 20 # smooth because in-air can sometimes be crazy high
-                end <- which(smooth(pp) > 20)[1]
+                end <- which(smooth(pp) > 1/2*max.pressure)[1]
                 if (!is.na(end)) {
                     pp <- pp[1:end]
                     ss <- ss[1:end]
@@ -2103,8 +2123,44 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 keep <- keep & (x@data[[item]] >= parameters$from)
             if ("to" %in% names(parameters))
                 keep <- keep & (x@data[[item]] <= parameters$to)
+        } else if (method == "sbe") {
+            oceDebug(debug, "Using method \"sbe\" for removing soak\n")
+            if (!missing(parameters)) {
+                if ("minSoak" %in% names(parameters)) {
+                    minSoak <- parameters$minSoak
+                } else {
+                    minSoak <- 1
+                }
+                if ("maxSoak" %in% names(parameters)) {
+                    maxSoak <- parameters$maxSoak
+                } else {
+                    maxSoak <- 20
+                }
+            } else {
+                minSoak <- 1
+                maxSoak <- 20
+            }
+            oceDebug(debug-1, "Using minSoak of ", minSoak, "\n")
+            oceDebug(debug-1, "Using maxSoak of ", maxSoak, "\n")
+            max.location <- which.max(smooth(pressure, kind="3R"))
+            max.pressure <- smooth(pressure, kind="3R")[max.location]
+            keep[max.location:n] <- FALSE
+            oceDebug(debug, "removed data at indices from ", max.location,
+                     " (where pressure is ", pressure[max.location], ") to the end of the data\n", sep="")
+            pp <- pressure[keep]
+            pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
+            ss <- x[["scan"]][keep]
+            n <- length(pp)
+            imin <- which(pp > minSoak & pp < maxSoak)[1]
+            imax <- which(pp > maxSoak)[1]
+            if (any(is.na(c(imin, imax)))) {
+                stop("Trim parameters for \"sbe\" method not appropriate. Try different parameters or a different method")
+            } else {
+                istart <- which(pp == min(pp[imin:imax]))[1] # the [1] is handle cases where digitization of the pressure channel gives more than one match
+                keep <- keep & (x[["scan"]] > istart)
+            }
         } else {
-            stop("'method' not recognized; must be 'index', 'downcast', 'scan', or 'range'")
+            stop("'method' not recognized; must be 'index', 'downcast', 'scan', 'range', or 'sbe'")
         }
     } else {
         keep <- method(data=x@data, parameters=parameters)
