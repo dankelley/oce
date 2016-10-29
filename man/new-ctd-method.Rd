@@ -29,7 +29,10 @@ up as if the call included the following:
      pressure=list(unit=expression(dbar), scale=""),
      depth=list(unit=expression(m), scale=""))}. This list is trimmed
 of any of the 4 items that were not specified in the previous
-arguments.}
+arguments. Note that if \code{units} is specified, then it is just
+copied into the \code{metadata} slot of the returned object, so the user
+must be careful to set up values that will make sense to other \code{oce}
+functions.}
 
 \item{pressureType}{optional character string indicating the type of pressure;
 if not supplied, this defaults to \code{"sea"}, which indicates the excess of
