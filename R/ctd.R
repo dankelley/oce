@@ -251,48 +251,58 @@ setMethod("handleFlags",
               res
           })
 
-## Initialize storage for a ctd object
-##
-## This function creates \code{oce} objects of \code{\link{ctd-class}}. It is mainly
-## used by \code{oce} functions such as \code{\link{read.ctd}} and \code{\link{as.ctd}},
-## and it is not intended for novice users, so it may change at any time, without
-## following the usual rules for transitioning to deprecated and defunct status
-## (see \link{oce-deprecated}).
-##
-## @details
-## To save storage, this function has arguments only for quantities that are often present in data
-## files all cases. For example, not
-## all data files will have oxygen, so that's not present here.
-## Extra data should be added after the object is created, using \code{\link{oceSetData}}.
-## Similarly, use \code{\link{oceSetMetadata}} to add metadata (station ID, etc)
-## to a \code{ctd} object, but be aware that other functions will be looking for such information
-## in particular places (e.g. the station ID is expected to be in a string named \code{station}
-## that is stored in the \code{metadata} slot). See \code{\link{ctd-class}} for more information
-## on elements stored in \code{ctd} objects.
-##
-## @param Class the string \code{"ctd"}
-## @param pressure optional vector of pressures.
-## @param salinity optional vector of salinities.
-## @param temperature optional vector of temperatures.
-## @param conductivity optional vector of conductivities.
-## @param units list indicating units for the quantities specified in the previous arguments. If this
-## is not supplied, it is set to
-## \code{list(temperature=list(unit=expression(degree*C),scale="ITS-90"),ETC)},
-## where "ETC" stands for entries for \code{salinity},
-## \code{conductivity}, \code{pressure}, and \code{depth}. An easy way to learn how
-## to define such values is to examine the output from
-## \code{str(new("ctd")[["units"]])}.
-## @param pressureType optional character string indicating the type of pressure
-## (typically, \code{"sea"}, meaning the excess of
-## pressure over the atmospheric value, in dbar).
-## @param deploymentType optional character string indicating the type of deployment, which may
-## be \code{"unknown"}, \code{"profile"}, \code{"towyo"}, or \code{"thermosalinograph"}.
-##
-## @name new,ctd-method
-## @aliases new,ctd-method
-## @usage new(Class,pressure,salinity,temperature,conductivity,units,
-##pressureType,deploymentType)
-## @family things related to \code{ctd} data
+#' Initialize storage for a ctd object
+#'
+#' This function creates \code{oce} objects of \code{\link{ctd-class}}. It is mainly
+#' used by \code{oce} functions such as \code{\link{read.ctd}} and \code{\link{as.ctd}},
+#' and it is not intended for novice users, so it may change at any time, without
+#' following the usual rules for transitioning to deprecated and defunct status
+#' (see \link{oce-deprecated}).
+#'
+#' @details
+#' To save storage, this function has arguments only for quantities that are often present in data
+#' files all cases. For example, not
+#' all data files will have oxygen, so that's not present here.
+#' Extra data may be added after the object is created, using
+#' \code{\link{oceSetData}}.
+#' Similarly, \code{\link{oceSetMetadata}} may be used to add metadata (station ID, etc),
+#' while bearing in mind that other functions look for such information
+#' in very particular places (e.g. the station ID is a string named \code{station}
+#' within the \code{metadata} slot). See \code{\link{ctd-class}} for more information
+#' on elements stored in \code{ctd} objects.
+#'
+#' @param pressure optional numerical vector of pressures.
+#' @param salinity optional numerical vector of salinities.
+#' @param temperature optional numerical vector of temperatures.
+#' @param conductivity optional numerical vector of conductivities.
+#' @param units optional list indicating units for the quantities specified
+#' in the previous arguments. If this
+#' is not supplied, a default is set up, based on which of the
+#' \code{pressure} to \code{conductivity} arguments were specified.
+#' If all of those 4 arguments were specified, then \code{units} is set
+#' up as if the call included the following:
+#' \code{units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+#'      salinity=list(unit=expression(), scale="PSS-78"),
+#'      conductivity=list(unit=expression(), scale=""),
+#'      pressure=list(unit=expression(dbar), scale=""),
+#'      depth=list(unit=expression(m), scale=""))}. This list is trimmed
+#' of any of the 4 items that were not specified in the previous
+#' arguments. Note that if \code{units} is specified, then it is just
+#' copied into the \code{metadata} slot of the returned object, so the user
+#' must be careful to set up values that will make sense to other \code{oce}
+#' functions.
+#' @param pressureType optional character string indicating the type of pressure;
+#' if not supplied, this defaults to \code{"sea"}, which indicates the excess of
+#' pressure over the atmospheric value, in dbar.
+#' @param deploymentType optional character string indicating the type of deployment, which may
+#' be \code{"unknown"}, \code{"profile"}, \code{"towyo"}, or \code{"thermosalinograph"}.
+#' If this is not set, the value defaults to \code{"unknown"}.
+#'
+#' @name new,ctd-method
+#' @aliases new,ctd-method
+#' @usage new("ctd", pressure, salinity, temperature, conductivity, units, 
+#'    pressureType, deploymentType)
+#' @family things related to \code{ctd} data
 setMethod(f="initialize",
           signature="ctd",
           definition=function(.Object, pressure, salinity, temperature, conductivity,
@@ -308,11 +318,15 @@ setMethod(f="initialize",
               ##.Object@metadata$labels <- titleCase(names) # paste(toupper(substring(names,1,1)), substring(names,2),sep="")
               ##.Object@metadata$filename <- filename
               if (missing(units)) {
-                  .Object@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-                                                 salinity=list(unit=expression(), scale="PSS-78"),
-                                                 conductivity=list(unit=expression(), scale=""),
-                                                 pressure=list(unit=expression(dbar), scale=""),
-                                                 depth=list(unit=expression(m), scale=""))
+                  .Object@metadata$units <- list()
+                  if (!missing(pressure))
+                      .Object@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+                  if (!missing(salinity))
+                      .Object@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+                  if (!missing(temperature))
+                      .Object@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+                  if (!missing(conductivity))
+                      .Object@metadata$units$conductivity <- list(unit=expression(), scale="")
               } else {
                   .Object@metadata$units <- units # CAUTION: we are being quite trusting here
               }
