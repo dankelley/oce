@@ -17,7 +17,7 @@ Stable versions of the package are normally installed from within R, in the
 same way as other packages.  However, this version is only updated a few times
 a year (pursuant to CRAN policy), so many users will want to install the
 ``develop`` branch instead. This branch may be updated several times per day,
-as the author fixes bugs or adds features that are motivated by day-to-day
+as the authors fix bugs or add features that are motivated by day-to-day
 usage.  This is the branch favoured by users who need new features or would
 like to contribute to Oce development.  
 
