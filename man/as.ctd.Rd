@@ -205,7 +205,7 @@ ctd <- as.ctd(salinity, temperature, pressure)
 # Add a new column
 fluo <- 5 * exp(-pressure / 20)
 ctd <- oceSetData(ctd, name="fluorescence", value=fluo,
-                  unit=list(unit=expression(mg/m^3), scale=""))
+                  units=list(unit=expression(mg/m^3), scale=""))
 summary(ctd)
 plot(ctd)
 
@@ -228,7 +228,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
-  \code{\link{new,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},

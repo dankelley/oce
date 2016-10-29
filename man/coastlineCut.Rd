@@ -9,7 +9,8 @@ coastlineCut(coastline, lon_0 = 0)
 \arguments{
 \item{coastline}{original coastline object}
 
-\item{lon_0}{longitude as would be given in a \code{+lon_0=} item in a proj.4 string}
+\item{lon_0}{longitude as would be given in a \code{+lon_0=} item in a 
+call to \link[rgdal]{project} in the \CRANpkg{rgdal} package.}
 }
 \value{
 a new coastline object
