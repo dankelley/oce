@@ -13,13 +13,6 @@ before_install:
   - ./configure --prefix=/usr
   - make
   - sudo make install
-  - cd
-  - wget http://download.osgeo.org/proj/proj-4.9.2.tar.gz
-  - tar zxvf proj-4.9.2.tar.gz
-  - cd proj-4.9.2
-  - ./configure --prefix=/usr
-  - make
-  - sudo make install
   - cd /home/travis/build/dankelley/oce
 
 r_build_args: --no-build-vignettes --no-manual --no-resave-data

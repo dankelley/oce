@@ -11,8 +11,14 @@ test_that("as.ctd() with specified arguments, including salinity", {
           expect_equal(ctd[["temperature"]], ctd_ctd[["temperature"]])
           expect_equal(ctd[["pressure"]], ctd_ctd[["pressure"]])
           expect_equal(ctd_ctd[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
-          expect_equal(ctd_ctd[["conductivityUnit"]], list(unit=expression(), scale=""))
           expect_equal(ctd_ctd[["pressureType"]], "sea")
+          # check addition of a new column
+          fluo <- rep(1, length(ctd_ctd[["salinity"]]))
+          ctd_ctd <- oceSetData(ctd, name="fluorescence", value=fluo,
+                                units=list(unit=expression(mg/m^3), scale=""))
+          expect_equal(ctd_ctd[["fluorescenceUnit"]],
+                       list(unit=expression(mg/m^3), scale=""))
+          expect_true("fluorescence" %in% names(ctd_ctd[["data"]]))
 })
 
 test_that("as.ctd() with specified arguments, not including salinity", {
