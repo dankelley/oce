@@ -870,6 +870,10 @@ setMethod(f="[[<-",
 #' temperature <- 10 - tanh((pressure - 20) / 5) + 0.02*rnorm(50)
 #' salinity <- 34 + 0.5*tanh((pressure - 20) / 5) + 0.01*rnorm(50)
 #' ctd <- as.ctd(salinity, temperature, pressure)
+#' # Add a new column
+#' fluo <- 5 * exp(-pressure / 20)
+#' ctd <- oceSetData(ctd, name="fluorescence", value=fluo,
+#'                   unit=list(unit=expression(mg/m^3), scale=""))
 #' summary(ctd)
 #' plot(ctd)
 #'
