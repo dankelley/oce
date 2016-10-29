@@ -271,6 +271,7 @@ setMethod("handleFlags",
 #' within the \code{metadata} slot). See \code{\link{ctd-class}} for more information
 #' on elements stored in \code{ctd} objects.
 #'
+#' @param .Object the string \code{"ctd"}
 #' @param pressure optional numerical vector of pressures.
 #' @param salinity optional numerical vector of salinities.
 #' @param temperature optional numerical vector of temperatures.
@@ -300,8 +301,8 @@ setMethod("handleFlags",
 #'
 #' @name new,ctd-method
 #' @aliases new,ctd-method
-#' @usage new("ctd", pressure, salinity, temperature, conductivity, units, 
-#'    pressureType, deploymentType)
+## @usage new,ctd-method(class, pressure, salinity, temperature, conductivity, units, 
+##    pressureType, deploymentType)
 #' @family things related to \code{ctd} data
 setMethod(f="initialize",
           signature="ctd",
@@ -873,7 +874,7 @@ setMethod(f="[[<-",
 #' # Add a new column
 #' fluo <- 5 * exp(-pressure / 20)
 #' ctd <- oceSetData(ctd, name="fluorescence", value=fluo,
-#'                   unit=list(unit=expression(mg/m^3), scale=""))
+#'                   units=list(unit=expression(mg/m^3), scale=""))
 #' summary(ctd)
 #' plot(ctd)
 #'
