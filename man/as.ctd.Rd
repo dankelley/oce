@@ -5,16 +5,11 @@
 \title{Coerce data into CTD object}
 \usage{
 as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
-  SA = NULL, CT = NULL, oxygen = NULL, nitrate = NULL, nitrite = NULL,
-  phosphate = NULL, silicate = NULL, scan = NULL, time = NULL,
-  other = NULL, units = NULL, flags = NULL, pressureType = "sea",
-  missingValue = NULL, quality = NULL, filename = "", type = "",
-  model = "", serialNumber = "", ship = "", scientist = "",
-  institute = "", address = "", cruise = "", station = "",
-  date = NULL, startTime = NULL, recovery = NULL, longitude = NA,
+  scan = NULL, time = NULL, other = NULL, units = NULL, flags = NULL,
+  missingValue = NULL, type = "", serialNumber = "", ship = "",
+  cruise = "", station = "", startTime = NULL, longitude = NA,
   latitude = NA, deploymentType = "unknown", pressureAtmospheric = 0,
-  waterDepth = NA, sampleInterval = NA, src = "",
-  debug = getOption("oceDebug"))
+  sampleInterval = NA, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{salinity}{There are three choices for \code{salinity}. (1) It can be a
@@ -27,6 +22,7 @@ is extracted and the other arguments to \code{as.ctd} are ignored, except for
 \code{pressureAtmospheric}. Note that if this first argument is an
 object of \code{\link{rsk-class}}, the present function merely passes
 it and \code{pressureAtmospheric} to \code{\link{rsk2ctd}}, which
+does the real work. (3) It can be unspecified, in which
 case \code{conductivity} becomes a mandatory argument, because it will
 be needed for computing actual salinity, using \code{\link{swSCTp}}.}
 
@@ -42,23 +38,6 @@ the length of \code{salinity}.}
 (optional). To convert from raw conductivity in milliSeimens per centimeter
 divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).}
 
-\item{SA}{absolute salinity (as in TEOS-10).  If given, the supplied absolute
-salinity is converted internally to UNESCO-defined practical salinity.}
-
-\item{CT}{conservative temperature (as in TEOS-10).  If given, the supplied
-conservative temperature is converted internally to UNESCO-defined in-situ
-temperature.}
-
-\item{oxygen}{optional oxygen concentration}
-
-\item{nitrate}{optional nitrate concentration}
-
-\item{nitrite}{optional nitrite concentration}
-
-\item{phosphate}{optional phosphate concentration}
-
-\item{silicate}{optional silicate concentration}
-
 \item{scan}{optional scan number.  If not provided, this will be set to
 \code{1:length(salinity)}.}
 
@@ -67,67 +46,33 @@ temperature.}
 \item{other}{optional list of other data columns that are not in the standard
 list}
 
-\item{units}{an optional list containing units.  If not supplied, a default of
-\code{list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-  salinity=list(unit=expression(), scale="",
-  pressure=list(unit=expression(dbar), scale="")} is used. This is quite
-typical of archived datasets, but for some instrumental files it will make
-sense to use \code{salinity=list(unit=expression(uS/cm), scale="")} or
-\code{salinity=list(unit=expression(S/m), scale="")}.}
+\item{units}{an optional list containing units.  If not supplied, 
+defaults are set for \code{pressure}, \code{temperature}, \code{salinity},
+and \code{conductivity}. Since these are simply guesses, users 
+are advised strongly to supply \code{units}. See \dQuote{Examples}.}
 
 \item{flags}{if supplied, this is a \code{\link{list}} containing data-quality
 flags. The elements of this list must have names that match the data
 provided to the object.}
 
-\item{pressureType}{a character string indicating the type of pressure; may be
-\code{"absolute"}, for total pressure, i.e. the sum of atmospheric pressure
-and sea pressure, or \code{"sea"}.}
-
 \item{missingValue}{optional missing value, indicating data that should be
 taken as \code{NA}. Set to \code{NULL} to turn off this feature.}
 
-\item{quality}{\strong{(deprecated)} optional quality flag, e.g. from the salinity quality flag in WOCE data.
-(In WOCE, \code{quality=2} indicates good data, \code{quality=3} means
-questionable data, and \code{quality=4} means bad data.
-This was deprecated in March 2016; see \link{oce-deprecated}.}
-
-\item{filename}{optional source filename to be stored in the object}
-
 \item{type}{optional type of CTD, e.g. "SBE"}
-
-\item{model}{optional model of instrument}
 
 \item{serialNumber}{optional serial number of instrument}
 
 \item{ship}{optional string containing the ship from which the observations were made.}
 
-\item{scientist}{optional string containing the chief scientist on the cruise.}
-
-\item{institute}{optional string containing the institute behind the work.}
-
-\item{address}{optional string containing the address of the institute.}
-
 \item{cruise}{optional string containing a cruise identifier.}
 
 \item{station}{optional string containing a station identifier.}
-
-\item{date}{optional string indicating
-the date at which the profile was started. This is copied verbatim into
-the result's \code{metadata} slot, and is not used in any processing. Since
-it serves no purpose, this argument is deprecated as of April 2016,
-and will be marked 'defunct' in an upcoming CRAN release;
-see \link{oce-deprecated}.}
 
 \item{startTime}{optional indication of the start time for the profile,
 which is used in some several plotting functions.  This is best given as a
 \code{\link{POSIXt}} time, but it may also be a character string
 that can be converted to a time with \code{\link{as.POSIXct}},
 using \code{UTC} as the timezone.}
-
-\item{recovery}{optional indication of the recovery time, in the format
-described for \code{startTime}.  This is not presently used by \code{oce},
-and is stored in the result's \code{metadata} slot just in case the user
-requires it.}
 
 \item{longitude}{optional numerical value containing longitude in decimal
 degrees, positive in the eastern hemisphere. If this is a single number,
@@ -154,15 +99,8 @@ that is subtracted from pressure before storing it in the return value.
 that is to be computed from \code{conductivity}, etc., using
 \code{\link{swSCTp}} (see \code{salinity} above).}
 
-\item{waterDepth}{optional numerical value indicating the water depth in
-metres. This is different from the maximum recorded pressure, although
-the latter is used by some oce functions as a guess on water depth, the
-most important example being \code{\link{plot,section-method}}.}
-
 \item{sampleInterval}{optional numerical value indicating the time between
 samples in the profile.}
-
-\item{src}{optional string indicating data source.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -198,6 +136,7 @@ appropriate. Further alteration of the pressure can be accomplished with the
 }
 \examples{
 library(oce)
+## 1. fake data, with default units
 pressure <- 1:50
 temperature <- 10 - tanh((pressure - 20) / 5) + 0.02*rnorm(50)
 salinity <- 34 + 0.5*tanh((pressure - 20) / 5) + 0.01*rnorm(50)
@@ -207,7 +146,12 @@ fluo <- 5 * exp(-pressure / 20)
 ctd <- oceSetData(ctd, name="fluorescence", value=fluo,
                   units=list(unit=expression(mg/m^3), scale=""))
 summary(ctd)
-plot(ctd)
+
+## 2. fake data, with supplied units (which are the defaults, actually)
+ctd <- as.ctd(salinity, temperature, pressure,
+    units=list(salinity=list(unit=expression(), scale="PSS-78"),
+    temperature=list(unit=expression(degree*C), scale="ITS-90"),
+    pressure=list(unit=expression(dbar), scale="")))
 
 }
 \author{

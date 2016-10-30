@@ -405,6 +405,7 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, 
     examineHeaderLines <- 10
     header <- readLines(file, n=examineHeaderLines)
     station <- ""
+    startTime <- NULL
     for (i in 1: examineHeaderLines) {
         if (1 == length(grep("STNNBR.*", header[i]))) {
             station <- gsub(" .*", "", gsub("STNNBR[ ]*", "", header[i]))
@@ -413,7 +414,7 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, 
             month <- as.numeric(substr(date, 1, 2))
             day <- as.numeric(substr(date, 3, 4))
             year <- 1900 + as.numeric(substr(date, 5, 6))
-            date <- ISOdatetime(year,month,day,0,0,0, tz="UTC")
+            startTime <- ISOdatetime(year,month,day,0,0,0, tz="UTC")
         }
     }
     data <- read.table(file, skip=6, header=FALSE)
@@ -428,7 +429,9 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, 
         pressure[pressure == missingValue] <- NA
         oxygen[oxygen == missingValue] <- NA
     }
-    res <- as.ctd(salinity, temperature, pressure, oxygen=oxygen, station=station, date=date)
+    res <- as.ctd(salinity, temperature, pressure, station=station, startTime=startTime)
+    res <- oceSetData(res, name="oxygen", value=oxygen,
+                      units=expression(unit=expression(), scale=""))
     res@metadata$dataNamesOriginal <- list(pressure="CTDPRS", temperature="CTDTMP", 
                                            salinity="CTDSAL", oxygen="CTDOXY")
     res
