@@ -98,10 +98,12 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
             salinity <- ifelse(salinity==missingValue, NA, salinity)
             oxygen <- ifelse(oxygen==missingValue, NA, oxygen)
         }
-        res <- as.ctd(salinity, temperature, pressure, oxygen=oxygen,
+        res <- as.ctd(salinity, temperature, pressure,
                       longitude=longitude, latitude=latitude,
                       startTime=ISOdate(year, 1, 1) + yearday * 3600 * 24,
                       station=station)
+        res <- oceSetData(res, name="oxygen", value=oxygen,
+                          units=expression(unit=expression(), scale=""))
         res <- oceSetMetadata(res, "filename", filename)
         res <- oceSetMetadata(res, "dataNamesOriginal",
                               list(temperature="temperature", salinity="salinity", oxygen="oxygen", pressure="pressure"))
