@@ -948,7 +948,6 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ship <- m$ship
         cruise <- m$cruise
         station <- m$station
-        scientist <- m$station
         if (is.character(m$startTime))
             startTime <- as.POSIXct(m$startTime, tz="UTC")
         if (is.na(latitude) && "latitude" %in% names(m))
