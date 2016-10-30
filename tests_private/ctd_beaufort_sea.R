@@ -16,7 +16,7 @@ for (i in seq_along(files)) {
     summary(d)                         # so we can look ... hard to do, though
     plot(d)
 }
-cat("Successfully checked", nfiles, "files\n")
+cat("Successfully checked", nfiles, "CNV files in", path[1], "and sister directories\n")
 
 if (!interactive()) dev.off()
 

@@ -21,5 +21,5 @@ for (dir in dirs) {
         i <- i + 1
     }
 }
-message("Tested", i, "files")
+cat("Successfully checked", i, "ODF files in various subdirectories of /data/flemishCap/moorings and /data/flemishCap/CTD\n")
 
