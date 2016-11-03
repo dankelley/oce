@@ -726,7 +726,7 @@ setMethod(f="[[<-",
 #' \code{pressureAtmospheric}. Note that if this first argument is an
 #' object of \code{\link{rsk-class}}, the present function merely passes
 #' it and \code{pressureAtmospheric} to \code{\link{rsk2ctd}}, which
-#" does the real work. (3) It can be unspecified, in which
+#' does the real work. (3) It can be unspecified, in which
 #' case \code{conductivity} becomes a mandatory argument, because it will
 #' be needed for computing actual salinity, using \code{\link{swSCTp}}.
 #'
@@ -742,23 +742,23 @@ setMethod(f="[[<-",
 #' (optional). To convert from raw conductivity in milliSeimens per centimeter
 #' divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).
 #'
-#' @param SA absolute salinity (as in TEOS-10).  If given, the supplied absolute
-#' salinity is converted internally to UNESCO-defined practical salinity.
-#'
-#' @param CT conservative temperature (as in TEOS-10).  If given, the supplied
-#' conservative temperature is converted internally to UNESCO-defined in-situ
-#' temperature.
-#'
-#' @param oxygen optional oxygen concentration
-#'
-#' @param nitrate optional nitrate concentration
-#'
-#' @param nitrite optional nitrite concentration
-#'
-#' @param phosphate optional phosphate concentration
-#'
-#' @param silicate optional silicate concentration
-#'
+##1108 @param SA absolute salinity (as in TEOS-10).  If given, the supplied absolute
+##1108 salinity is converted internally to UNESCO-defined practical salinity.
+##1108
+##1108 @param CT conservative temperature (as in TEOS-10).  If given, the supplied
+##1108 conservative temperature is converted internally to UNESCO-defined in-situ
+##1108 temperature.
+##1108
+##1108 @param oxygen optional oxygen concentration
+##1108
+##1108 @param nitrate optional nitrate concentration
+##1108
+##1108 @param nitrite optional nitrite concentration
+##1108
+##1108 @param phosphate optional phosphate concentration
+##1108
+##1108 @param silicate optional silicate concentration
+##1108
 #' @param scan optional scan number.  If not provided, this will be set to
 #' \code{1:length(salinity)}.
 #'
@@ -767,56 +767,53 @@ setMethod(f="[[<-",
 #' @param other optional list of other data columns that are not in the standard
 #' list
 #'
-#' @param units an optional list containing units.  If not supplied, a default of
-#' \code{list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-#'   salinity=list(unit=expression(), scale="",
-#'   pressure=list(unit=expression(dbar), scale="")} is used. This is quite
-#' typical of archived datasets, but for some instrumental files it will make
-#' sense to use \code{salinity=list(unit=expression(uS/cm), scale="")} or
-#' \code{salinity=list(unit=expression(S/m), scale="")}.
+#' @param units an optional list containing units.  If not supplied, 
+#' defaults are set for \code{pressure}, \code{temperature}, \code{salinity},
+#' and \code{conductivity}. Since these are simply guesses, users 
+#' are advised strongly to supply \code{units}. See \dQuote{Examples}.
 #'
 #' @param flags if supplied, this is a \code{\link{list}} containing data-quality
 #' flags. The elements of this list must have names that match the data
 #' provided to the object.
 #'
-#' @param pressureType a character string indicating the type of pressure; may be
-#' \code{"absolute"}, for total pressure, i.e. the sum of atmospheric pressure
-#' and sea pressure, or \code{"sea"}.
+##1108 @param pressureType a character string indicating the type of pressure; may be
+##1108 \code{"absolute"}, for total pressure, i.e. the sum of atmospheric pressure
+##1108 and sea pressure, or \code{"sea"}.
 #'
 #' @param missingValue optional missing value, indicating data that should be
 #' taken as \code{NA}. Set to \code{NULL} to turn off this feature.
 #'
-#' @param quality \strong{(deprecated)} optional quality flag, e.g. from the salinity quality flag in WOCE data.
-#' (In WOCE, \code{quality=2} indicates good data, \code{quality=3} means
-#' questionable data, and \code{quality=4} means bad data.
-#' This was deprecated in March 2016; see \link{oce-deprecated}.
+##1108 @param quality \strong{(deprecated)} optional quality flag, e.g. from the salinity quality flag in WOCE data.
+##1108 (In WOCE, \code{quality=2} indicates good data, \code{quality=3} means
+##1108 questionable data, and \code{quality=4} means bad data.
+##1108 This was deprecated in March 2016; see \link{oce-deprecated}.
 #'
-#' @param filename optional source filename to be stored in the object
+##1108 @param filename optional source filename to be stored in the object
 #'
 #' @param type optional type of CTD, e.g. "SBE"
 #'
-#' @param model optional model of instrument
+##1108 @param model optional model of instrument
 #'
 #' @param serialNumber optional serial number of instrument
 #'
 #' @param ship optional string containing the ship from which the observations were made.
 #'
-#' @param scientist optional string containing the chief scientist on the cruise.
-#'
-#' @param institute optional string containing the institute behind the work.
-#'
-#' @param address optional string containing the address of the institute.
-#'
+##1108 @param scientist optional string containing the chief scientist on the cruise.
+##1108
+##1108 @param institute optional string containing the institute behind the work.
+##1108
+##1108 @param address optional string containing the address of the institute.
+##1108
 #' @param cruise optional string containing a cruise identifier.
 #'
 #' @param station optional string containing a station identifier.
 #'
-#' @param date optional string indicating
-#' the date at which the profile was started. This is copied verbatim into
-#' the result's \code{metadata} slot, and is not used in any processing. Since
-#' it serves no purpose, this argument is deprecated as of April 2016,
-#' and will be marked 'defunct' in an upcoming CRAN release;
-#' see \link{oce-deprecated}.
+##1108 @param date optional string indicating
+##1108 the date at which the profile was started. This is copied verbatim into
+##1108 the result's \code{metadata} slot, and is not used in any processing. Since
+##1108 it serves no purpose, this argument is deprecated as of April 2016,
+##1108 and will be marked 'defunct' in an upcoming CRAN release;
+##1108 see \link{oce-deprecated}.
 #'
 #' @param startTime optional indication of the start time for the profile,
 #' which is used in some several plotting functions.  This is best given as a
@@ -824,10 +821,10 @@ setMethod(f="[[<-",
 #' that can be converted to a time with \code{\link{as.POSIXct}},
 #' using \code{UTC} as the timezone.
 #'
-#' @param recovery optional indication of the recovery time, in the format
-#' described for \code{startTime}.  This is not presently used by \code{oce},
-#' and is stored in the result's \code{metadata} slot just in case the user
-#' requires it.
+##1108 @param recovery optional indication of the recovery time, in the format
+##1108 described for \code{startTime}.  This is not presently used by \code{oce},
+##1108 and is stored in the result's \code{metadata} slot just in case the user
+##1108 requires it.
 #'
 #' @param longitude optional numerical value containing longitude in decimal
 #' degrees, positive in the eastern hemisphere. If this is a single number,
@@ -853,16 +850,16 @@ setMethod(f="[[<-",
 #' (This altered pressure is also used in calculating \code{salinity}, if
 #' that is to be computed from \code{conductivity}, etc., using
 #' \code{\link{swSCTp}} (see \code{salinity} above).
-#'
-#' @param waterDepth optional numerical value indicating the water depth in
-#' metres. This is different from the maximum recorded pressure, although
-#' the latter is used by some oce functions as a guess on water depth, the
-#' most important example being \code{\link{plot,section-method}}.
+##
+##1108 @param waterDepth optional numerical value indicating the water depth in
+##1108 metres. This is different from the maximum recorded pressure, although
+##1108 the latter is used by some oce functions as a guess on water depth, the
+##1108 most important example being \code{\link{plot,section-method}}.
 #'
 #' @param sampleInterval optional numerical value indicating the time between
 #' samples in the profile.
 #'
-#' @param src optional string indicating data source.
+##1108 @param src optional string indicating data source.
 #'
 #' @template debugTemplate
 #'
@@ -870,6 +867,7 @@ setMethod(f="[[<-",
 #'
 #' @examples
 #' library(oce)
+#' ## 1. fake data, with default units
 #' pressure <- 1:50
 #' temperature <- 10 - tanh((pressure - 20) / 5) + 0.02*rnorm(50)
 #' salinity <- 34 + 0.5*tanh((pressure - 20) / 5) + 0.01*rnorm(50)
@@ -879,7 +877,12 @@ setMethod(f="[[<-",
 #' ctd <- oceSetData(ctd, name="fluorescence", value=fluo,
 #'                   units=list(unit=expression(mg/m^3), scale=""))
 #' summary(ctd)
-#' plot(ctd)
+#'
+#' ## 2. fake data, with supplied units (which are the defaults, actually)
+#' ctd <- as.ctd(salinity, temperature, pressure,
+#'     units=list(salinity=list(unit=expression(), scale="PSS-78"),
+#'     temperature=list(unit=expression(degree*C), scale="ITS-90"),
+#'     pressure=list(unit=expression(dbar), scale="")))
 #'
 #' @references Culkin, F., and Norman D. Smith, 1980. Determination of the
 #' concentration of potassium chloride solution having the same electrical
@@ -891,30 +894,40 @@ setMethod(f="[[<-",
 #'
 #' @family things related to \code{ctd} data
 as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
-                   SA=NULL, CT=NULL, oxygen=NULL, nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
-                   scan=NULL, time=NULL, other=NULL,
+                   ##1108 SA=NULL, CT=NULL, oxygen=NULL, nitrate=NULL, nitrite=NULL, phosphate=NULL, silicate=NULL,
+                   scan=NULL,
+                   time=NULL, other=NULL,
                    units=NULL, flags=NULL,
-                   pressureType="sea",
-                   missingValue=NULL, quality=NULL,
-                   filename="", type="", model="", serialNumber="",
-                   ship="", scientist="", institute="", address="", cruise="", station="",
-                   date=NULL, startTime=NULL, recovery=NULL,
+                   ##1108 pressureType="sea",
+                   missingValue=NULL,
+                   ##1108 quality=NULL, filename="",
+                   type="",
+                   ##1108 model="",
+                   serialNumber="", ship="",
+                   ##1108 scientist="", institute="", address="",
+                   cruise="", station="",
+                   ##1108 date=NULL,
+                   startTime=NULL,
+                   ##1108 recovery=NULL,
                    longitude=NA, latitude=NA,
                    deploymentType="unknown",
-                   pressureAtmospheric=0, waterDepth=NA,
+                   pressureAtmospheric=0,
+                   ##1108 waterDepth=NA,
                    sampleInterval=NA,
-                   src="",
+                   ##1108 src="",
                    debug=getOption("oceDebug"))
 {
-    if (!missing(salinity) && inherits(salinity, "rsk"))
+    if (!missing(salinity) && inherits(salinity, "rsk")) {
         return(rsk2ctd(salinity, pressureAtmospheric=pressureAtmospheric, debug=debug-1))
+    }
     oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     res <- new('ctd')
+    waterDepth <- NA
     unitsGiven <- !is.null(units)
     if (!is.null(startTime) && is.character(startTime))
         startTime <- as.POSIXct(startTime, tz="UTC")
-    if (!is.null(recovery) && is.character(recovery))
-        recovery <- as.POSIXct(recovery, tz="UTC")
+    ##1108 if (!is.null(recovery) && is.character(recovery))
+    ##1108     recovery <- as.POSIXct(recovery, tz="UTC")
     if (missing(salinity)) {
         if (!missing(conductivity) && !missing(temperature) && !missing(pressure)) {
             salinity <- swSCTp(conductivity=conductivity, temperature=temperature, pressure=pressure)
@@ -922,6 +935,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             stop("if salinity is not provided, conductivity, temperature and pressure must all be provided")
         }
     }
+    filename <- ""
     if (inherits(salinity, "oce")) {
         if (inherits(salinity, "ctd"))
             return(salinity)
@@ -934,18 +948,17 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ship <- m$ship
         cruise <- m$cruise
         station <- m$station
-        scientist <- m$station
         if (is.character(m$startTime))
             startTime <- as.POSIXct(m$startTime, tz="UTC")
         if (is.na(latitude) && "latitude" %in% names(m))
             latitude <- m$latitude
         if (is.na(longitude) && "longitude" %in% names(m))
             longitude <- m$longitude
-        if (missing(date) && "date" %in% names(m)) {
-            date <- m$date
-        }
+        ##1108 if (missing(date) && "date" %in% names(m)) {
+        ##1108     date <- m$date
+        ##1108 }
         filename <- if ("filename" %in% mnames) m$filename else ""
-        model <- m$model
+        ##1108 model <- m$model
         serialNumber <- m$serialNumber
         sampleInterval <- m$sampleInterval
         if (!is.null(m$waterDepth))
@@ -964,10 +977,10 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@metadata$units <- units
         if (!is.null(flags))
             res@metadata$flags <- flags
-        res@metadata$pressureType <- pressureType
+        ##1108 res@metadata$pressureType <- pressureType
         res@metadata$startTime <- startTime
         ## copy relevant metadata.
-        if ("date" %in% mnames) res@metadata$date <- o@metadata$date
+        ##1108 if ("date" %in% mnames) res@metadata$date <- o@metadata$date
         if ("deploymentType" %in% mnames) res@metadata$deploymentType <- o@metadata$deploymentType
         if ("filename" %in% mnames) res@metadata$filename <- o@metadata$filename
         if ("serialNumber" %in% mnames) res@metadata$serialNumber <- o@metadata$serialNumber
@@ -987,7 +1000,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             if ("temperatureUnit" %in% mnames)
                 res@metadata$units$temperature <- o@metadata$temperatureUnit
         }
-        if ("pressureType" %in% mnames) res@metadata$pressureType <- pressureType
+        if ("pressureType" %in% mnames) res@metadata$pressureType <- o@metadata$pressureType
         if ("scan" %in% dnames) res@data$scan <- d$scan
         ## FIXME: time goes into metadata or data ... does that make sense?
         if ("time" %in% dnames) if (length(d$time) > 1) res@data$time <- d$time else res@metadata$time <- d$time
@@ -1031,13 +1044,15 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             res@data$salinity <- x$salinity
             res@data$temperature <- x$temperature
             res@metadata$units <- units
-            res@metadata$pressureType <- pressureType
+            ##1108 res@metadata$pressureType <- pressureType
+            res@metadata$pressureType <- "sea"
         } else if (3 == sum(c("PSAL", "TEMP", "PRES") %in% names)) {
             res@data$pressure <- x$PRES
             res@data$salinity <- x$PSAL
             res@data$temperature <- x$TEMP
-            res@metadatdata$units <- units
-            res@metadatdata$pressureType <- pressureType
+            res@metadata$units <- units
+            ##1108 res@metadata$pressureType <- pressureType
+            res@metadata$pressureType <- "sea"
         } else {
             stop("the first argument must contain salinity, temperature, and pressure")
         }
@@ -1058,32 +1073,34 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     } else {
         oceDebug(debug, "salinity, temperature, pressure (etc) supplied\n")
         ## 3. explicit mode
-        if (missing(temperature) && missing(CT)) stop("must give temperature or CT")
+        ##1108 if (missing(temperature) && missing(CT)) stop("must give temperature or CT")
+        if (missing(temperature)) stop("must give temperature")
         if (missing(pressure)) stop("must give pressure")
         if (!missing(units))
             res@metadata$units <- units
-        res@metadata$pressureType <- pressureType
+        ##1108 res@metadata$pressureType <- pressureType
+        res@metadata$pressureType <- "sea"
         salinity <- as.vector(salinity)
         temperature <- as.vector(temperature)
         pressure <- as.vector(pressure)
         if (!missing(pressureAtmospheric))
             pressure <- pressure - pressureAtmospheric
-        haveSA <- !missing(SA)
-        haveCT <- !missing(CT)
-        if (haveSA != haveCT)
-            stop("SA and CT must both be supplied, if either is")
-        if (!missing(SA)) {
-            n <- length(SA)
-            if (length(CT) != n)
-                stop("lengths of SA and CT must match")
-            if (missing(longitude)) {
-                longitude <- rep(300, n)
-                latitude <- rep(0, n)
-                warning("longitude and latitude set to default values, since none given")
-            }
-            salinity <- gsw::gsw_SP_from_SA(SA, pressure, longitude, latitude)
-            temperature <- gsw::gsw_t_from_CT(SA, CT, pressure)
-        }
+        ##1108 haveSA <- !missing(SA)
+        ##1108 haveCT <- !missing(CT)
+        ##1108 if (haveSA != haveCT)
+        ##1108     stop("SA and CT must both be supplied, if either is")
+        ##1108 if (!missing(SA)) {
+        ##1108     n <- length(SA)
+        ##1108     if (length(CT) != n)
+        ##1108         stop("lengths of SA and CT must match")
+        ##1108     if (missing(longitude)) {
+        ##1108         longitude <- rep(300, n)
+        ##1108         latitude <- rep(0, n)
+        ##1108         warning("longitude and latitude set to default values, since none given")
+        ##1108     }
+        ##1108     salinity <- gsw::gsw_SP_from_SA(SA, pressure, longitude, latitude)
+        ##1108     temperature <- gsw::gsw_t_from_CT(SA, CT, pressure)
+        ##1108 }
         ##depths <- max(length(salinity), length(temperature), length(pressure))
         ## 2015-01-24: now insist that lengths make sense; only pressure can be mismatched
         salinity <- as.vector(salinity)
@@ -1106,12 +1123,12 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                      temperature=temperature,
                      pressure=pressure)
         if (!missing(conductivity)) data$conductivity <- as.vector(conductivity)
-        if (!missing(quality)) data$quality <- quality
-        if (!missing(oxygen)) data$oxygen <- oxygen
-        if (!missing(nitrate)) data$nitrate <- nitrate
-        if (!missing(nitrite)) data$nitrite <- nitrite
-        if (!missing(phosphate)) data$phosphate <- phosphate
-        if (!missing(silicate)) data$silicate <- silicate
+        ##1108 if (!missing(quality)) data$quality <- quality
+        ##1108 if (!missing(oxygen)) data$oxygen <- oxygen
+        ##1108 if (!missing(nitrate)) data$nitrate <- nitrate
+        ##1108 if (!missing(nitrite)) data$nitrite <- nitrite
+        ##1108 if (!missing(phosphate)) data$phosphate <- phosphate
+        ##1108 if (!missing(silicate)) data$silicate <- silicate
         if (!missing(time)) data$time <- time
         if (!missing(other)) {
             names <- names(other)
@@ -1122,6 +1139,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                     warning("'other' item number ", i, " has no name")
                 }
             }
+            warning("the 'other' argument will be removed soon; use oceSetData() instead, as in the examples. See ?'oce-deprecated'.")
         }
         ## Handle missing value code (changes on July 24, 2016 fix issue 1028)
         if (!is.null(missingValue)) {
@@ -1146,18 +1164,18 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ##res@metadata$labels <- labels
         res@metadata$filename <- filename
         res@metadata$ship <- ship
-        res@metadata$scientist <- scientist
-        res@metadata$institute <- institute
-        res@metadata$address <- address
+        ##1108 res@metadata$scientist <- scientist
+        ##1108 res@metadata$institute <- institute
+        ##1108 res@metadata$address <- address
         res@metadata$cruise <- cruise
         res@metadata$station <- station
-        res@metadata$date <- date
+        ##1108 res@metadata$date <- date
         res@metadata$startTime <- startTime
-        res@metadata$recovery <- recovery
+        ##1108 res@metadata$recovery <- recovery
         res@metadata$type <- type
-        res@metadata$model <- model
+        ##1108 res@metadata$model <- model
         res@metadata$serialNumber <- serialNumber
-        res@metadata$src <- src
+        ##1108 res@metadata$src <- src
         res@metadata$deploymentType <- deploymentType
         ## If lon and lat are vectors, place in data, with averages in metadata.
         if (length(latitude) == 1) {
@@ -1182,12 +1200,13 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@metadata$flags <- flags
 
     ## Default some units (FIXME: this may be a bad idea)
-    if ("temperature" %in% dataNames && !("temperature" %in% unitsNames))
-        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
     if ("salinity" %in% dataNames && !("salinity" %in% unitsNames))
         res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+    if ("temperature" %in% dataNames && !("temperature" %in% unitsNames))
+        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
     if ("pressure" %in% dataNames && !("pressure" %in% unitsNames))
         res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    ## FIXME: setting waterDepth can have tricky results ... we've had issues with this
     if (is.na(res@metadata$waterDepth) && !is.na(waterDepth))
         res@metadata$waterDepth <- waterDepth
     oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
@@ -1529,10 +1548,10 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
             }
         }
     }
-    if ('scan' %in% names(dataNew)) {
-        dataNew[['scan']] <- NULL
-        warningMessages <- c(warningMessages, "Removed scan field from decimated ctd object")
-    }
+    ##1108 if ('scan' %in% names(dataNew)) {
+    ##1108     dataNew[['scan']] <- NULL
+    ##1108     warningMessages <- c(warningMessages, "Removed scan field from decimated ctd object")
+    ##1108 }
     if ('flag' %in% names(dataNew)) {
         dataNew[['flag']] <- NULL
         warningMessages <- c(warningMessages, "Removed flag field from decimated ctd object")

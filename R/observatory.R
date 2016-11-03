@@ -107,9 +107,9 @@ read.observatory.ctd <- function(file,
     salinity <- d[,Scol]
     temperature <- d[,Tcol]
     pressure  <- d[,pcol]
-    res <- as.ctd(salinity=salinity, temperature=temperature, pressure=pressure,
-                  latitude=latitude, longitude=longitude, waterDepth=waterDepth,
-                  other=list(time=time))
+    res <- as.ctd(salinity=salinity, temperature=temperature, pressure=pressure, time=time,
+                  latitude=latitude, longitude=longitude)
+    res <- oceSetMetadata(res, name="waterDepth", value=waterDepth)
     res@metadata$filename <- filename
     oceDebug(debug, "} # read.observatory.ctd()\n", unindent=1)
     res

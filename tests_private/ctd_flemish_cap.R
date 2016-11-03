@@ -17,6 +17,6 @@ for (i in seq_along(files)) {
     summary(d)                         # so we can look ... hard to do, though
     plot(d)
 }
-cat("Successfully checked", nfiles, "files in /data/flemishCap/CTD/*/\n")
+cat("Successfully checked", nfiles, "CNV files in /data/flemishCap/CTD/*/\n")
 
 if (!interactive()) dev.off()
