@@ -21,6 +21,10 @@ Convert a String to a Unit
 String matching is used to try to guess a unit from a character string.
 }
 \examples{
-as.unit("IPTS-69")
+as.unit("DBAR")
+as.unit("IPTS-68")
+as.unit("ITS-90")
+as.unit("PSS-78")
+as.unit("UMOL/KG")
 }
 
