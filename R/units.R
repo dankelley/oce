@@ -6,10 +6,13 @@
 #' @param default A default, if the string is not recognized.
 #' @return A list with elements \code{unit}, an \code{\link{expression}}, and \code{scale}, a string.
 #' @examples
-#' as.unit("IPTS-69")
+#' as.unit("DBAR")
+#' as.unit("IPTS-68")
+#' as.unit("ITS-90")
+#' as.unit("PSS-78")
+#' as.unit("UMOL/KG")
 as.unit <- function(u, default=list(unit=expression(), scale=""))
 {
-    ##> message("u: '", u, "'")
     if (length(grep("DBAR", u, ignore.case=TRUE, useBytes=TRUE))) {
         res <- list(unit=expression(dbar), scale="")
     } else if (length(grep("IPTS-68", u, ignore.case=TRUE, useBytes=TRUE))) {
@@ -23,6 +26,5 @@ as.unit <- function(u, default=list(unit=expression(), scale=""))
     } else {
         res <- default
     }
-    ##> message("returning:");print(res)
     res
 }
