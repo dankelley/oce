@@ -10,5 +10,11 @@ test_that("general", {
           expect_null(o[['no_such_thing']])
           summary(o)                   # for codecov test
           show(o)                      # for codecov test
+          data(adp)
+          summary(adp)                 # for codecov test
+          show(adp)                    # for codecov test
+          plot(adp)                    # for codecov test
+          adp2 <- subset(adp, pressure<10) # for codecov test
 })
+
 
