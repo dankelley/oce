@@ -50,9 +50,8 @@ setClass("oce",
 #' @param ... Extra arguments (ignored)
 #'
 #' @examples
-#' d <- new("oce")
-#' summary(oce)
-
+#' o <- new("oce")
+#' summary(o)
 setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
