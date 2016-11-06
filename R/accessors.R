@@ -137,11 +137,3 @@ oceSetMetadata <- function(object, name, value, note="")
     object
 }
 
-
-## time <- function(x)
-## {
-##     if (!("time" %in% names(x@data)))
-##         stop("no 'time' in names(x@data)")
-##     x@data$time
-## }
-
