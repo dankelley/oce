@@ -11,7 +11,14 @@ test_that("general", {
           summary(o)                   # for codecov test
           show(o)                      # for codecov test
           plot(o)                      # for codecov test
+          ## subsets of base oce object
+          oo <- new("oce")
+          oo2 <- oceSetData(oo, "a", 1:10)
+          subset(oo2, a < 5)
+          ## insert data
           o[['no_such_thing']] <- 0    # for codecov test
+          expect_null(o[['no_such_thing']])
+          ## built-in dataset
           data(adp)
           summary(adp)                 # for codecov test
           show(adp)                    # for codecov test
