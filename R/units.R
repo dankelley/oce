@@ -1,18 +1,22 @@
 #' Convert a String to a Unit
 #'
 #' @details
-#' String matching is used to try to guess a unit from a character string.
-#' @param u A character string.
-#' @param default A default, if the string is not recognized.
-#' @return A list with elements \code{unit}, an \code{\link{expression}}, and \code{scale}, a string.
-#' @examples
-#' as.unit("DBAR")
-#' as.unit("IPTS-68")
-#' as.unit("ITS-90")
-#' as.unit("PSS-78")
-#' as.unit("UMOL/KG")
+#' This function is not presently used by any \code{oce} functions, and is
+#' provided as a convenience function for users.
+#'
+#' @param u A character string indicating a variable name. The following
+#' names are recognized: \code{"DBAR"},
+#' \code{"IPTS-68"}, \code{"ITS-90"}, \code{"PSS-78"}, and \code{"UMOL/KG"}.
+#' All other names yield a return value equal to the value of the
+#' \code{default} argument.
+#' @param default A default to be used for the return value, if \code{u}
+#' is not a recognized string.
+#' @return A list with elements \code{unit}, an \code{\link{expression}},
+#' and \code{scale}, a string.
 as.unit <- function(u, default=list(unit=expression(), scale=""))
 {
+    if (!is.character(u))
+        return(default)
     if (length(grep("DBAR", u, ignore.case=TRUE, useBytes=TRUE))) {
         res <- list(unit=expression(dbar), scale="")
     } else if (length(grep("IPTS-68", u, ignore.case=TRUE, useBytes=TRUE))) {
