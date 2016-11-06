@@ -9,5 +9,6 @@ test_that("as.unit", {
           expect_equal(as.unit("ITS-90"), list(unit=expression(degree*C), scale="ITS-90"))
           expect_equal(as.unit("PSS-78"), list(unit=expression(), scale="PSS-78"))
           expect_equal(as.unit("UMOL/KG"), list(unit=expression(mu*mol/kg), scale=""))
+          expect_equal(as.unit(), list(unit=expression(), scale=""))
 })          
 

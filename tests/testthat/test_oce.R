@@ -18,5 +18,8 @@ test_that("as.oce", {
           p <- seq(1,100,length.out=10)
           ctd <- as.oce(list(salinity=S, temperature=T, pressure=p))
           ctd <- as.oce(data.frame(salinity=S, temperature=T, pressure=p))
+          cl <- as.oce(data.frame(longitude=c(1,2,1), latitude=c(0,1,0)))
+          expect_equal(cl[['longitude']], c(1,2,1))
+          expect_equal(cl[['latitude']], c(0,1,0))
 })
 

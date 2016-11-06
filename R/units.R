@@ -15,7 +15,7 @@
 #' and \code{scale}, a string.
 as.unit <- function(u, default=list(unit=expression(), scale=""))
 {
-    if (!is.character(u))
+    if (missing(u) || !is.character(u))
         return(default)
     if (length(grep("DBAR", u, ignore.case=TRUE, useBytes=TRUE))) {
         res <- list(unit=expression(dbar), scale="")
