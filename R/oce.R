@@ -174,45 +174,39 @@ NULL
 #' }
 #'
 #' @param x an item containing data. This may be data frame, list, or an oce object.
-#' @param \dots optional extra arguments, passed to conversion functions \code{\link{as.coastline}} or \code{\link{ODF2oce}}, if these are used.
+#' @param \dots optional extra arguments, passed to conversion functions
+#' \code{\link{as.coastline}} or \code{\link{ODF2oce}}, if these are used.
 #'
 #' @return \code{as.oce} returns an object inheriting from \code{\link{oce-class}}.
-#'
-#' @examples
-#' as.oce(data.frame(salinity=c(30, 30.5), temperature=c(15, 14), pressure=c(1, 5)))
-#' as.oce(list(longitude=1:3,latitude=11:13))
 as.oce <- function(x, ...)
 {
-    if (inherits(x, "oce"))
-        return(x)
+    if (inherits(x, "oce")) {
+        names <- names(x)
+        return(if ("EVENT_HEADER" %in% names) ODF2oce(x) else x)
+    }
     if (!is.list(x) && !is.data.frame(x))
         stop("x must be a list, a data frame, or an oce object")
     names <- names(x)
-    if ("EVENT_HEADER" %in% names) {
-        res <- ODF2oce(x)
-    } else {
-        if ("temperature" %in% names && "pressure" %in% names) {
-            ## Assume it's a CTD; if not, rely on users to understand their data
-            ## well enough to know the data type, and to use another function.
-            if ("salinity" %in% names) {
-                res <- as.ctd(salinity=x$salinity, temperature=x$temperature, pressure=x$pressure)
-                ## Add any other columns
-                for (name in names) {
-                    if (name != "temperature" && name != "pressure" && name != "salinity")
-                        res <- ctdAddColumn(res, column=x[name], name=name, label=name) # FIXME: supply units
-                }
-            } else if ("conductivity" %in% names) {
-                for (name in names) {
-                    if (name != "temperature" && name != "pressure" && name != "conductivity")
-                        res <- ctdAddColumn(res, column=x[name], name=name, label=name) # FIXME: supply units
-                }
+    if ("temperature" %in% names && "pressure" %in% names && "salinity" %in% names) {
+        ## Assume it's a CTD
+        res <- as.ctd(salinity=x$salinity, temperature=x$temperature, pressure=x$pressure)
+        ## Add other columns
+        for (name in names) {
+            if (name != "temperature" && name != "pressure" && name != "salinity") {
+                res <- oceSetData(res, name=name, value=x[[name]])
             }
-        } else if ("longitude" %in% names && "latitude" %in% names && length(names) == 2) {
-            res <- as.coastline(longitude=x$longitude, latitude=x$latitude)
-        } else {
-            stop("unknown data type; as of now, as.oce() only handles CTD data")
         }
+        return(res)
     }
+    if ("longitude" %in% names && "latitude" %in% names && length(names) == 2) {
+        ## Assume it's a coastline
+        return(as.coastline(longitude=x$longitude, latitude=x$latitude))
+    }
+    ## Not sure what it is, so make a generic oce object. We
+    ## have no way to guess the unit.
+    res <- new("oce")
+    for (name in names)
+        res <- oceSetData(res, name=name, value=x[[name]])
     res
 }
 
@@ -990,6 +984,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
 #' the month name appears.
 #' @param tz the timezone, as for \code{as.POSIXlt}
 #' @return A POSIXlt object.
+#' @examples
+#' oce.as.POSIXlt("2016-11-06")
 #' @author Dan Kelley
 #' @seealso \code{\link{as.POSIXlt}}, from which this is derived.
 #' @family things related to time
@@ -1067,7 +1063,7 @@ oce.as.POSIXlt <- function (x, tz = "")
 #' refer to the object as \code{x}; see Examples.
 #' 
 #' 3. Applied to an \code{adv} object (i.e. data from an acoustic velocimeter),
-#' \code{oce.edit} treats items named \code{heading}, \code{pitch}, \code{roll}
+#' \code{oceEdit} treats items named \code{heading}, \code{pitch}, \code{roll}
 #' appropriately, depending on the type of \code{adv} instrument used.  (This
 #' is necessary because different manufacturers produce different forms of
 #' these items, i.e. Nortek reports them on a time base that is different from
@@ -1080,7 +1076,7 @@ oce.as.POSIXlt <- function (x, tz = "")
 #' \code{person} doing the work.
 #' 
 #' @aliases oce.edit
-#' @param x an \code{oce} object.  The exact action of \code{oce.edit} depends
+#' @param x an \code{oce} object.  The exact action of \code{oceEdit} depends
 #' on the \code{\link{class}} of \code{x}; see \dQuote{Details}.
 #' @param item if supplied, a character string naming an item in the object's
 #' metadata (see \dQuote{Details}).
@@ -1098,9 +1094,9 @@ oce.as.POSIXlt <- function (x, tz = "")
 #' 
 #' library(oce)
 #' data(ctd)
-#' ctd2 <- oce.edit(ctd, item="latitude", value=47.8879,
-#'                 reason="illustration", person="Dan Kelley")
-#' ctd3 <- oce.edit(ctd,action="x@@data$pressure<-x@@data$pressure-1")
+#' ctd2 <- oceEdit(ctd, item="latitude", value=47.8879,
+#'                reason="illustration", person="Dan Kelley")
+#' ctd3 <- oceEdit(ctd,action="x@@data$pressure<-x@@data$pressure-1")
 oceEdit <- function(x, item, value, action, reason="", person="",
                      debug=getOption("oceDebug"))
 {

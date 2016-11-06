@@ -23,6 +23,9 @@ recognizes dates of forms such as \code{"2002 100 1430"} (year day hhmm),
 \code{"2002 23 Aug"}.  (The month may appear in abbreviated form or written
 in full, and may be capitalized or not.)
 }
+\examples{
+oce.as.POSIXlt("2016-11-06")
+}
 \author{
 Dan Kelley
 }
