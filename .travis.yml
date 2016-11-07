@@ -40,6 +40,6 @@ env:
         - _R_CHECK_CRAN_INCOMING=False
 
 after_success:
-        - Rscript -e 'library(covr); codecov()'
+        - Rscript -e 'library(covr); codecov(type="all")'
 
 
