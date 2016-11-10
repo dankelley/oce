@@ -33,8 +33,12 @@ r_packages:
     - devtools
     - rgdal
     - ncdf4
+    - covr
 env:
     global:
         - _R_CHECK_FORCE_SUGGESTS_=False
         - _R_CHECK_CRAN_INCOMING=False
+
+after_success:
+        - Rscript -e 'library(covr); codecov(type="all")'
 

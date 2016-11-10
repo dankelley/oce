@@ -27,4 +27,8 @@ for an object named \code{object}, say, one might use \code{\link{str}(object)}
 to learn about all the contents, or \code{\link{str}(object[["metadata"]])}
 to learn about the \code{metadata}, etc.
 }
+\examples{
+o <- new("oce")
+summary(o)
+}
 

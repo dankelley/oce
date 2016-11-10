@@ -75,7 +75,7 @@ oceSetData <- function(object, name, value, units, originalName, note="")
             } else {
                 ## Before 2016-07-24 (issue 1017) we used a character vector.
                 object@metadata$dataNamesOriginal <- as.list(object@metadata$dataNamesOriginal)
-                names(object@metadata$dataNamesOriginal) <- names(object@data)
+                object@metadata$dataNamesOriginal[[name]] <- originalName
             }
         } else {
             object@metadata$dataNamesOriginal <- list()
@@ -135,13 +135,5 @@ oceSetMetadata <- function(object, name, value, note="")
     if (nchar(note) > 0)
         object@processingLog <- processingLogAppend(object@processingLog, note)
     object
-}
-
-
-time <- function(x)
-{
-    if (!("time" %in% names(x@data)))
-        stop("no 'time' in names(x@data)")
-    x@data$time
 }
 

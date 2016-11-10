@@ -2,6 +2,7 @@ _site
 TAGS
 *.o
 *.so
+*.dll
 .Rhistory
 .Rapp.history
 *~

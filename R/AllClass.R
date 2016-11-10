@@ -48,6 +48,10 @@ setClass("oce",
 #'
 #' @param object The object to be summarized.
 #' @param ... Extra arguments (ignored)
+#'
+#' @examples
+#' o <- new("oce")
+#' summary(o)
 setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {

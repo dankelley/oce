@@ -68,3 +68,37 @@ test_that("despike", { # issue 1067
           expect_equal(x4, x5)
 })
 
+
+test_that("integration", {
+          x <- seq(0, 1, length.out=10)
+          dx <- x[2] - x[1]
+          y <- 2*x + 3*x^2
+          A <- integrateTrapezoid(x, y)
+          expect_equal(A,2,tolerance=dx^2) # test for quadratic accuracy
+})
+
+test_that("interpBarnes", {
+          data("wind")
+          u <- interpBarnes(wind$x, wind$y, wind$z)
+          ## These tests are not in comparison to theory, or
+          ## known values; they simply ensure that results have not
+          ## changed since 2016-11-06, when the tests were devised.
+          expect_equal(u$zg[1,1], 30.962611975027)
+          expect_equal(u$zg[10,10], 27.042654784966)
+})
+
+test_that("binAverage", {
+          x <- seq(0, 100, 1)
+          y <- 1 + x ^2
+          ba <- binAverage(x, y)
+          ## These tests are not in comparison to theory, or
+          ## known values; they simply ensure that results have not
+          ## changed since 2016-11-06, when the tests were devised.
+          expect_equal(10, length(ba$x))
+          expect_equal(10, length(ba$y))
+          expect_equal(ba$x[5], 45)
+          expect_equal(ba$y[5], 1989.5)
+})
+
+
+

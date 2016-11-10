@@ -656,22 +656,22 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     nameLines  <- grep("^# name [0-9][0-9]* = .*:.*$", lines, ignore.case=TRUE)
     colUnits <- vector("list", length(nameLines))
     colNamesInferred <- NULL
-    dataNamesOriginal <- NULL
+    dataNamesOriginal <- list()
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
         ##newname <- unduplicateName(nu$name, colNamesInferred)
         ##colNamesInferred <- c(colNamesInferred, newname)
         colNamesInferred <- c(colNamesInferred, nu$name)
         ## dataNamesOriginal[[newname]] <- nu$nameOriginal
-        dataNamesOriginal <- c(dataNamesOriginal, nu$nameOriginal)
+        dataNamesOriginal[[nu$name]] <- nu$nameOriginal
         ##colUnits[[iline]] <- nu$unit
         colUnits[[iline]] <- nu$unit
-        ##message("SBE name=", nu$name, "; nameOriginal=", nu$nameOriginal, "; unit='", as.character(nu$unit$unit),"'")
+        ## message("SBE name=", nu$name, "; nameOriginal=", nu$nameOriginal, "; unit='", as.character(nu$unit$unit),"'")
     }
     colNamesInferred <- unduplicateNames(colNamesInferred)
     names(colUnits) <- colNamesInferred
     ##print(colUnits)
-    names(dataNamesOriginal) <- colNamesInferred
+    ## names(dataNamesOriginal) <- colNamesInferred
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     ##found.scan <- "scan" %in% colNamesInferred
     ##found.temperature <- "temperature" %in% colNamesInferred
