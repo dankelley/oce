@@ -495,9 +495,10 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0,
         } else {
             ctd <- conductivity
         }
+        ## cat("< ", paste(names(ctd@data), collapse=" "), " >\n", sep="")
         conductivity <- ctd[["conductivity"]]
         if (is.null(conductivity)) stop("this CTD object has no conductivity")
-        ## Use unit within the object, ignoring the argument supplied here (FIXME: is this best?)
+        ## Use unit from within the object, but may be overridden after this block.
         tmp <- ctd[["conductivityUnit"]]
         if (is.list(tmp) && "unit" %in% names(tmp))
             conductivityUnit <- as.character(tmp$unit)
@@ -507,6 +508,8 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0,
     if (is.list(conductivityUnit)) {
         conductivityUnit <- as.character(conductivityUnit$unit)
     }
+    if (!length(conductivityUnit))
+        conductivityUnit <- ""
     if (conductivityUnit == "mS/cm")
         conductivity <- conductivity / 42.914
     else if (conductivityUnit == "S/m")

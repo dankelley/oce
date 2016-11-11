@@ -1180,8 +1180,11 @@ rsk2ctd <- function(x, pressureAtmospheric=0, debug=getOption("oceDebug"))
         } else {
             stop("unrecognized conductivity unit '", unit, "'; only uS/cm, mS/cm and S/m are handled")
         }
-        res <- ctdAddColumn(res, column=S, name="salinity", label="Salinity",
-                            unit=list(unit=expression(), scale="PSS-78"))
+        ## res <- ctdAddColumn(res, column=S, name="salinity", label="Salinity",
+        ##                     unit=list(unit=expression(), scale="PSS-78"))
+        res <- oceSetData(res, name="salinity", value=S,
+                          unit=list(unit=expression(), scale="PSS-78"))
+
     }
     oceDebug(debug, "} # rsk2ctd()\n", sep="", unindent=1)
     res@processingLog <- processingLogAppend(res@processingLog,

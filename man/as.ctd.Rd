@@ -144,7 +144,7 @@ ctd <- as.ctd(salinity, temperature, pressure)
 # Add a new column
 fluo <- 5 * exp(-pressure / 20)
 ctd <- oceSetData(ctd, name="fluorescence", value=fluo,
-                  units=list(unit=expression(mg/m^3), scale=""))
+                  unit=list(unit=expression(mg/m^3), scale=""))
 summary(ctd)
 
 ## 2. fake data, with supplied units (which are the defaults, actually)

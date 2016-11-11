@@ -146,9 +146,9 @@ unduplicateNames <- function(names)
 #' @examples
 #' data(ctd)
 #' new <- renameData(ctd, "temperature", "temperature68")
-#' new <- ctdAddColumn(new, T90fromT68(new[["temperature68"]]), 
-#'                    "temperature", "Temperature",
-#'                    list(unit=expression(degree*C),scale="ITS=90"))
+#' new <- oceSetData(new, name="temperature",
+#'                   value=T90fromT68(new[["temperature68"]]), 
+#'                   unit=list(unit=expression(degree*C),scale="ITS=90"))
 renameData <- function(x, old=NULL, new=NULL)
 {
     if (is.null(old)) stop("need to supply old")
@@ -3003,7 +3003,8 @@ addColumn <- function (x, data, name)
     if (n != length(data))
         stop("data length is ", n, " but it must be ", nd, " to match existing data")
     if (inherits(x, "ctd")) {
-        res <- ctdAddColumn(x, data, name) # FIXME: supply units
+        ## res <- ctdAddColumn(x, data, name) # FIXME: supply units
+        res <- oceSetData(x, name=name, value=data) # FIXME: supply units
     } else {
         res <- x
         res@data[[name]] <- data

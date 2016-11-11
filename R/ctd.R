@@ -95,8 +95,8 @@
 #' with \code{\link{ctdFindProfiles}}.  CTD data may be smoothed and/or cast onto
 #' specified pressure levels with \code{\link{ctdDecimate}}.
 #'
-#' Low-level manipulation may be done with functions such as
-#' \code{\link{ctdAddColumn}} and \code{\link{ctdUpdateHeader}}.  Additionally,
+#' As with all oce objects, low-level manipulation may be done with 
+#' \code{\link{oceSetData}} and \code{\link{oceSetMetadata}}. Additionally,
 #' many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
 #' discussed above, and skilled users may also manipulate the contents directly.
 #'
@@ -875,7 +875,7 @@ setMethod(f="[[<-",
 #' # Add a new column
 #' fluo <- 5 * exp(-pressure / 20)
 #' ctd <- oceSetData(ctd, name="fluorescence", value=fluo,
-#'                   units=list(unit=expression(mg/m^3), scale=""))
+#'                   unit=list(unit=expression(mg/m^3), scale=""))
 #' summary(ctd)
 #'
 #' ## 2. fake data, with supplied units (which are the defaults, actually)
@@ -1001,17 +1001,22 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 res@metadata$units$temperature <- o@metadata$temperatureUnit
         }
         if ("pressureType" %in% mnames) res@metadata$pressureType <- o@metadata$pressureType
-        if ("scan" %in% dnames) res@data$scan <- d$scan
+        ## if ("scan" %in% dnames) res@data$scan <- d$scan
         ## FIXME: time goes into metadata or data ... does that make sense?
         if ("time" %in% dnames) if (length(d$time) > 1) res@data$time <- d$time else res@metadata$time <- d$time
-        if ("quality" %in% dnames) res@data$quality <- d$quality
-        if ("oxygen" %in% dnames) res@data$oxygen <- d$oxygen
-        if ("nitrate" %in% dnames) res@data$nitrate <- d$nitrate
-        if ("nitrite" %in% dnames) res@data$nitrite <- d$nitrite
-        if ("phosphate" %in% dnames) res@data$phosphate <- d$phosphate
-        if ("silicate" %in% dnames) res@data$silicate <- d$silicate
+        ## if ("quality" %in% dnames) res@data$quality <- d$quality
+        ## if ("oxygen" %in% dnames) res@data$oxygen <- d$oxygen
+        ## if ("nitrate" %in% dnames) res@data$nitrate <- d$nitrate
+        ## if ("nitrite" %in% dnames) res@data$nitrite <- d$nitrite
+        ## if ("phosphate" %in% dnames) res@data$phosphate <- d$phosphate
+        ## if ("silicate" %in% dnames) res@data$silicate <- d$silicate
         for (field in names(d)) {
-            res <- ctdAddColumn(res, column=d[[field]], name=field, label=field, log=FALSE)
+            if (field == "time") {
+                if (length(d$time) > 1) res@data$time <- d$time else res@metadata$time <- d$time
+            } else {
+                ##res <- ctdAddColumn(res, column=d[[field]], name=field, label=field, log=FALSE)
+                res@data[[field]] <- d[[field]]
+            }
         }
         if ("longitude" %in% dnames && "latitude" %in% dnames) {
             longitude <- d$longitude

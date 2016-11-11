@@ -431,7 +431,7 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, 
     }
     res <- as.ctd(salinity, temperature, pressure, station=station, startTime=startTime)
     res <- oceSetData(res, name="oxygen", value=oxygen,
-                      units=expression(unit=expression(), scale=""))
+                      unit=expression(unit=expression(), scale=""))
     res@metadata$dataNamesOriginal <- list(pressure="CTDPRS", temperature="CTDTMP", 
                                            salinity="CTDSAL", oxygen="CTDOXY")
     res

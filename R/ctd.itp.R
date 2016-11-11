@@ -103,7 +103,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
                       startTime=ISOdate(year, 1, 1) + yearday * 3600 * 24,
                       station=station)
         res <- oceSetData(res, name="oxygen", value=oxygen,
-                          units=expression(unit=expression(), scale=""))
+                          unit=expression(unit=expression(), scale=""))
         res <- oceSetMetadata(res, "filename", filename)
         res <- oceSetMetadata(res, "dataNamesOriginal",
                               list(temperature="temperature", salinity="salinity", oxygen="oxygen", pressure="pressure"))

@@ -2665,8 +2665,10 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
                                 longitude=longitude[look][1], latitude=latitude[look][1],
                                 startTime=as.POSIXct(time[i]), station=paste("profile", stationLevels[i]))
             for (Ni in seq_along(N)) {
-                ctds[[i]] <- ctdAddColumn(ctds[[i]], as.vector(tmp[[N[Ni]]])[look], N[Ni],
-                                          unit=tmp[['units']][[N[Ni]]])
+                ## ctds[[i]] <- ctdAddColumn(ctds[[i]], as.vector(tmp[[N[Ni]]])[look], N[Ni],
+                ##                           unit=tmp[['units']][[N[Ni]]])
+                ctds[[i]] <- oceSetData(ctds[[i]], name=N[Ni], value=as.vector(tmp[[N[Ni]]])[look],
+                                        unit=tmp[['units']][[N[Ni]]])
             }
         }
     } else if (inherits(salinity, "list")) {
