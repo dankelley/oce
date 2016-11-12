@@ -1,0 +1,40 @@
+library(oce)
+context("read adp data")
+test_that("Teledyn/RDI", {
+          if (1 == length(list.files(path=".", pattern="local_data"))) {
+              beam <- read.oce("local_data/adp_rdi",
+                               from=1, to=10, latitude=47.88126, longitude=-69.73433)
+              xyz <- beamToXyzAdp(beam)
+              enu <- xyzToEnuAdp(xyz, declination=-18.1)
+              expect_equal(c(10, 84, 4), dim(beam[["v"]]))
+              expect_equal(c(10, 84, 4), dim(xyz[["v"]]))
+              expect_equal(c(10, 84, 4), dim(enu[["v"]]))
+              expect_equal(beam[["latitude"]], 47.88126)
+              expect_equal(xyz[["latitude"]], 47.88126)
+              expect_equal(enu[["latitude"]], 47.88126)
+              expect_equal(beam[["longitude"]], -69.73433)
+              expect_equal(xyz[["longitude"]], -69.73433)
+              expect_equal(enu[["longitude"]], -69.73433)
+              ## FIXME: add more tests on the data
+          }
+})
+
+test_that("Nortek aquadopp", {
+          if (1 == length(list.files(path=".", pattern="local_data"))) {
+              beam <- read.oce("local_data/adp_nortek_aquadopp",
+                               from=1, to=10, latitude=47.87943, longitude=-69.72533)
+              xyz <- beamToXyzAdp(beam)
+              enu <- xyzToEnuAdp(xyz, declination=-18.1)
+              expect_equal(c(10, 25, 3), dim(beam[["v"]]))
+              expect_equal(c(10, 25, 3), dim(xyz[["v"]]))
+              expect_equal(c(10, 25, 3), dim(enu[["v"]]))
+              expect_equal(beam[["latitude"]], 47.87943)
+              expect_equal(xyz[["latitude"]], 47.87943)
+              expect_equal(enu[["latitude"]], 47.87943)
+              expect_equal(beam[["longitude"]], -69.72533)
+              expect_equal(xyz[["longitude"]], -69.72533)
+              expect_equal(enu[["longitude"]], -69.72533)
+               ## FIXME: add more tests on the data
+          }
+})
+
