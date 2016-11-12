@@ -16,4 +16,6 @@ cp /data/archive/sleiwex/2008/fielddata/2008-07-04/Merlu/Biosonics/20080704_1124
 
 cp ../../../create_data/lobo/lobo.dat  .
 
+cp ~/src/rgdal/branches/rgdal_iconv/inst/vectors/test_trk2.gpx .
+
 ```
