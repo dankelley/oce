@@ -196,6 +196,7 @@ setMethod(f="[[",
                   else if (i == "rainDay") res <- 0.01 * getBand(x@data[[i]])
                   else if (i == "rainNight") res <- 0.01 * getBand(x@data[[i]])
                   else if (i == "rain") res <- 0.01 * getBand(.Call("amsr_average", x@data[["rainDay"]], x@data[["rainNight"]]))
+                  else if (i == "data") return(x@data)
               } else {
                   if      (i == "timeDay") res <- x@data[[i]]
                   else if (i == "timeNight") res <- x@data[[i]]
@@ -218,6 +219,7 @@ setMethod(f="[[",
                   else if (i == "rainDay") res <- x@data[[i]]
                   else if (i == "rainNight") res <- x@data[[i]]
                   else if (i == "rain") res <- .Call("amsr_average", x@data[["rainDay"]], x@data[["rainNight"]])
+                  else if (i == "data") return(x@data)
               }
               dim(res) <- dim
               res
