@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapMeridians}
 \alias{mapMeridians}
-\title{Add Meridians on a Map [DEPRECATED]}
+\title{Add Meridians on a Map [deprecated]}
 \usage{
 mapMeridians(latitude, lty = "solid", lwd = 0.5 * par("lwd"),
   col = "darkgray", ...)
@@ -20,11 +20,13 @@ a meridian grid, or a vector of latitudes at which to draw meridians.}
 \item{...}{optional arguments passed to \code{\link{lines}}.}
 }
 \description{
-Plot meridians (lines of constant latitude) on an existing map.
-\strong{Warning:} this function will be removed soon;
-see \link{oce-deprecated}.
+\strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+Use \code{\link{mapGrid}} instead of the present function.
 }
 \details{
+Plot meridians (lines of constant latitude) on an existing map.
+
+
 Meridians that will not fit in the plotting space are ignored.
 }
 \section{Bugs}{
@@ -51,18 +53,8 @@ Dan Kelley
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
 
-Other functions related to maps: \code{\link{lonlat2map}},
-  \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
-  \code{\link{mapArrows}}, \code{\link{mapAxis}},
-  \code{\link{mapContour}},
-  \code{\link{mapDirectionField}}, \code{\link{mapGrid}},
-  \code{\link{mapImage}}, \code{\link{mapLines}},
-  \code{\link{mapLocator}},
-  \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapPlot}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{mapZones}}, \code{\link{oceCRS}},
-  \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
+Other functions that will be removed soon: \code{\link{addColumn}},
+  \code{\link{ctdAddColumn}},
+  \code{\link{ctdUpdateHeader}}, \code{\link{mapZones}}
 }
 

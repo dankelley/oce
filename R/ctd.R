@@ -1219,7 +1219,10 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 }
 
 
-#' Add a Column to the Data Slot of a CTD Object
+#' Add a Column to the Data Slot of a CTD Object [deprecated]
+#'
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+#' Use \code{\link{oceSetData}} instead of the present function.
 #'
 #' Add a column to the \code{data} slot of an object of
 #' \code{\link{ctd-class}}, also updating the \code{metadata}
@@ -1257,10 +1260,12 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ctd} data
+#' @family functions that will be removed soon
 ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalName="",
                           debug=getOption("oceDebug"))
 {
+    .Deprecated("oceSetData",
+                msg="ctdAddColume() will be removed soon. Use oceSetData() instead. See ?'oce-deprecated'.")
     ## FIXME: not using the units
     oceDebug(debug, "ctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="", unindent=1)
     if (missing(column))
@@ -2244,7 +2249,9 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 }
 
 
-#' Update a CTD Header
+#' Update a CTD Header [deprecated]
+#'
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
 #'
 #' Update the header of a \code{ctd} object, e.g. adjusting \code{nvalues} and the
 #' \code{span} of each column. This is done automatically by \code{ctdTrim}, for
@@ -2268,9 +2275,11 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 #'
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ctd} data
+#' @family functions that will be removed soon
 ctdUpdateHeader <- function (x, debug=FALSE)
 {
+    .Deprecated("oceSetMetadata",
+                msg="ctdUpdateHeader() will be removed soon. See ?'oce-deprecated'.")
     if (length(x@metadata$header) < 1)
         stop("there is no header in this CTD object")
     if (length(x@data) < 1)

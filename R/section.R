@@ -636,7 +636,7 @@ sectionSort <- function(section, by)
 makeSection <- function(item, ...)
 {
     .Defunct("as.section",
-             msg="makeSection() was marked 'defunct' in March 2016, after having been marked 'deprecated' for a CRAN release cycle.section() instead. See ?'oce-defunct'.")
+             msg="makeSection() was marked 'defunct' in March 2016, after having been marked 'deprecated' for a CRAN release cycle. Use as.section() instead. See ?'oce-defunct'.")
 ##     .Deprecated("as.section",
 ##                 msg="makeSection() will be removed soon; use as.section() instead. See ?'oce-deprecated'.")
 ##     if (inherits(item, "ctd")) {

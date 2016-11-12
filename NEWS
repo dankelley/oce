@@ -1,4 +1,5 @@
 0.9-20
+- deprecate ctdAddColumn() and ctdUpdateHeader()
 - download.topo() added and read.topo() updated to handle new formats
 - download.amsr() added
 - composite() added

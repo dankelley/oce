@@ -2971,14 +2971,10 @@ fillGap <- function(x, method=c("linear"), rule=1)
 }
 
 
-#' Add a Column to the Data Slot of an Oce object [DEPRECATED]
+#' Add a Column to the Data Slot of an Oce object [deprecated]
 #'
-#' \strong{Warning:} this function will be removed soon;
-#' see \link{oce-deprecated}. The more powerful function
-#' \code{\link{oceSetData}} should be used instead.
-#'
-#' If there is already a column with the given name, its contents are replaced
-#' by the new value.
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+#' Use \code{\link{oceSetData}} instead of the present function.
 #'
 #' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
 #' @param data the data.  The length of this item must match that of the
@@ -2988,6 +2984,7 @@ fillGap <- function(x, method=c("linear"), rule=1)
 #' column.
 #' @author Dan Kelley
 #' @seealso Please use \code{\link{oceSetData}} instead of the present function.
+#' @family functions that will be removed soon
 addColumn <- function (x, data, name)
 {
     .Deprecated("oceSetData",
