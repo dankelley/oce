@@ -54,7 +54,6 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
         latitude <- d[4]
         oceDebug(debug, "station '", station, "' at ", latitude, "N, ", longitude, "E\n", sep="")
         namesLine <- grep("^%year day", lines[1:10])
-        dan<<-lines
         if (1 == length(namesLine)) {
             oceDebug(debug, "length(namesLine)==1\n")
             hline <- gsub("%", "", lines[namesLine])
