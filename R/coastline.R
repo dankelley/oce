@@ -1169,9 +1169,9 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #'
 #' @section Caution:
 #' This function is provisional. Its behaviour, name and very existence
-#' may change through the late months of 2015.  One part of the
-#' development plan is to see if there is common ground between this
-#' and the \code{clipPolys} function in the \CRANpkg{PBSmapping} package.
+#' may change.  Part of the development plan is to see if there is common
+#' ground between this and the \code{clipPolys} function in the
+#' \CRANpkg{PBSmapping} package.
 #' 
 #' @param coastline original coastline object
 #' @param lon_0 longitude as would be given in a \code{+lon_0=} item in a 
@@ -1181,7 +1181,7 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' library(oce)
 #' data(coastlineWorld)
 #' \dontrun{
-#' mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100", fill='gray')
+#' mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100")#, col='gray')
 #' }
 #'
 #' @return a new coastline object
@@ -1203,6 +1203,5 @@ coastlineCut <- function(coastline, lon_0=0)
               NAOK=TRUE)
     cut$xo <- cut$xo[1:cut$no]
     cut$yo <- cut$yo[1:cut$no]
-    warning("coastlineCut() may change name or behaviour during early 2016")
     as.coastline(longitude=cut$xo, latitude=cut$yo)
 }

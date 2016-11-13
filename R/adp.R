@@ -2911,7 +2911,7 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 #' 
 #' \dontrun{
 #' library(oce)    
-#' beam <- read.oce("adp_rdi_2615.000",
+#' beam <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
 #'                  from=as.POSIXct("2008-06-26", tz="UTC"),
 #'                  to=as.POSIXct("2008-06-26 00:10:00", tz="UTC"),
 #'                  longitude=-69.73433, latitude=47.88126)

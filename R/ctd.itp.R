@@ -28,6 +28,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
     }
     lines <- readLines(file, encoding="UTF-8")
     nlines <- length(lines)
+    oceDebug(debug, "read ", nlines, " lines\n")
     if ("%endofdat" == substr(lines[nlines], 1, 9)) {
         lines <- lines[1:(nlines-1)]
         nlines <- nlines - 1
@@ -51,8 +52,11 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
         if (longitude < 0)
             longitude <- 360 + longitude
         latitude <- d[4]
+        oceDebug(debug, "station '", station, "' at ", latitude, "N, ", longitude, "E\n", sep="")
         namesLine <- grep("^%year day", lines[1:10])
+        dan<<-lines
         if (1 == length(namesLine)) {
+            oceDebug(debug, "length(namesLine)==1\n")
             hline <- gsub("%", "", lines[namesLine])
             tokens <- strsplit(hline, " ")[[1]]
             names <- gsub("\\(.*\\)", "", tokens)
@@ -79,6 +83,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
             oxygen <- d$oxygen
             time <- as.POSIXct(paste(d$year, "-01-01 00:00:00", sep=""), tz="UTC") + d$day * 86400
         } else {
+            oceDebug(debug, "length(namesLine)!=1\n")
             d <- read.table(text=lines[4:nlines])
             items <- scan(text=lines[3], what="character", quiet=TRUE)
             pcol <- grep("pressure", items)[1]
@@ -103,7 +108,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
                       startTime=ISOdate(year, 1, 1) + yearday * 3600 * 24,
                       station=station)
         res <- oceSetData(res, name="oxygen", value=oxygen,
-                          unit=expression(unit=expression(), scale=""))
+                          unit=list(unit=expression(), scale=""))
         res <- oceSetMetadata(res, "filename", filename)
         res <- oceSetMetadata(res, "dataNamesOriginal",
                               list(temperature="temperature", salinity="salinity", oxygen="oxygen", pressure="pressure"))

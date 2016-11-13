@@ -565,3 +565,225 @@ void uint16_le(unsigned char *b, int *n, int *out)
   }
 }
 
+#if 0
+// 2016-10-13 This code is NOT used; it is being kept just in case it might be
+// 2016-10-13 useful later. 
+
+//#define debug
+
+/*
+ * bisect_d (bisection search vector of doubles)
+ * x = vector of doubles (must be in increasing order)
+ * find = vector of doubles whose index to find
+ * side = vector of 0 or 1 (to look to the left, or right, of find)
+ * returns a vector of indices, or NA values
+ *
+ * TESTING:
+
+ system("R CMD SHLIB misc.c") ; dyn.load("misc.so")
+
+ x <- 0.1 + 1:1e7
+ find <- c(10, 5e4)
+ side <- c(0, 1)
+
+ system.time({
+ loc <- .Call("bisect_d", x, find, side);
+ xx <- x[loc[1]:loc[2]]
+ })
+
+ user  system elapsed 
+ 0.021   0.000   0.021 
+
+ system.time(xxx <- x[(find[1] < x) & (x < find[2])])
+
+ user  system elapsed 
+ 0.266   0.001   0.264 
+
+CONCLUSION: about 10 times faster than the straightforward method.
+The latter might be an issue for deep use in loops, for large objects.
+
+*/
+SEXP bisect_d(SEXP x, SEXP find, SEXP side)
+{
+    PROTECT(x = AS_NUMERIC(x));
+    double *px = NUMERIC_POINTER(x);
+    PROTECT(find = AS_NUMERIC(find));
+    double *pfind = NUMERIC_POINTER(find);
+    PROTECT(side = AS_INTEGER(side));
+    int *pside = INTEGER_POINTER(side);
+    int nx = length(x);
+    int nfind = length(find);
+    int nside = length(side);
+    if (nfind != nside)
+        error("need length(find) = length(side)");
+    int i;
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(nfind));
+    /* ensure that x is in order */
+    for (i = 1; i < nx; i++) {
+        if (px[i-1] >= px[i]) {
+            char buf[1024];
+            sprintf(buf, "x must be ordered from small to large; fails at x[%d]\n", i);
+            error(buf);
+        }
+    }
+    int *pres = INTEGER_POINTER(res);
+    int left, right, middle, ifind;
+    for (ifind = 0; ifind < nfind; ifind++) {
+        double this_find = pfind[ifind];
+#ifdef debug
+        Rprintf("find[%d]=%f (%f <= x <= %f)\n", ifind, this_find, *(px), *(px+nx-1));
+#endif
+        /* trim indices to those of x (R notation) */
+        if (this_find <= px[0]) {
+            pres[ifind] = 1;
+            continue;
+        }
+        if (this_find >= px[nx-1]) {
+            pres[ifind] = nx;
+            continue;
+        }
+        left = 0;
+        right = nx - 1;
+        int halves = (int)(10 + log(0.0+nx) / log(2.0)); /* prevent inf loop from poor coding */
+        pres[ifind] = NA_INTEGER;
+        for (int half = 0; half < halves; half++) {
+            middle = (int)floor(0.5 * (left + right));
+            /* exact match to middle? */
+            if (px[middle] == pfind[ifind]) {
+#ifdef debug
+                Rprintf("exact match at middle=%d\n", middle);
+#endif
+                pres[ifind] = middle;
+                break;
+            }
+            /* in left half */
+            if ((px[left] <= this_find) & (this_find < px[middle])) {
+#ifdef debug
+                Rprintf("L %d %d\n", left, middle);
+#endif
+                right = middle;
+                if (2 > (middle - left)) {
+#ifdef debug
+                    Rprintf("narrowed to left=%d and middle=%d\n", left, middle);
+#endif
+                    pres[ifind] = middle;
+                    if (pside[ifind] == 0)
+                        pres[ifind] = left + 1;
+                    else
+                        pres[ifind] = middle + 1;
+                    break;
+                }
+            }
+            /* in right half */
+            if ((px[middle] < this_find) & (this_find <= px[right])) {
+#ifdef debug
+                Rprintf("R %d %d %f %f\n", middle, right, px[middle], px[right]);
+#endif
+                left = middle;
+                if (2 > (right - middle)) {
+#ifdef debug
+                    Rprintf("narrowed to middle=%d and right=%d\n", middle, right);
+                    Rprintf("pside=%d\n", pside[ifind]);
+#endif
+                    if (pside[ifind] == 0)
+                        pres[ifind] = middle + 1;
+                    else
+                        pres[ifind] = right + 1;
+#ifdef debug
+                    Rprintf("pres[ifind]=%d\n",pres[ifind]);
+#endif
+                    break;
+                }
+            }
+        }
+    }
+    UNPROTECT(4);
+    return(res);
+}
+
+#endif
+
+/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+// 2016-10-13 This code is NOT used; it is being kept just in case it might be
+// 2016-10-13 useful later. 
+#if 0
+
+// hex2int() takes a vector of character (hex) strings and returns a vector of
+// numbers corresponding to their pairs, eg. "0110" yields c(1, 16).
+// LIMITATION: all elements in the vector must have the same
+//             number of characters, and this number must be even.
+
+#include <R.h>
+#include <Rdefines.h>
+#include <Rinternals.h>
+
+/*
+   TEST CODE
+
+   system("R CMD shlib hex2int.c")
+   dyn.load("hex2int.so")
+   C <- c("0110", "00FF")
+   I <- .Call("hex2int", C)
+   I <- matrix(I, nrow=length(C), byrow=TRUE)
+
+ */
+int char2int(const char h)
+{
+    int I = 0;
+    switch(h) {
+        case '0': I = 0; break;
+        case '1': I = 1; break;
+        case '2': I = 2; break;
+        case '3': I = 3; break;
+        case '4': I = 4; break;
+        case '5': I = 5; break;
+        case '6': I = 6; break;
+        case '7': I = 7; break;
+        case '8': I = 8; break;
+        case '9': I = 9; break;
+        case 'A': I = 10; break;
+        case 'B': I = 11; break;
+        case 'C': I = 12; break;
+        case 'D': I = 13; break;
+        case 'E': I = 14; break;
+        case 'F': I = 15; break;
+        case 'a': I = 10; break;
+        case 'b': I = 11; break;
+        case 'c': I = 12; break;
+        case 'd': I = 13; break;
+        case 'e': I = 14; break;
+        case 'f': I = 15; break;
+    }
+    return(I);
+}
+
+SEXP hex2int(SEXP C)
+{
+  PROTECT(C = AS_CHARACTER(C));
+  int n = LENGTH(C);
+  const char *Cp;
+  SEXP res;
+
+  Cp = CHAR(STRING_ELT(C, 0));
+  int nchar = strlen(Cp);
+
+  PROTECT(res = NEW_INTEGER((int)(n * nchar / 2)));
+  int *resp = INTEGER_POINTER(res);
+  int resi = 0;
+  for (int i = 0; i < n; i++) {
+      //Rprintf("i: %d\n", i);
+      Cp = CHAR(STRING_ELT(C, i));
+      //Rprintf("(%s) len %d\n", Cp, nchar);
+      for (int c = 0; c < nchar; c+=2) {
+          int I = 16 * char2int(Cp[c]) + char2int(Cp[c+1]);
+          //if (i < 2) Rprintf("  [%c %c | %d]\n", Cp[c], Cp[c+1], I); //int)Cp[c]);
+          resp[resi++] = I;
+      }
+      //Rprintf("\n");
+  }
+  UNPROTECT(2);
+  return(res);
+}
+#endif
+

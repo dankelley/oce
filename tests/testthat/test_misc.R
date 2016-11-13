@@ -100,5 +100,10 @@ test_that("binAverage", {
           expect_equal(ba$y[5], 1989.5)
 })
 
-
+test_that("get_bit (unused in oce)", {
+          buf <- 0x3a
+          bits <- unlist(lapply(7:0, function(i) .Call("get_bit", buf, i)))
+          ## NB. 'i' starts at rightmost bit
+          expect_equal(c(0, 0, 1, 1, 1, 0, 1, 0), bits)
+})
 

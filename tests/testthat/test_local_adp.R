@@ -1,6 +1,6 @@
 library(oce)
 context("read adp data")
-test_that("Teledyn/RDI", {
+test_that("Teledyn/RDI read and check", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               beam <- read.oce("local_data/adp_rdi",
                                from=1, to=10, latitude=47.88126, longitude=-69.73433)
@@ -19,7 +19,16 @@ test_that("Teledyn/RDI", {
           }
 })
 
-test_that("Nortek aquadopp", {
+test_that("Teledyn/RDI binmap", {
+          if (1 == length(list.files(path=".", pattern="local_data"))) {
+              beam <- read.oce("local_data/adp_rdi",
+                               from=1, to=10, latitude=47.88126, longitude=-69.73433)
+              beam2 <- binmapAdp(beam)
+              ## FIXME: add tests on the data
+          }
+})
+
+test_that("Nortek aquadopp read and check", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               beam <- read.oce("local_data/adp_nortek_aquadopp",
                                from=1, to=10, latitude=47.87943, longitude=-69.72533)
@@ -35,6 +44,15 @@ test_that("Nortek aquadopp", {
               expect_equal(xyz[["longitude"]], -69.72533)
               expect_equal(enu[["longitude"]], -69.72533)
                ## FIXME: add more tests on the data
+          }
+})
+
+test_that("Sortek (PCADP)", {
+          if (1 == length(list.files(path=".", pattern="local_data"))) {
+              beam <- read.oce("local_data/adp_sontek",
+                               from=1, to=10, latitude=48.87961, longitude=-69.72706)
+              expect_equal(48.87961, beam[["latitude"]])
+              expect_equal(-69.72706, beam[["longitude"]])
           }
 })
 
