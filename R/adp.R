@@ -1196,7 +1196,7 @@ setMethod(f="plot",
                   stop("method is only for objects of class '", "adp", "'")
               if (!(is.null(x@metadata$haveActualData) || x@metadata$haveActualData)) {
                   warning("there are no profiles in this dataset")
-                  return
+                  return()
               }
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
