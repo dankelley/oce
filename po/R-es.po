@@ -247,7 +247,7 @@ msgid "cannot handle which="
 msgstr "no puedo manejar which="
 
 msgid "because this instrument lacked bottom tracking"
-msgstr "porque éste instrumento carece de bottom tracking"
+msgstr "porque éste instrumento no puede realizar bottom tracking"
 
 msgid "cannot use which=27 because this device did not have 4 beams"
 msgstr "no puedo utilizar which=27 porque éste dispositivo no tiene 4 lasers"
@@ -662,44 +662,49 @@ msgid ""
 "cannot convert coordinates because metadata$transformationMatrix is NULL "
 "(see above)."
 msgstr ""
-"cannot convert coordinates because metadata$transformationMatrix is NULL "
-"(see above)."
+"no puedo convertir coordenadas porque metadata$transformationMatrix es NULL "
+"(vea encima)."
 
 msgid "input must be in xyz coordinates, but it is in"
-msgstr "input must be in xyz coordinates, but it is in"
+msgstr "el input debería estar en coordenadas xyz, pero está en"
 
 msgid "cannot handle ADV objects that were created with oce version < 0.3"
-msgstr "cannot handle ADV objects that were created with oce version < 0.3"
+msgstr "no se pueden manejar objetos ADV creados con una versión de oce < 0.3"
 
 msgid "need sensor orientation to be 'upward' or 'downward', not '"
-msgstr "need sensor orientation to be 'upward' or 'downward', not '"
+msgstr "se necesita que el sensor esté orientado 'upward' o 'downward', no '"
 
 msgid "must give horizontalCase for cabled Nortek Vector (cases 3 to 6)"
-msgstr "must give horizontalCase for cabled Nortek Vector (cases 3 to 6)"
+msgstr "debe proporcionar horizontalCase para cabled Nortek Vector (casos 3 a 6)"
 
 msgid "must give horizontalCase as TRUE or FALSE"
-msgstr "must give horizontalCase as TRUE or FALSE"
+msgstr "debe proporcionar horizontalCase como TRUE o FALSE"
 
 msgid ""
 "cannot handle cases 5 and 6 (vector velocimeter cabled to a vertical case)"
 msgstr ""
-"cannot handle cases 5 and 6 (vector velocimeter cabled to a vertical case)"
+"no puedo manejar cajas 5 y 6 (vector velocimetro cableado a una caja vertical)"
+# I asume that both case equal box in this context. 
+# If the first case would equal instance, subject or matter replace it by 'casos' instead.
 
 msgid "cannot handle the case of a cabled Sontek unit (does it even exist?)"
-msgstr "cannot handle the case of a cabled Sontek unit (does it even exist?)"
+msgstr "no puedo manejar la caja de una unidad cableada Sontek (existe siquiera?)"
+# same as in the previous message, use caja if equals "cannot handle the box of a cabled..."
+# use caso instead if equals "cannot handle the issue of a cabled..."
 
 msgid ""
 "unknown type of instrument; x@metadata$manufacturer must contain either "
 "\"sontek\" or \"nortek\""
 msgstr ""
-"unknown type of instrument; x@metadata$manufacturer must contain either "
-"\"sontek\" or \"nortek\""
+"tipo de instrumento desconocido; x@metadata$manufacturer debe de contener bien "
+"\"sontek\" o bien \"nortek\""
 
 msgid "heading length ("
 msgstr "heading length ("
+# ambiguous, is the name of the header 'length' or its the header extension?
 
 msgid ") does not match number of velocity samples ("
-msgstr ") does not match number of velocity samples ("
+msgstr ") no coincide con el número de muestras de velocidad ("
 
 msgid "input must be in \"enu\" coordinates, but it is in"
 msgstr "input must be in \"enu\" coordinates, but it is in"
