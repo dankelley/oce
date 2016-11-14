@@ -144,7 +144,7 @@ ctd <- as.ctd(salinity, temperature, pressure)
 # Add a new column
 fluo <- 5 * exp(-pressure / 20)
 ctd <- oceSetData(ctd, name="fluorescence", value=fluo,
-                  units=list(unit=expression(mg/m^3), scale=""))
+                  unit=list(unit=expression(mg/m^3), scale=""))
 summary(ctd)
 
 ## 2. fake data, with supplied units (which are the defaults, actually)
@@ -168,9 +168,8 @@ Engineering}, \bold{5}, pp 22-23.
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},

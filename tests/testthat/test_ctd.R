@@ -14,8 +14,8 @@ test_that("as.ctd() with specified arguments, including salinity", {
           expect_equal(ctd_ctd[["pressureType"]], "sea")
           # check addition of a new column
           fluo <- rep(1, length(ctd_ctd[["salinity"]]))
-          ctd_ctd <- oceSetData(ctd, name="fluorescence", value=fluo,
-                                units=list(unit=expression(mg/m^3), scale=""))
+          ctd_ctd <- oceSetData(ctd_ctd, name="fluorescence", value=fluo,
+                                unit=list(unit=expression(mg/m^3), scale=""))
           expect_equal(ctd_ctd[["fluorescenceUnit"]],
                        list(unit=expression(mg/m^3), scale=""))
           expect_true("fluorescence" %in% names(ctd_ctd[["data"]]))
@@ -50,7 +50,7 @@ test_that("as.ctd() with a list", {
 
 test_that("as.ctd() with an argo object", {
           S2 <- argo[['salinity']] / 2
-          argo2 <- oceSetData(argo, "S2", S2, units=list(unit=expression(), scale="PSS-78"))
+          argo2 <- oceSetData(argo, "S2", S2, unit=list(unit=expression(), scale="PSS-78"))
           sec <- as.section(argo2)
           station1 <- sec[["station", 1]]
           expect_true("S2" %in% names(station1@data))
@@ -261,7 +261,7 @@ test_that("pressure accessor handles missing pressure", {
           ctd@data$pressure <- NULL
           ctd@metadata$units$pressure <- NULL
           ## add new
-          ctd2 <- ctdAddColumn(ctd, depth, "depth", unit=list(unit=expression(m), scale=""))
+          ctd2 <- oceSetData(ctd, name="depth", value=depth, unit=list(unit=expression(m), scale=""))
           ## test
           expect_equal(porig, ctd2[['pressure']], tolerance=0.0001) # swDepth is approximate; sub-mm is good enough anyway
 })
@@ -274,7 +274,7 @@ test_that("salinity accessor computes value from conductivity", {
           ctd@data$salinity <- NULL
           ctd@metadata$units$salinity <- NULL
           ## add new
-          ctd2 <- ctdAddColumn(ctd, C, "conductivity", unit=list(unit=expression(), scale="PSS-78"))
+          ctd2 <- oceSetData(ctd, name="conductivity", value=C, unit=list(unit=expression(), scale="PSS-78"))
           expect_equal(Sorig, ctd2[['salinity']], tolerance=0.0001)
 })
 

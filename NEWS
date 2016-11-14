@@ -1,4 +1,6 @@
 0.9-20
+- make read.gps() handle more files
+- deprecate ctdAddColumn() and ctdUpdateHeader()
 - download.topo() added and read.topo() updated to handle new formats
 - download.amsr() added
 - composite() added

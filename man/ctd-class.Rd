@@ -104,8 +104,8 @@ Towyow data can be split up into sets of profiles (ascending or descending)
 with \code{\link{ctdFindProfiles}}.  CTD data may be smoothed and/or cast onto
 specified pressure levels with \code{\link{ctdDecimate}}.
 
-Low-level manipulation may be done with functions such as
-\code{\link{ctdAddColumn}} and \code{\link{ctdUpdateHeader}}.  Additionally,
+As with all oce objects, low-level manipulation may be done with 
+\code{\link{oceSetData}} and \code{\link{oceSetMetadata}}. Additionally,
 many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
 discussed above, and skilled users may also manipulate the contents directly.
 }
@@ -127,11 +127,10 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctdDecimate}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
-  \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{ctdTrim}}, \code{\link{ctd}},
+  \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},

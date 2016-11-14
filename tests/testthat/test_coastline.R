@@ -22,3 +22,8 @@ test_that("various methods of coastline creation", {
           expect_equal(cl1[["longitude"]], cl4[["longitude"]])
 })
 
+test_that("coastlineCut", {
+          data(coastlineWorld)
+          cw180 <- coastlineCut(coastlineWorld, lon_0=100)
+})
+

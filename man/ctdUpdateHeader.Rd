@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdUpdateHeader}
 \alias{ctdUpdateHeader}
-\title{Update a CTD Header}
+\title{Update a CTD Header [deprecated]}
 \usage{
 ctdUpdateHeader(x, debug = FALSE)
 }
@@ -19,6 +19,9 @@ be printed.}
 A new \code{\link{ctd-class}} object.
 }
 \description{
+\strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+}
+\details{
 Update the header of a \code{ctd} object, e.g. adjusting \code{nvalues} and the
 \code{span} of each column. This is done automatically by \code{ctdTrim}, for
 example.
@@ -38,21 +41,8 @@ The Seabird CTD instrument is described at
   \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 }
 \seealso{
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctd}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
+Other functions that will be removed soon: \code{\link{addColumn}},
+  \code{\link{ctdAddColumn}}, \code{\link{mapMeridians}},
+  \code{\link{mapZones}}
 }
 

@@ -636,7 +636,7 @@ sectionSort <- function(section, by)
 makeSection <- function(item, ...)
 {
     .Defunct("as.section",
-             msg="makeSection() was marked 'defunct' in March 2016, after having been marked 'deprecated' for a CRAN release cycle.section() instead. See ?'oce-defunct'.")
+             msg="makeSection() was marked 'defunct' in March 2016, after having been marked 'deprecated' for a CRAN release cycle. Use as.section() instead. See ?'oce-defunct'.")
 ##     .Deprecated("as.section",
 ##                 msg="makeSection() will be removed soon; use as.section() instead. See ?'oce-deprecated'.")
 ##     if (inherits(item, "ctd")) {
@@ -2665,8 +2665,10 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
                                 longitude=longitude[look][1], latitude=latitude[look][1],
                                 startTime=as.POSIXct(time[i]), station=paste("profile", stationLevels[i]))
             for (Ni in seq_along(N)) {
-                ctds[[i]] <- ctdAddColumn(ctds[[i]], as.vector(tmp[[N[Ni]]])[look], N[Ni],
-                                          unit=tmp[['units']][[N[Ni]]])
+                ## ctds[[i]] <- ctdAddColumn(ctds[[i]], as.vector(tmp[[N[Ni]]])[look], N[Ni],
+                ##                           unit=tmp[['units']][[N[Ni]]])
+                ctds[[i]] <- oceSetData(ctds[[i]], name=N[Ni], value=as.vector(tmp[[N[Ni]]])[look],
+                                        unit=tmp[['units']][[N[Ni]]])
             }
         }
     } else if (inherits(salinity, "list")) {

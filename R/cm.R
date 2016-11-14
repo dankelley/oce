@@ -747,7 +747,7 @@ setMethod(f="plot",
               ##     warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
               if (!(is.null(x@metadata$have.actual.data) || x@metadata$have.actual.data)) {
                   warning("there are no profiles in this dataset")
-                  return
+                  return()
               }
               opar <- par(no.readonly = TRUE)
               lw <- length(which)

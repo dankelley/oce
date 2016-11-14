@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdAddColumn}
 \alias{ctdAddColumn}
-\title{Add a Column to the Data Slot of a CTD Object}
+\title{Add a Column to the Data Slot of a CTD Object [deprecated]}
 \usage{
 ctdAddColumn(x, column, name, label, unit = NULL, log = TRUE,
   originalName = "", debug = getOption("oceDebug"))
@@ -43,6 +43,10 @@ be printed.}
 A ctd object.
 }
 \description{
+\strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+Use \code{\link{oceSetData}} instead of the present function.
+}
+\details{
 Add a column to the \code{data} slot of an object of
 \code{\link{ctd-class}}, also updating the \code{metadata}
 slot as appropriate.
@@ -62,21 +66,8 @@ Dan Kelley
 The documentation for \code{\link{ctd-class}} explains the structure
    of CTD objects, and also outlines the other functions dealing with them.
 
-Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
-  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
-  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
-  \code{\link{handleFlags,ctd-method}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.sbe}},
-  \code{\link{read.ctd.woce.other}},
-  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
-  \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
+Other functions that will be removed soon: \code{\link{addColumn}},
+  \code{\link{ctdUpdateHeader}},
+  \code{\link{mapMeridians}}, \code{\link{mapZones}}
 }
 

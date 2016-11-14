@@ -966,16 +966,20 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                 warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items")
             }
             ## FIXME: move this to the very end, where we add 'scan' if that's not found.
-            res <- ctdAddColumn(res, S, name="salinity", label="Salinity",
-                                unit=c(unit=expression(), scale="PSS-78"), debug=debug-1)
+            ## res <- ctdAddColumn(res, S, name="salinity", label="Salinity",
+            ##                     unit=c(unit=expression(), scale="PSS-78"), debug=debug-1)
+            res <- oceSetData(res, name="salinity", value=S,
+                              unit=list(unit=expression(), scale="PSS-78"))
             ## colNamesOriginal <- c(colNamesOriginal, "NA")
         }
         if (found.depth && !found.pressure) { # && getOption("insertCalculatedDataCTD")) {
             ## BUG: this is a poor, nonrobust approximation of pressure
             g <- if (found.header.latitude) gravity(latitude) else 9.8
             rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0)
-            res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
-                                unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
+            ## res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
+            ##                     unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
+            res <- oceSetData(res, name="pressure", value=res@data$depth * g * rho0 / 1e4,
+                              unit=list(unit=expression("dbar"), scale=""))
             ## colNamesOriginal <- c(colNamesOriginal, "NA")
             warning("created a pressure data item from the depth item")
         }

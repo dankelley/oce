@@ -1530,11 +1530,12 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 }
 
 
-#' Add Meridians on a Map [DEPRECATED]
+#' Add Meridians on a Map [deprecated]
+#'
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+#' Use \code{\link{mapGrid}} instead of the present function.
 #'
 #' Plot meridians (lines of constant latitude) on an existing map.
-#' \strong{Warning:} this function will be removed soon;
-#' see \link{oce-deprecated}.
 #'
 #' @param latitude either a logical value indicating whether to draw
 #' a meridian grid, or a vector of latitudes at which to draw meridians.
@@ -1568,7 +1569,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions related to maps
+#' @family functions that will be removed soon
 mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
     .Deprecated("mapGrid",
@@ -1824,11 +1825,13 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, ...)
 }
 
 
-#' Add Zones to a Map [DEPRECATED]
+#' Add Zones to a Map [deprecated]
+#'
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+#'
+#' Use \code{\link{mapGrid}} instead of the present function.
 #'
 #' Plot zones (lines of constant longitude) on a existing map.
-#' \strong{Warning:} this function will be removed soon;
-#' see \link{oce-deprecated}.
 #'
 #' @param longitude either a logical indicating whether to draw a zonal grid,
 #' or a vector of longitudes at which to draw zones.
@@ -1865,7 +1868,7 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, ...)
 #'
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
-#' @family functions related to maps
+#' @family functions that will be removed soon
 mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
     .Deprecated("mapGrid",
