@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/dankelley/oce.svg?branch=develop)](https://travis-ci.org/dankelley/oce)
 [![codecov](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://codecov.io/gh/dankelley/oce)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/oce)](http://cran.r-project.org/package=oce)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/oce)](https://cran.r-project.org/package=oce)
 ![RStudio CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/last-month/oce)
 ![RStudio CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/last-week/oce)
 ![RStudio CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/last-day/oce)
