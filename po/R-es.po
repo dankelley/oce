@@ -343,10 +343,10 @@ msgid "size of hardware header expected to be"
 msgstr "el tamaño del hardware header esperado es"
 
 msgid "size of head header expected to be"
-msgstr "size of head header expected to be"
+msgstr "el tamaño esperado de head header es"
 
 msgid "size of user header expected to be"
-msgstr "size of user header expected to be"
+msgstr "el tamaño esperado de user header es"
 
 msgid "unknown originalCoordinate"
 msgstr "originalCoordinate desconocido"
@@ -362,65 +362,65 @@ msgstr ""
 msgid ""
 "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size"
 msgstr ""
-"(solamente entiende 1MHz and 2MHz); using 1Mhz formula to calculate cell size"
+"(solamente entiende 1MHz and 2MHz); utilizando la fórmula de 1Mhz para calcular el tamaño de celdilla"
 
 msgid ""
 "using fixed cell size and blanking distance for Aquadopp, since cannot infer "
 "these from the file"
 msgstr ""
-"using fixed cell size and blanking distance for Aquadopp, since cannot infer "
+"utilizando tamaño de celdilla fijado y blanking distance para Aquadopp, puesto que no puedo inferir "
 "these from the file"
 
 msgid "unknown instrument type \""
-msgstr "unknown instrument type \""
+msgstr "tipo de instrumento desconocido \""
 
 msgid "\", so calculating cell size as though it is a 2MHz AquadoppHR"
 msgstr "\", so calculating cell size as though it is a 2MHz AquadoppHR"
 
 msgid "cannot understand byte 0x"
-msgstr "cannot understand byte 0x"
+msgstr "no puedo comprender el byte 0x"
 
 msgid "; expecting one of the following: 0x"
-msgstr "; expecting one of the following: 0x"
+msgstr "; esperando uno de los siguientes: 0x"
 
 msgid "[hardware configuration] 0x"
-msgstr "[hardware configuration] 0x"
+msgstr "[configuración del hardware] 0x"
 
 msgid "[head configuration] or 0x"
-msgstr "[head configuration] or 0x"
+msgstr "[head configuration] o 0x"
 
 msgid "[user configuration]"
-msgstr "[user configuration]"
+msgstr "[configuration del usuario]"
 
 msgid "argument `file' must be a character string or connection"
-msgstr "argument `file' must be a character string or connection"
+msgstr "el argumento `file' debe de ser una cadena de caracteres o conexión"
 
 msgid "if 'from' is POSIXt, then 'to' must be, also"
-msgstr "if 'from' is POSIXt, then 'to' must be, also"
+msgstr "si 'from' es POSIXt, entonces 'to' debe de serlo también"
 
 msgid "need more separation between from and to"
-msgstr "need more separation between from and to"
+msgstr "necesita una mayor separación entre from y to"
 
 msgid "cannot have string for 'by' if 'from' and 'to' are integers"
-msgstr "cannot have string for 'by' if 'from' and 'to' are integers"
+msgstr "'by' no puede tener una cadena si 'from' y 'to' son números de tipo integer"
 
 msgid "the argument distance is of length"
-msgstr "the argument distance is of length"
+msgstr "la distancia al argumento es de longitud"
 
 msgid ", which does not match the second dimension of the velocity matrix,"
-msgstr ", which does not match the second dimension of the velocity matrix,"
+msgstr ", lo cual no coincide con la segunda dimensión de la matríz de velocidad,"
 
 msgid "first two bytes in file must be 0x7f 0x7f, but they are 0x"
-msgstr "first two bytes in file must be 0x7f 0x7f, but they are 0x"
+msgstr "los primeros dos bytes en el archivo deberían de ser 0x7f 0x7f, pero son 0x"
 
 msgid "0x"
 msgstr "0x"
 
 msgid "cannot have"
-msgstr "cannot have"
+msgstr "no puede tener"
 
 msgid "data types, as header indicates"
-msgstr "data types, as header indicates"
+msgstr "data types, como header indica"
 
 msgid "first byte of fixed leader header must be 0x00 but it was"
 msgstr "first byte of fixed leader header must be 0x00 but it was"
@@ -429,64 +429,64 @@ msgid "second byte of fixed leader header must be a0x00 but it was"
 msgstr "second byte of fixed leader header must be a0x00 but it was"
 
 msgid "unknown freq. bit code:"
-msgstr "unknown freq. bit code:"
+msgstr "freq. bit code desconocido:"
 
 msgid "(expect 000 for 75kHz, 001 for 150kHz, etc)"
-msgstr "(expect 000 for 75kHz, 001 for 150kHz, etc)"
+msgstr "(se espera 000 para 75kHz, 001 para 150kHz, etc)"
 
 msgid "expecting a beamAngle of 20 deg [more-or-less standard for RDI] but got"
 msgstr ""
-"expecting a beamAngle of 20 deg [more-or-less standard for RDI] but got"
+"se esperaba un beamAngle de 20 grados [mas o menos standar para RDI] pero se obtuvo"
 
 msgid "deg; using the latter in the transformationMatrix"
-msgstr "deg; using the latter in the transformationMatrix"
+msgstr "grados; usando estos últimos en la transformationMatrix"
 
 msgid "cellSize of"
-msgstr "cellSize of"
+msgstr "cellSize de"
 
 msgid "m is not in the allowed range of 0m to 64m"
-msgstr "m is not in the allowed range of 0m to 64m"
+msgstr "m no está en el rango permitido entre 0m y 64m"
 
 msgid "unexpected length"
-msgstr "unexpected length"
+msgstr "longitud (largo, no se refiere a coordenadas) inesperada"
 
 msgid ""
 "of fixed-leader-data header; expecting 50 for 'surveyor' or 59 for "
 "'workhorse'."
 msgstr ""
-"of fixed-leader-data header; expecting 50 for 'surveyor' or 59 for "
+"del fixed-leader-data header; esperando 50 para 'surveyor' o 59 para "
 "'workhorse'."
 
 msgid "byte 1 of variable leader data should be 0x80, but it is"
-msgstr "byte 1 of variable leader data should be 0x80, but it is"
+msgstr "el primer byte de la variable leader data debería ser 0x80, pero es"
 
 msgid "byte 2 of variable leader data should be 0x00, but it is"
-msgstr "byte 2 of variable leader data should be 0x00, but it is"
+msgstr "el segundo byte de la variable leader data debería ser 0x00, pero es"
 
 msgid "soundSpeed is"
-msgstr "soundSpeed is"
+msgstr "soundSpeed es"
 
 msgid ""
 ", which is outside the permitted range of 1400 m/s to\n"
 "                1600 m/s.  Something went wrong in decoding the data."
 msgstr ""
-", which is outside the permitted range of 1400 m/s to\n"
-"                1600 m/s.  Something went wrong in decoding the data."
+", lo cual está fuera del rango permitido entre 1400 m/s y\n"
+"                1600 m/s.  Algo fue incorrecto al decodificar los datos."
 
 msgid "no profilesToRead"
 msgstr "no profilesToRead"
 
 msgid "first byte of correlation segment should be 0x00 but is"
-msgstr "first byte of correlation segment should be 0x00 but is"
+msgstr "primer byte del segmento de correlation debería ser 0x00 pero es"
 
 msgid "at file position"
-msgstr "at file position"
+msgstr "en la posición del archivo"
 
 msgid "second byte of correlation segment should be 0x02 but is"
-msgstr "second byte of correlation segment should be 0x02 but is"
+msgstr "el segundo byte del segmento de correlacion debería ser 0x02 pero es"
 
 msgid "first byte of intensity segment should be 0x00 but is"
-msgstr "first byte of intensity segment should be 0x00 but is"
+msgstr "el primer byte del segmento de intensidad debería ser 0x00 pero es"
 
 msgid "second byte of intensity segment should be 0x03 but is"
 msgstr "second byte of intensity segment should be 0x03 but is"
