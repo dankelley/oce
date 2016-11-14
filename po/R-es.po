@@ -609,7 +609,7 @@ msgstr "by="
 msgid "must exceed to="
 msgstr "debe de superar to="
 # tricky because to can be or not part of the phrase or a variable name. 
-" "debe de superar a="? "debe de exceder en="?
+# "debe de superar a="? "debe de exceder en="?
 
 msgid "'by' must be numeric"
 msgstr "'by' debe de ser numérico"
