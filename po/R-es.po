@@ -2,8 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
 "POT-Creation-Date: 2015-01-16 15:10\n"
-"PO-Revision-Date: 2014-02-20 21:30-0400\n"
-"Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
+# "PO-Revision-Date: 2014-02-20 21:30-0400\n"
+"PO-Revision-Date: 2016-11-14 22:14-0400\n"
+# "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
+"Last-Translator: Pablo Valdés\n"
 "Language-Team: English\n"
 "Language: en_CA\n"
 "MIME-Version: 1.0\n"
@@ -1807,25 +1809,25 @@ msgid ""
 msgstr ""
 
 msgid "must create a map first, with mapPlot()"
-msgstr "must create a map first, with mapPlot()"
+msgstr "debe crear un mapa primero, con mapPlot()"
 
 msgid "must give 'longitude' and possibly 'latitude'"
-msgstr "must give 'longitude' and possibly 'latitude'"
+msgstr "debe proporcionar 'longitude' y posiblemente 'latitude'"
 
 msgid "lattudelim must contain two distinct values"
-msgstr "lattudelim must contain two distinct values"
+msgstr "lattudelim debe contener dos valores distintos"
 
 msgid "longitudelim must contain two distinct values"
-msgstr "longitudelim must contain two distinct values"
+msgstr "longitudelim debe contener dos valores distintos"
 
 msgid "cannot handle map projection of type 'wintri'"
-msgstr ""
+msgstr "no puedo manejar un mapa con proyección de tipo 'wintri'"
 
 msgid "cannot handle map projection of type 'aitoff'"
-msgstr ""
+msgstr "no puedo manejar un mapa con proyección de tipo 'aitoff'"
 
 msgid "mapPlot(): trimming"
-msgstr ""
+msgstr "mapPlot(): recortando"
 
 #, fuzzy
 msgid "spurious edge-to-edge lines; filling may be inaccurate"
@@ -2936,19 +2938,22 @@ msgid "lengths of temperature and p arrays must agree, but they are"
 msgstr "lengths of temperature and p arrays must agree, but they are"
 
 msgid "must provide salinity"
-msgstr "must provide salinity"
+msgstr "debe proporcionar salinidad"
 
 msgid "lengths of salinity and rho must agree, but they are"
-msgstr "lengths of salinity and rho must agree, but they are"
+msgstr "las longitudes (se refiere a medida, no a coordenadas) "
+"de salinidad y rho deben coincidir, pero son"
 
 msgid "lengths of salinity and pressure must agree, but they are"
-msgstr "lengths of salinity and pressure must agree, but they are"
+msgstr "las longitudes (se refiere a medida, no a coordenadas) "
+"de salinidad y presión deben coincidir, pero son"
 
 msgid "must provide temperature"
-msgstr "must provide temperature"
+msgstr "debe de proporcionar la temperatura"
 
 msgid "lengths of salinity and temperature must agree, but they are"
-msgstr "lengths of salinity and temperature must agree, but they are"
+msgstr "las longitudes (se refiere a medida, no a coordenadas) "
+"de salinidad y temperatura deben de coincidir, pero son"
 
 msgid "or '"
 msgstr ""
@@ -3107,25 +3112,25 @@ msgid ", which does not match matrix width"
 msgstr ", which does not match matrix width"
 
 msgid "latitude vector has length"
-msgstr "latitude vector has length"
+msgstr "el vector latitud tiene un tamaño"
 
 msgid ", which does not match matrix height"
-msgstr ", which does not match matrix height"
+msgstr ", que no coincide con el alto de la matriz"
 
 msgid "problem setting up bins (ai<1)"
-msgstr "problem setting up bins (ai<1)"
+msgstr "problema instalando bins (ai<1)"
 
 msgid "problem setting up bins (ai>xlen)"
-msgstr "problem setting up bins (ai>xlen)"
+msgstr "problema instalando bins (ai>xlen)"
 
 msgid "miscount in angles"
-msgstr "miscount in angles"
+msgstr "miscount en ángulos"
 
 msgid "windrose"
-msgstr ""
+msgstr "rosa de los vientos"
 
 msgid "'col' should be a list of 4 colours"
-msgstr "'col' should be a list of 4 colours"
+msgstr "'col' debe ser una lista de cuatro colores"
 
 #~ msgid ""
 #~ "DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' "
