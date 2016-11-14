@@ -3090,61 +3090,63 @@ msgid "tidem: using default coastline for testing"
 msgstr "tidem: using default coastline for testing"
 
 msgid "'longitude' and 'latitude' must be given unless 'node' is given"
-msgstr "'longitude' and 'latitude' must be given unless 'node' is given"
+msgstr "deben proporcionarse 'longitude' y 'latitude' a menos que se indique 'node'"
 
 msgid "cannot access \""
-msgstr "cannot access \""
+msgstr "no puedo acceder a \""
 
 #, fuzzy
 msgid "the subset must be based on longitude or latitude"
 msgstr ""
-"xtype must be one of: \"distance\", \"track\", \"longitude\", or \"latitude\""
+"xtype debe de ser uno de: \"distance\", \"track\", \"longitude\", o \"latitude\""
+# meaning of fuzzy here?
 
 msgid "must supply longitude"
-msgstr "must supply longitude"
+msgstr "debe proporcionar longitud"
 
 msgid "must supply latitude"
-msgstr "must supply latitude"
+msgstr "debe proporcionar latitud"
 
 msgid "must supply topo"
-msgstr "must supply topo"
+msgstr "debe proporcionar topo"
 
 msgid "lengths of latitude and longitude must match"
-msgstr "lengths of latitude and longitude must match"
+msgstr "los tamaños de latitud y longitud deben coincidir"
+# temptative, the problematic word is tamaños
 
 msgid "topo"
-msgstr ""
+msgstr "topo"
 
 msgid "please use 'clatitude' and 'clongitude' instead of 'center'"
-msgstr "please use 'clatitude' and 'clongitude' instead of 'center'"
+msgstr "por favor, use 'clatitude' y 'clongitude' en vez de 'center'"
 
 msgid "must give all of 'clatitude', 'clongitude' and 'span', or none of them"
-msgstr "must give all of 'clatitude', 'clongitude' and 'span', or none of them"
+msgstr "debe de proporcionar o bien 'clatitude', 'clongitude' y 'span' (todas ellas) "
+"o bien ninguna de ellas"
 
 msgid "argument 'asp' being ignored, because argument 'center' was given"
-msgstr "argument 'asp' being ignored, because argument 'center' was given"
+msgstr "'asp' se ignorará, puesto que el argumento 'center' ya se había dado"
 
 msgid "cannot give 'xlim' argument if the 'center' argument was given"
-msgstr "cannot give 'xlim' argument if the 'center' argument was given"
+msgstr "no se puede proporcionar 'xlim' si se ha dado ya el argumento 'center'"
 
 msgid "cannot give 'ylim' argument if the 'center' argument was given"
-msgstr "cannot give 'ylim' argument if the 'center' argument was given"
+msgstr "no se puede proporcionar 'ylim' si se ha dado ya el argumento 'center'"
 
 msgid "there are no topographic data within the longitudes of the plot region."
-msgstr ""
-"there are no topographic data within the longitudes of the plot region."
+msgstr "ningún dato topográfico cae dentro de las coords. de longitud de la región a dibujar."
 
 msgid "there are no topographic data within the latitudes of the plot region."
-msgstr "there are no topographic data within the latitudes of the plot region."
+msgstr "ningún dato topográfico cae dentro de las latitudes de la región a dibujar."
 
 msgid "must install.packages(\"ncdf4\") to read topo data from a netCDF file"
 msgstr ""
 
 msgid "longitude vector has length"
-msgstr "longitude vector has length"
+msgstr "el vector longitud mide"
 
 msgid ", which does not match matrix width"
-msgstr ", which does not match matrix width"
+msgstr ", lo cual no coincide con el ancho de la matríz"
 
 msgid "latitude vector has length"
 msgstr "el vector latitud tiene un tamaño"
@@ -3159,7 +3161,7 @@ msgid "problem setting up bins (ai>xlen)"
 msgstr "problema instalando bins (ai>xlen)"
 
 msgid "miscount in angles"
-msgstr "miscount en ángulos"
+msgstr "cálculo erróneo en los ángulos"
 
 msgid "windrose"
 msgstr "rosa de los vientos"
@@ -3184,7 +3186,7 @@ msgstr "'col' debe ser una lista de cuatro colores"
 #~ msgstr "sort.section() cannot yet handle argument by=\"distance\""
 
 #~ msgid "argument 'by' is incorrect"
-#~ msgstr "argument 'by' is incorrect"
+#~ msgstr "el argumento 'by' es incorrecto"
 
 #~ msgid "need the ncdf library to read a netcdf topography file"
 #~ msgstr "need the ncdf library to read a netcdf topography file"
