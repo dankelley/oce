@@ -44,7 +44,7 @@ msgid "' not in object"
 msgstr "' no en el objeto"
 
 msgid "cannot determine time to which to interpolate"
-msgstr "no puedo determinar tiempo en el que interpolar"
+msgstr "no se puede determinar tiempo en el que interpolar"
 
 msgid "only works for 'adv' and 'adp' objects"
 msgstr "sólo funciona para objetos de tipo 'adv' y 'adp'"
@@ -68,13 +68,16 @@ msgid "no item 'data$longitude$ or 'metadata$longitude' in object"
 msgstr "no hay un elemento 'data$longitude$ o 'metadata$longitude' en el objeto"
 
 msgid "no item 'data$pressure' in object"
-msgstr "Se desconoce la presión. El objeto carece del elemento 'data$pressure'"
+msgstr "Se desconoce la presión. " 
+"El objeto carece del elemento 'data$pressure'"
 
 msgid "no item 'data$salinity' in object"
-msgstr "Se desconoce la salinidad. El objeto carece del elemento 'data$salinity'"
+msgstr "Se desconoce la salinidad. "
+"El objeto carece del elemento 'data$salinity'"
 
 msgid "no item 'data$temperature' in object"
-msgstr "Se desconoce la temperatura. El objeto carece del elemento 'data$temperature'"
+msgstr "Se desconoce la temperatura. "
+"El objeto carece del elemento 'data$temperature'"
 
 msgid "object has no item named 'data$roll' or 'data$rollSlow'"
 msgstr "El objeto no tiene elementos llamados 'data$roll' o 'data$rollSlow'"
@@ -83,8 +86,8 @@ msgid ""
 "unknown 'which'; must be 1 for ADP velocity timescale, or 2 for ADP heading "
 "timescale"
 msgstr ""
-"'which' desconocido; debe de ser 1 para ADP velocity timescale, o 2 para ADP heading "
-"timescale"
+"'which' desconocido; debe de ser 1 para ADP velocity timescale, "
+"o 2 para ADP heading timescale"
 
 msgid "cannot determine times for this Oce object"
 msgstr "no puedo determinar tiempos para este objeto Oce"
@@ -109,7 +112,7 @@ msgstr ""
 "'time' no es ni un tiempo POSIXt ni un objeto Oce conteniendo data$time"
 
 msgid "method is only for objects of class '"
-msgstr "el método es sólo para objetos de la clase"
+msgstr "el método es sólo para objetos de la clase '"
 
 msgid "adp"
 msgstr ""
@@ -127,13 +130,13 @@ msgid "no 'v' in names(x@data)"
 msgstr "names(x@data) no contiene 'v'"
 
 msgid "cannot have control$bin less than 1, but got"
-msgstr "control$bin no puede ser menor que 1, pero lo es"
+msgstr "control$bin no puede ser menor que 1, pero lo fue"
 
 msgid "cannot have control$bin larger than"
 msgstr "control$bin no puede ser mayor que"
 
 msgid "but got"
-msgstr "pero lo tiene"
+msgstr "pero se obtuvo"
 
 msgid "class of object must inherit from either 'adv' or 'adp'"
 msgstr "la clase del objeto debe heredarse bien de 'adv' o de 'adp'"
@@ -149,7 +152,8 @@ msgid ","
 msgstr ","
 
 msgid "cannot subset by both time and distance; split into multiple calls"
-msgstr "no puedo tomar subconjuntos a la vez por tiempo y distancia; se divide en multiples llamadas"
+msgstr "no puedo tomar subconjuntos a la vez por tiempo y distancia; "
+"se divide en multiples llamadas"
 
 msgid "must keep at least 2 profiles"
 msgstr "debe mantener al menos 2 perfiles"
@@ -270,16 +274,14 @@ msgid "to ENU, so returning argument as-is"
 msgstr "a ENU, devolviendo el argumento 'as-is', sin modificar"
 
 msgid "the beams are already unspreaded in this dataset."
-msgstr "the beams are already unspreaded in this dataset."
-
-msgid "the beams are already unspreaded in this dataset"
-msgstr "the beams are already unspreaded in this dataset"
+msgstr "los beams ya están unspreaded en este dataset."
+# can you please add more context/explain? The entry was also duplicated in the next entry (why?). I deleted one
 
 msgid "method is only for objects of class \"adp\""
 msgstr "el método es exclusivamente para objetos de clase \"adp\""
 
 msgid "input must be in beam coordinates"
-msgstr "el input debe de estar en coordenadas beam coordinates"
+msgstr "el input debe de estar en coordenadas beam"
 
 msgid "can only handle 4-beam ADP units from RDI"
 msgstr "solamente puedo manejar 4-beam ADP units from RDI"
@@ -340,7 +342,9 @@ msgid "instead (while reading header #"
 msgstr "en su lugar (al leer el encabezado #"
 
 msgid "size of hardware header expected to be 24 two-byte words, but got"
-msgstr "se esperaba que el tamaño del hardware header fuera de 24 two-byte palabras, but se obtuvo"
+msgstr "se esperaba que el tamaño del hardware header fuera de palabras de 24 "
+"two-byte, pero se obtuvo"
+# temptative, could benefit of some more context. 
 
 msgid "size of hardware header expected to be"
 msgstr "el tamaño del hardware header esperado es"
@@ -349,7 +353,7 @@ msgid "size of head header expected to be"
 msgstr "el tamaño esperado de head header es"
 
 msgid "size of user header expected to be"
-msgstr "el tamaño esperado de user header es"
+msgstr "el tamaño esperado del encabezado user es"
 
 msgid "unknown originalCoordinate"
 msgstr "originalCoordinate desconocido"
@@ -360,55 +364,61 @@ msgstr "frequencia desconocida"
 msgid ""
 "(only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size"
 msgstr ""
-"(solamente entiende 1MHz y 2MHz); utilizando la fórmula de 2Mhz para calcular el tamaño de celdilla"
+"(solamente entiende 1MHz y 2MHz); utilizando la fórmula de 2Mhz "
+"para calcular el tamaño de celdilla"
 
 msgid ""
 "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size"
 msgstr ""
-"(solamente entiende 1MHz and 2MHz); utilizando la fórmula de 1Mhz para calcular el tamaño de celdilla"
+"(solamente entiende 1MHz and 2MHz); utilizando la fórmula de 1Mhz "
+"para calcular el tamaño de celdilla"
 
 msgid ""
 "using fixed cell size and blanking distance for Aquadopp, since cannot infer "
 "these from the file"
 msgstr ""
-"utilizando tamaño de celdilla fijado y blanking distance para Aquadopp, puesto que no puedo inferir "
-"these from the file"
+"utilizando tamaño de celdilla fijado y blanking distance para Aquadopp, puesto "
+"que no pude inferir estos directamente del archivo"
 
 msgid "unknown instrument type \""
 msgstr "tipo de instrumento desconocido \""
 
 msgid "\", so calculating cell size as though it is a 2MHz AquadoppHR"
-msgstr "\", so calculating cell size as though it is a 2MHz AquadoppHR"
+msgstr "\", por tanto calculando el tamaño de celdilla como si "
+"correspondiera a un 2MHz AquadoppHR"
 
 msgid "cannot understand byte 0x"
-msgstr "no puedo comprender el byte 0x"
+msgstr "no puedo entender el byte 0x"
 
 msgid "; expecting one of the following: 0x"
 msgstr "; esperando uno de los siguientes: 0x"
 
 msgid "[hardware configuration] 0x"
-msgstr "[configuración del hardware] 0x"
+msgstr "[hardware configuration] 0x"
 
 msgid "[head configuration] or 0x"
 msgstr "[head configuration] o 0x"
 
 msgid "[user configuration]"
-msgstr "[configuration del usuario]"
+msgstr "[user configuration]"
 
 msgid "argument `file' must be a character string or connection"
 msgstr "el argumento `file' debe de ser una cadena de caracteres o conexión"
 
 msgid "if 'from' is POSIXt, then 'to' must be, also"
-msgstr "si 'from' es POSIXt, entonces 'to' debe de serlo también"
+msgstr "si 'from' es POSIXt, entonces 'to' debe serlo también"
 
 msgid "need more separation between from and to"
 msgstr "necesita una mayor separación entre from y to"
 
 msgid "cannot have string for 'by' if 'from' and 'to' are integers"
-msgstr "'by' no puede tener una cadena si 'from' y 'to' son números de tipo integer"
+msgstr "'by' no puede tener una cadena si 'from' y 'to' son números enteros (integer)"
 
 msgid "the argument distance is of length"
 msgstr "la distancia al argumento es de longitud"
+# please add more context to choose between "al" argumento (distance to argument), 
+# "del" argumento (distance from argument)
+# or to omite argument (distance is the argument here)
 
 msgid ", which does not match the second dimension of the velocity matrix,"
 msgstr ", lo cual no coincide con la segunda dimensión de la matríz de velocidad,"
@@ -423,13 +433,13 @@ msgid "cannot have"
 msgstr "no puede tener"
 
 msgid "data types, as header indicates"
-msgstr "data types, como header indica"
+msgstr "tipos de dato, como indica el encabezado"
 
 msgid "first byte of fixed leader header must be 0x00 but it was"
-msgstr "first byte of fixed leader header must be 0x00 but it was"
+msgstr "el primer byte de fixed leader header debería de ser 0x00, pero fue"
 
 msgid "second byte of fixed leader header must be a0x00 but it was"
-msgstr "second byte of fixed leader header must be a0x00 but it was"
+msgstr "el segundo byte de fixed leader header debería ser a0x00, pero fue"
 
 msgid "unknown freq. bit code:"
 msgstr "freq. bit code desconocido:"
@@ -438,27 +448,31 @@ msgid "(expect 000 for 75kHz, 001 for 150kHz, etc)"
 msgstr "(se espera 000 para 75kHz, 001 para 150kHz, etc)"
 
 msgid "expecting a beamAngle of 20 deg [more-or-less standard for RDI] but got"
-msgstr ""
-"se esperaba un beamAngle de 20 grados [mas o menos standar para RDI] pero se obtuvo"
+msgstr "se esperaba un beamAngle de 20 grados " 
+"[mas o menos estándar para RDI] pero se obtuvo"
 
 msgid "deg; using the latter in the transformationMatrix"
-msgstr "grados; usando estos últimos en la transformationMatrix"
+msgstr "grados; usando estos últimos en transformationMatrix"
 
 msgid "cellSize of"
 msgstr "cellSize de"
 
 msgid "m is not in the allowed range of 0m to 64m"
-msgstr "m no está en el rango permitido entre 0m y 64m"
+msgstr "m no está en el rango permitido de 0-64m"
 
 msgid "unexpected length"
-msgstr "longitud (largo, no se refiere a coordenadas) inesperada"
+msgstr "longitud inesperada "
+"(no se refiere a coordenadas sino a medida)"
+# as in other similar places, this last note is important to 
+# avoid ambiguity among longitude and length, that use the same word in spanish
 
 msgid ""
 "of fixed-leader-data header; expecting 50 for 'surveyor' or 59 for "
 "'workhorse'."
 msgstr ""
-"del fixed-leader-data header; esperando 50 para 'surveyor' o 59 para "
+"del encabezado fixed-leader-data; esperando 50 para 'surveyor' o 59 para "
 "'workhorse'."
+# please add context for fixed-leader-data header
 
 msgid "byte 1 of variable leader data should be 0x80, but it is"
 msgstr "el primer byte de la variable leader data debería ser 0x80, pero es"
@@ -477,37 +491,41 @@ msgstr ""
 " Algo fue mal al decodificar los datos."
 
 msgid "no profilesToRead"
-msgstr "no profilesToRead"
+msgstr "profilesToRead ausente"
 
 msgid "first byte of correlation segment should be 0x00 but is"
-msgstr "primer byte del segmento de correlation debería ser 0x00 pero es"
+msgstr "el primer byte del segmento de correlation debería ser 0x00 pero es"
 
 msgid "at file position"
 msgstr "en la posición del archivo"
+# temptative. Ambiguous string, please add context
 
 msgid "second byte of correlation segment should be 0x02 but is"
-msgstr "el segundo byte del segmento de correlacion debería ser 0x02 pero es"
+msgstr "el segundo byte del segmento de correlacion debería ser 0x02, pero es"
 
 msgid "first byte of intensity segment should be 0x00 but is"
-msgstr "el primer byte del segmento de intensidad debería ser 0x00 pero es"
+msgstr "el primer byte del segmento de intensidad debería ser 0x00, pero es"
 
 msgid "second byte of intensity segment should be 0x03 but is"
-msgstr "second byte of intensity segment should be 0x03 but is"
+msgstr "el segundo byte del segmento de intensidad debería ser 0x03, pero es"
 
 msgid "first byte of percent-good segment should be 0x00 but is"
-msgstr "el primer byte del percent-good segment debería ser 0x00 pero es"
+msgstr "el primer byte del segmento percent-good debería ser 0x00, pero es"
 
 msgid "second byte of percent-good segment should be 0x04 but is"
-msgstr "second byte of percent-good segment should be 0x04 but is"
+msgstr "el segundo byte del segmento percent-good debería ser 0x04, pero es"
 
 msgid "expecting 4 beams, for this RDI adcp"
-msgstr "expecting 4 beams, for this RDI adcp"
+msgstr "esperando 4 lasers, para este RDI adcp"
 
 msgid "got to end of file"
-msgstr "se obtuvo al fin del archivo"
+msgstr "se obtuvo fin del archivo"
+# temptative. ambiguous string. If is like in "we got a cube" (obtuvimos un cubo), if is like
+# "we reached/travelled to the end of sth", would need to replace it for "se alcanzó el final del archivo" 
+# or other similar instead. Please add context
 
 msgid "Interpolated across a bad profile at time"
-msgstr "Interpolated across a bad profile at time"
+msgstr "Interpolado a través de un mal perfil en el tiempo"
 
 msgid ""
 ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 "
@@ -515,8 +533,8 @@ msgid ""
 "indicated by the byte sequence 0x80 0x00.)"
 msgstr ""
 ".  (\"Bad\" significa que el byte code esperado para un segmento de velocidad, 0x00 "
-"0x01, no se encontró 65 bytes tras empezar un perfil, the latter "
-"indicated by the byte sequence 0x80 0x00.)"
+"0x01, no fue localizado 65 bytes tras empezar un perfil, esto último "
+"indicado por la secuencia de bytes 0x80 0x00.)"
 
 msgid "Interpolated across"
 msgstr "Interpolado a través de"
@@ -528,106 +546,117 @@ msgid "There are no profiles in this file."
 msgstr "No hay perfiles en este archivo."
 
 msgid "The header indicates that there are no profiles in this file."
-msgstr "The header indicates that there are no profiles in this file."
+msgstr "El encabezado indica que no hay perfiles en este archivo."
 
 msgid "there should be 3 beams, but the file indicates"
-msgstr "there should be 3 beams, but the file indicates"
+msgstr "debería haber 3 beams, pero el archivo indica "
 
 msgid "please request to read *some* profiles"
-msgstr "please request to read *some* profiles"
+msgstr "por favor solicite leer *algunos* perfiles"
 
 msgid "read.adp.sontek() interpolating"
-msgstr "read.adp.sontek() interpolating"
+msgstr "interpolando read.adp.sontek()"
 
 msgid "heading/pitch/roll values to the"
-msgstr "heading/pitch/roll values to the"
+msgstr "valores de heading/pitch/roll para los"
 
 msgid "velocity profiles"
 msgstr "perfiles de velocidad"
 
 msgid "*****FIXME: check up and down; also read it and check*****"
-msgstr "*****FIXME: check up and down; also read it and check*****"
+msgstr "*****FIJEME: check up and down; también read it y check*****"
+# incomplete. I don't understand the context
 
 msgid "can only handle 3-beam devices"
-msgstr "can only handle 3-beam devices"
+msgstr "solamente puedo manejar dispositivos 3-beam"
 
 msgid "orientation="
 msgstr "orientation="
+# if is a variable name shouldn't be translated, if not: orientación=
 
 msgid "but must be 0 (upward), 1 (downward), or 2 (sideward)"
-msgstr "but must be 0 (upward), 1 (downward), or 2 (sideward)"
+msgstr "debe de ser 0 (upward/ hacia arriba), 1 (downward/ hacia abajo), "
+" o 2 (lateral)"
 
 msgid "orientation \""
-msgstr "orientation \""
+msgstr "orientación \""
 
 msgid "is not allowed; try \"upward\" or \"downward\""
-msgstr "is not allowed; try \"upward\" or \"downward\""
+msgstr "no está permitida; intente \"upward\" o \"downward\""
 
 msgid "originalCoordinate="
 msgstr "originalCoordinate="
+# if is a variable name, msgstr = "" could be enough.
 
 msgid "but must be 0 (beam), 1 (xyz), or 2 (enu)"
-msgstr "but must be 0 (beam), 1 (xyz), or 2 (enu)"
+msgstr "debe de ser 0 (beam), 1 (xyz), o 2 (enu)"
 
 msgid "from="
 msgstr "from="
+# if is not a variable name: desde=
 
 msgid "but must exceed 1"
-msgstr "but must exceed 1"
+msgstr "pero debe superar 1"
 
 msgid "to="
 msgstr "to="
+# if is not a variable name: hasta=
 
 msgid "by="
 msgstr "by="
+# if is not a variable name: por=
 
 msgid "must exceed to="
-msgstr "must exceed to="
+msgstr "debe de superar to="
+# tricky because to can be or not part of the phrase or a variable name. 
+" "debe de superar a="? "debe de exceder en="?
 
 msgid "'by' must be numeric"
-msgstr "'by' must be numeric"
+msgstr "'by' debe de ser numérico"
 
 msgid "must specify a 'subset'"
-msgstr "must specify a 'subset'"
+msgstr "debe de especificar un 'subset'"
 
 msgid "only 'time' is permitted for subsetting"
-msgstr "only 'time' is permitted for subsetting"
+msgstr "solamente se permite tomar subconjuntos con 'time'"
 
 msgid "read.adv() cannot understand type = \""
-msgstr "read.adv() cannot understand type = \""
+msgstr "read.adv() no se puede comprender tipo = \""
 
 msgid "adv"
 msgstr ""
 
 msgid "unknown 'which':"
-msgstr "unknown 'which':"
+msgstr "desconocido 'which':"
 
 msgid "no salinity in this ADV object"
-msgstr "no salinity in this ADV object"
+msgstr "este objeto ADV no especifica salinidad"
 
 msgid "Amplitude"
 msgstr ""
+# or: Amplitud
 
 msgid "Correlation"
 msgstr ""
+# or: Correlacción
 
 msgid "there is no analog1 signal in this ADV object"
-msgstr "there is no analog1 signal in this ADV object"
+msgstr "este objeto ADV no contiene una señal analog1"
 
 msgid "there is no analog2 signal in this ADV object"
-msgstr "there is no analog2 signal in this ADV object"
+msgstr "este objeto ADV no contiene una señal analog2"
 
 msgid "no voltage signal to plot"
-msgstr "no voltage signal to plot"
+msgstr "no hay señal voltaje en el plot"
 
 msgid "unknown value of \"which\":"
-msgstr "unknown value of \"which\":"
+msgstr "valor desconocido de \"which\":"
 
 msgid "adv.2enu cannot convert from coordinate system"
-msgstr "adv.2enu cannot convert from coordinate system"
+msgstr "adv.2enu no puede convertir desde sistema de coordenadas"
 
 msgid "input must be in beam coordinates, but it is in"
-msgstr "input must be in beam coordinates, but it is in"
+msgstr "el input debería de estar en coordenadas beam, pero está en"
 
 msgid ""
 "cannot convert coordinates because metadata$transformationMatrix is NULL "
