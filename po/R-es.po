@@ -2,8 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
 "POT-Creation-Date: 2015-01-16 15:10\n"
-"PO-Revision-Date: 2014-02-20 21:30-0400\n"
-"Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
+# "PO-Revision-Date: 2014-02-20 21:30-0400\n"
+"PO-Revision-Date: 2016-11-14 22:14-0400\n"
+# "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
+"Last-Translator: Pablo Valdés\n"
 "Language-Team: English\n"
 "Language: en_CA\n"
 "MIME-Version: 1.0\n"
@@ -12,168 +14,172 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "must give 'subset'"
-msgstr "must give 'subset'"
+msgstr "debe dar 'subset'"
 
 msgid "there is no item named \""
-msgstr "no hay ningún elemento con nombre \""
+msgstr "no hay ningún elemento denominado \""
 
 msgid "\" in this"
-msgstr "\" in this"
+msgstr "\" en este"
 
 msgid "object"
-msgstr "object"
+msgstr "objeto"
 
 msgid "method is only for oce objects"
-msgstr "método sólo es para la clase de oce"
+msgstr "El método es sólo para objetos de clase oce"
 
 msgid "must supply 'x'"
-msgstr "must supply 'x'"
+msgstr "debe proporcionar 'x'"
 
 msgid "must supply 'names'"
-msgstr "must supply 'names'"
+msgstr "debe proporcionar 'names'"
 
 msgid "'"
 msgstr "'"
 
 msgid "' not in object's metadata or data$station[[1]]@data"
-msgstr "' not in object's metadata or data$station[[1]]@data"
+msgstr "' no en los metadata del objeto o data$station[[1]]@data"
 
 msgid "' not in object"
-msgstr "' no en el objeton"
+msgstr "' no en el objeto"
 
 msgid "cannot determine time to which to interpolate"
-msgstr "cannot determine time to which to interpolate"
+msgstr "no se puede determinar tiempo en el que interpolar"
 
 msgid "only works for 'adv' and 'adp' objects"
-msgstr "only works for 'adv' and 'adp' objects"
+msgstr "sólo funciona para objetos de tipo 'adv' y 'adp'"
 
 msgid "object has no item named 'data$heading' or 'data$headingSlow'"
-msgstr "object has no item named 'data$heading' or 'data$headingSlow'"
+msgstr "el objeto no tiene un elemento llamado 'data$heading' o 'data$headingSlow'"
 
 msgid "object has no item named 'data$pitch' or 'data$pitchSlow'"
-msgstr "object has no item named 'data$pitch' or 'data$pitchSlow'"
+msgstr "el objeto no tiene un elemento llamado 'data$pitch' o 'data$pitchSlow'"
 
 msgid "no 'latitude' in names(x@data) or names(x@metadata)"
-msgstr "no 'latitude' in names(x@data) or names(x@metadata)"
+msgstr "no 'latitude' en names(x@data) o names(x@metadata)"
 
 msgid "no 'longitude' in names(x@data) or names(x@metadata)"
-msgstr "no 'longitude' in names(x@data) or names(x@metadata)"
+msgstr "no 'longitude' en names(x@data) o names(x@metadata)"
 
 msgid "no item 'data$latitude$ or 'metadata$latitude' in object"
-msgstr "no item 'data$latitude$ or 'metadata$latitude' in object"
+msgstr "no hay un elemento 'data$latitude$ o 'metadata$latitude' en el objeto"
 
 msgid "no item 'data$longitude$ or 'metadata$longitude' in object"
-msgstr "no item 'data$longitude$ or 'metadata$longitude' in object"
+msgstr "no hay un elemento 'data$longitude$ o 'metadata$longitude' en el objeto"
 
 msgid "no item 'data$pressure' in object"
-msgstr "no item 'data$pressure' in object"
+msgstr "Se desconoce la presión. " 
+"El objeto carece del elemento 'data$pressure'"
 
 msgid "no item 'data$salinity' in object"
-msgstr "no item 'data$salinity' in object"
+msgstr "Se desconoce la salinidad. "
+"El objeto carece del elemento 'data$salinity'"
 
 msgid "no item 'data$temperature' in object"
-msgstr "no item 'data$temperature' in object"
+msgstr "Se desconoce la temperatura. "
+"El objeto carece del elemento 'data$temperature'"
 
 msgid "object has no item named 'data$roll' or 'data$rollSlow'"
-msgstr "object has no item named 'data$roll' or 'data$rollSlow'"
+msgstr "El objeto no tiene elementos llamados 'data$roll' o 'data$rollSlow'"
 
 msgid ""
 "unknown 'which'; must be 1 for ADP velocity timescale, or 2 for ADP heading "
 "timescale"
 msgstr ""
-"unknown 'which'; must be 1 for ADP velocity timescale, or 2 for ADP heading "
-"timescale"
+"'which' desconocido; debe de ser 1 para ADP velocity timescale, "
+"o 2 para ADP heading timescale"
 
 msgid "cannot determine times for this Oce object"
-msgstr "cannot determine times for this Oce object"
+msgstr "no puedo determinar tiempos para este objeto Oce"
 
 msgid "the station data do not contain an item named \""
-msgstr "the station data do not contain an item named \""
+msgstr "Los datos de la estación no contienen un elemento llamado \""
 
 msgid "\""
 msgstr "\""
 
 msgid "cannot find item named '"
-msgstr "cannot find item named '"
+msgstr "no puedo encontrar un elemento llamado '"
 
 msgid "' in object's data"
-msgstr "' in object's data"
+msgstr "' en los datos del objeto"
 
 msgid "'x' does not contain data named \""
-msgstr "'x' does not contain data named \""
+msgstr "'x' no contiene datos denominados \""
 
 msgid "'time' is neither a POSIXt time, nor an oce object containing data$time"
 msgstr ""
-"'time' is neither a POSIXt time, nor an oce object containing data$time"
+"'time' no es ni un tiempo POSIXt ni un objeto Oce conteniendo data$time"
 
 msgid "method is only for objects of class '"
-msgstr "método es sólo para objetos de la clase"
+msgstr "el método es sólo para objetos de la clase '"
 
 msgid "adp"
 msgstr ""
 
 msgid "no 'time' in names(x@data)"
-msgstr "no 'time' in names(x@data)"
+msgstr "names(x@data) carece de 'time'"
 
 msgid "'x' must be an oce object"
-msgstr "'x' must be an oce object"
+msgstr "'x' debe de ser un objeto oce"
 
 msgid "'x' does not contain 'data$v'"
-msgstr "'x' does not contain 'data$v'"
+msgstr "'x' no contiene 'data$v'"
 
 msgid "no 'v' in names(x@data)"
-msgstr "no 'v' in names(x@data)"
+msgstr "names(x@data) no contiene 'v'"
 
 msgid "cannot have control$bin less than 1, but got"
-msgstr "cannot have control$bin less than 1, but got"
+msgstr "control$bin no puede ser menor que 1, pero lo fue"
 
 msgid "cannot have control$bin larger than"
-msgstr "cannot have control$bin larger than"
+msgstr "control$bin no puede ser mayor que"
 
 msgid "but got"
-msgstr "but got"
+msgstr "pero se obtuvo"
 
 msgid "class of object must inherit from either 'adv' or 'adp'"
-msgstr "class of object must inherit from either 'adv' or 'adp'"
+msgstr "la clase del objeto debe heredarse bien de 'adv' o de 'adp'"
 
 msgid ""
 "can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek"
 "\", not class"
 msgstr ""
-"can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek"
-"\", not class"
+"Solo puedo resumir objetos ADP de los subtipos \"rdi\", \"sontek\", o \"nortek"
+"\", no clases"
 
 msgid ","
 msgstr ","
 
 msgid "cannot subset by both time and distance; split into multiple calls"
-msgstr "cannot subset by both time and distance; split into multiple calls"
+msgstr "no puedo tomar subconjuntos a la vez por tiempo y distancia; "
+"se divide en multiples llamadas"
 
 msgid "must keep at least 2 profiles"
-msgstr "must keep at least 2 profiles"
+msgstr "debe mantener al menos 2 perfiles"
 
 msgid "must keep at least 2 bins"
-msgstr "must keep at least 2 bins"
+msgstr "debe mantener al menos 2 bins"
 
 msgid "should express the subset in terms of distance or time"
-msgstr "should express the subset in terms of distance or time"
+msgstr "debe expresar el subconjunto en terminos de distancia o tiempo"
 
 msgid "unknown object type; it must inherit from either \"adv\" or \"adp\""
-msgstr "unknown object type; it must inherit from either \"adv\" or \"adp\""
+msgstr "tipo de objeto desconocido; debe heredar bien de \"adv\" o de \"adp\""
 
 msgid ""
 "unknown file type; the object must inherit from either \"adv\" or \"adp\""
 msgstr ""
-"unknown file type; the object must inherit from either \"adv\" or \"adp\""
+"tipo de archivo desconocido; el objeto debe heredar bien de \"adv\" o de \"adp\""
 
 msgid "beam"
 msgstr "rayo"
 
 msgid "east"
-msgstr "este"
+msgstr "Este"
 
 msgid "north"
-msgstr "norte"
+msgstr "Norte"
 
 msgid "up"
 msgstr "arriba"
@@ -185,491 +191,520 @@ msgid ""
 "This instrument is not a Nortek Aquadopp, so mode=\"diagnostic\" is being "
 "ignored"
 msgstr ""
-"This instrument is not a Nortek Aquadopp, so mode=\"diagnostic\" is being "
-"ignored"
+"Este instrumento no es un Nortek Aquadopp, por lo que mode=\"diagnostic\" será ignorado."
 
 msgid ""
 "This instrument seems to be a Nortek Aquadopp, but it has more than 1 cell, "
 "so it must not be; so mode=\"diagnostic\" is being ignored"
 msgstr ""
-"This instrument seems to be a Nortek Aquadopp, but it has more than 1 cell, "
-"so it must not be; so mode=\"diagnostic\" is being ignored"
+"Este instrumento aparenta ser un Nortek Aquadopp, pero tiene más de una célda, "
+"por lo que no puede serlo; por tanto mode=\"diagnostic\" será ignorado."
 
 msgid ""
 "This instrument did not record Diagnostic data, so mode=\"diagnostic\" is "
 "being ignored"
 msgstr ""
-"This instrument did not record Diagnostic data, so mode=\"diagnostic\" is "
-"being ignored"
+"Este instrumento no registra Diagnostic data, "
+"por lo que mode=\"diagnostic\" será ignorado"
 
 msgid "there are no profiles in this dataset"
-msgstr "there are no profiles in this dataset"
+msgstr "no hay perfiles en esta dataset"
 
 msgid "length of 'titles' must equal length of 'which'"
-msgstr "length of 'titles' must equal length of 'which'"
+msgstr "la longitud de 'titles' debe igualar a la de 'which'"
 
 msgid "xlim must be a vector of length 2, or a 2-column matrix"
-msgstr "xlim must be a vector of length 2, or a 2-column matrix"
+msgstr "xlim debe de ser un vector de longitud 2, o una matríz de 2 columnas"
 
 msgid "zlim must be a vector of length 2, or a matrix with 2 columns"
-msgstr "zlim must be a vector of length 2, or a matrix with 2 columns"
+msgstr "zlim debe de ser un vector de longitud 2, o una matríz de 2 columnas"
 
 msgid "no data in the provided ylim=c("
-msgstr "no data in the provided ylim=c("
+msgstr "no hay datos en el ylim=c("
 
 msgid ")"
 msgstr ")"
 
 msgid "ADP object lacks a 'g' data item"
-msgstr "ADP object lacks a 'g' data item"
+msgstr "el objeto ADP carece de un elemento de datos 'g'"
 
 msgid "cannot plot beam/velo 1 because the device no beams"
-msgstr "cannot plot beam/velo 1 because the device no beams"
+msgstr "no puedo graficar beam/velo 1 porque el dispositivo no emite lasers"
 
 msgid "cannot plot beam/velo 2 because the device has only"
-msgstr "cannot plot beam/velo 2 because the device has only"
+msgstr "no puedo graficar beam/velo 2 porque el dispositivo solamente tiene"
 
 msgid "beams"
-msgstr "beams"
+msgstr "lasers"
 
 msgid "cannot plot beam/velo 3 because the device has only"
-msgstr "cannot plot beam/velo 3 because the device has only"
+msgstr "no puedo graficar beam/velo 3 porque el dispositivo solamente tiene"
 
 msgid "cannot plot beam/velo 4 because the device has only"
-msgstr "cannot plot beam/velo 4 because the device has only"
+msgstr "no puedo graficar plot beam/velo 4 porque el dispositivo solamente tiene"
 
 msgid "cannot handle which="
-msgstr "cannot handle which="
+msgstr "no puedo manejar which="
 
 msgid "because this instrument lacked bottom tracking"
-msgstr "because this instrument lacked bottom tracking"
+msgstr "porque éste instrumento no puede realizar bottom tracking"
 
 msgid "cannot use which=27 because this device did not have 4 beams"
-msgstr "cannot use which=27 because this device did not have 4 beams"
+msgstr "no puedo utilizar which=27 porque éste dispositivo no tiene 4 lasers"
 
 msgid "cannot evaluate adorn["
-msgstr "cannot evaluate adorn["
+msgstr "no puedo evaluar adorn["
 
 msgid "]"
 msgstr "]"
 
 msgid "no latitude or longitude in object's metadata, so cannot draw map"
-msgstr "no latitude or longitude in object's metadata, so cannot draw map"
+msgstr "no puedo dibujar el mapa, al no haber datos de latitud o longitud en los metadatos del objeto"
 
 msgid "there is no built-in coastline file of name \""
-msgstr "there is no built-in coastline file of name \""
+msgstr "no se incorpora un archivo preprocesado de línea costera de nombre \""
 
 msgid "unknown value of which ("
-msgstr "unknown value of which ("
+msgstr "valor desconocido de which ("
 
 msgid "toEnuAdp cannot convert from coordinate system"
-msgstr "toEnuAdp cannot convert from coordinate system"
+msgstr "toEnuAdp no puede convertir desde el sistema de coordenadas"
 
 msgid "to ENU, so returning argument as-is"
-msgstr "to ENU, so returning argument as-is"
+msgstr "a ENU, devolviendo el argumento 'as-is', sin modificar"
 
 msgid "the beams are already unspreaded in this dataset."
-msgstr "the beams are already unspreaded in this dataset."
-
-msgid "the beams are already unspreaded in this dataset"
-msgstr "the beams are already unspreaded in this dataset"
+msgstr "los beams ya están unspreaded en este dataset."
+# can you please add more context/explain? The entry was also duplicated in the next entry (why?). I deleted one
 
 msgid "method is only for objects of class \"adp\""
-msgstr "method is only for objects of class \"adp\""
+msgstr "el método es exclusivamente para objetos de clase \"adp\""
 
 msgid "input must be in beam coordinates"
-msgstr "input must be in beam coordinates"
+msgstr "el input debe de estar en coordenadas beam"
 
 msgid "can only handle 4-beam ADP units from RDI"
-msgstr "can only handle 4-beam ADP units from RDI"
+msgstr "solamente puedo manejar 4-beam ADP units from RDI"
 
 msgid "missing x@metadata$transformationMatrix"
-msgstr "missing x@metadata$transformationMatrix"
+msgstr "x@metadata$transformationMatrix ausente"
 
 msgid "x@metadata$transformationMatrix must be a 4x4 matrix"
-msgstr "x@metadata$transformationMatrix must be a 4x4 matrix"
+msgstr "x@metadata$transformationMatrix debe de ser una matríz de 4x4"
 
 msgid "can only handle 3-beam ADP units from nortek"
-msgstr "can only handle 3-beam ADP units from nortek"
+msgstr "solamente puedo manejar unidades 3-beam ADP de nortek"
 
 msgid "x@metadata$transformationMatrix must be a 3x3 matrix"
-msgstr "x@metadata$transformationMatrix must be a 3x3 matrix"
+msgstr "x@metadata$transformationMatrix debe de ser una matríz de 3x3"
 
 msgid "can only handle 3-beam ADP units from sontek"
-msgstr "can only handle 3-beam ADP units from sontek"
+msgstr "solo puedo manejar unidades 3-beam ADP de sontek"
 
 msgid "adp type must be either \"rdi\" or \"nortek\" or \"sontek\""
-msgstr "adp type must be either \"rdi\" or \"nortek\" or \"sontek\""
+msgstr "el tipo adp debe de ser bien \"rdi\", \"nortek\" o \"sontek\""
 
 msgid "input must be in xyz coordinates"
-msgstr "input must be in xyz coordinates"
+msgstr "el input debe de ser en coordenadas xyz"
 
 msgid "need metadata$orientation='upward' or 'downward', not '"
-msgstr "need metadata$orientation='upward' or 'downward', not '"
+msgstr "se necesitan metadata$orientation='upward' o 'downward', no '"
 
 msgid ""
 "unrecognized manufacturer; should be 'teledyne rdi', 'sontek', or 'nortek', "
 "but is '"
 msgstr ""
-"unrecognized manufacturer; should be 'teledyne rdi', 'sontek', or 'nortek', "
-"but is '"
+"marca desconocida; debe de ser 'teledyne rdi', 'sontek', o 'nortek', "
+"pero es '"
 
 msgid "input must be in enu coordinates, but it is in"
-msgstr "input must be in enu coordinates, but it is in"
+msgstr "el input debe de ser en coordenadas enu, pero es en"
 
 msgid "coordinates"
-msgstr "coordinates"
+msgstr "coordenadas"
 
 msgid "there is no bottom velocity in this object"
-msgstr "there is no bottom velocity in this object"
+msgstr "no hay velocidad del fondo en este objeto"
 
 msgid "x must be an \"adp\" object"
-msgstr "x must be an \"adp\" object"
+msgstr "x debe de ser un objeto \"adp\""
 
 msgid "binmap() only works for 4-beam instruments"
-msgstr "binmap() only works for 4-beam instruments"
+msgstr "binmap() solamente funciona con instrumentos con 4-beam"
 
 msgid "expecting syncCode 0x"
-msgstr "expecting syncCode 0x"
+msgstr "esperando syncCode 0x"
 
 msgid "but got 0x"
-msgstr "but got 0x"
+msgstr "pero se obtuvo 0x"
 
 msgid "instead (while reading header #"
-msgstr "instead (while reading header #"
+msgstr "en su lugar (al leer el encabezado #"
 
 msgid "size of hardware header expected to be 24 two-byte words, but got"
-msgstr "size of hardware header expected to be 24 two-byte words, but got"
+msgstr "se esperaba que el tamaño del hardware header fuera de palabras de 24 "
+"two-byte, pero se obtuvo"
+# temptative, could benefit of some more context. 
 
 msgid "size of hardware header expected to be"
-msgstr "size of hardware header expected to be"
+msgstr "el tamaño del hardware header esperado es"
 
 msgid "size of head header expected to be"
-msgstr "size of head header expected to be"
+msgstr "el tamaño esperado de head header es"
 
 msgid "size of user header expected to be"
-msgstr "size of user header expected to be"
+msgstr "el tamaño esperado del encabezado user es"
 
 msgid "unknown originalCoordinate"
-msgstr "unknown originalCoordinate"
+msgstr "originalCoordinate desconocido"
 
 msgid "unknown frequency"
-msgstr "unknown frequency"
+msgstr "frequencia desconocida"
 
 msgid ""
 "(only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size"
 msgstr ""
-"(only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size"
+"(solamente entiende 1MHz y 2MHz); utilizando la fórmula de 2Mhz "
+"para calcular el tamaño de celdilla"
 
 msgid ""
 "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size"
 msgstr ""
-"(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size"
+"(solamente entiende 1MHz and 2MHz); utilizando la fórmula de 1Mhz "
+"para calcular el tamaño de celdilla"
 
 msgid ""
 "using fixed cell size and blanking distance for Aquadopp, since cannot infer "
 "these from the file"
 msgstr ""
-"using fixed cell size and blanking distance for Aquadopp, since cannot infer "
-"these from the file"
+"utilizando tamaño de celdilla fijado y blanking distance para Aquadopp, puesto "
+"que no pude inferir estos directamente del archivo"
 
 msgid "unknown instrument type \""
-msgstr "unknown instrument type \""
+msgstr "tipo de instrumento desconocido \""
 
 msgid "\", so calculating cell size as though it is a 2MHz AquadoppHR"
-msgstr "\", so calculating cell size as though it is a 2MHz AquadoppHR"
+msgstr "\", por tanto calculando el tamaño de celdilla como si "
+"correspondiera a un 2MHz AquadoppHR"
 
 msgid "cannot understand byte 0x"
-msgstr "cannot understand byte 0x"
+msgstr "no puedo entender el byte 0x"
 
 msgid "; expecting one of the following: 0x"
-msgstr "; expecting one of the following: 0x"
+msgstr "; esperando uno de los siguientes: 0x"
 
 msgid "[hardware configuration] 0x"
 msgstr "[hardware configuration] 0x"
 
 msgid "[head configuration] or 0x"
-msgstr "[head configuration] or 0x"
+msgstr "[head configuration] o 0x"
 
 msgid "[user configuration]"
 msgstr "[user configuration]"
 
 msgid "argument `file' must be a character string or connection"
-msgstr "argument `file' must be a character string or connection"
+msgstr "el argumento `file' debe de ser una cadena de caracteres o conexión"
 
 msgid "if 'from' is POSIXt, then 'to' must be, also"
-msgstr "if 'from' is POSIXt, then 'to' must be, also"
+msgstr "si 'from' es POSIXt, entonces 'to' debe serlo también"
 
 msgid "need more separation between from and to"
-msgstr "need more separation between from and to"
+msgstr "necesita una mayor separación entre from y to"
 
 msgid "cannot have string for 'by' if 'from' and 'to' are integers"
-msgstr "cannot have string for 'by' if 'from' and 'to' are integers"
+msgstr "'by' no puede tener una cadena si 'from' y 'to' son números enteros (integer)"
 
 msgid "the argument distance is of length"
-msgstr "the argument distance is of length"
+msgstr "la distancia al argumento es de longitud"
+# please add more context to choose between "al" argumento (distance to argument), 
+# "del" argumento (distance from argument)
+# or to omite argument (distance is the argument here)
 
 msgid ", which does not match the second dimension of the velocity matrix,"
-msgstr ", which does not match the second dimension of the velocity matrix,"
+msgstr ", lo cual no coincide con la segunda dimensión de la matríz de velocidad,"
 
 msgid "first two bytes in file must be 0x7f 0x7f, but they are 0x"
-msgstr "first two bytes in file must be 0x7f 0x7f, but they are 0x"
+msgstr "los primeros dos bytes en el archivo deberían de ser 0x7f 0x7f, pero son 0x"
 
 msgid "0x"
 msgstr "0x"
 
 msgid "cannot have"
-msgstr "cannot have"
+msgstr "no puede tener"
 
 msgid "data types, as header indicates"
-msgstr "data types, as header indicates"
+msgstr "tipos de dato, como indica el encabezado"
 
 msgid "first byte of fixed leader header must be 0x00 but it was"
-msgstr "first byte of fixed leader header must be 0x00 but it was"
+msgstr "el primer byte de fixed leader header debería de ser 0x00, pero fue"
 
 msgid "second byte of fixed leader header must be a0x00 but it was"
-msgstr "second byte of fixed leader header must be a0x00 but it was"
+msgstr "el segundo byte de fixed leader header debería ser a0x00, pero fue"
 
 msgid "unknown freq. bit code:"
-msgstr "unknown freq. bit code:"
+msgstr "freq. bit code desconocido:"
 
 msgid "(expect 000 for 75kHz, 001 for 150kHz, etc)"
-msgstr "(expect 000 for 75kHz, 001 for 150kHz, etc)"
+msgstr "(se espera 000 para 75kHz, 001 para 150kHz, etc)"
 
 msgid "expecting a beamAngle of 20 deg [more-or-less standard for RDI] but got"
-msgstr ""
-"expecting a beamAngle of 20 deg [more-or-less standard for RDI] but got"
+msgstr "se esperaba un beamAngle de 20 grados " 
+"[mas o menos estándar para RDI] pero se obtuvo"
 
 msgid "deg; using the latter in the transformationMatrix"
-msgstr "deg; using the latter in the transformationMatrix"
+msgstr "grados; usando estos últimos en transformationMatrix"
 
 msgid "cellSize of"
-msgstr "cellSize of"
+msgstr "cellSize de"
 
 msgid "m is not in the allowed range of 0m to 64m"
-msgstr "m is not in the allowed range of 0m to 64m"
+msgstr "m no está en el rango permitido de 0-64m"
 
 msgid "unexpected length"
-msgstr "unexpected length"
+msgstr "longitud inesperada "
+"(no se refiere a coordenadas sino a medida)"
+# as in other similar places, this last note is important to 
+# avoid ambiguity among longitude and length, that use the same word in spanish
 
 msgid ""
 "of fixed-leader-data header; expecting 50 for 'surveyor' or 59 for "
 "'workhorse'."
 msgstr ""
-"of fixed-leader-data header; expecting 50 for 'surveyor' or 59 for "
+"del encabezado fixed-leader-data; esperando 50 para 'surveyor' o 59 para "
 "'workhorse'."
+# please add context for fixed-leader-data header
 
 msgid "byte 1 of variable leader data should be 0x80, but it is"
-msgstr "byte 1 of variable leader data should be 0x80, but it is"
+msgstr "el primer byte de la variable leader data debería ser 0x80, pero es"
 
 msgid "byte 2 of variable leader data should be 0x00, but it is"
-msgstr "byte 2 of variable leader data should be 0x00, but it is"
+msgstr "el segundo byte de la variable leader data debería ser 0x00, pero es"
 
 msgid "soundSpeed is"
-msgstr "soundSpeed is"
+msgstr "soundSpeed es"
 
 msgid ""
 ", which is outside the permitted range of 1400 m/s to\n"
 "                1600 m/s.  Something went wrong in decoding the data."
 msgstr ""
-", which is outside the permitted range of 1400 m/s to\n"
-"                1600 m/s.  Something went wrong in decoding the data."
+", lo que está fuera del rango permitido de 1400 a 1600 m/s\n"
+" Algo fue mal al decodificar los datos."
 
 msgid "no profilesToRead"
-msgstr "no profilesToRead"
+msgstr "profilesToRead ausente"
 
 msgid "first byte of correlation segment should be 0x00 but is"
-msgstr "first byte of correlation segment should be 0x00 but is"
+msgstr "el primer byte del segmento de correlation debería ser 0x00 pero es"
 
 msgid "at file position"
-msgstr "at file position"
+msgstr "en la posición del archivo"
+# temptative. Ambiguous string, please add context
 
 msgid "second byte of correlation segment should be 0x02 but is"
-msgstr "second byte of correlation segment should be 0x02 but is"
+msgstr "el segundo byte del segmento de correlacion debería ser 0x02, pero es"
 
 msgid "first byte of intensity segment should be 0x00 but is"
-msgstr "first byte of intensity segment should be 0x00 but is"
+msgstr "el primer byte del segmento de intensidad debería ser 0x00, pero es"
 
 msgid "second byte of intensity segment should be 0x03 but is"
-msgstr "second byte of intensity segment should be 0x03 but is"
+msgstr "el segundo byte del segmento de intensidad debería ser 0x03, pero es"
 
 msgid "first byte of percent-good segment should be 0x00 but is"
-msgstr "first byte of percent-good segment should be 0x00 but is"
+msgstr "el primer byte del segmento percent-good debería ser 0x00, pero es"
 
 msgid "second byte of percent-good segment should be 0x04 but is"
-msgstr "second byte of percent-good segment should be 0x04 but is"
+msgstr "el segundo byte del segmento percent-good debería ser 0x04, pero es"
 
 msgid "expecting 4 beams, for this RDI adcp"
-msgstr "expecting 4 beams, for this RDI adcp"
+msgstr "esperando 4 lasers, para este RDI adcp"
 
 msgid "got to end of file"
-msgstr "got to end of file"
+msgstr "se obtuvo fin del archivo"
+# temptative. ambiguous string. If is like in "we got a cube" (obtuvimos un cubo), if is like
+# "we reached/travelled to the end of sth", would need to replace it for "se alcanzó el final del archivo" 
+# or other similar instead. Please add context
 
 msgid "Interpolated across a bad profile at time"
-msgstr "Interpolated across a bad profile at time"
+msgstr "Interpolado a través de un mal perfil en el tiempo"
 
 msgid ""
 ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 "
 "0x01, was not found 65 bytes after the start of a profile, the latter "
 "indicated by the byte sequence 0x80 0x00.)"
 msgstr ""
-".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 "
-"0x01, was not found 65 bytes after the start of a profile, the latter "
-"indicated by the byte sequence 0x80 0x00.)"
+".  (\"Bad\" significa que el byte code esperado para un segmento de velocidad, 0x00 "
+"0x01, no fue localizado 65 bytes tras empezar un perfil, esto último "
+"indicado por la secuencia de bytes 0x80 0x00.)"
 
 msgid "Interpolated across"
-msgstr "Interpolated across"
+msgstr "Interpolado a través de"
 
 msgid "bad profile(s) at times:"
-msgstr "bad profile(s) at times:"
+msgstr "mal(os) perfil(es) en los tiempos:"
 
 msgid "There are no profiles in this file."
-msgstr "There are no profiles in this file."
+msgstr "No hay perfiles en este archivo."
 
 msgid "The header indicates that there are no profiles in this file."
-msgstr "The header indicates that there are no profiles in this file."
+msgstr "El encabezado indica que no hay perfiles en este archivo."
 
 msgid "there should be 3 beams, but the file indicates"
-msgstr "there should be 3 beams, but the file indicates"
+msgstr "debería haber 3 beams, pero el archivo indica "
 
 msgid "please request to read *some* profiles"
-msgstr "please request to read *some* profiles"
+msgstr "por favor solicite leer *algunos* perfiles"
 
 msgid "read.adp.sontek() interpolating"
-msgstr "read.adp.sontek() interpolating"
+msgstr "interpolando read.adp.sontek()"
 
 msgid "heading/pitch/roll values to the"
-msgstr "heading/pitch/roll values to the"
+msgstr "valores de heading/pitch/roll para los"
 
 msgid "velocity profiles"
 msgstr "perfiles de velocidad"
 
 msgid "*****FIXME: check up and down; also read it and check*****"
-msgstr "*****FIXME: check up and down; also read it and check*****"
+msgstr "*****FIJEME: check up and down; también read it y check*****"
+# incomplete. I don't understand the context
 
 msgid "can only handle 3-beam devices"
-msgstr "can only handle 3-beam devices"
+msgstr "solamente puedo manejar dispositivos 3-beam"
 
 msgid "orientation="
 msgstr "orientation="
+# if is a variable name shouldn't be translated, if not: orientación=
 
 msgid "but must be 0 (upward), 1 (downward), or 2 (sideward)"
-msgstr "but must be 0 (upward), 1 (downward), or 2 (sideward)"
+msgstr "debe de ser 0 (upward/ hacia arriba), 1 (downward/ hacia abajo), "
+" o 2 (lateral)"
 
 msgid "orientation \""
-msgstr "orientation \""
+msgstr "orientación \""
 
 msgid "is not allowed; try \"upward\" or \"downward\""
-msgstr "is not allowed; try \"upward\" or \"downward\""
+msgstr "no está permitida; intente \"upward\" o \"downward\""
 
 msgid "originalCoordinate="
 msgstr "originalCoordinate="
+# if is a variable name, msgstr = "" could be enough.
 
 msgid "but must be 0 (beam), 1 (xyz), or 2 (enu)"
-msgstr "but must be 0 (beam), 1 (xyz), or 2 (enu)"
+msgstr "debe de ser 0 (beam), 1 (xyz), o 2 (enu)"
 
 msgid "from="
 msgstr "from="
+# if is not a variable name: desde=
 
 msgid "but must exceed 1"
-msgstr "but must exceed 1"
+msgstr "pero debe superar 1"
 
 msgid "to="
 msgstr "to="
+# if is not a variable name: hasta=
 
 msgid "by="
 msgstr "by="
+# if is not a variable name: por=
 
 msgid "must exceed to="
-msgstr "must exceed to="
+msgstr "debe de superar to="
+# tricky because to can be or not part of the phrase or a variable name. 
+" "debe de superar a="? "debe de exceder en="?
 
 msgid "'by' must be numeric"
-msgstr "'by' must be numeric"
+msgstr "'by' debe de ser numérico"
 
 msgid "must specify a 'subset'"
-msgstr "must specify a 'subset'"
+msgstr "debe de especificar un 'subset'"
 
 msgid "only 'time' is permitted for subsetting"
-msgstr "only 'time' is permitted for subsetting"
+msgstr "solamente se permite tomar subconjuntos con 'time'"
 
 msgid "read.adv() cannot understand type = \""
-msgstr "read.adv() cannot understand type = \""
+msgstr "read.adv() no se puede comprender tipo = \""
 
 msgid "adv"
 msgstr ""
 
 msgid "unknown 'which':"
-msgstr "unknown 'which':"
+msgstr "desconocido 'which':"
 
 msgid "no salinity in this ADV object"
-msgstr "no salinity in this ADV object"
+msgstr "este objeto ADV no especifica salinidad"
 
 msgid "Amplitude"
 msgstr ""
+# or: Amplitud
 
 msgid "Correlation"
 msgstr ""
+# or: Correlacción
 
 msgid "there is no analog1 signal in this ADV object"
-msgstr "there is no analog1 signal in this ADV object"
+msgstr "este objeto ADV no contiene una señal analog1"
 
 msgid "there is no analog2 signal in this ADV object"
-msgstr "there is no analog2 signal in this ADV object"
+msgstr "este objeto ADV no contiene una señal analog2"
 
 msgid "no voltage signal to plot"
-msgstr "no voltage signal to plot"
+msgstr "no hay señal voltaje en el plot"
 
 msgid "unknown value of \"which\":"
-msgstr "unknown value of \"which\":"
+msgstr "valor desconocido de \"which\":"
 
 msgid "adv.2enu cannot convert from coordinate system"
-msgstr "adv.2enu cannot convert from coordinate system"
+msgstr "adv.2enu no puede convertir desde sistema de coordenadas"
 
 msgid "input must be in beam coordinates, but it is in"
-msgstr "input must be in beam coordinates, but it is in"
+msgstr "el input debería de estar en coordenadas beam, pero está en"
 
 msgid ""
 "cannot convert coordinates because metadata$transformationMatrix is NULL "
 "(see above)."
 msgstr ""
-"cannot convert coordinates because metadata$transformationMatrix is NULL "
-"(see above)."
+"no puedo convertir coordenadas porque metadata$transformationMatrix es NULL "
+"(vea encima)."
 
 msgid "input must be in xyz coordinates, but it is in"
-msgstr "input must be in xyz coordinates, but it is in"
+msgstr "el input debería estar en coordenadas xyz, pero está en"
 
 msgid "cannot handle ADV objects that were created with oce version < 0.3"
-msgstr "cannot handle ADV objects that were created with oce version < 0.3"
+msgstr "no se pueden manejar objetos ADV creados con una versión de oce < 0.3"
 
 msgid "need sensor orientation to be 'upward' or 'downward', not '"
-msgstr "need sensor orientation to be 'upward' or 'downward', not '"
+msgstr "se necesita que el sensor esté orientado 'upward' o 'downward', no '"
 
 msgid "must give horizontalCase for cabled Nortek Vector (cases 3 to 6)"
-msgstr "must give horizontalCase for cabled Nortek Vector (cases 3 to 6)"
+msgstr "debe proporcionar horizontalCase para cabled Nortek Vector (casos 3 a 6)"
 
 msgid "must give horizontalCase as TRUE or FALSE"
-msgstr "must give horizontalCase as TRUE or FALSE"
+msgstr "debe proporcionar horizontalCase como TRUE o FALSE"
 
 msgid ""
 "cannot handle cases 5 and 6 (vector velocimeter cabled to a vertical case)"
 msgstr ""
-"cannot handle cases 5 and 6 (vector velocimeter cabled to a vertical case)"
+"no puedo manejar cajas 5 y 6 (vector velocimetro cableado a una caja vertical)"
+# I asume that both case equal box in this context. 
+# If the first case would equal instance, subject or matter replace it by 'casos' instead.
 
 msgid "cannot handle the case of a cabled Sontek unit (does it even exist?)"
-msgstr "cannot handle the case of a cabled Sontek unit (does it even exist?)"
+msgstr "no puedo manejar la caja de una unidad cableada Sontek (existe siquiera?)"
+# same as in the previous message, use caja if equals "cannot handle the box of a cabled..."
+# use caso instead if equals "cannot handle the issue of a cabled..."
 
 msgid ""
 "unknown type of instrument; x@metadata$manufacturer must contain either "
 "\"sontek\" or \"nortek\""
 msgstr ""
-"unknown type of instrument; x@metadata$manufacturer must contain either "
-"\"sontek\" or \"nortek\""
+"tipo de instrumento desconocido; x@metadata$manufacturer debe de contener bien "
+"\"sontek\" o bien \"nortek\""
 
 msgid "heading length ("
 msgstr "heading length ("
+# ambiguous, is the name of the header 'length' or its the header extension?
 
 msgid ") does not match number of velocity samples ("
-msgstr ") does not match number of velocity samples ("
+msgstr ") no coincide con el número de muestras de velocidad ("
 
 msgid "input must be in \"enu\" coordinates, but it is in"
 msgstr "input must be in \"enu\" coordinates, but it is in"
@@ -1809,25 +1844,25 @@ msgid ""
 msgstr ""
 
 msgid "must create a map first, with mapPlot()"
-msgstr "must create a map first, with mapPlot()"
+msgstr "debe crear un mapa primero, con mapPlot()"
 
 msgid "must give 'longitude' and possibly 'latitude'"
-msgstr "must give 'longitude' and possibly 'latitude'"
+msgstr "debe proporcionar 'longitude' y posiblemente 'latitude'"
 
 msgid "lattudelim must contain two distinct values"
-msgstr "lattudelim must contain two distinct values"
+msgstr "lattudelim debe contener dos valores distintos"
 
 msgid "longitudelim must contain two distinct values"
-msgstr "longitudelim must contain two distinct values"
+msgstr "longitudelim debe contener dos valores distintos"
 
 msgid "cannot handle map projection of type 'wintri'"
-msgstr ""
+msgstr "no puedo manejar un mapa con proyección de tipo 'wintri'"
 
 msgid "cannot handle map projection of type 'aitoff'"
-msgstr ""
+msgstr "no puedo manejar un mapa con proyección de tipo 'aitoff'"
 
 msgid "mapPlot(): trimming"
-msgstr ""
+msgstr "mapPlot(): recortando"
 
 #, fuzzy
 msgid "spurious edge-to-edge lines; filling may be inaccurate"
@@ -2938,19 +2973,22 @@ msgid "lengths of temperature and p arrays must agree, but they are"
 msgstr "lengths of temperature and p arrays must agree, but they are"
 
 msgid "must provide salinity"
-msgstr "must provide salinity"
+msgstr "debe proporcionar salinidad"
 
 msgid "lengths of salinity and rho must agree, but they are"
-msgstr "lengths of salinity and rho must agree, but they are"
+msgstr "las longitudes (se refiere a medida, no a coordenadas) "
+"de salinidad y rho deben coincidir, pero son"
 
 msgid "lengths of salinity and pressure must agree, but they are"
-msgstr "lengths of salinity and pressure must agree, but they are"
+msgstr "las longitudes (se refiere a medida, no a coordenadas) "
+"de salinidad y presión deben coincidir, pero son"
 
 msgid "must provide temperature"
-msgstr "must provide temperature"
+msgstr "debe de proporcionar la temperatura"
 
 msgid "lengths of salinity and temperature must agree, but they are"
-msgstr "lengths of salinity and temperature must agree, but they are"
+msgstr "las longitudes (se refiere a medida, no a coordenadas) "
+"de salinidad y temperatura deben de coincidir, pero son"
 
 msgid "or '"
 msgstr ""
@@ -3052,82 +3090,84 @@ msgid "tidem: using default coastline for testing"
 msgstr "tidem: using default coastline for testing"
 
 msgid "'longitude' and 'latitude' must be given unless 'node' is given"
-msgstr "'longitude' and 'latitude' must be given unless 'node' is given"
+msgstr "deben proporcionarse 'longitude' y 'latitude' a menos que se indique 'node'"
 
 msgid "cannot access \""
-msgstr "cannot access \""
+msgstr "no puedo acceder a \""
 
 #, fuzzy
 msgid "the subset must be based on longitude or latitude"
 msgstr ""
-"xtype must be one of: \"distance\", \"track\", \"longitude\", or \"latitude\""
+"xtype debe de ser uno de: \"distance\", \"track\", \"longitude\", o \"latitude\""
+# meaning of fuzzy here?
 
 msgid "must supply longitude"
-msgstr "must supply longitude"
+msgstr "debe proporcionar longitud"
 
 msgid "must supply latitude"
-msgstr "must supply latitude"
+msgstr "debe proporcionar latitud"
 
 msgid "must supply topo"
-msgstr "must supply topo"
+msgstr "debe proporcionar topo"
 
 msgid "lengths of latitude and longitude must match"
-msgstr "lengths of latitude and longitude must match"
+msgstr "los tamaños de latitud y longitud deben coincidir"
+# temptative, the problematic word is tamaños
 
 msgid "topo"
-msgstr ""
+msgstr "topo"
 
 msgid "please use 'clatitude' and 'clongitude' instead of 'center'"
-msgstr "please use 'clatitude' and 'clongitude' instead of 'center'"
+msgstr "por favor, use 'clatitude' y 'clongitude' en vez de 'center'"
 
 msgid "must give all of 'clatitude', 'clongitude' and 'span', or none of them"
-msgstr "must give all of 'clatitude', 'clongitude' and 'span', or none of them"
+msgstr "debe de proporcionar o bien 'clatitude', 'clongitude' y 'span' (todas ellas) "
+"o bien ninguna de ellas"
 
 msgid "argument 'asp' being ignored, because argument 'center' was given"
-msgstr "argument 'asp' being ignored, because argument 'center' was given"
+msgstr "'asp' se ignorará, puesto que el argumento 'center' ya se había dado"
 
 msgid "cannot give 'xlim' argument if the 'center' argument was given"
-msgstr "cannot give 'xlim' argument if the 'center' argument was given"
+msgstr "no se puede proporcionar 'xlim' si se ha dado ya el argumento 'center'"
 
 msgid "cannot give 'ylim' argument if the 'center' argument was given"
-msgstr "cannot give 'ylim' argument if the 'center' argument was given"
+msgstr "no se puede proporcionar 'ylim' si se ha dado ya el argumento 'center'"
 
 msgid "there are no topographic data within the longitudes of the plot region."
-msgstr ""
-"there are no topographic data within the longitudes of the plot region."
+msgstr "ningún dato topográfico cae dentro de las coords. de longitud de la región a dibujar."
 
 msgid "there are no topographic data within the latitudes of the plot region."
-msgstr "there are no topographic data within the latitudes of the plot region."
+msgstr "ningún dato topográfico cae dentro de las latitudes de la región a dibujar."
 
 msgid "must install.packages(\"ncdf4\") to read topo data from a netCDF file"
 msgstr ""
 
 msgid "longitude vector has length"
-msgstr "longitude vector has length"
+msgstr "el vector longitud mide"
 
 msgid ", which does not match matrix width"
-msgstr ", which does not match matrix width"
+msgstr ", lo cual no coincide con el ancho de la matríz"
 
 msgid "latitude vector has length"
-msgstr "latitude vector has length"
+msgstr "el vector latitud tiene un tamaño"
 
 msgid ", which does not match matrix height"
-msgstr ", which does not match matrix height"
+msgstr ", que no coincide con el alto de la matriz"
 
 msgid "problem setting up bins (ai<1)"
-msgstr "problem setting up bins (ai<1)"
+msgstr "problema instalando bins (ai<1)"
 
 msgid "problem setting up bins (ai>xlen)"
-msgstr "problem setting up bins (ai>xlen)"
+msgstr "problema instalando bins (ai>xlen)"
 
 msgid "miscount in angles"
-msgstr "miscount in angles"
+msgstr "cálculo erróneo en los ángulos"
 
 msgid "windrose"
-msgstr ""
+msgstr "rosa de los vientos"
 
 msgid "'col' should be a list of 4 colours"
-msgstr "'col' should be a list of 4 colours"
+msgstr "'col' debe ser una lista de cuatro colores"
 
 #~ msgid ""
 #~ "DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' "
@@ -3146,7 +3186,7 @@ msgstr "'col' should be a list of 4 colours"
 #~ msgstr "sort.section() cannot yet handle argument by=\"distance\""
 
 #~ msgid "argument 'by' is incorrect"
-#~ msgstr "argument 'by' is incorrect"
+#~ msgstr "el argumento 'by' es incorrecto"
 
 #~ msgid "need the ncdf library to read a netcdf topography file"
 #~ msgstr "need the ncdf library to read a netcdf topography file"
