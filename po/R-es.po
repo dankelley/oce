@@ -12,159 +12,159 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "must give 'subset'"
-msgstr "must give 'subset'"
+msgstr "debe dar 'subset'"
 
 msgid "there is no item named \""
 msgstr "no hay ningún elemento con nombre \""
 
 msgid "\" in this"
-msgstr "\" in this"
+msgstr "\" en esto"
 
 msgid "object"
-msgstr "object"
+msgstr "objeto"
 
 msgid "method is only for oce objects"
-msgstr "método sólo es para la clase de oce"
+msgstr "El método es sólo para objetos de clase oce"
 
 msgid "must supply 'x'"
-msgstr "must supply 'x'"
+msgstr "debe proporcionar 'x'"
 
 msgid "must supply 'names'"
-msgstr "must supply 'names'"
+msgstr "debe proporcionar 'names'"
 
 msgid "'"
 msgstr "'"
 
 msgid "' not in object's metadata or data$station[[1]]@data"
-msgstr "' not in object's metadata or data$station[[1]]@data"
+msgstr "' no en los metadata del objeto o data$station[[1]]@data"
 
 msgid "' not in object"
-msgstr "' no en el objeton"
+msgstr "' no en el objeto"
 
 msgid "cannot determine time to which to interpolate"
-msgstr "cannot determine time to which to interpolate"
+msgstr "no puedo determinar tiempo en el que interpolar"
 
 msgid "only works for 'adv' and 'adp' objects"
-msgstr "only works for 'adv' and 'adp' objects"
+msgstr "sólo funciona para objetos de tipo 'adv' y 'adp'"
 
 msgid "object has no item named 'data$heading' or 'data$headingSlow'"
-msgstr "object has no item named 'data$heading' or 'data$headingSlow'"
+msgstr "el objeto no tiene un elemento llamado 'data$heading' o 'data$headingSlow'"
 
 msgid "object has no item named 'data$pitch' or 'data$pitchSlow'"
-msgstr "object has no item named 'data$pitch' or 'data$pitchSlow'"
+msgstr "el objeto no tiene un elemento llamado 'data$pitch' o 'data$pitchSlow'"
 
 msgid "no 'latitude' in names(x@data) or names(x@metadata)"
-msgstr "no 'latitude' in names(x@data) or names(x@metadata)"
+msgstr "no 'latitude' en names(x@data) o names(x@metadata)"
 
 msgid "no 'longitude' in names(x@data) or names(x@metadata)"
-msgstr "no 'longitude' in names(x@data) or names(x@metadata)"
+msgstr "no 'longitude' en names(x@data) o names(x@metadata)"
 
 msgid "no item 'data$latitude$ or 'metadata$latitude' in object"
-msgstr "no item 'data$latitude$ or 'metadata$latitude' in object"
+msgstr "no hay un elemento 'data$latitude$ o 'metadata$latitude' en el objeto"
 
 msgid "no item 'data$longitude$ or 'metadata$longitude' in object"
-msgstr "no item 'data$longitude$ or 'metadata$longitude' in object"
+msgstr "no hay un elemento 'data$longitude$ o 'metadata$longitude' en el objeto"
 
 msgid "no item 'data$pressure' in object"
-msgstr "no item 'data$pressure' in object"
+msgstr "Se desconoce la presión. El objeto carece del elemento 'data$pressure'"
 
 msgid "no item 'data$salinity' in object"
-msgstr "no item 'data$salinity' in object"
+msgstr "Se desconoce la salinidad. El objeto carece del elemento 'data$salinity'"
 
 msgid "no item 'data$temperature' in object"
-msgstr "no item 'data$temperature' in object"
+msgstr "Se desconoce la temperatura. El objeto carece del elemento 'data$temperature'"
 
 msgid "object has no item named 'data$roll' or 'data$rollSlow'"
-msgstr "object has no item named 'data$roll' or 'data$rollSlow'"
+msgstr "El objeto no tiene elementos llamados 'data$roll' o 'data$rollSlow'"
 
 msgid ""
 "unknown 'which'; must be 1 for ADP velocity timescale, or 2 for ADP heading "
 "timescale"
 msgstr ""
-"unknown 'which'; must be 1 for ADP velocity timescale, or 2 for ADP heading "
+"'which' desconocido; debe de ser 1 para ADP velocity timescale, o 2 para ADP heading "
 "timescale"
 
 msgid "cannot determine times for this Oce object"
-msgstr "cannot determine times for this Oce object"
+msgstr "no puedo determinar tiempos para este objeto Oce"
 
 msgid "the station data do not contain an item named \""
-msgstr "the station data do not contain an item named \""
+msgstr "Los datos de la estación no contienen un elemento llamado \""
 
 msgid "\""
 msgstr "\""
 
 msgid "cannot find item named '"
-msgstr "cannot find item named '"
+msgstr "no puedo encontrar un elemento llamado '"
 
 msgid "' in object's data"
-msgstr "' in object's data"
+msgstr "' en los datos del objeto"
 
 msgid "'x' does not contain data named \""
-msgstr "'x' does not contain data named \""
+msgstr "'x' no contiene datos denominados \""
 
 msgid "'time' is neither a POSIXt time, nor an oce object containing data$time"
 msgstr ""
-"'time' is neither a POSIXt time, nor an oce object containing data$time"
+"'time' no es ni un tiempo POSIXt ni un objeto Oce conteniendo data$time"
 
 msgid "method is only for objects of class '"
-msgstr "método es sólo para objetos de la clase"
+msgstr "el método es sólo para objetos de la clase"
 
 msgid "adp"
 msgstr ""
 
 msgid "no 'time' in names(x@data)"
-msgstr "no 'time' in names(x@data)"
+msgstr "names(x@data) carece de 'time'"
 
 msgid "'x' must be an oce object"
-msgstr "'x' must be an oce object"
+msgstr "'x' debe de ser un objeto oce"
 
 msgid "'x' does not contain 'data$v'"
-msgstr "'x' does not contain 'data$v'"
+msgstr "'x' no contiene 'data$v'"
 
 msgid "no 'v' in names(x@data)"
-msgstr "no 'v' in names(x@data)"
+msgstr "names(x@data) no contiene 'v'"
 
 msgid "cannot have control$bin less than 1, but got"
-msgstr "cannot have control$bin less than 1, but got"
+msgstr "control$bin no puede ser menor que 1, pero lo es"
 
 msgid "cannot have control$bin larger than"
-msgstr "cannot have control$bin larger than"
+msgstr "control$bin no puede ser mayor que"
 
 msgid "but got"
-msgstr "but got"
+msgstr "pero lo tiene"
 
 msgid "class of object must inherit from either 'adv' or 'adp'"
-msgstr "class of object must inherit from either 'adv' or 'adp'"
+msgstr "la clase del objeto debe heredarse bien de 'adv' o de 'adp'"
 
 msgid ""
 "can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek"
 "\", not class"
 msgstr ""
-"can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek"
-"\", not class"
+"Solo puedo resumir objetos ADP de los subtipos \"rdi\", \"sontek\", o \"nortek"
+"\", no clases"
 
 msgid ","
 msgstr ","
 
 msgid "cannot subset by both time and distance; split into multiple calls"
-msgstr "cannot subset by both time and distance; split into multiple calls"
+msgstr "no puedo tomar subconjuntos a la vez por tiempo y distancia; se divide en multiples llamadas"
 
 msgid "must keep at least 2 profiles"
-msgstr "must keep at least 2 profiles"
+msgstr "debe mantener al menos 2 perfiles"
 
 msgid "must keep at least 2 bins"
-msgstr "must keep at least 2 bins"
+msgstr "debe mantener al menos 2 bins"
 
 msgid "should express the subset in terms of distance or time"
-msgstr "should express the subset in terms of distance or time"
+msgstr "debe expresar el subconjunto en terminos de distancia o tiempo"
 
 msgid "unknown object type; it must inherit from either \"adv\" or \"adp\""
-msgstr "unknown object type; it must inherit from either \"adv\" or \"adp\""
+msgstr "tipo de objeto desconocido; debe heredar bien de \"adv\" o de \"adp\""
 
 msgid ""
 "unknown file type; the object must inherit from either \"adv\" or \"adp\""
 msgstr ""
-"unknown file type; the object must inherit from either \"adv\" or \"adp\""
+"tipo de archivo desconocido; el objeto debe heredar bien de \"adv\" o de \"adp\""
 
 msgid "beam"
 msgstr "rayo"
@@ -185,88 +185,86 @@ msgid ""
 "This instrument is not a Nortek Aquadopp, so mode=\"diagnostic\" is being "
 "ignored"
 msgstr ""
-"This instrument is not a Nortek Aquadopp, so mode=\"diagnostic\" is being "
-"ignored"
+"Este instrumento no es un Nortek Aquadopp, por lo que mode=\"diagnostic\" será ignorado."
 
 msgid ""
 "This instrument seems to be a Nortek Aquadopp, but it has more than 1 cell, "
 "so it must not be; so mode=\"diagnostic\" is being ignored"
 msgstr ""
-"This instrument seems to be a Nortek Aquadopp, but it has more than 1 cell, "
-"so it must not be; so mode=\"diagnostic\" is being ignored"
+"Este instrumento aparenta ser un Nortek Aquadopp, pero tiene más de una célda, "
+"por lo que no puede serlo; por tanto mode=\"diagnostic\" será ignorado."
 
 msgid ""
 "This instrument did not record Diagnostic data, so mode=\"diagnostic\" is "
 "being ignored"
 msgstr ""
-"This instrument did not record Diagnostic data, so mode=\"diagnostic\" is "
-"being ignored"
+"Este instrumento no registra Diagnostic data, por lo que mode=\"diagnostic\" será ignorado"
 
 msgid "there are no profiles in this dataset"
-msgstr "there are no profiles in this dataset"
+msgstr "no hay perfiles en esta dataset"
 
 msgid "length of 'titles' must equal length of 'which'"
-msgstr "length of 'titles' must equal length of 'which'"
+msgstr "la longitud de 'titles' debe igualar a la de 'which'"
 
 msgid "xlim must be a vector of length 2, or a 2-column matrix"
-msgstr "xlim must be a vector of length 2, or a 2-column matrix"
+msgstr "xlim debe de ser un vector de longitud 2, o una matríz de dos columnas"
 
 msgid "zlim must be a vector of length 2, or a matrix with 2 columns"
-msgstr "zlim must be a vector of length 2, or a matrix with 2 columns"
+msgstr "zlim debe de ser un vector de longitud 2, o una matríz de dos columnas"
 
 msgid "no data in the provided ylim=c("
-msgstr "no data in the provided ylim=c("
+msgstr "no hay datos en el ylim=c("
 
 msgid ")"
 msgstr ")"
 
 msgid "ADP object lacks a 'g' data item"
-msgstr "ADP object lacks a 'g' data item"
+msgstr "el objeto ADP carece de un elemento de datos 'g'"
 
 msgid "cannot plot beam/velo 1 because the device no beams"
-msgstr "cannot plot beam/velo 1 because the device no beams"
+msgstr "no puedo graficar beam/velo 1 porque el dispositivo no emite lasers"
 
 msgid "cannot plot beam/velo 2 because the device has only"
-msgstr "cannot plot beam/velo 2 because the device has only"
+msgstr "no puedo graficar beam/velo 2 porque el dispositivo solamente tiene"
 
 msgid "beams"
-msgstr "beams"
+msgstr "lasers"
 
 msgid "cannot plot beam/velo 3 because the device has only"
-msgstr "cannot plot beam/velo 3 because the device has only"
+msgstr "no puedo graficar beam/velo 3 porque el dispositivo solamente tiene"
 
 msgid "cannot plot beam/velo 4 because the device has only"
-msgstr "cannot plot beam/velo 4 because the device has only"
+msgstr "no puedo graficar plot beam/velo 4 porque el dispositivo solamente tiene"
 
 msgid "cannot handle which="
-msgstr "cannot handle which="
+msgstr "no puedo manejar which="
 
 msgid "because this instrument lacked bottom tracking"
-msgstr "because this instrument lacked bottom tracking"
+msgstr "porque éste instrumento carece de bottom tracking"
 
 msgid "cannot use which=27 because this device did not have 4 beams"
-msgstr "cannot use which=27 because this device did not have 4 beams"
+msgstr "no puedo utilizar which=27 porque éste dispositivo no tiene 4 lasers"
 
 msgid "cannot evaluate adorn["
-msgstr "cannot evaluate adorn["
+msgstr "no puedo evaluar adorn["
 
 msgid "]"
 msgstr "]"
 
 msgid "no latitude or longitude in object's metadata, so cannot draw map"
-msgstr "no latitude or longitude in object's metadata, so cannot draw map"
+msgstr "no puedo dibujar el mapa, al no haber datos de latitud o longitud en los metadatos del objeto"
 
 msgid "there is no built-in coastline file of name \""
-msgstr "there is no built-in coastline file of name \""
+msgstr "no se incorpora un archivo preprocesado de línea costera de nombre \""
 
 msgid "unknown value of which ("
-msgstr "unknown value of which ("
+msgstr "valor desconocido de which ("
 
 msgid "toEnuAdp cannot convert from coordinate system"
-msgstr "toEnuAdp cannot convert from coordinate system"
+msgstr "toEnuAdp no puede convertir desde el sistema de coordenadas"
 
 msgid "to ENU, so returning argument as-is"
-msgstr "to ENU, so returning argument as-is"
+msgstr "a ENU, devolviendo el argumento as-is sin modificar"
 
 msgid "the beams are already unspreaded in this dataset."
 msgstr "the beams are already unspreaded in this dataset."
@@ -275,68 +273,68 @@ msgid "the beams are already unspreaded in this dataset"
 msgstr "the beams are already unspreaded in this dataset"
 
 msgid "method is only for objects of class \"adp\""
-msgstr "method is only for objects of class \"adp\""
+msgstr "el método es exclusivamente para objetos de clase \"adp\""
 
 msgid "input must be in beam coordinates"
-msgstr "input must be in beam coordinates"
+msgstr "el input debe de estar en coordenadas beam coordinates"
 
 msgid "can only handle 4-beam ADP units from RDI"
-msgstr "can only handle 4-beam ADP units from RDI"
+msgstr "solamente puedo manejar 4-beam ADP units from RDI"
 
 msgid "missing x@metadata$transformationMatrix"
-msgstr "missing x@metadata$transformationMatrix"
+msgstr "x@metadata$transformationMatrix ausente"
 
 msgid "x@metadata$transformationMatrix must be a 4x4 matrix"
-msgstr "x@metadata$transformationMatrix must be a 4x4 matrix"
+msgstr "x@metadata$transformationMatrix debe de ser una matríz de 4x4"
 
 msgid "can only handle 3-beam ADP units from nortek"
-msgstr "can only handle 3-beam ADP units from nortek"
+msgstr "solamente puedo manejar unidades 3-beam ADP de nortek"
 
 msgid "x@metadata$transformationMatrix must be a 3x3 matrix"
-msgstr "x@metadata$transformationMatrix must be a 3x3 matrix"
+msgstr "x@metadata$transformationMatrix debe de ser una matríz de 3x3"
 
 msgid "can only handle 3-beam ADP units from sontek"
-msgstr "can only handle 3-beam ADP units from sontek"
+msgstr "solo puedo manejar unidades 3-beam ADP de sontek"
 
 msgid "adp type must be either \"rdi\" or \"nortek\" or \"sontek\""
-msgstr "adp type must be either \"rdi\" or \"nortek\" or \"sontek\""
+msgstr "el tipo adp debe de ser bien \"rdi\", \"nortek\" o \"sontek\""
 
 msgid "input must be in xyz coordinates"
-msgstr "input must be in xyz coordinates"
+msgstr "el input debe de ser en coordenadas xyz"
 
 msgid "need metadata$orientation='upward' or 'downward', not '"
-msgstr "need metadata$orientation='upward' or 'downward', not '"
+msgstr "se necesitan metadata$orientation='upward' o 'downward', no '"
 
 msgid ""
 "unrecognized manufacturer; should be 'teledyne rdi', 'sontek', or 'nortek', "
 "but is '"
 msgstr ""
-"unrecognized manufacturer; should be 'teledyne rdi', 'sontek', or 'nortek', "
-"but is '"
+"marca desconocida; debe de ser 'teledyne rdi', 'sontek', o 'nortek', "
+"pero es '"
 
 msgid "input must be in enu coordinates, but it is in"
-msgstr "input must be in enu coordinates, but it is in"
+msgstr "el input debe de ser en coordenadas enu, pero es en"
 
 msgid "coordinates"
-msgstr "coordinates"
+msgstr "coordenadas"
 
 msgid "there is no bottom velocity in this object"
-msgstr "there is no bottom velocity in this object"
+msgstr "no hay velocidad del fondo en este objeto"
 
 msgid "x must be an \"adp\" object"
-msgstr "x must be an \"adp\" object"
+msgstr "x debe de ser un objeto \"adp\""
 
 msgid "binmap() only works for 4-beam instruments"
-msgstr "binmap() only works for 4-beam instruments"
+msgstr "binmap() solamente funciona con instrumentos con 4-beam"
 
 msgid "expecting syncCode 0x"
-msgstr "expecting syncCode 0x"
+msgstr "esperando syncCode 0x"
 
 msgid "but got 0x"
-msgstr "but got 0x"
+msgstr "pero se obtuvo 0x"
 
 msgid "instead (while reading header #"
-msgstr "instead (while reading header #"
+msgstr "en su lugar (al leer el encabezado #"
 
 msgid "size of hardware header expected to be 24 two-byte words, but got"
 msgstr "size of hardware header expected to be 24 two-byte words, but got"
