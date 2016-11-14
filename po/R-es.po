@@ -15,10 +15,10 @@ msgid "must give 'subset'"
 msgstr "debe dar 'subset'"
 
 msgid "there is no item named \""
-msgstr "no hay ningún elemento con nombre \""
+msgstr "no hay ningún elemento denominado \""
 
 msgid "\" in this"
-msgstr "\" en esto"
+msgstr "\" en este"
 
 msgid "object"
 msgstr "objeto"
@@ -264,7 +264,7 @@ msgid "toEnuAdp cannot convert from coordinate system"
 msgstr "toEnuAdp no puede convertir desde el sistema de coordenadas"
 
 msgid "to ENU, so returning argument as-is"
-msgstr "a ENU, devolviendo el argumento as-is sin modificar"
+msgstr "a ENU, devolviendo el argumento 'as-is', sin modificar"
 
 msgid "the beams are already unspreaded in this dataset."
 msgstr "the beams are already unspreaded in this dataset."
@@ -337,10 +337,10 @@ msgid "instead (while reading header #"
 msgstr "en su lugar (al leer el encabezado #"
 
 msgid "size of hardware header expected to be 24 two-byte words, but got"
-msgstr "size of hardware header expected to be 24 two-byte words, but got"
+msgstr "se esperaba que el tamaño del hardware header fuera de 24 two-byte palabras, but se obtuvo"
 
 msgid "size of hardware header expected to be"
-msgstr "size of hardware header expected to be"
+msgstr "el tamaño del hardware header esperado es"
 
 msgid "size of head header expected to be"
 msgstr "size of head header expected to be"
@@ -349,20 +349,20 @@ msgid "size of user header expected to be"
 msgstr "size of user header expected to be"
 
 msgid "unknown originalCoordinate"
-msgstr "unknown originalCoordinate"
+msgstr "originalCoordinate desconocido"
 
 msgid "unknown frequency"
-msgstr "unknown frequency"
+msgstr "frequencia desconocida"
 
 msgid ""
 "(only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size"
 msgstr ""
-"(only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size"
+"(solamente entiende 1MHz y 2MHz); utilizando la fórmula de 2Mhz para calcular el tamaño de celdilla"
 
 msgid ""
 "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size"
 msgstr ""
-"(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size"
+"(solamente entiende 1MHz and 2MHz); using 1Mhz formula to calculate cell size"
 
 msgid ""
 "using fixed cell size and blanking distance for Aquadopp, since cannot infer "
