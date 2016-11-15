@@ -2361,49 +2361,49 @@ msgid "must supply 'm'"
 msgstr "debe indicar 'm'"
 
 msgid "increased filter length by 1, to make it odd"
-msgstr "increased filter length by 1, to make it odd"
+msgstr "se incrementa la longitud del filtro en 1, para hacerlo impar"
 
 msgid "m must be odd"
-msgstr "m must be odd"
+msgstr "m debe ser impar"
 
 msgid "must supply b"
-msgstr "must supply b"
+msgstr "debe indicar b"
 
 msgid "must provide lat"
-msgstr "must provide lat"
+msgstr "debe indicar lat"
 
 msgid "must provide lat.ref"
-msgstr "must provide lat.ref"
+msgstr "debe indicar lat.ref"
 
 msgid "must provide lon.ref"
-msgstr "must provide lon.ref"
+msgstr "debe indicar lon.ref"
 
 msgid "lat.ref must be finite"
-msgstr "lat.ref must be finite"
+msgstr "lat.ref debe ser finito"
 
 msgid "lat and lon must be vectors of the same length"
-msgstr "lat and lon must be vectors of the same length"
+msgstr "lat y lon deben ser vectores de la misma longitud"
 
 msgid "lat1 and lon1 must be vectors of the same length"
-msgstr "lat1 and lon1 must be vectors of the same length"
+msgstr "lat1 y lon1 deben de ser vectores de la misma longitud"
 
 msgid "lat2 and lon2 must be vectors of the same length"
-msgstr "lat2 and lon2 must be vectors of the same length"
+msgstr "lat2 y lon2 deben de ser vectores de la misma longitud"
 
 msgid "x must be a vector"
-msgstr "x must be a vector"
+msgstr "x debe ser un vector"
 
 msgid "lengths of x and y disagree; they are"
-msgstr "lengths of x and y disagree; they are"
+msgstr "el largo de 'x' e 'y' no coincide, son"
 
 msgid "lengths of x and z disagree; they are"
-msgstr "lengths of x and z disagree; they are"
+msgstr "el largo de 'x' y 'z' no coincide; son"
 
 msgid "no column named '"
-msgstr "no column named '"
+msgstr "no hay una columna denominada '"
 
 msgid "'; only found:"
-msgstr "'; only found:"
+msgstr "'; solamente encontré:"
 
 msgid "too few data to to undrift time; returning object unaltered"
 msgstr "too few data to to undrift time; returning object unaltered"
