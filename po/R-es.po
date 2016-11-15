@@ -2029,19 +2029,19 @@ msgid "length of 'pressure' must match length of 'time'"
 msgstr "el largo de la columna 'pressure' debe de coincidir con el de 'time'"
 
 msgid "length of 'u' must match length of 'time'"
-msgstr "length of 'u' must match length of 'time'"
+msgstr "el largo de la columna 'u' debe de coincidir con el largo de 'time'"
 
 msgid "length of 'v' must match length of 'time'"
-msgstr "length of 'v' must match length of 'time'"
+msgstr "el largo de la columna 'v' debe de coincidir con el largo de 'time'"
 
 msgid "must supply u"
-msgstr "must supply u"
+msgstr "debe indicar u"
 
 msgid "must supply v"
-msgstr "must supply v"
+msgstr "debe indicar v"
 
 msgid "must supply x"
-msgstr "must supply x"
+msgstr "debe indicar x"
 
 #, fuzzy
 msgid "length(x) must exceed 1 but it is"
