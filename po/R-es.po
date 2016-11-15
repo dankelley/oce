@@ -2546,70 +2546,72 @@ msgid "unknown type of observatory data"
 msgstr "tipo desconocido de datos de observatorio"
 
 msgid "'from' does not have any heading data (in b@data$heading)"
-msgstr "'from' does not have any heading data (in b@data$heading)"
+msgstr "'from' no tiene ningún tipo de dato asignable a rumbo en (en b@data$heading)"
 
 msgid "'b' does not have any time data (in b@data$time)"
-msgstr "'b' does not have any time data (in b@data$time)"
+msgstr "'b' no tiene ningún tipo de datos de tiempo (en b@data$time)"
 
 msgid "'g' does not have any heading data (in g@data$heading)"
-msgstr "'g' does not have any heading data (in g@data$heading)"
+msgstr "'g' no tiene ningún tipo de dato asignable a rumbo en (en g@data$heading)"
 
 msgid "'g' does not have any time data (in g@data$time)"
-msgstr "'g' does not have any time data (in g@data$time)"
+msgstr "'g' no tiene ningún tipo de datos de tiempo (en g@data$time)"
 
 msgid "need first element of from@data$time to be non-NA"
-msgstr "need first element of from@data$time to be non-NA"
+msgstr "el primer elemento de from@data$time no puede ser NA"
 
 msgid "cannot handle extend=TRUE yet"
-msgstr "cannot handle extend=TRUE yet"
+msgstr "no puedo manejar extend=TRUE aun"
 
 msgid "cannot handle frequency yet"
-msgstr "cannot handle frequency yet"
+msgstr "no puedo manejar la frecuencia aun"
 
 msgid "cannot handle deltat yet"
-msgstr "cannot handle deltat yet"
+msgstr "no puedo manejar deltat aun"
 
 msgid "must provide start"
-msgstr "must provide start"
+msgstr "debe indicar inicio"
 
 msgid "must provide end"
-msgstr "must provide end"
+msgstr "debe indicar final"
 
 msgid "lengths of 'start' and 'end' must match"
-msgstr "lengths of 'start' and 'end' must match"
+msgstr "la longitud de (los vectores) 'start' y 'end' debe coincidir"
 
 msgid ""
 "oce object has no @data$time vector, so window is returning it unaltered"
 msgstr ""
-"oce object has no @data$time vector, so window is returning it unaltered"
+"el objeto oce no posee un vector @data$time, por lo que ventana "
+"lo está devolviendo inalterado"
 
 msgid "window(..., which=\"distance\") only works for objects of class adp"
-msgstr "window(..., which=\"distance\") only works for objects of class adp"
+msgstr "window(..., which=\"distance\") funciona solamente "
+"para objectos de clase adp"
 
 msgid ""
 "oce object has no @data$s$distance vector, so window is returning it "
 "unaltered"
 msgstr ""
-"oce object has no @data$s$distance vector, so window is returning it "
-"unaltered"
+"el objeto oce no posee un vector @data$s$distance, por lo que ventana "
+"lo está devolviendo inalterado"
 
 msgid "unknown value of which \""
-msgstr "unknown value of which \""
+msgstr "valor desconocido de which \""
 
 msgid "must supply 'r'"
-msgstr "must supply 'r'"
+msgstr "debe indicar 'r'"
 
 msgid "must supply 'theta'"
-msgstr "must supply 'theta'"
+msgstr "debe indicar 'theta'"
 
 msgid ") and y ("
-msgstr ") and y ("
+msgstr ") e 'y' ("
 
 msgid ") must agree"
-msgstr ") must agree"
+msgstr ") debe coincidir"
 
 msgid "must not have any NA values in xout"
-msgstr "must not have any NA values in xout"
+msgstr "no puede haber ningún valor NA en xout"
 
 msgid "lengths of x and y must match, but they are"
 msgstr "lengths of x and y must match, but they are"
@@ -2686,16 +2688,16 @@ msgid "must install.packages(\"ncdf4\") to read a netCDF file"
 msgstr ""
 
 msgid "some sort of nortek ... two bytes are 0x"
-msgstr "some sort of nortek ... two bytes are 0x"
+msgstr "algun tipo de nortek ... dos bytes son 0x"
 
 msgid "and 0x"
-msgstr "and 0x"
+msgstr "y 0x"
 
 msgid "but cannot figure out what the type is"
-msgstr "but cannot figure out what the type is"
+msgstr "pero no puedo averiguar de qué tipo es"
 
 msgid "unknown file type \""
-msgstr "unknown file type \""
+msgstr "tipo de archivo desconocido \""
 
 msgid "unknown which"
 msgstr "unknown which"
