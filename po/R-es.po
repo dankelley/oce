@@ -2467,53 +2467,53 @@ msgid "decimation does not work (yet) for objects of class"
 msgstr "decimation no funciona (aun) para objetos de clase"
 
 msgid "cannot smooth ADP objects (feel free to request this from the author)"
-msgstr "cannot smooth ADP objects (feel free to request this from the author)"
+msgstr "no puedo suavizar objetos ADP (siéntase libre de solicitar esto al autor)"
 
 msgid ""
 "oce.smooth() has recently been recoded for 'adv' objects -- do not trust it "
 "yet!"
 msgstr ""
-"oce.smooth() has recently been recoded for 'adv' objects -- do not trust it "
-"yet!"
+"oce.smooth() ha sido recodificado recientemente para 'adv' objects "
+"-- no confíe en él aún!"
 
 msgid "smoothing does not work (yet) for objects of class"
-msgstr "smoothing does not work (yet) for objects of class"
+msgstr "el suavizado no funciona (aun) para objetos de clase"
 
 msgid "must supply ci"
-msgstr "must supply ci"
+msgstr "debe indicar ci"
 
 msgid "ci must contain 2 or 3 elements"
-msgstr "ci must contain 2 or 3 elements"
+msgstr "ci debe contener 2 o 3 elementos"
 
 msgid "must give either ci or model"
-msgstr "must give either ci or model"
+msgstr "debe indicar ci o bien model"
 
 msgid "cannot apply declination to object of class"
-msgstr "cannot apply declination to object of class"
+msgstr "no puedo aplicar declinacion a un objeto de clase"
 
 msgid "must provide longitude, latitude, and time"
-msgstr "must provide longitude, latitude, and time"
+msgstr "debe proporcionar longitud, latitud y tiempo"
 
 msgid "dimensions of longitude and latitude must agree"
-msgstr "dimensions of longitude and latitude must agree"
+msgstr "las dimensiones de (los vectores) longitud y latitud deben coincidir"
 
 msgid "dimensions of latitude and time must agree"
-msgstr "dimensions of latitude and time must agree"
+msgstr "las dimensiones de (los vectores) latitud y tiempo deben coincidir"
 
 msgid "cannot interpret \"time\"="
-msgstr "cannot interpret \"time\"="
+msgstr "no puedo interpretar \"time\"="
 
 msgid "as a time interval because it has more than 2 colons"
-msgstr "as a time interval because it has more than 2 colons"
+msgstr "como intervalo de tiempo, porque tiene más de 2 signos de \":\""
 
 msgid "must give h"
-msgstr "must give h"
+msgstr "debe proporcionar h"
 
 msgid "must give y"
-msgstr "must give y"
+msgstr "debe proporcionar y"
 
 msgid "length of x ("
-msgstr "length of x ("
+msgstr "largo de x ("
 
 #, fuzzy
 msgid ") must equal number of rows in h ("
@@ -2528,22 +2528,22 @@ msgid ") must equal number of cols in h ("
 msgstr "length of y (%d) must equal number of cols in h (%d)"
 
 msgid "must supply month, day, hour, min, sec, and tz"
-msgstr "must supply month, day, hour, min, sec, and tz"
+msgstr "debe proporcionar mes, día, hora, minuto, segundo y timezone (tz)"
 
 msgid "must give 't'"
-msgstr "must give 't'"
+msgstr "debe proporcionar 't'"
 
 msgid "must give 'longitude'"
-msgstr "must give 'longitude'"
+msgstr "debe proporcionar 'longitude'"
 
 msgid "must give 'latitude'"
-msgstr "must give 'latitude'"
+msgstr "debe proporcionar 'latitude'"
 
 msgid "t must be in UTC"
-msgstr "t must be in UTC"
+msgstr "t debe estar en UTC"
 
 msgid "unknown type of observatory data"
-msgstr "unknown type of observatory data"
+msgstr "tipo desconocido de datos de observatorio"
 
 msgid "'from' does not have any heading data (in b@data$heading)"
 msgstr "'from' does not have any heading data (in b@data$heading)"
