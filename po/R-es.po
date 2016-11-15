@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
 "POT-Creation-Date: 2015-01-16 15:10\n"
 #| "PO-Revision-Date: 2014-02-20 21:30-0400\n"
-"PO-Revision-Date: 2016-11-14 22:14-0400\n"
+"PO-Revision-Date: 2016-11-15 19:00-0400\n"
 #| "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Last-Translator: Pablo Valdés\n"
 "Language-Team: English\n"
@@ -1916,7 +1916,7 @@ msgid "mapScalebar() only works for plots created with projections"
 msgstr "mapScalebar() solamente funciona para gráficos creados con proyecciones"
 
 msgid "y must be NULL in this (early) version of mapScalebar()"
-msgstr "y debe ser NULL en esta (temprana) version de mapScalebar()"
+msgstr "'y' debe ser NULL en esta (temprana) version de mapScalebar()"
 
 #, fuzzy
 msgid "x must be \"topleft\" or \"topright\", but it is \""
@@ -1925,104 +1925,108 @@ msgstr "input must be in \"enu\" coordinates, but it is in"
 msgid ""
 "Use mapGrid(longitude=longitude,latitude=NULL) instead of mapZones(longitude)"
 msgstr ""
+"Use mapGrid(longitude=longitud,latitude=NULL) en vez de mapZones(longitud)"
 
 msgid "mapLines() does not yet handle argument 'greatCircle'"
-msgstr "mapLines() does not yet handle argument 'greatCircle'"
+msgstr "mapLines() aun no puede manejar el argumento 'greatCircle'"
 
-#, fuzzy
 msgid "lengths of longitude0 and latitude0 must match but they are"
-msgstr "lengths of longitude and latitude must match"
+msgstr "el largo de las columnas longitud0 y latitud0 debe coincidir, pero son"
 
 #, fuzzy
 msgid "lengths of longitude1 and latitude1 must match but they are"
 msgstr "lengths of longitude and latitude must match"
 
-#, fuzzy
 msgid "lengths of x and y must match but they are"
-msgstr "lengths of x and y must match, but they are"
+msgstr "el largo de las columnas 'x' e 'y' debe coincidir, pero son"
 
 msgid "must install 'proj4' package to get options(externalProj4=TRUE) to work"
-msgstr ""
+msgstr "para que options(externalProj4)=TRUE funcione, debe instalar "
+"primero el paquete 'proj4'"
 
 msgid "zclip:"
-msgstr ""
+msgstr "zclip:"
 
 msgid "breaks:"
-msgstr ""
+msgstr "breaks:"
 
 msgid "col:"
-msgstr ""
+msgstr "col:"
+# can be colour or column. contex?
 
 msgid "must install.packages(\"akima\") to plot filled contours on maps"
-msgstr ""
+msgstr "para poder incluir líneas de contorno llenas en los mapas debe correr: "
+"install.packages(\"akima\")"
+# contours 'filled' is temptative
 
 msgid "breaksMin:"
-msgstr ""
+msgstr "breaksMin:"
 
 msgid "breaksMax:"
-msgstr ""
+msgstr "breaksMax:"
 
 msgid "Z:"
-msgstr ""
+msgstr "Z:"
 
 msgid "z is NA"
-msgstr ""
+msgstr "z es NA"
 
 msgid "z:"
-msgstr ""
+msgstr "z:"
 
 msgid "is < breaksMin"
-msgstr ""
+msgstr "es < breaksMin"
 
 msgid "is > breaksMax"
-msgstr ""
+msgstr "es > breaksMax"
 
 msgid ", w:"
-msgstr ""
+msgstr ", w:"
 
 msgid ", using non-missing col:"
-msgstr ""
+msgstr ", utilizando col no ausente:"
 
 msgid ", using missing col:"
-msgstr ""
+msgstr ", utilizando col ausente:"
 
 msgid "lengths of longitude and latude must match"
-msgstr "lengths of longitude and latude must match"
+msgstr "el largo de los vectores de longitud y latitud debe coincidir"
 
 #, fuzzy
 msgid "lengths of longitude and latitude must match but they are"
 msgstr "lengths of longitude and latitude must match"
 
 msgid "mapPlot() suggestion: try using projection=\""
-msgstr ""
+msgstr "sugerencia de mapPlot(): intente usando la proyección=\""
 
 #, fuzzy
 msgid "projection '"
-msgstr "section"
+msgstr "proyección '"
+#| msgstr "section"
 
 msgid "' is unknown; try one of:"
-msgstr ""
+msgstr "' es desconocido; intente con uno de:"
 
 msgid "+proj=aitoff cannot be used"
-msgstr ""
+msgstr "+proj=aitoff no puede usarse"
 
 msgid "+proj=robin cannot be used"
-msgstr ""
+msgstr "+proj=robin no puede usarse"
 
 msgid "+proj=wintri cannot be used"
-msgstr ""
+msgstr "+proj=wintri no puede usarse"
 
 msgid "proj4 calculation is slow because it was done pointwise"
-msgstr ""
+msgstr "el cálculo de proj4 es lento porque se ha hecho punto a punto"
 
 msgid "must provide time"
-msgstr "must provide time"
+msgstr "debe indicar tiempo"
 
 msgid "length of 'temperature' must match length of 'time'"
-msgstr "length of 'temperature' must match length of 'time'"
+msgstr "el largo de la columna 'temperature' debe coincidir con el de 'time'"
 
 msgid "length of 'pressure' must match length of 'time'"
-msgstr "length of 'pressure' must match length of 'time'"
+msgstr "el largo de la columna 'pressure' debe de coincidir con el de 'time'"
 
 msgid "length of 'u' must match length of 'time'"
 msgstr "length of 'u' must match length of 'time'"
