@@ -2789,61 +2789,61 @@ msgid "require units to be 'mm' or 'MM', not '"
 msgstr "require que las unidades sean 'mm' o 'MM', no '"
 
 msgid "non-alternating day portions on data line"
-msgstr "non-alternating day portions on data line"
+msgstr "partes de día no alternas en la línea de datos"
 
 msgid "day portion is"
-msgstr "day portion is"
+msgstr "la parte del día es"
 
 msgid "but must be 1 or 2, on data line"
-msgstr "but must be 1 or 2, on data line"
+msgstr "pero debe ser 1 o 2, en la línea de datos"
 
 msgid "require units to be MM"
-msgstr "require units to be MM"
+msgstr "requiere que las unidades sean MM"
 
 msgid "there are"
-msgstr "there are"
+msgstr "hay"
 
 msgid "missing points in this timeseries, at indices"
-msgstr "missing points in this timeseries, at indices"
+msgstr "partes ausentes en esta serie temporal, en los indices"
 
 msgid "cannot give both 'subset' and 'indices'"
-msgstr "cannot give both 'subset' and 'indices'"
+msgstr "no pueden proporcionarse a la vez 'subset' e 'indices'"
 
 msgid "2. cannot give both 'subset' and 'indices'"
-msgstr "2. cannot give both 'subset' and 'indices'"
+msgstr "2. no puede indicar a la vez 'subset' e 'indices'"
 
 #, fuzzy
 msgid "unknown by value \""
-msgstr "unknown xtype value (\""
+msgstr "valor de xtype desconocido (\""
 
 #, fuzzy
 msgid "\"; should be one of:"
 msgstr "; should be 1 or 2"
 
 msgid "need more than 1 station to make a section"
-msgstr "need more than 1 station to make a section"
+msgstr "se necesita más de 1 estación para hacer una sección"
 
 msgid ""
 "first argument must be of a \"ctd\" object, a \"list\" of ctd objects, or a "
 "vector of character strings naming ctd objects"
 msgstr ""
-"first argument must be of a \"ctd\" object, a \"list\" of ctd objects, or a "
-"vector of character strings naming ctd objects"
+"el primer argumento debe ser un objeto \"ctd\", una \"list\" de objetos ctd, "
+"o un vector de cadenas de caracteres denominando objetos ctd"
 
 msgid "'section' is not a section"
-msgstr "'section' is not a section"
+msgstr "'section' no es una sección"
 
 msgid "'station' is not a station"
-msgstr "'station' is not a station"
+msgstr "'station' no es una estación"
 
 msgid "coastline must be a character string"
-msgstr "coastline must be a character string"
+msgstr "coastline debe ser una cadena de caracteres"
 
 msgid "this section does not contain a variable named '"
-msgstr "this section does not contain a variable named '"
+msgstr "esta sección no incluye una variable denominada '"
 
 msgid "unkown ztype: \""
-msgstr "unkown ztype: \""
+msgstr "ztype desconocido: \""
 
 msgid "\" [1]"
 msgstr "\" [1]"
@@ -2858,28 +2858,29 @@ msgid "\" [4]"
 msgstr "\" [4]"
 
 msgid "section"
-msgstr "section"
+msgstr "sección"
 
 msgid ""
 "xtype must be one of: \"distance\", \"track\", \"longitude\", or \"latitude\""
 msgstr ""
-"xtype must be one of: \"distance\", \"track\", \"longitude\", or \"latitude\""
+"xtype debe de ser uno de: \"distance\", \"track\", \"longitude\", o \"latitude\""
 
 msgid "cannot plot a section containing fewer than 2 stations"
-msgstr "cannot plot a section containing fewer than 2 stations"
+msgstr "no puedo hacer un gráfico de una sección conteniendo "
+"menos de 2 estaciones"
 
 msgid ""
 "unkown xtype; it must be one of: \"distance\", \"track\", \"longitude\", or "
 "\"latitude\""
 msgstr ""
-"unkown xtype; it must be one of: \"distance\", \"track\", \"longitude\", or "
-"\"latitude\""
+"xtype desconocido; debe de ser uno de los siguientes: "
+"\"distance\", \"track\", \"longitude\", o \"latitude\""
 
 msgid "unknown ytype"
-msgstr "unknown ytype"
+msgstr "ytype desconocido"
 
 msgid "cannot specify both 'file' and 'directory'"
-msgstr "cannot specify both 'file' and 'directory'"
+msgstr "no se pueden especificar a la vez 'file' y 'directory'"
 
 msgid "only type \"BOTTLE\" understood, but got header line"
 msgstr "only type \"BOTTLE\" understood, but got header line"
