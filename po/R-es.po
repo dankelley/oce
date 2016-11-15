@@ -47,7 +47,7 @@ msgid "cannot determine time to which to interpolate"
 msgstr "no se puede determinar tiempo al cual interpolar"
 
 msgid "only works for 'adv' and 'adp' objects"
-msgstr "sólo funciona para objetos de tipo 'adv' y 'adp'"
+msgstr "sólo funciona con objetos de tipo 'adv' y 'adp'"
 
 msgid "object has no item named 'data$heading' or 'data$headingSlow'"
 msgstr "el objeto no tiene un elemento llamado 'data$heading' o 'data$headingSlow'"
@@ -68,19 +68,16 @@ msgid "no item 'data$longitude$ or 'metadata$longitude' in object"
 msgstr "no hay un elemento 'data$longitude$ o 'metadata$longitude' en el objeto"
 
 msgid "no item 'data$pressure' in object"
-msgstr "Se desconoce la presión. " 
-"El objeto carece del elemento 'data$pressure'"
+msgstr "elemento 'data$pressure' ausente en el objeto"
 
 msgid "no item 'data$salinity' in object"
-msgstr "Se desconoce la salinidad. "
-"El objeto carece del elemento 'data$salinity'"
+msgstr "elemento 'data$salinity' ausente en el objeto"
 
 msgid "no item 'data$temperature' in object"
-msgstr "Se desconoce la temperatura. "
-"El objeto carece del elemento 'data$temperature'"
+msgstr "elemento 'data$temperature' ausente en el objeto"
 
 msgid "object has no item named 'data$roll' or 'data$rollSlow'"
-msgstr "El objeto no tiene elementos llamados 'data$roll' o 'data$rollSlow'"
+msgstr "el objeto no tiene un elemento llamado 'data$roll' o 'data$rollSlow'"
 
 msgid ""
 "unknown 'which'; must be 1 for ADP velocity timescale, or 2 for ADP heading "
@@ -112,7 +109,7 @@ msgstr ""
 "'time' no es ni un tiempo POSIXt ni un objeto Oce conteniendo data$time"
 
 msgid "method is only for objects of class '"
-msgstr "el método es sólo para objetos de la clase '"
+msgstr "método exclusivo para objetos de la clase '"
 
 msgid "adp"
 msgstr ""
@@ -139,13 +136,13 @@ msgid "but got"
 msgstr "pero se obtuvo"
 
 msgid "class of object must inherit from either 'adv' or 'adp'"
-msgstr "la clase del objeto debe heredarse bien de 'adv' o de 'adp'"
+msgstr "la clase del objeto debe heredar bien de 'adv' o de 'adp'"
 
 msgid ""
 "can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek"
 "\", not class"
 msgstr ""
-"Solo puedo resumir objetos ADP de los subtipos \"rdi\", \"sontek\", o \"nortek"
+"solo puedo resumir objetos ADP de los subtipos \"rdi\", \"sontek\", o \"nortek"
 "\", no clases"
 
 msgid ","
@@ -156,13 +153,13 @@ msgstr "no puedo tomar subconjuntos a la vez por tiempo y distancia; "
 "se divide en multiples llamadas"
 
 msgid "must keep at least 2 profiles"
-msgstr "debe mantener al menos 2 perfiles"
+msgstr "debe conservar al menos 2 perfiles"
 
 msgid "must keep at least 2 bins"
-msgstr "debe mantener al menos 2 bins"
+msgstr "debe conservar al menos 2 compartimentos (bins)"
 
 msgid "should express the subset in terms of distance or time"
-msgstr "debe expresar el subconjunto en terminos de distancia o tiempo"
+msgstr "debe expresarse el subconjunto en terminos de distancia o tiempo"
 
 msgid "unknown object type; it must inherit from either \"adv\" or \"adp\""
 msgstr "tipo de objeto desconocido; debe heredar bien de \"adv\" o de \"adp\""
@@ -173,7 +170,8 @@ msgstr ""
 "tipo de archivo desconocido; el objeto debe heredar bien de \"adv\" o de \"adp\""
 
 msgid "beam"
-msgstr "rayo"
+msgstr "haz"
+# beans can be made of ultrasounds and light. Rayo imply only light.
 
 msgid "east"
 msgstr "Este"
@@ -191,27 +189,27 @@ msgid ""
 "This instrument is not a Nortek Aquadopp, so mode=\"diagnostic\" is being "
 "ignored"
 msgstr ""
-"Este instrumento no es un Nortek Aquadopp, se ignorará el mode=\"diagnostic\"."
+"Este instrumento no es un Nortek Aquadopp, se ignorará el modo=\"diagnostic\"."
 
 msgid ""
 "This instrument seems to be a Nortek Aquadopp, but it has more than 1 cell, "
 "so it must not be; so mode=\"diagnostic\" is being ignored"
 msgstr ""
 "Este instrumento aparenta ser un Nortek Aquadopp, pero tiene más de una célda, "
-"por lo que no puede serlo; por tanto se ignorará el mode=\"diagnostic\"."
+"por lo que no puede serlo; por tanto se ignorará el modo=\"diagnostic\"."
 
 msgid ""
 "This instrument did not record Diagnostic data, so mode=\"diagnostic\" is "
 "being ignored"
 msgstr ""
 "Este instrumento no registra Diagnostic data, "
-"por lo que mode=\"diagnostic\" será ignorado"
+"por lo que el modo=\"diagnostic\" será ignorado"
 
 msgid "there are no profiles in this dataset"
-msgstr "no hay perfiles en esta dataset"
+msgstr "esta datashet no contiene perfiles"
 
 msgid "length of 'titles' must equal length of 'which'"
-msgstr "la longitud de 'titles' debe igualar a la de 'which'"
+msgstr "la longitud del vector 'titles' debe igualar a la del vector 'which'"
 
 msgid "xlim must be a vector of length 2, or a 2-column matrix"
 msgstr "xlim debe de ser un vector de longitud 2, o una matríz de 2 columnas"
@@ -229,19 +227,19 @@ msgid "ADP object lacks a 'g' data item"
 msgstr "el objeto ADP carece de un elemento de datos 'g'"
 
 msgid "cannot plot beam/velo 1 because the device no beams"
-msgstr "no puedo graficar beam/velo 1 porque el dispositivo no emite lasers"
+msgstr "no puedo dibujar beam/velo 1 porque el dispositivo no emite barridos"
 
 msgid "cannot plot beam/velo 2 because the device has only"
-msgstr "no puedo graficar beam/velo 2 porque el dispositivo solamente tiene"
+msgstr "no puedo dibujar haz/velo 2 porque el dispositivo solamente tiene"
 
 msgid "beams"
-msgstr "lasers"
+msgstr "haces"
 
 msgid "cannot plot beam/velo 3 because the device has only"
-msgstr "no puedo graficar beam/velo 3 porque el dispositivo solamente tiene"
+msgstr "no puedo dibujar haz/velo 3 porque el dispositivo solamente tiene"
 
 msgid "cannot plot beam/velo 4 because the device has only"
-msgstr "no puedo graficar plot beam/velo 4 porque el dispositivo solamente tiene"
+msgstr "no puedo dibujar haz/velo 4 porque el dispositivo solamente tiene"
 
 msgid "cannot handle which="
 msgstr "no puedo manejar which="
@@ -250,7 +248,7 @@ msgid "because this instrument lacked bottom tracking"
 msgstr "porque éste instrumento no puede realizar bottom tracking"
 
 msgid "cannot use which=27 because this device did not have 4 beams"
-msgstr "no puedo utilizar which=27 porque éste dispositivo no tiene 4 lasers"
+msgstr "no puedo utilizar which=27 porque éste dispositivo no tiene 4 haces de barrido"
 
 msgid "cannot evaluate adorn["
 msgstr "no puedo evaluar adorn["
@@ -274,17 +272,17 @@ msgid "to ENU, so returning argument as-is"
 msgstr "a ENU, devolviendo el argumento 'as-is', sin modificar"
 
 msgid "the beams are already unspreaded in this dataset."
-msgstr "los beams ya están unspreaded en este dataset."
-# can you please add more context/explain? The entry was also duplicated in the next entry (why?). I deleted one
+msgstr "los haces de barrido ya están cerrados juntos en este dataset."
+# temptative unspreaded
 
 msgid "method is only for objects of class \"adp\""
-msgstr "el método es exclusivamente para objetos de clase \"adp\""
+msgstr "método exclusivo para objetos de clase \"adp\""
 
 msgid "input must be in beam coordinates"
-msgstr "el input debe de estar en coordenadas beam"
+msgstr "el input debe de estar en coordenadas de barrido"
 
 msgid "can only handle 4-beam ADP units from RDI"
-msgstr "solamente puedo manejar 4-beam ADP units from RDI"
+msgstr "solamente puedo manejar unidades ADP de cuatro haces (4-beam) de RDI"
 
 msgid "missing x@metadata$transformationMatrix"
 msgstr "x@metadata$transformationMatrix ausente"
@@ -293,19 +291,19 @@ msgid "x@metadata$transformationMatrix must be a 4x4 matrix"
 msgstr "x@metadata$transformationMatrix debe de ser una matríz de 4x4"
 
 msgid "can only handle 3-beam ADP units from nortek"
-msgstr "solamente puedo manejar unidades 3-beam ADP de nortek"
+msgstr "solamente puedo manejar unidades ADP de tres haces (3-beam) de nortek"
 
 msgid "x@metadata$transformationMatrix must be a 3x3 matrix"
 msgstr "x@metadata$transformationMatrix debe de ser una matríz de 3x3"
 
 msgid "can only handle 3-beam ADP units from sontek"
-msgstr "solo puedo manejar unidades 3-beam ADP de sontek"
+msgstr "solo puedo manejar unidades ADP de tres haces (3-beam) de sontek"
 
 msgid "adp type must be either \"rdi\" or \"nortek\" or \"sontek\""
 msgstr "el tipo adp debe de ser bien \"rdi\", \"nortek\" o \"sontek\""
 
 msgid "input must be in xyz coordinates"
-msgstr "el input debe de ser en coordenadas xyz"
+msgstr "el input debe estar en coordenadas xyz"
 
 msgid "need metadata$orientation='upward' or 'downward', not '"
 msgstr "se necesitan metadata$orientation='upward' o 'downward', no '"
@@ -318,19 +316,19 @@ msgstr ""
 "pero es '"
 
 msgid "input must be in enu coordinates, but it is in"
-msgstr "el input debe de ser en coordenadas enu, pero es en"
+msgstr "el input debe estar en coordenadas enu, pero está en"
 
 msgid "coordinates"
 msgstr "coordenadas"
 
 msgid "there is no bottom velocity in this object"
-msgstr "no hay velocidad del fondo en este objeto"
+msgstr "no hay datos de velocidad del fondo en este objeto"
 
 msgid "x must be an \"adp\" object"
 msgstr "x debe de ser un objeto \"adp\""
 
 msgid "binmap() only works for 4-beam instruments"
-msgstr "binmap() solamente funciona con instrumentos con 4-beam"
+msgstr "binmap() solamente funciona con instrumentos con cuatro haces de barrido (4-beam)"
 
 msgid "expecting syncCode 0x"
 msgstr "esperando syncCode 0x"
@@ -342,15 +340,13 @@ msgid "instead (while reading header #"
 msgstr "en su lugar (al leer el encabezado #"
 
 msgid "size of hardware header expected to be 24 two-byte words, but got"
-msgstr "se esperaba que el tamaño del hardware header fuera de 24 palabras de "
-"two-byte, pero se obtuvo"
-# temptative, could benefit of some more context. 
+msgstr "se esperaba un tamaño de 24 palabras de dos bytes para el encabezado hardware, pero se obtuvo"
 
 msgid "size of hardware header expected to be"
-msgstr "el tamaño del hardware header esperado es"
+msgstr "el tamaño esperado para el encabezado hardware es"
 
 msgid "size of head header expected to be"
-msgstr "el tamaño esperado de head header es"
+msgstr "el tamaño esperado del encabezado head es"
 
 msgid "size of user header expected to be"
 msgstr "el tamaño esperado del encabezado user es"
@@ -364,14 +360,14 @@ msgstr "frequencia desconocida"
 msgid ""
 "(only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size"
 msgstr ""
-"(solamente entiende 1MHz y 2MHz); utilizando la fórmula de 2Mhz "
-"para calcular el tamaño de celdilla"
+"(solamente entiende 1MHz y 2MHz); utilizando la fórmula de 2Mhz para"
+"calcular el tamaño de celdilla"
 
 msgid ""
 "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size"
 msgstr ""
-"(solamente entiende 1MHz and 2MHz); utilizando la fórmula de 1Mhz "
-"para calcular el tamaño de celdilla"
+"(solamente entiende 1MHz and 2MHz); utilizando la fórmula de 1Mhz para"
+"calcular el tamaño de celdilla"
 
 msgid ""
 "using fixed cell size and blanking distance for Aquadopp, since cannot infer "
