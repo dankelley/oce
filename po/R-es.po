@@ -2657,26 +2657,26 @@ msgid "cannot find that item"
 msgstr "no puedo encontrar ese elemento"
 
 msgid "do not know how to handle this item, named \""
-msgstr "do not know how to handle this item, named \""
+msgstr "no sé como manejar este item, denominado \""
 
 msgid "the 'action' method may not work -- this needs testing!"
-msgstr "the 'action' method may not work -- this needs testing!"
+msgstr "el método 'action' puede no funcionar -- esto necesita testing!"
 
 msgid "must supply either an 'item' plus a 'value', or an 'action'"
-msgstr "must supply either an 'item' plus a 'value', or an 'action'"
+msgstr "debe indicar o bien un 'item' mas un 'value', o una 'action'"
 
 msgid "please supply a file name, not a directory name"
-msgstr "please supply a file name, not a directory name"
+msgstr "por favor, indique un nombre de archivo, no de directorio"
 
 msgid "cannot infer type of ODF file"
-msgstr "cannot infer type of ODF file"
+msgstr "no puedo inferir el tipo de archivo ODF"
 
 msgid ""
 "cannot open netcdf files over the web; try doing as follows\n"
 "    download.file(\""
 msgstr ""
-"cannot open netcdf files over the web; try doing as follows\n"
-"    download.file(\""
+"no puede abrir archivos netcdf directamente de la web; "
+"intente hacerlo como sigue:  download.file(\""
 
 msgid "\", \""
 msgstr "\", \""
@@ -2685,10 +2685,11 @@ msgid ".*/"
 msgstr ".*/"
 
 msgid "must install.packages(\"ncdf4\") to read a netCDF file"
-msgstr ""
+msgstr "para poder leer un archivo netCDF debe correr primero: "
+"install.packages(\"ncdf4\")"
 
 msgid "some sort of nortek ... two bytes are 0x"
-msgstr "algun tipo de nortek ... dos bytes son 0x"
+msgstr "alguna clase de nortek ... dos bytes son 0x"
 
 msgid "and 0x"
 msgstr "y 0x"
@@ -2700,35 +2701,36 @@ msgid "unknown file type \""
 msgstr "tipo de archivo desconocido \""
 
 msgid "unknown which"
-msgstr "unknown which"
+msgstr "el cual es desconocido"
 
 msgid "can only handle strings or factors"
-msgstr "can only handle strings or factors"
+msgstr "solamente puedo manejar cadenas o factores"
 
 msgid "'t' must have two columns, one for year, the other for yearday"
-msgstr "'t' must have two columns, one for year, the other for yearday"
+msgstr "'t' debe tener dos columnas, una para el año, la otra para la "
+"posición que ocupa el día respecto del año completo (yearday)"
 
 msgid ""
 "for GPS times, 't' must be a two-column matrix, with first col the week, "
 "second the second"
 msgstr ""
-"for GPS times, 't' must be a two-column matrix, with first col the week, "
-"second the second"
+"para tiempos GPS, 't' debe de ser una matríz de dos columnas, "
+"con la primera columna la semana, y la segunda los segundos"
 
 msgid "type must be \"unix\", \"matlab\" or \"GPS\""
-msgstr "type must be \"unix\", \"matlab\" or \"GPS\""
+msgstr "el tipo debe ser \"unix\", \"matlab\" o \"GPS\""
 
 msgid "only named position is \"bottomleft\""
-msgstr "only named position is \"bottomleft\""
+msgstr "la única posición con nombre es \"bottomleft\""
 
 msgid "cannot handle xlog yet"
-msgstr "cannot handle xlog yet"
+msgstr "no puedo manejar xlog aun"
 
 msgid "cannot handle ylog yet"
-msgstr "cannot handle ylog yet"
+msgstr "no puedo manejar ylog aun"
 
 msgid "part of the inset is off the page"
-msgstr "part of the inset is off the page"
+msgstr "parte del inset cae fuera de la página"
 
 msgid "must supply x, y, u, and v"
 msgstr "must supply x, y, u, and v"
