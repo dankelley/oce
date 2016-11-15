@@ -2917,51 +2917,51 @@ msgid "has no data"
 msgstr "no tiene datos"
 
 msgid "p must be numeric"
-msgstr "p must be numeric"
+msgstr "p debe ser numérico"
 
 msgid "pressure mismatch between station 1 and station"
-msgstr "pressure mismatch between station 1 and station"
+msgstr "diferencia de presiones entre las estaciones 1 y"
 
 msgid "pressure mismatch between station 1 and station."
-msgstr "pressure mismatch between station 1 and station."
+msgstr "diferencia de presiones entre la estación 1 la estación."
 
 msgid "n must round to a positive integer"
-msgstr "n must round to a positive integer"
+msgstr "n debe redondear a un entero positivo"
 
 msgid "n must be a positive integer"
-msgstr "n must be a positive integer"
+msgstr "n debe ser un entero positivo"
 
 msgid "fs does not match frequency(x); using the former"
-msgstr "fs does not match frequency(x); using the former"
+msgstr "fs no coincide con frequency(x); se usa el primero"
 
 msgid "need more than one data point"
-msgstr "need more than one data point"
+msgstr "se necesita más de un punto de datos"
 
 msgid "'spectrumtype' is ignored at present"
-msgstr "'spectrumtype' is ignored at present"
+msgstr "'spectrumtype' se ignora actualmente"
 
 msgid "'esttype' is ignored at present"
-msgstr "'esttype' is ignored at present"
+msgstr "'esttype' se ignora actualmente"
 
 msgid ""
 "if both 'window' and 'nfft' are given, then length(window) must equal nfft"
 msgstr ""
-"if both 'window' and 'nfft' are given, then length(window) must equal nfft"
+"si se proporcionan ambos 'window' y 'nfft', entonces length(window) debe igualar a nfft"
 
 msgid "for now, 'window' may only be a list of numbers, or a single number"
-msgstr "for now, 'window' may only be a list of numbers, or a single number"
+msgstr "por ahora, 'window' puede ser solamente una lista de números o un único número"
 
 msgid "'nfft' must be a positive integer"
-msgstr "'nfft' must be a positive integer"
+msgstr "'nfft' debe ser un entero positivo"
 
 msgid "overlap cannot exceed segment length"
-msgstr "overlap cannot exceed segment length"
+msgstr "overlap no puede superar la longitud del segmento"
 
 msgid "must provide t"
-msgstr "must provide t"
+msgstr "se debe indicar t"
 
 msgid "t must be POSIXt or a number corresponding to POSIXt (in UTC)"
-msgstr "t must be POSIXt or a number corresponding to POSIXt (in UTC)"
+msgstr "t debe ser POSIXt o un nçumero correspondiente a POSIXt (en UTC)"
 
 msgid "lengths of longitude and latitude must match"
 msgstr "lengths of longitude and latitude must match"
