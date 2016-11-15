@@ -14,7 +14,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "must give 'subset'"
-msgstr "debe dar 'subset'"
+msgstr "debe indicar 'subset'"
 
 msgid "there is no item named \""
 msgstr "no hay ningún elemento denominado \""
@@ -342,7 +342,7 @@ msgid "instead (while reading header #"
 msgstr "en su lugar (al leer el encabezado #"
 
 msgid "size of hardware header expected to be 24 two-byte words, but got"
-msgstr "se esperaba que el tamaño del hardware header fuera de palabras de 24 "
+msgstr "se esperaba que el tamaño del hardware header fuera de 24 palabras de "
 "two-byte, pero se obtuvo"
 # temptative, could benefit of some more context. 
 
@@ -608,8 +608,8 @@ msgstr "by="
 
 msgid "must exceed to="
 msgstr "debe de superar to="
-# tricky because to can be or not part of the phrase or a variable name. 
-" "debe de superar a="? "debe de exceder en="?
+# tricky because 'to' can be or not part of the phrase or a variable name. 
+# "debe de superar a="? "debe de exceder en="?
 
 msgid "'by' must be numeric"
 msgstr "'by' debe de ser numérico"
@@ -638,7 +638,7 @@ msgstr ""
 
 msgid "Correlation"
 msgstr ""
-# or: Correlacción
+# or: Correlación
 
 msgid "there is no analog1 signal in this ADV object"
 msgstr "este objeto ADV no contiene una señal analog1"
@@ -684,7 +684,7 @@ msgid ""
 "cannot handle cases 5 and 6 (vector velocimeter cabled to a vertical case)"
 msgstr ""
 "no puedo manejar cajas 5 y 6 (vector velocimetro cableado a una caja vertical)"
-# I asume that both case equal box in this context. 
+# I asume that both 'case' words equal 'box' in this context. 
 # If the first case would equal instance, subject or matter replace it by 'casos' instead.
 
 msgid "cannot handle the case of a cabled Sontek unit (does it even exist?)"
@@ -707,116 +707,122 @@ msgid ") does not match number of velocity samples ("
 msgstr ") no coincide con el número de muestras de velocidad ("
 
 msgid "input must be in \"enu\" coordinates, but it is in"
-msgstr "input must be in \"enu\" coordinates, but it is in"
+msgstr "el input debe de estar en coordenadas \"enu\", pero está en "
 
 msgid "cannot handle negative 'by' values"
-msgstr "cannot handle negative 'by' values"
+msgstr "no puedo manejar valores 'by' negativos"
 
 msgid ""
 "'by' argument only applies to fast-scale items such as velocity; "
 "temperature, etc. are not affected"
 msgstr ""
-"'by' argument only applies to fast-scale items such as velocity; "
-"temperature, etc. are not affected"
+"el argumento 'by' solamente se aplica a elementos fast-scale como velocidad; "
+"la temperatura, etc. no se ven afectados"
 
 msgid "argument \"from\" must be 1 or larger"
-msgstr "argument \"from\" must be 1 or larger"
+msgstr "el argumento \"from\" debe de ser 1 or mayor"
 
 msgid "argument \"to\" must be 1 or larger"
-msgstr "argument \"to\" must be 1 or larger"
+msgstr "el argumento \"to\" debe de ser 1  mayor"
 
 msgid "header must be TRUE"
-msgstr "header must be TRUE"
+msgstr "header debe de ser TRUE"
 
 msgid "must supply 'to'"
-msgstr "must supply 'to'"
+msgstr "se debe proporcionar 'to'"
 
 msgid ""
 "need at least 2 velocity-system-data chunks to determine the timing; try "
 "increasing the difference between 'from' and 'to'"
 msgstr ""
-"need at least 2 velocity-system-data chunks to determine the timing; try "
-"increasing the difference between 'from' and 'to'"
+"para poder determinar el timing se necesitan al menos 2 fragmentos velocity-system-data; "
+"intente incrementar la diferencia entre 'from' y 'to'"
 
 msgid "no data in specified range from="
-msgstr "no data in specified range from="
+msgstr "no hay datos en el rango especificado from="
+# if from is not a variable name that must remain unchanged, "no hay datos en el rango especificado desde="
 
 msgid ""
 "must supply start, a POSIXct time (or suitable string for time, in UTC) at "
 "which the first observation was made"
 msgstr ""
-"must supply start, a POSIXct time (or suitable string for time, in UTC) at "
-"which the first observation was made"
+"debe proporcionar start, un tiempo POSIXct (o una cadena adecuada para representar "
+" tiempo, en UTC) en el cual se hizo la primera observación"
 
 msgid "'start' must be a string, or a POSIXt time"
-msgstr "'start' must be a string, or a POSIXt time"
+msgstr "'start' debe de ser una cadena o un tiempo POSIXt"
 
 msgid "must supply deltat, the number of seconds between observations"
-msgstr "must supply deltat, the number of seconds between observations"
+msgstr "se debe proporcionar deltat, el número de segundos entre observaciones"
 
 msgid "length of 'file' must equal length of 'start', but they are"
-msgstr "length of 'file' must equal length of 'start', but they are"
+msgstr "la longitud de 'file' debe igualar a la de 'start', pero son"
 
 msgid "and"
-msgstr "and"
+msgstr "y"
 
 msgid "respectively"
-msgstr "respectively"
+msgstr "respectivamente"
 
 msgid ""
 "cannot infer coordinate system, etc., since header=FALSE; see documentation."
 msgstr ""
-"cannot infer coordinate system, etc., since header=FALSE; see documentation."
+"no puedo inferir el sistema de coordenadas, etc., ya que header=FALSE; véase la documentation."
 
 msgid ""
 "sontek adv in serial format lacks heading, pitch and roll: user must fill in"
 msgstr ""
-"sontek adv in serial format lacks heading, pitch and roll: user must fill in"
+"el sontek adv en formato serie carece de heading, pitch y roll: El usuario debe rellenarlos"
 
 msgid "cannot handle data files for ADV files that lack compass data"
-msgstr "cannot handle data files for ADV files that lack compass data"
+msgstr "no se pueden manejar archivos de datos para archivos ADV que "
+"carecen de datos de compás"
 
 msgid "cannot handle data files for ADV files that lack thermometer data"
-msgstr "cannot handle data files for ADV files that lack thermometer data"
+msgstr "no puedo manejar archivos de datos para archivos ADV que "
+"carecen de datos de termómetro"
 
 msgid "cannot handle data files for ADV files that lack pressure data"
-msgstr "cannot handle data files for ADV files that lack pressure data"
+msgstr "no puedo manejar archivos de datos para archivos ADV sin datos sobre la presión"
 
 msgid "number of beams should be 3, but it is"
-msgstr "number of beams should be 3, but it is"
+msgstr "el número de beams debe de ser 3, pero es"
 
 msgid "... reseting to 3"
-msgstr "... reseting to 3"
+msgstr "... reseteando a 3"
 
 msgid "first byte of deploymentParameters header should be 0x12 but it is 0x"
-msgstr "first byte of deploymentParameters header should be 0x12 but it is 0x"
+msgstr "el primer byte del encabezado deploymentParameters debería ser 0x12, pero es 0x"
 
 msgid "first byte of deploymentParameters header should be 0x01 but it is 0x"
-msgstr "first byte of deploymentParameters header should be 0x01 but it is 0x"
+msgstr "el primer byte del encabezado deploymentParameters debería ser 0x01, pero es 0x"
+# repeated messageid with two different answers for the same question, 
+# could be "the second byte of..." here instead first?
 
 msgid "cannot handle beam coordinates"
-msgstr "cannot handle beam coordinates"
+msgstr "no puedo manejar coordenadas beam"
+# A better translation for beam in this context is needed
 
 msgid "ignoring non-zero items 2 and/or 3 of samplingRate vector"
-msgstr "ignoring non-zero items 2 and/or 3 of samplingRate vector"
+msgstr "ignorando elementos non-zero 2 y/o 3 del vector samplingRate"
 
 msgid "samplingRate must be a positive integer, but got"
-msgstr "samplingRate must be a positive integer, but got"
+msgstr "samplingRate debe de ser un entero positivo, pero se obtuvo"
 
 msgid "ignoring non-zero items 2 and/or 3 in burstInterval vector"
-msgstr "ignoring non-zero items 2 and/or 3 in burstInterval vector"
+msgstr "ignorando elementos non-zero 2 y/o 3 en el vector burstInterval"
 
 msgid "ignoring non-zero items 2 and/or 3 in samplesPerBurst vector"
-msgstr "ignoring non-zero items 2 and/or 3 in samplesPerBurst vector"
+msgstr "ignorando elementos non-zero 2 y/o 3 en el vector samplesPerBurst"
 
 msgid "samplesPerBurst must be a positive integer, but got"
-msgstr "samplesPerBurst must be a positive integer, but got"
+msgstr "samplesPerBurst debe de ser un entero positivo, pero se obtuvo"
 
 msgid "fromIndex"
 msgstr "fromIndex"
 
 msgid "is not in thisFile"
-msgstr "is not in thisFile"
+msgstr "no está en thisFile"
 
 msgid "toIndex"
 msgstr "toIndex"
@@ -825,137 +831,139 @@ msgid ""
 "something is wrong with the data.  Perhaps the record length is not the "
 "assumed value of"
 msgstr ""
-"something is wrong with the data.  Perhaps the record length is not the "
-"assumed value of"
+"algo está mal en los datos.  Quizás la longitud de registro no corresponde "
+"al valor asumido de"
 
 msgid "some times are NA; this is an internal coding error"
-msgstr "some times are NA; this is an internal coding error"
+msgstr "algunos tiempos son NA; este es un código interno de error"
 
 msgid ""
 "got negative numbers in iii, which indicates a coding problem; range(iii)="
 msgstr ""
-"got negative numbers in iii, which indicates a coding problem; range(iii)="
+"se obtuvieron números negativos para iii, lo que indica un problema de programación; rango(iii)="
 
 msgid "to"
-msgstr "to"
+msgstr "a"
 
 msgid "must have \"by\"=1, in this version of the package"
-msgstr "must have \"by\"=1, in this version of the package"
+msgstr "debe tener \"by\"=1, en esta versión del paquete"
 
 msgid "need to supply a basefile, e.g. \"A\" to read \"A.hd1\" and \"A.ts1\""
-msgstr "need to supply a basefile, e.g. \"A\" to read \"A.hd1\" and \"A.ts1\""
+msgstr "se necesita aportar un archivo base, e.g. \"A\" para leer \"A.hd1\" y \"A.ts1\""
+# check a better replacement for basefile
 
 msgid "no data in this time interval, starting at time"
-msgstr "no data in this time interval, starting at time"
+msgstr "no hay datos en éste intervalo de tiempo, empezando en el tiempo"
 
 msgid "must supply \"to\""
-msgstr "must supply \"to\""
+msgstr "se debe aportar \"to\""
 
 msgid "argument `tsFile' must be a character string or connection"
-msgstr "argument `tsFile' must be a character string or connection"
+msgstr "el argumento `tsFile' debe de ser una cadena de caracteres o una conexión"
+# check that this is not "a caracter, string or ..." with a missing comma
 
 msgid "need equal line lengths in"
-msgstr "need equal line lengths in"
+msgstr "precisa longitudes de línea iguales en"
 
 msgid "file \"."
-msgstr "file \"."
+msgstr "archivo \"."
 
 msgid "\" should have"
-msgstr "\" should have"
+msgstr "\" debería tener"
+# note the difference between 'debería tener' here (should have) and 'debe tener' (must have)
 
-msgid "elemetns per line, but it has"
-msgstr "elemetns per line, but it has"
+msgid "elements per line, but it has"
+msgstr "elementos por línea, pero tiene"
 
 msgid "sensor orientation cannot be inferred without a header; \""
-msgstr "sensor orientation cannot be inferred without a header; \""
+msgstr "la orientación del sensor no puede inferirse sin un encabezado; \""
 
 msgid "\" was assumed."
-msgstr "\" was assumed."
+msgstr "\" se asumió."
 
 msgid "unknown type of current meter"
-msgstr "unknown type of current meter"
+msgstr "tipo desconocido de medidor de corriente"
 
 msgid "sorry, 'by' must equal 1, in this (early) version of read.cm.s4()"
-msgstr "sorry, 'by' must equal 1, in this (early) version of read.cm.s4()"
+msgstr "lo sentimos, 'by' debe de ser igual a 1, en esta (temprana) version de read.cm.s4()"
 
 msgid "'from' must be either POSIXt or numeric"
-msgstr "'from' must be either POSIXt or numeric"
+msgstr "'from' debe ser o bien POSIXt o numérico"
 
 msgid "'to' must be either POSIXt or numeric"
-msgstr "'to' must be either POSIXt or numeric"
+msgstr "'to' debe ser o bien POSIXt o numérico"
 
 msgid "cm"
 msgstr "cm"
 
 msgid "must provide longitude"
-msgstr "must provide longitude"
+msgstr "se debe de proporcionar la coordenada longitud"
 
 msgid "must provide latitude"
-msgstr "must provide latitude"
+msgstr "se debe proporcionar la coordenada latitud"
 
 msgid "Lengths of longitude and latitude must be equal"
-msgstr "Lengths of longitude and latitude must be equal"
+msgstr "Las extensiones de longitud y latitud deben de ser iguales"
 
 msgid "argument geographical must be 0, 1, or 2"
-msgstr "argument geographical must be 0, 1, or 2"
+msgstr "el argumento geographical debe ser 0, 1, o 2"
 
 msgid "list must contain item named 'longitude'"
-msgstr "list must contain item named 'longitude'"
+msgstr "la lista debe contener un elemento llamado 'longitude'"
 
 msgid ""
 "method is only for coastline objects, or lists that contain 'latitude' and "
 "'longitude'"
 msgstr ""
-"method is only for coastline objects, or lists that contain 'latitude' and "
-"'longitude'"
+"método exclusivo para objetos coastline, o listas que contienen coordenadas "
+"'latitude' y 'longitude'"
 
 msgid "use 'clongitude' and 'clatitude' instead of 'center'"
-msgstr "use 'clongitude' and 'clatitude' instead of 'center'"
+msgstr "use 'clongitude' y 'clatitude' en lugar de 'center'"
 
 msgid "do not specify 'xlim'; give 'clongitude' and 'span' instead"
-msgstr "do not specify 'xlim'; give 'clongitude' and 'span' instead"
+msgstr "no especifique 'xlim'; indique 'clongitude' y 'span' en su lugar"
 
 msgid "do not specify 'ylim'; give 'clatitude' and 'span' instead"
-msgstr "do not specify 'ylim'; give 'clatitude' and 'span' instead"
+msgstr "no especifique 'ylim'; indique 'clatitude' y 'span' en su lugar"
 
 msgid ""
 "argument 'asp' being ignored, because argument 'clatitude' and 'clongitude' "
 "were given"
 msgstr ""
-"argument 'asp' being ignored, because argument 'clatitude' and 'clongitude' "
-"were given"
+"Se ignora el argumento 'asp', ya que se han proporcionado 'clatitude' y'clongitude'"
 
 msgid "'file' must be a character string or connection"
-msgstr "'file' must be a character string or connection"
+msgstr "'file' debe ser una cadena de caracteres o una conexión"
 
 msgid "Unknown file type; the unrecognized header line is '"
-msgstr "Unknown file type; the unrecognized header line is '"
+msgstr "Tipo de archivo desconocido; la línea de encabezado no reconocida is '"
 
 msgid "unknown method.  Should be \"R\", \"S\", or \"mapgen\""
-msgstr "unknown method.  Should be \"R\", \"S\", or \"mapgen\""
+msgstr "método desconocido.  Debe ser \"R\", \"S\", o \"mapgen\""
 
 msgid ""
 "first four bytes of file must yield 9994 (as a big-endian integer) but yield"
 msgstr ""
-"first four bytes of file must yield 9994 (as a big-endian integer) but yield"
+"los primeros cuatro bytes del archivo deben producir 9994 (como big-endian entero) pero producen"
 
 msgid "file size is"
-msgstr "file size is"
+msgstr "el tamaño del archivo es"
 
 msgid "but the header suggests it to be"
-msgstr "but the header suggests it to be"
+msgstr "pero el encabezado sugiere que es"
 
 msgid "; using the former"
-msgstr "; using the former"
+msgstr "; utilizando el primero"
 
 msgid "can handle shape-type 3 ("
-msgstr "can handle shape-type 3 ("
+msgstr "puedo manejar shape-type 3 ("
 
 msgid ") and 5 ("
-msgstr ") and 5 ("
+msgstr ") y 5 ("
 
 msgid "), but not"
-msgstr "), but not"
+msgstr "), pero no"
 
 msgid "("
 msgstr "("
@@ -964,39 +972,43 @@ msgid ""
 "cannot read shapeFile element of type 3 without the 'foreign' package being "
 "installed"
 msgstr ""
-"cannot read shapeFile element of type 3 without the 'foreign' package being "
-"installed"
+"no pueden leerse elementos shapeFile de tipo 3 sin tener instalado el paquete 'foreign'"
 
 msgid "cannot have shapeType < 0, but got"
-msgstr "cannot have shapeType < 0, but got"
+msgstr "no puede haber shapeType < 0, pero se obtuvo"
 
 msgid "(programming error)"
-msgstr "(programming error)"
+msgstr "(error de programación)"
 
 msgid "cannot have shapeType > 31, but got"
-msgstr "cannot have shapeType > 31, but got"
+msgstr "no puede haber shapeType > 31, pero se obtuvo"
 
 msgid "record"
-msgstr "record"
+msgstr "récord"
+# need more context, if as in "guinness record" = récord, 
+# if as in "annotation" = registro, 
+# if as in "camera record" =  grabación
 
 msgid "has shape type"
-msgstr "has shape type"
+msgstr "tiene forma de tipo"
 
 msgid ", which does not match file value"
-msgstr ", which does not match file value"
+msgstr ", lo que no cuadra con el valor del archivo"
 
 #, fuzzy
 msgid "must give z, zlim or breaks"
 msgstr "must give time"
+# must give z, zlim or breaks = debe aportar z, zlim o número de divisiones
+# must give time = debe aportar el tiempo
 
 msgid "must give z or zlim if length(breaks)=1"
-msgstr ""
+msgstr "Si lenght(breaks)=1 debe aportar z o zlim"
 
 msgid "cannot supply 'col' and 'colormap' at the same time"
-msgstr ""
+msgstr "no se pueden indicar 'col' y 'colormap' al mismo tiempo"
 
 msgid "cannot supply 'breaks' and 'colormap' at the same time"
-msgstr ""
+msgstr "no se pueden indicar a la vez 'breaks' y 'colormap'"
 
 #, fuzzy
 msgid "mismatched lengths of x0 and x1 ("
@@ -1011,7 +1023,7 @@ msgid "mismatched lengths of x0 and col1 ("
 msgstr "mismatch between length of data names ("
 
 msgid "must give either 'file' or 'text'"
-msgstr "must give either 'file' or 'text'"
+msgstr "se debe proporcionar 'file' o bien 'text'"
 
 #, fuzzy
 msgid "cannot decode \"F\" from \""
@@ -1030,27 +1042,31 @@ msgid "unknown colormap name \""
 msgstr "no column named '"
 
 msgid "\"; try one of:"
-msgstr ""
+msgstr "\" intente con uno de:"
 
 msgid "unknown colormap name; try one of:"
-msgstr ""
+msgstr "nombre de mapa de color desconocido; intente con uno de:"
 
-msgid "cannot specify both zlim and breaks, unless length(breaks)==1"
-msgstr ""
+msgid "cannot specify both 'zlim' and 'breaks', unless length(breaks)==1"
+msgstr "a menos que lenght(breaks)==1, no pueden especificarse a la vez 'zlim' y 'breaks'"
 
 msgid "cannot infer zlim; please specify zlim, breaks, name, or z"
-msgstr ""
+msgstr "no puedo inferir zlim; por favor especifique zlim, breaks, name o z"
 
 msgid "must supply \"z\" if length(breaks)==1"
-msgstr ""
+msgstr "debe proporcionar \"z\" si length(breaks)==1"
 
 msgid ""
 "must give \"breaks\" or \"name\", or each of \"x0\", \"x1\", \"col0\", and "
 "\"col1\""
 msgstr ""
+"debe proporcionar \"breaks\" o \"name\", o cada uno de \"x0\", \"x1\", \"col0\", y "
+"\"col1\""
 
-msgid "give either \"name\" or all of: \"x0\", \"x1\", \"col0\" and \"col1\""
-msgstr ""
+msgid "give either \"name\" or each of \"x0\", \"x1\", \"col0\", and "
+"\"col1\"""
+msgstr "proporcione o bien \"name\" o bien todos los siguientes: \"x0\", \"x1\", "
+" \"col0\" y \"col1\""
 
 #, fuzzy
 msgid "lengths of \"x0\" and \"x1\" must agree"
@@ -1073,13 +1089,13 @@ msgstr ""
 
 msgid "TEOS-10 calculation assuming lat=0 lon=300, because location is unknown"
 msgstr ""
-"TEOS-10 calculation assuming lat=0 lon=300, because location is unknown"
+"cálculo de TEOS-10 asumiendo lat=0 lon=300, puesto que localidad es desconocida"
 
 msgid "in ctd[[\""
-msgstr "in ctd[[\""
+msgstr "en ctd[[\""
 
 msgid "\"]]: no such item"
-msgstr "\"]]: no such item"
+msgstr "\"]]: no hay dicho elemento"
 
 msgid ""
 "data frame must contain columns 'temperature', 'salinity', and 'pressure'"
