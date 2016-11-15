@@ -2192,23 +2192,23 @@ msgid ""
 "need a 'dir', naming a directory containing a file with suffix .TBL, and "
 "also data files named in that file"
 msgstr ""
-"need a 'dir', naming a directory containing a file with suffix .TBL, and "
-"also data files named in that file"
+"se necesita un 'dir', denominando a un directorio que contenga un archivo "
+"con extensión .TBL, así como los archivos de datos nombrados en dicho archivo"
 
 msgid "could not locate a .TBL file in direcory"
-msgstr "could not locate a .TBL file in direcory"
+msgstr "no pude encontrar un archivo .TBL en el directorio"
 
 msgid "found no data in file"
-msgstr "found no data in file"
+msgstr "no se encontraron datos en el archivo"
 
 msgid "/"
 msgstr "/"
 
 msgid "'x' must be numeric or character"
-msgstr "'x' must be numeric or character"
+msgstr "'x' debe ser numérico o caracter"
 
 msgid "must provide matrix 'm'"
-msgstr "must provide matrix 'm'"
+msgstr "debe proporcionar la matríz 'm'"
 
 msgid "matrixSmooth given passes<=0, so returning matrix unmodified"
 msgstr "matrixSmooth given passes<=0, so returning matrix unmodified"
