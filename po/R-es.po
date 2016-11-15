@@ -2060,10 +2060,10 @@ msgid "length(x) must equal ncol(u)"
 msgstr "length of y (%d) must equal number of cols in h (%d)"
 
 msgid "nrow(u) and nrow(v) must match"
-msgstr ""
+msgstr "nrow(u) y nrow(v) deben coincidir"
 
 msgid "ncol(u) and ncol(v) must match"
-msgstr ""
+msgstr "ncol(u) y ncol(v) deben coincidir"
 
 #, fuzzy
 msgid "geographical must be a logical quantity"
@@ -2074,118 +2074,119 @@ msgid "method must be 1 or 2"
 msgstr "deriv must be 0 or 1"
 
 msgid "must supply 'f'"
-msgstr "must supply 'f'"
+msgstr "debe indicarse 'f'"
 
 msgid "must supply 'FUN'"
-msgstr "must supply 'FUN'"
+msgstr "debe indicarse 'FUN'"
 
 msgid "'FUN' must be a function"
-msgstr "'FUN' must be a function"
+msgstr "'FUN' debe ser una función"
 
 msgid "must supply 'y'"
-msgstr "must supply 'y'"
+msgstr "debe indicarse 'y'"
 
 msgid "lengths of x and y must agree"
-msgstr "lengths of x and y must agree"
+msgstr "el largo de los vectores 'x' e 'y' debe coincidir"
 
 msgid "must have more than 1 xbreak"
-msgstr "must have more than 1 xbreak"
+msgstr "debe haber más de 1 xbreak"
 
 msgid "must have more than 1 ybreak"
-msgstr "must have more than 1 ybreak"
+msgstr "debe haber más de 1 ybreak"
 
 msgid "must have more than 1 break"
-msgstr "must have more than 1 break"
+msgstr "debe haber más de 1 break"
 
 msgid "lengths of x and f must agree"
-msgstr "lengths of x and f must agree"
+msgstr "el largo de los vectores 'x' e 'y' debe coincidir"
+# repeated
 
 msgid "must have xmax > xmin"
-msgstr "must have xmax > xmin"
+msgstr "debe tener xmax > xmin"
 
 msgid "must have xinc > 0"
-msgstr "must have xinc > 0"
+msgstr "debe tener xinc > 0"
 
 msgid "must provide x"
-msgstr "must provide x"
+msgstr "debe proporcionar x"
 
 msgid "must provide y"
-msgstr "must provide y"
+msgstr "debe proporcionar y"
 
 msgid "must provide z"
-msgstr "must provide z"
+msgstr "debe proporcionar z"
 
 msgid "must provide f"
-msgstr "must provide f"
+msgstr "debe proporcionar f"
 
 msgid "must provide xout"
-msgstr "must provide xout"
+msgstr "debe proporcionar xout"
 
 msgid "must provide yout"
-msgstr "must provide yout"
+msgstr "debe proporcionar yout"
 
 msgid "must provide zout"
-msgstr "must provide zout"
+msgstr "debe proporcionar zout"
 
 msgid "x values must be equi-spaced"
-msgstr "x values must be equi-spaced"
+msgstr "los valores x deben de estar igualmente espaciados"
 
 msgid "y values must be equi-spaced"
-msgstr "y values must be equi-spaced"
+msgstr "los valores y deben de estar igualmente espaciados"
 
 msgid "z values must be equi-spaced"
-msgstr "z values must be equi-spaced"
+msgstr "los valores z deben de estar igualmente espaciados"
 
 msgid "x and y must be of same length"
-msgstr "x and y must be of same length"
+msgstr "los vectores 'x' e 'y' deben ser igual de largos"
 
 msgid "must give either xe or ye"
-msgstr "must give either xe or ye"
+msgstr "debe aportar bien 'xe', o bien 'ye'"
 
 msgid "x and xe must be of same length"
-msgstr "x and xe must be of same length"
+msgstr "las columnas 'x' y 'xe' deben de ser igual de largas"
 
 msgid "unknown value"
-msgstr "unknown value"
+msgstr "valor desconocido"
 
 msgid "of style; must be 0 or 1"
-msgstr "of style; must be 0 or 1"
+msgstr "de estilo; debe ser 0 o 1"
 
 msgid "y and ye must be of same length"
-msgstr "y and ye must be of same length"
+msgstr "los vectores 'y' y 'ye' deben tener el mismo largo"
 
 msgid "'x' missing"
-msgstr "'x' missing"
+msgstr "'x' ausente"
 
 msgid "'f' missing"
-msgstr "'f' missing"
+msgstr "'f' ausente"
 
 msgid "must give argument 'x'"
-msgstr "must give argument 'x'"
+msgstr "debe indicar el argumento 'x'"
 
 msgid "must give argument 'a'"
-msgstr "must give argument 'a'"
+msgstr "debe indicar el argumento 'a'"
 
 msgid "must give argument 'b'"
-msgstr "must give argument 'b'"
+msgstr "debe indicar el argumento 'b'"
 
 msgid "must give argument 't0'"
-msgstr "must give argument 't0'"
+msgstr "debe indicar el argumento 't0'"
 
 msgid "must give x"
-msgstr "must give x"
+msgstr "debe indicar x"
 
 msgid "x and y must be of same length, but they are"
-msgstr "x and y must be of same length, but they are"
+msgstr "(los vectores) 'x' e 'y' deben tener la misma longitud, pero son"
 
 msgid "cannot have x[1] == x[n]"
-msgstr "cannot have x[1] == x[n]"
+msgstr "no puede haber x[1] == x[n]"
 
 msgid "must give min and max"
-msgstr "must give min and max"
+msgstr "debe indicar min y max"
 
 msgid "unknown reference"
-msgstr "unknown reference"
+msgstr "referencia desconocida"
 
 msgid ""
 "need a 'dir', naming a directory containing a file with suffix .TBL, and "
