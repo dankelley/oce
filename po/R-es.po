@@ -2406,43 +2406,44 @@ msgid "'; only found:"
 msgstr "'; solamente encontré:"
 
 msgid "too few data to to undrift time; returning object unaltered"
-msgstr "too few data to to undrift time; returning object unaltered"
+msgstr "muy pocos datos para to undrift time; devolviendo el objeto inalterado"
+# I don't understand "to undrift time", not translated
 
 msgid "only works for numeric 'x'"
-msgstr "only works for numeric 'x'"
+msgstr "solamente funciona para 'x' numérico"
 
 msgid "only works if 'x' is a vector or a matrix"
-msgstr "only works if 'x' is a vector or a matrix"
+msgstr "solamente funciona si 'x' es un vector o una matríz"
 
 msgid "must supply data"
-msgstr "must supply data"
+msgstr "debe proporcionar datos"
 
 msgid "must supply name"
-msgstr "must supply name"
+msgstr "debe proporcionar nombre"
 
 msgid "data length is"
-msgstr "data length is"
+msgstr "el número de datos es"
 
 msgid "but it must be"
-msgstr "but it must be"
+msgstr "pero debe ser"
 
 msgid "to match existing data"
-msgstr "to match existing data"
+msgstr "para coincidir con los datos existentes"
 
 msgid "decimate(adp) not working yet ... just returning the adp unchanged"
-msgstr "decimate(adp) not working yet ... just returning the adp unchanged"
+msgstr "decimate(adp) aun no funciona ... devolviendo simplemente el adp inalterado"
 
 msgid "decimate(adv) not working yet ... just returning the adv unchanged"
-msgstr "decimate(adv) not working yet ... just returning the adv unchanged"
+msgstr "decimate(adv) aun no funciona ... devolviendo simplemente el adv inalterado"
 
 msgid "item data[["
-msgstr "item data[["
+msgstr "elemento data[["
 
 msgid "]] is not understood; it must be a vector, a matrix, or an array"
-msgstr "]] is not understood; it must be a vector, a matrix, or an array"
+msgstr "]] no se comprende; debe ser un vector, una matriz o un array"
 
 msgid "decimate(ctd) not working yet ... just returning the ctd unchanged"
-msgstr "decimate(ctd) not working yet ... just returning the ctd unchanged"
+msgstr "decimate(ctd) aun no funciona ... devolviendo simplemente el ctd inalterado"
 
 msgid "cannot (yet) filter ctd data during decimation"
 msgstr "cannot (yet) filter ctd data during decimation"
