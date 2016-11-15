@@ -1182,42 +1182,43 @@ msgid "x@data has no item named '"
 msgstr "x@data no tiene un elemento denominado '"
 
 msgid "'method' not recognized; must be 'index', 'downcast', or 'range'"
-msgstr "'method' not recognized; must be 'index', 'downcast', or 'range'"
+msgstr "'method' no reconocido; debe ser 'index', 'downcast', o 'range'"
 
 msgid "should add note about trimming depth inversions to processingLog"
-msgstr "should add note about trimming depth inversions to processingLog"
+msgstr "debería añadirse nota sobre trimming depth inversiones a processingLog"
+# temptative
 
 msgid "there is no header in this CTD object"
-msgstr "there is no header in this CTD object"
+msgstr "este objeto CTD carece de encabezado"
 
 msgid "there are no data in this CTD object"
-msgstr "there are no data in this CTD object"
+msgstr "este objeto CTD no contiene datos"
 
 msgid "'file' must be specified"
-msgstr "'file' must be specified"
+msgstr "debe especificarse 'file'"
 
 msgid "'file' must be a non-empty string"
-msgstr "'file' must be a non-empty string"
+msgstr "'file' debe de ser una cadena no vacía"
 
 msgid ""
 "in plot.ctd() : 'xlim' argument not allowed; use Slim for a salinity "
 "profile, Tlim for a temperature profile, etc"
 msgstr ""
-"in plot.ctd() : 'xlim' argument not allowed; use Slim for a salinity "
-"profile, Tlim for a temperature profile, etc"
+"en plot.ctd() : no se permite el argumento 'xlim'; use Slim para un perfil de salinidades, "
+"Tlim para un perfil de temperaturas, etc"
 
 msgid ""
 "in plot.ctd() : 'ylim' argument not allowed; use plim for a profile, Tlim "
 "for a TS plot, etc"
 msgstr ""
-"in plot.ctd() : 'ylim' argument not allowed; use plim for a profile, Tlim "
-"for a TS plot, etc"
+"en plot.ctd() : 'no se permite el argumento 'ylim'; use plim para un perfil, Tlim "
+"para un gráfico de temperatura/salinidad (TS), etc"
 
 msgid "ignoring add=TRUE because length(which) > 1"
-msgstr "ignoring add=TRUE because length(which) > 1"
+msgstr "ignorando add=TRUE porque length(which) > 1"
 
 msgid "no data to plot in this object"
-msgstr "no data to plot in this object"
+msgstr "el objeto no contiene datos que poder mostrar en el gráfico"
 
 msgid ""
 "the latlim argument is deprecated; should instead specify clongitude, "
@@ -1247,19 +1248,19 @@ msgid "unknown value of which,"
 msgstr "valor desconocido de which,"
 
 msgid "length mismatch.  '"
-msgstr "longitud no coincide.  '"
+msgstr "el largo no coincide.  '"
 
 msgid "' has length"
-msgstr "' tiene longitud"
+msgstr "' tiene largo"
 
 msgid "but pressure has length"
-msgstr "pero la presión tiene longitud"
+msgstr "pero la columna de presión tiene largo"
 
 msgid "length mismatch.  'salinity' has length"
-msgstr "longitud no coincide.  'salinity' tiene longitud"
+msgstr "el largo no coincide.  la columna 'salinity' tiene longitud"
 
 msgid "but 'temperature' has length"
-msgstr "pero 'temperature' tiene longitud"
+msgstr "pero la columna 'temperature' tiene longitud"
 
 msgid "Cannot discover type in line '"
 msgstr "No puede descubrirse el tipo en línea '"
@@ -1308,93 +1309,95 @@ msgid "'columns' must contain three or more elements"
 msgstr "'columns' debe contener tres o más elementos"
 
 msgid "ignoring unit on water depth '"
-msgstr "ignoring unit on water depth '"
+msgstr "ignorando unidad en la profundidad del agua '"
 
 msgid "cannot interpret water depth from '"
-msgstr "cannot interpret water depth from '"
+msgstr "no puedo interpretar la profundidad del agua a partir de '"
 
 msgid "cannot understand `"
-msgstr "cannot understand `"
+msgstr "no entiendo `"
 
 msgid "' as a unit of time for sampleInterval"
-msgstr "' as a unit of time for sampleInterval"
+msgstr "' como unidad de tiempo para sampleInterval"
 
 msgid "'* sample rate =' not found in header"
-msgstr "'* sample rate =' not found in header"
+msgstr "'* sample rate =' no encontrada en el encabezado"
 
 msgid "'** Latitude:' not found in header"
-msgstr "'** Latitude:' not found in header"
+msgstr "'** Latitude:' no encontrada en el encabezado"
 
 msgid "'** Longitude:' not found in header"
-msgstr "'** Longitude:' not found in header"
+msgstr "'** Longitude:' no encontrada en el encabezado"
 
 msgid "'** Date:' not found in header"
-msgstr "'** Date:' not found in header"
+msgstr "'** Date:' no encontrada en el encabezado"
 
 msgid "'** Recovery' not found in header"
-msgstr "'** Recovery' not found in header"
+msgstr "'** Recovery' no encontrado en el encabezado"
 
 msgid "cannot find 'temperature' in this file"
-msgstr "cannot find 'temperature' in this file"
+msgstr "no puedo encontrar datos 'temperature' en este archivo"
 
 msgid "no column named 'pressure', 'depth' or 'depSM'"
-msgstr "no column named 'pressure', 'depth' or 'depSM'"
+msgstr "no hay columnas denominadas 'pressure', 'depth' o 'depSM'"
 
 msgid "data-header conflict; check that #names matches #columns"
-msgstr ""
+msgstr "conflicto de data-header; compruebe que el nombre de las columnas #names"
+"coincide con las columnas #columns"
 
 msgid "no data in CTD file \""
-msgstr "no data in CTD file \""
+msgstr "no hay datos en el archivo CTD \""
 
 msgid "cannot find 'salinity' in this file; calculating from T, C, and p"
-msgstr "cannot find 'salinity' in this file; calculating from T, C, and p"
+msgstr "no puedo encontrar 'salinity' en este archivo; calculándola desde T, C y p"
 
 msgid "cannot find 'salinity' in this file; calculating from T, C-ratio, and p"
 msgstr ""
-"cannot find 'salinity' in this file; calculating from T, C-ratio, and p"
+"no puedo encontrar 'salinity' en este archivo; calculándola desde T, C-ratio y p"
 
 msgid ""
 "cannot find salinity in this file, nor conductivity or conductivity ratio"
 msgstr ""
-"cannot find salinity in this file, nor conductivity or conductivity ratio"
+"no puedo encontrar salinidad en este archivo, ni tampoco conductividad o "
+"ratio de conductividad"
 
 msgid "created a pressure column from the depth column"
-msgstr ""
+msgstr "creada una columna presión a partir de la columna de profundidad"
 
 msgid "cannot locate a line containing '-- DATA --'"
-msgstr "cannot locate a line containing '-- DATA --'"
+msgstr "no pude localizar una línea conteniendo '-- DATA --'"
 
 msgid "cannot locate any lines containing 'PARAMETER_HEADER'"
-msgstr "cannot locate any lines containing 'PARAMETER_HEADER'"
+msgstr "no puedo localizar ninguna línea conteniendo 'PARAMETER_HEADER'"
 
 msgid "mismatch between length of data names ("
-msgstr "mismatch between length of data names ("
+msgstr "no hay concordancia entre la longitud de los nombres de datos ("
 
 msgid ") and number of columns in data matrix ("
-msgstr ") and number of columns in data matrix ("
+msgstr ") y el número de columnas en la matríz de datos ("
 
 msgid "missing data$salinity"
-msgstr "missing data$salinity"
+msgstr "data$salinity ausente"
 
 msgid "missing data$pressure"
-msgstr "missing data$pressure"
+msgstr "data$pressure ausente"
 
 msgid "missing data$temperature"
-msgstr "missing data$temperature"
+msgstr "data$temperature ausente"
 
 msgid "FIXME: make read.ctd.odv() work"
-msgstr ""
+msgstr "FIXME: hacer que read.ctd.odv() funcione"
 
 msgid "cannot find salinity and temperature in 'x'"
-msgstr "cannot find salinity and temperature in 'x'"
+msgstr "no puedo encontrar salinidad y temperatura en 'x'"
 
-#, fuzzy
+#, fuzzy, but translated
 msgid "no valid salinity data"
-msgstr "no non-missing salinity data"
+msgstr "no hay datos de salinidad válidos (non-missing)"
 
-#, fuzzy
+#, fuzzy, but translated
 msgid "no valid temperature data"
-msgstr "no non-missing temperature data"
+msgstr "no hay datos de temperatura válidos (non-missing)"
 
 #, fuzzy
 msgid "no good data to plot"
@@ -1404,8 +1407,8 @@ msgid ""
 "nothing is being plotted, because z is always negative and ylim specified a "
 "positive interval"
 msgstr ""
-"nothing is being plotted, because z is always negative and ylim specified a "
-"positive interval"
+"nada está siendo incluido en el gráfico, porque z es siempre negativa y" 
+" ylim especifica un intervalo positivo"
 
 msgid "length(xtype) must match number of levels in the CTD object"
 msgstr "length(xtype) must match number of levels in the CTD object"
