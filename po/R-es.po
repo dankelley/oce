@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
 "POT-Creation-Date: 2015-01-16 15:10\n"
-# "PO-Revision-Date: 2014-02-20 21:30-0400\n"
+#| "PO-Revision-Date: 2014-02-20 21:30-0400\n"
 "PO-Revision-Date: 2016-11-14 22:14-0400\n"
-# "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
+#| "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Last-Translator: Pablo Valdés\n"
 "Language-Team: English\n"
 "Language: en_CA\n"
@@ -1070,19 +1070,20 @@ msgstr "proporcione o bien \"name\" o bien todos los siguientes: \"x0\", \"x1\",
 
 #, fuzzy
 msgid "lengths of \"x0\" and \"x1\" must agree"
-msgstr "lengths of x and y must agree"
+msgstr "las longitudes de x e y deben coincidir"
 
 #, fuzzy
 msgid "lengths of \"x0\" and \"col0\" must agree"
-msgstr "lengths of x and y must agree"
+msgstr "las longitudes de x e y deben coincidir"
 
 #, fuzzy
 msgid "lengths of \"x0\" and \"col1\" must agree"
-msgstr "lengths of x and y must agree"
+msgstr "las longitudes de x e y deben coincidir"
 
 #, fuzzy
 msgid "unknown palette name \""
-msgstr "unknown file type \""
+msgstr "nombre de paleta de color desconocido \""
+# temptative
 
 msgid "' is not a recognized value for 'palette'"
 msgstr ""
@@ -1100,61 +1101,62 @@ msgstr "\"]]: no hay dicho elemento"
 msgid ""
 "data frame must contain columns 'temperature', 'salinity', and 'pressure'"
 msgstr ""
-"data frame must contain columns 'temperature', 'salinity', and 'pressure'"
+"data frame debe contener las columnas 'temperature', 'salinity' y 'pressure'"
 
 msgid "must give temperature or CT"
-msgstr "must give temperature or CT"
+msgstr "se deben proporcionar temperatura o CT"
 
 msgid "must give pressure"
-msgstr "must give pressure"
+msgstr "se debe indicar la presión"
 
 msgid "SA and CT must both be supplied, if either is"
-msgstr "SA and CT must both be supplied, if either is"
+msgstr "ambas, SA y CT deben de ser aportadas, si alguna de ellas lo es"
 
 msgid "lengths of SA and CT must match"
-msgstr "lengths of SA and CT must match"
+msgstr "las longitudes de SA y CT deben coincidir"
 
 msgid "longitude and latitude set to default values, since none given"
-msgstr "longitude and latitude set to default values, since none given"
+msgstr "longitud y latitud se establecen a valores por defecto, puesto que no se indicó ninguno"
 
 msgid "'other' item number"
-msgstr "'other' item number"
+msgstr "'other' número de elementos"
+# temptative. lack context.
 
 msgid "has no name"
-msgstr "has no name"
+msgstr "no tiene nombre"
 
 msgid "must supply column data"
-msgstr "must supply column data"
+msgstr "debe proporcionar datos de columnas"
 
 msgid "column has"
-msgstr "column has"
+msgstr "la columna tiene"
 
 msgid "data but it must have"
-msgstr "data but it must have"
+msgstr "datos pero debe tener"
 
 msgid "data to match existing object"
-msgstr "data to match existing object"
+msgstr "datos para match objeto existente"
 
 msgid "must supply \"name\""
-msgstr "must supply \"name\""
+msgstr "debe aportarse \"name\""
 
 msgid "unknown method \""
-msgstr "unknown method \""
+msgstr "método desconocido \""
 
 msgid "ctd"
 msgstr ""
 
 msgid "too few data to ctdDecimate()"
-msgstr "too few data to ctdDecimate()"
+msgstr "muy pocos datos para ctdDecimate()"
 
 msgid "impossible to get here -- developer error"
-msgstr "impossible to get here -- developer error"
+msgstr "imposible llegar aquí -- developer error"
 
 msgid "direction must be either \"ascending\" or \"descending\""
-msgstr "direction must be either \"ascending\" or \"descending\""
+msgstr "la dirección debe de ser o bien \"ascending\" o \"descending\""
 
 msgid "too few data to ctdTrim()"
-msgstr "too few data to ctdTrim()"
+msgstr "muy pocos datos para ctdTrim()"
 
 msgid ""
 "for method=\"index\", need length(parameters) to match number of pressure "
@@ -1164,7 +1166,7 @@ msgstr ""
 "values"
 
 msgid "Cannot select indices < 1"
-msgstr "Cannot select indices < 1"
+msgstr "No pueden seleccionarse índices < 1"
 
 msgid "Cannot select past end of array, i.e. past"
 msgstr "Cannot select past end of array, i.e. past"
