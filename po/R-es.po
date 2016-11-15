@@ -1531,13 +1531,13 @@ msgstr ""
 "'longitude'"
 
 msgid "cannot supply 'xlim'; use 'clongitude' and 'span' instead"
-msgstr "cannot supply 'xlim'; use 'clongitude' and 'span' instead"
+msgstr "no puede proporcionar 'xlim'; use 'clongitude' y 'span' en su lugar"
 
 msgid "cannot supply 'ylim'; use 'clatitude' and 'span' instead"
-msgstr "cannot supply 'ylim'; use 'clatitude' and 'span' instead"
+msgstr "no puede proporcionar 'ylim'; use 'clatitude' y 'span' en su lugar"
 
 msgid "cannot determine file type; assuming 'gpx'"
-msgstr "cannot determine file type; assuming 'gpx'"
+msgstr "no puede determinarse el tipo de archivo; asumiendo 'gpx'"
 
 #, fuzzy
 msgid "'pos' must be 1, 2, 3 or 4"
@@ -1552,30 +1552,31 @@ msgid "pos must be 1, 2, 3 or 4"
 msgstr "of style; must be 0 or 1"
 
 msgid "horizontal triangles not working yet"
-msgstr ""
+msgstr "los triángulos horizontales aun no funcionan"
 
 msgid "may not give y, since x is a list"
-msgstr "may not give y, since x is a list"
+msgstr "puede no tener que proporcionar y, ya que x es una lista"
 
 msgid "may not give z, since x is a list"
-msgstr "may not give z, since x is a list"
+msgstr "puede no tener que proporcionar z, ya que x es una lista"
 
 msgid "since x is a list, it must have an item named 'x'"
-msgstr "since x is a list, it must have an item named 'x'"
+msgstr "puesto que x es una lista, debe tener un elemento llamado 'x'"
 
 msgid "since x is a list, it must have an item named 'y'"
-msgstr "since x is a list, it must have an item named 'y'"
+msgstr "puesto que x es una lista, debe tener un elemento llamado 'y'"
 
 msgid "since x is a list, it must have an item named 'z'"
-msgstr "since x is a list, it must have an item named 'z'"
+msgstr "puesto que x es una lista, debe de tener un elemento llamado 'z'"
 
 msgid "x must be a matrix, not an array with dim(x) = c("
-msgstr "x must be a matrix, not an array with dim(x) = c("
+msgstr "x debe de ser una matríz, no un array con dim(x) = c("
+# array deliberately left untranslated. Could de translated as 'colección', but I feel that array is more precise here
 
 msgid "must supply y"
-msgstr "must supply y"
+msgstr "debe indicar y"
 
-msgid "must supply z"
+msgid "debe indicar z"
 msgstr "must supply z"
 
 #, fuzzy
@@ -1583,7 +1584,7 @@ msgid "decimate must be a positive integer or a logical value"
 msgstr "samplingRate must be a positive integer, but got"
 
 msgid "image width ("
-msgstr "image width ("
+msgstr "el ancho de imágen ("
 
 msgid ") does not match length of x ("
 msgstr ") does not match length of x ("
