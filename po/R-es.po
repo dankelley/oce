@@ -3149,17 +3149,16 @@ msgstr ""
 # meaning of fuzzy here?
 
 msgid "must supply longitude"
-msgstr "debe proporcionar longitud"
+msgstr "debe proporcionar coord. longitud"
 
 msgid "must supply latitude"
-msgstr "debe proporcionar latitud"
+msgstr "debe proporcionar coord. latitud"
 
 msgid "must supply topo"
 msgstr "debe proporcionar topo"
 
 msgid "lengths of latitude and longitude must match"
-msgstr "los tamaños de latitud y longitud deben coincidir"
-# temptative, the problematic word is tamaños
+msgstr "los tamaños de (los vectores) latitud y longitud deben coincidir"
 
 msgid "topo"
 msgstr "topo"
@@ -3187,7 +3186,8 @@ msgid "there are no topographic data within the latitudes of the plot region."
 msgstr "ningún dato topográfico cae dentro de las latitudes de la región a dibujar."
 
 msgid "must install.packages(\"ncdf4\") to read topo data from a netCDF file"
-msgstr ""
+msgstr "para poder leer datos topográficos (topo) desde un archivo netCDF "
+"debe correr primero install.packages(\"ncdf4\")"
 
 msgid "longitude vector has length"
 msgstr "el vector longitud mide"
@@ -3196,10 +3196,10 @@ msgid ", which does not match matrix width"
 msgstr ", lo cual no coincide con el ancho de la matríz"
 
 msgid "latitude vector has length"
-msgstr "el vector latitud tiene un tamaño"
+msgstr "el vector latitud mide"
 
 msgid ", which does not match matrix height"
-msgstr ", que no coincide con el alto de la matriz"
+msgstr ", lo cual no coincide con el alto de la matriz"
 
 msgid "problem setting up bins (ai<1)"
 msgstr "problema instalando bins (ai<1)"
@@ -3220,23 +3220,23 @@ msgstr "'col' debe ser una lista de cuatro colores"
 #~ "DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' "
 #~ "instead of 'axis'"
 #~ msgstr ""
-#~ "DEVELOPER message: since debug>90, axis labels were drawn with 'mtext' "
-#~ "instead of 'axis'"
+#~ "DEVELOPER mensaje: desde debug>90, las etiquetas de los ejes fueron dibujadas con 'mtext' "
+#~ "en vez de 'axis'"
 
-#~ msgid "x must be \"topleft\"in this (early) version of mapScalebar()"
-#~ msgstr "x must be \"topleft\"in this (early) version of mapScalebar()"
+#~ msgid "x must be \"topleft\" in this (early) version of mapScalebar()"
+#~ msgstr "x debe ser \"topleft\" en esta (temprana) version de mapScalebar()"
 
 #~ msgid "mapImage() cannot yet handle filledContour"
-#~ msgstr "mapImage() cannot yet handle filledContour"
+#~ msgstr "mapImage() no puede manejar aun filledContour"
 
 #~ msgid "sort.section() cannot yet handle argument by=\"distance\""
-#~ msgstr "sort.section() cannot yet handle argument by=\"distance\""
+#~ msgstr "sort.section() no puede manejar aun el argumento by=\"distance\""
 
 #~ msgid "argument 'by' is incorrect"
 #~ msgstr "el argumento 'by' es incorrecto"
 
 #~ msgid "need the ncdf library to read a netcdf topography file"
-#~ msgstr "need the ncdf library to read a netcdf topography file"
+#~ msgstr "necesito la biblioteca ncdf para leer un archivo topográfico netcdf"
 
 #~ msgid ""
 #~ "plot.section() requires stations to have identical pressure levels.\n"
@@ -3244,7 +3244,8 @@ msgstr "'col' debe ser una lista de cuatro colores"
 #~ "\tsectionGridded <- sectionGrid(section)\n"
 #~ "  to create a uniform grid, and then you will be able to plot the section."
 #~ msgstr ""
-#~ "plot.section() requires stations to have identical pressure levels.\n"
-#~ "  Please use e.g.\n"
+#~ "plot.section() requiere que las estaciones tengan idénticos niveles de presión.\n"
+#~ " Por favor use, ej.\n"
 #~ "\tsectionGridded <- sectionGrid(section)\n"
-#~ "  to create a uniform grid, and then you will be able to plot the section."
+#~ "  para crear una rejilla grid uniforme, y entonces será capaz de "
+#~ "  trazar la sección en un gráfico."
