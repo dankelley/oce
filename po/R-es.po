@@ -1637,7 +1637,7 @@ msgid "K1="
 msgstr "K1="
 
 msgid "# Landsat7_Handbook.pdf Table 11.5"
-msgstr "# Landsta7_Handbook.pdf Tabla 11.5"
+msgstr "# Landsat7_Handbook.pdf Tabla 11.5"
 
 msgid "K2="
 msgstr "K2="
@@ -1656,30 +1656,33 @@ msgid ""
 "band=\"terralook\" requires landsat object to contain \"red\", \"green\" and "
 "\"nir\""
 msgstr ""
+"band=\"terralook\" requiere que el objeto landsat contenga \"red\", \"green\" and "
+"\"nir\""
 
 msgid "this landsat object has no band named \""
-msgstr ""
+msgstr "este objeto landsat no tiene una banda denominada \""
 
 #, fuzzy
 msgid "unknown value of 'which'"
 msgstr "unknown value of which"
 
 msgid "spacecraft type"
-msgstr ""
+msgstr "tipo de astronave"
 
 #, fuzzy
 msgid "cannot be handled yet"
-msgstr "cannot handle deltat yet"
+msgstr "no puedo manejar deltat aún"
 
 msgid "must install.packages(\"tiff\") to read landsat data"
-msgstr ""
+msgstr "para poder leer datos de landsat debe correr: "
+"install.packages(\"tiff\")"
 
 #, fuzzy
 msgid "band \""
 msgstr "and 0x"
 
 msgid "\" unknown; must be one of:"
-msgstr ""
+msgstr "\" desconocido; debe ser uno de:"
 
 #, fuzzy
 msgid "data must be a matrix"
@@ -1690,7 +1693,7 @@ msgid "must provide a name for the data"
 msgstr "must provide at least one byte to match"
 
 msgid "dim(data) = c("
-msgstr ""
+msgstr "dim(datos) = c("
 
 #, fuzzy
 msgid ") must match existing dimension c("
@@ -1698,7 +1701,8 @@ msgstr "to match existing data"
 
 #, fuzzy
 msgid "method is only for landsat objects"
-msgstr "método sólo es para la clase de oce"
+msgstr "método exclusivo para objetos landsat"
+#| msgstr "method is only for class oce"
 
 #, fuzzy
 msgid "'ll' must have named items 'longitude' and 'latitude'"
@@ -1709,7 +1713,7 @@ msgid "'ur' must have named items 'longitude' and 'latitude'"
 msgstr "must give 'longitude' and possibly 'latitude'"
 
 msgid "no intersection between landsat image and trimming box"
-msgstr ""
+msgstr "no hay intersección entre la imagen landsat y la trimming box"
 
 msgid "Size Class #"
 msgstr "Clase de tamaño"
