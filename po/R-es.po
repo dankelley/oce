@@ -1791,23 +1791,25 @@ msgstr ""
 
 msgid "cannot (yet) handle argument 'by' for a ruskin file; using by=1 instead"
 msgstr ""
-"cannot (yet) handle argument 'by' for a ruskin file; using by=1 instead"
+"no puedo manejar (aún) un argumento 'by' para un archivo ruskin; "
+"usando by=1 en su lugar"
 
 msgid ""
 "cannot (yet) handle argument 'to' for a ruskin file; using the whole file"
 msgstr ""
-"cannot (yet) handle argument 'to' for a ruskin file; using the whole file"
+"no puedo manejar (aún) un argumento 'to' para un archivo ruskin; utilizando "
+"el archivo entero"
 
 #, fuzzy
 msgid ""
 "read.rsk(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this "
 "file has"
 msgstr ""
-"read.rsk(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this file "
-"has"
+"read.rsk(..., type=\"rbr/rsk\" no puede manejar archivos multi-dataset; "
+"este archivo tiene"
 
 msgid "making some (untested) assumptions, since the ruskin Version ("
-msgstr "making some (untested) assumptions, since the ruskin Version ("
+msgstr "haciendo algunas (no comprobadas) asunciones, desde la versión de ruskin ("
 
 msgid "."
 msgstr "."
