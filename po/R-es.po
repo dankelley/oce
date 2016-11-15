@@ -3001,92 +3001,89 @@ msgid "first argument must be of class \"ctd\""
 msgstr "el primer argumento debe de ser de clase \"ctd\""
 
 msgid "derivs must be 'simple', 'smoothing', or a function"
-msgstr "derivs must be 'simple', 'smoothing', or a function"
+msgstr "derivs debe de ser 'simple', 'smoothing', o una función"
 
 msgid "derivs must be 'smoothing', 'simple', or a function"
-msgstr "derivs must be 'smoothing', 'simple', or a function"
+msgstr "derivs debe ser 'smoothing', 'simple', o una function"
 
 msgid "must supply conductivity, temperature and pressure"
-msgstr "must supply conductivity, temperature and pressure"
+msgstr "deben indicarse conductividad, temperatura y presión"
 
 msgid "lengths of C and temperature must agree, but they are"
-msgstr "lengths of C and temperature must agree, but they are"
+msgstr "las longitudes de (los vectores) C y temperatura deben coincidir, pero son"
 
 msgid "lengths of C and p must agree, but they are"
-msgstr "lengths of C and p must agree, but they are"
+msgstr "las longitudes de (los vectores) C y p deben coincidir, pero son"
 
 msgid "lengths of temperature and density must agree, but they are"
-msgstr "lengths of temperature and density must agree, but they are"
+msgstr "las longitudes de (los vectores) temperatura y densidad deben coincidir, pero son"
 
 msgid "lengths of temperature and p arrays must agree, but they are"
-msgstr "lengths of temperature and p arrays must agree, but they are"
+msgstr "las longitudes (de los vectores) temperatura y p arrays deben coincidir, pero son"
 
 msgid "must provide salinity"
 msgstr "debe proporcionar salinidad"
 
 msgid "lengths of salinity and rho must agree, but they are"
-msgstr "las longitudes (se refiere a medida, no a coordenadas) "
-"de salinidad y rho deben coincidir, pero son"
+msgstr "las longitudes de (los vectores) salinidad y rho deben coincidir, pero son"
 
 msgid "lengths of salinity and pressure must agree, but they are"
-msgstr "las longitudes (se refiere a medida, no a coordenadas) "
-"de salinidad y presión deben coincidir, pero son"
+msgstr "las longitudes de (los vectores) salinidad y presión deben coincidir, pero son"
 
 msgid "must provide temperature"
 msgstr "debe de proporcionar la temperatura"
 
 msgid "lengths of salinity and temperature must agree, but they are"
-msgstr "las longitudes (se refiere a medida, no a coordenadas) "
-"de salinidad y temperatura deben de coincidir, pero son"
+msgstr "las longitudes de (los vectores) salinidad y temperatura deben de coincidir, pero son"
 
 msgid "or '"
-msgstr ""
+msgstr "o '"
 
 msgid "unrecognized method=\""
-msgstr "unrecognized method=\""
+msgstr "método no reconocido=\""
 
 msgid "lengths of salinity and temperature must match"
-msgstr "lengths of salinity and temperature must match"
+msgstr "las longitudes de (los vectores) salinidad y temperatura deben coincidir"
 
 msgid "lengths of salinity and pressure must match"
-msgstr "lengths of salinity and pressure must match"
+msgstr "las longitudes de (los vectores) salinidad y presión deben coincidir"
 
 msgid "must provide longitude to compute absolute salinity"
-msgstr "must provide longitude to compute absolute salinity"
+msgstr "para computar la salinidad absoluta debe indicar coords. de longitud"
 
 msgid "must provide latitude to compute absolute salinity"
-msgstr "must provide latitude to compute absolute salinity"
+msgstr "para computar la salinidad absoluta debe de indicar coords. de latitud"
 
 msgid "lengths of salinity and longitude must match"
-msgstr "lengths of salinity and longitude must match"
+msgstr "los largos de (los vectores) salinidad y longitud deben coincidir"
 
 msgid "lengths of salinity and latitude must match"
-msgstr "lengths of salinity and latitude must match"
+msgstr "las longitudes de (los vectores) salinidad y latitud deben coincidir"
 
 msgid ""
 "a function name must be given, and it must be in lower case letters, e.g. "
 "\"gsw_sa_from_sp\""
 msgstr ""
-"a function name must be given, and it must be in lower case letters, e.g. "
+"debe proporcionarse un nombre de función, y debe de ir en minúsculas, ej. "
 "\"gsw_sa_from_sp\""
 
 msgid "must provide a1"
-msgstr "must provide a1"
+msgstr "debe indicarse a1"
 
 msgid "must provide a2"
-msgstr "must provide a2"
+msgstr "debe indicarse a2"
 
 msgid "length(a2) must match length(a1)"
-msgstr "length(a2) must match length(a1)"
+msgstr "length(a2) debe coincidir con length(a1)"
 
 msgid "length(a3) must match length(a1)"
-msgstr "length(a3) must match length(a1)"
+msgstr "length(a3) debe coincidir con length(a1)"
 
 msgid "length(a4) must match length(a1)"
-msgstr "length(a4) must match length(a1)"
+msgstr "length(a4) debe coincidir con length(a1)"
 
 msgid "there is no such constituent '"
-msgstr "there is no such constituent '"
+msgstr "no hay dicho constituyente '"
 
 msgid "tidem"
 msgstr ""
