@@ -1664,7 +1664,7 @@ msgstr "este objeto landsat no tiene una banda denominada \""
 
 #, fuzzy
 msgid "unknown value of 'which'"
-msgstr "unknown value of which"
+msgstr "valor desconocido de 'which'"
 
 msgid "spacecraft type"
 msgstr "tipo de astronave"
@@ -1791,7 +1791,7 @@ msgid "Serial Number"
 msgstr "Número de serie"
 
 msgid "from cannot be an integer less than 1"
-msgstr "from no puede ser un entero menor que 1"
+msgstr "'from' no puede ser un entero menor que 1"
 
 msgid ""
 "cannot (yet) handle argument 'from' for a ruskin file; using from=1 instead"
@@ -1841,23 +1841,23 @@ msgstr ""
 "la base de datos; asumiendo que es la columna 3"
 
 msgid "if 'from' is POSIXt or character, then 'to' must be, also"
-msgstr "if 'from' is POSIXt or character, then 'to' must be, also"
+msgstr "si 'from' es POSIXt o caracter, entonces 'to' debe serlo también"
 
 msgid "cannot have 'to' <= 'from'"
-msgstr "cannot have 'to' <= 'from'"
+msgstr "no puede haber 'to' <= 'from'"
 
 msgid "cannot have 'from' < 1"
-msgstr "cannot have 'from' < 1"
+msgstr "no puede haber 'from' < 1"
 
 msgid "cannot have 'to' < 'from'"
-msgstr "cannot have 'to' < 'from'"
+msgstr "no puede haber 'to' < 'from'"
 
 msgid "wrong number of variables; need 2, 4, or 5, but got"
-msgstr "wrong number of variables; need 2, 4, or 5, but got"
+msgstr "número erróneo de variables; necesito 2, 4, o 5, pero tuve"
 
 #, fuzzy
 msgid "too few data to trim rsk record"
-msgstr "too few data to trim rsk record"
+msgstr "muy pocos too datos para recortar el registro rsk"
 
 msgid "Unknown method"
 msgstr "Método desconocido"
@@ -1866,11 +1866,15 @@ msgid ""
 "mapAxis(side=1) cannot draw latitude labels yet; contact author if you need "
 "this"
 msgstr ""
+"mapAxis(side=1) no puede dibujar aún etiquetas de latitud; contacte"
+"con el autor si las necesita"
 
 msgid ""
 "mapAxis(side=2) cannot draw longitude labels yet; contact author if you need "
 "this"
 msgstr ""
+"mapAxis(side=2) no puede dibujar aún etiquetas de longitud; contacte"
+"con el autor si las necesita"
 
 msgid "must create a map first, with mapPlot()"
 msgstr "debe crear un mapa primero, con mapPlot()"
@@ -1899,18 +1903,20 @@ msgstr ""
 "mapPlot(): trimming spurious edge-to-edge lines; filling may be inaccurate"
 
 msgid "FIXME: mapGrid() should check if longitude or latitude is NULL"
-msgstr ""
+msgstr "FIXME: mapGrid() debe comprobar si latitud o longitud son NULL"
 
 msgid ""
 "Use mapGrid(longitude=NULL,latitude=latitude) instead of "
 "mapMeridians(latitude)"
 msgstr ""
+"Use mapGrid(longitude=NULL,latitude=latitud) en vez de "
+"mapMeridians(latitud)"
 
 msgid "mapScalebar() only works for plots created with projections"
-msgstr ""
+msgstr "mapScalebar() solamente funciona para gráficos creados con proyecciones"
 
 msgid "y must be NULL in this (early) version of mapScalebar()"
-msgstr "y must be NULL in this (early) version of mapScalebar()"
+msgstr "y debe ser NULL en esta (temprana) version de mapScalebar()"
 
 #, fuzzy
 msgid "x must be \"topleft\" or \"topright\", but it is \""
