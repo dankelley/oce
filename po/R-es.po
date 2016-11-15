@@ -2730,13 +2730,13 @@ msgid "cannot handle ylog yet"
 msgstr "no puedo manejar ylog aun"
 
 msgid "part of the inset is off the page"
-msgstr "parte del inset cae fuera de la página"
+msgstr "parte del recuadro cae fuera de la página"
 
 msgid "must supply x, y, u, and v"
-msgstr "must supply x, y, u, and v"
+msgstr "debe indicar 'x', 'y', 'u' y 'v'"
 
 msgid "either 'scalex' or 'scaley' must be specified (but not both)"
-msgstr "either 'scalex' or 'scaley' must be specified (but not both)"
+msgstr "o bien 'scalex' o 'scaley' deben especificarse (pero no ambos)"
 
 #, fuzzy
 msgid "lengths of x and y must match"
@@ -2751,7 +2751,7 @@ msgid "lengths of x and v must match"
 msgstr "lengths of SA and CT must match"
 
 msgid "unknown value of type"
-msgstr "unknown value of type"
+msgstr "valor de tipo desconocido"
 
 msgid "no 'z' matrix specified"
 msgstr "no 'z' matrix specified"
