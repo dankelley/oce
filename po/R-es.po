@@ -2961,44 +2961,44 @@ msgid "must provide t"
 msgstr "se debe indicar t"
 
 msgid "t must be POSIXt or a number corresponding to POSIXt (in UTC)"
-msgstr "t debe ser POSIXt o un nçumero correspondiente a POSIXt (en UTC)"
+msgstr "t debe ser POSIXt o un número correspondiente a POSIXt (en UTC)"
 
 msgid "lengths of longitude and latitude must match"
-msgstr "lengths of longitude and latitude must match"
+msgstr "el largo de las columnas de longitud y latitud debe coincidir"
 
 msgid ""
 "lengths of t, latitude and longitude must match, unless last two are of "
 "length 1"
 msgstr ""
-"lengths of t, latitude and longitude must match, unless last two are of "
-"length 1"
+"las dimensiones de t, latitud y longitud deben coincidir, a menos que "
+"las dos últimas sean de largo 1"
 
 msgid "year="
-msgstr "year="
+msgstr "año="
 
 msgid "is outside acceptable range"
-msgstr "is outside acceptable range"
+msgstr "cae fuera del rango aceptable"
 
 msgid "day is not in range 1 to 366"
-msgstr "day is not in range 1 to 366"
+msgstr "el día no cae en un rango de 1 a 366"
 
 msgid "hour outside range -13 to 36"
-msgstr "hour outside range -13 to 36"
+msgstr "la hora cae fuera del rango de -13 a 36"
 
 msgid "latitude(s) trimmed to range -90 to 90"
-msgstr "latitude(s) trimmed to range -90 to 90"
+msgstr "latitud(es) recortadas al rango -90 a 90"
 
 msgid "longitude(s) trimmed to range -180 to 180"
-msgstr "longitude(s) trimmed to range -180 to 180"
+msgstr "longitud(es) recortadas al rango -180 a 180"
 
 msgid "output argument el out of range"
-msgstr "output argument el out of range"
+msgstr "argumento de salida 'el' fuera de rango"
 
 msgid "output argument az out of range"
-msgstr "output argument az out of range"
+msgstr "argumento de salida 'az' fuera de rango"
 
 msgid "first argument must be of class \"ctd\""
-msgstr "first argument must be of class \"ctd\""
+msgstr "el primer argumento debe de ser de clase \"ctd\""
 
 msgid "derivs must be 'simple', 'smoothing', or a function"
 msgstr "derivs must be 'simple', 'smoothing', or a function"
