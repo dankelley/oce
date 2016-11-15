@@ -3086,54 +3086,55 @@ msgid "there is no such constituent '"
 msgstr "no hay dicho constituyente '"
 
 msgid "tidem"
-msgstr ""
+msgstr "tidem"
 
 msgid "unknown value of which"
-msgstr "unknown value of which"
+msgstr "valor desconocido del cual"
 
 msgid "; should be 1 or 2"
-msgstr "; should be 1 or 2"
+msgstr "; debe de ser 1 o 2"
 
 msgid "trimming u and f to get same length as v -- this is a bug"
-msgstr "trimming u and f to get same length as v -- this is a bug"
+msgstr "recortando u y f para obtener la misma longitud que v -- esto es un bug"
 
 msgid "must supply 't', since 'x' is not a sealevel object"
-msgstr "must supply 't', since 'x' is not a sealevel object"
+msgstr "debe proporcionar 't', puesto que 'x' no es un objeto sealevel"
 
 msgid "lengths of 'x' and 't' must match, but they are"
-msgstr "lengths of 'x' and 't' must match, but they are"
+msgstr "las longitudes de (los vectores) 'x' y 't' deben coincidir, pero son"
 
 msgid "'t' must be of length 1, unless it is a vector of POSIXt times"
-msgstr "'t' must be of length 1, unless it is a vector of POSIXt times"
+msgstr "'t' debe tener largo 1, a menos que sea un vector de tiempos POSIXt"
 
 msgid ""
 "Time series spans 18.6 years, but tidem() is ignoring this important fact"
 msgstr ""
-"Time series spans 18.6 years, but tidem() is ignoring this important fact"
+"La serie temporal se extiende a 18.6 años, pero tidem() está ignorando "
+"este importante hecho"
 
 msgid "\"standard\" must occur first in constituents list"
-msgstr "\"standard\" must occur first in constituents list"
+msgstr "\"standard\" debe aparecer primero en la lista de constituyentes"
 
 msgid "cannot delete constituent '"
-msgstr "cannot delete constituent '"
+msgstr "no puedo borrar el constituyente '"
 
 msgid "' from the list because it is not there"
-msgstr "' from the list because it is not there"
+msgstr "' de la lista porque no está ahí"
 
 msgid "cannot add constituent '"
-msgstr "cannot add constituent '"
+msgstr "no puedo añadir constituyente '"
 
 msgid "' because it is not known; see ?tideconst"
-msgstr "' because it is not known; see ?tideconst"
+msgstr "' porque no es uno conocido; véase ?tideconst"
 
 msgid "there is no tidal constituent named \""
-msgstr "there is no tidal constituent named \""
+msgstr "no hay un constituyente mareal denominado \""
 
 msgid "newdata must be of class POSIXt"
-msgstr "newdata must be of class POSIXt"
+msgstr "newdata debe de ser de clase POSIXt"
 
 msgid "tidem: using default coastline for testing"
-msgstr "tidem: using default coastline for testing"
+msgstr "tidem: utilizando la línea de costa por defecto para testing"
 
 msgid "'longitude' and 'latitude' must be given unless 'node' is given"
 msgstr "deben proporcionarse 'longitude' y 'latitude' a menos que se indique 'node'"
