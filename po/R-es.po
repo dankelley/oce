@@ -1713,10 +1713,10 @@ msgid "'ur' must have named items 'longitude' and 'latitude'"
 msgstr "must give 'longitude' and possibly 'latitude'"
 
 msgid "no intersection between landsat image and trimming box"
-msgstr "no hay intersección entre la imagen landsat y la trimming box"
+msgstr "no hay intersección entre la imagen landsat y la caja de recorte"
 
 msgid "Size Class #"
-msgstr "Clase de tamaño"
+msgstr "Clase de tamaño #"
 
 msgid "Laser Trans. Sensor"
 msgstr "Sensor de trans. de láser"
@@ -1737,10 +1737,10 @@ msgid "Beam-C [1/m]"
 msgstr "Haz-C [1/m]"
 
 msgid "data file must hold at least 42 space-separated columns"
-msgstr "data file must hold at least 42 space-separated columns"
+msgstr "el archivo de datos debe contener al menos 42 columnas separadas por espacios"
 
 msgid "data file has more than 42 columns; only first 42 are used"
-msgstr "data file has more than 42 columns; only first 42 are used"
+msgstr "el archivo de datos tiene más de 42 columnas; sólo se usan las primeras 42"
 
 msgid "lobo"
 msgstr "lobo"
