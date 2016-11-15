@@ -1411,49 +1411,49 @@ msgstr ""
 " ylim especifica un intervalo positivo"
 
 msgid "length(xtype) must match number of levels in the CTD object"
-msgstr "length(xtype) must match number of levels in the CTD object"
+msgstr "length(xtype) debe de coincidir con el número de niveles en el objeto CTD"
 
 msgid "argument 'add' is ignored for xtype=\"density+time\""
-msgstr "argument 'add' is ignored for xtype=\"density+time\""
+msgstr "el argumento 'add' se ignora para xtype=\"density+time\""
 
 msgid "argument 'add' is ignored for xtype=\"density+dpdt\""
-msgstr "argument 'add' is ignored for xtype=\"density+dpdt\""
+msgstr "el argumento 'add' se ignora para xtype=\"density+dpdt\""
 
 msgid "no"
 msgstr "no"
 
 msgid "in this station"
-msgstr "in this station"
+msgstr "en ésta estación"
 
 msgid "all"
-msgstr "all"
+msgstr "todos"
 
 msgid "values in this station are NA"
-msgstr "values in this station are NA"
+msgstr "los valores en ésta estación son NA"
 
 msgid "no valid sigma-theta data"
-msgstr ""
+msgstr "no hay datos válidos para sigma-theta"
 
 msgid "no valid N2 data"
-msgstr ""
+msgstr "no hay datos válidos para N2"
 
 msgid "argument 'add' is ignored for xtype=\"salinity+temperature\""
-msgstr "argument 'add' is ignored for xtype=\"salinity+temperature\""
+msgstr "el argumento 'add' se ignora para xtype=\"salinity+temperature\""
 
 msgid "unknown xtype value (\""
-msgstr "unknown xtype value (\""
+msgstr "valor xtype desconocido (\""
 
 msgid "\")"
 msgstr "\")"
 
 msgid "file is too short; must have more than 2 lines"
-msgstr "file is too short; must have more than 2 lines"
+msgstr "el archivo es demasiado corto; debe tener más de 2 líneas"
 
 msgid "can only handle 'profile' data type, not (presumably) SAMI type"
-msgstr "can only handle 'profile' data type, not (presumably) SAMI type"
+msgstr "puedo manejar solamente tipo de datos 'profile', no (presumiblemente) tipo SAMI"
 
 msgid "type must be SBE19 or WOCE, not"
-msgstr "type must be SBE19 or WOCE, not"
+msgstr "el tipo debe de ser SBE19 o WOCE, no"
 
 #, fuzzy
 msgid ""
@@ -1469,64 +1469,65 @@ msgid "value of 'p' must be numeric, or \"levitus\""
 msgstr "'x' must be numeric or character"
 
 msgid "must install.packages(\"ncdf4\") to read drifter data"
-msgstr ""
+msgstr "para leer datos de arrastre debe correrse antes install.packages(\"ncdf4\")"
 
 msgid "must give time"
-msgstr "must give time"
+msgstr "debe indicar tiempo"
 
 msgid "must give longitude"
-msgstr "must give longitude"
+msgstr "debe indicar coord. de longitud"
 
 msgid "must give latitude"
-msgstr "must give latitude"
+msgstr "debe indicar coord. de latitud"
 
 msgid "must give temperature"
-msgstr "must give temperature"
+msgstr "debe indicar temperatura"
 
 msgid "must give salinity"
-msgstr "must give salinity"
+msgstr "debe indicar salinidad"
 
 msgid "drifter"
-msgstr "drifter"
+msgstr "arrastre"
 
 msgid "no non-missing salinity data"
-msgstr "no non-missing salinity data"
+msgstr "no hay datos de salinidad válidos (non-missing)"
 
 msgid "no non-missing temperature data"
-msgstr "no non-missing temperature data"
+msgstr "no hay datos de temperatura válidos (non-missing)"
 
 msgid "plot.difter() given unknown value of which="
-msgstr "plot.difter() given unknown value of which="
+msgstr "plot.difter() indica un valor desconocido de which="
 
 msgid "can only subset an echosounder object by 'time' or 'depth'"
-msgstr "can only subset an echosounder object by 'time' or 'depth'"
+msgstr "solamente puedo tomar subconjuntos de un objeto echosounder por 'time' o 'depth'"
 
 msgid "plot.echosounder() cannot plot, because @data$time has zero length"
-msgstr "plot.echosounder() cannot plot, because @data$time has zero length"
+msgstr "plot.echosounder() no puede dibujar el gráfico, porque @data$time tiene longitud cero"
 
 msgid "length of 'newx' must match that of time within the object"
-msgstr "length of 'newx' must match that of time within the object"
+msgstr "la longitud de la columna 'newx' debe coincidir con la del tiempo dentro del objeto"
 
 msgid "unknown 'tuple' 0x"
-msgstr "unknown 'tuple' 0x"
+msgstr "'tuple' 0x desconocida"
 
 msgid "Biosonics file of type 'V2' detected ... errors may crop up"
-msgstr "Biosonics file of type 'V2' detected ... errors may crop up"
+msgstr "Detectado un archivo Biosonics de tipo 'V2' ... pueden surgir errores"
 
 msgid "Biosonics file of type 'V1' detected ... errors may crop up"
-msgstr "Biosonics file of type 'V1' detected ... errors may crop up"
+msgstr "Detectado un archivo Biosonics de tipo 'V1' ... pueden surgir errores"
 
 msgid "error reading tuple number"
-msgstr "error reading tuple number"
+msgstr "error leyendo número de tupla"
 
 msgid "(mismatch in redundant header-length flags)"
-msgstr "(mismatch in redundant header-length flags)"
+msgstr "(discordancia en flags header-length redundantes)"
+# temptative
 
 msgid ""
 "method is only for gps objects, or lists that contain 'latitude' and "
 "'longitude'"
 msgstr ""
-"method is only for gps objects, or lists that contain 'latitude' and "
+"el método es exclusivo de objetos gps, o listas que contienen 'latitude' y "
 "'longitude'"
 
 msgid "cannot supply 'xlim'; use 'clongitude' and 'span' instead"
