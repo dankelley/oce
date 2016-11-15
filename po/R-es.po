@@ -2754,39 +2754,39 @@ msgid "unknown value of type"
 msgstr "valor de tipo desconocido"
 
 msgid "no 'z' matrix specified"
-msgstr "no 'z' matrix specified"
+msgstr "no se especificó la matríz 'z'"
 
 msgid "'x' is not an oce object"
-msgstr "'x' is not an oce object"
+msgstr "'x' no es un objeto oce"
 
 msgid ", respectively"
-msgstr ", respectively"
+msgstr ", respectivamente"
 
 msgid "deriv must be 0 or 1"
-msgstr "deriv must be 0 or 1"
+msgstr "deriv debe ser 0 o 1"
 
 msgid "\" in this sealevel object"
-msgstr "\" in this sealevel object"
+msgstr "\" en este objeto sealevel"
 
 msgid "must supply sealevel height, elevation, in metres"
-msgstr "must supply sealevel height, elevation, in metres"
+msgstr "deben indicarse altura del nivel del mar, elevación, en metros"
 
 msgid "Station"
 msgstr "Estación"
 
 msgid "sealevel"
-msgstr ""
+msgstr "nivel del mar"
 
 msgid ""
-"cannot draw sealevel spectum, because the series contains missing values"
+"cannot draw sealevel spectrum, because the series contains missing values"
 msgstr ""
-"cannot draw sealevel spectum, because the series contains missing values"
+"no puedo dibujar espectro de nivel del mar, porque la serie contiene valores ausentes"
 
 msgid "unrecognized value of which:"
-msgstr "unrecognized value of which:"
+msgstr "valor no reconocido de which:"
 
 msgid "require units to be 'mm' or 'MM', not '"
-msgstr "require units to be 'mm' or 'MM', not '"
+msgstr "require que las unidades sean 'mm' o 'MM', no '"
 
 msgid "non-alternating day portions on data line"
 msgstr "non-alternating day portions on data line"
