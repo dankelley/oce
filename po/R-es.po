@@ -2614,47 +2614,47 @@ msgid "must not have any NA values in xout"
 msgstr "no puede haber ningún valor NA en xout"
 
 msgid "lengths of x and y must match, but they are"
-msgstr "lengths of x and y must match, but they are"
+msgstr "los tamaños de x e y deben coincidir, pero son"
 
 msgid "lengths of x and u must match, but they are"
-msgstr "lengths of x and u must match, but they are"
+msgstr "los tamaños de x y u deben coincidir, pero son"
 
 msgid "lenghts of x and v must match, but they are"
-msgstr "lenghts of x and v must match, but they are"
+msgstr "los tamaños de x y v deben coincidir, pero son"
 
 #, fuzzy
 msgid "x cannot be a function"
 msgstr "'FUN' must be a function"
 
 msgid "'xlim' must be of length 2"
-msgstr "'xlim' must be of length 2"
+msgstr "'xlim' debe tener largo 2"
 
 msgid "the elements of xlim must be in order"
-msgstr "the elements of xlim must be in order"
+msgstr "los elementos de xlim deben estar en órden"
 
 msgid "cannot evaluate adorn {"
-msgstr "cannot evaluate adorn {"
+msgstr "no puedo evaluar adorn {"
 
 msgid "}"
 msgstr "}"
 
 msgid "The string \""
-msgstr "The string \""
+msgstr "La cadena \""
 
 msgid "\" is not in a known date format"
-msgstr "\" is not in a known date format"
+msgstr "\" no está en un formato de fecha conocido"
 
 msgid "do not know how to convert '%s' to class \"POSIXlt\""
-msgstr "do not know how to convert '%s' to class \"POSIXlt\""
+msgstr "no sé como convertir '%s' a clase \"POSIXlt\""
 
 msgid "must supply a 'value' for this 'item'"
-msgstr "must supply a 'value' for this 'item'"
+msgstr "debe indicar un 'value' para este 'item'"
 
 msgid "do not know how to handle this item"
-msgstr "do not know how to handle this item"
+msgstr "no sé como manejar este elemento"
 
 msgid "cannot find that item"
-msgstr "cannot find that item"
+msgstr "no puedo encontrar ese elemento"
 
 msgid "do not know how to handle this item, named \""
 msgstr "do not know how to handle this item, named \""
