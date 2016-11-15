@@ -731,28 +731,29 @@ msgid ""
 "need at least 2 velocity-system-data chunks to determine the timing; try "
 "increasing the difference between 'from' and 'to'"
 msgstr ""
-"para poder determinar el timing se necesitan al menos 2 fragmentos velocity-system-data; "
-"intente incrementar la diferencia entre 'from' y 'to'"
+"para poder determinar el sincronizado se necesitan al menos 2 fragmentos de datos"
+" velocity-system-data; intente incrementar la diferencia entre 'from' y 'to'"
+# chek that timing is not equal to chronometer here
 
 msgid "no data in specified range from="
-msgstr "no hay datos en el rango especificado from="
-# if from is not a variable name that must remain unchanged, "no hay datos en el rango especificado desde="
+msgstr "no hay datos en el rango especificado desde="
+# if from is a variable name should remain unchanged, I assume that it is not.
 
 msgid ""
 "must supply start, a POSIXct time (or suitable string for time, in UTC) at "
 "which the first observation was made"
 msgstr ""
-"debe proporcionar start, un tiempo POSIXct (o una cadena adecuada para representar "
-" tiempo, en UTC) en el cual se hizo la primera observación"
+"debe proporcionar start, un tiempo POSIXct (o una cadena adecuada para "
+" representar tiempo, en UTC) en el cual se hizo la primera observación"
 
 msgid "'start' must be a string, or a POSIXt time"
 msgstr "'start' debe de ser una cadena o un tiempo POSIXt"
 
 msgid "must supply deltat, the number of seconds between observations"
-msgstr "se debe proporcionar deltat, el número de segundos entre observaciones"
+msgstr "se debe proporcionar deltat, el núm. de segundos entre observaciones"
 
 msgid "length of 'file' must equal length of 'start', but they are"
-msgstr "la longitud de 'file' debe igualar a la de 'start', pero son"
+msgstr "la longitud de la columna 'file' debe igualar a la de la columna 'start', pero son"
 
 msgid "and"
 msgstr "y"
@@ -763,15 +764,17 @@ msgstr "respectivamente"
 msgid ""
 "cannot infer coordinate system, etc., since header=FALSE; see documentation."
 msgstr ""
-"no puedo inferir el sistema de coordenadas, etc., ya que header=FALSE; véase la documentation."
+"no puedo inferir el sistema de coordenadas, etc., ya que header=FALSE; "
+"véase la documentation."
 
 msgid ""
 "sontek adv in serial format lacks heading, pitch and roll: user must fill in"
 msgstr ""
-"el sontek adv en formato serie carece de heading, pitch y roll: El usuario debe rellenarlos"
+"el sontek adv en formato serie carece de rumbo (heading), inclinación (pitch)"
+" y balanceo (roll): El usuario debe rellenarlos"
 
 msgid "cannot handle data files for ADV files that lack compass data"
-msgstr "no se pueden manejar archivos de datos para archivos ADV que "
+msgstr "no puedo manejar archivos de datos para archivos ADV que "
 "carecen de datos de compás"
 
 msgid "cannot handle data files for ADV files that lack thermometer data"
@@ -779,25 +782,26 @@ msgstr "no puedo manejar archivos de datos para archivos ADV que "
 "carecen de datos de termómetro"
 
 msgid "cannot handle data files for ADV files that lack pressure data"
-msgstr "no puedo manejar archivos de datos para archivos ADV sin datos sobre la presión"
+msgstr "no puedo manejar archivos de datos para archivos ADV "
+"que no tienen datos de presión"
 
 msgid "number of beams should be 3, but it is"
-msgstr "el número de beams debe de ser 3, pero es"
+msgstr "el número de haces de barrido debe de ser 3, pero es"
 
 msgid "... reseting to 3"
 msgstr "... reseteando a 3"
 
 msgid "first byte of deploymentParameters header should be 0x12 but it is 0x"
-msgstr "el primer byte del encabezado deploymentParameters debería ser 0x12, pero es 0x"
+msgstr "el primer byte del encabezado 'deploymentParameters' debería "
+"ser 0x12, pero es 0x"
 
 msgid "first byte of deploymentParameters header should be 0x01 but it is 0x"
-msgstr "el primer byte del encabezado deploymentParameters debería ser 0x01, pero es 0x"
-# repeated messageid with two different answers for the same question, 
-# could be "the second byte of..." here instead first?
+msgstr "el primer byte del encabezado 'deploymentParameters' debería "
+"ser 0x01, pero es 0x"
+# I assume that this msg is duplicated intentionatelly for different machines
 
 msgid "cannot handle beam coordinates"
-msgstr "no puedo manejar coordenadas beam"
-# A better translation for beam in this context is needed
+msgstr "no puedo manejar coordenadas del haz de barrido"
 
 msgid "ignoring non-zero items 2 and/or 3 of samplingRate vector"
 msgstr "ignorando elementos non-zero 2 y/o 3 del vector samplingRate"
