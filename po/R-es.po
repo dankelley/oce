@@ -191,14 +191,14 @@ msgid ""
 "This instrument is not a Nortek Aquadopp, so mode=\"diagnostic\" is being "
 "ignored"
 msgstr ""
-"Este instrumento no es un Nortek Aquadopp, por lo que mode=\"diagnostic\" será ignorado."
+"Este instrumento no es un Nortek Aquadopp, se ignorará el mode=\"diagnostic\"."
 
 msgid ""
 "This instrument seems to be a Nortek Aquadopp, but it has more than 1 cell, "
 "so it must not be; so mode=\"diagnostic\" is being ignored"
 msgstr ""
 "Este instrumento aparenta ser un Nortek Aquadopp, pero tiene más de una célda, "
-"por lo que no puede serlo; por tanto mode=\"diagnostic\" será ignorado."
+"por lo que no puede serlo; por tanto se ignorará el mode=\"diagnostic\"."
 
 msgid ""
 "This instrument did not record Diagnostic data, so mode=\"diagnostic\" is "
@@ -1223,89 +1223,89 @@ msgid ""
 "the latlim argument is deprecated; should instead specify clongitude, "
 "clatitude, and span"
 msgstr ""
-"the latlim argument is deprecated; should instead specify clongitude, "
-"clatitude, and span"
+"el argumento latlim está obsoleto; debería especificar clongitude, "
+"clatitude, y span en su lugar"
 
 msgid ""
 "the lonlim argument is deprecated; should instead specify clongitude, "
 "clatitude, and span"
 msgstr ""
-"the lonlim argument is deprecated; should instead specify clongitude, "
-"clatitude, and span"
+"el argumento lonlim está obsoleto; debería especificar clongitude, "
+"clatitude, y span en su lugar"
 
 msgid "plot.ctd(): unknown plot type requested"
-msgstr "plot.ctd(): unknown plot type requested"
+msgstr "plot.ctd(): el tipo de gráfico solicitado es desconocido"
 
 msgid ""
 "CTD plots will have better coastlines after doing install.packages(\"ocedata"
 "\")"
 msgstr ""
-"CTD plots will have better coastlines after doing install.packages(\"ocedata"
-"\")"
+"los gráficos CTD presentarán mejores líneas de costa tras lanzar el comando "
+"install.packages(\"ocedata\")"
 
 msgid "unknown value of which,"
-msgstr "unknown value of which,"
+msgstr "valor desconocido de which,"
 
 msgid "length mismatch.  '"
-msgstr "length mismatch.  '"
+msgstr "longitud no coincide.  '"
 
 msgid "' has length"
-msgstr "' has length"
+msgstr "' tiene longitud"
 
 msgid "but pressure has length"
-msgstr "but pressure has length"
+msgstr "pero la presión tiene longitud"
 
 msgid "length mismatch.  'salinity' has length"
-msgstr "length mismatch.  'salinity' has length"
+msgstr "longitud no coincide.  'salinity' tiene longitud"
 
 msgid "but 'temperature' has length"
-msgstr "but 'temperature' has length"
+msgstr "pero 'temperature' tiene longitud"
 
 msgid "Cannot discover type in line '"
-msgstr "Cannot discover type in line '"
+msgstr "No puede descubrirse el tipo en línea '"
 
 #, fuzzy
 msgid "type must be SBE19, WOCE, ODF, ODV, or ITP, not"
-msgstr "type must be SBE19, WOCE, ODF, or ITP, not"
+msgstr "el tipo debe ser SBE19, WOCE, ODF, o ITP, no"
 
 msgid "cannot decode the header in this CTD file"
-msgstr "cannot decode the header in this CTD file"
+msgstr "no se puede decodificar el encabezado en éste archivo CTD"
 
 msgid "cannot find pressure column in list c(\""
-msgstr "cannot find pressure column in list c(\""
+msgstr "no se encuentra la columna de presión en la lista c(\""
 
 msgid "\",\""
 msgstr "\",\""
 
 msgid "\"); need 'DB' or 'CTDPRS'"
-msgstr "\"); need 'DB' or 'CTDPRS'"
+msgstr "\"); necesita 'DB' o 'CTDPRS'"
 
 msgid "cannot find salinity column in list c(\""
-msgstr "cannot find salinity column in list c(\""
+msgstr "no se encuentra la columna de salinidad en la lista c(\""
 
 msgid "\"); need 'CTDSAL' or 'SALNTY'"
-msgstr "\"); need 'CTDSAL' or 'SALNTY'"
+msgstr "\"); necesita 'CTDSAL' o 'SALNTY'"
 
 msgid "cannot find salinity-flag column in list c(\""
-msgstr "cannot find salinity-flag column in list c(\""
+msgstr "no se puede encontrar la columna salinity-flag en la lista c(\""
 
 msgid "\"); need 'CTDSAL_FLAG_W' or 'SALNTY_FLAG_W'"
-msgstr "\"); need 'CTDSAL_FLAG_W' or 'SALNTY_FLAG_W'"
+msgstr "\"); necesita 'CTDSAL_FLAG_W' o 'SALNTY_FLAG_W'"
 
 msgid "cannot find temperature column in list"
-msgstr "cannot find temperature column in list"
+msgstr "no se encuentra la columna de temperatura en la lista"
 
 msgid "'columns' must contain 'temperature'"
-msgstr "'columns' must contain 'temperature'"
+msgstr "'columns' debe contener 'temperature'"
 
 msgid "'columns' must contain 'pressure'"
-msgstr "'columns' must contain 'pressure'"
+msgstr "'columns' debe contener 'pressure'"
 
 msgid "'columns' must contain 'salinity'"
-msgstr "'columns' must contain 'salinity'"
+msgstr "'columns' debe contener 'salinity'"
 
 msgid "'columns' must contain three or more elements"
-msgstr "'columns' must contain three or more elements"
+msgstr "'columns' debe contener tres o más elementos"
 
 msgid "ignoring unit on water depth '"
 msgstr "ignoring unit on water depth '"
