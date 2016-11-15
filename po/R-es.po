@@ -2446,23 +2446,25 @@ msgid "decimate(ctd) not working yet ... just returning the ctd unchanged"
 msgstr "decimate(ctd) aun no funciona ... devolviendo simplemente el ctd inalterado"
 
 msgid "cannot (yet) filter ctd data during decimation"
-msgstr "cannot (yet) filter ctd data during decimation"
+msgstr "no puedo filtrar (aun) los datos ctd durante decimation"
+# meaning of decimation? untranslated.
 
 msgid "decimate(pt) not working yet ... just returning the pt unchanged"
-msgstr "decimate(pt) not working yet ... just returning the pt unchanged"
+msgstr "decimate(pt) aun no funciona ... devolviendo simplemente el pt inalterado"
 
 msgid "cannot (yet) filter pt data during decimation"
-msgstr "cannot (yet) filter pt data during decimation"
+msgstr "no puedo filtrar (aun) los datos pt durante decimation"
+# decimation untranslated
 
 msgid ""
 "length(by) must equal 2.  First element is width of boxcar in pings, second "
 "is width in depths"
 msgstr ""
-"length(by) must equal 2.  First element is width of boxcar in pings, second "
-"is width in depths"
+"length(by) debe ser igual a 2.  El primer elemento es ancho de boxcar en pings, el segundo "
+"es el ancho en profundidades"
 
 msgid "decimation does not work (yet) for objects of class"
-msgstr "decimation does not work (yet) for objects of class"
+msgstr "decimation no funciona (aun) para objetos de clase"
 
 msgid "cannot smooth ADP objects (feel free to request this from the author)"
 msgstr "cannot smooth ADP objects (feel free to request this from the author)"
