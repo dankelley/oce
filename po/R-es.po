@@ -26,7 +26,7 @@ msgid "object"
 msgstr "objeto"
 
 msgid "method is only for oce objects"
-msgstr "El método es sólo para objetos de clase oce"
+msgstr "método exclusivo para objetos de clase oce"
 
 msgid "must supply 'x'"
 msgstr "debe proporcionar 'x'"
@@ -38,13 +38,13 @@ msgid "'"
 msgstr "'"
 
 msgid "' not in object's metadata or data$station[[1]]@data"
-msgstr "' no en los metadata del objeto o data$station[[1]]@data"
+msgstr "' no está en los metadatos del objeto ni en data$station[[1]]@data"
 
 msgid "' not in object"
-msgstr "' no en el objeto"
+msgstr "' no está en el objeto"
 
 msgid "cannot determine time to which to interpolate"
-msgstr "no se puede determinar tiempo en el que interpolar"
+msgstr "no se puede determinar tiempo al cual interpolar"
 
 msgid "only works for 'adv' and 'adp' objects"
 msgstr "sólo funciona para objetos de tipo 'adv' y 'adp'"
@@ -56,10 +56,10 @@ msgid "object has no item named 'data$pitch' or 'data$pitchSlow'"
 msgstr "el objeto no tiene un elemento llamado 'data$pitch' o 'data$pitchSlow'"
 
 msgid "no 'latitude' in names(x@data) or names(x@metadata)"
-msgstr "no 'latitude' en names(x@data) o names(x@metadata)"
+msgstr "no hay 'latitude' en names(x@data) o names(x@metadata)"
 
 msgid "no 'longitude' in names(x@data) or names(x@metadata)"
-msgstr "no 'longitude' en names(x@data) o names(x@metadata)"
+msgstr "no hay 'longitude' en names(x@data) o names(x@metadata)"
 
 msgid "no item 'data$latitude$ or 'metadata$latitude' in object"
 msgstr "no hay un elemento 'data$latitude$ o 'metadata$latitude' en el objeto"
