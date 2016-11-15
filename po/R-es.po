@@ -804,16 +804,16 @@ msgid "cannot handle beam coordinates"
 msgstr "no puedo manejar coordenadas del haz de barrido"
 
 msgid "ignoring non-zero items 2 and/or 3 of samplingRate vector"
-msgstr "ignorando elementos non-zero 2 y/o 3 del vector samplingRate"
+msgstr "ignorando non-zero elementos 2 y/o 3 del vector samplingRate"
 
 msgid "samplingRate must be a positive integer, but got"
 msgstr "samplingRate debe de ser un entero positivo, pero se obtuvo"
 
 msgid "ignoring non-zero items 2 and/or 3 in burstInterval vector"
-msgstr "ignorando elementos non-zero 2 y/o 3 en el vector burstInterval"
+msgstr "ignorando non-zero elementos 2 y/o 3 en el vector burstInterval"
 
 msgid "ignoring non-zero items 2 and/or 3 in samplesPerBurst vector"
-msgstr "ignorando elementos non-zero 2 y/o 3 en el vector samplesPerBurst"
+msgstr "ignorando non-zero elementos 2 y/o 3 en el vector samplesPerBurst"
 
 msgid "samplesPerBurst must be a positive integer, but got"
 msgstr "samplesPerBurst debe de ser un entero positivo, pero se obtuvo"
@@ -831,7 +831,7 @@ msgid ""
 "something is wrong with the data.  Perhaps the record length is not the "
 "assumed value of"
 msgstr ""
-"algo está mal en los datos.  Quizás la longitud de registro no corresponde "
+"algo está mal en los datos.  Quizás el tamaño del registro no corresponde "
 "al valor asumido de"
 
 msgid "some times are NA; this is an internal coding error"
@@ -840,7 +840,8 @@ msgstr "algunos tiempos son NA; este es un código interno de error"
 msgid ""
 "got negative numbers in iii, which indicates a coding problem; range(iii)="
 msgstr ""
-"se obtuvieron números negativos para iii, lo que indica un problema de programación; rango(iii)="
+"se obtuvieron números negativos para iii, lo que indica un problema "
+"de programación; rango(iii)="
 
 msgid "to"
 msgstr "a"
@@ -850,7 +851,6 @@ msgstr "debe tener \"by\"=1, en esta versión del paquete"
 
 msgid "need to supply a basefile, e.g. \"A\" to read \"A.hd1\" and \"A.ts1\""
 msgstr "se necesita aportar un archivo base, e.g. \"A\" para leer \"A.hd1\" y \"A.ts1\""
-# check a better replacement for basefile
 
 msgid "no data in this time interval, starting at time"
 msgstr "no hay datos en éste intervalo de tiempo, empezando en el tiempo"
@@ -860,10 +860,9 @@ msgstr "se debe aportar \"to\""
 
 msgid "argument `tsFile' must be a character string or connection"
 msgstr "el argumento `tsFile' debe de ser una cadena de caracteres o una conexión"
-# check that this is not "a caracter, string or ..." with a missing comma
 
 msgid "need equal line lengths in"
-msgstr "precisa longitudes de línea iguales en"
+msgstr "precisa líneas de igual longitud en"
 
 msgid "file \"."
 msgstr "archivo \"."
@@ -897,13 +896,13 @@ msgid "cm"
 msgstr "cm"
 
 msgid "must provide longitude"
-msgstr "se debe de proporcionar la coordenada longitud"
+msgstr "se deben proporcionar las coordenadas de longitud"
 
 msgid "must provide latitude"
-msgstr "se debe proporcionar la coordenada latitud"
+msgstr "se deben proporcionar las coordenadas de latitud"
 
 msgid "Lengths of longitude and latitude must be equal"
-msgstr "Las extensiones de longitud y latitud deben de ser iguales"
+msgstr "Las columnas longitud y latitud deben de ser igual de largas"
 
 msgid "argument geographical must be 0, 1, or 2"
 msgstr "el argumento geographical debe ser 0, 1, o 2"
@@ -931,7 +930,7 @@ msgid ""
 "argument 'asp' being ignored, because argument 'clatitude' and 'clongitude' "
 "were given"
 msgstr ""
-"Se ignora el argumento 'asp', ya que se han proporcionado 'clatitude' y'clongitude'"
+"Se ignora el argumento 'asp', al haberse proporcionado ya 'clatitude' y'clongitude'"
 
 msgid "'file' must be a character string or connection"
 msgstr "'file' debe ser una cadena de caracteres o una conexión"
@@ -984,13 +983,13 @@ msgid "cannot have shapeType > 31, but got"
 msgstr "no puede haber shapeType > 31, pero se obtuvo"
 
 msgid "record"
-msgstr "récord"
+msgstr "registro"
 # need more context, if as in "guinness record" = récord, 
 # if as in "annotation" = registro, 
 # if as in "camera record" =  grabación
 
 msgid "has shape type"
-msgstr "tiene forma de tipo"
+msgstr "tiene forma tipo"
 
 msgid ", which does not match file value"
 msgstr ", lo que no cuadra con el valor del archivo"
@@ -998,17 +997,17 @@ msgstr ", lo que no cuadra con el valor del archivo"
 #, fuzzy
 msgid "must give z, zlim or breaks"
 msgstr "must give time"
-# must give z, zlim or breaks = debe aportar z, zlim o número de divisiones
-# must give time = debe aportar el tiempo
+# must give z, zlim or breaks = "debe aportar z, zlim o número de divisiones"
+# must give time = "debe aportar el tiempo"
 
 msgid "must give z or zlim if length(breaks)=1"
 msgstr "Si lenght(breaks)=1 debe aportar z o zlim"
 
 msgid "cannot supply 'col' and 'colormap' at the same time"
-msgstr "no se pueden indicar 'col' y 'colormap' al mismo tiempo"
+msgstr "no pueden indicarse 'col' y 'colormap' al mismo tiempo"
 
 msgid "cannot supply 'breaks' and 'colormap' at the same time"
-msgstr "no se pueden indicar a la vez 'breaks' y 'colormap'"
+msgstr "no pueden indicarse a la vez 'breaks' y 'colormap'"
 
 #, fuzzy
 msgid "mismatched lengths of x0 and x1 ("
@@ -1027,7 +1026,7 @@ msgstr "se debe proporcionar 'file' o bien 'text'"
 
 #, fuzzy
 msgid "cannot decode \"F\" from \""
-msgstr "cannot decode latitude or longitude from \""
+msgstr "no puedo decodificar latitude o longitude from \""
 
 #, fuzzy
 msgid "cannot decode \"B\" from \""
@@ -1060,7 +1059,7 @@ msgid ""
 "must give \"breaks\" or \"name\", or each of \"x0\", \"x1\", \"col0\", and "
 "\"col1\""
 msgstr ""
-"debe proporcionar \"breaks\" o \"name\", o cada uno de \"x0\", \"x1\", \"col0\", y "
+"debe proporcionar bien \"breaks\" o \"name\", o bien cada uno de \"x0\", \"x1\", \"col0\", y "
 "\"col1\""
 
 msgid "give either \"name\" or each of \"x0\", \"x1\", \"col0\", and "
@@ -1086,11 +1085,10 @@ msgstr "nombre de paleta de color desconocido \""
 # temptative
 
 msgid "' is not a recognized value for 'palette'"
-msgstr ""
+msgstr "' no es un valor reconocible para 'palette'"
 
 msgid "TEOS-10 calculation assuming lat=0 lon=300, because location is unknown"
-msgstr ""
-"cálculo de TEOS-10 asumiendo lat=0 lon=300, puesto que localidad es desconocida"
+msgstr "puesto que la localidad es desconocida, calculamos TEOS-10 asumiendo lat=0 lon=300"
 
 msgid "in ctd[[\""
 msgstr "en ctd[[\""
@@ -1110,17 +1108,17 @@ msgid "must give pressure"
 msgstr "se debe indicar la presión"
 
 msgid "SA and CT must both be supplied, if either is"
-msgstr "ambas, SA y CT deben de ser aportadas, si alguna de ellas lo es"
+msgstr "ambas, SA y CT, deben de ser aportadas si alguna de ellas lo es"
 
 msgid "lengths of SA and CT must match"
-msgstr "las longitudes de SA y CT deben coincidir"
+msgstr "las longitudes de las columnas para SA y CT deben coincidir"
 
 msgid "longitude and latitude set to default values, since none given"
-msgstr "longitud y latitud se establecen a valores por defecto, puesto que no se indicó ninguno"
+msgstr "al no indicar ninguna, longitud y latitud se establecen a valores por defecto"
 
 msgid "'other' item number"
 msgstr "'other' número de elementos"
-# temptative. lack context.
+# temptative, lack context
 
 msgid "has no name"
 msgstr "no tiene nombre"
@@ -1135,7 +1133,7 @@ msgid "data but it must have"
 msgstr "datos pero debe tener"
 
 msgid "data to match existing object"
-msgstr "datos para match objeto existente"
+msgstr "datos para coincidir con el objeto existente"
 
 msgid "must supply \"name\""
 msgstr "debe aportarse \"name\""
@@ -1144,7 +1142,7 @@ msgid "unknown method \""
 msgstr "método desconocido \""
 
 msgid "ctd"
-msgstr ""
+msgstr "sonda ctd"
 
 msgid "too few data to ctdDecimate()"
 msgstr "muy pocos datos para ctdDecimate()"
@@ -1162,26 +1160,26 @@ msgid ""
 "for method=\"index\", need length(parameters) to match number of pressure "
 "values"
 msgstr ""
-"for method=\"index\", need length(parameters) to match number of pressure "
-"values"
+"para method=\"index\", se necesita que length(parameters) coincida con "
+"el número de valores de presión"
 
 msgid "Cannot select indices < 1"
 msgstr "No pueden seleccionarse índices < 1"
 
 msgid "Cannot select past end of array, i.e. past"
-msgstr "Cannot select past end of array, i.e. past"
+msgstr "no se puede seleccionar más allá del final del array, i.e. pasado"
 
 msgid "parameter not understood for this method"
-msgstr "parameter not understood for this method"
+msgstr "parámetro no comprendido para este método"
 
 msgid "bilinear method could not converge on a solution"
-msgstr "bilinear method could not converge on a solution"
+msgstr "el método bilinear podría no converger a una solución"
 
 msgid "'parameters' must be a list containing 'item'"
-msgstr "'parameters' must be a list containing 'item'"
+msgstr "'parameters' debe de ser una lista conteniendo 'item'"
 
 msgid "x@data has no item named '"
-msgstr "x@data has no item named '"
+msgstr "x@data no tiene un elemento denominado '"
 
 msgid "'method' not recognized; must be 'index', 'downcast', or 'range'"
 msgstr "'method' not recognized; must be 'index', 'downcast', or 'range'"
