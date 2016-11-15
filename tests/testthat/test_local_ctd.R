@@ -18,3 +18,27 @@ test_that("woce", {
           }
 })
 
+## I dump files here whenever I download new data. These files
+## go back about 3 years, I think.
+test_that("various ctd files", {
+          if (1 == length(list.files(path=".", pattern="local_data"))) {
+              files <- c("77DN20020420_hy1.csv",
+                         "p10_00026_00001_ct1.csv",
+                         "sr01_l_00001_00003_ct1.csv",
+                         "p02_2004a_00175_00002_ct1.csv",
+                         "i06sb_00062_00001_ct1.csv",
+                         "a23_00043_00001_ct1.csv",
+                         "a22_00025_00001_ct1.csv",
+                         "a03_3_00001_ct1.csv",
+                         "a22_2003a_00001_00001_ct1.csv",
+                         "18HU2010014_00003_00001_ct1.csv",
+                         "18HU20130507_00235_00001_ct1.csv")
+              for (file in files) {
+                  d <- read.oce(paste("local_data", file, sep="/"))
+                  ## summarizing and plotting can depend on the data, so try both
+                  summary(d)
+                  plot(d)
+              }
+          }
+})
+
