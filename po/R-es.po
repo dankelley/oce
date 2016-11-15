@@ -2883,37 +2883,38 @@ msgid "cannot specify both 'file' and 'directory'"
 msgstr "no se pueden especificar a la vez 'file' y 'directory'"
 
 msgid "only type \"BOTTLE\" understood, but got header line"
-msgstr "only type \"BOTTLE\" understood, but got header line"
+msgstr "solo se entendió el tipo \"BOTTLE\", pero obtuve "
+"una línea de encabezado"
 
 msgid "length mismatch in variable lists"
-msgstr "length mismatch in variable lists"
+msgstr "diferentes tamaños en las listas de variables"
 
 msgid "no column named \"CTDPRS\""
-msgstr "no column named \"CTDPRS\""
+msgstr "no hay una columna denominada \"CTDPRS\""
 
 msgid "no column named \"CTDTMP\""
-msgstr "no column named \"CTDTMP\""
+msgstr "no hay una colunna denominada \"CTDTMP\""
 
 msgid "no column named \"CTDSAL\" or \"SALNTY\"; have:"
-msgstr "no column named \"CTDSAL\" or \"SALNTY\"; have:"
+msgstr "no hay columnas denominadas \"CTDSAL\" o \"SALNTY\"; hay:"
 
 msgid "no column named \"CTDSAL_FLAG_W\" or \"SALNTY_FLAG W\"; have:"
-msgstr "no column named \"CTDSAL_FLAG_W\" or \"SALNTY_FLAG W\"; have:"
+msgstr "no hay columnas denominadas \"CTDSAL_FLAG_W\" o \"SALNTY_FLAG W\"; hay:"
 
 msgid "no column named \"DATE\""
-msgstr "no column named \"DATE\""
+msgstr "no hay una columna denominada \"DATE\""
 
 msgid "no column named \"TIME\""
-msgstr "no column named \"TIME\""
+msgstr "no hay una columna denominada \"TIME\""
 
 msgid "cannot determine nitrate and nitrite"
-msgstr "cannot determine nitrate and nitrite"
+msgstr "no puedo determinar nitrato y nitrito"
 
 msgid "station"
-msgstr "station"
+msgstr "estación"
 
 msgid "has no data"
-msgstr "has no data"
+msgstr "no tiene datos"
 
 msgid "p must be numeric"
 msgstr "p must be numeric"
