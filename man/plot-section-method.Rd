@@ -139,7 +139,7 @@ at the bottom.}
 \code{getOption("oceMgp")}.}
 
 \item{mar}{Value to be used with \code{\link{par}("mar")}. If not provided,
-this is computed as \code{c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2]+0.5)}.}
+a default is set up.}
 
 \item{col}{Colour, which defaults to \code{\link{par}("col")}.}
 

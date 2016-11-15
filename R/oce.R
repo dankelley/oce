@@ -1335,13 +1335,13 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         }
         if (length(grep(".csv$", filename, ignore.case=TRUE))) {
             someLines <- readLines(filename, 30)
-            if (1 == length(grep("WMO Identifier", someLines, useBytes=TRUE))) {
+            if (1 == length(grep("^WMO Identifier", someLines, useBytes=TRUE))) {
                 return("met") # FIXME: may be other things too ...
-            } else if (1 == length(grep("Station_Name,", someLines, useBytes=TRUE))) {
+            } else if (1 == length(grep("^Station_Name,", someLines, useBytes=TRUE))) {
                 return("sealevel")
-            } else if (1 == length(grep("CTD,", someLines, useBytes=TRUE))) {
+            } else if (1 == length(grep("^CTD,", someLines, useBytes=TRUE))) {
                 return("ctd/woce/exchange")
-            } else if (1 == length(grep("BOTTLE,", someLines, useBytes=TRUE))) {
+            } else if (1 == length(grep("^BOTTLE,", someLines, useBytes=TRUE))) {
                 return("section")
             } else {
                 return("unknown")

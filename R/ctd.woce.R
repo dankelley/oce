@@ -298,11 +298,12 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
                 stop("cannot find salinity column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL' or 'SALNTY'")
         }
         ## FIXME: use these flags ... they are ignored at present.
-        Sflagcol <- pmatch("CTDSAL_FLAG_W", varNames)
+        Sflagcol <- pmatch("CTDSAL_FLAG", varNames)
         if (is.na(Sflagcol)) {
-            Sflagcol <- pmatch("SALNTY_FLAG_W", varNames)
+            Sflagcol <- pmatch("SALNTY_FLAG", varNames)
+            browser()
             if (is.na(Sflagcol))
-                stop("cannot find salinity-flag column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL_FLAG_W' or 'SALNTY_FLAG_W'")
+                stop("cannot find salinity-flag column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL_FLAG...' or 'SALNTY_FLAG...'")
         }
         Tcol <- pmatch("CTDTMP", varNames)
         if (is.na(Tcol))

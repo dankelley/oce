@@ -36,4 +36,9 @@ cp ~/src/rgdal/branches/rgdal_iconv/inst/vectors/test_trk2.gpx .
 # ftp://ftp.whoi.edu/whoinet/itpdata/itp99grddata.zip
 cp  ~/Downloads/itp99grddata/itp99grd0000.dat  .
 
+
+# CTD
+
+18HU2010014_00003_00001_ct1.csv is from https://cchdo.ucsd.edu/data/9837/18HU20100513_ct1.zip
+
 ```

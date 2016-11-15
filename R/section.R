@@ -949,7 +949,7 @@ sectionAddCtd <- sectionAddStation
 #' \code{getOption("oceMgp")}.
 #' 
 #' @param mar Value to be used with \code{\link{par}("mar")}. If not provided,
-#' this is computed as \code{c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2]+0.5)}.
+#' a default is set up.
 #' 
 #' @param col Colour, which defaults to \code{\link{par}("col")}.
 #' 
@@ -1060,7 +1060,7 @@ setMethod(f="plot",
               if (missing(mgp))
                   mgp <- getOption("oceMgp")
               if (missing(mar))
-                  mar <- c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2]+0.5)
+                  mar <- c(mgp[1]+1, mgp[1]+1.5, mgp[2]+1, mgp[2]+0.5)
               if (missing(col))
                   col <- par("col")
               if (missing(cex))
@@ -1074,6 +1074,7 @@ setMethod(f="plot",
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
               lw <- length(which)
               whichOriginal <- which
+              oceDebug(debug, "whichOriginal=", paste(whichOriginal, collapse=" "))
               ##which <- oce.pmatch(which,
               ##                    list(temperature=1, salinity=2, 
               ##                         sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
@@ -1710,6 +1711,7 @@ setMethod(f="plot",
               } else {
                   stop("unknown ytype")
               }
+              oceDebug(debug, "yy starts:", paste(head(yy), collapse=" "))
               ##> message("CHECK(section.R:1034) yy: ", paste(round(yy), " "))
               ##> message("station 1 pressure: ", paste(x@data$station[[1]]@data$pressure, collapse=" "))
               par(mgp=mgp, mar=mar)
@@ -1752,7 +1754,7 @@ setMethod(f="plot",
                       } else {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          whichOriginal[w], whichOriginal[w], unit=unit,
-                                         eos=eos, ylab="",
+                                         eos=eos, # ylab="",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
                                          axes=axes, col=col, debug=debug-1, ...)
                       }
@@ -1775,7 +1777,7 @@ setMethod(f="plot",
                                          axes=axes, col=col, debug=debug-1, ...)
                       } else {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         which[w], which[w], eos=eos, ylab="",
+                                         which[w], which[w], eos=eos, # ylab="",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
@@ -2545,9 +2547,9 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
 #' 
 #' @description
 #' Create a section based on columnar data, or a set of \code{\link{oce-class}}
-#' objects that can be coerced to a section.
+#' objects that can be coerced to a section. There are three cases.
 #' 
-#' If the first argument is a numerical vector, then it is taken to be the
+#' Case 1. If the first argument is a numerical vector, then it is taken to be the
 #' salinity, and \code{\link{factor}} is applied to \code{station} to break the
 #' data up into chunks that are assembled into \code{\link{ctd-class}} objects with
 #' \code{\link{as.ctd}} and combined to make a \code{\link{section-class}} object
@@ -2555,17 +2557,16 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
 #' that are already partly processed; if original CTD data are available, the next
 #' mode is preferred, because it permits the storage of much more data and metadata
 #' in the CTD object.
-#' 
-#' If the first argument is a list containing oce objects, then those
+#'
+#' Case 2. If the first argument is a list containing oce objects, then those
 #' objects are taken as profiles of something.  The only requirement for this
 #' to work are that every element of the list must contain both \code{longitude}
 #' and latitude in its \code{metadata} slot and that every element also contains
 #' \code{pressure} in its \code{data} slot.
 #' 
-#' If the first argument is a \code{\link{argo-class}} object, then the profiles it
-#' contains are turned into \code{\link{ctd-class}} object, and these are assembled
+#' Case 3. If the first argument is a \code{\link{argo-class}} object, then the profiles it
+#' contains are turned into \code{\link{ctd-class}} objects, and these are assembled
 #' into a section to be returned.
-#' 
 #' 
 #' @param salinity This may be a numerical vector, in which case it is interpreted
 #' as the salinity, and the other arguments are used for the other components of
@@ -2686,18 +2687,20 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
         } else {
             stop("first argument must be a salinity vector, or a list of oce objects")
         }
-    } else if (is.character(salinity) && length(salinity) > 1) {
+    } else if (is.character(salinity)) {
         ## vector of names of CTD objects
         nstation <- length(salinity)
         ctds <- vector("list", nstation)
         for (i in 1:nstation)
             ctds[[i]] <- get(salinity[i], parent.frame())
+    } else {
+        stop("first argument is not understood")
     }
     ## In each case, we now have a vector of CTD objects.
     res@metadata$sectionId<- ""
-    res@metadata$stationId<- unlist(lapply(ctds, function(x) x[["station"]]))
-    res@metadata$longitude<- unlist(lapply(ctds, function(x) x[["longitude"]]))
-    res@metadata$latitude<- unlist(lapply(ctds, function(x) x[["latitude"]]))
+    res@metadata$stationId<- unlist(lapply(ctds, function(x) x[["station"]][1]))
+    res@metadata$longitude<- unlist(lapply(ctds, function(x) x[["longitude"]][1]))
+    res@metadata$latitude<- unlist(lapply(ctds, function(x) x[["latitude"]][1]))
     res@data <- list(station=ctds)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
