@@ -1587,23 +1587,24 @@ msgid "image width ("
 msgstr "el ancho de imágen ("
 
 msgid ") does not match length of x ("
-msgstr ") does not match length of x ("
+msgstr ") no coincide con el largo de x ("
 
 msgid "image height ("
-msgstr "image height ("
+msgstr "la altura de la imágen ("
 
 msgid ") does not match length of y ("
-msgstr ") does not match length of y ("
+msgstr ") no coincide con el largo de y ("
 
 msgid "cannot evaluate adorn='"
-msgstr "cannot evaluate adorn='"
+msgstr "no puedo evaluar adorn='"
 
 #, fuzzy
 msgid "cannot find missing-value token"
 msgstr "cannot find item named '"
 
 msgid "Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'"
-msgstr ""
+msgstr "Debe nombrar un elemento de landsat para poder recuperarlo, "
+"ej. '[[\"panchromatic\"]]'"
 
 #, fuzzy
 msgid "landsat item must be specified by name"
