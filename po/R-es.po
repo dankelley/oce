@@ -2211,28 +2211,28 @@ msgid "must provide matrix 'm'"
 msgstr "debe proporcionar la matríz 'm'"
 
 msgid "matrixSmooth given passes<=0, so returning matrix unmodified"
-msgstr "matrixSmooth given passes<=0, so returning matrix unmodified"
+msgstr "el matrixSmooth dado pasa<=0, devolviendo la matríz sin modificar por tanto"
 
 msgid "must provide \"input\""
-msgstr "must provide \"input\""
+msgstr "debe proporcionar \"input\""
 
 msgid "must provide at least one byte to match"
-msgstr "must provide at least one byte to match"
+msgstr "debe proporcionar al menos un byte que emparejar"
 
 msgid "must provide 2 or 3 bytes"
-msgstr "must provide 2 or 3 bytes"
+msgstr "debe proporcionar 2 o 3 bytes"
 
 msgid "Temperature"
 msgstr "Temperatura"
 
 msgid "Conservative Temperature"
-msgstr "temperatura conservador"
+msgstr "Temperatura Conservadora"
 
 msgid "Potential density anomaly"
-msgstr "Anomalía densidad potencial"
+msgstr "Anomalía en la densidad potencial"
 
 msgid "Potential Temperature"
-msgstr "Temperatura potencial"
+msgstr "Temperatura Potencial"
 
 msgid "Tritium"
 msgstr "Tritio"
@@ -2268,7 +2268,7 @@ msgid "PO4"
 msgstr ""
 
 msgid "Silicate"
-msgstr ""
+msgstr "Silicato"
 
 msgid "SiO4"
 msgstr ""
@@ -2307,13 +2307,13 @@ msgid "Along-track Distance"
 msgstr "Distancia a lo largo de la pista"
 
 msgid "Heading"
-msgstr "Dirección"
+msgstr "Rumbo"
 
 msgid "Pitch"
-msgstr "Brea"
+msgstr "Cabeceo"
 
 msgid "Roll"
-msgstr "rollo"
+msgstr "Balanceo"
 
 msgid "u"
 msgstr ""
@@ -2325,10 +2325,10 @@ msgid "w"
 msgstr ""
 
 msgid "Eastward"
-msgstr ""
+msgstr "Hacia el Este"
 
 msgid "Northward"
-msgstr ""
+msgstr "Hacia el Norte"
 
 msgid "Depth"
 msgstr "Profundidad"
@@ -2337,7 +2337,7 @@ msgid "Elevation"
 msgstr "Elevación"
 
 msgid "Speed"
-msgstr ""
+msgstr "Velocidad"
 
 msgid "m/s"
 msgstr ""
@@ -2358,7 +2358,7 @@ msgid "Spectral density"
 msgstr "Densidad espectral"
 
 msgid "must supply 'm'"
-msgstr "must supply 'm'"
+msgstr "debe indicar 'm'"
 
 msgid "increased filter length by 1, to make it odd"
 msgstr "increased filter length by 1, to make it odd"
