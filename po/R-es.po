@@ -373,21 +373,25 @@ msgid ""
 "using fixed cell size and blanking distance for Aquadopp, since cannot infer "
 "these from the file"
 msgstr ""
-"utilizando tamaño de celdilla fijado y blanking distance para Aquadopp, puesto "
-"que no pude inferir estos directamente del archivo"
+"utilizando distancia de borrado y tamaño fijo de celdilla para Aquadopp, puesto "
+"que no pude inferirlos directamente del archivo"
 
 msgid "unknown instrument type \""
 msgstr "tipo de instrumento desconocido \""
 
 msgid "\", so calculating cell size as though it is a 2MHz AquadoppHR"
 msgstr "\", por tanto calculando el tamaño de celdilla como si "
-"correspondiera a un 2MHz AquadoppHR"
+"correspondiera a un AquadoppHR 2MHz"
 
 msgid "cannot understand byte 0x"
 msgstr "no puedo entender el byte 0x"
 
 msgid "; expecting one of the following: 0x"
 msgstr "; esperando uno de los siguientes: 0x"
+
+# next three untranslated because they look like variable names. If this is not the case
+# a replacement could be [configuración de hardware], [configuración de cabeza] (as in "a CTD head") 
+# and [configuración de usuario] respectively
 
 msgid "[hardware configuration] 0x"
 msgstr "[hardware configuration] 0x"
@@ -399,25 +403,25 @@ msgid "[user configuration]"
 msgstr "[user configuration]"
 
 msgid "argument `file' must be a character string or connection"
-msgstr "el argumento `file' debe de ser una cadena de caracteres o conexión"
+msgstr "el argumento `file' debe de ser una cadena de caracteres o una conexión"
 
 msgid "if 'from' is POSIXt, then 'to' must be, also"
 msgstr "si 'from' es POSIXt, entonces 'to' debe serlo también"
 
 msgid "need more separation between from and to"
-msgstr "necesita una mayor separación entre from y to"
+msgstr "se necesita una mayor separación entre from y to"
 
 msgid "cannot have string for 'by' if 'from' and 'to' are integers"
-msgstr "'by' no puede tener una cadena si 'from' y 'to' son números enteros (integer)"
+msgstr "si 'from' y 'to' son de tipo num. entero, 'by' no puede ser una cadena"
 
 msgid "the argument distance is of length"
-msgstr "la distancia al argumento es de longitud"
-# please add more context to choose between "al" argumento (distance to argument), 
-# "del" argumento (distance from argument)
-# or to omite argument (distance is the argument here)
+msgstr "el argumento distancia mide"
+# Assuming that 'distance' is the argument here
+# if not would need more context to choose between 'distancia "al" argumento' (distance to argument), 
+# o 'distancia "del" argumento' (distance from argument)
 
 msgid ", which does not match the second dimension of the velocity matrix,"
-msgstr ", lo cual no coincide con la segunda dimensión de la matríz de velocidad,"
+msgstr ", lo cual no coincide con la segunda dimensión de la matríz de velocidades,"
 
 msgid "first two bytes in file must be 0x7f 0x7f, but they are 0x"
 msgstr "los primeros dos bytes en el archivo deberían de ser 0x7f 0x7f, pero son 0x"
@@ -432,13 +436,13 @@ msgid "data types, as header indicates"
 msgstr "tipos de dato, como indica el encabezado"
 
 msgid "first byte of fixed leader header must be 0x00 but it was"
-msgstr "el primer byte de fixed leader header debería de ser 0x00, pero fue"
+msgstr "el primer byte del encabezado fixed leader debería de ser 0x00, pero fue"
 
 msgid "second byte of fixed leader header must be a0x00 but it was"
-msgstr "el segundo byte de fixed leader header debería ser a0x00, pero fue"
+msgstr "el segundo byte del encabezado fixed leader debería ser a0x00, pero fue"
 
 msgid "unknown freq. bit code:"
-msgstr "freq. bit code desconocido:"
+msgstr "freq. bit code desconocida:"
 
 msgid "(expect 000 for 75kHz, 001 for 150kHz, etc)"
 msgstr "(se espera 000 para 75kHz, 001 para 150kHz, etc)"
@@ -457,10 +461,7 @@ msgid "m is not in the allowed range of 0m to 64m"
 msgstr "m no está en el rango permitido de 0-64m"
 
 msgid "unexpected length"
-msgstr "longitud inesperada "
-"(no se refiere a coordenadas sino a medida)"
-# as in other similar places, this last note is important to 
-# avoid ambiguity among longitude and length, that use the same word in spanish
+msgstr "tamaño inesperado "
 
 msgid ""
 "of fixed-leader-data header; expecting 50 for 'surveyor' or 59 for "
@@ -468,7 +469,7 @@ msgid ""
 msgstr ""
 "del encabezado fixed-leader-data; esperando 50 para 'surveyor' o 59 para "
 "'workhorse'."
-# please add context for fixed-leader-data header
+# please add context for fixed-leader
 
 msgid "byte 1 of variable leader data should be 0x80, but it is"
 msgstr "el primer byte de la variable leader data debería ser 0x80, pero es"
@@ -483,7 +484,7 @@ msgid ""
 ", which is outside the permitted range of 1400 m/s to\n"
 "                1600 m/s.  Something went wrong in decoding the data."
 msgstr ""
-", lo que está fuera del rango permitido de 1400 a 1600 m/s\n"
+", lo que está fuera del rango permitido de 1400 a 1600 m/s. "
 " Algo fue mal al decodificar los datos."
 
 msgid "no profilesToRead"
@@ -494,7 +495,6 @@ msgstr "el primer byte del segmento de correlation debería ser 0x00 pero es"
 
 msgid "at file position"
 msgstr "en la posición del archivo"
-# temptative. Ambiguous string, please add context
 
 msgid "second byte of correlation segment should be 0x02 but is"
 msgstr "el segundo byte del segmento de correlacion debería ser 0x02, pero es"
@@ -512,7 +512,7 @@ msgid "second byte of percent-good segment should be 0x04 but is"
 msgstr "el segundo byte del segmento percent-good debería ser 0x04, pero es"
 
 msgid "expecting 4 beams, for this RDI adcp"
-msgstr "esperando 4 lasers, para este RDI adcp"
+msgstr "esperando 4 haces de barrido, para este adcp RDI"
 
 msgid "got to end of file"
 msgstr "se obtuvo fin del archivo"
@@ -529,7 +529,7 @@ msgid ""
 "indicated by the byte sequence 0x80 0x00.)"
 msgstr ""
 ".  (\"Bad\" significa que el byte code esperado para un segmento de velocidad, 0x00 "
-"0x01, no fue localizado 65 bytes tras empezar un perfil, esto último "
+"0x01, no fue localizado 65 bytes más allá del inicio del perfil, este último "
 "indicado por la secuencia de bytes 0x80 0x00.)"
 
 msgid "Interpolated across"
@@ -545,7 +545,7 @@ msgid "The header indicates that there are no profiles in this file."
 msgstr "El encabezado indica que no hay perfiles en este archivo."
 
 msgid "there should be 3 beams, but the file indicates"
-msgstr "debería haber 3 beams, pero el archivo indica "
+msgstr "debería haber 3 haces de barrido, pero el archivo indica "
 
 msgid "please request to read *some* profiles"
 msgstr "por favor solicite leer *algunos* perfiles"
@@ -557,14 +557,14 @@ msgid "heading/pitch/roll values to the"
 msgstr "valores de heading/pitch/roll para los"
 
 msgid "velocity profiles"
-msgstr "perfiles de velocidad"
+msgstr "perfiles de velocidades"
 
 msgid "*****FIXME: check up and down; also read it and check*****"
-msgstr "*****FIJEME: check up and down; también read it y check*****"
-# incomplete. I don't understand the context
+msgstr "*****FIXME: comprobar 'arriba' y 'abajo'; también 'leerlo' y 'comprobar'*****"
+# temptative. FIXME can be probably left untranslated.
 
 msgid "can only handle 3-beam devices"
-msgstr "solamente puedo manejar dispositivos 3-beam"
+msgstr "solamente puedo manejar dispositivos de tres haces de barrido (3-beam)"
 
 msgid "orientation="
 msgstr "orientation="
@@ -582,17 +582,16 @@ msgstr "no está permitida; intente \"upward\" o \"downward\""
 
 msgid "originalCoordinate="
 msgstr "originalCoordinate="
-# if is a variable name, msgstr = "" could be enough.
 
 msgid "but must be 0 (beam), 1 (xyz), or 2 (enu)"
-msgstr "debe de ser 0 (beam), 1 (xyz), o 2 (enu)"
+msgstr "pero debe de ser 0 (beam), 1 (xyz), o 2 (enu)"
 
 msgid "from="
 msgstr "from="
-# if is not a variable name: desde=
+# if from is part of a phrase instead a variable name: desde=
 
 msgid "but must exceed 1"
-msgstr "pero debe superar 1"
+msgstr "pero debe superar a 1"
 
 msgid "to="
 msgstr "to="
@@ -604,26 +603,27 @@ msgstr "by="
 
 msgid "must exceed to="
 msgstr "debe de superar to="
-# tricky because 'to' can be or not part of the phrase or a variable name. 
-# "debe de superar a="? "debe de exceder en="?
+# 'to' can be a variable name or part of the phrase. If latter could use: 
+# "debe de superar a=" (or "debe de exceder en=")
 
 msgid "'by' must be numeric"
-msgstr "'by' debe de ser numérico"
+msgstr "'by' debe ser numérico"
 
 msgid "must specify a 'subset'"
-msgstr "debe de especificar un 'subset'"
+msgstr "debe especificar un 'subset'"
 
 msgid "only 'time' is permitted for subsetting"
 msgstr "solamente se permite tomar subconjuntos con 'time'"
 
 msgid "read.adv() cannot understand type = \""
-msgstr "read.adv() no se puede comprender tipo = \""
+msgstr "read.adv() no se puede comprender el tipo = \""
 
 msgid "adv"
 msgstr ""
 
 msgid "unknown 'which':"
 msgstr "desconocido 'which':"
+# should be "wich desconocido:", but as it seems that there is something after 'wich:' I left it at the end
 
 msgid "no salinity in this ADV object"
 msgstr "este objeto ADV no especifica salinidad"
@@ -643,7 +643,7 @@ msgid "there is no analog2 signal in this ADV object"
 msgstr "este objeto ADV no contiene una señal analog2"
 
 msgid "no voltage signal to plot"
-msgstr "no hay señal voltaje en el plot"
+msgstr "no hay señal voltaje que poder dibujar"
 
 msgid "unknown value of \"which\":"
 msgstr "valor desconocido de \"which\":"
@@ -652,26 +652,27 @@ msgid "adv.2enu cannot convert from coordinate system"
 msgstr "adv.2enu no puede convertir desde sistema de coordenadas"
 
 msgid "input must be in beam coordinates, but it is in"
-msgstr "el input debería de estar en coordenadas beam, pero está en"
+msgstr "el input debería de estar en coordenadas de haz, pero está en"
 
 msgid ""
 "cannot convert coordinates because metadata$transformationMatrix is NULL "
 "(see above)."
 msgstr ""
 "no puedo convertir coordenadas porque metadata$transformationMatrix es NULL "
-"(vea encima)."
+"(véase encima)."
 
 msgid "input must be in xyz coordinates, but it is in"
 msgstr "el input debería estar en coordenadas xyz, pero está en"
 
 msgid "cannot handle ADV objects that were created with oce version < 0.3"
-msgstr "no se pueden manejar objetos ADV creados con una versión de oce < 0.3"
+msgstr "no puedo manejar objetos ADV creados con una versión de oce < 0.3"
 
 msgid "need sensor orientation to be 'upward' or 'downward', not '"
 msgstr "se necesita que el sensor esté orientado 'upward' o 'downward', no '"
 
 msgid "must give horizontalCase for cabled Nortek Vector (cases 3 to 6)"
-msgstr "debe proporcionar horizontalCase para cabled Nortek Vector (casos 3 a 6)"
+msgstr "debe proporcionar horizontalCase para cabled Nortek Vector (cajas 3 a 6)"
+# I assume that cases = boxes here, not instances or occurrences
 
 msgid "must give horizontalCase as TRUE or FALSE"
 msgstr "debe proporcionar horizontalCase como TRUE o FALSE"
@@ -686,7 +687,7 @@ msgstr ""
 msgid "cannot handle the case of a cabled Sontek unit (does it even exist?)"
 msgstr "no puedo manejar la caja de una unidad cableada Sontek (existe siquiera?)"
 # same as in the previous message, use caja if equals "cannot handle the box of a cabled..."
-# use caso instead if equals "cannot handle the issue of a cabled..."
+# use caso if equals "cannot handle the issue of a cabled..."
 
 msgid ""
 "unknown type of instrument; x@metadata$manufacturer must contain either "
@@ -696,8 +697,7 @@ msgstr ""
 "\"sontek\" o bien \"nortek\""
 
 msgid "heading length ("
-msgstr "heading length ("
-# ambiguous, is the name of the header 'length' or its the header extension?
+msgstr "longitud del encabezado ("
 
 msgid ") does not match number of velocity samples ("
 msgstr ") no coincide con el número de muestras de velocidad ("
@@ -719,10 +719,10 @@ msgid "argument \"from\" must be 1 or larger"
 msgstr "el argumento \"from\" debe de ser 1 or mayor"
 
 msgid "argument \"to\" must be 1 or larger"
-msgstr "el argumento \"to\" debe de ser 1  mayor"
+msgstr "el argumento \"to\" debe de ser 1 o mayor"
 
 msgid "header must be TRUE"
-msgstr "header debe de ser TRUE"
+msgstr "el encabezado debe de ser TRUE"
 
 msgid "must supply 'to'"
 msgstr "se debe proporcionar 'to'"
