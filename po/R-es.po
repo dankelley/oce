@@ -1615,40 +1615,42 @@ msgid "cannot compute temperature without \"tirs1\" band"
 msgstr "cannot find 'temperature' in this file"
 
 msgid "the \"tirs1\" band is not stored in two-byte format"
-msgstr ""
+msgstr "la banda \"tirs1\" no se almacena en formato de dos bytes"
 
 #, fuzzy
 msgid "cannot decimate by a step smaller than 1, but got"
-msgstr "cannot have control$bin less than 1, but got"
+msgstr "control$bin no puede ser menor que 1, pero fue"
 
 msgid "cannot decimate by a step larger than image dimension"
-msgstr ""
+msgstr "no puedo diezmar por un paso mayor que la dimensión de la imágen"
+# temptative
 
 msgid ""
 "cannot calculate Landsat temperature because no \"tirs1\" band in object"
 msgstr ""
+"no puedo calcular la temperatura Landsat porque el objeto no contiene una banda \"tirs1\""
 
 msgid "FIXME: should handle temperature for landsat-5"
-msgstr ""
+msgstr "FIXME: debería manejar la temperatura para landsat-5"
 
 msgid "K1="
-msgstr ""
+msgstr "K1="
 
 msgid "# Landsat7_Handbook.pdf Table 11.5"
-msgstr ""
+msgstr "# Landsta7_Handbook.pdf Tabla 11.5"
 
 msgid "K2="
-msgstr ""
+msgstr "K2="
 
 msgid "landsat-5 is not converted AT ALL"
-msgstr ""
+msgstr "landsat-5 no es convertido EN ABSOLUTO"
 
 #, fuzzy
 msgid "unknown satellite:"
 msgstr "unknown value"
 
 msgid "this landsat object lacks a band named \""
-msgstr ""
+msgstr "este objeto landsat carece de una banda denominada \""
 
 msgid ""
 "band=\"terralook\" requires landsat object to contain \"red\", \"green\" and "
@@ -1855,7 +1857,7 @@ msgid "too few data to trim rsk record"
 msgstr "too few data to trim rsk record"
 
 msgid "Unknown method"
-msgstr "Unknown method"
+msgstr "Método desconocido"
 
 msgid ""
 "mapAxis(side=1) cannot draw latitude labels yet; contact author if you need "
