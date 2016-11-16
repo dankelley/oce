@@ -686,8 +686,12 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     res@metadata$juldLocation <- if (maybeLC("JULD_LOCATION", lc) %in% varNames)
         as.vector(ncdf4::ncvar_get(file, maybeLC("JULD_LOCATION", lc))) else NULL
 
+    ## Now for the data.
+    res@metadata$dataNamesOriginal <- list() # NB. will store upper-case names
+
     if (maybeLC("LATITUDE", lc) %in% varNames) {
         res@data$latitude <- as.vector(ncdf4::ncvar_get(file, maybeLC("LATITUDE", lc)))
+        res@metadata$dataNamesOriginal$latitude <- "LATITUDE"
         latitudeNA <- ncdf4::ncatt_get(file, maybeLC("LATITUDE", lc), "_FillValue")$value
         res@data$latitude[res@data$latitude == latitudeNA] <- NA
         rm(list="latitudeNA") # no longer needed
@@ -697,6 +701,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     }
     if (maybeLC("LONGITUDE", lc) %in% varNames) {
         res@data$longitude <- as.vector(ncdf4::ncvar_get(file, maybeLC("LONGITUDE", lc)))
+        res@metadata$dataNamesOriginal$longitude <- "LONGITUDE"
         longitudeNA <- ncdf4::ncatt_get(file, maybeLC("LONGITUDE", lc),"_FillValue")$value
         res@data$longitude[res@data$longitude == longitudeNA] <- NA
         rm(list="longitudeNA") # no longer needed
@@ -716,15 +721,26 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
             next
         n <- item
         d <- getData(file, maybeLC(n, lc))
-        res@data[[argoDataNames(n)]] <- if (!is.null(d)) d else NULL
+        if (!is.null(d)) {
+            res@data[[argoDataNames(n)]] <- d
+            res@metadata$dataNamesOriginal[[argoDataNames(n)]] <- n
+        } else {
+            res@data[[argoDataNames(n)]] <- NULL
+        }
 
         n <- paste(item, maybeLC("_QC", lc), sep="")
         d <- getData(file, maybeLC(n, lc))
         if (!is.null(d)) res@metadata$flags[[argoDataNames(n)]] <- argoDecodeFlags(d)
+
         n <- paste(item, maybeLC("_ADJUSTED", lc), sep="")
         if (n %in% varNames) {
             d <- getData(file, maybeLC(n, lc))
-            res@data[[argoDataNames(n)]] <- if (!is.null(d)) d else NULL
+            if (!is.null(d)) {
+                res@data[[argoDataNames(n)]] <- d
+                res@metadata$dataNamesOriginal[[argoDataNames(n)]] <- n
+            } else {
+                res@data[[argoDataNames(n)]] <- NULL
+            }
         }
         n <- paste(item, maybeLC("_ADJUSTED_QC", lc), sep="")
         if (n %in% varNames) {
@@ -734,7 +750,12 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         n <- paste(item, maybeLC("_ADJUSTED_ERROR", lc), sep="")
         if (n %in% varNames) {
             d <- getData(file, maybeLC(n, lc))
-            res@data[[argoDataNames(n)]] <- if (!is.null(d)) d else NULL
+            if (!is.null(d)) {
+                res@data[[argoDataNames(n)]] <- d
+                res@metadata$dataNamesOriginal[[argoDataNames(n)]] <- n
+            } else {
+                res@data[[argoDataNames(n)]] <- NULL
+            }
         }
     }
     res@metadata$filename <- filename
