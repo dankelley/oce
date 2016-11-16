@@ -16,6 +16,11 @@ dd if=/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_194
 
 dd if=/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr of=adv_sontek bs=40000 count=1
 
+# Argo
+
+cp ~/git/oce/create_data/argo/6900388_prof.nc .
+
+
 # AMSR satellite
 
 cp ~/data/amsr/f34_20160808v7.2.gz .
