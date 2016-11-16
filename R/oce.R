@@ -1319,7 +1319,13 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 }
                 ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
                 f <- ncdf4::nc_open(filename)
-                if ("DATA_TYPE" %in% names(f$var) && grep("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case=TRUE)) return("argo") else return("netcdf")
+                if ("DATA_TYPE" %in% names(f$var)) {
+                    if (grep("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case=TRUE)) return("argo")
+                    else return("netcdf")
+                } else if ("data_type" %in% names(f$var)) {
+                    if (grep("argo", ncdf4::ncvar_get(f, "data_type"), ignore.case=TRUE)) return("argo")
+                    else return("netcdf")
+                }
             } else {
                 stop('must install.packages("ncdf4") to read a netCDF file')
             }
@@ -1689,6 +1695,15 @@ read.netcdf <- function(file, ...)
     data <- list()
 
     for (name in names) {
+        ## message("name=", name)
+        if (1 == length(grep("^history_", name)))
+            next
+        ## if (name == "history_institution" || name == "history_step" || name == "history_software"
+        ##     || name == "history_software_release" || name == "history_reference" || name == "history_date"
+        ##     || name == "history_action" || name == "history_parameter" || name == "history_start_pres"
+        ##     || name == "history_stop_pres" || name == "history_previous_value"
+        ##     || name == "history_qctest")
+        ##     next
         item <- ncdf4::ncvar_get(f, name)
         if (1 == length(dim(item))) # matrix column converted to vector
             item <- as.vector(item)
