@@ -428,7 +428,8 @@ Professional Paper: 1395 (available at
 3. Wikipedia page \url{http://en.wikipedia.org/wiki/List_of_map_projections}
 
 4. Radical Cartography website
-\url{http://www.radicalcartography.net/?projectionref}
+\code{http://www.radicalcartography.net/?projectionref} (This URL worked
+prior to Nov 16, 2016, but was found to fail on that date.)
 
 5. The \code{PROJ.4} website is \url{http://trac.osgeo.org/proj}, and it is
 the place to start to learn about the code.
