@@ -25,6 +25,10 @@ mv ~/Dropbox/BR5904179_001.nc . # from a server; this is a BIOargo with new fiel
 
 cp ~/data/amsr/f34_20160808v7.2.gz .
 
+# Bremen
+
+cp /data/flemishCap/msm27_ladcp/msm27_003.ladcp .
+
 # Echosounder
 
 cp /data/archive/sleiwex/2008/fielddata/2008-07-04/Merlu/Biosonics/20080704_112452.dt4 echosounder.dt4

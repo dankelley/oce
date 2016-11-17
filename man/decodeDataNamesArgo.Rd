@@ -17,8 +17,8 @@ replacements having been made for all known quantities.
 This function is used by \code{\link{read.argo}} to convert Argo-convention
 data names to oce-convention names. The inference of names was done
 by case-by-case inspection of some files. Eventually, it would make
-sense to handle all the documented names, which are possibly in
-Table 2.2.3 of [1].
+sense to handle all the documented names listed in tables 2.2.2 
+and 2.2.3 of [1].
 }
 \details{
 The names are converted with
@@ -46,7 +46,7 @@ are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 \item \code{LONGITUDE} becomes \code{longitude}
 \item \code{PI_NAME} becomes \code{PIName}
 \item \code{PLATFORM_NUMBER} becomes \code{id}
-\item \code{POSITION} becomes \code{position}
+\item \code{POSITION_ACCURACY} becomes \code{positionAccuracy}
 \item \code{POSITIONING_SYSTEM} becomes \code{positioningSystem}
 \item \code{PROFILE} becomes \code{profile}
 \item \code{PROJECT_NAME} becomes \code{projectName}
@@ -58,8 +58,9 @@ are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 }
 }
 \references{
-1. \samp{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
-(link last checked 2016-06-18)
-is the main document describing argo data.
+1. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
+\url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+(link checked 17 Nov 2016).
+Tables 2.2.2 and 2.2.3 of this document lists the codes used in Argo netCDF files.
 }
 

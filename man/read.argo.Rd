@@ -134,13 +134,15 @@ Dan Kelley
 \references{
 1. \url{http://www.argo.ucsd.edu/}
 
-2. \samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-(link last checked 2016-06-18)
-documents the codes used in the netCDF files.
+2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
+\url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+(link checked 17 Nov 2016).
+Table 2.2.2 of this document lists the codes used in Argo netCDF files.
 
-3. \samp{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
-(link last checked 2016-06-18)
-is the main document describing argo data.
+3. User's Manual (ar-um-02-01) 13 July 2010, available at
+\url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
+(link checked on 17 Nov 2016).
+This is the main document describing argo data.
 }
 \seealso{
 The documentation for \code{\link{argo-class}} explains the structure of argo

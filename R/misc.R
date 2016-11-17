@@ -3953,6 +3953,8 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
         item <- object@metadata[[name]]
         if (is.null(item))
             return()
+        if (is.na(item))
+            return()
         if (is.character(item) && nchar(item) == 0)
             return()
         if (is.na(item))

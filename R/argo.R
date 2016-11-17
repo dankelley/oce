@@ -105,8 +105,8 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #' This function is used by \code{\link{read.argo}} to convert Argo-convention
 #' data names to oce-convention names. The inference of names was done
 #' by case-by-case inspection of some files. Eventually, it would make
-#' sense to handle all the documented names, which are possibly in
-#' Table 2.2.3 of [1].
+#' sense to handle all the documented names listed in tables 2.2.2 
+#' and 2.2.3 of [1].
 #'
 #' The names are converted with
 #' \code{\link{gsub}}, ignoring the case of the input strings. The procedure
@@ -133,7 +133,7 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #' \item \code{LONGITUDE} becomes \code{longitude}
 #' \item \code{PI_NAME} becomes \code{PIName}
 #' \item \code{PLATFORM_NUMBER} becomes \code{id}
-#' \item \code{POSITION} becomes \code{position}
+#' \item \code{POSITION_ACCURACY} becomes \code{positionAccuracy}
 #' \item \code{POSITIONING_SYSTEM} becomes \code{positioningSystem}
 #' \item \code{PROFILE} becomes \code{profile}
 #' \item \code{PROJECT_NAME} becomes \code{projectName}
@@ -149,9 +149,10 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #' replacements having been made for all known quantities.
 #'
 #' @references
-#' 1. \samp{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
-#' (link last checked 2016-06-18)
-#' is the main document describing argo data.
+#' 1. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
+#' \url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+#' (link checked 17 Nov 2016).
+#' Tables 2.2.2 and 2.2.3 of this document lists the codes used in Argo netCDF files.
 decodeDataNamesArgo <- function(names)
 {
     ignore.case <- TRUE
@@ -163,6 +164,7 @@ decodeDataNamesArgo <- function(names)
     names <- gsub("FLUORESCENCE_CHLA", "fluorescenceChlorophyllA", names, ignore.case=ignore.case) # put before CHLA
     names <- gsub("CHLA", "chlorophyllA", names, ignore.case=ignore.case)
     names <- gsub("TEMP_DOXY", "temperatureOxygen", names, ignore.case=ignore.case)
+    names <- gsub("POSITION_ACCURACY", "positionAccuracy", names, ignore.case=ignore.case)
     names <- gsub("NITRATE", "nitrate", names, ignore.case=ignore.case)
     names <- gsub("DOXY", "oxygen", names, ignore.case=ignore.case)
     names <- gsub("PRES", "pressure", names, ignore.case=ignore.case)
@@ -172,7 +174,7 @@ decodeDataNamesArgo <- function(names)
     names <- gsub("UV_INTENSITY_NITRATE", "UVIntensityNitrate", names, ignore.case=ignore.case)
     names <- gsub("UV_INTENSITY", "UVIntensity", names, ignore.case=ignore.case)
     names <- gsub("_ADJUSTED", "Adjusted", names, ignore.case=ignore.case)
-    names <- gsub("_QC", "", names, ignore.case=ignore.case)
+    names <- gsub("_QC", "QC", names, ignore.case=ignore.case)
     names <- gsub("_ERROR", "Error", names, ignore.case=ignore.case)
     names
 }
@@ -592,13 +594,15 @@ argoDecodeFlags <- function(f) # local function
 #' @references
 #' 1. \url{http://www.argo.ucsd.edu/}
 #' 
-#' 2. \samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-#' (link last checked 2016-06-18)
-#' documents the codes used in the netCDF files.
+#' 2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
+#' \url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+#' (link checked 17 Nov 2016).
+#' Table 2.2.2 of this document lists the codes used in Argo netCDF files.
 #'
-#' 3. \samp{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
-#' (link last checked 2016-06-18)
-#' is the main document describing argo data.
+#' 3. User's Manual (ar-um-02-01) 13 July 2010, available at
+#' \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
+#' (link checked on 17 Nov 2016).
+#' This is the main document describing argo data.
 #' 
 #' @section Data sources:
 #' Argo data are made available at several websites. A bit of detective
