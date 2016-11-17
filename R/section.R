@@ -2640,12 +2640,6 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
         tmp <- salinity
         nstation <- length(tmp[['longitude']])
         ndepth <- dim(tmp[["salinity"]])[1]
-        ## station <- rep(1:nstation, each=ndepth)
-        ## longitude <- rep(tmp[['longitude']], each=ndepth)
-        ## latitude <- rep(tmp[['latitude']], each=ndepth)
-        ## salinity <- as.vector(tmp[['salinity']])
-        ## temperature <- as.vector(tmp[['temperature']])
-        ## pressure <- as.vector(tmp[['pressure']])
         station <- 1:nstation
         longitude <- tmp[['longitude']]
         latitude <- tmp[['latitude']]
@@ -2654,7 +2648,6 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
         pressure <- tmp[['pressure']]
         stationFactor <- factor(station)
         stationLevels <- levels(stationFactor)
-        ## nstation <- length(stationLevels)
         ctds <- vector("list", nstation)
         ## N will hold the names of extra data for the CTDs
         N <- names(tmp@data)
@@ -2666,14 +2659,6 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
         if ("pressure" %in% N) N <- N[-which(N=="pressure")]
         time <- tmp[['time']]
         for (i in 1:nstation) {
-            ## look <- station==stationLevels[i]
-            ## ctds[[i]] <- as.ctd(salinity[look], temperature[look], pressure[look],
-            ##                     longitude=longitude[look][1], latitude=latitude[look][1],
-            ##                     startTime=as.POSIXct(time[i]), station=paste("profile", stationLevels[i]))
-            ## for (Ni in seq_along(N)) {
-            ##     ctds[[i]] <- oceSetData(ctds[[i]], name=N[Ni], value=as.vector(tmp[[N[Ni]]])[look],
-            ##                             unit=tmp[['units']][[N[Ni]]])
-            ## }
             ctds[[i]] <- as.ctd(salinity[,i], temperature[,i], pressure[,i],
                                 longitude=longitude[i], latitude=latitude[i],
                                 startTime=as.POSIXct(time[i]), station=as.character(station[i]))
