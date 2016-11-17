@@ -1,4 +1,6 @@
 0.9-20
+- improvements for BioArgo data
+- Spanish translation by Pablo Valdés
 - make read.gps() handle more files
 - deprecate ctdAddColumn() and ctdUpdateHeader()
 - download.topo() added and read.topo() updated to handle new formats

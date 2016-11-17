@@ -102,19 +102,78 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 
 #' Convert Data Names From the Argo Convention to the Oce Convention
 #'
-#' For example, \code{"PSAL"} becomes \code{"salinity"}
+#' This function is used by \code{\link{read.argo}} to convert Argo-convention
+#' data names to oce-convention names. The inference of names was done
+#' by case-by-case inspection of some files. Eventually, it would make
+#' sense to handle all the documented names, which are possibly in
+#' Table 2.2.3 of [1].
+#'
+#' The names are converted with
+#' \code{\link{gsub}}, ignoring the case of the input strings. The procedure
+#' is to first handle the items listed in the following table. After that,
+#' the qualifiers 
+#' \code{_ADJUSTED}, \code{_ERROR} and \code{_QC},
+#' are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
+#' \itemize{
+#' \item \code{BBP700} becomes \code{bbp700}
+#' \item \code{BETA_BACKSCATTERING700} becomes \code{betaBackscattering700}
+#' \item \code{BPHASE_OXY} becomes \code{bphaseOxygen}
+#' \item \code{CHLA} becomes \code{chlorophyllA}
+#' \item \code{CYCLE_NUMBER} becomes \code{cycleNumber}
+#' \item \code{DATA_CENTRE} becomes \code{dataCentre} (note the spelling)
+#' \item \code{DATA_MODE} becomes \code{dataMode}
+#' \item \code{DATA_STATE_INDICATOR} becomes \code{dataStateIndicator}
+#' \item \code{DC_REFERENCE} becomes \code{DCReference}
+#' \item \code{DIRECTION} becomes \code{direction} (either \code{A} for ascending or \code{D} for descending)
+#' \item \code{FIRMWARE_VERSION} becomes \code{firmwareVersion}
+#' \item \code{INST_REFERENCE} becomes \code{instReference}
+#' \item \code{JULD} becomes \code{juld} (and used to compute \code{time})
+#' \item \code{JULD_QC_LOCATION} becomes \code{juldQCLocation}
+#' \item \code{LATITUDE} becomes \code{latitude}
+#' \item \code{LONGITUDE} becomes \code{longitude}
+#' \item \code{PI_NAME} becomes \code{PIName}
+#' \item \code{PLATFORM_NUMBER} becomes \code{id}
+#' \item \code{POSITION} becomes \code{position}
+#' \item \code{POSITIONING_SYSTEM} becomes \code{positioningSystem}
+#' \item \code{PROFILE} becomes \code{profile}
+#' \item \code{PROJECT_NAME} becomes \code{projectName}
+#' \item \code{STATION_PARAMETERS} becomes \code{stationParameters}
+#' \item \code{UV_INTENSITY} becomes \code{UVIntensity}
+#' \item \code{UV_INTENSITY_DARK_NITRATE} becomes \code{UVIntensityDarkNitrate}
+#' \item \code{UV_INTENSITY_NITRATE} becomes \code{UVIntensityNitrate}
+#' \item \code{WMO_INST_TYPE} becomes \code{WMOInstType}
+#'}
+#'
 #' @param names vector of character strings containing names in the Argo convention.
-argoDataNames <- function(names)
+#' @return A character vector of the same length as \code{names}, but with
+#' replacements having been made for all known quantities.
+#'
+#' @references
+#' 1. \samp{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
+#' (link last checked 2016-06-18)
+#' is the main document describing argo data.
+decodeDataNamesArgo <- function(names)
 {
-    names <- gsub("CYCLE_NUMBER", "cycle", names)
-    names <- gsub("TEMP_DOXY", "temperatureOxygen", names)
-    names <- gsub("DOXY", "oxygen", names)
-    names <- gsub("PRES", "pressure", names)
-    names <- gsub("PSAL", "salinity", names)
-    names <- gsub("TEMP", "temperature", names)
-    names <- gsub("_ADJUSTED", "Adjusted", names)
-    names <- gsub("_QC", "", names)
-    names <- gsub("_ERROR", "Error", names)
+    ignore.case <- TRUE
+    ## do NOT change the order below, because we are working with partial strings.
+    names <- gsub("BBP700", "bbp700", names, ignore.case=ignore.case)
+    names <- gsub("BETA_BACKSCATTERING700", "betaBackscattering700", names, ignore.case=ignore.case)
+    names <- gsub("BPHASE_DOXY", "bphaseOxygen", names, ignore.case=ignore.case)
+    names <- gsub("CYCLE_NUMBER", "cycle", names, ignore.case=ignore.case)
+    names <- gsub("FLUORESCENCE_CHLA", "fluorescenceChlorophyllA", names, ignore.case=ignore.case) # put before CHLA
+    names <- gsub("CHLA", "chlorophyllA", names, ignore.case=ignore.case)
+    names <- gsub("TEMP_DOXY", "temperatureOxygen", names, ignore.case=ignore.case)
+    names <- gsub("NITRATE", "nitrate", names, ignore.case=ignore.case)
+    names <- gsub("DOXY", "oxygen", names, ignore.case=ignore.case)
+    names <- gsub("PRES", "pressure", names, ignore.case=ignore.case)
+    names <- gsub("PSAL", "salinity", names, ignore.case=ignore.case)
+    names <- gsub("TEMP", "temperature", names, ignore.case=ignore.case)
+    names <- gsub("UV_INTENSITY_DARK_NITRATE", "UVIntensityDarkNitrate", names, ignore.case=ignore.case)
+    names <- gsub("UV_INTENSITY_NITRATE", "UVIntensityNitrate", names, ignore.case=ignore.case)
+    names <- gsub("UV_INTENSITY", "UVIntensity", names, ignore.case=ignore.case)
+    names <- gsub("_ADJUSTED", "Adjusted", names, ignore.case=ignore.case)
+    names <- gsub("_QC", "", names, ignore.case=ignore.case)
+    names <- gsub("_ERROR", "Error", names, ignore.case=ignore.case)
     names
 }
 
@@ -469,30 +528,7 @@ argoDecodeFlags <- function(f) # local function
 #' them in returned object.
 #'
 #' Items are translated from upper-case Argo names to \code{oce} names
-#' as follows.
-#' \itemize{
-#' \item \code{PLATFORM_NUMBER} becomes \code{id}
-#' \item \code{PROJECT_NAME} becomes \code{projectName}
-#' \item \code{PI_NAME} becomes \code{PIName}
-#' \item \code{STATION_PARAMETERS} becomes \code{stationParameters}
-#' \item \code{CYCLE_NUMBER} becomes \code{cycleNumber}
-#' \item \code{DIRECTION} becomes \code{direction} (either \code{A} for ascending or \code{D} for descending)
-#' \item \code{DATA_CENTRE} becomes \code{dataCentre} (note the spelling)
-#' \item \code{DC_REFERENCE} becomes \code{DCReference}
-#' \item \code{DATA_STATE_INDICATOR} becomes \code{dataStateIndicator}
-#' \item \code{DATA_MODE} becomes \code{dataMode}
-#' \item \code{INST_REFERENCE} becomes \code{instReference}
-#' \item \code{FIRMWARE_VERSION} becomes \code{firmwareVersion}
-#' \item \code{WMO_INST_TYPE} becomes \code{WMOInstType}
-#' \item \code{JULD} becomes \code{juld} (and used to compute \code{time})
-#' \item \code{JULD_QC} becomes \code{juldQc}
-#' \item \code{JULD_QC_LOCATION} becomes \code{juldQcLocation}
-#' \item \code{LATITUDE} becomes \code{latitude}
-#' \item \code{LONGITUDE} becomes \code{longitude}
-#' \item \code{POSITION_QC} becomes \code{positionQC}
-#' \item \code{POSITIONING_SYSTEM} becomes \code{positioningSystem}
-#' \item \code{PROFILE_QC} becomes \code{} ... FIX ME
-#'}
+#' using \code{\link{decodeDataNamesArgo}}.
 #' 
 #' It is assumed that the profile data are as listed in the NetCDF variable
 #' called \code{STATION_PARAMETERS}. Each item can have variants, as
@@ -722,39 +758,39 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         n <- item
         d <- getData(file, maybeLC(n, lc))
         if (!is.null(d)) {
-            res@data[[argoDataNames(n)]] <- d
-            res@metadata$dataNamesOriginal[[argoDataNames(n)]] <- n
+            res@data[[decodeDataNamesArgo(n)]] <- d
+            res@metadata$dataNamesOriginal[[decodeDataNamesArgo(n)]] <- n
         } else {
-            res@data[[argoDataNames(n)]] <- NULL
+            res@data[[decodeDataNamesArgo(n)]] <- NULL
         }
 
         n <- paste(item, maybeLC("_QC", lc), sep="")
         d <- getData(file, maybeLC(n, lc))
-        if (!is.null(d)) res@metadata$flags[[argoDataNames(n)]] <- argoDecodeFlags(d)
+        if (!is.null(d)) res@metadata$flags[[decodeDataNamesArgo(n)]] <- argoDecodeFlags(d)
 
         n <- paste(item, maybeLC("_ADJUSTED", lc), sep="")
         if (n %in% varNames) {
             d <- getData(file, maybeLC(n, lc))
             if (!is.null(d)) {
-                res@data[[argoDataNames(n)]] <- d
-                res@metadata$dataNamesOriginal[[argoDataNames(n)]] <- n
+                res@data[[decodeDataNamesArgo(n)]] <- d
+                res@metadata$dataNamesOriginal[[decodeDataNamesArgo(n)]] <- n
             } else {
-                res@data[[argoDataNames(n)]] <- NULL
+                res@data[[decodeDataNamesArgo(n)]] <- NULL
             }
         }
         n <- paste(item, maybeLC("_ADJUSTED_QC", lc), sep="")
         if (n %in% varNames) {
             d <- getData(file, maybeLC(n, lc))
-            if (!is.null(d)) res@metadata$flags[[argoDataNames(n)]] <- argoDecodeFlags(d)
+            if (!is.null(d)) res@metadata$flags[[decodeDataNamesArgo(n)]] <- argoDecodeFlags(d)
         }
         n <- paste(item, maybeLC("_ADJUSTED_ERROR", lc), sep="")
         if (n %in% varNames) {
             d <- getData(file, maybeLC(n, lc))
             if (!is.null(d)) {
-                res@data[[argoDataNames(n)]] <- d
-                res@metadata$dataNamesOriginal[[argoDataNames(n)]] <- n
+                res@data[[decodeDataNamesArgo(n)]] <- d
+                res@metadata$dataNamesOriginal[[decodeDataNamesArgo(n)]] <- n
             } else {
-                res@data[[argoDataNames(n)]] <- NULL
+                res@data[[decodeDataNamesArgo(n)]] <- NULL
             }
         }
     }

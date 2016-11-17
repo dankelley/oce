@@ -19,7 +19,7 @@ dd if=/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b3
 # Argo
 
 cp ~/git/oce/create_data/argo/6900388_prof.nc .
-
+mv ~/Dropbox/BR5904179_001.nc . # from a server; this is a BIOargo with new fields
 
 # AMSR satellite
 
