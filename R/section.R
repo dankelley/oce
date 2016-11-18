@@ -2639,7 +2639,6 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
     } else if (inherits(salinity, "argo")) {
         tmp <- salinity
         nstation <- length(tmp[['longitude']])
-        ndepth <- dim(tmp[["salinity"]])[1]
         station <- 1:nstation
         longitude <- tmp[['longitude']]
         latitude <- tmp[['latitude']]
