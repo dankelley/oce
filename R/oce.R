@@ -1290,11 +1290,6 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             oceDebug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
             return("interocean/s4")
         }
-        if (length(grep(".tsv$", filename))) {
-            firstLine <- readLines(file, n=1, encoding="UTF-8")
-            if (substr(firstLine, 1, 2) == "/*")
-                return("pangaea")
-        }
         if (length(grep(".ODF$", filename, ignore.case=TRUE))) {
             ## in BIO files, the data type seems to be on line 14.  Read more, for safety.
             someLines <- readLines(file, n=100, encoding="UTF-8")
@@ -1475,10 +1470,6 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is sealevel\n")
         return("sealevel")
     }
-    if (1 == length(grep("^%$", line, useBytes=TRUE)) && 1 == length(grep("^Observatory", line2, useBytes=TRUE))) {
-        oceDebug(debug, "this is observatory\n")
-        return("observatory")
-    }
     if (1 == length(grep("^[0-9][0-9][0-9][A-Z] ", line, useBytes=TRUE))) {
         oceDebug(debug, "this is sealevel\n")
         return("sealevel")
@@ -1631,8 +1622,6 @@ read.oce <- function(file, ...)
         return(read.argo(file))
     if (type == "lisst")
         return(read.lisst(file))
-    if (type == "pangaea")
-        return(read.pangaea(file, debug=debug-1))
     if (type == "sealevel")
         return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")
@@ -1647,8 +1636,6 @@ read.oce <- function(file, ...)
         return(read.section(file, processingLog=processingLog, ...))
     if (type == "ctd/woce/other")
         return(read.ctd.woce.other(file, processingLog=processingLog, ...))
-    if (type == "observatory")
-        return(read.observatory(file, processingLog=processingLog, ...))
     if (type == "landsat")
         return(read.landsat(file, ...))
     if (type == "netcdf")
