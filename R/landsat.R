@@ -233,6 +233,9 @@ setMethod(f="summary",
               cat(sprintf("* Lower right:         %fE %fN\n", object@metadata$lrlon, object@metadata$lrlat)) 
               cat(sprintf("* Upper right:         %fE %fN\n", object@metadata$urlon, object@metadata$urlat)) 
               cat(sprintf("* Upper left:          %fE %fN\n", object@metadata$ullon, object@metadata$ullat)) 
+              for (name in names(object@data)) {
+                  object@data[[name]] <- object[[name]] # translate to science units
+              }
               callNextMethod()
           })
 
@@ -340,8 +343,8 @@ setMethod(f="[[",
                   ilook <- seq.int(1L, dim[1], by=1L)
                   jlook <- seq.int(1L, dim[2], by=1L)
                   if (!missing(j)) {
-                      if (is.logical(j) && j) {
-                          decimate <- max(as.integer(round(maxdim / 800)), 1)
+                      if (is.logical(j)) {
+                         decimate <- if (j) max(as.integer(round(maxdim / 800)), 1) else 1
                       } else {
                           if (round(j) < 1) stop("cannot decimate by a step smaller than 1, but got ", j)
                           decimate <- as.integer(round(j))
@@ -1036,7 +1039,7 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
         band <- c("red", "green", "nir")
     decimateGiven <- !missing(decimate)
     if (decimateGiven && decimate < 1)
-        warning("invalid value of decimate (", decimate, ") being ignored\n")
+        warning("invalid value of decimate (", decimate, ") being ignored")
     if (!requireNamespace("tiff", quietly=TRUE))
         stop('must install.packages("tiff") to read landsat data')
     res <- new("landsat")

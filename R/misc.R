@@ -1,5 +1,33 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+shortenTimeString <- function(t, debug=getOption("oceDebug"))
+{
+    tc <- as.character(t)
+    oceDebug(debug, "shortenTimeString() {\n", sep="", unindent=1)
+    oceDebug(debug, "A: '", paste(t, collapse="' '"), "'\n")
+    tc <- gsub(" [A-Z]{3}$", "", tc) # remove timezone
+    if (all(grepl("^[0-9]{4}", tc))) { # leading years
+        years <- substr(tc, 1, 4)
+        if (1 == length(unique(years))) {
+            tc <- gsub("^[0-9]{4}", "", tc)
+            tc <- gsub("^-", "", tc) # works for ISO dates
+            oceDebug(debug, "B: '", paste(tc, collapse="' '"), "'\n", sep='')
+        }
+    } else if (any(grepl("[a-zA-Z]", tc))) {
+        ## Change e.g. 'Jul 01' to 'Jul' if all labels end in 01
+        if (all(grepl("01\\s*$", tc))) {
+            tc <- gsub(" 01\\s*$", "", tc)
+            oceDebug(debug, "B: '", paste(tc, collapse="' '"), "'\n", sep='')
+        }
+    }
+    oceDebug(debug, "C: '", paste(tc, collapse="' '"), "'\n", sep='')
+    tc <- gsub("^\\s*", "", tc)
+    tc <- gsub("\\s*$", "", tc)
+    oceDebug(debug, "D: '", paste(tc, collapse="' '"), "'\n", sep='')
+    oceDebug(debug, "}\n", unindent=1)
+    tc
+}
+
 #' Get first finite value in a vector or array, or NULL if none
 #' @param v A numerical vector or array.
 firstFinite <- function(v)
@@ -44,6 +72,35 @@ unitFromString <- function(s)
     return(list(unit=as.expression(s), scale=""))
 }
 
+## #' Rename a duplicated item (used in reading CTD files)
+## #'
+## #' Determine a new name for an item that is already in a list of names. This is
+## #' done by e.g. appending a \code{2} to the second occurrence of a name, etc.
+## #' The purpose is to create distinct variable names for
+## #' \code{\link{read.ctd.sbe}}.
+## #' 
+## #' @param existingNames Vector of strings with names already processed.
+## #' @param name String with a candidate name.
+## #' @return names String with an unduplicated name.
+## #' @seealso \code{\link{unduplicateNames}} is similar, but considers
+## #' a vector of names.
+## #'
+## #' @examples
+## #' unduplicateName("a", c("a", "b", "a")) # returns "a3"
+## unduplicateName <- function(name, existingNames)
+## {
+##     counter <- 0
+##     for (i in seq_along(existingNames)) {
+##         if (name == existingNames[i])
+##             counter <- counter + 1
+##     }
+##     res <- if (counter > 0) paste(name, counter+1, sep="") else name
+##     ## message("unduplicateName() name: '", name, "'")
+##     ## message("         existingNames '", paste(existingNames, collapse="' '"))
+##     ## message("         returning '", res, "'")
+##     res
+## }
+
 #' Rename duplicated items (used in reading CTD files)
 #'
 #' Rename items to avoid name collision, by appending a \code{2} to
@@ -51,6 +108,7 @@ unitFromString <- function(s)
 #' 
 #' @param names Vector of strings with variable names.
 #' @return names Vector of strings with numbered variable names.
+#' @seealso used by \code{\link{read.ctd.sbe}}.
 #'
 #' @examples
 #' unduplicateNames(c("a", "b", "a", "c", "b"))
@@ -88,9 +146,9 @@ unduplicateNames <- function(names)
 #' @examples
 #' data(ctd)
 #' new <- renameData(ctd, "temperature", "temperature68")
-#' new <- ctdAddColumn(new, T90fromT68(new[["temperature68"]]), 
-#'                    "temperature", "Temperature",
-#'                    list(unit=expression(degree*C),scale="ITS=90"))
+#' new <- oceSetData(new, name="temperature",
+#'                   value=T90fromT68(new[["temperature68"]]), 
+#'                   unit=list(unit=expression(degree*C),scale="ITS=90"))
 renameData <- function(x, old=NULL, new=NULL)
 {
     if (is.null(old)) stop("need to supply old")
@@ -197,18 +255,20 @@ argShow <- function(x, nshow=2, last=FALSE, sep="=")
 dataLabel <- function(names, units)
 {
     res <- names
-    ##message("in dataLabel()")
+    ## message("in dataLabel()")
     if (!missing(units)) {
         ## message("  dataLabel(); next line is names")
         ## print(names)
         ## message("  dataLabel(); next line is units")
         ## print(units)
         unitsNames <- names(units)
+        ##message("  dataLabel(); next line is unitsNames")
+        ##print(unitsNames)
         for (i in seq_along(names)) {
-            ##> message("  i: ", i, ", name: ", names[i])
+            ##message("  i: ", i, ", name: ", names[i])
             w <- which(unitsNames == names[i])
             if (length(w)) {
-                ## message("  we match a unit at index w=",  w)
+                ##message("  we match a unit at index w=",  paste(w, collapse=" "))
                 u <- units[w]
                 if (!is.null(u)) {
                     if (is.character(u)) {
@@ -658,7 +718,11 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 #' \code{number}.
 #' @param fill Logical value indicating whether to fill \code{NA}-value gaps in
 #' the matrix. Gaps will be filled as the average of linear interpolations
-#' across rows and columns.
+#' across rows and columns. See \code{fillgap}, which works together with this.
+#' @param fillgap Integer controlling the size of gap that can be filled
+#' across. If this is negative (as in the default), gaps will be filled
+#' regardless of their size. If it is positive, then gaps exceeding this
+#' number of indices will not be filled.
 #'
 #' @return A list with the following elements: the midpoints (renamed as
 #' \code{x} and \code{y}), the count (\code{number}) of \code{f(x,y)} values
@@ -679,10 +743,11 @@ binCount2D <- function(x, y, xbreaks, ybreaks, flatten=FALSE)
 #'
 #' @author Dan Kelley
 #' @family bin-related functions
-binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE)
+binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE, fillgap=-1)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
+    if (fillgap == 0) stop("cannot have a negative 'fillgap' value")
     fGiven <- !missing(f)
     if (!fGiven)
         f <- rep(1, length(x))
@@ -697,7 +762,7 @@ binMean2D <- function(x, y, f, xbreaks, ybreaks, flatten=FALSE, fill=FALSE)
     M <- .C("bin_mean_2d", length(x), as.double(x), as.double(y), as.double(f),
             length(xbreaks), as.double(xbreaks),
             length(ybreaks), as.double(ybreaks),
-            as.integer(fill), 
+            as.integer(fill), as.integer(fillgap),
             number=integer((nxbreaks-1)*(nybreaks-1)),
             mean=double((nxbreaks-1)*(nybreaks-1)),
             NAOK=TRUE, PACKAGE="oce")
@@ -1342,9 +1407,13 @@ normalize <- function(x)
 #' Detrend a set of observations
 #' 
 #' Detrends \code{y} by subtracting a linear trend in \code{x}, to create
-#' \code{Y} that has \code{Y[1]=0} and \code{Y[length(Y)]=0}.  If \code{y} is
-#' not given, then y is taken from x, and x is set to the series of integers
-#' from 1 to \code{length{x}}.
+#' a vector that is zero for its first and last finite value.
+#' If the second parameter (\code{y}) is missing, then \code{x} is
+#' taken to be \code{y}, and a new \code{x} is constructed with
+#' \code{\link{seq_along}}.  Any \code{NA} values are left as-is.
+#'
+#' A common application is to bring the end points of a time series
+#' down to zero, prior to applying a digital filter. (See examples.)
 #' 
 #' @param x a vector of numerical values.  If \code{y} is not given, then
 #' \code{x} is taken for \code{y}.
@@ -1357,11 +1426,13 @@ normalize <- function(x)
 #' 
 #' x <- seq(0, 0.9 * pi, length.out=50)
 #' y <- sin(x)
-#' plot(x, y)
+#' y[1] <- NA
+#' y[10] <- NA
+#' plot(x, y, ylim=c(0,1))
 #' d <- detrend(x, y)
 #' points(x, d$Y, pch=20)
-#' abline(h=0, lty='dotted')
-#' abline(d$a, d$b, col='red')
+#' abline(d$a, d$b, col='blue')
+#' abline(h=0)
 #' points(x, d$Y + d$a + d$b * x, col='blue', pch='+')
 detrend <- function(x, y)
 {
@@ -1375,10 +1446,12 @@ detrend <- function(x, y)
         if (length(y) != n)
             stop("x and y must be of same length, but they are ", n, " and ", length(y))
     }
-    if (x[1] == x[n])
-        stop("cannot have x[1] == x[n]")
-    b <- (y[1] - y[n]) / (x[1] - x[n])
-    a <- y[1] - b * x[1]
+    first <- which(is.finite(y))[1]
+    last <- 1 + length(y) - which(is.finite(rev(y)))[1]
+    if (x[first] == x[last])
+        stop("the first and last x values must be distinct")
+    b <- (y[first] - y[[last]]) / (x[first] - x[[last]])
+    a <- y[first] - b * x[first]
     list(Y=y-(a+b*x), a=a, b=b)
 }
 
@@ -1390,26 +1463,37 @@ detrend <- function(x, y)
 #' replaces these spikes with the reference value, or with \code{NA} according
 #' to the value of \code{action}; see \dQuote{Details}.
 #' 
-#' For \code{reference="median"}, the first step is to linearly interpolate
-#' across any gaps, in which \code{x==NA}.  Then the reference time series is
-#' constructed using \code{\link{runmed}} as a running median of \code{k}
-#' elements.  Then, the standard deviation of the difference between \code{x}
-#' and the reference is calculated.  Any \code{x} values that differ from the
-#' reference by more than \code{n} times this standard deviation are considered
-#' to be spikes.  If \code{replace="reference"}, these \code{x} values are
-#' replaced with the reference series, and the resultant time series is
-#' returned.  If \code{replace="NA"}, the spikes are replaced with \code{NA} in
-#' the returned time series.
+#' @details
+#' Three modes of operation are permitted, depending on the value of
+#' \code{reference}.
+#'
+#'\itemize{
+#'
+#'\item For \code{reference="median"}, the first step is to linearly interpolate
+#' across any gaps (spots where \code{x==NA}), using \code{\link{approx}} with
+#' \code{rule=2}. The second step is to pass this through
+#' \code{\link{runmed}} to get a running median spanning \code{k}
+#' elements. The result of these two steps is the "reference" time-series.
+#' Then, the standard deviation of the difference between \code{x}
+#' and the reference is calculated.  Any \code{x} values that differ from 
+#' the reference by more than \code{n} times this standard deviation are considered
+#' to be spikes.  If \code{replace="reference"}, the spike values are
+#' replaced with the reference, and the resultant time series is
+#' returned.  If \code{replace="NA"}, the spikes are replaced with \code{NA},
+#' and that result is returned.
 #' 
-#' For \code{reference="smooth"}, the processing is the same as for
+#'\item For \code{reference="smooth"}, the processing is the same as for
 #' \code{"median"}, except that \code{\link{smooth}} is used to calculate the
 #' reference time series.
 #' 
-#' For \code{reference="trim"}, the reference time series is constructed by
+#'\item For \code{reference="trim"}, the reference time series is constructed by
 #' linear interpolation across any regions in which \code{x<min} or
-#' \code{x>max}.  In this case, the value of \code{n} is ignored, and the
-#' return value either uses the reference time series for spikes, or \code{NA},
-#' according to the value of \code{replace}.
+#' \code{x>max}.  (Again, this is done with \code{\link{approx}} with
+#' \code{rule=2}.) In this case, the value of \code{n} is ignored, and the
+#' return value is the same as \code{x}, except that spikes are replaced
+#' with the reference series (if \code{replace="reference"} or with
+#' \code{NA}, if \code{replace="NA"}.
+#'}
 #' 
 #' @param x a vector of (time-series) values, a list of vectors, a data frame,
 #' or an object that inherits from class \code{oce}.
@@ -1528,10 +1612,11 @@ despikeColumn <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, 
         nbad <- length(bad)
         if (nbad > 0) {
             i <- 1:nx
-            if (replace == "reference")
-                x[bad] <- approx(i[!bad], x.gapless[!bad], i[bad])$y
-            else
-                x[bad] <- rep(NA, nbad)
+            if (replace == "reference") {
+                x[bad] <- approx(i[!bad], x.gapless[!bad], i[bad], rule=2)$y
+            } else {
+                x[bad] <- NA
+            }
         }
     } else {
         stop("unknown reference ", reference)
@@ -1771,37 +1856,50 @@ oce.spectrum <- oceSpectrum
 #' Show some values from a vector
 #' 
 #' This is similar to \code{\link{str}}, but it shows data at the first and
-#' last of the vector, which is quite helpful in debugging.
+#' last of the vector, which can be quite helpful in debugging.
 #' 
 #' @param v the vector.
 #' @param msg a message to show, introducing the vector.  If not provided, then
-#' a label is created from \code{v}.
+#' a message is created from \code{v}.
 #' @param digits for numerical values of \code{v}, this is the number of digits
 #' to use, in formatting the numbers with \code{\link{format}}; otherwise,
 #' \code{digits} is ignored.
+#' @param n number of elements to at start and end. If \code{n}
+#' is negative, then all the elements are shown.
 #' @return A string, suitable for using in \code{\link{cat}} or
 #' \code{\link{oceDebug}}.
 #' @author Dan Kelley
-vectorShow <- function(v, msg, digits=5)
+vectorShow <- function(v, msg, digits=5, n=2L)
 {
-    n <- length(v)
+    nv <- length(v)
     if (missing(msg))
         msg <- deparse(substitute(v))
-    if (n == 0) {
+    if (nv == 0) {
         paste(msg, "(empty vector)\n")
     } else {
+        if (n < 0 || nv <= 2*n) {
+            showAll <- TRUE
+        } else {
+            n <- floor(min(n, nv/2))
+            showAll <- FALSE
+        }
         if (is.numeric(v)) {
-            if (n > 4) {
-                vv <- format(v[c(1, 2, n-1, n)], digits=digits)
-                paste(msg, ": ", vv[1], ", ", vv[2], ", ..., ", vv[3], ", ", vv[4], " (length ", n, ")\n", sep="")
+            if (showAll) {
+                paste(msg, ": ", paste(format(v, digits=digits), collapse=", "),
+                      " (length ", nv, ")\n", sep="")
             } else {
-                paste(msg, ": ", paste(format(v, digits=digits), collapse=", "), "\n", sep="")
+                paste(msg, ": ", paste(format(v[1:n], digits=digits), collapse=", "),
+                      ", ..., ", paste(format(v[nv-seq.int(n-1,0)], digits=digits), collapse=", "),
+                      " (length ", nv, ")\n", sep="")
             }
         } else {
-            if (n > 4) {
-                paste(msg, ": ", v[1], ", ", v[2], ", ..., ", v[n-1], ", ", v[n], " (length ", n, ")\n", sep="")
+            if (showAll) {
+                paste(msg, ": ", paste(v, collapse=", "),
+                      " (length ", nv, ")\n", sep="")
             } else {
-                paste(msg, ": ", paste(v, collapse=", "), "\n", sep="")
+                paste(msg, ": ", paste(v[1:n], collapse=", "),
+                      ", ..., ", paste(v[nv-seq.int(n-1,0)], collapse=", "),
+                      " (length ", nv, ")\n", sep="")
             }
         }
     }
@@ -2390,6 +2488,8 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' @examples
 #' 
 #' library(oce)
+#'
+#' # 1. Demonstrate step-function response
 #' y <- c(rep(1,10), rep(-1,10))
 #' x <- seq_along(y)
 #' plot(x, y, type='o', ylim=c(-1.05, 1.05))
@@ -2401,6 +2501,39 @@ gravity <- function(latitude=45, degrees=TRUE)
 #' points(yH, col=3, type='o')
 #' legend("topright", col=1:3, cex=2/3, pch=1,
 #'        legend=c("input", "Blackman Harris", "Hamming"))
+#'
+#' # 2. Show theoretical and practical filter gain, where
+#' #    the latter is based on random white noise, and
+#' #    includes a particular value for the spans
+#' #    argument of spectrum(), etc.
+#' \dontrun{ # need signal package for this example
+#' r <- rnorm(2048)
+#' rh <- stats::filter(r, H)
+#' rh <- rh[is.finite(rh)] # kludge to remove NA at start/end
+#' sR <- spectrum(r, plot=FALSE, spans=c(11,5,3))
+#' sRH <- spectrum(rh, plot=FALSE, spans=c(11,5,3))
+#' par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+#' plot(sR$freq, sRH$spec/sR$spec, xlab="Frequency", ylab="Power Transfer",
+#'      type='l', lwd=5, col='gray')
+#' theory <- freqz(H, n=seq(0,pi,length.out=100))
+#' # Note we must square the modulus for the power spectrum
+#' lines(theory$f/pi/2, Mod(theory$h)^2, lwd=1, col='red')
+#' grid()
+#' legend("topright", col=c("gray", "red"), lwd=c(5,1), cex=2/3,
+#'        legend=c("Practical", "Theory"), bg="white")
+#' plot(log10(sR$freq), log10(sRH$spec/sR$spec),
+#'      xlab="log10 Frequency", ylab="log10 Power Transfer",
+#'      type='l', lwd=5, col='gray')
+#' theory <- freqz(H, n=seq(0,pi,length.out=100))
+#' # Note we must square the modulus for the power spectrum
+#' lines(log10(theory$f/pi/2), log10(Mod(theory$h)^2), lwd=1, col='red')
+#' grid()
+#' legend("topright", col=c("gray", "red"), lwd=c(5,1), cex=2/3,
+#'        legend=c("Practical", "Theory"), bg="white")
+#
+
+
+#' }
 makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
 {
     type <- match.arg(type)
@@ -2509,8 +2642,6 @@ oce.filter <- oceFilter
 
 
 #' Grid data using Barnes algorithm
-#' 
-#' Grid data using Barnes algorithm.
 #' 
 #' The algorithm follows that described by Koch et al. (1983), with the
 #' addition of the ability to blank out the grid in spots where data are
@@ -2840,10 +2971,10 @@ fillGap <- function(x, method=c("linear"), rule=1)
 }
 
 
-#' Add a Column to the Data Slot of an Oce object
+#' Add a Column to the Data Slot of an Oce object [deprecated]
 #'
-#' If there is already a column with the given name, its contents are replaced
-#' by the new value.
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+#' Use \code{\link{oceSetData}} instead of the present function.
 #'
 #' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
 #' @param data the data.  The length of this item must match that of the
@@ -2852,15 +2983,12 @@ fillGap <- function(x, method=c("linear"), rule=1)
 #' @return An object of \code{\link[base]{class}} \code{oce}, with a new
 #' column.
 #' @author Dan Kelley
-#' @seealso \code{\link{ctdAddColumn}} does a similar thing for \code{ctd}
-#' objects, and is in fact called, if \code{x} is of class \code{ctd}.
-#' @examples
-#' library(oce)
-#' data(ctd) 
-#' st <- swSigmaTheta(ctd[["salinity"]], ctd[["temperature"]], ctd[["pressure"]])
-#' new <- addColumn(ctd, st, "sigmaTheta")
+#' @seealso Please use \code{\link{oceSetData}} instead of the present function.
+#' @family functions that will be removed soon
 addColumn <- function (x, data, name)
 {
+    .Deprecated("oceSetData",
+                msg="addColumn() will be removed soon; use oceSetData() instead. See ?'oce-deprecated'.")
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (missing(data))
@@ -2872,7 +3000,8 @@ addColumn <- function (x, data, name)
     if (n != length(data))
         stop("data length is ", n, " but it must be ", nd, " to match existing data")
     if (inherits(x, "ctd")) {
-        res <- ctdAddColumn(x, data, name) # FIXME: supply units
+        ## res <- ctdAddColumn(x, data, name) # FIXME: supply units
+        res <- oceSetData(x, name=name, value=data) # FIXME: supply units
     } else {
         res <- x
         res@data[[name]] <- data
@@ -3666,7 +3795,7 @@ matrixSmooth <- function(m, passes=1)
             m <- .Call("matrix_smooth", m)
         }
     } else {
-        warning("matrixSmooth given passes<=0, so returning matrix unmodified\n")
+        warning("matrixSmooth given passes<=0, so returning matrix unmodified")
     }
     m
 }
@@ -3822,6 +3951,14 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 {
     if (name %in% names(object@metadata)) {
         item <- object@metadata[[name]]
+        if (is.null(item))
+            return()
+        if (is.na(item))
+            return()
+        if (is.character(item) && nchar(item) == 0)
+            return()
+        if (is.na(item))
+            return()
         if (isdate) item <- format(item)
         if (quote) item <- paste('`"', item, '"`', sep="")
         cat(paste("* ", label, item, postlabel, "\n", sep=""))

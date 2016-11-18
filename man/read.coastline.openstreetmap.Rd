@@ -8,12 +8,22 @@ read.coastline.openstreetmap(file, lonlim = c(-180, 180), latlim = c(-90,
   90), debug = getOption("oceDebug"), monitor = FALSE, processingLog)
 }
 \arguments{
-\item{file}{name of file containing coastline data.}
+\item{file}{name of file containing coastline data (a file ending in \code{.shp})
+or a zipfile that contains such a file, with a corresponding name.
+The second scheme is useful for files downloaded from the NaturalEarth
+website [2].}
 
-\item{lonlim}{as \code{latlim}, but a signed longitude.}
+\item{lonlim}{numerical vectors specifying the
+west and east edges (and south and north edges) of a focus window.
+Coastline polygons that do not intersect the defined box are
+skipped, which can be useful in narrowing high-resolution world-scale
+data to a local application.}
 
-\item{latlim}{range of (signed) latitudes, used only for shapefiles.
-Regions that do not intersect this range are skipped.}
+\item{latlim}{numerical vectors specifying the
+west and east edges (and south and north edges) of a focus window.
+Coastline polygons that do not intersect the defined box are
+skipped, which can be useful in narrowing high-resolution world-scale
+data to a local application.}
 
 \item{debug}{set to TRUE to print information about the header, etc.}
 
@@ -40,6 +50,7 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{coastline-class}},
   \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
   \code{\link{coastlineWorld}},
+  \code{\link{download.coastline}},
   \code{\link{plot,coastline-method}},
   \code{\link{read.coastline.shapefile}},
   \code{\link{subset,coastline-method}},

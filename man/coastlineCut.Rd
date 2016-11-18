@@ -9,7 +9,8 @@ coastlineCut(coastline, lon_0 = 0)
 \arguments{
 \item{coastline}{original coastline object}
 
-\item{lon_0}{longitude as would be given in a \code{+lon_0=} item in a proj.4 string}
+\item{lon_0}{longitude as would be given in a \code{+lon_0=} item in a 
+call to \link[rgdal]{project} in the \CRANpkg{rgdal} package.}
 }
 \value{
 a new coastline object
@@ -25,15 +26,15 @@ may help with other values of \code{lon_0}.
 \section{Caution}{
 
 This function is provisional. Its behaviour, name and very existence
-may change through the late months of 2015.  One part of the
-development plan is to see if there is common ground between this
-and the \code{clipPolys} function in the \CRANpkg{PBSmapping} package.
+may change.  Part of the development plan is to see if there is common
+ground between this and the \code{clipPolys} function in the
+\CRANpkg{PBSmapping} package.
 }
 \examples{
 library(oce)
 data(coastlineWorld)
 \dontrun{
-mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100", fill='gray')
+mapPlot(coastlineCut(coastlineWorld, lon_0=100), proj="+proj=robin +lon_0=100")#, col='gray')
 }
 
 }
@@ -44,6 +45,7 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{coastline-class}},
   \code{\link{coastlineBest}},
   \code{\link{coastlineWorld}},
+  \code{\link{download.coastline}},
   \code{\link{plot,coastline-method}},
   \code{\link{read.coastline.openstreetmap}},
   \code{\link{read.coastline.shapefile}},

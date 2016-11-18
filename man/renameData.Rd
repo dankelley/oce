@@ -23,8 +23,8 @@ the changes.
 \examples{
 data(ctd)
 new <- renameData(ctd, "temperature", "temperature68")
-new <- ctdAddColumn(new, T90fromT68(new[["temperature68"]]), 
-                   "temperature", "Temperature",
-                   list(unit=expression(degree*C),scale="ITS=90"))
+new <- oceSetData(new, name="temperature",
+                  value=T90fromT68(new[["temperature68"]]), 
+                  unit=list(unit=expression(degree*C),scale="ITS=90"))
 }
 

@@ -70,10 +70,15 @@ NULL
 #' Several \sQuote{oce} functions are marked "deprecated" in the present
 #' release of oce. Please use the replacement functions as listed below.
 #' 
-#' \tabular{lll}{ \strong{Deprecated} \tab \strong{Replacement} \tab
-#' \strong{Notes}\cr \code{mapZones} \tab \code{\link{mapGrid}} \tab Improve
-#' name sensibility\cr \code{mapMeridians} \tab \code{\link{mapGrid}} \tab
-#' Improve name sensibility\cr }
+#' \tabular{lll}{
+#' \strong{Deprecated}    \tab \strong{Replacement}     \tab \strong{Notes}\cr
+#' \code{mapZones}        \tab \code{\link{mapGrid}}    \tab Improve name sensibility\cr
+#' \code{mapMeridians}    \tab \code{\link{mapGrid}}    \tab Improve name sensibility\cr
+#' \code{addColumn}       \tab \code{\link{oceSetData}} \tab Deprecated 2016-08-01\cr
+#' \code{oce.magic}       \tab \code{\link{oceMagic}}   \tab Deprecated 2016-09-01\cr
+#' \code{ctdAddColumn}    \tab \code{\link{oceSetData}} \tab Deprecated 2016-11-11\cr
+#' \code{ctdUpdateHeader} \tab -                        \tab Deprecated 2016-11-11\cr
+#' }
 #' 
 #' The next CRAN release of \sQuote{oce} will have these functions flagged as
 #' "defunct", which will mean that trying to use them will generate an error
@@ -83,13 +88,14 @@ NULL
 #' present version of oce will produce an error, and that they will be removed
 #' altogether in the next oce release on CRAN.
 #' 
-#' \tabular{lll}{ \strong{Defunct} \tab \strong{Replacement} \tab
-#' \strong{Notes}\cr \code{makeSection} \tab \code{\link{as.section}} \tab
-#' Improve utility and name sensibility\cr \code{columns} \tab
-#' \code{\link{read.ctd}} \tab Unnecessary, and never worked\cr }
+#' \tabular{lll}{
+#' \strong{Defunct}   \tab \strong{Replacement}     \tab \strong{Notes}\cr
+#' \code{makeSection} \tab \code{\link{as.section}} \tab Improve utility and name sensibility\cr
+#' \code{columns}     \tab \code{\link{read.ctd}}   \tab Unnecessary, and never worked\cr
+#'}
 #' 
-#' Several \sQuote{oce} function arguments are considered defunct but are
-#' being permitted in the present CRAN release. They are as follows.
+#' Several \sQuote{oce} function arguments are considered defunct, which
+#' means they will be removed in the next CRAN release. They are as follows.
 #' 
 #' \itemize{
 #'
@@ -171,45 +177,39 @@ NULL
 #' }
 #'
 #' @param x an item containing data. This may be data frame, list, or an oce object.
-#' @param \dots optional extra arguments, passed to conversion functions \code{\link{as.coastline}} or \code{\link{ODF2oce}}, if these are used.
+#' @param \dots optional extra arguments, passed to conversion functions
+#' \code{\link{as.coastline}} or \code{\link{ODF2oce}}, if these are used.
 #'
 #' @return \code{as.oce} returns an object inheriting from \code{\link{oce-class}}.
-#'
-#' @examples
-#' as.oce(data.frame(salinity=c(30, 30.5), temperature=c(15, 14), pressure=c(1, 5)))
-#' as.oce(list(longitude=1:3,latitude=11:13))
 as.oce <- function(x, ...)
 {
-    if (inherits(x, "oce"))
-        return(x)
+    if (inherits(x, "oce")) {
+        names <- names(x)
+        return(if ("EVENT_HEADER" %in% names) ODF2oce(x) else x)
+    }
     if (!is.list(x) && !is.data.frame(x))
         stop("x must be a list, a data frame, or an oce object")
     names <- names(x)
-    if ("EVENT_HEADER" %in% names) {
-        res <- ODF2oce(x)
-    } else {
-        if ("temperature" %in% names && "pressure" %in% names) {
-            ## Assume it's a CTD; if not, rely on users to understand their data
-            ## well enough to know the data type, and to use another function.
-            if ("salinity" %in% names) {
-                res <- as.ctd(salinity=x$salinity, temperature=x$temperature, pressure=x$pressure)
-                ## Add any other columns
-                for (name in names) {
-                    if (name != "temperature" && name != "pressure" && name != "salinity")
-                        res <- ctdAddColumn(res, column=x[name], name=name, label=name) # FIXME: supply units
-                }
-            } else if ("conductivity" %in% names) {
-                for (name in names) {
-                    if (name != "temperature" && name != "pressure" && name != "conductivity")
-                        res <- ctdAddColumn(res, column=x[name], name=name, label=name) # FIXME: supply units
-                }
+    if ("temperature" %in% names && "pressure" %in% names && "salinity" %in% names) {
+        ## Assume it's a CTD
+        res <- as.ctd(salinity=x$salinity, temperature=x$temperature, pressure=x$pressure)
+        ## Add other columns
+        for (name in names) {
+            if (name != "temperature" && name != "pressure" && name != "salinity") {
+                res <- oceSetData(res, name=name, value=x[[name]])
             }
-        } else if ("longitude" %in% names && "latitude" %in% names && length(names) == 2) {
-            res <- as.coastline(longitude=x$longitude, latitude=x$latitude)
-        } else {
-            stop("unknown data type; as of now, as.oce() only handles CTD data")
         }
+        return(res)
     }
+    if ("longitude" %in% names && "latitude" %in% names && length(names) == 2) {
+        ## Assume it's a coastline
+        return(as.coastline(longitude=x$longitude, latitude=x$latitude))
+    }
+    ## Not sure what it is, so make a generic oce object. We
+    ## have no way to guess the unit.
+    res <- new("oce")
+    for (name in names)
+        res <- oceSetData(res, name=name, value=x[[name]])
     res
 }
 
@@ -783,13 +783,14 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' Oce Variant of plot.ts
 #' 
 #' Plot a time-series, obeying the timezone and possibly drawing the range in
-#' the top-left margin
+#' the top-left margin.
+#'
+#' @details
 #' Depending on the version of R, the standard \code{\link{plot}} and
 #' \code{\link{plot.ts}} routines will not obey the time zone of the data.
 #' This routine gets around that problem.  It can also plot the time range in
 #' the top-left margin, if desired; this string includes the timezone, to
 #' remove any possible confusion.
-#' 
 #' The time axis is drawn with \code{\link{oce.axis.POSIXct}}.
 #' 
 #' @param x the times of observations.
@@ -965,7 +966,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     if (!is.null(adorn)) {
         t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
         if (class(t) == "try-error")
-            warning("cannot evaluate adorn {", format(adorn), "}\n")
+            warning("cannot evaluate adorn {", format(adorn), "}")
     }
     ##par(cex=ocex)
     oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
@@ -986,6 +987,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
 #' the month name appears.
 #' @param tz the timezone, as for \code{as.POSIXlt}
 #' @return A POSIXlt object.
+#' @examples
+#' oce.as.POSIXlt("2016-11-06")
 #' @author Dan Kelley
 #' @seealso \code{\link{as.POSIXlt}}, from which this is derived.
 #' @family things related to time
@@ -1063,7 +1066,7 @@ oce.as.POSIXlt <- function (x, tz = "")
 #' refer to the object as \code{x}; see Examples.
 #' 
 #' 3. Applied to an \code{adv} object (i.e. data from an acoustic velocimeter),
-#' \code{oce.edit} treats items named \code{heading}, \code{pitch}, \code{roll}
+#' \code{oceEdit} treats items named \code{heading}, \code{pitch}, \code{roll}
 #' appropriately, depending on the type of \code{adv} instrument used.  (This
 #' is necessary because different manufacturers produce different forms of
 #' these items, i.e. Nortek reports them on a time base that is different from
@@ -1076,7 +1079,7 @@ oce.as.POSIXlt <- function (x, tz = "")
 #' \code{person} doing the work.
 #' 
 #' @aliases oce.edit
-#' @param x an \code{oce} object.  The exact action of \code{oce.edit} depends
+#' @param x an \code{oce} object.  The exact action of \code{oceEdit} depends
 #' on the \code{\link{class}} of \code{x}; see \dQuote{Details}.
 #' @param item if supplied, a character string naming an item in the object's
 #' metadata (see \dQuote{Details}).
@@ -1094,9 +1097,9 @@ oce.as.POSIXlt <- function (x, tz = "")
 #' 
 #' library(oce)
 #' data(ctd)
-#' ctd2 <- oce.edit(ctd, item="latitude", value=47.8879,
-#'                 reason="illustration", person="Dan Kelley")
-#' ctd3 <- oce.edit(ctd,action="x@@data$pressure<-x@@data$pressure-1")
+#' ctd2 <- oceEdit(ctd, item="latitude", value=47.8879,
+#'                reason="illustration", person="Dan Kelley")
+#' ctd3 <- oceEdit(ctd,action="x@@data$pressure<-x@@data$pressure-1")
 oceEdit <- function(x, item, value, action, reason="", person="",
                      debug=getOption("oceDebug"))
 {
@@ -1236,8 +1239,12 @@ standardDepths <- function()
 
 #' Find the Type of an Oceanographic Data File
 #' 
-#' This function tries to infer the file type, based on either the data within
-#' the file or, more rarely, based on the file name.
+#' \code{oceMagic} tries to infer the file type, based on the data
+#' within the file, the file name, or a combination of the two.
+#'
+#' \code{oceMagic} was previously called \code{oce.magic}, but that
+#' alias will be removed towards the end of the year 2016; see
+#' \link{oce-deprecated}.
 #' 
 #' @aliases oceMagic oce.magic
 #' @param file a connection or a character string giving the name of the file
@@ -1270,16 +1277,20 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             someLines <- readLines(file, encoding="UTF-8", n=1)
             if (42 == length(strsplit(someLines[1], ' ')[[1]]))
                 return("lisst")
-        } else if (length(grep(".adr$", filename))) {
+        } 
+        if (length(grep(".adr$", filename))) {
             oceDebug(debug, "file names ends in .adr, so this is an adv/sontek/adr file.\n")
             return("adv/sontek/adr")
-        } else if (length(grep(".rsk$", filename))) {
+        }
+        if (length(grep(".rsk$", filename))) {
             oceDebug(debug, "file names ends with \".rsk\", so this is an RBR/rsk file.\n")
             return("RBR/rsk")
-        } else if (length(grep(".s4a.", filename))) {
+        }
+        if (length(grep(".s4a.", filename))) {
             oceDebug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
             return("interocean/s4")
-        } else if (length(grep(".ODF$", filename, ignore.case=TRUE))) {
+        }
+        if (length(grep(".ODF$", filename, ignore.case=TRUE))) {
             ## in BIO files, the data type seems to be on line 14.  Read more, for safety.
             someLines <- readLines(file, n=100, encoding="UTF-8")
             dt <- grep("DATA_TYPE=", someLines)
@@ -1291,9 +1302,11 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             res <- paste(subtype, "odf", sep="/")
             oceDebug(debug, "file type:", res, "\n")
             return(res)
-        } else if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
+        }
+        if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
-        } else if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo?
+        }
+        if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo?
             if (requireNamespace("ncdf4", quietly=TRUE)) {
                 if (substr(filename, 1, 5) == "http:") {
                     stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
@@ -1301,25 +1314,35 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 }
                 ## NOTE: need to name ncdf4 package because otherwise R checks give warnings.
                 f <- ncdf4::nc_open(filename)
-                if ("DATA_TYPE" %in% names(f$var) && grep("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case=TRUE)) return("argo") else return("netcdf")
+                if ("DATA_TYPE" %in% names(f$var)) {
+                    if (grep("argo", ncdf4::ncvar_get(f, "DATA_TYPE"), ignore.case=TRUE)) return("argo")
+                    else return("netcdf")
+                } else if ("data_type" %in% names(f$var)) {
+                    if (grep("argo", ncdf4::ncvar_get(f, "data_type"), ignore.case=TRUE)) return("argo")
+                    else return("netcdf")
+                }
             } else {
                 stop('must install.packages("ncdf4") to read a netCDF file')
             }
-        } else if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) { # openstreetmap
+        }
+        if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) { # openstreetmap
             return("openstreetmap")
-        } else if (length(grep(".osm$", filename, ignore.case=TRUE))) { # openstreetmap
+        }
+        if (length(grep(".osm$", filename, ignore.case=TRUE))) { # openstreetmap
             return("openstreetmap")
-        } else if (length(grep(".gpx$", filename, ignore.case=TRUE))) { # gpx (e.g. Garmin GPS)
+        }
+        if (length(grep(".gpx$", filename, ignore.case=TRUE))) { # gpx (e.g. Garmin GPS)
             return("gpx")
-        } else if (length(grep(".csv$", filename, ignore.case=TRUE))) {
+        }
+        if (length(grep(".csv$", filename, ignore.case=TRUE))) {
             someLines <- readLines(filename, 30)
-            if (1 == length(grep("WMO Identifier", someLines, useBytes=TRUE))) {
+            if (1 == length(grep("^WMO Identifier", someLines, useBytes=TRUE))) {
                 return("met") # FIXME: may be other things too ...
-            } else if (1 == length(grep("Station_Name,", someLines, useBytes=TRUE))) {
+            } else if (1 == length(grep("^Station_Name,", someLines, useBytes=TRUE))) {
                 return("sealevel")
-            } else if (1 == length(grep("CTD,", someLines, useBytes=TRUE))) {
+            } else if (1 == length(grep("^CTD,", someLines, useBytes=TRUE))) {
                 return("ctd/woce/exchange")
-            } else if (1 == length(grep("BOTTLE,", someLines, useBytes=TRUE))) {
+            } else if (1 == length(grep("^BOTTLE,", someLines, useBytes=TRUE))) {
                 return("section")
             } else {
                 return("unknown")
@@ -1418,53 +1441,55 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                       " from RDI, please send them to dan.kelley@dal.ca so the format can be added."))
         return("possibly RDI CTD")
     }
-
-    ##if (substr(line, 1, 2) == "\177\177")            return("adp")
-    if (substr(line, 1, 3) == "CTD") {
+    ## if (substr(line, 1, 3) == "CTD")) {
+    if (1 == length(grep("^CTD", line, useBytes=TRUE))) { #substr(line, 1, 3) == "CTD") {
         oceDebug(debug, "this is ctd/woce/exchange\n")
         return("ctd/woce/exchange")
     }
-    if ("* Sea-Bird" == substr(line, 1, 10))  {
+    if (1 == length(grep("^\\* Sea-Bird", line, useBytes=TRUE))) {
         oceDebug(debug, "this is ctd/sbe/19\n")
         return("ctd/sbe/19")
     }
-    if ("%ITP" == substr(line, 1, 4)) {
+    ## if ("%ITP" == substr(line, 1, 4)) {
+    if (1 == length(grep("^%ITP", line, useBytes=TRUE))) {
         oceDebug(debug, "this is ice-tethered profile\n")
         return("ctd/itp")
     }
-    if ("# -b" == substr(line, 1, 4)) {
+    ##if ("# -b" == substr(line, 1, 4)) {
+    if (1 == length(grep("^# -b", line, useBytes=TRUE))) {
         oceDebug(debug, "this is coastline\n")
         return("coastline")
     }
-    if ("# Station_Name," == substr(line, 1, 15)) {
+    ## if ("# Station_Name," == substr(line, 1, 15)) {
+    if (1 == length(grep("^# Station_Name,", line, useBytes=TRUE))) {
         oceDebug(debug, "this is sealevel\n")
         return("sealevel")
     }
-    if ("Station_Name," == substr(line, 1, 13)) {
+    ##if ("Station_Name," == substr(line, 1, 13)) {
+    if (1 == length(grep("^Station_Name,", line, useBytes=TRUE))) {
         oceDebug(debug, "this is sealevel\n")
         return("sealevel")
     }
-    if ("%" == line && length(line2) && regexpr("^Observatory", line2)) {
-        oceDebug(debug, "this is observatory\n")
-        return("observatory")
-    }
-    if (0 < regexpr("^[0-9][0-9][0-9][A-Z] ", line)) {
+    if (1 == length(grep("^[0-9][0-9][0-9][A-Z] ", line, useBytes=TRUE))) {
         oceDebug(debug, "this is sealevel\n")
         return("sealevel")
     }
-    if (0 < regexpr("^NCOLS[ ]*[0-9]*[ ]*$", line, ignore.case=TRUE)) {
+    if (1 == length(grep("^NCOLS[ ]*[0-9]*[ ]*$", line, useBytes=TRUE, ignore.case=TRUE))) {
         oceDebug(debug, "this is topo\n")
         return("topo")
     }
-    if ("RBR TDR" == substr(line, 1, 7))  { ## FIXME: obsolete; to be removed Fall 2015
+    ##if ("RBR TDR" == substr(line, 1, 7))  { ## FIXME: obsolete; to be removed Fall 2015
+    if (1 == length(grep("^RBR TDR", line, useBytes=TRUE))) { ## FIXME: obsolete; to be removed Fall 2015
         oceDebug(debug, "this is RBR/dat\n")
         return("RBR/dat")
     }
-    if ("Model=" == substr(line, 1, 6))  {
+    ## if ("Model=" == substr(line, 1, 6))  {
+    if (1 == length(grep("^Model=", line, useBytes=TRUE))) {
         oceDebug(debug, "this is RBR/txt\n")
         return("RBR/txt")
     }
-    if ("BOTTLE"  == substr(line, 1, 6))  {
+    ## if ("BOTTLE"  == substr(line, 1, 6))  {
+    if (1 == length(grep("^BOTTLE", line, useBytes=TRUE)))  {
         oceDebug(debug, "this is section\n")
         return("section")
     }
@@ -1600,7 +1625,7 @@ read.oce <- function(file, ...)
     if (type == "sealevel")
         return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")
-        return(read.topo(file, processingLog=processingLog, ...))
+        return(read.topo(file))
     if (type == "RBR/dat") # FIXME: obsolete; to be removed by Fall 2015
         return(read.rsk(file, processingLog=processingLog, ...))
     if (type == "RBR/rsk")
@@ -1611,8 +1636,6 @@ read.oce <- function(file, ...)
         return(read.section(file, processingLog=processingLog, ...))
     if (type == "ctd/woce/other")
         return(read.ctd.woce.other(file, processingLog=processingLog, ...))
-    if (type == "observatory")
-        return(read.observatory(file, processingLog=processingLog, ...))
     if (type == "landsat")
         return(read.landsat(file, ...))
     if (type == "netcdf")
@@ -1659,6 +1682,15 @@ read.netcdf <- function(file, ...)
     data <- list()
 
     for (name in names) {
+        ## message("name=", name)
+        if (1 == length(grep("^history_", name)))
+            next
+        ## if (name == "history_institution" || name == "history_step" || name == "history_software"
+        ##     || name == "history_software_release" || name == "history_reference" || name == "history_date"
+        ##     || name == "history_action" || name == "history_parameter" || name == "history_start_pres"
+        ##     || name == "history_stop_pres" || name == "history_previous_value"
+        ##     || name == "history_qctest")
+        ##     next
         item <- ncdf4::ncvar_get(f, name)
         if (1 == length(dim(item))) # matrix column converted to vector
             item <- as.vector(item)
@@ -1668,7 +1700,7 @@ read.netcdf <- function(file, ...)
             if ("seconds since 1970-01-01 UTC" == u) {
                 data[[name]] <- numberAsPOSIXct(item)
             } else {
-                warning("time unit is not understood, so it remains simply numeric\n")
+                warning("time unit is not understood, so it remains simply numeric")
             }
         }
     }
@@ -1997,15 +2029,51 @@ oceColorsPalette <- oce.colorsPalette
 
 #' Oce Version of axis.POSIXct
 #' 
-#' As \code{\link{axis.POSIXct}} but with axis labels obeying the timezone of
-#' \code{x}.  This will not be needed for 2.9 and later, but is included so
-#' that \code{oce} will work even with earlier versions.
+#' A specialized variant of \code{\link{axis.POSIXct}} that produces
+#' results with less ambiguity in axis labels.
+#' 
+#' The tick marks are set automatically based on examination of the time range on
+#' the axis. The scheme was devised by constructing test cases with a typical plot
+#' size and font size, and over a wide range of time scales. In some categories,
+#' both small tick marks are interspersed between large ones.
+#' 
+#' The user may set the format of axis numbers with the \code{tformat} argument.
+#' If this is not supplied, the format is set based on the time span of the axis:
+#' 
+#' \itemize{
+#' 
+#' \item If this time span is less than a minute, the time axis labels are in
+#' seconds (fractional seconds, if the interval is less than 2 seconds), with
+#' leading zeros on small integers. (Fractional seconds are enabled with a trick:
+#' the usual R format \code{"\%S"} is supplemented with a new format e.g.
+#' \code{"\%.2S"}, meaning to use two digits after the decimal.)
+#' 
+#' \item If the time span exceeds a minute but is less than 1.5 days, the label
+#' format is \code{"\%H:\%M:\%S"}.
+#' 
+#' \item If the time span exceeds 1.5 days but is less than 1 year, the format is
+#' \code{"\%b \%d"} (e.g. Jul 15) and, again, the tick marks are set up for several
+#' subcategories.
+#' 
+#' \item If the time span exceeds a year, the format is \code{"\%Y"}, i.e. the year
+#' is displayed with 4 digits.
+#' 
+#' }
+#' 
+#' It should be noted that this scheme differs from the R approach in several
+#' ways. First, R writes day names for some time ranges, in a convention that is
+#' seldom seen in the literature. Second, R will write nn:mm for both HH:MM and
+#' MM:SS, an ambiguity that might confuse readers. Third, the use of both large
+#' and small tick marks is not something that R does. 
+#' 
+#' Bear in mind that \code{tformat} may be set to alter the number format, but
+#' that the tick mark scheme cannot (presently) be controlled.
 #' 
 #' @param side as for \code{\link{axis.POSIXct}}.
 #' @param x as for \code{\link{axis.POSIXct}}.
 #' @param at as for \code{\link{axis.POSIXct}}.
 #' @param tformat as \code{format} for \code{\link{axis.POSIXct}} for now, but
-#' eventually will have new features for multiline labels, e.g. day on one line
+#' may eventually have new features for multiline labels, e.g. day on one line
 #' and month on another.
 #' @param labels as for \code{\link{axis.POSIXct}}.
 #' @param drawTimeRange boolean, \code{TRUE} to draw a time range on the
@@ -2040,7 +2108,8 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     oceDebug(debug,"mar=",mar,"\n")
     oceDebug(debug,"mgp=",mgp,"\n")
     oceDebug(debug,"cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
-    oceDebug(debug,vectorShow(x, "x"))
+    oceDebug(debug, vectorShow(x, "x"))
+    tformatGiven <- !missing(tformat)
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
     ## time zone in the data.  (Version 2.9.0 obeys the time zone.)
     if (missing(x))
@@ -2065,7 +2134,8 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
               "UTC\n")
     z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
     oceDebug(debug, "d=", d, " (time range)\n")
-    if (d < 2) {
+    if (d <= 2) {
+        oceDebug(debug, "Time range is under 2 sec\n")
         ## The time rounding will fail for very small time intervals;
         ## a wider range can be added easily.
         t.start <- rr[1]
@@ -2081,110 +2151,143 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         t.start <- t0+round*floor((as.numeric(t.start)-as.numeric(t0))/round)
         t.end <- t0+round*floor((as.numeric(t.end)-as.numeric(t0))/round)
         z <- seq(t.start, t.end, by=round)
-        oceDebug(debug, "time range is under 5 seconds\n")
-        oceDebug(debug, vectorShow(z, "z"))
-        if (missing(tformat))
-            tformat <- "%OS" # FIXME: not too useful if span is under 1ms
-    } else if (d < 60) {                       # under a min
+        oceDebug(debug, vectorShow(z, "TIME RANGE is under 2 seconds; z="))
+        ## BOOKMARK 1A
+        if (missing(tformat)) {
+            tformat <- "%.1S" # NOTE: this .1 is interpreted at BOOKMARK 1B
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d <= 60) {
+        oceDebug(debug, "Time range is between 2 sec and 1 min\n")
         t.start <- trunc(rr[1]-1, "secs")
         t.end <- trunc(rr[2]+1, "secs")
         z <- seq(t.start, t.end, by="1 sec")
-        oceDebug(debug, "time range is under a minute\n")
-        oceDebug(debug, vectorShow(z, "z"))
-        if (missing(tformat))
+        oceDebug(debug, vectorShow(z))
+        if (missing(tformat)) {
             tformat <- "%S"
-    } else if (d < 60 * 3) {                       # under 3 min
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d <= 60 * 3) {
+        oceDebug(debug, "Time range is between 1 min and 3 min\n")
         t.start <- trunc(rr[1]-60, "mins")
         t.end <- trunc(rr[2]+60, "mins")
         z <- seq(t.start, t.end, by="10 sec")
-        oceDebug(debug, "time range is under 3 minutes\n")
-        oceDebug(debug, vectorShow(z, "z"))
-        if (missing(tformat))
-            tformat <- "%H:%M:%S"
-    } else if (d < 60 * 30) {                  # under 30min
+        oceDebug(debug, vectorShow(z))
+        if (missing(tformat)) {
+            tformat <- "%M:%S"
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d <= 60 * 30) {
+        oceDebug(debug, "Time range is between 3 min and 30 min\n")
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="min")
-        oceDebug(debug, "time range is under 30 min\n")
-        oceDebug(debug, vectorShow(z, "z"))
-        if (missing(tformat))
-            tformat <- "%H:%M"
-    } else if (d < 60 * 60) {                  # under 1 hour
+        oceDebug(debug, vectorShow(z))
+        if (missing(tformat)) {
+            tformat <- "%M:%S"
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d <= 60 * 60) {
+        oceDebug(debug, "Time range is between 30 min and 1 hour\n")
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="10 min")
-        oceDebug(debug, vectorShow(z, "Time range is under an hour; z="))
-        if (missing(tformat))
-            tformat <- "%H:%M"
-    } else if (d < 60 * 60 * 2) {       # under 2 hours
+        oceDebug(debug, vectorShow(z))
+        if (missing(tformat)) {
+            tformat <- "%M:%S"
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d <= 60 * 60 * 2) {
+        oceDebug(debug, "Time range is between 1 and 2 hours\n")
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="10 min")
-        oceDebug(debug, vectorShow(z, "Time range is under 2 hours; z="))
-        if (missing(tformat))
-            tformat <- "%H:%M"
-    } else if (d < 60 * 60 * 6) {       # under 6 hours, use HM
+        oceDebug(debug, vectorShow(z))
+        if (missing(tformat)) {
+            tformat <- "%H:%M:%S"
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d <= 60 * 60 * 6) {
+        oceDebug(debug, "Time range is between 2 and 6 hours\n")
         t.start <- trunc(rr[1], "hour")
         t.end <- trunc(rr[2] + 3600, "hour")
         z <- seq(t.start, t.end, by="30 min")
-        oceDebug(debug, vectorShow(z, "Time range is under 6 hours; z="))
-        if (missing(tformat))
-            tformat <- "%H:%M"
-    } else if (d < 60 * 60 * 30) {       # under about a day
+        oceDebug(debug, vectorShow(z))
+        if (missing(tformat)) {
+            tformat <- "%H:%M:%S"
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d <= 60 * 60 * 24 * 1.5) {
+        oceDebug(debug, "Time range is between 6 hours and 1.5 days\n")
         t.start <- trunc(rr[1], "hour")
-        t.end <- trunc(rr[2] + 3600, "hour")
-        z <- seq(t.start, t.end, by="1 hour")
-        oceDebug(debug, vectorShow(z, "Time range is under 30 hours, so z="))
-        if (missing(tformat))
-            tformat <- "%H"
-    } else if (d <= 60 * 60 * 24 * 3) {        # under 3 days: label day; show 1-hour subticks
-        t.start <- trunc(rr[1], "day")
-        t.end <- trunc(rr[2] + 86400, "day")
-        z <- seq(t.start, t.end, by="hour")
+        t.end <- trunc(rr[2] + 86400, "hour")
+        z <- seq(t.start, t.end, by="2 hour")
         z.sub <- seq(t.start, t.end, by="hour")
-        oceDebug(debug, vectorShow(z, "Time range is under 3 days; z="))
-        oceDebug(debug, vectorShow(z.sub, "Time range is under 3 days; z.sub="))
-        if (missing(tformat))
-            tformat <- "%H"             #b %d"
-    } else if (d <= 60 * 60 * 24 * 5) {        # under 5 days: label day; show 2-h subticks
+        oceDebug(debug, vectorShow(z))
+        if (missing(tformat)) {
+            tformat <- "%H:%M:%S"
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d <= 60 * 60 * 24 * 5) {
+        oceDebug(debug, "Time range is between 1.5 and 5 days\n")
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
-        z.sub <- seq(t.start, t.end, by="2 hour")
-        oceDebug(debug, vectorShow(z, "Time range is under 5 days; z="))
-        oceDebug(debug, vectorShow(z.sub, "Time range is under 5 days; z.sub="))
-        if (missing(tformat))
+        z.sub <- seq(t.start, t.end, by="6 hour")
+        oceDebug(debug, vectorShow(z))
+        oceDebug(debug, vectorShow(z.sub))
+        if (missing(tformat)) {
             tformat <- "%b %d"
-    } else if (d <= 60 * 60 * 24 * 14) { # under 2 weeks: label day; show 12-h subticks
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d <= 60 * 60 * 24 * 14) {
+        oceDebug(debug, "Time range is between 4 days and 2 weeks\n")
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
         z.sub <- seq(t.start, t.end, by="12 hour")
-        oceDebug(debug, vectorShow(z, "Time range is under 2 weeks; z="))
-        if (missing(tformat))
+        oceDebug(debug, vectorShow(z))
+        oceDebug(debug, vectorShow(z.sub))
+        if (missing(tformat)) {
             tformat <- "%b %d"
-    } else if (d <= 60 * 60 * 24 * 31) { # under 1 month: label day
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d <= 60 * 60 * 24 * 31) {
+        oceDebug(debug, "Time range is between 2 weeks and 1 month (defined as 31 days)\n")
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
-        z <- seq(t.start, t.end, by="day")
-        oceDebug(debug, vectorShow(z, "Time range is under a month; z="))
-        if (missing(tformat))
+        z <- seq(t.start, t.end, by="week")
+        z.sub <- seq(t.start, t.end, by="day")
+        oceDebug(debug, vectorShow(z))
+        oceDebug(debug, vectorShow(z.sub))
+        if (missing(tformat)) {
             tformat <- "%b %d"
-    } else if (d < 60 * 60 * 24 * 31 * 2) {        # under 2 months
-        t.start <- trunc(rr[1], "day")
-        t.end <- trunc(rr[2] + 86400, "day")
-        z <- seq(t.start, t.end, by="day")
-        oceDebug(debug, vectorShow(z, "Time range is under 2 months; z="))
-        if (missing(tformat))
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d < 60 * 60 * 24 * 31 * 2) {
+        oceDebug(debug, "Time range is between 1 and 2 months (defined as 31 days)\n")
+        t.start <- trunc(rr[1], "days")
+        t.end <- trunc(rr[2] + 86400, "days")
+        z <- seq(t.start, t.end, by="week") # big ticks
+        z.sub <- seq(t.start, t.end, by="day") # small ticks
+        oceDebug(debug, vectorShow(z))
+        oceDebug(debug, vectorShow(z.sub))
+        if (missing(tformat)) {
             tformat <- "%b %d"
-    } else if (d < 60 * 60 * 24 * 31 * 4) {        # under 4 months
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d < 60 * 60 * 24 * 31 * 4) {
+        oceDebug(debug, "Time range is between 2 and 4 months (defined as 31 days)\n")
         t.start <- trunc(rr[1], "days")
         t.end <- trunc(rr[2] + 86400, "days")
         z <- seq(t.start, t.end, by="week")
-        oceDebug(debug, vectorShow(z, "Time range is under 4 months; z="))
-        if (missing(tformat))
+        oceDebug(debug, vectorShow(z))
+        if (missing(tformat)) {
             tformat <- "%b %d"
-    } else if (d < 1.1 * 60 * 60 * 24 * 365) { # under about a year
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d < 1.1 * 60 * 60 * 24 * 365) {
+        oceDebug(debug, "Time range is between 4 months and 1 year\n")
         rrl <- as.POSIXlt(rr)
         rrl[1]$mday <- 1
         rrl[2] <- rrl[2] + 31 * 86400
@@ -2192,23 +2295,33 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         t.start <- trunc(rrl[1], "day")
         t.end <- trunc(rrl[2] + 86400, "day")
         z <- seq(t.start, t.end, by="month")
-        oceDebug(debug, vectorShow(z, "Time range is under a year or so; z="))
-        if (missing(tformat))
+        oceDebug(debug, vectorShow(z))
+        if (missing(tformat)) {
             tformat <- "%b %d"
-    } else if (d < 3.1 * 60 * 60 * 24 * 365) { # under about 3 years
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else if (d < 3.1 * 60 * 60 * 24 * 365) {
+        oceDebug(debug, "Time range is between 1 and 3 years\n")
         rrl <- as.POSIXlt(rr)
         rrl[1]$mday <- 1
         rrl[2] <- rrl[2] + 31 * 86400
         rrl[2]$mday <- 1
         t.start <- trunc(rrl[1], "days")
         t.end <- trunc(rrl[2], "days")
-        z <- seq(t.start, t.end, by="1 month")
-        if (missing(tformat))
-            tformat <- "%b %Y"
-    } else { # FIXME: do this as above.  Then remove the junk near the top.
+        z <- seq(t.start, t.end, by="6 month")
+        oceDebug(debug, vectorShow(z))
+        z.sub <- seq(t.start, t.end, by="month") # small ticks
+        oceDebug(debug, vectorShow(z.sub))
+        if (missing(tformat)) {
+            tformat <- "%Y %b"
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+    } else {                           
+        oceDebug(debug, "Time range is longer than 3 years\n")
         class(z) <- c("POSIXt", "POSIXct")
-        attr(z, "tzone") <- attr(x, "tzone")
-        zz <- as.POSIXlt(z)
+        tz <- attr(x, "tzone")
+        attr(z, "tzone") <- tz
+        zz <- as.POSIXlt(z, tz=tz)
         zz$mday <- zz$wday <- zz$yday <- 1
         zz$isdst <- -1
         zz$mon <- zz$hour <- zz$min <- zz$sec <- 0
@@ -2216,10 +2329,13 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         M <- length(zz$year)
         zz <- lapply(zz, function(x) rep(x, length.out = M))
         class(zz) <- c("POSIXt", "POSIXlt")
-        z <- as.POSIXct(zz)
+        z <- as.POSIXct(zz, tz=tz)
         attr(z, "tzone") <- attr(x, "tzone")
-        if (missing(tformat))
+        oceDebug(debug, vectorShow(z))
+        if (missing(tformat)) {
             tformat <- "%Y"
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
         oceDebug(debug, vectorShow(z, "z="))
     }
     if (!mat)
@@ -2237,12 +2353,26 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     oceDebug(debug, vectorShow(z, "z before keep"))
     z <- z[keep]
     oceDebug(debug, vectorShow(z, "z after keep"))
-    if (!is.logical(labels))
+    if (!is.logical(labels)) {
         labels <- labels[keep]
-    else if (identical(labels, TRUE))
-        labels <- format(z, format = tformat)
-    else if (identical(labels, FALSE))
+    } else if (labels[1]) {
+        if (length(grep("[0-9]+S.*", tformat))) {
+            ## BOOKMARK 1B a special trick to get fractional seconds (cf BOOKMARK 1A)
+            old <- options("digits.secs")$digits.secs
+            n <- as.numeric(gsub("^%.*\\.([0-9]*)S.*", "\\1", tformat))
+            options(digits.secs=n)
+            labels <- format(z) # "2016-01-01 hh:mm:ss.digits"
+            labels <- gsub("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:", "", labels)
+            options(digits.secs=old)
+        } else {
+            labels <- format(z, format=tformat)
+        }
+    } else if (!labels[1]) {
         labels <- rep("", length(z))
+    }
+    oceDebug(debug, vectorShow(labels, n=-1))
+    oceDebug(debug, vectorShow(format(z), n=-1))
+    oceDebug(debug, vectorShow(z, n=-1))
     if (drawTimeRange) {
         time.range <- par("usr")[1:2]   # axis, not data
         class(time.range) <- c("POSIXt", "POSIXct")
@@ -2287,7 +2417,6 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     if (nchar(main) > 0) {
         mtext(main, side=if(side==1) 3 else 1, cex=cex.axis*par('cex'), adj=1)
     }
-    ## FIXME: why an axis() here and also in a dozen lines?
     oceDebug(debug, vectorShow(z, "z="))
     if (length(z.sub) > 0) {
         axis(side, at = z.sub, line=0, labels = FALSE, tcl=-0.25)
@@ -2300,11 +2429,21 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     omgp <- par('mgp')
     par(cex.axis=cex.axis, cex.main=cex.main, mgp=mgp, tcl=-0.5)
     ##axis(side, at=z, line=0, labels=labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, mar=mar, mgp=mgp)
+
+    ## If the user did gave tformat, shorten the strings for aesthetic reasons.
+    if (!tformatGiven) {
+        oceDebug(debug, "axis labels before shortenTimeString(): '", paste(labels, "', '"), "'\n")
+        labels <- shortenTimeString(labels, debug=debug-1)
+        oceDebug(debug, "axis labels after shortenTimeString(): '", paste(labels, "', '"), "'\n")
+    }
     axis(side, at=z, line=0, labels=labels, mgp=mgp, cex.main=cex.main, cex.axis=cex.axis, ...)
     par(cex.axis=ocex.axis, cex.main=ocex.main, mgp=omgp)
     oceDebug(debug, "} # oce.axis.ts()\n", unindent=1)
     zzz <- as.numeric(z)
-    par(xaxp=c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz)))
+    if (1 < length(zzz)) {
+        xaxp <- c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz))
+        par(xaxp=xaxp)
+    }
     invisible(z)                       # FIXME: or z.sub?
 }
 

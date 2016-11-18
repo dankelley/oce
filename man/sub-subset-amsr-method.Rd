@@ -74,7 +74,10 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,windrose-method}}
 
 Other things related to \code{amsr} data: \code{\link{amsr-class}},
+  \code{\link{composite,amsr-method}},
+  \code{\link{download.amsr}},
   \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
+  \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}
 }
 

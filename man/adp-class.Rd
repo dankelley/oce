@@ -48,13 +48,27 @@ in the original data file.)
 
 The \code{data} slot holds some standardized items, and
 many that vary from instrument to instrument.  One standard item is
-\code{adp[["v"]]}, a three-dimensional numeric matrix of velocities in
+\code{adp[["v"]]}, a three-dimensional numeric array of velocities in
 m/s.  In this matrix, the first index indicates time, the second bin
-number, and the third beam number.  The meanings of the beams depends on
+number, and the third beam number. The meaning of beams number depends on
 whether the object is in beam coordinates, frame coordinates, or earth
-coordinates.  
+coordinates.  For example, if in earth coordinates, then beam 1 is
+the eastward component of velocity.
+Thus, for example,
+\preformatted{
+library(oce)
+data(adp)
+t <- adp[['time']]
+d <- adp[['distance']]
+eastward <- adp[['v']][,,1]
+imagep(t, d, eastward, missingColor="gray")
+}
+plots an image of the eastward component of velocity as a function of time (the x axis)
+and distance from sensor (y axis), since the \code{adp} dataset is
+in earth coordinates. Note the semidurnal tidal signal, and the pattern of missing
+data at the ocean surface (gray blotches at the top).
     
-Corresponding to the velocity matrix are two matrices of type raw, and
+Corresponding to the velocity array are two arrays of type raw, and
 identical dimension, accessed by \code{adp[["a"]]} and \code{adp[["q"]]},
 holding measures of signal strength and data quality quality,
 respectively.  (The exact meanings of these depend on the particular type
@@ -62,7 +76,7 @@ of instrument, and it is assumed that users will be familiar enough with
 instruments to know both the meanings and their practical consequences in
 terms of data-quality assessment, etc.)
 
-In addition to the matrices, there are time-based vectors.  The vector
+In addition to the arrays, there are time-based vectors.  The vector
 \code{adp[["time"]]} (of length equal to the first index of
 \code{adp[["v"]]}, etc.) holds times of observation.  Depending on type of
 instrument and its configuration, there may also be corresponding vectors
@@ -75,7 +89,6 @@ The precise meanings of the data items depend on the instrument type.  All
 instruments have \code{v} (for velocity), \code{q} (for a measure of data
 quality) and \code{a} (for a measure of backscatter amplitude, also called
 echo intensity).  
-      
 Teledyne-RDI profilers have an additional item \code{g} (for
 percent-good). 
       
@@ -145,6 +158,15 @@ line bisecting beam pairs.  The length of this vector equals
 
 The \code{processingLog} slot is in standard form and needs little comment.
 }
+\section{Teledyne-RDI Sentinel V ADCPs}{
+ As of 2016-09-27 there is
+    provisional support for the TRDI "SentinelV" ADCPs, which are 5
+    beam ADCPs with a vertical centre beam. Relevant vertical beam
+    fields are called \code{adp[["vv"]]}, \code{adp[["va"]]},
+    \code{adp[["vq"]]}, and \code{adp[["vg"]]} in analogy with the
+    standard 4-beam fields.
+}
+
 \section{Accessing and altering information within \code{adp-class} objects}{
 
 \emph{Extracting values} Matrix data may be accessed as illustrated

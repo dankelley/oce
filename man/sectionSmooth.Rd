@@ -4,7 +4,8 @@
 \alias{sectionSmooth}
 \title{Smooth a Section}
 \usage{
-sectionSmooth(section, method = c("spline", "barnes"),
+sectionSmooth(section, method = c("spline", "barnes"), xg, yg, xgl, ygl, xr,
+  yr, gamma = 0.5, iterations = 2, trim = 0, pregrid = FALSE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -13,6 +14,27 @@ For \code{method="spline"}, the pressure levels must match for each station in
 the section.}
 
 \item{method}{Specifies the method to use; see \sQuote{Details}.}
+
+\item{xg, xgl}{passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.
+If \code{xg} is supplied, it defines the x component of the grid, i.e. the resultant "stations".
+Alternatively, if \code{xgl} is supplied, the x grid is established using \code{\link{seq}},
+to span the data with \code{xgl} elements. If neither of these is supplied, the output
+x grid will equal the input x grid.}
+
+\item{yg, ygl}{similar to \code{xg} and \code{xgl}.}
+
+\item{xr, yr}{influence ranges in x and y, passed to \code{\link{interpBarnes}} if
+\code{method="barnes"}; ignored otherwise.}
+
+\item{gamma}{scale-reduction parameter, passed to \code{\link{interpBarnes}},
+if \code{method="barnes"}; ignored otherwise.}
+
+\item{iterations}{number of interations of Barnes algorithm, passed to
+\code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.}
+
+\item{trim}{passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise}
+
+\item{pregrid}{passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a moderate amount
 of debugging information, or to 2 to get more.}
@@ -42,8 +64,8 @@ and sigma-theta.
 
 For the (much slower) \code{method="barnes"} method, smoothing is done across
 both horizontal and vertical coordinates, using \code{\link{interpBarnes}}.
-Any arguments in \code{\dots} being passed to that function; see
-\sQuote{Examples}.
+The stations are changed to lie on the grid supplied defined \code{xg} and
+\code{yg}, or by \code{xgl} and \code{ygl} (see those arguments)
 }
 \examples{
 library(oce)
@@ -52,8 +74,10 @@ gs <- subset(section, 109<=stationId&stationId<=129)
 gsg <- sectionGrid(gs, p=seq(0, 5000, 150))
 gss1 <- sectionSmooth(gsg, "spline", df=16)
 plot(gss1)
+\dontrun{
 gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
 plot(gss2)
+}
 
 }
 \author{

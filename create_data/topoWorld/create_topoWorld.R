@@ -52,6 +52,5 @@ topoWorld <- as.topo(longitude, latitude, z, filename="etopo5.dat")
 close(f)
 
 save(topoWorld, file="topoWorld.rda")
-library(tools)
 tools::resaveRdaFiles("topoWorld.rda")
 

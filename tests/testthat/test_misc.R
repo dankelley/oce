@@ -52,3 +52,58 @@ test_that("Gravity", {
 })
 
 
+test_that("despike", { # issue 1067
+          min <- 10000
+          max <- 20000
+          x1 <- c(3715, 7546, 10903, 13386, 15196, 15371, 55748, 71488)
+          x2 <- despike(x1, reference="trim", min=min, max=max, replace="reference")
+          x3 <- x1
+          x3[1:2] <- 10903 # result from approx() with rule=2
+          x3[7:8] <- 15371 # result from approx() with rule=2
+          expect_equal(x2, x3)
+          x4 <- despike(x1, reference="trim",min=min,max=max, replace="NA")
+          x5 <- x1
+          x5[x5<min] <- NA
+          x5[x5>max] <- NA
+          expect_equal(x4, x5)
+})
+
+
+test_that("integration", {
+          x <- seq(0, 1, length.out=10)
+          dx <- x[2] - x[1]
+          y <- 2*x + 3*x^2
+          A <- integrateTrapezoid(x, y)
+          expect_equal(A,2,tolerance=dx^2) # test for quadratic accuracy
+})
+
+test_that("interpBarnes", {
+          data("wind")
+          u <- interpBarnes(wind$x, wind$y, wind$z)
+          ## These tests are not in comparison to theory, or
+          ## known values; they simply ensure that results have not
+          ## changed since 2016-11-06, when the tests were devised.
+          expect_equal(u$zg[1,1], 30.962611975027)
+          expect_equal(u$zg[10,10], 27.042654784966)
+})
+
+test_that("binAverage", {
+          x <- seq(0, 100, 1)
+          y <- 1 + x ^2
+          ba <- binAverage(x, y)
+          ## These tests are not in comparison to theory, or
+          ## known values; they simply ensure that results have not
+          ## changed since 2016-11-06, when the tests were devised.
+          expect_equal(10, length(ba$x))
+          expect_equal(10, length(ba$y))
+          expect_equal(ba$x[5], 45)
+          expect_equal(ba$y[5], 1989.5)
+})
+
+test_that("get_bit (unused in oce)", {
+          buf <- 0x3a
+          bits <- unlist(lapply(7:0, function(i) .Call("get_bit", buf, i)))
+          ## NB. 'i' starts at rightmost bit
+          expect_equal(c(0, 0, 1, 1, 1, 0, 1, 0), bits)
+})
+

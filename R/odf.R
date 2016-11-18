@@ -207,6 +207,9 @@ findInHeader <- function(key, lines) # local
 #'     \code{FFFF_*.*} \tab \code{flag_archaic}       \tab Old flag name, replaced by \code{QCFF}                     \cr
 #'     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
+#'     \code{HCDM}     \tab \code{directionMagnetic}  \tab                                                            \cr
+#'     \code{HCDT}     \tab \code{directionTrue}      \tab                                                            \cr
+#'     \code{HCSP}     \tab \code{speedHorizontal}    \tab                                                            \cr
 #'     \code{LATD_*.*} \tab \code{latitude}           \tab                                                            \cr
 #'     \code{LOND_*.*} \tab \code{longitude}          \tab                                                            \cr
 #'     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr
@@ -299,6 +302,9 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("FFFF", "flag_archaic", names)
     names <- gsub("FLOR", "fluorometer", names)
     names <- gsub("FWETLABS", "fwetlabs", names) # FIXME: what is this?
+    names <- gsub("HCSP", "speedHorizontal", names)
+    names <- gsub("HCDM", "directionMagnetic", names)
+    names <- gsub("HCDT", "directionTrue", names)
     names <- gsub("LATD", "latitude", names)
     names <- gsub("LOND", "longitude", names)
     names <- gsub("NSCT", "v", names)
@@ -334,29 +340,80 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     ## Now deal with units
     units <- list()
     for (i in seq_along(names)) {
-        units[[names[i]]] <- if (ODFunits[i] == "db") {
+        ## NOTE: this was originally coded with ==, but as errors in ODF
+        ## formatting have been found, I've moved to grep() instead; for
+        ## example, the sigma-theta case is done that way, because the
+        ## original code expected kg/m^3 but then (issue 1051) I ran
+        ## across an ODF file that wrote density as Kg/m^3.
+        units[[names[i]]] <- if (ODFunits[i] == "counts") {
+            list(unit=expression(), scale="")
+        } else if (ODFunits[i] == "db") {
             list(unit=expression(dbar), scale="")
-        } else if (ODFunits[i] == "IPTS-68, deg C") {
+        } else if (ODFunits[i] == "decibars") {
+            list(unit=expression(dbar), scale="")
+        } else if (1 == length(grep("^deg(ree){0,1}(s){0,1}$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(degree), scale="")
+        } else if (1 == length(grep("^I[P]{0,1}TS-68, deg C$", ODFunits[i], ignore.case=TRUE))) {
+            ## handles both the correct IPTS and the incorrect ITS.
             list(unit=expression(degree*C), scale="IPTS-68")
+        } else if (ODFunits[i] == "degrees C") { # guess on scale
+            list(unit=expression(degree*C), scale="ITS-90")
         } else if (ODFunits[i] == "ITS-90, deg C") {
             list(unit=expression(degree*C), scale="ITS-90")
+        } else if (1 == length(grep("^m$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(m), scale="")
         } else if (ODFunits[i] == "mg/m^3") {
             list(unit=expression(mg/m^3), scale="")
         } else if (ODFunits[i] == "ml/l") {
             list(unit=expression(ml/l), scale="")
-        } else if (ODFunits[i] == "none") {
+        ##} else if (ODFunits[i] == "m/s") {
+        } else if (1 == length(grep("^\\s*m/s\\s*$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(m/s), scale="")
+        #} else if (ODFunits[i] == "mho/m") {
+        } else if (1 == length(grep("^\\mho(s){0,1}/m\\s*$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(mho/m), scale="")
+        } else if (ODFunits[i] == "mmho/cm") {
+            list(unit=expression(mmho/cm), scale="")
+        ##} else if (ODFunits[i] == "[(]*none[)]$") {
+        } else if (1 == length(grep("^[(]*none[)]*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(), scale="")
-        } else if (ODFunits[i] == "PSU") {
+        ##} else if (ODFunits[i] == "PSU") {
+        } else if (1 == length(grep("^psu$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(), scale="PSS-78")
-        } else if (ODFunits[i] == "sigma-theta, kg/m^3") {
+        } else if (1 == length(grep("^\\s*kg/m\\^3$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(kg/m^3), scale="")
+        } else if (1 == length(grep("^\\s*kg/m\\*\\*3\\s*$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(kg/m^3), scale="")
+        } else if (1 == length(grep("^sigma-theta,\\s*kg/m\\^3$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(kg/m^3), scale="")
+        } else if (1 == length(grep("^seconds$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(s), scale="")
         } else if (ODFunits[i] == "S/m") {
             list(unit=expression(S/m), scale="")
         } else if (ODFunits[i] == "V") {
             list(unit=expression(V), scale="")
+        } else if (1 == length(grep("^ug/l$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(ug/l), scale="")
+        } else if (nchar(ODFunits[i]) == 0) {
+            list(unit=expression(), scale="")
         } else {
-            warning("unable to interpret ODFunits[", i, "]='", ODFunits[i], "'\n", sep="")
+            warning("unable to interpret ODFunits[", i, "]='", ODFunits[i], "', for item named '", names[i], "'", sep="")
             list(unit=as.expression(ODFunits[i]), scale=ODFunits[i])
+        }
+    }
+    ## Catch some problems I've seen in data
+    directionVariables <- which(names == "directionMagnetic" | names == "directionTrue")
+    for (directionVariable in directionVariables) {
+        ## message("directionVariable=",directionVariable)
+        unit <- units[[directionVariable]]$unit
+        if (is.null(unit)) {
+            warning("no unit found for '", 
+                    names[[directionVariable]], "'; this will not affect calculations, though")
+            ## units[[directionVariable]]$unit <- expression(degree)
+        } else if ("degree" != as.character(unit)) {
+            warning("odd unit, '", as.character(unit), "', for '",
+                    names[directionVariable], "'; this will not affect calculations, though")
+            ## units[[directionVariable]]$unit <- expression(degree)
         }
     }
     list(names=names, units=units)
@@ -496,7 +553,8 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' are inferred from ODF items named \code{MIN_DEPTH}, \code{MAX_DEPTH}
 #' and \code{SOUNDING}, respectively. In addition, the more common metadata
 #' item \code{waterDepth}, which is used in \code{ctd} objects to refer to
-#' the total water depth, is here identical to \code{sounding}.
+#' the total water depth, is set to \code{sounding} if that is finite,
+#' or to \code{maxDepth} otherwise.
 #'
 #' @examples
 #' library(oce)
@@ -544,8 +602,15 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     lines <- readLines(file, 1000, encoding="UTF-8")
     pushBack(lines, file) # we used to read.table(text=lines, ...) but it is VERY slow
     dataStart <- grep("-- DATA --", lines)
-    if (!length(dataStart))
-        stop("cannot locate a line containing '-- DATA --'")
+    if (!length(dataStart)) {
+        lines <- readLines(file, encoding="UTF-8")
+        dataStart <- grep("-- DATA --", lines)
+        if (!length(dataStart)) {
+            stop("cannot locate a line containing '-- DATA --'")
+        }
+        pushBack(lines, file)
+    }
+
     parameterStart <- grep("PARAMETER_HEADER", lines)
     if (!length(parameterStart))
         stop("cannot locate any lines containing 'PARAMETER_HEADER'")
@@ -569,6 +634,8 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ##print(ODFunits)
 
     ODFnames <- lines[grep("^\\s*CODE\\s*=", lines)]
+    ODFnames <- gsub("^.*CODE=", "", ODFnames)
+    ODFnames <- gsub(",", "", ODFnames)
     ODFnames <- gsub("^[^']*'(.*)'.*$",'\\1', ODFnames) # e.g. "  CODE= 'CNTR_01',"
     ##message("below is ODFnames...")
     ##print(ODFnames)
@@ -580,6 +647,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     scientist <- findInHeader("CHIEF_SCIENTIST", lines)
     ship <- findInHeader("PLATFORM", lines) # maybe should rename, e.g. for helicopter
     institute <- findInHeader("ORGANIZATION", lines) # maybe should rename, e.g. for helicopter
+    station <- findInHeader("EVENT_NUMBER", lines)
     latitude <- as.numeric(findInHeader("INITIAL_LATITUDE", lines))
     longitude <- as.numeric(findInHeader("INITIAL_LONGITUDE", lines))
     cruise <- findInHeader("CRUISE_NAME", lines)
@@ -590,22 +658,11 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ## date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
     startTime <- strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
     ## endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
+    NAvalue <- as.numeric(findInHeader("NULL_VALUE", lines))
     depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     sounding <- as.numeric(findInHeader("SOUNDING", lines))
-    waterDepth <- as.numeric(findInHeader("SOUNDING", lines))
-    if (is.null(waterDepth))
-        waterDepth <- NA
-    station <- findInHeader("EVENT_NUMBER", lines)
-
-    ## water depth could be missing or e.g. -999
-    waterDepthWarning <- FALSE
-    if (is.na(waterDepth)) {
-        waterDepth <- max(abs(data$pressure), na.rm=TRUE)
-        waterDepthWarning <- TRUE
-    }
-    if (!is.na(waterDepth) && waterDepth < 0)
-        waterDepth <- NA
+    waterDepth <- ifelse(sounding!=NAvalue, sounding, ifelse(depthMax!=NAvalue,depthMax,NA)) # also see later
 
     type <- findInHeader("INST_TYPE", lines)
     if (length(grep("sea", type, ignore.case=TRUE)))
@@ -615,7 +672,9 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     res <- new("odf")
     res@metadata$header <- NULL
     res@metadata$units <- namesUnits$units
-    res@metadata$dataNamesOriginal <- ODFnames
+    ## res@metadata$dataNamesOriginal <- ODFnames
+    res@metadata$dataNamesOriginal <- as.list(ODFnames)
+    names(res@metadata$dataNamesOriginal) <- namesUnits$names
     res@metadata$type <- type
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber
@@ -650,9 +709,17 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     }
     if ("time" %in% namesUnits$names)
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
-    res@metadata$names <- namesUnits$names
-    res@metadata$labels <- namesUnits$names
+    ##res@metadata$names <- namesUnits$names
+    ##res@metadata$labels <- namesUnits$names
     res@data <- as.list(data)
+
+    ## Return to water depth issue. In a BIO file, I found that the missing-value code was
+    ## -99, but that a SOUNDING was given as -99.9, so this is an extra check.
+    if (is.na(waterDepth) || waterDepth < 0) {
+        res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
+        warning("estimating waterDepth from maximum pressure")
+    }
+
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.odf()\n")
     res

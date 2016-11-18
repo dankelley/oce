@@ -17,7 +17,7 @@ ODFNames2oceNames(ODFnames, ODFunits = NULL, columns = NULL,
 
 \item{PARAMETER_HEADER}{Optional list containing information on the data variables.}
 
-\item{debug}{An integer specifying whether debugging information is
+\item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
@@ -52,6 +52,9 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{FFFF_*.*} \tab \code{flag_archaic}       \tab Old flag name, replaced by \code{QCFF}                     \cr
     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
+    \code{HCDM}     \tab \code{directionMagnetic}  \tab                                                            \cr
+    \code{HCDT}     \tab \code{directionTrue}      \tab                                                            \cr
+    \code{HCSP}     \tab \code{speedHorizontal}    \tab                                                            \cr
     \code{LATD_*.*} \tab \code{latitude}           \tab                                                            \cr
     \code{LOND_*.*} \tab \code{longitude}          \tab                                                            \cr
     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr

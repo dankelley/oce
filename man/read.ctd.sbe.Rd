@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.sbe.R
 \name{read.ctd.sbe}
 \alias{read.ctd.sbe}
-\title{Read an Seabird CTD File}
+\title{Read a Seabird CTD File}
 \usage{
 read.ctd.sbe(file, columns = NULL, station = NULL, missingValue,
   monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
@@ -54,7 +54,7 @@ variable across data formats, because the meta-information provided
 in those formats varies widely.
 }
 \description{
-Read an Seabird CTD File
+Read a Seabird CTD File
 }
 \details{
 This function reads files stored in Seabird \code{.cnv} format.
@@ -98,11 +98,9 @@ information is given in the Sea-Bird data-processing manaual
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
-  \code{\link{ctd}}, \code{\link{gps-class}},
-  \code{\link{handleFlags,ctd-method}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
+  \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},

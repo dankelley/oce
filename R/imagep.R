@@ -434,7 +434,7 @@ drawPalette <- function(zlim, zlab="",
             oceDebug(debug, "triangleHeight=", triangleHeight, "(user units)\n")
             if (drawTriangles[2]) {
                 if (pos == 1 || pos == 3) {
-                    warning("horizontal triangles not working yet\n")
+                    warning("horizontal triangles not working yet")
                 } else if (pos == 2 || pos == 4) {
                     polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
                             usr[4] + c(0, triangleHeight, 0), col=col[length(col)], 
@@ -446,7 +446,7 @@ drawPalette <- function(zlim, zlab="",
             }
             if (drawTriangles[1]) {
                 if (pos == 1 || pos == 3) {
-                    warning("horizontal triangles not working yet\n")
+                    warning("horizontal triangles not working yet")
                 } else if (pos == 2 || pos == 4) {
                     polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
                             usr[3] + c(0, -triangleHeight, 0), col=col[1], 
@@ -552,7 +552,7 @@ drawPalette <- function(zlim, zlab="",
 #'         must be supplied and, within each, the values must be finite and
 #'         distinct; if values are out of order, they (and \code{z}) will be
 #'         transformed to put them in order.
-#'         ordered in a matching way).  \strong{Mode 2.}
+#'         ordered in a matching way).  \emph{Mode 2.}
 #'         If \code{z} is provided but not \code{x} and \code{y}, then the latter
 #'         are constructed to 
 #'         indicate the indices of the matrix, in contrast
@@ -572,9 +572,15 @@ drawPalette <- function(zlim, zlab="",
 #'         are meant to mimic those of \code{\link{image}}, which explains the same
 #'         description here.) 
 #' @param  xlim,ylim Limits on x and y axes.
-#' @param  zlim Either a pair of numbers giving the limits for the colour scale,
-#'         or \code{"histogram"} to have a flattened histogram (i.e. to maximally
-#'         increase contrast throughout the domain.)
+#' @param  zlim If missing, the z scale is determined by the range of the data.
+#'         If provided, \code{zlim} may take several forms. First, it may be a pair
+#'         of numbers that specify the limits for the colour scale.  Second,
+#'         it could be the string \code{"histogram"}, to yield a flattened
+#'         histogram (i.e. to increase contrast). Third, it could be the 
+#'         string \code{"symmetric"}, to yield limits that are symmetric
+#'         about zero, which can be helpful in drawing velocity fields,
+#'         for which a zero value has a particular meaning (in which case,
+#'         a good colour scheme might be \code{col=\link{oceColorsTwo}}).
 #' @param  zclip Logical, indicating whether to clip the colours to those
 #'         corresponding to \code{zlim}. This only works if \code{zlim} is
 #'         provided. Clipped regions will be coloured with \code{missingColor}.
@@ -645,7 +651,8 @@ drawPalette <- function(zlim, zlab="",
 #' @param  filledContour Boolean value indicating whether to use filled
 #'         contours to plot the image.
 #' @param  missingColor A colour to be used to indicate missing data, or
-#'         \code{NULL} to avoid making the indication.
+#'         \code{NULL} for transparent (to see this, try setting
+#'         \code{par("bg")<-"red"}).
 #' @param  mgp A 3-element numerical vector to use for \code{par(mgp)}, and
 #'         also for \code{par(mar)}, computed from this.  The default is
 #'         tighter than the R default, in order to use more space for the
@@ -672,6 +679,17 @@ drawPalette <- function(zlim, zlab="",
 #' @param  main Title for plot.
 #' @param  axisPalette Optional replacement function for \code{axis()}, passed to
 #'         \code{\link{drawPalette}}.
+#'
+#' @param add Logical value indicating whether to add to an existing plot.
+#' The default value, \code{FALSE} indicates that a new plot is to be created.
+#' However, if \code{add} is \code{TRUE}, the idea is to add an image (but not
+#' its palette or its axes) to an existing plot. Clearly, then, arguments
+#' such \code{xlim} are to be ignored. Indeed, if \code{add=TRUE}, the only
+#' arguments examined are \code{x} (which must be a vector; the mode of providing
+#' a matrix or \code{oce} object does not work), \code{y}, \code{z},
+#' \code{decimate}, plus either \code{colormap} or
+#' both \code{breaks} and \code{col}.
+#'
 #' @param  debug A flag that turns on debugging.  Set to 1 to get a
 #'         moderate amount of debugging information, or to 2 to get more.
 #' @param  \dots Optional arguments passed to plotting functions.
@@ -757,6 +775,7 @@ imagep <- function(x, y, z,
                    axes=TRUE,
                    main="",
                    axisPalette,
+                   add=FALSE,
                    debug=getOption("oceDebug"),
                    ...)
 {
@@ -778,11 +797,49 @@ imagep <- function(x, y, z,
              "...) {\n", sep="", unindent=1)
     oceDebug(debug, "par('mai'):", paste(format(par('mai'), digits=2)), "\n")
     oceDebug(debug, "par('mar'):", paste(format(par('mar'), digits=2)), "\n")
+
+    if (is.logical(add)) {
+        if (add) {
+            if (missing(x)) stop("must give 'x'")
+            if (missing(y)) stop("must give 'y'")
+            if (missing(z)) stop("must give 'z'")
+            if (missing(colormap)) {
+                if (missing(breaks)) stop("must give 'breaks'")
+                if (missing(col)) stop("must give 'col'")
+            } else {
+                breaks <- colormap$breaks
+                col <- colormap$col
+            }
+            oceDebug(debug, "decimate: ", paste(decimate, collapse=" "), " (before calculation)\n")
+            if (is.logical(decimate)) {
+                decimate <- as.integer(dim(z) / 400)
+                decimate <- ifelse(decimate < 1, 1, decimate)
+            } else {
+                decimate <- rep(as.numeric(decimate), length.out=2)
+            }
+            oceDebug(debug, "decimate: ", paste(decimate, collapse=" "), " (after calculation)\n")
+            ix <- seq(1L, length(x), by=decimate[1])
+            iy <- seq(1L, length(y), by=decimate[2])
+            if (is.function(col))
+                col <- col(n=length(breaks)-1)
+            image(x[ix], y[iy], z[ix,iy], breaks=breaks, col=col, add=TRUE)
+            return(invisible(list(xat=NULL, yat=NULL, decimate=decimate)))
+        }
+    } else {
+        stop("'add' must be a logical value")
+    }
+
     if (!is.null(adorn))
         warning("In imagep() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
     xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
     zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot,adp-method
+    xlimGiven <- !missing(xlim)
+    if (zlimGiven && is.character(zlim)) {
+        if ("symmetric" == zlim) {
+            zlim <- c(-1, 1) * max(abs(z), na.rm=TRUE)
+        }
+    }
     breaksGiven <- !missing(breaks)
     if (zlimGiven && breaksGiven && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
@@ -890,7 +947,7 @@ imagep <- function(x, y, z,
         z <- z[ilook,]
         oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
         if (decimateLogical)
-            warning("auto-decimating first index of large image by ", decimate[1], "; use decimate=FALSE to prevent this\n")
+            warning("auto-decimating first index of large image by ", decimate[1], "; use decimate=FALSE to prevent this")
     }
     if (decimate[2] > 1) {
         jlook <- seq.int(1, dim[2], by=decimate[2])
@@ -898,7 +955,7 @@ imagep <- function(x, y, z,
         z <- z[, jlook]
         oceDebug(debug, "jlook:", paste(jlook[1:4], collapse=" "), "...\n")
         if (decimateLogical)
-            warning("auto-decimating second index of large image by ", decimate[2], "; use decimate=FALSE to prevent this\n")
+            warning("auto-decimating second index of large image by ", decimate[2], "; use decimate=FALSE to prevent this")
     }
     ##> message("dim(z): ", paste(dim(z), collapse=" "))
     if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
@@ -1161,12 +1218,12 @@ imagep <- function(x, y, z,
             oceDebug(debug, "not doing filled contours [2]\n")
             if (zlimHistogram) {
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col2,
-                      xlim=xlim, ylim=ylim, zlim=c(0,1), asp=asp, ...)
+                      xlim=xlim, ylim=ylim, zlim=c(0,1), asp=asp, add=add, ...)
             } else {
                 ## issue 489: use breaks/col instead of breaks2/col2
                 ##image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks2, col=col2,
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, asp=asp, ...)
+                  xlim=xlim, ylim=ylim, zlim=zlim, asp=asp, add=add, ...)
             }
         }
         if (axes) {
@@ -1214,8 +1271,11 @@ imagep <- function(x, y, z,
         if (axes)
             box()
     }
-    if (!(is.character(main) && main == ""))
+    if (is.na(main)) {
+        mtext("", at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))        
+    } else if (!(is.character(main) && main == "")) {
         mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
+    }
     if (drawContours) {
         oceDebug(debug, "adding contours\n")
         contour(x=xorig, y=yorig, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
@@ -1225,12 +1285,12 @@ imagep <- function(x, y, z,
     if (!missing(adorn)) {
         t <- try(eval.parent(adorn), silent=!TRUE)
         if (class(t) == "try-error")
-            warning("cannot evaluate adorn='", adorn, "'\n")
+            warning("cannot evaluate adorn='", adorn, "'")
     }
     par(cex=ocex)
     oceDebug(debug, "par('mai')=c(",
              paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",
              paste(format(par('mar'), digits=2), collapse=","), ")\n", sep='')
     oceDebug(debug, "} # imagep()\n", unindent=1)
-    invisible(list(xat=xat, yat=yat))
+    invisible(list(xat=xat, yat=yat, decimate=decimate))
 }

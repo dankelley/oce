@@ -249,7 +249,7 @@ test_that("misc sw calculations", {
           temperature <- ctd[["temperature"]]
           pressure <- ctd[["pressure"]]
           conductivity <- swCSTp(salinity, temperature, pressure, eos="unesco")
-          ctd <- ctdAddColumn(ctd, conductivity, "conductivity")
+          ctd <- oceSetData(ctd, name="conductivity", value=conductivity, unit=list(unit=expression(), scale=""))
           S <- swSCTp(ctd)
           expect_equal(S, salinity, tolerance=1e-3)
           ## Test that swCSTp() takes both salinity and CTD [issue 630]

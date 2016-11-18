@@ -9,7 +9,8 @@ as.oce(x, ...)
 \arguments{
 \item{x}{an item containing data. This may be data frame, list, or an oce object.}
 
-\item{\dots}{optional extra arguments, passed to conversion functions \code{\link{as.coastline}} or \code{\link{ODF2oce}}, if these are used.}
+\item{\dots}{optional extra arguments, passed to conversion functions
+\code{\link{as.coastline}} or \code{\link{ODF2oce}}, if these are used.}
 }
 \value{
 \code{as.oce} returns an object inheriting from \code{\link{oce-class}}.
@@ -54,9 +55,5 @@ then an object of type \code{\link{ctd-class}} will be returned.
 but no other columns, then an object of class \code{\link{coastline-class}}
 is returned.
 }
-}
-\examples{
-as.oce(data.frame(salinity=c(30, 30.5), temperature=c(15, 14), pressure=c(1, 5)))
-as.oce(list(longitude=1:3,latitude=11:13))
 }
 

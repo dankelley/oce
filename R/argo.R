@@ -87,6 +87,9 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+maybeLC <- function(s, lower)
+    if (lower) tolower(s) else s
+
 getData <- function(file, name) # a local function -- no need to pollute namesapce with it
 {
     res <- try(ncdf4::ncvar_get(file, name), silent=TRUE)
@@ -99,19 +102,81 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 
 #' Convert Data Names From the Argo Convention to the Oce Convention
 #'
-#' For example, \code{"PSAL"} becomes \code{"salinity"}
+#' This function is used by \code{\link{read.argo}} to convert Argo-convention
+#' data names to oce-convention names. The inference of names was done
+#' by case-by-case inspection of some files. Eventually, it would make
+#' sense to handle all the documented names listed in tables 2.2.2 
+#' and 2.2.3 of [1].
+#'
+#' The names are converted with
+#' \code{\link{gsub}}, ignoring the case of the input strings. The procedure
+#' is to first handle the items listed in the following table. After that,
+#' the qualifiers 
+#' \code{_ADJUSTED}, \code{_ERROR} and \code{_QC},
+#' are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
+#' \itemize{
+#' \item \code{BBP700} becomes \code{bbp700}
+#' \item \code{BETA_BACKSCATTERING700} becomes \code{betaBackscattering700}
+#' \item \code{BPHASE_OXY} becomes \code{bphaseOxygen}
+#' \item \code{CHLA} becomes \code{chlorophyllA}
+#' \item \code{CYCLE_NUMBER} becomes \code{cycleNumber}
+#' \item \code{DATA_CENTRE} becomes \code{dataCentre} (note the spelling)
+#' \item \code{DATA_MODE} becomes \code{dataMode}
+#' \item \code{DATA_STATE_INDICATOR} becomes \code{dataStateIndicator}
+#' \item \code{DC_REFERENCE} becomes \code{DCReference}
+#' \item \code{DIRECTION} becomes \code{direction} (either \code{A} for ascending or \code{D} for descending)
+#' \item \code{FIRMWARE_VERSION} becomes \code{firmwareVersion}
+#' \item \code{INST_REFERENCE} becomes \code{instReference}
+#' \item \code{JULD} becomes \code{juld} (and used to compute \code{time})
+#' \item \code{JULD_QC_LOCATION} becomes \code{juldQCLocation}
+#' \item \code{LATITUDE} becomes \code{latitude}
+#' \item \code{LONGITUDE} becomes \code{longitude}
+#' \item \code{PI_NAME} becomes \code{PIName}
+#' \item \code{PLATFORM_NUMBER} becomes \code{id}
+#' \item \code{POSITION_ACCURACY} becomes \code{positionAccuracy}
+#' \item \code{POSITIONING_SYSTEM} becomes \code{positioningSystem}
+#' \item \code{PROFILE} becomes \code{profile}
+#' \item \code{PROJECT_NAME} becomes \code{projectName}
+#' \item \code{STATION_PARAMETERS} becomes \code{stationParameters}
+#' \item \code{UV_INTENSITY} becomes \code{UVIntensity}
+#' \item \code{UV_INTENSITY_DARK_NITRATE} becomes \code{UVIntensityDarkNitrate}
+#' \item \code{UV_INTENSITY_NITRATE} becomes \code{UVIntensityNitrate}
+#' \item \code{WMO_INST_TYPE} becomes \code{WMOInstType}
+#'}
+#'
 #' @param names vector of character strings containing names in the Argo convention.
-argoDataNames <- function(names)
+#' @return A character vector of the same length as \code{names}, but with
+#' replacements having been made for all known quantities.
+#'
+#' @references
+#' 1. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
+#' \samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+#' (link checked 17 Nov 2016 several times in the months before, 
+#' but failed 18 Nov 2016).
+#' Tables 2.2.2 and 2.2.3 of this document lists the codes used in Argo netCDF files.
+decodeDataNamesArgo <- function(names)
 {
-    names <- gsub("CYCLE_NUMBER", "cycle", names)
-    names <- gsub("TEMP_DOXY", "temperatureOxygen", names)
-    names <- gsub("DOXY", "oxygen", names)
-    names <- gsub("PRES", "pressure", names)
-    names <- gsub("PSAL", "salinity", names)
-    names <- gsub("TEMP", "temperature", names)
-    names <- gsub("_ADJUSTED", "Adjusted", names)
-    names <- gsub("_QC", "", names)
-    names <- gsub("_ERROR", "Error", names)
+    ignore.case <- TRUE
+    ## do NOT change the order below, because we are working with partial strings.
+    names <- gsub("BBP700", "bbp700", names, ignore.case=ignore.case)
+    names <- gsub("BETA_BACKSCATTERING700", "betaBackscattering700", names, ignore.case=ignore.case)
+    names <- gsub("BPHASE_DOXY", "bphaseOxygen", names, ignore.case=ignore.case)
+    names <- gsub("CYCLE_NUMBER", "cycle", names, ignore.case=ignore.case)
+    names <- gsub("FLUORESCENCE_CHLA", "fluorescenceChlorophyllA", names, ignore.case=ignore.case) # put before CHLA
+    names <- gsub("CHLA", "chlorophyllA", names, ignore.case=ignore.case)
+    names <- gsub("TEMP_DOXY", "temperatureOxygen", names, ignore.case=ignore.case)
+    names <- gsub("POSITION_ACCURACY", "positionAccuracy", names, ignore.case=ignore.case)
+    names <- gsub("NITRATE", "nitrate", names, ignore.case=ignore.case)
+    names <- gsub("DOXY", "oxygen", names, ignore.case=ignore.case)
+    names <- gsub("PRES", "pressure", names, ignore.case=ignore.case)
+    names <- gsub("PSAL", "salinity", names, ignore.case=ignore.case)
+    names <- gsub("TEMP", "temperature", names, ignore.case=ignore.case)
+    names <- gsub("UV_INTENSITY_DARK_NITRATE", "UVIntensityDarkNitrate", names, ignore.case=ignore.case)
+    names <- gsub("UV_INTENSITY_NITRATE", "UVIntensityNitrate", names, ignore.case=ignore.case)
+    names <- gsub("UV_INTENSITY", "UVIntensity", names, ignore.case=ignore.case)
+    names <- gsub("_ADJUSTED", "Adjusted", names, ignore.case=ignore.case)
+    names <- gsub("_QC", "QC", names, ignore.case=ignore.case)
+    names <- gsub("_ERROR", "Error", names, ignore.case=ignore.case)
     names
 }
 
@@ -466,30 +531,7 @@ argoDecodeFlags <- function(f) # local function
 #' them in returned object.
 #'
 #' Items are translated from upper-case Argo names to \code{oce} names
-#' as follows.
-#' \itemize{
-#' \item \code{PLATFORM_NUMBER} becomes \code{id}
-#' \item \code{PROJECT_NAME} becomes \code{projectName}
-#' \item \code{PI_NAME} becomes \code{PIName}
-#' \item \code{STATION_PARAMETERS} becomes \code{stationParameters}
-#' \item \code{CYCLE_NUMBER} becomes \code{cycleNumber}
-#' \item \code{DIRECTION} becomes \code{direction} (either \code{A} for ascending or \code{D} for descending)
-#' \item \code{DATA_CENTRE} becomes \code{dataCentre} (note the spelling)
-#' \item \code{DC_REFERENCE} becomes \code{DCReference}
-#' \item \code{DATA_STATE_INDICATOR} becomes \code{dataStateIndicator}
-#' \item \code{DATA_MODE} becomes \code{dataMode}
-#' \item \code{INST_REFERENCE} becomes \code{instReference}
-#' \item \code{FIRMWARE_VERSION} becomes \code{firmwareVersion}
-#' \item \code{WMO_INST_TYPE} becomes \code{WMOInstType}
-#' \item \code{JULD} becomes \code{juld} (and used to compute \code{time})
-#' \item \code{JULD_QC} becomes \code{juldQc}
-#' \item \code{JULD_QC_LOCATION} becomes \code{juldQcLocation}
-#' \item \code{LATITUDE} becomes \code{latitude}
-#' \item \code{LONGITUDE} becomes \code{longitude}
-#' \item \code{POSITION_QC} becomes \code{positionQC}
-#' \item \code{POSITIONING_SYSTEM} becomes \code{positioningSystem}
-#' \item \code{PROFILE_QC} becomes \code{} ... FIX ME
-#'}
+#' using \code{\link{decodeDataNamesArgo}}.
 #' 
 #' It is assumed that the profile data are as listed in the NetCDF variable
 #' called \code{STATION_PARAMETERS}. Each item can have variants, as
@@ -553,13 +595,16 @@ argoDecodeFlags <- function(f) # local function
 #' @references
 #' 1. \url{http://www.argo.ucsd.edu/}
 #' 
-#' 2. \samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-#' (link last checked 2016-06-18)
-#' documents the codes used in the netCDF files.
+#' 2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
+#' \samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+#' (link checked 17 Nov 2016 several times in the months before, 
+#' but failed 18 Nov 2016).
+#' Table 2.2.2 of this document lists the codes used in Argo netCDF files.
 #'
-#' 3. \samp{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
-#' (link last checked 2016-06-18)
-#' is the main document describing argo data.
+#' 3. User's Manual (ar-um-02-01) 13 July 2010, available at
+#' \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
+#' (link checked on 17 Nov 2016).
+#' This is the main document describing argo data.
 #' 
 #' @section Data sources:
 #' Argo data are made available at several websites. A bit of detective
@@ -622,17 +667,20 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
             on.exit(ncdf4::nc_close(file))
         }
     }
+    varNames <- names(file$var)
+    lc <- "data_type" %in% varNames
     res <- new("argo")
     if (debug > 0) {
         if (debug > 10)
             message("This netcdf file contains the following $var: ", paste(names(file$var), collapse=" "))
         columnNames <- gsub(" *$", "",
-                            unique(as.vector(ncdf4::ncvar_get(file, "STATION_PARAMETERS"))))
-        message("columnNames: ", paste(columnNames, collapse=" "), " (from STATION_PARAMETERS)")
-        QCNames <- paste(columnNames, "_QC", sep="")
+                            unique(as.vector(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc)))))
+        message("columnNames: '", paste(columnNames, collapse="' '"), "' (from ", maybeLC("STATION_PARAMETERS", lc), ")")
+        QCNames <- paste(columnNames, "_QC",  sep="")
         message("QCnames: ", paste(QCNames, collapse=" "), " (inferred from above)")
-        physicalNames <- ODFNames2oceNames(columnNames, ODFunits=NULL)
-        message("Therefore need @data items: ", paste(physicalNames, collapse=" "), " (in addition to longitude etc)")
+        ## browser()
+        ## physicalNames <- ODFNames2oceNames(columnNames, ODFunits=NULL)
+        ## message("Therefore need @data items: ", paste(physicalNames, collapse=" "), " (in addition to longitude etc)")
     }
 
     ## Grab all information listed in table 2.2.3 of [3], with exceptions as listed in the 
@@ -640,150 +688,172 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     ## Must check against varNames to avoid errors if files lack some items ... e.g.
     ## 6900388_prof.nc lacked FIRMWARE_VERSION, even though table 2.2.3 of [3] indicates
     ## that it should be present.
-    varNames <- names(file$var)
-    res@metadata$id <- if ("PLATFORM_NUMBER" %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, "PLATFORM_NUMBER"))) else NULL
-    res@metadata$projectName <- if ("PROJECT_NAME" %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, "PROJECT_NAME"))) else NULL
-    res@metadata$PIName <- if ("PI_NAME" %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, "PI_NAME"))) else NULL
-    res@metadata$stationParameters <- if ("STATION_PARAMETERS" %in% varNames)
-        trimString(ncdf4::ncvar_get(file, "STATION_PARAMETERS")) else NULL
-    res@metadata$cycleNumber <- if ("CYCLE_NUMBER" %in% varNames) 
-        as.vector(ncdf4::ncvar_get(file, "CYCLE_NUMBER")) else NULL
-    res@metadata$direction <- if ("DIRECTION" %in% varNames)
-        as.vector(ncdf4::ncvar_get(file, "DIRECTION")) else NULL
-    res@metadata$dataCentre <- if ("DATA_CENTRE" %in% varNames)
-        as.vector(ncdf4::ncvar_get(file, "DATA_CENTRE")) else NULL
-    res@metadata$DCReference <- if ("DC_REFERENCE" %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, "DC_REFERENCE"))) else NULL
-    res@metadata$dataStateIndicator <- if ("DATA_STATE_INDICATOR" %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, "DATA_STATE_INDICATOR"))) else NULL
-    res@metadata$dataMode <- if ("DATA_MODE" %in% varNames)
-        strsplit(ncdf4::ncvar_get(file, "DATA_MODE"), "")[[1]] else NULL
-    res@metadata$instReference <- if ("INST_REFERENCE" %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, "INST_REFERENCE"))) else NULL
-    res@metadata$firmwareVersion <- if ("FIRMWARE_VERSION" %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, "FIRMWARE_VERSION"))) else NULL
-    res@metadata$WMOInstType <- if ("WMO_INST_TYPE" %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, "WMO_INST_TYPE"))) else NULL
-    res@metadata$juld <- if ("JULD" %in% varNames)
-        as.vector(ncdf4::ncvar_get(file, "JULD")) else NULL
+    res@metadata$id <- if (maybeLC("PLATFORM_NUMBER", lc) %in% varNames)
+        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PLATFORM_NUMBER", lc)))) else NULL
+    res@metadata$projectName <- if (maybeLC("PROJECT_NAME", lc) %in% varNames)
+        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PROJECT_NAME", lc)))) else NULL
+    res@metadata$PIName <- if (maybeLC("PI_NAME", lc) %in% varNames)
+        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("PI_NAME", lc)))) else NULL
+    res@metadata$stationParameters <- if (maybeLC("STATION_PARAMETERS", lc) %in% varNames)
+        trimString(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc))) else NULL
+    res@metadata$cycleNumber <- if (maybeLC("CYCLE_NUMBER", lc) %in% varNames) 
+        as.vector(ncdf4::ncvar_get(file, maybeLC("CYCLE_NUMBER", lc))) else NULL
+    res@metadata$direction <- if (maybeLC("DIRECTION", lc) %in% varNames)
+        as.vector(ncdf4::ncvar_get(file, maybeLC("DIRECTION", lc))) else NULL
+    res@metadata$dataCentre <- if (maybeLC("DATA_CENTRE", lc) %in% varNames)
+        as.vector(ncdf4::ncvar_get(file, maybeLC("DATA_CENTRE", lc))) else NULL
+    res@metadata$DCReference <- if (maybeLC("DC_REFERENCE", lc) %in% varNames)
+        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("DC_REFERENCE", lc)))) else NULL
+    res@metadata$dataStateIndicator <- if (maybeLC("DATA_STATE_INDICATOR", lc) %in% varNames)
+        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("DATA_STATE_INDICATOR", lc)))) else NULL
+    res@metadata$dataMode <- if (maybeLC("DATA_MODE", lc) %in% varNames)
+        strsplit(ncdf4::ncvar_get(file, maybeLC("DATA_MODE", lc)), "")[[1]] else NULL
+    res@metadata$instReference <- if (maybeLC("INST_REFERENCE", lc) %in% varNames)
+        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("INST_REFERENCE", lc)))) else NULL
+    res@metadata$firmwareVersion <- if (maybeLC("FIRMWARE_VERSION", lc) %in% varNames)
+        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("FIRMWARE_VERSION", lc)))) else NULL
+    res@metadata$WMOInstType <- if (maybeLC("WMO_INST_TYPE", lc) %in% varNames)
+        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("WMO_INST_TYPE", lc)))) else NULL
+    res@metadata$juld <- if (maybeLC("JULD", lc) %in% varNames)
+        as.vector(ncdf4::ncvar_get(file, maybeLC("JULD", lc))) else NULL
     ## set up 'time' also
-    t0s <- as.vector(ncdf4::ncvar_get(file, "REFERENCE_DATE_TIME"))
+    t0s <- as.vector(ncdf4::ncvar_get(file, maybeLC("REFERENCE_DATE_TIME", lc)))
     t0 <- strptime(t0s, "%Y%m%d%M%H%S", tz="UTC")
-    julianDayTime <- as.vector(ncdf4::ncvar_get(file, "JULD"))
+    julianDayTime <- as.vector(ncdf4::ncvar_get(file, maybeLC("JULD", lc)))
     res@data$time <- t0 + julianDayTime * 86400
     rm(list=c("t0s", "t0", "julianDayTime")) # no longer needed
 
-    res@metadata$juldQc <- if ("JULD_QC" %in% varNames)
-        as.vector(ncdf4::ncvar_get(file, "JULD_QC")) else NULL
-    res@metadata$juldLocation <- if ("JULD_LOCATION" %in% varNames)
-        as.vector(ncdf4::ncvar_get(file, "JULD_LOCATION")) else NULL
+    res@metadata$juldQc <- if (maybeLC("JULD_QC", lc) %in% varNames)
+        as.vector(ncdf4::ncvar_get(file, maybeLC("JULD_QC", lc))) else NULL
+    res@metadata$juldLocation <- if (maybeLC("JULD_LOCATION", lc) %in% varNames)
+        as.vector(ncdf4::ncvar_get(file, maybeLC("JULD_LOCATION", lc))) else NULL
 
-    if ("LATITUDE" %in% varNames) {
-        res@data$latitude <- as.vector(ncdf4::ncvar_get(file, "LATITUDE"))
-        latitudeNA <- ncdf4::ncatt_get(file, "LATITUDE","_FillValue")$value
+    ## Now for the data.
+    res@metadata$dataNamesOriginal <- list() # NB. will store upper-case names
+
+    if (maybeLC("LATITUDE", lc) %in% varNames) {
+        res@data$latitude <- as.vector(ncdf4::ncvar_get(file, maybeLC("LATITUDE", lc)))
+        res@metadata$dataNamesOriginal$latitude <- "LATITUDE"
+        latitudeNA <- ncdf4::ncatt_get(file, maybeLC("LATITUDE", lc), "_FillValue")$value
         res@data$latitude[res@data$latitude == latitudeNA] <- NA
         rm(list="latitudeNA") # no longer needed
         res@metadata$units$latitude <-
-            if (1 == length(grep("north", ncdf4::ncatt_get(file, "LATITUDE", "units")$value, ignore.case=TRUE)))
+            if (1 == length(grep("north", ncdf4::ncatt_get(file, maybeLC("LATITUDE", lc), "units")$value, ignore.case=TRUE)))
                 list(unit=expression(degree*N), scale="") else list(unit=expression(degree*S), scale="")
     }
-    if ("LONGITUDE" %in% varNames) {
-        res@data$longitude <- as.vector(ncdf4::ncvar_get(file, "LONGITUDE"))
-        longitudeNA <- ncdf4::ncatt_get(file, "LONGITUDE","_FillValue")$value
+    if (maybeLC("LONGITUDE", lc) %in% varNames) {
+        res@data$longitude <- as.vector(ncdf4::ncvar_get(file, maybeLC("LONGITUDE", lc)))
+        res@metadata$dataNamesOriginal$longitude <- "LONGITUDE"
+        longitudeNA <- ncdf4::ncatt_get(file, maybeLC("LONGITUDE", lc),"_FillValue")$value
         res@data$longitude[res@data$longitude == longitudeNA] <- NA
         rm(list="longitudeNA") # no longer needed
         res@metadata$units$longitude <-
-            if (1 == length(grep("east", ncdf4::ncatt_get(file, "LONGITUDE", "units")$value, ignore.case=TRUE)))
+            if (1 == length(grep("east", ncdf4::ncatt_get(file, maybeLC("LONGITUDE", lc), "units")$value, ignore.case=TRUE)))
                 list(unit=expression(degree*E), scale="") else list(unit=expression(degree*W), scale="")
     }
 
-    res@metadata$positionQc <- if ("POSITION_QC" %in% varNames)
-        as.vector(ncdf4::ncvar_get(file, "POSITION_QC")) else NULL
-    res@metadata$positioningSystem <- if ("POSITIONING_SYSTEM" %in% varNames)
-        as.vector(trimString(ncdf4::ncvar_get(file, "POSITIONING_SYSTEM"))) else NULL
+    res@metadata$positionQc <- if (maybeLC("POSITION_QC", lc) %in% varNames)
+        as.vector(ncdf4::ncvar_get(file, maybeLC("POSITION_QC", lc))) else NULL
+    res@metadata$positioningSystem <- if (maybeLC("POSITIONING_SYSTEM", lc) %in% varNames)
+        as.vector(trimString(ncdf4::ncvar_get(file, maybeLC("POSITIONING_SYSTEM", lc)))) else NULL
 
     stationParameters <- unique(as.vector(res@metadata$stationParameters)) # will be PRES, TEMP etc
     for (item in stationParameters) {
+        if (!nchar(item)) ## some files have unnamed variables, so we skip them 
+            next
         n <- item
-        d <- getData(file, n)
-        res@data[[argoDataNames(n)]] <- if (!is.null(d)) d else NULL
+        d <- getData(file, maybeLC(n, lc))
+        if (!is.null(d)) {
+            res@data[[decodeDataNamesArgo(n)]] <- d
+            res@metadata$dataNamesOriginal[[decodeDataNamesArgo(n)]] <- n
+        } else {
+            res@data[[decodeDataNamesArgo(n)]] <- NULL
+        }
 
-        n <- paste(item, "_QC", sep="")
-        d <- getData(file, n)
-        if (!is.null(d)) res@metadata$flags[[argoDataNames(n)]] <- argoDecodeFlags(d)
-        n <- paste(item, "_ADJUSTED", sep="")
+        n <- paste(item, maybeLC("_QC", lc), sep="")
+        d <- getData(file, maybeLC(n, lc))
+        if (!is.null(d)) res@metadata$flags[[decodeDataNamesArgo(n)]] <- argoDecodeFlags(d)
+
+        n <- paste(item, maybeLC("_ADJUSTED", lc), sep="")
         if (n %in% varNames) {
-            d <- getData(file, n)
-            res@data[[argoDataNames(n)]] <- if (!is.null(d)) d else NULL
+            d <- getData(file, maybeLC(n, lc))
+            if (!is.null(d)) {
+                res@data[[decodeDataNamesArgo(n)]] <- d
+                res@metadata$dataNamesOriginal[[decodeDataNamesArgo(n)]] <- n
+            } else {
+                res@data[[decodeDataNamesArgo(n)]] <- NULL
+            }
         }
-        n <- paste(item, "_ADJUSTED_QC", sep="")
+        n <- paste(item, maybeLC("_ADJUSTED_QC", lc), sep="")
         if (n %in% varNames) {
-            d <- getData(file, n)
-            if (!is.null(d)) res@metadata$flags[[argoDataNames(n)]] <- argoDecodeFlags(d)
+            d <- getData(file, maybeLC(n, lc))
+            if (!is.null(d)) res@metadata$flags[[decodeDataNamesArgo(n)]] <- argoDecodeFlags(d)
         }
-        n <- paste(item, "_ADJUSTED_ERROR", sep="")
+        n <- paste(item, maybeLC("_ADJUSTED_ERROR", lc), sep="")
         if (n %in% varNames) {
-            d <- getData(file, n)
-            res@data[[argoDataNames(n)]] <- if (!is.null(d)) d else NULL
+            d <- getData(file, maybeLC(n, lc))
+            if (!is.null(d)) {
+                res@data[[decodeDataNamesArgo(n)]] <- d
+                res@metadata$dataNamesOriginal[[decodeDataNamesArgo(n)]] <- n
+            } else {
+                res@data[[decodeDataNamesArgo(n)]] <- NULL
+            }
         }
     }
     res@metadata$filename <- filename
-    if ("TEMP" %in% varNames) {
+    if (maybeLC("TEMP", lc) %in% varNames) {
         ## leave some code in case we get a newer scale
-        if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, "TEMP", "long_name")$value, ignore.case=TRUE)))
+        if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, maybeLC("TEMP", lc), "long_name")$value, ignore.case=TRUE)))
             res@metadata$units$temperature <- list(unit=expression(degree *C), scale="ITS-90")
         else res@metadata$units$temperature <- list(unit=expression(degree *C), scale="ITS-90")
     }
-    if ("TEMP_ADJUSTED" %in% varNames) {
+    if (maybeLC("TEMP_ADJUSTED", lc) %in% varNames) {
         ## leave some code in case we get a newer scale
-        if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, "TEMP_ADJUSTED", "long_name")$value, ignore.case=TRUE)))
+        if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, maybeLC("TEMP_ADJUSTED", lc), "long_name")$value, ignore.case=TRUE)))
             res@metadata$units$temperatureAdjusted <- list(unit=expression(degree *C), scale="ITS-90")
         else res@metadata$units$temperatureAdjusted <- list(unit=expression(degree *C), scale="ITS-90")
     }
-    if ("TEMP_ADJUSTED_ERROR" %in% varNames) {
+    if (maybeLC("TEMP_ADJUSTED_ERROR", lc) %in% varNames) {
         ## leave some code in case we get a newer scale
-        if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, "TEMP_ADJUSTED_ERROR", "long_name")$value, ignore.case=TRUE)))
+        if (1 == length(grep("ITS-90", ncdf4::ncatt_get(file, maybeLC("TEMP_ADJUSTED_ERROR", lc), "long_name")$value, ignore.case=TRUE)))
             res@metadata$units$temperatureAdjustedError <- list(unit=expression(degree *C), scale="ITS-90")
         else res@metadata$units$temperatureAdjustedError <- list(unit=expression(degree *C), scale="ITS-90")
     }
-    if ("PSAL" %in% varNames) {
+    if (maybeLC("PSAL", lc) %in% varNames) {
         ## leave some code in case we get a newer scale
-        if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, "PSAL", "long_name")$value, ignore.case=TRUE)))
+        if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, maybeLC("PSAL", lc), "long_name")$value, ignore.case=TRUE)))
             res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
         else
             res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
     }
-    if ("PSAL_ADJUSTED" %in% varNames) {
+    if (maybeLC("PSAL_ADJUSTED", lc) %in% varNames) {
         ## leave some code in case we get a newer scale
-        if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, "PSAL_ADJUSTED", "long_name")$value, ignore.case=TRUE)))
+        if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, maybeLC("PSAL_ADJUSTED", lc), "long_name")$value, ignore.case=TRUE)))
             res@metadata$units$salinityAdjusted <- list(unit=expression(), scale="PSS-78")
         else
             res@metadata$units$salinityAdjusted <- list(unit=expression(), scale="PSS-78")
     }
-    if ("PSAL_ADJUSTED_ERROR" %in% varNames) {
+    if (maybeLC("PSAL_ADJUSTED_ERROR", lc) %in% varNames) {
         ## leave some code in case we get a newer scale
-        if (1 == length(grep("PRACTICAL", ncdf4::ncatt_get(file, "PSAL_ADJUSTED_ERROR", "long_name")$value, ignore.case=TRUE)))
+        if (1 == length(grep(maybeLC("PRACTICAL", lc), ncdf4::ncatt_get(file, maybeLC("PSAL_ADJUSTED_ERROR", lc), "long_name")$value, ignore.case=TRUE)))
             res@metadata$units$salinityAdjustedError <- list(unit=expression(), scale="PSS-78")
         else
             res@metadata$units$salinityAdjustedError <- list(unit=expression(), scale="PSS-78")
     }
-    if ("PRES" %in% varNames) {
-        if (1 == length(grep("decibar", ncdf4::ncatt_get(file, "PRES", "units")$value, ignore.case=TRUE)))
+    if (maybeLC("PRES", lc) %in% varNames) {
+        if (1 == length(grep("decibar", ncdf4::ncatt_get(file, maybeLC("PRES", lc), "units")$value, ignore.case=TRUE)))
             res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
         else
             res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
     }
-    if ("PRES_ADJUSTED" %in% varNames) {
-        if (1 == length(grep("decibar", ncdf4::ncatt_get(file, "PRES_ADJUSTED", "units")$value, ignore.case=TRUE)))
+    if (maybeLC("PRES_ADJUSTED", lc) %in% varNames) {
+        if (1 == length(grep("decibar", ncdf4::ncatt_get(file, maybeLC("PRES_ADJUSTED", lc), "units")$value, ignore.case=TRUE)))
             res@metadata$units$pressureAdjusted <- list(unit=expression(dbar), scale="")
         else
             res@metadata$units$pressureAdjusted <- list(unit=expression(dbar), scale="")
     }
-    if ("PRES_ADJUSTED_ERROR" %in% varNames) {
-        if (1 == length(grep("decibar", ncdf4::ncatt_get(file, "PRES_ADJUSTED_ERROR", "units")$value, ignore.case=TRUE)))
+    if (maybeLC("PRES_ADJUSTED_ERROR", lc) %in% varNames) {
+        if (1 == length(grep("decibar", ncdf4::ncatt_get(file, maybeLC("PRES_ADJUSTED_ERROR", lc), "units")$value, ignore.case=TRUE)))
             res@metadata$units$pressureAdjustedError <- list(unit=expression(dbar), scale="")
         else
             res@metadata$units$pressureAdjustedError<- list(unit=expression(dbar), scale="")

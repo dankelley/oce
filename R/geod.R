@@ -82,7 +82,7 @@ geodXy <- function(longitude, latitude, longitudeRef=0, latitudeRef=0, rotate=0)
     if (length(latitude) != n) stop("longitude and latitude vectors of unequal length")
     xy  <- .C("geod_xy", as.integer(n), as.double(latitude), as.double(longitude),
               as.double(latitudeRef), as.double(longitudeRef), as.double(a), as.double(f),
-              x = double(n), y = double(n), PACKAGE = "oce")
+              x=double(n), y=double(n), NAOK=TRUE, PACKAGE="oce")
     if (rotate != 0) {
         S <- sin(rotate * pi / 180)
         C <- cos(rotate * pi / 180)
@@ -118,7 +118,7 @@ geodXyInverse <- function(x, y, longitudeRef=0, latitudeRef=0)
     if (length(y) != n) stop("x and y vectors of unequal length")
     ll <- .C("geod_xy_inverse", as.integer(n), as.double(x), as.double(y),
              as.double(latitudeRef), as.double(longitudeRef), as.double(a), as.double(f),
-             longitude = double(n), latitude = double(n), PACKAGE = "oce")
+             longitude=double(n), latitude=double(n), NAOK=TRUE, PACKAGE="oce")
     data.frame(longitude=ll$longitude, latitude=ll$latitude)
 }
 

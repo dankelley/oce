@@ -29,7 +29,7 @@
 #' \code{time} and \code{value}, i.e. the times of entries
 #' and the text notations of those entries..
 #' @param h either the \code{processingLog} slot of an object, or
-#' an object from which the processingLog will be extracted
+#' an \code{oce} object from which the processingLog will be extracted
 #' @param value A string indicating the text of the log entry.
 processingLogAppend <- function(h, value="")
 {
@@ -67,8 +67,8 @@ processingLogShow <- function(x)
 {
     cat("* Processing Log\n")
     for (i in seq_along(x@processingLog$value)) {
-        cat("    - ", format(x@processingLog$time[i]), " UTC: ``",
-            x@processingLog$value[i], "``\n", sep="")
+        cat("    - ", format(x@processingLog$time[i]), " UTC: `",
+            x@processingLog$value[i], "`\n", sep="")
     }
 }
 

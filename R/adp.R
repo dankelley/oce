@@ -44,21 +44,35 @@
 #' 
 #' The \code{data} slot holds some standardized items, and
 #' many that vary from instrument to instrument.  One standard item is
-#' \code{adp[["v"]]}, a three-dimensional numeric matrix of velocities in
+#' \code{adp[["v"]]}, a three-dimensional numeric array of velocities in
 #' m/s.  In this matrix, the first index indicates time, the second bin
-#' number, and the third beam number.  The meanings of the beams depends on
+#' number, and the third beam number. The meaning of beams number depends on
 #' whether the object is in beam coordinates, frame coordinates, or earth
-#' coordinates.  
+#' coordinates.  For example, if in earth coordinates, then beam 1 is
+#' the eastward component of velocity.
+#' Thus, for example,
+#' \preformatted{
+#' library(oce)
+#' data(adp)
+#' t <- adp[['time']]
+#' d <- adp[['distance']]
+#' eastward <- adp[['v']][,,1]
+#' imagep(t, d, eastward, missingColor="gray")
+#' }
+#' plots an image of the eastward component of velocity as a function of time (the x axis)
+#' and distance from sensor (y axis), since the \code{adp} dataset is
+#' in earth coordinates. Note the semidurnal tidal signal, and the pattern of missing
+#' data at the ocean surface (gray blotches at the top).
 #'     
-#' Corresponding to the velocity matrix are two matrices of type raw, and
+#' Corresponding to the velocity array are two arrays of type raw, and
 #' identical dimension, accessed by \code{adp[["a"]]} and \code{adp[["q"]]},
 #' holding measures of signal strength and data quality quality,
 #' respectively.  (The exact meanings of these depend on the particular type
 #' of instrument, and it is assumed that users will be familiar enough with
 #' instruments to know both the meanings and their practical consequences in
 #' terms of data-quality assessment, etc.)
-#' 
-#' In addition to the matrices, there are time-based vectors.  The vector
+#'
+#' In addition to the arrays, there are time-based vectors.  The vector
 #' \code{adp[["time"]]} (of length equal to the first index of
 #' \code{adp[["v"]]}, etc.) holds times of observation.  Depending on type of
 #' instrument and its configuration, there may also be corresponding vectors
@@ -71,7 +85,6 @@
 #' instruments have \code{v} (for velocity), \code{q} (for a measure of data
 #' quality) and \code{a} (for a measure of backscatter amplitude, also called
 #' echo intensity).  
-#'       
 #' Teledyne-RDI profilers have an additional item \code{g} (for
 #' percent-good). 
 #'       
@@ -140,6 +153,13 @@
 #' \code{dim(adp[["v"]])[2]}.
 #' 
 #' The \code{processingLog} slot is in standard form and needs little comment.
+#'
+#' @section Teledyne-RDI Sentinel V ADCPs: As of 2016-09-27 there is
+#'     provisional support for the TRDI "SentinelV" ADCPs, which are 5
+#'     beam ADCPs with a vertical centre beam. Relevant vertical beam
+#'     fields are called \code{adp[["vv"]]}, \code{adp[["va"]]},
+#'     \code{adp[["vq"]]}, and \code{adp[["vg"]]} in analogy with the
+#'     standard 4-beam fields.
 #' 
 #' @section Accessing and altering information within \code{adp-class} objects:
 #' \emph{Extracting values} Matrix data may be accessed as illustrated
@@ -425,6 +445,36 @@ setMethod(f="[[",
                       dim(res) <- dim
                   } else {
                       res <- x@data$g
+                  }
+                  res
+              } else if (i == "va") {
+                  if (!missing(j) && j == "numeric") {
+                      res <- x@data$va
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
+                  } else {
+                      res <- x@data$va
+                  }
+                  res
+              } else if (i == "vq") {
+                  if (!missing(j) && j == "numeric") {
+                      res <- x@data$vq
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
+                  } else {
+                      res <- x@data$vq
+                  }
+                  res
+              } else if (i == "vg") {
+                  if (!missing(j) && j == "numeric") {
+                      res <- x@data$vg
+                      dim <- dim(res)
+                      res <- as.numeric(res)
+                      dim(res) <- dim
+                  } else {
+                      res <- x@data$vg
                   }
                   res
               } else if (i == "coordinate") {
@@ -849,6 +899,14 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' distance-time images of percent-good for the respective beams.  (For data
 #' derived from Teledyne-RDI instruments, which are the only instruments that
 #' yield this item, it is called ``percent good.'')
+#'
+#' \item \code{which=80:83} (or \code{which="vv"}, \code{which="va"},
+#' \code{which="vq"}, and \code{which="vg"}) yield distance-time
+#' images of the vertical beam fields for a 5 beam "SentinelV" ADCP
+#' from Teledyne RDI.
+#'
+#' \item \code{which="vertical"} yields a two panel distance-time
+#' image of vertical beam velocity and amplitude.
 #' 
 #' \item \code{which=13} (or \code{which="salinity"}) yields a time-series plot
 #' of salinity.
@@ -1138,7 +1196,7 @@ setMethod(f="plot",
                   stop("method is only for objects of class '", "adp", "'")
               if (!(is.null(x@metadata$haveActualData) || x@metadata$haveActualData)) {
                   warning("there are no profiles in this dataset")
-                  return
+                  return()
               }
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
@@ -1258,10 +1316,12 @@ setMethod(f="plot",
                                        amplitude=5:7,
                                        quality=9:11,
                                        hydrography=14:15,
-                                       angles=16:18))
+                                       angles=16:18,
+                                       vertical=80:81,
+                                       vv=80, va=81, vq=82, vg=83))
               nw <- length(which) # may be longer with e.g. which='velocity'
               oceDebug(debug, "which:", which, "(after conversion to numerical codes)\n")
-              images <- c(1:12, 70:73)
+              images <- c(1:12, 70:73, 80:83)
               timeseries <- c(13:22, 40:44, 50:54, 55, 100)
               spatial <- 23:27
               #speed <- 28
@@ -1374,6 +1434,59 @@ setMethod(f="plot",
                               zlab <- c(expression(g[1]),expression(g[2]),expression(g[3]))[which[w]-8]
                           } else {
                               warning("ADP object lacks a 'g' data item")
+                          }
+                      } else if (which[w] == 80) { # vertical beam velocity
+                          if ("vv" %in% names(x@data)) {
+                              oceDebug(debug, "vertical beam velocity\n")
+                              z <- x@data$vv
+                              zlab <- if (missing(titles)) expression(w[vert]) else titles[w]
+                              y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= x@data$distance & x@data$distance <= ylimAsGiven[w, 2] else rep(TRUE, length(x@data$distance))
+                              if (0 == sum(y.look))
+                                  stop("no data in the provided ylim=c(", paste(ylimAsGiven[w,], collapse=","), ")")
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else {
+                                  if (breaksGiven) NULL else c(-1,1)
+                              }
+                          } else {
+                              warning("ADP object lacks a 'vv' data item")
+                          }
+                      } else if (which[w] == 81) { # vertical beam amplitude
+                          if ("va" %in% names(x@data)) {
+                              oceDebug(debug, "vertical beam amplitude\n")
+                              z <- as.numeric(x@data$va)
+                              dim(z) <- dim(x@data$va)
+                              y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else {
+                                  if (breaksGiven) NULL else range(as.numeric(x@data$va[,y.look]), na.rm=TRUE) 
+                              }
+                              zlab <- expression(a[vert])
+                          } else {
+                              warning("ADP object lacks a 'va' data item")
+                          }
+                      } else if (which[w] == 82) { # vertical beam correlation
+                          if ("vq" %in% names(x@data)) {
+                              oceDebug(debug, "vertical beam correlation\n")
+                              z <- as.numeric(x@data$vq)
+                              dim(z) <- dim(x@data$vq)
+                              y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else {
+                                  if (breaksGiven) NULL else range(as.numeric(x@data$vq[,y.look]), na.rm=TRUE) 
+                              }
+                              zlab <- expression(q[vert])
+                          } else {
+                              warning("ADP object lacks a 'vq' data item")
+                          }
+                      } else if (which[w] == 83) { # vertical beam percent good
+                          if ("vg" %in% names(x@data)) {
+                              oceDebug(debug, "vertical beam percent good\n")
+                              z <- as.numeric(x@data$vg)
+                              dim(z) <- dim(x@data$vg)
+                              y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
+                              zlim <- if (zlimGiven) zlimAsGiven[w,] else {
+                                  if (breaksGiven) NULL else range(as.numeric(x@data$vg[,y.look]), na.rm=TRUE) 
+                              }
+                              zlab <- expression(g[vert])
+                          } else {
+                              warning("ADP object lacks a 'vq' data item")
                           }
                       } else {
                           skip <- TRUE
@@ -1968,7 +2081,7 @@ setMethod(f="plot",
                       }
                       if (w <= adorn.length) {
                           t <- try(eval(adorn[w]), silent=TRUE)
-                          if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+                          if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]")
                       }
                   } else if (which[w] %in% 28:30) { # "uv", "uv+ellipse", or "uv+ellipse+arrow"
                       par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
@@ -2040,8 +2153,8 @@ setMethod(f="plot",
                           rotate <- rbind(c(cos(theta0), -sin(theta0)),
                                           c(sin(theta0), cos(theta0)))
                           xxyy <- rotate %*% rbind(xx, yy)
-                          col <- if (colGiven) col else "darkblue"
-                          lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
+                          col <- if (colGiven) col else "black"
+                          lines(xxyy[1,], xxyy[2,], lwd=4, col="white")
                           lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
                           res$ellipseMajor <- major
                           res$ellipseMinor <- minor
@@ -2061,7 +2174,7 @@ setMethod(f="plot",
                               }
                               res$meanU <- umean
                               res$meanV <- vmean
-                              arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
+                              arrows(0, 0, umean, vmean, lwd=4, length=1/10, col="white")
                               arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                           }
                       }
@@ -2113,10 +2226,10 @@ setMethod(f="plot",
                                   plot(coastline, clatitude=lat, clongitude=lon, span=50)
                                   points(x[["longitude"]], x[["latitude"]], cex=2*par('cex'))
                               } else {
-                                  warning("nothing to map\n")
+                                  warning("nothing to map")
                               }
                           } else {
-                              warning("nothing to map\n")
+                              warning("nothing to map")
                           }
                       }
                   } else {
@@ -2127,7 +2240,7 @@ setMethod(f="plot",
                   if (w <= adorn.length) {
                       t <- try(eval(adorn[w]), silent=TRUE)
                       if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]\n")
+                          warning("cannot evaluate adorn[", w, "]")
                   }
               }
               par(cex=opar$cex)
@@ -2798,7 +2911,7 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 #' 
 #' \dontrun{
 #' library(oce)    
-#' beam <- read.oce("adp_rdi_2615.000",
+#' beam <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
 #'                  from=as.POSIXct("2008-06-26", tz="UTC"),
 #'                  to=as.POSIXct("2008-06-26 00:10:00", tz="UTC"),
 #'                  longitude=-69.73433, latitude=47.88126)

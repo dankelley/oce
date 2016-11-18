@@ -44,6 +44,7 @@
 #'   \strong{Key}       \tab \strong{Result}                     \tab \strong{Unit;scale} \tab \strong{Notes} \cr
 #'   \code{alt}         \tab \code{altimeter}                    \tab m                   \tab    \cr
 #'   \code{altM}        \tab \code{altimeter}                    \tab m                   \tab    \cr
+#'   \code{accM}        \tab \code{acceleration}                 \tab m/s^2               \tab    \cr
 #'   \code{bat~}        \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
 #'   \code{C2-C1S/m}    \tab \code{conductivityDifference}       \tab S/m                 \tab    \cr
 #'   \code{C2-C1mS/cm}  \tab \code{conductivityDifference}       \tab mS/cm               \tab    \cr
@@ -98,21 +99,25 @@
 #'   \code{prSM}        \tab \code{pressure}                     \tab dbar                 \tab   \cr
 #'   \code{prDM}        \tab \code{pressure}                     \tab dbar; digiquartz     \tab   \cr
 #'   \code{prdE}        \tab \code{pressure}                     \tab psi; strain gauge    \tab 2 \cr
+#'   \code{prDE}        \tab \code{pressure}                     \tab psi; digiquartz      \tab 2 \cr
 #'   \code{prdM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
 #'   \code{prSM}        \tab \code{pressure}                     \tab dbar; strain gauge   \tab   \cr
 #'   \code{ptempC}      \tab \code{pressureTemperature}          \tab degC; ITS-90         \tab 3 \cr
 #'   \code{pumps}       \tab \code{pumpStatus}                   \tab                      \tab   \cr
+#'   \code{rhodflTC~}   \tab \code{Rhodamine}                    \tab ppb; Turner Cyclops  \tab   \cr
 #'   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
-#'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
 #'   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
-#'   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
+#'   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
+#'   \code{sbeox~Mm/L}  \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
 #'   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
 #'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
+#'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
 #'   \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
 #'   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
 #'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
 #'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
+#'   \code{specc}       \tab \code{conductivity}                 \tab uS/cm                \tab   \cr
 #'   \code{sva}         \tab \code{specificVolumeAnomaly}        \tab 1e-8 m^3/kg;         \tab   \cr
 #'   \code{svCM~}       \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
 #'   \code{T2~68C}      \tab \code{temperatureDifference}        \tab degC; IPTS-68        \tab   \cr 
@@ -132,9 +137,9 @@
 #'   \code{t190C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{tnc290C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{tnc268C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{t3890C}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+#'   \code{t3890C~}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{t38~90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
-#'   \code{t3868C}      \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+#'   \code{t3868C~}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{timeH}       \tab \code{time}                         \tab hour; elapsed        \tab   \cr
 #'   \code{timeJ}       \tab \code{time}                         \tab day; elapsed         \tab   \cr
@@ -143,14 +148,22 @@
 #'   \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr
 #'   \code{timeQ}       \tab \code{time}                         \tab s; NMEA since Jan 1, 2000\tab\cr
 #'   \code{timeS}       \tab \code{time}                         \tab s; elapsed           \tab   \cr
+#'   \code{turbflTC~}   \tab \code{turbidity}                    \tab NTU; Turner Cyclops  \tab   \cr
+#'   \code{turbflTCdiff}\tab \code{turbidityDifference}          \tab NTU; Turner Cyclops  \tab   \cr
+#'   \code{turbWETbb~}  \tab \code{turbidity}                    \tab 1/(m*sr); WET Labs ECO\tab   \cr
+#'   \code{turbWETbbdiff}\tab \code{turbidityDifference}         \tab 1/(m*sr); WET Labs ECO\tab   \cr
+#'   \code{turbWETntu~} \tab \code{turbidity}                    \tab NTU; WET Labs ECO    \tab   \cr
+#'   \code{turbWETntudiff}\tab \code{turbidityDifference}        \tab NTU; WET Labs ECO    \tab   \cr
 #'   \code{upoly~}      \tab \code{upoly}                        \tab -                    \tab   \cr
 #'   \code{user~}       \tab \code{user}                         \tab -                    \tab   \cr
 #'   \code{v~~}         \tab \code{voltage}                      \tab V                    \tab   \cr
 #'   \code{wetBAttn}    \tab \code{beamAttenuation}              \tab 1/m; WET Labs AC3    \tab   \cr
 #'   \code{wetBTrans}   \tab \code{beamTransmission}             \tab percent; WET Labs AC3\tab   \cr
-#'   \code{wetCDOM}     \tab \code{fluorescence}                 \tab mg/m^3; WET Labs CDOM\tab   \cr
+#'   \code{wetCDOM~}    \tab \code{fluorescence}                 \tab mg/m^3; WET Labs CDOM\tab   \cr
+#'   \code{wetCDOMdiff} \tab \code{fluorescenceDifference}       \tab mg/m^3; WET Labs CDOM\tab   \cr
 #'   \code{wetChAbs}    \tab \code{fluorescence}                 \tab 1/m; WET Labs AC3 absorption\tab   \cr
 #'   \code{wetStar~}    \tab \code{fluorescence}                 \tab mg/m^3; WET Labs WETstar\tab   \cr
+#'   \code{wetStardiff} \tab \code{fluorescenceDifference}       \tab mg/m^3; WET Labs WETstar\tab   \cr
 #'   \code{xmiss}       \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
 #'   \code{xmiss~}      \tab \code{beamTransmission}             \tab percent; Chelsea/Seatech\tab \cr
 #' }
@@ -207,10 +220,12 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     if (1 == length(grep("^alt[M]?$", name))) {
         name <- "altimeter"
         unit <- list(unit=expression(m), scale="")
+    } else if (1 == length(grep("^acc[M]?$", name))) {
+        name <- "acceleration"
+        unit <- list(unit=expression(m/s^2), scale="")
     } else if (1 == length(grep("^bat[0-9]?$", name))) {
         name <- "beamAttenuation"
         unit <- list(unit=expression(1/m), scale="Chelsea/Seatech")
-
     } else if (1 == length(grep("^C2-C1S/m$", name))) {
         name <- "conductivityDifference"
         unit <- list(unit=expression(S/m), scale="")
@@ -220,7 +235,6 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^C2-C1uS/cm$", name))) {
         name <- "conductivityDifference"
         unit <- list(unit=expression(mu*S/cm), scale="")
-
     } else if (1 == length(grep("^c((_)|([0-2]))mS/cm$", name))) {
         name <- "conductivity"
         unit <- list(unit=expression(mS/cm), scale="")
@@ -263,6 +277,12 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^flECO-AFL[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs")
+    } else if (1 == length(grep("^flflTC[0-1]{1}$", name))) {
+        name <- "fluorescein"
+        unit <- list(unit=expression(ppb), scale="Turner Cyclops")
+    } else if (1 == length(grep("^flflTCdiff$", name))) {
+        name <- "fluoresceinDifference"
+        unit <- list(unit=expression(ppb), scale="Turner Cyclops")
     } else if (1 == length(grep("^flSP[0-9]?$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint")
@@ -354,6 +374,10 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         name <- "pressure"
         unit <- list(unit=expression(psi), scale="")
         warning("this .cnv file contains pressure in PSI, but [[\"pressure\"]] will return in dbar")
+    } else if (1 == length(grep("^prDE$", name))) { # Caution: English unit
+        name <- "pressure"
+        unit <- list(unit=expression(psi), scale="")
+        warning("this .cnv file contains pressure in PSI, but [[\"pressure\"]] will return in dbar")
     } else if (1 == length(grep("^prM$", name))) {
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="")
@@ -378,6 +402,12 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^pumps$", name))) {
         name <- "pumpStatus"
         unit <- list(unit=expression(), scale="")
+    } else if (1 == length(grep("^rhodflTC[0-1]{1}$", name))) {
+        name <- "Rhodamine"
+        unit <- list(unit=expression(ppb), scale="Turner Cyclops")
+    } else if (1 == length(grep("^rhodflTCdiff$", name))) {
+        name <- "RhodamineDifference"
+        unit <- list(unit=expression(ppb), scale="Turner Cyclops")
     } else if (1 == length(grep("^sal[0-9]{2}$", name))) {
         name <- "salinity"
         unit <- list(unit=expression(), scale="PSS-78") # FIXME: guess on scale
@@ -390,6 +420,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^sbeox[0-9]Mm/Kg$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/kg), scale="SBE43")
+    } else if (1 == length(grep("^sbeox[0-9]Mm/L$", name))) {
+        name <- "oxygen"
+        unit <- list(unit=expression(mu*mol/l), scale="SBE43")
     } else if (1 == length(grep("^sbeox[0-9]PS$", name))) {
         name <- "oxygen"
         unit <- list(unit=expression(percent), scale="SBE43")
@@ -415,6 +448,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^spar$", name))) {
         name <- "spar"
         unit <- list(unit=expression(), scale="")
+    } else if (1 == length(grep("^specc$", name))) {
+        name <- "conductivity"
+        unit <- list(unit=expression(uS/cm), scale="")
     } else if (1 == length(grep("^sva$", name))) {
         name <- "specificVolumeAnomaly"
         unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
@@ -433,10 +469,10 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^t[0-9]90((C)|(Cm))?$", name))) {
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
-    } else if (name %in% c("t4968C", "tnc68C", "tv268C", "tnc268C", "t3868C", "t38_68C")) { # [1] p169-170
+    } else if (name %in% c("t4968C", "tnc68C", "tv268C", "tnc268C", "t3868C", "t3836C1", "t38_68C")) { # [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (name %in% c("t4990C", "tnc90C", "tv290C", "tnc290C", "t3890C", "t38_90C")) { # [1] p169-170
+    } else if (name %in% c("t4990C", "tnc90C", "tv290C", "tnc290C", "t3890C", "t3890C1", "t38_90C")) { # [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (1 == length(grep("^timeH$", name))) {
@@ -463,6 +499,24 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^tsa$", name))) {
         name <- "thermostericAnomaly"
         unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
+    } else if (1 == length(grep("^turbflTC[0-1]$", name))) {
+        name <- "turbidity"
+        unit <- list(unit=expression(NTU), scale="Turner Cyclops")
+    } else if (1 == length(grep("^turbflTCdiff$", name))) {
+        name <- "turbidityDifference"
+        unit <- list(unit=expression(NTU), scale="Turner Cyclops")
+    } else if (1 == length(grep("^turbWETbb[0-4]$", name))) {
+        name <- "turbidity"
+        unit <- list(unit=expression(1/(m*sr)), scale="WET Labs ECO")
+    } else if (1 == length(grep("^turbWETbbdiff$", name))) {
+        name <- "turbidityDifference"
+        unit <- list(unit=expression(1/(m*sr)), scale="WET Labs ECO")
+    } else if (1 == length(grep("^turbWETntu[0-5]$", name))) {
+        name <- "turbidity"
+        unit <- list(unit=expression(NTU), scale="WET Labs ECO")
+    } else if (1 == length(grep("^turbWETntudiff$", name))) {
+        name <- "turbidityDifference"
+        unit <- list(unit=expression(NTU), scale="WET Labs ECO")
     } else if (1 == length(grep("^upoly[0-2]$", name))) {
         name <- "upoly"
         unit <- list(unit=expression(), scale="")
@@ -470,7 +524,6 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         name <- "user"
         unit <- list(unit=expression(), scale="")
     } else if (1 == length(grep("^v[0-9][0-9]?$", name))) {
-        name <- "v"
         unit <- list(unit=expression(V), scale="")
     } else if (1 == length(grep("^wetBAttn$", name))) {
         name <- "beamAttenuation"
@@ -478,14 +531,20 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^wetBTrans$", name))) {
         name <- "beamTransmission"
         unit <- list(unit=expression(percent), scale="WET Labs AC3")
-    } else if (1 == length(grep("^wetCDOM[0-9]?$", name))) {
+    } else if (1 == length(grep("^wetCDOM[0-5]{0,1}$", name))) {
         name <- "fluorescence"
+        unit <- list(unit=expression(mg/m^3), scale="WET Labs CDOM")
+    } else if (1 == length(grep("^wetCDOMdiff$", name))) {
+        name <- "fluorescenceDifference"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs CDOM")
     } else if (1 == length(grep("^wetChAbs$", name))) {
         name <- "fluorescence"
         unit <- list(unit=expression(1/m), scale="WET Labs AC3 absorption")
     } else if (1 == length(grep("^wetStar[0-9]?$", name))) {
         name <- "fluorescence"
+        unit <- list(unit=expression(mg/m^3), scale="WET Labs WETstar")
+    } else if (1 == length(grep("^wetStardiff$", name))) {
+        name <- "fluorescenceDifference"
         unit <- list(unit=expression(mg/m^3), scale="WET Labs WETstar")
     } else if (1 == length(grep("^xmiss[0-9]?$", name))) {
         name <- "beamTransmission"
@@ -500,7 +559,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 }
 
 
-#' Read an Seabird CTD File
+#' Read a Seabird CTD File
 #' @template readCtdTemplate
 #'
 #' @details
@@ -595,17 +654,24 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
 
     ## Get names and units of columns in the SBE data file
     nameLines  <- grep("^# name [0-9][0-9]* = .*:.*$", lines, ignore.case=TRUE)
-    colUnits <- list()
+    colUnits <- vector("list", length(nameLines))
     colNamesInferred <- NULL
-    dataNamesOriginal <- NULL
+    dataNamesOriginal <- list()
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
+        ##newname <- unduplicateName(nu$name, colNamesInferred)
+        ##colNamesInferred <- c(colNamesInferred, newname)
         colNamesInferred <- c(colNamesInferred, nu$name)
-        dataNamesOriginal <- c(dataNamesOriginal, nu$nameOriginal)
+        ## dataNamesOriginal[[newname]] <- nu$nameOriginal
+        dataNamesOriginal[[nu$name]] <- nu$nameOriginal
+        ##colUnits[[iline]] <- nu$unit
         colUnits[[iline]] <- nu$unit
-        ## message("nu$name: ", nu$name, "; scale: ", colUnits[[nu$name]]$unit$scale)
+        ## message("SBE name=", nu$name, "; nameOriginal=", nu$nameOriginal, "; unit='", as.character(nu$unit$unit),"'")
     }
     colNamesInferred <- unduplicateNames(colNamesInferred)
+    names(colUnits) <- colNamesInferred
+    ##print(colUnits)
+    ## names(dataNamesOriginal) <- colNamesInferred
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     ##found.scan <- "scan" %in% colNamesInferred
     ##found.temperature <- "temperature" %in% colNamesInferred
@@ -619,19 +685,23 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     fileType <- "unknown"
 
     for (iline in seq_along(lines)) {
+        ##message("** scan at iline ", iline)
         line <- lines[iline]
+        ##message(line)
         #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        oceDebug(debug>1, paste("Examining header line '",line,"'\n", sep=""))
+        oceDebug(debug, paste("Examining header line '",line,"'\n", sep=""))
         header <- c(header, line)
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
-        if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) {
+        if (length(grep("^\\s*\\*END\\*\\s*$", aline, perl=TRUE, useBytes=TRUE))) {
+            ##message("got *END* at line ", iline)
             ## Sometimes SBE files have a header line after the *END* line.
             iline <- iline + 1
             if (length(grep("[a-cf-zA-CF-Z]", lines[iline])))
                 iline <- iline + 1
             break
         }
+        ##if (iline>129) browser()
         lline <- tolower(aline)
         if (0 < regexpr(".*seacat profiler.*", lline))
             serialNumber <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
@@ -659,6 +729,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                 d <- sub(" *$", "", d)
                 date <- decodeTime(d)
             }
+        }
+        if (length(grep("^\\* Sea-Bird SBE (.*) Data File:$", lline, ignore.case=TRUE))) {
+            model <- gsub("^\\* sea-bird sbe (.*) data file:$", "\\1", lline)
+            res@metadata$model <- model
         }
         if (0 < (r<-regexpr("filename", lline)))
             hexfilename <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline)
@@ -810,11 +884,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$recovery <- recovery
     res@metadata$waterDepth <- waterDepth # if NA, will update later
     res@metadata$sampleInterval <- sampleInterval
-    res@metadata$names <- colNamesInferred
-    res@metadata$labels <- colNamesInferred
+    ##res@metadata$names <- colNamesInferred
+    ##res@metadata$labels <- colNamesInferred
     res@metadata$filename <- filename
     if (fileType == "binary") {
-        warning("can only read the header of binary .cnv files")
+        warning("can only handle non-binary .cnv files")
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         return(res)
     }
@@ -822,6 +896,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     pushBack(lines, file)
     ##if (is.null(columns)) {
     oceDebug(debug, "About to read these names: c(\"", paste(colNamesInferred, collapse='","'),"\")\n", sep="")
+    ##message("skipping ", iline-1, " lines at top of file")
     data <- as.list(read.table(file, skip=iline-1, header=FALSE))
     if (length(data) != length(colNamesInferred))
         stop("Number of columns in .cnv data file must match number of variables named in the header")
@@ -839,7 +914,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         ## }
     } else {
         haveData <- FALSE
-        warning("no data in CTD file \"", filename, "\"\n")
+        warning("no data in CTD file \"", filename, "\"")
         data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
     }
     if (missing(processingLog))
@@ -891,16 +966,20 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                 warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items")
             }
             ## FIXME: move this to the very end, where we add 'scan' if that's not found.
-            res <- ctdAddColumn(res, S, name="salinity", label="Salinity",
-                                unit=c(unit=expression(), scale="PSS-78"), debug=debug-1)
+            ## res <- ctdAddColumn(res, S, name="salinity", label="Salinity",
+            ##                     unit=c(unit=expression(), scale="PSS-78"), debug=debug-1)
+            res <- oceSetData(res, name="salinity", value=S,
+                              unit=list(unit=expression(), scale="PSS-78"))
             ## colNamesOriginal <- c(colNamesOriginal, "NA")
         }
         if (found.depth && !found.pressure) { # && getOption("insertCalculatedDataCTD")) {
             ## BUG: this is a poor, nonrobust approximation of pressure
             g <- if (found.header.latitude) gravity(latitude) else 9.8
             rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0)
-            res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
-                                unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
+            ## res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
+            ##                     unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
+            res <- oceSetData(res, name="pressure", value=res@data$depth * g * rho0 / 1e4,
+                              unit=list(unit=expression("dbar"), scale=""))
             ## colNamesOriginal <- c(colNamesOriginal, "NA")
             warning("created a pressure data item from the depth item")
         }

@@ -56,22 +56,20 @@ If \code{flags} and \code{actions} are not provided, the
 default is to use WHP (World Hydrographic Program) flags [1], in which the
 value 2 indicates good data, and other values indicate either unchecked,
 suspicious, or bad data. Any data not flagged as good are set
-to \code{NA} in the returned value. Since WHP flag codes run
+to \code{NA} in the returned value. (An exception is for salinity:
+if the item named \code{salinity} has a bad flag but \code{salinityBottle}
+has a good flag, then the bottle value is substituted, and a
+warning is issued.) Since WHP flag codes run
 from 1 to 9, this default is equivalent to
 setting \code{flags=list(all=c(1, 3:9))} along with
 \code{action=list("NA")}.
 }
 \section{Implementation status}{
  \code{handleFlags} is a new function as of March 2016,
-and it will probably change through the Spring of 2016.
-Almost nothing works yet, and users should not be doing
-any more than looking at the documentation and telling the developers
+and it will probably continue to evolve through the rest of 2016.
+Users are asked to be patient, and to provide help by
+looking at the documentation and telling the developers
 whether the planned functioning seems reasonable.
-The hope is to get trial code working for \code{ctd}
-and \code{argo} data types by the end of April. After that, there
-will likely  be a month or more of testing with real-world
-work, with possible changes to the user interface. Then other
-types will be added, as needed.
 }
 \examples{
 library(oce)
@@ -115,14 +113,12 @@ Other functions that handle data-quality flags: \code{\link{handleFlags,argo-met
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
-  \code{\link{ctd}}, \code{\link{gps-class}},
-  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
-  \code{\link{plotScan}}, \code{\link{plotTS}},
-  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
-  \code{\link{read.ctd.sbe}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
+  \code{\link{ctd}}, \code{\link{plot,ctd-method}},
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{read.ctd.itp}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},

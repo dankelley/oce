@@ -19,4 +19,7 @@ the second occurrence of a name, etc.
 \examples{
 unduplicateNames(c("a", "b", "a", "c", "b"))
 }
+\seealso{
+used by \code{\link{read.ctd.sbe}}.
+}
 

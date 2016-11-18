@@ -11,7 +11,7 @@ imagep(x, y, z, xlim, ylim, zlim, zclip = FALSE, flipy = FALSE, xlab = "",
   tformat, drawTimeRange = getOption("oceDrawTimeRange"),
   filledContour = FALSE, missingColor = NULL, mgp = getOption("oceMgp"),
   mar, mai.palette, xaxs = "i", yaxs = "i", asp = NA, cex = par("cex"),
-  adorn = NULL, axes = TRUE, main = "", axisPalette,
+  adorn = NULL, axes = TRUE, main = "", axisPalette, add = FALSE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -22,7 +22,7 @@ matrix \code{z} are defined. In this case, both \code{x} and \code{y}
 must be supplied and, within each, the values must be finite and
 distinct; if values are out of order, they (and \code{z}) will be
 transformed to put them in order.
-ordered in a matching way).  \strong{Mode 2.}
+ordered in a matching way).  \emph{Mode 2.}
 If \code{z} is provided but not \code{x} and \code{y}, then the latter
 are constructed to 
 indicate the indices of the matrix, in contrast
@@ -44,9 +44,15 @@ description here.)}
 
 \item{xlim, ylim}{Limits on x and y axes.}
 
-\item{zlim}{Either a pair of numbers giving the limits for the colour scale,
-or \code{"histogram"} to have a flattened histogram (i.e. to maximally
-increase contrast throughout the domain.)}
+\item{zlim}{If missing, the z scale is determined by the range of the data.
+If provided, \code{zlim} may take several forms. First, it may be a pair
+of numbers that specify the limits for the colour scale.  Second,
+it could be the string \code{"histogram"}, to yield a flattened
+histogram (i.e. to increase contrast). Third, it could be the 
+string \code{"symmetric"}, to yield limits that are symmetric
+about zero, which can be helpful in drawing velocity fields,
+for which a zero value has a particular meaning (in which case,
+a good colour scheme might be \code{col=\link{oceColorsTwo}}).}
 
 \item{zclip}{Logical, indicating whether to clip the colours to those
 corresponding to \code{zlim}. This only works if \code{zlim} is
@@ -134,7 +140,8 @@ hours if the range is less than a day, etc.}
 contours to plot the image.}
 
 \item{missingColor}{A colour to be used to indicate missing data, or
-\code{NULL} to avoid making the indication.}
+\code{NULL} for transparent (to see this, try setting
+\code{par("bg")<-"red"}).}
 
 \item{mgp}{A 3-element numerical vector to use for \code{par(mgp)}, and
 also for \code{par(mar)}, computed from this.  The default is
@@ -186,6 +193,16 @@ defunct \code{oce} features.)}
 
 \item{axisPalette}{Optional replacement function for \code{axis()}, passed to
 \code{\link{drawPalette}}.}
+
+\item{add}{Logical value indicating whether to add to an existing plot.
+The default value, \code{FALSE} indicates that a new plot is to be created.
+However, if \code{add} is \code{TRUE}, the idea is to add an image (but not
+its palette or its axes) to an existing plot. Clearly, then, arguments
+such \code{xlim} are to be ignored. Indeed, if \code{add=TRUE}, the only
+arguments examined are \code{x} (which must be a vector; the mode of providing
+a matrix or \code{oce} object does not work), \code{y}, \code{z},
+\code{decimate}, plus either \code{colormap} or
+both \code{breaks} and \code{col}.}
 
 \item{debug}{A flag that turns on debugging.  Set to 1 to get a
 moderate amount of debugging information, or to 2 to get more.}

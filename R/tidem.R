@@ -24,33 +24,45 @@ setMethod(f="initialize",
 #' @description
 #' The \code{tidedata} dataset contains Tide-constituent information that is
 #' use by \code{\link{tidem}} to fit tidal models.  \code{tidedata} is a list
-#' containing \describe{ \item{const}{a list containing vectors \describe{
-#' \item{list("name")}{a string with constituent name} \item{list("freq")}{the
-#' frequency, in cycles per hour} \item{list("kmpr")}{a string naming the
-#' comparison constituent, blank if there is none} \item{list("ikmpr")}{index
-#' of comparison constituent, or \code{0} if there is none}
-#' \item{list("df")}{frequency difference betwee constituent and its
-#' comparison, used in the Rayleigh criterion} \item{list("d1")}{first Doodson
-#' number} \item{list("d2")}{second Doodson number} \item{list("d3")}{third
-#' Doodson number} \item{list("d4")}{fourth Doodson number}
-#' \item{list("d5")}{fifth Doodson number} \item{list("d6")}{sixth Doodson
-#' number} \item{list("semi")}{(fill in some info later)}
-#' \item{list("nsat")}{number of satellite constituents}
-#' \item{list("ishallow")}{(fill in some info later)}
-#' \item{list("nshallow")}{(fill in some info later)}
-#' \item{list("doodsonamp")}{(fill in some info later)}
-#' \item{list("doodsonspecies")}{(fill in some info later)} } }
-#' \item{list("sat")}{a list containing vectors \describe{
-#' \item{list("deldood")}{(fill in some info later)}
-#' \item{list("phcorr")}{(fill in some info later)} \item{list("amprat")}{(fill
-#' in some info later)} \item{list("ilatfac")}{(fill in some info later)}
-#' \item{list("iconst")}{(fill in some info later)} } }
-#' \item{list("shallow")}{a list containing vectors \describe{
-#' \item{list("iconst")}{(fill in some info later)} \item{list("coef")}{(fill
-#' in some info later)} \item{list("iname")}{(fill in some info later)} } } }
+#' containing
+#' \describe{
+#' \item{\code{const}}{
+#' a list containing vectors
+#' \code{name} (a string with constituent name),
+#' \code{freq} (the frequency, in cycles per hour),
+#' \code{kmpr} (a string naming the comparison constituent, blank if there is none),
+#' \code{ikmpr} (index of comparison constituent, or \code{0} if there is none),
+#' \code{df} (frequency difference between constituent and its
+#' comparison, used in the Rayleigh criterion),
+#' \code{d1} through \code{d6} (the first through sixth Doodson numbers),
+#' \code{semi},
+#' \code{nsat} (number of satellite constituents),
+#' \code{ishallow},
+#' \code{nshallow},
+#' \code{doodsonamp},
+#' and
+#' \code{doodsonspecies}.
+#'}
+#' \item{\code{sat}}{
+#' a list containing vectors
+#' \code{deldood},
+#' \code{phcorr},
+#' \code{amprat},
+#' \code{ilatfac},
+#' and
+#' \code{iconst}.
+#'}
+#' \item{\code{shallow}}{
+#' a list containing vectors
+#' \code{iconst},
+#' \code{coef},
+#' and
+#' \code{iname}.
+#'}
+#'}
 #' Apart from the use of \code{d1} through \code{d6}, the naming and content
-#' follows \code{T_TIDE}.  All of this is based on Foreman (1977), to which the
-#' reader is referred for details.
+#' follows \code{T_TIDE} (see Pawlowicz et al. 2002), which in turn builds upon
+#' the analysis of Foreman (1977).
 #'
 #' @name tidedata
 #' @docType data
@@ -173,9 +185,23 @@ setMethod(f="[[<-",
 #' \code{\link{tidem-class}}.
 #' @param which integer flag indicating plot type, 1 for stair-case spectral, 2
 #' for spike spectral.
-#' @param labelIf if NULL, the function will indicate some particular tidal
-#' constituents; if a value is provided, labels will be given for any
-#' constituent with amplitude exceeding the value provided.
+#'
+#' @param constituents a character vector of constituents that are
+#' to be drawn and label. If \code{NULL}, then no constituents will be shown.
+#' Consult the built-in dataset \code{\link{tidedata}} for the permissible
+#' constituent names and their frequencies.
+#'
+#' @param sides an integer vector of length equal to that of \code{constituents},
+#' designating the side on which the constituent labels are to be drawn. As in 
+#' all R graphics, the value \code{1} indicates the bottom of the plot, and
+#' \code{3} indicates the top. If \code{sides=NULL}, the default, then all labels
+#' are drawn at the top. Any value of \code{sides} that is not either 1 or 3
+#' is converted to 3.
+#'
+#' @param col a character vector naming colours to be used for \code{constituents}.
+#' Ignored if \code{sides=3}. Repeated to be of the same length as
+#' \code{constituents}, otherwise.
+#'
 #' @param log if set to "\code{x}", the frequency axis will be logarithmic.
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
@@ -189,6 +215,12 @@ setMethod(f="[[<-",
 #' tide <- tidem(sealevel)
 #' plot(tide)
 #' }
+#'
+#' @section Historical note:
+#' An argument named \code{labelIf} was removed in July 2016,
+#' because it was discovered never to have worked as documented, and
+#' because the more useful argument \code{constituents} had been added.
+#'
 #' @author Dan Kelley
 #'
 #' @family functions that plot \code{oce} data
@@ -197,43 +229,35 @@ setMethod(f="plot",
           signature=signature("tidem"),
           definition=function(x,
                               which=1,
-                              labelIf=NULL,
+                              constituents=c("SA", "O1", "K1", "M2", "S2", "M4"),
+                              sides=NULL,
+                              col="blue",
                               log="",
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1),
                               ...)
           {
-              drawConstituent<-function(name="M2",frequency,col="blue",side=1, adj=NULL)
+              data("tidedata", package="oce", envir=environment())
+              tidedata <- get("tidedata")#, pos=globalenv())
+              drawConstituent<-function(name="M2",side=3,col="blue",adj=NULL)
               {
+                  w <- which(tidedata$const$name == name)
+                  ## message("w:")
+                  ## print(w)
+                  if (!length(w)) {
+                      warning("constituent '", name, "' is unknown")
+                      return()
+                  }
+                  frequency <- tidedata$const$freq[w]
+                  ## message("constituent '", name, "' has frequency ", frequency, " cph")
                   abline(v=frequency, col=col, lty="dotted")
-                  if (frequency <= par('usr')[2]) {
+                  if (par('usr')[1] < frequency && frequency <= par('usr')[2]) {
                       if (is.null(adj))
                           mtext(name, side=side, at=frequency, col=col, cex=0.8)
                       else
                           mtext(name, side=side, at=frequency, col=col, cex=0.8, adj=adj)
                   }
               }
-              drawConstituents<-function(amplitude, type="standard", labelIf=NULL, col="blue")
-              {
-                  if (type == "standard") {
-                      drawConstituent("SA", 0.0001140741, side=3)
-                      drawConstituent("O1", 0.0387306544, side=3, adj=1)
-                      drawConstituent("K1", 0.0417807462, side=1, adj=0)
-                      drawConstituent("M2", 0.0805114007, side=3, adj=1)
-                      drawConstituent("S2", 0.0833333333, side=1, adj=0)
-                      drawConstituent("M4", 0.1610228013, side=3)
-                  } else {
-                      if (is.null(labelIf)) labelIf <- amplitude[order(amplitude, decreasing=TRUE)[3]]
-                      for (i in 1:nc) {
-                          if (amplitude[i] >= labelIf) {
-                              abline(v=frequency[i], col=col, lty="dotted")
-                              mtext(name[i], side=3, at=frequency[i], col=col)
-                          }
-                      }
-                  }
-              }
-              if (!inherits(x, "tidem"))
-                  stop("method is only for objects of class '", "tidem", "'")
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
               if (lw > 1) on.exit(par(opar))
@@ -241,15 +265,23 @@ setMethod(f="plot",
               frequency <- x@data$freq[-1] # trim z0
               amplitude <- x@data$amplitude[-1]
               name      <- x@data$name[-1]
-              nc <- length(frequency)
+              if (!is.null(constituents)) {
+                  sides <- if (is.null(sides)) rep(3, length(constituents))
+                  else rep(sides, length.out=length(constituents))
+                  col <- rep(col, length.out=length(constituents))
+              }
+              sides[sides!=1&sides!=3] <- 3 # default to top
               for (w in 1:lw) {
+                  ##message("w=", w, "; which[w]=", which[w])
                   if (which[w] == 2) {
                       plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
                       segments(frequency, 0, frequency, amplitude)
-                      drawConstituents(amplitude)
+                      for (i in seq_along(constituents))
+                          drawConstituent(constituents[i], side=sides[i], col=col[i])
                   } else if (which[w] == 1) {
                       plot(frequency, cumsum(amplitude), xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type='s')
-                      drawConstituents(amplitude)
+                      for (i in seq_along(constituents))
+                          drawConstituent(constituents[i], side=sides[i], col=col[i])
                   } else {
                       stop("unknown value of which ", which, "; should be 1 or 2")
                   }
@@ -581,7 +613,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
         if (missing(x))
             stop("must supply 'x', since the first argument is not a sealevel object")
         if (inherits(x, "POSIXt")) {
-            warning("tidem() switching first 2 args to permit old-style usage\n")
+            warning("tidem() switching first 2 args to permit old-style usage")
             tmp <- x
             x <- t
             t <- tmp

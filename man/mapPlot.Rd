@@ -5,9 +5,10 @@
 \title{Draw a Map}
 \usage{
 mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg, fill,
-  border = NULL, col = NA, type = "l", axes = TRUE, drawBox = TRUE,
-  showHemi = TRUE, polarCircle = 0, lonlabel = NULL, latlabel = NULL,
-  sides = NULL, projection = "+proj=moll", tissot = FALSE, trim = TRUE,
+  border = NULL, col = NA, type = "l", axes = TRUE, cex, cex.axis = 1,
+  mgp = c(0, 0.5, 0), drawBox = TRUE, showHemi = TRUE, polarCircle = 0,
+  lonlabel = NULL, latlabel = NULL, sides = NULL,
+  projection = "+proj=moll", tissot = FALSE, trim = TRUE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -20,7 +21,7 @@ argument is ignored).  If \code{longitude} is missing, both it and
 \item{latitude}{vector of latitudes of points to be plotted (ignored
 if the first argument contains both latitude and longitude).}
 
-\item{longitudelim}{Optional vector of length two, indicating the
+\item{longitudelim}{optional vector of length two, indicating the
 longitude limits of the plot. This value is used in the selection of
 longitude lines that are shown (and possibly
 labelled on the axes). In some cases, e.g. for polar views,
@@ -29,7 +30,7 @@ being left out of the plot.  Altering \code{longitudelim} can
 often help in such cases, e.g. \code{longitudelim=c(-180,180)} will
 force the drawing of lines all around the globe.}
 
-\item{latitudelim}{Optinoal vector of length two, indicating
+\item{latitudelim}{optional vector of length two, indicating
 the latitude limits of the plot. This, together with \code{longitudelim}
 (and, importantly, the geometry of the plot device) is used in the
 selection of map scale.}
@@ -62,6 +63,14 @@ most projections this works quite well.  If not, one may set
 values in the lower and left margin, respectively.  This may not work well
 for some projections or scales.}
 
+\item{cex}{character expansion factor for plot symbols, 
+used if \code{type='p'} or any other value that yields symbols.}
+
+\item{cex.axis}{axis-label expansion factor (see \code{\link{par}}).}
+
+\item{mgp}{three-element numerical vector describing axis-label
+placement, passed to \code{\link{mapAxis}}.}
+
 \item{drawBox}{logical value indicating whether to draw a box around the plot.
 This is helpful for many projections at sub-global scale.}
 
@@ -77,10 +86,14 @@ to label on the indicated sides of plot, passed to
 simple customization.  If they are are not provided, reasonable defaults
 will be used.}
 
-\item{projection}{optional indication of projection, a character string that
-in the format used by the \code{rgdal} package (and in much of computer
+\item{projection}{optional indication of projection, in one of two
+forms. First, it may be a character string in the "CRS" format that is
+used by the \code{rgdal} package (and in much of modern computer-based
 cartography). For example, \code{projection="+proj=merc"} specifies a
-Mercator projection. See \dQuote{Details}.)}
+Mercator projection. The second format is the output from 
+\code{\link[sp]{CRS}} in the \CRANpkg{sp} package, which is an object
+with a slot named \code{projarg} that gets used as a projection string.
+See \dQuote{Details}.}
 
 \item{tissot}{logical value indicating whether to use \code{\link{mapTissot}}
 to plot Tissot indicatrices, i.e. ellipses at grid intersection points, which
@@ -202,8 +215,9 @@ Int'l map of the world polyconic          \tab \code{imw_p}    \tab \code{lat_1}
 Kavraisky V                               \tab \code{kav5}     \tab - \cr
 Kavraisky VII                             \tab \code{kav7}     \tab - \cr
 Lambert azimuthal equal area              \tab \code{laea}     \tab - \cr
-Lat/long                                  \tab \code{lonlat}   \tab - \cr
-Lat/long                                  \tab \code{latlon}   \tab - \cr
+Longitude and latitude                    \tab \code{lonlat}   \tab - \cr
+Longitude and latitude                    \tab \code{longlat}   \tab - \cr
+Longitude and latitude                    \tab \code{latlon}   \tab - \cr
 Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
 Lambert conformal conic alternative       \tab \code{lcca}     \tab \code{lat_0}\cr
 Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
@@ -310,8 +324,7 @@ appropriate to most oceanographic applications.
 
 \section{Choosing a projection}{
 
-The use of the PROJ.4 scheme is greatly
-encouraged. The best choice of projection depends on the application.
+The best choice of projection depends on the application.
 Readers may find \code{projection="+proj=moll"} useful for world-wide
 plots, \code{ortho} for hemispheres viewed from the equator, \code{stere}
 for polar views, \code{lcc} for wide meridional ranges in mid latitudes,
@@ -415,7 +428,8 @@ Professional Paper: 1395 (available at
 3. Wikipedia page \url{http://en.wikipedia.org/wiki/List_of_map_projections}
 
 4. Radical Cartography website
-\url{http://www.radicalcartography.net/?projectionref}
+\code{http://www.radicalcartography.net/?projectionref} (This URL worked
+prior to Nov 16, 2016, but was found to fail on that date.)
 
 5. The \code{PROJ.4} website is \url{http://trac.osgeo.org/proj}, and it is
 the place to start to learn about the code.
@@ -446,10 +460,9 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapImage}}, \code{\link{mapLines}},
   \code{\link{mapLocator}},
   \code{\link{mapLongitudeLatitudeXY}},
-  \code{\link{mapMeridians}}, \code{\link{mapPoints}},
-  \code{\link{mapPolygon}}, \code{\link{mapScalebar}},
-  \code{\link{mapText}}, \code{\link{mapTissot}},
-  \code{\link{mapZones}}, \code{\link{shiftLongitude}},
-  \code{\link{utm2lonlat}}
+  \code{\link{mapPoints}}, \code{\link{mapPolygon}},
+  \code{\link{mapScalebar}}, \code{\link{mapText}},
+  \code{\link{mapTissot}}, \code{\link{oceCRS}},
+  \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
 

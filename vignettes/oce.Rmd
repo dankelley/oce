@@ -45,7 +45,7 @@ of limited use to researchers who work with several instrument types at the
 same time, and who need to move beyond engineering plots to scientific plots
 and statistical analysis.
 
-# Object design and generic functions
+# Architecture of oce objects
 
 ![**Figure 1.** Basic layout of a CTD object.  All `oce` objects contain slots named `data`, `metadata`, and `processingLog`, with the contents depending on the type of data.](ctd-object.png)
 
@@ -54,7 +54,7 @@ The need to scan diverse data files was one motivation for the creation of
 are in the system.  This was accomplished partly by the provision of
 specialized and generic (overloaded) functions to work with the data, and
 partly by providing accessor methods that make it convenient to reach inside
-the data objects.
+the data objects (see next section).
 
 As illustrated in Figure 1, each `oce` object contains three slots:
 
@@ -64,6 +64,25 @@ As illustrated in Figure 1, each `oce` object contains three slots:
   quality flags, sampling locations, etc.
 * `processingLog`, a list that documents how the object was created and
   possibly changed thereafter.
+
+# Accessing data in oce objects
+
+For detailed analysis, users may want to access data *within* oce objects. While it is possible to descend through the object using the "slot" and "list" notation (e.g. `d@data$salinity` yields the salinity within an oce object named `d`), this approach is not recommended. It is better to use the `[[` oce method, which derives from the generic "Extract" method for accessing parts of an object. To see the full help file, type:
+```{r extract, eval=FALSE}
+?`[[,oce-method`
+```
+For example, to access the `salinity` field in an `oce` object, instead of the slot/list notation above, one could type:
+```{r extractExample, eval=FALSE}
+S <- d[['salinity']]
+```
+The advantages of the `[[` method over directly accessing information in the slots are as follows.
+
+1. It does not require knowledge of where the desired field is contained in the object. (For example, some objects hold latitude in the `metadata` slot, while others might hold it in the `data` slot.)
+2. It should be familiar to users who understand the basics of R.
+3. It permits the extraction of derived values that are stored in the data. For example, if `d` is a CTD object, then `d[["N2"]]` will yield the square of the buoyancy frequency (by calling `swN2` with reasonable defaults for smoothing parameters).
+4. It permits oce to store data compactly, e.g. in 1-byte or 2-byte chunks, instead of using the 8 bytes that are required for numerical data (this permits e.g. working with landsat data in computers with typical memory sizes).
+
+# Oce functions
 
 The uniformity of the various `oce` objects helps users build skill in
 examining and modifying objects. Fine-scale control is provided throughout
@@ -90,9 +109,10 @@ time-distance variation in each of the measured velocity components.
 1. As just illustrated, the general function to read a dataset ends in `.oce`,
    and the name is a signal that the returned object is of class `oce`.
    Depending on the file contents, `d` will also have an additional class, e.g.
-   if the file contains CTD data, then the object would have two classes, `oce`
+   if the file contains CTD data, then the object would inherit from two classes, `oce`
    and `ctd`, with the second being used to tailor the graphics by 
-   passing control to `plot.ctd()`.
+   passing control to the `ctd` variant of the generic `plot` function
+   (use `help("plot,ctd-method")` to learn more).
 
 2. Generally, `oce` functions employ a "camel case" naming convention, in which
    a function that is described by several words is named by stringing the
@@ -302,8 +322,9 @@ plot(section, which=c(1, 2, 3, 99))
 ```
 will plot a summary diagram containing sections of $T$, $S$, and
 $\sigma_\theta$, along with a chart indicating station locations. In addition
-to such overview diagrams, `plot.section()`, which is called by `plot()`, can
-also create individual plots of individual properties.
+to such overview diagrams, the `section` variant of the generic
+`plot` function can also create individual plots of individual properties
+(use `help("plot,section-method")` to learn more).
 
 Some section datasets are supplied in a pre-gridded format, but it is also
 common to have different pressure levels at each station.  For such cases,
@@ -433,10 +454,11 @@ The following code graphs a built-in dataset of sea-level time series (Figure
 9).  The top panel provides an overview of the entire data set. The second
 panel is narrowed to the most recent month, which should reveal spring-neap
 cycles if the tide is mixed. The third panel is a log spectrum, with a few
-tidal constituents indicated. The `plot.sealevel()` function provides other
-possibilities for plotting, of which the cumulative spectrum can be quite
-informative.
-
+tidal constituents indicated. The `section` variant of
+the generic `plot` function provides other
+possibilities for plotting, including a cumulative spectrum that can be quite
+informative
+(use `help("plot,sealevel-method")` to learn more).
 
 ```{r fig.cap="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=16)}
 library(oce)
@@ -462,7 +484,9 @@ whether Hurricane Juan is visible. (Hint: use `predict` with the results from
 
 The following commands produce Figure 10, showing one velocity component of
 currents measured in the St Lawrence Estuary Internal Wave Experiment. This
-plot type is just one of many provided by `plot.adp()`.
+plot type is just one of many provided by the `adp` variant of the
+generic `plot` function
+(use `help("plot,adp-method")` to learn more).
 ```{r fig.cap="**Figure 10.** Measurements made with a bottom-mounted ADP in the St Lawrence Estuary. The line near the surface indicates pressure measured by the ADP.", fig.width=4, fig.height=2, dpi=72}
 library(oce)
 data(adp)

@@ -44,30 +44,7 @@ in all files, but tests showed that this is not the case, and so
 them in returned object.
 
 Items are translated from upper-case Argo names to \code{oce} names
-as follows.
-\itemize{
-\item \code{PLATFORM_NUMBER} becomes \code{id}
-\item \code{PROJECT_NAME} becomes \code{projectName}
-\item \code{PI_NAME} becomes \code{PIName}
-\item \code{STATION_PARAMETERS} becomes \code{stationParameters}
-\item \code{CYCLE_NUMBER} becomes \code{cycleNumber}
-\item \code{DIRECTION} becomes \code{direction} (either \code{A} for ascending or \code{D} for descending)
-\item \code{DATA_CENTRE} becomes \code{dataCentre} (note the spelling)
-\item \code{DC_REFERENCE} becomes \code{DCReference}
-\item \code{DATA_STATE_INDICATOR} becomes \code{dataStateIndicator}
-\item \code{DATA_MODE} becomes \code{dataMode}
-\item \code{INST_REFERENCE} becomes \code{instReference}
-\item \code{FIRMWARE_VERSION} becomes \code{firmwareVersion}
-\item \code{WMO_INST_TYPE} becomes \code{WMOInstType}
-\item \code{JULD} becomes \code{juld} (and used to compute \code{time})
-\item \code{JULD_QC} becomes \code{juldQc}
-\item \code{JULD_QC_LOCATION} becomes \code{juldQcLocation}
-\item \code{LATITUDE} becomes \code{latitude}
-\item \code{LONGITUDE} becomes \code{longitude}
-\item \code{POSITION_QC} becomes \code{positionQC}
-\item \code{POSITIONING_SYSTEM} becomes \code{positioningSystem}
-\item \code{PROFILE_QC} becomes \code{} ... FIX ME
-}
+using \code{\link{decodeDataNamesArgo}}.
 
 It is assumed that the profile data are as listed in the NetCDF variable
 called \code{STATION_PARAMETERS}. Each item can have variants, as
@@ -157,13 +134,16 @@ Dan Kelley
 \references{
 1. \url{http://www.argo.ucsd.edu/}
 
-2. \samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-(link last checked 2016-06-18)
-documents the codes used in the netCDF files.
+2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
+\samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+(link checked 17 Nov 2016 several times in the months before, 
+but failed 18 Nov 2016).
+Table 2.2.2 of this document lists the codes used in Argo netCDF files.
 
-3. \samp{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
-(link last checked 2016-06-18)
-is the main document describing argo data.
+3. User's Manual (ar-um-02-01) 13 July 2010, available at
+\url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
+(link checked on 17 Nov 2016).
+This is the main document describing argo data.
 }
 \seealso{
 The documentation for \code{\link{argo-class}} explains the structure of argo

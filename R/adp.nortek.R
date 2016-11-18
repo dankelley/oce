@@ -211,7 +211,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
                     user$cellSize <- user$hBinLength / 256 * 0.01350 * cos(25 * degToRad)
                     user$blankingDistance <- user$T2 * 0.01350 * cos(25 * degToRad) - user$cellSize
                 } else {
-                    warning("unknown frequency ", head$frequency, " (only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size\n")
+                    warning("unknown frequency ", head$frequency, " (only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size")
                     user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                     user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
                 }
@@ -225,7 +225,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
                 } else if (isTRUE(all.equal.numeric(head$frequency, 400))) {
                     user$cellSize <- user$hBinLength / 256 * 0.1195 * cos(25 * degToRad)
                 } else {
-                    warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size\n")
+                    warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size")
                     user$cellSize <- user$hBinLength / 256 * 0.0478 * cos(25 * degToRad)
                     ##user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                 }
@@ -233,7 +233,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             } else if (type == "aquadopp") {
                 ##user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                 ##user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
-                warning("using fixed cell size and blanking distance for Aquadopp, since cannot infer these from the file\n")
+                warning("using fixed cell size and blanking distance for Aquadopp, since cannot infer these from the file")
                 user$cellSize <- 0.75  # value for one particular test file
                 user$blankingDistance <- 0.37 # value for one particular test file
             } else if (type == "vector") {
@@ -243,7 +243,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
                 user$cellSize <- user$receiveLength * (soundspeed / 2) / 480.0e3 # drop the 1000 to get m
                 user$blankingDistance <- 0 # ?
             } else {
-                warning("unknown instrument type \"", type, "\", so calculating cell size as though it is a 2MHz AquadoppHR\n")
+                warning("unknown instrument type \"", type, "\", so calculating cell size as though it is a 2MHz AquadoppHR")
                 user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                 user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
             }
@@ -721,7 +721,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
     ## get diagnostic data, if any, and trim them to same index range as conventional data
     if (type == "aquadopp") {
-        ##warning("read.aquadopp() is still in development.  BUG: vDiag mismatch to ascii file is up to 3 times the rounding error of the ascii (.dia) file.\n")
+        ##warning("read.aquadopp() is still in development.  BUG: vDiag mismatch to ascii file is up to 3 times the rounding error of the ascii (.dia) file.")
         diaStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
         oceDebug(debug, "diaStart range:", range(diaStart), "\n")
         diaStart <- subset(diaStart, diaStart >= profileStart[fromIndex])

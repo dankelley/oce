@@ -6,8 +6,8 @@
 \usage{
 ctdFindProfiles(x, cutoff = 0.5, minLength = 10, minHeight = 0.1 *
   diff(range(x[["pressure"]])), smoother = smooth.spline,
-  direction = c("descending", "ascending"), arr.ind = FALSE,
-  debug = getOption("oceDebug"), ...)
+  direction = c("descending", "ascending"), breaks, arr.ind = FALSE,
+  distinct, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -19,9 +19,9 @@ ctdFindProfiles(x, cutoff = 0.5, minLength = 10, minHeight = 0.1 *
 \item{minHeight}{lower limit on height of candidate profiles.}
 
 \item{smoother}{The smoothing function to use for identifying down/up
-casts. The default is \code{smooth.spline}, which performs well for 
+casts. The default is \code{smooth.spline}, which performs well for
 a small number of cycles; see \dQuote{Examples} for a method that is
-better for a long tow-yo. The return value from \code{smoother} must 
+better for a long tow-yo. The return value from \code{smoother} must
 be either a list containing an element named \code{y} or something
 that can be coerced to a vector with \code{\link{as.vector}}. To
 turn smoothing off, so that cycles in pressure are determined by
@@ -29,10 +29,23 @@ simple first difference, set \code{smoother} to \code{NULL}.}
 
 \item{direction}{String indicating the travel direction to be selected.}
 
+\item{breaks}{optional logical vector indicating the indices of data
+at the edges of profiles. If this is given, then the preceding arguments
+\code{cutoff} through \code{direction} are ignored. This argument
+can be handy when the other scheme fails, because it gives complete
+control to the user (example 3).}
+
 \item{arr.ind}{Logical indicating whether the array indices should be returned;
 the alternative is to return a vector of ctd objects.}
 
-\item{debug}{An integer specifying whether debugging information is
+\item{distinct}{An optional string indicating how to identify profiles
+by unique values. Use \code{"location"}
+to find profiles by a change in longitude and latitude, or use the name of any
+of item in the \code{data} slot in \code{x}. In these cases, all the
+other arguments except \code{x} are ignored. However, if \code{distinct}
+is not supplied, the other arguments are handled as described above.}
+
+\item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
@@ -69,6 +82,7 @@ relying on e.g. \code{\link{plotScan}} to identify profiles visually, for a fina
 \examples{
 \dontrun{
 library(oce)
+## Example 1.
 d <- read.csv("towyow.csv", header=TRUE)
 towyow <- as.ctd(d$salinity, d$temperature, d$pressure)
 
@@ -80,15 +94,20 @@ for (cast in casts) {
   plotTS(cast, type='o')
 }
 
+## Example 2.
 ## Using a moving average to smooth pressure, instead of the default
 ## smooth.spline() method. This avoids a tendency of smooth.spline()
 ## to smooth out the profiles in a tow-yo with many (dozens or more) cycles.
-movingAverage <- function(x, n = 11, ...) 
+movingAverage <- function(x, n = 11, ...)
 {
    f <- rep(1/n, n)
    stats::filter(x, f, ...)
 }
 casts <- ctdFindProfiles(towyo, smoother=movingAverage)
+
+## Example 3: glider data, with profiles separated by >10dbar jump.
+breaks <- which(diff(ctd[["pressure"]]) > 10))
+profiles <- ctdFindProfiles(ctd, breaks=breaks)
 }
 
 }
@@ -102,10 +121,8 @@ of CTD objects, and also outlines the other functions dealing with them.
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
-  \code{\link{gps-class}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdRaw}},
+  \code{\link{ctdTrim}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},

@@ -332,38 +332,34 @@ as.rsk <- function(time, columns,
 #' \code{rsk} objects is that they contain a \code{time} vector in their
 #' \code{data} slot.
 #' 
-#' @details
-#' Several plots are available.  \itemize{
-#'     \item \code{which=0} or \code{"timeseries"} for time-series plots of each variable;
-#'     this over-rides any other specification
-#'     \item \code{which=1} or \code{"temperature"} for a time-series plot of temperature
-#'     \item \code{which=2} or \code{"text"} for textual information about the dataset
-#'     \item \code{which=3} or \code{"pressure"} for a time-series plot of pressure
-#'     \item \code{which=4} or \code{"profile"} for a temperature profile
-#' }
+#' @details Plots produced are time series plots of the data in the
+#'     object. The default, \code{which="timeseries"} plots all data
+#'     fields, and over-rides any other specification. Specific fields
+#'     can be plotted by naming the field,
+#'     e.g. \code{which="temperature"} to plot a time series of just
+#'     the temperature field.
 #' 
 #' @param x \code{rsk} object, typically result of \code{\link{read.rsk}}.
 #' 
-#' @param which list of desired plot types.  These are graphed in panels running
-#' down from the top of the page.  See \dQuote{Details} for the meanings of
-#' various values of \code{which}.
+#' @param which character indicating desired plot types.  These are
+#'     graphed in panels running down from the top of the page.  See
+#'     \dQuote{Details} for the meanings of various values of
+#'     \code{which}.
 #' 
-#' @param title character string to be used in the text-summary panel
-#' (\code{which}=2).
-#'
 #' @template adornTemplate
 #' 
 #' @param tlim optional limits for time axis.  If not provided, the value will be
 #' inferred from the data.
 #' 
-#' @param plim optional limits for pressure axis.  If not provided, the value will
-#' be inferred from the data.  (It is helpful to specify this, if the auto-scaled
-#' value will be inappropriate, e.g. if more lines are to be added later.)
-#' 
-#' @param Tlim optional limits for temperature axis.  If not provided, the value
-#' will be inferred from the data.  (It is helpful to specify this, if the
-#' auto-scaled value will be inappropriate, e.g. if more lines are to be added
-#' later.)
+#' @param ylim optional limits for the y axis.  If not provided, the
+#'     value will be inferred from the data.  (It is helpful to
+#'     specify this, if the auto-scaled value will be inappropriate,
+#'     e.g. if more lines are to be added later). Note that this is
+#'     ignored, unless \code{length(which) == 1} and \code{which}
+#'     corresponds to one of the data fields. If a multipanel plot of
+#'     a specific subset of the data fields is desired with
+#'     \code{ylim} control, it should be done panel by panel (see
+#'     Examples).
 #' 
 #' @param xlab optional label for x axis.
 #' 
@@ -400,22 +396,25 @@ as.rsk <- function(time, columns,
 #' @examples
 #' library(oce)
 #' data(rsk)
-#' plot(rsk, which=c(1,3))
-#' 
+#' plot(rsk) # default timeseries plot of all data fields
+#'
+#' ## A multipanel plot of just pressure and temperature with ylim
+#' par(mfrow=c(2, 1))
+#' plot(rsk, which="pressure", ylim=c(10, 30))
+#' plot(rsk, which="temperature", ylim=c(2, 4))
 #' 
 #' @seealso
 #' The documentation for \code{\link{rsk-class}} explains the structure of
 #' \code{rsk} objects, and also outlines the other functions dealing with them.
 #' 
-#' @author Dan Kelley
+#' @author Dan Kelley and Clark Richards
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{rsk} data
 setMethod(f="plot",
           signature=signature("rsk"),
-          ##definition=function(x, which=c(1, 3, 4), title="", adorn=NULL,
-          definition=function(x, which="timeseries", title="", adorn=NULL,
-                              tlim, plim, Tlim,
+          definition=function(x, which="timeseries", adorn=NULL,
+                              tlim, ylim,
                               xlab, ylab,
                               tformat,
                               drawTimeRange=getOption("oceDrawTimeRange"),
@@ -435,51 +434,43 @@ setMethod(f="plot",
               ## but it may be better to get users out of the habit of supplying xlim
               ## etc (which will yield errors in plot.lm(), for example).
               if ("xlim" %in% dotsNames)
-                  stop("in plot.rsk() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim (for type=4) ", call.=FALSE)
-              if ("ylim" %in% dotsNames)
-                  stop("in plot.rsk() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim (for type=3) ", call.=FALSE)
-              whichOk <- c("timeseries", "temperature", "text", "pressure", "profile")
-              whichNew <- oce.pmatch(which, list(timeseries=0, temperature=1, text=2, pressure=3, profile=4))
-              if (any(is.na(whichNew))) stop("plot.rsk(..., which=\"", which, "\") not understood; try one of: ", paste(whichOk, collapse=" "), call.=FALSE)
-              which <- whichNew # now it's numeric
-              if (any(which==0))
-                  which <- 0 # "timeseries" overrides any others
-              opar <- par(no.readonly = TRUE)
-              on.exit(par(opar))
+                  stop("in plot.rsk() : 'xlim' not allowed; use tlim", call.=FALSE)
+              if (any(which=="timeseries"))
+                  which <- "timeseries" # "timeseries" overrides any others
               lw <- length(which)
-              if (lw == 1 && which==0) {
+              if (lw == 1 && which=="timeseries") {
+                  opar <- par(no.readonly = TRUE)
+                  on.exit(par(opar))
                   names <- names(x@data)
                   if (!"time" %in% names) stop("plot.rsk() cannot plot timeseries, since no \"time\" data", call.=FALSE)
                   names <- names[names != "time"]
                   par(mfrow=c(length(names), 1))
                   for (name in names) {
-                      oce.plot.ts(x[["time"]], x[[name]], ylab=name, ...)
+                      if (!is.null(x[['units']])) {
+                          unit <- x[['units']][[name]]$unit
+                          tmp <- c(name, '~"["*', as.character(unit), '*"]"')
+                          label <- bquote(.(parse(text=paste0(tmp, collapse=''))))
+                      } else {
+                          label <- name
+                      }
+                      oce.plot.ts(x[["time"]], x[[name]], ylab=label, ...)
                   }
               } else {
                   ## individual panels
                   ## Trim out plots that we cannot do.
                   names <- names(x@data)
-                  haveTemperature <- ("temperature" %in% names) && any(is.finite(x@data$temperature))
-                  havePressure <- ("pressure" %in% names) && any(is.finite(x@data$pressure))
-                  if (!haveTemperature) 
-                      which <- which[which != 1 & which != 4]
-                  if (!havePressure) 
-                      which <- which[which != 3 & which != 4]
+                  names <- names[-(names=="time")]
                   nw <- length(which)
-                  opar <- par(no.readonly = TRUE)
-                  if (nw > 1)
-                      on.exit(par(opar))
+                  ## opar <- par(no.readonly = TRUE)
+                  ## if (nw > 1) {
+                  ##     par(mfrow=c(nw, 1))
+                  ##     on.exit(par(opar))
+                  ## }
                   adorn.length <- length(adorn)
                   if (adorn.length == 1) {
                       adorn <- rep(adorn, nw)
                       adorn.length <- nw
                   }
-                  ## Old-style for pT sensors; others, just 
-                  if (3 == length(which) && 1 %in% which && 3 %in% which && 4 %in% which)
-                      layout(rbind(c(1,2), c(3,4)), widths=c(2,1))
-                  else
-                      layout(matrix(1:nw))
-                  par(mgp=mgp, mar=mar)
                   if (missing(main))
                       main <- rep('', length.out=nw)
                   else
@@ -487,94 +478,33 @@ setMethod(f="plot",
                   oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
                   for (w in 1:nw) {
                       oceDebug(debug, "which[", w, "]=", which[w], "\n")
-                      if (which[w] == 1) {           # temperature timeseries
-                          if (haveTemperature) {
-                              oce.plot.ts(x@data$time, x@data$temperature,
-                                          xlab=if (!missing(xlab))xlab else "",
-                                          ylab=if (missing(ylab)) resizableLabel("T", "y") else ylab,
-                                          type='l',
-                                          xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
-                                          ylim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
-                                          tformat=tformat,
-                                          drawTimeRange=drawTimeRange,
-                                          mgp=mgp, mar=mar, main=main[w], ...)
-                              drawTimeRange <- FALSE    # only the first time panel gets the time indication
-                              axis(2)
+                      haveField <- (which[w] %in% names) && any(is.finite(x[[which[w]]]))
+                      if (haveField) {
+                          if (!is.null(x[['units']])) {
+                              unit <- x[['units']][[which[w]]]$unit
+                              tmp <- c(which[w], '~"["*', as.character(unit), '*"]"')
+                              label <- bquote(.(parse(text=paste0(tmp, collapse=''))))
+                          } else {
+                              label <- which[w]
                           }
-                      } else if (which[w] == 3) {    # pressure timeseries
-                          if (havePressure) {
-                              oce.plot.ts(x@data$time, x@data$pressure,
-                                          xlab=if (!missing(xlab))xlab else "",
-                                          ylab=if (missing(ylab)) resizableLabel("p", "y") else ylab,
-                                          type='l',
-                                          xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
-                                          ylim=if (missing(plim)) range(x@data$pressure, na.rm=TRUE) else plim,
-                                          tformat=tformat,
-                                          drawTimeRange=drawTimeRange,
-                                          mgp=mgp, mar=mar, main=main[w], ...)
-                              drawTimeRange <- FALSE
-                          }
-                      } else if (which[w] == 2) {
-                          textItem<-function(xloc, yloc, item, cex=4/5*par("cex"), d.yloc=0.8) {
-                              if (!is.null(item) && !is.na(item))
-                                  text(xloc, yloc, item, adj = c(0, 0), cex=cex);
-                              yloc - d.yloc
-                          }
-                          xfake <- seq(0:10)
-                          yfake <- seq(0:10)
-                          mar <- par("mar")
-                          par(mar=c(0,0,0,0))
-
-                          plot(xfake, yfake, type = "n", xlab = "", ylab = "", axes = FALSE)
-                          xloc <- 1
-                          yloc <- 10
-                          cex <- par("cex")
-                          yloc <- textItem(xloc, yloc, title, cex=1.25*cex)
-                          ##if (!is.null(object@metadata$filename))
-                          ##    textItem(object@metadata$filename, cex=cex)
-                          if (!is.null(x@metadata$serialNumber)) {
-                              yloc <- textItem(xloc, yloc, paste(gettext("Serial Number", domain="R-oce"), x@metadata$serialNumber),cex=cex)
-                          }
-                          if (!(1 %in% which || 2 %in% which)) { # don't bother with these if already on a time-series panel
-                              yloc <- textItem(xloc, yloc, paste("Start:", x@data$time[1], attr(x@data$time, "tzone")), cex=cex)
-                              yloc <- textItem(xloc, yloc, paste("End:", x@data$time[length(x@data$time)], attr(x@data$time, "tzone")), cex=cex)
-                              yloc <- textItem(xloc, yloc, paste("Sampled interval:", difftime(x@data$time[2], x@data$time[1], units="secs"), "s"),cex=cex)
-                          }
-                          par(mar=mar)
-                      } else if (which[w] == 4) {     # "profile"
-                          if (haveTemperature && havePressure) {
-                              args <- list(x=x@data$temperature, y=x@data$pressure,
-                                           xlab="",
-                                           ylab=resizableLabel("p"),
-                                           xlim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
-                                           ylim=if (missing(plim)) rev(range(x@data$pressure, na.rm=TRUE)) else plim,
-                                           ...)
-                              a <- names(list(...))
-                              if (!("type" %in% a))
-                                  args <- c(args, type="p")
-                              if (!("cex"  %in% a))
-                                  args <- c(args, cex=1/2)
-                              if (!("axes" %in% a))
-                                  args <- c(args, axes=FALSE)
-                              ##np <- length(x@data$pressure)
-                              if (nw == 1)
-                                  par(mar=c(1, 3.5, 4, 1))
-                              if (useSmoothScatter) {
-                                  args <- args[names(args) != "type"]
-                                  do.call(smoothScatter, args)
-                              } else {
-                                  do.call(plot, args)
-                              }
-                              box()
-                              axis(2)
-                              axis(3)
-                              mtext(resizableLabel("T", "x"), side = 3, line = 2)
-                          }
+                          oce.plot.ts(x@data$time, x[[which[w]]],
+                                      xlab=if (!missing(xlab)) xlab else "",
+                                      ylab=if (missing(ylab)) label else  ylab,
+                                      type='l',
+                                      xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
+                                      ylim=if (missing(ylim)) range(x[[which[w]]], na.rm=TRUE) else ylim,
+                                      tformat=tformat,
+                                      drawTimeRange=drawTimeRange,
+                                      mgp=mgp, mar=mar, main=main[w], ...)
+                          drawTimeRange <- FALSE    # only the first time panel gets the time indication
+                          axis(2)
+                      } else {
+                          stop("Unrecognized value for \"which\". Must be \"timeseries\" or the name of any field from the data slot.")
                       }
                       if (w <= adorn.length) {
                           t <- try(eval(adorn[w]), silent=TRUE)
                           if (class(t) == "try-error")
-                              warning("cannot evaluate adorn[", w, "]\n")
+                              warning("cannot evaluate adorn[", w, "]")
                       }
                   }
               }
@@ -796,7 +726,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             warn <- TRUE
         }, silent=TRUE)
         if (warn)
-            warning("non-standard pressureAtmospheric value: ", pressureAtmospheric, "\n")
+            warning("non-standard pressureAtmospheric value: ", pressureAtmospheric)
         ##message("NEW: pressureAtmospheric:", pressureAtmospheric)
         oceDebug(debug, "after studying the RSK file, now have pressureAtmospheric=", pressureAtmospheric, "\n")
 
@@ -935,7 +865,8 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         res@metadata$sampleInterval <- sampleInterval
         res@metadata$rskVersion <- rskVersion
         res@metadata$ruskinVersion <- ruskinVersion
-        res@metadata$dataNamesOriginal <- dataNamesOriginal
+        res@metadata$dataNamesOriginal <- as.list(dataNamesOriginal)
+        names(res@metadata$dataNamesOriginal) <- names(res@data)
         if (hasDatasetID) res@metadata$datasetID <- datasetID
         ## There is actually no need to set the conductivity unit since new()
         ## sets it, but do it anyway, as a placeholder to show where to do
@@ -1249,8 +1180,11 @@ rsk2ctd <- function(x, pressureAtmospheric=0, debug=getOption("oceDebug"))
         } else {
             stop("unrecognized conductivity unit '", unit, "'; only uS/cm, mS/cm and S/m are handled")
         }
-        res <- ctdAddColumn(res, column=S, name="salinity", label="Salinity",
-                            unit=list(unit=expression(), scale="PSS-78"))
+        ## res <- ctdAddColumn(res, column=S, name="salinity", label="Salinity",
+        ##                     unit=list(unit=expression(), scale="PSS-78"))
+        res <- oceSetData(res, name="salinity", value=S,
+                          unit=list(unit=expression(), scale="PSS-78"))
+
     }
     oceDebug(debug, "} # rsk2ctd()\n", sep="", unindent=1)
     res@processingLog <- processingLogAppend(res@processingLog,

@@ -16,7 +16,7 @@ states that a short-name of \code{"salt"} represents salinity, and that the unit
 as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFNames2oceNames}},
 as appropriate, and takes precendence over the lookup table in that function.}
 
-\item{debug}{An integer specifying whether debugging information is
+\item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
@@ -41,7 +41,8 @@ e.g. \code{depthMin}, \code{depthMax} and \code{sounding}, which
 are inferred from ODF items named \code{MIN_DEPTH}, \code{MAX_DEPTH}
 and \code{SOUNDING}, respectively. In addition, the more common metadata
 item \code{waterDepth}, which is used in \code{ctd} objects to refer to
-the total water depth, is here identical to \code{sounding}.
+the total water depth, is set to \code{sounding} if that is finite,
+or to \code{maxDepth} otherwise.
 }
 \examples{
 library(oce)

@@ -11,7 +11,6 @@
 #' @docType class
 #' @author Dan Kelley
 #'
-#' @family things related to \code{ctd} data
 #' @family things related to \code{gps} data
 setClass("gps", contains="oce")
 
@@ -438,7 +437,7 @@ read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog
     type <- match.arg(type, c("gpx"))
     oceDebug(debug, "file type:", type, "\n")
     lines <- readLines(file)
-    look <- grep("lat=", lines)
+    look <- grep("^<.* lat=", lines)
     latlon <- lines[look]
     latlonCleaned <- gsub("[a-zA-Z<>=\"/]*", "", latlon)
     latlon <- read.table(text=latlonCleaned)

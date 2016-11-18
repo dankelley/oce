@@ -122,8 +122,9 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
             stop("cannot decode the header in this CTD file")
         header <- lines[1:headerEnd]
         oceDebug(debug, "headerEnd:", headerEnd, "\n")
-        dataNamesOriginal <- gsub(" *$", "", strsplit(header[headerEnd-1], ",")[[1]])
+        dataNamesOriginal <- as.list(gsub(" *$", "", strsplit(header[headerEnd-1], ",")[[1]]))
         names <- tolower(dataNamesOriginal)
+        names(dataNamesOriginal) <- names
         unitsOriginal <- gsub(" *$", "", gsub("^ *", "", strsplit(header[headerEnd],",")[[1]]))
         ## FIXME: decode to real units
         units <- list()
@@ -178,7 +179,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         ## res@metadata$units <- list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
         ##                            salinity=list(unit=expression(), scale="PSS-78"),
         ##                            conductivity=list(unit=expression(), scale=""))
-        res@metadata$dataNamesOriginal <- dataNamesOriginal
+        res@metadata$dataNamesOriginal <- as.list(dataNamesOriginal)
+        names(res@metadata$dataNamesOriginal) <- names
         res@metadata$pressureType <- "sea"
         res@metadata$ship <- ship
         res@metadata$scientist <- scientist
@@ -194,8 +196,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         res@metadata$recovery <- recovery
         res@metadata$waterDepth <- max(abs(data$pressure), na.rm=TRUE) # not in header
         res@metadata$sampleInterval <- sampleInterval
-        res@metadata$names <- names
-        res@metadata$labels <- labels
+        ##res@metadata$names <- names
+        ##res@metadata$labels <- labels
         res@metadata$src <- filename
     } else {                           # CTD, 20000718WHPOSIOSCD
         tmp <- sub("(.*), ", "", line)
@@ -296,11 +298,12 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
                 stop("cannot find salinity column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL' or 'SALNTY'")
         }
         ## FIXME: use these flags ... they are ignored at present.
-        Sflagcol <- pmatch("CTDSAL_FLAG_W", varNames)
+        Sflagcol <- pmatch("CTDSAL_FLAG", varNames)
         if (is.na(Sflagcol)) {
-            Sflagcol <- pmatch("SALNTY_FLAG_W", varNames)
+            Sflagcol <- pmatch("SALNTY_FLAG", varNames)
+            browser()
             if (is.na(Sflagcol))
-                stop("cannot find salinity-flag column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL_FLAG_W' or 'SALNTY_FLAG_W'")
+                stop("cannot find salinity-flag column in list c(\"", paste(varNames, '","'), "\"); need 'CTDSAL_FLAG...' or 'SALNTY_FLAG...'")
         }
         Tcol <- pmatch("CTDTMP", varNames)
         if (is.na(Tcol))
@@ -330,7 +333,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         flags <- as.list(dataAndFlags[, flags])
         names(flags) <- gsub("Flag", "", names(flags))
         names <- names(data)
-        labels <- titleCase(names)
+        ##labels <- titleCase(names)
         if (is.na(waterDepth)) {
             waterDepth <- max(abs(data$pressure), na.rm=TRUE)
             waterDepthWarning <- TRUE
@@ -360,8 +363,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         res@metadata$recovery <- recovery
         res@metadata$waterDepth <- waterDepth
         res@metadata$sampleInterval <- sampleInterval
-        res@metadata$names <- names
-        res@metadata$labels <- labels
+        ##res@metadata$names <- names
+        ##res@metadata$labels <- labels
         res@metadata$src <- filename
     }
     res@data <- data
@@ -403,6 +406,7 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, 
     examineHeaderLines <- 10
     header <- readLines(file, n=examineHeaderLines)
     station <- ""
+    startTime <- NULL
     for (i in 1: examineHeaderLines) {
         if (1 == length(grep("STNNBR.*", header[i]))) {
             station <- gsub(" .*", "", gsub("STNNBR[ ]*", "", header[i]))
@@ -411,7 +415,7 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, 
             month <- as.numeric(substr(date, 1, 2))
             day <- as.numeric(substr(date, 3, 4))
             year <- 1900 + as.numeric(substr(date, 5, 6))
-            date <- ISOdatetime(year,month,day,0,0,0, tz="UTC")
+            startTime <- ISOdatetime(year,month,day,0,0,0, tz="UTC")
         }
     }
     data <- read.table(file, skip=6, header=FALSE)
@@ -426,7 +430,12 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, 
         pressure[pressure == missingValue] <- NA
         oxygen[oxygen == missingValue] <- NA
     }
-    as.ctd(salinity, temperature, pressure, oxygen=oxygen, station=station, date=date)
+    res <- as.ctd(salinity, temperature, pressure, station=station, startTime=startTime)
+    res <- oceSetData(res, name="oxygen", value=oxygen,
+                      unit=expression(unit=expression(), scale=""))
+    res@metadata$dataNamesOriginal <- list(pressure="CTDPRS", temperature="CTDTMP", 
+                                           salinity="CTDSAL", oxygen="CTDOXY")
+    res
 }
 
 

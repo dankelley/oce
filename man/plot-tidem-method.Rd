@@ -5,7 +5,8 @@
 \alias{plot,tidem-method}
 \title{Plot a Tidem Prediction}
 \usage{
-\S4method{plot}{tidem}(x, which = 1, labelIf = NULL, log = "",
+\S4method{plot}{tidem}(x, which = 1, constituents = c("SA", "O1", "K1",
+  "M2", "S2", "M4"), sides = NULL, col = "blue", log = "",
   mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, mgp[2] + 0.25,
   mgp[2] + 1), ...)
 }
@@ -16,9 +17,21 @@
 \item{which}{integer flag indicating plot type, 1 for stair-case spectral, 2
 for spike spectral.}
 
-\item{labelIf}{if NULL, the function will indicate some particular tidal
-constituents; if a value is provided, labels will be given for any
-constituent with amplitude exceeding the value provided.}
+\item{constituents}{a character vector of constituents that are
+to be drawn and label. If \code{NULL}, then no constituents will be shown.
+Consult the built-in dataset \code{\link{tidedata}} for the permissible
+constituent names and their frequencies.}
+
+\item{sides}{an integer vector of length equal to that of \code{constituents},
+designating the side on which the constituent labels are to be drawn. As in 
+all R graphics, the value \code{1} indicates the bottom of the plot, and
+\code{3} indicates the top. If \code{sides=NULL}, the default, then all labels
+are drawn at the top. Any value of \code{sides} that is not either 1 or 3
+is converted to 3.}
+
+\item{col}{a character vector naming colours to be used for \code{constituents}.
+Ignored if \code{sides=3}. Repeated to be of the same length as
+\code{constituents}, otherwise.}
 
 \item{log}{if set to "\code{x}", the frequency axis will be logarithmic.}
 
@@ -33,6 +46,12 @@ default, in order to use more space for the data and less for the axes.}
 \description{
 Plot a summary diagram for a tidal fit.
 }
+\section{Historical note}{
+
+An argument named \code{labelIf} was removed in July 2016,
+because it was discovered never to have worked as documented, and
+because the more useful argument \code{constituents} had been added.
+}
 \examples{
 \dontrun{
 library(oce)
@@ -40,6 +59,7 @@ data(sealevel)
 tide <- tidem(sealevel)
 plot(tide)
 }
+
 }
 \author{
 Dan Kelley

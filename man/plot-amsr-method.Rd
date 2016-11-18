@@ -5,7 +5,9 @@
 \alias{plot,amsr-method}
 \title{Plot an amsr Object}
 \usage{
-\S4method{plot}{amsr}(x, y, asp, debug = getOption("oceDebug"), ...)
+\S4method{plot}{amsr}(x, y, asp, missingColor = list(land = "papayaWhip", none
+  = "lightGray", bad = "gray", rain = "plum", ice = "mediumVioletRed"),
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{An object inherting from \code{\link{amsr-class}}.}
@@ -14,6 +16,13 @@
 \code{SST} is used; see \code{\link{amsr-class}} for a list of bands.}
 
 \item{asp}{Optional aspect ratio for plot.}
+
+\item{missingColor}{List of colours for problem cases. The names of the
+elements in this list must be as in the default, but the colours may
+be changed to any desired values. These default values work reasonably
+well for SST images, which are the default image, and which employ a
+blue-white-red blend of colours, no mixture of which matches the
+default values in \code{missingColor}.}
 
 \item{debug}{A debugging flag, integer.}
 
@@ -61,7 +70,10 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
-  \code{\link{amsr-class}}, \code{\link{read.amsr}},
+  \code{\link{amsr-class}},
+  \code{\link{composite,amsr-method}},
+  \code{\link{download.amsr}}, \code{\link{read.amsr}},
+  \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}
 }
 \concept{

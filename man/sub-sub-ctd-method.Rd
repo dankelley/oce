@@ -78,7 +78,7 @@ If none of the above-listed conditions holds, then \code{NULL} is returned.
 
 
 Some uses of \code{[[,ctd-method} involve direct retrieval of
-items within the \code{data} slot of the \code{ctd} object, 
+items within the \code{data} slot of the \code{ctd} object,
 while other uses involve calculations based on items in that
 \code{data} slot. For an example, all \code{ctd} objects
 should hold an item named \code{temperature} in the \code{data}
@@ -101,7 +101,7 @@ be stored in the same unit within the \code{ctd} object, but
 \code{x[["pressure"]]} will return a value that has been converted
 to decibars.  (Users who need the pressure in PSI can
 use \code{x@data$pressure}.)
-Similarly, temperature is 
+Similarly, temperature is
 returned in the ITS-90 scale, with a conversion having been performed with
 \code{\link{T90fromT68}}, if the object holds temperature in
 IPTS-68.  Again, temperature on the IPTS-68
@@ -161,7 +161,7 @@ referenced to a pressure of 3000dbar, computed with \code{\link{swSigma3}(x)}.
 
 \item \code{sigma4}: potential density anomaly
 referenced to a pressure of 4000dbar, computed with \code{\link{swSigma4}(x)}.
-                                       
+
 \item \code{SP}: Salinity on the Practical Salinity Scale, which is
 \code{salinity} in the \code{data} slot.
 
@@ -213,11 +213,9 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
 
 Other things related to \code{ctd} data: \code{\link{[[<-,ctd-method}},
   \code{\link{as.ctd}}, \code{\link{cnvName2oceName}},
-  \code{\link{ctd-class}}, \code{\link{ctdAddColumn}},
-  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
-  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
-  \code{\link{ctdUpdateHeader}}, \code{\link{ctd}},
-  \code{\link{gps-class}},
+  \code{\link{ctd-class}}, \code{\link{ctdDecimate}},
+  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
+  \code{\link{ctdTrim}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},

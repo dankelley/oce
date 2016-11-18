@@ -9,7 +9,7 @@ oceEdit(x, item, value, action, reason = "", person = "",
   debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{an \code{oce} object.  The exact action of \code{oce.edit} depends
+\item{x}{an \code{oce} object.  The exact action of \code{oceEdit} depends
 on the \code{\link{class}} of \code{x}; see \dQuote{Details}.}
 
 \item{item}{if supplied, a character string naming an item in the object's
@@ -47,7 +47,7 @@ performed on the object, e.g. a manipulation of a column.  The action must
 refer to the object as \code{x}; see Examples.
 
 3. Applied to an \code{adv} object (i.e. data from an acoustic velocimeter),
-\code{oce.edit} treats items named \code{heading}, \code{pitch}, \code{roll}
+\code{oceEdit} treats items named \code{heading}, \code{pitch}, \code{roll}
 appropriately, depending on the type of \code{adv} instrument used.  (This
 is necessary because different manufacturers produce different forms of
 these items, i.e. Nortek reports them on a time base that is different from
@@ -63,9 +63,9 @@ brief note on the \code{reason} for the change, and the name of the
 
 library(oce)
 data(ctd)
-ctd2 <- oce.edit(ctd, item="latitude", value=47.8879,
-                reason="illustration", person="Dan Kelley")
-ctd3 <- oce.edit(ctd,action="x@data$pressure<-x@data$pressure-1")
+ctd2 <- oceEdit(ctd, item="latitude", value=47.8879,
+               reason="illustration", person="Dan Kelley")
+ctd3 <- oceEdit(ctd,action="x@data$pressure<-x@data$pressure-1")
 }
 \author{
 Dan Kelley

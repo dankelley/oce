@@ -4,7 +4,7 @@
 \alias{oceSetData}
 \title{Set something in the \code{data} slot of an \code{oce} object}
 \usage{
-oceSetData(object, name, value, units, note = "")
+oceSetData(object, name, value, unit, originalName, note = "")
 }
 \arguments{
 \item{object}{an \code{oce} object}
@@ -13,12 +13,17 @@ oceSetData(object, name, value, units, note = "")
 
 \item{value}{Value for the item.}
 
-\item{units}{An optional list specifying units for the item, containing an element
-named \code{units} that is an \code{\link{expression}}, and a string named
+\item{unit}{An optional list specifying units for the item, containing an element
+named \code{unit} that is an \code{\link{expression}}, and a string named
 \code{scale} that describes the scale used. For example, modern temperatures
 have \code{unit=list(unit=expression(degree*C), scale="ITS-90")}.}
 
-\item{note}{A note to be stored in the processing log.}
+\item{originalName}{Optional character string giving an 'original' name (e.g.
+as stored in the header of a data file).}
+
+\item{note}{A note to be stored in the processing log. If an empty string
+(the default) then an entry will be constructed from the function call. If
+\code{NULL}, then no entry will be added to the processing log.}
 }
 \description{
 Set something in the \code{data} slot of an \code{oce} object

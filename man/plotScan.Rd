@@ -39,7 +39,7 @@ extraneous data from a CTD cast.
 }
 \examples{
 library(oce)
-data(ctdRaw) 
+data(ctdRaw)
 plotScan(ctdRaw)
 abline(v=c(130, 350), col='red') # useful for ctdTrim()
 
@@ -75,11 +75,9 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
-  \code{\link{ctdAddColumn}}, \code{\link{ctdDecimate}},
-  \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
-  \code{\link{ctdTrim}}, \code{\link{ctdUpdateHeader}},
-  \code{\link{ctd}}, \code{\link{gps-class}},
-  \code{\link{handleFlags,ctd-method}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
+  \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotTS}}, \code{\link{read.ctd.itp}},
   \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},

@@ -48,6 +48,10 @@ setClass("oce",
 #'
 #' @param object The object to be summarized.
 #' @param ... Extra arguments (ignored)
+#'
+#' @examples
+#' o <- new("oce")
+#' summary(o)
 setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
@@ -139,7 +143,15 @@ setMethod(f="summary",
                       rownames(threes) <- paste("    ", dataLabel(names, units))
                       colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
                       cat("* Statistics of data\n```\n")
-                      OriginalName <- object@metadata$dataNamesOriginal
+                      if ("dataNamesOriginal" %in% names(object@metadata)) {
+                          if (is.list(object@metadata$dataNamesOriginal)) {
+                              OriginalName <- unlist(lapply(names, function(n) if (n %in% names(object@metadata$dataNamesOriginal)) object@metadata$dataNamesOriginal[[n]] else "-"))
+                          } else {
+                              OriginalName <- object@metadata$dataNamesOriginal
+                          }
+                      } else {
+                          OriginalName <- NULL
+                      }
                       ##print(OriginalName)
                       ## I'm not sure the following will ever happen, if we always remember
                       ## to use ctdAddColumn(), but I don't want names getting recycled, so
@@ -200,7 +212,7 @@ setMethod(f="plot",
               else if (n > 2)
                   pairs(x@data, ...)
               else
-                  warning("no data to plot\n")
+                  warning("no data to plot")
           })
 
 #' Subset an oce Object
@@ -244,7 +256,10 @@ setMethod(f="subset",
 #' The named item is sought first in
 #' \code{metadata}, where an exact match to the name is required. If
 #' it is not present in the \code{metadata} slot, then a partial-name
-#' match is sought in the \code{data} slot. 
+#' match is sought in the \code{data} slot. Failing both 
+#' tests, an exact-name match is sought in a field named
+#' \code{dataNamesOriginal} in the object's \code{metadata}
+#' slot, if that field exists. Failing that, \code{NULL} is returned.
 #'
 #' To get information on the specialized variants of this function, 
 #' type e.g. \code{?"[[,adv-method"} for information on extracting
@@ -279,14 +294,24 @@ setMethod(f="[[",
               } else if (length(grep("Flag$", i))) { # returns a list
                   return(if ("flags" %in% names(x@metadata)) x@metadata$flags[[gsub("Flag$","",i)]] else NULL)
               } else {
-                  ## metadata must match exactly but data can be partially matched
+                  ## Check metadata
                   if (i %in% names(x@metadata))
                       return(x@metadata[[i]])
                   index <- pmatch(i, names(x@data))
-                  if (!is.na(index[1]))
+                  if (!is.na(index[1])) {
                       return(x@data[[index]])
-                  else
-                      return(NULL)
+                  } else {
+                      ## some special cases
+                      if (i == "sigmaTheta") {
+                          return(swSigmaTheta(x))
+                      } else {
+                          ## Check original data names
+                          if (i %in% x@metadata$dataNamesOriginal)
+                              return(x@data[[which(i==x@metadata$dataNamesOriginal)[1]]])
+                          ## Give up
+                          return(NULL)
+                      }
+                  }
                   ## if (missing(j) || j != "nowarn")
                   ##     warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
               }
@@ -393,6 +418,43 @@ setMethod(f="show",
               }
           })
 
+#' @title Create a composite object by averaging across good data
+#' @details
+#' This only works for objects inheriting from \code{\link{amsr-class}}.
+#' @param object Either a \code{\link{list}} of \link{oce-class} objects, in
+#' which case this is the only argument, or a single \link{oce-class} object,
+#' in which case at least one other argument (an object of the size)
+#' must be supplied.
+#' @param ... Ignored, if \code{object} is a list. Otherwise, one or more
+#' \code{oce-class} objects of the same sub-class as the first argument.
+#' @template compositeTemplate
+setGeneric("composite", function(object, ...) {
+           standardGeneric("composite")
+         })
+
+
+#' @title Create a composite object by averaging across good data stored in a list
+#' @param object A \code{\link{list}} of \link{oce-class} objects. This is done
+#' by calling a specialized version of the function defined in the given
+#' class. In the present
+#' version, the objects must inherit from \link{amsr-class}, so the
+#' action is to call
+#' \code{\link{composite,amsr-method}}.
+#' @template compositeTemplate
+setMethod("composite",
+          c(object="list"),
+          function(object) {
+              if (length(object) < 2)
+                  object
+              if (inherits(object[[1]], "amsr")) {
+                  do.call("composite", object)
+              } else {
+                  stop("In composite(list) : only AMSR objects are handled")
+              }
+          })
+
+
+
 #' @title Handle flags in oce objects
 #' @details
 #' Each specialized variant of this function has its own defaults
@@ -416,11 +478,11 @@ setMethod("handleFlags",
 handleFlagsInternal <- function(object, flags, actions) {
     debug <- options('oceDebug')$oceDebug # avoid an arg for this
     if (missing(flags)) {
-        warning("no flags supplied (internal error; report to developer)\n")
+        warning("no flags supplied (internal error; report to developer)")
         return(object)
     }
     if (missing(actions)) {
-        warning("no actions supplied (internal error; report to developer)\n")
+        warning("no actions supplied (internal error; report to developer)")
         return(object)
     }
     if (any(names(flags)!=names(actions)))

@@ -715,7 +715,7 @@ setMethod(f="plot",
                   if (w <= adorn.length && nchar(adorn[w]) > 0) {
                       t <- try(eval(adorn[w]), silent=TRUE)
                       if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]\n")
+                          warning("cannot evaluate adorn[", w, "]")
                   }
               }
               oceDebug(debug, "} # plot.echosounder()\n", unindent=1)

@@ -28,6 +28,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
     }
     lines <- readLines(file, encoding="UTF-8")
     nlines <- length(lines)
+    oceDebug(debug, "read ", nlines, " lines\n")
     if ("%endofdat" == substr(lines[nlines], 1, 9)) {
         lines <- lines[1:(nlines-1)]
         nlines <- nlines - 1
@@ -51,16 +52,49 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
         if (longitude < 0)
             longitude <- 360 + longitude
         latitude <- d[4]
-        d <- read.table(text=lines[4:nlines])
-        items <- scan(text=lines[3], what="character", quiet=TRUE)
-        pcol <- grep("pressure", items)[1]
-        Scol <- grep("salinity", items)[1]
-        Tcol <- grep("temperature", items)[1]
-        Ocol <- grep("oxygen", items)[1]
-        pressure <- d[, pcol]
-        temperature <- d[, Tcol]
-        salinity <- d[, Scol]
-        oxygen <- d[, Ocol]
+        oceDebug(debug, "station '", station, "' at ", latitude, "N, ", longitude, "E\n", sep="")
+        namesLine <- grep("^%year day", lines[1:10])
+        if (1 == length(namesLine)) {
+            oceDebug(debug, "length(namesLine)==1\n")
+            hline <- gsub("%", "", lines[namesLine])
+            tokens <- strsplit(hline, " ")[[1]]
+            names <- gsub("\\(.*\\)", "", tokens)
+            ## unitGiven <- grep("\\(", tokens)
+            units <- list()
+            for (i in seq_along(names)) {
+                if (names[i] == "temperature") {
+                    units[[names[i]]] <- list(unit=expression(degree*C), scale="ITS-90")
+                } else if (names[i] == "salinity") {
+                    units[[names[i]]] <- list(unit=expression(), scale="PSS-78")
+                } else if (names[i] == "pressure") {
+                    units[[names[i]]] <- list(unit=expression(dbar), scale="")
+                } else if (names[i] != "year" && names[i] != "day") {
+                    unit <- gsub("(.*)\\((.*)\\)", "\\2", tokens[i])
+                    units[[names[i]]] <- list(unit=as.expression(unit), scale="")
+                }
+            }
+            d <- read.table(text=lines[-seq.int(1, namesLine)], col.names=names)
+            ## print(head(d), 2)
+            ## print(str(units))
+            pressure <- d$pressure
+            salinity <- d$salinity
+            temperature <- d$temperature
+            oxygen <- d$oxygen
+            time <- as.POSIXct(paste(d$year, "-01-01 00:00:00", sep=""), tz="UTC") + d$day * 86400
+        } else {
+            oceDebug(debug, "length(namesLine)!=1\n")
+            d <- read.table(text=lines[4:nlines])
+            items <- scan(text=lines[3], what="character", quiet=TRUE)
+            pcol <- grep("pressure", items)[1]
+            Scol <- grep("salinity", items)[1]
+            Tcol <- grep("temperature", items)[1]
+            Ocol <- grep("oxygen", items)[1]
+            pressure <- d[, pcol]
+            temperature <- d[, Tcol]
+            salinity <- d[, Scol]
+            oxygen <- d[, Ocol]
+            time <- NULL
+        }
         ## replace any missingValue with NA
         if (!missing(missingValue) && !is.null(missingValue)) {
             pressure <- ifelse(pressure==missingValue, NA, pressure)
@@ -68,10 +102,17 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
             salinity <- ifelse(salinity==missingValue, NA, salinity)
             oxygen <- ifelse(oxygen==missingValue, NA, oxygen)
         }
-        res <- as.ctd(salinity, temperature, pressure, oxygen=oxygen,
+        res <- as.ctd(salinity, temperature, pressure,
                       longitude=longitude, latitude=latitude,
                       startTime=ISOdate(year, 1, 1) + yearday * 3600 * 24,
                       station=station)
+        res <- oceSetData(res, name="oxygen", value=oxygen,
+                          unit=list(unit=expression(), scale=""))
+        res <- oceSetMetadata(res, "filename", filename)
+        res <- oceSetMetadata(res, "dataNamesOriginal",
+                              list(temperature="temperature", salinity="salinity", oxygen="oxygen", pressure="pressure"))
+        if (!is.null(time))
+            res <- oceSetData(res, "time", time) 
     } else {
         stop("can only handle 'profile' data type, not (presumably) SAMI type")
     }

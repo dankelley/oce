@@ -25,3 +25,6 @@ man/figures/Makefile
 man/figures/*.R
 vignettes
 
+tests_private
+tests/testthat/local_data
+
