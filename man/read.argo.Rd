@@ -135,8 +135,9 @@ Dan Kelley
 1. \url{http://www.argo.ucsd.edu/}
 
 2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-\url{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-(link checked 17 Nov 2016).
+\samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+(link checked 17 Nov 2016 several times in the months before, 
+but failed 18 Nov 2016).
 Table 2.2.2 of this document lists the codes used in Argo netCDF files.
 
 3. User's Manual (ar-um-02-01) 13 July 2010, available at
