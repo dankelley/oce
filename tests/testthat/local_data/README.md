@@ -33,6 +33,10 @@ cp /data/flemishCap/msm27_ladcp/msm27_003.ladcp .
 
 cp /data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab .
 
+# CTD
+
+18HU2010014_00003_00001_ct1.csv is from https://cchdo.ucsd.edu/data/9837/18HU20100513_ct1.zip
+
 # Echosounder
 
 cp /data/archive/sleiwex/2008/fielddata/2008-07-04/Merlu/Biosonics/20080704_112452.dt4 echosounder.dt4
@@ -50,8 +54,9 @@ cp ~/src/rgdal/branches/rgdal_iconv/inst/vectors/test_trk2.gpx .
 cp  ~/Downloads/itp99grddata/itp99grd0000.dat  .
 
 
-# CTD
+# index
 
-18HU2010014_00003_00001_ct1.csv is from https://cchdo.ucsd.edu/data/9837/18HU20100513_ct1.zip
+curl http://www.cgd.ucar.edu/cas/catalog/climind/SOI.signal.ascii > SOI.signal.ascii
+
 
 ```
