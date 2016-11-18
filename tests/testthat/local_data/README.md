@@ -29,6 +29,10 @@ cp ~/data/amsr/f34_20160808v7.2.gz .
 
 cp /data/flemishCap/msm27_ladcp/msm27_003.ladcp .
 
+# cm
+
+cp /data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab .
+
 # Echosounder
 
 cp /data/archive/sleiwex/2008/fielddata/2008-07-04/Merlu/Biosonics/20080704_112452.dt4 echosounder.dt4
