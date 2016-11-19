@@ -24,7 +24,8 @@ tests/testthat/*pdf
 man/figures/Makefile
 man/figures/*.R
 vignettes
-
 tests_private
+tests/testthat/*pdf
+tests/testthat/test_local_*.R
 tests/testthat/local_data
 
