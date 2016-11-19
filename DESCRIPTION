@@ -1,5 +1,5 @@
 Package: oce
-Version: 0.9-20
+Version: 0.9-21
 Date: 2016-11-18
 Title: Analysis of Oceanographic Data
 Authors@R: c(person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre")),
