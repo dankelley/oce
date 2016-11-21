@@ -2,6 +2,7 @@
 #
 # 1. run as below, in the shell
 #       sh valgrind_tests.sh > valgrind_tests.out 2>&1
+#
 # 2. Look for string
 #       Invalid read of size 8
 # in the file valgrind_test.out; this signals a problem in reading past
@@ -10,6 +11,10 @@
 # error in the submitted 0.9.20). NOTE: I think building 'oce' with
 # valgrind built-in would tell us the line number, and if I figure that out,
 # I will upate this comment to say how to do that.
+#
+# 3. Find all such strings
+#    grep -5 "Invalid read" valgrind_tests.out
+#
 echo "library(testthat);source('test_accessors.R')" | R --vanilla -d valgrind
 echo "library(testthat);source('test_adp.R')" | R --vanilla -d valgrind
 echo "library(testthat);source('test_allclass.R')" | R --vanilla -d valgrind
