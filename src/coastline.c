@@ -38,12 +38,12 @@ void polygon_subdivide_vertically_smash_1(int *n, double *x, double *y, double *
   int i = start;
   while (i < (*n)) {
     // Find first non-NA
-    while (ISNA(x[i]) && (i < (*n))) {
+    while ((i < (*n)) && !ISNA(x[i])) {
       i++;
     }
     poly_start[npoly] = i;
     // Find last non-NA
-    while (!ISNA(x[i]) && (i < (*n))) {
+    while ((i < (*n)) && !ISNA(x[i])) {
       i++;
     }
     poly_end[npoly] = (i == (*n)) ? i - 1 : i;
