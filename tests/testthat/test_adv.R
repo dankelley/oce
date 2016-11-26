@@ -4,14 +4,21 @@ data(adp)
 
 context("ADV")
 
-test_that("as.adv() inserts data properly", {
+test_that("enuToOther(adv) test of rotation", {
           data(adv)
-          adv2 <- enuToOther(adv) # zero angle: should be same
+          ## 1. test with zero heading,pitch,roll (default)
+          adv2 <- enuToOther(adv) # all angles are 0 by default, so result should be same
           expect_equal(adv2[['v']], adv[['v']])
-          adv3 <- enuToOther(adv, heading=10)
+          ## 2. test with heading shift of 10deg
+          heading <- 10 # heading shift
+          adv3 <- enuToOther(adv, heading=heading)
           expect_false(identical(adv3[['v']],adv[['v']]))
-          adv4 <- enuToOther(adv3, heading=-10)
-          ## FIXME: why does following fail? (issue 1129)
-          ## expect_true(identical(adv4[['v']],adv[['v']]))
+          V <- adv[["v"]][,1:2]
+          theta <- heading * pi / 180
+          S <- sin(theta)
+          C <- cos(theta)
+          rotationMatrix <- matrix(c(C,-S,S,C), byrow=TRUE, nrow=2)
+          VR <- V %*% rotationMatrix
+          expect_true(identical(VR, adv3[["v"]][,1:2]))
 })
  
