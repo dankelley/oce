@@ -65,6 +65,21 @@ test_that("ctd subsetting and trimming", {
           ## yet handled by oce at that time), and the April 2016
           ## transition back to IPTS-68 for this dataset, once oce could handle
           ## both scales.
+
+          p <- c(rep(4, 1000),
+                 seq(4, 0.5, length.out = 50),
+                 seq(0.5, 100, length.out=1000),
+                 rep(100, 100),
+                 seq(100, 0, length.out=1000))
+          S <- 35-p/100
+          T <- 10+(100-p)/50
+          d <- as.ctd(S, T, p)
+          plotScan(d)
+          dt <- ctdTrim(d, method="sbe")
+          ##plotScan(dt)
+          dt2 <- ctdTrim(d)
+          ##plotScan(dt2)
+
           scanRange <- range(ctd[['scan']])
           newScanRange <- c(scanRange[1] + 20, scanRange[2] - 20)
           ctdTrimmed <- ctdTrim(ctd, "scan", parameters=newScanRange)
@@ -88,7 +103,6 @@ test_that("ctd subsetting and trimming", {
 })
 
 test_that("ctd subsetting by index", {
-          data(ctd)
           n <- 3                       # number of data to retain
           ctdTrimmed <- ctdTrim(ctd, "index", parameters=c(1, n))
           expect_equal(length(ctdTrimmed[["salinity"]]), n)
@@ -132,8 +146,6 @@ test_that("gsw calcuations on ctd data", {
 })
 
 test_that("accessors work as functions and [[", {
-          library(oce)
-          data(ctd)
           expect_equal(swSigmaTheta(ctd), ctd[["sigmaTheta"]])
 })
 
@@ -255,7 +267,6 @@ test_that("ODF file", {
 }) 
 
 test_that("pressure accessor handles psi unit", {
-          data(ctd)
           porig <- ctd@data$pressure
           ## fake data in psi ... [[]] should return in dbar
           ctd@data$pressure <- porig / 0.6894757 # 1 psi=6894.757Pa=0.6894756 dbar
@@ -264,7 +275,6 @@ test_that("pressure accessor handles psi unit", {
 })
 
 test_that("pressure accessor handles missing pressure", {
-          data(ctd)
           depth <- swDepth(ctd@data$pressure, latitude=ctd[["latitude"]], eos="unesco")
           porig <- ctd@data$pressure
           ## remove existing
@@ -277,7 +287,6 @@ test_that("pressure accessor handles missing pressure", {
 })
 
 test_that("salinity accessor computes value from conductivity", {
-          data(ctd)
           C <- swCSTp(ctd@data$salinity, ctd@data$temperature, ctd@data$pressure)
           Sorig <- ctd@data$salinity
           ## remove existing
@@ -319,7 +328,6 @@ test_that("as.ctd(rsk) transfers information properly", {
 })
 
 test_that("ctdFindProfiles", {
-          data(ctd)
           S <- ctd[["salinity"]] 
           T <- ctd[["temperature"]]
           p <- ctd[["pressure"]]
