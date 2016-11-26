@@ -902,23 +902,27 @@ predict.tidem <- function(object, newdata, ...)
 #' @title Get a Tidal Prediction from a WebTide Database
 #'
 #' @description
-#' Get a tidal prediction from a WebTide database.
+#' Get a tidal prediction from a WebTide database. There are two distinct cases.
 #'
-#' If \code{action="map"} then a map is drawn, with a dot for the lower-left
-#' corner of each triangle used in the finite-element tidal simulation upon
-#' which WebTide predictions are based.  If \code{node} is missing, then
-#' \code{\link{locator}} is called, so that the user can indicate a spot of
-#' interest on the map, and this point is indicated on the map (and in the
-#' return value).  If \code{node} is provided, however, the point is indicated
-#' but \code{\link{locator}} is not called.  (This second style is of use in
-#' documenting interactive work after the fact.)
+#' \emph{Case 1:} \code{action="map"}. In this case, if 
+#' \code{plot} is \code{FALSE}, a list is returned, containing
+#' all the \code{node}s in the selected database, along with all
+#' the \code{latitude}s and \code{longitude}s. This value is 
+#' also returned (silently) if \code{plot} is true, but in that case,
+#' a plot is drawn to indicate the node locations. If \code{latitude} and
+#' \code{longitude} are given, then the node nearest that spot is indicated on
+#' the map; otherwise, if \code{node} is given, then the location of that
+#' node is indicated. There is also a special case: if \code{node} is negative,
+#' then \code{\link{locator}} is called, and the node nearest the spot
+#' where the user clicks the mouse is indicated in the plot and in the 
+#' return value.
 #'
-#' If \code{action="predict"} then either a node number or the longitude and
-#' latitude must be specified.  If \code{plot=TRUE} (the default) then a plot
-#' is drawn, but no plot is produced otherwise.  In either case, the (silent)
-#' return value is a list as described in the next section.  The times used for
-#' prediction are specified with the \code{time} argument, and if this is not
-#' specified then a week following the present time is used.
+#' \code{Case 2:} \code{action="predict"}. If \code{plot} is \code{FALSE},
+#' then a list is returned, indicating \code{time}, predicted
+#' \code{elevation}, velocity components \code{u} and \code{v},
+#' \code{node} number, the name of the \code{basedir}, and
+#' the \code{region}. If \code{plot} is \code{TRUE}, this list is returned
+#' silently, and time-series plots are drawn for elevation, u, and v.
 #'
 #' Naturally, \code{webtide} will not work unless WebTide has been installed on
 #' the computer.
@@ -926,12 +930,10 @@ predict.tidem <- function(object, newdata, ...)
 #' @param action An indication of the action, either \code{action="map"} to
 #' draw a map or \code{action="predict"} to get a prediction; see
 #' \sQuote{Details}.
-#' @param longitude longitude at which prediction is required (ignored if
+#' @param longitude,latitude optional location at which prediction is required (ignored if
 #' \code{node} is given).
-#' @param latitude latitude at which prediction is required (ignored if
-#' \code{node} is given).
-#' @param node node to look up; only needed if \code{longitude} and
-#' \code{latitude} are not given.
+#' @param node optional integer specifying which node to look up; if this is given,
+#' then neither \code{latitude} nor \code{longitude} may be given.
 #' @param time times at which prediction is to be made.  If not supplied, this
 #' will be the week starting at the present time, incrementing by 15 minutes.
 #' @param basedir directory containing the \code{WebTide} application.
@@ -946,17 +948,17 @@ predict.tidem <- function(object, newdata, ...)
 #' @template debugTemplate
 #' @param \dots optional arguments passed to plotting functions. A common
 #' example is to set \code{xlim} and \code{ylim}, to focus a map region.
-#' @return If \code{action="map"} and \code{plot=TRUE}, the return value is a
+#' @return If \code{action="map"} the return value is a
 #' list containing the index of the nearest node, along with the
-#' \code{latitude} and \code{longitude} of that node.  If \code{action="map"}
-#' and \code{plot=FALSE}, the return value is a list of all nodes, longitude,
-#' and latitudes.
+#' \code{latitude} and \code{longitude} of that node.  If 
+#' \code{plot} is \code{FALSE}, this value is returned invisibly.
 #'
 #' If \code{action="predict"}, the return value is a list containing a vector
 #' of times (\code{time}), as well as vectors of the predicted \code{elevation}
 #' in metres and the predicted horizontal components of velocity, \code{u} and
 #' \code{v}, along with the \code{node} number, and the \code{basedir} and
 #' \code{region} as supplied to this function.
+#' If \code{plot} is \code{FALSE}, this value is returned invisibly.
 #'
 #' @source The WebTide software may be downloaded for free at the
 #' Department of Fisheries and Oceans (Canada) website, which in February 2016
@@ -971,7 +973,10 @@ predict.tidem <- function(object, newdata, ...)
 #' @examples
 #' \dontrun{
 #' library(oce)
-#' prediction <- webtide("predict", longitude=-69.61, latitude=48.14)
+#' lon <- -69.61
+#' lat <- 48.14
+#' prediction <- webtide("predict", longitude=lon, latitude=lat)
+#' mtext(sprintf("prediction at %fN %fE", lat, lon), line=0.75, side=3)
 #' }
 #' @author Dan Kelley
 webtide <- function(action=c("map", "predict"),
@@ -1022,13 +1027,12 @@ webtide <- function(action=c("map", "predict"),
                  asp=asp, xlab="", ylab="", ...)
             ##usr <- par('usr')
             ##best <- coastlineBest(lonRange=usr[1:2], latRange=usr[3:4])
-            warning("tidem: using default coastline for testing")
             data("coastlineWorld", package="oce", envir=environment())
             coastlineWorld <- get("coastlineWorld")
             ##data(best, envir=environment(), debug=debug-1)
             ##coastline <- get(best)
             lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
-            if (missing(node)) {
+            if (!missing(node) && node < 0) {
                 point <- locator(1)
                 node <- which.min(geodDist(triangles$longitude, triangles$latitude, point$x, point$y))
             }
@@ -1037,12 +1041,13 @@ webtide <- function(action=c("map", "predict"),
             points(longitude, latitude, pch=20, cex=2, col='blue')
             legend("topleft", pch=20, pt.cex=2, cex=3/4, col='blue', bg='white',
                    legend=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude))
+            return(invisible(list(node=node, latitude=latitude, longitude=longitude)))
         } else  {
             node <- seq_along(triangles$longitude)
             longitude <- triangles$longitude
             latitude <- triangles$latitude
+            return(list(node=node, latitude=latitude, longitude=longitude))
         }
-        return(list(node=node, latitude=latitude, longitude=longitude))
     } else if (action == "predict") {
         if (missing(time))
             time <- seq.POSIXt(from=Sys.time(), by="15 min", length.out=7*4*24)
@@ -1104,7 +1109,6 @@ webtide <- function(action=c("map", "predict"),
             oceDebug(debug, sprintf("%s ", twoLetter),  
                      sprintf("%4.2fh ", period[i]),
                      sprintf("%4.4fm ", ampe[i]), sprintf("%3.3fdeg", phasee[i]), "\n", sep="")
- 
         }
         if (plot) {
             par(mfrow=c(3,1))
@@ -1118,8 +1122,11 @@ webtide <- function(action=c("map", "predict"),
             oce.plot.ts(time, v, type='l', xlab="", ylab=resizableLabel("v"),
                         drawTimeRange=FALSE, tformat=tformat)
             abline(h=0, lty='dotted', col='gray')
+            return(invisible(list(time=time, elevation=elevation, u=u, v=v,
+                                  node=node, basedir=basedir, region=region)))
+        } else {
+            return(list(time=time, elevation=elevation, u=u, v=v,
+                        node=node, basedir=basedir, region=region))
         }
     }
-    invisible(list(time=time, elevation=elevation, u=u, v=v,
-                   node=node, basedir=basedir, region=region))
 }
