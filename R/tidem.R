@@ -114,7 +114,9 @@ setMethod(f="summary",
           signature="tidem",
           definition=function(object, p, constituent, ...) {
               n <- length(object[["p"]])
-              ok <- if (!missing(p)) object@data$p <= p else seq(1, n)
+              if (missing(p)) 
+                  p <- 1
+              ok <- object@data$p <= p
               haveP <- any(!is.na(object@data$p))
               if (missing(constituent)) {
                   fit <- data.frame(Const=object@data$const[ok],
@@ -124,7 +126,10 @@ setMethod(f="summary",
                                     Phase=object@data$phase[ok],
                                     p=object@data$p[ok])
               } else {
-                  i <- which(object@data$name==constituent)
+                  i <- NULL
+                  for (const in constituent)
+                      i <- c(i, which(object@data$name==const))
+                  i <- unique(i)
                   if (length(i) == 0)
                       stop("there is no such constituent '", constituent, "'")
                   fit <- data.frame(Const=object@data$const[i],
@@ -132,7 +137,7 @@ setMethod(f="summary",
                                     Freq=object@data$freq[i],
                                     Amplitude=object@data$amplitude[i],
                                     Phase=object@data$phase[i],
-                                    p=p)
+                                    p=object@data$p[i])
               }
               cat("tidem summary\n-------------\n")
               cat("\nCall:\n")

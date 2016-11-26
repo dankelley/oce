@@ -444,7 +444,8 @@ setMethod(f="show",
 #' @param subset A condition to be applied to the \code{data} portion of \code{x}.
 #' See \sQuote{Details}.
 #' 
-#' @param ... May include \code{debug}, to set a debugging level.
+#' @param ... Optional arguments, which may include \code{indices}, a vector
+#' of the indices of stations to be kept (starting at 1 for the first station).
 #' 
 #' @return A new \code{section} object.
 #' 
@@ -610,17 +611,24 @@ sectionSort <- function(section, by)
     res <- section
     if (by == "stationId") {
 	o <- order(section@metadata$stationId)
+    } else if (by == "distance") {
+        o <- order(section[["distance", "byStation"]])
+    } else if (by == "longitude") {
+        o <- order(section[["longitude", "byStation"]])
+    } else if (by == "latitude") {
+        o <- order(section[["latitude", "byStation"]])
     } else if (by == "time") {
         ## FIXME: should check to see if startTime exists first?
         times <- unlist(lapply(section@data$station, function(x) x@metadata$startTime))
         o <- order(times)
     } else {
-	o <- order(section[[by, "byStation"]])
+	o <- seq_along(section[["station"]]) ## cannot ever get here, actually
     }
     res@metadata$stationId <- res@metadata$stationId[o]
     res@metadata$longitude <- res@metadata$longitude[o]
     res@metadata$latitude <- res@metadata$latitude[o]
-    res@metadata$time <- res@metadata$time[o] ## FIXME: do all sections have time?
+    if ("time" %in% names(res@metadata))
+        res@metadata$time <- res@metadata$time[o]
     res@data$station <- res@data$station[o]
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
