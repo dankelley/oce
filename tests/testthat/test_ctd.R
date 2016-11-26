@@ -1,11 +1,10 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
-data("ctd")
-data("argo")
 
 context("CTD")
 
 test_that("as.ctd() with specified arguments, including salinity", {
+          data("ctd")
           ctd_ctd <- as.ctd(salinity=ctd[["salinity"]], temperature=ctd[["temperature"]], pressure=ctd[["pressure"]])
           expect_equal(ctd[["salinity"]], ctd_ctd[["salinity"]])
           expect_equal(ctd[["temperature"]], ctd_ctd[["temperature"]])
@@ -22,6 +21,7 @@ test_that("as.ctd() with specified arguments, including salinity", {
 })
 
 test_that("as.ctd() with specified arguments, not including salinity", {
+          data("ctd")
           S <- ctd[["salinity"]]
           T <- ctd[["temperature"]]
           p <- ctd[["pressure"]]
@@ -35,6 +35,7 @@ test_that("as.ctd() with specified arguments, not including salinity", {
 
 
 test_that("as.ctd() with a data frame", {
+          data("ctd")
           ctd_df <- as.ctd(data.frame(pressure=ctd[["pressure"]],temperature=ctd[["temperature"]],salinity=ctd[["salinity"]]))
           expect_equal(ctd[["salinity"]], ctd_df[["salinity"]])
           expect_equal(ctd[["temperature"]], ctd_df[["temperature"]])
@@ -42,6 +43,7 @@ test_that("as.ctd() with a data frame", {
 })
 
 test_that("as.ctd() with a list", {
+          data("ctd")
           ctd_l <- as.ctd(list(pressure=ctd[["pressure"]],temperature=ctd[["temperature"]],salinity=ctd[["salinity"]]))
           expect_equal(ctd[["salinity"]], ctd_l[["salinity"]])
           expect_equal(ctd[["temperature"]], ctd_l[["temperature"]])
@@ -49,6 +51,7 @@ test_that("as.ctd() with a list", {
 })
 
 test_that("as.ctd() with an argo object", {
+          data("argo")
           S2 <- argo[['salinity']] / 2
           argo2 <- oceSetData(argo, "S2", S2, unit=list(unit=expression(), scale="PSS-78"))
           sec <- as.section(argo2)
@@ -59,13 +62,13 @@ test_that("as.ctd() with an argo object", {
 
 
 test_that("ctd subsetting and trimming", {
+          data("ctd")
           ## NOTE: this is brittle to changes in data(ctd), but that's a good thing, becausing
           ## changing the dataset should be done only when really necessary, e.g. the July 2015
           ## transition to use ITS-90 based temperature (because IPTS-68 was not
           ## yet handled by oce at that time), and the April 2016
           ## transition back to IPTS-68 for this dataset, once oce could handle
           ## both scales.
-
           p <- c(rep(4, 1000),
                  seq(4, 0.5, length.out = 50),
                  seq(0.5, 100, length.out=1000),
@@ -103,6 +106,7 @@ test_that("ctd subsetting and trimming", {
 })
 
 test_that("ctd subsetting by index", {
+          data("ctd")
           n <- 3                       # number of data to retain
           ctdTrimmed <- ctdTrim(ctd, "index", parameters=c(1, n))
           expect_equal(length(ctdTrimmed[["salinity"]]), n)
@@ -110,6 +114,7 @@ test_that("ctd subsetting by index", {
 
 
 test_that("alter ctd metadata", {
+          data("ctd")
           ctd[["longitude"]] <- 1
           expect_equal(ctd[["longitude"]], 1)
           ctd[["latitude"]] <- 2
@@ -146,10 +151,12 @@ test_that("gsw calcuations on ctd data", {
 })
 
 test_that("accessors work as functions and [[", {
+          data("ctd")
           expect_equal(swSigmaTheta(ctd), ctd[["sigmaTheta"]])
 })
 
 test_that("ability to change conductivityUnit", {
+          data("ctd")
           ## These came from issue 731
           ctd2 <- ctd
           ctd2@data$conductivity <- swCSTp(ctd2) * 42.914
@@ -267,6 +274,7 @@ test_that("ODF file", {
 }) 
 
 test_that("pressure accessor handles psi unit", {
+          data("ctd")
           porig <- ctd@data$pressure
           ## fake data in psi ... [[]] should return in dbar
           ctd@data$pressure <- porig / 0.6894757 # 1 psi=6894.757Pa=0.6894756 dbar
@@ -275,6 +283,7 @@ test_that("pressure accessor handles psi unit", {
 })
 
 test_that("pressure accessor handles missing pressure", {
+          data("ctd")
           depth <- swDepth(ctd@data$pressure, latitude=ctd[["latitude"]], eos="unesco")
           porig <- ctd@data$pressure
           ## remove existing
@@ -287,6 +296,7 @@ test_that("pressure accessor handles missing pressure", {
 })
 
 test_that("salinity accessor computes value from conductivity", {
+          data("ctd")
           C <- swCSTp(ctd@data$salinity, ctd@data$temperature, ctd@data$pressure)
           Sorig <- ctd@data$salinity
           ## remove existing
@@ -328,6 +338,7 @@ test_that("as.ctd(rsk) transfers information properly", {
 })
 
 test_that("ctdFindProfiles", {
+          data("ctd")
           S <- ctd[["salinity"]] 
           T <- ctd[["temperature"]]
           p <- ctd[["pressure"]]
