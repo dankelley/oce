@@ -1,6 +1,6 @@
 library(oce)
 context("read adp data")
-test_that("Teledyn/RDI read and check", {
+test_that("Teledyn/RDI read (integer from,to) and check", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               beam <- read.oce("local_data/adp_rdi",
                                from=1, to=10, latitude=47.88126, longitude=-69.73433)
@@ -16,6 +16,17 @@ test_that("Teledyn/RDI read and check", {
               expect_equal(xyz[["longitude"]], -69.73433)
               expect_equal(enu[["longitude"]], -69.73433)
               ## FIXME: add more tests on the data
+          }
+})
+
+test_that("Teledyn/RDI read (POSIXct from,to)", {
+          if (1 == length(list.files(path=".", pattern="local_data"))) {
+              beam <- read.oce("local_data/adp_rdi",
+                               from=as.POSIXct("2008-06-25 10:01:00",tz="UTC"),
+                               to=as.POSIXct("2008-06-25 10:03:00",tz="UTC"))
+              expect_true(is.na(beam[["latitude"]]))
+              expect_true(is.na(beam[["longitude"]]))
+              expect_true(dim(beam[["v"]]), c(14,84,4))
           }
 })
 
