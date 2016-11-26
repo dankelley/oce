@@ -61,8 +61,10 @@ test_that("as.ctd() with an argo object", {
 test_that("ctd subsetting and trimming", {
           ## NOTE: this is brittle to changes in data(ctd), but that's a good thing, becausing
           ## changing the dataset should be done only when really necessary, e.g. the July 2015
-          ## transition to use ITS-90 based temperature. ... and the April 2016
-          ## transition back to IPTS-68 (FIXME: do we *really* want this??)
+          ## transition to use ITS-90 based temperature (because IPTS-68 was not
+          ## yet handled by oce at that time), and the April 2016
+          ## transition back to IPTS-68 for this dataset, once oce could handle
+          ## both scales.
           scanRange <- range(ctd[['scan']])
           newScanRange <- c(scanRange[1] + 20, scanRange[2] - 20)
           ctdTrimmed <- ctdTrim(ctd, "scan", parameters=newScanRange)
@@ -84,6 +86,14 @@ test_that("ctd subsetting and trimming", {
           expect_equal(ctdnewSubset[['scan']], ctdnewTrim[['scan']])
           expect_equal(length(ctdnewSubset[['scan']]), length(ctdnewSubset[['longitude']]))
 })
+
+test_that("ctd subsetting by index", {
+          data(ctd)
+          n <- 3                       # number of data to retain
+          ctdTrimmed <- ctdTrim(ctd, "index", parameters=c(1, n))
+          expect_equal(length(ctdTrimmed[["salinity"]]), n)
+})
+
 
 test_that("alter ctd metadata", {
           ctd[["longitude"]] <- 1
@@ -306,4 +316,18 @@ test_that("as.ctd(rsk) transfers information properly", {
           expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']])
           ctd <- as.ctd(rsk, pressureAtmospheric=1)
           expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']] - 1)
+})
+
+test_that("ctdFindProfiles", {
+          data(ctd)
+          S <- ctd[["salinity"]] 
+          T <- ctd[["temperature"]]
+          p <- ctd[["pressure"]]
+          n <- 10                      # number of fake profiles
+          SS <- rep(c(S, rev(S)), n)
+          TT <- rep(c(T, rev(T)), n)
+          pp <- rep(c(p, rev(p)), n)
+          towyow <- as.ctd(SS, TT, pp, latitude=ctd[["latitude"]], longitude=ctd[["longitude"]])
+          casts <- ctdFindProfiles(towyow)
+          expect_equal(length(casts), n)
 })
