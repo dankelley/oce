@@ -5,15 +5,29 @@ sudo: required
 r_build_args: --no-build-vignettes --no-manual --no-resave-data
 r_check_args: --no-build-vignettes --no-manual
 
+before_install:
+    - curl -OL https://raw.githubusercontent.com/metacran/r-builder/master/pkg-build.sh
+    - chmod 755 pkg-build.sh
+    - ./pkg-build.sh bootstrap
+    - cd
+    - wget http://download.osgeo.org/gdal/2.0.1/gdal-2.0.1.tar.gz
+    - tar zxf gdal-2.0.1.tar.gz
+    - cd gdal-2.0.1
+    - ./configure --prefix=/usr
+    - make
+    - sudo make install
+    - cd
+    - wget http://download.osgeo.org/proj/proj-4.9.2.tar.gz
+    - tar zxvf proj-4.9.2.tar.gz
+    - cd proj-4.9.2
+    - ./configure --prefix=/usr
+    - make
+    - sudo make install
+    - cd /home/travis/build/dankelley/oce
+
 apt_packages:
     - libnetcdf-dev
     - netcdf-bin
-    - libhdf5-7
-    - libhdf5-dev
-    - libhdf5-serial-dev
-    - gdal-bin
-    - libgdal-dev
-    - libproj-dev
 
 r_packages:
     - devtools
