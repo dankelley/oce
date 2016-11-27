@@ -1,6 +1,6 @@
 language: r
 warnings_are_errors: false
-sudo: required
+cache: packages
 
 r_build_args: --no-build-vignettes --no-manual --no-resave-data
 r_check_args: --no-build-vignettes --no-manual
@@ -8,6 +8,7 @@ r_check_args: --no-build-vignettes --no-manual
 apt_packages:
     - libnetcdf-dev
     - netcdf-bin
+    - libhdf5-7
     - libhdf5-dev
     - libhdf5-serial-dev
     - gdal-bin
