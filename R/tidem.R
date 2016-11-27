@@ -113,7 +113,6 @@ NULL
 setMethod(f="summary",
           signature="tidem",
           definition=function(object, p, constituent, ...) {
-              n <- length(object[["p"]])
               if (missing(p)) 
                   p <- 1
               ok <- object@data$p <= p
