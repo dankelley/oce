@@ -477,6 +477,7 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
     ##    stop("cannot coerce 'data' into a data.frame")
     fSplit <- split(f, cut(x, xbreaks))
     res <- sapply(fSplit, FUN, ...)
+    res[!is.finite(res)] <- NA
     names(res) <- NULL
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=res)
 }
@@ -552,6 +553,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
         ##res[,i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
         res[,i] <- sapply(fSplit, FUN, ...)
     }
+    res[!is.finite(res)] <- NA
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), 
          ybreaks=ybreaks, ymids=ybreaks[-1]-0.5*diff(ybreaks),
          result=res)

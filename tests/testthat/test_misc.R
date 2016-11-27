@@ -129,6 +129,24 @@ test_that("binAverage", {
           expect_equal(ba$y[5], 1989.5)
 })
 
+test_that("binApply1D", {
+          set.seed(123)
+          n <- 3
+          x <- runif(n)
+          f <- x^2
+          b <- binApply1D(x, f, xbreaks=seq(0,1,0.25), FUN=mean)
+})
+
+
+test_that("binApply2D", {
+          set.seed(123)
+          n <- 10
+          x <- runif(n)
+          y <- runif(n)
+          z <- outer(x, y)
+          b <- binApply2D(x, y, z, xbreaks=seq(0,1,0.25), ybreaks=seq(0,1,0.25), FUN=mean)
+})
+
 test_that("get_bit (unused in oce)", {
           buf <- 0x3a
           bits <- unlist(lapply(7:0, function(i) .Call("get_bit", buf, i)))
