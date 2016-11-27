@@ -44,7 +44,7 @@ This handles the case of pressure-binned data. However, if the pressure differen
 varies, a variety of approaches are taken to trimming the dataset.
 
 \itemize{
-  \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to only data for
+  \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to keep only data for
   which the CTD is descending.  This is done in stages, with variants based on \code{method[2]}, if
   supplied.  \emph{Step 1.} The pressure data are despiked with a smooth() filter with method "3R".
   This removes wild spikes that arise from poor instrument connections, etc.  \emph{Step 2.} If no
