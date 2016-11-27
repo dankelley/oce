@@ -65,6 +65,20 @@ test_that("ctd subsetting and trimming", {
           ## yet handled by oce at that time), and the April 2016
           ## transition back to IPTS-68 for this dataset, once oce could handle
           ## both scales.
+          ##
+          ## 1. SBE trimming method
+          p <- c(rep(4, 1000),
+                 seq(4, 0.5, length.out = 50),
+                 seq(0.5, 100, length.out=1000),
+                 rep(100, 100),
+                 seq(100, 0, length.out=1000))
+          S <- 35-p/100
+          T <- 10+(100-p)/50
+          d <- as.ctd(S, T, p)
+          plotScan(d)
+          dt <- ctdTrim(d, method="sbe")
+          dt2 <- ctdTrim(d)
+          ##  2. trim by scan
           scanRange <- range(ctd[['scan']])
           newScanRange <- c(scanRange[1] + 20, scanRange[2] - 20)
           ctdTrimmed <- ctdTrim(ctd, "scan", parameters=newScanRange)

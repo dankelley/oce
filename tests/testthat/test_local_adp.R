@@ -26,7 +26,7 @@ test_that("Teledyn/RDI read (POSIXct from,to)", {
                                to=as.POSIXct("2008-06-25 10:03:00",tz="UTC"))
               expect_true(is.na(beam[["latitude"]]))
               expect_true(is.na(beam[["longitude"]]))
-              expect_true(dim(beam[["v"]]), c(14,84,4))
+              expect_equal(dim(beam[["v"]]), c(14,84,4))
           }
 })
 

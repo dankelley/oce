@@ -5,7 +5,6 @@ context("LISST")
 
 test_that("as.lisst()", {
           set.seed(1333334L)
-          library(oce)
           t <- seq(0, 6, 1/15) * 3600 + as.POSIXct("2012-01-01 00:00:00", tz="UTC")
           n <- length(t)
           p <- 5 + sin(as.numeric(t - t[1]) / 12.4 / 3600 * 2 * pi) + rnorm(n, sd=0.01)
