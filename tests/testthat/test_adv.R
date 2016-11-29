@@ -19,6 +19,9 @@ test_that("enuToOther(adv) test of rotation", {
           C <- cos(theta)
           rotationMatrix <- matrix(c(C,-S,S,C), byrow=TRUE, nrow=2)
           VR <- V %*% rotationMatrix
-          expect_true(identical(VR, adv3[["v"]][,1:2]))
+          ## cat("VR follows:\n");cat(VR[1:5,1]);cat("\ncomparable:\n");cat(adv3[["v"]][1:5,1])
+          ## cat("VR follows:\n");cat(VR[1:5,2]);cat("\ncomparable:\n");cat(adv3[["v"]][1:5,2])
+          expect_equal(VR[1:5,1], adv3[["v"]][1:5,1])
+          expect_equal(VR[1:5,2], adv3[["v"]][1:5,2])
 })
  
