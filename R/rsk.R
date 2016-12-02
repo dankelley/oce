@@ -643,6 +643,12 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     ##measurement.deltat <- 0
     if (is.numeric(from) && from < 1)
         stop("from cannot be an integer less than 1")
+    
+    if(!missing(to)){
+      if (is.numeric(to) && to < 1)
+        stop("to cannot be an integer less than 1")
+    }
+    
     ##from.keep <- from
     if (!missing(to))
         to.keep <- to
@@ -736,40 +742,80 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
 
         ## Get time stamp. Note the trick of making it floating-point
         ## to avoid the problem that R lacks 64 bit integers.
-        res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
-        t1000 <- DBI::dbFetch(res, n=-1)[[1]]
-        RSQLite::dbClearResult(res)
-        time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
-        if (missing(to)) {
-            if (inherits(from, 'POSIXt')) {
-                to <- tail(time, 1)
-            } else if (inherits(from, 'character')) {
-                to <- format(tail(time, 1))
-            } else if (is.numeric(from)) {
-                to <- length(time)
-            } else {
-                stop("Unknown format for to= argument")
-            }
-        }
-        if (is.numeric(from) & is.numeric(to)) {
-            from <- t1000[from]
-            to <- t1000[to]
-        } else if (inherits(from, 'POSIXt') & inherits(to, 'POSIXt')) {
-            from <- as.character(as.numeric(from)*1000)
+        fields <- DBI::dbListFields(con, "data")
+        fields <- fields[!grepl('tstamp', fields)]
+        sql_fields <- paste0("1.0*tstamp AS tstamp")
+        
+        sql_fields <- paste(c(sql_fields, fields), collapse=',')
+        sql_fields <- paste("SELECT", sql_fields, "FROM data")
+        
+        
+        # When to and from are numeric and not equal to 1 we have to query the table
+        # and then sort the times so that the limits are meaningful.  This code
+        # does that only when required and will be slower than when from and to 
+        # are dates or character.
+        time <- NA
+        
+        if(!missing(to)){
+          if(inherits(to, 'POSIXt')){
             to <- as.character(as.numeric(to)*1000)
-        } else if (inherits(from, 'character') & inherits(to, 'character')) {
-            from <- as.character(as.numeric(as.POSIXct(from, tz=tz))*1000)
+          } else if (inherits(to, 'character')){
             to <- as.character(as.numeric(as.POSIXct(to, tz=tz))*1000)
-        } else {
-            warning('from= and to= have to be of the same class (either index, POSIXt, or character)')
+          } else if(is.numeric(to)){
+            res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
+            t1000 <- DBI::dbFetch(res, n=-1)[[1]]
+            RSQLite::dbClearResult(res)
+            time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
+          }
         }
-        if ((as.numeric(to)-as.numeric(from)) <= 0)
-            stop("'to' must be greater than 'from'")
-
+        
+        if(is.numeric(from) & from != 1 & all(is.na(time))){
+          res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
+          t1000 <- DBI::dbFetch(res, n=-1)[[1]]
+          RSQLite::dbClearResult(res)
+          time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
+        }
+        
+        
+        # format to and from that match tstamp from the rsk file
+        if(inherits(from, 'POSIXt')) {
+          from <- as.character(as.numeric(from)*1000)
+        } else if (inherits(from, 'character')) {
+          from <- as.character(as.numeric(as.POSIXct(from, tz=tz))*1000)
+        }
+        
+        if(!all(is.na(time))){
+          if(is.numeric(from)){
+            from <- t1000[from]
+          }
+          if(missing(to)){
+            to <- tail(t1000, 1)
+          } else if(is.numeric(to)){
+            to <- t1000[to]
+          }
+        }
+        # Generate the sql that contains the time filters
+        if(missing(to)){
+          if(is.numeric(from)){
+            res <- DBI::dbSendQuery(con, paste(sql_fields, ";"))
+          } else {
+            res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
+          }
+        } else {
+          if(missing(to)){
+            res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
+          } else if(from==1){
+            res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp <=",  to, ";"))
+          } else {
+            res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp between",  from, "and", to, ";"))
+          }
+        }
+        
         ## Now, get only the specified time range
-        res <- DBI::dbSendQuery(con, paste("select 1.0*tstamp as tstamp, * from data where tstamp between",  from, "and", to, "order by tstamp;"))
         data <- DBI::dbFetch(res, n=-1)
+        data <- data[order(data$tstamp),]
         time <- numberAsPOSIXct(as.numeric(data[,1])/1000, type='unix')
+        
         ## Need to check if there is a datasetID column (for rskVersion >= 1.12.2)
         ## If so, for now just extract it from the data matrix
         hasDatasetID <- sum(grep('datasetID', names(data))) > 0
@@ -777,7 +823,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             datasetID <- data[,grep('datasetID', names(data))]
             data <- data[,-grep('datasetID', names(data)), drop=FALSE]
         }
-        data <- data[,c(-1, -2), drop=FALSE] # drop the corrupted time column
+        data <- data[,c(-1), drop=FALSE] # drop the corrupted time column
         DBI::dbClearResult(res)
         ## Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
