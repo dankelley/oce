@@ -742,6 +742,14 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
 
         ## Get time stamp. Note the trick of making it floating-point
         ## to avoid the problem that R lacks 64 bit integers.
+        fields <- DBI::dbListFields(con, "data")
+        fields <- fields[!grepl('tstamp', fields)]
+        sql_fields <- paste0("1.0*tstamp AS tstamp")
+        
+        sql_fields <- paste(c(sql_fields, fields), collapse=',')
+        sql_fields <- paste("SELECT", sql_fields, "FROM data")
+        
+        
         res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
         t1000 <- DBI::dbFetch(res, n=-1)[[1]]
         RSQLite::dbClearResult(res)
