@@ -750,21 +750,28 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         sql_fields <- paste("SELECT", sql_fields, "FROM data")
         
         
-        res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
-        t1000 <- DBI::dbFetch(res, n=-1)[[1]]
-        RSQLite::dbClearResult(res)
-        time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
-        if (missing(to)) {
-            if (inherits(from, 'POSIXt')) {
-                to <- tail(time, 1)
-            } else if (inherits(from, 'character')) {
-                to <- format(tail(time, 1))
-            } else if (is.numeric(from)) {
-                to <- length(time)
-            } else {
-                stop("Unknown format for to= argument")
-            }
+        time <- NA
+        
+        if(!missing(to)){
+          if(inherits(to, 'POSIXt')){
+            to <- as.character(as.numeric(to)*1000)
+          } else if (inherits(to, 'character')){
+            to <- as.character(as.numeric(as.POSIXct(to, tz=tz))*1000)
+          } else if(is.numeric(to)){
+            res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
+            t1000 <- DBI::dbFetch(res, n=-1)[[1]]
+            RSQLite::dbClearResult(res)
+            time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
+          }
         }
+        if(is.numeric(from) & from != 1 & all(is.na(time))){
+          res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
+          t1000 <- DBI::dbFetch(res, n=-1)[[1]]
+          RSQLite::dbClearResult(res)
+          time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
+        }
+        
+        
         if (is.numeric(from) & is.numeric(to)) {
             from <- t1000[from]
             to <- t1000[to]
