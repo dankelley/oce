@@ -643,6 +643,12 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
     ##measurement.deltat <- 0
     if (is.numeric(from) && from < 1)
         stop("from cannot be an integer less than 1")
+    
+    if(!missing(to)){
+      if (is.numeric(to) && to < 1)
+        stop("to cannot be an integer less than 1")
+    }
+    
     ##from.keep <- from
     if (!missing(to))
         to.keep <- to
