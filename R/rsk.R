@@ -772,20 +772,41 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         }
         
         
-        if (is.numeric(from) & is.numeric(to)) {
-            from <- t1000[from]
-            to <- t1000[to]
-        } else if (inherits(from, 'POSIXt') & inherits(to, 'POSIXt')) {
-            from <- as.character(as.numeric(from)*1000)
-            to <- as.character(as.numeric(to)*1000)
-        } else if (inherits(from, 'character') & inherits(to, 'character')) {
-            from <- as.character(as.numeric(as.POSIXct(from, tz=tz))*1000)
-            to <- as.character(as.numeric(as.POSIXct(to, tz=tz))*1000)
-        } else {
-            warning('from= and to= have to be of the same class (either index, POSIXt, or character)')
+        if(inherits(from, 'POSIXt')) {
+          from <- as.character(as.numeric(from)*1000)
+        } else if (inherits(from, 'character')) {
+          from <- as.character(as.numeric(as.POSIXct(from, tz=tz))*1000)
         }
-        if ((as.numeric(to)-as.numeric(from)) <= 0)
-            stop("'to' must be greater than 'from'")
+        
+        if(!all(is.na(time))){
+          if(is.numeric(from)){
+            from <- t1000[from]
+          }
+          if(missing(to)){
+            to <- tail(t1000, 1)
+          } else if(is.numeric(to)){
+            to <- t1000[to]
+          }
+        }
+        if(missing(to)){
+          if(is.numeric(from)){
+            res <- DBI::dbSendQuery(con, paste(sql_fields, ";"))
+          } else {
+            res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
+          }
+        } else {
+          if(missing(to)){
+            res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp >=",  from, ";"))
+          } else if(from==1){
+            res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp <=",  to, ";"))
+          } else {
+            res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp between",  from, "and", to, ";"))
+          }
+        }
+        ## Now, get only the specified time range
+        data <- DBI::dbFetch(res, n=-1)
+        data <- data[order(data$tstamp),]
+        time <- numberAsPOSIXct(as.numeric(data[,1])/1000, type='unix')
 
         ## Now, get only the specified time range
         res <- DBI::dbSendQuery(con, paste("select 1.0*tstamp as tstamp, * from data where tstamp between",  from, "and", to, "order by tstamp;"))
