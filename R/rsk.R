@@ -750,6 +750,10 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         sql_fields <- paste("SELECT", sql_fields, "FROM data")
         
         
+        # When to and from are numeric and not equal to 1 we have to query the table
+        # and then sort the times so that the limits are meaningful.  This code
+        # does that only when required and will be slower than when from and to 
+        # are dates or character.
         time <- NA
         
         if(!missing(to)){
@@ -764,6 +768,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             time <- numberAsPOSIXct(as.numeric(t1000) / 1000, type='unix')
           }
         }
+        
         if(is.numeric(from) & from != 1 & all(is.na(time))){
           res <- DBI::dbSendQuery(con, "select 1.0*tstamp from data order by tstamp;")
           t1000 <- DBI::dbFetch(res, n=-1)[[1]]
@@ -772,6 +777,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         }
         
         
+        # format to and from that match tstamp from the rsk file
         if(inherits(from, 'POSIXt')) {
           from <- as.character(as.numeric(from)*1000)
         } else if (inherits(from, 'character')) {
@@ -788,6 +794,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             to <- t1000[to]
           }
         }
+        # Generate the sql that contains the time filters
         if(missing(to)){
           if(is.numeric(from)){
             res <- DBI::dbSendQuery(con, paste(sql_fields, ";"))
@@ -803,15 +810,12 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             res <- DBI::dbSendQuery(con, paste(sql_fields, "where tstamp between",  from, "and", to, ";"))
           }
         }
+        
         ## Now, get only the specified time range
         data <- DBI::dbFetch(res, n=-1)
         data <- data[order(data$tstamp),]
         time <- numberAsPOSIXct(as.numeric(data[,1])/1000, type='unix')
-
-        ## Now, get only the specified time range
-        res <- DBI::dbSendQuery(con, paste("select 1.0*tstamp as tstamp, * from data where tstamp between",  from, "and", to, "order by tstamp;"))
-        data <- DBI::dbFetch(res, n=-1)
-        time <- numberAsPOSIXct(as.numeric(data[,1])/1000, type='unix')
+        
         ## Need to check if there is a datasetID column (for rskVersion >= 1.12.2)
         ## If so, for now just extract it from the data matrix
         hasDatasetID <- sum(grep('datasetID', names(data))) > 0
@@ -819,7 +823,7 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
             datasetID <- data[,grep('datasetID', names(data))]
             data <- data[,-grep('datasetID', names(data)), drop=FALSE]
         }
-        data <- data[,c(-1, -2), drop=FALSE] # drop the corrupted time column
+        data <- data[,c(-1), drop=FALSE] # drop the corrupted time column
         DBI::dbClearResult(res)
         ## Get column names from the 'channels' table.
         names <- tolower(RSQLite::dbReadTable(con, "channels")$longName)
