@@ -220,8 +220,9 @@ julianCenturyAnomaly <- function(jd)
 #' to calculate the local azimuth and altitude of the moon, using
 #' \code{\link{equatorialToLocalHorizontal}}.
 #' 
-#' @param t time, a POSIXt object (must be in timezone UTC), or a numeric value
-#' that corresponds to such a time.
+#' @param t time, a POSIXt object (converted to timezone \code{"UTC"},
+#' if it is not already in that timezone), or a numeric value that
+#' corresponds to such a time.
 #' @param longitude observer longitude in degrees east
 #' @param latitude observer latitude in degrees north
 #' @param useRefraction boolean, set to \code{TRUE} to apply a correction for
@@ -290,10 +291,18 @@ julianCenturyAnomaly <- function(jd)
 moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
 {
     if (missing(t)) stop("must give 't'")
+    if (!inherits(t, "POSIXt")) {
+        if (is.numeric(t)) {
+            tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") # arbitrary
+            t <- t - as.numeric(tref) + tref
+        } else {
+            stop("t must be POSIXt or a number corresponding to POSIXt (in UTC)")
+        }
+    }
+    if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
+        attributes(t)$tzone <- "UTC"
     if (missing(longitude)) stop("must give 'longitude'")
     if (missing(latitude)) stop("must give 'latitude'")
-    if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
-        stop("t must be in UTC")
     RPD <- atan2(1, 1) / 45            # radians per degree
     ## In this cde, the symbol names follow [1] Meeus 1982 chapter 30, with e.g. "p"
     ## used to indicate primes, e.g. Lp stands for L' in Meeus' notation.

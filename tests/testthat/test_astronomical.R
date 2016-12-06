@@ -43,4 +43,29 @@ test_that("Moon", {
           ## moon illuminated fraction [1] ex 31.b page 156
           illfrac <- (1 + cos(RPD * 105.8493)) / 2
           expect_equal(moonAngle(ISOdatetime(1979,12,25,0,0,0,tz="UTC"),0,0)$illuminatedFraction,illfrac,tolerance=0.001)
+          ## Local time
+          tlocal <- t
+          attributes(tlocal)$tzone <- ""
+          mlocal <- moonAngle(tlocal, 0, 0)
+          expect_identical(m, mlocal)
+          ## Numerical time
+          expect_identical(m, moonAngle(as.numeric(t), 0, 0))
+})
+
+test_that("Sun", {
+          ## Testing against values that worked on 2016-12-06;
+          ## FIXME: replace by numbers from [2] if they can be found.
+          t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
+          s <- sunAngle(t, 0, 0) # lat and lon arbitrary
+          expect_equal(s$azimuth, 358.6241689)
+          expect_equal(s$altitude, -81.3030909)
+          expect_equal(s$diameter, 0.5318717591)
+          expect_equal(s$distance, 1.002497295)
+          ## Local time
+          tlocal <- t
+          attributes(tlocal)$tzone <- ""
+          slocal <- sunAngle(tlocal, 0, 0)
+          expect_identical(s, slocal)
+          ## Numerical time
+          expect_identical(s, sunAngle(as.numeric(t), 0, 0))
 })
