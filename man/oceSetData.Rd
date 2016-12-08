@@ -29,19 +29,20 @@ Set something in the \code{data} slot of an \code{oce} object
 \details{
 There are three possibilities for \code{unit}:
 \itemize{
-\item \emph{Case 1.} \code{unit} is a \code{\link{list}} containing two items.
-This may be a named or unnamed list. If named, then the names must be
-\code{unit} and \code{scale}; if unnamed, then those names are assigned
-to the items, in order. Either way, the \code{unit}
+\item \emph{Case 1.} \code{unit} is a named or unnamed \code{\link{list}}
+that contains two items.
+If the list is named, the names must be
+\code{unit} and \code{scale}. If the list is unnamed, the stated names are assigned
+to the items, in the stated order. Either way, the \code{unit}
 item must be an \code{\link{expression}} that specifies the unit,
 and the \code{scale} item must be a string that describes the scale. For
 example, modern temperatures have
 \code{unit=list(unit=expression(degree*C), scale="ITS-90")}.
 \item \emph{Case 2.} \code{unit} is an \code{\link{expression}} giving the unit as above. In this
 case, the scale will be set to \code{""}.
-\item \emph{Case 3.} \code{unit} is a character string that indicates the unit.
-This is converted to an expression with 
-\code{\link{as.expression}}, and the scale set to \code{""}.
+\item \emph{Case 3.} \code{unit} is a character string that is converted
+into an expression with \code{\link{parse}(text=unit)},
+and the scale set to \code{""}.
 }
 }
 \examples{
