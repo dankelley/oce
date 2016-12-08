@@ -104,6 +104,7 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
             object@metadata$units[[name]] <- list(unit=unit, scale="")
         } else if (is.character(unit)) {
             ## message("case 3")
+            ## browser()
             object@metadata$units[[name]] <- list(unit=parse(text=unit), scale="")
         } else {
             stop("'unit' must be a list, an expression, or a character string")

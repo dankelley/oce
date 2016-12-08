@@ -65,9 +65,9 @@ test_that("three methods for specifying units", {
           feet <- 3.28048 * swDepth(ctd)
           ctd <- oceSetData(ctd, "depthInFeet", feet, expression("feet"))
           expect_identical(ctd[["units"]]$depthInFeet, list(unit=expression("feet"), scale=""))
-          fathoms <- 0.546807 * swDepth(ctd)
+          fathoms <- feet / 6
           ctd <- oceSetData(ctd, "depthInFathoms", fathoms, "fathoms")
-          expect_identical(ctd[["units"]]$depthInFathoms, list(unit=expression("fathoms"), scale=""))
+          expect_identical(ctd[["units"]]$depthInFathoms, list(unit=expression(fathoms), scale=""))
 })
 
 test_that("can use original names", {
