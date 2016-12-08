@@ -57,6 +57,19 @@ test_that("alter units", {
           expect_equal(ctd[["salinityUnit"]], list(unit=expression(foo), scale="bar"))
 })
 
+
+test_that("three methods for specifying units", {
+          data("ctd")
+          freezing <- swTFreeze(ctd)
+          ctd <- oceSetData(ctd, "freezing", freezing, list(unit=expression(degree*C), scale="ITS-90"))
+          feet <- 3.28048 * swDepth(ctd)
+          ctd <- oceSetData(ctd, "depthInFeet", feet, expression("feet"))
+          expect_identical(ctd[["units"]]$depthInFeet, list(unit=expression("feet"), scale=""))
+          fathoms <- 0.546807 * swDepth(ctd)
+          ctd <- oceSetData(ctd, "depthInFathoms", fathoms, "fathoms")
+          expect_identical(ctd[["units"]]$depthInFathoms, list(unit=expression("fathoms"), scale=""))
+})
+
 test_that("can use original names", {
           data("ctd")
           expect_equal(ctd[["time"]], ctd[["timeS"]])

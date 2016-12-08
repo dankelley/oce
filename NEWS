@@ -1,5 +1,6 @@
 0.9-21
 - fix memory-usage error in coastlineCut()
+- more flexible unit specification in oceSetData()
 
 0.9-20
 - remove observatory object type (changed format, seldom-used type)
