@@ -1,4 +1,7 @@
-linters: with_defaults(line_length_linter(140),
+linters: with_defaults(
                  camel_case_linter=NULL,
                  commented_code_linter=NULL,
-                 infix_spaces_linter=NULL)
+                 infix_spaces_linter=NULL,
+                 line_length_linter(140),
+                 single_quotes_linter=NULL
+                 )
