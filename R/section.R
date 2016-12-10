@@ -610,7 +610,7 @@ sectionSort <- function(section, by)
     }
     res <- section
     if (by == "stationId") {
-	o <- order(section@metadata$stationId)
+        o <- order(section@metadata$stationId)
     } else if (by == "distance") {
         o <- order(section[["distance", "byStation"]])
     } else if (by == "longitude") {
@@ -622,7 +622,7 @@ sectionSort <- function(section, by)
         times <- unlist(lapply(section@data$station, function(x) x@metadata$startTime))
         o <- order(times)
     } else {
-	o <- seq_along(section[["station"]]) ## cannot ever get here, actually
+        o <- seq_along(section[["station"]]) ## cannot ever get here, actually
     }
     res@metadata$stationId <- res@metadata$stationId[o]
     res@metadata$longitude <- res@metadata$longitude[o]
@@ -648,35 +648,35 @@ makeSection <- function(item, ...)
 ##     .Deprecated("as.section",
 ##                 msg="makeSection() will be removed soon; use as.section() instead. See ?'oce-deprecated'.")
 ##     if (inherits(item, "ctd")) {
-## 	extra.args <- list(...)
-## 	numStations <- 1 + length(extra.args)
-## 	station <- vector("list", numStations)
-## 	stn <- vector("character", numStations)
-## 	lon <- vector("numeric", numStations)
-## 	lat <- vector("numeric", numStations)
-## 	stn[1] <- item@metadata$station
-## 	lon[1] <- item@metadata$longitude
-## 	lat[1] <- item@metadata$latitude
-## 	station[[1]] <- item
-## 	if (numStations > 1) {
-## 	    for (i in 2:numStations) {
+##      extra.args <- list(...)
+##      numStations <- 1 + length(extra.args)
+##      station <- vector("list", numStations)
+##      stn <- vector("character", numStations)
+##      lon <- vector("numeric", numStations)
+##      lat <- vector("numeric", numStations)
+##      stn[1] <- item@metadata$station
+##      lon[1] <- item@metadata$longitude
+##      lat[1] <- item@metadata$latitude
+##      station[[1]] <- item
+##      if (numStations > 1) {
+##          for (i in 2:numStations) {
 ##                 ## message("DAN ", i)
 ##                 thisStn <- extra.args[[i-1]]
-## 		stn[i] <- thisStn@metadata$station
-## 		lon[i] <- thisStn@metadata$longitude
-## 		lat[i] <- thisStn@metadata$latitude
-## 		station[[i]] <- thisStn
-## 	    }
-## 	}
+##              stn[i] <- thisStn@metadata$station
+##              lon[i] <- thisStn@metadata$longitude
+##              lat[i] <- thisStn@metadata$latitude
+##              station[[i]] <- thisStn
+##          }
+##      }
 ##     } else if (inherits(item, "list") && !inherits(item[[1]], "oce")) {
 ##         stop("cannot yet handle a list of non-oce objects")
 ##     } else if (inherits(item, "list") && inherits(item[[1]], "oce")) {
-## 	numStations <- length(item)
-## 	station <- vector("list", numStations)
-## 	stn <- vector("character", numStations)
-## 	lon <- vector("numeric", numStations)
-## 	lat <- vector("numeric", numStations)
-## 	if (numStations < 1) 
+##      numStations <- length(item)
+##      station <- vector("list", numStations)
+##      stn <- vector("character", numStations)
+##      lon <- vector("numeric", numStations)
+##      lat <- vector("numeric", numStations)
+##      if (numStations < 1) 
 ##             stop("need more than 1 item in the list, to create a section")
 ##         ## 2015-12-06 if (inherits(item[[1]], "oce")) {
 ##         for (i in 1:numStations) {
@@ -718,36 +718,36 @@ makeSection <- function(item, ...)
 ##         ## 2015-12-06 }
 ##     } else if (class(item) == "character") {
 ##         numStations <- length(item)
-## 	station <- vector("list", numStations)
-## 	stn <- vector("character", numStations)
-## 	lon <- vector("numeric", numStations)
-## 	lat <- vector("numeric", numStations)
-## 	if (numStations <= 1)
-## 	    stop("need more than 1 station to make a section")
-## 	if (exists(item[1])) {
-## 	    ## ctd objects
-## 	    ##oceDebug(1, "ctd objects\n")
-## 	    for (i in 1:numStations) {
+##      station <- vector("list", numStations)
+##      stn <- vector("character", numStations)
+##      lon <- vector("numeric", numStations)
+##      lat <- vector("numeric", numStations)
+##      if (numStations <= 1)
+##          stop("need more than 1 station to make a section")
+##      if (exists(item[1])) {
+##          ## ctd objects
+##          ##oceDebug(1, "ctd objects\n")
+##          for (i in 1:numStations) {
 ##                 thisItem <- get(item[[i]])
-## 		stn[i] <- thisItem@metadata$station
-## 		lon[i] <- thisItem@metadata$longitude
-## 		lat[i] <- thisItem@metadata$latitude
-## 		station[[i]] <- thisItem
-## 	    }
-## 	} else {
-## 	    ## ctd filenames
-## 	    ##oceDebug(1, "ctd files\n")
-## 	    for (i in 1:numStations) {
-## 		##oceDebug(1, "file named", item[i], "\n")
-## 		ctd <- read.ctd(item[i])
-## 		stn[i] <- ctd@metadata$station
-## 		lon[i] <- ctd@metadata$longitude
+##              stn[i] <- thisItem@metadata$station
+##              lon[i] <- thisItem@metadata$longitude
+##              lat[i] <- thisItem@metadata$latitude
+##              station[[i]] <- thisItem
+##          }
+##      } else {
+##          ## ctd filenames
+##          ##oceDebug(1, "ctd files\n")
+##          for (i in 1:numStations) {
+##              ##oceDebug(1, "file named", item[i], "\n")
+##              ctd <- read.ctd(item[i])
+##              stn[i] <- ctd@metadata$station
+##              lon[i] <- ctd@metadata$longitude
 ##                 lat[i] <- ctd@metadata$latitude
 ##                 station[[i]] <- ctd
-## 	    }
-## 	}
+##          }
+##      }
 ##     } else {
-## 	stop("first argument must be a \"ctd\" object, a \"list\" of ctd objects, or a vector of character strings naming ctd objects")
+##      stop("first argument must be a \"ctd\" object, a \"list\" of ctd objects, or a vector of character strings naming ctd objects")
 ##     }
 ##     res <- new("section")
 ##     res@metadata$sectionId <- ""
@@ -803,7 +803,7 @@ sectionAddStation <- function(section, station)
     n.orig <- length(section@data$station)
     s <- vector("list", n.orig + 1)
     for (i in 1:n.orig)
-	s[[i]] <- section@data$station[[i]]
+        s[[i]] <- section@data$station[[i]]
     s[[n.orig + 1]] <- station
     res@data$station <- s
     res@metadata$longitude <- c(res@metadata$longitude, station@metadata$longitude)
@@ -1870,9 +1870,9 @@ setMethod(f="plot",
 #' 
 #' @family things related to \code{section} data
 read.section <- function(file, directory, sectionId="", flags,
-			 ship="", scientist="", institute="",
+                         ship="", scientist="", institute="",
                          missingValue=-999,
-			 debug=getOption("oceDebug"), processingLog)
+                         debug=getOption("oceDebug"), processingLog)
 {
     if (!missing(directory)) {
         if (!missing(file))
@@ -1887,38 +1887,38 @@ read.section <- function(file, directory, sectionId="", flags,
         return(as.section(stations))
     }
     if (is.character(file)) {
-	filename <- file
-	file <- file(file, "r")
-	on.exit(close(file))
+        filename <- file
+        file <- file(file, "r")
+        on.exit(close(file))
     }
     if (!inherits(file, "connection")) {
-	stop("argument `file' must be a character string or connection")
+        stop("argument `file' must be a character string or connection")
     }
     res <- new("section")
     if (!isOpen(file)) {
-	filename <- "(connection)"
-	open(file, "r")
-	on.exit(close(file))
+        filename <- "(connection)"
+        open(file, "r")
+        on.exit(close(file))
     }
     if (!missing(flags))
         warning("'flags' is ignored, and will be disallowed in an upcoming CRAN release")
     ##>     ## flag=2 for good data [WOCE]
     ##>     if (missing(flags))
-    ##> 	flags <- c(2)
+    ##>         flags <- c(2)
     # Skip header
     lines <- readLines(file)
     if ("BOTTLE" != substr(lines[1], 1, 6))
-	stop("only type \"BOTTLE\" understood, but got header line\n", lines[1],"\n")
+        stop("only type \"BOTTLE\" understood, but got header line\n", lines[1],"\n")
     if (nchar(sectionId) < 1)
         sectionId <- substr(lines[1], 8, nchar(lines[1]))
     n <- length(lines)
     header <- lines[1]
     for (l in (2:n)) {
-	oceDebug(debug, lines[l], "\n")
-	if ("#" != substr(lines[l], 1, 1)) {
-	    header <- c(header, lines[l])
-	    break
-	}
+        oceDebug(debug, lines[l], "\n")
+        if ("#" != substr(lines[l], 1, 1)) {
+            header <- c(header, lines[l])
+            break
+        }
     }
     header.length <- l + 1
     ccc <- textConnection(lines[header.length - 1])
@@ -1940,11 +1940,11 @@ read.section <- function(file, directory, sectionId="", flags,
     stnSectionId <- vector("character", nd)
     stnId <- vector("character", nd)
     for (l in ((header.length + 1):(n-1))) { # last line is END_DATA
-	contents <- strsplit(lines[l], split=",")[[1]]
-	stnSectionId[l - header.length] <- sub(" *","", contents[2])
-	stnId[l - header.length] <- sub("^ *","", contents[3])
-	data[l - header.length,] <- contents[col.start:nv]
-	## FIXME: maybe should just scan this thing; it might work better anyway
+        contents <- strsplit(lines[l], split=",")[[1]]
+        stnSectionId[l - header.length] <- sub(" *","", contents[2])
+        stnId[l - header.length] <- sub("^ *","", contents[3])
+        data[l - header.length,] <- contents[col.start:nv]
+        ## FIXME: maybe should just scan this thing; it might work better anyway
     }
     ## salinityUnit <- NULL
     ## if (1 == length(w <- which(var.names=="CTDPRS"))) {
@@ -1991,13 +1991,13 @@ read.section <- function(file, directory, sectionId="", flags,
     ## }
     ## if (!haveSalinity) stop("no column named \"CTDSAL\" or \"SALNTY\"")
     if (length(which(var.names=="DATE")))
-	stn.date <- as.character(data[,which(var.names=="DATE") - col.start + 1])
+        stn.date <- as.character(data[,which(var.names=="DATE") - col.start + 1])
     else
-	stop("no column named \"DATE\"")
+        stop("no column named \"DATE\"")
     if (length(which(var.names=="TIME")))
-	stn.time <- as.character(data[,which(var.names=="TIME") - col.start + 1])
+        stn.time <- as.character(data[,which(var.names=="TIME") - col.start + 1])
     else
-	stop("no column named \"TIME\"")
+        stop("no column named \"TIME\"")
     ## EXPOCODE,SECT_ID,STNNBR,CASTNO,SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
 
     ## oxygenUnit <- NULL
@@ -2105,38 +2105,38 @@ read.section <- function(file, directory, sectionId="", flags,
     ## Names and units are the same for every station, so determine them
     ## before going through the data.
     for (i in 1:numStations) {
-	oceDebug(debug, "reading station", i, "... ")
-	select <- which(stationId == stationList[i])
-	# "199309232222"
-	# "1993-09-23 22:22:00"
-	time[i] <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""), "%Y%m%d%H%M", tz="UTC"))
-	stn[i] <- sub("^ *", "", stationId[select[1]])
-	lon[i] <- longitude[select[1]]
-	lat[i] <- latitude[select[1]]
+        oceDebug(debug, "reading station", i, "... ")
+        select <- which(stationId == stationList[i])
+        ## "199309232222"
+        ## "1993-09-23 22:22:00"
+        time[i] <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""), "%Y%m%d%H%M", tz="UTC"))
+        stn[i] <- sub("^ *", "", stationId[select[1]])
+        lon[i] <- longitude[select[1]]
+        lat[i] <- latitude[select[1]]
         ## ## FIXME: chop flags up
         ## flagsSelected <- flags
         ## for (name in names(flagsSelected)) {
         ##     flagsSelected[[name]] <- flags[[name]][select]
         ## }
         ## ##> message("flagsSelected:"); str(flagsSelected)
-	## thisStation <- as.ctd(salinity=salinity[select],
-	## 		       temperature=temperature[select],
-	## 		       pressure=pressure[select],
+        ## thisStation <- as.ctd(salinity=salinity[select],
+        ##                     temperature=temperature[select],
+        ##                     pressure=pressure[select],
         ##                        oxygen=if(!is.null(oxygen))oxygen[select],
         ##                        nitrate=if(!is.null(nitrate))nitrate[select],
         ##                        nitrite=if(!is.null(nitrite))nitrite[select],
         ##                        phosphate=if(!is.null(phosphate))phosphate[select],
         ##                        silicate=if(!is.null(silicate))silicate[select],
         ##                        flags=flagsSelected,
-	## 		       ship=ship,
-	## 		       startTime=numberAsPOSIXct(time[i]),
-	## 		       scientist=scientist,
-	## 		       institute=institute,
-	## 		       longitude=lon[i], latitude=lat[i],
-	## 		       cruise=stnSectionId[select[1]],
-	## 		       station=stn[i],
-	## 		       waterDepth=waterDepth[select[1]],
-	## 		       src=filename)
+        ##                     ship=ship,
+        ##                     startTime=numberAsPOSIXct(time[i]),
+        ##                     scientist=scientist,
+        ##                     institute=institute,
+        ##                     longitude=lon[i], latitude=lat[i],
+        ##                     cruise=stnSectionId[select[1]],
+        ##                     station=stn[i],
+        ##                     waterDepth=waterDepth[select[1]],
+        ##                     src=filename)
         select <- which(stationId == stationList[i])
         thisStation <- new("ctd")
         thisStation@data <- list() # start over, then insert one by one
@@ -2200,8 +2200,8 @@ read.section <- function(file, directory, sectionId="", flags,
         ## if (!is.null(oxygenUnit)) thisStation@metadata$units$oxygen <- oxygenUnit
         ## if (!is.null(silicateUnit)) thisStation@metadata$units$silicate <- silicateUnit
         ## if (!is.null(phosphateUnit)) thisStation@metadata$units$phosphate <- phosphateUnit
-	if (debug) cat(length(select), "levels @ ", lat[i], "N ", lon[i], "W\n")
-	station[[i]] <- thisStation
+        if (debug) cat(length(select), "levels @ ", lat[i], "N ", lon[i], "W\n")
+        station[[i]] <- thisStation
     }
     res@metadata$header <- header
     res@metadata$sectionId <- sectionId
@@ -2212,7 +2212,7 @@ read.section <- function(file, directory, sectionId="", flags,
     res@metadata$filename <- filename
     res@data <- list(station=station)
     if (missing(processingLog))
-	processingLog <- paste(deparse(match.call()), sep="", collapse="")
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
     ##hitem <- processingLogItem(processingLog)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
@@ -2280,32 +2280,32 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
     oceDebug(debug, "have", n, "stations in this section\n")
     dp.list <- NULL
     if (missing(p)) {
-	oceDebug(debug, "argument 'p' not given\n")
-	p.max <- 0
-	for (i in 1:n) {
-	    p <- section@data$station[[i]]@data$pressure
-	    dp.list <- c(dp.list, mean(diff(p)), na.rm=TRUE)
-	    p.max <- max(c(p.max, p), na.rm=TRUE)
+        oceDebug(debug, "argument 'p' not given\n")
+        p.max <- 0
+        for (i in 1:n) {
+            p <- section@data$station[[i]]@data$pressure
+            dp.list <- c(dp.list, mean(diff(p)), na.rm=TRUE)
+            p.max <- max(c(p.max, p), na.rm=TRUE)
             ## message("i: ", i, ", p.max: ", p.max)
-	}
-	dp <- mean(dp.list, na.rm=TRUE) / 1.5 # make it a little smaller
-	pt <- pretty(c(0, p.max), n=min(200, floor(p.max / dp)))
-	oceDebug(debug, "p.max=", p.max, "; dp=", dp, "\n")
-	oceDebug(debug, "pt=", pt, "\n")
+        }
+        dp <- mean(dp.list, na.rm=TRUE) / 1.5 # make it a little smaller
+        pt <- pretty(c(0, p.max), n=min(200, floor(p.max / dp)))
+        oceDebug(debug, "p.max=", p.max, "; dp=", dp, "\n")
+        oceDebug(debug, "pt=", pt, "\n")
     } else {
-	if (length(p) == 1) {
-	    if (p=="levitus") {
-		pt <- standardDepths()
+        if (length(p) == 1) {
+            if (p=="levitus") {
+                pt <- standardDepths()
                 pt <- pt[pt < max(section[["pressure"]], na.rm=TRUE)]
-	    } else {
+            } else {
                 if (!is.numeric(p))
                     stop("p must be numeric")
                 pMax <- max(section[["pressure"]], na.rm=TRUE)
-		pt <- seq(0, pMax, p)
-	    }
-	} else {
-	    pt <- p
-	}
+                pt <- seq(0, pMax, p)
+            }
+        } else {
+            pt <- p
+        }
     }
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
@@ -2313,7 +2313,7 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
                          "Removed flags from gridded section object. Use handleFlags() first to remove bad data.")
     for (i in 1:n) {
         ##message("i: ", i, ", p before decimation: ", paste(section@data$station[[i]]@data$pressure, " "))
-	suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...))
+        suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...))
         res@data$station[[i]]@metadata$flags <- NULL
         ##message("i: ", i, ", p after decimation: ", paste(res@data$station[[i]]@data$pressure, " "))
     }

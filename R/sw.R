@@ -669,12 +669,12 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
     if (nS != np)
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     for (i in 1:nS) {                   # FIXME: avoid loops
-    	sig <- density[i]
-    	if (sig > 500) {
+        sig <- density[i]
+        if (sig > 500) {
             sig <- sig - 1000
-    	}
+        }
         ## FIXME: is this right for all equations of state? I doubt it
-    	this.T <- .C("sw_tsrho",
+        this.T <- .C("sw_tsrho",
                      as.double(salinity[i]),
                      as.double(sig),
                      as.double(pressure[i]),
@@ -682,7 +682,7 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
                      temperature = double(1),
                      NAOK=TRUE, PACKAGE = "oce")$t
         this.T <- T90fromT68(this.T)
-    	if (i == 1) res <- this.T else res <- c(res, this.T)
+        if (i == 1) res <- this.T else res <- c(res, this.T)
     }
     dim(res) <- dim
     res
@@ -1823,7 +1823,7 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
 #' @examples
 #' library(oce)
 #' print(swTheta(40, T90fromT68(40), 10000, 0, eos="unesco")) # 36.89073 (Fofonoff et al., 1983)
-#' 	
+#'
 #' # Demonstrate that the UNESCO and GSW methods agree to a about 0.1C over a
 #' # typical span of values.
 #' S <- c(30,35,30,35)

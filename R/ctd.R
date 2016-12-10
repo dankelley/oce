@@ -2945,10 +2945,10 @@ setMethod(f="plot",
                       if (!is.null(xm$filename) && nchar(xm$filename, "bytes") > 0) {
                           yloc <- textItem(xloc, yloc, xm$filename,    " File:     ", cex=cex)
                       }
-                      if (!is.null(xm$scientist))	{
+                      if (!is.null(xm$scientist)) {
                           yloc <- textItem(xloc, yloc, xm$scientist,   " Scientist:", cex=cex)
                       }
-                      if (!is.null(xm$institute))	{
+                      if (!is.null(xm$institute)) {
                           yloc <- textItem(xloc, yloc, xm$institute,   " Institute:", cex=cex)
                       }
                       if (!is.null(xm$date)) {

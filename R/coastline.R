@@ -770,13 +770,13 @@ read.coastline <- function(file,
         oceDebug(debug, "method is mapgen\nheader:", header, "\n")
         ##separator <- NULL
                                         # mapgen    # -b
-                                        # matlab	nan nan
+                                        # matlab    nan nan
                                         # Splus     NA NA
                                         # mapgen...
-                                        #	1
-                                        #	...
-                                        #	END
-                                        #	2
+                                        # 1
+                                        # ...
+                                        # END
+                                        # 2
                                         #   ...
                                         #   END
         if (all.equal(header, c("#","-b"))) {

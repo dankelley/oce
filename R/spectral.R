@@ -113,12 +113,12 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     if (is.ts(x)) {
         if (missing(fs))
             fs <- frequency(x)
-    	else {
+        else {
             if (fs != frequency(x)) {
                 warning("fs does not match frequency(x); using the former")
                 x <- ts(x, frequency=fs)
             }
-    	}
+        }
     }
     x.len <- length(x)
     if (x.len < 1)
@@ -195,10 +195,10 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     oceDebug(debug, "resultant spectrum is average across matrix of dimension", dim(psd), "\n")
     oceDebug(debug, "} # pwelch()\n", unindent=1)
     res <- list(freq=freq, spec=apply(psd, 2, mean), 
-                 method="Welch", series=deparse(substitute(x)),
-                 df=s$df * (x.len / length(window)),
-                 bandwidth=s$bandwidth, # FIXME: wrong formulae
-                 demean=FALSE, detrend=TRUE)
+                method="Welch", series=deparse(substitute(x)),
+                df=s$df * (x.len / length(window)),
+                bandwidth=s$bandwidth, # FIXME: wrong formulae
+                demean=FALSE, detrend=TRUE)
     class(res) <- "spec"
     if (plot) {
         plot(res, ...)
