@@ -205,7 +205,6 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     ## If 'name' is mentioned in columns, then use columns and ignore the lookup table.
     if (!is.null(columns)) {
         ##message("name:", name)
-        ## d<-read.ctd("~/src/oce/create_data/ctd/ctd.cnv",columns=list(salinity=list(name="sal00",unit=list(expression(), scale="PSS-78monkey"))))
         cnames <- names(columns)
         for (i in seq_along(cnames)) {
             if (name == columns[[i]]$name) {
@@ -453,7 +452,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         unit <- list(unit=expression(uS/cm), scale="")
     } else if (1 == length(grep("^sva$", name))) {
         name <- "specificVolumeAnomaly"
-        unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
+        unit <- list(unit=expression(10^-8*m^3/kg), scale="")
     } else if (1 == length(grep("^svCM[0-9]?$", name))) {
         name <- "soundSpeed"
         unit <- list(unit=expression(m/s), scale="Chen-Millero")
@@ -498,7 +497,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         unit <- list(unit=expression(s), scale="elapsed")
     } else if (1 == length(grep("^tsa$", name))) {
         name <- "thermostericAnomaly"
-        unit <- list(unit=expression(10^(-8)*m^3/kg), scale="")
+        unit <- list(unit=expression(10^-8*m^3/kg), scale="")
     } else if (1 == length(grep("^turbflTC[0-1]$", name))) {
         name <- "turbidity"
         unit <- list(unit=expression(NTU), scale="Turner Cyclops")
@@ -507,10 +506,10 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         unit <- list(unit=expression(NTU), scale="Turner Cyclops")
     } else if (1 == length(grep("^turbWETbb[0-4]$", name))) {
         name <- "turbidity"
-        unit <- list(unit=expression(1/(m*sr)), scale="WET Labs ECO")
+        unit <- list(unit=expression(1/m*sr), scale="WET Labs ECO")
     } else if (1 == length(grep("^turbWETbbdiff$", name))) {
         name <- "turbidityDifference"
-        unit <- list(unit=expression(1/(m*sr)), scale="WET Labs ECO")
+        unit <- list(unit=expression(1/m*sr), scale="WET Labs ECO")
     } else if (1 == length(grep("^turbWETntu[0-5]$", name))) {
         name <- "turbidity"
         unit <- list(unit=expression(NTU), scale="WET Labs ECO")
@@ -640,11 +639,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     date <- recovery <- NA
     header <- c()
     ##conductivity.standard <- 4.2914
-    found.header.latitude <- found.header.longitude <- FALSE
+    foundHeaderLatitude <- foundHeaderLongitude <- FALSE
     serialNumber <- serialNumberConductivity <- serialNumberTemperature <- ""
     ## units$conductivity <- list(unit=expression(), scale="") # guess; other types are "mS/cm" and "S/m"
     ## units$temperature <- list(unit=expression(degree*C), scale="ITS-90") # guess; other option is IPTS-68
-    pressureType = "sea"               # guess; other option is "absolute"
+    pressureType <- "sea"              # guess; other option is "absolute"
 
     ## Silence warnings because binary files have 'NUL' characters that spew many warnings
     warn <- options("warn")$warn
@@ -675,12 +674,12 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$dataNamesOriginal <- dataNamesOriginal
     ##found.scan <- "scan" %in% colNamesInferred
     ##found.temperature <- "temperature" %in% colNamesInferred
-    found.pressure <- "pressure" %in% colNamesInferred
-    found.salinity <- "salinity" %in% colNamesInferred
+    foundPressure <- "pressure" %in% colNamesInferred
+    foundSalinity <- "salinity" %in% colNamesInferred
     ##found.time <- "time" %in% colNamesInferred
-    found.depth <- "depth" %in% colNamesInferred
-    found.conductivity <- "conductivity" %in% colNamesInferred
-    found.conductivity.ratio <- "conductivity.ratio" %in% colNamesInferred
+    foundDepth <- "depth" %in% colNamesInferred
+    foundConductivity <- "conductivity" %in% colNamesInferred
+    foundConductivityRatio <- "conductivity.ratio" %in% colNamesInferred
     ## FIXME: should we insist on having salinity, temperature, and pressure?
     fileType <- "unknown"
 
@@ -689,7 +688,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         line <- lines[iline]
         ##message(line)
         #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        oceDebug(debug, paste("Examining header line '",line,"'\n", sep=""))
+        oceDebug(debug, paste("Examining header line '", line, "'\n", sep=""))
         header <- c(header, line)
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?")
@@ -704,7 +703,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         ##if (iline>129) browser()
         lline <- tolower(aline)
         if (0 < regexpr(".*seacat profiler.*", lline))
-            serialNumber <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
+            serialNumber <- gsub("[ ].*$", "", gsub(".*sn[ ]*", "", lline))
         if (length(grep("^\\* Temperature SN", lline, ignore.case=TRUE)))
             serialNumberTemperature <- gsub("^.*=\\s", "", lline)
         if (length(grep("^\\* Conductivity SN", lline, ignore.case=TRUE)))
@@ -744,13 +743,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         ## Styles:
         ## * NMEA Latitude = 47 54.760 N
         ## ** Latitude:      47 53.27 N
-        if (!found.header.latitude && (0 < (r<-regexpr("latitude*[0-8]*", lline, ignore.case=TRUE)))) {
+        if (!foundHeaderLatitude && (0 < (r<-regexpr("latitude*[0-8]*", lline, ignore.case=TRUE)))) {
             latitude <- parseLatLon(lline, debug=debug-1)
-            found.header.latitude <- TRUE
+            foundHeaderLatitude <- TRUE
         }
-        if (!found.header.longitude && (0 < (r<-regexpr("longitude*[0-8]*", lline, ignore.case=TRUE)))) {
+        if (!foundHeaderLongitude && (0 < (r<-regexpr("longitude*[0-8]*", lline, ignore.case=TRUE)))) {
             longitude <- parseLatLon(lline, debug=debug-1)
-            found.header.longitude <- TRUE
+            foundHeaderLongitude <- TRUE
         }
         if (0 < (r<-regexpr("start_time =", lline))) {
             d <- sub("#[ ]*start_time[ ]*=[ ]*", "", lline)
@@ -802,7 +801,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             ##** Profondeur: 76
             ##** Water Depth:   40 m
             look <- sub("[ ]*$", "", sub(".*:[ ]*", "", lline))
-            linesplit <- strsplit(look," ")[[1]]
+            linesplit <- strsplit(look, " ")[[1]]
             nitems <- length(linesplit)
             if (nitems == 1) {
                 waterDepth <- as.numeric(linesplit[1])
@@ -837,7 +836,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                     if (rtmp[[1]][3] == "hours") {
                         sampleInterval <- sampleInterval / 3600;
                     } else {
-                        warning("cannot understand `",rtmp[[1]][2],"' as a unit of time for sampleInterval")
+                        warning("cannot understand `", rtmp[[1]][2], "' as a unit of time for sampleInterval")
                     }
                 }
             }
@@ -895,7 +894,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     ## Read the data as a table.
     pushBack(lines, file)
     ##if (is.null(columns)) {
-    oceDebug(debug, "About to read these names: c(\"", paste(colNamesInferred, collapse='","'),"\")\n", sep="")
+    oceDebug(debug, "About to read these names: c(\"", paste(colNamesInferred, collapse='","'), "\")\n", sep="")
     ##message("skipping ", iline-1, " lines at top of file")
     data <- as.list(read.table(file, skip=iline-1, header=FALSE))
     if (length(data) != length(colNamesInferred))
@@ -929,12 +928,12 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@data <- data
     ## Add standard things, if missing
     if (haveData) {
-        if (!found.salinity) {         # && getOption("insertCalculatedDataCTD")) {
-            if (found.conductivity.ratio) {
+        if (!foundSalinity) {         # && getOption("insertCalculatedDataCTD")) {
+            if (foundConductivityRatio) {
                 C <- data$conductivityratio
                 S <- swSCTp(C, data$temperature, data$pressure)
                 warning("created a salinity data item from the temperature, conductivity-ratio and pressure items")
-            } else if (found.conductivity) {
+            } else if (foundConductivity) {
                 C <- data$conductivity
                 if (!is.null(res@metadata$units$conductivity)) {
                     unit <- as.character(res@metadata$units$conductivity$unit)
@@ -943,11 +942,12 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                     if ("uS/cm" == unit) {
                         C <- C / 429.14
                     } else if ("mS/cm" == unit) {
-                        C <- C / 42.914 # e.g. RSK 
+                        C <- C / 42.914 # e.g. RSK
                     } else if ("S/m" == unit) {
                         C <- C / 4.2914
                     } else {
-                        warning("unrecognized conductivity unit '", unit, "'; assuming mS/cm for salinity calculation -- results should be used with caution")
+                        warning("unrecognized conductivity unit '", unit,
+                                "'; assuming mS/cm for salinity calculation -- results should be used with caution")
                     }
                 } else {
                     warning("missing conductivity unit; guessing a unit based on maximum value")
@@ -972,9 +972,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                               unit=list(unit=expression(), scale="PSS-78"))
             ## colNamesOriginal <- c(colNamesOriginal, "NA")
         }
-        if (found.depth && !found.pressure) { # && getOption("insertCalculatedDataCTD")) {
+        if (foundDepth && !foundPressure) { # && getOption("insertCalculatedDataCTD")) {
             ## BUG: this is a poor, nonrobust approximation of pressure
-            g <- if (found.header.latitude) gravity(latitude) else 9.8
+            g <- if (foundHeaderLatitude) gravity(latitude) else 9.8
             rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0)
             ## res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure",
             ##                     unit=list(unit=expression("dbar"), scale=""), debug=debug-1)
@@ -1006,4 +1006,3 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     oceDebug(debug, "} # read.ctd.sbe()\n")
     res
 }
-
