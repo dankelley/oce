@@ -112,11 +112,10 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
         res <- oceSetMetadata(res, "dataNamesOriginal",
                               list(temperature="temperature", salinity="salinity", oxygen="oxygen", pressure="pressure"))
         if (!is.null(time))
-            res <- oceSetData(res, "time", time) 
+            res <- oceSetData(res, "time", time)
     } else {
         stop("can only handle 'profile' data type, not (presumably) SAMI type")
     }
     oceDebug(debug, "} # read.ctd.itp()\n", unindent=1)
     res
 }
-
