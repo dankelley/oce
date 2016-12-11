@@ -20,7 +20,7 @@ character matches, and that an error will occur if the match is
 not complete (e.g. \code{"salinity"} matches to both
 \code{"salinity ts"} and \code{"salinity profile"}.).
 \itemize{
-    \item \code{which=1} or \code{which="trajectory"} gives a 
+    \item \code{which=1} or \code{which="trajectory"} gives a
     plot of the argo trajectory, with the coastline, if one is provided.
 
     \item \code{which=2} or \code{"salinity ts"} gives a time series of
@@ -81,7 +81,7 @@ defunct \code{oce} features.)}
 
 \item{projection}{indication of the projection to be used
 in trajetory maps. If this is \code{NULL}, no projection is used, although
-the plot aspect ratio will be set to yield zero shape distortion at the 
+the plot aspect ratio will be set to yield zero shape distortion at the
 mean float latitude.  If \code{projection="automatic"}, then one
 of two projections is used: stereopolar (i.e. \code{"+proj=stere +lon_0=X"}
 where \code{X} is the mean longitude), or Mercator (i.e. \code{"+proj=merc"})

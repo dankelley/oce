@@ -31,7 +31,7 @@ Metadata items such as \code{time}, \code{longitude} and \code{latitude}
 are inferred from the data file in a straightforward way, using
 \code{\link[ncdf4]{ncvar_get}} and data-variable names as listed in
 the Argo documentation [2,3]. The items listed in section 2.2.3
-of [3] is read from the file and stored in the \code{metadata} slot, 
+of [3] is read from the file and stored in the \code{metadata} slot,
 with the exception of \code{longitude} and \code{latitude},
 which are stored in the \code{data} slot.
 
@@ -56,7 +56,7 @@ then \code{PRES} (pressure) data are sought in the file, along with
 are stored with different names within the resultant \code{\link{argo-class}}
 object, to match with \code{oce} conventions. Thus, \code{PRES} gets renamed
 \code{pressure}, while \code{PRES_ADJUSTED} gets renamed \code{pressureAdjusted},
-and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are 
+and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are
 stored in the \code{data} slot. Meanwhile, the quality-control flags
 \code{PRES_QC} and \code{PRES_ADJUSTED_QC} are stored as \code{pressure}
 and \code{pressureAdjusted} in the \code{metadata$flags} slot.
@@ -64,16 +64,16 @@ and \code{pressureAdjusted} in the \code{metadata$flags} slot.
 \section{Data sources}{
 
 Argo data are made available at several websites. A bit of detective
-work can be required to track down the data.  
+work can be required to track down the data.
 
 Some servers provide  data for floats that surfaced in a given ocean
-on a given day, the anonymous FTP server 
+on a given day, the anonymous FTP server
 \url{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
 
 Other servers provide data on a per-float basis. A complicating
 factor is that these data tend to be categorized by "dac" (data
 archiving centre), which makes it difficult to find a particular
-float. For example, 
+float. For example,
 \url{http://www.usgodae.org/ftp/outgoing/argo/} is the top level of
 a such a repository. If the ID of a float is known but not the
 "dac", then a first step is to download the text file
@@ -136,7 +136,7 @@ Dan Kelley
 
 2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
 \samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-(link checked 17 Nov 2016 several times in the months before, 
+(link checked 17 Nov 2016 several times in the months before,
 but failed 18 Nov 2016).
 Table 2.2.2 of this document lists the codes used in Argo netCDF files.
 

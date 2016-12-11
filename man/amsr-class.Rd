@@ -11,7 +11,7 @@ May 2012. Data are processed by Remote Sensing Systems. The satellite
 completes an ascending and descending pass during local daytime and nightime
 hours respectively. Each daily file contains 7 daytime and 7 nighttime
 maps of variables named as follows within the \code{data}
-slot of amsr objects: \code{timeDay}, 
+slot of amsr objects: \code{timeDay},
 \code{SSTDay}, \code{LFwindDay} (wind at 10m sensed in
 the 10.7GHz band), \code{MFwindDay} (wind at 10m sensed at 18.7GHz),
 \code{vaporDay}, \code{cloudDay}, and \code{rainDay}, along with

@@ -38,7 +38,7 @@ taken as \code{NA}.}
 An object of \code{\link{argo-class}}.
 }
 \description{
-Coerce a dataset into an argo dataset. This is not the right way to 
+Coerce a dataset into an argo dataset. This is not the right way to
 read official argo datasets, which are provided in NetCDF format and may
 be read with \code{\link{read.argo}}.
 }

@@ -149,7 +149,7 @@ If \code{projection} is provided without \code{longitudelim} or \code{latitudeli
 then \code{\link{mapPlot}} is still called, but \code{longitudelim} and
 \code{latitudelim} are computed from \code{clongitude}, \code{clatitude} and \code{span}.
 
-If \code{projection} is not provided, much simpler plots are produced. These are 
+If \code{projection} is not provided, much simpler plots are produced. These are
 Cartesian, with aspect ratio set to minimize shape distortion at the central latitude.
 Although these are crude, they have the benefit of always working, which cannot
 be said of true map projections, which can be problematic in various ways owing
