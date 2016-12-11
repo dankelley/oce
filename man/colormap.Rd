@@ -199,7 +199,7 @@ cm$col1[deep] <- 'black'
 cm <- colormap(x0=cm$x0, x1=cm$x1, col0=cm$col0, col1=cm$col1)
 imagep(topoWorld, breaks=cm$breaks, col=cm$col)
 
-## Example 4. image of world topography with water colorized 
+## Example 4. image of world topography with water colorized
 ## smoothly from violet at 8km depth to blue
 ## at 4km depth, then blending in 0.5km increments
 ## to white at the coast, with tan for land.

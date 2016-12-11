@@ -14,7 +14,7 @@ created with \code{\link{as.argo}}.  Argo data can be gridded to constant
 pressures with \code{\link{argoGrid}}.  Plots can be made with
 \code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}} produces statistical
 summaries and \code{show} produces overviews. The usual oce generic
-functions are available, e.g. \code{\link{[[,argo-method}} may 
+functions are available, e.g. \code{\link{[[,argo-method}} may
 be used to extract data, and \code{\link{[[<-,argo-method}} may
 be used to insert data.
 
