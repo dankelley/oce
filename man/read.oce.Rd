@@ -14,7 +14,7 @@ to load.}
 function is selected, based on the header.}
 }
 \value{
-An object of \code{\link{oce-class}} that is 
+An object of \code{\link{oce-class}} that is
 specialized to the data type, e.g. \code{\link{ctd-class}},
 if the data file contains \code{ctd} data.
 }

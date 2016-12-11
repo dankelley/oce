@@ -13,7 +13,7 @@ oceSetData(object, name, value, unit, originalName, note = "")
 
 \item{value}{Value for the item.}
 
-\item{unit}{An optional indication of the units for the item. This has 
+\item{unit}{An optional indication of the units for the item. This has
 three possible forms (see \dQuote{Details}).}
 
 \item{originalName}{Optional character string giving an 'original' name (e.g.

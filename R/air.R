@@ -46,4 +46,3 @@ airRho <- function(temperature, pressure, humidity)
     ##1.225
     M * pressure / R / Tkelvin
 }
-

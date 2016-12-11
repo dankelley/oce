@@ -13,7 +13,7 @@
 ## ("WorkHorse Technical Manual_Nov07.pdf" in Dan Kelley's collection)
 ##
 ## teledyne2010wcao: Workhorse Commands and Output Data format. August 2010
-## Teledyne RD Instruments, 2010. 
+## Teledyne RD Instruments, 2010.
 ## ("WorkHorse_commands_data_format_AUG10.PDF" in Dan Kelley's collection)
 ##
 ## teledyne2014ostm: Ocean Surveyor / Ocean Observer technical manual
@@ -27,11 +27,11 @@
 ## The following information is from Table 33, p 146 teledyne2014ostm. Note that
 ## 'i' refers to a byte number offset, with 'i+1' the subsequent byte; this avoid
 ## the confusing LSB and MSB notation in teledyne2014ostm.
-## 
+##
 ## Standard byte flags
-## 
+##
 ##  i     i+1    DESCRIPTION
-## 7F      7F    Header                   
+## 7F      7F    Header
 ## 00      00    Fixed Leader
 ## 80      00    Variable Leader
 ## 00      01    Velocity Profile
@@ -43,11 +43,11 @@
 ## 00      20    Navigation
 ## 00      30    Binary Fixed Attitude
 ## 40-F0   30    Binary Variable Attitude
-## 
+##
 ## "Standard plus 1" byte flags (not handled)
-## 
+##
 ##  i     i+1    DESCRIPTION
-## 7F      7F    Header                    
+## 7F      7F    Header
 ## 01      00    Fixed Leader
 ## 81      00    Variable Leader
 ## 01      01    Velocity Profile
@@ -59,7 +59,7 @@
 ## 00      20    Navigation
 ## 00      30    Binary Fixed Attitude
 ## 40-F0   30    Binary Variable Attitude
-## 
+##
 
 
 
@@ -90,7 +90,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ## See if this is a sentinel file by looking for dataType ID bytes
     ## of 0x00 and 0x70 (V series system configuration)
     codes <- cbind(buf[1 + c(0, dataOffset)], buf[1+c(0, dataOffset) + 1])
-    if (any(codes[,1] == 0x00 & codes[,2] == 0x70)) {
+    if (any(codes[, 1] == 0x00 & codes[, 2] == 0x70)) {
         message('Detected dataType 0x00 0x70 for Sentinel V series configuration')
         isSentinel <- TRUE
     } else {
@@ -108,7 +108,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     firmwareVersionMinor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
     firmwareVersion <- paste(firmwareVersionMajor, firmwareVersionMinor, sep=".")
     firmwareVersionNumeric <- as.numeric(firmwareVersion)
-    oceDebug(debug, "firmwareVersion=", firmwareVersion, "(numerically, it is", firmwareVersionNumeric,")\n")
+    oceDebug(debug, "firmwareVersion=", firmwareVersion, "(numerically, it is", firmwareVersionNumeric, ")\n")
     ##if (firmwareVersion < 16.28) warning("firmwareVersion ", firmwareVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
 
     if (!haveActualData)
@@ -120,7 +120,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 
     ## FLD[5] = SYSTEM CONFIGURATION LSB (Table 5.2, page 126, System Integrator Guide, Nov 2007)
     ## FLD[6] = SYSTEM CONFIGURATION MSB
-    systemConfiguration <- paste(byteToBinary(FLD[5], endian="big"), byteToBinary(FLD[6],endian="big"),sep="-")
+    systemConfiguration <- paste(byteToBinary(FLD[5], endian="big"), byteToBinary(FLD[6], endian="big"), sep="-")
     oceDebug(debug, "FLD[4]=", byteToBinary(FLD[4], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
     oceDebug(debug, "FLD[5]=", byteToBinary(FLD[5], endian="big"), "(should be one of the systemConfiguration bytes)\n")
     oceDebug(debug, "FLD[6]=", byteToBinary(FLD[6], endian="big"), "(should be one of the systemConfiguration bytes)\n")
@@ -144,13 +144,13 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "bits:", bits, "so frequency=", frequency, "\n")
     bits <- substr(systemConfiguration, 16, 17)
     if (isSentinel) {
-        oceDebug(debug, "systemConfiguration:", systemConfiguration,"\n")
+        oceDebug(debug, "systemConfiguration:", systemConfiguration, "\n")
         oceDebug(debug, "bits:", bits, "Expect 111 for 25 degrees\n")
         bits <- substr(systemConfiguration, 15, 17)
         if (bits != "111") message("Assuming beam angle of 25deg, but SysCon bits aren't 111")
         beamAngle <- 25
     } else {
-        oceDebug(debug, "systemConfiguration:", systemConfiguration,"\n")
+        oceDebug(debug, "systemConfiguration:", systemConfiguration, "\n")
         oceDebug(debug, "bits:", bits, "00 is 15deg, 01 is 20deg, 02 is 30deg, 11 is 'other'\n")
         if (bits == "00") beamAngle <- 15
         else if (bits == "01") beamAngle <- 20
@@ -415,7 +415,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' two facts control the maximum recordable velocity and the velocity
 #' resolution, values that may be retrieved for an ADP object name \code{d}
 #' with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
-#' @param testing Logical value, indicating whether 
+#' @param testing Logical value, indicating whether
 #' the time-varying device orientation is to be inferred from the
 #' per-profile header information, and the boolean result is stored in an
 #' integer vector named \code{upward} within the \code{data} slot.
@@ -442,8 +442,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          debug=getOption("oceDebug"),
                          ...)
 {
-    oceDebug(debug, "read.adp.rdi(...,from=",format(from),
-             ",to=",if(missing(to)) "missing" else format(to), "...) {\n", unindent=1)
+    oceDebug(debug, "read.adp.rdi(...,from=", format(from),
+             ",to=", if (missing(to)) "missing" else format(to), "...) {\n", unindent=1)
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
     bisectAdpRdi <- function(buf, t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, ") {\n", unindent=1)
@@ -452,7 +452,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         upper <- len
         passes <- floor(10 + log(len, 2)) # won't need this many; only do this to catch coding errors
         for (pass in 1:passes) {
-            middle <- floor((upper + lower) / 2)
+            middle <- floor( (upper + lower) / 2 )
             year   <- unabbreviateYear(readBin(buf[profileStart[middle] +  4], what="integer", n=1, size=1, signed=FALSE))
             month  <- readBin(buf[profileStart[middle] +  5], what="integer", n=1, size=1, signed=FALSE)
             day    <- readBin(buf[profileStart[middle] +  6], what="integer", n=1, size=1, signed=FALSE)
@@ -461,7 +461,11 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             second <- readBin(buf[profileStart[middle] +  9], what="integer", n=1, size=1, signed=FALSE)
             sec100 <- readBin(buf[profileStart[middle] + 10], what="integer", n=1, size=1, signed=FALSE)
             t <- ISOdatetime(year, month, day, hour, minute, second + sec100/100, tz=tz)
-            oceDebug(debug, "t=", format(t), "| y=", year, " m=", month, " d=", format(day, width=2), " h=", format(hour, width=2), " m=", format(minute, width=2), "s=", format(second, width=2), "sec100=", sec100, "| pass", format(pass, width=2), "/", passes, "| middle=", middle, "(", format(middle/upper*100,digits=4), "%)\n")
+            oceDebug(debug, "t=", format(t), "| y=", year, " m=", month, " d=",
+                     format(day, width=2), " h=", format(hour, width=2), " m=",
+                     format(minute, width=2), "s=", format(second, width=2), "sec100=", sec100, "| pass",
+                     format(pass, width=2), "/", passes, "| middle=", middle, "(",
+                     format(middle/upper*100, digits=4), "%)\n")
             if (t.find < t)
                 upper <- middle
             else
@@ -474,7 +478,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             middle <- 1
         if (middle > len)
             middle <- len
-        t <- ISOdatetime(unabbreviateYear(readBin(buf[profileStart[middle]+4],"integer",size=1,signed=FALSE,endian="little")),
+        t <- ISOdatetime(unabbreviateYear(readBin(buf[profileStart[middle]+4], "integer", size=1, signed=FALSE, endian="little")),
                          as.integer(buf[profileStart[middle]+5]), # month
                          as.integer(buf[profileStart[middle]+6]), # day
                          as.integer(buf[profileStart[middle]+7]), # hour
@@ -616,10 +620,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 oceDebug(debug, "'from' is profileStart[", fromPair$index, "]:", profileStart[fromPair$index], "at time", format(fromPair$t), "\n")
                 oceDebug(debug, "'to' is profileStart[", toPair$index, "]:", profileStart[toPair$index], "at time", format(toPair$t), "\n")
                 dt <- measurementDeltat
-                oceDebug(debug, "dt:", dt, "s, by:", by,"\n")
+                oceDebug(debug, "dt:", dt, "s, by:", by, "\n")
                 if (is.character(by))
                     by <- floor(0.5 + ctimeToSeconds(by) / dt)
-                oceDebug(debug, "by:",by,"profiles (after decoding)\n")
+                oceDebug(debug, "by:", by, "profiles (after decoding)\n")
                 profileStart <- profileStart[profileStart[fromIndex] < profileStart & profileStart < profileStart[toIndex]]
                 ensembleStart <- ensembleStart[ensembleStart[fromIndex] < ensembleStart & ensembleStart < ensembleStart[toIndex]]
                 profileStart <- profileStart[seq(1, length(profileStart), by=by)]
@@ -638,10 +642,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             profileStart <- profileStart[!is.na(profileStart)]
             ensembleStart <- ensembleStart[!is.na(ensembleStart)]
             profilesToRead <- length(profileStart)
-            oceDebug(debug, "filename: \"",filename,"\"\n", sep="")
-            oceDebug(debug, "profilesToRead:",profilesToRead,"\n")
-            oceDebug(debug, "numberOfBeams:",numberOfBeams,"\n")
-            oceDebug(debug, "numberOfCells:",numberOfCells,"\n")
+            oceDebug(debug, "filename: \"", filename, "\"\n", sep="")
+            oceDebug(debug, "profilesToRead:", profilesToRead, "\n")
+            oceDebug(debug, "numberOfBeams:", numberOfBeams, "\n")
+            oceDebug(debug, "numberOfCells:", numberOfCells, "\n")
 
             ##20151121 if (testing) {
             ##20151121     nensembles <- length(ensembleStart)
@@ -668,18 +672,18 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             items <- numberOfBeams * numberOfCells
 
             ## set up storage
-            codes <- cbind(buf[ensembleStart[1]+c(0,header$dataOffset)], buf[1+ensembleStart[1]+c(0,header$dataOffset)])
+            codes <- cbind(buf[ensembleStart[1]+c(0, header$dataOffset)], buf[1+ensembleStart[1]+c(0, header$dataOffset)])
             oceDebug(debug, "below are the data-chunk codes; see Table 33 p145 of Teledyne/RDI OS_TM_Apr14.pdf\n")
             if (debug)
                 print(codes)
-            vFound <- sum(codes[,1]==0x00 & codes[,2]==0x01) # velo
-            qFound <- sum(codes[,1]==0x00 & codes[,2]==0x02) # corr
-            aFound <- sum(codes[,1]==0x00 & codes[,2]==0x03) # echo intensity
-            gFound <- sum(codes[,1]==0x00 & codes[,2]==0x04) # percent good
+            vFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x01) # velo
+            qFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x02) # corr
+            aFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x03) # echo intensity
+            gFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x04) # percent good
             ##sFound <- sum(codes[,1]==0x00 & codes[,2]==0x05) # status
-            bFound <- sum(codes[,1]==0x00 & codes[,2]==0x06) # bottom-track
+            bFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x06) # bottom-track
             ##nFound <- sum(codes[,1]==0x00 & codes[,2]==0x20) # navigation
-            tmFound <- sum(codes[,1]==0x00 & codes[,2]==0x32) # transformation matrix
+            tmFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x32) # transformation matrix
             if (vFound) {
                 v <- array(numeric(), dim=c(profilesToRead, numberOfCells, numberOfBeams))
                 oceDebug(debug, "set up 'v' (velocity) storage for", profilesToRead, "profiles,",
@@ -708,7 +712,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             } else {
                 g <- NULL
             }
-            ii <- which(codes[,1]==0x01 & codes[,2]==0x0f)
+            ii <- which(codes[, 1]==0x01 & codes[, 2]==0x0f)
             if (isSentinel & length(ii) < 1) {
                 warning("Didn't find V series leader data ID, treating as a 4 beam ADCP")
                 isSentinel <- FALSE
@@ -725,18 +729,18 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 ## 0x00 0x0c: V beam amplitude
                 ## 0x00 0x0d: V beam percent good
                 ## 0x00 0x32: Transformation Matrix
-                tmFound <- sum(codes[,1]==0x00 & codes[,2]==0x32) # transformation matrix
-                vvFound <- sum(codes[,1]==0x00 & codes[,2]==0x0a) # v beam data
-                vaFound <- sum(codes[,1]==0x00 & codes[,2]==0x0c) # v beam amplitude
-                vqFound <- sum(codes[,1]==0x00 & codes[,2]==0x0b) # v beam correlation
-                vgFound <- sum(codes[,1]==0x00 & codes[,2]==0x0d) # v beam percent good
+                tmFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x32) # transformation matrix
+                vvFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x0a) # v beam data
+                vaFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x0c) # v beam amplitude
+                vqFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x0b) # v beam correlation
+                vgFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x0d) # v beam percent good
                 ## Read the relevant V series metadata
                 ## remove the first row from codes (7f7f) because it is the header (always has to be there)
-                codes <- codes[-1,]
+                codes <- codes[-1, ]
                 ##
                 ## transformation matrix
                 if (tmFound) {
-                    ii <- which(codes[,1]==0x00 & codes[,2]==0x32)
+                    ii <- which(codes[, 1]==0x00 & codes[, 2]==0x32)
                     oceDebug(debug, 'Reading transformation matrix\n')
                     tmx <- 0.0001 * readBin(buf[ensembleStart[1]+header$dataOffset[ii]+0:7+2], "integer", n=4, size=2, signed=TRUE, endian="little")
                     tmy <- 0.0001 * readBin(buf[ensembleStart[1]+header$dataOffset[ii]+0:7+10], "integer", n=4, size=2, signed=TRUE, endian="little")
@@ -752,10 +756,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         cat(vectorShow(tme, paste("tme", sep="")))
                     }
                 }
-                ## 
+                ##
                 ## Read the V beam data leader
-                ii <- which(codes[,1]==0x01 & codes[,2]==0x0f)
-                oceDebug(debug, 'Reading V series data leader\n')                
+                ii <- which(codes[, 1]==0x01 & codes[, 2]==0x0f)
+                oceDebug(debug, 'Reading V series data leader\n')
                 numberOfVCells <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+2:3], "integer", size=2, endian="little")
                 verticalPings <- readBin(buf[ensembleStart[1] + header$dataOffset[ii]+4:5], "integer", size=2, endian="little")
                 depthCellSize <- 0.01*readBin(buf[ensembleStart[1] + header$dataOffset[ii]+6:7], "integer", size=2, endian="little")
@@ -796,9 +800,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                     percentGoodThreshold=percentGoodThreshold,
                                     verticalDOproofing=verticalDOproofing)
                 vItems <- numberOfVCells
-                
+
                 ## V series config
-                ii <- which(codes[,1]==0x00 & codes[,2]==0x70)
+                ii <- which(codes[, 1]==0x00 & codes[, 2]==0x70)
                 if (length(ii) < 1) stop("Didn't find V series Configuration data ID")
                 oceDebug(debug, 'Reading V series configuration\n')
                 firmwareVersionPrimary <- as.numeric(buf[ensembleStart[1]+header$dataOffset[ii]+2])
@@ -821,7 +825,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                   schemaMinor=schemaMinor,
                                                   schemaRev=schemaRev)
                 ## Read V series ping setup
-                ii <- which(codes[,1]==0x01 & codes[,2]==0x70)
+                ii <- which(codes[, 1]==0x01 & codes[, 2]==0x70)
                 if (length(ii) < 1) stop("Didn't find V series ping setup data ID")
                 oceDebug(debug, 'Reading V series ping setup\n')
                 ensembleInterval <- readBin(buf[ensembleStart[1] + header$dataOffset[ii] + 4:7], 'integer', endian='little')
@@ -934,33 +938,33 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         if (i <= profilesToShow) oceDebug(debug, "Variable leader skipped\n")
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x01) {
                         vtmp <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
-                        vtmp[vtmp==(-32768)] <- NA       # blank out bad data
-                        v[i,,] <- matrix(velocityScale * vtmp, ncol=numberOfBeams, byrow=TRUE)
-                        if (debug && i <= profilesToShow) cat(vectorShow(v[i,,1], paste("v[", i, ",,1]", sep="")))
+                        vtmp[-32768 == vtmp] <- NA       # blank out bad data
+                        v[i, , ] <- matrix(velocityScale * vtmp, ncol=numberOfBeams, byrow=TRUE)
+                        if (debug && i <= profilesToShow) cat(vectorShow(v[i, , 1], paste("v[", i, ",,1]", sep="")))
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x02) {
-                        q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
-                        if (debug && i <= profilesToShow) cat(vectorShow(q[i,,1], paste("q[", i, ",,1]", sep="")))
+                        q[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
+                        if (debug && i <= profilesToShow) cat(vectorShow(q[i, , 1], paste("q[", i, ",,1]", sep="")))
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x03) {
-                        a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
-                        if (debug && i <= profilesToShow) cat(vectorShow(a[i,,1], paste("a[", i, ",,1]", sep="")))
+                        a[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
+                        if (debug && i <= profilesToShow) cat(vectorShow(a[i, , 1], paste("a[", i, ",,1]", sep="")))
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x04) {
-                        g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
-                        if (debug && i <= profilesToShow) cat(vectorShow(g[i,,1], paste("g[", i, ",,1]", sep="")))
+                        g[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
+                        if (debug && i <= profilesToShow) cat(vectorShow(g[i, , 1], paste("g[", i, ",,1]", sep="")))
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x05) {
                         if (i <= profilesToShow) oceDebug(debug, "Status profile is ignored\n")
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x06) {
                         rangeLSB <- readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
                         rangeMSB <- readBin(buf[o+77:80], "integer", n=4, size=1, signed=FALSE, endian="little")
-                        br[i,] <- 0.01 * (65536 * rangeMSB + rangeLSB)
-                        bv[i,] <- 0.001 * readBin(buf[o+c(24:31)], "integer", n=4, size=2, signed=TRUE, endian="little")
-                        bc[i,] <- as.integer(buf[o+32:35])
-                        ba[i,] <- as.integer(buf[o+36:39])
-                        bg[i,] <- as.integer(buf[o+40:43])
-                        if (debug && i <= profilesToShow) cat(vectorShow(br[i,], paste("br[", i, ",]", sep="")))
-                        if (debug && i <= profilesToShow) cat(vectorShow(bv[i,], paste("bv[", i, ",]", sep="")))
-                        if (debug && i <= profilesToShow) cat(vectorShow(bc[i,], paste("bc[", i, ",]", sep="")))
-                        if (debug && i <= profilesToShow) cat(vectorShow(ba[i,], paste("ba[", i, ",]", sep="")))
-                        if (debug && i <= profilesToShow) cat(vectorShow(bg[i,], paste("bg[", i, ",]", sep="")))
+                        br[i, ] <- 0.01 * (65536 * rangeMSB + rangeLSB)
+                        bv[i, ] <- 0.001 * readBin(buf[o+c(24:31)], "integer", n=4, size=2, signed=TRUE, endian="little")
+                        bc[i, ] <- as.integer(buf[o+32:35])
+                        ba[i, ] <- as.integer(buf[o+36:39])
+                        bg[i, ] <- as.integer(buf[o+40:43])
+                        if (debug && i <= profilesToShow) cat(vectorShow(br[i, ], paste("br[", i, ",]", sep="")))
+                        if (debug && i <= profilesToShow) cat(vectorShow(bv[i, ], paste("bv[", i, ",]", sep="")))
+                        if (debug && i <= profilesToShow) cat(vectorShow(bc[i, ], paste("bc[", i, ",]", sep="")))
+                        if (debug && i <= profilesToShow) cat(vectorShow(ba[i, ], paste("ba[", i, ",]", sep="")))
+                        if (debug && i <= profilesToShow) cat(vectorShow(bg[i, ], paste("bg[", i, ",]", sep="")))
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x20) {
                         ## message("navigation")
                         ## On the first profile, we set up space.
@@ -991,7 +995,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                           0, 0, 0,
                                                           tz=tz))
                         clockOffset <- 0.001 * readBin(buf[o+10:13], 'integer', n=1, size=4, endian='little')
-                        firstTime <- c(firstTime, tmpTime + clockOffset+readBin(buf[o+6:9],'integer',n=1,size=4,endian='little')/10000)
+                        firstTime <- c(firstTime, tmpTime + clockOffset+readBin(buf[o+6:9], 'integer', n=1, size=4, endian='little')/10000)
                         ##704 sNavTime <- as.POSIXct(sNavTime, origin='1970-01-01', tz=tz)
                         cfac <- 180/2^31 # from rdradcp.m line 825
                         ## FIXME: this c() operation is slow and inelegant
@@ -1052,30 +1056,30 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0a) { # vertical beam data
                         if (isSentinel) {
                             vtmp <- readBin(buf[o + 1 + seq(1, 2*vItems)], "integer", n=vItems, size=2, endian="little", signed=TRUE)
-                            vtmp[vtmp==(-32768)] <- NA       # blank out bad data
-                            vv[i,] <- velocityScale * vtmp
-                            if (debug && i <= profilesToShow) cat(vectorShow(vv[i,], paste("vv[", i, ",]", sep="")))
+                            vtmp[-32768 == vtmp] <- NA       # blank out bad data
+                            vv[i, ] <- velocityScale * vtmp
+                            if (debug && i <= profilesToShow) cat(vectorShow(vv[i, ], paste("vv[", i, ",]", sep="")))
                         } else {
                             oceDebug(debug, "**Detected vertical beam data chunk, but this is not a SentinelV\n")
                         }
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0c) { # vertical beam amplitude
                         if (isSentinel) {
-                            va[i,] <- buf[o + 1 + seq(1, vItems)]
-                            if (debug && i <= profilesToShow) cat(vectorShow(va[i,], paste("va[", i, ",]", sep="")))
+                            va[i, ] <- buf[o + 1 + seq(1, vItems)]
+                            if (debug && i <= profilesToShow) cat(vectorShow(va[i, ], paste("va[", i, ",]", sep="")))
                         } else {
                             oceDebug(debug, "**Detected vertical beam amplitude chunk, but this is not a SentinelV\n")
                         }
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0b) { # vertical beam correlation
                         if (isSentinel) {
-                            vq[i,] <- buf[o + 1 + seq(1, vItems)]
-                            if (debug && i <= profilesToShow) cat(vectorShow(vq[i,], paste("vq[", i, ",]", sep="")))
+                            vq[i, ] <- buf[o + 1 + seq(1, vItems)]
+                            if (debug && i <= profilesToShow) cat(vectorShow(vq[i, ], paste("vq[", i, ",]", sep="")))
                         } else {
                             oceDebug(debug, "**Detected vertical beam correlation chunk, but this is not a SentinelV\n")
                         }
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0d) { # vertical beam percent good
                         if (isSentinel) {
-                            vg[i,] <- buf[o + 1 + seq(1, vItems)]
-                            if (debug && i <= profilesToShow) cat(vectorShow(vg[i,], paste("vg[", i, ",]", sep="")))
+                            vg[i, ] <- buf[o + 1 + seq(1, vItems)]
+                            if (debug && i <= profilesToShow) cat(vectorShow(vg[i, ], paste("vg[", i, ",]", sep="")))
                         } else {
                             oceDebug(debug, "**Detected vertical beam percent good chunk, but this is not a SentinelV\n")
                         }
@@ -1095,24 +1099,24 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         ##>message("velo at o=", o, "; profile=", i)
                         vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
                         ##cat(vectorShow(vv, "vv:"))
-                        vv[vv==(-32768)] <- NA       # blank out bad data
-                        v[i,,] <- matrix(velocityScale * vv, ncol=numberOfBeams, byrow=TRUE)
+                        vv[-32768 == vv] <- NA       # blank out bad data
+                        v[i, , ] <- matrix(velocityScale * vv, ncol=numberOfBeams, byrow=TRUE)
                         o <- o + items * 2 + 2 # point to next chunk
-                        if (debug && i <= profilesToShow) cat(vectorShow(v[i,,], paste("v[", i, ",,]", sep="")))
+                        if (debug && i <= profilesToShow) cat(vectorShow(v[i, , ], paste("v[", i, ",,]", sep="")))
                     } else if (buf[o+1] == 0x02) {
                         message("CORRELATION")
-                        q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
-                        if (debug && i <= profilesToShow) cat(vectorShow(q[i,,], paste("q[", i, ",,]", sep="")))
+                        q[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
+                        if (debug && i <= profilesToShow) cat(vectorShow(q[i, , ], paste("q[", i, ",,]", sep="")))
                         o <- o + items + 2 # point to next chunk
                     } else if (buf[o+1] == 0x03) {
                         message("ECHO INTENSITY")
-                        a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
-                        if (debug && i <= profilesToShow) cat(vectorShow(a[i,,], paste("a[", i, ",,]", sep="")))
+                        a[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
+                        if (debug && i <= profilesToShow) cat(vectorShow(a[i, , ], paste("a[", i, ",,]", sep="")))
                         o <- o + items + 2 # point to next chunk
                     } else if (buf[o+1] == 0x04) {
                         message("PERCENT GOOD")
-                        g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
-                        if (debug && i <= profilesToShow) cat(vectorShow(g[i,,], paste("g[", i, ",,]", sep="")))
+                        g[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
+                        if (debug && i <= profilesToShow) cat(vectorShow(g[i, , ], paste("g[", i, ",,]", sep="")))
                         o <- o + items + 2
                     } else if (buf[o+1] == 0x05) {
                         message("STATUS")
@@ -1125,17 +1129,17 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         ## the bottom range is in 3 bytes, split into two chunks
                         rangeLSB <- readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
                         rangeMSB <- readBin(buf[o+77:80], "integer", n=4, size=1, signed=FALSE, endian="little")
-                        br[i,] <- 0.01 * (65536 * rangeMSB + rangeLSB)
-                        bv[i,] <- 0.001 * readBin(buf[o+c(24:31)], "integer", n=4, size=2, signed=TRUE, endian="little")
-                        bc[i,] <- as.integer(buf[o+32:35])
-                        ba[i,] <- as.integer(buf[o+36:39])
-                        bg[i,] <- as.integer(buf[o+40:43])
+                        br[i, ] <- 0.01 * (65536 * rangeMSB + rangeLSB)
+                        bv[i, ] <- 0.001 * readBin(buf[o+c(24:31)], "integer", n=4, size=2, signed=TRUE, endian="little")
+                        bc[i, ] <- as.integer(buf[o+32:35])
+                        ba[i, ] <- as.integer(buf[o+36:39])
+                        bg[i, ] <- as.integer(buf[o+40:43])
                         o <- o + 81 ## BOTTOM data chunk is always 81 bytes (Fig 46, p145 teledyne2014ostm)
-                        if (debug && i <= profilesToShow) cat(vectorShow(br[i,], paste("br[", i, ",]", sep="")))
-                        if (debug && i <= profilesToShow) cat(vectorShow(bv[i,], paste("bv[", i, ",]", sep="")))
-                        if (debug && i <= profilesToShow) cat(vectorShow(bc[i,], paste("bc[", i, ",]", sep="")))
-                        if (debug && i <= profilesToShow) cat(vectorShow(ba[i,], paste("ba[", i, ",]", sep="")))
-                        if (debug && i <= profilesToShow) cat(vectorShow(bg[i,], paste("bg[", i, ",]", sep="")))
+                        if (debug && i <= profilesToShow) cat(vectorShow(br[i, ], paste("br[", i, ",]", sep="")))
+                        if (debug && i <= profilesToShow) cat(vectorShow(bv[i, ], paste("bv[", i, ",]", sep="")))
+                        if (debug && i <= profilesToShow) cat(vectorShow(bc[i, ], paste("bc[", i, ",]", sep="")))
+                        if (debug && i <= profilesToShow) cat(vectorShow(ba[i, ], paste("ba[", i, ",]", sep="")))
+                        if (debug && i <= profilesToShow) cat(vectorShow(bg[i, ], paste("bg[", i, ",]", sep="")))
                     } else if (buf[o+1] == 0x20) { # navigation
                         message("NAVIGATION")
                         ## On the first profile, we set up space.
@@ -1166,7 +1170,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                           0, 0, 0,
                                                           tz=tz))
                         clockOffset <- 0.001 * readBin(buf[o+10:13], 'integer', n=1, size=4, endian='little')
-                        firstTime <- c(firstTime, tmpTime + clockOffset+readBin(buf[o+6:9],'integer',n=1,size=4,endian='little')/10000)
+                        firstTime <- c(firstTime, tmpTime + clockOffset+readBin(buf[o+6:9], 'integer', n=1, size=4, endian='little')/10000)
                         ##704 sNavTime <- as.POSIXct(sNavTime, origin='1970-01-01', tz=tz)
                         cfac <- 180/2^31 # from rdradcp.m line 825
                         ## FIXME: this c() operation is slow and inelegant
@@ -1265,9 +1269,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 time <- fillGap(as.numeric(time) - as.numeric(t0)) + t0
                 nbad <- length(badProfiles)
                 if (nbad == 1)
-                    warning("Interpolated across a bad profile at time ", format(time[badProfiles]), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)")
+                    warning("Interpolated across a bad profile at time ", format(time[badProfiles]),
+                            ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)")
                 else
-                    warning("Interpolated across ", length(badProfiles), " bad profile(s) at times: ", paste(format(time[badProfiles]), collapse=", "), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)")
+                    warning("Interpolated across ", length(badProfiles), " bad profile(s) at times: ",
+                            paste(format(time[badProfiles]), collapse=", "),
+                            ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)")
             }
 
             profileStart2 <- sort(c(profileStart, profileStart + 1)) # lets us index two-byte chunks
@@ -1378,13 +1385,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 tm.b <- 1 / (4 * cos(res@metadata$beamAngle * pi / 180))
                 tm.d <- tm.a / sqrt(2)
                 res@metadata$transformationMatrix <- matrix(c(tm.c*tm.a, -tm.c*tm.a,          0,         0,
-                                                              0        ,          0, -tm.c*tm.a, tm.c*tm.a,
-                                                              tm.b     ,       tm.b,       tm.b,      tm.b,
-                                                              tm.d     ,       tm.d,      -tm.d,     -tm.d),
+                                                                      0,          0, -tm.c*tm.a, tm.c*tm.a,
+                                                                   tm.b,       tm.b,       tm.b,      tm.b,
+                                                                   tm.d,       tm.d,      -tm.d,     -tm.d),
                                                             nrow=4, byrow=TRUE)
             }
             if (monitor)
-                cat("\nRead", profilesToRead,  "profiles, out of a total of",profilesInFile,"profiles in", filename, "\n", ...)
+                cat("\nRead", profilesToRead, "profiles, out of a total of", profilesInFile, "profiles in", filename, "\n", ...)
 
            ## Sometimes a non-VMDAS file will have some profiles that have the VMDAS flag.
            ## It is not clear why this happens, but in any case, provide a warning.
@@ -1557,9 +1564,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 if (is.null(dim)) {
                     res@data[[field]] <- res@data[[field]][-junkProfiles]
                 } else if (length(dim) == 2) {
-                    res@data[[field]] <- res@data[[field]][-junkProfiles,]
+                    res@data[[field]] <- res@data[[field]][-junkProfiles, ]
                 } else if (length(dim) == 3) {
-                    res@data[[field]] <- res@data[[field]][-junkProfiles,,]
+                    res@data[[field]] <- res@data[[field]][-junkProfiles, , ]
                 }
             }
         }
@@ -1574,26 +1581,26 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     paste(format(time[junkProfiles-1]), collapse=", "),
                     ".  (\"Junk\" means that the decoded time was NA and all data fields were garbage)")
     }
-    
+
     res@metadata$manufacturer <- "teledyne rdi"
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
     res@processingLog <- unclass(hitem)
-    res@metadata$units$v=list(unit=expression(m/s), scale="")
-    res@metadata$units$distance=list(unit=expression(m), scale="")
-    res@metadata$units$pressure=list(unit=expression(dbar), scale="")
-    res@metadata$units$salinity=list(unit=expression(), scale="PSS-78")
-    res@metadata$units$temperature=list(unit=expression(degree*C), scale="ITS-90")
-    res@metadata$units$soundSpeed=list(unit=expression(m/s), scale="")
-    res@metadata$units$heading=list(unit=expression(degree), scale="")
-    res@metadata$units$pitch=list(unit=expression(degree), scale="")
-    res@metadata$units$roll=list(unit=expression(degree), scale="")
-    res@metadata$units$headingStd=list(unit=expression(degree), scale="")
-    res@metadata$units$pitchStd=list(unit=expression(degree), scale="")
-    res@metadata$units$rollStd=list(unit=expression(degree), scale="")
-    res@metadata$units$attitude=list(unit=expression(degree), scale="")
-    res@metadata$units$depth=list(unit=expression(m), scale="")
+    res@metadata$units$v <- list(unit=expression(m/s), scale="")
+    res@metadata$units$distance <- list(unit=expression(m), scale="")
+    res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
+    res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
+    res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+    res@metadata$units$soundSpeed <- list(unit=expression(m/s), scale="")
+    res@metadata$units$heading <- list(unit=expression(degree), scale="")
+    res@metadata$units$pitch <- list(unit=expression(degree), scale="")
+    res@metadata$units$roll <- list(unit=expression(degree), scale="")
+    res@metadata$units$headingStd <- list(unit=expression(degree), scale="")
+    res@metadata$units$pitchStd <- list(unit=expression(degree), scale="")
+    res@metadata$units$rollStd <- list(unit=expression(degree), scale="")
+    res@metadata$units$attitude <- list(unit=expression(degree), scale="")
+    res@metadata$units$depth <- list(unit=expression(m), scale="")
     oceDebug(debug, "} # read.adp.rdi()\n", unindent=1)
     res
 }

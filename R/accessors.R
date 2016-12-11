@@ -60,7 +60,7 @@ oceDeleteData <- function(object, name)
 #' @param object an \code{oce} object
 #' @param name String indicating the name of the item to be set.
 #' @param value Value for the item.
-#' @param unit An optional indication of the units for the item. This has 
+#' @param unit An optional indication of the units for the item. This has
 #' three possible forms (see \dQuote{Details}).
 #' @param originalName Optional character string giving an 'original' name (e.g.
 #' as stored in the header of a data file).
@@ -119,7 +119,7 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
     ## here to cover two types of storage.
     if (!missing(originalName)) {
         if ("dataNamesOriginal" %in% names(object@metadata)) {
-            if (is.list(object@metadata$dataNamesOriginal)) { 
+            if (is.list(object@metadata$dataNamesOriginal)) {
                 ## After 2016-07-24 (issue 1017) we use a list.
                 object@metadata$dataNamesOriginal[[name]] <- originalName
             } else {
@@ -186,4 +186,3 @@ oceSetMetadata <- function(object, name, value, note="")
         object@processingLog <- processingLogAppend(object@processingLog, note)
     object
 }
-
