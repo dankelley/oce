@@ -1,34 +1,34 @@
 #' @title Class to Store ODF data
-#' 
+#'
 #' @description
 #' Class for data stored in a format used at Canadian Department of Fisheries
 #' and Oceans laboratories. This is somewhat unusual amongst \code{oce}
 #' classes, in that it does not map to a particular instrument, but rather to a
 #' storage type; in that sense, it is similar to the \code{bremen-class}.
-#' 
+#'
 #' @section Methods:
-#' 
+#'
 #' Consider an ODF object named \code{odf}.
-#' 
+#'
 #' \emph{Accessing metadata.}
-#' 
+#'
 #' Metadata (contained in the S4 slot named \code{metadata}) may be retrieved
 #' or set by name, \code{odf[["longitude"]] <- odf[["longitude"]] + 1} corrects
 #' a one-degree error.
-#' 
+#'
 #' \emph{Accessing measured data.}
-#' 
+#'
 #' Column data may be accessed by name, e.g. \code{odf[["salinity"]]},
 #' \code{odf[["temperature"]]}, \code{odf[["pressure"]]}, etc.  It is up to the
 #' user to realize what is in the object.
-#' 
+#'
 #' \emph{Assigning values.}
-#' 
+#'
 #' Items stored in the object may be altered with e.g.  \code{odf[["salinity"]]
 #' <- rep(35,10)}.
-#' 
+#'
 #' \emph{Overview of contents.}
-#' 
+#'
 #' The \code{show} method (e.g.  \code{show(odf)}) displays information about
 #' the object.
 #' @author Dan Kelley
@@ -42,7 +42,7 @@ setClass("odf", contains="oce")
 
 setMethod(f="initialize",
           signature="odf",
-          definition=function(.Object,time,filename="") {
+          definition=function(.Object, time, filename="") {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@data$time <- if (missing(time)) NULL else time
               .Object@metadata$filename <- filename
@@ -73,10 +73,10 @@ setMethod(f="[[<-",
           })
 
 #' @title Subset an ODF object
-#' 
+#'
 #' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
-#' 
+#'
 #' @param x a \code{odf} object.
 #' @param subset a condition to be applied to the \code{data} portion of
 #' \code{x}.  See \sQuote{Details}.
@@ -106,14 +106,14 @@ setMethod(f="subset",
 
 
 #' @title Plot an ODF Object
-#' 
+#'
 #' @description
 #' Plot data contained within an ODF object,
 #' using \code{\link{oce.plot.ts}} to create panels of time-series plots for all
 #' the columns contained in the \code{odf} object. This is crude, but \code{odf}
 #' objects are usually cast to other types, and those types have more useful
 #' plots.
-#' 
+#'
 #' @param x A \code{odf} object, e.g. one inheriting from \code{\link{odf-class}}.
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
@@ -134,11 +134,11 @@ setMethod(f="plot",
 
 
 #' @title Summarize an ODF Object
-#' 
+#'
 #' @description
 #' Pertinent summary information is presented, including the station name,
 #' sampling location, data ranges, etc.
-#' 
+#'
 #' @param object an object of class \code{"odf"}, usually, a result of a call
 #' to \code{\link{read.odf}} or \code{\link{read.oce}}.
 #' @param \dots further arguments passed to or from other methods.
@@ -169,14 +169,14 @@ setMethod(f="summary",
           })
 
 
- 
+
 findInHeader <- function(key, lines) # local
 {
     i <- grep(key, lines)
     if (length(i) < 1)
         ""
     else
-        gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
+        gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i[1]], "=")[[1]][2]))))
 }
 
 #' @title Translate from ODF Names to Oce Names
@@ -230,7 +230,7 @@ findInHeader <- function(key, lines) # local
 #'     \code{UNKN_*.*} \tab \code{-}                  \tab The result is context-dependent                            \cr
 #'     \code{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                                 \cr
 #' }
-#' Any code not shown in the list is transferred to the oce object without renaming, apart from 
+#' Any code not shown in the list is transferred to the oce object without renaming, apart from
 #' the adjustment of suffix numbers. The following code have been seen in data files from
 #' the Bedford Institute of Oceanography: \code{ALTB}, \code{PHPH} and \code{QCFF}.
 #'
@@ -277,7 +277,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             if (name[i] == columns[[i]]$name) {
                 ##message("HIT; name=", cnames[i])
                 ##message("HIT; unit$scale=", columns[[i]]$unit$scale)
-                name[i] = names
+                name[i] <- names
             }
         }
         ## do something with units too; check this block generally for new spelling
@@ -407,7 +407,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         ## message("directionVariable=",directionVariable)
         unit <- units[[directionVariable]]$unit
         if (is.null(unit)) {
-            warning("no unit found for '", 
+            warning("no unit found for '",
                     names[[directionVariable]], "'; this will not affect calculations, though")
             ## units[[directionVariable]]$unit <- expression(degree)
         } else if ("degree" != as.character(unit)) {
@@ -421,7 +421,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
 
 
 #' @title Create ODF object from the output of \code{ODF::read_ODF()}
-#' 
+#'
 #' @description
 #' As of August 11, 2015, \code{ODF::read_ODF} returns a list with 9 elements,
 #' one named \code{DATA}, which is a \code{\link{data.frame}} containing the
@@ -435,7 +435,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
 #' copy of \code{metadata@@odfHeader$EVENT_HEADER$INITIAL_LATITUDE}).  As for
 #' the \code{DATA}, they are stored in the \code{data} slot, after renaming
 #' from ODF to oce convention using \code{\link{ODFNames2oceNames}}.
-#' 
+#'
 #' @param ODF A list as returned by \code{read_ODF} in the \code{ODF} package
 #' @param coerce A logical value indicating whether to coerce the return value
 #' to an appropriate object type, if possible.
@@ -454,13 +454,13 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     ## Stage 1. insert metadata (with odfHeader holding entire ODF header info)
     ## FIXME: add other types, starting with ADCP perhaps
     isCTD <- FALSE
-    isMCTD <- FALSE
+    isMCTD <- FALSE                    # nolint (variable not used)
     if (coerce) {
-        if ("CTD" == ODF$EVENT_HEADER$DATA_TYPE) { 
+        if ("CTD" == ODF$EVENT_HEADER$DATA_TYPE) {
             isCTD <- TRUE
             res <- new("ctd")
-        } else if ("MCTD" == ODF$EVENT_HEADER$DATA_TYPE) { 
-            isMCTD <- TRUE
+        } else if ("MCTD" == ODF$EVENT_HEADER$DATA_TYPE) {
+            isMCTD <- TRUE             # nolint (variable not used)
             res <- new("ctd")
             res@metadata$deploymentType <- "moored"
         } else {
@@ -538,13 +538,13 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' @title Read an ODF file
 #'
 #' @description
-#' ODF (Ocean Data Format) is a 
+#' ODF (Ocean Data Format) is a
 #' format developed at the Bedford Institute of Oceanography and also used
 #' at other Canadian Department of Fisheries and Oceans (DFO) facilities.
 #' It can hold various types of time-series data, which includes a variety
-#' of instrument types. Thus, \code{read.odf} 
+#' of instrument types. Thus, \code{read.odf}
 #' is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2015,
-#' \code{read.odf} is still in development, with features being added as  a 
+#' \code{read.odf} is still in development, with features being added as  a
 #' project with DFO makes available more files.
 #'
 #' @details
@@ -558,7 +558,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #'
 #' @examples
 #' library(oce)
-#' odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce")) 
+#' odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
 #' # Figure 1. make a CTD, and plot (with span to show NS)
 #' plot(as.ctd(odf), span=500, fill='lightgray')
 #' # show levels with bad QC flags
@@ -619,7 +619,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
 
     ## The mess below hides warnings on non-numeric missing-value codes.
     options <- options('warn')
-    options(warn=-1) 
+    options(warn=-1)
     nullValue <- NA
     t <- try({nullValue <- as.numeric(findInHeader("NULL_VALUE", lines)[1])},
         silent=TRUE)
@@ -629,14 +629,14 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     options(warn=options$warn)
 
     ODFunits <- lines[grep("^\\s*UNITS\\s*=", lines)]
-    ODFunits <- gsub("^[^']*'(.*)'.*$",'\\1', ODFunits) # e.g.  "  UNITS= 'none',"
+    ODFunits <- gsub("^[^']*'(.*)'.*$", "\\1", ODFunits) # e.g.  "  UNITS= 'none',"
     ##message("below is ODFunits...")
     ##print(ODFunits)
 
     ODFnames <- lines[grep("^\\s*CODE\\s*=", lines)]
     ODFnames <- gsub("^.*CODE=", "", ODFnames)
     ODFnames <- gsub(",", "", ODFnames)
-    ODFnames <- gsub("^[^']*'(.*)'.*$",'\\1', ODFnames) # e.g. "  CODE= 'CNTR_01',"
+    ODFnames <- gsub("^[^']*'(.*)'.*$", "\\1", ODFnames) # e.g. "  CODE= 'CNTR_01',"
     ##message("below is ODFnames...")
     ##print(ODFnames)
 
@@ -662,7 +662,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     sounding <- as.numeric(findInHeader("SOUNDING", lines))
-    waterDepth <- ifelse(sounding!=NAvalue, sounding, ifelse(depthMax!=NAvalue,depthMax,NA)) # also see later
+    waterDepth <- ifelse(sounding!=NAvalue, sounding, ifelse(depthMax!=NAvalue, depthMax, NA)) # also see later
 
     type <- findInHeader("INST_TYPE", lines)
     if (length(grep("sea", type, ignore.case=TRUE)))
@@ -724,4 +724,3 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     oceDebug(debug, "} # read.odf()\n")
     res
 }
-

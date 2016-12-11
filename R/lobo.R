@@ -1,5 +1,5 @@
 #' @title Class to Store LOBO Data
-#' 
+#'
 #' @description
 #' Class to store LOBO data.
 #' A \code{lobo} object may be read with \code{\link{read.lobo}} or
@@ -7,7 +7,7 @@
 #' \code{\link{plot,lobo-method}}, while \code{\link{summary,lobo-method}} produces
 #' statistical summaries. Data within a \code{lobo} object may be retrieved with
 #' \code{\link{[[,lobo-method}} and altered with \code{\link{[[,lobo-method}}.
-#' 
+#'
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}
 #' @family things related to \code{lobo} data
@@ -15,7 +15,7 @@ setClass("lobo", contains="oce")
 
 setMethod(f="initialize",
           signature="lobo",
-          definition=function(.Object,time,u,v,salinity,temperature,airtemperature,pressure,nitrate,fluorescence,filename) {
+          definition=function(.Object, time, u, v, salinity, temperature, airtemperature, pressure, nitrate, fluorescence, filename) {
               if (!missing(time)) .Object@data$time <- time
               if (!missing(u)) {
                   .Object@data$u <- u
@@ -57,11 +57,11 @@ setMethod(f="initialize",
 
 
 #' @title LOBO Dataset
-#' 
+#'
 #' @description
 #' This is sample lobo dataset obtained in the Northwest Arm of Halifax by
 #' Satlantic.
-#' 
+#'
 #' @name lobo
 #' @docType data
 #'
@@ -75,7 +75,7 @@ setMethod(f="initialize",
 #' summary(lobo)
 #' plot(lobo)
 #' }
-#' 
+#'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{lobo} data
 NULL
@@ -101,11 +101,11 @@ setMethod(f="[[<-",
           })
 
 #' @title Summarize a LOBO Object
-#' 
+#'
 #' @description
 #' Pertinent summary information is presented, including the sampling interval,
 #' data ranges, etc.
-#' 
+#'
 #' @param object an object of class \code{"lobo"}, usually, a result of a call
 #' to \code{\link{read.lobo}} or \code{\link{read.oce}}.
 #' @param \dots further arguments passed to or from other methods.
@@ -117,7 +117,7 @@ setMethod(f="[[<-",
 #' with them.
 #' @references \url{http://lobo.satlantic.com} \url{http://www.mbari.org/lobo/}
 #' @examples
-#' 
+#'
 #' library(oce)
 #' data(lobo)
 #' summary(lobo)
@@ -133,11 +133,11 @@ setMethod(f="summary",
 
 
 #' @title Subset a LOBO Object
-#' 
+#'
 #' @description
 #' Subset an lobo object, in a way that is somewhat
 #' analogous to \code{\link{subset.data.frame}}.
-#' 
+#'
 #' @param x a \code{lobo} object.
 #' @param subset a condition to be applied to the \code{data} portion of
 #' \code{x}.  See \sQuote{Details}.
@@ -161,7 +161,7 @@ setMethod(f="subset",
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset.lobo(x, subset=", subsetString, ")", sep=""))
               res
           })
- 
+
 
 plot.lobo.timeseries.TS <- function(lobo,
                                     S.col = "blue", T.col = "darkgreen", draw.legend=FALSE, ...)
@@ -185,7 +185,7 @@ plot.lobo.timeseries.TS <- function(lobo,
     axis(4, col=T.col)
     mtext(expression(paste("T [", degree, "C]")), side=4, line=mgp[1], col=T.col, cex=par("cex"))
     if (draw.legend)
-        legend("topright",c("S","T"),col=c(S.col,T.col),lwd=2)
+        legend("topright", c("S", "T"), col=c(S.col, T.col), lwd=2)
     mtext(paste(paste(format(range(lobo@data$time, na.rm=TRUE)), collapse=" to "),
                 attr(lobo@data$time[1], "tzone")),
           side=3, cex=3/4*par("cex.axis"), adj=0)
@@ -194,8 +194,8 @@ plot.lobo.timeseries.TS <- function(lobo,
 
 plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", draw.legend=FALSE, ...)
 {
-    peak <- max(range(c(lobo@data$u,lobo@data$v),na.rm=TRUE))
-    ylim <- c(-peak,peak)
+    peak <- max(range(c(lobo@data$u, lobo@data$v), na.rm=TRUE))
+    ylim <- c(-peak, peak)
     plot(lobo@data$time, lobo@data$u, ylim=ylim, type='l', axes=FALSE, col=col.u, ylab="", ...)
     box()
     lines(lobo@data$time, lobo@data$v, col=col.v, ...)
@@ -206,7 +206,7 @@ plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", d
     mtext("U [m/s]", side=2, line=mgp[1], col=col.u, cex=par("cex"))
     mtext("V [m/s]", side=4, line=mgp[1], col=col.v, cex=par("cex"))
     if (draw.legend)
-        legend("topright",c("U","V"),col=c(col.u,col.v),lwd=2)
+        legend("topright", c("U", "V"), col=c(col.u, col.v), lwd=2)
     invisible(lobo)
 }
 
@@ -229,7 +229,7 @@ plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.ni
     axis(4, col=col.nitrate)
     mtext("Nitrate", side=4, line=mgp[1], col=col.nitrate, cex=par("cex"))
     if (draw.legend)
-        legend("top",c("nitrate","fluorescence"),col=c(col.nitrate,col.fluorescence),lwd=2, ...)
+        legend("top", c("nitrate", "fluorescence"), col=c(col.nitrate, col.fluorescence), lwd=2, ...)
 }
 
 plot.lobo.TS <- function(lobo, ...)
@@ -239,10 +239,10 @@ plot.lobo.TS <- function(lobo, ...)
 
 
 #' @title Plot LOBO data
-#' 
+#'
 #' @description
 #' Plot a summary diagram for lobo data.
-#' 
+#'
 #' @param x A \code{lobo} object, e.g. as read by \code{\link{read.lobo}}.
 #' @param which A vector of numbers or character strings, indicating the
 #' quantities to plot.  These are stacked in a single column.  The possible
@@ -263,13 +263,13 @@ plot.lobo.TS <- function(lobo, ...)
 #' @template debugTemplate
 #' @param \dots optional arguments passed to plotting functions.
 #' @author Dan Kelley
-#' 
+#'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{lobo} data
 setMethod(f="plot",
           signature=signature("lobo"),
           definition=function(x,
-                              which=c(1,2,3), 
+                              which=c(1, 2, 3),
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25),
@@ -278,7 +278,7 @@ setMethod(f="plot",
           {
               oceDebug(debug, "plot.lobo(...)\n", sep="")
               if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
+                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
               oceDebug(debug, "which:", which, "\n")
@@ -346,10 +346,10 @@ setMethod(f="plot",
 
 
 #' @title Read a LOBO File
-#' 
+#'
 #' @description
 #' Read a data file created by a LOBO instrument.
-#' 
+#'
 #' @details
 #' This version of \code{read.lobo} is really quite crude, having been
 #' developed mainly for a ``predict the Spring bloom'' contest at Dalhousie
@@ -360,7 +360,7 @@ setMethod(f="plot",
 #' files; the supplier makes no claims that the format will be fixed in time.
 #' It is also worth noting that there is no \code{\link{read.oce}} equivalent
 #' to \code{read.lobo}, because the file format has no recognizable header.
-#' 
+#'
 #' @param file a connection or a character string giving the name of the file
 #' to load.
 #' @param cols number of columns in dataset.
@@ -410,7 +410,7 @@ read.lobo <- function(file, cols=7, processingLog)
     if (!length(tCol))
         stop("no time column in data file.  The column names are: ", paste(names, collapse=" "))
     ## until issue 808, used as.POSIXct() here
-    time <- strptime(d[,tCol], "%Y-%m-%d %H:%M:%S", tz="UTC") # tz is likely wrong 
+    time <- strptime(d[, tCol], "%Y-%m-%d %H:%M:%S", tz="UTC") # tz is likely wrong
     n <- dim(d)[1]
     u <- if (length(uCol)) as.numeric(d[, uCol]) else rep(NA, n)
     v <- if (length(vCol)) as.numeric(d[, vCol]) else rep(NA, n)
@@ -433,10 +433,10 @@ read.lobo <- function(file, cols=7, processingLog)
 
 
 #' @title Coerce Data into a Lobo Object
-#' 
+#'
 #' @description
 #' Coerce a dataset into a lobo dataset.
-#' 
+#'
 #' @param time vector of times of observation
 #' @param u vector of x velocity component observations
 #' @param v vector of y velocity component observations
@@ -456,5 +456,3 @@ as.lobo <- function(time, u, v, salinity, temperature, pressure, nitrate, fluore
     new("lobo", u=u, v=v, salinity=salinity, temperature=temperature, pressure=pressure,
         nitrate=nitrate, fluorescence=fluorescence, filename=filename)
 }
-
-

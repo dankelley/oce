@@ -26,13 +26,13 @@ be printed.}
 an object of class \code{oce}. It is up to a calling function to determine what to do with this object.
 }
 \description{
-ODF (Ocean Data Format) is a 
+ODF (Ocean Data Format) is a
 format developed at the Bedford Institute of Oceanography and also used
 at other Canadian Department of Fisheries and Oceans (DFO) facilities.
 It can hold various types of time-series data, which includes a variety
-of instrument types. Thus, \code{read.odf} 
+of instrument types. Thus, \code{read.odf}
 is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2015,
-\code{read.odf} is still in development, with features being added as  a 
+\code{read.odf} is still in development, with features being added as  a
 project with DFO makes available more files.
 }
 \details{
@@ -46,7 +46,7 @@ or to \code{maxDepth} otherwise.
 }
 \examples{
 library(oce)
-odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce")) 
+odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
 # Figure 1. make a CTD, and plot (with span to show NS)
 plot(as.ctd(odf), span=500, fill='lightgray')
 # show levels with bad QC flags
