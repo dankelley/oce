@@ -1567,8 +1567,8 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  adorn=adorn[w],
                                                  debug=debug-1)
-                              res$xat <- grid$xat
-                              res$yat <- grid$yat
+                              res$xat <- ats$xat
+                              res$yat <- ats$yat
                           }
                       }
                       drawTimeRange <- FALSE
