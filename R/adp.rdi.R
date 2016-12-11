@@ -210,7 +210,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     else if (bits == "01") originalCoordinate <- "instrument"
     else if (bits == "10") originalCoordinate <- "xyz"
     else if (bits == "11") originalCoordinate <- "enu"
-    if (isSentinel) { ## FIXME: does this apply to a workhorse instrument too?
+    if (isSentinel) {
+        ## FIXME: does this apply to a workhorse instrument too?
         bits <- substr(byteToBinary(FLD[26], endian="big"), 6, 6)
         if (bits == "1") tiltUsed <- TRUE
         else tiltUsed <- FALSE
@@ -525,7 +526,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         isSentinel <- header$instrumentSubtype == "sentinelV"
         oceDebug(debug, "about to call ldc_rdi\n")
         ensembleStart <- .Call("ldc_rdi_2", filename, 1, 0)
-        if (TRUE) { # testing
+        if (TRUE) {
+            ## testing
             ensembleStart2 <- .Call("ldc_rdi", buf, 0)
             lensembleStart <- length(ensembleStart)
             lensembleStart2 <- length(ensembleStart2)
@@ -568,7 +570,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming:"))
         profilesInFile <- length(profileStart)
         oceDebug(debug, "profilesInFile=", profilesInFile, "(as inferred by a byte-check on the sequence 0x80, 0x00)\n")
-        if (!gaveFromTo) {             # read whole file if 'from' and 'to' not given
+        if (!gaveFromTo) {
+            ## read whole file if 'from' and 'to' not given
             from <- 1
             to <- profilesInFile
         }
@@ -717,7 +720,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 warning("Didn't find V series leader data ID, treating as a 4 beam ADCP")
                 isSentinel <- FALSE
             }
-            if (isSentinel) { ## Look for sentinel-related codes
+            if (isSentinel) {
+                ## Look for sentinel-related codes
                 ## FIXME: Fields to look for:
                 ## 0x00 0x70: V series Config
                 ## 0x01 0x70: V series ping setup
@@ -927,7 +931,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
             profilesToShow <- 2 # only if debug>0
 
-            for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
+            for (i in 1:profilesToRead) {
+                ## recall: these start at 0x80 0x00
                 for (chunk in 1:header$numberOfDataTypes) {
                     o <- ensembleStart[i] + header$dataOffset[chunk]
                     if (i <= profilesToShow)
@@ -1051,9 +1056,11 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         if (i <= profilesToShow) oceDebug(debug, "Navigaiton, profile", i, "\n")
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x30) {
                         if (i <= profilesToShow) oceDebug(debug, "Fixed attitude, profile", i, "\n")
-                    } else if (buf[1+o] == 0x30) { ## fixme need to check first byte
+                    } else if (buf[1+o] == 0x30) {
+                        ## fixme need to check first byte
                         if (i <= profilesToShow) oceDebug(debug, "Variable attitude, profile", i, "\n")
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0a) { # vertical beam data
+                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0a) {
+                        ## vertical beam data
                         if (isSentinel) {
                             vtmp <- readBin(buf[o + 1 + seq(1, 2*vItems)], "integer", n=vItems, size=2, endian="little", signed=TRUE)
                             vtmp[-32768 == vtmp] <- NA       # blank out bad data
@@ -1062,21 +1069,24 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         } else {
                             oceDebug(debug, "**Detected vertical beam data chunk, but this is not a SentinelV\n")
                         }
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0c) { # vertical beam amplitude
+                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0c) {
+                        ## vertical beam amplitude
                         if (isSentinel) {
                             va[i, ] <- buf[o + 1 + seq(1, vItems)]
                             if (debug && i <= profilesToShow) cat(vectorShow(va[i, ], paste("va[", i, ",]", sep="")))
                         } else {
                             oceDebug(debug, "**Detected vertical beam amplitude chunk, but this is not a SentinelV\n")
                         }
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0b) { # vertical beam correlation
+                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0b) {
+                        ## vertical beam correlation
                         if (isSentinel) {
                             vq[i, ] <- buf[o + 1 + seq(1, vItems)]
                             if (debug && i <= profilesToShow) cat(vectorShow(vq[i, ], paste("vq[", i, ",]", sep="")))
                         } else {
                             oceDebug(debug, "**Detected vertical beam correlation chunk, but this is not a SentinelV\n")
                         }
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0d) { # vertical beam percent good
+                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0d) {
+                        ## vertical beam percent good
                         if (isSentinel) {
                             vg[i, ] <- buf[o + 1 + seq(1, vItems)]
                             if (debug && i <= profilesToShow) cat(vectorShow(vg[i, ], paste("vg[", i, ",]", sep="")))
@@ -1085,8 +1095,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         }
                     }
                 }
-                if (FALSE) { ### FIXME
-                o <- profileStart[i] + header$dataOffset[3] - header$dataOffset[2] # 65 for workhorse; 50 for surveyor
+                if (FALSE) {
+                    ## FIXME
+                    o <- profileStart[i] + header$dataOffset[3] - header$dataOffset[2] # 65 for workhorse; 50 for surveyor
                 ## Process data chunks, detecting each type by the second byte in the chunk; the
                 ## first byte must be 0x00. The second-byte codes are given in
                 ## teledyne2014ostm(Table 33, page 146)
@@ -1123,7 +1134,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         o <- o + 2 + items
                         ## FIXME do something with these STATUS data
                         if (debug && i <= profilesToShow) cat("skipping ", 2 + items, " bytes for STATUS data (FIXME: not stored)\n")
-                    } else if (buf[o+1] == 0x06) { # bottom-track
+                    } else if (buf[o+1] == 0x06) {
+                        ## bottom-track
                         message("BOTTOM TRACK")
                         ## On the first profile, we set up space.
                         ## the bottom range is in 3 bytes, split into two chunks
@@ -1140,7 +1152,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         if (debug && i <= profilesToShow) cat(vectorShow(bc[i, ], paste("bc[", i, ",]", sep="")))
                         if (debug && i <= profilesToShow) cat(vectorShow(ba[i, ], paste("ba[", i, ",]", sep="")))
                         if (debug && i <= profilesToShow) cat(vectorShow(bg[i, ], paste("bg[", i, ",]", sep="")))
-                    } else if (buf[o+1] == 0x20) { # navigation
+                    } else if (buf[o+1] == 0x20) {
+                        ## navigation
                         message("NAVIGATION")
                         ## On the first profile, we set up space.
                         if (!VMDASStorageInitialized) {
@@ -1224,7 +1237,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         primaryFlags <- c(primaryFlags,
                                           readBin(buf[o+90:91], 'integer', n=1, size=2, endian='little'))
                         o <- o + 78 ## NAVIGATION data chunk is always 78 bytes (Fig 46, p145 teledyne2014ostm)
-                    } else if (buf[o+1] == 0x30) { # FIXED ATTITUDE
+                    } else if (buf[o+1] == 0x30) {
+                        ## FIXED ATTITUDE
                         message("FIXED ATTITUDE")
                         o <- o + 41 ## FIXED ATTITUDE data chunk is always 41 bytes (Fig 46, p145 teledyne2014ostm)
                         warning("skipping BINARY FIXED ATTITUDE data chunk, profile ", i)
@@ -1263,7 +1277,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 firstTime <- firstTime + as.POSIXct("1970-01-01 00:00:00", tz=tz)
                 lastTime <- lastTime + as.POSIXct("1970-01-01 00:00:00", tz=tz)
             }
-            if (length(badProfiles) > 0) { # remove NAs in time (not sure this is right, but it prevents other problems)
+            if (length(badProfiles) > 0) {
+                ## remove NAs in time (not sure this is right, but it prevents other problems)
                 ## FIXME: won't we need to handle VmDas here, also?
                 t0 <- time[match(1, !is.na(time))] # FIXME: should test if any
                 time <- fillGap(as.numeric(time) - as.numeric(t0)) + t0
@@ -1557,7 +1572,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         res@data <- NULL
     }
     ## Remove "junk" profiles
-    if (length(junkProfiles) > 0) { # remove all data from the profile
+    if (length(junkProfiles) > 0) {
+        ## remove all data from the profile
         for (field in names(res@data)) {
             if (!(field %in% c('distance', 'vdistance'))) {
                 dim <- dim(res@data[[field]])

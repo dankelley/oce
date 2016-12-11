@@ -477,7 +477,8 @@ setMethod(f="plot",
                       }
                       ## Expand
                       if (missing(span)) {
-                          if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) { # don't expand if full map
+                          if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) {
+                              ## don't expand if full map
                               xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
                               yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
                           } else {
@@ -491,7 +492,8 @@ setMethod(f="plot",
                       oceDebug(debug, "xr=", xr, " yr=", yr, "\n")
                   }
                   ## Trim lat or lon, to avoid empty margin space
-                  if (FALSE) { # disable for issue 677 (as a test, or maybe permanently)
+                  if (FALSE) {
+                      ## disable for issue 677 (as a test, or maybe permanently)
                       asp.page <- par("fin")[2] / par("fin")[1] # dy / dx
                       oceDebug(debug, "par('pin')=", par('pin'), "\n")
                       oceDebug(debug, "par('fin')=", par('fin'), "\n")
@@ -969,7 +971,8 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
     segment <- 0
     while (TRUE) {
         record <- record + 1
-        if ( (o + 53) > fileSize) {      # FIXME could be more clever on eof
+        if ( (o + 53) > fileSize) {
+            ## FIXME could be more clever on eof
             oceDebug(debug, "o:", o, ", fileSize:", fileSize, " ... so finished\n")
             break
         }
@@ -980,7 +983,8 @@ read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90
         shapeType <- readBin(buf[o + 9:12], "integer", n=1, size=4, endian="little")
         if (shapeType < 0) stop("cannot have shapeType < 0, but got ", shapeType, " (programming error)")
         if (shapeType > 31) stop("cannot have shapeType > 31, but got ", shapeType, " (programming error)")
-        if (shapeType == 0) { # NULL record; just skip 4 bytes (I guess; [1] table 3)
+        if (shapeType == 0) {
+            ## NULL record; just skip 4 bytes (I guess; [1] table 3)
             o <- o + 12
         } else {
             if (shapeType != shapeTypeFile)

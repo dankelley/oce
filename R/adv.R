@@ -222,7 +222,8 @@ setMethod(f="[[",
 #' @family things related to \code{adv} data
 setMethod(f="[[<-",
           signature="adv",
-          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+          definition=function(x, i, j, value) {
+              ## FIXME: use j for e.g. times
               haveSlow <- "timeSlow" %in% names(x@data)
               if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
@@ -726,7 +727,8 @@ setMethod(f="plot",
                       main <- ""
                   oceDebug(debug, "plotting which[", w, "]=", which[w], "\n")
                   par(mgp=mgp, mar=mar)
-                  if (which[w] %in% 1:3) {        # u1, u2, u3
+                  if (which[w] %in% 1:3) {
+                      ## u1, u2, u3
                       y <- as.numeric(x@data$v[, which[w]])
                       if (have.brushCorrelation && type == "p") {
                           good <- as.numeric(x@data$q[, which[w]]) >= brushCorrelation
@@ -763,7 +765,8 @@ setMethod(f="plot",
                       if (drawZeroLine)
                           abline(h=0)
                       rm(y)                       # space may be tight
-                  } else if (which[w] %in% 5:7) { # a1, a2, a3
+                  } else if (which[w] %in% 5:7) {
+                      ## a1, a2, a3
                       ## FIXME/DRY: alter a1,a2,a3 if alter q1,q2,q3, since both almost the same
                       oceDebug(debug, "plotting a1, a2, or a3 since which[w] == ", which[w], "\n")
                       y <- as.numeric(x@data$a[, which[w]-4])
@@ -800,7 +803,8 @@ setMethod(f="plot",
                                       debug=debug-1)
                       }
                       rm(y)                       # space may be tight
-                  } else if (which[w] %in% 9:11) { # q1, q2, q3 (named c1, c2, and c3 in the object)
+                  } else if (which[w] %in% 9:11) {
+                      ## q1, q2, q3 (named c1, c2, and c3 in the object)
                       y <- as.numeric(x@data$q[, which[w]-8])
                       if (have.brushCorrelation && type == "p") {
                           good <- as.numeric(x@data$q[, which[w]-8]) >= brushCorrelation
@@ -936,7 +940,8 @@ setMethod(f="plot",
                                       tformat=tformat,
                                       debug=debug-1)
                       }
-                  } else if (which[w] == 17 || which[w] == "pitch") {    # pitch
+                  } else if (which[w] == 17 || which[w] == "pitch") {
+                      ## pitch
                       if ("timeSlow" %in% names(x@data) && "pitchSlow" %in% names(x@data)) {
                           oce.plot.ts(x@data$timeSlow, x@data$pitchSlow, ylab="pitch",
                                       drawTimeRange=drawTimeRange,
@@ -993,7 +998,8 @@ setMethod(f="plot",
                                       debug=debug-1)
                       }
                       ## FIXME: should plot.adv() be passing mar, cex, etc to smoothScatter?
-                  } else if (which[w] == 19) {    # beam 1 correlation-amplitude diagnostic plot
+                  } else if (which[w] == 19) {
+                      ## beam 1 correlation-amplitude diagnostic plot
                       a <- as.numeric(x@data$a[, 1])
                       q <- as.numeric(x@data$q[, 1])
                       n <- length(a)
@@ -1015,7 +1021,8 @@ setMethod(f="plot",
                                         debug=debug-1)
                       }
                       mtext("beam 1")
-                  } else if (which[w] == 20) {    # beam 2 correlation-amplitude diagnostic plot
+                  } else if (which[w] == 20) {
+                      ## beam 2 correlation-amplitude diagnostic plot
                       a <- as.numeric(x@data$a[, 2])
                       q <- as.numeric(x@data$q[, 2])
                       n <- length(a)
@@ -1037,7 +1044,8 @@ setMethod(f="plot",
                                         debug=debug-1)
                       }
                       mtext("beam 2")
-                  } else if (which[w] == 21) {    # beam 3 correlation-amplitude diagnostic plot
+                  } else if (which[w] == 21) {
+                      ## beam 3 correlation-amplitude diagnostic plot
                       a <- as.numeric(x@data$a[, 3])
                       q <- as.numeric(x@data$q[, 3])
                       n <- length(a)
@@ -1057,7 +1065,8 @@ setMethod(f="plot",
                                         main=main)
                       }
                       mtext("beam 3")
-                  } else if (which[w] == 23 || which[w] == "progressive vector") {    # progressive vector
+                  } else if (which[w] == 23 || which[w] == "progressive vector") {
+                      ## progressive vector
                       par(mar=c(mgp[1]+1, mgp[1]+1, 1, 1))
                       mPerKm <- 1000
                       u <- x@data$v[, 1]

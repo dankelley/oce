@@ -234,7 +234,8 @@ setMethod(f="plot",
                       }
                       ## Expand
                       if (missing(span)) {
-                          if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) { # don't expand if full map
+                          if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) {
+                              ## don't expand if full map
                               xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
                               yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
                           } else {

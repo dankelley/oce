@@ -294,7 +294,8 @@ as.sealevel <- function(elevation,
         stop("must supply sealevel height, elevation, in metres")
     res <- new('sealevel')
     n <- length(elevation)
-    if (missing(time)) {              # construct hourly from time "zero"
+    if (missing(time)) {
+        ## construct hourly from time "zero"
         start <- as.POSIXct("0000-01-01 00:00:00", tz="UTC")
         time <- as.POSIXct(start + seq(0, n - 1, 1) * 3600, tz="UTC")
         if (is.na(GMTOffset))
@@ -491,7 +492,8 @@ setMethod(f="plot",
                       abline(v=tics, col="darkgray", lty="dotted")
                       abline(h=0, col="darkgreen")
                       mtext(side=4, text=sprintf("%.2f m", MSL), col="darkgreen", cex=2/3)
-                  } else if (which2[w] == 2) {     # sample month
+                  } else if (which2[w] == 2) {
+                      ## sample month
                       from <- trunc(x@data$time[1], "day")
                       to <- from + 28 * 86400 # 28 days
                       look <- from <= x@data$time & x@data$time <= to
@@ -658,7 +660,8 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     referenceOffset <- NA
     referenceCode <- NA
     res <- new('sealevel')
-    if (substr(firstLine, 1, 12) == "Station_Name") { # type 2
+    if (substr(firstLine, 1, 12) == "Station_Name") {
+        ## type 2
         oceDebug(debug, "File is of format 1 (e.g. as in MEDS archives)\n")
         ## Station_Name,HALIFAX
         ## Station_Number,490
@@ -693,7 +696,8 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
                   "first pass has time string:", as.character(x$V1)[1], "\n",
                   "first pass has time start:", format(time[1]), " ", attr(time[1], "tzone"), "\n")
         year <- as.POSIXlt(time[1])$year + 1900
-    } else { # type 1
+    } else {
+        ## type 1
         if (debug) cat("File is of type 2 (e.g. as in the Hawaii archives)\n")
         d <- readLines(file)
         n <- length(d)

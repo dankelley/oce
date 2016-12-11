@@ -664,7 +664,8 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
         for (i in 1:nconst) {
             if (debug > 0)
                 cat("[", constituents[i], "]\n", sep="")
-            if (constituents[i] == "standard") { # must be first!
+            if (constituents[i] == "standard") {
+                ## must be first!
                 if (i != 1)
                     stop("\"standard\" must occur first in constituents list")
                 name <- tc$name[standard][-1]
@@ -708,7 +709,8 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
     freq <- vector("numeric", nc)
     kmpr <- vector("numeric", nc)
 
-    for (i in 1:nc) {                   # Build up based on constituent names
+    for (i in 1:nc) {                   
+        ## Build up based on constituent names
         ic <- which(tc$name == name[i])
         if (!length(ic))
             stop("there is no tidal constituent named \"", name[i], "\"")

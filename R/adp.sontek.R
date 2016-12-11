@@ -293,7 +293,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                          ncol=numberOfBeams, byrow=FALSE)
             a_ <- matrix(buf[profileStart[i] + headerLength + 2*nd + seq(0, nd-1)], ncol=numberOfBeams, byrow=FALSE)
             q_ <- matrix(buf[profileStart[i] + headerLength + 3*nd + seq(0, nd-1)], ncol=numberOfBeams, byrow=FALSE)
-            for (b in 1:numberOfBeams) { # FIXME: probably could be speeded up
+            for (b in 1:numberOfBeams) {
+                ## FIXME: probably could be speeded up
                 v[i, , b] <- v_[, b]
                 a[i, , b] <- a_[, b]
                 q[i, , b] <- q_[, b]
@@ -487,7 +488,8 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                            ", monitor=", monitor,
                            ", processingLog=(not shown), debug=", debug, ") {\n", sep=""), unindent=1)
     nfile <- length(file)
-    if (nfile > 1) {                   # handle multiple files
+    if (nfile > 1) {
+        ## handle multiple files
         oceDebug(debug, "handling multiple files\n")
         buf <- NULL
         for (i in 1:nfile) {
@@ -502,7 +504,8 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
             close(thisFile)
         }
         filename <- paste("(\"", file[i], "\", ...)", sep="")
-    } else {                            # handle single file (which might be a connection, etc)
+    } else {
+        ## handle single file (which might be a connection, etc)
         if (is.character(file)) {
             filename <- fullFilename(file)
             file <- file(file, "rb")

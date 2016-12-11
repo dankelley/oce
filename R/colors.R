@@ -58,7 +58,8 @@ colormap_colorize <- function(z=NULL,
                     stop("must give z, zlim or breaks")
                 }
             }
-            if (length(breaks) == 1) { # special case: 'breaks' means *number* of breaks
+            if (length(breaks) == 1) {
+                ## special case: 'breaks' means *number* of breaks
                 if (!missing(zlim) && !is.null(zlim)) {
                     breaks <- seq(zlim[1], zlim[2], length.out=breaks)
                     ##message("pretty(zlim)")
@@ -96,7 +97,8 @@ colormap_colorize <- function(z=NULL,
                 zcol[tooHigh] <- tail(col, 1)
            }
         }
-    } else {                           # have a colormap
+    } else {
+        ## have a colormap
         if (!missing(col))
             stop("cannot supply 'col' and 'colormap' at the same time")
         if (!missing(breaks))

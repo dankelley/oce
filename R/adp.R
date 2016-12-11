@@ -1375,9 +1375,11 @@ setMethod(f="plot",
               oceDebug(debug, 'haveTimeImages=', haveTimeImages, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
               for (w in 1:nw) {
                   oceDebug(debug, "which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n")
-                  if (which[w] %in% images) {                   # image types
+                  if (which[w] %in% images) {
+                      ## image types
                       skip <- FALSE
-                      if (which[w] %in% 1:(x@metadata$numberOfBeams)) {    #velocity
+                      if (which[w] %in% 1:(x@metadata$numberOfBeams)) {
+                          ## velocity
                           if (mode == "diagnostic") {
                               oceDebug(debug, "a diagnostic velocity component image/timeseries\n")
                               z <- x@data$vDia[, , which[w]]
@@ -2003,8 +2005,10 @@ setMethod(f="plot",
                           plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
                           par(mar=omar)
                       }
-                  } else if (which[w] %in% spatial) {                   # various spatial types
-                      if (which[w] == 23) {    # progressive vector
+                  } else if (which[w] %in% spatial) {
+                      ## various spatial types
+                      if (which[w] == 23) {
+                          ## progressive vector
                           par(mar=c(mgp[1]+1, mgp[1]+1, 1, 1))
                           if (mode == 'diagnostic')
                               dt <- as.numeric(difftime(x@data$timeDia[2], x@data$timeDia[1], units="sec")) # FIXME: should not assume all equal
@@ -2628,7 +2632,8 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             starboard <- -res@data$v[, , 1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             forward <- res@data$v[, , 2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             mast <- -res@data$v[, , 3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
-            if (haveBv) {              # bottom velocity
+            if (haveBv) {
+                ## bottom velocity
                 starboardBv <- -res@data$bv[, 1]
                 forwardBv <- res@data$bv[, 2]
                 mastBv <- -res@data$bv[, 3]
@@ -2640,7 +2645,8 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             starboard <- res@data$v[, , 1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             forward <- res@data$v[, , 2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             mast <- res@data$v[, , 3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
-            if (haveBv) {              # bottom velocity
+            if (haveBv) {
+                ## bottom velocity
                 starboardBv <- res@data$bv[, 1]
                 forwardBv <- res@data$bv[, 2]
                 mastBv <- res@data$bv[, 3]
@@ -2661,7 +2667,8 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             starboard <- res@data$v[, , 1]
             forward <- res@data$v[, , 2]
             mast <- res@data$v[, , 3]
-            if (haveBv) {              # bottom velocity
+            if (haveBv) {
+                ## bottom velocity
                 starboardBv <- res@data$bv[, 1]
                 forwardBv <- res@data$bv[, 2]
                 mastBv <- res@data$bv[, 3]
@@ -2676,7 +2683,8 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             starboard <- res@data$v[, , 1]
             forward <- -res@data$v[, , 2]
             mast <- -res@data$v[, , 3]
-            if (haveBv) {              # bottom velocity
+            if (haveBv) {
+                ## bottom velocity
                 starboardBv <- res@data$bv[, 1]
                 forwardBv <- -res@data$bv[, 2]
                 mastBv <- res@data$bv[, 3]
@@ -2695,7 +2703,8 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             starboard <- res@data$v[, , 1]
             forward <- res@data$v[, , 2]
             mast <- res@data$v[, , 3]
-            if (haveBv) {              # bottom velocity
+            if (haveBv) {
+                ## bottom velocity
                 starboardBv <- res@data$bv[, 1]
                 forwardBv <- res@data$bv[, 2]
                 mastBv <- res@data$bv[, 3]
@@ -2709,7 +2718,8 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             starboard <- res@data$v[, , 1]
             forward <- res@data$v[, , 2]
             mast <- res@data$v[, , 3]
-            if (haveBv) {              # bottom velocity
+            if (haveBv) {
+                ## bottom velocity
                 starboardBv <- res@data$bv[, 1]
                 forwardBv <- res@data$bv[, 2]
                 mastBv <- res@data$bv[, 3]

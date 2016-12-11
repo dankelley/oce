@@ -720,7 +720,8 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         pressureAtmospheric <- 10.1325 # FIXME: what is best default?
         oceDebug(debug, "first, guess pressureAtmospheric=", pressureAtmospheric, "\n")
         warn <- FALSE
-        try({ # need to wrap in try() because this can fail
+        try({
+            ## need to wrap in try() because this can fail
             deriveDepth <- RSQLite::dbReadTable(con, "deriveDepth")
             pressureAtmospheric <- deriveDepth$atmosphericPressure
             warn <- TRUE
@@ -804,7 +805,8 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         if (sum(duplicated(names)) > 0) {
             for (n in names) {
                 dup <- match(names, n, nomatch=0)
-                if (sum(dup) > 1) { # more than one
+                if (sum(dup) > 1) {
+                    ## more than one
                     names[which(dup==1)] <- paste0(n, c('', seq(2, sum(dup))))
                 }
             }
@@ -821,14 +823,16 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         for (iname in seq_along(names)) {
             res@data[[names[iname]]] <- data[[names[iname]]]
             res@metadata$units[[names[iname]]] <- unitFromStringRsk(unitsRsk[iname])
-            if (debug > 1) {           # FIXME: developer sets this for temporary (and undocumented) debugging
+            if (debug > 1) {
+                ## FIXME: developer sets this for temporary (and undocumented) debugging
                 cat("\n***\nUNIT CHECK. The rsk string", unitsRsk[iname], "yielded as follows:\n")
                 print(res@metadata$units[[names[iname]]])
                 cat("***\n")
             }
         }
         res@metadata$units$pressure$scale <- "absolute"
-        if ("pressure" %in% names) { # possibly compute sea pressure
+        if ("pressure" %in% names) {
+            ## possibly compute sea pressure
             if (is.logical(patm)) {
                 if (patm) {
                     ## This code is a bit tricky because we modify existing pressure in-place
@@ -954,13 +958,15 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
                        sampleInterval=sampleInterval,
                        filename=filename,
                        debug=debug-1)
-    } else { # to read the "old" TDR files
+    } else {
+        ## to read the "old" TDR files
         while (TRUE) {
             line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
             if (0 < (r<-regexpr("Temp[ \t]*Pres", line))) # nolint (variable not used)
                 break
             header <- c(header, line)
-            if (0 < (r<-regexpr("Logging[ \t]*start", line))) { # nolint (variable not used)
+            if (0 < (r<-regexpr("Logging[ \t]*start", line))) {
+                ## nolint (variable not used)
                 l <- sub("[ ]*Logging[ \t]*start[ ]*", "", line)
                 measurementStart <- as.POSIXct(strptime(l, "%y/%m/%d %H:%M:%S", tz=tz))
             }

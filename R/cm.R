@@ -788,7 +788,8 @@ setMethod(f="plot",
                                   xlab="", ylab=resizableLabel("v"),
                                   main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
-                  } else if (which[w] == 3) {     # or "progressive vector"
+                  } else if (which[w] == 3) {
+                      ## or "progressive vector"
                       oceDebug(debug, "progressive vector plot\n")
                       dt <- as.numeric(difftime(x@data$time[2], x@data$time[1], units="sec")) # FIXME: assuming equal dt
                       mPerKm <- 1000
@@ -806,7 +807,8 @@ setMethod(f="plot",
                       plot(x.dist, y.dist,
                            xlab=resizableLabel("distance km"), ylab=resizableLabel("distance km"),
                            type='l', asp=1, ...)
-                  } else if (which[w] %in% 4:6) {     # "uv" (if 4), "uv+ellipse" (if 5), or "uv+ellipse+arrow" (if 6)
+                  } else if (which[w] %in% 4:6) {
+                      ## "uv" (if 4), "uv+ellipse" (if 5), or "uv+ellipse+arrow" (if 6)
                       oceDebug(debug, "\"uv\", \"uv+ellipse\", or \"uv+ellipse+arrow\" plot\n")
                       if (len <= small)
                           plot(x@data$u, x@data$v, type=type,

@@ -199,7 +199,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         ##res@metadata$names <- names
         ##res@metadata$labels <- labels
         res@metadata$src <- filename
-    } else {                           # CTD, 20000718WHPOSIOSCD
+    } else {
+        ## CTD, 20000718WHPOSIOSCD
         tmp <- sub("(.*), ", "", line)
         date <- substr(tmp, 1, 8)
         ##cat("DATE '", date, "'\n", sep="")
@@ -231,7 +232,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
             ##      LATITUDE = -17.5053
             ##      LONGITUDE = -150.4812
             ##      BOTTOM = 3600
-            if (!(0 < (r<-regexpr("^[ ]*#", line)[1]))) { # first non-hash line
+            if (!(0 < (r<-regexpr("^[ ]*#", line)[1]))) {
+                ## first non-hash line
                 ## NUMBER_HEADERS = 10
                 nh <- as.numeric(sub("(.*)NUMBER_HEADERS = ", "", ignore.case=TRUE, line))
                 if (is.finite(nh)) {
@@ -264,7 +266,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
             }
         }
         if (!gotHeader) {
-            while (TRUE) {                    # catch any remaining "#" lines
+            while (TRUE) {
+                ## catch any remaining "#" lines
                 line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
                 if (!(0 < (r<-regexpr("^#", line))))
                     break

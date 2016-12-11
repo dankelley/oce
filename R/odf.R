@@ -356,7 +356,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         } else if (1 == length(grep("^I[P]{0,1}TS-68, deg C$", ODFunits[i], ignore.case=TRUE))) {
             ## handles both the correct IPTS and the incorrect ITS.
             list(unit=expression(degree*C), scale="IPTS-68")
-        } else if (ODFunits[i] == "degrees C") { # guess on scale
+        } else if (ODFunits[i] == "degrees C") {
+            ## guess on scale
             list(unit=expression(degree*C), scale="ITS-90")
         } else if (ODFunits[i] == "ITS-90, deg C") {
             list(unit=expression(degree*C), scale="ITS-90")

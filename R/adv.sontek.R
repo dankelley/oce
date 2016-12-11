@@ -35,7 +35,8 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
         deltat <- ctimeToSeconds(deltat)
     oceDebug(debug, "time series is inferred to have data every", deltat, "s\n")
 
-    if (nstart > 1) {                   # handle multiple files
+    if (nstart > 1) {
+        ## handle multiple files
         oceDebug(debug, "handling multiple files\n")
         buf <- NULL
         for (i in 1:nfile) {
@@ -48,7 +49,8 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
             close(thisFile)
         }
         filename <- paste("(\"", file[i], "\", ...)", sep="")
-    } else {                            # handle single file (which might be a connection, etc)
+    } else {
+        ## handle single file (which might be a connection, etc)
         if (is.character(file)) {
             filename <- fullFilename(file)
             file <- file(file, "rb")

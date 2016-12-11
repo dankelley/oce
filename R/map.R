@@ -3,8 +3,9 @@
     function(new) if (!missing(new)) val <<- new else val
 })
 
-.Projection <- local({                # emulate mapproj
-    # type can be 'none' or 'proj4' (once, permitted 'mapproj' also)
+.Projection <- local({
+    ## emulate mapproj
+    ## type can be 'none' or 'proj4' (once, permitted 'mapproj' also)
     val <- list(type="none", projection="")
     function(new) if (!missing(new)) val <<- new else val
 })
@@ -139,7 +140,8 @@ badFillFix2 <- function(x, y, xorig, yorig)
             yl <- yorig[look]
             offscale <- yl < usr[3] | xl < usr[1] | yl > usr[4] | xl > usr[2]
             offscale <- offscale[is.finite(offscale)]
-            if (all(offscale)) { # probably faster to do this than to make new vectors
+            if (all(offscale)) {
+                ## probably faster to do this than to make new vectors
                 ##message("  TRIM")
                 x[look] <- NA
                 y[look] <- NA
@@ -1465,7 +1467,8 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                latitude=if (!missing(latitude) && length(latitude)) latitude else axisOLD$latitude))
     if (length(latitude))
         oceDebug(debug, "drawing latitude line:")
-    for (l in latitude) {              # FIXME: maybe we should use mapLines here
+    for (l in latitude) {
+        ## FIXME: maybe we should use mapLines here
         if (is.finite(l)) {
             if (debug > 0) cat(l, " ")
             line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
@@ -1506,7 +1509,8 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
     }
     if (length(longitude))
         oceDebug(debug, "drawing longitude line:")
-    for (l in longitude) {             # FIXME: should use mapLines here
+    for (l in longitude) {
+        ## FIXME: should use mapLines here
         if (is.finite(l)) {
             if (debug > 0) cat(l, " ")
             line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
@@ -1583,7 +1587,8 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
         ## FIXME: below is a kludge to avoid weird horiz lines; it
         ## FIXME: would be better to complete the polygons, so they
         ## FIXME: can be filled.  It might be smart to do this in C
-        if (FALSE) { # this was a bad idea, e.g. in orthographic, lines cross whole domain
+        if (FALSE) {
+            ## this was a bad idea, e.g. in orthographic, lines cross whole domain
             d <- c(0, sqrt(diff(x)^2 + diff(y)^2))
             d[!is.finite(d)] <- 0
             if (0 == length(d))
@@ -2560,7 +2565,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
              ", ...) {\n", sep="", unindent=1)
 
     if ("data" %in% slotNames(longitude)) {
-        if (3 == sum(c("longitude", "latitude", "z") %in% names(longitude@data))) { # e.g. a topo object
+        if (3 == sum(c("longitude", "latitude", "z") %in% names(longitude@data))) {
+            ## e.g. a topo object
             z <- longitude@data$z
             latitude <- longitude@data$latitude
             longitude <- longitude@data$longitude # destroys container
@@ -2576,7 +2582,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     if (!is.matrix(z))
         stop("z must be a matrix")
     breaksGiven <- !missing(breaks)
-    if (!missing(colormap)) { # takes precedence over breaks and col
+    if (!missing(colormap)) {
+        ## takes precedence over breaks and col
         breaks <- colormap$breaks
         breaksGiven <- TRUE
         col <- colormap$col
@@ -2606,7 +2613,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             }
             breaksOrig <- breaks       # nolint (variable not used)
         } else {
-            if (!colGiven) {## missing(col)) {
+            if (!colGiven) {
                 oceDebug(debug, "zlim provided, but not breaks or col\n")
                 breaks <- c(zlim[1], pretty(zlim, n=128), zlim[2])
             } else {
@@ -2770,19 +2777,22 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         colorLookup <- function (ij) {
             zval <- Z[ij]
             if (is.na(zval)) {
-                if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+                if (debug > 10) {
+                    ## FIXME (issue 522): retain this test code until 2014-oct
                     message("z is NA")
                 }
                 return(missingColor)   # whether clipping or not
             }
             if (zval < breaksMin) {
-                if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+                if (debug > 10) {
+                    ## FIXME (issue 522): retain this test code until 2014-oct
                     message("z: ", zval, " is < breaksMin")
                 }
                 return(if (zclip) missingColor else colFirst)
             }
             if (zval > breaksMax) {
-                if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+                if (debug > 10) {
+                    ## FIXME (issue 522): retain this test code until 2014-oct
                     message("z: ", zval, " is > breaksMax")
                 }
                 return(if (zclip) missingColor else colLast)
@@ -2795,12 +2805,14 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             ## sometime later: w <- which(zval < breaks + 1*small)[1]
             w <- which(zval <= breaks)[1]
             if (!is.na(w) && w > 1) {
-                if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+                if (debug > 10) {
+                    ## FIXME (issue 522): retain this test code until 2014-oct
                     message("z: ", zval, ", w: ", w, ", using non-missing col: ", col[-1+w])
                 }
                 return(col[-1 + w])
             } else {
-                if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
+                if (debug > 10) {
+                    ## FIXME (issue 522): retain this test code until 2014-oct
                     message("z: ", zval, ", w: ", w, ", using missing col: ", missingColor)
                 }
                 return(missingColor)

@@ -70,12 +70,14 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
     headerLengthUser <- 512
     hardware <- head <- user <- list()
     o <- 0                              # offset
-    for (header in 1:3) { # FIXME: code is needlessly written as if headers could be in different order
+    for (header in 1:3) {
+        ## FIXME: code is needlessly written as if headers could be in different order
         oceDebug(debug, "\n")
         ##oceDebug(debug, "examining buf[o+2]=", buf[o+2], "to see what type of header block is next...\n")
         if (buf[o+1] != syncCode)
             stop("expecting syncCode 0x", syncCode, " but got 0x", buf[o+1], " instead (while reading header #", header, ")")
-        if (buf[o+2] == idHardwareConfiguration) {         # see page 29 of System Integrator Guide
+        if (buf[o+2] == idHardwareConfiguration) {
+            ## see page 29 of System Integrator Guide
             oceDebug(debug, "\nHARDWARE CONFIGURATION\n", unindent=1)
             hardware$size <- readBin(buf[o+3:4], "integer", signed=FALSE, n=1, size=2, endian="little")
             if (hardware$size != 24)
@@ -100,7 +102,8 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             hardware$fwVersion <- as.numeric(paste(readBin(buf[o+43:46], "character", n=4, size=1), collapse=""))
             oceDebug(debug, "hardware$fw.version=", hardware$fw.version, "\n")
             o <- o + 2 * hardware$size
-        } else if (buf[o+2] == idHeadConfiguration) {     # see page 30 of System Integrator Guide
+        } else if (buf[o+2] == idHeadConfiguration) {
+            ## see page 30 of System Integrator Guide
             oceDebug(debug, "HEAD CONFIGURATION\n", unindent=1)
             ##buf <- readBin(file, "raw", headerLengthHead)
             head$size <- readBin(buf[o+3:4], "integer", signed=FALSE, n=1, size=2)
@@ -141,7 +144,8 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             head$numberOfBeams <- readBin(buf[o+221:222], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "head$numberOfBeams=", head$numberOfBeams, "\n")
             o <- o + 2 * head$size
-        } else if (buf[o+2] == idUserConfiguration) {     # User Configuration [p30-32 of System Integrator Guide]
+        } else if (buf[o+2] == idUserConfiguration) {
+            ## User Configuration [p30-32 of System Integrator Guide]
             oceDebug(debug, "USER CONFIGURATION\n", unindent=1)
             user$size <- readBin(buf[o+3:4], what="integer", n=1, size=2, endian="little")
             if (2 * user$size != headerLengthUser)

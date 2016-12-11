@@ -315,13 +315,15 @@ setMethod(f="[[",
               if (!is.character(i))
                   stop("landsat item must be specified by name", call.=FALSE)
               ## Handle cases one by one, starting with simplest.
-              if (!(is.na(pmatch(i, "longitude")))) { # FIXME: ignoring decimation (may be best, anyway)
+              if (!(is.na(pmatch(i, "longitude")))) {
+                  ## FIXME: ignoring decimation (may be best, anyway)
                   b1 <- x@data[[1]]
                   dim <- if (is.list(b1)) dim(b1$lsb) else dim(b1)
                   oceDebug(debug, "} # landsat [[\n", unindent=1)
                   return(x@metadata$lllon + seq(0, 1, length.out=dim[1]) * (x@metadata$urlon - x@metadata$lllon))
               }
-              if (!(is.na(pmatch(i, "latitude")))) { # FIXME: ignoring decimation (may be best, anyway)
+              if (!(is.na(pmatch(i, "latitude")))) {
+                  ## FIXME: ignoring decimation (may be best, anyway)
                   b1 <- x@data[[1]]
                   dim <- if (is.list(b1)) dim(b1$lsb) else dim(b1)
                   oceDebug(debug, "} # landsat [[\n", unindent=1)
@@ -727,7 +729,8 @@ setMethod(f="plot",
                   } else {
                       ## not band="terralook"
                       if (missing(band)) {
-                          if ("tirs1" %in% names(x@data)) { # different meanings landsat-8 and previous
+                          if ("tirs1" %in% names(x@data)) {
+                              ## different meanings landsat-8 and previous
                               oceDebug(debug, "using tirs1\n")
                               d <- x[["tirs1", decimate]]
                               band <- "tirs1"
@@ -801,7 +804,8 @@ setMethod(f="plot",
                       mtext(band, side=3, adj=1, line=0, cex=1)
               } else if (which == 2) {
                   if (missing(band)) {
-                      if ("tirs1" %in% names(x@data)) { # different meanings landsat-8 and previous
+                      if ("tirs1" %in% names(x@data)) {
+                          ## different meanings landsat-8 and previous
                           oceDebug(debug, "using tirs1\n")
                           d <- x[["tirs1", decimate]]
                           band <- "tirs1"
@@ -1086,7 +1090,8 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
     options(warn=-1)
     ##> cat("BEFORE\n")
     ##> print(Sys.time())
-    for (b in seq_along(band)) {       # 'band' is numeric
+    for (b in seq_along(band)) {
+        ## 'band' is numeric
         ## message("b:", b, " band: ", header$bandnames[b], " suffix: ", header$filesuffices[b])
         ##bandfilename <- paste(file, "/", actualfilename, "_B", band[b], ".TIF", sep="")
         bandfilename <- paste(file, "/", actualfilename, "_", header$filesuffices[band[b]], sep="") # FIXME: 1 more layer of indexing?

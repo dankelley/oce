@@ -1178,7 +1178,8 @@ setMethod(f="plot",
                           }
                       }
                       par(mar=mar)
-                  } else if (which[w] == 2) {    # salinity timeseries
+                  } else if (which[w] == 2) {
+                      ## salinity timeseries
                       if (0 != sum(!is.na(x@data$salinity))) {
                           nlevels <- dim(x@data$salinity)[1]
                           t <- if (length(level) > 1)
@@ -1192,7 +1193,8 @@ setMethod(f="plot",
                       } else {
                           warning("no non-missing salinity data")
                       }
-                  } else if (which[w] == 3) {    # temperature timeseries
+                  } else if (which[w] == 3) {
+                      ## temperature timeseries
                       if (0 != sum(!is.na(x@data$temperature))) {
                           nlevels <- dim(x@data$temperature)[1]
                           t <- if (length(level) > 1)
@@ -1206,19 +1208,22 @@ setMethod(f="plot",
                       } else {
                           warning("no non-missing temperature data")
                       }
-                  } else if (which[w] == 4) {    # TS
+                  } else if (which[w] == 4) {
+                      ## TS
                       if (0 != sum(!is.na(x@data$temperature)) && 0 != sum(!is.na(x@data$salinity))) {
                           plotTS(ctd, col=if (missing(col)) "black" else col, type=type, ...)
                      } else {
                           warning("no non-missing salinity data")
                       }
-                  } else if (which[w] == 5) {    # S profile
+                  } else if (which[w] == 5) {
+                      ## S profile
                       ## FIXME: how to handle the noise; if as below, document it
                       plotProfile(ctd, xtype="salinity",
                            Slim=quantile(x@data$salinity, c(0.01, 0.99), na.rm=TRUE),
                            ylim=quantile(x@data$pressure, c(0.99, 0.01), na.rm=TRUE),
                            col=if (missing(col)) "black" else col, type=type)
-                  } else if (which[w] == 6) {    # T profile
+                  } else if (which[w] == 6) {
+                      ## T profile
                       ## FIXME: how to handle the noise; if as below, document it
                       plotProfile(ctd, xtype="temperature",
                            Tlim=quantile(x@data$temperature, c(0.01, 0.99), na.rm=TRUE),

@@ -903,7 +903,8 @@ imagep <- function(x, y, z,
     # Handle TRUE/FALSE decimation
     dim <- dim(z)
     decimateLogical <- is.logical(decimate)
-    if (decimateLogical) { # this block makes decimate be a vector of length 2
+    if (decimateLogical) {
+        ## this block makes decimate be a vector of length 2
         ## message("decimate is logical; decimate:", decimate)
         if (decimate) {
             cdim <- dim                    # (possibly) clipped dim
@@ -1233,7 +1234,8 @@ imagep <- function(x, y, z,
                                     mar=mar, mgp=mgp, tformat=tformat, debug=debug-1)
             yat <- axis(2)#, cex.axis=cex, cex.lab=cex)
         }
-    } else {                           # x is not a POSIXt
+    } else {
+        ## x is not a POSIXt
         oceDebug(debug, "the x axis does not represent time\n")
         if (filledContour) {
             oceDebug(debug, "doing filled contours [3]\n")

@@ -57,7 +57,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "  fileSize=", fileSize, "\n")
     buf <- readBin(file, "raw", fileSize)
     header <- decodeHeaderNortek(buf, type="vector", debug=debug-1)
-    if (debug > 1) {                    # Note: need high debugging to get this
+    if (debug > 1) {
+        ## Note: need high debugging to get this
         cat("\nheader is as follows:\n")
         str(header)
     }
@@ -104,7 +105,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
 
     vsdStart <- NULL # prevent scope warning from rstudio; defined later anyway
-    bisectNortekVectorSd <- function(tFind, add=0, debug=0) { # tFind=time add=offset debug=debug
+    bisectNortekVectorSd <- function(tFind, add=0, debug=0) {
+        ## tFind=time add=offset debug=debug
         oceDebug(debug, "\n")
         oceDebug(debug, "bisectNortekVectorSd(tFind=", format(tFind), ", add=", add, ", debug=", debug, ")\n")
         vsdLen <- length(vsdStart)
@@ -166,7 +168,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         IMUlength <- length(imuStart)
         B4 <- sort(c(imuStart, imuStart+1, imuStart+2, imuStart+3))
         ## Note: a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
-        if (IMUtype == "c3") {          # desribed in [1C] of the refernces of ?read.adv
+        if (IMUtype == "c3") {
+            ## desribed in [1C] of the refernces of ?read.adv
             res@data$IMUdeltaAngleX <- readBin(buf[B4+ 6], "numeric", size=4, n=IMUlength, endian="little")
             res@data$IMUdeltaAngleY <- readBin(buf[B4+10], "numeric", size=4, n=IMUlength, endian="little")
             res@data$IMUdeltaAngleZ <- readBin(buf[B4+14], "numeric", size=4, n=IMUlength, endian="little")
@@ -211,7 +214,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             res@metadata$units$IMUdeltaVelocityZ <- list(unit=expression(m/s), scale="")
             res@metadata$units$IMUrotation <- list(unit=expression(), scale="")
             res@metadata$units$IMUtime <- list(unit=expression(s), scale="")
-        } else if (IMUtype == "cc") {   # described in [1B] of the references of ?read.adv
+        } else if (IMUtype == "cc") {
+            ## described in [1B] of the references of ?read.adv
             ## a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
             res@data$IMUaccelX <- readBin(buf[B4+ 6], "numeric", size=4, n=IMUlength, endian="little")
             res@data$IMUaccelY <- readBin(buf[B4+10], "numeric", size=4, n=IMUlength, endian="little")
@@ -245,7 +249,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             res@metadata$units$IMUmagrtZ <- list(unit=expression(gauss), scale="")
             res@metadata$units$IMUrotation <- list(unit=expression(), scale="")
             res@metadata$units$IMUtime <- list(unit=expression(s), scale="")
-        } else if (IMUtype == "d2") {   # described in [1B] of the references of ?read.adv
+        } else if (IMUtype == "d2") {
+            ## described in [1B] of the references of ?read.adv
             ## a "tick" of the internal timestamp clock is 16 microseconds [IMU p 78]
             res@data$IMUaccelX <- readBin(buf[B4+ 6], "numeric", size=4, n=IMUlength, endian="little")
             res@data$IMUaccelY <- readBin(buf[B4+10], "numeric", size=4, n=IMUlength, endian="little")
@@ -269,7 +274,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             res@metadata$units$IMUmagrtZ <- list(unit=expression(gauss), scale="")
             res@metadata$units$IMUrotation <- list(unit=expression(), scale="")
             res@metadata$units$IMUtime <- list(unit=expression(s), scale="")
-        } else if (IMUtype == "d3") {   # described in [1B] of the references of ?read.adv
+        } else if (IMUtype == "d3") {
+            ## described in [1B] of the references of ?read.adv
             res@data$IMUdeltaAngleX <- readBin(buf[B4+ 6], "numeric", size=4, n=IMUlength, endian="little")
             res@data$IMUdeltaAngleY <- readBin(buf[B4+10], "numeric", size=4, n=IMUlength, endian="little")
             res@data$IMUdeltaAngleZ <- readBin(buf[B4+14], "numeric", size=4, n=IMUlength, endian="little")
@@ -509,11 +515,13 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     vvdStart2 <- sort(c(vvdStart, 1 + vvdStart))
     vvdLen <- length(vvdStart)          # FIXME: should be subsampled with 'by' ... but how???
 
-    if (haveAnalog1) { # FIXME: shouldn't this be auto-detected from 'USER' header?
+    if (haveAnalog1) {
+        ## FIXME: shouldn't this be auto-detected from 'USER' header?
         analog1 <- readBin(buf[sort(c(vvdStart + 8, vvdStart + 9))],
                            "integer", n=vvdLen, size=2, endian="little", signed=FALSE)
     }
-    if (haveAnalog2) { # FIXME: shouldn't this be auto-detected from 'USER' header?
+    if (haveAnalog2) {
+        ## FIXME: shouldn't this be auto-detected from 'USER' header?
         analog2 <- readBin(buf[sort(c(vvdStart+2, vvdStart+5))],
                            "integer", n=vvdLen, size=2, endian="little", signed=FALSE)
     }

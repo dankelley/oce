@@ -212,10 +212,12 @@ geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NUL
             n2 <- length(latitude2)
             if (length(longitude2) != n2)
                 stop("latitude2 and longitude2 must be vectors of the same length")
-            if (n2 < n1) { # copy first (latitude2, longitude2)
+            if (n2 < n1) {
+                ## copy first (latitude2, longitude2)
                 latitude2 <- rep(latitude2[1], n1)
                 longitude2 <- rep(longitude2[1], n1)
-            } else { # trim
+            } else {
+                ## trim
                 latitude2 <- latitude2[1:n1]
                 longitude2 <- longitude2[1:n1]
             }

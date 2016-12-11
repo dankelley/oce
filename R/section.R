@@ -468,7 +468,8 @@ setMethod(f="subset",
               debug <- getOption("oceDebug")
               if (length(dots) && ("debug" %in% names(dots)))
                   debug <- dots$debug
-              if (indicesGiven) {        # select a portion of the stations
+              if (indicesGiven) {
+                  ## select a portion of the stations
                   if (!missing(subset))
                       stop("cannot give both 'subset' and 'indices'")
                   oceDebug(debug, "subsetting by indices\n")
@@ -504,7 +505,8 @@ setMethod(f="subset",
                   res@metadata$time <- x@metadata$time[keep]
                   res@data$station <- x@data$station[keep]
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
-              } else {                        # subset within the stations
+              } else {
+                  ## subset within the stations
                   if ("indices" %in% dotsNames)
                       stop("2. cannot give both 'subset' and 'indices'")
                   oceDebug(debug, "subsetting by 'subset'\n")
@@ -1939,7 +1941,8 @@ read.section <- function(file, directory, sectionId="", flags,
     flags <- list()
     stnSectionId <- vector("character", nd)
     stnId <- vector("character", nd)
-    for (l in ( (header.length + 1):(n-1)) ) { # last line is END_DATA
+    for (l in ( (header.length + 1):(n-1)) ) {
+        ## last line is END_DATA
         contents <- strsplit(lines[l], split=",")[[1]]
         stnSectionId[l - header.length] <- sub(" *", "", contents[2])
         stnId[l - header.length] <- sub("^ *", "", contents[3])
@@ -2455,7 +2458,8 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
             ok <- !is.na(temperatureMat[p, ]) ## FIXME: ok to infer missingness from temperature alone?
             nok <- sum(ok)
             ##iok <- (1:nstn)[ok]
-            if (nok > 4) { ## Only fit spline if have 4 or more values; ignore bad values in fitting.
+            if (nok > 4) {
+                ## Only fit spline if have 4 or more values; ignore bad values in fitting.
                 if (gaveDF) {
                     temperatureMat[p, ] <- predict(smooth.spline(x[ok], temperatureMat[p, ok], ...), x)$y
                     salinityMat[p, ]    <- predict(smooth.spline(x[ok],    salinityMat[p, ok], ...), x)$y

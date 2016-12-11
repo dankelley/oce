@@ -864,7 +864,8 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         if (debug > 3) cat("buf[", 3+offset, "] = code1 = 0x", code1, sep="")
         ## The ordering of the code1 tests is not too systematic here; frequently-encountered
         ## codes are placed first, but then it's a bit random.
-        if (code1 == 0x15 || code1 == 0x1c || code1 == 0x1d) {           # single-beam, dual-beam, or split-beam tuple
+        if (code1 == 0x15 || code1 == 0x1c || code1 == 0x1d) {
+            ## single-beam, dual-beam, or split-beam tuple
             thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4L, n=1L, endian="little")
             pingElapsedTime <- 0.001 * readBin(buf[offset+10+1:4], "integer", size=4L, n=1L, endian="little")
@@ -906,7 +907,8 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                        " ping=", pingNumber, " ns=", ns, " channel=", thisChannel, " IGNORED since wrong channel)\n", sep="")
                 }
             }
-        } else if (code1 == 0x0f || code == 0x20) { # time
+        } else if (code1 == 0x0f || code == 0x20) {
+            ## time
             timeSec <- readBin(buf[offset+4 + 1:4], what="integer", endian="little", size=4, n=1)
             timeSubSec <- .C("biosonics_ss", buf[offset+10], res=numeric(1), NAOK=TRUE, PACKAGE="oce")$res
             timeFull <- timeSec + timeSubSec
@@ -914,7 +916,8 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             ## centisecond = ss & 0x7F [1 sec 4.7]
             timeLast <- timeSec + timeSubSec # used for positioning
             if (debug > 3) cat(sprintf(" time calendar: %s   elapsed %.2f\n", timeFull+as.POSIXct("1970-01-01 00:00:00", tz="UTC"), timeElapsedSec))
-        } else if (code1 == 0x0e) { # position
+        } else if (code1 == 0x0e) {
+            ## position
             lat <- readBin(buf[offset + 4 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
             lon <- readBin(buf[offset + 8 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
             latitudeSlow <- c(latitudeSlow, lat)
@@ -953,7 +956,8 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             corr <- 0.01 * readBin(buf[offset+282+1:2], "integer", n=1L, size=2L, endian="little") # [p13 1]
             if (debug > 1) cat('corr: ', corr, ' user-defined calibration correction in dB (expect 0 for 01-Fish.dt4)\n', sep='')
 
-            if (1 == length(channelNumber)) { # get space
+            if (1 == length(channelNumber)) {
+                ## get space
                 a <- matrix(NA_real_, nrow=pingsInFile, ncol=samplesPerPing)
                 b <- matrix(NA_real_, nrow=pingsInFile, ncol=samplesPerPing)
                 c <- matrix(NA_real_, nrow=pingsInFile, ncol=samplesPerPing)

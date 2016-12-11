@@ -6,7 +6,8 @@ shortenTimeString <- function(t, debug=getOption("oceDebug"))
     oceDebug(debug, "shortenTimeString() {\n", sep="", unindent=1)
     oceDebug(debug, "A: '", paste(t, collapse="' '"), "'\n")
     tc <- gsub(" [A-Z]{3}$", "", tc) # remove timezone
-    if (all(grepl("^[0-9]{4}", tc))) { # leading years
+    if (all(grepl("^[0-9]{4}", tc))) {
+        ## leading years
         years <- substr(tc, 1, 4)
         if (1 == length(unique(years))) {
             tc <- gsub("^[0-9]{4}", "", tc)
@@ -1189,21 +1190,27 @@ prettyPosition <- function(x, debug=getOption("oceDebug"))
     oceDebug(debug, "prettyPosition(...) {\n", sep="", unindent=1)
     r <- diff(range(x, na.rm=TRUE))
     oceDebug(debug, 'range(x)=', range(x), 'r=', r, '\n')
-    if (r > 5) {                       # D only
+    if (r > 5) {
+        ## D only
         res <- pretty(x)
-    } else if (r > 1) {                # round to 30 minutes
+    } else if (r > 1) {
+        ## round to 30 minutes
         res <- (1 / 2) * pretty(2 * x)
         oceDebug(debug, "case 1: res=", res, "\n")
-    } else if (r > 30/60) {            # round to 1 minute, with extras
+    } else if (r > 30/60) {
+        ## round to 1 minute, with extras
         res <- (1 / 60) * pretty(60 * x, n=6)
         oceDebug("case 2: res=", res, "\n")
-    } else if (r > 5/60) {             # round to 1 minute
+    } else if (r > 5/60) {
+        ## round to 1 minute
         res <- (1 / 60) * pretty(60 * x, 4)
         oceDebug(debug, "case 3: res=", res, "\n")
-    } else if (r > 10/3600) {          # round to 10 sec
+    } else if (r > 10/3600) {
+        ## round to 10 sec
         res <- (1 / 360) * pretty(360 * x)
         oceDebug(debug, "case 4: res=", res, "\n")
-    } else {                           # round to seconds
+    } else {
+        ## round to seconds
         res <- (1 / 3600) * pretty(3600 * x)
         if (debug) cat("case 5: res=", res, "\n")
     }
@@ -1361,7 +1368,8 @@ threenum <- function(x)
     if (is.character(x) || is.null(x)) {
         res <- rep(NA, 3)
     } else if (is.list(x)) {
-        if (2 == sum(c("lsb", "msb") %in% names(x))) { # e.g. landsat data
+        if (2 == sum(c("lsb", "msb") %in% names(x))) {
+            ## e.g. landsat data
             x <- as.numeric(x$lsb) + 256 * as.numeric(x$msb)
             dim(x) <- dim
             res <- c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
@@ -2023,7 +2031,8 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
         var <- gettext("Conductivity", domain="R-oce")
         full <- bquote(.(var)*.(L)*S/m*.(R))
         abbreviated <- bquote("C"*.(L)*S/m*.(R))
-    } else if (item == "C") { # unitless form
+    } else if (item == "C") {
+        ## unitless form
         var <- gettext("Conductivity Ratio", domain="R-oce")
         unit <- gettext("unitless", domain="R-oce")
         full <- bquote(.(var)*.(L)*.(unit)*.(R))
@@ -2542,7 +2551,8 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
     if (missing(m))
         stop("must supply 'm'")
     i <- seq(0, m - 1)
-    if (type == "blackman-harris") {    # See Harris (1978) table on p65
+    if (type == "blackman-harris") {
+        ## See Harris (1978) table on p65
         if (m == 2 * floor(m/2)) {
             m <- m + 1
             warning("increased filter length by 1, to make it odd")
@@ -3060,7 +3070,8 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     if ("time" %in% names(x@data)) {
         if (missing(to))
             to <- length(x@data$time[[1]])
-        if (length(by) == 1) { # FIXME: probably should not be here
+        if (length(by) == 1) {
+            ## FIXME: probably should not be here
             select <- seq(from=1, to=to, by=by)
             oceDebug(debug, vectorShow(select, "select:"))
         }
@@ -3102,7 +3113,8 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
                 }
             }
         }
-    } else if (inherits(x, "adv")) { # FIXME: the (newer) adp code is probably better than this ADV code
+    } else if (inherits(x, "adv")) {
+        ## FIXME: the (newer) adp code is probably better than this ADV code
         oceDebug(debug, "decimate() on an ADV object\n")
         warning("decimate(adv) not working yet ... just returning the adv unchanged")
         return(res) # FIXME
@@ -4069,7 +4081,8 @@ grad <- function(h, x, y)
 #' x <- c(-0.1, 0, 1, 255, 255.1)
 #' data.frame(x, oce.as.raw(x))
 oce.as.raw <- function(x)
-{       # prevent warnings from out-of-range with as.raw()
+{
+    ## prevent warnings from out-of-range with as.raw()
     na <- is.na(x)
     x[na] <- 0                 # FIXME: what to do here?
     x <- ifelse(x < 0, 0, x)

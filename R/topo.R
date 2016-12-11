@@ -518,7 +518,8 @@ setMethod(f="plot",
                   yr0 <- range(x[["latitude"]], na.rm=TRUE)
                   oceDebug(debug, "xr0=", xr0, "\n")
                   oceDebug(debug, "yr0=", yr0, "\n")
-                  if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) { # don't expand if full map
+                  if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) {
+                      ## don't expand if full map
                       xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
                       yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
                   } else {
@@ -542,7 +543,8 @@ setMethod(f="plot",
               ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
               asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
               oceDebug(debug, "par('pin')=", par('pin'), "asp=", asp, "asp.page=", asp.page, "\n")
-              if (asp > asp.page) {               # FIXME: this seems to have x and y mixed up (asp=dy/dx)
+              if (asp > asp.page) {
+                  ## FIXME: this seems to have x and y mixed up (asp=dy/dx)
                   oceDebug(debug, "type 1 (will narrow x range)\n")
                   d <- asp / asp.page * diff(xr)
                   xr <- mean(xr) + d * c(-1/2, 1/2)

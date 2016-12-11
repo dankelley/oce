@@ -100,7 +100,8 @@ read.index <- function(file, format, missingValue, tz=getOption("oceTz"), debug=
         data <- as.vector(t(m[, -1]))
         t <- seq(ISOdatetime(year[1], 1, 15, 0, 0, 0, tz="UTC"), by="month", length.out=12*length(year))
     } else stop("unknown format '", format, "'; must be 'noaa' or 'ucar'")
-    if (missing(missingValue)) { # guess, probably dangerous
+    if (missing(missingValue)) {
+        ## guess, probably dangerous
         data[data <= -99] <- NA
     } else {
         if (!is.null(missingValue))

@@ -1005,7 +1005,8 @@ oce.as.POSIXlt <- function (x, tz = "")
         }
         ## year day hhmm
         tokens <- strsplit(xx, " +")[[1]]
-        if (length(tokens) == 3 && nchar(tokens[3]) == 4) { # the nchar check skips [year month day]
+        if (length(tokens) == 3 && nchar(tokens[3]) == 4) {
+            ## the nchar check skips [year month day]
             return(strptime(x, format="%Y %j %H%M"))
         }
         if (is.na(xx) ||
@@ -1157,7 +1158,8 @@ oceEdit <- function(x, item, value, action, reason="", person="",
             } else {
                 stop("cannot find that item")
             }
-        } else if ("instrumentType" %in% names(x@metadata) && x@metadata$instrumentType == "aquadopp-hr") { ## FIXME: what if S4?
+        } else if ("instrumentType" %in% names(x@metadata) && x@metadata$instrumentType == "aquadopp-hr") {
+            ## FIXME: what if S4?
             oceDebug(debug, "About to try editing AQUADOPP ...\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item)) # FIXME: possibly aquadopp should have tsSlow
             x@data[[item]] <- value
@@ -1303,10 +1305,12 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
             oceDebug(debug, "file type:", res, "\n")
             return(res)
         }
-        if (length(grep(".WCT$", filename, ignore.case=TRUE))) { # old-style WOCE
+        if (length(grep(".WCT$", filename, ignore.case=TRUE))) {
+            ## old-style WOCE
             return("ctd/woce/other") # e.g. http://cchdo.ucsd.edu/data/onetime/atlantic/a01/a01e/a01ect.zip
         }
-        if (length(grep(".nc$", filename, ignore.case=TRUE))) { # argo?
+        if (length(grep(".nc$", filename, ignore.case=TRUE))) {
+            ## argo?
             if (requireNamespace("ncdf4", quietly=TRUE)) {
                 if (substr(filename, 1, 5) == "http:") {
                     stop("cannot open netcdf files over the web; try doing as follows\n    download.file(\"",
@@ -1325,13 +1329,16 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                 stop('must install.packages("ncdf4") to read a netCDF file')
             }
         }
-        if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) { # openstreetmap
+        if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) {
+            ## openstreetmap
             return("openstreetmap")
         }
-        if (length(grep(".osm$", filename, ignore.case=TRUE))) { # openstreetmap
+        if (length(grep(".osm$", filename, ignore.case=TRUE))) {
+            ## openstreetmap
             return("openstreetmap")
         }
-        if (length(grep(".gpx$", filename, ignore.case=TRUE))) { # gpx (e.g. Garmin GPS)
+        if (length(grep(".gpx$", filename, ignore.case=TRUE))) {
+            ## gpx (e.g. Garmin GPS)
             return("gpx")
         }
         if (length(grep(".csv$", filename, ignore.case=TRUE))) {
@@ -1442,7 +1449,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         return("possibly RDI CTD")
     }
     ## if (substr(line, 1, 3) == "CTD")) {
-    if (1 == length(grep("^CTD", line, useBytes=TRUE))) { #substr(line, 1, 3) == "CTD") {
+    if (1 == length(grep("^CTD", line, useBytes=TRUE))) {
         oceDebug(debug, "this is ctd/woce/exchange\n")
         return("ctd/woce/exchange")
     }
@@ -1479,7 +1486,8 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         return("topo")
     }
     ##if ("RBR TDR" == substr(line, 1, 7))  { ## FIXME: obsolete; to be removed Fall 2015
-    if (1 == length(grep("^RBR TDR", line, useBytes=TRUE))) { ## FIXME: obsolete; to be removed Fall 2015
+    if (1 == length(grep("^RBR TDR", line, useBytes=TRUE))) {
+        ## FIXME: obsolete; to be removed Fall 2015
         oceDebug(debug, "this is RBR/dat\n")
         return("RBR/dat")
     }
@@ -1910,7 +1918,8 @@ oce.colorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill
         r <- approx(1:l, rgb.list[1, 1:l], xout=seq(1, l, length.out=n))$y
         g <- approx(1:l, rgb.list[2, 1:l], xout=seq(1, l, length.out=n))$y
         b <- approx(1:l, rgb.list[3, 1:l], xout=seq(1, l, length.out=n))$y
-    } else {                            # both
+    } else {
+        ## both
         rgb.list <- col2rgb(c(water, land)) / 255
         l <- length(land) + length(water)
         r <- approx(1:l, rgb.list[1, 1:l], xout=seq(1, l, length.out=n))$y
@@ -2016,7 +2025,8 @@ oce.colorsPalette <- function(n, which=1)
             rev(rgb(approx(i, r, xout, rule=1)$y,
                     approx(i, g, xout, rule=1)$y,
                     approx(i, b, xout, rule=1)$y))
-        } else if (which == 9.01 || which == "9A" || which == "jet") { # jet, also known as 9A or 9.01
+        } else if (which == 9.01 || which == "9A" || which == "jet") {
+            ## jet, also known as 9A or 9.01
             oce.colorsJet(n)
         } else if (which == 9.02 || which == "9B") {
             oce.colors9B(n)
@@ -2576,7 +2586,8 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
         return(ISOdatetime(t[, 1], 1, 1, 0, 0, 0, tz=tz) + 1 + t[, 2] * 24 * 3600)
     } else if (type == "argo") {
         return(t * 86400 + as.POSIXct("1900-01-01 00:00:00", tz="UTC"))
-    } else if (type == "ncep1") { # hours since the start of 1800
+    } else if (type == "ncep1") {
+        ## hours since the start of 1800
         return(t * 3600 + as.POSIXct("1800-01-01 00:00:00", tz="UTC"))
     } else if (type == "ncep2") {
         ## days since 1-1-1 00:00:0.0 (supposedly, but offset to match a test case; see

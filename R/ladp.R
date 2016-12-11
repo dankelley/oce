@@ -101,7 +101,8 @@ setMethod(f="[[",
                   x@data$uz
               } else if (i == "vz") {
                   x@data$vz
-              } else if (i == "temperature" || i == "t") { # FIXME: document "t" part
+              } else if (i == "temperature" || i == "t") {
+                  ## FIXME: document "t" part
                   x@data$temperature
               } else if (i == "salinity" || i == "S") {
                   x@data$salinity
