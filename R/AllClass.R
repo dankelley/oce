@@ -4,7 +4,7 @@
 #' users can use \code{new("oce")} to create a blank \code{oce}
 #' object, if desired.
 #'
-#' @slot metadata A list containing information about the data. The 
+#' @slot metadata A list containing information about the data. The
 #' contents vary across sub-classes, e.g. an \code{\link{adp-class}}
 #' object has information about beam patterns, which obviously would
 #' not make sense for a \code{\link{ctd-class}} object. In addition,
@@ -86,7 +86,7 @@ setMethod(f="summary",
                   threes <- matrix(nrow=length(names), ncol=4)
                   ii <- 1
                   for (i in 1:ndata) {
-                      threes[ii,] <- threenum(object@data[[i]])
+                      threes[ii, ] <- threenum(object@data[[i]])
                       ii <- ii + 1
                   }
                   ##rownames(threes) <- paste("   ", names[!isTime])
@@ -128,7 +128,7 @@ setMethod(f="summary",
                                              if (nchar(res)) res <- gsub("mu . ", "\u03BC", res)
                                              ##> message("4. res: '", res, "'")
                                              if (nchar(res)) res <- gsub("per . mil", "\u2030", res)
-                                             if (nchar(res)) res <- gsub("10\\^\\(-8\\)[ ]*\\*", "10\u207B\u2078", res) 
+                                             if (nchar(res)) res <- gsub("10\\^\\(-8\\)[ ]*\\*", "10\u207B\u2078", res)
                                              ##> message("5. res: '", res, "'")
                                              if (nchar(res)) res <- gsub("\\^2", "\u00B2", res)
                                              ##> message("6. res: '", res, "'")
@@ -145,7 +145,9 @@ setMethod(f="summary",
                       cat("* Statistics of data\n```\n")
                       if ("dataNamesOriginal" %in% names(object@metadata)) {
                           if (is.list(object@metadata$dataNamesOriginal)) {
-                              OriginalName <- unlist(lapply(names, function(n) if (n %in% names(object@metadata$dataNamesOriginal)) object@metadata$dataNamesOriginal[[n]] else "-"))
+                              OriginalName <- unlist(lapply(names, function(n)
+                                                            if (n %in% names(object@metadata$dataNamesOriginal))
+                                                                object@metadata$dataNamesOriginal[[n]] else "-"))
                           } else {
                               OriginalName <- object@metadata$dataNamesOriginal
                           }
@@ -192,7 +194,7 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 #' \code{\link{plot,ctd-method}}.
 #' @param y Ignored; only present here because S4 object for generic \code{plot}
 #' need to have a second parameter before the \code{...} parameter.
-#' @param ... Passed to \code{\link{hist}}, \code{\link{plot}}, or to 
+#' @param ... Passed to \code{\link{hist}}, \code{\link{plot}}, or to
 #" \code{\link{pairs}}, according to whichever does the plotting.
 #' @examples
 #' library(oce)
@@ -219,7 +221,7 @@ setMethod(f="plot",
 #'
 #' @description
 #' This is a basic class for general oce objects.  It has specialised
-#' versions for most sub-classes, e.g. \code{\link{subset,ctd-method}} 
+#' versions for most sub-classes, e.g. \code{\link{subset,ctd-method}}
 #' for \code{ctd} objects.
 #'
 #' @param x An oce object.
@@ -256,12 +258,12 @@ setMethod(f="subset",
 #' The named item is sought first in
 #' \code{metadata}, where an exact match to the name is required. If
 #' it is not present in the \code{metadata} slot, then a partial-name
-#' match is sought in the \code{data} slot. Failing both 
+#' match is sought in the \code{data} slot. Failing both
 #' tests, an exact-name match is sought in a field named
 #' \code{dataNamesOriginal} in the object's \code{metadata}
 #' slot, if that field exists. Failing that, \code{NULL} is returned.
 #'
-#' To get information on the specialized variants of this function, 
+#' To get information on the specialized variants of this function,
 #' type e.g. \code{?"[[,adv-method"} for information on extracting
 #' data from an object of \code{\link{adv-class}}.
 #'
@@ -286,13 +288,13 @@ setMethod(f="[[",
               } else if (i == "processingLog") {
                   return(x@processingLog)
                } else if (length(grep("Unit$", i))) { # returns a list
-                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$","",i)]] else x@metadata[[i]])
+                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub("Unit$", "", i)]] else x@metadata[[i]])
               } else if (length(grep(" unit$", i))) { # returns just the unit, an expression
-                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub(" unit$","",i)]][[1]] else "")
+                  return(if ("units" %in% names(x@metadata)) x@metadata$units[[gsub(" unit$", "", i)]][[1]] else "")
               } else if (length(grep(" scale$", i))) { # returns just the scale, a character string
-                  return(if ("units" %in% names(x@metadata)) as.character(x@metadata$units[[gsub(" scale$","",i)]][[2]]) else "")
+                  return(if ("units" %in% names(x@metadata)) as.character(x@metadata$units[[gsub(" scale$", "", i)]][[2]]) else "")
               } else if (length(grep("Flag$", i))) { # returns a list
-                  return(if ("flags" %in% names(x@metadata)) x@metadata$flags[[gsub("Flag$","",i)]] else NULL)
+                  return(if ("flags" %in% names(x@metadata)) x@metadata$flags[[gsub("Flag$", "", i)]] else NULL)
               } else {
                   ## Check metadata
                   if (i %in% names(x@metadata))
@@ -406,9 +408,9 @@ setMethod(f="show",
                           if (length(dim) == 1) {
                               cat(vectorShow(d, paste("  ", names[i])))
                           } else if (length(dim) == 2) {
-                              cat("   ", names[i], ", a ", dim[1], "x", dim[2], " array with value ", d[1,1], " at [1,1] position\n", sep="")
+                              cat("   ", names[i], ", a ", dim[1], "x", dim[2], " array with value ", d[1, 1], " at [1,1] position\n", sep="")
                           } else if (length(dim) == 3) {
-                              cat("   ", names[i], ", a ", dim[1], "x", dim[2], "x", dim[3], " array with value ", d[1,1,1],
+                              cat("   ", names[i], ", a ", dim[1], "x", dim[2], "x", dim[3], " array with value ", d[1, 1, 1],
                                   " at [1,1,1] position\n", sep="")
                           } else {
                               cat("   ", names[i], ", an array of more than 3 dimensions\n")
