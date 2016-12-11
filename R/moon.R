@@ -1,9 +1,9 @@
 #' Convert ecliptical to equatorial coordinate
-#' 
+#'
 #' Convert from ecliptical to equatorial coordinates, using
 #' equations 8.3 and 8.4 of [1], or, equivalently,
 #' equations 12.3 and 12.4 of [2].
-#' 
+#'
 #' @param lambda longitude, in degrees, or a data frame containing
 #' \code{lambda}, \code{beta}, and \code{epsilon}, in which case the next to
 #' arguments are ignored.
@@ -14,12 +14,12 @@
 #' @author Dan Kelley, based on formulae in [1] and [2].
 #' @references 1. Meeus, Jean, 1982. Astronomical formuae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages.
-#' 
+#'
 #' 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
 #' USA. 429 pages.
-#' The code is based on [1]; see help(moonAngle,"oce") for comments on 
+#' The code is based on [1]; see help(moonAngle,"oce") for comments on
 #' the differences in formulae found in [2].  Indeed, [2] is only cited
-#' here in case readers want to check the ideas of the formulae; DK 
+#' here in case readers want to check the ideas of the formulae; DK
 #' has found that [2] is available to him via his university library
 #' inter-library loan system, whereas he owns a copy of [1].
 #' @family things related to astronomy
@@ -38,12 +38,12 @@ eclipticalToEquatorial <- function(lambda, beta, epsilon)
 
 
 #' Convert equatorial to local horizontal coordinate
-#' 
+#'
 #' Convert from equatorial coordinates to local horizontal coordinates, i.e.
 #' azimuth and altitude.
 #' The method is taken from equations 8.5 and 8.6 of [1], or, equivalently,
 #' from equations 12.5 and 12.6 of [2].
-#' 
+#'
 #' @param rightAscension right ascension, e.g. calculated with
 #' \code{\link{eclipticalToEquatorial}}.
 #' @param declination declination, e.g. calculated with
@@ -58,7 +58,7 @@ eclipticalToEquatorial <- function(lambda, beta, epsilon)
 #' @references
 #' 1. Meeus, Jean, 1982. Astronomical formulae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages.
-#' 
+#'
 #' 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
 #' USA. 429 pages.
 #' @family things related to astronomy
@@ -77,11 +77,11 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
 
 
 #' Convert a POSIXt time to a sidereal time
-#' 
+#'
 #' Convert a POSIXt time to a sidereal time, using
 #' the method in Chapter 7 of Meeus (1982).  The small correction
 #' that he discusses after his equation 7.1 is not applied here.
-#' 
+#'
 #' @param t a time, in POSIXt format, e.g. as created by
 #' \code{\link{as.POSIXct}}, \code{\link{as.POSIXlt}}, or
 #' \code{\link{numberAsPOSIXct}}.  If this is provided, the other arguments are
@@ -91,13 +91,13 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
 #' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages
 #' @examples
-#' 
+#'
 #' t <- ISOdatetime(1978, 11, 13, 0, 0, 0, tz="UTC")
 #' print(siderealTime(t))
-#' 
+#'
 #' @family things related to astronomy
 siderealTime <- function(t)
-{                                   
+{
     tt <- as.POSIXlt(t)
     n <- length(tt$hour)
     tt$hour <- rep(0, n)
@@ -116,7 +116,7 @@ siderealTime <- function(t)
 
 
 #' Convert a POSIXt time to a Julian day
-#' 
+#'
 #' Convert a POSIXt time to a Julian day, using the method provided in
 #' Chapter 3 of Meeus (1982).  It should be noted that
 #' Meeus and other astronomical treatments use fractional days, whereas the
@@ -127,7 +127,7 @@ siderealTime <- function(t)
 #' \code{\link{julian}} suggests another formula, but the point of the present
 #' function is to match the other Meeus formulae, so that suggestion is ignored
 #' here.
-#' 
+#'
 #' @param t a time, in POSIXt format, e.g. as created by
 #' \code{\link{as.POSIXct}}, \code{\link{as.POSIXlt}}, or
 #' \code{\link{numberAsPOSIXct}}.  If this is provided, the other arguments are
@@ -146,11 +146,11 @@ siderealTime <- function(t)
 #' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages
 #' @examples
-#' 
+#'
 #' t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="ET")+0.4*86400
 #' jd <- julianDay(t)
 #' cat(format(t), "is Julian Day", format(jd, digits=14), "\n")
-#' 
+#'
 #' @family things related to astronomy
 #' @family things related to time
 julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz="UTC")
@@ -164,7 +164,7 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
     tt <- as.POSIXlt(t, tz=tz)
     year <- tt$year + 1900
     month <- tt$mon + 1
-    day <- tt$mday + (tt$hour + tt$min / 60 + tt$sec / 3600) / 24 
+    day <- tt$mday + (tt$hour + tt$min / 60 + tt$sec / 3600) / 24
     m <- ifelse(month <= 2, month + 12, month)
     y <- ifelse(month <= 2, year - 1, year)
     A <- floor(y / 100)
@@ -178,23 +178,23 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
 
 
 #' Julian-Day number to Julian century
-#' 
+#'
 #' Convert a Julian-Day number to a time in julian centuries since noon on
 #' January 1, 1900.
 #' The method follows Meese (1982 equation 15.1).  The example reproduces the
 #' example provided by Meeuse (1982 example 15.a), with fractional error 3e-8.
-#' 
+#'
 #' @param jd a julian day number, e.g. as given by \code{\link{julianDay}}.
 #' @return Julian century since noon on January 1, 1900.
 #' @author Dan Kelley
 #' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages
 #' @examples
-#' 
+#'
 #' t <- ISOdatetime(1978, 11, 13, 4, 35, 0, tz="UTC")
 #' jca <- julianCenturyAnomaly(julianDay(t))
 #' cat(format(t), "is Julian Century anomaly", format(jca, digits=8), "\n")
-#' 
+#'
 #' @family things related to astronomy
 #' @family things related to time
 julianCenturyAnomaly <- function(jd)
@@ -204,7 +204,7 @@ julianCenturyAnomaly <- function(jd)
 
 
 #' Lunar Angle as Function of Space and Time
-#' 
+#'
 #' The calculations are based on formulae provided by Meeus [1982], primarily
 #' in chapters 6, 18, and 30.  The first step is to compute sidereal time as
 #' formulated in Meeus [1982] chapter 7, which in turn uses Julian day computed
@@ -219,7 +219,7 @@ julianCenturyAnomaly <- function(jd)
 #' [1982] equation 8.1.  Finally, Meeus [1982] equations 8.5 and 8.6 are used
 #' to calculate the local azimuth and altitude of the moon, using
 #' \code{\link{equatorialToLocalHorizontal}}.
-#' 
+#'
 #' @param t time, a POSIXt object (converted to timezone \code{"UTC"},
 #' if it is not already in that timezone), or a numeric value that
 #' corresponds to such a time.
@@ -258,11 +258,11 @@ julianCenturyAnomaly <- function(jd)
 #' @seealso The equivalent function for the sun is \code{\link{sunAngle}}.
 #' @references Meeus, Jean, 1982.  Astronomical formulae for calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages.
-#' 
+#'
 #' Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
 #' USA. 429 pages.
 #' @examples
-#' 
+#'
 #' library(oce)
 #' par(mfrow=c(3,2))
 #' y <- 2012
@@ -286,7 +286,7 @@ julianCenturyAnomaly <- function(jd)
 #'     points(rises[i], -180+azrises[i], col='red', pch=3, lwd=2, cex=1.5)
 #'     points(sets[i], -180+azsets[i], col='blue', pch=3, lwd=2, cex=1.5)
 #' }
-#' 
+#'
 #' @family things related to astronomy
 moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
 {
@@ -476,7 +476,7 @@ moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
     (e2*  0.000026 * cos(RPD * (2 * D - 2 * M     ))) +
     (    -0.000023 * cos(RPD * (2 * F - 2 * D + Mp))) +
     (e *  0.000019 * cos(RPD * (4 * D - M - Mp    )))
-    ## For coordinate conversions, need epsilon (obliquity of the ecliptic) 
+    ## For coordinate conversions, need epsilon (obliquity of the ecliptic)
     ## as defined in Meuus eq 18.4, page 81.
     epsilon <- 23.452294 - 0.0130125 * T - 0.00000164 * T2 + 0.000000503 * T3
     ec <- eclipticalToEquatorial(lambda, beta, epsilon)
@@ -509,4 +509,3 @@ moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
                  phase=phase)
     res
 }
-

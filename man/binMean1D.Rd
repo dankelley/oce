@@ -16,7 +16,7 @@ binMean1D(x, f, xbreaks)
 }
 \value{
 A list with the following elements: the breaks (\code{xbreaks},
-midpoints (\code{xmids}) between those breaks, 
+midpoints (\code{xmids}) between those breaks,
 the count (\code{number}) of \code{x} values between successive breaks,
 and the resultant average (\code{result}) of \code{f}, classified by the
 \code{x} breaks.

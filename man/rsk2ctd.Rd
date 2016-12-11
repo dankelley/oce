@@ -25,16 +25,16 @@ The data and metadata are mostly unchanged, with an important exception: the
 instruments measure total pressure, not sea pressure; see \dQuote{Details}.
 }
 \details{
-The \code{pressureType} element of the 
+The \code{pressureType} element of the
 \code{metadata} of \code{rsk} objects defines the pressure type, and this controls
 how pressure is set up in the returned object. If \code{object@metadata$pressureType}
 is \code{"absolute"} (or \code{NULL}) then the resultant pressure will be adjusted
 to make it into \code{"sea"} pressure. To do this, the value of
 \code{object@metadata$pressureAtmospheric} is inspected. If this is present, then
-it is subtracted from \code{pressure}. If this is missing, then 
+it is subtracted from \code{pressure}. If this is missing, then
 standard pressure (10.1325 dbar) will be subtracted. At this stage, the
-pressure should be near zero at the ocean surface, but some additional adjustment 
-might be necessary, and this may be indicated by setting the argument \code{pressureAtmospheric} to 
+pressure should be near zero at the ocean surface, but some additional adjustment
+might be necessary, and this may be indicated by setting the argument \code{pressureAtmospheric} to
 a non-zero value to be subtracted from pressure.
 }
 

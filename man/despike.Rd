@@ -58,7 +58,7 @@ across any gaps (spots where \code{x==NA}), using \code{\link{approx}} with
 \code{\link{runmed}} to get a running median spanning \code{k}
 elements. The result of these two steps is the "reference" time-series.
 Then, the standard deviation of the difference between \code{x}
-and the reference is calculated.  Any \code{x} values that differ from 
+and the reference is calculated.  Any \code{x} values that differ from
 the reference by more than \code{n} times this standard deviation are considered
 to be spikes.  If \code{replace="reference"}, the spike values are
 replaced with the reference, and the resultant time series is

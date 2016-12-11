@@ -31,11 +31,11 @@ setMethod(f="summary",
           signature="satellite",
           definition=function(object, ...) {
               ## message("JUNK BEGIN")
-              ## spacecraft <- if ("spacecraft" %in% names(object@metadata)) 
+              ## spacecraft <- if ("spacecraft" %in% names(object@metadata))
               ##     object@metadata$spacecraft
               ## else if ("satellite" %in% names(object@metadata))
               ##     object@metadata$satellite
-              ## else 
+              ## else
               ##     ""
               ## cat("Satellite Summary\n-----------------\n\n")
               ## showMetadataItem(object, "filename",   "Data file:           ")
@@ -87,5 +87,3 @@ setMethod(f="plot",
               }
               oceDebug(debug, "} # plot.satellite()\n", unindent=1)
           })
-
-

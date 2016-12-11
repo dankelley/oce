@@ -43,7 +43,7 @@
 #' 
 #' \dontrun{
 #' library(oce)
-#' par(mfrow=c(2,1))
+#' par(mfrow=c(2, 1))
 #' # 1. AO, Arctic oscillation
 #' ao <- read.index("http://www.esrl.noaa.gov/psd/data/correlation/ao.data")
 #' aorecent <- subset(ao, t > as.POSIXct("2000-01-01"))
@@ -90,14 +90,14 @@ read.index <- function(file, format, missingValue, tz=getOption("oceTz"), debug=
         missingValue <- as.numeric(lines[onetoken])
         lines <- lines[seq.int(1L, onetoken-1)]
         d <- as.matrix(read.table(text=lines, header=FALSE))
-        year <- d[,1]
+        year <- d[, 1]
         t <- seq(ISOdatetime(year[1], 1, 15, 0, 0, 0, tz="UTC"), by="month", length.out=12*length(year))
-        data <- as.vector(t(d[,-1]))
+        data <- as.vector(t(d[, -1]))
         data[data == missingValue] <- NA
     } else if (format == "ucar") {
         m <- read.table(text=lines, header=FALSE)
-        year <- m[,1]
-        data <- as.vector(t(m[,-1]))
+        year <- m[, 1]
+        data <- as.vector(t(m[, -1]))
         t <- seq(ISOdatetime(year[1], 1, 15, 0, 0, 0, tz="UTC"), by="month", length.out=12*length(year))
     } else stop("unknown format '", format, "'; must be 'noaa' or 'ucar'")
     if (missing(missingValue)) { # guess, probably dangerous
@@ -108,4 +108,3 @@ read.index <- function(file, format, missingValue, tz=getOption("oceTz"), debug=
     }
     data.frame(t=t, index=data)
 }
-

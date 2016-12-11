@@ -107,9 +107,9 @@ library(oce)
 data(coastlineWorld)
 data(topoWorld)
 
-par(mfrow=c(2,1), mar=c(2, 2, 1, 1))
-lonlim <- c(-70,-50)
-latlim <- c(40,50)
+par(mfrow=c(2, 1), mar=c(2, 2, 1, 1))
+lonlim <- c(-70, -50)
+latlim <- c(40, 50)
 topo <- decimate(topoWorld, by=2) # coarse to illustrate filled contours
 topo <- subset(topo, latlim[1] < latitude & latitude < latlim[2])
 topo <- subset(topo, lonlim[1] < longitude & longitude < lonlim[2])
@@ -129,7 +129,7 @@ mapLines(coastlineWorld)
 
 ## Northern polar region, with colour-coded bathymetry
 par(mfrow=c(1,1))
-drawPalette(c(-5000,0), zlim=c(-5000, 0), col=oce.colorsJet)
+drawPalette(c(-5000, 0), zlim=c(-5000, 0), col=oce.colorsJet)
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
         longitudelim=c(-180,180), latitudelim=c(60,120))
 mapImage(topoWorld, zlim=c(-5000, 0), col=oce.colorsJet)

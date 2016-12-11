@@ -34,7 +34,7 @@ x <- seq(0, 0.9 * pi, length.out=50)
 y <- sin(x)
 y[1] <- NA
 y[10] <- NA
-plot(x, y, ylim=c(0,1))
+plot(x, y, ylim=c(0, 1))
 d <- detrend(x, y)
 points(x, d$Y, pch=20)
 abline(d$a, d$b, col='blue')

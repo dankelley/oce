@@ -17,7 +17,7 @@ T90fromT68 <- function(temperature) temperature / 1.00024
 #' @template temperatureConversionTemplate
 #' @param temperature Vector of temperatures expressed in the ITS-48 scale.
 #' @return Temperature expressed in the ITS-90 scale.
-T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-temperature))/1.00024
+T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature * (100-temperature))/1.00024
 
 #' Look Within the First Element of a List for Replacement Values
 #'
@@ -965,7 +965,7 @@ swThermalConductivity <- function (salinity, temperature=NULL, pressure=NULL)
         f <- 0.0690 + (-8e-5)*T + (-0.0020)*p + (-0.00010)*S # Caldwell eq 8
         cond <- K * (1 + f)                # Caldwell eq 7
     } else {
-        cond <- 0.001365*(1+0.003*T - 1.025e-5*T^2 + 0.0653 * p - 0.00029 * S)
+        cond <- 0.001365 * (1+0.003*T - 1.025e-5*T^2 + 0.0653 * p - 0.00029 * S)
     }
     418.400 * cond                     # convert from cal/(cm*sec*degC) to J/(m*sec*degC)
 }
@@ -1018,8 +1018,8 @@ swDepth <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"
     if (l$eos == "unesco") {
         l$latitude <- l$latitude * atan2(1, 1) / 45
         x <- sin(l$latitude)^2
-        gr <- 9.780318*(1.0+(5.2788e-3+2.36e-5*x)*x) + 1.092e-6*l$pressure
-        res <- (((-1.82e-15*l$pressure+2.279e-10)*l$pressure-2.2512e-5)*l$pressure+9.72659)*l$pressure / gr
+        gr <- 9.780318 * (1.0 + (5.2788e-3+2.36e-5*x)*x) + 1.092e-6*l$pressure
+        res <- ( ( (-1.82e-15*l$pressure+2.279e-10)*l$pressure-2.2512e-5)*l$pressure+9.72659)*l$pressure / gr
     } else if (l$eos == "gsw") {
         res <- -gsw::gsw_z_from_p(p=l$pressure, latitude=l$latitude)
     }
@@ -1135,7 +1135,7 @@ swDynamicHeight <- function(x, referencePressure=2000,
             rho <- swRho(ctd)
             if (sum(!is.na(rho)) < 2) return(NA)
             ## 1e4 converts decibar to Pa
-            dzdp <- ((1/rho - 1/swRho(rep(35,np),rep(0,np),ctd@data$pressure))/g)*1e4
+            dzdp <- ( (1/rho - 1/swRho(rep(35, np), rep(0, np), ctd@data$pressure)) / g )*1e4
             ## Scale both pressure and dz/dp to make integration work better (issue 499)
             max <- max(dzdp, na.rm=TRUE)
             integrand <- approxfun(ctd@data$pressure/referencePressure, dzdp/max, rule=2)
@@ -1578,13 +1578,13 @@ swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
         T <- T68fromT90(temperature)
         f <- frequency
         A1 <- 1.03e-8 + 2.36e-10*T - 5.22e-12*T^2                       # (5)
-        f1 <- 1.32e3*(T + 273.1)*exp(-1700/(T + 273.1))                 # (6)
+        f1 <- 1.32e3 * (T + 273.1) * exp(-1700 / (T + 273.1))           # (6)
         A2 <- 5.62e-8 + 7.52e-10 * T                                    # (7)
-        f2 <- 1.55e7 * (T + 273.1)*exp(-3052/(T + 273.1))               # (8)
+        f2 <- 1.55e7 * (T + 273.1)*exp(-3052 / (T + 273.1))             # (8)
         P2 <- 1 - 10.3e-4 * p + 3.7e-7 * p^2                            # (9)
-        A3 <-(55.9 - 2.37 * T + 4.77e-2 * T^2  - 3.48e-4*T^3) * 1e-15   # (10)
+        A3 <- (55.9 - 2.37 * T + 4.77e-2 * T^2  - 3.48e-4*T^3) * 1e-15  # (10)
         P3 <- 1 - 3.84e-4 * p + 7.57e-8 * p^2                           # (11)
-        alpha <- (A1*f1*f^2)/(f1^2 + f^2) + (A2*P2*f2*f^2)/(f2^2 + f^2) + A3*P3*f^2 # (3a)
+        alpha <- (A1*f1*f^2) / (f1^2 + f^2) + (A2*P2*f2*f^2) / (f2^2 + f^2) + A3*P3*f^2 # (3a)
         alpha <- alpha * 8686 / 1000   # dB/m
     } else if (formulation == "francois-garrison") {
         S <- salinity
@@ -1593,18 +1593,21 @@ swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
         c <- 1412 + 3.21 * T + 1.19 * S + 0.0167 * D # sound speed m/s
         f <- frequency / 1000          # convert to kHz
         theta <- 273 + T
-        f1 <- 2.8 * sqrt(S / 35) * 10^(4 - 1245 / theta) # kHz
+        ## f1 in kHz
+        f1 <- 2.8 * sqrt(S / 35) * 10^(4 - 1245 / theta) # nolint (space before left parenthesis)
         ## subscript 1 for boric acid contribution
-        A1 <- 8.86 / c * 10^(0.78 * pH - 5) # dB / km / kHz
+        ## A1 in dB / km / kHz
+        A1 <- 8.86 / c * 10^(0.78 * pH - 5) # nolint (space before left parenthesis)
         P1 <- 1
         ## MgSO4 contribution
         A2 <- 21.44 * (S / c) * (1 + 0.025 * T) # dB / km / kHz
         P2 <- 1 - 1.37e-4 * D + 6.2e-9 * D^2
-        f2 <- (8.17 * 10^(8 - 1990 / theta)) / (1 + 0.0018 * (S - 35)) # kHz
+        ## f2 in kHz
+        f2 <- (8.17 * 10^(8 - 1990 / theta)) / (1 + 0.0018 * (S - 35)) # nolint (space before left parenthesis)
         ## pure water contribution
         A3 <- 3.964e-4 - 1.146e-5 * T + 1.45e-7 * T^2 - 6.5e-10 * T^3 # dB / km / kHz^2
         P3 <- 1 - 3.83e-5 * D + 4.9e-10 * D^2
-        alpha <- (A1 * P1 * f1 * f^2)/(f^2 + f1^2) + (A2 * P2 * f2 * f^2)/(f^2 + f2^2) + A3 * P3 * f^2
+        alpha <- (A1 * P1 * f1 * f^2) / (f^2 + f1^2) + (A2 * P2 * f2 * f^2) / (f^2 + f2^2) + A3 * P3 * f^2
         alpha <- alpha / 1000
     }
     alpha

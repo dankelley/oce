@@ -69,7 +69,7 @@ be converted to conductivity ratio (which is what many other instruments report)
 by dividing by 42.914 (see Culkin and Smith, 1980) which will be necessary in
 any seawater-related function that takes conductivity ratio as an argument (see
 \dQuote{Examples}).
-    
+
   \emph{A note on pressure.} RBR devices tend to record absolute pressure (i.e.
   sea pressure plus atmospheric pressure), unlike most oceanographic instruments
   that record sea pressure (or an estimate thereof).  The handling of pressure
