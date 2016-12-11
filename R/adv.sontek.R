@@ -161,7 +161,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         upper <- len
         passes <- floor(10 + log(len, 2)) # won't need this many; only do this to catch coding errors
         for (pass in 1:passes) {
-            middle <- floor((upper + lower) / 2) # nolint (nee space before opening parenthesis)
+            middle <- floor((upper + lower) / 2) # nolint (no space before opening parenthesis)
             t <- burstTime[middle]
             if (tFind < t)
                 upper <- middle

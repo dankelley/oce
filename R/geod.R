@@ -86,10 +86,10 @@ geodXy <- function(longitude, latitude, longitudeRef=0, latitudeRef=0, rotate=0)
     if (rotate != 0) {
         S <- sin(rotate * pi / 180)
         C <- cos(rotate * pi / 180)
-        r <- matrix(c(C,S,-S,C),nrow=2)
+        r <- matrix(c(C, S, -S, C), nrow=2)
         rxy <- r %*% rbind(xy$x, xy$y)
-        xy$x <- rxy[1,]
-        xy$y <- rxy[2,]
+        xy$x <- rxy[1, ]
+        xy$y <- rxy[2, ]
     }
     data.frame(x=xy$x, y=xy$y)
 }
@@ -268,15 +268,16 @@ geodGc <- function(longitude, latitude, dmax)
     lat <- NULL
     ## FIXME: if this is slow, may need to use C
     for (i in seq.int(1, n-1)) {
-        d <- 2 * asin(sqrt((sin((rlat[i] - rlat[i+1])/2))^2
-                           + cos(rlat[i]) * cos(rlat[i+1]) * (sin((rlon[i] - rlon[i+1])/2))^2))
+        d <- 2 * asin(sqrt((sin((rlat[i] - rlat[i+1])/2))^2 # nolint (no space before opening parenthesis)
+                           + cos(rlat[i]) * cos(rlat[i+1]) * (sin((rlon[i] - rlon[i+1])/2))^2)) # nolint (no space before opening parenthesis)
+
         ddeg <- d / d2r
         if (ddeg < dmax) {
             lon <- c(lon, longitude[i])
             lat <- c(lat, latitude[i])
         } else {
             f <- seq(0, 1, length.out=ceiling(1 + ddeg/dmax))
-            A <- sin((1 - f) * d) / sin(d)
+            A <- sin((1 - f) * d) / sin(d) # nolint (no space before opening parenthesis)
             B <- sin(f * d) / sin(d)
             x <- A * cos(rlat[i]) * cos(rlon[i]) + B * cos(rlat[i+1]) * cos(rlon[i+1])
             y <- A * cos(rlat[i]) * sin(rlon[i]) + B * cos(rlat[i+1]) * sin(rlon[i+1])
