@@ -768,12 +768,14 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## NA Because the times are continuous without the extra sample,
     ## for now I'll just remove the entire sample
     tNA <- which(is.na(time))
-    for (field in names(res@data)) {
-        if (!('field' %in% distance)) {
-            if (field %in% c('v', 'a', 'q')) {
-                res@data[[field]] <- res@data[[field]][-tNA, , , drop=FALSE]
-            } else {
-                res@data[[field]] <- res@data[[field]][-tNA]
+    if (length(tNA) > 0) {
+        for (field in names(res@data)) {
+            if (!('field' %in% distance)) {
+                if (field %in% c('v', 'a', 'q')) {
+                    res@data[[field]] <- res@data[[field]][-tNA, , , drop=FALSE]
+                } else {
+                    res@data[[field]] <- res@data[[field]][-tNA]
+                }
             }
         }
     }
