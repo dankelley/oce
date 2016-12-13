@@ -30,7 +30,9 @@ test_that("Times", {
 test_that("Moon", {
           ## [2] example 45.a (pages 312-313)
           ## Do not check too many digits, because the code does not have all terms
-          ## in formulae.  (Note: this also tests eclipticalToEquatorial)
+          ## in formulae.
+          ## NB. this block also tests eclipticalToEquatorial(), julianDay(),
+          ## and julianCenturyAnomaly().
           t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
           m <- moonAngle(t, 0, 0) # lat and lon arbitrary
           expect_equal(m$lambda, 133.162659, tolerance=0.0002)
@@ -57,10 +59,10 @@ test_that("Sun", {
           ## FIXME: replace by numbers from [2] if they can be found.
           t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
           s <- sunAngle(t, 0, 0) # lat and lon arbitrary
-          expect_equal(s$azimuth, 358.6241689)
-          expect_equal(s$altitude, -81.3030909)
-          expect_equal(s$diameter, 0.5318717591)
-          expect_equal(s$distance, 1.002497295)
+          expect_equal(s$azimuth, 358.624168865654)
+          expect_equal(s$altitude, -81.3030909018573)
+          expect_equal(s$diameter, 0.531871759139675)
+          expect_equal(s$distance, 1.00249729533012)
           ## Local time
           tlocal <- t
           attributes(tlocal)$tzone <- ""
