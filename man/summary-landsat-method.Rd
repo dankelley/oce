@@ -14,7 +14,7 @@ call to \code{\link{read.landsat}}.}
 \item{...}{Ignored.}
 }
 \description{
-Provides a summary of a some information about an object of 
+Provides a summary of a some information about an object of
 \code{\link{landsat-class}}.
 }
 \author{

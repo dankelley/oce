@@ -75,7 +75,7 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{UNKN_*.*} \tab \code{-}                  \tab The result is context-dependent                            \cr
     \code{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                                 \cr
 }
-Any code not shown in the list is transferred to the oce object without renaming, apart from 
+Any code not shown in the list is transferred to the oce object without renaming, apart from
 the adjustment of suffix numbers. The following code have been seen in data files from
 the Bedford Institute of Oceanography: \code{ALTB}, \code{PHPH} and \code{QCFF}.
 }

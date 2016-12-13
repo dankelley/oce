@@ -1,5 +1,5 @@
 #' @title Class to Store Coastline Data
-#' 
+#'
 #' @description
 #' Class to store coastline data, which may be read with
 #' \code{\link{read.coastline}} or constructed with \code{\link{as.coastline}},
@@ -16,7 +16,7 @@ setClass("coastline", contains="oce")
 
 
 #' @title World Coastline
-#' 
+#'
 #' @description
 #' This is a coarse resolution coastline at scale 1:110M, with 10,696 points,
 #' suitable for world-scale plots plotted at a small size, e.g. inset diagrams.
@@ -77,7 +77,7 @@ setMethod(f="[[<-",
           })
 
 #' @title Subset a Coastline Object
-#' 
+#'
 #' @description
 #' Summarizes coastline length, bounding box, etc.
 #' @param x A \code{coastline} object, i.e. one inheriting from \code{\link{coastline-class}}.
@@ -104,12 +104,11 @@ setMethod(f="subset",
           })
 
 
-                                        
 #' @title Summarize a Coastline Object
-#' 
+#'
 #' @description
 #' Summarizes coastline length, bounding box, etc.
-#' 
+#'
 #' @param object an object of class \code{"coastline"}, usually, a result of a
 #' call to \code{\link{read.coastline}} or \code{\link{read.oce}}.
 #' @param \dots further arguments passed to or from other methods.
@@ -119,19 +118,18 @@ setMethod(f="summary",
           signature="coastline",
           definition=function(object, ...) {
               cat("Coastline Summary\n-----------------\n\n")
-              cat("* Number of points:", length(object@data$latitude), ", of which", 
+              cat("* Number of points:", length(object@data$latitude), ", of which",
                   sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
               callNextMethod()
           })
 
- 
-#' @title Coerce Data into a Coastline Object 
-#' 
+#' @title Coerce Data into a Coastline Object
+#'
 #' @description
 #' Coerces a sequence of longitudes and latitudes into a coastline dataset.
 #' This may be used when \code{\link{read.coastline}} cannot read a file, or
 #' when the data have been manipulated.
-#' 
+#'
 #' @param longitude the longitude in decimal degrees, positive east of
 #' Greenwich, or a data frame with columns named \code{latitude} and
 #' \code{longitude}, in which case these values are extracted from the data
@@ -163,13 +161,13 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 
 
 #' @title Plot a Coastline
-#' 
+#'
 #' @description
 #' This function plots a coastline.  An attempt is made to fill the space of
 #' the plot, and this is done by limiting either the longitude range or the
 #' latitude range, as appropriate, by modifying the eastern or northern limit,
 #' as appropriate.
-#' 
+#'
 #' @details
 #' If \code{longitudelim}, \code{latitudelim} and \code{projection} are all given,
 #' then these arguments are passed to \code{\link{mapPlot}} to produce the plot.
@@ -181,7 +179,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' then \code{\link{mapPlot}} is still called, but \code{longitudelim} and
 #' \code{latitudelim} are computed from \code{clongitude}, \code{clatitude} and \code{span}.
 #'
-#' If \code{projection} is not provided, much simpler plots are produced. These are 
+#' If \code{projection} is not provided, much simpler plots are produced. These are
 #' Cartesian, with aspect ratio set to minimize shape distortion at the central latitude.
 #' Although these are crude, they have the benefit of always working, which cannot
 #' be said of true map projections, which can be problematic in various ways owing
@@ -191,7 +189,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' \code{par(new=TRUE)}, and then call \code{plot,coastline-method} with a value of
 #' \code{mar} that moves the inset plot to a desired location on the existing
 #' plot, and with \code{bg="white"}.
-#' 
+#'
 #' @param x A \code{coastline} object, as read by \code{\link{read.coastline}}
 #' or created by \code{\link{as.coastline}}, or a list containing items named
 #' \code{longitude} and \code{latitude}.
@@ -299,12 +297,12 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' data(coastlineWorld)
 #' plot(coastlineWorld)
 #' plot(coastlineWorld, clongitude=-63.6, clatitude=44.6, span=1000)
-#' 
+#'
 #' ## Canada in Lambert projection
 #' plot(coastlineWorld, clongitude=-95, clatitude=65, span=5500,
 #'      grid=10, projection='+proj=laea +lon_0=-100 +lat_0=55')
 #' }
-#' 
+#'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{coastline} data
 setMethod(f="plot",
@@ -316,7 +314,7 @@ setMethod(f="plot",
                                lonlabel=NULL, latlabel=NULL, sides=NULL,
                                projection=NULL,
                                expand=1,
-                               mgp=getOption("oceMgp"), mar=c(mgp[1]+1,mgp[1]+1,1,1),
+                               mgp=getOption("oceMgp"), mar=c(mgp[1]+1, mgp[1]+1, 1, 1),
                                bg,
                                fill, # just so we catch it's use ... will be removed at some later time
                                border=NULL, col="lightgray", # OLD: border and col did not exist
@@ -330,13 +328,13 @@ setMethod(f="plot",
               if (!missing(projection) && inherits(projection, "CRS"))
                   projection <- projection@projargs
               oceDebug(debug, "plot,coastline-method(...",
-                       ", clongitude=", if(missing(clongitude)) "(missing)" else clongitude,
-                       ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
-                       ", span=", if(missing(span)) "(missing)" else span,
+                       ", clongitude=", if (missing(clongitude)) "(missing)" else clongitude,
+                       ", clatitude=", if (missing(clatitude)) "(missing)" else clatitude,
+                       ", span=", if (missing(span)) "(missing)" else span,
                        ", geographical=", geographical,
                        ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
-                       ", cex.axis=", cex.axis, 
-                       ", inset=", inset, 
+                       ", cex.axis=", cex.axis,
+                       ", inset=", inset,
                        ", ...) {\n", sep="", unindent=1)
               if (missing(clongitude) && !missing(projection) && length(grep("+lon_0", projection))) {
                   clongitude <- as.numeric(gsub(".*\\+lon_0=([^ ]*).*", "\\1", projection))
@@ -347,8 +345,8 @@ setMethod(f="plot",
                   oceDebug(debug, "inferred clatitude=", clatitude, " from projection\n")
               }
               dots <- list(...)
-              ##> message("fill: ", if(missing(fill)) "MISSING" else fill)
-              ##> message("col: ", if(missing(col)) "MISSING" else col)
+              ##> message("fill: ", if (missing(fill)) "MISSING" else fill)
+              ##> message("col: ", if (missing(col)) "MISSING" else col)
               if (!missing(fill)) {
                   ## permit call as documented before 2016-02-03
                   ## Note: the code permitted fill=TRUE but this was never documented
@@ -361,8 +359,8 @@ setMethod(f="plot",
                   }
                   warning("In plot,coastline-method() : 'fill' being accepted for backwards compatibility; please use 'col' instead", call.=FALSE)
               }
-              ##> message("fill: ", if(missing(fill)) "MISSING" else fill)
-              ##> message("col: ", if(missing(col)) "MISSING" else col)
+              ##> message("fill: ", if (missing(fill)) "MISSING" else fill)
+              ##> message("col: ", if (missing(col)) "MISSING" else col)
               if (is.character(col)) {
                   if (!("fillable" %in% names(x@metadata) && x@metadata$fillable)) {
                       col <- NULL
@@ -372,7 +370,7 @@ setMethod(f="plot",
               if (inherits(x, "coastline") && !missing(longitudelim) && !missing(latitudelim) && !missing(projection)) {
                   oceDebug(debug, "plot,coastline-method calling mapPlot (code location 1)\n")
                   mapPlot(x[["longitude"]], x[["latitude"]], projection=projection,
-                          longitudelim=longitudelim, latitudelim=latitudelim, 
+                          longitudelim=longitudelim, latitudelim=latitudelim,
                           bg=col, col=col, fill=fill, border=border, debug=debug-1)
                   return(invisible())
               }
@@ -465,7 +463,7 @@ setMethod(f="plot",
                       yr <- clatitude + sqrt(1/2) * span * c(-1/2, 1/2) / 111.11
                       xr0 <- xr
                       yr0 <- yr
-                      oceDebug(debug, "xr=", xr," yr=", yr, "span=", span, "\n")
+                      oceDebug(debug, "xr=", xr, " yr=", yr, "span=", span, "\n")
                       oceDebug(debug, "corner-to-corner span=", geodDist(xr[1], yr[1], xr[2], yr[2]), " km\n")
                   } else {
                       xr0 <- range(longitude, na.rm=TRUE)
@@ -479,7 +477,8 @@ setMethod(f="plot",
                       }
                       ## Expand
                       if (missing(span)) {
-                          if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) { # don't expand if full map
+                          if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) {
+                              ## don't expand if full map
                               xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
                               yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
                           } else {
@@ -493,7 +492,8 @@ setMethod(f="plot",
                       oceDebug(debug, "xr=", xr, " yr=", yr, "\n")
                   }
                   ## Trim lat or lon, to avoid empty margin space
-                  if (FALSE) { # disable for issue 677 (as a test, or maybe permanently)
+                  if (FALSE) {
+                      ## disable for issue 677 (as a test, or maybe permanently)
                       asp.page <- par("fin")[2] / par("fin")[1] # dy / dx
                       oceDebug(debug, "par('pin')=", par('pin'), "\n")
                       oceDebug(debug, "par('fin')=", par('fin'), "\n")
@@ -677,7 +677,7 @@ setMethod(f="plot",
 #'
 #' @family functions that download files
 #' @family things related to \code{coastline} data
-download.coastline <- function(resolution, item="coastline", 
+download.coastline <- function(resolution, item="coastline",
                            destdir=".", destfile,
                            server="naturalearth",
                            debug=getOption("oceDebug"))
@@ -708,7 +708,7 @@ download.coastline <- function(resolution, item="coastline",
 }
 
 #' @title Read a Coastline File
-#' 
+#'
 #' @description
 #' Read a coastline file in R, Splus, mapgen, shapefile, or openstreetmap
 #' format.
@@ -717,7 +717,7 @@ download.coastline <- function(resolution, item="coastline",
 #' The MapGen format is of the form \preformatted{ # -b -16.179081 28.553943
 #' -16.244793 28.563330 } BUG: the 'arc/info ungenerate' format is not yet
 #' understood.
-#' 
+#'
 #' @param file name of file containing coastline data.
 #' @param type type of file, one of \code{"R"}, \code{"S"}, \code{"mapgen"},
 #' \code{"shapefile"} or \code{"openstreetmap"}.
@@ -730,7 +730,7 @@ download.coastline <- function(resolution, item="coastline",
 #' @return An object of \code{\link{coastline-class}}.
 #' @author Dan Kelley
 read.coastline <- function(file,
-                           type=c("R","S","mapgen","shapefile","openstreetmap"),
+                           type=c("R", "S", "mapgen", "shapefile", "openstreetmap"),
                            debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     type <- match.arg(type)
@@ -779,20 +779,20 @@ read.coastline <- function(file,
                                         # 2
                                         #   ...
                                         #   END
-        if (all.equal(header, c("#","-b"))) {
-            lonlat <- scan(file,what=double(0),na.strings=c("#","-b"), quiet=TRUE) # slow, but just one line
+        if (all.equal(header, c("#", "-b"))) {
+            lonlat <- scan(file, what=double(0), na.strings=c("#", "-b"), quiet=TRUE) # slow, but just one line
         } else {
-            if (all.equal(header, c("nan","nan"))) {
-                lonlat <- scan(file,what=double(0),na.strings=c("nan","nan"), quiet=TRUE) # fast because whole file
+            if (all.equal(header, c("nan", "nan"))) {
+                lonlat <- scan(file, what=double(0), na.strings=c("nan", "nan"), quiet=TRUE) # fast because whole file
             } else {
-                if (all.equal(header, c("NA","NA"))) {
-                    lonlat <- scan(file,what=double(0), quiet=TRUE) # fast because whole file
+                if (all.equal(header, c("NA", "NA"))) {
+                    lonlat <- scan(file, what=double(0), quiet=TRUE) # fast because whole file
                 } else {
-                    stop(cat("Unknown file type; the unrecognized header line is '",header,"'\n",sep=" "))
+                    stop(cat("Unknown file type; the unrecognized header line is '", header, "'\n", sep=" "))
                 }
             }
         }
-        res <- new("coastline", longitude=lonlat[,1], latitude=lonlat[,2], fillable=FALSE)
+        res <- new("coastline", longitude=lonlat[, 1], latitude=lonlat[, 2], fillable=FALSE)
     } else {
         stop("unknown method.  Should be \"R\", \"S\", or \"mapgen\"")
     }
@@ -804,10 +804,10 @@ read.coastline <- function(file,
 }
 
 #' @title Read a Coastline File in Shapefile Format
-#' 
+#'
 #' @description
 #' Read coastline data stored in the shapefile format [1].
-#' 
+#'
 #' @param file name of file containing coastline data (a file ending in \code{.shp})
 #' or a zipfile that contains such a file, with a corresponding name.
 #' The second scheme is useful for files downloaded from the NaturalEarth
@@ -840,7 +840,7 @@ read.coastline <- function(file,
 #' lakes and rivers, for borders, etc. It is highly recommended.
 #'}
 #' @family things related to \code{coastline} data
-read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
+read.coastline.shapefile <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90),
                                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     oceDebug(debug, "read.shapefile(file=\"", file, "\", ...) {\n", sep="", unindent=1)
@@ -886,7 +886,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
             ## Handle zipfiles. Note that this code might come in handy
             ## in other contexts, so it is being written in a step-by-step
             ## way. Importantly, the extracted file is saved in a temporary
-            ## directory to avoid overwriting something (or otherwise 
+            ## directory to avoid overwriting something (or otherwise
             ## disrupting) the working directory.
             zipfile <- file
             ## filename <- fullFilename(zipfile)
@@ -971,7 +971,8 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     segment <- 0
     while (TRUE) {
         record <- record + 1
-        if ((o + 53) > fileSize) {      # FIXME could be more clever on eof
+        if ( (o + 53) > fileSize) {
+            ## FIXME could be more clever on eof
             oceDebug(debug, "o:", o, ", fileSize:", fileSize, " ... so finished\n")
             break
         }
@@ -982,7 +983,8 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         shapeType <- readBin(buf[o + 9:12], "integer", n=1, size=4, endian="little")
         if (shapeType < 0) stop("cannot have shapeType < 0, but got ", shapeType, " (programming error)")
         if (shapeType > 31) stop("cannot have shapeType > 31, but got ", shapeType, " (programming error)")
-        if (shapeType == 0) { # NULL record; just skip 4 bytes (I guess; [1] table 3)
+        if (shapeType == 0) {
+            ## NULL record; just skip 4 bytes (I guess; [1] table 3)
             o <- o + 12
         } else {
             if (shapeType != shapeTypeFile)
@@ -1016,8 +1018,8 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
                             cat(segment, "\n")
                     }
                     rows <- seq.int(look[part], -1 + look[part+1])
-                    latitude <- c(latitude, NA, xy[rows,2]) # FIXME: this is slow; can we know size at start?
-                    longitude <- c(longitude, NA, xy[rows,1])
+                    latitude <- c(latitude, NA, xy[rows, 2]) # FIXME: this is slow; can we know size at start?
+                    longitude <- c(longitude, NA, xy[rows, 1])
                 }
             }
             o <- o + 53 + 4 * numberParts + 2 * numberPoints * 8 - 1
@@ -1035,7 +1037,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
 }
 
 #' @title Read a Coastline File in Openstreetmap Format
-#' 
+#'
 #' @description
 #' Read coastline data stored in the openstreetmap format [1].
 #'
@@ -1043,7 +1045,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
 #' @return An object of \code{\link{coastline-class}}
 #' @author Dan Kelley
 #' @family things related to \code{coastline} data
-read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
+read.coastline.openstreetmap <- function(file, lonlim=c(-180, 180), latlim=c(-90, 90),
                                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     oceDebug(debug, "read.coastline.openstreetmap(file=\"", file, "\", ...) {\n", sep="", unindent=1)
@@ -1104,13 +1106,13 @@ read.coastline.openstreetmap <- function(file, lonlim=c(-180,180), latlim=c(-90,
 
 
 #' @title Find the Name of the Best Coastline Object
-#' 
+#'
 #' @description
 #' Find the name of the most appropriate coastline for a given locale
 #' Checks \code{coastlineWorld}, \code{coastlineWorldFine} and
 #' \code{coastlineWorldCoarse}, in that order, to find the one most appropriate
 #' for the locale.
-#' 
+#'
 #' @param lonRange range of longitude for locale
 #' @param latRange range of latitude for locale
 #' @param span span of domain in km (if provided, previous two arguments are
@@ -1172,11 +1174,11 @@ coastlineBest <- function(lonRange, latRange, span, debug=getOption("oceDebug"))
 #' may change.  Part of the development plan is to see if there is common
 #' ground between this and the \code{clipPolys} function in the
 #' \CRANpkg{PBSmapping} package.
-#' 
+#'
 #' @param coastline original coastline object
-#' @param lon_0 longitude as would be given in a \code{+lon_0=} item in a 
+#' @param lon_0 longitude as would be given in a \code{+lon_0=} item in a
 #' call to \link[rgdal]{project} in the \CRANpkg{rgdal} package.
-#' 
+#'
 #' @examples
 #' library(oce)
 #' data(coastlineWorld)
@@ -1191,7 +1193,7 @@ coastlineCut <- function(coastline, lon_0=0)
     if (lon_0 == 0)
         return(coastline)
     cleanAngle<-function(a)
-        ifelse(a<(-180), a+360, ifelse(a>180, a-360, a))
+        ifelse(a < -180, a+360, ifelse(a > 180, a-360, a))
     loncut <- cleanAngle(lon_0+180)
     lon <- coastline[["longitude"]]
     lat <- coastline[["latitude"]]

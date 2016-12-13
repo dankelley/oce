@@ -369,11 +369,13 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^pr$", name))) {
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="")
-    } else if (1 == length(grep("^prdE$", name))) { # Caution: English unit
+    } else if (1 == length(grep("^prdE$", name))) {
+        ## Caution: English unit
         name <- "pressure"
         unit <- list(unit=expression(psi), scale="")
         warning("this .cnv file contains pressure in PSI, but [[\"pressure\"]] will return in dbar")
-    } else if (1 == length(grep("^prDE$", name))) { # Caution: English unit
+    } else if (1 == length(grep("^prDE$", name))) {
+        ## Caution: English unit
         name <- "pressure"
         unit <- list(unit=expression(psi), scale="")
         warning("this .cnv file contains pressure in PSI, but [[\"pressure\"]] will return in dbar")
@@ -468,10 +470,12 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^t[0-9]90((C)|(Cm))?$", name))) {
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
-    } else if (name %in% c("t4968C", "tnc68C", "tv268C", "tnc268C", "t3868C", "t3836C1", "t38_68C")) { # [1] p169-170
+    } else if (name %in% c("t4968C", "tnc68C", "tv268C", "tnc268C", "t3868C", "t3836C1", "t38_68C")) {
+        ## [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="IPTS-68")
-    } else if (name %in% c("t4990C", "tnc90C", "tv290C", "tnc290C", "t3890C", "t3890C1", "t38_90C")) { # [1] p169-170
+    } else if (name %in% c("t4990C", "tnc90C", "tv290C", "tnc290C", "t3890C", "t3890C1", "t38_90C")) {
+        ## [1] p169-170
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (1 == length(grep("^timeH$", name))) {
@@ -785,7 +789,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             if (missing(missingValue))
                 missingValue <- as.numeric(bad_flag)
         }
-        if (0 < (r<-regexpr("depth", lline))) { # "** Depth (m): 3447 "
+        if (0 < (r<-regexpr("depth", lline))) {
+            ## "** Depth (m): 3447 "
             look <- sub("[a-z:()]*", "", lline, ignore.case=TRUE)
             look <- gsub("^[*a-zA-Z\\(\\) :]*", "", lline, ignore.case=TRUE)
             look <- gsub("[ ]*", "", look, ignore.case=TRUE)
@@ -928,7 +933,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@data <- data
     ## Add standard things, if missing
     if (haveData) {
-        if (!foundSalinity) {         # && getOption("insertCalculatedDataCTD")) {
+        if (!foundSalinity) {
             if (foundConductivityRatio) {
                 C <- data$conductivityratio
                 S <- swSCTp(C, data$temperature, data$pressure)
@@ -972,7 +977,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                               unit=list(unit=expression(), scale="PSS-78"))
             ## colNamesOriginal <- c(colNamesOriginal, "NA")
         }
-        if (foundDepth && !foundPressure) { # && getOption("insertCalculatedDataCTD")) {
+        if (foundDepth && !foundPressure) {
             ## BUG: this is a poor, nonrobust approximation of pressure
             g <- if (foundHeaderLatitude) gravity(latitude) else 9.8
             rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0)

@@ -30,7 +30,7 @@ files.
 }
 \details{
 The three permitted file types are as follows: (1) an ascii type described
-by NOAA as "?"; (2) a NetCDF format described by NOAA as "GMT NetCDF" 
+by NOAA as "?"; (2) a NetCDF format described by NOAA as "GMT NetCDF"
 (recognized by the presence of a variable named \code{}), and
 (3) another NetCDF format described by NOAA as "NetCDF" (recognized
 by the presence of a variable called \code{}). Files in each of these formatss

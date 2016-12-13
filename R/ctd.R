@@ -3790,13 +3790,15 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
             Tok <- Tline[ok]
             lines(Sok, Tok, col=col, lwd=lwd, lty=lty)
             if (cex > 0) {
-                if (Sok[length(Sok)] > SAxisMax) { # to right of box
+                if (Sok[length(Sok)] > SAxisMax) {
+                    ## to right of box
                     i <- match(TRUE, Sok > SAxisMax)
                     if (rotate)
                         mtext(rhoLabel, side=4, at=Tline[i], line=0, cex=cex, col=col)
                     else
                         text(usr[2], Tline[i], rhoLabel, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
-                } else { # above box ... if the line got there
+                } else {
+                    ## above box ... if the line got there
                     if (max(Tok) > (TAxisMax - 0.05 * (TAxisMax - TAxisMin)))
                         mtext(rhoLabel, side=3, at=Sline[Tn], line=0.1, cex=cex, col=col)
                 }
@@ -3961,7 +3963,8 @@ plotProfile <- function (x,
     oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
              "\", debug=", debug, ", ...) {\n", sep="", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
-    if (missing(mar)) {                # default behaviour changed 20161020 for issue #1103
+    if (missing(mar)) {
+        ## default behaviour changed 20161020 for issue #1103
         mar <- c(1 + if (length(grep('\\+', xtype))) mgp[1] else 0, mgp[1]+1.5, mgp[1]+1.5, mgp[1])
         if (length(xtype) == 1 && xtype %in% names(x@data))
             mar[1] <- 1 # the bottom margin is wrong for e.g. NO2+NO3

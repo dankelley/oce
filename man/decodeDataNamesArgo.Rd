@@ -17,14 +17,14 @@ replacements having been made for all known quantities.
 This function is used by \code{\link{read.argo}} to convert Argo-convention
 data names to oce-convention names. The inference of names was done
 by case-by-case inspection of some files. Eventually, it would make
-sense to handle all the documented names listed in tables 2.2.2 
+sense to handle all the documented names listed in tables 2.2.2
 and 2.2.3 of [1].
 }
 \details{
 The names are converted with
 \code{\link{gsub}}, ignoring the case of the input strings. The procedure
 is to first handle the items listed in the following table. After that,
-the qualifiers 
+the qualifiers
 \code{_ADJUSTED}, \code{_ERROR} and \code{_QC},
 are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 \itemize{
@@ -60,7 +60,7 @@ are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
 \references{
 1. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
 \samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-(link checked 17 Nov 2016 several times in the months before, 
+(link checked 17 Nov 2016 several times in the months before,
 but failed 18 Nov 2016).
 Tables 2.2.2 and 2.2.3 of this document lists the codes used in Argo netCDF files.
 }

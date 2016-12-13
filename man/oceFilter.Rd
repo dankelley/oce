@@ -53,8 +53,8 @@ The first value in the \code{a} vector is ignored, and if
 \examples{
 
 library(oce)
-par(mar=c(4,4,1,1))
-b <- rep(1,5)/5
+par(mar=c(4, 4, 1, 1))
+b <- rep(1, 5)/5
 a <- 1
 x <- seq(0, 10)
 y <- ifelse(x == 5, 1, 0)

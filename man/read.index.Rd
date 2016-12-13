@@ -56,7 +56,7 @@ for January, February, etc.
 
 \dontrun{
 library(oce)
-par(mfrow=c(2,1))
+par(mfrow=c(2, 1))
 # 1. AO, Arctic oscillation
 ao <- read.index("http://www.esrl.noaa.gov/psd/data/correlation/ao.data")
 aorecent <- subset(ao, t > as.POSIXct("2000-01-01"))

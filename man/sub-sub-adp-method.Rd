@@ -9,7 +9,7 @@ In addition to the usual extraction of elements by name, some shortcuts
 are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
 for the other velocity components. The \code{a} and \code{q}
 data can be retrieved in \code{\link{raw}} form or numeric
-form (see examples). The coordinate system may be 
+form (see examples). The coordinate system may be
 retrieved with e.g. \code{x[["coordinate"]]}.}
 \usage{
 \S4method{[[}{adp}(x, i, j, ...)

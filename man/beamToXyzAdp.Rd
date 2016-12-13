@@ -38,7 +38,7 @@ and \eqn{B_4}{B4} are used to calculate velocity components in a cartesian
 system referenced to the instrument using the following formulae:
 \eqn{u=ca(B_1-B_2)}{u=c*a*(B1-B2)}, \eqn{v=ca(B_4-B_3)}{v=c*a*(B4-B3)},
 \eqn{w=-b(B_1+B_2+B_3+B_4)}{w=-b*(B1+B2+B3+B4)}, and an estimate of the
-error in velocity is calculated using \eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1 +
+error in velocity is calculated using \eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1+
 B2 - B3 - B4)}
 
 (Note that the multiplier on \eqn{e}{e} is subject to discussion; RDI

@@ -46,7 +46,7 @@ then a boxcar filter, each of length equal to the corresponding component of
 library(oce)
 data(adp)
 plot(adp)
-adpDec <- decimate(adp,by=2,filter=c(1/4,1/2,1/4))
+adpDec <- decimate(adp,by=2,filter=c(1/4, 1/2, 1/4))
 plot(adpDec)
 }
 \author{

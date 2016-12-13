@@ -71,4 +71,3 @@ processingLogShow <- function(x)
             x@processingLog$value[i], "`\n", sep="")
     }
 }
-

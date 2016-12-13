@@ -25,7 +25,7 @@ setClass("bremen", contains="oce") # 20150528 may be called "geomar" or somethin
 
 setMethod(f="initialize",
           signature="bremen",
-          definition=function(.Object,filename="") {
+          definition=function(.Object, filename="") {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@metadata$filename <- filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
@@ -227,4 +227,3 @@ read.bremen <- function(file)
     }
     res
 }
-

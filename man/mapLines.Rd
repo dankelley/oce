@@ -30,7 +30,7 @@ Adds lines to an existing map, by analogy to \code{\link{lines}}.
 library(oce)
 data(coastlineWorld)
 mapPlot(coastlineWorld, type='l',
-        longitudelim=c(-80,10), latitudelim=c(0,120),
+        longitudelim=c(-80, 10), latitudelim=c(0, 120),
         projection="+proj=ortho +lon_0=-40")
 lon <- c(-63.5744, 0.1062)             # Halifax CA to London UK
 lat <- c(44.6479, 51.5171)

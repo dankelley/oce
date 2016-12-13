@@ -105,11 +105,11 @@ library(oce)
 par(mgp=getOption("oceMgp"))
 
 ## 1. A three-panel plot
-par(mfrow=c(3,1), mar=c(3, 3, 1, 1))
+par(mfrow=c(3, 1), mar=c(3, 3, 1, 1))
 omar <- par('mar')                 # save initial margin
 
 ## 1a. top panel: simple case
-drawPalette(zlim=c(0,1), col=oce.colorsJet(10))
+drawPalette(zlim=c(0, 1), col=oce.colorsJet(10))
 plot(1:10, 1:10, col=oce.colorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 par(mar=omar)                      # reset margin
 

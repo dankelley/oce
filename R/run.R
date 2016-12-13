@@ -88,4 +88,3 @@ runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv)
         res <- res$dydx
     res
 }
-

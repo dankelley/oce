@@ -1,7 +1,7 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 #' @title Class to Store Hydrographic Section Data
-#' 
+#'
 #' @description
 #' Class to store hydrographic section data, with standard slots \code{metadata},
 #' \code{data} and \code{processingLog}.
@@ -10,12 +10,12 @@
 #' Individual stations are retrieved by providing a station number as a second
 #' argument in the index, e.g.  the first station is \code{s[["station", 1]]}
 #' (which is a \code{\link{ctd-class}} object).
-#'         
+#'
 #' Aggregated values of the quantities measured at each level of the CTD
 #' profiles contained within the section may be accessed as e.g.
 #' \code{section[["salinity"]]}.  This works for any quantity whose name is
-#' present in the constituent profiles.   
-#' 
+#' present in the constituent profiles.
+#'
 #' Since it is often useful to pair such quantities with locations,
 #' \code{section[["longitude"]]} and \code{section[["latitude"]]} return vectors
 #' with values repeated for each level in each CTD (see the \code{pairs()} call in
@@ -24,7 +24,7 @@
 #' \code{section[["latitude", "byStation"]]} may be used.  Station-by-station
 #' values of dynamic height are provided by e.g.
 #' \code{section[["dynamic height"]]}.
-#' 
+#'
 #' The depths of all data are obtained from e.g.  \code{section[["depth"]]}, and
 #' the distances along the transect, measured from the first station, are obtained
 #' from e.g.  \code{section[["distance"]]}.
@@ -34,15 +34,15 @@
 #' \code{\link{read.section}} or created from CTD objects by using
 #' \code{\link{as.section}} or by adding a ctd station to an existing section with
 #' \code{\link{sectionAddStation}}.
-#' 
+#'
 #' Sections may be sorted with \code{\link{sectionSort}}, subsetted with
 #' \code{\link{subset,section-method}}, smoothed with \code{\link{sectionSmooth}}, and
 #' gridded with \code{\link{sectionGrid}}.  Gridded sections may be plotted with
-#' \code{\link{plot,section-method}}.  
-#'     
+#' \code{\link{plot,section-method}}.
+#'
 #' Statistical summaries are provided by \code{\link{summary,section-method}}, while
-#' overviews are provided by \code{show}.  
-#'     
+#' overviews are provided by \code{show}.
+#'
 #' The sample dataset \code{\link{section}} contains data along WOCE line A03.
 #'
 #' @examples
@@ -54,7 +54,7 @@
 #' par(mfrow=c(3,3))
 #' Tlim <- range(section[["temperature"]])
 #' ylim <- rev(range(section[["pressure"]]))
-#' for (stn in section[["station",1:9]])
+#' for (stn in section[["station", 1:9]])
 #'     plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
 #'
 #' @author Dan Kelley
@@ -65,7 +65,7 @@ setClass("section", contains="oce")
 
 
 #' @title Hydrographic section
-#' 
+#'
 #' @description
 #' This is line A03 (ExpoCode 90CT40_1, with nominal sampling date 1993-09-11).
 #' The chief scientist was Tereschenkov of SOI, working aboard the Russian ship
@@ -76,7 +76,7 @@ setClass("section", contains="oce")
 #' 2 for an acceptable measurement, 3 for a questionable measurement, 4
 #' for a bad measurement, etc; see \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 #' for further details.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' library(oce)
@@ -86,16 +86,16 @@ setClass("section", contains="oce")
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 #' plot(GSg, map.xlim=c(-80,-60))
 #' }
-#' 
+#'
 #' @name section
-#' 
+#'
 #' @docType data
-#' 
+#'
 #' @usage data(section)
-#' 
+#'
 #' @source This is based on the WOCE file named \code{a03_hy1.csv}, downloaded
 #' from \url{http://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
-#' 
+#'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{section} data
 NULL
@@ -131,7 +131,7 @@ setMethod(f="initialize",
 #' library(oce)
 #' data(section)
 #' section2 <- handleFlags(section)
-#' par(mfrow=c(2,1))
+#' par(mfrow=c(2, 1))
 #' plotTS(section)
 #' plotTS(section2)
 #'
@@ -160,26 +160,26 @@ setMethod("handleFlags",
 
 
 #' @title Summarize a Section Object
-#' 
+#'
 #' @description
 #' Pertinent summary information is presented, including station locations,
 #' distance along track, etc.
-#' 
+#'
 #' @param object An object of class \code{"section"}, usually, a result of a call
 #' to \code{\link{read.section}}, \code{\link{read.oce}}, or
 #' \code{\link{as.section}}.
-#' 
+#'
 #' @param ... Further arguments passed to or from other methods.
-#' 
+#'
 #' @return \code{NULL}
-#' 
+#'
 #' @examples
 #' library(oce)
 #' data(section)
 #' summary(section)
-#' 
+#'
 #' @family things related to \code{section} data
-#' 
+#'
 #' @author Dan Kelley
 setMethod(f="summary",
           signature="section",
@@ -189,7 +189,7 @@ setMethod(f="summary",
               ##lon1 <- object@data$station[[1]]@metadata$longitude
               cat("Section Summary\n---------------\n\n")
               cat("* Source: \"", object@metadata$filename, "\"\n", sep="")
-              cat("* ID:     \"", object@metadata$sectionId, "\"\n",sep="")
+              cat("* ID:     \"", object@metadata$sectionId, "\"\n", sep="")
               ##stn.sum <- matrix(nrow=numStations, ncol=5)
               if (numStations > 0) {
                   cat("Overview of stations\n```\n")
@@ -221,12 +221,12 @@ setMethod(f="summary",
 #' length(section[["latitude", "byStation"]])
 #'
 #' @section Details of the specialized section method:
-#' If \code{i} is the string \code{"station"}, then the method 
-#' will return a \code{\link{list}} of 
-#' \code{\link{ctd-class}} objects holding the station data. If \code{j} 
+#' If \code{i} is the string \code{"station"}, then the method
+#' will return a \code{\link{list}} of
+#' \code{\link{ctd-class}} objects holding the station data. If \code{j}
 #' is also given and is an integer, then just the j-th station in the section is returned.
 #'
-#' If \code{i} is \code{"station ID"}, then the IDs of the stations in the 
+#' If \code{i} is \code{"station ID"}, then the IDs of the stations in the
 #' section are returned.
 #'
 #' If \code{i} is \code{"dynamic height"}, then an estimate of dynamic
@@ -239,19 +239,19 @@ setMethod(f="summary",
 #' of the stations is returned.
 #'
 #' If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
-#' the potential temperatures of all the stations are returned in one 
+#' the potential temperatures of all the stations are returned in one
 #' vector.  Similarly, \code{"spice"} returns the property known
 #' as spice, using \code{\link{swSpice}}.
 #'
 #' If \code{i} is a string ending with \code{"Flag"}, then the characters
 #' prior to that ending are taken to be the name of a variable contained
-#' within the stations in the section. If this flag is available in 
+#' within the stations in the section. If this flag is available in
 #' the first station of the section, then the flag values are looked
 #' up for every station.
 #'
 ## #' If \code{j} is \code{"grid:distance-pressure"}, then a gridded
 ## #' representation of \code{i} is returned, as a list with elements
-## #' \code{distance} (in km), \code{pressure} (in dbar) and 
+## #' \code{distance} (in km), \code{pressure} (in dbar) and
 ## #' \code{field} (in whatever unit is used for \code{i}). See Example
 ## #' for in the documentation for \code{\link{plot,section-method}}.
 #'
@@ -315,16 +315,16 @@ setMethod(f="[[",
                           np1 <- length(p1)
                           field <- matrix(NA, nrow=numStations, ncol=np1)
                           if (numStations > 1) {
-                              field[1,] <- x[["station", 1]][[i]]
+                              field[1, ] <- x[["station", 1]][[i]]
                               for (istn in 2:numStations) {
                                   pi <- x[["station", istn]][["pressure"]]
                                   if (length(pi) != np1 || any(pi != p1)) {
                                       warning("returning NULL because this section is not gridded")
                                       return(NULL)
                                   }
-                                  field[istn,] <- x[["station", istn]][[i]]
+                                  field[istn, ] <- x[["station", istn]][[i]]
                               }
-                              res <- list(distance=x[['distance','byStation']], pressure=p1, field=field)
+                              res <- list(distance=x[["distance", "byStation"]], pressure=p1, field=field)
                               return(res)
                           } else {
                               warning("returning NULL because this section contains only 1 station")
@@ -431,31 +431,31 @@ setMethod(f="show",
           })
 
 #' @title Subset a Section Object
-#' 
+#'
 #' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.  The
 #' condition set by \code{subset} may be in terms of \code{stationId} or any
 #' combination of \code{longitude}, \code{latitude} and \code{time}.  However,
 #' \code{stationId} may not be combined with the others; to get that effect, call
 #' this function more than once.
-#' 
+#'
 #' @param x A \code{\link{section-class}} object.
-#' 
+#'
 #' @param subset A condition to be applied to the \code{data} portion of \code{x}.
 #' See \sQuote{Details}.
-#' 
+#'
 #' @param ... Optional arguments, which may include \code{indices}, a vector
 #' of the indices of stations to be kept (starting at 1 for the first station).
-#' 
+#'
 #' @return A new \code{section} object.
-#' 
+#'
 #' @examples
 #' library(oce)
 #' data(section)
 #' GS <- subset(section, 109<=stationId&stationId<=129)
-#' 
+#'
 #' @family things related to \code{section} data
-#' 
+#'
 #' @author Dan Kelley
 setMethod(f="subset",
           signature="section",
@@ -468,7 +468,8 @@ setMethod(f="subset",
               debug <- getOption("oceDebug")
               if (length(dots) && ("debug" %in% names(dots)))
                   debug <- dots$debug
-              if (indicesGiven) {        # select a portion of the stations
+              if (indicesGiven) {
+                  ## select a portion of the stations
                   if (!missing(subset))
                       stop("cannot give both 'subset' and 'indices'")
                   oceDebug(debug, "subsetting by indices\n")
@@ -504,7 +505,8 @@ setMethod(f="subset",
                   res@metadata$time <- x@metadata$time[keep]
                   res@data$station <- x@data$station[keep]
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
-              } else {                        # subset within the stations
+              } else {
+                  ## subset within the stations
                   if ("indices" %in% dotsNames)
                       stop("2. cannot give both 'subset' and 'indices'")
                   oceDebug(debug, "subsetting by 'subset'\n")
@@ -550,7 +552,7 @@ setMethod(f="subset",
                       n <- length(x@data$station)
                       r <- eval(substitute(subset), x@data$station[[1]]@data, parent.frame(2))
                       for (i in 1:n) {
-                          res@data$station[[i]]@data <- x@data$station[[i]]@data[r,]
+                          res@data$station[[i]]@data <- x@data$station[[i]]@data[r, ]
                       }
                   }
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
@@ -558,9 +560,9 @@ setMethod(f="subset",
               res
           })
 
- 
+
 #' @title Sort a Section
-#' 
+#'
 #' @description
 #' Sections created with \code{\link{as.section}} have "stations" that are in the
 #' order of the CTD objects (or filenames for such objects) provided.  Sometimes,
@@ -570,18 +572,18 @@ setMethod(f="subset",
 #' realizing that this will yield an unhelpful ordering, by file name, if there
 #' are more than 9 stations.) The purpose of \code{sectionSort} is to permit
 #' reordering the constituent stations in sensible ways.
-#' 
+#'
 #' @param section A \code{section} object containing the section whose stations
 #' are to be sorted.
-#' 
+#'
 #' @param by An optional string indicating how to reorder.  If not provided,
 #' \code{"stationID"} will be assumed.  Other choices are \code{"distance"}, for
 #' distance from the first station, \code{"longitude"}, for longitude,
 #' \code{"latitude"} for latitude, and \code{"time"}, for time.
-#' 
+#'
 #' @return An object of \code{\link{section-class}} that has less lateral
 #' variation than the input section.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' # Eastern North Atlantic, showing Mediterranean water;
@@ -593,9 +595,9 @@ setMethod(f="subset",
 #' ss <- sectionSort(ss, by="longitude")
 #' plot(ss)
 #' }
-#' 
+#'
 #' @author Dan Kelley
-#' 
+#'
 #' @family things related to \code{section} data
 sectionSort <- function(section, by)
 {
@@ -676,7 +678,7 @@ makeSection <- function(item, ...)
 ##      stn <- vector("character", numStations)
 ##      lon <- vector("numeric", numStations)
 ##      lat <- vector("numeric", numStations)
-##      if (numStations < 1) 
+##      if (numStations < 1)
 ##             stop("need more than 1 item in the list, to create a section")
 ##         ## 2015-12-06 if (inherits(item[[1]], "oce")) {
 ##         for (i in 1:numStations) {
@@ -689,7 +691,7 @@ makeSection <- function(item, ...)
 ##             station[[i]] <- thisItem
 ##         }
 ##         ## 2015-12-06 } else {
-##         ## 2015-12-06: this code block could not be run 
+##         ## 2015-12-06: this code block could not be run
 ##         ## 2015-12-06 ## demand that items contain @data$pressure
 ##         ## 2015-12-06 if ("pressure" %in% names(item[[1]]) || "pressure" %in% names(item[[1]]@data)) {
 ##         ## 2015-12-06     stop("items must contain pressure")
@@ -761,7 +763,7 @@ makeSection <- function(item, ...)
 
 
 #' @title Add a CTD Station to a Section
-#' 
+#'
 #' @description
 #' Add a CTD profile to an existing section.
 #'
@@ -769,14 +771,14 @@ makeSection <- function(item, ...)
 #' Until March 2015, this operation was carried out with the \code{+} operator,
 #' but at that time, the syntax was flagged by the development version of R, so it
 #' was changed to the present form.
-#' 
+#'
 #' @param section A section to which a station is to be added.
-#' 
+#'
 #' @param station A ctd object holding data for the station to be added.
-#' 
+#'
 #' @aliases sectionAddCtd
 #' @return An object of \code{\link[base]{class}} \code{section}.
-#' 
+#'
 #' @examples
 #' library(oce)
 #' data(ctd)
@@ -789,7 +791,7 @@ makeSection <- function(item, ...)
 #' ctd3[["latitude"]] <- ctd[["latitude"]] + 0.1
 #' ctd3[["station"]] <- "Stn 3"
 #' sectionAddStation(section, ctd3)
-#' 
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to \code{section} data
@@ -816,15 +818,15 @@ sectionAddCtd <- sectionAddStation
 
 
 #' @title Plot a Section
-#' 
+#'
 #' @description
 #' Creates a summary plot for a CTD section, with one panel for each value of
 #' \code{which}.
 #'
 #' @details
 #' The type of plot is governed by \code{which}, as follows.
-#' 
-#' \itemize{  
+#'
+#' \itemize{
 #'     \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
 #'     \item \code{which=2} or \code{"salinity"} for salinity contours
 #'     \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
@@ -840,7 +842,7 @@ sectionAddCtd <- sectionAddStation
 #'     \item \code{which=20} or \code{"data"} for a dot for each data location
 #'     \item \code{which=99} or \code{"map"} for a location map
 #' }
-#' 
+#'
 #' The y-axis for the contours is pressure, plotted in the conventional reversed
 #' form, so that the water surface appears at the top of the plot.  The x-axis is
 #' more complicated. If \code{at} is not supplied, then the routine calculates x
@@ -851,48 +853,48 @@ sectionAddCtd <- sectionAddStation
 #' to be the location, in arbitrary units, along the x-axis of labels specified by
 #' \code{labels}; the way this works is designed to be the same as for
 #' \code{\link{axis}}.
-#' 
-#' 
+#'
+#'
 #' @param x a \code{section} object, e.g. as created by \code{\link{as.section}}
 #' or \code{\link{read.section}}.
-#' 
+#'
 #' @param which a list of desired plot types, as explained in \dQuote{Details}.
 #' There may be up to four panels in total, and the desired plots are placed in
 #' these panels, in reading order.  If only one panel is plotted, \code{par} is
 #' not adjusted, which makes it easy to add to the plot with subsequent plotting
 #' commands.
-#' 
+#'
 #' @template eosTemplate
-#' 
+#'
 #' @param at If \code{NULL} (the default), the x axis will indicate the distance
 #' of the stations from the first in the section.  (This may give errors in the
 #' contouring routine, if the stations are not present in a geographical order.)
 #' If a list, then it indicates the values at which stations will be plotted.
-#' 
+#'
 #' @param labels Either a logical, indicating whether to put labels on the x axis,
 #' or a vector that is a list of labels to be placed at the x positions indicated
-#' by \code{at}. 
-#' 
+#' by \code{at}.
+#'
 #' @param grid If \code{TRUE}, points are drawn at data locations.
-#' 
+#'
 #' @param contourLevels Optional contour levels.
-#' 
+#'
 #' @param contourLabels Optional contour labels.
-#' 
+#'
 #' @param stationIndices Optional list of the indices of stations to use.  Note
 #' that an index is \emph{not} a station number, e.g. to show the first 4
 #' stations, use \code{station.indices=1:4}.
-#' 
+#'
 #' @param coastline String giving the coastline to be used in a station map
 #' The permitted choices are \code{"best"} (the default) to pick
 #' a variant that suits the scale, \code{"coastlineWorld"} for the coarse
 #' version that is provided by \CRANpkg{oce},
-#' \code{"coastlineWorldMedium"} or \code{"coastlineWorldFine"} for two 
-#' coastlines provided by the \CRANpkg{ocedata} package, or \code{"none"}, to avoid 
+#' \code{"coastlineWorldMedium"} or \code{"coastlineWorldFine"} for two
+#' coastlines provided by the \CRANpkg{ocedata} package, or \code{"none"}, to avoid
 #' drawing a coastline.
-#' 
+#'
 #' @param xlim Optional limit for x axis (only in sections, not map).
-#' 
+#'
 #' @param ylim Optional limit for y axis (only in sections, not map)
 #'
 #' @param zlim Optional two-element numerical vector specifying the
@@ -901,24 +903,24 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @param map.xlim,map.ylim Optional limits for station map; \code{map.ylim} is
 #' ignored if \code{map.xlim} is provided.
-#' 
+#'
 #' @param clongitude,clatitude,span Optional map centre position and span (km).
-#' 
+#'
 #' @param projection Parameter specifying map
 #' projection; see \code{\link{mapPlot}}.  If \code{projection="automatic"},
 #' however, a projection is devised from the data, with \code{stereographic} if
 #' the mean latitude exceeds 70N and \code{mollweide} otherwise.
-#' 
+#'
 #' @param xtype Type of x axis, for contour plots, either \code{"distance"} for
 #' distance (in km) to the first point in the section, \code{"track"} for distance
 #' along the cruise track, \code{"longitude"}, \code{"latitude"}, or
 #' \code{"time"}.  Note that if the x values are not in order, they will be put in
 #' order (which may make no sense) and a warning will be printed.
-#' 
+#'
 #' @param ytype Type of y axis for contour plots, either \code{"pressure"} for
 #' pressure (in dbar, with zero at the surface) or \code{"depth"} for depth (in m
 #' below the surface, calculated from pressure with \code{\link{swDepth}}).
-#' 
+#'
 #' @param ztype String indicating whether to how to indicate the "z"
 #' data (in the R sense, i.e. this could be salinity, temperature, etc; it does
 #' not mean the vertical coordinate) The choices are: \code{"contour"} for
@@ -926,80 +928,80 @@ sectionAddCtd <- sectionAddStation
 #' \code{filledContours=TRUE}), or \code{"points"} to draw points.
 #' In the first two cases, the data must be gridded, with identical pressures at
 #' each station.
-#'     
+#'
 #' @param zbreaks,zcol Indication of breaks and colours to be used if \code{ztype="points"} or
 #' \code{"image"}. If not provided, reasonable default are used. If \code{zlim}
 #' is given but \code{breaks} is not given, then \code{breaks} is computed to
 #' run from \code{zlim[1]} to \code{zlim[2]}. If \code{zcol} is a function,
 #' it will be invoked with an argument equal to
 #' \code{1+length(zbreaks)}.
-#' 
+#'
 #' @param legend.loc Location of legend, as supplied to \code{\link{legend}}, or
 #' set to the empty string to avoid plotting a legend.
-#' 
+#'
 #' @template adornTemplate
-#' 
+#'
 #' @param showStations Logical indicating whether to draw station numbers on maps.
-#' 
+#'
 #' @param showStart Logical indicating whether to indicate the first station with
 #' a different symbol than the others.
-#' 
+#'
 #' @param showBottom Logical indicating whether to draw the bottom, or a character
 #' string indicating the method for plotting the bottom.  The allowed methods are:
 #' \code{polygon}, which fills the space to the bottom, or \code{lines}, which
 #' draws lines from stations to the bottom, or \code{points}, which draws points
 #' at the bottom.
-#' 
+#'
 #' @param axes Logical value indicating whether to draw axes.
-#' 
+#'
 #' @param mgp A 3-element numerical vector to use for \code{par(mgp)}, and also for
 #' \code{par(mar)}, computed from this. If not provided, this defaults to
 #' \code{getOption("oceMgp")}.
-#' 
+#'
 #' @param mar Value to be used with \code{\link{par}("mar")}. If not provided,
 #' a default is set up.
-#' 
+#'
 #' @param col Colour, which defaults to \code{\link{par}("col")}.
-#' 
+#'
 #' @param cex Numerical character-expansion factor, which defaults to \code{\link{par}("cex")}.
-#' 
+#'
 #' @param pch Indication of symbol type; defaults to \code{\link{par}("pch")}.
-#' 
+#'
 #' @template debugShortTemplate
-#' 
+#'
 #' @param ... Optional arguments passed to the contouring function, e.g. using
 #' \code{labcex=1} will increase the size of contour labels.
-#' 
-#' 
+#'
+#'
 #' @return If the original section was gridded, the return value is that section.
 #' Otherwise, the gridded section that was constructed for the plot is returned.
 #' In both cases, the value is returned silently. The
 #' purpose of returning the section is to enable subsequent processing
 #' of the grid, including adding elements to the plot.
-#' 
+#'
 #' @seealso The documentation for \code{\link{section-class}} explains the
 #' structure of section objects, and also outlines the other functions dealing
 #' with them.
-#' 
-#' 
+#'
+#'
 #' @examples
 #' library(oce)
 #' data(section)
 #' sg <- sectionGrid(section)
-#' 
+#'
 #' ## 1. AO3 section, default fields.
 #' plot(section)
-#' 
+#'
 #' ## 2. Gulf Stream
 #' GS <- subset(section, 109<=stationId&stationId<=129)
-#' GSg <- sectionGrid(GS, p=seq(0,2000,100))
-#' plot(GSg, which=c(1,99), map.ylim=c(34,42))
-#' par(mfrow=c(2,1))
+#' GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
+#' plot(GSg, which=c(1, 99), map.ylim=c(34, 42))
+#' par(mfrow=c(2, 1))
 #' plot(GS, which=1, ylim=c(2000, 0), ztype='points',
 #'      zbreaks=seq(0,30,2), pch=20, cex=3)
 #' plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
-#' 
-#' par(mfrow=c(1,1))
+#'
+#' par(mfrow=c(1, 1))
 #'
 #' ## 3. Image, with coloured dots to indicate grid-data mismatch.
 #' plot(GSg, which=1, ztype='image')
@@ -1021,9 +1023,9 @@ sectionAddCtd <- sectionAddStation
 ## #' spice <- section[["spice"]]
 ## #' look <- spice > 1.8 & depth > 500
 ## #' points(distance[look], depth[look], col='red')
-#' 
+#'
 #' @author Dan Kelley
-#' 
+#'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{section} data
 setMethod(f="plot",
@@ -1076,7 +1078,7 @@ setMethod(f="plot",
               if (missing(pch))
                   pch <- par("pch")
               if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
+                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
 
               ## Make 'which' be numeric, to simplify following code
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
@@ -1084,9 +1086,9 @@ setMethod(f="plot",
               whichOriginal <- which
               oceDebug(debug, "whichOriginal=", paste(whichOriginal, collapse=" "))
               ##which <- oce.pmatch(which,
-              ##                    list(temperature=1, salinity=2, 
+              ##                    list(temperature=1, salinity=2,
               ##                         sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
-              ##                         phosphate=7, silicate=8, 
+              ##                         phosphate=7, silicate=8,
               ##                         u=9, uz=10, v=11, vz=12, # lowered adcp
               ##                         data=20, map=99))
               if (is.numeric(which)) {
@@ -1167,7 +1169,7 @@ setMethod(f="plot",
                           lat[i] <- thisStation[["latitude"]][1]
                       }
                       ## lon[lon<0] <- lon[lon<0] + 360
-                      asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
+                      asp <- 1 / cos(mean(range(lat, na.rm=TRUE))*pi/180)
                       latm <- mean(lat, na.rm=TRUE)
                       lonm <- mean(lon, na.rm=TRUE)
                       if (missing(span)) {
@@ -1181,7 +1183,7 @@ setMethod(f="plot",
 
                       ## FIXME: this coastline code is reproduced in section.R; it should be DRY
                       haveCoastline <- FALSE
-                      if (!is.character(coastline)) 
+                      if (!is.character(coastline))
                           stop("coastline must be a character string")
                       haveOcedata <- requireNamespace("ocedata", quietly=TRUE)
                       if (coastline == "best") {
@@ -1228,7 +1230,7 @@ setMethod(f="plot",
                           if (!is.na(id)) {
                               meanlat <- mean(stnlats, na.rm=TRUE)
                               meanlon <- mean(stnlons, na.rm=TRUE)
-                              ## NOTE: mercator messes up filling for data(section) but mollweide is okay 
+                              ## NOTE: mercator messes up filling for data(section) but mollweide is okay
                               projection <- if (meanlat > 70) "stereographic" else "mollweide"
                               orientation <- c(90, meanlon, 0)
                               oceDebug(debug, "using", projection, "projection (chosen automatically)\n")
@@ -1271,7 +1273,7 @@ setMethod(f="plot",
                       ## add station data
                       lines(lon, lat, col="lightgray")
                       ## replot with shifted longitude
-                      col <- if("col" %in% names(list(...))) list(...)$col else "black"
+                      col <- if ("col" %in% names(list(...))) list(...)$col else "black"
                       points(lon, lat, col=col, pch=3, lwd=1/2)
                       points(lon - 360, lat, col=col, pch=3, lwd=1/2)
                       if (showStations) {
@@ -1284,8 +1286,8 @@ setMethod(f="plot",
                           points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
                       }
                       if (indicate.stations) {
-                          dy <- 5 * mean(diff(sort(x@metadata$latitude)),na.rm=TRUE)
-                          dx <- 5 * mean(diff(sort(x@metadata$longitude)),na.rm=TRUE)
+                          dy <- 5 * mean(diff(sort(x@metadata$latitude)), na.rm=TRUE)
+                          dx <- 5 * mean(diff(sort(x@metadata$longitude)), na.rm=TRUE)
                           ylab <- x@metadata$latitude[1]  - dy * sign(x@metadata$latitude[2]  - x@metadata$latitude[1])
                           xlab <- x@metadata$longitude[1] - dx * sign(x@metadata$longitude[2] - x@metadata$longitude[1])
                           ## text(xlab, ylab, x@metadata$stationId[1])
@@ -1293,13 +1295,13 @@ setMethod(f="plot",
                           ylab <- x@metadata$latitude[numStations]  - dy * sign(x@metadata$latitude[numStations-1]  - x@metadata$latitude[numStations])
                           ## text(xlab, ylab, x@metadata$stationId[numStations])
                       }
-                  } else {                        
+                  } else {
                       ## not a map
                       zAllMissing <- all(is.na(x[[variable]]))
                       ##> message("zAllMissing=", zAllMissing)
                       ##> message("drawPoints=", drawPoints)
                       ##> message("ztype='", ztype, "'")
-                      if ((drawPoints || ztype == "image") && !zAllMissing) {
+                      if ( (drawPoints || ztype == "image") && !zAllMissing ) {
                           ##> message("is.null(zbreaks)=", is.null(zbreaks))
                           if (is.null(zbreaks)) {
                               if (is.null(zlim)) {
@@ -1316,7 +1318,7 @@ setMethod(f="plot",
                           }
                           nbreaks <- length(zbreaks)
                           if (nbreaks > 0) {
-                              if (is.null(zcol)) 
+                              if (is.null(zcol))
                                   zcol <- oce.colorsJet(nbreaks - 1)
                               if (is.function(zcol))
                                   zcol <- zcol(nbreaks - 1)
@@ -1333,7 +1335,7 @@ setMethod(f="plot",
                       ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
                       par(xaxs="i", yaxs="i")
                       ylab <- if ("ylab" %in% names(list(...))) {
-                          list(...)$ylab 
+                          list(...)$ylab
                       } else {
                           if (which.ytype==1) {
                               resizableLabel("p")
@@ -1345,7 +1347,7 @@ setMethod(f="plot",
                           if ("xlab" %in% names(list(...))) {
                               xlab <- list(...)$xlab
                           } else {
-                              xlab <- switch(which.xtype, 
+                              xlab <- switch(which.xtype,
                                              resizableLabel("distance km"),
                                              resizableLabel("along-track distance km"),
                                              gettext("Longitude", domain="R-oce"),
@@ -1415,11 +1417,11 @@ setMethod(f="plot",
                                          col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
                               } else {
                                   if (eos == "teos" && variable == "temperature") {
-                                      zz[i,] <- rev(swConservativeTemperature(x@data$station[[stationIndices[i]]]))
+                                      zz[i, ] <- rev(swConservativeTemperature(x@data$station[[stationIndices[i]]]))
                                   } else if (eos == "teos" && variable == "salinity") {
-                                      zz[i,] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
+                                      zz[i, ] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
                                   } else {
-                                      zz[i,] <- rev(x@data$station[[stationIndices[i]]][[variable]])
+                                      zz[i, ] <- rev(x@data$station[[stationIndices[i]]][[variable]])
                                   }
                               }
                           }
@@ -1470,7 +1472,7 @@ setMethod(f="plot",
                       xxOrig <- xx
                       if (any(xx[ox] != xx)) {
                           xx <- xx[ox]
-                          zz <- zz[ox,] ## FIXME keep this???
+                          zz <- zz[ox, ] ## FIXME keep this???
                           ##warning("plot.section() reordered the stations to make x monotonic")
                           bottom.x <- c(min(xxOrig), xxOrig[ox], max(xxOrig))
                           bottom.y <- c(graph.bottom, -waterDepth[ox], graph.bottom)
@@ -1500,16 +1502,16 @@ setMethod(f="plot",
                               if (nchar(legend.loc)) {
                                   if (is.character(vtitle) && vtitle == "sigmaTheta")
                                       vtitle <- expression(sigma[theta])
-                                  legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
+                                  legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5, cex=1)
                               }
                               return()
                           }
-                          zrange <- try(range(zz[xx.unique,yy.unique], na.rm=TRUE), silent=TRUE)
+                          zrange <- try(range(zz[xx.unique, yy.unique], na.rm=TRUE), silent=TRUE)
                           if (!is.null(contourLevels) && !is.null(contourLabels)) {
                               oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
                               if (!("labcex" %in% dots$labcex)) {
                                   if (ztype == 'contour') {
-                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                               axes=FALSE, add=TRUE, labcex=0.8,
                                               levels=contourLevels, labels=contourLabels,
                                               col=col,
@@ -1520,14 +1522,14 @@ setMethod(f="plot",
                                       zz[zz > max(zbreaks)] <- max(zbreaks)
                                       if (is.function(zcol))
                                           zcol <- zcol(1+length(zbreaks))
-                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else {
                                       stop("unknown ztype: \"", ztype, "\" [1]")
                                   }
                               } else {
                                   if (ztype == 'contour') {
-                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                           axes=FALSE, add=TRUE,
                                           levels=contourLevels, labels=contourLabels,
                                           col=col,
@@ -1538,7 +1540,7 @@ setMethod(f="plot",
                                       zz[zz > max(zbreaks)] <- max(zbreaks)
                                       if (is.function(zcol))
                                           zcol <- zcol(1+length(zbreaks))
-                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else {
                                       stop("unknown ztype: \"", ztype, "\" [2]")
@@ -1546,10 +1548,10 @@ setMethod(f="plot",
                               }
                           } else {
                               oceDebug(debug, "automatically-calculated contourLevels\n")
-                              zrange <- range(zz[xx.unique,yy.unique], na.rm=TRUE)
+                              zrange <- range(zz[xx.unique, yy.unique], na.rm=TRUE)
                               if (is.null(dots$labcex)) {
                                   if (ztype == 'contour') {
-                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                               labcex=0.8, add=TRUE, col=col, ...)
                                   } else if (ztype == "image") {
                                       zz[zz < min(zbreaks)] <- min(zbreaks)
@@ -1557,7 +1559,7 @@ setMethod(f="plot",
                                       ## FIXME: testing here
                                       if (is.function(zcol))
                                           zcol <- zcol(1+length(zbreaks))
-                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else if (ztype == "points") {
                                       ## nothing to do now
@@ -1566,7 +1568,7 @@ setMethod(f="plot",
                                   }
                               } else {
                                   if (ztype == 'contour') {
-                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                               axes=FALSE,
                                               add=TRUE,
                                               col=col,
@@ -1577,7 +1579,7 @@ setMethod(f="plot",
                                       zz[zz > max(zbreaks)] <- max(zbreaks)
                                       if (is.function(zcol))
                                           zcol <- zcol(1+length(zbreaks))
-                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                                       levels=zbreaks, col=zcol)
                                   } else {
                                       stop("unknown ztype: \"", ztype, "\" [4]")
@@ -1622,7 +1624,7 @@ setMethod(f="plot",
                       vtitle <- if (length(unit) == 0) vtitle else bquote(.(vtitle)*.(L)*.(unit[[1]])*.(R))
                       if (nchar(legend.loc)) {
 
-                          legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
+                          legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5, cex=1)
                       }
                       ##lines(xx, -waterDepth[ox], col='red')
 
@@ -1739,10 +1741,10 @@ setMethod(f="plot",
               R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
               for (w in 1:lw) {
                   ## See whether we have this item in station 1 (directly, or by calculation)
-                  station1 <- x[["station",1]]
+                  station1 <- x[["station", 1]]
                   haveWhich <- length(station1[[which[w]]]) || which[w] == "map"
                   unit <- station1[[paste(which[w], "Unit", sep="")]][[1]]
-                  if (!haveWhich) 
+                  if (!haveWhich)
                       stop("in plot(section) : no '", which[w], "' in data; try one of c(\"", paste(names(station1[["data"]]), collapse="\",\""),
                            "\") or something that can be calculated from these", call.=FALSE)
                   if (!missing(contourLevels)) {
@@ -1812,7 +1814,7 @@ setMethod(f="plot",
 
 
 #' @title Read a Section File
-#' 
+#'
 #' @description
 #' Read a file that contains a series of \code{ctd} profiles that make up an
 #' oceanographic section.
@@ -1822,7 +1824,7 @@ setMethod(f="plot",
 #' may cause problems if the format is not universal. For example, the header must
 #' name the salinity column "\code{CTDSAL}"; if not, salinity values will not be
 #' read from the file.
-#' 
+#'
 #' @section Disambiguating salinity:
 #' WOCE datasets commonly have a column named \code{CTDSAL} for salinity inferred
 #' from a CTD and \code{SALNTY} (not a typo) for salinity derived from bottle data.
@@ -1830,44 +1832,44 @@ setMethod(f="plot",
 #' \code{salinity} in the \code{data} slot of the return value. However, if both
 #' are present, then \code{CTDSAL} is stored as \code{salinity} and \code{SALNTY}
 #' is stored as \code{salinityBottle}.
-#' 
+#'
 #' @param file A file containing a set of CTD observations.  At present, only the
 #' \emph{exchange BOT} format is accepted (see Details).
-#' 
+#'
 #' @param directory A character string indicating the name of a  directory that
 #' contains a set of CTD files that hold individual stations in the section.
-#' 
+#'
 #' @param sectionId Optional string indicating the name for the section.  If not
 #' provided, the section ID is determined by examination of the file header.
-#' 
+#'
 #' @param ship Name of the ship carrying out the sampling.
-#' 
+#'
 #' @param scientist Name of chief scientist aboard ship.
-#' 
+#'
 #' @param institute Name of chief scientist's institute.
-#' 
+#'
 #' @param flags Ignored, and deprecated (will be disallowed in a future version).
-#' 
+#'
 #' @param missingValue Numerical value used to indicate missing data.
-#' 
+#'
 #' @param debug Logical. If \code{TRUE}, print some information that might be
 #' helpful during debugging.
-#' 
+#'
 #' @param processingLog If provided, the action item to be stored in the log.  This
 #' is typically only provided for internal calls; the default that it provides is
 #' better for normal calls by a user.
-#' 
+#'
 #' @return An object of class \code{\link{section-class}}.
-#' 
+#'
 #' @references
 #' Several repository sites provide section data. An example that is perhaps likely
 #' to exist for years is \url{http://cchdo.ucsd.edu}, but a search on \code{"WOCE
 #'   bottle data"} should turn up other sites, if this one ceases to exist. Only
 #' the so-called \emph{exchange BOT} data format can be processed by read.section()
 #' at this time.
-#' 
+#'
 #' @author Dan Kelley
-#' 
+#'
 #' @family things related to \code{section} data
 read.section <- function(file, directory, sectionId="", flags,
                          ship="", scientist="", institute="",
@@ -1908,7 +1910,7 @@ read.section <- function(file, directory, sectionId="", flags,
     # Skip header
     lines <- readLines(file)
     if ("BOTTLE" != substr(lines[1], 1, 6))
-        stop("only type \"BOTTLE\" understood, but got header line\n", lines[1],"\n")
+        stop("only type \"BOTTLE\" understood, but got header line\n", lines[1], "\n")
     if (nchar(sectionId) < 1)
         sectionId <- substr(lines[1], 8, nchar(lines[1]))
     n <- length(lines)
@@ -1939,11 +1941,12 @@ read.section <- function(file, directory, sectionId="", flags,
     flags <- list()
     stnSectionId <- vector("character", nd)
     stnId <- vector("character", nd)
-    for (l in ((header.length + 1):(n-1))) { # last line is END_DATA
+    for (l in ( (header.length + 1):(n-1)) ) {
+        ## last line is END_DATA
         contents <- strsplit(lines[l], split=",")[[1]]
-        stnSectionId[l - header.length] <- sub(" *","", contents[2])
-        stnId[l - header.length] <- sub("^ *","", contents[3])
-        data[l - header.length,] <- contents[col.start:nv]
+        stnSectionId[l - header.length] <- sub(" *", "", contents[2])
+        stnId[l - header.length] <- sub("^ *", "", contents[3])
+        data[l - header.length, ] <- contents[col.start:nv]
         ## FIXME: maybe should just scan this thing; it might work better anyway
     }
     ## salinityUnit <- NULL
@@ -1963,8 +1966,8 @@ read.section <- function(file, directory, sectionId="", flags,
     ## ## oceDebug(debug, "var.names=", paste(var.names, sep=","), "\n")
     ## ## haveSalinity <- FALSE
     ## ## salinityUnit <- NULL
-    ## 
-    ## ## For salinity, use CTDSAL if it exists, otherwise use 'SALNTY', if it exists. If 
+    ##
+    ## ## For salinity, use CTDSAL if it exists, otherwise use 'SALNTY', if it exists. If
     ## ## both exist, store SALNTY as 'salinityBottle'.
     ## haveTwoSalinities <- length(which(var.names=="CTDSAL")) && length(which(var.names=="CTDSAL"))
     ## salinityBottle <- NULL # so we can check later
@@ -1974,7 +1977,7 @@ read.section <- function(file, directory, sectionId="", flags,
     ##     salinityUnit <- as.unit(var.units[w], list(unit=expression(), scale="PSS-78"))
     ##     if (1 == length(wf <- which(var.names=="CTDSAL_FLAG_W")))
     ##         flags$salinity <- as.numeric(data[, wf - col.start + 1])
-    ## } 
+    ## }
     ## if (1 == length(w <- which(var.names=="SALNTY"))) { # spelling not a typo
     ##     haveSalinity <- TRUE
     ##     if (haveTwoSalinities) {
@@ -1991,14 +1994,18 @@ read.section <- function(file, directory, sectionId="", flags,
     ## }
     ## if (!haveSalinity) stop("no column named \"CTDSAL\" or \"SALNTY\"")
     if (length(which(var.names=="DATE")))
-        stn.date <- as.character(data[,which(var.names=="DATE") - col.start + 1])
+        stn.date <- as.character(data[, which(var.names=="DATE") - col.start + 1])
     else
         stop("no column named \"DATE\"")
     if (length(which(var.names=="TIME")))
-        stn.time <- as.character(data[,which(var.names=="TIME") - col.start + 1])
+        stn.time <- as.character(data[, which(var.names=="TIME") - col.start + 1])
     else
         stop("no column named \"TIME\"")
+    ## nolint start (long lines)
+
     ## EXPOCODE,SECT_ID,STNNBR,CASTNO,SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
+
+    ## nolint end (long lines)
 
     ## oxygenUnit <- NULL
     ## if (1 == length(w <- which(var.names=="OXYGEN"))) {
@@ -2061,12 +2068,12 @@ read.section <- function(file, directory, sectionId="", flags,
     ##     if (1 == length(wf <- which(var.names=="PHSPHT_FLAG_W")))
     ##         flags$phosphate  <- as.numeric(data[, wf - col.start + 1])
     ## } else phosphate <- NULL
-    waterDepth  <- as.numeric(data[,which(var.names=="DEPTH") - col.start + 1])
+    waterDepth  <- as.numeric(data[, which(var.names=="DEPTH") - col.start + 1])
     ## FIXME: we have both 'latitude' and 'lat'; this is too confusing
-    longitude <- as.numeric(data[,which(var.names=="LONGITUDE") - col.start + 1])
-    latitude  <- as.numeric(data[,which(var.names=="LATITUDE") - col.start + 1])
-    stationId <- data[,which(var.names=="STNNBR") - col.start + 1]
-    stationId <- sub(" *$","",sub("^ *","",stationId)) #remove blanks
+    longitude <- as.numeric(data[, which(var.names=="LONGITUDE") - col.start + 1])
+    latitude  <- as.numeric(data[, which(var.names=="LATITUDE") - col.start + 1])
+    stationId <- data[, which(var.names=="STNNBR") - col.start + 1]
+    stationId <- sub(" *$", "", sub("^ *", "", stationId)) #remove blanks
     stationList <- unique(stationId)
     numStations <- length(stationList)
     station <- vector("list", numStations)
@@ -2084,7 +2091,7 @@ read.section <- function(file, directory, sectionId="", flags,
     ## the following column names.
     ## "EXPOCODE" "SECT_ID" "STNNBR" "CASTNO" "SAMPNO" "BTLNBR" "BTLNBR_FLAG_W"
     ## "DATE" "TIME" "LATITUDE" "LONGITUDE" "DEPTH" "CTDPRS" "CTDTMP"
-    ## "CTDSAL" "CTDSAL_FLAG_W" "SALNTY" "SALNTY_FLAG_W" "OXYGEN" "OXYGEN_FLAG_W" 
+    ## "CTDSAL" "CTDSAL_FLAG_W" "SALNTY" "SALNTY_FLAG_W" "OXYGEN" "OXYGEN_FLAG_W"
     colSkip <- var.names %in% c("EXPOCODE", "SECT_ID", "STNNBR", "CASTNO", "SAMPNO",
                                 "BTLNBR", "BTLNBR_FLAG_W",
                                 "DATE", "TIME", "LATITUDE", "LONGITUDE", "DEPTH")
@@ -2141,7 +2148,7 @@ read.section <- function(file, directory, sectionId="", flags,
         thisStation <- new("ctd")
         thisStation@data <- list() # start over, then insert one by one
         ## colNames <- oceNames[!colSkip]
-        DATA <- data[,!colSkip]
+        DATA <- data[, !colSkip]
         isFlag <- rep(TRUE, sum(!colSkip))
         for (idata in seq_along(dataNames)) {
             ## Split flags into metadata
@@ -2178,8 +2185,8 @@ read.section <- function(file, directory, sectionId="", flags,
         ## }
         ## 20160504: I no longer think we should store made-up columns; an accessor
         ## 20160504: could use the following code, though, so I'll keep it here, commented-out.
-        ## 20160504: ## Nitrite and Nitrate are tricky since they can be contained 
-        ## 20160504: ## in the file individually or in combination, with a column 
+        ## 20160504: ## Nitrite and Nitrate are tricky since they can be contained
+        ## 20160504: ## in the file individually or in combination, with a column
         ## 20160504: ## that is the sum of NO2 and NO3.
         ## 20160504: if (haveNO2plusNO3) {
         ## 20160504:     if (is.null(nitriteUnit)) {
@@ -2222,7 +2229,7 @@ read.section <- function(file, directory, sectionId="", flags,
 }
 
 #' @title Grid a Section
-#' 
+#'
 #' @description
 #' Grid a section, by interpolating to fixed pressure levels.  The
 #' \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in the
@@ -2233,9 +2240,9 @@ read.section <- function(file, directory, sectionId="", flags,
 #' with a variety of \code{"p"} values.
 #'
 #' @template flagDeletionTemplate
-#' 
+#'
 #' @param section A \code{section} object containing the section to be gridded.
-#' 
+#'
 #' @param p Optional indication of the pressure levels to which interpolation
 #' should be done.  If this is not supplied, the pressure levels will be
 #' calculated based on the typical spacing in the ctd profiles stored within
@@ -2245,22 +2252,22 @@ read.section <- function(file, directory, sectionId="", flags,
 #' it is taken as the number of subdivisions to use in a call to \code{\link{seq}}
 #' that has range from 0 to the maximum pressure in \code{section}.  Finally, if a
 #' vector numerical values is provided, then it is used as is.
-#' 
+#'
 #' @param method The method to use to decimate data within the stations; see
 #' \code{\link{ctdDecimate}}, which is used for the decimation.
-#' 
+#'
 #' @param debug A flag that turns on debugging.  The value indicates the depth
 #' within the call stack to which debugging applies.  For example,
 #' \code{read.adv.nortek()} calls \code{read.header.nortek()}, so that
 #' \code{read.adv.nortek(...,debug=2)} provides information about not just the
 #' main body of the data file, but also the details of the header.
-#' 
+#'
 #' @param ... Optional arguments to be supplied to \code{\link{ctdDecimate}}.
-#' 
-#' 
+#'
+#'
 #' @return An object of \code{\link{section-class}} that contains stations whose
 #' pressure values match identically.
-#' 
+#'
 #' @examples
 #' # Gulf Stream
 #' library(oce)
@@ -2268,9 +2275,9 @@ read.section <- function(file, directory, sectionId="", flags,
 #' GS <- subset(section, 109<=stationId&stationId<=129)
 #' GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 #' plot(GSg, map.xlim=c(-80,-60))
-#' 
+#'
 #' @author Dan Kelley
-#' 
+#'
 #' @family things related to \code{section} data
 sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug"), ...)
 {
@@ -2326,33 +2333,33 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 
 
 #' @title Smooth a Section
-#' 
+#'
 #' @description
 #' Smooth a section in the lateral (alpha version that may change).
-#' 
+#'
 #' @details
 #' This function should be used with caution, as should any operation that changes
 #' data.  Although smoothing may be desirable to produce aesthetically-pleasing
 #' plots, it can also introduce artifacts that can lead to erroneous conclusions.
 #' The prudent analyst starts by comparing plots of the raw data with plots of the
 #' smoothed data.
-#'     
+#'
 #' For \code{method="spline"}, the section is smoothed using
 #' \code{\link{smooth.spline}} on individual pressure levels, with any parameters
 #' listed in \code{parameters} being passed to that function.  If \code{df} is not
 #' present in \code{parameters}, then this function sets it to the number of
 #' stations divided by 5.  Smoothing is done separately for temperature, salinity,
 #' and sigma-theta.
-#' 
+#'
 #' For the (much slower) \code{method="barnes"} method, smoothing is done across
 #' both horizontal and vertical coordinates, using \code{\link{interpBarnes}}.
 #' The stations are changed to lie on the grid supplied defined \code{xg} and
 #' \code{yg}, or by \code{xgl} and \code{ygl} (see those arguments)
-#' 
+#'
 #' @param section A \code{section} object containing the section to be smoothed.
 #' For \code{method="spline"}, the pressure levels must match for each station in
 #' the section.
-#' 
+#'
 #' @param method Specifies the method to use; see \sQuote{Details}.
 #'
 #' @param xg,xgl passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.
@@ -2375,15 +2382,15 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' @param trim passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
 #'
 #' @param pregrid passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
-#' 
+#'
 #' @param debug A flag that turns on debugging.  Set to 1 to get a moderate amount
 #' of debugging information, or to 2 to get more.
-#' 
+#'
 #' @param ... Optional extra arguments, passed to either
 #' \code{\link{smooth.spline}} or \code{\link{interpBarnes}}.
-#' 
+#'
 #' @return An object of \code{\link{section-class}} that ordered in some way.
-#' 
+#'
 #' @examples
 #' library(oce)
 #' data(section)
@@ -2395,11 +2402,11 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' gss2 <- sectionSmooth(gsg, "barnes", xr=24, yr=100)
 #' plot(gss2)
 #' }
-#' 
+#'
 #' @author Dan Kelley
-#' 
+#'
 #' @family things related to \code{section} data
-sectionSmooth <- function(section, method=c("spline", "barnes"), 
+sectionSmooth <- function(section, method=c("spline", "barnes"),
                           xg, yg, xgl, ygl, xr, yr, gamma=0.5, iterations=2, trim=0, pregrid=FALSE,
                           debug=getOption("oceDebug"), ...)
 {
@@ -2439,40 +2446,41 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
         sigmaThetaMat <- array(double(), dim=c(npressure, nstn))
         for (s in 1:nstn) {
             thisStation <- res@data$station[[s]]
-            temperatureMat[,s] <- thisStation@data$temperature
-            salinityMat[,s] <- thisStation[["salinity"]]
-            sigmaThetaMat[,s] <- thisStation[["sigmaTheta"]]
+            temperatureMat[, s] <- thisStation@data$temperature
+            salinityMat[, s] <- thisStation[["salinity"]]
+            sigmaThetaMat[, s] <- thisStation[["sigmaTheta"]]
         }
         ## turn off warnings about df being too small
         o <- options('warn')
-        options(warn=-1) 
+        options(warn=-1)
         gaveDF <- "df" %in% names(list(...))
         for (p in 1:npressure) {
-            ok <- !is.na(temperatureMat[p,]) ## FIXME: ok to infer missingness from temperature alone?
+            ok <- !is.na(temperatureMat[p, ]) ## FIXME: ok to infer missingness from temperature alone?
             nok <- sum(ok)
             ##iok <- (1:nstn)[ok]
-            if (nok > 4) { ## Only fit spline if have 4 or more values; ignore bad values in fitting.
+            if (nok > 4) {
+                ## Only fit spline if have 4 or more values; ignore bad values in fitting.
                 if (gaveDF) {
-                    temperatureMat[p,] <- predict(smooth.spline(x[ok], temperatureMat[p,ok], ...), x)$y
-                    salinityMat[p,]    <- predict(smooth.spline(x[ok],    salinityMat[p,ok], ...), x)$y
-                    sigmaThetaMat[p,]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p,ok], ...), x)$y
+                    temperatureMat[p, ] <- predict(smooth.spline(x[ok], temperatureMat[p, ok], ...), x)$y
+                    salinityMat[p, ]    <- predict(smooth.spline(x[ok],    salinityMat[p, ok], ...), x)$y
+                    sigmaThetaMat[p, ]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p, ok], ...), x)$y
                     oceDebug(debug, stn1pressure[p], "dbar: smoothing with supplied df=", list(...)$df, " (have", nok, "good values)\n")
                 } else {
                     usedf <- nok / 5
-                    temperatureMat[p,] <- predict(smooth.spline(x[ok], temperatureMat[p,ok], df=usedf), x)$y
-                    salinityMat[p,]    <- predict(smooth.spline(x[ok],    salinityMat[p,ok], df=usedf), x)$y
-                    sigmaThetaMat[p,]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p,ok], df=usedf), x)$y
+                    temperatureMat[p, ] <- predict(smooth.spline(x[ok], temperatureMat[p, ok], df=usedf), x)$y
+                    salinityMat[p, ]    <- predict(smooth.spline(x[ok],    salinityMat[p, ok], df=usedf), x)$y
+                    sigmaThetaMat[p, ]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p, ok], df=usedf), x)$y
                     oceDebug(debug, stn1pressure[p], "dbar: smoothing with df=", usedf, " (have", nok, "good values)\n")
                 }
             } else {
                 oceDebug(debug, stn1pressure[p], "dbar: not smoothing, since have only", nok, "good values\n")
             }
         }
-        options(warn=o$warn) 
+        options(warn=o$warn)
         for (s in 1:nstn) {
-            res@data$station[[s]]@data$temperature <- temperatureMat[,s]
-            res@data$station[[s]]@data$salinity <- salinityMat[,s]
-            res@data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[,s]
+            res@data$station[[s]]@data$temperature <- temperatureMat[, s]
+            res@data$station[[s]]@data$salinity <- salinityMat[, s]
+            res@data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[, s]
         }
     } else if (method == "barnes") {
         message("barnes method")
@@ -2531,7 +2539,7 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
                                 xg=xg, yg=yg, xgl=xgl, ygl=ygl, xr=xr, yr=yr, gamma=gamma, iterations=iterations, trim=trim,
                                 debug=debug-1)
             for (istn in seq_along(xg)) {
-                res@data$station[[istn]]@data[[var]] <- smu$zg[istn,]
+                res@data$station[[istn]]@data[[var]] <- smu$zg[istn, ]
                 res@data$station[[istn]]@data[["pressure"]] <- yg
                 ## na <- is.na(section@data$station[[istn]][[var]])
                 ## message("A/3")
@@ -2552,11 +2560,11 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
 
 
 #' @title Create a Section
-#' 
+#'
 #' @description
 #' Create a section based on columnar data, or a set of \code{\link{oce-class}}
 #' objects that can be coerced to a section. There are three cases.
-#' 
+#'
 #' Case 1. If the first argument is a numerical vector, then it is taken to be the
 #' salinity, and \code{\link{factor}} is applied to \code{station} to break the
 #' data up into chunks that are assembled into \code{\link{ctd-class}} objects with
@@ -2571,31 +2579,31 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
 #' to work are that every element of the list must contain both \code{longitude}
 #' and latitude in its \code{metadata} slot and that every element also contains
 #' \code{pressure} in its \code{data} slot.
-#' 
+#'
 #' Case 3. If the first argument is a \code{\link{argo-class}} object, then the profiles it
 #' contains are turned into \code{\link{ctd-class}} objects, and these are assembled
 #' into a section to be returned.
-#' 
+#'
 #' @param salinity This may be a numerical vector, in which case it is interpreted
 #' as the salinity, and the other arguments are used for the other components of
 #' \code{\link{ctd-class}} objects. Alternatively, it may be one of a variety of
 #' other objects from which the CTD objects can be inferred, in which case the
 #' other arguments are ignored; see \sQuote{Details}.
-#' 
+#'
 #' @param temperature Temperature, in a vector holding values for all stations.
-#' 
+#'
 #' @param pressure Pressure, in a vector holding values for all stations.
-#' 
+#'
 #' @param longitude Longitude, in a vector holding values for all stations.
-#' 
+#'
 #' @param latitude Latitude, in a vector holding values for all stations.
-#' 
+#'
 #' @param station Station identifiers, in a vector holding values for all stations.
-#' 
+#'
 #' @param sectionId Section identifier.
-#' 
+#'
 #' @return An object of \code{\link{section-class}}.
-#' 
+#'
 #' @examples
 #' library(oce)
 #' data(ctd)
@@ -2617,9 +2625,9 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
 #' data(argo)
 #' sec3 <- as.section(subset(argo, profile<5))
 #' summary(sec3)
-#' 
+#'
 #' @author Dan Kelley
-#' 
+#'
 #' @family things related to \code{section} data
 as.section <- function(salinity, temperature, pressure, longitude, latitude, station, sectionId="")
 {
@@ -2666,11 +2674,11 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
         if ("pressure" %in% N) N <- N[-which(N=="pressure")]
         time <- tmp[['time']]
         for (i in 1:nstation) {
-            ctds[[i]] <- as.ctd(salinity[,i], temperature[,i], pressure[,i],
+            ctds[[i]] <- as.ctd(salinity[, i], temperature[, i], pressure[, i],
                                 longitude=longitude[i], latitude=latitude[i],
                                 startTime=as.POSIXct(time[i]), station=as.character(station[i]))
             for (Ni in seq_along(N)) {
-                ctds[[i]] <- oceSetData(ctds[[i]], name=N[Ni], value=tmp[[N[Ni]]][,i],
+                ctds[[i]] <- oceSetData(ctds[[i]], name=N[Ni], value=tmp[[N[Ni]]][, i],
                                         unit=tmp[['units']][[N[Ni]]])
             }
         }
@@ -2707,4 +2715,3 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
-
