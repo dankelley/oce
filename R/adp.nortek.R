@@ -773,13 +773,13 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      heading=heading,
                      pitch=pitch,
                      roll=roll)
-    ## FIXME: Sometimes there can be an extra sample, with a time of
-    ## NA Because the times are continuous without the extra sample,
+    ## Sometimes there can be an extra sample, with a time of
+    ## NA. Because the times are continuous without the extra sample,
     ## for now I'll just remove the entire sample
     tNA <- which(is.na(time))
     if (length(tNA) > 0) {
         for (field in names(res@data)) {
-            if (!('field' %in% distance)) {
+            if (!(field %in% 'distance')) {
                 if (field %in% c('v', 'a', 'q')) {
                     res@data[[field]] <- res@data[[field]][-tNA, , , drop=FALSE]
                 } else {
@@ -787,6 +787,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 }
             }
         }
+        warning(paste('Found and removed', length(tNA), 'NAs in the time vector.'))
     }
     
     if (type == "aquadopp" && diaToRead > 0) {
