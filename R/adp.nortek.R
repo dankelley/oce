@@ -773,6 +773,23 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      heading=heading,
                      pitch=pitch,
                      roll=roll)
+    ## Sometimes there can be an extra sample, with a time of
+    ## NA. Because the times are continuous without the extra sample,
+    ## for now I'll just remove the entire sample
+    tNA <- which(is.na(time))
+    if (length(tNA) > 0) {
+        for (field in names(res@data)) {
+            if (!(field %in% 'distance')) {
+                if (field %in% c('v', 'a', 'q')) {
+                    res@data[[field]] <- res@data[[field]][-tNA, , , drop=FALSE]
+                } else {
+                    res@data[[field]] <- res@data[[field]][-tNA]
+                }
+            }
+        }
+        warning(paste('Found and removed', length(tNA), 'NAs in the time vector.'))
+    }
+    
     if (type == "aquadopp" && diaToRead > 0) {
         ## FIXME: there may be other things here, e.g. does it try to measure salinity?
         res@data$timeDia <- timeDia
