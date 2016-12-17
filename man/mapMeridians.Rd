@@ -36,6 +36,7 @@ Dan Kelley
 \seealso{
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdAddColumn}},
-  \code{\link{ctdUpdateHeader}}, \code{\link{mapZones}}
+  \code{\link{ctdUpdateHeader}}, \code{\link{mapZones}},
+  \code{\link{oce.as.POSIXlt}}
 }
 

@@ -30,6 +30,7 @@ Please use \code{\link{oceSetData}} instead of the present function.
 
 Other functions that will be removed soon: \code{\link{ctdAddColumn}},
   \code{\link{ctdUpdateHeader}},
-  \code{\link{mapMeridians}}, \code{\link{mapZones}}
+  \code{\link{mapMeridians}}, \code{\link{mapZones}},
+  \code{\link{oce.as.POSIXlt}}
 }
 

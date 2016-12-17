@@ -68,6 +68,7 @@ The documentation for \code{\link{ctd-class}} explains the structure
 
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdUpdateHeader}},
-  \code{\link{mapMeridians}}, \code{\link{mapZones}}
+  \code{\link{mapMeridians}}, \code{\link{mapZones}},
+  \code{\link{oce.as.POSIXlt}}
 }
 

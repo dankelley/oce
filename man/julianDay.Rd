@@ -68,7 +68,6 @@ Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
 Other things related to time: \code{\link{ctimeToSeconds}},
   \code{\link{julianCenturyAnomaly}},
   \code{\link{numberAsHMS}}, \code{\link{numberAsPOSIXct}},
-  \code{\link{oce.as.POSIXlt}},
   \code{\link{secondsToCtime}},
   \code{\link{unabbreviateYear}}
 }
