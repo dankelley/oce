@@ -660,16 +660,30 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     colUnits <- vector("list", length(nameLines))
     colNamesInferred <- NULL
     dataNamesOriginal <- list()
+    namesUsed <- NULL
+    namesReusedCounter <- list()
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
         ##newname <- unduplicateName(nu$name, colNamesInferred)
         ##colNamesInferred <- c(colNamesInferred, newname)
-        colNamesInferred <- c(colNamesInferred, nu$name)
         ## dataNamesOriginal[[newname]] <- nu$nameOriginal
+        if (nu$name %in% namesUsed) {
+            trial <- 2
+            while (paste(nu$name, trial, sep="") %in% namesUsed) {
+                trial <- trial + 1
+                ##message("trial=", trial)
+                if (trial > 10)
+                    break
+            }
+            ## message("** REUSING NAME '", nu$name)
+            nu$name <- paste(nu$name, trial, sep="")
+            ##message("  -> '", nu$name, "'")
+        }
+        namesUsed <- c(namesUsed, nu$name)
         dataNamesOriginal[[nu$name]] <- nu$nameOriginal
-        ##colUnits[[iline]] <- nu$unit
         colUnits[[iline]] <- nu$unit
-        ## message("SBE name=", nu$name, "; nameOriginal=", nu$nameOriginal, "; unit='", as.character(nu$unit$unit),"'")
+        colNamesInferred <- c(colNamesInferred, nu$name)
+        ##message("SBE name=", nu$name, "; nameOriginal=", nu$nameOriginal, "; unit='", as.character(nu$unit$unit),"'")
     }
     colNamesInferred <- unduplicateNames(colNamesInferred)
     names(colUnits) <- colNamesInferred
