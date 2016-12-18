@@ -434,8 +434,13 @@ prior to Nov 16, 2016, but was found to fail on that date.)
 5. The \code{PROJ.4} website is \url{http://trac.osgeo.org/proj}, and it is
 the place to start to learn about the code.
 
-6. \code{PROJ.4} projection details are at
-\url{http://www.remotesensing.org/geotiff/proj_list/}.
+6. \code{PROJ.4} projection details were once at
+\code{http://www.remotesensing.org/geotiff/proj_list/} but it was 
+discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
+seems to have been significant reorganization of websites related to this.
+The base website seems to be \url{https://trac.osgeo.org/geotiff/} and that
+lists only what is called an unofficial listing, on the wayback web-archiver server
+\url{http://web.archive.org/web/20160802172057/http://www.remotesensing.org/geotiff/proj_list/}
 
 7. A gallery of map plots is provided at
 \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html}.

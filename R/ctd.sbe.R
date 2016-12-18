@@ -883,6 +883,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$deploymentType <- "unknown"
     res@metadata$date <- date
     res@metadata$startTime <- startTime
+    res@metadata$time <- date          # standardized name
     res@metadata$latitude <- latitude
     res@metadata$longitude <- longitude
     res@metadata$recovery <- recovery

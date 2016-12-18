@@ -100,80 +100,151 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
     res
 }
 
-#' Convert Data Names From the Argo Convention to the Oce Convention
+#' Convert Argo Data Name to Oce Name
 #'
-#' This function is used by \code{\link{read.argo}} to convert Argo-convention
-#' data names to oce-convention names. The inference of names was done
-#' by case-by-case inspection of some files. Eventually, it would make
-#' sense to handle all the documented names listed in tables 2.2.2
-#' and 2.2.3 of [1].
+#' This function is used internally by \code{\link{read.argo}} to convert Argo-convention
+#' data names to oce-convention names. Users should not call this directly, since 
+#' its return value may be changed at any moment (e.g. to include units as well
+#' as names).
+#' 
+#'
+#' The inference of names was done
+#' by inspection of some data files, using [1] as a reference. It should be noted,
+#' however, that the data files examined contain some names that are not
+#' undocumented in [1], and others that are listed only in its changelog, 
+#' with no actual definitions being given. For example, the files had six distinct
+#' variable names that seem to relate to phase in the oxygen sensor, but
+#' these are not translated by the present function because these
+#' variable names are not defined in [1], or not defined uniquely
+#' in [2].
 #'
 #' The names are converted with
-#' \code{\link{gsub}}, ignoring the case of the input strings. The procedure
-#' is to first handle the items listed in the following table. After that,
+#' \code{\link{gsub}}, using the \code{ignore.case} argument of the present 
+#' function.
+#' The procedure
+#' is to first handle the items listed in the following table, with string
+#' searches anchored to the start of the string. After that,
 #' the qualifiers
 #' \code{_ADJUSTED}, \code{_ERROR} and \code{_QC},
 #' are translated to \code{Adjusted}, \code{Error}, and \code{QC}, respectively.
-#' \itemize{
-#' \item \code{BBP700} becomes \code{bbp700}
-#' \item \code{BETA_BACKSCATTERING700} becomes \code{betaBackscattering700}
-#' \item \code{BPHASE_OXY} becomes \code{bphaseOxygen}
-#' \item \code{CHLA} becomes \code{chlorophyllA}
-#' \item \code{CYCLE_NUMBER} becomes \code{cycleNumber}
-#' \item \code{DATA_CENTRE} becomes \code{dataCentre} (note the spelling)
-#' \item \code{DATA_MODE} becomes \code{dataMode}
-#' \item \code{DATA_STATE_INDICATOR} becomes \code{dataStateIndicator}
-#' \item \code{DC_REFERENCE} becomes \code{DCReference}
-#' \item \code{DIRECTION} becomes \code{direction} (either \code{A} for ascending or \code{D} for descending)
-#' \item \code{FIRMWARE_VERSION} becomes \code{firmwareVersion}
-#' \item \code{INST_REFERENCE} becomes \code{instReference}
-#' \item \code{JULD} becomes \code{juld} (and used to compute \code{time})
-#' \item \code{JULD_QC_LOCATION} becomes \code{juldQCLocation}
-#' \item \code{LATITUDE} becomes \code{latitude}
-#' \item \code{LONGITUDE} becomes \code{longitude}
-#' \item \code{PI_NAME} becomes \code{PIName}
-#' \item \code{PLATFORM_NUMBER} becomes \code{id}
-#' \item \code{POSITION_ACCURACY} becomes \code{positionAccuracy}
-#' \item \code{POSITIONING_SYSTEM} becomes \code{positioningSystem}
-#' \item \code{PROFILE} becomes \code{profile}
-#' \item \code{PROJECT_NAME} becomes \code{projectName}
-#' \item \code{STATION_PARAMETERS} becomes \code{stationParameters}
-#' \item \code{UV_INTENSITY} becomes \code{UVIntensity}
-#' \item \code{UV_INTENSITY_DARK_NITRATE} becomes \code{UVIntensityDarkNitrate}
-#' \item \code{UV_INTENSITY_NITRATE} becomes \code{UVIntensityNitrate}
-#' \item \code{WMO_INST_TYPE} becomes \code{WMOInstType}
+#' \tabular{ll}{
+#' \strong{Argo name} \tab \strong{oce name}\cr
+#' \code{BBP} \tab \code{bbp}\cr
+#' \code{BETA_BACKSCATTERING} \tab \code{betaBackscattering}\cr
+#' \code{BPHASE_OXY} \tab \code{bphaseOxygen}\cr
+#' \code{CDOM} \tab \code{CDOM}\cr
+#' \code{CNDC} \tab \code{conductivity}\cr
+#' \code{CHLA} \tab \code{chlorophyllA}\cr
+#' \code{CP} \tab \code{beamAttenuation}\cr
+#' \code{CYCLE_NUMBER} \tab \code{cycleNumber}\cr
+#' \code{DATA_CENTRE} \tab \code{dataCentre}\cr
+#' \code{DATA_MODE} \tab \code{dataMode}\cr
+#' \code{DATA_STATE_INDICATOR} \tab \code{dataStateIndicator}\cr
+#' \code{DC_REFERENCE} \tab \code{DCReference}\cr
+#' \code{DIRECTION} \tab \code{direction}\cr
+#' \code{DOWN_IRRADIANCE} \tab \code{downwellingIrradiance}\cr
+#' \code{DOWNWELLING_PAR} \tab \code{downwellingPAR}\cr
+#' \code{FIRMWARE_VERSION} \tab \code{firmwareVersion}\cr
+#' \code{FIT_ERROR_NITRATE} \tab \code{fitErrorNitrate}\cr
+#' \code{FLUORESCENCE_CDOM} \tab \code{fluorescenceCDOM}\cr
+#' \code{FLUORESCENCE_CHLA} \tab \code{fluorescenceChlorophyllA}\cr
+#' \code{INST_REFERENCE} \tab \code{instReference}\cr
+#' \code{JULD} \tab \code{juld} (and used to compute \code{time})\cr
+#' \code{JULD_QC_LOCATION} \tab \code{juldQCLocation}\cr
+#' \code{LATITUDE} \tab \code{latitude}\cr
+#' \code{LONGITUDE} \tab \code{longitude}\cr
+#' \code{MOLAR_DOXY} \tab \code{oxygenUncompensated}\cr
+#' \code{PH_IN_SITU_FREE} \tab \code{pHFree}\cr
+#' \code{PH_IN_SITU_TOTAL} \tab \code{pH}\cr
+#' \code{PI_NAME} \tab \code{PIName}\cr
+#' \code{PLATFORM_NUMBER} \tab \code{id}\cr
+#' \code{POSITION_ACCURACY} \tab \code{positionAccuracy}\cr
+#' \code{POSITIONING_SYSTEM} \tab \code{positioningSystem}\cr
+#' \code{PROFILE} \tab \code{profile}\cr
+#' \code{PROJECT_NAME} \tab \code{projectName}\cr
+#' \code{RAW_DOWNWELLING_IRRADIANCE} \tab \code{rawDownwellingIrradiance}\cr
+#' \code{RAW_DOWNWELLING_PAR} \tab \code{rawDownwellingPAR}\cr
+#' \code{RAW_UPWELLING_RADIANCE} \tab \code{rawUpwellingRadiance}\cr
+#' \code{STATION_PARAMETERS} \tab \code{stationParameters}\cr
+#' \code{TEMP} \tab \code{temperature}\cr
+#' \code{TEMP_CPU_CHLA} \tab \code{temperatureCPUChlorophyllA}\cr
+#' \code{TEMP_DOXY} \tab \code{temperatureOxygen}\cr
+#' \code{TEMP_NITRATE} \tab \code{temperatureNitrate}\cr
+#' \code{TEMP_PH} \tab \code{temperaturePH}\cr
+#' \code{TEMP_SPECTROPHOTOMETER_NITRATE} \tab \code{temperatureSpectrophotometerNitrate}\cr
+#' \code{TILT} \tab \code{tilt}\cr
+#' \code{TURBIDITY} \tab \code{turbidity}\cr
+#' \code{UP_RADIANCE} \tab \code{upwellingRadiance}\cr
+#' \code{UV_INTENSITY} \tab \code{UVIntensity}\cr
+#' \code{UV_INTENSITY_DARK_NITRATE} \tab \code{UVIntensityDarkNitrate}\cr
+#' \code{UV_INTENSITY_NITRATE} \tab \code{UVIntensityNitrate}\cr
+#' \code{VRS_PH} \tab \code{VRSpH}\cr
+#' \code{WMO_INST_TYPE} \tab \code{WMOInstType}\cr
 #'}
 #'
 #' @param names vector of character strings containing names in the Argo convention.
+#' @param ignore.case a logical value passed to \code{\link{gsub}}, indicating whether to
+#' ignore the case of input strings. The default is set to \code{TRUE} because some data
+#' files use lower-case names, despite the fact that the Argo documentation specifies
+#' upper-case.
 #' @return A character vector of the same length as \code{names}, but with
 #' replacements having been made for all known quantities.
 #'
 #' @references
 #' 1. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-#' \samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-#' (link checked 17 Nov 2016 several times in the months before,
-#' but failed 18 Nov 2016).
-#' Tables 2.2.2 and 2.2.3 of this document lists the codes used in Argo netCDF files.
-decodeDataNamesArgo <- function(names)
+#' \url{https://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+#' (but note that this is a draft; newer versions may have
+#' replaced this by now).
+#'
+#' 2. Argo list of parameters in an excel spreadsheet, available at
+#' \code{https://www.argodatamgt.org/content/download/27444/187206/file/argo-parameters-list-core-and-b.xlsx}
+#' (but note that the certificate at this website was noticed to be invalid on December 17, 2016,
+#' so exercise caution in downloading the file).
+#' @family things related to \code{argo} data
+argoNames2oceNames <- function(names, ignore.case=TRUE)
 {
-    ignore.case <- TRUE
     ## do NOT change the order below, because we are working with partial strings.
-    names <- gsub("BBP700", "bbp700", names, ignore.case=ignore.case)
-    names <- gsub("BETA_BACKSCATTERING700", "betaBackscattering700", names, ignore.case=ignore.case)
-    names <- gsub("BPHASE_DOXY", "bphaseOxygen", names, ignore.case=ignore.case)
-    names <- gsub("CYCLE_NUMBER", "cycle", names, ignore.case=ignore.case)
-    names <- gsub("FLUORESCENCE_CHLA", "fluorescenceChlorophyllA", names, ignore.case=ignore.case) # put before CHLA
-    names <- gsub("CHLA", "chlorophyllA", names, ignore.case=ignore.case)
-    names <- gsub("TEMP_DOXY", "temperatureOxygen", names, ignore.case=ignore.case)
-    names <- gsub("POSITION_ACCURACY", "positionAccuracy", names, ignore.case=ignore.case)
-    names <- gsub("NITRATE", "nitrate", names, ignore.case=ignore.case)
-    names <- gsub("DOXY", "oxygen", names, ignore.case=ignore.case)
-    names <- gsub("PRES", "pressure", names, ignore.case=ignore.case)
-    names <- gsub("PSAL", "salinity", names, ignore.case=ignore.case)
-    names <- gsub("TEMP", "temperature", names, ignore.case=ignore.case)
-    names <- gsub("UV_INTENSITY_DARK_NITRATE", "UVIntensityDarkNitrate", names, ignore.case=ignore.case)
-    names <- gsub("UV_INTENSITY_NITRATE", "UVIntensityNitrate", names, ignore.case=ignore.case)
-    names <- gsub("UV_INTENSITY", "UVIntensity", names, ignore.case=ignore.case)
+    names <- gsub("^BBP([0-9_]*)", "BBP\\1", names, ignore.case=ignore.case)
+    names <- gsub("^BETA_BACKSCATTERING([0-9_]*)", "betaBackscattering\\1", names, ignore.case=ignore.case)
+    names <- gsub("^BPHASE_DOXY", "bphaseOxygen", names, ignore.case=ignore.case)
+    names <- gsub("^CHLA", "chlorophyllA", names, ignore.case=ignore.case)
+    names <- gsub("^CDOM", "CDOM", names, ignore.case=ignore.case)
+    names <- gsub("^CNDC([0-9_]*)", "conductivity\\1", names, ignore.case=ignore.case)
+    names <- gsub("^CP([0-9_]*)", "beamAttenuation\\1", names, ignore.case=ignore.case)
+    names <- gsub("^CYCLE_NUMBER", "cycleNumber", names, ignore.case=ignore.case)
+    names <- gsub("^DOWN_IRRADIANCE", "downwellingIrradiance", names, ignore.case=ignore.case)
+    names <- gsub("^DOWNWELLING_PAR", "downwellingPAR", names, ignore.case=ignore.case)
+    names <- gsub("^FIT_ERROR_NITRATE", "fitErrorNitrate", names, ignore.case=ignore.case) # put before CHLA
+    names <- gsub("^FLUORESCENCE_CDOM", "fluorescenceCDOM", names, ignore.case=ignore.case) # put before CHLA
+    names <- gsub("^FLUORESCENCE_CHLA", "fluorescenceChlorophyllA", names, ignore.case=ignore.case) # put before CHLA
+    names <- gsub("^MOLAR_DOXY", "oxygenUncompensated", names, ignore.case=ignore.case)
+    names <- gsub("^PH_IN_SITU_FREE", "pHFree", names, ignore.case=ignore.case)
+    names <- gsub("^PH_IN_SITU_TOTAL", "pH", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_DOXY", "temperatureOxygen", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_NITRATE", "temperatureNitrate", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_PH", "temperaturePH", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_SPECTROPHOTOMETER_NITRATE", "temperatureSpectrophotometerNitrate", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_CPU_CHLA", "temperatureCPUChlA", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_VOLTAGE_DOXY", "temperatureVoltageOxygen", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP_", "temperature_", names, ignore.case=ignore.case)
+    names <- gsub("^POSITION_ACCURACY", "positionAccuracy", names, ignore.case=ignore.case)
+    names <- gsub("^NITRATE", "nitrate", names, ignore.case=ignore.case)
+    names <- gsub("^DOXY", "oxygen", names, ignore.case=ignore.case)
+    names <- gsub("^PRES", "pressure", names, ignore.case=ignore.case)
+    names <- gsub("^PSAL", "salinity", names, ignore.case=ignore.case)
+    names <- gsub("^RAW_DOWNWELLING_IRRADIANCE", "rawDownwellingIrradiance", names, ignore.case=ignore.case)
+    names <- gsub("^RAW_DOWNWELLING_PAR", "rawDownwellingPAR", names, ignore.case=ignore.case)
+    names <- gsub("^RAW_UPWELLING_RADIANCE", "rawUpwellingRadiance", names, ignore.case=ignore.case)
+    names <- gsub("^TEMP([0-9_]*)$", "temperature\\1", names, ignore.case=ignore.case)
+    names <- gsub("^TILT([0-9_]*)$", "tilt\\1", names, ignore.case=ignore.case)
+    names <- gsub("^TRANSMITTANCE_PARTICLE_BEAM_ATTENUATION([0-9_]*)$",
+                  "transmittanceParticleBeamAttenuation\\1", names, ignore.case=ignore.case)
+    names <- gsub("^TURBIDITY([0-9_]*)$", "turbidity\\1", names, ignore.case=ignore.case)
+    names <- gsub("^UP_RADIANCE", "upwellingRadiance", names, ignore.case=ignore.case)
+    names <- gsub("^UV_INTENSITY_DARK_NITRATE", "UVIntensityDarkNitrate", names, ignore.case=ignore.case)
+    names <- gsub("^UV_INTENSITY_NITRATE", "UVIntensityNitrate", names, ignore.case=ignore.case)
+    names <- gsub("^UV_INTENSITY", "UVIntensity", names, ignore.case=ignore.case)
+    names <- gsub("^VRS_PH", "VRSpH", names, ignore.case=ignore.case)
     names <- gsub("_ADJUSTED", "Adjusted", names, ignore.case=ignore.case)
     names <- gsub("_QC", "QC", names, ignore.case=ignore.case)
     names <- gsub("_ERROR", "Error", names, ignore.case=ignore.case)
@@ -531,7 +602,7 @@ argoDecodeFlags <- function(f) # local function
 #' them in returned object.
 #'
 #' Items are translated from upper-case Argo names to \code{oce} names
-#' using \code{\link{decodeDataNamesArgo}}.
+#' using \code{\link{argoNames2oceNames}}.
 #'
 #' It is assumed that the profile data are as listed in the NetCDF variable
 #' called \code{STATION_PARAMETERS}. Each item can have variants, as
@@ -596,10 +667,9 @@ argoDecodeFlags <- function(f) # local function
 #' 1. \url{http://www.argo.ucsd.edu/}
 #'
 #' 2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-#' \samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-#' (link checked 17 Nov 2016 several times in the months before,
-#' but failed 18 Nov 2016).
-#' Table 2.2.2 of this document lists the codes used in Argo netCDF files.
+#' \url{https://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+#' (but note that this is a draft; newer versions may have
+#' replaced this by now).
 #'
 #' 3. User's Manual (ar-um-02-01) 13 July 2010, available at
 #' \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
@@ -764,39 +834,39 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         n <- item
         d <- getData(file, maybeLC(n, lc))
         if (!is.null(d)) {
-            res@data[[decodeDataNamesArgo(n)]] <- d
-            res@metadata$dataNamesOriginal[[decodeDataNamesArgo(n)]] <- n
+            res@data[[argoNames2oceNames(n)]] <- d
+            res@metadata$dataNamesOriginal[[argoNames2oceNames(n)]] <- n
         } else {
-            res@data[[decodeDataNamesArgo(n)]] <- NULL
+            res@data[[argoNames2oceNames(n)]] <- NULL
         }
 
         n <- paste(item, maybeLC("_QC", lc), sep="")
         d <- getData(file, maybeLC(n, lc))
-        if (!is.null(d)) res@metadata$flags[[decodeDataNamesArgo(n)]] <- argoDecodeFlags(d)
+        if (!is.null(d)) res@metadata$flags[[argoNames2oceNames(n)]] <- argoDecodeFlags(d)
 
         n <- paste(item, maybeLC("_ADJUSTED", lc), sep="")
         if (n %in% varNames) {
             d <- getData(file, maybeLC(n, lc))
             if (!is.null(d)) {
-                res@data[[decodeDataNamesArgo(n)]] <- d
-                res@metadata$dataNamesOriginal[[decodeDataNamesArgo(n)]] <- n
+                res@data[[argoNames2oceNames(n)]] <- d
+                res@metadata$dataNamesOriginal[[argoNames2oceNames(n)]] <- n
             } else {
-                res@data[[decodeDataNamesArgo(n)]] <- NULL
+                res@data[[argoNames2oceNames(n)]] <- NULL
             }
         }
         n <- paste(item, maybeLC("_ADJUSTED_QC", lc), sep="")
         if (n %in% varNames) {
             d <- getData(file, maybeLC(n, lc))
-            if (!is.null(d)) res@metadata$flags[[decodeDataNamesArgo(n)]] <- argoDecodeFlags(d)
+            if (!is.null(d)) res@metadata$flags[[argoNames2oceNames(n)]] <- argoDecodeFlags(d)
         }
         n <- paste(item, maybeLC("_ADJUSTED_ERROR", lc), sep="")
         if (n %in% varNames) {
             d <- getData(file, maybeLC(n, lc))
             if (!is.null(d)) {
-                res@data[[decodeDataNamesArgo(n)]] <- d
-                res@metadata$dataNamesOriginal[[decodeDataNamesArgo(n)]] <- n
+                res@data[[argoNames2oceNames(n)]] <- d
+                res@metadata$dataNamesOriginal[[argoNames2oceNames(n)]] <- n
             } else {
-                res@data[[decodeDataNamesArgo(n)]] <- NULL
+                res@data[[argoNames2oceNames(n)]] <- NULL
             }
         }
     }
@@ -858,6 +928,10 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         else
             res@metadata$units$pressureAdjustedError<- list(unit=expression(dbar), scale="")
     }
+    ## Fix up names of flags. This became required with changes made to argoNames2oceNames() in Dec 17-18, 2016. Arguably, I
+    ## should find out why the change occurred, but fixing the names now is just as easy, and might be clearer to the reader.
+    names(res@metadata$flags) <- gsub("QC$", "", names(res@metadata$flags))
+    ## Record a log item
     res@processingLog <- if (is.character(file))
         processingLogAppend(res@processingLog, paste("read.argo(\"", file, "\")", sep=""))
     else processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))

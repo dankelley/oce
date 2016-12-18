@@ -4,7 +4,7 @@ library(oce)
 ## source("~/git/oce/R/ctd.sbe.R")
 ctd <- read.oce("ctd.cnv")
 ctd <- oce.edit(ctd, "startTime", ctd[["systemUploadTime"]],
-                reason="startTime is not in file", person="Dan Kelley")
+                reason="startTime in file has Y2K error", person="Dan Kelley")
 save(ctd, file="ctd.rda")
 tools::resaveRdaFiles("ctd.rda")
 

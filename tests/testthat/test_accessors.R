@@ -63,8 +63,8 @@ test_that("three methods for specifying units", {
           freezing <- swTFreeze(ctd)
           ctd <- oceSetData(ctd, "freezing", freezing, list(unit=expression(degree*C), scale="ITS-90"))
           feet <- 3.28048 * swDepth(ctd)
-          ctd <- oceSetData(ctd, "depthInFeet", feet, expression("feet"))
-          expect_identical(ctd[["units"]]$depthInFeet, list(unit=expression("feet"), scale=""))
+          ctd <- oceSetData(ctd, "depthInFeet", feet, expression(feet))
+          expect_identical(ctd[["units"]]$depthInFeet, list(unit=expression(feet), scale=""))
           fathoms <- feet / 6
           ctd <- oceSetData(ctd, "depthInFathoms", fathoms, "fathoms")
           expect_identical(ctd[["units"]]$depthInFathoms, list(unit=expression(fathoms), scale=""))
@@ -72,7 +72,7 @@ test_that("three methods for specifying units", {
 
 test_that("can use original names", {
           data("ctd")
-          expect_equal(ctd[["time"]], ctd[["timeS"]])
+          expect_equal(ctd[["time"]], as.POSIXct("2003-10-15 11:38:38", tz="UTC"))
           expect_equal(ctd[["pressure"]], ctd[["pr"]])
           expect_equal(ctd[["depth"]], ctd[["depS"]])
           expect_equal(ctd[["temperature"]], T90fromT68(ctd[["t068"]]))

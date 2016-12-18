@@ -44,7 +44,7 @@ in all files, but tests showed that this is not the case, and so
 them in returned object.
 
 Items are translated from upper-case Argo names to \code{oce} names
-using \code{\link{decodeDataNamesArgo}}.
+using \code{\link{argoNames2oceNames}}.
 
 It is assumed that the profile data are as listed in the NetCDF variable
 called \code{STATION_PARAMETERS}. Each item can have variants, as
@@ -135,10 +135,9 @@ Dan Kelley
 1. \url{http://www.argo.ucsd.edu/}
 
 2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-\samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-(link checked 17 Nov 2016 several times in the months before,
-but failed 18 Nov 2016).
-Table 2.2.2 of this document lists the codes used in Argo netCDF files.
+\url{https://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+(but note that this is a draft; newer versions may have
+replaced this by now).
 
 3. User's Manual (ar-um-02-01) 13 July 2010, available at
 \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
@@ -151,8 +150,8 @@ objects, and also outlines the other functions dealing with them.
 
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoGrid}}, \code{\link{argo}},
-  \code{\link{as.argo}},
+  \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
+  \code{\link{argo}}, \code{\link{as.argo}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{plot,argo-method}},
   \code{\link{subset,argo-method}},

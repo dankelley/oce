@@ -190,6 +190,53 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
     new('met', time=time, temperature=temperature, pressure=pressure, u=u, v=v, filename=filename)
 }
 
+#' Convert met Data Name to Oce Name
+#'
+#' @details
+#' Interoperability between oce functions requires that standardized data names
+#' be used, e.g. \code{"temperature"} for in-situ temperature. Very few
+#' data-file headers name the temperature column in exactly that way, however,
+#' and this function is provided to try to guess the names.
+#'
+#' @param names a vector of character strings with original names
+#' @param scheme an optional indication of the scheme that is employed. This may
+#' be \code{"ODF"}, in which case \code{\link{ODFNames2oceNames}} is used,
+#' or \code{"met"}, in which case some tentative code for met files is used.
+#'
+#' @return
+#' Vector of strings for the decoded names. If an unknown scheme is provided,
+#' this will just be \code{names}.
+metNames2oceNames <- function(names, scheme)
+{
+    ##schemeGiven <- !missing(scheme)
+    res <- names
+    if (!missing(scheme)) {
+        if (scheme == "ODF") {
+            res <- ODFNames2oceNames(ODFnames=names, ODFunits=NULL)
+        } else if (scheme == "met") {
+            ## FIXME: capture the flags also
+            if (1 == length(i <- grep("^Temp.*C.*$", res))) res[i] <- "temperature"
+            if (1 == length(i <- grep("^Stn.*Press.*kPa.*$", res))) res[i] <- "pressure"
+            if (1 == length(i <- grep("^Wind.*Spd.*km.*$", res))) res[i] <- "wind"
+            if (1 == length(i <- grep("^Wind.*deg.*$", res))) res[i] <- "direction"
+            if (1 == length(i <- grep("^Visibility.*km.*$", res))) res[i] <- "visibility"
+            if (1 == length(i <- grep("^Rel\\.Hum\\.\\.\\.\\.$", res))) res[i] <- "humidity"
+            if (1 == length(i <- grep("^Dew\\.Point\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "dewPoint"
+            if (1 == length(i <- grep("^Wind\\.Chill$", res))) res[i] <- "windChill"
+            if (1 == length(i <- grep("^Weather$", res))) res[i] <- "weather"
+            if (1 == length(i <- grep("^Hmdx$", res))) res[i] <- "humidex"
+        } else {
+            warning("unknown scheme ", scheme)
+        }
+    } else {
+        ## temperature
+        col <- grep("temp", names, ignore.case=TRUE, useBytes=TRUE)
+        if (1 == length(col))
+            res[col] <- "temperature"
+    }
+    res
+}
+
 
 
 #' @title Read a Met File
@@ -314,7 +361,7 @@ read.met <- function(file, type=NULL, skip,
     ##direction <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
     rpd <- atan2(1, 1) / 45            # radian/degree
 
-    names(rawData) <- decodeDataNames(names, "met")
+    names(rawData) <- metNames2oceNames(names, "met")
     rawData[["speed"]] <- rawData[["wind"]] * 1000 / 3600 # convert km/h to m/s
 
 

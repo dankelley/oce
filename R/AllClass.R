@@ -83,11 +83,9 @@ setMethod(f="summary",
               ndata <- length(object@data)
               threes <- NULL
               if (ndata > 0) {
-                  threes <- matrix(nrow=length(names), ncol=4)
-                  ii <- 1
+                  threes <- matrix(nrow=ndata, ncol=4)
                   for (i in 1:ndata) {
-                      threes[ii, ] <- threenum(object@data[[i]])
-                      ii <- ii + 1
+                      threes[i, ] <- threenum(object@data[[i]])
                   }
                   ##rownames(threes) <- paste("   ", names[!isTime])
                   units <- if ("units" %in% names(object@metadata)) object@metadata$units else NULL
@@ -140,7 +138,7 @@ setMethod(f="summary",
                   names(units) <- unitsNames
                   ##> message("units:");str(units)
                   if (!is.null(threes)) {
-                      rownames(threes) <- paste("    ", dataLabel(names, units))
+                      rownames(threes) <- paste(dataLabel(names, units))
                       colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
                       cat("* Statistics of data\n```\n")
                       if ("dataNamesOriginal" %in% names(object@metadata)) {
@@ -165,6 +163,8 @@ setMethod(f="summary",
                       if (!is.null(OriginalName)) {
                           threes <- cbind(threes, OriginalName)
                       }
+                      if ("time" %in% names)
+                          threes <- threes[-which("time"==names),]
                       owidth <- options('width')
                       options(width=150) # make wide to avoid line breaks
                       print(threes, quote=FALSE, indent='')

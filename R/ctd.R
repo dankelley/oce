@@ -1385,7 +1385,7 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
 #' lines(ctd2[["salinity"]], ctd2[["pressure"]], col="blue")
 #' p <- seq(0, 45, 1)
 #' ctd3 <- ctdDecimate(ctd, p=p, method=function(x, y, xout)
-#'                     predict(smooth.spline(x, y, df=30), p)$y)
+#'                     predict(smooth.spline(x, y, df=30), xout)$y)
 #' lines(ctd3[["salinity"]], ctd3[["pressure"]], col="red")
 #'
 #'
@@ -1446,7 +1446,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", e=1.5, debug=getOption("oceDebu
                 if (all(is.na(x@data[[datumName]]))) {
                     dataNew[[datumName]] <- rep(NA, npt)
                 } else {
-                    dataNew[[datumName]] <- method(pressure, x[[datumName]], pt)
+                    dataNew[[datumName]] <- method(pressure, x@data[[datumName]], pt)
                 }
             }
         }
