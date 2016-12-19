@@ -30,7 +30,7 @@ test_that("woce 2", {
               expect_equal(woce[["pressureUnit"]], list(unit=expression(dbar), scale=""))
               expect_equal(woce[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
               expect_equal(woce[["salinityUnit"]], list(unit=expression(), scale="PSS-78"))
-              expect_equal(woce[["oxygenUnit"]], expression(unit=expression(umol/kg), scale=""))
+              expect_equal(woce[["oxygenUnit"]], list(unit=expression(mu*mol/kg), scale=""))
           }
 })
 

@@ -351,6 +351,13 @@ test_that("original names pair with final names", {
           f <- system.file("extdata", "d201211_0011.cnv", package="oce")
           d <- read.oce(f)
           dno <- d[["dataNamesOriginal"]]
+          expect_equal(names(d[["data"]]),
+                       c("scan", "pressure", "depth", "temperature",
+                         "temperature2", "conductivity", "conductivity2",
+                         "oxygenRaw", "beamTransmission", "v1", "fluorescence",
+                         "v0", "fluorescence2", "v4", "upoly", "par", "spar",
+                         "altimeter", "oxygen", "salinity", "salinity2",
+                         "theta", "sigmaTheta", "soundSpeed", "nbin", "flag"))
           expect_equal(dno$scan, "scan")
           expect_equal(dno$pressure, "prDM")
           expect_equal(dno$depth, "depSM")
