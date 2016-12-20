@@ -250,6 +250,14 @@ setMethod(f="subset",
 #' lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
 #'}
 #'
+#' @section History:
+#' When this function was created in August 2016, the default server was
+#' \code{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
+#' but this was found to fail in December 2016, so the default was changed to
+#' \code{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}, which
+#' is what is used by \code{\link[marmap]{getNOAA.bathy}} in the
+#' \CRANpkg{marmap} package.
+#'
 #' @seealso The work is done with \code{\link[utils]{download.file}}.
 #'
 #' @template downloadWarningTemplate
@@ -269,7 +277,8 @@ download.topo <- function(west, east, south, north, resolution,
                            server, debug=getOption("oceDebug"))
 {
     if (missing(server))
-        server <- "http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"
+        server <- "http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"
+        ##server <- "http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"
     if (missing(destdir))
         destdir <- "."
     if (missing(format))

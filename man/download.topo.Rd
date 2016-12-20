@@ -76,6 +76,16 @@ recognized by \code{\link{read.topo}}.
 \code{\link{read.topo}} is extended to handle them, they will
 also be added here.)
 }
+\section{History}{
+
+When this function was created in August 2016, the default server was
+\code{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
+but this was found to fail in December 2016, so the default was changed to
+\code{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}, which
+is what is used by \code{\link[marmap]{getNOAA.bathy}} in the
+\CRANpkg{marmap} package.
+}
+
 \section{Warning}{
 
 All of the \code{download.*} functions are subject to change through the
