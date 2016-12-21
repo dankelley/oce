@@ -351,7 +351,6 @@ test_that("original names pair with final names", {
           ## This should help to ensure that bug 1141 does not return
           f <- system.file("extdata", "d201211_0011.cnv", package="oce")
           d <- read.oce(f)
-          dno <- d[["dataNamesOriginal"]]
           expect_equal(names(d[["data"]]),
                        c("scan", "pressure", "depth", "temperature",
                          "temperature2", "conductivity", "conductivity2",
@@ -359,6 +358,7 @@ test_that("original names pair with final names", {
                          "v0", "fluorescence2", "v4", "upoly", "par", "spar",
                          "altimeter", "oxygen", "salinity", "salinity2",
                          "theta", "sigmaTheta", "soundSpeed", "nbin", "flag"))
+          dno <- d[["dataNamesOriginal"]]
           expect_equal(dno$scan, "scan")
           expect_equal(dno$pressure, "prDM")
           expect_equal(dno$depth, "depSM")
