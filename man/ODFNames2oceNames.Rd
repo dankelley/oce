@@ -49,7 +49,7 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
     \code{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                   \cr
-    \code{FFFF_*.*} \tab \code{flag_archaic}       \tab Old flag name, replaced by \code{QCFF}                     \cr
+    \code{FFFF_*.*} \tab \code{flagArchaic}        \tab Old flag name, replaced by \code{QCFF}                     \cr
     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
     \code{HCDM}     \tab \code{directionMagnetic}  \tab                                                            \cr
@@ -58,7 +58,8 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{LATD_*.*} \tab \code{latitude}           \tab                                                            \cr
     \code{LOND_*.*} \tab \code{longitude}          \tab                                                            \cr
     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr
-    \code{OCUR_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
+    \code{OCUR_*.*} \tab \code{oxygenCurrent}      \tab Used mainly in \code{ctd} objects                          \cr
+    \code{OSAT_*.*} \tab \code{oxygenSaturation}   \tab Used mainly in \code{ctd} objects                          \cr
     \code{OTMP_*.*} \tab \code{oxygenTemperature}  \tab Used mainly in \code{ctd} objects                          \cr
     \code{OXYV_*.*} \tab \code{oxygenVoltage}      \tab Used mainly in \code{ctd} objects                          \cr
     \code{PHPH_*.*} \tab \code{pH}                 \tab                                                            \cr

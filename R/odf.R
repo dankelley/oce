@@ -204,7 +204,7 @@ findInHeader <- function(key, lines) # local
 #'     \code{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
 #'     \code{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                   \cr
-#'     \code{FFFF_*.*} \tab \code{flag_archaic}       \tab Old flag name, replaced by \code{QCFF}                     \cr
+#'     \code{FFFF_*.*} \tab \code{flagArchaic}        \tab Old flag name, replaced by \code{QCFF}                     \cr
 #'     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
 #'     \code{HCDM}     \tab \code{directionMagnetic}  \tab                                                            \cr
@@ -213,7 +213,8 @@ findInHeader <- function(key, lines) # local
 #'     \code{LATD_*.*} \tab \code{latitude}           \tab                                                            \cr
 #'     \code{LOND_*.*} \tab \code{longitude}          \tab                                                            \cr
 #'     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr
-#'     \code{OCUR_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{OCUR_*.*} \tab \code{oxygenCurrent}      \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{OSAT_*.*} \tab \code{oxygenSaturation}   \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{OTMP_*.*} \tab \code{oxygenTemperature}  \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{OXYV_*.*} \tab \code{oxygenVoltage}      \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{PHPH_*.*} \tab \code{pH}                 \tab                                                            \cr
@@ -253,9 +254,16 @@ findInHeader <- function(key, lines) # local
 ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                               columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "ODFNames2oceNames() {\n", unindent=1, sep="")
     n <- length(ODFnames)
-    if (n != length(ODFunits))
-        stop("length of ODFnames and ODFunits must agree but they are ", n, " and ", length(ODFunits))
+    if (n != length(ODFunits)) {
+        if (0 == length(ODFunits)) {
+            ## Handle the case of missing UNITS
+            ODFunits <- rep("", n)
+        } else {
+            stop("length of ODFnames and ODFunits must agree but they are ", n, " and ", length(ODFunits))
+        }
+    }
     names <- ODFnames
     ## message("names: ", paste(names, collapse="|"))
     ## Capture names for UNKN_* items, and key on them.  Possibly this should be done to
@@ -299,7 +307,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("DOXY", "oxygen", names)
     names <- gsub("ERRV", "error", names)
     names <- gsub("EWCT", "u", names)
-    names <- gsub("FFFF", "flag_archaic", names)
+    names <- gsub("FFFF", "flagArchaic", names)
     names <- gsub("FLOR", "fluorometer", names)
     names <- gsub("FWETLABS", "fwetlabs", names) # FIXME: what is this?
     names <- gsub("HCSP", "speedHorizontal", names)
@@ -308,7 +316,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("LATD", "latitude", names)
     names <- gsub("LOND", "longitude", names)
     names <- gsub("NSCT", "v", names)
-    names <- gsub("OCUR", "oxygen", names)
+    names <- gsub("OCUR", "oxygenCurrent", names)
+    names <- gsub("OSAT", "oxygenSaturation", names)
     names <- gsub("OTMP", "oxygenTemperature", names)
     names <- gsub("OXYV", "oxygenVoltage", names)
     names <- gsub("PHPH", "pH", names)
@@ -322,6 +331,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("SYTM", "time", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("TE90", "temperature", names)
     names <- gsub("TEMP", "temperature", names)
+    names <- gsub("UNKN", "unknown", names)
     names <- gsub("VCSP", "w", names)
     ## Step 3: recognize something from moving-vessel CTDs
     ## Step 4: some meanings inferred (guessed, really) from file CTD_HUD2014030_163_1_DN.ODF
@@ -345,7 +355,10 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         ## example, the sigma-theta case is done that way, because the
         ## original code expected kg/m^3 but then (issue 1051) I ran
         ## across an ODF file that wrote density as Kg/m^3.
-        units[[names[i]]] <- if (ODFunits[i] == "counts") {
+        oceDebug(debug, paste("ODFnames[",i,"]='",ODFnames[i],"', names[",i,"]='", names[i], "', ODFunits[", i, "]='", ODFunits[i], "'\n", sep=""))
+        units[[names[i]]] <- if (ODFunits[i] == "code") {
+            list(unit=expression(), scale="")
+        } else if (ODFunits[i] == "counts") {
             list(unit=expression(), scale="")
         } else if (ODFunits[i] == "db") {
             list(unit=expression(dbar), scale="")
@@ -364,6 +377,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         } else if (1 == length(grep("^m$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(m), scale="")
         } else if (ODFunits[i] == "mg/m^3") {
+            list(unit=expression(mg/m^3), scale="")
+        } else if (ODFunits[i] == "mg/m**3") {
             list(unit=expression(mg/m^3), scale="")
         } else if (ODFunits[i] == "ml/l") {
             list(unit=expression(ml/l), scale="")
@@ -394,7 +409,13 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         } else if (ODFunits[i] == "V") {
             list(unit=expression(V), scale="")
         } else if (1 == length(grep("^ug/l$", ODFunits[i], ignore.case=TRUE))) {
-            list(unit=expression(ug/l), scale="")
+            list(unit=expression(mu*g/l), scale="")
+        } else if (1 == length(grep("^ueinsteins/s/m\\*\\*2$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(mu*einstein/s/m^2), scale="")
+        } else if (1 == length(grep("^uA$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(mu*amp), scale="")
+        } else if (1 == length(grep("^%$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression("%"), scale="")
         } else if (nchar(ODFunits[i]) == 0) {
             list(unit=expression(), scale="")
         } else {
@@ -417,6 +438,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             ## units[[directionVariable]]$unit <- expression(degree)
         }
     }
+    oceDebug(debug, "} # ODFNames2oceNames()\n", unindent=1, sep="")
     list(names=names, units=units)
 }
 
@@ -452,6 +474,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
 #' @family things related to \code{odf} data
 ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 {
+    message("DAN")
     ## Stage 1. insert metadata (with odfHeader holding entire ODF header info)
     ## FIXME: add other types, starting with ADCP perhaps
     isCTD <- FALSE
@@ -529,8 +552,8 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
         }
     }
     ## use old (FFFF) flag if there is no modern (QCFF) flag
-    if ("flag_archaic" %in% names && !("flag" %in% names))
-        names <- gsub("flag_archaic", "flag", names)
+    if ("flagArchaic" %in% names && !("flag" %in% names))
+        names <- gsub("flagArchaic", "flag", names)
     names(res@data) <- names
     res
 }

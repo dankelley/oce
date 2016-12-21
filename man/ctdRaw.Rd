@@ -26,7 +26,7 @@ scale using \code{\link{T90fromT68}}.
 }
 \seealso{
 A similar dataset (trimmed to the downcast) is available as
-\code{\link{ctd}}.
+\code{data(\link{ctd})}.
 
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},

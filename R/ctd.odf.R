@@ -16,10 +16,10 @@
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
-    oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {")
+    oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {\n", sep="", unindent=1)
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
-    odf <- read.odf(file=file, columns=columns)
-    res <- as.ctd(odf)
+    odf <- read.odf(file=file, columns=columns, debug=debug-1)
+    res <- as.ctd(odf, debug=debug-1)
     ## replace any missingValue with NA
     if (!missing(missingValue) && !is.null(missingValue)) {
         for (item in names(res@data)) {
@@ -28,6 +28,6 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, monitor
     }
     if (!is.null(station))
         res@metadata$station <- station
-    oceDebug(debug, "} # read.ctd.odf()")
+    oceDebug(debug, "} # read.ctd.odf()\n", unindent=1)
     res
 }

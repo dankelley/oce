@@ -135,14 +135,13 @@ setClass("ctd", contains="oce")
 #' }
 #'
 #' @seealso The full profile (not trimmed to the downcast) is available as
-#' \link{ctdRaw}.
+#' \code{data(\link{ctdRaw})}.
 #'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{ctd} data
 NULL
 
 #' Seawater CTD Profile, Without Trimming of Extraneous Data
-#'
 #'
 #' This is sample CTD profile provided for testing.  It includes not just the
 #' (useful) portion of the dataset during which the instrument was being lowered,
@@ -165,7 +164,7 @@ NULL
 #' @usage data(ctdRaw)
 #'
 #' @seealso A similar dataset (trimmed to the downcast) is available as
-#' \code{\link{ctd}}.
+#' \code{data(\link{ctd})}.
 #'
 #' @family things related to \code{ctd} data
 #' @family datasets provided with \code{oce}
@@ -921,7 +920,10 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    debug=getOption("oceDebug"))
 {
     if (!missing(salinity) && inherits(salinity, "rsk")) {
-        return(rsk2ctd(salinity, pressureAtmospheric=pressureAtmospheric, debug=debug-1))
+        oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
+        res <- rsk2ctd(salinity, pressureAtmospheric=pressureAtmospheric, debug=debug-1)
+        oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
+        return(res)
     }
     oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     res <- new('ctd')
@@ -951,8 +953,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ship <- m$ship
         cruise <- m$cruise
         station <- m$station
-        if (is.character(m$startTime))
-            startTime <- as.POSIXct(m$startTime, tz="UTC")
+        startTime <- if (is.character(m$startTime)) startTime <- as.POSIXct(m$startTime, tz="UTC") else m$startTime
         if (is.na(latitude) && "latitude" %in% names(m))
             latitude <- m$latitude
         if (is.na(longitude) && "longitude" %in% names(m))
@@ -1040,7 +1041,6 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@metadata$deploymentType <- deploymentType
         res@metadata$dataNamesOriginal <- m$dataNamesOriginal
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-        oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
     } else if (is.list(salinity) || is.data.frame(salinity)) {
         oceDebug(debug, "salinity is a list or data frame\n")
         ## 2. coerce a data-frame or list
@@ -1077,7 +1077,6 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if ("phosphate" %in% names) res@data$phosphate <- x$phosphate
         if ("silicate" %in% names) res@data$silicate <- x$silicate
         if ("time" %in% names) res@data$time <- x$time
-        oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
     } else {
         oceDebug(debug, "salinity, temperature, pressure (etc) supplied\n")
         ## 3. explicit mode

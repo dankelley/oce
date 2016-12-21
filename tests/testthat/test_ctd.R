@@ -85,7 +85,8 @@ test_that("ctd subsetting and trimming", {
           expect_equal(ctdTrimmed[["scan"]][1:3], c(150,151,152))
           expect_equal(ctdTrimmed[["salinity"]][1:3], c(30.8882,30.9301,30.8928))
           expect_equal(ctdTrimmed[["pressure"]][1:3], c(6.198,6.437,6.770))
-          expect_equal(ctdTrimmed[["temperature"]][1:3], c(11.73438375, 11.63030873, 11.42455811))
+          ## next changed in Dec 21, 2016, when data(ctd) was switched to ITS-90, to match data(ctdRaw)
+          expect_equal(ctdTrimmed[["temperature"]][1:3], c(11.7315681715393,11.6275181215566,11.4218168700057))
           ## next is form a test for issue 669
           n <- length(ctd[["salinity"]])
           set.seed(669)
