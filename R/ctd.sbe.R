@@ -116,6 +116,7 @@
 #'   \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
 #'   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
 #'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
+#'   \code{sigma-é}     \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
 #'   \code{spar}        \tab \code{spar}                         \tab -                    \tab   \cr
 #'   \code{specc}       \tab \code{conductivity}                 \tab uS/cm                \tab   \cr
 #'   \code{sva}         \tab \code{specificVolumeAnomaly}        \tab 1e-8 m^3/kg;         \tab   \cr
@@ -443,7 +444,10 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         name <- "sigmaT"
         unit <- list(unit=expression(kg/m^3), scale="")
     ##} else if (1 == length(grep("sigma-.*[0-9]*", name, ignore.case=TRUE))) {
-    } else if (1 == length(grep("^sigma-\xfc\xbe\x8e\x96\x94\xbc[0-9]{2}$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sigma-\xfc\xbe\x8e\x96\x94\xbc[0-9]{2}$", name, useBytes=TRUE))) { # Q: 2016-12-22 what is this?
+        name <- "sigmaTheta"
+        unit <- list(unit=expression(kg/m^3), scale="")
+    } else if (1 == length(grep("^sigma-\xc3\xa9[0-9]{2}$", name, useBytes=TRUE))) { # Q: 2016-12-22 what is this?
         name <- "sigmaTheta"
         unit <- list(unit=expression(kg/m^3), scale="")
     } else if (1 == length(grep("^spar$", name))) {
