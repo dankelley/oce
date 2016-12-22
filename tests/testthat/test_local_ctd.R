@@ -26,7 +26,6 @@ test_that("woce 2", {
               expect_equal(woce[["institute"]], "SIO")
               expect_equal(woce[["station"]], 221)
               expect_equal(woce[["waterDepth"]], 3596)
-              expect_equal(woce[["conductivityUnit"]], list(unit=expression(), scale=""))
               expect_equal(woce[["pressureUnit"]], list(unit=expression(dbar), scale=""))
               expect_equal(woce[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
               expect_equal(woce[["salinityUnit"]], list(unit=expression(), scale="PSS-78"))
