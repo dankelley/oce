@@ -83,13 +83,16 @@ the Bedford Institute of Oceanography: \code{ALTB}, \code{PHPH} and \code{QCFF}.
 \section{Consistency warning}{
 
 There are disagreements on variable names. For example, the ``DFO
-Common Data Dictionary''
-(\url{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
-indicates that \code{DOXY} has unit millmole/m^3 for NODC and MEDS, but
-has unit mL/L for BIO and IML.
+Common Data Dictionary'' [1]
+has unit millmole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
 }
 \author{
 Dan Kelley
+}
+\references{
+1. The Department of Fisheries and Oceans Common Data Dictionary may be
+available at \code{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
+although that link seems to be unreliable.
 }
 \seealso{
 Other functions that interpret variable names and units from headers: \code{\link{cnvName2oceName}},

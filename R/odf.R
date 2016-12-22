@@ -237,10 +237,8 @@ findInHeader <- function(key, lines) # local
 #'
 #' @section Consistency warning:
 #' There are disagreements on variable names. For example, the ``DFO
-#' Common Data Dictionary''
-#' (\url{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
-#' indicates that \code{DOXY} has unit millmole/m^3 for NODC and MEDS, but
-#' has unit mL/L for BIO and IML.
+#' Common Data Dictionary'' [1]
+#' has unit millmole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
 #'
 #' @param ODFnames Vector of strings holding ODF names.
 #' @param ODFunits Vector of strings holding ODF units.
@@ -251,6 +249,11 @@ findInHeader <- function(key, lines) # local
 #' @return A vector of strings.
 #' @author Dan Kelley
 #' @family functions that interpret variable names and units from headers
+#'
+#' @references
+#' 1. The Department of Fisheries and Oceans Common Data Dictionary may be
+#' available at \code{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
+#' although that link seems to be unreliable.
 ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                               columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
 {

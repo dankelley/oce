@@ -20,7 +20,7 @@ test_that("woce 1", {
 
 test_that("woce 2", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              woce <- read.ctd.woce("local_data/example_ct1.csv")
+              woce <- read.ctd.woce("local_data/example_ct1.csv", debug=3)
               expect_equal(woce[["latitude"]], -17.5102)
               expect_equal(woce[["longitude"]], -150.4812)
               expect_equal(woce[["institute"]], "SIO")

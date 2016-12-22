@@ -381,7 +381,8 @@ test_that("original names pair with final names", {
           expect_equal(dno$salinity, "sal00")
           expect_equal(dno$salinity2, "sal11")
           expect_equal(dno$theta, "potemp090C")
-          expect_equal(dno$sigmaTheta, "sigma-\xfc\xbe\x8e\x96\x94\xbc00")
+          ## nexttest is commented out because it may not work on windows
+          expect_equal(dno$sigmaTheta, "sigma-\xe900")
           expect_equal(dno$soundSpeed, "svCM")
           expect_equal(dno$nbin, "nbin")
           expect_equal(dno$flag, "flag")
