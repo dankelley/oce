@@ -960,6 +960,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x06) {
                         rangeLSB <- readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
                         rangeMSB <- readBin(buf[o+77:80], "integer", n=4, size=1, signed=FALSE, endian="little")
+                        ## Note that following error msg has no period at the end, to distinguish
+                        ## from a similar message, below. 
+                        if (is.null(br))
+                            stop("cannot store bottom-track data for profile ", i, " because profile 1 lacked such data so no storage was set up (adp.rdi.R near line 966)")
                         br[i, ] <- 0.01 * (65536 * rangeMSB + rangeLSB)
                         bv[i, ] <- 0.001 * readBin(buf[o+c(24:31)], "integer", n=4, size=2, signed=TRUE, endian="little")
                         bc[i, ] <- as.integer(buf[o+32:35])
@@ -1130,13 +1134,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         if (debug && i <= profilesToShow) cat(vectorShow(g[i, , ], paste("g[", i, ",,]", sep="")))
                         o <- o + items + 2
                     } else if (buf[o+1] == 0x05) {
-                        message("STATUS")
                         o <- o + 2 + items
                         ## FIXME do something with these STATUS data
                         if (debug && i <= profilesToShow) cat("skipping ", 2 + items, " bytes for STATUS data (FIXME: not stored)\n")
                     } else if (buf[o+1] == 0x06) {
                         ## bottom-track
-                        message("BOTTOM TRACK")
+                        if (is.null(br))
+                            stop("cannot store bottom-track data for profile ", i, " because profile 1 lacked such data so no storage was set up (adp.rdi.R near line 1143)")
                         ## On the first profile, we set up space.
                         ## the bottom range is in 3 bytes, split into two chunks
                         rangeLSB <- readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
