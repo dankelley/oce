@@ -2,19 +2,25 @@
 % Please edit documentation in R/misc.R
 \name{integrateTrapezoid}
 \alias{integrateTrapezoid}
-\title{Use trapezoidal integration}
+\title{Trapezoidal Integration}
 \usage{
-integrateTrapezoid(x, y, type = c("A", "dA", "cA"))
+integrateTrapezoid(x, y, type = c("A", "dA", "cA"), xmin, xmax)
 }
 \arguments{
-\item{x}{x values, or a single value that is taken as the (constant)
-difference between x values.}
-
-\item{y}{y values, with length (\code{n}, say) that must match that of
-\code{x}.  If \code{y} is not given, the integration is done with the
-\code{x} values taken to be y, and \eqn{dx}{dx} taken to be 1.}
+\item{x, y}{vectors of x and y values. In the normal case, these
+vectors are both supplied, and of equal length. There are also two
+special cases. First, if \code{y} is missing, then
+\code{x} is taken to be \code{y}, and a new \code{x} is constructed
+as \code{\link{seq_along}(y)}. Second, if \code{length(x)} is 1
+and \code{length(y)} exceeds 1, then \code{x} is replaced by
+\code{x*seq_along(y)}.}
 
 \item{type}{Flag indicating the desired return value (see \dQuote{Value}).}
+
+\item{xmin, xmax}{Optional numbers indicating the range of the integration.
+These values may be used to restrict the range of integration, or to 
+extend it; in either case, \code{\link{approx}} with \code{rule=2}
+is used to create new x and y vectors.}
 }
 \value{
 If \code{type="A"} (the default), a single value is returned,
@@ -33,7 +39,6 @@ rule.
  There is no handling of \code{NA} values.
 }
 \examples{
-
 x <- seq(0, 1, length.out=10) # try larger length.out to see if area approaches 2
 y <- 2*x + 3*x^2
 A <- integrateTrapezoid(x, y)

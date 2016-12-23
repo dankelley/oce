@@ -49,6 +49,17 @@ test_that("times", {
                        as.numeric(as.POSIXct("1988-01-01 00:00:00", tz="UTC")), tolerance=1)
 })
 
+test_that("integrateTrapezoid", {
+          x <- seq(0, 1, length.out=10)
+          y <- rep(1, length(x))
+          expect_equal(1, integrateTrapezoid(x, y))
+          expect_equal(4, integrateTrapezoid(x, y, xmin=-2, xmax=2))
+          expect_equal(9, integrateTrapezoid(rep(1, 10)))
+          x <- seq(0, 1, length.out=10)
+          y <- 2*x + 3*x^2
+          expect_equal(2, integrateTrapezoid(x, y), tolerance=0.01)
+})
+
 test_that("matchBytes", {
           buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
           expect_equal(c(1,4), matchBytes(buf, 0xa5, 0x11))

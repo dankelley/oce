@@ -3980,17 +3980,24 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 }
 
 
-#' Use trapezoidal integration
+#' Trapezoidal Integration
 #'
 #' Estimate the integral of one-dimensional function using the trapezoidal
 #' rule.
 #'
-#' @param x x values, or a single value that is taken as the (constant)
-#' difference between x values.
-#' @param y y values, with length (\code{n}, say) that must match that of
-#' \code{x}.  If \code{y} is not given, the integration is done with the
-#' \code{x} values taken to be y, and \eqn{dx}{dx} taken to be 1.
+#' @param x,y vectors of x and y values. In the normal case, these
+#' vectors are both supplied, and of equal length. There are also two
+#' special cases. First, if \code{y} is missing, then
+#' \code{x} is taken to be \code{y}, and a new \code{x} is constructed
+#' as \code{\link{seq_along}(y)}. Second, if \code{length(x)} is 1
+#' and \code{length(y)} exceeds 1, then \code{x} is replaced by
+#' \code{x*seq_along(y)}.
 #' @param type Flag indicating the desired return value (see \dQuote{Value}).
+#' @param xmin,xmax Optional numbers indicating the range of the integration.
+#' These values may be used to restrict the range of integration, or to 
+#' extend it; in either case, \code{\link{approx}} with \code{rule=2}
+#' is used to create new x and y vectors.
+#'
 #' @return If \code{type="A"} (the default), a single value is returned,
 #' containing the estimate of the integral of \code{y=y(x)}.  If
 #' \code{type="dA"}, a numeric vector of the same length as \code{x}, of which
@@ -4001,7 +4008,6 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 #' @section Bugs: There is no handling of \code{NA} values.
 #' @author Dan Kelley
 #' @examples
-#'
 #' x <- seq(0, 1, length.out=10) # try larger length.out to see if area approaches 2
 #' y <- 2*x + 3*x^2
 #' A <- integrateTrapezoid(x, y)
@@ -4012,13 +4018,49 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 #' print(tail(cA, 1))
 #' print(integrateTrapezoid(diff(x[1:2]), y))
 #' print(integrateTrapezoid(y))
-integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"))
+integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 {
+    if (missing(x)) stop("must supply 'x'")
     if (missing(y)) {
-        res <- .Call("trap", 1, x, switch(match.arg(type), A=0, dA=1, cA=2))
-    } else {
-        res <- .Call("trap", x, y, switch(match.arg(type), A=0, dA=1, cA=2))
+        y <- x
+        x <- seq_along(y)
     }
+    if (length(x) == 1 && length(y) > 1)
+       x <- x * seq_along(y)
+    if (length(x) != length(y))
+        stop("'x' and 'y' must be of same length")
+    xout <- x
+    yout <- y
+    ## message("x: ", paste(x, collapse=" "))
+    ## message("y: ", paste(y, collapse=" "))
+    if (!missing(xmin) || !missing(xmax)) {
+        if (missing(xmin) || missing(xmax))
+            stop("'xmin' and 'xmax' must both be supplied, if either is")
+        if (xmin >= xmax)
+            stop("'xmin' must be less than 'xmax'")
+
+        if (xmin > max(x, na.rm=TRUE))
+            stop("xmin must be less than max(x)")
+        if (xmin < min(x, na.rm=TRUE)) {
+            xout <- c(xmin, xout)
+        } else {
+            xout <- xout[xout >= xmin]
+            xout <- c(xmin, xout)
+        }
+
+        if (xmax < min(x, na.rm=TRUE))
+            stop("xmax must be greater than min(x)")
+        if (xmax > max(x, na.rm=TRUE)) {
+            xout <- c(xout, xmax)
+        } else {
+            xout <- xout[xout < xmax]
+            xout <- c(xout, xmax)
+        }
+        yout <- approx(x, y, xout, rule=2)$y
+    }
+    ## message("xout: ", paste(xout, collapse=" "))
+    ## message("yout: ", paste(yout, collapse=" "))
+    res <- .Call("trap", xout, yout, switch(match.arg(type), A=0, dA=1, cA=2))
     res
 }
 
