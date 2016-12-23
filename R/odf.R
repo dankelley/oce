@@ -683,7 +683,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     DATA_TYPE <- findInHeader("DATA_TYPE", lines)
     deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
     ## date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
-    startTime <- strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
+    startTime <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
     ## endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
     NAvalue <- as.numeric(findInHeader("NULL_VALUE", lines))
     depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
