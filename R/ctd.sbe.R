@@ -458,34 +458,26 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
             name <- "sigma3"
         } else if (1 == length(grep("^sigma-4[0-9]{2}$", name, useBytes=TRUE))) {
             name <- "sigma4"
-        } else if (1 == length(grep("^sigma-\xc3\xa9[0-9]{2}$", name, useBytes=TRUE))) {
-            ## This tries to match for theta, or at least one of the
-            ## variants of theta (and there are many).
-            message("CLARK -- please report 'case 1' to Dan")
-            name <- "sigmaTheta"
         } else if (1 == length(grep("^sigma-\xe9[0-9]{2}$", name, useBytes=TRUE))) {
-            ## This matches for what we see in the supplied file
+            name <- "sigmaTheta"
+            ## 2016-12-22 DK
+            ## The above regexp matches for what we see in the supplied file
             ##    system.file("extdata", "d201211_0011.cnv", package="oce")
-            ## at line 54, an accented "e".
-            message("CLARK -- please report 'case 2' to Dan")
-            name <- "sigmaTheta"
-        } else if (1 == length(grep("^sigma-(.*)[0-9]{2}$", name, useBytes=TRUE))) {
-            ## This is a desparate measure, to try to infer a sigmaTheta.
-            ## A warning is issued because it's just a guess.
-            ## DK and CR spent time on 2016-12-22 trying to figure
-            ## out how to recognize a sigma with hexadecimal codings
-            ## on a windows machine, but found no solution. 
-            ## Prior to that date, the test looked like
-            ##    grep("^sigma-\xfc\xbe\x8e\x96\x94\xbc[0-9]{2}$", name, useBytes=TRUE)
-            ## but we had no idea where we came up with that! Then we tried
-            ##    grep("^sigma-\xc3\xa9[0-9]{2}$", name))
-            ## which was ok on osx but not on windows. At that point,
-            ## we consulted the SBE manuals and realized that there are
-            ## only a few possibilities, so we did NOT have to match the
-            ## theta, after all. That led to the present ifelse block.
-            message("CLARK -- please report 'case 3' to Dan")
-            warning("assuming that '", name, "' refers to sigmaTheta", sep="")
-            name <- "sigmaTheta"
+            ## at line 54, an acute-accented "e" (which maybe looked like
+            ## a theta to someone at SBE, when the format was invented. Clark
+            ## found the SBE docs and did some tests, which made it clear that
+            ## this accented "e" is always used, i.e. it is not just in some
+            ## sample files. Therefore, the above should not need changes.
+            ## However, it is worth explaining more, since the above regexp
+            ## replaces one that we had before today. That older one failed
+            ## on mswindows. On the assumption that this was an encoding issue,
+            ## the readLines() that reads in the data (line 686 of the present file)
+            ## was provided with an encoding of UTF-8, which is almost certainly
+            ## what osx and linux are using by default, but it's a *bad idea*
+            ## to rely on defaults, so we now set the encoding when we read
+            ## the data. Note that this switch also required to use the
+            ## useBytes=TRUE setting in all the grep() calls in the present
+            ## block.
         } else {
             name <- "sigma" ## give up; this is a default
         }
