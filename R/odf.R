@@ -657,6 +657,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
 
     ODFunits <- lines[grep("^\\s*UNITS\\s*=", lines)]
     ODFunits <- gsub("^[^']*'(.*)'.*$", "\\1", ODFunits) # e.g.  "  UNITS= 'none',"
+    ODFunits <- trimws(ODFunits)
     ##message("below is ODFunits...")
     ##print(ODFunits)
 
@@ -664,6 +665,12 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ODFnames <- gsub("^.*CODE=", "", ODFnames)
     ODFnames <- gsub(",", "", ODFnames)
     ODFnames <- gsub("^[^']*'(.*)'.*$", "\\1", ODFnames) # e.g. "  CODE= 'CNTR_01',"
+    if (length(ODFnames) < 1) {
+        ODFnames <- lines[grep("^\\s*WMO_CODE\\s*=", lines)]
+        ODFnames <- gsub("^.*WMO_CODE=", "", ODFnames)
+        ODFnames <- gsub(",", "", ODFnames)
+        ODFnames <- gsub("^[^']*'(.*)'.*$", "\\1", ODFnames) # e.g. "  CODE= 'CNTR_01',"
+    }
     ##message("below is ODFnames...")
     ##print(ODFnames)
 
@@ -680,7 +687,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     cruise <- findInHeader("CRUISE_NAME", lines)
     countryInstituteCode <- findInHeader("COUNTRY_INSTITUTE_CODE", lines)
     cruiseNumber <- findInHeader("CRUISE_NUMBER", lines)
-    DATA_TYPE <- findInHeader("DATA_TYPE", lines)
+    DATA_TYPE <- trimws(findInHeader("DATA_TYPE", lines))
     deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
     ## date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
     startTime <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
