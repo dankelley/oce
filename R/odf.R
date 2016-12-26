@@ -389,9 +389,9 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         } else if (1 == length(grep("^\\s*m/s\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(m/s), scale="")
         #} else if (ODFunits[i] == "mho/m") {
-        } else if (1 == length(grep("^\\mho(s){0,1}/m\\s*$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (1 == length(grep("^\\s*mho[s]{0,1}/m\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(mho/m), scale="")
-        } else if (ODFunits[i] == "mmho/cm") {
+        } else if (1 == length(grep("^\\s*mmho[s]{0,1}/cm\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(mmho/cm), scale="")
         ##} else if (ODFunits[i] == "[(]*none[)]$") {
         } else if (1 == length(grep("^[(]*none[)]*$", ODFunits[i], ignore.case=TRUE))) {
