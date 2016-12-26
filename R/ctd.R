@@ -3270,7 +3270,9 @@ setMethod(f="subset",
 #' if necessary. In the latter case, an error results if the \code{data}
 #' slot of \code{x} lacks a variable called \code{time}.
 #'
-#' @param type Line type.
+#' @param type Character indicating the line type, as for \code{\link{plot.default}}. The default
+#' is \code{"l"}, meaning to connect data with line segments. Another good choice is
+#' \code{"o"}, to add points at the data.
 #'
 #' @param mgp Three-element numerical vector to use for \code{par(mgp)}, and also
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
