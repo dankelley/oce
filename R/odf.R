@@ -393,14 +393,12 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(mg/m^3), scale="")
         } else if (ODFunits[i] == "ml/l") {
             list(unit=expression(ml/l), scale="")
-        ##} else if (ODFunits[i] == "m/s") {
         } else if (1 == length(grep("^\\s*m/s\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(m/s), scale="")
-        #} else if (ODFunits[i] == "mho/m") {
-        } else if (1 == length(grep("^\\mho(s){0,1}/m\\s*$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (1 == length(grep("^\\s*mho[s]{0,1}/m\\s*$", ODFunits[i], ignore.case=TRUE))) {
             warning('Changed unit mho/m to S/m for conductivity')
             list(unit=expression(S/m), scale="")
-        } else if (ODFunits[i] == "mmho/cm") {
+        } else if (1 == length(grep("^\\s*mmho[s]{0,1}/cm\\s*$", ODFunits[i], ignore.case=TRUE))) {
             warning('Changed unit mmho/cm to mS/cm for conductivity')
             list(unit=expression(mS/cm), scale="")
         } else if (ODFunits[i] == "mmHo") {
