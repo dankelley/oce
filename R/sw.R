@@ -489,7 +489,8 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0,
         conductivityUnit <- conductivityUnit$unit
     if (is.expression(conductivityUnit))
         conductivityUnit <- as.character(conductivityUnit)
-    conductivityUnit <- match.arg(conductivityUnit)
+    if (conductivityUnit != "" && conductivityUnit != "mS/cm" && conductivityUnit != "S/m")
+        stop("conductivity unit must be \"\", \"mS/cm\", or \"S/m\"")
     if (inherits(conductivity, "oce")) {
         if (inherits(conductivity, "rsk")) {
             ctd <- as.ctd(conductivity)
