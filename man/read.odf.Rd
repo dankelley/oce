@@ -43,6 +43,12 @@ and \code{SOUNDING}, respectively. In addition, the more common metadata
 item \code{waterDepth}, which is used in \code{ctd} objects to refer to
 the total water depth, is set to \code{sounding} if that is finite,
 or to \code{maxDepth} otherwise.
+
+The function \code{\link{ODFNames2oceNames}} is used to translate
+data names from the ODF file to standard \code{oce} names, and
+handles conversion for a few non-standard units. The documentation
+of \code{\link{ODFNames2oceNames}} should be consulted for more
+details.
 }
 \examples{
 library(oce)
