@@ -716,7 +716,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         for (w in which) {
             ustring <- as.character(namesUnits$units[[w]]$unit)
             if ("" != as.character(namesUnits$units[[w]]$unit))
-                warning("ODF column \"", ODFnames[w], "\" should be a conductivity ratio, but the unit is stored as \"", ustring, "\" as per the file. Type ?as.odf to see how to solve this problem.")
+                warning("ODF column \"", ODFnames[w], "\" should be a conductivity ratio, but the unit is stored as \"", ustring, "\" as per the file. See the examples provided by ?as.odf on a solution to this problem.")
         }
     }
 
