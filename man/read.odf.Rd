@@ -48,7 +48,9 @@ or to \code{maxDepth} otherwise.
 library(oce)
 # Read a CTD cast made on the Scotian Shelf. Note that the file's metadata
 # states that conductivity is in S/m, but it is really conductivity ratio,
-# so we must alter the unit before converting to a CTD object.
+# so we must alter the unit before converting to a CTD object. Note that
+# read.odf() on this data file produces a warning suggesting that the user
+# repair the unit, using the method outlined here.
 odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
 odf[["conductivityUnit"]] <- list(unit=expression(), scale="")
 #

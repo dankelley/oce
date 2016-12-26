@@ -533,8 +533,6 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     ## Stage 2. insert data (renamed to Oce convention)
     xnames <- names(ODF$DATA)
     res@data <- as.list(ODF$DATA)
-    ## table relating ODF names to Oce names ... guessing on FFF and SIGP, and no idea on CRAT
-    ## FIXME: be sure to record unit as conductivityRatio.
     resNames <- ODFNames2oceNames(xnames, columns=NULL, PARAMETER_HEADER=ODF$PARAMETER_HEADER, debug=debug-1)
     names(res@data) <- resNames
     ## Obey missing values ... only for numerical things (which might be everything, for all I know)
@@ -588,7 +586,9 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' library(oce)
 #' # Read a CTD cast made on the Scotian Shelf. Note that the file's metadata
 #' # states that conductivity is in S/m, but it is really conductivity ratio,
-#' # so we must alter the unit before converting to a CTD object.
+#' # so we must alter the unit before converting to a CTD object. Note that
+#' # read.odf() on this data file produces a warning suggesting that the user
+#' # repair the unit, using the method outlined here.
 #' odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
 #' odf[["conductivityUnit"]] <- list(unit=expression(), scale="")
 #' #
@@ -708,6 +708,18 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     model <- findInHeader("MODEL", lines)
     res <- new("odf")
     res@metadata$header <- NULL
+
+    ## catch erroneous units on CRAT, which should be in a ratio, and hence have no units.
+    ## This is necessary for the sample file inst/extdata/CTD_BCD2014666_008_1_DN.ODF
+    if (length(grep("CRAT", ODFnames))) {
+        which <- grep("CRAT", ODFnames)
+        for (w in which) {
+            ustring <- as.character(namesUnits$units[[w]]$unit)
+            if ("" != as.character(namesUnits$units[[w]]$unit))
+                warning("ODF column \"", ODFnames[w], "\" should be a conductivity ratio, but the unit is stored as \"", ustring, "\" as per the file. Type ?as.odf to see how to solve this problem.")
+        }
+    }
+
     res@metadata$units <- namesUnits$units
     ## res@metadata$dataNamesOriginal <- ODFnames
     res@metadata$dataNamesOriginal <- as.list(ODFnames)
