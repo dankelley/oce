@@ -1,7 +1,8 @@
 0.9-21
-- deprecate oce.as.POSIXlt()
-- code cleanup (for lintr warnings)
-- improve oceSetData() unit specification
+- read.odf() handles contradictory metadata better
+- oce.as.POSIXlt() deprecated
+- oceSetData() handles units better
+- clean up code flagged by lintr
 - fix memory-usage error in coastlineCut()
 
 0.9-20

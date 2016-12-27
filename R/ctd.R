@@ -3970,6 +3970,7 @@ plotProfile <- function (x,
         if (length(xtype) == 1 && xtype %in% names(x@data))
             mar[1] <- 1 # the bottom margin is wrong for e.g. NO2+NO3
     }
+    plimGiven <- !missing(plim)
 
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
                                 lwd=par("lwd"),
@@ -4022,20 +4023,33 @@ plotProfile <- function (x,
                         sigmaTheta=resizableLabel("sigmaTheta", "y"))
     }
     ## if plim given on a pressure plot, then it takes precedence over ylim
-    if (ytype == "pressure")
-        if (!missing(plim))
-            ylim <- plim
+    if (ytype == "pressure" && plimGiven)
+        ylim <- plim
     if (missing(ylim))
         ylim <- switch(ytype,
                        pressure=rev(range(x[["pressure"]], na.rm=TRUE)),
                        z=range(swZ(x[["pressure"]]), na.rm=TRUE),
                        depth=rev(range(x[["depth"]], na.rm=TRUE)),
                        sigmaTheta=rev(range(x[["sigmaTheta"]], na.rm=TRUE)))
-    examineIndices <- switch(ytype,
-                       pressure=min(ylim) <= x[["pressure"]] & x[["pressure"]] <= max(ylim),
-                       z=min(ylim) <= x[["z"]] & x[["z"]] <= max(ylim),
-                       depth=min(ylim) <= x[["depth"]] & x[["depth"]] <= max(ylim),
-                       sigmaTheta=min(ylim) <= x[["sigmaTheta"]] & x[["sigmaTheta"]] <= max(ylim))
+    ## issue 1137 Dec 27, 2016
+    ## Below, we used to trim the data to ylim, but this made it 
+    ## look as though there were no data at top and bottom of the plot.
+    ## The new scheme is to retain 5% of data outside the limit, which
+    ## should be OK for the usual R convention of a 4% gap at axis ends.
+    if (ytype %in% c("pressure", "z", "depth", "sigmaTheta")) {
+        yy <- x[[ytype]]
+        extra <- 0.05 * diff(range(yy, na.rm=TRUE)) # note larger than 0.04, just in case
+        if (is.na(extra)) examineIndices <- seq_along(yy)
+        else examineIndices <- (min(ylim) - extra) <= yy & yy <= (max(ylim) + extra)
+    } else {
+        warning("unknown \"ytype\"; must be one of \"pressure\", \"z\", \"depth\" or \"sigmaTheta\"")
+        examineIndices <- seq_along(x[["pressure"]]) # we know for sure this will work
+    }
+    ##1137 examineIndices <- switch(ytype,
+    ##1137                    pressure=g[1]*min(ylim) <= x[["pressure"]] & x[["pressure"]] <= g[2]*max(ylim),
+    ##1137                    z=g[1]*min(ylim) <= x[["z"]] & x[["z"]] <= g[2]*max(ylim),
+    ##1137                    depth=g[1]*min(ylim) <= x[["depth"]] & x[["depth"]] <= g[2]*max(ylim),
+    ##1137                    sigmaTheta=g[1]*min(ylim) <= x[["sigmaTheta"]] & x[["sigmaTheta"]] <= g[2]*max(ylim))
     if (0 == sum(examineIndices) && ytype == 'z' && ylim[1] >= 0 && ylim[2] >= 0) {
         warning("nothing is being plotted, because z is always negative and ylim specified a positive interval")
         return(invisible())
@@ -4064,10 +4078,8 @@ plotProfile <- function (x,
             time <- time * x@metadata$sampleInterval
         }
     }
-    y <- if (ytype == "pressure") x[["pressure"]]
-        else if (ytype == "z") x[["z"]]
-        else if (ytype == "depth") x[["depth"]]
-        else if (ytype == "sigmaTheta") x[["sigmaTheta"]]
+    y <- if (ytype == "pressure") x[["pressure"]] else if (ytype == "z") x[["z"]]
+        else if (ytype == "depth") x[["depth"]] else if (ytype == "sigmaTheta") x[["sigmaTheta"]]
 
     if (!add)
         par(mar=mar, mgp=mgp)
@@ -4089,6 +4101,7 @@ plotProfile <- function (x,
             box()
         }
     } else if (is.numeric(xtype)) {
+        oceDebug(debug, "xtype is numeric\n")
         if (length(xtype) != length(y))
             stop("length(xtype) must match number of levels in the CTD object")
         if (add) {
