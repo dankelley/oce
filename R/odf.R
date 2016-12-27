@@ -110,9 +110,12 @@ setMethod(f="subset",
 #' @description
 #' Plot data contained within an ODF object,
 #' using \code{\link{oce.plot.ts}} to create panels of time-series plots for all
-#' the columns contained in the \code{odf} object. This is crude, but \code{odf}
-#' objects are usually cast to other types, and those types have more useful
-#' plots.
+#' the columns contained in the \code{odf} object. If the object's \code{data}
+#' slot does not contain \code{time}, then \code{\link{pairs}} is used to plot
+#' all the elements in the slot. These actions are both crude and there are
+#' no arguments to control the behaviour, but this function is really just a stop-gap
+#' measure, since in practical work \code{odf} objects are usually cast to other types,
+#' and those types tend to have more useful plots.
 #'
 #' @param x A \code{odf} object, e.g. one inheriting from \code{\link{odf-class}}.
 #' @author Dan Kelley
@@ -121,14 +124,21 @@ setMethod(f="subset",
 setMethod(f="plot",
           signature=signature("odf"),
           definition=function(x) {
-              names <- names(x@data)
-              n <- length(names)
-              par(mfrow=c(n-1, 1))
-              for (i in 1:n) {
-                   if (names[i] != "time") {
-                       oce.plot.ts(x[["time"]], x[[names[i]]],
-                                   ylab=names[i], mar=c(2, 3, 0.5, 1), drawTimeRange=FALSE)
-                   }
+              data <- x@data
+              dataNames <- names(data)
+              n <- length(dataNames)
+              time <- data$time
+              if (!is.null(time)) {
+                  par(mfrow=c(n-1, 1))
+                  for (i in 1:n) {
+                      if (dataNames[i] != "time") {
+                          oce.plot.ts(time, data[[dataNames[i]]],
+                                      ylab=dataNames[i], mar=c(2, 3, 0.5, 1), drawTimeRange=FALSE)
+                      }
+                  }
+              } else {
+                  flags <- grepl("^.*[fF]lag$", dataNames)
+                  pairs(data.frame(data)[,!flags], labels=dataNames[!flags])
               }
           })
 
@@ -715,7 +725,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         which <- grep("CRAT", ODFnames)
         for (w in which) {
             ustring <- as.character(namesUnits$units[[w]]$unit)
-            if ("" != as.character(namesUnits$units[[w]]$unit))
+            if (length(ustring) && ustring != "")
                 warning("ODF column \"", ODFnames[w], "\" should be a conductivity ratio, but the unit is stored as \"", ustring, "\" as per the file. See the examples provided by ?as.odf on a solution to this problem.")
         }
     }
