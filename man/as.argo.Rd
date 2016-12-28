@@ -38,7 +38,7 @@ taken as \code{NA}.}
 An object of \code{\link{argo-class}}.
 }
 \description{
-Coerce a dataset into an argo dataset. This is not the right way to 
+Coerce a dataset into an argo dataset. This is not the right way to
 read official argo datasets, which are provided in NetCDF format and may
 be read with \code{\link{read.argo}}.
 }
@@ -51,7 +51,8 @@ objects, and also outlines the other functions dealing with them.
 
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoGrid}}, \code{\link{argo}},
+  \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
+  \code{\link{argo}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},

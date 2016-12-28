@@ -53,8 +53,8 @@ stations, use \code{station.indices=1:4}.}
 The permitted choices are \code{"best"} (the default) to pick
 a variant that suits the scale, \code{"coastlineWorld"} for the coarse
 version that is provided by \CRANpkg{oce},
-\code{"coastlineWorldMedium"} or \code{"coastlineWorldFine"} for two 
-coastlines provided by the \CRANpkg{ocedata} package, or \code{"none"}, to avoid 
+\code{"coastlineWorldMedium"} or \code{"coastlineWorldFine"} for two
+coastlines provided by the \CRANpkg{ocedata} package, or \code{"none"}, to avoid
 drawing a coastline.}
 
 \item{xlim}{Optional limit for x axis (only in sections, not map).}
@@ -139,7 +139,7 @@ at the bottom.}
 \code{getOption("oceMgp")}.}
 
 \item{mar}{Value to be used with \code{\link{par}("mar")}. If not provided,
-this is computed as \code{c(mgp[1]+1, mgp[1]+1, mgp[2]+1, mgp[2]+0.5)}.}
+a default is set up.}
 
 \item{col}{Colour, which defaults to \code{\link{par}("col")}.}
 
@@ -171,7 +171,7 @@ Creates a summary plot for a CTD section, with one panel for each value of
 \details{
 The type of plot is governed by \code{which}, as follows.
 
-\itemize{  
+\itemize{
     \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
     \item \code{which=2} or \code{"salinity"} for salinity contours
     \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
@@ -209,14 +209,14 @@ plot(section)
 
 ## 2. Gulf Stream
 GS <- subset(section, 109<=stationId&stationId<=129)
-GSg <- sectionGrid(GS, p=seq(0,2000,100))
-plot(GSg, which=c(1,99), map.ylim=c(34,42))
-par(mfrow=c(2,1))
+GSg <- sectionGrid(GS, p=seq(0, 2000, 100))
+plot(GSg, which=c(1, 99), map.ylim=c(34, 42))
+par(mfrow=c(2, 1))
 plot(GS, which=1, ylim=c(2000, 0), ztype='points',
      zbreaks=seq(0,30,2), pch=20, cex=3)
 plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
 
-par(mfrow=c(1,1))
+par(mfrow=c(1, 1))
 
 ## 3. Image, with coloured dots to indicate grid-data mismatch.
 plot(GSg, which=1, ztype='image')

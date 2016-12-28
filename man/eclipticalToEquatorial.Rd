@@ -33,9 +33,9 @@ Willmann-Bell. Richmond VA, USA. 201 pages.
 
 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
 USA. 429 pages.
-The code is based on [1]; see help(moonAngle,"oce") for comments on 
+The code is based on [1]; see help(moonAngle,"oce") for comments on
 the differences in formulae found in [2].  Indeed, [2] is only cited
-here in case readers want to check the ideas of the formulae; DK 
+here in case readers want to check the ideas of the formulae; DK
 has found that [2] is available to him via his university library
 inter-library loan system, whereas he owns a copy of [1].
 }

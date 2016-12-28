@@ -1,7 +1,7 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 #' @title Class to Store Meteorological Data
-#' 
+#'
 #' @description
 #' Class to store meteorological data, with standard slots \code{metadata},
 #' \code{data} and \code{processingLog}.  For objects created with
@@ -11,9 +11,9 @@
 #' velocities in m/s (not the km/h stored in typical data files), and which
 #' obey the oceanographic convention that \code{u>0} is a wind towards the
 #' east.
-#' 
+#'
 #' @section Methods:
-#' 
+#'
 #' \emph{Accessing values.} For an object named \code{m}, temperature (in degC)
 #' may be accessed as \code{m[["temperature"]]}, dew point (in degC) as
 #' \code{m[["dewPoint"]]}, pressure (in kPa) as \code{m[["pressure"]]},
@@ -26,14 +26,14 @@
 #' (if any) may be found with \code{m[["filename"]]}.  Items in \code{metadata}
 #' must be specifield by full name, but those in \code{data} may be
 #' abbreviated, so long as the abbreviation is unique.
-#' 
+#'
 #' \emph{Assigning values.} Everything that may be accessed may also be
 #' assigned, e.g.
 #' \preformatted{
 #' m[["temperature"]] <- 1 + m[["temperature"]]
 #' }
 #' increases temperature by 1C.
-#' 
+#'
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}
 #' @family things related to \code{met} data
@@ -61,12 +61,12 @@ setMethod(f="[[<-",
 
 
 #' @title Sample Met Object
-#' 
+#'
 #' @description
 #' This is sample \code{met} object containing data for Halifax, Nova Scotia,
 #' during September of 2003 (the period during which Hurricane Juan struck the
 #' city).
-#' 
+#'
 #' @name met
 #' @docType data
 #' @source Downloaded from the Environment Canada website on May 29, 2014, and
@@ -85,7 +85,7 @@ setMethod(f="initialize",
           signature="met",
           definition=function(.Object, time, temperature, pressure, u, v, filename="") {
               if (!missing(time)) .Object@data$time <- time
-              if (!missing(temperature)) .Object@data$temperature <-temperature 
+              if (!missing(temperature)) .Object@data$temperature <-temperature
               if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(u)) .Object@data$u <- u
               if (!missing(v)) .Object@data$v <- v
@@ -97,11 +97,11 @@ setMethod(f="initialize",
 
 
 #' @title Summarize a Met Object
-#' 
+#'
 #' @description
 #' Pertinent summary information is presented, including the sampling location,
 #' data ranges, etc.
-#' 
+#'
 #' @param object A \code{met} object, i.e. one inheriting from \code{\link{met-class}}.
 #' @param \dots further arguments passed to or from other methods.
 #' @author Dan Kelley
@@ -122,10 +122,10 @@ setMethod(f="summary",
 
 
 #' @title Subset a Met Object
-#' 
+#'
 #' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
-#' 
+#'
 #' @param x An object inheriting from \code{\link{met-class}}.
 #' @param subset An expression indicating how to subset \code{x}.
 #' @param \dots ignored.
@@ -136,7 +136,7 @@ setMethod(f="summary",
 #' data(met)
 #' # Few days surrounding Hurricane Juan
 #' plot(subset(met, time > as.POSIXct("2003-09-27", tz="UTC")))
-#' 
+#'
 #' @family things related to \code{met} data
 setMethod(f="subset",
           signature="met",
@@ -154,16 +154,16 @@ setMethod(f="subset",
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset.met(x, subset=", subsetString, ")", sep=""))
               res
           })
- 
+
 
 
 #' @title Coerce Data into Met Object
-#' 
+#'
 #' @description
 #' Coerces a dataset into a met dataset.
 #' This function is used by \code{\link{read.met}}, and may be used to
 #' construct objects that behave as though read by that function.
-#' 
+#'
 #' @param time Vector of obseration times (or character strings that can be
 #' coerced into times).
 #' @param temperature vector of temperatures.
@@ -190,16 +190,63 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
     new('met', time=time, temperature=temperature, pressure=pressure, u=u, v=v, filename=filename)
 }
 
+#' Convert met Data Name to Oce Name
+#'
+#' @details
+#' Interoperability between oce functions requires that standardized data names
+#' be used, e.g. \code{"temperature"} for in-situ temperature. Very few
+#' data-file headers name the temperature column in exactly that way, however,
+#' and this function is provided to try to guess the names.
+#'
+#' @param names a vector of character strings with original names
+#' @param scheme an optional indication of the scheme that is employed. This may
+#' be \code{"ODF"}, in which case \code{\link{ODFNames2oceNames}} is used,
+#' or \code{"met"}, in which case some tentative code for met files is used.
+#'
+#' @return
+#' Vector of strings for the decoded names. If an unknown scheme is provided,
+#' this will just be \code{names}.
+metNames2oceNames <- function(names, scheme)
+{
+    ##schemeGiven <- !missing(scheme)
+    res <- names
+    if (!missing(scheme)) {
+        if (scheme == "ODF") {
+            res <- ODFNames2oceNames(ODFnames=names, ODFunits=NULL)
+        } else if (scheme == "met") {
+            ## FIXME: capture the flags also
+            if (1 == length(i <- grep("^Temp.*C.*$", res))) res[i] <- "temperature"
+            if (1 == length(i <- grep("^Stn.*Press.*kPa.*$", res))) res[i] <- "pressure"
+            if (1 == length(i <- grep("^Wind.*Spd.*km.*$", res))) res[i] <- "wind"
+            if (1 == length(i <- grep("^Wind.*deg.*$", res))) res[i] <- "direction"
+            if (1 == length(i <- grep("^Visibility.*km.*$", res))) res[i] <- "visibility"
+            if (1 == length(i <- grep("^Rel\\.Hum\\.\\.\\.\\.$", res))) res[i] <- "humidity"
+            if (1 == length(i <- grep("^Dew\\.Point\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "dewPoint"
+            if (1 == length(i <- grep("^Wind\\.Chill$", res))) res[i] <- "windChill"
+            if (1 == length(i <- grep("^Weather$", res))) res[i] <- "weather"
+            if (1 == length(i <- grep("^Hmdx$", res))) res[i] <- "humidex"
+        } else {
+            warning("unknown scheme ", scheme)
+        }
+    } else {
+        ## temperature
+        col <- grep("temp", names, ignore.case=TRUE, useBytes=TRUE)
+        if (1 == length(col))
+            res[col] <- "temperature"
+    }
+    res
+}
+
 
 
 #' @title Read a Met File
-#' 
+#'
 #' @description
 #' Reads a comma-separated value file in the format used by the Meteorological
 #' Service of Canada (MSC).  The agency does not publish a format for these
 #' files, so this function was based on a study of a few sample files, and it
 #' may fail for other files, if MSC changes the format.
-#' 
+#'
 #' @param file a connection or a character string giving the name of the file
 #' to load.
 #' @param type if \code{NULL}, then the first line is studied, in order to
@@ -234,9 +281,9 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' met <- read.met("ile-rouge-eng-hourly-06012008-06302008.csv")
 #' plot(met, which=3:4)
 #' }
-#' 
+#'
 #' @family things related to \code{met} data
-read.met <- function(file, type=NULL, skip, 
+read.met <- function(file, type=NULL, skip,
                      tz=getOption("oceTz"),
                      debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -314,12 +361,12 @@ read.met <- function(file, type=NULL, skip,
     ##direction <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
     rpd <- atan2(1, 1) / 45            # radian/degree
 
-    names(rawData) <- decodeDataNames(names, "met")
+    names(rawData) <- metNames2oceNames(names, "met")
     rawData[["speed"]] <- rawData[["wind"]] * 1000 / 3600 # convert km/h to m/s
 
 
     ## Note (90 - ) to get from "clockwise from north" to "anticlockwise from east"
-    theta <- (90 - 10 * rawData[["direction"]]) * rpd 
+    theta <- (90 - 10 * rawData[["direction"]]) * rpd
     ## Note the (-) to get from "wind from" to "wind speed towards"
     rawData[["u"]] <- -rawData[["speed"]] * sin(theta)
     rawData[["v"]] <- -rawData[["speed"]] * cos(theta)
@@ -346,21 +393,21 @@ read.met <- function(file, type=NULL, skip,
 
 
 #' @title Plot Met Data
-#' 
+#'
 #' @description
 #' Creates a multi-panel summary plot of data measured in a meteorological data
 #' set.  cast. The panels are controlled by the \code{which} argument.
 #' Normally, 4 panels are specified with the \code{which}, but it can also be
 #' useful to specify less than 4 panels, and then to draw other panels after
 #' this call.
-#' 
+#'
 #' @details
 #' If more than one panel is drawn, then on exit from \code{plot.met}, the
 #' value of \code{par} will be reset to the value it had before the function
 #' call.  However, if only one panel is drawn, the adjustments to \code{par}
 #' made within \code{plot.met} are left in place, so that further additions may
 #' be made to the plot.
-#' 
+#'
 #' @param x A \code{met} object, e.g. as read by \code{\link{read.met}}, or a
 #' list containing items named \code{salinity} and \code{temperature}.
 #' @param which list of desired plot types.  \itemize{ \item \code{which=1}
@@ -380,14 +427,14 @@ read.met <- function(file, type=NULL, skip,
 #' library(oce)
 #' data(met)
 #' plot(met, which=3:4)
-#' 
+#'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{met} data
 setMethod(f="plot",
            signature=signature("met"),
            definition=function(x, which = 1:4,
                                mgp=getOption("oceMgp"),
-                               mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
+                               mar=c(mgp[1]+1, mgp[1]+1, mgp[1]+1, mgp[1]+1),
                                tformat,
                                debug=getOption("oceDebug"),
                                ...)
@@ -414,7 +461,3 @@ setMethod(f="plot",
                }
                oceDebug(debug, "} # plot.met()\n", unindent=1)
            })
-
-
-
- 

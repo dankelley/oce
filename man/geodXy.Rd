@@ -75,7 +75,7 @@ kmperdeg <- geodDist(0, mean(lat)-0.5, 0, mean(lat)+0.5) # mid-latitude estimate
 X <- (lon - lonR) * kmperdeg * cos(lat * pi / 180)
 Y <- (lat - latR) * kmperdeg
 XY <- list(x=X, y=Y)
-## plot, with labels for sphere-ellipse deviations
+# plot, with labels for sphere-ellipse deviations
 par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 plot(lon, lat, asp=1/cos(median(lat*pi/180)))
 plot(xy$x, xy$y, asp=1, xlab="x [km]", ylab="y [km]")

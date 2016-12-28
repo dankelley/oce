@@ -9,14 +9,14 @@ download.amsr(year, month, day, destdir = ".",
 }
 \arguments{
 \item{year, month, day}{Numerical values of the year, month, and day
-of the desired dataset. Note that one file is archived per day, 
+of the desired dataset. Note that one file is archived per day,
 so these three values uniquely identify a dataset.
 If \code{day} and \code{month} are not provided but \code{day} is,
 then the time is provided in a relative sense, based on the present
 date, with \code{day} indicating the number of days in the past.
 Owing to issues with timezones and the time when the data
 are uploaded to the server, \code{day=3} may yield the
-most recent available data. For this reason, there is a 
+most recent available data. For this reason, there is a
 third option, which is to leave \code{day} unspecified, which
 works as though \code{day=3} had been given.}
 

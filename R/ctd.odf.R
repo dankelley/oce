@@ -13,13 +13,15 @@
 #' is not clear that ODF format is handled correctly in \code{read.ctd.odf}, or
 #' the more general function \code{\link{read.odf}}, because the format 
 #' varies between some sample files the author has encountered in his research.
+#' @family things related to \code{ctd} data
+#' @family things related to \code{odf} data
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, monitor=FALSE,
                          debug=getOption("oceDebug"), processingLog, ...)
 {
-    oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {")
+    oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {\n", sep="", unindent=1)
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
-    odf <- read.odf(file=file, columns=columns)
-    res <- as.ctd(odf)
+    odf <- read.odf(file=file, columns=columns, debug=debug-1)
+    res <- as.ctd(odf, debug=debug-1)
     ## replace any missingValue with NA
     if (!missing(missingValue) && !is.null(missingValue)) {
         for (item in names(res@data)) {
@@ -28,7 +30,6 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, monitor
     }
     if (!is.null(station))
         res@metadata$station <- station
-    oceDebug(debug, "} # read.ctd.odf()")
+    oceDebug(debug, "} # read.ctd.odf()\n", unindent=1)
     res
 }
-

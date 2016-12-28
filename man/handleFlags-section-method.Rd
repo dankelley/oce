@@ -72,7 +72,7 @@ whether the planned functioning seems reasonable.
 library(oce)
 data(section)
 section2 <- handleFlags(section)
-par(mfrow=c(2,1))
+par(mfrow=c(2, 1))
 plotTS(section)
 plotTS(section2)
 

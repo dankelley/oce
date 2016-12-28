@@ -31,7 +31,7 @@ file on the assumption that this will offer the least surprise to
 the user.
 
 2. An attempt is made to find some common metadata from global
-attributes in the netcdf file. These attributes include 
+attributes in the netcdf file. These attributes include
 \code{Longitude}, \code{Latitude}, \code{Ship} and \code{Cruise}.
 Before they are stored in the metadata, they are converted to
 lower case, since that is the oce convention.

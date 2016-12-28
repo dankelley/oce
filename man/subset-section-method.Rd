@@ -13,7 +13,8 @@
 \item{subset}{A condition to be applied to the \code{data} portion of \code{x}.
 See \sQuote{Details}.}
 
-\item{...}{May include \code{debug}, to set a debugging level.}
+\item{...}{Optional arguments, which may include \code{indices}, a vector
+of the indices of stations to be kept (starting at 1 for the first station).}
 }
 \value{
 A new \code{section} object.

@@ -30,7 +30,7 @@ library(oce)
 data(sealevelTuktoyaktuk)
 time <- sealevelTuktoyaktuk[["time"]]
 elevation <- sealevelTuktoyaktuk[["elevation"]]
-oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2,6))
+oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2, 6))
 legend("topleft", legend=c("Tuktoyaktuk (1975)","Detided"),
        col=c("black","red"),lwd=1)
 tide <- tidem(sealevelTuktoyaktuk)

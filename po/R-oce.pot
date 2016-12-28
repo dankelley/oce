@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-20\n"
-"POT-Creation-Date: 2016-11-14 19:18\n"
+"POT-Creation-Date: 2016-11-15 18:42\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1570,7 +1570,7 @@ msgstr ""
 msgid "cannot find salinity-flag column in list c(\""
 msgstr ""
 
-msgid "\"); need 'CTDSAL_FLAG_W' or 'SALNTY_FLAG_W'"
+msgid "\"); need 'CTDSAL_FLAG...' or 'SALNTY_FLAG...'"
 msgstr ""
 
 msgid "cannot find temperature column in list"
@@ -3065,6 +3065,9 @@ msgid "lacks pressure"
 msgstr ""
 
 msgid "first argument must be a salinity vector, or a list of oce objects"
+msgstr ""
+
+msgid "first argument is not understood"
 msgstr ""
 
 msgid "n must round to a positive integer"

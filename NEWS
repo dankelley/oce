@@ -1,4 +1,15 @@
+0.9-21
+- read.odf() handles contradictory metadata better
+- oce.as.POSIXlt() deprecated
+- oceSetData() handles units better
+- clean up code flagged by lintr
+- fix memory-usage error in coastlineCut()
+
 0.9-20
+- remove observatory object type (changed format, seldom-used type)
+- remove pangaea object type (undocumented format, seldom-used type)
+- improvements for BioArgo data
+- Spanish translation by Pablo Valdés
 - make read.gps() handle more files
 - deprecate ctdAddColumn() and ctdUpdateHeader()
 - download.topo() added and read.topo() updated to handle new formats

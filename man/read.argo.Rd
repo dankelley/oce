@@ -31,7 +31,7 @@ Metadata items such as \code{time}, \code{longitude} and \code{latitude}
 are inferred from the data file in a straightforward way, using
 \code{\link[ncdf4]{ncvar_get}} and data-variable names as listed in
 the Argo documentation [2,3]. The items listed in section 2.2.3
-of [3] is read from the file and stored in the \code{metadata} slot, 
+of [3] is read from the file and stored in the \code{metadata} slot,
 with the exception of \code{longitude} and \code{latitude},
 which are stored in the \code{data} slot.
 
@@ -44,30 +44,7 @@ in all files, but tests showed that this is not the case, and so
 them in returned object.
 
 Items are translated from upper-case Argo names to \code{oce} names
-as follows.
-\itemize{
-\item \code{PLATFORM_NUMBER} becomes \code{id}
-\item \code{PROJECT_NAME} becomes \code{projectName}
-\item \code{PI_NAME} becomes \code{PIName}
-\item \code{STATION_PARAMETERS} becomes \code{stationParameters}
-\item \code{CYCLE_NUMBER} becomes \code{cycleNumber}
-\item \code{DIRECTION} becomes \code{direction} (either \code{A} for ascending or \code{D} for descending)
-\item \code{DATA_CENTRE} becomes \code{dataCentre} (note the spelling)
-\item \code{DC_REFERENCE} becomes \code{DCReference}
-\item \code{DATA_STATE_INDICATOR} becomes \code{dataStateIndicator}
-\item \code{DATA_MODE} becomes \code{dataMode}
-\item \code{INST_REFERENCE} becomes \code{instReference}
-\item \code{FIRMWARE_VERSION} becomes \code{firmwareVersion}
-\item \code{WMO_INST_TYPE} becomes \code{WMOInstType}
-\item \code{JULD} becomes \code{juld} (and used to compute \code{time})
-\item \code{JULD_QC} becomes \code{juldQc}
-\item \code{JULD_QC_LOCATION} becomes \code{juldQcLocation}
-\item \code{LATITUDE} becomes \code{latitude}
-\item \code{LONGITUDE} becomes \code{longitude}
-\item \code{POSITION_QC} becomes \code{positionQC}
-\item \code{POSITIONING_SYSTEM} becomes \code{positioningSystem}
-\item \code{PROFILE_QC} becomes \code{} ... FIX ME
-}
+using \code{\link{argoNames2oceNames}}.
 
 It is assumed that the profile data are as listed in the NetCDF variable
 called \code{STATION_PARAMETERS}. Each item can have variants, as
@@ -79,7 +56,7 @@ then \code{PRES} (pressure) data are sought in the file, along with
 are stored with different names within the resultant \code{\link{argo-class}}
 object, to match with \code{oce} conventions. Thus, \code{PRES} gets renamed
 \code{pressure}, while \code{PRES_ADJUSTED} gets renamed \code{pressureAdjusted},
-and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are 
+and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are
 stored in the \code{data} slot. Meanwhile, the quality-control flags
 \code{PRES_QC} and \code{PRES_ADJUSTED_QC} are stored as \code{pressure}
 and \code{pressureAdjusted} in the \code{metadata$flags} slot.
@@ -87,16 +64,16 @@ and \code{pressureAdjusted} in the \code{metadata$flags} slot.
 \section{Data sources}{
 
 Argo data are made available at several websites. A bit of detective
-work can be required to track down the data.  
+work can be required to track down the data.
 
 Some servers provide  data for floats that surfaced in a given ocean
-on a given day, the anonymous FTP server 
+on a given day, the anonymous FTP server
 \url{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
 
 Other servers provide data on a per-float basis. A complicating
 factor is that these data tend to be categorized by "dac" (data
 archiving centre), which makes it difficult to find a particular
-float. For example, 
+float. For example,
 \url{http://www.usgodae.org/ftp/outgoing/argo/} is the top level of
 a such a repository. If the ID of a float is known but not the
 "dac", then a first step is to download the text file
@@ -157,13 +134,15 @@ Dan Kelley
 \references{
 1. \url{http://www.argo.ucsd.edu/}
 
-2. \samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-(link last checked 2016-06-18)
-documents the codes used in the netCDF files.
+2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
+\url{https://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+(but note that this is a draft; newer versions may have
+replaced this by now).
 
-3. \samp{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
-(link last checked 2016-06-18)
-is the main document describing argo data.
+3. User's Manual (ar-um-02-01) 13 July 2010, available at
+\url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
+(link checked on 17 Nov 2016).
+This is the main document describing argo data.
 }
 \seealso{
 The documentation for \code{\link{argo-class}} explains the structure of argo
@@ -171,8 +150,8 @@ objects, and also outlines the other functions dealing with them.
 
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoGrid}}, \code{\link{argo}},
-  \code{\link{as.argo}},
+  \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
+  \code{\link{argo}}, \code{\link{as.argo}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{plot,argo-method}},
   \code{\link{subset,argo-method}},

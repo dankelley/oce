@@ -2,7 +2,7 @@
 
 
 #' Convert From Geographical to Geodesic Coordinates
-#' 
+#'
 #' The method employs geodesic calculations of the distances along geodesic
 #' curves, i.e. akin to great-circle curves that go along the surface of the
 #' ellipsoidal earth; see \code{\link{geodDist}}. The results are minimally
@@ -11,7 +11,7 @@
 #' returned from a map projection; in the latter case, the results vary greatly
 #' across a range of popular projections. Use the present function for things
 #' like gridding data or calculating drifter speeds.
-#' 
+#'
 #' Consider the \code{i}-th point in the \code{longitude} and \code{latitude}
 #' vectors.  The value of \code{x[i]} is inferred from the distance along a
 #' geodesic curve from from (\code{longitude[i]}, \code{latitude[i]}) to
@@ -21,7 +21,7 @@
 #' (\code{longitude[i]}, \code{latitudeRef}). Once the distances are inferred,
 #' signs are calculated from determining the sign of
 #' \code{longitude[i]-longitudeRef} for \code{x[i]} and similarly \code{y[i]}.
-#' 
+#'
 #' @param longitude vector of longitudes
 #' @param latitude vector of latitudes
 #' @param longitudeRef numeric, reference longitude
@@ -36,7 +36,7 @@
 #' @section Change notification: Until 2015-11-02, the names of the arguments
 #' were \code{lon}, \code{lat}, \code{lon.ref} and \code{lat.ref}; these were
 #' changed to be more in keeping with names in the rest of oce.
-#' 
+#'
 #' @section Caution: The calculation is devised by the author and is without known
 #' precedent in the literature, so users might have to explain it in their
 #' publications--hence the detailed discussion below.
@@ -59,7 +59,7 @@
 #' X <- (lon - lonR) * kmperdeg * cos(lat * pi / 180)
 #' Y <- (lat - latR) * kmperdeg
 #' XY <- list(x=X, y=Y)
-#' ## plot, with labels for sphere-ellipse deviations
+#' # plot, with labels for sphere-ellipse deviations
 #' par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 #' plot(lon, lat, asp=1/cos(median(lat*pi/180)))
 #' plot(xy$x, xy$y, asp=1, xlab="x [km]", ylab="y [km]")
@@ -70,7 +70,7 @@
 #'               rms(xy$x-XY$x)/diff(range(xy$x)),
 #'               rms(xy$y-XY$y)/diff(range(xy$y))),
 #'       side=3, line=-2)
-#' 
+#'
 #' @section Caution: This is possibly useful, possibly not. The method changed in Oct, 2015.
 #' @family functions relating to geodesy
 geodXy <- function(longitude, latitude, longitudeRef=0, latitudeRef=0, rotate=0)
@@ -86,10 +86,10 @@ geodXy <- function(longitude, latitude, longitudeRef=0, latitudeRef=0, rotate=0)
     if (rotate != 0) {
         S <- sin(rotate * pi / 180)
         C <- cos(rotate * pi / 180)
-        r <- matrix(c(C,S,-S,C),nrow=2)
+        r <- matrix(c(C, S, -S, C), nrow=2)
         rxy <- r %*% rbind(xy$x, xy$y)
-        xy$x <- rxy[1,]
-        xy$y <- rxy[2,]
+        xy$x <- rxy[1, ]
+        xy$y <- rxy[2, ]
     }
     data.frame(x=xy$x, y=xy$y)
 }
@@ -124,14 +124,14 @@ geodXyInverse <- function(x, y, longitudeRef=0, latitudeRef=0)
 
 
 #' Compute Geodesic Distance on Surface of Earth
-#' 
+#'
 #' This calculates geodesic distance between points on the earth, i.e.
 #' distance measured along the (presumed ellipsoidal) surface. The method
 #' involves the solution of the geodetic inverse problem, using T. Vincenty's
 #' modification of Rainsford's method with Helmert's elliptical terms.
-#' 
+#'
 #' The function may be used in several different ways.
-#' 
+#'
 #' Case 1: \code{longitude1} is a \code{section} object. The values of
 #' \code{latitude1}, \code{longitude2}, and \code{latitude2} arguments are
 #' ignored, and the behaviour depends on the value of the \code{alongPath}
@@ -139,7 +139,7 @@ geodXyInverse <- function(x, y, longitudeRef=0, latitudeRef=0)
 #' distances of each station from the first one.  If \code{alongPath=TRUE}, the
 #' return value is the geodetic distance along the path connecting the
 #' stations, in the order in which they are stored in the section.
-#' 
+#'
 #' Case 2: \code{longitude1} is a vector.  If \code{longitude2} and
 #' \code{latitude2} are not given, then the return value is a vector containing
 #' the distances of each point from the first one, \emph{or} the distancce
@@ -153,7 +153,7 @@ geodXyInverse <- function(x, y, longitudeRef=0, latitudeRef=0)
 #' \code{latitude1}, then the return value is the distance between
 #' corresponding (\code{longitude1},\code{latitude1}) and
 #' (\code{longitude2},\code{latitude2}) values.
-#' 
+#'
 #' @param longitude1 longitude or a vector of longitudes, \strong{or} a
 #' \code{section} object, from which longitude and latitude are extracted and
 #' used instead of the next three arguments
@@ -182,7 +182,7 @@ geodXyInverse <- function(x, y, longitudeRef=0, latitudeRef=0)
 #' data(section)
 #' geodDist(section)
 #' geodDist(section, alongPath=TRUE)
-#' 
+#'
 #' @family functions relating to geodesy
 geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NULL, alongPath=FALSE)
 {
@@ -212,10 +212,12 @@ geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NUL
             n2 <- length(latitude2)
             if (length(longitude2) != n2)
                 stop("latitude2 and longitude2 must be vectors of the same length")
-            if (n2 < n1) { # copy first (latitude2, longitude2)
+            if (n2 < n1) {
+                ## copy first (latitude2, longitude2)
                 latitude2 <- rep(latitude2[1], n1)
                 longitude2 <- rep(longitude2[1], n1)
-            } else { # trim
+            } else {
+                ## trim
                 latitude2 <- latitude2[1:n1]
                 longitude2 <- longitude2[1:n1]
             }
@@ -231,10 +233,10 @@ geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NUL
 
 
 #' Great-circle Segments Between Points on Earth
-#' 
+#'
 #' Each pair in the \code{longitude} and \code{latitude} vectors is considered
 #' in turn.  For long vectors, this may be slow.
-#' 
+#'
 #' @param longitude vector of longitudes, in degrees east
 #' @param latitude vector of latitudes, in degrees north
 #' @param dmax maximum angular separation to tolerate between sub-segments, in
@@ -251,10 +253,10 @@ geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NUL
 #'         longitudelim=c(-80,10), latitudelim=c(35,80),
 #'         projection="+proj=ortho", orientation=c(35, -35, 0))
 #' ## Great circle from New York to Paris (Lindberg's flight)
-#' l <- geodGc(c(-73.94,2.35), c(40.67,48.86), 1) 
+#' l <- geodGc(c(-73.94,2.35), c(40.67,48.86), 1)
 #' mapLines(l$longitude, l$latitude, col='red', lwd=2)
 #' }
-#' 
+#'
 #' @family functions relating to geodesy
 geodGc <- function(longitude, latitude, dmax)
 {
@@ -268,15 +270,16 @@ geodGc <- function(longitude, latitude, dmax)
     lat <- NULL
     ## FIXME: if this is slow, may need to use C
     for (i in seq.int(1, n-1)) {
-        d <- 2 * asin(sqrt((sin((rlat[i] - rlat[i+1])/2))^2
-                           + cos(rlat[i]) * cos(rlat[i+1]) * (sin((rlon[i] - rlon[i+1])/2))^2))
+        d <- 2 * asin(sqrt((sin((rlat[i] - rlat[i+1])/2))^2 # nolint (no space before opening parenthesis)
+                           + cos(rlat[i]) * cos(rlat[i+1]) * (sin((rlon[i] - rlon[i+1])/2))^2)) # nolint (no space before opening parenthesis)
+
         ddeg <- d / d2r
         if (ddeg < dmax) {
             lon <- c(lon, longitude[i])
             lat <- c(lat, latitude[i])
         } else {
             f <- seq(0, 1, length.out=ceiling(1 + ddeg/dmax))
-            A <- sin((1 - f) * d) / sin(d)
+            A <- sin((1 - f) * d) / sin(d) # nolint (no space before opening parenthesis)
             B <- sin(f * d) / sin(d)
             x <- A * cos(rlat[i]) * cos(rlon[i]) + B * cos(rlat[i+1]) * cos(rlon[i+1])
             y <- A * cos(rlat[i]) * sin(rlon[i]) + B * cos(rlat[i+1]) * sin(rlon[i+1])
@@ -292,5 +295,3 @@ geodGc <- function(longitude, latitude, dmax)
         lon <- ifelse(lon < 0, lon+360, lon)
     list(longitude=lon, latitude=lat)
 }
-
-

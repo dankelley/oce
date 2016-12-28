@@ -27,13 +27,12 @@ Adds points to an existing map, by analogy to \code{\link{points}}.
 }
 \examples{
 \dontrun{
-    library(oce)
-    data(coastlineWorld)
-    mapPlot(coastlineWorld, type='l', grid=TRUE,
-    longitudelim=c(-80,0), latitudelim=c(20,50),
-    projection="+proj=merc", orientation=c(90,0,0))
-    data(section)
-    mapPoints(section)
+library(oce)
+data(coastlineWorld)
+mapPlot(coastlineWorld, longitudelim=c(-80, 0), latitudelim=c(20, 50),
+        col="lightgray", projection="+proj=laea +lon_0=-35")
+data(section)
+mapPoints(section)
 }
 
 }

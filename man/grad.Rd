@@ -32,7 +32,7 @@ y <- seq(-200e3, 200e3, dy)
 R <- 100e3
 h <- outer(x, y, function(x, y) 500*exp(-(x^2+y^2)/R^2))
 grad <- grad(h, x, y)
-par(mfrow=c(2,2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+par(mfrow=c(2, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 contour(x,y,h,asp=1, main=expression(h))
 f <- 1e-4
 gprime <- 9.8 * 1 / 1024

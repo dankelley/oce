@@ -13,7 +13,7 @@ load.  This is a directory name containing the data.}
 
 \item{band}{The bands to be read, by default all of the bands.  Use
 `band=NULL` to skip the reading of bands, instead reading only the
-image metadata, which is often enough to check if the image is of 
+image metadata, which is often enough to check if the image is of
 interest in a given study. See \sQuote{Details} for the names of the
 bands, some of which are pseudo-bands, computed from the actual data.}
 
@@ -48,8 +48,8 @@ if desired, e.g. to store calculated quantities.
 }
 \description{
 Read a landsat data file, producing an object of \code{\link{landsat-class}}.
-The actual reading is done with \link[tiff]{readTIFF} in the 
-\CRANpkg{tiff} package, so that package must be installed for 
+The actual reading is done with \link[tiff]{readTIFF} in the
+\CRANpkg{tiff} package, so that package must be installed for
 \code{read.landsat} to work.
 }
 \details{
@@ -59,7 +59,7 @@ names of the files in those directories.  Those file names were found by
 inspection of some data, on the assumption that similar patterns will hold for
 other datasets for any given satellite. This is a brittle approach and it
 should be born in mind if \code{read.landsat} fails for a given dataset.
-    
+
 For Landsat 8, there are 11 bands, with names \code{"aerosol"} (band 1),
 \code{"blue"} (band 2), \code{"green"} (band 3), \code{"red"} (band 4),
 \code{"nir"} (band 5), \code{"swir1"} (band 6), \code{"swir2"} (band 7),
@@ -71,15 +71,15 @@ an abbreviation for \code{band=c("red", "green", "nir")}.
 For Landsat 7, there 8 bands, with names \code{"blue"} (band 1), \code{"green"}
 (band 2), \code{"red"} (band 3), \code{"nir"} (band 4), \code{"swir1"} (band
 5), \code{"tir1"} (band 6A), \code{"tir2"} (band 6B), \code{"swir2"} (band 7)
-and \code{"panchromatic"} (band 8).  
-    
+and \code{"panchromatic"} (band 8).
+
 For Landsat 4 and 5, the bands similar to Landsat 7 but without
 \code{"panchromatic"} (band 8).
 }
 \section{Storage requirements}{
 
 
-Landsat data files (directories, really) are large, accounting for 
+Landsat data files (directories, really) are large, accounting for
 approximately 1 gigabyte each.  The storage of the Oce object is
 similar (see \code{\link{landsat-class}}).  In R, many operations involving
 copying data, so that dealing with full-scale landsat images can overwhelm

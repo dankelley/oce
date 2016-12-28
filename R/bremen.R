@@ -25,7 +25,7 @@ setClass("bremen", contains="oce") # 20150528 may be called "geomar" or somethin
 
 setMethod(f="initialize",
           signature="bremen",
-          definition=function(.Object,filename="") {
+          definition=function(.Object, filename="") {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@metadata$filename <- filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
@@ -132,10 +132,31 @@ findInHeaderBremen <- function(key, lines)
 #' Read a file in Bremen format, producing an object inheriting from
 #' \code{\link{bremen-class}}.
 #'
+#' @details
+#' Velocities are assumed to be in
+#' cm/s, and are converted to m/s to follow the oce convention. Shears
+#' (which is what the variables named \code{uz} and \code{vz} are assumed
+#' to represent) are assumed to be in (cm/s)/m, although they could be in 1/s
+#' or something else; the lack of documentation is a problem here. Also,
+#' note that the assumed shears are not just first-difference estimates
+#' of velocity, given the results of a sample dataset:
+#' \preformatted{
+#' > head(data.frame(b[["data"]]))
+#'   pressure      u      v       uz       vz
+#' 1        0  0.092 -0.191  0.00000  0.00000
+#' 2       10  0.092 -0.191  0.02183 -0.35412
+#' 3       20  0.092 -0.191  0.03046 -0.09458
+#' 4       30  0.026 -0.246 -0.03948  0.02169
+#' 5       40 -0.003 -0.212 -0.02614  0.03111
+#' 6       50 -0.023 -0.169 -0.03791  0.01706
+#' }
+#'
 #' @param file a connection or a character string giving the name of the file
 #' to load.
 #' @return An object of \code{\link{bremen-class}}.
-#' @section Issues: This may be renamed (or removed) without notice.
+#' @section Issues: This function may be renamed (or removed) without notice.
+#' It was created to read some data being used in a particular research
+#' project, and will be rendered uselss if Bremen changes this data format.
 #' @author Dan Kelley
 #' @family things related to \code{bremen} data
 read.bremen <- function(file)
@@ -206,4 +227,3 @@ read.bremen <- function(file)
     }
     res
 }
-

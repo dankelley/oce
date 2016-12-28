@@ -168,7 +168,8 @@ stopifnot(all.equal(a[1:10], b))
 	    error("cannot enlarge the buffer used to store data within an individual adp/rdi ensemble; trying to enlarge to %d bytes", bytes_to_read);
 	  nebuf = bytes_to_read;
       }
-      fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
+      size_t tmp; // prevent compiler warnings with fread
+      tmp = fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
       if (feof(fp)) {
 	//Free(ensembles);
 	//Free(ebuf);

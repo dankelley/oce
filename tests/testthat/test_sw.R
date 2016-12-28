@@ -4,7 +4,7 @@ library(gsw)
 context("sw")
 ## Table of contents.
 ##  1. rho and sigma
-##  2. potential temperature
+##  2. potential temperature and temperature scales
 ##  3. Absolute Salinity and Conservative Temperature
 ##  4. sound speed
 ##  5. freezing temperature
@@ -40,7 +40,9 @@ context("sw")
 
 test_that("rho and sigma", {
           ## 1. rho and sigma
-          ## 1.1 UNESCO rho [1 p19]
+          ## 1.1 UNESCO rho [1 p19]. Note that we must
+          ## convert to the T68 temperature scale, which was in use at the time
+          ## that [1] was written.
           S <- c( 0,   0,   0,   0,  35,  35,  35,  35)
           T <- T90fromT68(c( 5,   5,  25,  25,   5,   5,  25,  25))
           p <- c( 0, 1e4,   0, 1e4,   0, 1e4,   0, 1e4)
@@ -110,6 +112,10 @@ test_that("potential_temperature, SA and CT, sound speed (GSW)", {
           speedGSW <- gsw::gsw_sound_speed(SA, CT, 1e4)
           speed <- swSoundSpeed(salinity=40, temperature=40, pressure=1e4, longitude=300, latitude=30, eos="gsw")
           expect_equal(speedGSW, speed)
+})
+
+test_that("temperature scales", {
+          expect_equal(10, T68fromT90(T90fromT68(10)))
 })
 
 test_that("freezing temperature", {
@@ -184,6 +190,16 @@ test_that("alpha and beta", {
           expect_equal(a, aGSW)
           bGSW <- gsw::gsw_beta(SA=SA, CT=CT, p=p)
           expect_equal(b, bGSW)
+          ## 8.2 swAlphaOverBeta
+          ## Ensure that alpha, beta, and alpha/beta are consistent, in both EOS
+          S <- 34
+          T <- 10
+          p <- 100
+          expect_equal(1, swAlpha(S,T,p)/swBeta(S,T,p)/swAlphaOverBeta(S,T,p))
+          eos <- "gsw"
+          expect_equal(1, swAlpha(S,T,p,eos=eos)/swBeta(S,T,p,eos=eos)/swAlphaOverBeta(S,T,p,eos=eos))
+          eos <- "unesco"
+          expect_equal(1, swAlpha(S,T,p,eos=eos)/swBeta(S,T,p,eos=eos)/swAlphaOverBeta(S,T,p,eos=eos))
 })
 
 test_that("swSTrho", {

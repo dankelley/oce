@@ -103,7 +103,8 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
 
 Other things related to \code{argo} data: \code{\link{[[<-,argo-method}},
   \code{\link{argo-class}}, \code{\link{argoGrid}},
-  \code{\link{argo}}, \code{\link{as.argo}},
+  \code{\link{argoNames2oceNames}}, \code{\link{argo}},
+  \code{\link{as.argo}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},

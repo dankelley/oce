@@ -12,11 +12,11 @@ A \code{\link{list}} of stations is retrieved by \code{s[["station"]]}.
 Individual stations are retrieved by providing a station number as a second
 argument in the index, e.g.  the first station is \code{s[["station", 1]]}
 (which is a \code{\link{ctd-class}} object).
-        
+
 Aggregated values of the quantities measured at each level of the CTD
 profiles contained within the section may be accessed as e.g.
 \code{section[["salinity"]]}.  This works for any quantity whose name is
-present in the constituent profiles.   
+present in the constituent profiles.
 
 Since it is often useful to pair such quantities with locations,
 \code{section[["longitude"]]} and \code{section[["latitude"]]} return vectors
@@ -40,7 +40,7 @@ pairs(cbind(z=-section[["pressure"]],T=section[["temperature"]],S=section[["sali
 par(mfrow=c(3,3))
 Tlim <- range(section[["temperature"]])
 ylim <- rev(range(section[["pressure"]]))
-for (stn in section[["station",1:9]])
+for (stn in section[["station", 1:9]])
     plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
 
 }
@@ -56,11 +56,11 @@ Sections can be read with \code{\link{read.section}} or created with
 Sections may be sorted with \code{\link{sectionSort}}, subsetted with
 \code{\link{subset,section-method}}, smoothed with \code{\link{sectionSmooth}}, and
 gridded with \code{\link{sectionGrid}}.  Gridded sections may be plotted with
-\code{\link{plot,section-method}}.  
-    
+\code{\link{plot,section-method}}.
+
 Statistical summaries are provided by \code{\link{summary,section-method}}, while
-overviews are provided by \code{show}.  
-    
+overviews are provided by \code{show}.
+
 The sample dataset \code{\link{section}} contains data along WOCE line A03.
 
 Other classes provided by \code{oce}: \code{\link{adp-class}},

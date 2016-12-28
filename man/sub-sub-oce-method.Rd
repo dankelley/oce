@@ -20,12 +20,12 @@
 The named item is sought first in
 \code{metadata}, where an exact match to the name is required. If
 it is not present in the \code{metadata} slot, then a partial-name
-match is sought in the \code{data} slot. Failing both 
+match is sought in the \code{data} slot. Failing both
 tests, an exact-name match is sought in a field named
 \code{dataNamesOriginal} in the object's \code{metadata}
 slot, if that field exists. Failing that, \code{NULL} is returned.
 
-To get information on the specialized variants of this function, 
+To get information on the specialized variants of this function,
 type e.g. \code{?"[[,adv-method"} for information on extracting
 data from an object of \code{\link{adv-class}}.
 }

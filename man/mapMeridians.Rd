@@ -27,34 +27,16 @@ Use \code{\link{mapGrid}} instead of the present function.
 Plot meridians (lines of constant latitude) on an existing map.
 
 
-Meridians that will not fit in the plotting space are ignored.
-}
-\section{Bugs}{
-
-This should use \code{\link{approx}} to fill in multiple
-segments within the line, so that e.g. great circle lines will be curved.
-}
-\examples{
-\dontrun{
-library(oce)
-data(coastlineWorld)
-longitude <- coastlineWorld[['longitude']]
-latitude <- coastlineWorld[['latitude']]
-mapPlot(longitude, latitude, type='l',
-longitudelim=c(-130,-50), latitudelim=c(30,60),
-proj="polyconic", orientation=c(90, -90, 0))
-mapMeridians()
-}
-
+This function should not be used, since it will be removed soon.
+Please use mapGrid() instead.
 }
 \author{
 Dan Kelley
 }
 \seealso{
-A map must first have been created with \code{\link{mapPlot}}.
-
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdAddColumn}},
-  \code{\link{ctdUpdateHeader}}, \code{\link{mapZones}}
+  \code{\link{ctdUpdateHeader}}, \code{\link{mapZones}},
+  \code{\link{oce.as.POSIXlt}}
 }
 

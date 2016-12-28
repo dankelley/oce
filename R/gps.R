@@ -2,7 +2,7 @@
 
 
 #' @title Class to Store GPS Data
-#' 
+#'
 #' @description
 #' Class to store gps data. These objects may be read with
 #' \code{\link{read.gps}} or assembled with \code{\link{as.gps}}.
@@ -27,10 +27,10 @@ setMethod(f="initialize",
 
 
 #' @title Summarize a GPS Object
-#' 
+#'
 #' @description
 #' Summarize a \code{gps} object, i.e. one inheriting from \code{\link{gps-class}}.
-#' 
+#'
 #' @param object an object of class \code{"gps"}
 #' @param \dots further arguments passed to or from other methods.
 #' @author Dan Kelley
@@ -65,7 +65,7 @@ setMethod(f="[[<-",
 
 
 #' @title Plot a GPS Object
-#' 
+#'
 #' @description
 #' This function plots a gps object.  An attempt is made to use the whole space
 #' of the plot, and this is done by limiting either the longitude range or the
@@ -75,7 +75,7 @@ setMethod(f="[[<-",
 #' \code{par(new=TRUE)}, and then call \code{plot.gps} with a value of
 #' \code{mar} that moves the inset plot to a desired location on the existing
 #' plot, and with \code{bg="white"}.
-#' 
+#'
 #' @param x A \code{gps} object, as read by \code{\link{read.gps}} or created
 #' by \code{\link{as.gps}}, or a list containing items named \code{longitude}
 #' and \code{latitude}.
@@ -153,7 +153,7 @@ setMethod(f="plot",
                                ## center, span,
                                expand=1,
                                mgp=getOption("oceMgp"),
-                               mar=c(mgp[1]+1,mgp[1]+1,1,1),
+                               mar=c(mgp[1]+1, mgp[1]+1, 1, 1),
                                bg,
                                axes=TRUE, cex.axis=par('cex.axis'),
                                add=FALSE, inset=FALSE,
@@ -162,12 +162,12 @@ setMethod(f="plot",
                                ...)
           {
               oceDebug(debug, "plot.gps(...",
-                       ", clongitude=", if(missing(clongitude)) "(missing)" else clongitude,
-                       ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
-                       ", span=", if(missing(span)) "(missing)" else span,
+                       ", clongitude=", if (missing(clongitude)) "(missing)" else clongitude,
+                       ", clatitude=", if (missing(clatitude)) "(missing)" else clatitude,
+                       ", span=", if (missing(span)) "(missing)" else span,
                        ", geographical=", geographical,
-                       ", cex.axis=", cex.axis, 
-                       ", inset=", inset, 
+                       ", cex.axis=", cex.axis,
+                       ", inset=", inset,
                        ", ...) {\n", sep="", unindent=1)
               if (!missing(projection)) {
                   if (missing(span))
@@ -221,7 +221,7 @@ setMethod(f="plot",
                       yr <- clatitude + span * c(-1/2, 1/2) / 111.11
                       xr0 <- xr
                       yr0 <- yr
-                      oceDebug(debug, "xr=", xr," yr=", yr, " asp=", asp, "\n")
+                      oceDebug(debug, "xr=", xr, " yr=", yr, " asp=", asp, "\n")
                   } else {
                       xr0 <- range(longitude, na.rm=TRUE)
                       yr0 <- range(latitude, na.rm=TRUE)
@@ -234,7 +234,8 @@ setMethod(f="plot",
                       }
                       ## Expand
                       if (missing(span)) {
-                          if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) { # don't expand if full map
+                          if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) {
+                              ## don't expand if full map
                               xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
                               yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
                           } else {
@@ -365,12 +366,12 @@ setMethod(f="plot",
 
 
 #' @title Coerce data into a GPS dataset
-#' 
+#'
 #' @description
 #' Coerces a sequence of longitudes and latitudes into a GPS dataset.
 #' This may be used when \code{\link{read.gps}} cannot read a file, or when the
 #' data have been manipulated.
-#' 
+#'
 #' @param longitude the longitude in decimal degrees, positive east of
 #' Greenwich, or a data frame with columns named \code{latitude} and
 #' \code{longitude}, in which case these values are extracted from the data
@@ -393,12 +394,11 @@ as.gps <- function(longitude, latitude, filename="")
 
 
 #' @title Read a GPS File
-#' 
-#' 
+#'
 #' @description
 #' Reads GPX format files by simply finding all longitudes and latitudes; in
 #' other words, information on separate tracks, or waypoints, etc., is lost.
-#' 
+#'
 #' @param file name of file containing gps data.
 #' @param type type of file, which will be inferred from examination of the
 #' data if not supplied.  In the present version, the only choice for
@@ -441,8 +441,7 @@ read.gps <- function(file, type=NULL, debug=getOption("oceDebug"), processingLog
     latlon <- lines[look]
     latlonCleaned <- gsub("[a-zA-Z<>=\"/]*", "", latlon)
     latlon <- read.table(text=latlonCleaned)
-    res <- new("gps", longitude=latlon[,2], latitude=latlon[,1], file=filename)
+    res <- new("gps", longitude=latlon[, 2], latitude=latlon[, 1], file=filename)
     oceDebug(debug, "} # read.gps()\n", sep="", unindent=1)
     res
 }
-

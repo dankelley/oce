@@ -49,7 +49,7 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
     \code{EWCT_*.*} \tab \code{u}                  \tab Used in \code{adp} and \code{cm} objects                   \cr
-    \code{FFFF_*.*} \tab \code{flag_archaic}       \tab Old flag name, replaced by \code{QCFF}                     \cr
+    \code{FFFF_*.*} \tab \code{flagArchaic}        \tab Old flag name, replaced by \code{QCFF}                     \cr
     \code{FLOR_*.*} \tab \code{fluorometer}        \tab Used mainly in \code{ctd} objects                          \cr
     \code{FWETLABS} \tab \code{fwetlabs}           \tab Used in ??                                                 \cr
     \code{HCDM}     \tab \code{directionMagnetic}  \tab                                                            \cr
@@ -58,7 +58,8 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{LATD_*.*} \tab \code{latitude}           \tab                                                            \cr
     \code{LOND_*.*} \tab \code{longitude}          \tab                                                            \cr
     \code{NSCT_*.*} \tab \code{v}                  \tab Used in \code{adp} objects                                 \cr
-    \code{OCUR_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
+    \code{OCUR_*.*} \tab \code{oxygenCurrent}      \tab Used mainly in \code{ctd} objects                          \cr
+    \code{OSAT_*.*} \tab \code{oxygenSaturation}   \tab Used mainly in \code{ctd} objects                          \cr
     \code{OTMP_*.*} \tab \code{oxygenTemperature}  \tab Used mainly in \code{ctd} objects                          \cr
     \code{OXYV_*.*} \tab \code{oxygenVoltage}      \tab Used mainly in \code{ctd} objects                          \cr
     \code{PHPH_*.*} \tab \code{pH}                 \tab                                                            \cr
@@ -75,25 +76,36 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{UNKN_*.*} \tab \code{-}                  \tab The result is context-dependent                            \cr
     \code{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                                 \cr
 }
-Any code not shown in the list is transferred to the oce object without renaming, apart from 
+Any code not shown in the list is transferred to the oce object without renaming, apart from
 the adjustment of suffix numbers. The following code have been seen in data files from
 the Bedford Institute of Oceanography: \code{ALTB}, \code{PHPH} and \code{QCFF}.
 }
 \section{Consistency warning}{
 
 There are disagreements on variable names. For example, the ``DFO
-Common Data Dictionary''
-(\url{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
-indicates that \code{DOXY} has unit millmole/m^3 for NODC and MEDS, but
-has unit mL/L for BIO and IML.
+Common Data Dictionary'' [1]
+has unit millmole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
 }
 \author{
 Dan Kelley
+}
+\references{
+1. The Department of Fisheries and Oceans Common Data Dictionary may be
+available at \code{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
+although that link seems to be unreliable.
 }
 \seealso{
 Other functions that interpret variable names and units from headers: \code{\link{cnvName2oceName}},
   \code{\link{unitFromStringRsk}},
   \code{\link{unitFromString}},
   \code{\link{woceNames2oceNames}}
+
+Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{[[,odf-method}},
+  \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
+  \code{\link{plot,odf-method}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
+  \code{\link{subset,odf-method}},
+  \code{\link{summary,odf-method}}
 }
 

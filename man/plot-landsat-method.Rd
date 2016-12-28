@@ -107,7 +107,7 @@ For Landsat-7 data, \code{band} may be one of \code{"blue"}, \code{"green"}, \co
 For Landsat data prior to
 Landsat-7, \code{band} may be one of \code{"blue"}, \code{"green"},
 \code{"red"}, \code{"nir"}, \code{"swir1"}, \code{"tirs1"},
-\code{"tirs2"}, or \code{"swir2"}.  
+\code{"tirs2"}, or \code{"swir2"}.
 
 If \code{band} is not given, the
 (\code{"tirs1"}) will be used if it exists in the object data, or

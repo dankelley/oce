@@ -1,5 +1,5 @@
 #' Welch periodogram
-#' 
+#'
 #' Compute periodogram using the Welch (1967) method.
 #' First, \code{x} is broken up into chunks,
 #' overlapping as specified by \code{noverlap}.  These chunks are then
@@ -7,7 +7,7 @@
 #' passed to \code{\link{spectrum}}.  The resulting spectra are then averaged,
 #' with the results being stored in \code{spec} of the return value.  Other
 #' entries of the return value mimic those returned by \code{\link{spectrum}}.
-#' 
+#'
 #' @param x a vector or timeseries to be analyzed.  If a timeseries, then there
 #' is no need to specify \code{fs}.
 #' @param window window specification, either a single value giving the number
@@ -43,7 +43,7 @@
 #' Modified Periodograms. \emph{IEEE Transactions on Audio Electroacoustics},
 #' AU-15, 70--73.
 #' @examples
-#' 
+#'
 #' library(oce)
 #' Fs <- 1000
 #' t <- seq(0, 0.296, 1/Fs)
@@ -80,11 +80,11 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
         if (n < 0)
             stop("n must round to a positive integer")
         if (n == 1)
-            c = 1
+            c <- 1
         else {
-            n = n - 1
+            n <- n - 1
             pi <- 4 * atan2(1, 1) # avoid problems if user redefined this
-            c = 0.54 - 0.46 * cos(2 * pi * (0:n)/n)
+            c <- 0.54 - 0.46 * cos(2 * pi * (0:n)/n)
         }
         c
     }
@@ -113,12 +113,12 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     if (is.ts(x)) {
         if (missing(fs))
             fs <- frequency(x)
-    	else {
+        else {
             if (fs != frequency(x)) {
                 warning("fs does not match frequency(x); using the former")
                 x <- ts(x, frequency=fs)
             }
-    	}
+        }
     }
     x.len <- length(x)
     if (x.len < 1)
@@ -157,7 +157,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
         noverlap <- floor(window.len / 2)
     }
     step <- floor(window.len - noverlap + 1)
-    oceDebug(debug, "window.len=",window.len,"  step=",step,"  noverlap=", noverlap, "  x.len=", x.len, "\n")
+    oceDebug(debug, "window.len=", window.len, "  step=", step, "  noverlap=", noverlap, "  x.len=", x.len, "\n")
     if (step < 1)
         stop("overlap cannot exceed segment length")
     ## i0 <- 1
@@ -194,11 +194,11 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     psd <- matrix(psd, nrow=nrow, byrow=TRUE) / normalization
     oceDebug(debug, "resultant spectrum is average across matrix of dimension", dim(psd), "\n")
     oceDebug(debug, "} # pwelch()\n", unindent=1)
-    res <- list(freq=freq, spec=apply(psd, 2, mean), 
-                 method="Welch", series=deparse(substitute(x)),
-                 df=s$df * (x.len / length(window)),
-                 bandwidth=s$bandwidth, # FIXME: wrong formulae
-                 demean=FALSE, detrend=TRUE)
+    res <- list(freq=freq, spec=apply(psd, 2, mean),
+                method="Welch", series=deparse(substitute(x)),
+                df=s$df * (x.len / length(window)),
+                bandwidth=s$bandwidth, # FIXME: wrong formulae
+                demean=FALSE, detrend=TRUE)
     class(res) <- "spec"
     if (plot) {
         plot(res, ...)

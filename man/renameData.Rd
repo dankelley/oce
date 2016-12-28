@@ -24,7 +24,7 @@ the changes.
 data(ctd)
 new <- renameData(ctd, "temperature", "temperature68")
 new <- oceSetData(new, name="temperature",
-                  value=T90fromT68(new[["temperature68"]]), 
+                  value=T90fromT68(new[["temperature68"]]),
                   unit=list(unit=expression(degree*C),scale="ITS=90"))
 }
 

@@ -8,7 +8,7 @@
 #' completes an ascending and descending pass during local daytime and nightime
 #' hours respectively. Each daily file contains 7 daytime and 7 nighttime
 #' maps of variables named as follows within the \code{data}
-#' slot of amsr objects: \code{timeDay}, 
+#' slot of amsr objects: \code{timeDay},
 #' \code{SSTDay}, \code{LFwindDay} (wind at 10m sensed in
 #' the 10.7GHz band), \code{MFwindDay} (wind at 10m sensed at 18.7GHz),
 #' \code{vaporDay}, \code{cloudDay}, and \code{rainDay}, along with
@@ -67,8 +67,8 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("Amsr Summary\n------------\n\n")
               showMetadataItem(object, "filename",   "Data file:           ")
-              cat(sprintf("* Longitude range:     %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude,1))) 
-              cat(sprintf("* Latitude range:      %.4fN to %.4fN\n", object@metadata$latitude[1], tail(object@metadata$latitude,1))) 
+              cat(sprintf("* Longitude range:     %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude, 1)))
+              cat(sprintf("* Latitude range:      %.4fN to %.4fN\n", object@metadata$latitude[1], tail(object@metadata$latitude, 1)))
               for (name in names(object@data)) {
                   object@data[[name]] <- object[[name]] # translate to science units
               }
@@ -107,7 +107,7 @@ setMethod(f="summary",
 #' \code{"SSTDay"}) is a request to try to find good
 #' data by looking at both the Day and Night measurements. The scheme
 #' employed is quite detailed. Denote by "A" the raw value of the desired field
-#' in the daytime pass, and by "B" the corresponding value in the 
+#' in the daytime pass, and by "B" the corresponding value in the
 #' nighttime pass. If either A or B is 255, the code for land, then the
 #' result will be 255. If A is 254 (i.e. there is no observation),
 #' then B is returned, and the reverse holds also. Similarly, if either
@@ -115,7 +115,7 @@ setMethod(f="summary",
 #' The same is done for code 252 (ice) and code 251 (rain).
 #'
 #' @return
-#' In all cases, the returned value is a matrix with 
+#' In all cases, the returned value is a matrix with
 #' with \code{NA} values inserted at locations where
 #' the raw data equal \code{as.raw(251:255)}, as explained
 #' in \dQuote{Details}.
@@ -131,7 +131,7 @@ setMethod(f="summary",
 #' earth <- read.amsr("f34_20160102v7.2.gz")
 #' fclat <- subset(earth , 35 <= latitude & latitude <= 55)
 #' fc <- subset(fclat , -70 <= longitude & longitude <= -30)
-#' par(mfrow=c(2,1))
+#' par(mfrow=c(2, 1))
 #' plot(fc, "SSTDay")
 #' rainy <- fc[["SSTDay", "raw"]] == as.raw(0xfb)
 #' lon <- fc[["longitude"]]
@@ -270,13 +270,13 @@ setMethod(f="subset",
                   keep <- eval(substitute(subset),
                                envir=data.frame(longitude=x@metadata$longitude))
                   for (name in names(res@data))
-                      res@data[[name]] <- res@data[[name]][keep,]
+                      res@data[[name]] <- res@data[[name]][keep, ]
                   res@metadata$longitude <- x@metadata$longitude[keep]
               } else if (length(grep("latitude", subsetString))) {
                   keep <- eval(substitute(subset),
                                envir=data.frame(latitude=x@metadata$latitude))
                   for (name in names(res@data))
-                      res@data[[name]] <- res@data[[name]][,keep]
+                      res@data[[name]] <- res@data[[name]][, keep]
                   res@metadata$latitude <- res@metadata$latitude[keep]
               } else {
                   stop("may only subset by longitude or latitude")
@@ -284,7 +284,7 @@ setMethod(f="subset",
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               res
           })
- 
+
 
 #' Plot an amsr Object
 #'
@@ -355,7 +355,7 @@ setMethod(f="plot",
               if (5 != missingColorLength) {
                   stop("must have 5 elements in the missingColor argument")
               }
-              if (!all(sort(names(missingColor))==sort(c("land","none","bad","ice","rain"))))
+              if (!all(sort(names(missingColor))==sort(c("land", "none", "bad", "ice", "rain"))))
                   stop("missingColor names must be: 'land', 'none', 'bad', 'ice' and 'rain'")
               lonDecIndices <- seq(1L, length(lon), by=i$decimate[1])
               latDecIndices <- seq(1L, length(lat), by=i$decimate[2])
@@ -390,14 +390,14 @@ setMethod(f="plot",
 #' only work on unix-like systems.
 #'
 #' @param year,month,day Numerical values of the year, month, and day
-#' of the desired dataset. Note that one file is archived per day, 
+#' of the desired dataset. Note that one file is archived per day,
 #' so these three values uniquely identify a dataset.
 #' If \code{day} and \code{month} are not provided but \code{day} is,
 #' then the time is provided in a relative sense, based on the present
 #' date, with \code{day} indicating the number of days in the past.
 #' Owing to issues with timezones and the time when the data
 #' are uploaded to the server, \code{day=3} may yield the
-#' most recent available data. For this reason, there is a 
+#' most recent available data. For this reason, there is a
 #' third option, which is to leave \code{day} unspecified, which
 #' works as though \code{day=3} had been given.
 #' @param destdir String naming the directory in which to cache resultant files.
@@ -428,7 +428,7 @@ download.amsr <- function(year, month, day, destdir=".", server="ftp.ssmi.com/am
     day <- as.integer(day)
     destfile <- sprintf("f34_%4d%02d%02dv7.2.gz", year, month, day)
     destpath <- paste(destdir, destfile, sep="/")
-    if (tail(destpath,1)=="/") # remove trailing slash
+    if (tail(destpath, 1)=="/") # remove trailing slash
         destpath <- substr(destpath, 1, length(destpath)-1)
     if (0 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
         cmd <- sprintf("ftp ftp://%s/y%4d/m%02d/%s", server, year, month, destfile)
@@ -462,7 +462,7 @@ download.amsr <- function(year, month, day, destdir=".", server="ftp.ssmi.com/am
 #' If \code{read.amsr} reports an error on the number of chunks, try
 #' downloading a similarly-named file (e.g. in the present example,
 #' \code{read.amsr("f34_20160803v7.2_d3d.gz")} will report an error
-#' about inability to read a 6-chunk file, but 
+#' about inability to read a 6-chunk file, but
 #' \code{read.amsr("f34_20160803v7.2.gz")} will work properly.
 #'
 #' @param file String indicating the name of a compressed file. See
@@ -490,7 +490,7 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
     nbuf <- length(buf)
     dim <- c(1440, 720)
     nchunks <- nbuf / prod(dim)
-    if (nchunks != round(nchunks)) 
+    if (nchunks != round(nchunks))
         stop("error: the data length ", nbuf, " is not an integral multiple of ", dim[1], "*", dim[2])
     ## From an amsr webpage --
     ## Each binary data file available from our ftp site consists of fourteen (daily) or
@@ -603,11 +603,11 @@ setMethod("composite",
               for (name in names(object@data)) {
                   a <- array(as.raw(0xff), dim=dim)
                   ##message("A name='", name, "'")
-                  a[,,1] <- object@data[[name]]
+                  a[, , 1] <- object@data[[name]]
                   ##message("B")
                   for (idot in 1:ndots) {
                       ##message("C idot=", idot)
-                      a[,,1+idot] <- dots[[idot]]@data[[name]]
+                      a[, , 1+idot] <- dots[[idot]]@data[[name]]
                       ##message("D idot=", idot)
                   }
                   ##message("E")
