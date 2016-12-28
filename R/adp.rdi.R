@@ -86,16 +86,20 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     if (dataOffset[1]!=6+2*numberOfDataTypes)
         warning("dataOffset and numberOfDataTypes are inconsistent -- this dataset seems damaged")
     oceDebug(debug, "dataOffset=", paste(dataOffset, sep=" "), "\n")
+    oceDebug(debug, "sort(diff(dataOffset))=", paste(sort(diff(dataOffset)), sep=" "), "\n")
     ##
     ## See if this is a sentinel file by looking for dataType ID bytes
     ## of 0x00 and 0x70 (V series system configuration)
     codes <- cbind(buf[1 + c(0, dataOffset)], buf[1+c(0, dataOffset) + 1])
+    oceDebug(debug, "codes[,1]=", codes[,1], "\n")
+    oceDebug(debug, "codes[,2]=", codes[,2], "\n")
     if (any(codes[, 1] == 0x00 & codes[, 2] == 0x70)) {
         message('Detected dataType 0x00 0x70 for Sentinel V series configuration')
         isSentinel <- TRUE
     } else {
         isSentinel <- FALSE
     }
+    oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 102\n")
     ##
     ## Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
     FLD <- buf[dataOffset[1]+1:(dataOffset[2] - dataOffset[1])]
@@ -298,6 +302,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         ##> warning("unexpected length ", FLDLength, " of fixed-leader-data header; expecting 50 for
         ##>         'surveyor/observor' or 59 for 'workhorse'.")
     }
+    oceDebug(debug, "instrumentSubtype='", instrumentSubtype, "' near adp.rdi.R line 305\n", sep="")
     nVLD <- 65 # FIXME: should use the proper length, but we won't use it all anyway
     VLD <- buf[dataOffset[2]+1:nVLD]
     oceDebug(debug, "Variable Leader Data (", length(VLD), "bytes):", paste(VLD, collapse=" "), "\n")
@@ -445,7 +450,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     oceDebug(debug, "read.adp.rdi(...,from=", format(from),
              ",to=", if (missing(to)) "missing" else format(to), "...) {\n", unindent=1)
-    profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
+#    profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
     bisectAdpRdi <- function(buf, t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, ") {\n", unindent=1)
         len <- length(profileStart)
@@ -523,7 +528,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         bin1Distance <- header$bin1Distance
         xmitPulseLength <- header$xmitPulseLength
         cellSize <- header$cellSize
+        #message("1. isSentinel=", isSentinel)
         isSentinel <- header$instrumentSubtype == "sentinelV"
+        oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 532\n")
         oceDebug(debug, "about to call ldc_rdi\n")
         ensembleStart <- .Call("ldc_rdi_2", filename, 1, 0)
         if (TRUE) {
@@ -556,7 +563,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ## re-read the numberOfDataTypes and dataOffsets from the second ensemble
             header$numberOfDataTypes <- readBin(buf[ensembleStart[1]+5], "integer", n=1, size=1)
             header$dataOffset <- readBin(buf[ensembleStart[1]+6+0:(2*header$numberOfDataTypes)], "integer", n=header$numberOfDataTypes, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "dataOffset=", paste(dataOffset, sep=" "), " (reread because a sentinelV file)\n")
         }
+            if (debug>10) browser() # FIXME: remove this when 1153 has been addressed
 
         ## Profiles start at the VARIABLE LEADER DATA, since there is no point in
         ## re-interpreting the HEADER and the FIXED LEADER DATA over and over,
@@ -1582,6 +1591,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         res@metadata$filename <- filename
         res@data <- NULL
     }
+
     ## Remove "junk" profiles
     if (length(junkProfiles) > 0) {
         ## remove all data from the profile
