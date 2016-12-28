@@ -1167,6 +1167,8 @@ setMethod(f="plot",
               zlimGiven <- !missing(zlim)
               if (breaksGiven && zlimGiven)
                   stop("cannot supply both zlim and breaks")
+              ylimGiven <- !missing(ylim)
+              oceDebug(debug, 'ylimGiven=', ylimGiven, '\n')
               res <- list(xat=NULL, yat=NULL)
               mode <- match.arg(mode)
               if (mode == "diagnostic") {
@@ -1191,7 +1193,7 @@ setMethod(f="plot",
               oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
               oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
               oceDebug(debug, "mai.palette=", paste(mai.palette, collapse=" "), "\n")
-              if (!missing(ylim))
+              if (ylimGiven)
                   oceDebug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")
               if (!inherits(x, "adp"))
                   stop("method is only for objects of class '", "adp", "'")
@@ -1232,8 +1234,6 @@ setMethod(f="plot",
               dots <- list(...)
               ytype <- match.arg(ytype)
               ## user may specify a matrix for xlim and ylim
-              ylimGiven <- !missing(ylim)
-              oceDebug(debug, 'ylimGiven=', ylimGiven, '\n')
               if (ylimGiven) {
                   if (is.matrix(ylim)) {
                       if (dim(ylim)[2] != nw) {
@@ -2051,49 +2051,25 @@ setMethod(f="plot",
                           yaxp <- par("yaxp")
                           yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
                           ats <- list(xat=xat, yat=yat)
-                      } else if (which[w] == 24) {
+                      } else if (which[w] %in% 24:27) {
                           par(mar=c(mgp[1]+1, mgp[1]+1, 1, 1))
-                          value <- apply(x@data$v[, , 1], 2, mean, na.rm=TRUE)
-                          plot(value, x@data$distance, xlab=beamName(x, 1),
-                               ylab=resizableLabel("distance"), type='l', ...)
-                          xaxp <- par("xaxp")
-                          xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
-                          yaxp <- par("yaxp")
-                          yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
-                          ats <- list(xat=xat, yat=yat)
-                      } else if (which[w] == 25) {
-                          par(mar=c(mgp[1]+1, mgp[1]+1, 1, 1))
-                          value <- apply(x@data$v[, , 2], 2, mean, na.rm=TRUE)
-                          plot(value, x@data$distance, xlab=beamName(x, 2),
-                               ylab=resizableLabel("distance"), type='l', ...)
-                          xaxp <- par("xaxp")
-                          xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
-                          yaxp <- par("yaxp")
-                          yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
-                          ats <- list(xat=xat, yat=yat)
-                      } else if (which[w] == 26) {
-                          par(mar=c(mgp[1]+1, mgp[1]+1, 1, 1))
-                          value <- apply(x@data$v[, , 3], 2, mean, na.rm=TRUE)
-                          plot(value, x@data$distance, xlab=beamName(x, 3),
-                               ylab=resizableLabel("distance"), type='l', ...)
-                          xaxp <- par("xaxp")
-                          xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
-                          yaxp <- par("yaxp")
-                          yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
-                          ats <- list(xat=xat, yat=yat)
-                      } else if (which[w] == 27) {
-                          if (x@metadata$numberOfBeams > 3) {
-                              par(mar=c(mgp[1]+1, mgp[1]+1, 1, 1))
-                              value <- apply(x@data$v[, , 4], 2, mean, na.rm=TRUE)
-                              plot(value, x@data$distance, xlab=beamName(x, 4),
-                                   ylab=resizableLabel("distance"), type='l', ...)
+                          if (which[w] == 27 && x@metadata$numberOfBeams < 4) {
+                              warning("cannot use which=27 for a 3-beam instrument")
+                          } else {
+                              value <- apply(x@data$v[, , which[w]-23], 2, mean, na.rm=TRUE)
+                              yy <- x@data$distance
+                              if (ytype == "profile" && x@metadata$orientation == "downward" && !ylimGiven) {
+                                  plot(value, yy, xlab=beamName(x, which[w]-23),
+                                       ylab=resizableLabel("distance"), type='l', ylim=rev(range(yy)), ...)
+                              } else {
+                                  plot(value, yy, xlab=beamName(x, 1),
+                                       ylab=resizableLabel("distance"), type='l', ...)
+                              }
                               xaxp <- par("xaxp")
                               xat <- seq(xaxp[1], xaxp[2], length.out=1+xaxp[3])
                               yaxp <- par("yaxp")
                               yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
                               ats <- list(xat=xat, yat=yat)
-                          } else {
-                              warning("cannot use which=27 because this device did not have 4 beams")
                           }
                       }
                       if (w <= adorn.length) {
