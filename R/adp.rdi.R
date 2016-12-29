@@ -99,7 +99,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     } else {
         isSentinel <- FALSE
     }
-    oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 102\n")
+    oceDebug(debug, "isSentinel=", isSentinel, " as inferred from the codes matrix, near adp.rdi.R line 102\n")
     ##
     ## Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
     FLD <- buf[dataOffset[1]+1:(dataOffset[2] - dataOffset[1])]
@@ -284,6 +284,11 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ## thus, length of FLD is dataOffset[2]-dataOffset[1]
     FLDLength <- dataOffset[2] - dataOffset[1]
     oceDebug(debug, "FLDLength", FLDLength, " (expect 59 for Workhorse, or 50 for Surveyor/Observer)\n")
+
+    ## ----------
+    ## RISKY CODE
+    ## ----------
+    ##
     ## There really seems to be nothing specific in the file to tell instrument type, so, in an act of
     ## desparation (or is that hope) I'm going to flag on the one thing that was clearly stated, and
     ## clearly different, in the two documentation entries. The exception is the 'sentinel V' class,
@@ -303,7 +308,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         ##> warning("unexpected length ", FLDLength, " of fixed-leader-data header; expecting 50 for
         ##>         'surveyor/observor' or 59 for 'workhorse'.")
     }
-    oceDebug(debug, "instrumentSubtype='", instrumentSubtype, "' near adp.rdi.R line 305\n", sep="")
+    oceDebug(debug, "instrumentSubtype='", instrumentSubtype, "' in R/adp.rdi.R near line 311\n", sep="")
     nVLD <- 65 # FIXME: should use the proper length, but we won't use it all anyway
     VLD <- buf[dataOffset[2]+1:nVLD]
     oceDebug(debug, "Variable Leader Data (", length(VLD), "bytes):", paste(VLD, collapse=" "), "\n")

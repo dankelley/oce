@@ -1,4 +1,5 @@
 0.9-21
+- read.adp.rdi() handles more file types
 - read.odf() handles contradictory metadata better
 - oce.as.POSIXlt() deprecated
 - oceSetData() handles units better
