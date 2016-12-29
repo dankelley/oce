@@ -286,16 +286,17 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "FLDLength", FLDLength, " (expect 59 for Workhorse, or 50 for Surveyor/Observer)\n")
     ## There really seems to be nothing specific in the file to tell instrument type, so, in an act of
     ## desparation (or is that hope) I'm going to flag on the one thing that was clearly stated, and
-    ## clearly different, in the two documentation entries.
-    if (FLDLength == 59) {
+    ## clearly different, in the two documentation entries. The exception is the 'sentinel V' class,
+    ## which is recognized by a code sequence 0x00 0x70 (see near line 96), so we capture that first.
+    if (isSentinel) {
+        instrumentSubtype <- "sentinelV"
+        ## 5 beam (4 beam workhorse + a vertical centre beam)
+    } else if (FLDLength == 59) {
         instrumentSubtype <- "workhorse" # "WorkHorse Commands and Output Data Format_Mar05.pdf" (and Nov07 version) Figure 9 on page 122 (pdf-page 130)
     } else if (FLDLength == 50) {
         instrumentSubtype <- "surveyor/observer"
         ## "Ocean Surveyor Technical Manual.pdf" table D-3 on page D-5 (pdf-page 139)
         ## also teledyne2014ostm page 144 says could be Surveyor or Observer
-    } else if (isSentinel) {
-        instrumentSubtype <- 'sentinelV'
-        ## 5 beam (4 beam workhorse + a vertical centre beam)
     } else {
         instrumentSubtype <- "unknown"
         ## FIXME: I think this is a poor way to determine the intrument type. Why do we even try?
@@ -563,9 +564,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ## re-read the numberOfDataTypes and dataOffsets from the second ensemble
             header$numberOfDataTypes <- readBin(buf[ensembleStart[1]+5], "integer", n=1, size=1)
             header$dataOffset <- readBin(buf[ensembleStart[1]+6+0:(2*header$numberOfDataTypes)], "integer", n=header$numberOfDataTypes, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "dataOffset=", paste(dataOffset, sep=" "), " (reread because a sentinelV file)\n")
+            oceDebug(debug, "header$dataOffset=", paste(header$dataOffset, sep=" "), " (reread because a sentinelV file)\n")
         }
-            if (debug>10) browser() # FIXME: remove this when 1153 has been addressed
 
         ## Profiles start at the VARIABLE LEADER DATA, since there is no point in
         ## re-interpreting the HEADER and the FIXED LEADER DATA over and over,
