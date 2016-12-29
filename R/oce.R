@@ -1452,6 +1452,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is ctd/woce/exchange\n")
         return("ctd/woce/exchange")
     }
+    if (1 == length(grep("^\\s*ODF_HEADER,", line, useByte=TRUE))){
+        oceDebug(debug, "this is an ODF file\n")
+        return("odf")
+    }
     if (1 == length(grep("^\\* Sea-Bird", line, useBytes=TRUE))) {
         oceDebug(debug, "this is ctd/sbe/19\n")
         return("ctd/sbe/19")
@@ -1647,9 +1651,10 @@ read.oce <- function(file, ...)
         return(read.landsat(file, ...))
     if (type == "netcdf")
         return(read.netcdf(file, ...))
-    if (type == "met") {
+    if (type == "met")
         return(read.met(file, ...))
-    }
+    if (type == "odf")
+        return(read.odf(file, ...))
     stop("unknown file type \"", type, "\"")
 }
 
