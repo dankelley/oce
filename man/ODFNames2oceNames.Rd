@@ -109,5 +109,13 @@ Other functions that interpret variable names and units from headers: \code{\lin
   \code{\link{unitFromStringRsk}},
   \code{\link{unitFromString}},
   \code{\link{woceNames2oceNames}}
+
+Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{[[,odf-method}},
+  \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
+  \code{\link{plot,odf-method}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
+  \code{\link{subset,odf-method}},
+  \code{\link{summary,odf-method}}
 }
 

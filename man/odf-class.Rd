@@ -53,9 +53,11 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{windrose-class}}
 
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}},
   \code{\link{plot,odf-method}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }

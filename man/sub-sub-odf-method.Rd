@@ -8,7 +8,7 @@
 \S4method{[[}{odf}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A odf object, i.e. one inheriting from \code{\link{odf-class}}.}
+\item{x}{an odf object, i.e. one inheriting from \code{\link{odf-class}}.}
 
 \item{i}{Character string indicating the name of item to extract.}
 
@@ -97,8 +97,10 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[<-,adv-method}}
 
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFNames2oceNames}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
   \code{\link{plot,odf-method}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }

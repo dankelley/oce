@@ -45,8 +45,10 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }

@@ -23,7 +23,7 @@ turns off the printing, while higher values suggest that more information
 be printed.}
 }
 \value{
-an object of class \code{oce}. It is up to a calling function to determine what to do with this object.
+An object of class \code{oce}. It is up to a calling function to determine what to do with this object.
 }
 \description{
 ODF (Ocean Data Format) is a
@@ -52,9 +52,16 @@ details.
 }
 \examples{
 library(oce)
+# Read a CTD cast made on the Scotian Shelf. Note that the file's metadata
+# states that conductivity is in S/m, but it is really conductivity ratio,
+# so we must alter the unit before converting to a CTD object. Note that
+# read.odf() on this data file produces a warning suggesting that the user
+# repair the unit, using the method outlined here.
 odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
+odf[["conductivityUnit"]] <- list(unit=expression(), scale="")
+#
 # Figure 1. make a CTD, and plot (with span to show NS)
-plot(as.ctd(odf), span=500, fill='lightgray')
+plot(as.ctd(odf), span=500)
 # show levels with bad QC flags
 subset(odf, flag!=0)
 # Figure 2. highlight bad data on TS diagram
@@ -71,5 +78,14 @@ in June 2011.)
 \seealso{
 \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
 package is released by the Canadian Department of Fisheries and Oceans.
+
+Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFNames2oceNames}},
+  \code{\link{[[,odf-method}},
+  \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
+  \code{\link{plot,odf-method}},
+  \code{\link{read.ctd.odf}},
+  \code{\link{subset,odf-method}},
+  \code{\link{summary,odf-method}}
 }
 

@@ -53,7 +53,7 @@ setMethod(f="initialize",
           })
 
 #' @title Extract Something From an ODF Object
-#' @param x A odf object, i.e. one inheriting from \code{\link{odf-class}}.
+#' @param x an odf object, i.e. one inheriting from \code{\link{odf-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{odf} data
 setMethod(f="[[",
@@ -63,7 +63,7 @@ setMethod(f="[[",
           })
 
 #' @title Replace Parts of an ODF Object
-#' @param x An \code{odf} object, i.e. inheriting from \code{\link{odf-class}}
+#' @param x an \code{odf} object, i.e. inheriting from \code{\link{odf-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{odf} data
 setMethod(f="[[<-",
@@ -77,7 +77,7 @@ setMethod(f="[[<-",
 #' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
 #'
-#' @param x a \code{odf} object.
+#' @param x an \code{odf} object.
 #' @param subset a condition to be applied to the \code{data} portion of
 #' \code{x}.  See \sQuote{Details}.
 #' @param \dots ignored.
@@ -262,6 +262,7 @@ findInHeader <- function(key, lines) # local
 #' 1. The Department of Fisheries and Oceans Common Data Dictionary may be
 #' available at \code{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
 #' although that link seems to be unreliable.
+#' @family things related to \code{odf} data
 ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                               columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
 {
@@ -543,8 +544,6 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     ## Stage 2. insert data (renamed to Oce convention)
     xnames <- names(ODF$DATA)
     res@data <- as.list(ODF$DATA)
-    ## table relating ODF names to Oce names ... guessing on FFF and SIGP, and no idea on CRAT
-    ## FIXME: be sure to record unit as conductivityRatio.
     resNames <- ODFNames2oceNames(xnames, columns=NULL, PARAMETER_HEADER=ODF$PARAMETER_HEADER, debug=debug-1)
     names(res@data) <- resNames
     ## Obey missing values ... only for numerical things (which might be everything, for all I know)
@@ -602,9 +601,16 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #'
 #' @examples
 #' library(oce)
+#' # Read a CTD cast made on the Scotian Shelf. Note that the file's metadata
+#' # states that conductivity is in S/m, but it is really conductivity ratio,
+#' # so we must alter the unit before converting to a CTD object. Note that
+#' # read.odf() on this data file produces a warning suggesting that the user
+#' # repair the unit, using the method outlined here.
 #' odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
+#' odf[["conductivityUnit"]] <- list(unit=expression(), scale="")
+#' #
 #' # Figure 1. make a CTD, and plot (with span to show NS)
-#' plot(as.ctd(odf), span=500, fill='lightgray')
+#' plot(as.ctd(odf), span=500)
 #' # show levels with bad QC flags
 #' subset(odf, flag!=0)
 #' # Figure 2. highlight bad data on TS diagram
@@ -613,20 +619,24 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' points(odf[['salinity']][bad],odf[['temperature']][bad],col='red',pch=20)
 #'
 #' @param file the file containing the data.
-#' @template debugTemplate
 #' @param columns An optional \code{\link{list}} that can be used to convert unrecognized
 #' data names to resultant variable names.  For example,
 #' \code{columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))}
 #' states that a short-name of \code{"salt"} represents salinity, and that the unit is
 #' as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFNames2oceNames}},
 #' as appropriate, and takes precendence over the lookup table in that function.
-#' @return an object of class \code{oce}. It is up to a calling function to determine what to do with this object.
+#' @template debugTemplate
+#'
+#' @return An object of class \code{oce}. It is up to a calling function to determine what to do with this object.
+#"
 #' @seealso \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
 #' package is released by the Canadian Department of Fisheries and Oceans.
-
+#'
 #' @references Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
 #' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 #' in June 2011.)
+#'
+#' @family things related to \code{odf} data
 read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")
@@ -722,6 +732,18 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     model <- findInHeader("MODEL", lines)
     res <- new("odf")
     res@metadata$header <- NULL
+
+    ## catch erroneous units on CRAT, which should be in a ratio, and hence have no units.
+    ## This is necessary for the sample file inst/extdata/CTD_BCD2014666_008_1_DN.ODF
+    if (length(grep("CRAT", ODFnames))) {
+        which <- grep("CRAT", ODFnames)
+        for (w in which) {
+            ustring <- as.character(namesUnits$units[[w]]$unit)
+            if ("" != as.character(namesUnits$units[[w]]$unit))
+                warning("ODF column \"", ODFnames[w], "\" should be a conductivity ratio, but the unit is stored as \"", ustring, "\" as per the file. See the examples provided by ?as.odf on a solution to this problem.")
+        }
+    }
+
     res@metadata$units <- namesUnits$units
     ## res@metadata$dataNamesOriginal <- ODFnames
     res@metadata$dataNamesOriginal <- as.list(ODFnames)
