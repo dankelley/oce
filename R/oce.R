@@ -1452,7 +1452,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is ctd/woce/exchange\n")
         return("ctd/woce/exchange")
     }
-    if (1 == length(grep("^\\s*ODF_HEADER,", line, useByte=TRUE))){
+    if (1 == length(grep("^\\s*ODF_HEADER", line, useBytes=TRUE))){
         oceDebug(debug, "this is an ODF file\n")
         return("odf")
     }
