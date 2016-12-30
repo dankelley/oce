@@ -41,6 +41,23 @@ be slated for outright deletion in the following release.
 \code{columns}     \tab \code{\link{read.ctd}}   \tab Unnecessary; never worked\cr
 }
 
+Several \sQuote{oce} function arguments are considered "deprecated", which
+means they will be marked "defunct" in the next CRAN release. They are as follows.
+
+\itemize{
+
+\item The \code{parameters} argument of \code{\link{plot,ctd-method}}
+was deprecated on 2016-12-30.  It was once used by
+\code{\link{plot,coastline-method}} but has been ignored by that
+function since February 2016.
+
+\item The \code{orientation} argument of \code{\link{plot,ctd-method}}
+was deprecated on 2016-12-30.  It was once used by
+\code{\link{plot,coastline-method}} but has been ignored by that
+function since February 2016.
+
+}
+
 Several \sQuote{oce} function arguments are considered "defunct", which
 means they will be removed in the next CRAN release. They are as follows.
 

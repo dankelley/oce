@@ -2502,9 +2502,11 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' or at higher latitudes.  Finally, if this is a string in the format used by
 #' \code{\link{mapPlot}}, then it is is passed to that function.
 #'
-#' @param parameters Parameters for map, as for \code{projection}.
+#' @param parameters a \strong{deprecated} argument that has been ignored
+#' since February 2016; see \link{oce-deprecated}.
 #'
-#' @param orientation Orientation for map, as for \code{projection}.
+#' @param orientation a \strong{deprecated} argument that has been ignored
+#' since February 2016; see \link{oce-deprecated}.
 #'
 #' @param latlon.pch Symbol code for sample location (ignored if no map plotted).
 #'
@@ -2622,6 +2624,10 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
+              if (!is.null(parameters))
+                  warning("'parameters' is a deprecated argument that is ignored; see ?'oce-deprecated'")
+              if (!is.null(orientation))
+                  warning("'orientation' is a deprecated argument that is ignored; see ?'oce-deprecated'")
               eos <- match.arg(eos, c("unesco", "gsw"))
               if (!is.null(adorn))
                   warning("In plot() : the 'adorn' argument is deprecated, and will be removed soon", call.=FALSE)
@@ -3087,11 +3093,11 @@ setMethod(f="plot",
                                   oceDebug(debug, "clongitude=", clon, "\n")
                                   oceDebug(debug, "span=", span, "\n")
                                   oceDebug(debug, "projection=", projection, "\n")
-                                  oceDebug(debug, "parameters=", parameters, "\n")
+                                  ## oceDebug(debug, "parameters=", parameters, "\n")
                                   oceDebug(debug, "ok, about to call plot(coastline)\n")
                                   plot(coastline,
                                        clongitude=standardizeLongitude(clon), clatitude=mean(latlim.c), span=span,
-                                       projection=projection, parameters=parameters, orientation=orientation,
+                                       projection=projection, # parameters=parameters, orientation=orientation,
                                        border=borderCoastline, col=colCoastline,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                        lonlabel=lonlabel, latlabel=latlabel, sides=sides,
@@ -3102,7 +3108,7 @@ setMethod(f="plot",
                                   clat <- mean(latlim)
                                   plot(coastline,
                                        clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                       projection=projection, parameters=parameters, orientation=orientation,
+                                       projection=projection, # parameters=parameters, orientation=orientation,
                                        border=borderCoastline, col=colCoastline,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                        lonlabel=lonlabel, latlabel=latlabel, sides=sides,
@@ -3120,7 +3126,7 @@ setMethod(f="plot",
                                   clat <- mean(latlim.c)
                                   plot(coastline,
                                        clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                       projection=projection, parameters=parameters, orientation=orientation,
+                                       projection=projection, #parameters=parameters, orientation=orientation,
                                        border=borderCoastline, col=colCoastline,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                        lonlabel=lonlabel, latlabel=latlabel, sides=sides,
@@ -3131,7 +3137,7 @@ setMethod(f="plot",
                                   plot(coastline,
                                        clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
                                        border=borderCoastline, col=colCoastline,
-                                       projection=projection, parameters=parameters, orientation=orientation,
+                                       projection=projection, #parameters=parameters, orientation=orientation,
                                        mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
                                        lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                                        debug=debug-1)
