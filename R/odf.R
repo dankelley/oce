@@ -184,10 +184,14 @@ setMethod(f="summary",
 findInHeader <- function(key, lines) # local function
 {
     i <- grep(key, lines)[1]
-    if (length(i) < 1)
-        return("")
-    line <- gsub("D([-+])([0-9][0-9]),", "e\\1\\2,", lines[i]) # permits e.g. D+00 as well as e+00
-    gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(line, "=")[[1]][2]))))
+    rval <- ""
+    if (length(i) > 0) {
+        ## isolate the RHS of the eqquality
+        rval <- gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i], "=")[[1]][2]))))
+        ## convert e.g. D+00 to e+00
+        rval <- gsub("D([-+])([0-9][0-9]),", "e\\1\\2,", rval)
+    }
+    rval
 }
 
 #' @title Translate from ODF Names to Oce Names
