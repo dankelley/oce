@@ -180,13 +180,14 @@ setMethod(f="summary",
 
 
 
-findInHeader <- function(key, lines) # local
+## find first match in header
+findInHeader <- function(key, lines) # local function
 {
-    i <- grep(key, lines)
+    i <- grep(key, lines)[1]
     if (length(i) < 1)
-        ""
-    else
-        gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i[1]], "=")[[1]][2]))))
+        return("")
+    line <- gsub("D([-+])([0-9][0-9]),", "e\\1\\2,", lines[i]) # permits e.g. D+00 as well as e+00
+    gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(line, "=")[[1]][2]))))
 }
 
 #' @title Translate from ODF Names to Oce Names
@@ -730,6 +731,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     startTime <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
     ## endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
     NAvalue <- as.numeric(findInHeader("NULL_VALUE", lines))
+
     depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     sounding <- as.numeric(findInHeader("SOUNDING", lines))
