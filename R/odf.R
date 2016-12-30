@@ -183,13 +183,17 @@ setMethod(f="summary",
 ## find first match in header
 findInHeader <- function(key, lines) # local function
 {
-    i <- grep(key, lines)[1]
+    i <- grep(key, lines)
     rval <- ""
     if (length(i) > 0) {
+        ## ----------
+        ## RISKY CODE: only look at first match
+        ## ----------
+        i <- i[1]
         ## isolate the RHS of the eqquality
         rval <- gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i], "=")[[1]][2]))))
         ## convert e.g. D+00 to e+00
-        rval <- gsub("D([-+])([0-9][0-9]),", "e\\1\\2,", rval)
+        rval <- gsub("(.*)D([-+])([0-9]{2})", "\\1e\\2\\3", rval)
     }
     rval
 }
