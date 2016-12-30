@@ -320,7 +320,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             }
         }
         ## do something with units too; check this block generally for new spelling
-        stop("FIXME(Kelley): code 'columns' support into ODFNames2oceNames")
+        warning("FIXME(Kelley): code 'columns' support into ODFNames2oceNames")
     }
 
 
@@ -328,6 +328,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
     ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
     ## or whatever), this is a place to look.
+    oceDebug(debug, "STAGE 1 names: ", paste(names, collapse=" "), "\n")
     names <- gsub("ALTB", "altimeter", names)
     names <- gsub("BATH", "waterDepth", names) # FIXME: is this water column depth or sensor depth?
     names <- gsub("BEAM", "a", names)  # FIXME: is this sensible?
@@ -369,7 +370,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     ## Finally, fix up suffixes.
     ##message("names (line 324): ", paste(names, collapse="|"))
     names <- gsub("_[0-9][0-9]", "", names)
-    ##message("names (line 326): ", paste(names, collapse="|"))
+    oceDebug(debug, "STAGE 2 names: ", paste(names, collapse=" "), "\n")
     if (n > 1) {
         for (i in 2:n) {
             ##message("names[", i, "] = '", names[i], "'")
@@ -377,7 +378,9 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                 names[i] <- paste(names[i-1], "Flag", sep="")
         }
     }
-    ##message("finally, names: ", paste(names, collapse="|"))
+    oceDebug(debug, "STAGE 3 names: ", paste(names, collapse=" "), "\n")
+    names <- unduplicateNames(names)
+    oceDebug(debug, "STAGE 4 names: ", paste(names, collapse=" "), "\n")
     ## Now deal with units
     units <- list()
     for (i in seq_along(names)) {
@@ -760,7 +763,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         for (w in which) {
             ustring <- as.character(namesUnits$units[[w]]$unit)
             if (length(ustring) && ustring != "")
-                warning("ODF column \"", ODFnames[w], "\" should be a conductivity ratio, but the unit is stored as \"", ustring, "\" as per the file. See the examples provided by ?as.odf on a solution to this problem.")
+                warning("\"", ODFnames[w], "\" should be a conductivity ratio, but storing \"", ustring, "\" since that is in the data file; see ?as.odf for an example of fixing the unit.")
         }
     }
 
