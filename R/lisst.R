@@ -34,8 +34,8 @@ setMethod(f="[[",
 #' @family things related to \code{lisst} data
 setMethod(f="[[<-",
           signature(x="lisst", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ..., value=value)
           })
 
 

@@ -121,8 +121,8 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="topo", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ..., value=value)
           })
 
 #' @title Subset a Topo Object

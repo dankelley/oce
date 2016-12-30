@@ -197,8 +197,8 @@ setMethod(f="[[",
 #' @family things related to \code{sealevel} data
 setMethod(f="[[<-",
           signature(x="sealevel", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ..., value=value)
           })
 
 setValidity("sealevel",

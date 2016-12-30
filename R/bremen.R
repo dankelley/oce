@@ -49,8 +49,8 @@ setMethod(f="[[",
 #' @family things related to \code{bremen} data
 setMethod(f="[[<-",
           signature(x="bremen", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ..., value=value)
           })
 
 #' @title Plot a Bremen Object
