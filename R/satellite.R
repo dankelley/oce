@@ -51,7 +51,7 @@ setMethod(f="summary",
               ##         format(object@metadata$time, "%Y-%m-%d %H:%M:%S %z"), "\n", sep="")
               ## }
               ## message("JUNK END")
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 #' Plot a satellite object

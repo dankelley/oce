@@ -25,7 +25,7 @@ setClass("lisst", contains="oce")
 setMethod(f="[[",
           signature(x="lisst", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' Replace Parts of a LISST Object
@@ -35,7 +35,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="lisst", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value)
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 
@@ -94,7 +94,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("LISST Summary\n-------------\n\n")
               showMetadataItem(object, "filename", "File source:        ")
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 

@@ -59,7 +59,7 @@ setMethod(f="initialize",
 setMethod(f="[[",
           signature(x="odf", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of an ODF Object
@@ -69,7 +69,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="odf", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value)
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 #' @title Subset an ODF object
@@ -175,7 +175,7 @@ setMethod(f="summary",
               showMetadataItem(object, "cruise",                   "Cruise:              ")
               showMetadataItem(object, "ship",                     "Vessel:              ")
               showMetadataItem(object, "station",                  "Station:             ")
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 

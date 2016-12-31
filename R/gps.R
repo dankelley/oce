@@ -39,7 +39,7 @@ setMethod(f="summary",
           signature="gps",
           definition=function(object, ...) {
               cat("GPS Summary\n-----------------\n\n")
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 
@@ -50,7 +50,7 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="gps", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a GPS Object
@@ -60,7 +60,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="gps", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value)
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 

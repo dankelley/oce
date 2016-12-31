@@ -165,7 +165,7 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="tidem", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a Tidem Object
@@ -175,7 +175,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="tidem", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value)
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 

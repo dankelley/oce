@@ -381,7 +381,7 @@ setMethod(f="[[",
               ##?20160328? } else {
               ##?20160328?     res <- unlist(lapply(x@data$station, function(X) X[[i]]))
               } else {
-                  callNextMethod()
+                  callNextMethod()     # [[
               }
               res
           })
@@ -400,7 +400,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value)
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 

@@ -40,7 +40,7 @@ setMethod(f="initialize",
 setMethod(f="[[",
           signature(x="bremen", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a Bremen Object
@@ -50,7 +50,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="bremen", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value)
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 #' @title Plot a Bremen Object
@@ -115,7 +115,7 @@ setMethod(f="summary",
               showMetadataItem(object, "ship",    "Vessel:              ")
               showMetadataItem(object, "station", "Station:             ")
               showMetadataItem(object, "profile", "Profile:             ")
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 

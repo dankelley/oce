@@ -50,7 +50,7 @@ NULL
 setMethod(f="[[",
           signature(x="cm", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a CM Object
@@ -60,7 +60,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="cm", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value)
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 setMethod(f="initialize",
@@ -121,7 +121,7 @@ setMethod(f="summary",
               showMetadataItem(object, "model",         "Instrument model:   ")
               showMetadataItem(object, "serialNumber",  "Serial Number:      ")
               showMetadataItem(object, "version",       "Version:            ")
-              callNextMethod()
+              callNextMethod() # summary
           })
 
 

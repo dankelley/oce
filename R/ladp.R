@@ -72,7 +72,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("LADP Summary\n------------\n\n")
               showMetadataItem(object, "station", "Station:             ")
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 #' @title Extract Something From an ladp Object
@@ -107,7 +107,7 @@ setMethod(f="[[",
               } else if (i == "salinity" || i == "S") {
                   x@data$salinity
               } else {
-                  callNextMethod()
+                  callNextMethod()     # [[
               }
           })
 

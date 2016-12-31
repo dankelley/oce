@@ -87,7 +87,7 @@ NULL
 setMethod(f="[[",
           signature(x="lobo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod() # [[
           })
 
 #' @title Replace Parts of a LOBO Object
@@ -97,7 +97,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="lobo", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value)
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 #' @title Summarize a LOBO Object
@@ -127,7 +127,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("Lobo Summary\n------------\n\n")
               cat("* source: \"", object@metadata$filename, "\"\n", sep="")
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 

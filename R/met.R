@@ -46,7 +46,7 @@ setClass("met", contains="oce")
 setMethod(f="[[",
           signature(x="met", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a Met Object
@@ -56,7 +56,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="met", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value)
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 
@@ -117,7 +117,7 @@ setMethod(f="summary",
               showMetadataItem(object, "climateIdentifier", "Climate Identifer          ")
               showMetadataItem(object, "WMOIdentifier", "World Met Office Identifer ")
               showMetadataItem(object, "TCIdentifier", "Transport Canada Identifer ")
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 

@@ -412,7 +412,7 @@ setMethod(f="summary",
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
               names <- names(object@data)
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 #' @title Extract Parts of a CTD Object
@@ -669,7 +669,7 @@ setMethod(f="[[",
               } else if (i == "N2") {
                   swN2(x)
               } else {
-                  callNextMethod()
+                  callNextMethod()     # [[
               }
           })
 
@@ -690,8 +690,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="ctd", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              ## FIXME: use j for e.g. times
-              callNextMethod(x=x, i=i, j=j, ..., value=value)
+              callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
           })
 
 

@@ -22,11 +22,17 @@
 #' are as follows.
 #' \describe{
 #' \item{[[}{Find the value of an item in the object's
-#'     \code{metadata} or \code{data} slot.
+#'     \code{metadata} or \code{data} slot. If the item does
+#'     not exist, but can be calculated from the other items,
+#'     then the calculated value is returned. As an example of the
+#'     latter, consider the built-in \code{ctd} dataset, which does
+#'     not contain potential temperature, "\code{theta}". Using
+#'     \code{ctd[["theta"]]} therefore causes \code{\link{swTheta}}
+#'     to be called, to calculate \code{theta}.
 #'     See \link{[[,oce-method} or type \code{?"[[,oce-method"}
 #'     to learn more.}
 #' \item{[[<-}{Alters the named item in the object's \code{metadata} or
-#'     \code{data} slot.
+#'     \code{data} slot.  If the item does not exist, it is created.
 #'     See \link{[[<-,oce-method} or type \code{?"[[<-,oce-method"}
 #'     to learn more.}
 #' \item{summary}{Displays some information about the object named as an

@@ -72,7 +72,7 @@ setMethod(f="summary",
               for (name in names(object@data)) {
                   object@data[[name]] <- object[[name]] # translate to science units
               }
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 #' Extract Something From an amsr Object
@@ -232,7 +232,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="amsr", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value)
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 #' Subset an amsr Object

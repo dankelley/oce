@@ -456,7 +456,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     oceDebug(debug, "read.adp.rdi(...,from=", format(from),
              ",to=", if (missing(to)) "missing" else format(to), "...) {\n", unindent=1)
-#    profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
+    profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
     bisectAdpRdi <- function(buf, t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, ") {\n", unindent=1)
         len <- length(profileStart)

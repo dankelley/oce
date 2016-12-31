@@ -106,7 +106,7 @@ setMethod(f="summary",
               if ("pressureType" %in% mnames)
                   cat(paste("* Pressure type:      ", m$pressureType, "\n", sep=""))
               cat(paste("* Source:             ``", m$filename, "``\n", sep=""))
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 #' @title Extract Something From a Rsk Object
@@ -116,7 +116,7 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="rsk", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a Rsk Object
@@ -126,7 +126,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="rsk", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ..., value=value)
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 
