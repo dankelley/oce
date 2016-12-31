@@ -763,7 +763,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         for (w in which) {
             ustring <- as.character(namesUnits$units[[w]]$unit)
             if (length(ustring) && ustring != "")
-                warning("\"", ODFnames[w], "\" should be a conductivity ratio, but storing \"", ustring, "\" since that is in the data file; see ?as.odf for an example of fixing the unit.")
+                warning("\"", ODFnames[w], "\" should be a conductivity ratio, but setting unit to \"", ustring, "\" since that is in the data file; see ?read.odf for an example of rectifying this unit error.")
         }
     }
 
