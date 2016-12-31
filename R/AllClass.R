@@ -107,7 +107,7 @@ setMethod(f="summary",
                                              } else {
                                                  res <- ""
                                              }
-                                             res <- as.character(res)
+                                             res <- as.character(res)[1] # the [1] is in case the unit is mixed up
                                              ##> message("1. res: '", res, "'")
                                              ## Clean up notation, by stages. (The order may matter.)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+C", "\u00B0C", res)
