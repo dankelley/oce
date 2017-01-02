@@ -126,4 +126,9 @@ curl http://www.cgd.ucar.edu/cas/catalog/climind/SOI.signal.ascii > SOI.signal.a
 ```
 cp ../../../create_data/lobo/lobo.dat  .
 ```
+# 12. a broken ctd file
+
+CTD_98911_1P_1_DN.txt is from an ODF file that CR had. It has p, temperature,
+and theta, but no salinity or conductivity. It is worth testing because it's
+odd, basically.
 

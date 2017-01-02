@@ -45,7 +45,7 @@ setMethod(f="summary",
               n <- length(object@data$theta)
               dtheta <- abs(diff(object@data$theta[1:2]))
               cat("* Have n=", n, "angles, separated by dtheta=", dtheta, "\n\n")
-              callNextMethod()
+              callNextMethod() # summary
           })
 
 
@@ -59,7 +59,7 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="windrose", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a Windrose Object
@@ -68,8 +68,8 @@ setMethod(f="[[",
 #' @family things related to \code{windrose} data
 setMethod(f="[[<-",
           signature(x="windrose", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod()
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 

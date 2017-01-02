@@ -387,7 +387,7 @@ setMethod(f="summary",
                   if (object@metadata$numberOfBeams > 3)
                       cat("  ", format(object@metadata$transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
               }
-              callNextMethod()
+              callNextMethod() # summary
           })
 
 
@@ -480,7 +480,7 @@ setMethod(f="[[",
               } else if (i == "coordinate") {
                   res <- x@metadata$oceCoordinate
               } else {
-                  callNextMethod()
+                  callNextMethod()     # [[
               }
           })
 
@@ -497,14 +497,14 @@ setMethod(f="[[",
 #' @family things related to \code{adp} data
 setMethod(f="[[<-",
           signature="adp",
-          definition=function(x, i, j, value) {
+          definition=function(x, i, j, ..., value) {
               ## FIXME: use j for e.g. times
               if (i %in% names(x@metadata)) {
                   x@metadata[[i]] <- value
               } else if (i %in% names(x@data)) {
                   x@data[[i]] <- value
               } else {
-                  x <- callNextMethod()
+                  x <- callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
               }
               ## Not checking validity because user may want to shorten items one by one, and check validity later.
               ## validObject(x)

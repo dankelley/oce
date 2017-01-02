@@ -107,7 +107,7 @@ setMethod(f="summary",
                                              } else {
                                                  res <- ""
                                              }
-                                             res <- as.character(res)
+                                             res <- as.character(res)[1] # the [1] is in case the unit is mixed up
                                              ##> message("1. res: '", res, "'")
                                              ## Clean up notation, by stages. (The order may matter.)
                                              if (nchar(res)) res <- gsub("degree[ ]+[*][ ]+C", "\u00B0C", res)
@@ -348,12 +348,13 @@ setMethod(f="[[<-",
                           x@metadata$flags <- list()
                       x@metadata$flags[[gsub("Flag$", "", i)]] <- value
                   } else {
-                      index <- pmatch(i, names(x@data))
-                      if (!is.na(index[1])) {
-                          x@data[[index]] <- value
-                      } else {
-                          warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
-                      }
+                      x@data[[i]] <- value
+                      ##1162 index <- pmatch(i, names(x@data))
+                      ##1162 if (!is.na(index[1])) {
+                      ##1162     x@data[[index]] <- value
+                      ##1162 } else {
+                      ##1162     warning("there is no item named \"", i, "\" in this ", class(x), " object", call.=FALSE)
+                      ##1162 }
                   }
               }
               validObject(x)

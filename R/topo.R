@@ -95,7 +95,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("\nTopo dataset\n------------\n")
               cat("* Source:          ", object[["filename"]], "\n")
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 #' @title Extract Something From a Topo Object
@@ -112,7 +112,7 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="topo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a Topo Object
@@ -121,8 +121,8 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="topo", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
           })
 
 #' @title Subset a Topo Object

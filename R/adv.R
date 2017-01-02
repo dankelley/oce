@@ -130,7 +130,7 @@ setMethod(f="summary",
                             if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
                             if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
               }
-              callNextMethod()
+              callNextMethod() # summary
           })
 
 #' @title Extract Parts of an ADV Object
@@ -199,7 +199,7 @@ setMethod(f="[[",
                       res <- x@data[[i]]
                   }
               } else {
-                  callNextMethod()
+                  callNextMethod() # [[
               }
           })
 
@@ -222,7 +222,7 @@ setMethod(f="[[",
 #' @family things related to \code{adv} data
 setMethod(f="[[<-",
           signature="adv",
-          definition=function(x, i, j, value) {
+          definition=function(x, i, j, ..., value) {
               ## FIXME: use j for e.g. times
               haveSlow <- "timeSlow" %in% names(x@data)
               if (i %in% names(x@metadata)) {
@@ -242,7 +242,7 @@ setMethod(f="[[<-",
                       x@data[[i]] <- value
                   }
               } else {
-                  x <- callNextMethod()
+                  x <- callNextMethod(i=i, j=j, ...=..., value=value) # [[<-
               }
               ## Not checking validity because user may want to shorten items one by one, and check validity later.
               ## validObject(x)

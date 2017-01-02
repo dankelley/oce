@@ -698,7 +698,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     colNamesInferred <- NULL
     dataNamesOriginal <- list()
     namesUsed <- NULL
-    namesReusedCounter <- list()
     for (iline in seq_along(nameLines)) {
         nu <- cnvName2oceName(lines[nameLines[iline]], columns, debug=debug-1)
         ##newname <- unduplicateName(nu$name, colNamesInferred)

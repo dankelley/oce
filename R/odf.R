@@ -59,7 +59,7 @@ setMethod(f="initialize",
 setMethod(f="[[",
           signature(x="odf", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of an ODF Object
@@ -68,8 +68,8 @@ setMethod(f="[[",
 #' @family things related to \code{odf} data
 setMethod(f="[[<-",
           signature(x="odf", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 #' @title Subset an ODF object
@@ -175,18 +175,27 @@ setMethod(f="summary",
               showMetadataItem(object, "cruise",                   "Cruise:              ")
               showMetadataItem(object, "ship",                     "Vessel:              ")
               showMetadataItem(object, "station",                  "Station:             ")
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 
 
-findInHeader <- function(key, lines) # local
+## find first match in header
+findInHeader <- function(key, lines) # local function
 {
     i <- grep(key, lines)
-    if (length(i) < 1)
-        ""
-    else
-        gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i[1]], "=")[[1]][2]))))
+    rval <- ""
+    if (length(i) > 0) {
+        ## ----------
+        ## RISKY CODE: only look at first match
+        ## ----------
+        i <- i[1]
+        ## isolate the RHS of the eqquality
+        rval <- gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i], "=")[[1]][2]))))
+        ## convert e.g. D+00 to e+00
+        rval <- gsub("(.*)D([-+])([0-9]{2})", "\\1e\\2\\3", rval)
+    }
+    rval
 }
 
 #' @title Translate from ODF Names to Oce Names
@@ -210,6 +219,7 @@ findInHeader <- function(key, lines) # local
 #'     \code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                                 \cr
 #'     \code{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                                         \cr
 #'     \code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in S/m                                        \cr
+#'     \code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm                                        \cr
 #'     \code{DEPH_*.*} \tab \code{pressure}           \tab Sensor depth below sea level                               \cr
 #'     \code{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
@@ -244,6 +254,13 @@ findInHeader <- function(key, lines) # local
 #' Any code not shown in the list is transferred to the oce object without renaming, apart from
 #' the adjustment of suffix numbers. The following code have been seen in data files from
 #' the Bedford Institute of Oceanography: \code{ALTB}, \code{PHPH} and \code{QCFF}.
+#'
+#' @section A note on unit conventions:
+#' Some older ODF files contain non-standard units for conductivity,
+#' including \code{mho/m}, \code{mmho/cm}, and \code{mmHo}. As the
+#' units for conductivity are important for derived quantities
+#' (e.g. salinity), such units are converted to standard units
+#' (e.g. \code{S/m} and \code{mS/cm}), with a warning.
 #'
 #' @section Consistency warning:
 #' There are disagreements on variable names. For example, the ``DFO
@@ -303,7 +320,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             }
         }
         ## do something with units too; check this block generally for new spelling
-        stop("FIXME(Kelley): code 'columns' support into ODFNames2oceNames")
+        warning("FIXME(Kelley): code 'columns' support into ODFNames2oceNames")
     }
 
 
@@ -311,6 +328,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
     ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
     ## or whatever), this is a place to look.
+    oceDebug(debug, "STAGE 1 names: ", paste(names, collapse=" "), "\n")
     names <- gsub("ALTB", "altimeter", names)
     names <- gsub("BATH", "waterDepth", names) # FIXME: is this water column depth or sensor depth?
     names <- gsub("BEAM", "a", names)  # FIXME: is this sensible?
@@ -352,7 +370,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     ## Finally, fix up suffixes.
     ##message("names (line 324): ", paste(names, collapse="|"))
     names <- gsub("_[0-9][0-9]", "", names)
-    ##message("names (line 326): ", paste(names, collapse="|"))
+    oceDebug(debug, "STAGE 2 names: ", paste(names, collapse=" "), "\n")
     if (n > 1) {
         for (i in 2:n) {
             ##message("names[", i, "] = '", names[i], "'")
@@ -360,7 +378,9 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                 names[i] <- paste(names[i-1], "Flag", sep="")
         }
     }
-    ##message("finally, names: ", paste(names, collapse="|"))
+    oceDebug(debug, "STAGE 3 names: ", paste(names, collapse=" "), "\n")
+    names <- unduplicateNames(names)
+    oceDebug(debug, "STAGE 4 names: ", paste(names, collapse=" "), "\n")
     ## Now deal with units
     units <- list()
     for (i in seq_along(names)) {
@@ -396,14 +416,17 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(mg/m^3), scale="")
         } else if (ODFunits[i] == "ml/l") {
             list(unit=expression(ml/l), scale="")
-        ##} else if (ODFunits[i] == "m/s") {
         } else if (1 == length(grep("^\\s*m/s\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(m/s), scale="")
-        #} else if (ODFunits[i] == "mho/m") {
         } else if (1 == length(grep("^\\s*mho[s]{0,1}/m\\s*$", ODFunits[i], ignore.case=TRUE))) {
-            list(unit=expression(mho/m), scale="")
+            warning('Changed unit mho/m to S/m for conductivity')
+            list(unit=expression(S/m), scale="")
         } else if (1 == length(grep("^\\s*mmho[s]{0,1}/cm\\s*$", ODFunits[i], ignore.case=TRUE))) {
-            list(unit=expression(mmho/cm), scale="")
+            warning('Changed unit mmho/cm to mS/cm for conductivity')
+            list(unit=expression(mS/cm), scale="")
+        } else if (ODFunits[i] == "mmHo") {
+            warning('Changed unit mmHo to S/m for conductivity')
+            list(unit=expression(S/m), scale="")
         ##} else if (ODFunits[i] == "[(]*none[)]$") {
         } else if (1 == length(grep("^[(]*none[)]*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(), scale="")
@@ -592,6 +615,12 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' the total water depth, is set to \code{sounding} if that is finite,
 #' or to \code{maxDepth} otherwise.
 #'
+#' The function \code{\link{ODFNames2oceNames}} is used to translate
+#' data names from the ODF file to standard \code{oce} names, and
+#' handles conversion for a few non-standard units. The documentation
+#' of \code{\link{ODFNames2oceNames}} should be consulted for more
+#' details.
+#'
 #' @examples
 #' library(oce)
 #' # Read a CTD cast made on the Scotian Shelf. Note that the file's metadata
@@ -677,6 +706,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
 
     ODFunits <- lines[grep("^\\s*UNITS\\s*=", lines)]
     ODFunits <- gsub("^[^']*'(.*)'.*$", "\\1", ODFunits) # e.g.  "  UNITS= 'none',"
+    ODFunits <- trimws(ODFunits)
     ##message("below is ODFunits...")
     ##print(ODFunits)
 
@@ -684,6 +714,12 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ODFnames <- gsub("^.*CODE=", "", ODFnames)
     ODFnames <- gsub(",", "", ODFnames)
     ODFnames <- gsub("^[^']*'(.*)'.*$", "\\1", ODFnames) # e.g. "  CODE= 'CNTR_01',"
+    if (length(ODFnames) < 1) {
+        ODFnames <- lines[grep("^\\s*WMO_CODE\\s*=", lines)]
+        ODFnames <- gsub("^.*WMO_CODE=", "", ODFnames)
+        ODFnames <- gsub(",", "", ODFnames)
+        ODFnames <- gsub("^[^']*'(.*)'.*$", "\\1", ODFnames) # e.g. "  CODE= 'CNTR_01',"
+    }
     ##message("below is ODFnames...")
     ##print(ODFnames)
 
@@ -700,12 +736,13 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     cruise <- findInHeader("CRUISE_NAME", lines)
     countryInstituteCode <- findInHeader("COUNTRY_INSTITUTE_CODE", lines)
     cruiseNumber <- findInHeader("CRUISE_NUMBER", lines)
-    DATA_TYPE <- findInHeader("DATA_TYPE", lines)
+    DATA_TYPE <- trimws(findInHeader("DATA_TYPE", lines))
     deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
     ## date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
     startTime <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
     ## endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
     NAvalue <- as.numeric(findInHeader("NULL_VALUE", lines))
+
     depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     sounding <- as.numeric(findInHeader("SOUNDING", lines))
@@ -726,7 +763,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         for (w in which) {
             ustring <- as.character(namesUnits$units[[w]]$unit)
             if (length(ustring) && ustring != "")
-                warning("ODF column \"", ODFnames[w], "\" should be a conductivity ratio, but the unit is stored as \"", ustring, "\" as per the file. See the examples provided by ?as.odf on a solution to this problem.")
+                warning("\"", ODFnames[w], "\" should be a conductivity ratio, but setting unit to \"", ustring, "\" since that is in the data file; see ?read.odf for an example of rectifying this unit error.")
         }
     }
 

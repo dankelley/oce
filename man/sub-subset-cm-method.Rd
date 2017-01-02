@@ -5,7 +5,7 @@
 \alias{[[<-,cm-method}
 \title{Replace Parts of a CM Object}
 \usage{
-\S4method{[[}{cm}(x, i, j) <- value
+\S4method{[[}{cm}(x, i, j, ...) <- value
 }
 \arguments{
 \item{x}{An \code{cm} object, i.e. inheriting from \code{\link{cm-class}}}
@@ -14,9 +14,9 @@
 
 \item{j}{Optional additional information on the \code{i} item.}
 
-\item{value}{The value to be placed into \code{x}, somewhere.}
-
 \item{...}{Optional additional information (ignored).}
+
+\item{value}{The value to be placed into \code{x}, somewhere.}
 }
 \description{
 The \code{[[<-} method works for all \code{oce} objects, i.e.

@@ -236,7 +236,7 @@ setMethod(f="summary",
               for (name in names(object@data)) {
                   object@data[[name]] <- object[[name]] # translate to science units
               }
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 

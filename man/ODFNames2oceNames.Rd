@@ -45,6 +45,7 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                                 \cr
     \code{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                                         \cr
     \code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in S/m                                        \cr
+    \code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm                                        \cr
     \code{DEPH_*.*} \tab \code{pressure}           \tab Sensor depth below sea level                               \cr
     \code{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
@@ -80,6 +81,15 @@ Any code not shown in the list is transferred to the oce object without renaming
 the adjustment of suffix numbers. The following code have been seen in data files from
 the Bedford Institute of Oceanography: \code{ALTB}, \code{PHPH} and \code{QCFF}.
 }
+\section{A note on unit conventions}{
+
+Some older ODF files contain non-standard units for conductivity,
+including \code{mho/m}, \code{mmho/cm}, and \code{mmHo}. As the
+units for conductivity are important for derived quantities
+(e.g. salinity), such units are converted to standard units
+(e.g. \code{S/m} and \code{mS/cm}), with a warning.
+}
+
 \section{Consistency warning}{
 
 There are disagreements on variable names. For example, the ``DFO

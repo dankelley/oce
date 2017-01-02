@@ -138,7 +138,7 @@ setMethod(f="summary",
               ndata <- length(object@data$elevation)
               cat("* number of observations:  ", ndata, "\n")
               cat("*    \"      non-missing:   ", sum(!is.na(object@data$elevation)), "\n")
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 
@@ -188,7 +188,7 @@ setMethod(f="subset",
 setMethod(f="[[",
           signature(x="sealevel", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a Sealevel Object
@@ -197,8 +197,8 @@ setMethod(f="[[",
 #' @family things related to \code{sealevel} data
 setMethod(f="[[<-",
           signature(x="sealevel", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 setValidity("sealevel",

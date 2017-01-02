@@ -146,7 +146,7 @@ setMethod(f="summary",
               cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
               cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
               cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 #' @title Extract Parts of an Echosounder Object
@@ -205,7 +205,7 @@ setMethod(f="[[",
                       TS
                   }
               } else {
-                  callNextMethod()
+                  callNextMethod()     # [[
               }
           })
 
@@ -215,8 +215,8 @@ setMethod(f="[[",
 #' @family things related to \code{echosounder} data
 setMethod(f="[[<-",
           signature(x="echosounder", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 

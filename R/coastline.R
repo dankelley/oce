@@ -63,7 +63,7 @@ setMethod(f="initialize",
 setMethod(f="[[",
           signature(x="coastline", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a Coastline Object
@@ -72,8 +72,8 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="coastline", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 #' @title Subset a Coastline Object
@@ -120,7 +120,7 @@ setMethod(f="summary",
               cat("Coastline Summary\n-----------------\n\n")
               cat("* Number of points:", length(object@data$latitude), ", of which",
                   sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 #' @title Coerce Data into a Coastline Object

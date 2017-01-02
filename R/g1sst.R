@@ -37,7 +37,7 @@ setClass("g1sst", contains="satellite")
 setMethod(f="[[",
           signature(x="g1sst", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a G1SST Object
@@ -46,8 +46,8 @@ setMethod(f="[[",
 #' @family things related to \code{g1sst} data
 setMethod(f="[[<-",
           signature(x="g1sst", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 

@@ -22,11 +22,17 @@
 #' are as follows.
 #' \describe{
 #' \item{[[}{Find the value of an item in the object's
-#'     \code{metadata} or \code{data} slot.
+#'     \code{metadata} or \code{data} slot. If the item does
+#'     not exist, but can be calculated from the other items,
+#'     then the calculated value is returned. As an example of the
+#'     latter, consider the built-in \code{ctd} dataset, which does
+#'     not contain potential temperature, "\code{theta}". Using
+#'     \code{ctd[["theta"]]} therefore causes \code{\link{swTheta}}
+#'     to be called, to calculate \code{theta}.
 #'     See \link{[[,oce-method} or type \code{?"[[,oce-method"}
 #'     to learn more.}
 #' \item{[[<-}{Alters the named item in the object's \code{metadata} or
-#'     \code{data} slot.
+#'     \code{data} slot.  If the item does not exist, it is created.
 #'     See \link{[[<-,oce-method} or type \code{?"[[<-,oce-method"}
 #'     to learn more.}
 #' \item{summary}{Displays some information about the object named as an
@@ -94,6 +100,23 @@ NULL
 #' \code{makeSection} \tab \code{\link{as.section}} \tab Improve utility and name sensibility\cr
 #' \code{columns}     \tab \code{\link{read.ctd}}   \tab Unnecessary; never worked\cr
 #'}
+#'
+#' Several \sQuote{oce} function arguments are considered "deprecated", which
+#' means they will be marked "defunct" in the next CRAN release. They are as follows.
+#'
+#' \itemize{
+#'
+#' \item The \code{parameters} argument of \code{\link{plot,ctd-method}}
+#' was deprecated on 2016-12-30.  It was once used by
+#' \code{\link{plot,coastline-method}} but has been ignored by that
+#' function since February 2016.
+#'
+#' \item The \code{orientation} argument of \code{\link{plot,ctd-method}}
+#' was deprecated on 2016-12-30.  It was once used by
+#' \code{\link{plot,coastline-method}} but has been ignored by that
+#' function since February 2016.
+#'
+#' }
 #'
 #' Several \sQuote{oce} function arguments are considered "defunct", which
 #' means they will be removed in the next CRAN release. They are as follows.
@@ -1452,6 +1475,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is ctd/woce/exchange\n")
         return("ctd/woce/exchange")
     }
+    if (1 == length(grep("^\\s*ODF_HEADER", line, useBytes=TRUE))){
+        oceDebug(debug, "this is an ODF file\n")
+        return("odf")
+    }
     if (1 == length(grep("^\\* Sea-Bird", line, useBytes=TRUE))) {
         oceDebug(debug, "this is ctd/sbe/19\n")
         return("ctd/sbe/19")
@@ -1647,9 +1674,10 @@ read.oce <- function(file, ...)
         return(read.landsat(file, ...))
     if (type == "netcdf")
         return(read.netcdf(file, ...))
-    if (type == "met") {
+    if (type == "met")
         return(read.met(file, ...))
-    }
+    if (type == "odf")
+        return(read.odf(file, ...))
     stop("unknown file type \"", type, "\"")
 }
 

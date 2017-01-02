@@ -412,7 +412,7 @@ setMethod(f="summary",
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
               names <- names(object@data)
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 #' @title Extract Parts of a CTD Object
@@ -669,7 +669,7 @@ setMethod(f="[[",
               } else if (i == "N2") {
                   swN2(x)
               } else {
-                  callNextMethod()
+                  callNextMethod()     # [[
               }
           })
 
@@ -690,8 +690,7 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="ctd", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              ## FIXME: use j for e.g. times
-              callNextMethod(x=x, i=i, j=j, value=value)
+              callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
           })
 
 
@@ -2502,9 +2501,11 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 #' or at higher latitudes.  Finally, if this is a string in the format used by
 #' \code{\link{mapPlot}}, then it is is passed to that function.
 #'
-#' @param parameters Parameters for map, as for \code{projection}.
+#' @param parameters a \strong{deprecated} argument that has been ignored
+#' since February 2016; see \link{oce-deprecated}.
 #'
-#' @param orientation Orientation for map, as for \code{projection}.
+#' @param orientation a \strong{deprecated} argument that has been ignored
+#' since February 2016; see \link{oce-deprecated}.
 #'
 #' @param latlon.pch Symbol code for sample location (ignored if no map plotted).
 #'
@@ -2622,6 +2623,10 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
+              if (!is.null(parameters))
+                  warning("'parameters' is a deprecated argument that is ignored; see ?'oce-deprecated'")
+              if (!is.null(orientation))
+                  warning("'orientation' is a deprecated argument that is ignored; see ?'oce-deprecated'")
               eos <- match.arg(eos, c("unesco", "gsw"))
               if (!is.null(adorn))
                   warning("In plot() : the 'adorn' argument is deprecated, and will be removed soon", call.=FALSE)
@@ -3072,69 +3077,79 @@ setMethod(f="plot",
                               if (!inherits(coastline, "coastline"))
                                   stop("'coastline' must be a coastline object, or a string naming one")
                           }
-                          if (missing(lonlim)) {
-                              mlon <- mean(x[["longitude"]], na.rm=TRUE)
-                              lonlim.c <- mlon + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - mlon))
-                              clon <- mean(lonlim.c)
-                              if (missing(latlim)) {
-                                  mlat <- mean(x[["latitude"]], na.rm=TRUE)
-                                  oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection=",
-                                           if (is.null(projection)) "NULL" else projection, "\n")
-                                  latlim.c <- mlat + c(-1, 1) * min(abs(range(coastline[["latitude"]], na.rm=TRUE) - mlat))
-                                  latlim.c <- ifelse(latlim.c > 90, 89.99, latlim.c)
-                                  oceDebug(debug, "about to plot coastline\n")
-                                  oceDebug(debug, "clatitude=", mean(latlim.c), "\n")
-                                  oceDebug(debug, "clongitude=", clon, "\n")
-                                  oceDebug(debug, "span=", span, "\n")
-                                  oceDebug(debug, "projection=", projection, "\n")
-                                  oceDebug(debug, "parameters=", parameters, "\n")
-                                  oceDebug(debug, "ok, about to call plot(coastline)\n")
-                                  plot(coastline,
-                                       clongitude=standardizeLongitude(clon), clatitude=mean(latlim.c), span=span,
-                                       projection=projection, parameters=parameters, orientation=orientation,
-                                       border=borderCoastline, col=colCoastline,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
-                                       debug=debug-1)
-                                  oceDebug(debug, " ... did plot(coastline)\n")
-                              } else {
-                                  oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
-                                  clat <- mean(latlim)
-                                  plot(coastline,
-                                       clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                       projection=projection, parameters=parameters, orientation=orientation,
-                                       border=borderCoastline, col=colCoastline,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
-                                       debug=debug-1)
-                              }
-                              if (is.numeric(which[w]) && round(which[w], 1) == 5.1) # HIDDEN FEATURE
-                                  mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
+                          if (!missing(clongitude) && !missing(clatitude) && !missing(span)) {
+                              plot(coastline,
+                                   clongitude=clongitude, clatitude=clatitude, span=span,
+                                   projection=projection, # parameters=parameters, orientation=orientation,
+                                   border=borderCoastline, col=colCoastline,
+                                   mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                   lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                   debug=debug-1)
                           } else {
-                              oceDebug(debug, "lonlim was provided\n")
-                              clon <- mean(lonlim)
-                              if (missing(latlim)) {
-                                  oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
-                                  latlim.c <- mean(x@metadata$latitude, na.rm=TRUE) +
-                                  c(-1, 1) * min(abs(range(coastline[["latitude"]], na.rm=TRUE) - x@metadata$latitude))
-                                  clat <- mean(latlim.c)
-                                  plot(coastline,
-                                       clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                       projection=projection, parameters=parameters, orientation=orientation,
-                                       border=borderCoastline, col=colCoastline,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
-                                       debug=debug-1)
+                              if (missing(lonlim)) {
+                                  mlon <- mean(x[["longitude"]], na.rm=TRUE)
+                                  lonlim.c <- mlon + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - mlon))
+                                  clon <- mean(lonlim.c)
+                                  if (missing(latlim)) {
+                                      mlat <- mean(x[["latitude"]], na.rm=TRUE)
+                                      oceDebug(debug, "CASE 1: both latlim and lonlim missing; using projection=",
+                                               if (is.null(projection)) "NULL" else projection, "\n")
+                                      latlim.c <- mlat + c(-1, 1) * min(abs(range(coastline[["latitude"]], na.rm=TRUE) - mlat))
+                                      latlim.c <- ifelse(latlim.c > 90, 89.99, latlim.c)
+                                      oceDebug(debug, "about to plot coastline\n")
+                                      oceDebug(debug, "clatitude=", mean(latlim.c), "\n")
+                                      oceDebug(debug, "clongitude=", clon, "\n")
+                                      oceDebug(debug, "span=", span, "\n")
+                                      oceDebug(debug, "projection=", projection, "\n")
+                                      ## oceDebug(debug, "parameters=", parameters, "\n")
+                                      oceDebug(debug, "ok, about to call plot(coastline)\n")
+                                      plot(coastline,
+                                           clongitude=standardizeLongitude(clon), clatitude=mean(latlim.c), span=span,
+                                           projection=projection, # parameters=parameters, orientation=orientation,
+                                           border=borderCoastline, col=colCoastline,
+                                           mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                           lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                           debug=debug-1)
+                                      oceDebug(debug, " ... did plot(coastline)\n")
+                                  } else {
+                                      oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
+                                      clat <- mean(latlim)
+                                      plot(coastline,
+                                           clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
+                                           projection=projection, # parameters=parameters, orientation=orientation,
+                                           border=borderCoastline, col=colCoastline,
+                                           mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                           lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                           debug=debug-1)
+                                  }
+                                  if (is.numeric(which[w]) && round(which[w], 1) == 5.1) # HIDDEN FEATURE
+                                      mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
                               } else {
-                                  oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
-                                  clat <- mean(latlim)
-                                  plot(coastline,
-                                       clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
-                                       border=borderCoastline, col=colCoastline,
-                                       projection=projection, parameters=parameters, orientation=orientation,
-                                       mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
-                                       lonlabel=lonlabel, latlabel=latlabel, sides=sides,
-                                       debug=debug-1)
+                                  oceDebug(debug, "lonlim was provided\n")
+                                  clon <- mean(lonlim)
+                                  if (missing(latlim)) {
+                                      oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
+                                      latlim.c <- mean(x@metadata$latitude, na.rm=TRUE) +
+                                      c(-1, 1) * min(abs(range(coastline[["latitude"]], na.rm=TRUE) - x@metadata$latitude))
+                                      clat <- mean(latlim.c)
+                                      plot(coastline,
+                                           clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
+                                           projection=projection, #parameters=parameters, orientation=orientation,
+                                           border=borderCoastline, col=colCoastline,
+                                           mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                           lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                           debug=debug-1)
+                                  } else {
+                                      oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
+                                      clat <- mean(latlim)
+                                      plot(coastline,
+                                           clongitude=standardizeLongitude(clon), clatitude=clat, span=span,
+                                           border=borderCoastline, col=colCoastline,
+                                           projection=projection, #parameters=parameters, orientation=orientation,
+                                           mgp=mgp, mar=mar, inset=inset, cex.axis=cex.axis,
+                                           lonlabel=lonlabel, latlabel=latlabel, sides=sides,
+                                           debug=debug-1)
+                                  }
                               }
                           }
                           ## draw isobaths
@@ -4484,7 +4499,7 @@ plotProfile <- function (x,
                             keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "theta" || xtype == "potential temperature") {
-        theta <- swTheta(x, eos=eos)
+        theta <- if ("theta" %in% names(x@data)) x@data$theta else swTheta(x, eos=eos)
         if (missing(Tlim)) {
             if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(theta, na.rm=TRUE)
         }
@@ -4528,6 +4543,7 @@ plotProfile <- function (x,
                             keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "sigmaTheta") {
+        ## FIXME: do as theta above
         st <- swSigmaTheta(x)
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
         ## FIXME: if this works, extend to other x types
