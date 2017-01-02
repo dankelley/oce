@@ -427,10 +427,10 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' two facts control the maximum recordable velocity and the velocity
 #' resolution, values that may be retrieved for an ADP object name \code{d}
 #' with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
-#' @param testing Logical value, indicating whether
-#' the time-varying device orientation is to be inferred from the
-#' per-profile header information, and the boolean result is stored in an
-#' integer vector named \code{upward} within the \code{data} slot.
+#' @param testing Logical value, indicating whether to test a new version
+#' of the code. That new version varies over time. ONLY DEVELOPERS should
+#' use this option. At Jan-2017, 'testing=TRUE' means to try a new scheme
+#' for reading large files.
 #' @param type A character string indicating the type of instrument.
 #' @template adpTemplate
 #' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
@@ -522,9 +522,20 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Read whole file into 'buf'
     seek(file, 0, "start")
     seek(file, where=0, origin="end")
-    file.size <- seek(file, where=0)
-    oceDebug(debug, "file.size=", file.size, "\n")
-    buf <- readBin(file, what="raw", n=file.size, endian="little")
+    fileSize <- seek(file, where=0)
+    oceDebug(debug, "fileSize=", fileSize, "\n")
+    if (testing) {
+        message("testing -- check that 'from' and 'to' are both supplied, and both of integer type")
+        if (missing(to)) stop("'to' must be given if testing=TRUE")
+        if (!is.numeric(from)) stop("'from' is ", from, " but it must be an integer if testing=TRUE")
+        if (!is.numeric(to)) stop("'to' must be an integer if testing=TRUE")
+        from <- as.integer(from)
+        to <- as.integer(to)
+        message("testing -- reading 10000 bytes to try to find first profile (DANGEROUS)")
+        buf <- readBin(file, what="raw", n=min(fileSize, 10000), endian="little")
+    } else {
+        buf <- readBin(file, what="raw", n=fileSize, endian="little")
+    }
     ## decode header
     header <- decodeHeaderRDI(buf, debug=debug-1)
 
@@ -537,32 +548,28 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         #message("1. isSentinel=", isSentinel)
         isSentinel <- header$instrumentSubtype == "sentinelV"
         oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 532\n")
-        oceDebug(debug, "about to call ldc_rdi\n")
-        ensembleStart <- .Call("ldc_rdi_2", filename, 1, 0)
-        if (TRUE) {
-            ## testing
-            ensembleStart2 <- .Call("ldc_rdi", buf, 0)
-            lensembleStart <- length(ensembleStart)
-            lensembleStart2 <- length(ensembleStart2)
-            if (abs(lensembleStart - lensembleStart2) > 1) {
-                cat("ERROR: >1 mismatch in lengths:\n")
-                cat("    length(ensembleStart)  = ", lensembleStart, "\n")
-                cat("    length(ensembleStart2) = ", lensembleStart2, "\n")
-            }
-            minlen <- pmin(length(ensembleStart), length(ensembleStart2))
-            firstMismatch <- which(ensembleStart[1:minlen]!=ensembleStart2[1:minlen])[1]
-            if (!is.na(firstMismatch)) {
-                cat("ERROR: found difference when comparing first ", minlen, " entries of ensembleStart and ensembleStart2", "\n")
-                cat("    firstMismatch=", firstMismatch, " (note: there may be more later ... not checked, though)", "\n")
-                look <- seq(pmax(1, firstMismatch - 5), pmin(length(ensembleStart2), firstMismatch+5))
-                cat("    following are some values in the mismatch neighborhood:\n")
-                cat("    ensembleStart       : ", paste(ensembleStart[look], collapse=" "), "\n")
-                cat("    ensembleStart2      : ", paste(ensembleStart2[look], collapse=" "), "\n")
-                cat("    diff(ensembleStart) : ", paste(diff(ensembleStart[look]), collapse=" "), "\n")
-                cat("    diff(ensembleStart2): ", paste(diff(ensembleStart2[look]), collapse=" "), "\n")
-            }
+        oceDebug(debug, "about to call ldc_rdi_in_file\n")
+        ensembleStart <- .Call("ldc_rdi_in_file", filename, 1, 0) # works directly in file
+        oceDebug(debug, "successfully called ldc_rdi_in_file\n")
+        if (testing) {
+            if (from < 1) stop("cannot have 'from' < 1")
+            if (to > -1+length(ensembleStart)) stop("cannot have 'to' > ", -1+length(ensembleStart))
+            fileSizeSubset <- (-1 + ensembleStart[to+1]) - ensembleStart[1]
+            message("testing -- fileSizeSubset=", fileSizeSubset)
+            ensembleStartOrig <- ensembleStart
+            ensembleStart <- ensembleStart[seq.int(from, to)]
+            message("testing -- length(ensembleStart)=", length(ensembleStart), " (after triming)")
+            seek(file, where=-1+ensembleStart[1])
+            buf <- readBin(file, what="raw", n=fileSizeSubset, endian="little")
+            ensembleStart <- ensembleStart - ensembleStart[1] + 1
+            message("testing -- ensembleStart[1]=", ensembleStart[1])
+            message("testing -- ensembleStart[2]=", ensembleStart[2])
+            message("testing -- ensembleStart[3]=", ensembleStart[3])
+            ## redefine from and to
+            from <- 1
+            to <- length(ensembleStart)
         }
-        oceDebug(debug, "successfully called ldc_rdi\n")
+
         if (isSentinel) {
             oceDebug(debug, "SentinelV type detected, skipping first ensemble\n")
             ensembleStart <- ensembleStart[-1] # remove the first ensemble to simplify parsing
@@ -663,28 +670,6 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, "profilesToRead:", profilesToRead, "\n")
             oceDebug(debug, "numberOfBeams:", numberOfBeams, "\n")
             oceDebug(debug, "numberOfCells:", numberOfCells, "\n")
-
-            ##20151121 if (testing) {
-            ##20151121     nensembles <- length(ensembleStart)
-            ##20151121     numberOfDataTypes <- readBin(buf[ensembleStart[1] + 5], "integer", n=1, size=1) # Note: just using first one
-            ##20151121     FLDStart <- ensembleStart + 6 + 2 * numberOfDataTypes
-            ##20151121     ## FIXME: decide whether the code below is cleaner than the spot where time is determined
-            ##20151121     ## VLDStart <- FLDStart + 59
-            ##20151121     ## RTC.year <- unabbreviateYear(readBin(buf[VLDStart+4], "integer", n=nensembles, size=1))
-            ##20151121     ## RTC.month <- readBin(buf[VLDStart+5], "integer", n=nensembles, size=1)
-            ##20151121     ## RTC.day <- readBin(buf[VLDStart+6], "integer", n=nensembles, size=1)
-            ##20151121     ## RTC.hour <- readBin(buf[VLDStart+7], "integer", n=nensembles, size=1)
-            ##20151121     ## RTC.minute <- readBin(buf[VLDStart+8], "integer", n=nensembles, size=1)
-            ##20151121     ## RTC.second <- readBin(buf[VLDStart+9], "integer", n=nensembles, size=1)
-            ##20151121     ## RTC.hundredths <- readBin(buf[VLDStart+10], "integer", n=nensembles, size=1)
-            ##20151121     ## time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz=tz)
-
-            ##20151121     ## regarding the "4" below, see p 135 of WorkHorse_commands_data_format_AUG10.PDF,
-            ##20151121     ## noting that we subtract 1 because it's an offset; we are thus examining
-            ##20151121     ## the LSB of the "Sys Cfg" pair.
-            ##20151121     upward <- .Call("get_bit", buf[FLDStart+4], 7)
-            ##20151121     ##testingData <- list(time=time, upward=upward)
-            ##20151121 }
 
             items <- numberOfBeams * numberOfCells
 
@@ -1283,7 +1268,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 ##VMDAS             cat(i, "\n", ...)
                 ##VMDAS     }
                 ##VMDAS }
-                if (o >= file.size) {
+                if (o >= fileSize) {
                     warning("got to end of file")
                     break
                 }
@@ -1579,9 +1564,6 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 attitude=attitude,
                                 contaminationSensor=contaminationSensor)
            }
-           ##>if (testing) {
-           ##>    data$upward=upward
-           ##>}
         } else {
             warning("There are no profiles in this file.")
             for (name in names(header))

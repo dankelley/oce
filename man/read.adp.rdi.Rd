@@ -50,10 +50,8 @@ anomalous spikes in heading, etc.}
 (Typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.)}
 
-\item{testing}{Logical value, indicating whether
-the time-varying device orientation is to be inferred from the
-per-profile header information, and the boolean result is stored in an
-integer vector named \code{upward} within the \code{data} slot.}
+\item{testing}{Logical value, indicating whether to try a new
+scheme for reading large files.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
