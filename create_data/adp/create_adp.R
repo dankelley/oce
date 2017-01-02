@@ -6,6 +6,7 @@ beam <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_r
                  from=as.POSIXct("2008-06-26", tz="UTC"),
                  to=as.POSIXct("2008-06-27", tz="UTC"),
                  by="60:00", 
+                 testing=TRUE,
                  latitude=47.88126,
                  longitude=-69.73433)
 xyz <- beamToXyzAdp(beam)

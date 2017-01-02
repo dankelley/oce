@@ -549,22 +549,23 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         isSentinel <- header$instrumentSubtype == "sentinelV"
         oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 532\n")
         oceDebug(debug, "about to call ldc_rdi_in_file\n")
-        ensembleStart <- .Call("ldc_rdi_in_file", filename, 1, 0) # works directly in file
+        ldc <<- .Call("ldc_rdi_in_file", filename, 1, 0) # works directly in file
+        ensembleStart <- ldc$ensembleStart
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
         if (testing) {
             if (from < 1) stop("cannot have 'from' < 1")
             if (to > -1+length(ensembleStart)) stop("cannot have 'to' > ", -1+length(ensembleStart))
             fileSizeSubset <- (-1 + ensembleStart[to+1]) - ensembleStart[1]
-            message("testing -- fileSizeSubset=", fileSizeSubset)
+            ##message("testing -- fileSizeSubset=", fileSizeSubset)
             ensembleStartOrig <- ensembleStart
             ensembleStart <- ensembleStart[seq.int(from, to)]
-            message("testing -- length(ensembleStart)=", length(ensembleStart), " (after triming)")
+            ##message("testing -- length(ensembleStart)=", length(ensembleStart), " (after triming)")
             seek(file, where=-1+ensembleStart[1])
             buf <- readBin(file, what="raw", n=fileSizeSubset, endian="little")
             ensembleStart <- ensembleStart - ensembleStart[1] + 1
-            message("testing -- ensembleStart[1]=", ensembleStart[1])
-            message("testing -- ensembleStart[2]=", ensembleStart[2])
-            message("testing -- ensembleStart[3]=", ensembleStart[3])
+            ## message("testing -- ensembleStart[1]=", ensembleStart[1])
+            ## message("testing -- ensembleStart[2]=", ensembleStart[2])
+            ## message("testing -- ensembleStart[3]=", ensembleStart[3])
             ## redefine from and to
             from <- 1
             to <- length(ensembleStart)
