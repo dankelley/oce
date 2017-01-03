@@ -635,10 +635,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 to <- toIndex <- toPair$index
                 oceDebug(debug, "POSIXt 'from' and 'to' transformed to numeric from=", from, ", to=", to, "\n", sep="")
                 dt <- measurementDeltat
-                oceDebug(debug, "dt:", dt, "s, by:", by, "\n")
-                if (is.character(by))
+                if (is.character(by)) {
+                    oceDebug(debug, "by:", by, " in 'clock-type' format, which will now be decoded...\n")
                     by <- floor(0.5 + ctimeToSeconds(by) / dt)
-                oceDebug(debug, "by:", by, "profiles (after decoding)\n")
+                } else {
+                }
+                oceDebug(debug, "dt:", dt, "s, by:", by, "profiles\n")
             }
             if (from < 1) stop("cannot have 'from' < 1")
             if (to > -1+length(ensembleStart)) stop("cannot have 'to' > ", -1+length(ensembleStart))
@@ -732,9 +734,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
             ## set up storage
             codes <- cbind(buf[ensembleStart[1]+c(0, header$dataOffset)], buf[1+ensembleStart[1]+c(0, header$dataOffset)])
-            oceDebug(debug, "below are the data-chunk codes; see Table 33 p145 of Teledyne/RDI OS_TM_Apr14.pdf\n")
-            if (debug)
-                print(codes)
+            if (debug) {
+                oceDebug(debug, "below are the data-chunk codes; see Table 33 p145 of Teledyne/RDI OS_TM_Apr14.pdf\n")
+                for (irow in 1:dim(codes)[1]) {
+                    oceDebug(debug, paste("  ", paste(paste("0x", codes[irow,], sep=""), collapse=" ")), "\n")
+                }
+            }
             vFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x01) # velo
             qFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x02) # corr
             aFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x03) # echo intensity
@@ -996,25 +1001,25 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     if (i <= profilesToShow)
                         oceDebug(debug, "profile:", i, ", chunk:", chunk, ", buf: 0x", buf[o], " 0x", buf[1+o], "\n", sep="")
                     if (buf[o] == 0x00 & buf[1+o] == 0x00) {
-                        if (i <= profilesToShow) oceDebug(debug, "Fixed leader skipped\n")
+                        if (i <= profilesToShow) oceDebug(debug, "  fixed leader skipped\n")
                     } else if (buf[o] == 0x80 & buf[1+o] == 0x00) {
-                        if (i <= profilesToShow) oceDebug(debug, "Variable leader skipped\n")
+                        if (i <= profilesToShow) oceDebug(debug, "  variable leader skipped\n")
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x01) {
                         vtmp <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
                         vtmp[-32768 == vtmp] <- NA       # blank out bad data
                         v[i, , ] <- matrix(velocityScale * vtmp, ncol=numberOfBeams, byrow=TRUE)
-                        if (debug && i <= profilesToShow) cat(vectorShow(v[i, , 1], paste("v[", i, ",,1]", sep="")))
+                        if (debug && i <= profilesToShow) oceDebug(debug, vectorShow(v[i, , 1], paste("  v[", i, ",,1]", sep="")))
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x02) {
                         q[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
-                        if (debug && i <= profilesToShow) cat(vectorShow(q[i, , 1], paste("q[", i, ",,1]", sep="")))
+                        if (debug && i <= profilesToShow) oceDebug(debug, vectorShow(q[i, , 1], paste("  q[", i, ",,1]", sep="")))
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x03) {
                         a[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
-                        if (debug && i <= profilesToShow) cat(vectorShow(a[i, , 1], paste("a[", i, ",,1]", sep="")))
+                        if (debug && i <= profilesToShow) oceDebug(debug, vectorShow(a[i, , 1], paste("  a[", i, ",,1]", sep="")))
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x04) {
                         g[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
-                        if (debug && i <= profilesToShow) cat(vectorShow(g[i, , 1], paste("g[", i, ",,1]", sep="")))
+                        if (debug && i <= profilesToShow) oceDebug(debug, vectorShow(g[i, , 1], paste("  g[", i, ",,1]", sep="")))
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x05) {
-                        if (i <= profilesToShow) oceDebug(debug, "Status profile is ignored\n")
+                        if (i <= profilesToShow) oceDebug(debug, "  status profile ignored\n")
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x06) {
                         rangeLSB <- readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
                         rangeMSB <- readBin(buf[o+77:80], "integer", n=4, size=1, signed=FALSE, endian="little")
@@ -1376,9 +1381,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             roll <- 0.01 * readBin(buf[profileStart2 + 22], "integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
             oceDebug(debug, vectorShow(roll, "roll"))
             ##tmp <- pitch
-            oceDebug(debug, vectorShow(pitch, "pitch, before correction as on p14 of 'adcp coordinate transformation.pdf'"))
+            oceDebug(debug, "will adjust the pitch as explained on page 14 of 'adcp coordinate transformation.pdf'\n")
+            oceDebug(debug, vectorShow(pitch, "pitch, before correction"))
             pitch <- 180 / pi * atan(tan(pitch * pi / 180) / cos(roll * pi / 180)) # correct the pitch (see ACT page 14)
-            oceDebug(debug, vectorShow(pitch, "pitch, correction"))
+            oceDebug(debug, vectorShow(pitch, "pitch, after correction"))
             ##oceDebug(debug, "RMS change in pitch:", sqrt(mean((pitch - tmp)^2, na.rm=TRUE)), "\n")
             ##rm(tmp)
             salinity <- readBin(buf[profileStart2 + 24], "integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
