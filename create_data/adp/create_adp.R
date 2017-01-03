@@ -11,13 +11,13 @@ beam <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_r
                  longitude=-69.73433)
 xyz <- beamToXyzAdp(beam)
 adp <- xyzToEnuAdp(xyz, declination=-18.1)
-adp@metadata$filename <- "(file name redacted)"
-adp@metadata$serialNumber <- "(serial number redacted)"
-adp@metadata$headSerialNumber <- "(head serial number redacted)"
-adp@metadata$deploymentName <- "(deployment name redacted)"
+adp@metadata$filename <- "(redacted)"
+adp@metadata$serialNumber <- "(redacted)"
+adp@metadata$headSerialNumber <- "(redacted)"
+adp@metadata$deploymentName <- "(redacted)"
 adp@metadata$comments <- "sample ADP file"
 adp@processingLog$time <- adp@processingLog$time[1]
-adp@processingLog$value <- "(data processing redacted)"
+adp@processingLog$value <- "(redacted)"
 save(adp, file='adp.rda')
 library(tools)
 tools::resaveRdaFiles("adp.rda", compress="auto")

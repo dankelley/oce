@@ -25,9 +25,13 @@ be read.}
 
 \item{by}{an indication of the stride length to use while walking through
 the file.  If this is an integer, then \code{by-1} profiles are skipped
-between each pair of profiles that is read.  If this is a string
+between each pair of profiles that is read; use \code{by=1} (the
+default) to read all the data.  If this is a string
 representing a time interval, in colon-separated format (MM:SS), then this
-interval is divided by the sampling interval, to get the stride length.}
+interval is divided by the sampling interval, to infer a stride length.
+Note that this \code{by} parameter only makes sense if the data are
+sampled at a uniform rate; for burst-mode data, the best plan
+is to read all the data.}
 
 \item{tz}{character string indicating time zone to be assumed in the data.}
 
