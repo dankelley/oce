@@ -115,18 +115,34 @@ stopifnot(all.equal(a[1:10], b))
   // Growable buffer for ensemble starting points
   unsigned long int nensembles = 100000;
   unsigned long int in_ensemble = 0, out_ensemble = 0;
+
   int *ensembles = (int *)Calloc((size_t)nensembles, int);
-  unsigned char *years = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  unsigned char *months = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  unsigned char *days = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  unsigned char *hours = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  unsigned char *minutes = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  unsigned char *seconds = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  unsigned char *sec100s = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-
   if (ensembles == NULL)
-    error("cannot set up the buffer used to store adp/rdi ensemble pointers");
-
+    error("cannot set up the buffer used to store adp/rdi ensembles");
+  int *bytes = (int *)Calloc((size_t)nensembles, int);
+  if (bytes == NULL)
+    error("cannot set up the buffer used to store adp/rdi bytes");
+  unsigned char *years = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
+  if (years == NULL)
+    error("cannot set up the buffer used to store adp/rdi years");
+  unsigned char *months = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
+  if (months == NULL)
+    error("cannot set up the buffer used to store adp/rdi months");
+  unsigned char *days = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
+  if (days == NULL)
+    error("cannot set up the buffer used to store adp/rdi days");
+  unsigned char *hours = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
+  if (hours == NULL)
+    error("cannot set up the buffer used to store adp/rdi hours");
+  unsigned char *minutes = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
+  if (minutes == NULL)
+    error("cannot set up the buffer used to store adp/rdi minutes");
+  unsigned char *seconds = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
+  if (seconds == NULL)
+    error("cannot set up the buffer used to store adp/rdi seconds");
+  unsigned char *sec100s = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
+  if (sec100s == NULL)
+    error("cannot set up the buffer used to store adp/rdi sec100s");
   // Growable buffer for the present ensemble.
   unsigned long int nebuf = 30000;
   unsigned char *ebuf = (unsigned char *)Calloc((size_t)nebuf, unsigned char);
@@ -219,7 +235,10 @@ stopifnot(all.equal(a[1:10], b))
 	  //Rprintf("in_ensemble=%d : present  storage starts at 0x%x and can contain %d elements...\n", in_ensemble, ensembles, nensembles);
 	  ensembles = (int *)Realloc(ensembles, 2*nensembles, int);
 	  if (ensembles == NULL)
-	    error("cannot enlarge the buffer used to store adp/rdi ensemble pointers; trying to enlarge to %d bytes", 2*nensembles);
+	    error("cannot enlarge the buffer used to store adp/rdi ensembles; trying to enlarge to %d bytes", 2*nensembles);
+	  bytes = (int *)Realloc(bytes, 2*nensembles, int);
+	  if (bytes == NULL)
+	    error("cannot enlarge the buffer used to store adp/rdi bytes; trying to enlarge to %d bytes", 2*nensembles);
 	  years = (unsigned char *)Realloc(years, 2*nensembles, unsigned char);
 	  if (years == NULL)
 	    error("cannot enlarge the buffer used to store adp/rdi years; trying to enlarge to %d bytes", 2*nensembles);
@@ -246,6 +265,7 @@ stopifnot(all.equal(a[1:10], b))
 	}
 	if (from_value > 0 && (1+in_ensemble) >= from_value) {
 	  ensembles[out_ensemble] = last_start;
+	  bytes[out_ensemble] = 6 + bytes_to_read; // 2 for 0x7f, 2 for length, 2 for checksum
 	  // profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
 	  //unsigned int timePointer = (unsigned int)ebuf[7] + 256 * (unsigned int) ebuf[8];
 	  unsigned int timePointer = (unsigned int)ebuf[4] + 256 * (unsigned int) ebuf[5];
@@ -286,8 +306,9 @@ stopifnot(all.equal(a[1:10], b))
   
   // Storage for ensembleStart, year, month, day, hour, second,
   // sec100, all returned in a list.
-  SEXP es, year, month, day, hour, minute, second, sec100;
+  SEXP es, by, year, month, day, hour, minute, second, sec100;
   PROTECT(es = NEW_INTEGER(in_ensemble)); // "es" = "ensembleStart"
+  PROTECT(by = NEW_INTEGER(in_ensemble)); // "by" = "bytes"
   PROTECT(year = NEW_RAW(in_ensemble));
   PROTECT(month = NEW_RAW(in_ensemble));
   PROTECT(day = NEW_RAW(in_ensemble));
@@ -297,6 +318,7 @@ stopifnot(all.equal(a[1:10], b))
   PROTECT(sec100 = NEW_RAW(in_ensemble));
 
   int *pes = INTEGER_POINTER(es);
+  int *pby = INTEGER_POINTER(by);
   unsigned char *pyear = RAW_POINTER(year);
   unsigned char *pmonth = RAW_POINTER(month);
   unsigned char *pday = RAW_POINTER(day);
@@ -307,6 +329,7 @@ stopifnot(all.equal(a[1:10], b))
 
   for (long int i = 0; i < in_ensemble; i++) {
     pes[i] = ensembles[i];
+    pby[i] = bytes[i];
     pyear[i] = years[i];
     pmonth[i] = months[i];
     pday[i] = days[i];
@@ -316,31 +339,41 @@ stopifnot(all.equal(a[1:10], b))
     psec100[i] = sec100s[i];
   }
   Free(ensembles);
+  Free(bytes);
+  Free(years);
+  Free(months);
+  Free(days);
+  Free(hours);
+  Free(minutes);
+  Free(seconds);
+  Free(sec100s);
   Free(ebuf);
 
   // return ensembleStart, year, month, day, hour, minute, second and centisecond
   SEXP lres;
   SEXP lres_names;
-  PROTECT(lres = allocVector(VECSXP, 8));
-  PROTECT(lres_names = allocVector(STRSXP, 8));
+  PROTECT(lres = allocVector(VECSXP, 9));
+  PROTECT(lres_names = allocVector(STRSXP, 9));
   SET_VECTOR_ELT(lres, 0, es);
   SET_STRING_ELT(lres_names, 0, mkChar("ensembleStart"));
-  SET_VECTOR_ELT(lres, 1, year);
-  SET_STRING_ELT(lres_names, 1, mkChar("year"));
-  SET_VECTOR_ELT(lres, 2, month);
-  SET_STRING_ELT(lres_names, 2, mkChar("month"));
-  SET_VECTOR_ELT(lres, 3, day);
-  SET_STRING_ELT(lres_names, 3, mkChar("day"));
-  SET_VECTOR_ELT(lres, 4, hour);
-  SET_STRING_ELT(lres_names, 4, mkChar("hour"));
-  SET_VECTOR_ELT(lres, 5, minute);
-  SET_STRING_ELT(lres_names, 5, mkChar("minute"));
-  SET_VECTOR_ELT(lres, 6, second);
-  SET_STRING_ELT(lres_names, 6, mkChar("second"));
-  SET_VECTOR_ELT(lres, 7, sec100);
-  SET_STRING_ELT(lres_names, 7, mkChar("sec100"));
+  SET_VECTOR_ELT(lres, 1, by);
+  SET_STRING_ELT(lres_names, 1, mkChar("bytes"));
+  SET_VECTOR_ELT(lres, 2, year);
+  SET_STRING_ELT(lres_names, 2, mkChar("year"));
+  SET_VECTOR_ELT(lres, 3, month);
+  SET_STRING_ELT(lres_names, 3, mkChar("month"));
+  SET_VECTOR_ELT(lres, 4, day);
+  SET_STRING_ELT(lres_names, 4, mkChar("day"));
+  SET_VECTOR_ELT(lres, 5, hour);
+  SET_STRING_ELT(lres_names, 5, mkChar("hour"));
+  SET_VECTOR_ELT(lres, 6, minute);
+  SET_STRING_ELT(lres_names, 6, mkChar("minute"));
+  SET_VECTOR_ELT(lres, 7, second);
+  SET_STRING_ELT(lres_names, 7, mkChar("second"));
+  SET_VECTOR_ELT(lres, 8, sec100);
+  SET_STRING_ELT(lres_names, 8, mkChar("sec100"));
   setAttrib(lres, R_NamesSymbol, lres_names);
-  UNPROTECT(12); 
+  UNPROTECT(13); 
   return(lres);
 }
 

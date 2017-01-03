@@ -584,7 +584,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         isSentinel <- header$instrumentSubtype == "sentinelV"
         oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 532\n")
         oceDebug(debug, "about to call ldc_rdi_in_file\n")
-        ldc <- .Call("ldc_rdi_in_file", filename, 1, 0) # FIXME: use from and to, if integers
+        ldc <<- .Call("ldc_rdi_in_file", filename, 1, 0) # FIXME: use from and to, if integers
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
         ensembleStart <- ldc$ensembleStart
         profilesInFile <- length(ldc$ensembleStart)
@@ -644,6 +644,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             if (to > -1+length(ensembleStart)) stop("cannot have 'to' > ", -1+length(ensembleStart))
             fileSizeSubset <- (-1 + ensembleStart[to+1]) - ensembleStart[1]
             ensembleStart <- ensembleStart[seq.int(from, to)]
+            ## FIXME: if by>1, call a C function to subset bytes (likely faster than C), making
+            ## FIXME: a new buffer to use here in R space.
             seek(file, where=-1+ensembleStart[1])
             buf <- readBin(file, what="raw", n=fileSizeSubset, endian="little")
             ensembleStart <- ensembleStart - ensembleStart[1] + 1
@@ -677,7 +679,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         # offset for data type 1 (velocity)
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming:"))
         profilesInFile <- length(profileStart)
-        oceDebug(debug, "profilesInFile=", profilesInFile, "(as inferred by a byte-check on the sequence 0x80, 0x00)\n")
+        oceDebug(debug, "profilesInFile=", profilesInFile, "\n")
         if (!gaveFromTo) {
             ## read whole file if 'from' and 'to' not given
             from <- 1
@@ -808,10 +810,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                    nrow=4, byrow=TRUE)
                     if (debug > 0) {
                         cat('Transformation matrix:\n')
-                        cat(vectorShow(tmx, paste("tmx", sep="")))
-                        cat(vectorShow(tmy, paste("tmy", sep="")))
-                        cat(vectorShow(tmz, paste("tmz", sep="")))
-                        cat(vectorShow(tme, paste("tme", sep="")))
+                        oceDebug(debug, vectorShow(tmy, paste("tmy", sep="")), "\n")
+                        oceDebug(debug, vectorShow(tmz, paste("tmz", sep="")), "\n")
+                        oceDebug(debug, vectorShow(tme, paste("tme", sep="")), "\n")
+                        ## cat(vectorShow(tmy, paste("tmy", sep="")))
+                        ## cat(vectorShow(tmz, paste("tmz", sep="")))
+                        ## cat(vectorShow(tme, paste("tme", sep="")))
                     }
                 }
                 ##
@@ -1219,7 +1223,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         }
                     } else if (buf[o+1] == 0x20) {
                         ## navigation
-                        message("NAVIGATION")
+                        oceDebug(debug, "found NAVIGATION block (buf[o+1] is 0x20)")
                         ## On the first profile, we set up space.
                         if (!VMDASStorageInitialized) {
                             VMDASStorageInitialized <- TRUE
@@ -1681,5 +1685,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$units$attitude <- list(unit=expression(degree), scale="")
     res@metadata$units$depth <- list(unit=expression(m), scale="")
     oceDebug(debug, "} # read.adp.rdi()\n", unindent=1)
+    if (testing && by != 1)
+        warning("FIXME: testing mode but by=", by, " so there is not much gain for large files\n")
     res
 }
