@@ -144,7 +144,7 @@ stopifnot(all.equal(a[1:10], b))
   if (sec100s == NULL)
     error("cannot set up the buffer used to store adp/rdi sec100s");
   // Growable buffer for the present ensemble.
-  unsigned long int nebuf = 30000;
+  unsigned long int nebuf = 5000;
   unsigned char *ebuf = (unsigned char *)Calloc((size_t)nebuf, unsigned char);
   if (ebuf == NULL)
     error("cannot set up the buffer used to store data within an individual adp/rdi ensemble");
@@ -198,6 +198,7 @@ stopifnot(all.equal(a[1:10], b))
 
       // Read the bytes in one operation, because fgetc() is too slow.
       if (bytes_to_read > nebuf) {
+	  Rprintf("increasing 'ebuf' buffer size from %d bytes to %d bytes\n", nebuf, bytes_to_read);
 	  ebuf = (unsigned char *)Realloc(ebuf, bytes_to_read, unsigned char);
 	  if (ebuf== NULL)
 	    error("cannot enlarge the buffer used to store data within an individual adp/rdi ensemble; trying to enlarge to %d bytes", bytes_to_read);
@@ -257,7 +258,7 @@ stopifnot(all.equal(a[1:10], b))
 	  seconds = (unsigned char *)Realloc(seconds, 2*nensembles, unsigned char);
 	  if (seconds == NULL)
 	    error("cannot enlarge the buffer used to store adp/rdi seconds; trying to enlarge to %d bytes", 2*nensembles);
-	  sec100s = (unsigned char *)Realloc(seconds, 2*nensembles, unsigned char);
+	  sec100s = (unsigned char *)Realloc(sec100s, 2*nensembles, unsigned char);
 	  if (sec100s == NULL)
 	    error("cannot enlarge the buffer used to store adp/rdi sec100s; trying to enlarge to %d bytes", 2*nensembles);
 	  nensembles = 2 * nensembles;
@@ -338,16 +339,27 @@ stopifnot(all.equal(a[1:10], b))
     psecond[i] = seconds[i];
     psec100[i] = sec100s[i];
   }
+  Rprintf("freeing ensembles\n");
   Free(ensembles);
+  Rprintf("freeing bytes\n");
   Free(bytes);
+  Rprintf("freeing years\n");
   Free(years);
+  Rprintf("freeing months\n");
   Free(months);
+  Rprintf("freeing days\n");
   Free(days);
+  Rprintf("fre;eing hours\n");
   Free(hours);
+  Rprintf("free;ing minutes\n");
   Free(minutes);
+  Rprintf("freei;ng seconds\n");
   Free(seconds);
+  Rprintf("freeing sec100s\n");
   Free(sec100s);
+  Rprintf("freeing ebuf\n");
   Free(ebuf);
+  Rprintf("freeing; -- all done\n");
 
   // return ensembleStart, year, month, day, hour, minute, second and centisecond
   SEXP lres;
