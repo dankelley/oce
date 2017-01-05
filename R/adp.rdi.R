@@ -584,7 +584,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         isSentinel <- header$instrumentSubtype == "sentinelV"
         oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 532\n")
         oceDebug(debug, "about to call ldc_rdi_in_file\n")
-        ldc <<- .Call("ldc_rdi_in_file", filename, 1, 0) # FIXME: use from and to, if integers
+        ldc <- .Call("ldc_rdi_in_file", filename, 1, 0) # FIXME: use from and to, if integers
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
         ensembleStart <- ldc$ensembleStart
         profilesInFile <- length(ldc$ensembleStart)
