@@ -47,7 +47,7 @@ East.}
 \item{latitude}{optional signed number indicating the latitude in degrees
 North.}
 
-\item{type}{A character string indicating the type of instrument.}
+\item{type}{character string indicating the type of instrument.}
 
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication (with
 numbers and dots) of every profile read.}
@@ -59,10 +59,7 @@ anomalous spikes in heading, etc.}
 (Typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.)}
 
-\item{testing}{Logical value, indicating whether to test a new version
-of the code. That new version varies over time. ONLY DEVELOPERS should
-use this option. As of early Jan 2017, \code{testing=TRUE} means to try a new scheme
-for reading large files.}
+\item{testing}{logical value (IGNORED).}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
