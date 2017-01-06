@@ -1531,7 +1531,6 @@ setMethod(f="plot",
                                                 debug=debug-1,
                                                 ...)
                               } else {
-                                  oceDebug(debug, "issue 585: about to call imagep()\n")
                                   ats <- imagep(x=tt, y=x@data$distance, z=z,
                                                 zlim=zlim,
                                                 flipy=flipy,

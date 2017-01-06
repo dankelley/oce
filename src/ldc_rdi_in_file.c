@@ -4,6 +4,7 @@
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
+#include <time.h>
 
 //#define DEBUG
 
@@ -15,46 +16,56 @@ Locate Data Chunk for RDI
 @description
 
 Read an RDI adp file, finding the start indices of ensembles (or
-"profiles", in other words).
-Use `from` and `to` to extract a subset of the file. (Possibly a
-`by` argument will get added later.) Setting `from=0`
-and `to=0` means to read the entire file.
+"profiles", in other words).  Use `from` and `to` to extract a subset
+of the file.  Setting `from=1` and `to=0` means to read the entire
+file.
 
 @details
 
 In the name, "ldc" refers to "Locate Data Chunk", and "rdi" refers to
-RD Instruments.  Note that an earlier version of this function, used
-before October 2016, was passed a buffer that contained the whole file
-contents. This earlier scheme was dropped because of limitations on
-the size of vectors in R, which is set by the R use of 32-bit
-integers. (Note: 2^32-1 corresponds to a data file of roughly 4.3Gb.)
+RD Instruments.
 
-@param filename name of an RDI adp file
+@section history:
 
-@param from first ensemble (AKA profile) to get, in R notation, i.e. 1
-means the first ensemble in the file. (Possibly this will later be
-permitted to be negative, e.g. from=-10 with to=0 might be used to get
-the last 10 ensembles in the file. But this is not set up yet, because
-I do not see the need for it.)
+A version of this function, used before October 2016, was passed a
+buffer that contained the whole file contents. This scheme was dropped
+because of limitations on the size of vectors in R, which is set by
+the R use of 32-bit integers. (Note: 2^32-1 corresponds to a data file
+of roughly 4.3Gb.)
 
-@param to last ensemble to get.  Setting this to 0 will retrieve *all*
-the data within the file.  If `to` exceeds the number of ensembles in
-the file, then the returned value will just be the actual number of
-ensembles.
+@param filename character string indicating the name of an RDI adp
+file.
 
-@value a vector of indices where enembles start, in R notation, i.e.
-if the file starts with an ensemble (flagged by the first two bytes
-being 0x7f) then the first value in the returned result is 1.
+@param from integer giving the index of the first ensemble (AKA
+profile) to retrieve. The R notation is used, i.e. from=1 means the
+first profile.
 
+@param to integer giving the index of the last ensemble to retrieve.
+As a special case, setting this to 0 will retrieve *all* the data
+within the file.
+
+@param by integer giving increment of the sequence, as for seq(), i.e.
+a value of 1 means to retrieve all the profiles, while a value of 2
+means to get every second profile.
+
+@param mode integer, 0 if 'from' etc are profile numbers or 1 if they
+are the numerical values of unix times.
+
+@value a list containing "ensembleStart" "bytes" "year" "month" "day"
+"hour" "minute" "second" and "sec100". The first indicates a spot in
+the file where the profile starts. The second is the number of bytes
+in the profile. The others are all bytes, and they can be assembled to
+give a time (see calling code).
+ 
 @examples
 
 R CMD SHLIB ldc_rdi_in_file.c
 f <- "/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
 dyn.load("src/ldc_rdi_in_file.so")
-a <- .Call("ldc_rdi_in_file", f, 1, 0)  # whole file
-b <- .Call("ldc_rdi_in_file", f, 1, 10) # first 10 ensembles
-stopifnot(all.equal(length(a), 79134))
-stopifnot(all.equal(a[1:10], b))
+a <- .Call("ldc_rdi_in_file", f, 1, 0, 1) # whole file
+b <- .Call("ldc_rdi_in_file", f, 1, 10, ) # first 10 ensembles
+stopifnot(all.equal(length(a$ensembleStart), 79134))
+stopifnot(all.equal(a$ensembleStart[1:10], b$ensembleStart))
 
 @references
 
@@ -72,8 +83,12 @@ Dan Kelley
 
 */
 
-SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to)
+SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
 {
+  struct tm etime; // time of the ensemble under examination
+  time_t ensemble_time = 0; // integer-ish form of the above (only calculated if mode=1)
+  time_t ensemble_time_last = 0; // we use this for 'by', if mode is 1
+
   /*
      
 # Test R code, used by developers whilst debugging:
@@ -81,8 +96,8 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to)
 system("R CMD SHLIB src/ldc_rdi_in_file.c")
 f <- "/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
 dyn.load("src/ldc_rdi_2.so")
-a <- .Call("ldc_rdi_2", f, 1, 0)
-b <- .Call("ldc_rdi_2", f, 1, 10)
+a <- .Call("ldc_rdi_2", f, 1, 0, 0)
+b <- .Call("ldc_rdi_2", f, 1, 10, 0)
 stopifnot(all.equal(length(a), 79134))
 stopifnot(all.equal(a[1:10], b))
     
@@ -93,13 +108,24 @@ stopifnot(all.equal(a[1:10], b))
   if (!fp)
     error("cannot open file '%s'\n", filenamestring);
   PROTECT(from = AS_INTEGER(from));
+  PROTECT(to = AS_INTEGER(to));
+  PROTECT(by = AS_INTEGER(by));
+  PROTECT(mode = AS_INTEGER(mode));
+
   int from_value = *INTEGER_POINTER(from);
   if (from_value < 0)
     error("'from' must be positive");
-  PROTECT(to = AS_INTEGER(to));
   int to_value = *INTEGER_POINTER(to);
   if (to_value < 0)
     error("'to' must be positive");
+  int by_value = *INTEGER_POINTER(by);
+  if (by_value < 0)
+    error("'by' must be positive");
+  int mode_value = *INTEGER_POINTER(mode);
+  if (mode_value != 0 && mode_value != 1)
+    error("'mode' must be 0 or 1");
+
+  Rprintf("from=%d, to=%d, by=%d, mode_value=%d\n", from_value, to_value, by_value, mode_value);
 
   int c, clast=0x00;
   int byte1 = 0x7f;
@@ -112,46 +138,34 @@ stopifnot(all.equal(a[1:10], b))
   if (clast == EOF)
     error("empty file '%s'", filenamestring);
 
-  // Growable buffer for ensemble starting points
+  // Growable buffers; see 'Realloc()' and 'Free()' calls later in the code.
+  // Note that we do not check the Calloc() results because the R docs say that
+  // Calloc() performs tests and R handles any problems.
   unsigned long int nensembles = 100000;
-  unsigned long int in_ensemble = 0, out_ensemble = 0;
-
   int *ensembles = (int *)Calloc((size_t)nensembles, int);
-  if (ensembles == NULL)
-    error("cannot set up the buffer used to store adp/rdi ensembles");
+  int *times = (int *)Calloc((size_t)nensembles, int);
   int *bytes = (int *)Calloc((size_t)nensembles, int);
-  if (bytes == NULL)
-    error("cannot set up the buffer used to store adp/rdi bytes");
   unsigned char *years = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  if (years == NULL)
-    error("cannot set up the buffer used to store adp/rdi years");
   unsigned char *months = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  if (months == NULL)
-    error("cannot set up the buffer used to store adp/rdi months");
   unsigned char *days = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  if (days == NULL)
-    error("cannot set up the buffer used to store adp/rdi days");
   unsigned char *hours = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  if (hours == NULL)
-    error("cannot set up the buffer used to store adp/rdi hours");
   unsigned char *minutes = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  if (minutes == NULL)
-    error("cannot set up the buffer used to store adp/rdi minutes");
   unsigned char *seconds = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  if (seconds == NULL)
-    error("cannot set up the buffer used to store adp/rdi seconds");
   unsigned char *sec100s = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  if (sec100s == NULL)
-    error("cannot set up the buffer used to store adp/rdi sec100s");
-  // Growable buffer for the present ensemble.
   unsigned long int nebuf = 5000;
   unsigned char *ebuf = (unsigned char *)Calloc((size_t)nebuf, unsigned char);
-  if (ebuf == NULL)
-    error("cannot set up the buffer used to store data within an individual adp/rdi ensemble");
+  
+  // outbuf holds the output. It is growable
+  unsigned long int iobuf = 0;
+  unsigned long int nobuf = 100000;
+  unsigned char *obuf = (unsigned char *)Calloc((size_t)nobuf, unsigned char);
 
+  unsigned long int in_ensemble = 0, out_ensemble = 0;
   int b1, b2;
   long int last_start = 0;
 
+
+  unsigned long int by_counter = 0;
   while (1) {
     c = fgetc(fp);
     if (c == EOF) break;
@@ -184,6 +198,8 @@ stopifnot(all.equal(a[1:10], b))
       // cindex, in_ensemble, bytes_to_check);
       if (bytes_to_check < 5) { // this will only happen in error; we check so bytes_to_read won't be crazy
 	Free(ensembles);
+	Free(times);
+	Free(bytes);
 	Free(years);
 	Free(months);
 	Free(days);
@@ -200,16 +216,12 @@ stopifnot(all.equal(a[1:10], b))
       if (bytes_to_read > nebuf) {
 	  Rprintf("increasing 'ebuf' buffer size from %d bytes to %d bytes\n", nebuf, bytes_to_read);
 	  ebuf = (unsigned char *)Realloc(ebuf, bytes_to_read, unsigned char);
-	  if (ebuf== NULL)
-	    error("cannot enlarge the buffer used to store data within an individual adp/rdi ensemble; trying to enlarge to %d bytes", bytes_to_read);
 	  nebuf = bytes_to_read;
       }
       // Read the bytes in one operation, because fgetc() is too slow.
       size_t tmp; // prevent compiler warnings with fread
       tmp = fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
       if (feof(fp)) {
-	//Free(ensembles);
-	//Free(ebuf);
 	//Rprintf("NEW: end of file while reading ensemble number %d, at byte %d\n", in_ensemble+1, cindex);
 	break;
       }
@@ -230,69 +242,110 @@ stopifnot(all.equal(a[1:10], b))
       //if (SHOW(in_ensemble)) Rprintf("NEW in_ensemble=%d icindex=%d check_sum %d desired_check_sum=%d b1=%d b2=%d bytes_to_check=%d\n",
       // in_ensemble, cindex, check_sum, desired_check_sum, b1, b2, bytes_to_check);
       if (check_sum == desired_check_sum) {
-	// The check_sum is ok, so we can store the results, after
-	// enlarging the buffers, if they are full.
+	// The check_sum is ok, so we may want to store the results for
+	// this profile.
+	//
+	// First, ensure that there will be sufficient storage to store results.
+	// We do this before checking to see if we are actually going
+	// to store the results, so possibly this might get done one
+	// more time than required, before this function returns.
 	if (out_ensemble >= nensembles) {
-	  // Enlarge the buffer
-	  Rprintf("in_ensemble=%d : present  storage starts at 0x%x and can contain %d elements...\n", in_ensemble, ensembles, nensembles);
-	  ensembles = (int *)Realloc(ensembles, 2*nensembles, int);
-	  if (ensembles == NULL)
-	    error("cannot enlarge the buffer used to store adp/rdi ensembles; trying to enlarge to %d bytes", 2*nensembles);
+	  // Enlarge the buffer. We do not check the Realloc() result, because this
+	  // is an R macro that is supposed to check for errors and handle them.
+	  ensembles = (int *) Realloc(ensembles, 2*nensembles, int);
+	  times = (int *) Realloc(times, 2*nensembles, int);
 	  bytes = (int *)Realloc(bytes, 2*nensembles, int);
-	  if (bytes == NULL)
-	    error("cannot enlarge the buffer used to store adp/rdi bytes; trying to enlarge to %d bytes", 2*nensembles);
 	  years = (unsigned char *)Realloc(years, 2*nensembles, unsigned char);
-	  if (years == NULL)
-	    error("cannot enlarge the buffer used to store adp/rdi years; trying to enlarge to %d bytes", 2*nensembles);
 	  months = (unsigned char *)Realloc(months, 2*nensembles, unsigned char);
-	  if (months == NULL)
-	    error("cannot enlarge the buffer used to store adp/rdi months; trying to enlarge to %d bytes", 2*nensembles);
 	  days = (unsigned char *)Realloc(days, 2*nensembles, unsigned char);
-	  if (days == NULL)
-	    error("cannot enlarge the buffer used to store adp/rdi days; trying to enlarge to %d bytes", 2*nensembles);
 	  hours = (unsigned char *)Realloc(hours, 2*nensembles, unsigned char);
-	  if (hours == NULL)
-	    error("cannot enlarge the buffer used to store adp/rdi hours; trying to enlarge to %d bytes", 2*nensembles);
 	  minutes = (unsigned char *)Realloc(minutes, 2*nensembles, unsigned char);
-	  if (minutes == NULL)
-	    error("cannot enlarge the buffer used to store adp/rdi minutes; trying to enlarge to %d bytes", 2*nensembles);
 	  seconds = (unsigned char *)Realloc(seconds, 2*nensembles, unsigned char);
-	  if (seconds == NULL)
-	    error("cannot enlarge the buffer used to store adp/rdi seconds; trying to enlarge to %d bytes", 2*nensembles);
 	  sec100s = (unsigned char *)Realloc(sec100s, 2*nensembles, unsigned char);
-	  if (sec100s == NULL)
-	    error("cannot enlarge the buffer used to store adp/rdi sec100s; trying to enlarge to %d bytes", 2*nensembles);
 	  nensembles = 2 * nensembles;
 	  //Rprintf("            : upgraded storage starts at 0x%x and can contain %d elements...\n", ensembles, nensembles);
 	}
-	if (from_value > 0 && in_ensemble >= (from_value-1)) { // the -1 is because R index starts at 1
-	  ensembles[out_ensemble] = last_start;
-	  bytes[out_ensemble] = 6 + bytes_to_read; // 2 for 0x7f, 2 for length, 2 for checksum
-	  // profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
-	  //unsigned int timePointer = (unsigned int)ebuf[7] + 256 * (unsigned int) ebuf[8];
-	  unsigned int timePointer = (unsigned int)ebuf[4] + 256 * (unsigned int) ebuf[5];
-	  //Rprintf("ebuf[1:4] %d %d %d %d, timePointer %d; ebuf[timePointer+5] %d\n",
-	  //   (unsigned int) ebuf[0],
-	  //   (unsigned int) ebuf[1],
-	  //   (unsigned int) ebuf[2],
-	  //   (unsigned int) ebuf[3],
-	  //   (unsigned int) ebuf[4],
-	  //   timePointer, (unsigned int)ebuf[timePointer+1]); 
-	  years[out_ensemble] = ebuf[timePointer+0];
-	  months[out_ensemble] = ebuf[timePointer+1];
-	  days[out_ensemble] = ebuf[timePointer+2];
-	  hours[out_ensemble] = ebuf[timePointer+3];
-	  minutes[out_ensemble] = ebuf[timePointer+4];
-	  seconds[out_ensemble] = ebuf[timePointer+5];
-	  sec100s[out_ensemble] = ebuf[timePointer+6];
-	  out_ensemble++;
+	// We will decide whether to keep this ensemble, based on ensemble
+	// number, if mode_value==0 or on time, if mode_value==1. That
+	// means we only need to compute a time if mode_value==1.
+	unsigned int time_pointer = (unsigned int)ebuf[4] + 256 * (unsigned int) ebuf[5];
+	etime.tm_year = 100 + (int) ebuf[time_pointer+0];
+	etime.tm_mon = -1 + (int) ebuf[time_pointer+1];
+	etime.tm_mday = (int) ebuf[time_pointer+2];
+	etime.tm_hour = (int) ebuf[time_pointer+3];
+	etime.tm_min = (int) ebuf[time_pointer+4];
+	etime.tm_sec = (int) ebuf[time_pointer+5];
+	etime.tm_isdst = 0; // FIXME: care about timezone?
+	ensemble_time = mktime(&etime);
+	//Rprintf(" estimet %d %s after_from=%d before_to=%d",
+	//    ensemble_time, ctime(&ensemble_time),
+	//    ensemble_time > from_value, ensemble_time < to_value);
+
+
+	// See whether we are past the 'from' condition. Note the "-1"
+	// for the ensemble case, because R starts counts at 1, not 0,
+	// and the calling R code is (naturally) in R notation.
+	if ((mode_value == 0 && in_ensemble >= (from_value-1)) ||
+	    (mode_value == 1 && ensemble_time >= from_value)) {
+
+	  // Handle the 'by' value.
+	  //
+	  // FIXME: best to have a 'last' variable and to count from
+	  // FIXME: that, instead of using the '%' method'
+	  if ((mode_value == 0 && !(by_counter % by_value)) ||
+	      (mode_value == 1 && (ensemble_time - ensemble_time_last) >= by_value)) {
+	    // Expand the output buffer if needed.
+	    if ((iobuf + 6 + bytes_to_read) >= nobuf) {
+	      nobuf = 2 * nobuf;
+	      Rprintf("growing obuf (iobuf=%d, bytes_to_read=%d; new nobuf=%d)\n", 
+		  iobuf, bytes_to_read, nobuf);
+	      obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
+	    }
+	    // Copy ensemble to output buffer, after 6 bytes of header
+	    Rprintf("starting outbuf chunk at iobuf=%d, value 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+		iobuf, byte1, byte2, b1, b2, cs1, cs2);
+
+	    ensembles[out_ensemble] = iobuf + 1; // the +1 puts in R notation
+	    times[out_ensemble] = ensemble_time;
+	    obuf[iobuf++] = byte1; // 0x7f
+	    obuf[iobuf++] = byte2; // 0x7f
+	    obuf[iobuf++] = b1; // this and b2 yield bytes_to_read
+	    obuf[iobuf++] = b2;
+	    //obuf[iobuf++] = cs1; // this and cs2 form the checksum
+	    //obuf[iobuf++] = cs2;
+	    for (unsigned int i = 0; i < 6 + bytes_to_read; i++) {
+	      obuf[iobuf++] = ebuf[i];
+	    }
+	    Rprintf("AFTER saving, iobuf=%d, nobuf=%d, bytes_to_read=%d\n", iobuf, nobuf, bytes_to_read);
+	    if (mode_value == 1) {
+	      ensemble_time_last = ensemble_time; // reset
+	      Rprintf("ensemble_time=%d, to=%d\n", ensemble_time_last, to_value);
+	    }
+	    //Rprintf("saving at in_ensemble=%d, by_counter=%d, by=%d\n", in_ensemble, by_counter, by_value);
+	    //	    ensembles[out_ensemble] = last_start;
+	    bytes[out_ensemble] = 6 + bytes_to_read; // 2 for 0x7f, 2 for length, 2 for checksum
+	    unsigned int timePointer = (unsigned int)ebuf[4] + 256 * (unsigned int) ebuf[5];
+	    years[out_ensemble] = ebuf[timePointer+0];
+	    months[out_ensemble] = ebuf[timePointer+1];
+	    days[out_ensemble] = ebuf[timePointer+2];
+	    hours[out_ensemble] = ebuf[timePointer+3];
+	    minutes[out_ensemble] = ebuf[timePointer+4];
+	    seconds[out_ensemble] = ebuf[timePointer+5];
+	    sec100s[out_ensemble] = ebuf[timePointer+6];
+
+	    out_ensemble++;
+	  } else {
+	    //Rprintf("skipping at in_ensemble=%d, by_counter=%d, by=%d\n", in_ensemble, by_counter, by_value);
+	  }
+	  by_counter++;
 	}
 	in_ensemble++;
 	// If 'max' is positive, check that we return only that many
 	// ensemble pointers.
-	if (to_value > 0 && out_ensemble > (to_value-from_value+1)) { // FIXME: seems to be off by 1
-	  //Rprintf("breaking at out_ensemble=%d, in_ensemble=%d, from=%d, to=%d\n",
-	  //    out_ensemble, in_ensemble, from_value, to_value);
+	if ((mode_value == 0 && (to_value > 0 && in_ensemble > to_value)) ||
+	    (mode_value == 1 && (ensemble_time > to_value))) {
+	  Rprintf("breaking at out_ensemble=%d, in_ensemble=%d, from=%d, to=%d, ensemble_time=%d, mode_value=%d\n",
+	      out_ensemble, in_ensemble, from_value, to_value, ensemble_time, mode_value);
 	  break;
 	}
       } // if it doesn't match the check_sum, we just ignore it as a coincidence of a 0x7f 0x7f pair
@@ -308,9 +361,10 @@ stopifnot(all.equal(a[1:10], b))
   
   // Storage for ensembleStart, year, month, day, hour, second,
   // sec100, all returned in a list.
-  SEXP es, by, year, month, day, hour, minute, second, sec100;
-  PROTECT(es = NEW_INTEGER(out_ensemble)); // "es" = "ensembleStart"
-  PROTECT(by = NEW_INTEGER(out_ensemble)); // "by" = "bytes"
+  SEXP ensemble, time, byte, year, month, day, hour, minute, second, sec100;
+  PROTECT(ensemble = NEW_INTEGER(out_ensemble));
+  PROTECT(time = NEW_INTEGER(out_ensemble));
+  PROTECT(byte = NEW_INTEGER(out_ensemble));
   PROTECT(year = NEW_RAW(out_ensemble));
   PROTECT(month = NEW_RAW(out_ensemble));
   PROTECT(day = NEW_RAW(out_ensemble));
@@ -319,8 +373,12 @@ stopifnot(all.equal(a[1:10], b))
   PROTECT(second = NEW_RAW(out_ensemble));
   PROTECT(sec100 = NEW_RAW(out_ensemble));
 
-  int *pes = INTEGER_POINTER(es);
-  int *pby = INTEGER_POINTER(by);
+  SEXP outbuf;
+  PROTECT(outbuf = NEW_RAW(iobuf)); // FIXME: check ok
+
+  int *pensemble = INTEGER_POINTER(ensemble);
+  int *ptime = INTEGER_POINTER(time);
+  int *pbyte = INTEGER_POINTER(byte);
   unsigned char *pyear = RAW_POINTER(year);
   unsigned char *pmonth = RAW_POINTER(month);
   unsigned char *pday = RAW_POINTER(day);
@@ -328,10 +386,12 @@ stopifnot(all.equal(a[1:10], b))
   unsigned char *pminute = RAW_POINTER(minute);
   unsigned char *psecond = RAW_POINTER(second);
   unsigned char *psec100 = RAW_POINTER(sec100);
+  unsigned char *poutbuf = RAW_POINTER(outbuf);
 
   for (long int i = 0; i < out_ensemble; i++) {
-    pes[i] = ensembles[i];
-    pby[i] = bytes[i];
+    pensemble[i] = ensembles[i];
+    ptime[i] = times[i];
+    pbyte[i] = bytes[i];
     pyear[i] = years[i];
     pmonth[i] = months[i];
     pday[i] = days[i];
@@ -340,52 +400,49 @@ stopifnot(all.equal(a[1:10], b))
     psecond[i] = seconds[i];
     psec100[i] = sec100s[i];
   }
-  //Rprintf("freeing ensembles\n");
+  for (long int i = 0; i < iobuf; i++) {
+    poutbuf[i] = obuf[i];
+  }
   Free(ensembles);
-  //Rprintf("freeing bytes\n");
   Free(bytes);
-  //Rprintf("freeing years\n");
   Free(years);
-  //Rprintf("freeing months\n");
   Free(months);
-  //Rprintf("freeing days\n");
   Free(days);
-  //Rprintf("fre;eing hours\n");
   Free(hours);
-  //Rprintf("free;ing minutes\n");
   Free(minutes);
-  //Rprintf("freei;ng seconds\n");
   Free(seconds);
-  //Rprintf("freeing sec100s\n");
   Free(sec100s);
-  //Rprintf("freeing ebuf\n");
   Free(ebuf);
-  //Rprintf("freeing; -- all done\n");
 
   SEXP lres;
   SEXP lres_names;
-  PROTECT(lres = allocVector(VECSXP, 9));
-  PROTECT(lres_names = allocVector(STRSXP, 9));
-  SET_VECTOR_ELT(lres, 0, es);
-  SET_STRING_ELT(lres_names, 0, mkChar("ensembleStart"));
-  SET_VECTOR_ELT(lres, 1, by);
-  SET_STRING_ELT(lres_names, 1, mkChar("bytes"));
-  SET_VECTOR_ELT(lres, 2, year);
-  SET_STRING_ELT(lres_names, 2, mkChar("year"));
-  SET_VECTOR_ELT(lres, 3, month);
-  SET_STRING_ELT(lres_names, 3, mkChar("month"));
-  SET_VECTOR_ELT(lres, 4, day);
-  SET_STRING_ELT(lres_names, 4, mkChar("day"));
-  SET_VECTOR_ELT(lres, 5, hour);
-  SET_STRING_ELT(lres_names, 5, mkChar("hour"));
-  SET_VECTOR_ELT(lres, 6, minute);
-  SET_STRING_ELT(lres_names, 6, mkChar("minute"));
-  SET_VECTOR_ELT(lres, 7, second);
-  SET_STRING_ELT(lres_names, 7, mkChar("second"));
-  SET_VECTOR_ELT(lres, 8, sec100);
-  SET_STRING_ELT(lres_names, 8, mkChar("sec100"));
+  PROTECT(lres = allocVector(VECSXP, 11));
+  PROTECT(lres_names = allocVector(STRSXP, 11));
+  int i = 0;
+  SET_VECTOR_ELT(lres, i, ensemble);
+  SET_STRING_ELT(lres_names, i, mkChar("ensembleStart"));
+  SET_VECTOR_ELT(lres, ++i, time);
+  SET_STRING_ELT(lres_names, i, mkChar("time"));
+  SET_VECTOR_ELT(lres, ++i, byte);
+  SET_STRING_ELT(lres_names, i, mkChar("bytes"));
+  SET_VECTOR_ELT(lres, ++i, year);
+  SET_STRING_ELT(lres_names, i, mkChar("year"));
+  SET_VECTOR_ELT(lres, ++i, month);
+  SET_STRING_ELT(lres_names, i, mkChar("month"));
+  SET_VECTOR_ELT(lres, ++i, day);
+  SET_STRING_ELT(lres_names, i, mkChar("day"));
+  SET_VECTOR_ELT(lres, ++i, hour);
+  SET_STRING_ELT(lres_names, i, mkChar("hour"));
+  SET_VECTOR_ELT(lres, ++i, minute);
+  SET_STRING_ELT(lres_names, i, mkChar("minute"));
+  SET_VECTOR_ELT(lres, ++i, second);
+  SET_STRING_ELT(lres_names, i, mkChar("second"));
+  SET_VECTOR_ELT(lres, ++i, sec100);
+  SET_STRING_ELT(lres_names, i, mkChar("sec100"));
+  SET_VECTOR_ELT(lres, ++i, outbuf);
+  SET_STRING_ELT(lres_names, i, mkChar("outbuf"));
   setAttrib(lres, R_NamesSymbol, lres_names);
-  UNPROTECT(13); 
+  UNPROTECT(17); 
   return(lres);
 }
 

@@ -356,6 +356,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
                 orientation=orientation,
                 numberOfDataTypes=numberOfDataTypes,
                 dataOffset=dataOffset,
+                codes=codes,
                 numberOfBeams=numberOfBeams,
                 numberOfCells=numberOfCells,
                 pingsPerEnsemble=pingsPerEnsemble,
@@ -430,12 +431,9 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'
 #' @template adpTemplate
 #'
-#' @param testing Logical value, indicating whether to test a new version
-#' of the code. That new version varies over time. ONLY DEVELOPERS should
-#' use this option. As of early Jan 2017, \code{testing=TRUE} means to try a new scheme
-#' for reading large files.
+#' @param testing logical value (IGNORED).
 #'
-#' @param type A character string indicating the type of instrument.
+#' @param type character string indicating the type of instrument.
 #'
 #' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
 #' anomalous spikes in heading, etc.
@@ -474,8 +472,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         by <- 1
     if (!byGiven) message("FIXME: set 'by' according to file size")
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
-    bisectAdpRdi <- function(buf, t.find, add=0, debug=0) {
-        oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, ") {\n", unindent=1)
+    bisectAdpRdiBuf <- function(buf, t.find, add=0, debug=0) {
+        oceDebug(debug, "bisectAdpRdiBuffer(t.find=", format(t.find), ", add=", add, ") {\n", unindent=1)
         len <- length(profileStart)
         lower <- 1
         upper <- len
@@ -515,12 +513,12 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          as.integer(buf[profileStart[middle]+9])+0.01*as.integer(buf[profileStart[middle]+10]), # decimal second
                          tz=tz)
         oceDebug(debug, "result: t=", format(t), " at vsdStart[", middle, "]=", profileStart[middle], "\n")
-        oceDebug(debug, "} # bisectAdpRdi()\n", unindent=1)
+        oceDebug(debug, "} # bisectAdpRdiBuffer()\n", unindent=1)
         return(list(index=middle, time=t))
     }
 
-    bisectAdpRdiNEW <- function(ldc, tFind, add=0, debug=0) {
-        oceDebug(debug, "bisectAdpRdi(tFind=", format(tFind), ", add=", add, ") {\n", unindent=1, sep="")
+    bisectAdpRdiLdc<- function(ldc, tFind, add=0, debug=0) {
+        oceDebug(debug, "bisectAdpRdiLdc(tFind=", format(tFind), ", add=", add, ") {\n", unindent=1, sep="")
         len <- length(ldc$year)
         lower <- 1
         upper <- len
@@ -548,7 +546,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         if (middle > len)
             middle <- len
         oceDebug(debug, "result: t=", format(t), " at middle=", middle, "\n")
-        oceDebug(debug, "} # bisectAdpRdi()\n", unindent=1)
+        oceDebug(debug, "} # bisectAdpRdiLdc()\n", unindent=1)
         return(list(index=middle, time=t))
     }
 
@@ -577,11 +575,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     seek(file, where=0, origin="end")
     fileSize <- seek(file, where=0)
     oceDebug(debug, "fileSize=", fileSize, "\n")
-    if (testing) {
-        buf <- readBin(file, what="raw", n=min(fileSize, 10000), endian="little")
-    } else {
-        buf <- readBin(file, what="raw", n=fileSize, endian="little")
-    }
+    buf <- readBin(file, what="raw", n=min(fileSize, 10000), endian="little")
     ## decode header
     header <- decodeHeaderRDI(buf, debug=debug-1)
 
@@ -595,49 +589,53 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         isSentinel <- header$instrumentSubtype == "sentinelV"
         oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 532\n")
         oceDebug(debug, "about to call ldc_rdi_in_file\n")
-        if (is.numeric(from) && !missing(to) && is.numeric(to)) {
-            ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to))
+        if (is.numeric(from) && is.numeric(to) && is.numeric(by) ) {
+            message("FIXME: handle percentage by cases")
+            ldc <- .Call("ldc_rdi_in_file", filename,
+                         as.integer(from), as.integer(to), as.integer(by), 0L)
             from <- 1
             to <- length(ldc$ensembleStart)
+            by <- 1
         } else {
-            .Call("ldc_rdi_in_file", filename, 1, 0)
+            ldc <- .Call("ldc_rdi_in_file", filename,
+                         as.integer(from), as.integer(to), ctimeToSeconds(by), 1L)
         }
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
-        ensembleStart <- ldc$ensembleStart
-        profilesInFile <- length(ldc$ensembleStart)
-        if (profilesInFile < 1)
-            stop("this data file contains no profiles")
+        if (FALSE) {
+            ensembleStart <- ldc$ensembleStart
+            profilesInFile <- length(ldc$ensembleStart)
+            if (profilesInFile < 1)
+                stop("this data file contains no profiles")
 
-        ## Find start time, end time, and deltat (for calculating with from/to/by that are POSIXt)
-        measurementStart <- ISOdatetime(unabbreviateYear(as.integer(ldc$year[1])),
-                                        as.integer(ldc$month[1]),
-                                        as.integer(ldc$day[1]),
-                                        as.integer(ldc$hour[1]),
-                                        as.integer(ldc$min[1]),
-                                        as.integer(ldc$second[1]) + 0.01*as.integer(ldc$sec100[1]),
-                                        tz=tz)
-        oceDebug(debug, "measurementStart:", format(measurementStart), "\n")
+            ## Find start time, end time, and deltat (for calculating with from/to/by that are POSIXt)
+            measurementStart <- ISOdatetime(unabbreviateYear(as.integer(ldc$year[1])),
+                                            as.integer(ldc$month[1]),
+                                            as.integer(ldc$day[1]),
+                                            as.integer(ldc$hour[1]),
+                                            as.integer(ldc$min[1]),
+                                            as.integer(ldc$second[1]) + 0.01*as.integer(ldc$sec100[1]),
+                                            tz=tz)
+            oceDebug(debug, "measurementStart:", format(measurementStart), "\n")
 
-        measurementEnd <- ISOdatetime(unabbreviateYear(as.integer(ldc$year[profilesInFile])),
-                                      as.integer(ldc$month[profilesInFile]),
-                                      as.integer(ldc$day[profilesInFile]),
-                                      as.integer(ldc$hour[profilesInFile]),
-                                      as.integer(ldc$min[profilesInFile]),
-                                      as.integer(ldc$second[profilesInFile]) + 0.01*as.integer(ldc$sec100[profilesInFile]),
-                                      tz=tz)
-        oceDebug(debug, "measurementEnd:", format(measurementEnd), "\n")
+            measurementEnd <- ISOdatetime(unabbreviateYear(as.integer(ldc$year[profilesInFile])),
+                                          as.integer(ldc$month[profilesInFile]),
+                                          as.integer(ldc$day[profilesInFile]),
+                                          as.integer(ldc$hour[profilesInFile]),
+                                          as.integer(ldc$min[profilesInFile]),
+                                          as.integer(ldc$second[profilesInFile]) + 0.01*as.integer(ldc$sec100[profilesInFile]),
+                                          tz=tz)
+            oceDebug(debug, "measurementEnd:", format(measurementEnd), "\n")
 
-        measurementDeltat <- as.numeric(ISOdatetime(unabbreviateYear(as.integer(ldc$year[2])),
-                                                         as.integer(ldc$month[2]),
-                                                         as.integer(ldc$day[2]),
-                                                         as.integer(ldc$hour[2]),
-                                                         as.integer(ldc$minute[2]),
-                                                         as.integer(ldc$second[2]) + 0.01*as.integer(ldc$sec100[2]),
-                                                         tz=tz)) - as.numeric(measurementStart)
-        oceDebug(debug, "measurementDeltat:", measurementDeltat, "s\n")
+            measurementDeltat <- as.numeric(ISOdatetime(unabbreviateYear(as.integer(ldc$year[2])),
+                                                        as.integer(ldc$month[2]),
+                                                        as.integer(ldc$day[2]),
+                                                        as.integer(ldc$hour[2]),
+                                                        as.integer(ldc$minute[2]),
+                                                        as.integer(ldc$second[2]) + 0.01*as.integer(ldc$sec100[2]),
+                                                        tz=tz)) - as.numeric(measurementStart)
+            oceDebug(debug, "measurementDeltat:", measurementDeltat, "s\n")
 
 
-        if (testing) {
             if (is.numeric(from)) {
                 if (missing(to)) {
                     to <- -1L + length(ensembleStart)
@@ -645,10 +643,10 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 }
                 from <- as.integer(from)
                 to <- as.integer(to)
-           } else {
-                fromPair <- bisectAdpRdiNEW(ldc, from, add=-1, debug=debug-1)
+            } else {
+                fromPair <- bisectAdpRdiLdc(ldc, from, add=-1, debug=debug-1)
                 from <- fromIndex <- fromPair$index
-                toPair <- bisectAdpRdiNEW(ldc, to, add=1, debug=debug-1)
+                toPair <- bisectAdpRdiLdc(ldc, to, add=1, debug=debug-1)
                 to <- toIndex <- toPair$index
                 oceDebug(debug, "POSIXt 'from' and 'to' transformed to numeric from=", from, ", to=", to, "\n", sep="")
                 dt <- measurementDeltat
@@ -667,11 +665,49 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ## FIXME: a new buffer to use here in R space.
             seek(file, where=-1+ensembleStart[1])
             buf <- readBin(file, what="raw", n=fileSizeSubset, endian="little")
-            ensembleStart <- ensembleStart - ensembleStart[1] + 1
-            from <- 1
-            to <- length(ensembleStart)
-            oceDebug(debug, "NEW method from=", from, ", by=", by, ", to=", to, "\n", sep="")
+
+        } else {
+            buf <- ldc$outbuf
+            ensembleStart <- ldc$ensembleStart
+            measurementStart <- as.POSIXct(ldc$time[1] + 0.01 * as.integer(ldc$sec100[1]),
+                                           origin="1970-01-01", tz="UTC")
+            ## measurementStart <- ISOdatetime(unabbreviateYear(as.integer(ldc$year[1])),
+            ##                                 as.integer(ldc$month[1]),
+            ##                                 as.integer(ldc$day[1]),
+            ##                                 as.integer(ldc$hour[1]),
+            ##                                 as.integer(ldc$min[1]),
+            ##                                 as.integer(ldc$second[1]) + 0.01*as.integer(ldc$sec100[1]),
+            ##                                 tz=tz)
+            oceDebug(1+debug, "measurementStart:", format(measurementStart), "\n")
+            profilesInFile <- length(ldc$year)
+            measurementEnd <- as.POSIXct(ldc$time[profilesInFile] + 0.01 * as.integer(ldc$sec100[profilesInFile]),
+                                         origin="1970-01-01", tz="UTC")
+            ## measurementEnd <- ISOdatetime(unabbreviateYear(as.integer(ldc$year[profilesInFile])),
+            ##                               as.integer(ldc$month[profilesInFile]),
+            ##                               as.integer(ldc$day[profilesInFile]),
+            ##                               as.integer(ldc$hour[profilesInFile]),
+            ##                               as.integer(ldc$min[profilesInFile]),
+            ##                               as.integer(ldc$second[profilesInFile]) + 0.01*as.integer(ldc$sec100[profilesInFile]),
+            ##                               tz=tz)
+            oceDebug(1+debug, "measurementEnd:", format(measurementEnd), "\n")
+            measurementDeltat <- (ldc$time[2] + 0.01 * as.integer(ldc$sec100[2])) - (ldc$time[1] + 0.01 * as.integer(ldc$sec100[2]))
+            ## as.numeric(ISOdatetime(unabbreviateYear(as.integer(ldc$year[2])),
+            ##                        as.integer(ldc$month[2]),
+            ##                                             as.integer(ldc$day[2]),
+            ##                                             as.integer(ldc$hour[2]),
+            ##                                             as.integer(ldc$minute[2]),
+            ##                                             as.integer(ldc$second[2]) + 0.01*as.integer(ldc$sec100[2]),
+            ##                                             tz=tz)) - as.numeric(measurementStart)
+            oceDebug(1+debug, "measurementDeltat:", measurementDeltat, "s\n")
         }
+
+        ##ensembleStart <- ensembleStart - ensembleStart[1] + 1
+        from <- 1
+        to <- length(ensembleStart)
+        by <- 1
+        oceDebug(debug, "NEW method from=", from, ", by=", by, ", to=", to, "\n", sep="")
+
+
         ## At this stage, we have 'buf', a buffer that holds either the full file or the
         ## a fraction of it, as established by 'from' and 'to'. Note that the file is *not*
         ## divided up by the 'by' argument, and this will cause problems with large files.
@@ -708,9 +744,12 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             if (inherits(from, "POSIXt")) {
                 if (!inherits(to, "POSIXt"))
                     stop("if 'from' is POSIXt, then 'to' must be, also")
-                fromPair <- bisectAdpRdi(buf, from, add=-1, debug=debug-1)
+                message("FIXME: this code never called")
+                stop("this code should be deleted")
+                message("length(buf) ", length(buf))
+                fromPair <- bisectAdpRdiBuf(buf, from, add=-1, debug=debug-1)
                 from <- fromIndex <- fromPair$index
-                toPair <- bisectAdpRdi(buf, to, add=1, debug=debug-1)
+                toPair <- bisectAdpRdiBuf(buf, to, add=1, debug=debug-1)
                 to <- toIndex <- toPair$index
                 oceDebug(debug, "from:", format(fromPair$t), " yields profileStart[", fromIndex, "]\n")
                 oceDebug(debug, "to:", format(toPair$t), "yields profileStart[", toIndex, "]\n")
@@ -729,12 +768,14 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 profileStart <- profileStart[seq(1, length(profileStart), by=by)]
                 ensembleStart <- ensembleStart[seq(1, length(ensembleStart), by=by)]
             } else {
+                message("here we are, numeric from=",from,", to=",to,", by=", by)
+                message("this code will be removed later")
                 fromIndex <- from
                 toIndex <- to
                 if (toIndex < fromIndex)
                     stop("need more separation between from and to")
-                if (is.character(by))
-                    stop("cannot have string for 'by' if 'from' and 'to' are integers")
+                # if (is.character(by))
+                #     stop("cannot have string for 'by' if 'from' and 'to' are integers")
                 profileStart <- profileStart[seq(from=from, to=to, by=by)]
                 ensembleStart <- ensembleStart[seq(from=from, to=to, by=by)]
                 oceDebug(debug, vectorShow(profileStart, "profileStart after indexing:"))
@@ -750,7 +791,20 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             items <- numberOfBeams * numberOfCells
 
             ## set up storage
-            codes <- cbind(buf[ensembleStart[1]+c(0, header$dataOffset)], buf[1+ensembleStart[1]+c(0, header$dataOffset)])
+            cat("ensembleStart[1]=", ensembleStart[1], "\n")
+            cat("buf[ensembleStart[1]+seq(0,10)]=", paste(buf[ensembleStart[1]+seq(0,20)],sep=" "), "\n")
+ 
+            TESTcodes <- cbind(buf[ensembleStart[1]+c(0, header$dataOffset)], buf[1+ensembleStart[1]+c(0, header$dataOffset)])
+            cat("TESTcodes\n")
+            print(TESTcodes)
+            codes <- header$codes
+            cat("codes\n")
+            print(codes)
+            cat("why are above not same?\n")
+            ##. message("codes (header)")
+            ##. print(header$codes)
+            ##. browser()
+
             if (debug) {
                 oceDebug(debug, "below are the data-chunk codes; see Table 33 p145 of Teledyne/RDI OS_TM_Apr14.pdf\n")
                 for (irow in 1:dim(codes)[1]) {
@@ -1354,13 +1408,15 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                     break
                 }
             }
-            time <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart+4])), # year
-                                as.integer(buf[profileStart+5]),      # month
-                                as.integer(buf[profileStart+6]),      # day
-                                as.integer(buf[profileStart+7]),      # hour
-                                as.integer(buf[profileStart+8]),      # minute
-                                as.integer(buf[profileStart+9])+0.01*as.integer(buf[profileStart+10]), # decimal second
-                                tz=tz)
+            ## time <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart+4])), # year
+            ##                     as.integer(buf[profileStart+5]),      # month
+            ##                     as.integer(buf[profileStart+6]),      # day
+            ##                     as.integer(buf[profileStart+7]),      # hour
+            ##                     as.integer(buf[profileStart+8]),      # minute
+            ##                     as.integer(buf[profileStart+9])+0.01*as.integer(buf[profileStart+10]), # decimal second
+            ##                     tz=tz)
+            time <- as.POSIXct(ldc$time, origin="1970-01-01")
+
             ## Identify "junk" profiles by NA times
             junkProfiles <- which(is.na(time))
             if (isVMDAS) {
@@ -1708,7 +1764,5 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     res@metadata$units$attitude <- list(unit=expression(degree), scale="")
     res@metadata$units$depth <- list(unit=expression(m), scale="")
     oceDebug(debug, "} # read.adp.rdi()\n", unindent=1)
-    if (testing && by != 1)
-        warning("FIXME: testing mode but by=", by, " so there is not much gain for large files\n")
     res
 }
