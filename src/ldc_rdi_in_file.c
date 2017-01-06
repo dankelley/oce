@@ -196,7 +196,7 @@ stopifnot(all.equal(a[1:10], b))
       }
       unsigned int bytes_to_read = bytes_to_check - 4; // check_sum has used first 4 bytes already
 
-      // Read the bytes in one operation, because fgetc() is too slow.
+      // Expand the ensemble buffer, ebuf, if need be.
       if (bytes_to_read > nebuf) {
 	  Rprintf("increasing 'ebuf' buffer size from %d bytes to %d bytes\n", nebuf, bytes_to_read);
 	  ebuf = (unsigned char *)Realloc(ebuf, bytes_to_read, unsigned char);
@@ -204,6 +204,7 @@ stopifnot(all.equal(a[1:10], b))
 	    error("cannot enlarge the buffer used to store data within an individual adp/rdi ensemble; trying to enlarge to %d bytes", bytes_to_read);
 	  nebuf = bytes_to_read;
       }
+      // Read the bytes in one operation, because fgetc() is too slow.
       size_t tmp; // prevent compiler warnings with fread
       tmp = fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
       if (feof(fp)) {
@@ -233,7 +234,7 @@ stopifnot(all.equal(a[1:10], b))
 	// enlarging the buffers, if they are full.
 	if (out_ensemble >= nensembles) {
 	  // Enlarge the buffer
-	  //Rprintf("in_ensemble=%d : present  storage starts at 0x%x and can contain %d elements...\n", in_ensemble, ensembles, nensembles);
+	  Rprintf("in_ensemble=%d : present  storage starts at 0x%x and can contain %d elements...\n", in_ensemble, ensembles, nensembles);
 	  ensembles = (int *)Realloc(ensembles, 2*nensembles, int);
 	  if (ensembles == NULL)
 	    error("cannot enlarge the buffer used to store adp/rdi ensembles; trying to enlarge to %d bytes", 2*nensembles);
@@ -264,7 +265,7 @@ stopifnot(all.equal(a[1:10], b))
 	  nensembles = 2 * nensembles;
 	  //Rprintf("            : upgraded storage starts at 0x%x and can contain %d elements...\n", ensembles, nensembles);
 	}
-	if (from_value > 0 && (1+in_ensemble) >= from_value) {
+	if (from_value > 0 && in_ensemble >= (from_value-1)) { // the -1 is because R index starts at 1
 	  ensembles[out_ensemble] = last_start;
 	  bytes[out_ensemble] = 6 + bytes_to_read; // 2 for 0x7f, 2 for length, 2 for checksum
 	  // profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
@@ -289,9 +290,9 @@ stopifnot(all.equal(a[1:10], b))
 	in_ensemble++;
 	// If 'max' is positive, check that we return only that many
 	// ensemble pointers.
-	if (to_value > 0 && out_ensemble >= to_value) {
-	  // Rprintf("breaking at out_ensemble=%d, in_ensemble=%d, from=%d, to=%d\n",
-	  //     out_ensemble, in_ensemble, from_value, to_value);
+	if (to_value > 0 && out_ensemble > (to_value-from_value+1)) { // FIXME: seems to be off by 1
+	  //Rprintf("breaking at out_ensemble=%d, in_ensemble=%d, from=%d, to=%d\n",
+	  //    out_ensemble, in_ensemble, from_value, to_value);
 	  break;
 	}
       } // if it doesn't match the check_sum, we just ignore it as a coincidence of a 0x7f 0x7f pair
@@ -308,15 +309,15 @@ stopifnot(all.equal(a[1:10], b))
   // Storage for ensembleStart, year, month, day, hour, second,
   // sec100, all returned in a list.
   SEXP es, by, year, month, day, hour, minute, second, sec100;
-  PROTECT(es = NEW_INTEGER(in_ensemble)); // "es" = "ensembleStart"
-  PROTECT(by = NEW_INTEGER(in_ensemble)); // "by" = "bytes"
-  PROTECT(year = NEW_RAW(in_ensemble));
-  PROTECT(month = NEW_RAW(in_ensemble));
-  PROTECT(day = NEW_RAW(in_ensemble));
-  PROTECT(hour = NEW_RAW(in_ensemble));
-  PROTECT(minute = NEW_RAW(in_ensemble));
-  PROTECT(second = NEW_RAW(in_ensemble));
-  PROTECT(sec100 = NEW_RAW(in_ensemble));
+  PROTECT(es = NEW_INTEGER(out_ensemble)); // "es" = "ensembleStart"
+  PROTECT(by = NEW_INTEGER(out_ensemble)); // "by" = "bytes"
+  PROTECT(year = NEW_RAW(out_ensemble));
+  PROTECT(month = NEW_RAW(out_ensemble));
+  PROTECT(day = NEW_RAW(out_ensemble));
+  PROTECT(hour = NEW_RAW(out_ensemble));
+  PROTECT(minute = NEW_RAW(out_ensemble));
+  PROTECT(second = NEW_RAW(out_ensemble));
+  PROTECT(sec100 = NEW_RAW(out_ensemble));
 
   int *pes = INTEGER_POINTER(es);
   int *pby = INTEGER_POINTER(by);
@@ -328,7 +329,7 @@ stopifnot(all.equal(a[1:10], b))
   unsigned char *psecond = RAW_POINTER(second);
   unsigned char *psec100 = RAW_POINTER(sec100);
 
-  for (long int i = 0; i < in_ensemble; i++) {
+  for (long int i = 0; i < out_ensemble; i++) {
     pes[i] = ensembles[i];
     pby[i] = bytes[i];
     pyear[i] = years[i];
@@ -339,29 +340,28 @@ stopifnot(all.equal(a[1:10], b))
     psecond[i] = seconds[i];
     psec100[i] = sec100s[i];
   }
-  Rprintf("freeing ensembles\n");
+  //Rprintf("freeing ensembles\n");
   Free(ensembles);
-  Rprintf("freeing bytes\n");
+  //Rprintf("freeing bytes\n");
   Free(bytes);
-  Rprintf("freeing years\n");
+  //Rprintf("freeing years\n");
   Free(years);
-  Rprintf("freeing months\n");
+  //Rprintf("freeing months\n");
   Free(months);
-  Rprintf("freeing days\n");
+  //Rprintf("freeing days\n");
   Free(days);
-  Rprintf("fre;eing hours\n");
+  //Rprintf("fre;eing hours\n");
   Free(hours);
-  Rprintf("free;ing minutes\n");
+  //Rprintf("free;ing minutes\n");
   Free(minutes);
-  Rprintf("freei;ng seconds\n");
+  //Rprintf("freei;ng seconds\n");
   Free(seconds);
-  Rprintf("freeing sec100s\n");
+  //Rprintf("freeing sec100s\n");
   Free(sec100s);
-  Rprintf("freeing ebuf\n");
+  //Rprintf("freeing ebuf\n");
   Free(ebuf);
-  Rprintf("freeing; -- all done\n");
+  //Rprintf("freeing; -- all done\n");
 
-  // return ensembleStart, year, month, day, hour, minute, second and centisecond
   SEXP lres;
   SEXP lres_names;
   PROTECT(lres = allocVector(VECSXP, 9));

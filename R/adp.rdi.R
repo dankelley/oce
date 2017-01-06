@@ -94,7 +94,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "codes[,1]=", codes[,1], "\n")
     oceDebug(debug, "codes[,2]=", codes[,2], "\n")
     if (any(codes[, 1] == 0x00 & codes[, 2] == 0x70)) {
-        message('Detected dataType 0x00 0x70 for Sentinel V series configuration')
+        oceDebug(debug, "Detected dataType 0x00 0x70 for Sentinel V series configuration")
         isSentinel <- TRUE
     } else {
         isSentinel <- FALSE
@@ -452,7 +452,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' sequences to interpret data files.)
 #' 2. Teledyne-RDI, 2015. \emph{V Series output data format.} P/N 95D-6022-00 (May 2015).
 #' @family things related to \code{adp} data
-read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          longitude=NA, latitude=NA,
                          type=c("workhorse"),
                          monitor=FALSE, despike=FALSE, processingLog,
@@ -460,8 +460,19 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          debug=getOption("oceDebug"),
                          ...)
 {
-    oceDebug(debug, "read.adp.rdi(...,from=", format(from),
-             ",to=", if (missing(to)) "missing" else format(to), "...) {\n", unindent=1)
+    fromGiven <- !missing(from) # FIXME document THIS
+    toGiven <- !missing(to) # FIXME document THIS
+    byGiven <- !missing(by) # FIXME document THIS
+    oceDebug(debug, "read.adp.rdi(...",
+             ", from=", if (fromGiven) format(from) else "(missing)",
+             ", to=", if (toGiven) format(to) else "(missing)",
+             ", by=", if (byGiven) format(by) else "(missing)",
+             "...) {\n", unindent=1)
+    if (!fromGiven)
+        from <- 1
+    if (!byGiven)
+        by <- 1
+    if (!byGiven) message("FIXME: set 'by' according to file size")
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
     bisectAdpRdi <- function(buf, t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, ") {\n", unindent=1)
@@ -584,7 +595,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         isSentinel <- header$instrumentSubtype == "sentinelV"
         oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 532\n")
         oceDebug(debug, "about to call ldc_rdi_in_file\n")
-        ldc <- .Call("ldc_rdi_in_file", filename, 1, 0) # FIXME: use from and to, if integers
+        if (is.numeric(from) && !missing(to) && is.numeric(to)) {
+            ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to))
+            from <- 1
+            to <- length(ldc$ensembleStart)
+        } else {
+            .Call("ldc_rdi_in_file", filename, 1, 0)
+        }
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
         ensembleStart <- ldc$ensembleStart
         profilesInFile <- length(ldc$ensembleStart)
@@ -643,7 +660,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 oceDebug(debug, "dt:", dt, "s, by:", by, "profiles\n")
             }
             if (from < 1) stop("cannot have 'from' < 1")
-            if (to > -1+length(ensembleStart)) stop("cannot have 'to' > ", -1+length(ensembleStart))
+            to <- min(to, length(ensembleStart) - 1)
             fileSizeSubset <- (-1 + ensembleStart[to+1]) - ensembleStart[1]
             ensembleStart <- ensembleStart[seq.int(from, to)]
             ## FIXME: if by>1, call a C function to subset bytes (likely faster than C), making

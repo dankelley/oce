@@ -11,27 +11,32 @@ read.aquadopp(file, from = 1, to, by = 1, tz = getOption("oceTz"),
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
 to load.  (For \code{read.adp.sontek.serial}, this is generally a list of
-files, which will be concatenated.}
+files, which will be concatenated.)}
 
 \item{from}{indication of the first profile to read.  This can be an
 integer, the sequence number of the first profile to read, or a POSIXt time
 before which profiles should be skipped, or a character string that converts
 to a POSIXt time (assuming UTC timezone).  See \dQuote{Examples}, and make
-careful note of the use of the \code{tz} argument.}
+careful note of the use of the \code{tz} argument. If \code{from} is not
+supplied, it defaults to 1.}
 
-\item{to}{if supplied, an indication of the last profile to read, in a
-format as described for \code{from}.  If not supplied, the whole file will
-be read.}
+\item{to}{an optional indication of the last profile to read, in a
+format as described for \code{from}.  As a special case, \code{to=0} means
+to read the file to the end.  If \code{to} is not supplied, then it defaults
+to 0.}
 
-\item{by}{an indication of the stride length to use while walking through
+\item{by}{an optional indication of the stride length to use while walking through
 the file.  If this is an integer, then \code{by-1} profiles are skipped
-between each pair of profiles that is read; use \code{by=1} (the
-default) to read all the data.  If this is a string
+between each pair of profiles that is read, e.g. the default \code{by=1}
+means to read all the data.  If \code{by} is a string
 representing a time interval, in colon-separated format (MM:SS), then this
 interval is divided by the sampling interval, to infer a stride length.
-Note that this \code{by} parameter only makes sense if the data are
-sampled at a uniform rate; for burst-mode data, the best plan
-is to read all the data.}
+Finally, if \code{by} is a string containing a number followed by the
+percent sign, then the data are subsampled at that rate, e.g. \code{by="1\%"}
+means to take 100 points in the sampling range. To achieve speed and avoid
+possible problems with running out of R memory, the default value of \code{by}
+depends on the file size. For files smaller than 500Mb,
+\code{by=1} is used, while for larger files, \code{by=1\%} is used.}
 
 \item{tz}{character string indicating time zone to be assumed in the data.}
 
