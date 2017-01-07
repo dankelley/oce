@@ -302,8 +302,8 @@ stopifnot(all.equal(a[1:10], b))
 	      obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
 	    }
 	    // Copy ensemble to output buffer, after 6 bytes of header
-	    Rprintf("starting outbuf chunk at iobuf=%d, value 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
-		iobuf, byte1, byte2, b1, b2, cs1, cs2);
+	    //Rprintf("starting outbuf chunk at iobuf=%d, value 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+		//iobuf, byte1, byte2, b1, b2, cs1, cs2);
 
 	    ensembles[out_ensemble] = iobuf + 1; // the +1 puts in R notation
 	    times[out_ensemble] = ensemble_time;
@@ -316,10 +316,10 @@ stopifnot(all.equal(a[1:10], b))
 	    for (unsigned int i = 0; i < 6 + bytes_to_read; i++) { // FIXME: 4 here, or 6, or maybe 2???
 	      obuf[iobuf++] = ebuf[i];
 	    }
-	    Rprintf("AFTER saving, iobuf=%d, nobuf=%d, bytes_to_read=%d\n", iobuf, nobuf, bytes_to_read);
+	    //Rprintf("AFTER saving, iobuf=%d, nobuf=%d, bytes_to_read=%d\n", iobuf, nobuf, bytes_to_read);
 	    if (mode_value == 1) {
 	      ensemble_time_last = ensemble_time; // reset
-	      Rprintf("ensemble_time=%d, to=%d\n", ensemble_time_last, to_value);
+	      //Rprintf("ensemble_time=%d, to=%d\n", ensemble_time_last, to_value);
 	    }
 	    //Rprintf("saving at in_ensemble=%d, by_counter=%d, by=%d\n", in_ensemble, by_counter, by_value);
 	    //	    ensembles[out_ensemble] = last_start;
