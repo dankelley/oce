@@ -275,8 +275,8 @@ stopifnot(all.equal(a[1:10], b))
 	etime.tm_hour = (int) ebuf[time_pointer+3];
 	etime.tm_min = (int) ebuf[time_pointer+4];
 	etime.tm_sec = (int) ebuf[time_pointer+5];
-	etime.tm_isdst = 0; // FIXME: care about timezone?
-	ensemble_time = mktime(&etime);
+	etime.tm_isdst = 0;
+	ensemble_time = timegm(&etime);
 	//Rprintf(" estimet %d %s after_from=%d before_to=%d",
 	//    ensemble_time, ctime(&ensemble_time),
 	//    ensemble_time > from_value, ensemble_time < to_value);
