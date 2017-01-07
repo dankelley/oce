@@ -313,7 +313,7 @@ stopifnot(all.equal(a[1:10], b))
 	    obuf[iobuf++] = b2;
 	    //obuf[iobuf++] = cs1; // this and cs2 form the checksum
 	    //obuf[iobuf++] = cs2;
-	    for (unsigned int i = 0; i < 6 + bytes_to_read; i++) {
+	    for (unsigned int i = 0; i < 6 + bytes_to_read; i++) { // FIXME: 4 here, or 6, or maybe 2???
 	      obuf[iobuf++] = ebuf[i];
 	    }
 	    Rprintf("AFTER saving, iobuf=%d, nobuf=%d, bytes_to_read=%d\n", iobuf, nobuf, bytes_to_read);
