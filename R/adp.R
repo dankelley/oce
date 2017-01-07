@@ -355,17 +355,23 @@ setMethod(f="summary",
                   resSpecific <- list(orientation=object@metadata$orientation)
                   #stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
               }
-              cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                          format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
-                          format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
-                          1 / object@metadata$measurementDeltat))
-              subsampleStart <- object@data$time[1]
-              subsampleDeltat <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])
-              subsampleEnd <- object@data$time[length(object@data$time)]
-              cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
-                          format(subsampleStart), attr(subsampleStart, "tzone"),
-                          format(subsampleEnd),  attr(subsampleEnd, "tzone"),
-                          1 / subsampleDeltat))
+              ## 20170107: drop the printing of these. In the new scheme, we can subsample
+              ## 20170107: files, and therefore do not read to the end, and it seems silly
+              ## 20170107: to use time going through the whole file to find this out. If we
+              ## 20170107: decide that this is needed, we could do a seek() to the end of the 
+              ## 20170107: and then go back to find the final time.
+
+              ## cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
+              ##             format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
+              ##             format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
+              ##             1 / object@metadata$measurementDeltat))
+              ## subsampleStart <- object@data$time[1]
+              ## subsampleDeltat <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])
+              ## subsampleEnd <- object@data$time[length(object@data$time)]
+              ## cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
+              ##             format(subsampleStart), attr(subsampleStart, "tzone"),
+              ##             format(subsampleEnd),  attr(subsampleEnd, "tzone"),
+              ##             1 / subsampleDeltat))
               if (object@metadata$numberOfCells > 1)
                   cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
                               object@metadata$numberOfCells, object@data$distance[1],  tail(object@data$distance, 1), diff(object@data$distance[1:2])),  ...)

@@ -32,12 +32,9 @@ between each pair of profiles that is read, e.g. the default \code{by=1}
 means to read all the data.  If \code{by} is a string
 representing a time interval, in colon-separated format (MM:SS), then this
 interval is divided by the sampling interval, to infer a stride length.
-Finally, if \code{by} is a string containing a number followed by the
-percent sign, then the data are subsampled at that rate, e.g. \code{by="1\%"}
-means to take 100 points in the sampling range. To achieve speed and avoid
-possible problems with running out of R memory, the default value of \code{by}
-depends on the file size. For files smaller than 500Mb,
-\code{by=1} is used, while for larger files, \code{by=1\%} is used.}
+If \code{by} is not given, a default will be chosen based on the file size:
+with file size under 1Mb, this will not skip profiles, but for larger
+files, \code{by} will be set to yield approximately 500 profiles.}
 
 \item{tz}{character string indicating time zone to be assumed in the data.}
 
