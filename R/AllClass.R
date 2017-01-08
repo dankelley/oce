@@ -69,13 +69,13 @@ setMethod(f="summary",
                           cat("* Time:               ", format(from), "\n")
                       } else {
                           if (deltat < 60) {
-                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean step", deltat, "s\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat, "s\n")
                           } else if (deltat < 3600) {
-                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean step", deltat/60, "min\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat/60, "min\n")
                           } else if (deltat < 24*3600) {
-                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean step", deltat/3600, "hours\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat/3600, "hours\n")
                           } else {
-                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean step", deltat/3600/24, "days\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat/3600/24, "days\n")
                           }
                       }
                   }
@@ -140,7 +140,7 @@ setMethod(f="summary",
                   if (!is.null(threes)) {
                       rownames(threes) <- paste(dataLabel(names, units))
                       colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
-                      cat("* Statistics of data\n```\n")
+                      cat("* Statistics of data\n\n")
                       if ("dataNamesOriginal" %in% names(object@metadata)) {
                           if (is.list(object@metadata$dataNamesOriginal)) {
                               OriginalName <- unlist(lapply(names, function(n)
@@ -167,9 +167,9 @@ setMethod(f="summary",
                           threes <- threes[-which("time"==names),]
                       owidth <- options('width')
                       options(width=150) # make wide to avoid line breaks
-                      print(threes, quote=FALSE, indent='')
+                      print(threes, quote=FALSE)
                       options(width=owidth$width)
-                      cat("```\n")
+                      cat("\n")
                   }
               }
               processingLogShow(object)
