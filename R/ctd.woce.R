@@ -20,6 +20,7 @@ woceNames2oceNames <- function(names)
     ## FIXME: should list a source.
     ## SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
     names <- gsub("_FLAG_W", "Flag", names)
+    names <- gsub("_FLAG_I", "Flag", names)
     names <- gsub("CTDOXY", "oxygen", names)
     names <- gsub("CTDPRS", "pressure", names)
     names <- gsub("CTDSAL", "salinity", names)
