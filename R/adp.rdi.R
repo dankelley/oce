@@ -1271,7 +1271,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ##                     as.integer(buf[profileStart+8]),      # minute
             ##                     as.integer(buf[profileStart+9])+0.01*as.integer(buf[profileStart+10]), # decimal second
             ##                     tz=tz)
-            time <- as.POSIXct(ldc$time, origin="1970-01-01")
+            time <- as.POSIXct(ldc$time + 0.01 * as.numeric(ldc$sec100), origin="1970-01-01")
 
             ## Identify "junk" profiles by NA times
             junkProfiles <- which(is.na(time))

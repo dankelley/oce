@@ -1123,6 +1123,7 @@ imagep <- function(x, y, z,
     ## oceDebug(debug, "zlim=c(", paste(zlim, collapse=","), ")\n", sep="")
 
 
+
     if (drawPalette == "space") {
         drawPalette(zlab=if (zlabPosition=="side") zlab else "", axisPalette=axisPalette, debug=debug-1)
     } else if (drawPalette) {
