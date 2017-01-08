@@ -57,7 +57,11 @@ in those formats varies widely.
 Read an ITP-type CTD File
 }
 \details{
-\code{read.ctd.itp()} reads files stored in ice-tethered profile format.
+\code{read.ctd.itp()} reads ice-tethered-profiler data that are stored
+in a format files used by WHOI servers as of 2016-2017. Lacking
+documentation on the format, the author constructed this function
+to work with some files that were on-hand. Whether the function will
+prove robust is an open question.
 }
 \author{
 Dan Kelley
