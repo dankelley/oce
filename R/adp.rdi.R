@@ -472,7 +472,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         by <- 1
     if (!toGiven)
         to <- 0
-    if (!byGiven) message("FIXME: set 'by' according to file size")
     profileStart <- NULL # prevent scope warning from rstudio; defined later anyway
     ## bisectAdpRdiBuf <- function(buf, t.find, add=0, debug=0) {
     ##     oceDebug(debug, "bisectAdpRdiBuffer(t.find=", format(t.find), ", add=", add, ") {\n", unindent=1)
@@ -575,13 +574,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     seek(file, where=0, origin="end")
     fileSize <- seek(file, where=0)
     oceDebug(debug, "fileSize=", fileSize, "\n")
-    if (!byGiven) {
-        ## guess profiles typically 2Kb each, and set by
-        ## to have 500 of these. Note that 'from' and 'to' are in
-        ## profile-index units, at this point in the function.
-        by <- if (fileSize < 1e6) 1 else as.integer((from - to) / 2000 / 500)
-        oceDebug(debug, "by defaulted to ", by)
-    }
 
     ## FIXME 20170107
     ## We process the header wholly in R, and we don't need more than probably 2000 bytes
@@ -601,28 +593,40 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 532\n")
         oceDebug(debug, "about to call ldc_rdi_in_file\n")
         if (is.numeric(from) && is.numeric(to) && is.numeric(by) ) {
-            message("FIXME: handle percentage by cases")
+            if (!byGiven) {
+                if (to == 0) {              # whole file
+                    by <- if (fileSize < 1e6) 1 else as.integer(fileSize / 2000 / 500)
+                } else {
+                    by <- if ((to-from) < 1000) 1 else as.integer((to-from) / 1000)
+                }
+                by <- max(1L, by)
+                oceDebug(debug, "defaulting to by=", by, "\n")
+            }
             ldc <- .Call("ldc_rdi_in_file", filename,
                          as.integer(from), as.integer(to), as.integer(by), 0L)
-            from <- 1
-            to <- length(ldc$ensembleStart)
-            by <- 1
         } else {
             ldc <- .Call("ldc_rdi_in_file", filename,
                          as.integer(from), as.integer(to), ctimeToSeconds(by), 1L)
         }
+        ## Must now reset from,to,by in the *subsetted* data item, ldc.
+        from <- 1
+        to <- length(ldc$ensembleStart)
+        by <- 1
+
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
         buf <- ldc$outbuf
         ensembleStart <- ldc$ensembleStart
-        measurementStart <- as.POSIXct(ldc$time[1] + 0.01 * as.integer(ldc$sec100[1]),
-                                       origin="1970-01-01", tz="UTC")
-        oceDebug(debug, "measurementStart:", format(measurementStart), "\n")
-        profilesInFile <- length(ldc$year)
-        measurementEnd <- as.POSIXct(ldc$time[profilesInFile] + 0.01 * as.integer(ldc$sec100[profilesInFile]),
-                                     origin="1970-01-01", tz="UTC")
-        oceDebug(debug, "measurementEnd:", format(measurementEnd), "\n")
-        measurementDeltat <- (ldc$time[2] + 0.01 * as.integer(ldc$sec100[2])) - (ldc$time[1] + 0.01 * as.integer(ldc$sec100[2]))
-        oceDebug(debug, "measurementDeltat:", measurementDeltat, "s\n")
+        ## 20170108 ## These three things no longer make sense, since we are not reading
+        ## 20170108 ## the file to the end, in this updated scheme.
+        ## 20170108 measurementStart <- as.POSIXct(ldc$time[1] + 0.01 * as.integer(ldc$sec100[1]),
+        ## 20170108                                origin="1970-01-01", tz="UTC")
+        ## 20170108 oceDebug(debug, "measurementStart:", format(measurementStart), "\n")
+        ## 20170108 profilesInFile <- length(ldc$year)
+        ## 20170108 measurementEnd <- as.POSIXct(ldc$time[profilesInFile] + 0.01 * as.integer(ldc$sec100[profilesInFile]),
+        ## 20170108                              origin="1970-01-01", tz="UTC")
+        ## 20170108 oceDebug(debug, "measurementEnd:", format(measurementEnd), "\n")
+        ## 20170108 measurementDeltat <- (ldc$time[2] + 0.01 * as.integer(ldc$sec100[2])) - (ldc$time[1] + 0.01 * as.integer(ldc$sec100[2]))
+        ## 20170108 oceDebug(debug, "measurementDeltat:", measurementDeltat, "s\n")
 
         ## Now, 'buf' contains *only* the profiles we want, so we may
         ## redefine 'from', 'to' and 'by' to specify each and every profile.
@@ -956,11 +960,11 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                             bg[i, ] <- as.integer(buf[o+40:43])
                             if (debug && i <= profilesToShow) {
                                 ## FIXME: speed things up by commenting this out when things are working
-                                cat(vectorShow(br[i, ], paste("br[", i, ",]", sep="")))
-                                cat(vectorShow(bv[i, ], paste("bv[", i, ",]", sep="")))
-                                cat(vectorShow(bc[i, ], paste("bc[", i, ",]", sep="")))
-                                cat(vectorShow(ba[i, ], paste("ba[", i, ",]", sep="")))
-                                cat(vectorShow(bg[i, ], paste("bg[", i, ",]", sep="")))
+                                oceDebug(debug, vectorShow(br[i, ], paste("br[", i, ",]", sep="")))
+                                oceDebug(debug, vectorShow(bv[i, ], paste("bv[", i, ",]", sep="")))
+                                oceDebug(debug, vectorShow(bc[i, ], paste("bc[", i, ",]", sep="")))
+                                oceDebug(debug, vectorShow(ba[i, ], paste("ba[", i, ",]", sep="")))
+                                oceDebug(debug, vectorShow(bg[i, ], paste("bg[", i, ",]", sep="")))
                             }
                         }
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x20) {
@@ -1097,9 +1101,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 for (dataType in 1:header$numberOfDataTypes) {
                     if (buf[o] != 0x00)
                         stop("Expecting byte 0x00 but got byte 0x", buf[o], " while trying to read a data chunk for profile ", i)
-                    message("buf[", o, "+1]: ", buf[o+1])
+                    oceDebug(debug, "buf[", o, "+1]: ", buf[o+1], "\n")
                     if (buf[o+1] == 0x01) {
-                        message("VELOCITY")
+                        oceDebug(debug, "VELOCITY\n")
                         ##>message("velo at o=", o, "; profile=", i)
                         vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
                         ##cat(vectorShow(vv, "vv:"))
@@ -1108,17 +1112,17 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         o <- o + items * 2 + 2 # point to next chunk
                         if (debug && i <= profilesToShow) cat(vectorShow(v[i, , ], paste("v[", i, ",,]", sep="")))
                     } else if (buf[o+1] == 0x02) {
-                        message("CORRELATION")
+                        oceDebug(debug, "CORRELATION\n")
                         q[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
                         if (debug && i <= profilesToShow) cat(vectorShow(q[i, , ], paste("q[", i, ",,]", sep="")))
                         o <- o + items + 2 # point to next chunk
                     } else if (buf[o+1] == 0x03) {
-                        message("ECHO INTENSITY")
+                        oceDebug(debug, "ECHO INTENSITY\n")
                         a[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
                         if (debug && i <= profilesToShow) cat(vectorShow(a[i, , ], paste("a[", i, ",,]", sep="")))
                         o <- o + items + 2 # point to next chunk
                     } else if (buf[o+1] == 0x04) {
-                        message("PERCENT GOOD")
+                        oceDebug(debug, "PERCENT GOOD\n")
                         g[i, , ] <- matrix(buf[o + 1 + seq(1, items)], ncol=numberOfBeams, byrow=TRUE)
                         if (debug && i <= profilesToShow) cat(vectorShow(g[i, , ], paste("g[", i, ",,]", sep="")))
                         o <- o + items + 2
@@ -1236,12 +1240,12 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         o <- o + 78 ## NAVIGATION data chunk is always 78 bytes (Fig 46, p145 teledyne2014ostm)
                     } else if (buf[o+1] == 0x30) {
                         ## FIXED ATTITUDE
-                        message("FIXED ATTITUDE")
+                        oceDebug(debug, "FIXED ATTITUDE\n")
                         o <- o + 41 ## FIXED ATTITUDE data chunk is always 41 bytes (Fig 46, p145 teledyne2014ostm)
                         warning("skipping BINARY FIXED ATTITUDE data chunk, profile ", i)
                     } else {
-                        message("0x", buf[o+1], " flag... unknown. FIXME: handle 0x40-0xF0 0x30 (p146 teledynRDI 2014)")
-                        message("also, how far should we skip forward???")
+                        oceDebug(debug, "0x", buf[o+1], " flag... unknown. FIXME: handle 0x40-0xF0 0x30 (p146 teledynRDI 2014)\n")
+                        oceDebug(debug, "also, how far should we skip forward?\n")
                         stop("unknown byte code 0x", buf[o+1], " encountered while trying to read profile ", i)
                     }
                 }
@@ -1349,9 +1353,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             res@metadata$numberOfSamples <- dim(v)[1]
             res@metadata$numberOfCells <- dim(v)[2]
             res@metadata$numberOfBeams <- dim(v)[3]
-            res@metadata$measurementStart <- measurementStart
-            res@metadata$measurementEnd <- measurementEnd
-            res@metadata$measurementDeltat <- measurementDeltat
+            ##res@metadata$measurementStart <- measurementStart
+            ##res@metadata$measurementEnd <- measurementEnd
+            ##res@metadata$measurementDeltat <- measurementDeltat
             res@metadata$bin1Distance <- bin1Distance
             res@metadata$xmitPulseLength <- xmitPulseLength
             res@metadata$oceBeamUnspreaded <- FALSE

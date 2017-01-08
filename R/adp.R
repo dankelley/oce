@@ -835,7 +835,7 @@ beamName <- function(x, which)
 #' @author Dan Kelley and Clark Richards
 #'
 #' @family things related to \code{adp} data
-read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
                      longitude=NA, latitude=NA,
                      manufacturer=c("rdi", "nortek", "sontek"),
                      monitor=FALSE, despike=FALSE, processingLog,

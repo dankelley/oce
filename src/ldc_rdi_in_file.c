@@ -155,7 +155,7 @@ stopifnot(all.equal(a[1:10], b))
   long int last_start = 0;
 
 
-  unsigned long int by_counter = 0;
+  unsigned long int counter = 0, counter_last = 0;
   while (1) {
     c = fgetc(fp);
     if (c == EOF) break;
@@ -269,7 +269,7 @@ stopifnot(all.equal(a[1:10], b))
 	  //
 	  // FIXME: best to have a 'last' variable and to count from
 	  // FIXME: that, instead of using the '%' method'
-	  if ((mode_value == 0 && !(by_counter % by_value)) ||
+	  if ((mode_value == 0 && (counter - counter_last) >= by_value) ||
 	      (mode_value == 1 && (ensemble_time - ensemble_time_last) >= by_value)) {
 	    // Expand the output buffer if needed.
 	    if ((iobuf + 6 + bytes_to_read) >= nobuf) {
@@ -294,19 +294,21 @@ stopifnot(all.equal(a[1:10], b))
 	      obuf[iobuf++] = ebuf[i];
 	    }
 	    //Rprintf("AFTER saving, iobuf=%d, nobuf=%d, bytes_to_read=%d\n", iobuf, nobuf, bytes_to_read);
+	    // Increment counter (can be of two types)
 	    if (mode_value == 1) {
-	      ensemble_time_last = ensemble_time; // reset
-	      //Rprintf("ensemble_time=%d, to=%d\n", ensemble_time_last, to_value);
+	      ensemble_time_last = ensemble_time;
+	    } else {
+	      counter_last = counter;
 	    }
-	    //Rprintf("saving at in_ensemble=%d, by_counter=%d, by=%d\n", in_ensemble, by_counter, by_value);
+	    //Rprintf("saving at in_ensemble=%d, counter=%d, by=%d\n", in_ensemble, counter, by_value);
 	    //	    ensembles[out_ensemble] = last_start;
 	    unsigned int timePointer = (unsigned int)ebuf[4] + 256 * (unsigned int) ebuf[5];
 	    sec100s[out_ensemble] = ebuf[timePointer+6];
 	    out_ensemble++;
 	  } else {
-	    //Rprintf("skipping at in_ensemble=%d, by_counter=%d, by=%d\n", in_ensemble, by_counter, by_value);
+	    //Rprintf("skipping at in_ensemble=%d, counter=%d, by=%d\n", in_ensemble, counter, by_value);
 	  }
-	  by_counter++;
+	  counter++;
 	}
 	in_ensemble++;
 	// If 'max' is positive, check that we return only that many

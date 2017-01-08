@@ -29,12 +29,14 @@ to 0.}
 \item{by}{an optional indication of the stride length to use while walking through
 the file.  If this is an integer, then \code{by-1} profiles are skipped
 between each pair of profiles that is read, e.g. the default \code{by=1}
-means to read all the data.  If \code{by} is a string
-representing a time interval, in colon-separated format (MM:SS), then this
-interval is divided by the sampling interval, to infer a stride length.
-If \code{by} is not given, a default will be chosen based on the file size:
-with file size under 1Mb, this will not skip profiles, but for larger
-files, \code{by} will be set to yield approximately 500 profiles.}
+means to read all the data.  For RDI files, there are some other
+special features. If \code{by} is a string  representing a time interval,
+then \code{\link{ctimeToSeconds}} is used to infer a stride interval in
+seconds (e.g. \code{"30:00"} means a half-hour interval). For RDI files,
+if \code{by} is not given, a default will be chosen based on the file
+size: with file size under 1Mb, this will be \code{by=1}, meaning
+that no profiles are to be skipped, while for larger files, \code{by}
+will be set to progressively larger values.}
 
 \item{tz}{character string indicating time zone to be assumed in the data.}
 
