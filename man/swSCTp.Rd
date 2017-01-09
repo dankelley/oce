@@ -4,9 +4,8 @@
 \alias{swSCTp}
 \title{Salinity from electrical conductivity, temperature and pressure}
 \usage{
-swSCTp(conductivity, temperature = NULL, pressure = 0,
-  conductivityUnit = c("", "mS/cm", "S/m"), eos = getOption("oceEOS",
-  default = "gsw"))
+swSCTp(conductivity, temperature = NULL, pressure = 0, conductivityUnit,
+  eos = getOption("oceEOS", default = "gsw"))
 }
 \arguments{
 \item{conductivity}{a measure of conductivity (see also \code{conductivityUnit})
