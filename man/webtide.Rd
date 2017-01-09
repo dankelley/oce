@@ -75,7 +75,8 @@ also returned (silently) if \code{plot} is true, but in that case,
 a plot is drawn to indicate the node locations. If \code{latitude} and
 \code{longitude} are given, then the node nearest that spot is indicated on
 the map; otherwise, if \code{node} is given, then the location of that
-node is indicated. There is also a special case: if \code{node} is negative,
+node is indicated. There is also a special case: if \code{node} is negative
+and \code{interactive()} is \code{TRUE},
 then \code{\link{locator}} is called, and the node nearest the spot
 where the user clicks the mouse is indicated in the plot and in the
 return value.
