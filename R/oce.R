@@ -2345,7 +2345,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         rrl[2]$mday <- 1
         t.start <- trunc(rrl[1], "days")
         t.end <- trunc(rrl[2], "days")
-        z <- seq(t.start, t.end, by="1 month")
+        z <- seq(t.start, t.end, by="2 month")
         oceDebug(debug, vectorShow(z))
         z.sub <- seq(t.start, t.end, by="month") # small ticks
         oceDebug(debug, vectorShow(z.sub))
