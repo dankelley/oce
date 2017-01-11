@@ -29,14 +29,8 @@ to 0.}
 \item{by}{an optional indication of the stride length to use while walking through
 the file.  If this is an integer, then \code{by-1} profiles are skipped
 between each pair of profiles that is read, e.g. the default \code{by=1}
-means to read all the data.  For RDI files, there are some other
-special features. If \code{by} is a string  representing a time interval,
-then \code{\link{ctimeToSeconds}} is used to infer a stride interval in
-seconds (e.g. \code{"30:00"} means a half-hour interval). For RDI files,
-if \code{by} is not given, a default will be chosen based on the file
-size: with file size under 1Mb, this will be \code{by=1}, meaning
-that no profiles are to be skipped, while for larger files, \code{by}
-will be set to progressively larger values.}
+means to read all the data.  (For RDI files \emph{only}, there are some
+extra features to avoid running out of memory; see \dQuote{Memory considerations}.)}
 
 \item{tz}{character string indicating time zone to be assumed in the data.}
 
@@ -92,6 +86,50 @@ scale factor being used to convert to velocity in metres per second.  These
 two facts control the maximum recordable velocity and the velocity
 resolution, values that may be retrieved for an ADP object name \code{d}
 with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
+}
+\section{Memory considerations}{
+
+
+For \code{RDI} files only, and only in the case where \code{by} is not specified,
+an attempt is made to avoid running out of memory by skipping some profiles
+in large input files. This only applies if \code{from} and \code{to} are both
+integers; if they are times, none of the rest of this section applies.
+
+The core issue is that the input file and the oce object will not be of equal size, because R
+cannot store 2-byte integers natively. The R object will always require more memory
+than in the data file (as is the whole point of this 2-byte encoding in RDI files, 
+of course). A scale factor can be estimated by ignoring
+vector quanties (e.g. time, one per profile) and concentrating on matrix properties
+such as velocity, backscatter, and correlation. In this sort of data object,
+these three elements are of equal dimensionality.  Velocity 
+takes 2 bytes in the input file, while the other two quanties take 1 byte each. In
+the oce object, these 4 bytes become 10 bytes (8 for the floating-point velocity, and 1
+byte each for the others). Thus the oce object is likely about 10/4 times larger
+than the input file. It makes sense to increase this expansion factor to be
+conservative and to account for the byte expansion of the vector quantities, so
+\code{read.adp.rdi} rounds 10/4 up to 3.
+
+The next consideration is the memory limit in R. The least-performant machines
+in typical use appear to be windows systems, which limit R to about 2GB (see
+microsoft links pointed to by \code{\link{Memory-limits}}).
+Since typical processing will require copying of objects,
+e.g. for function call-by-value, \code{read.adp.rdi} uses a safety
+factor of 4, setting an upper limit of 5e8 bytes. Using the factor of 3 compression
+from R to an RDI file, this corresponds to an input file size of 1.5e9 bytes.
+For a round number, \code{read.adp.rdi} translates this to 1e9 bytes.
+This is the key to the calculation of a default value used for \code{by},
+to be used if that parameter is not supplied in the function call.
+
+The analysis is broken down into two cases. The first case is where \code{from=1} and
+\code{to=0}, which also applies if neither \code{from} or \code{to} is given.
+If the input file is smaller than 1e9 bytes, then \code{by} defaults to 1.
+For larger files, \code{by} is set to the \code{\link{ceiling}} of the
+ratio of input file size to 1e9 bytes. The second case is where \code{from} exceeds 1,
+and/or \code{to} is nonzero. In this case, the value of \code{by} is calculated
+in terms of \code{2e3*(to-from)}, which is an estimate of the number of bytes
+to be processed (assuming 2e3 file bytes per profile, a rough estimate for RDI
+files). If this value is smaller than 1e9, then \code{by} is set to 1. Otherwise,
+\code{by} is set to the \code{\link{ceiling}} of the ratio of this value to 1e9.
 }
 \author{
 Dan Kelley and Clark Richards
