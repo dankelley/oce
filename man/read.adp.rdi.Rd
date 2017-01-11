@@ -95,49 +95,51 @@ an attempt is made to avoid running out of memory by skipping some profiles
 in large input files. This only applies if \code{from} and \code{to} are both
 integers; if they are times, none of the rest of this section applies.
 
-The core issue is that the input file and the oce object will not be of equal size, because R
-cannot store 2-byte integers natively. The R object will always require more memory
-than in the data file (as is the whole point of this 2-byte encoding in RDI files, 
-of course). A scale factor can be estimated by ignoring
-vector quanties (e.g. time, one per profile) and concentrating on matrix properties
-such as velocity, backscatter, and correlation. In this sort of data object,
-these three elements are of equal dimensionality.  Velocity 
-takes 2 bytes in the input file, while the other two quanties take 1 byte each. In
-the oce object, these 4 bytes become 10 bytes (8 for the floating-point velocity, and 1
-byte each for the others). Thus the oce object is likely about 10/4 times larger
-than the input file. It makes sense to increase this expansion factor to be
-conservative and to account for the byte expansion of the vector quantities, so
-\code{read.adp.rdi} rounds 10/4 up to 3.
+A key issue is that RDI files store velocities in 2-byte values, which is
+not a format that R supports. These velocities become 8-byte (numeric) values
+in R. Thus, the R object created by \code{read.adp.rdi} will require more memory
+than that of the data file. A scale factor can be estimated by ignoring
+vector quanties (e.g. time, which has just one value per profile) and concentrating on matrix properties
+such as velocity, backscatter, and correlation. These three elements have equal dimensions.
+Thus, each 4-byte slide in the data file (2 bytes + 1 byte + 1 byte)
+corresponds to 10 bytes in the object (8 bytes + 1 byte + 1 byte).
+Rounding up the resultant 10/4 to 3 for safety, we conclude that any limit on the
+size of the R object corresponds to a 3X smaller limit on file size.
 
-The next consideration is the memory limit in R. The least-performant machines
-in typical use appear to be windows systems, which limit R to about 2e6 bytes (see
-microsoft links pointed to by \code{\link{Memory-limits}}, noting that those
-links express the limit in GB, gigabytes, as opposed to the erroneous
-unit of Gb, gigabits, used in \code{\link{Memory-limits}}).
-Since typical processing requires the copying of objects for commonplace
-tasks (e.g. for call-by-value in function evaluation), \code{read.adp.rdi} uses a safety
-factor in its calculations. This is set to 10, yielding a limiting target of
-2e8 bytes. Using the factor of 3 expansion from an RDI file to R storage,
-this suggests a limit for an input file of 6e8 bytes. This number is simplified,
-in a conservative fashion, to 5e8 bytes. Based on this, \code{read.adp.rdi}
-takes 500 MB as a criterion for file "largeness".
+Various things can limit the size of objects in R, but a strong upper limit
+is set by the space the operating system provides to R. The least-performant machines
+in typical use appear to be Microsoft-Windows systems, which limit R objects to
+about 2e6 bytes [3].  Since R routinely duplicates objects for certain tasks
+(e.g. for call-by-value in function evaluation), \code{read.adp.rdi} uses a safety
+factor in its calculation of when to auto-decimate a file. This factor is set to 3,
+based partly on the developers' experience with datasets in their possession.
+Multiplied by the previously stated safety factor of 3, 
+this suggests that the 2 GB limit on R objects corresponds to approximately a
+222 MB limit on file size. In the present version of \code{read.adp.rdi}, this
+value is lowered to 200 MB for simplicity. Larger files are considered to be "big",
+and are decimated unless the user supplies a value for the \code{by} argument.
 
-The analysis is broken down into two cases.
+The decimation procedure has two cases.
 \enumerate{
 \item \emph{Case 1.} If \code{from=1} and
 \code{to=0} (or if neither \code{from} or \code{to} is given), then the 
 intention is to process the full span of the data.  If the input file is
-under 500 MB, then \code{by} defaults to 1, so that all profiles are read.
+under 200 MB, then \code{by} defaults to 1, so that all profiles are read.
 For larger files, \code{by} is set to the \code{\link{ceiling}} of the
-ratio of input file size to 500 MB.
+ratio of input file size to 200 MB.
 
 \item \emph{Case 2.} If \code{from} exceeds 1, and/or \code{to} is nonzero, then
-the intention is to process only an interior subset of the file. The this
+the intention is to process only an interior subset of the file. In this
 case, \code{by} is calculated as the \code{\link{ceiling}} of
-the ratio of \code{bbp*(1+to-from)}, where \code{bbp} is the number
-of file bytes per profile) to 5e8. (If this ratio is less than 1,
-\code{by} is set to 1.)
+the ratio of \code{bbp*(1+to-from)} to 200 MB, where \code{bbp} is the number
+of file bytes per profile. Of course, \code{by} is set to 1, if this
+ratio is less than 1.
 }
+
+If the result of these calculations is that \code{by} exceeds 1, then
+messages are printed to alert the user that the file will be decimated,
+and also \code{monitor} is set to \code{TRUE}, so that a textual progress bar
+is shown.
 }
 \author{
 Dan Kelley and Clark Richards
@@ -150,7 +152,12 @@ and each profile starts with the bytes \code{0x80}, followed by \code{0x00},
 followed by the sequence number of the profile, represented as a
 little-endian two-byte short integer.  \code{read.adp.rdi} uses these
 sequences to interpret data files.)
+
 2. Teledyne-RDI, 2015. \emph{V Series output data format.} P/N 95D-6022-00 (May 2015).
+
+3. See \code{\link{Memory-limits}} for more on the 2 GB limit for R on windows
+machines (but note that this documentation erroneously states the unit as Gb, which is
+typically used for gigabits).
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
