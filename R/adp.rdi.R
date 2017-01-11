@@ -460,26 +460,34 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' \code{read.adp.rdi} rounds 10/4 up to 3.
 #'
 #' The next consideration is the memory limit in R. The least-performant machines
-#' in typical use appear to be windows systems, which limit R to about 2GB (see
-#' microsoft links pointed to by \code{\link{Memory-limits}}).
-#' Since typical processing will require copying of objects,
-#' e.g. for function call-by-value, \code{read.adp.rdi} uses a safety
-#' factor of 4, setting an upper limit of 5e8 bytes. Using the factor of 3 compression
-#' from R to an RDI file, this corresponds to an input file size of 1.5e9 bytes.
-#' For a round number, \code{read.adp.rdi} translates this to 1e9 bytes.
-#' This is the key to the calculation of a default value used for \code{by},
-#' to be used if that parameter is not supplied in the function call.
+#' in typical use appear to be windows systems, which limit R to about 2e6 bytes (see
+#' microsoft links pointed to by \code{\link{Memory-limits}}, noting that those
+#' links express the limit in GB, gigabytes, as opposed to the erroneous
+#' unit of Gb, gigabits, used in \code{\link{Memory-limits}}).
+#' Since typical processing requires the copying of objects for commonplace
+#' tasks (e.g. for call-by-value in function evaluation), \code{read.adp.rdi} uses a safety
+#' factor in its calculations. This is set to 10, yielding a limiting target of
+#' 2e8 bytes. Using the factor of 3 expansion from an RDI file to R storage,
+#' this suggests a limit for an input file of 6e8 bytes. This number is simplified,
+#' in a conservative fashion, to 5e8 bytes. Based on this, \code{read.adp.rdi}
+#' takes 500 MB as a criterion for file "largeness".
 #'
-#' The analysis is broken down into two cases. The first case is where \code{from=1} and
-#' \code{to=0}, which also applies if neither \code{from} or \code{to} is given.
-#' If the input file is smaller than 1e9 bytes, then \code{by} defaults to 1.
+#' The analysis is broken down into two cases.
+#' \enumerate{
+#' \item \emph{Case 1.} If \code{from=1} and
+#' \code{to=0} (or if neither \code{from} or \code{to} is given), then the 
+#' intention is to process the full span of the data.  If the input file is
+#' under 500 MB, then \code{by} defaults to 1, so that all profiles are read.
 #' For larger files, \code{by} is set to the \code{\link{ceiling}} of the
-#' ratio of input file size to 1e9 bytes. The second case is where \code{from} exceeds 1,
-#' and/or \code{to} is nonzero. In this case, the value of \code{by} is calculated
-#' in terms of \code{2e3*(to-from)}, which is an estimate of the number of bytes
-#' to be processed (assuming 2e3 file bytes per profile, a rough estimate for RDI
-#' files). If this value is smaller than 1e9, then \code{by} is set to 1. Otherwise,
-#' \code{by} is set to the \code{\link{ceiling}} of the ratio of this value to 1e9.
+#' ratio of input file size to 500 MB.
+#'
+#' \item \emph{Case 2.} If \code{from} exceeds 1, and/or \code{to} is nonzero, then
+#' the intention is to process only an interior subset of the file. The this
+#' case, \code{by} is calculated as the \code{\link{ceiling}} of
+#' the ratio of \code{bbp*(1+to-from)}, where \code{bbp} is the number
+#' of file bytes per profile) to 5e8. (If this ratio is less than 1,
+#' \code{by} is set to 1.)
+#'}
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -489,7 +497,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' format, e.g. the file should start with the byte \code{0x7f} repeated twice,
 #' and each profile starts with the bytes \code{0x80}, followed by \code{0x00},
 #' followed by the sequence number of the profile, represented as a
-#' little-endian two-byte short integer.  \code{read.adp.rdi()} uses these
+#' little-endian two-byte short integer.  \code{read.adp.rdi} uses these
 #' sequences to interpret data files.)
 #' 2. Teledyne-RDI, 2015. \emph{V Series output data format.} P/N 95D-6022-00 (May 2015).
 #' @family things related to \code{adp} data
@@ -636,18 +644,17 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 532\n")
         oceDebug(debug, "about to call ldc_rdi_in_file\n")
         if (is.numeric(from) && is.numeric(to) && is.numeric(by) ) {
-            byteMax <- 1e9             # for reasoning, see the help file
+            byteMax <- 5e8             # for reasoning, see the help file
             if (!byGiven) {
                 if (to == 0) {         # whole file
-                    by <- if (fileSize < byteMax) 1L else ceiling(as.integer(fileSize / byteMax))
-                    message("by=", by, " (case 1)")
+                    by <- if (fileSize < byteMax) 1L else fileSize / byteMax
                 } else {
-                    byteEstimate <- 2e3 * (to - from) # for the factor, see the help file
-                    by <- if (byteEstimate < byteMax) 1L else as.integer(byteEstimate / byteMax)
-                    message("by=", by, " (case 2)")
+                    byteEstimate <-header$bytesPerEnsemble * (to - from)
+                    by <- if (byteEstimate < byteMax) 1L else byteEstimate / byteMax
                 }
-                by <- max(1L, by)
-                oceDebug(debug, "defaulting to by=", by, "\n")
+                by <- max(1L, as.integer(by))
+                if (by > 1)
+                    warning("setting by=", by, " for a large RDI file")
             }
             ldc <- .Call("ldc_rdi_in_file", filename,
                          as.integer(from), as.integer(to), as.integer(by), 0L)
