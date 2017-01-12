@@ -91,8 +91,9 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ## See if this is a sentinel file by looking for dataType ID bytes
     ## of 0x00 and 0x70 (V series system configuration)
     codes <- cbind(buf[1 + c(0, dataOffset)], buf[1+c(0, dataOffset) + 1])
-    oceDebug(debug, "codes[,1]=", codes[,1], "\n")
-    oceDebug(debug, "codes[,2]=", codes[,2], "\n")
+    oceDebug(debug, "buf[1:10] near line 95: ", paste("0x", paste(buf[1:10], sep=" "), sep=""), "\n")
+    oceDebug(debug, "codes[,1]=", paste("0x", paste(codes[,1], sep=""), sep=""), "\n")
+    oceDebug(debug, "codes[,2]=", paste("0x", paste(codes[,2], sep=""), sep=""), "\n")
     if (any(codes[, 1] == 0x00 & codes[, 2] == 0x70)) {
         oceDebug(debug, "Detected dataType 0x00 0x70 for Sentinel V series configuration")
         isSentinel <- TRUE
@@ -734,13 +735,16 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             oceDebug(debug, "numberOfBeams:", numberOfBeams, "\n")
             oceDebug(debug, "numberOfCells:", numberOfCells, "\n")
             items <- numberOfBeams * numberOfCells
-            codes <- cbind(buf[ensembleStart[1]+c(0, header$dataOffset)], buf[1+ensembleStart[1]+c(0, header$dataOffset)])
-            if (debug) {
-                oceDebug(debug, "below are the data-chunk codes; see Table 33 p145 of Teledyne/RDI OS_TM_Apr14.pdf\n")
-                for (irow in 1:dim(codes)[1]) {
-                    oceDebug(debug, paste("  ", paste(paste("0x", codes[irow,], sep=""), collapse=" ")), "\n")
-                }
-            }
+            ## 20170112 issue 1168: I think that in a winriver file, the second profile is
+            ## 20170112 different, somehow, yielding incorrect 'codes'. FIXME: if the codes differ from
+            ## 20170112 profile to profile, then what are we supposed to do?
+            ## 20170112 codes <- cbind(buf[ensembleStart[1]+c(0, header$dataOffset)], buf[1+ensembleStart[1]+c(0, header$dataOffset)])
+            ## 20170112 oceDebug(debug, "codes[,1]=", paste("0x", paste(codes[,1], sep=""), sep=""), "\n")
+            ## 20170112 oceDebug(debug, "codes[,2]=", paste("0x", paste(codes[,2], sep=""), sep=""), "\n")
+            codes <- header$codes
+            oceDebug(debug, "codes[,1]=", paste("0x", paste(codes[,1], sep=""), sep=""), "\n")
+            oceDebug(debug, "codes[,2]=", paste("0x", paste(codes[,2], sep=""), sep=""), "\n")
+            oceDebug(debug, "buf[1:10] near line 745: ", paste("0x", paste(buf[1:10], sep=" "), sep=""), "\n")
             vFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x01) # velo
             qFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x02) # corr
             aFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x03) # echo intensity
@@ -991,7 +995,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
 
             profilesToShow <- 2 # only if debug>0
             if (monitor)
-                progressBar = txtProgressBar(max=profilesToRead, style=3, text="Reading profiles")
+                progressBar = txtProgressBar(max=profilesToRead, style=3, title="Reading profiles")
 
             for (i in 1:profilesToRead) {
                 ## recall: these start at 0x80 0x00
@@ -1489,7 +1493,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                                             nrow=4, byrow=TRUE)
             }
             if (monitor)
-                cat("\nRead", profilesToRead, "profiles from ", filename, "\n", ...)
+                cat("\nFinished reading ", profilesToRead, " profiles from \"", filename, "\"\n", sep="")
 
            ## Sometimes a non-VMDAS file will have some profiles that have the VMDAS flag.
            ## It is not clear why this happens, but in any case, provide a warning.
