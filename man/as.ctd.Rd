@@ -19,8 +19,11 @@ something (a data frame, a list or an \code{oce}
 object) from which practical
 salinity, temperature, etc., can be inferred. In that case, the relevant information
 is extracted and the other arguments to \code{as.ctd} are ignored, except for
-\code{pressureAtmospheric}. Note that if this first argument is an
-object of \code{\link{rsk-class}}, the present function merely passes
+\code{pressureAtmospheric}. If the first argument has salinity, etc., in
+matrix form (as can happen with some objects of \code{\link{argo-class}}),
+then only the first column is used, and a warning to that effect is given.
+If the first argument is an object of \code{\link{rsk-class}},
+then \code{as.ctd} merely passes
 it and \code{pressureAtmospheric} to \code{\link{rsk2ctd}}, which
 does the real work. (3) It can be unspecified, in which
 case \code{conductivity} becomes a mandatory argument, because it will
