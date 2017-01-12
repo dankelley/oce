@@ -1032,7 +1032,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             }
         }
         if (convertedMatrix)
-            warning("input salinity, etc., were matrices, so took just first column")
+            warning("using just column 1 of matrix data; try as.section() to keep all columns")
         if ("longitude" %in% dnames && "latitude" %in% dnames) {
             longitude <- d$longitude
             latitude <- d$latitude
