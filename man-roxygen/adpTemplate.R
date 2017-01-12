@@ -28,8 +28,9 @@
 #' @param latitude optional signed number indicating the latitude in degrees
 #' North.
 #'
-#' @param monitor boolean, set to \code{TRUE} to provide an indication (with
-#' numbers and dots) of every profile read.
+#' @param monitor boolean, set to \code{TRUE} to provide an indication of progress
+#' in reading the file, either by printing a dot for each profile or by writing
+#' a textual progress bar with \code{\link{txtProgressBar}}.
 #'
 #' @param processingLog if provided, the action item to be stored in the log.
 #' (Typically only provided for internal calls; the default that it provides is

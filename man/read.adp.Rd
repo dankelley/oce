@@ -44,8 +44,9 @@ North.}
 the general function \code{read.adp} to select a subsidiary function to use,
 such as \code{read.adp.nortek}.}
 
-\item{monitor}{boolean, set to \code{TRUE} to provide an indication (with
-numbers and dots) of every profile read.}
+\item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
+in reading the file, either by printing a dot for each profile or by writing
+a textual progress bar with \code{\link{txtProgressBar}}.}
 
 \item{despike}{if \code{TRUE}, \code{\link{despike}} will be used to clean
 anomalous spikes in heading, etc.}

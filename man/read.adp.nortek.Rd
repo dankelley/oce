@@ -54,8 +54,9 @@ data.  The problem is that the distance is poorly documented in the Nortek
 System Integrator Guide (2008 edition, page 31), so the function must rely
 on word-of-mouth formulae that do not work in all cases.}
 
-\item{monitor}{boolean, set to \code{TRUE} to provide an indication (with
-numbers and dots) of every profile read.}
+\item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
+in reading the file, either by printing a dot for each profile or by writing
+a textual progress bar with \code{\link{txtProgressBar}}.}
 
 \item{despike}{if \code{TRUE}, \code{\link{despike}} will be used to clean
 anomalous spikes in heading, etc.}

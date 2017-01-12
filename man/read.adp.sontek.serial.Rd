@@ -49,8 +49,9 @@ sensor, provided for those cases in which it cannot be inferred from the
 data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
 \code{"sideward"}.}
 
-\item{monitor}{boolean, set to \code{TRUE} to provide an indication (with
-numbers and dots) of every profile read.}
+\item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
+in reading the file, either by printing a dot for each profile or by writing
+a textual progress bar with \code{\link{txtProgressBar}}.}
 
 \item{processingLog}{if provided, the action item to be stored in the log.
 (Typically only provided for internal calls; the default that it provides is
