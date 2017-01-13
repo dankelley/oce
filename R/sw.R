@@ -480,15 +480,20 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
 #'
 #' @family functions that calculate seawater properties
 swSCTp <- function(conductivity, temperature=NULL, pressure=0,
-                   conductivityUnit=c("", "mS/cm", "S/m"),
-                   eos=getOption("oceEOS", default="gsw"))
+                   conductivityUnit, eos=getOption("oceEOS", default="gsw"))
 {
     ## FIXME-gsw add gsw version
     if (missing(conductivity)) stop("must supply conductivity (which may be S or a CTD object)")
-    if (is.list(conductivityUnit) && "unit" %in% names(conductivityUnit))
-        conductivityUnit <- conductivityUnit$unit
-    if (is.expression(conductivityUnit))
-        conductivityUnit <- as.character(conductivityUnit)
+    if (missing(conductivityUnit)) {
+        conductivityUnit <- ""
+    } else {
+        if (is.list(conductivityUnit) && "unit" %in% names(conductivityUnit))
+            conductivityUnit <- conductivityUnit$unit
+        if (is.expression(conductivityUnit))
+            conductivityUnit <- as.character(conductivityUnit)
+        if (conductivityUnit == "ratio")
+            conductivityUnit <- ""
+    }
     if (conductivityUnit != "" && conductivityUnit != "mS/cm" && conductivityUnit != "S/m")
         stop("conductivity unit must be \"\", \"mS/cm\", or \"S/m\"")
     if (inherits(conductivity, "oce")) {

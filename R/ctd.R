@@ -724,8 +724,11 @@ setMethod(f="[[<-",
 #' object) from which practical
 #' salinity, temperature, etc., can be inferred. In that case, the relevant information
 #' is extracted and the other arguments to \code{as.ctd} are ignored, except for
-#' \code{pressureAtmospheric}. Note that if this first argument is an
-#' object of \code{\link{rsk-class}}, the present function merely passes
+#' \code{pressureAtmospheric}. If the first argument has salinity, etc., in
+#' matrix form (as can happen with some objects of \code{\link{argo-class}}),
+#' then only the first column is used, and a warning to that effect is given.
+#' If the first argument is an object of \code{\link{rsk-class}},
+#' then \code{as.ctd} merely passes
 #' it and \code{pressureAtmospheric} to \code{\link{rsk2ctd}}, which
 #' does the real work. (3) It can be unspecified, in which
 #' case \code{conductivity} becomes a mandatory argument, because it will
@@ -1013,14 +1016,23 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ## if ("nitrite" %in% dnames) res@data$nitrite <- d$nitrite
         ## if ("phosphate" %in% dnames) res@data$phosphate <- d$phosphate
         ## if ("silicate" %in% dnames) res@data$silicate <- d$silicate
+        convertedMatrix <- FALSE
         for (field in names(d)) {
             if (field == "time") {
                 if (length(d$time) > 1) res@data$time <- d$time else res@metadata$time <- d$time
             } else {
                 ##res <- ctdAddColumn(res, column=d[[field]], name=field, label=field, log=FALSE)
-                res@data[[field]] <- d[[field]]
+                dataInField <- d[[field]]
+                if (is.matrix(dataInField)) {
+                    convertedMatrix <- TRUE
+                    res@data[[field]] <- d[[field]][, 1]
+                } else {
+                    res@data[[field]] <- d[[field]]
+                }
             }
         }
+        if (convertedMatrix)
+            warning("using just column 1 of matrix data; try as.section() to keep all columns")
         if ("longitude" %in% dnames && "latitude" %in% dnames) {
             longitude <- d$longitude
             latitude <- d$latitude

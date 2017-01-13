@@ -4,31 +4,33 @@
 \alias{read.adp.rdi}
 \title{Read a Teledyne/RDI ADP File}
 \usage{
-read.adp.rdi(file, from = 1, to, by = 1, tz = getOption("oceTz"),
-  longitude = NA, latitude = NA, type = c("workhorse"), monitor = FALSE,
+read.adp.rdi(file, from, to, by, tz = getOption("oceTz"), longitude = NA,
+  latitude = NA, type = c("workhorse"), monitor = FALSE,
   despike = FALSE, processingLog, testing = FALSE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
 to load.  (For \code{read.adp.sontek.serial}, this is generally a list of
-files, which will be concatenated.}
+files, which will be concatenated.)}
 
 \item{from}{indication of the first profile to read.  This can be an
 integer, the sequence number of the first profile to read, or a POSIXt time
 before which profiles should be skipped, or a character string that converts
 to a POSIXt time (assuming UTC timezone).  See \dQuote{Examples}, and make
-careful note of the use of the \code{tz} argument.}
+careful note of the use of the \code{tz} argument. If \code{from} is not
+supplied, it defaults to 1.}
 
-\item{to}{if supplied, an indication of the last profile to read, in a
-format as described for \code{from}.  If not supplied, the whole file will
-be read.}
+\item{to}{an optional indication of the last profile to read, in a
+format as described for \code{from}.  As a special case, \code{to=0} means
+to read the file to the end.  If \code{to} is not supplied, then it defaults
+to 0.}
 
-\item{by}{an indication of the stride length to use while walking through
+\item{by}{an optional indication of the stride length to use while walking through
 the file.  If this is an integer, then \code{by-1} profiles are skipped
-between each pair of profiles that is read.  If this is a string
-representing a time interval, in colon-separated format (MM:SS), then this
-interval is divided by the sampling interval, to get the stride length.}
+between each pair of profiles that is read, e.g. the default \code{by=1}
+means to read all the data.  (For RDI files \emph{only}, there are some
+extra features to avoid running out of memory; see \dQuote{Memory considerations}.)}
 
 \item{tz}{character string indicating time zone to be assumed in the data.}
 
@@ -38,10 +40,11 @@ East.}
 \item{latitude}{optional signed number indicating the latitude in degrees
 North.}
 
-\item{type}{A character string indicating the type of instrument.}
+\item{type}{character string indicating the type of instrument.}
 
-\item{monitor}{boolean, set to \code{TRUE} to provide an indication (with
-numbers and dots) of every profile read.}
+\item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
+in reading the file, either by printing a dot for each profile or by writing
+a textual progress bar with \code{\link{txtProgressBar}}.}
 
 \item{despike}{if \code{TRUE}, \code{\link{despike}} will be used to clean
 anomalous spikes in heading, etc.}
@@ -50,10 +53,7 @@ anomalous spikes in heading, etc.}
 (Typically only provided for internal calls; the default that it provides is
 better for normal calls by a user.)}
 
-\item{testing}{Logical value, indicating whether
-the time-varying device orientation is to be inferred from the
-per-profile header information, and the boolean result is stored in an
-integer vector named \code{upward} within the \code{data} slot.}
+\item{testing}{logical value (IGNORED).}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
@@ -88,6 +88,60 @@ two facts control the maximum recordable velocity and the velocity
 resolution, values that may be retrieved for an ADP object name \code{d}
 with \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
 }
+\section{Memory considerations}{
+
+
+For \code{RDI} files only, and only in the case where \code{by} is not specified,
+an attempt is made to avoid running out of memory by skipping some profiles
+in large input files. This only applies if \code{from} and \code{to} are both
+integers; if they are times, none of the rest of this section applies.
+
+A key issue is that RDI files store velocities in 2-byte values, which is
+not a format that R supports. These velocities become 8-byte (numeric) values
+in R. Thus, the R object created by \code{read.adp.rdi} will require more memory
+than that of the data file. A scale factor can be estimated by ignoring
+vector quanties (e.g. time, which has just one value per profile) and concentrating on matrix properties
+such as velocity, backscatter, and correlation. These three elements have equal dimensions.
+Thus, each 4-byte slide in the data file (2 bytes + 1 byte + 1 byte)
+corresponds to 10 bytes in the object (8 bytes + 1 byte + 1 byte).
+Rounding up the resultant 10/4 to 3 for safety, we conclude that any limit on the
+size of the R object corresponds to a 3X smaller limit on file size.
+
+Various things can limit the size of objects in R, but a strong upper limit
+is set by the space the operating system provides to R. The least-performant machines
+in typical use appear to be Microsoft-Windows systems, which limit R objects to
+about 2e6 bytes [3].  Since R routinely duplicates objects for certain tasks
+(e.g. for call-by-value in function evaluation), \code{read.adp.rdi} uses a safety
+factor in its calculation of when to auto-decimate a file. This factor is set to 3,
+based partly on the developers' experience with datasets in their possession.
+Multiplied by the previously stated safety factor of 3, 
+this suggests that the 2 GB limit on R objects corresponds to approximately a
+222 MB limit on file size. In the present version of \code{read.adp.rdi}, this
+value is lowered to 200 MB for simplicity. Larger files are considered to be "big",
+and are decimated unless the user supplies a value for the \code{by} argument.
+
+The decimation procedure has two cases.
+\enumerate{
+\item \emph{Case 1.} If \code{from=1} and
+\code{to=0} (or if neither \code{from} or \code{to} is given), then the 
+intention is to process the full span of the data.  If the input file is
+under 200 MB, then \code{by} defaults to 1, so that all profiles are read.
+For larger files, \code{by} is set to the \code{\link{ceiling}} of the
+ratio of input file size to 200 MB.
+
+\item \emph{Case 2.} If \code{from} exceeds 1, and/or \code{to} is nonzero, then
+the intention is to process only an interior subset of the file. In this
+case, \code{by} is calculated as the \code{\link{ceiling}} of
+the ratio of \code{bbp*(1+to-from)} to 200 MB, where \code{bbp} is the number
+of file bytes per profile. Of course, \code{by} is set to 1, if this
+ratio is less than 1.
+}
+
+If the result of these calculations is that \code{by} exceeds 1, then
+messages are printed to alert the user that the file will be decimated,
+and also \code{monitor} is set to \code{TRUE}, so that a textual progress bar
+is shown.
+}
 \author{
 Dan Kelley and Clark Richards
 }
@@ -97,9 +151,14 @@ format.} P/N 957-6156-00 (November 2007).  (Section 5.3 h details the binary
 format, e.g. the file should start with the byte \code{0x7f} repeated twice,
 and each profile starts with the bytes \code{0x80}, followed by \code{0x00},
 followed by the sequence number of the profile, represented as a
-little-endian two-byte short integer.  \code{read.adp.rdi()} uses these
+little-endian two-byte short integer.  \code{read.adp.rdi} uses these
 sequences to interpret data files.)
+
 2. Teledyne-RDI, 2015. \emph{V Series output data format.} P/N 95D-6022-00 (May 2015).
+
+3. See \code{\link{Memory-limits}} for more on the 2 GB limit for R on windows
+machines (but note that this documentation erroneously states the unit as Gb, which is
+typically used for gigabits).
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},

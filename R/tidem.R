@@ -914,7 +914,8 @@ predict.tidem <- function(object, newdata, ...)
 #' a plot is drawn to indicate the node locations. If \code{latitude} and
 #' \code{longitude} are given, then the node nearest that spot is indicated on
 #' the map; otherwise, if \code{node} is given, then the location of that
-#' node is indicated. There is also a special case: if \code{node} is negative,
+#' node is indicated. There is also a special case: if \code{node} is negative
+#' and \code{interactive()} is \code{TRUE},
 #' then \code{\link{locator}} is called, and the node nearest the spot
 #' where the user clicks the mouse is indicated in the plot and in the
 #' return value.
@@ -988,39 +989,23 @@ webtide <- function(action=c("map", "predict"),
                     plot=TRUE, tformat, debug=getOption("oceDebug"), ...)
 {
     action <- match.arg(action)
-    subdir <- paste(basedir, "/data/", region, sep="")
+    path <- paste(basedir, "/data/", region, sep="")
 
     ## 2016-02-03: it seems that there are several possibilities for this filename.
+    suffices <- c(".nod", "ll.nod", "_ll.nod")
+    nodFiles <- paste(region, suffices, sep="")
     triangles <- NULL
-    warn <- options("warn")$warn
-    options(warn=-1)
-    nodFile <- paste(subdir, "/", region, ".nod", sep="")
-    t <- try({ triangles <- read.table(nodFile,
-        col.names=c("triangle", "longitude", "latitude")) }, silent=TRUE)
-    if (inherits(t, "try-error")) {
-        nodFile <- paste(subdir, "/", region, "ll.nod", sep="")
-        t <- try({ triangles <- read.table(nodFile,
-            col.names=c("triangle", "longitude", "latitude")) }, silent=TRUE)
-        if (inherits(t, "try-error")) {
-            nodFile <- paste(subdir, "/", region, "_ll.nod", sep="")
-            t <- try({ triangles <- read.table(nodFile,
-                col.names=c("triangle", "longitude", "latitude")) }, silent=TRUE)
-            if (inherits(t, "try-error")) {
-                stop("cannot find WebTide nod file; last trial name was ", nodFile)
-            } else {
-                oceDebug(debug, "Found node information in ", nodFile, "\n")
-            }
+    for (nodFile in nodFiles) {
+        if (1 == length(list.files(path=path, pattern=nodFile))) {
+            triangles <- read.table(paste(path, nodFile, sep="/"), col.names=c("triangle", "longitude", "latitude"))
+            oceDebug(debug, "found webtide information in '", nodFile, "'\n", sep="")
+            break
         } else {
-            oceDebug(debug, "Found node information in ", nodFile, "\n")
+            oceDebug(debug, "looked for webtide information in '", nodFile, "' but this file does not exist\n", sep="")
         }
-    } else {
-        oceDebug(debug, "Found node information in ", nodFile, "\n")
     }
     if (is.null(triangles))
-        stop("Could not find the '.nod' file")
-    options(warn=warn)
-    rm(warn)
-
+        stop("cannot find WebTide data file; rerun with debug=1 to see the searched list")
     if (action == "map") {
         if (plot) {
             asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
@@ -1034,15 +1019,17 @@ webtide <- function(action=c("map", "predict"),
             ##data(best, envir=environment(), debug=debug-1)
             ##coastline <- get(best)
             lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
-            if (!missing(node) && node < 0) {
+            if (!missing(node) && node < 0 && interactive()) {
                 point <- locator(1)
                 node <- which.min(geodDist(triangles$longitude, triangles$latitude, point$x, point$y))
             }
-            longitude <- triangles$longitude[node]
-            latitude <- triangles$latitude[node]
-            points(longitude, latitude, pch=20, cex=2, col='blue')
-            legend("topleft", pch=20, pt.cex=2, cex=3/4, col='blue', bg='white',
-                   legend=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude))
+            if (is.finite(node)) {
+                longitude <- triangles$longitude[node]
+                latitude <- triangles$latitude[node]
+                points(longitude, latitude, pch=20, cex=2, col='blue')
+                legend("topleft", pch=20, pt.cex=2, cex=3/4, col='blue', bg='white',
+                       legend=sprintf("node %.0f %.3fN %.3fE", node, latitude, longitude))
+            }
             return(invisible(list(node=node, latitude=latitude, longitude=longitude)))
         } else  {
             node <- seq_along(triangles$longitude)
@@ -1063,8 +1050,8 @@ webtide <- function(action=c("map", "predict"),
         }
         oceDebug(debug, latitude, "N ", longitude, "E -- use node ", node,
                  " at ", triangles$latitude[node], "N ", triangles$longitude[node], "E\n", sep="")
-        constituentse <- dir(path=subdir, pattern="*.s2c")
-        constituentsuv <- dir(path=subdir, pattern="*.v2c")
+        constituentse <- dir(path=path, pattern="*.s2c")
+        constituentsuv <- dir(path=path, pattern="*.v2c")
         nconstituents <- length(constituentse)
         period <- ampe <- phasee <- ampu <- phaseu <- ampv <- phasev <- vector("numeric", length(nconstituents))
         data("tidedata", package="oce", envir=environment())
@@ -1079,11 +1066,11 @@ webtide <- function(action=c("map", "predict"),
             ##260.000000 (days)
             ##1 0.191244 223.820954
             ##2 0.188446 223.141200
-            coneFile <- paste(subdir, constituentse[i], sep="/")
+            coneFile <- paste(path, constituentse[i], sep="/")
             cone <- read.table(coneFile, skip=3)[node, ]
             ampe[i] <- cone[[2]]
             phasee[i] <- cone[[3]]
-            conuvFile <- paste(subdir, constituentsuv[i], sep="/")
+            conuvFile <- paste(path, constituentsuv[i], sep="/")
             conuv <- read.table(conuvFile, skip=3)[node, ]
             ampu[i] <- conuv[[2]]
             phaseu[i] <- conuv[[3]]
