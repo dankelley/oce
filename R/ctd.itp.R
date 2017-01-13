@@ -2,7 +2,11 @@
 #' @template readCtdTemplate
 #'
 #' @details
-#' \code{read.ctd.itp()} reads files stored in ice-tethered profile format.
+#' \code{read.ctd.itp()} reads ice-tethered-profiler data that are stored
+#' in a format files used by WHOI servers as of 2016-2017. Lacking
+#' documentation on the format, the author constructed this function
+#' to work with some files that were on-hand. Whether the function will
+#' prove robust is an open question.
 #'
 #' @references
 #' Information about ice-tethered profile data is provided at
@@ -68,6 +72,12 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
                     units[[names[i]]] <- list(unit=expression(), scale="PSS-78")
                 } else if (names[i] == "pressure") {
                     units[[names[i]]] <- list(unit=expression(dbar), scale="")
+                } else if (names[i] == "oxygen") {
+                    unit <- gsub("(.*)\\((.*)\\)", "\\2", tokens[i])
+                    if (unit == "umol/kg")
+                        units[[names[i]]] <- list(unit=expression(mu*mol/kg), scale="")
+                    else 
+                        units[[names[i]]] <- list(unit=expression(unit), scale="")
                 } else if (names[i] != "year" && names[i] != "day") {
                     unit <- gsub("(.*)\\((.*)\\)", "\\2", tokens[i])
                     units[[names[i]]] <- list(unit=as.expression(unit), scale="")
@@ -80,7 +90,6 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
             salinity <- d$salinity
             temperature <- d$temperature
             oxygen <- d$oxygen
-            time <- as.POSIXct(paste(d$year, "-01-01 00:00:00", sep=""), tz="UTC") + d$day * 86400
         } else {
             oceDebug(debug, "length(namesLine)!=1\n")
             d <- read.table(text=lines[4:nlines])
@@ -93,7 +102,6 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
             temperature <- d[, Tcol]
             salinity <- d[, Scol]
             oxygen <- d[, Ocol]
-            time <- NULL
         }
         ## replace any missingValue with NA
         if (!missing(missingValue) && !is.null(missingValue)) {
@@ -106,13 +114,12 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
                       longitude=longitude, latitude=latitude,
                       startTime=ISOdate(year, 1, 1) + yearday * 3600 * 24,
                       station=station)
-        res <- oceSetData(res, name="oxygen", value=oxygen,
-                          unit=list(unit=expression(), scale=""))
+        res <- oceSetData(res, name="oxygen", value=oxygen, unit=units$oxygen, originalName="oxygen")
         res <- oceSetMetadata(res, "filename", filename)
         res <- oceSetMetadata(res, "dataNamesOriginal",
                               list(temperature="temperature", salinity="salinity", oxygen="oxygen", pressure="pressure"))
-        if (!is.null(time))
-            res <- oceSetData(res, "time", time)
+        res <- oceSetData(res, "year", year, originalName="year")
+        res <- oceSetData(res, "yearday", yearday, originalName="yearday")
     } else {
         stop("can only handle 'profile' data type, not (presumably) SAMI type")
     }
