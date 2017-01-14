@@ -9,7 +9,7 @@ as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
   missingValue = NULL, type = "", serialNumber = "", ship = "",
   cruise = "", station = "", startTime = NULL, longitude = NA,
   latitude = NA, deploymentType = "unknown", pressureAtmospheric = 0,
-  sampleInterval = NA, debug = getOption("oceDebug"))
+  sampleInterval = NA, profile, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{salinity}{There are three choices for \code{salinity}. (1) It can be a
@@ -21,7 +21,7 @@ salinity, temperature, etc., can be inferred. In that case, the relevant informa
 is extracted and the other arguments to \code{as.ctd} are ignored, except for
 \code{pressureAtmospheric}. If the first argument has salinity, etc., in
 matrix form (as can happen with some objects of \code{\link{argo-class}}),
-then only the first column is used, and a warning to that effect is given.
+then only the first column is used, and a warning to that effect is given, unless the \code{profile} argument is specified and then that specific profile is extracted.
 If the first argument is an object of \code{\link{rsk-class}},
 then \code{as.ctd} merely passes
 it and \code{pressureAtmospheric} to \code{\link{rsk2ctd}}, which
@@ -104,6 +104,10 @@ that is to be computed from \code{conductivity}, etc., using
 
 \item{sampleInterval}{optional numerical value indicating the time between
 samples in the profile.}
+
+\item{profile}{optional value specifying the number of the profile to
+extract from an object with data in matrices, such as for some
+\code{argo} objects. Must be a numeric of length one.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
