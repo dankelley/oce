@@ -863,9 +863,9 @@ setMethod(f="[[<-",
 #' @param sampleInterval optional numerical value indicating the time between
 #' samples in the profile.
 #'
-#' @param profile optional value specifying the number of the profile to
-#'     extract from an object with data in matrices, such as for some
-#'     \code{argo} objects. Must be a numeric of length one.
+#' @param profile optional positive integer specifying the number of the profile
+#' to extract from an object that has data in matrices, such as for some
+#' \code{argo} objects.
 #'
 ##1108 @param src optional string indicating data source.
 #'
@@ -1029,13 +1029,19 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 ##res <- ctdAddColumn(res, column=d[[field]], name=field, label=field, log=FALSE)
                 dataInField <- d[[field]]
                 if (is.matrix(dataInField)) {
+                    ## Note that the tests are repeated for each datum. That may not
+                    ## be required, but this scheme will be kept unless/until we
+                    ## learn that the data are required to have the same dimensionality.
                     if (missing(profile)) {
                         profile <- 1
                         warning("using just column 1 of matrix data; use the 'profile' argument to select a specific profile or try as.section() to keep all columns")
                     }
-                    if (!is.numeric(profile) | length(profile) != 1) {
-                        stop('profile argument must be a numeric value of length one.')
+                    if (!is.numeric(profile) || length(profile) != 1 || profile < 1) {
+                        stop("profile must be a positive integer")
                     }
+                    ncol <- ncol(d[[field]])
+                    if (profile > ncol)
+                        stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
                     convertedMatrix <- TRUE
                     res@data[[field]] <- d[[field]][, profile]
                 } else {

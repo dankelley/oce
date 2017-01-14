@@ -105,9 +105,9 @@ that is to be computed from \code{conductivity}, etc., using
 \item{sampleInterval}{optional numerical value indicating the time between
 samples in the profile.}
 
-\item{profile}{optional value specifying the number of the profile to
-extract from an object with data in matrices, such as for some
-\code{argo} objects. Must be a numeric of length one.}
+\item{profile}{optional positive integer specifying the number of the profile
+to extract from an object that has data in matrices, such as for some
+\code{argo} objects.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
