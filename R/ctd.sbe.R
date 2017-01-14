@@ -372,14 +372,12 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         unit <- list(unit=expression(dbar), scale="")
     } else if (1 == length(grep("^prdE$", name, useBytes=TRUE))) {
         ## Caution: English unit
-        name <- "pressure"
+        name <- "pressurePSI"
         unit <- list(unit=expression(psi), scale="")
-        warning("this .cnv file contains pressure in PSI, but [[\"pressure\"]] will return in dbar")
     } else if (1 == length(grep("^prDE$", name, useBytes=TRUE))) {
         ## Caution: English unit
-        name <- "pressure"
+        name <- "pressurePSI"
         unit <- list(unit=expression(psi), scale="")
-        warning("this .cnv file contains pressure in PSI, but [[\"pressure\"]] will return in dbar")
     } else if (1 == length(grep("^prM$", name, useBytes=TRUE))) {
         name <- "pressure"
         unit <- list(unit=expression(dbar), scale="")
@@ -988,7 +986,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             if (foundConductivityRatio) {
                 C <- data$conductivityratio
                 S <- swSCTp(C, data$temperature, data$pressure)
-                warning("created a salinity data item from the temperature, conductivity-ratio and pressure items")
+                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'")
             } else if (foundConductivity) {
                 C <- data$conductivity
                 if (!is.null(res@metadata$units$conductivity)) {
@@ -1017,7 +1015,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                     }
                 }
                 S <- swSCTp(C, data$temperature, data$pressure)
-                warning("created a salinity data item from the temperature, conductivity and pressure items")
+                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'")
             } else {
                 warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items")
             }
@@ -1028,7 +1026,15 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                               unit=list(unit=expression(), scale="PSS-78"))
             ## colNamesOriginal <- c(colNamesOriginal, "NA")
         }
-        if (foundDepth && !foundPressure) {
+        if ("pressurePSI" %in% names && !("pressure" %in% names)) {
+            ## DK 20170114: I cannot find what I consider to be a definitive source, so 
+            ## I am taking the wikipedia value.
+            ## 0.6894757293168  https://en.wikipedia.org/wiki/Pounds_per_square_inch
+            ## 0.689475728      http://www.convertunits.com/from/psi/to/decibar
+            res <- oceSetData(res, name="pressure", value=res@data$pressurePSI/0.6894757293168,
+                              unit=list(unit=expression("dbar"), scale=""))
+            warning("created 'pressure' from 'pressurePSI'")
+        } else if (foundDepth && !foundPressure) {
             ## BUG: this is a poor, nonrobust approximation of pressure
             g <- if (foundHeaderLatitude) gravity(latitude) else 9.8
             rho0 <- 1000 + swSigmaTheta(median(res[["salinity"]]), median(res[["temperature"]]), 0)
@@ -1037,7 +1043,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             res <- oceSetData(res, name="pressure", value=res@data$depth * g * rho0 / 1e4,
                               unit=list(unit=expression("dbar"), scale=""))
             ## colNamesOriginal <- c(colNamesOriginal, "NA")
-            warning("created a pressure data item from the depth item")
+            warning("created 'pressure' from 'depth'")
         }
     }
     ##res@metadata$dataNamesOriginal <- colNamesOriginal
