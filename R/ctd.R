@@ -726,7 +726,7 @@ setMethod(f="[[<-",
 #' is extracted and the other arguments to \code{as.ctd} are ignored, except for
 #' \code{pressureAtmospheric}. If the first argument has salinity, etc., in
 #' matrix form (as can happen with some objects of \code{\link{argo-class}}),
-#' then only the first column is used, and a warning to that effect is given.
+#' then only the first column is used, and a warning to that effect is given, unless the \code{profile} argument is specified and then that specific profile is extracted.
 #' If the first argument is an object of \code{\link{rsk-class}},
 #' then \code{as.ctd} merely passes
 #' it and \code{pressureAtmospheric} to \code{\link{rsk2ctd}}, which
@@ -863,6 +863,10 @@ setMethod(f="[[<-",
 #' @param sampleInterval optional numerical value indicating the time between
 #' samples in the profile.
 #'
+#' @param profile optional positive integer specifying the number of the profile
+#' to extract from an object that has data in matrices, such as for some
+#' \code{argo} objects.
+#'
 ##1108 @param src optional string indicating data source.
 #'
 #' @template debugTemplate
@@ -918,6 +922,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    pressureAtmospheric=0,
                    ##1108 waterDepth=NA,
                    sampleInterval=NA,
+                   profile,
                    ##1108 src="",
                    debug=getOption("oceDebug"))
 {
@@ -1024,15 +1029,26 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                 ##res <- ctdAddColumn(res, column=d[[field]], name=field, label=field, log=FALSE)
                 dataInField <- d[[field]]
                 if (is.matrix(dataInField)) {
+                    ## Note that the tests are repeated for each datum. That may not
+                    ## be required, but this scheme will be kept unless/until we
+                    ## learn that the data are required to have the same dimensionality.
+                    if (missing(profile)) {
+                        profile <- 1
+                        warning("using just column 1 of matrix data; use the 'profile' argument to select a specific profile or try as.section() to keep all columns")
+                    }
+                    if (!is.numeric(profile) || length(profile) != 1 || profile < 1) {
+                        stop("profile must be a positive integer")
+                    }
+                    ncol <- ncol(d[[field]])
+                    if (profile > ncol)
+                        stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
                     convertedMatrix <- TRUE
-                    res@data[[field]] <- d[[field]][, 1]
+                    res@data[[field]] <- d[[field]][, profile]
                 } else {
                     res@data[[field]] <- d[[field]]
                 }
             }
         }
-        if (convertedMatrix)
-            warning("using just column 1 of matrix data; try as.section() to keep all columns")
         if ("longitude" %in% dnames && "latitude" %in% dnames) {
             longitude <- d$longitude
             latitude <- d$latitude

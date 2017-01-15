@@ -26,7 +26,7 @@ that turns off the model-based filling of cloud gaps.
 Dan Kelley
 }
 \references{
-1. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+1. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
 }
 \seealso{
 Other things related to satellite data: \code{\link{plot,satellite-method}},
