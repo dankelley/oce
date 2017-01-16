@@ -24,22 +24,24 @@
 // extern time_t R_timegm(struct tm*);
 #endif
 
-// Below is based upon the hint given by 'man timegm'. Note that 
-// parse.cc of the RccpTOML source is similar, except that it has
-// an extra strdup() and free() ... are these needed?
+// Below is based upon the hint given by 'man timegm', with (a)
+// renaming to _FCN() for these msdn equivalents and (b) a strdup()
+// and free() which may help make things threadsafe (I am not too sure
+// on this; in any case, a pair like this is used in parse.cc of the
+// RccpTOML source).
 time_t oce_timegm(struct tm *tm) {
 #if __WIN32
-    char *tz = getenv("TZ");
-    //if (tz) tz = strdup(tz);
-    setenv("TZ", "", 1);
-    tzset();
+    char *tz = _getenv("TZ");
+    if (tz) tz = strdup(tz);
+    _setenv("TZ", "", 1);
+    _tzset();
     time_t ret = mktime(tm);
     if (tz) {
-        setenv("TZ", tz, 1);
-        //free(tz);
+        _setenv("TZ", tz, 1);
+        free(tz);
     } else
-        unsetenv("TZ");
-    tzset();
+        _unsetenv("TZ");
+    _tzset();
     return ret;
 #else
     return timegm(tm);
