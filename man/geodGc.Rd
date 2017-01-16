@@ -39,7 +39,8 @@ Dan Kelley, based on code from Clark Richards, in turn based on
 formulae provided by Ed Williams [1].
 }
 \references{
-1. \url{http://williams.best.vwh.net/avform.htm#Intermediate}
+1. \code{http://williams.best.vwh.net/avform.htm#Intermediate}
+(link worked for years but failed 2017-01-16).
 }
 \seealso{
 Other functions relating to geodesy: \code{\link{geodDist}},

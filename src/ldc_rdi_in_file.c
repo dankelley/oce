@@ -6,9 +6,21 @@
 #include <Rinternals.h>
 #include <time.h>
 
+// The windows compiler lacks timegm(). I tried lots of tricks
+// to try to access some of the supposed alternatives, namely
+// _mkgmtime(), _mkgmtime32() or _mkgmtime64()), but had no
+// success. Each test takes about a half hour on the winbuilder
+// machine and I didn't want to overstay my welcome there, so I 
+// looked in the R source. Using
+//     grep -R --include \*.[ch] timegm .
+// gave me the idea of using R_timegm(). I think this may be 
+// risky since I could not find documentation for it, and so
+// it might stop being available at any time. That's why I only
+// use it for the __WIN32 version; if it stops breaking, then
+// at least it will just be for one platform. See the call, near
+// line 270 in this file.
 #ifdef __WIN32
-//#define timegm _mkgmtime
-//#define _USE_32BIT_TIME_T
+extern time_t R_timegm(struct tm*);
 #endif
 
 //#define DEBUG
@@ -256,7 +268,7 @@ stopifnot(all.equal(a[1:10], b))
 	etime.tm_sec = (int) ebuf[time_pointer+5];
 	etime.tm_isdst = 0;
 #ifdef __WIN32
-	ensemble_time = _mkgmtime64(&etime);
+	ensemble_time = R_timegm(&etime);
 #else
 	ensemble_time = timegm(&etime);
 #endif
