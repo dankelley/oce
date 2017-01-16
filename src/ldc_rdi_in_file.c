@@ -4,6 +4,7 @@
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
+#include <stdlib.h>
 #include <time.h>
 
 // The windows compiler lacks timegm(). I tried lots of tricks
@@ -22,6 +23,29 @@
 #ifdef __WIN32
 // extern time_t R_timegm(struct tm*);
 #endif
+
+// Below is based upon the hint given by 'man timegm'. Note that 
+// parse.cc of the RccpTOML source is similar, except that it has
+// an extra strdup() and free() ... are these needed?
+time_t oce_timegm(struct tm *tm) {
+#if __WIN32
+    char *tz = getenv("TZ");
+    //if (tz) tz = strdup(tz);
+    setenv("TZ", "", 1);
+    tzset();
+    time_t ret = mktime(tm);
+    if (tz) {
+        setenv("TZ", tz, 1);
+        //free(tz);
+    } else
+        unsetenv("TZ");
+    tzset();
+    return ret;
+#else
+    return timegm(tm);
+#endif
+}
+
 
 //#define DEBUG
 
@@ -267,12 +291,8 @@ stopifnot(all.equal(a[1:10], b))
 	etime.tm_min = (int) ebuf[time_pointer+4];
 	etime.tm_sec = (int) ebuf[time_pointer+5];
 	etime.tm_isdst = 0;
-#ifdef __WIN32
-	//ensemble_time = R_timegm(&etime);
-	ensemble_time = mktime(&etime);
-#else
-	ensemble_time = timegm(&etime);
-#endif
+	// below should work even with windows
+	ensemble_time = oce_timegm(&etime);
 	//Rprintf(" estimet %d %s after_from=%d before_to=%d",
 	//    ensemble_time, ctime(&ensemble_time),
 	//    ensemble_time > from_value, ensemble_time < to_value);
