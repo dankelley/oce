@@ -20,7 +20,7 @@
 // at least it will just be for one platform. See the call, near
 // line 270 in this file.
 #ifdef __WIN32
-extern time_t R_timegm(struct tm*);
+// extern time_t R_timegm(struct tm*);
 #endif
 
 //#define DEBUG
@@ -268,7 +268,8 @@ stopifnot(all.equal(a[1:10], b))
 	etime.tm_sec = (int) ebuf[time_pointer+5];
 	etime.tm_isdst = 0;
 #ifdef __WIN32
-	ensemble_time = R_timegm(&etime);
+	//ensemble_time = R_timegm(&etime);
+	ensemble_time = mktime(&etime);
 #else
 	ensemble_time = timegm(&etime);
 #endif
