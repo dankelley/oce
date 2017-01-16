@@ -152,7 +152,6 @@ stopifnot(all.equal(a[1:10], b))
 
   unsigned long int in_ensemble = 0, out_ensemble = 0;
   int b1, b2;
-  long int last_start = 0;
 
 
   unsigned long int counter = 0, counter_last = 0;
@@ -163,7 +162,6 @@ stopifnot(all.equal(a[1:10], b))
     // Try to locate "ensemble starts", spots where a 0x7f is followed by a second 0x7f,
     // then followed by data that match a checksum.
     if (clast == byte1 && c == byte2) {
-      last_start = cindex - 1;
       // The checksum includes the starting 0x7f, 0x7f pair, and also
       // the two bytes that specify the number of bytes in the
       // ensemble. So we start by adding these four bytes.
@@ -203,8 +201,7 @@ stopifnot(all.equal(a[1:10], b))
 	  nebuf = bytes_to_read;
       }
       // Read the bytes in one operation, because fgetc() is too slow.
-      size_t tmp; // prevent compiler warnings with fread
-      tmp = fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
+      fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
       if (feof(fp)) {
 	//Rprintf("NEW: end of file while reading ensemble number %d, at byte %d\n", in_ensemble+1, cindex);
 	break;
