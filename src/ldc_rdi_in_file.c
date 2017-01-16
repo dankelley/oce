@@ -7,7 +7,8 @@
 #include <time.h>
 
 #ifdef __WIN32
-#define timegm _mkgmtime
+//#define timegm _mkgmtime
+#define _USE_32BIT_TIME_T
 #endif
 
 //#define DEBUG
@@ -254,7 +255,11 @@ stopifnot(all.equal(a[1:10], b))
 	etime.tm_min = (int) ebuf[time_pointer+4];
 	etime.tm_sec = (int) ebuf[time_pointer+5];
 	etime.tm_isdst = 0;
+#ifdef __WIN32
+	ensemble_time = _mkgmtime(&etime);
+#else
 	ensemble_time = timegm(&etime);
+#endif
 	//Rprintf(" estimet %d %s after_from=%d before_to=%d",
 	//    ensemble_time, ctime(&ensemble_time),
 	//    ensemble_time > from_value, ensemble_time < to_value);
