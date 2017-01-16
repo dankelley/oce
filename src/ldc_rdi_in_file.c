@@ -6,6 +6,10 @@
 #include <Rinternals.h>
 #include <time.h>
 
+#ifdef __WIN32
+#define timegm _mkgmtime
+#endif
+
 //#define DEBUG
 
 
