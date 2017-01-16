@@ -8,7 +8,7 @@
 
 #ifdef __WIN32
 //#define timegm _mkgmtime
-#define _USE_32BIT_TIME_T
+//#define _USE_32BIT_TIME_T
 #endif
 
 //#define DEBUG
@@ -256,7 +256,7 @@ stopifnot(all.equal(a[1:10], b))
 	etime.tm_sec = (int) ebuf[time_pointer+5];
 	etime.tm_isdst = 0;
 #ifdef __WIN32
-	ensemble_time = _mkgmtime(&etime);
+	ensemble_time = _mkgmtime64(&etime);
 #else
 	ensemble_time = timegm(&etime);
 #endif

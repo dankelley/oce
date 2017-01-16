@@ -244,7 +244,8 @@ geodDist <- function (longitude1, latitude1=NULL, longitude2=NULL, latitude2=NUL
 #' @return Data frame of \code{longitude} and \code{latitude}.
 #' @author Dan Kelley, based on code from Clark Richards, in turn based on
 #' formulae provided by Ed Williams [1].
-#' @references 1. \url{http://williams.best.vwh.net/avform.htm#Intermediate}
+#' @references 1. \code{http://williams.best.vwh.net/avform.htm#Intermediate}
+#' (link worked for years but failed 2017-01-16).
 #' @examples
 #' \dontrun{
 #' library(oce)
