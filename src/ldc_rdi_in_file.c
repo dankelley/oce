@@ -6,6 +6,94 @@
 #include <Rinternals.h>
 #include <time.h>
 
+// The windows compiler lacks timegm(). I tried lots of tricks
+// to try to access some of the supposed alternatives, namely
+// _mkgmtime(), _mkgmtime32() or _mkgmtime64()), but had no
+// success. Each test takes about a half hour on the winbuilder
+// machine and I didn't want to overstay my welcome there, so I 
+// looked in the R source. Using
+//     grep -R --include \*.[ch] timegm .
+// gave me the idea of using R_timegm(). I'm not sure how to link
+// with it, though. In the end, I tried a half-dozen schemes
+// that tried to link with windows subroutines, and then decided it
+// was not worth the hassle, and I just used code that used the number
+// of days in each month, etc. It takes leap years into account, but
+// not leap seconds. I'm basing this on code in Rcpp, which states the
+// deeper source as R itself. Since these products and oce are all
+// GPL, I reason that it's OK to use it here, modified from the C++
+// form (using references) to a C form (likely similar to that used
+// within R, but I didn't check on that).
+// Note that this returns a double, which we cast to a time_t.
+double oce_timegm(struct tm *t)
+{
+  static const int days_in_month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  static const int year_base = 1900;
+#define isleap(y) ((((y) % 4) == 0 && ((y) % 100) != 0) || ((y) % 400) == 0)
+#define days_in_year(year) (isleap(year) ? 366 : 365)
+  int day = 0;
+  int i, year, year0;
+  double excess = 0.0;
+
+  day = t->tm_mday - 1;
+  year0 = year_base + t->tm_year;
+  /* safety check for unbounded loops */
+  if (year0 > 3000) {
+    excess = (int)(year0/2000) - 1;
+    year0 -= excess * 2000;
+  } else if (year0 < 0) {
+    excess = -1 - (int)(-year0/2000);
+    year0 -= excess * 2000;
+  }
+
+  for(i = 0; i < t->tm_mon; i++)
+    day += days_in_month[i];
+  if (t->tm_mon > 1 && isleap(year0))
+    day++;
+  t->tm_yday = day;
+
+  if (year0 > 1970) {
+    for (year = 1970; year < year0; year++)
+      day += days_in_year(year);
+  } else if (year0 < 1970) {
+    for (year = 1969; year >= year0; year--)
+      day -= days_in_year(year);
+  }
+
+  /* weekday: Epoch day was a Thursday */
+  if ((t->tm_wday = (day + 4) % 7) < 0)
+    t->tm_wday += 7;
+
+  return t->tm_sec + (t->tm_min * 60) + (t->tm_hour * 3600)
+    + (day + excess * 730485) * 86400.0;
+#undef isleap
+#undef days_in_year
+}
+
+// // Below is based upon the hint given by 'man timegm', with (a)
+// // renaming to _FCN() for these msdn equivalents and (b) a strdup()
+// // and free() which may help make things threadsafe (I am not too sure
+// // on this; in any case, a pair like this is used in parse.cc of the
+// // RccpTOML source).
+// time_t oce_timegm(struct tm *tm) {
+// #if __WIN32
+//     char *tz = _getenv("TZ");
+//     if (tz) tz = strdup(tz);
+//     _setenv("TZ", "", 1);
+//     _tzset();
+//     time_t ret = mktime(tm);
+//     if (tz) {
+//         _setenv("TZ", tz, 1);
+//         free(tz);
+//     } else
+//         _unsetenv("TZ");
+//     _tzset();
+//     return ret;
+// #else
+//     return timegm(tm);
+// #endif
+// }
+
+
 //#define DEBUG
 
 
@@ -152,7 +240,6 @@ stopifnot(all.equal(a[1:10], b))
 
   unsigned long int in_ensemble = 0, out_ensemble = 0;
   int b1, b2;
-  long int last_start = 0;
 
 
   unsigned long int counter = 0, counter_last = 0;
@@ -163,7 +250,6 @@ stopifnot(all.equal(a[1:10], b))
     // Try to locate "ensemble starts", spots where a 0x7f is followed by a second 0x7f,
     // then followed by data that match a checksum.
     if (clast == byte1 && c == byte2) {
-      last_start = cindex - 1;
       // The checksum includes the starting 0x7f, 0x7f pair, and also
       // the two bytes that specify the number of bytes in the
       // ensemble. So we start by adding these four bytes.
@@ -203,8 +289,7 @@ stopifnot(all.equal(a[1:10], b))
 	  nebuf = bytes_to_read;
       }
       // Read the bytes in one operation, because fgetc() is too slow.
-      size_t tmp; // prevent compiler warnings with fread
-      tmp = fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
+      fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
       if (feof(fp)) {
 	//Rprintf("NEW: end of file while reading ensemble number %d, at byte %d\n", in_ensemble+1, cindex);
 	break;
@@ -253,7 +338,9 @@ stopifnot(all.equal(a[1:10], b))
 	etime.tm_min = (int) ebuf[time_pointer+4];
 	etime.tm_sec = (int) ebuf[time_pointer+5];
 	etime.tm_isdst = 0;
-	ensemble_time = timegm(&etime);
+	// below should work even with windows
+	ensemble_time = oce_timegm(&etime);
+	//Rprintf("C %d\n", ensemble_time);
 	//Rprintf(" estimet %d %s after_from=%d before_to=%d",
 	//    ensemble_time, ctime(&ensemble_time),
 	//    ensemble_time > from_value, ensemble_time < to_value);
