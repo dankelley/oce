@@ -1566,8 +1566,13 @@ despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA
             columns <- names(x@data)
             for (column in columns) {
                 if (!(column %in% skip)) {
-                    x[[column]] <- despikeColumn(x[[column]],
-                                                 reference=reference, n=n, k=k, min=min, max=max, replace=replace)
+                    ## check for NA column
+                    if (all(is.na(x[[column]]))) {
+                        warning(paste("Column", column, "contains only NAs. Skipping"))
+                    } else {
+                        x[[column]] <- despikeColumn(x[[column]],
+                                                     reference=reference, n=n, k=k, min=min, max=max, replace=replace)
+                    }
                 }
             }
             x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
@@ -1575,8 +1580,12 @@ despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min=NA
             columns <- names(x)
             for (column in columns) {
                 if (!(column %in% skip)) {
-                    x[[column]] <- despikeColumn(x[[column]],
-                                                 reference=reference, n=n, k=k, min=min, max=max, replace=replace)
+                    if (all(is.na(x[[column]]))) {
+                        warning(paste("Column", column, "contains only NAs. Skipping"))
+                    } else {
+                        x[[column]] <- despikeColumn(x[[column]],
+                                                     reference=reference, n=n, k=k, min=min, max=max, replace=replace)
+                    }
                 }
             }
         }
