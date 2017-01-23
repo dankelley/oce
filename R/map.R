@@ -1758,6 +1758,7 @@ mapText <- function(longitude, latitude, labels, ...)
 #'
 #' Plot ellipses at grid intersection points, as a method for
 #' indicating the distortion inherent in the projection [1].
+#' (Each ellipse is drawn with 64 segments.)
 #'
 #' @param grid numeric vector of length 2, specifying the increment in
 #' longitude and latitude for the grid. Indicatrices are drawn at e.g.
@@ -1766,6 +1767,12 @@ mapText <- function(longitude, latitude, labels, ...)
 #' @param scale numerical scale factor for ellipses. This is multiplied by
 #' \code{min(grid)} and the result is the radius of the circle on the
 #' earth, in latitude degrees.
+#'
+#' @param crosshairs logical value indicating whether to draw constant-latitude
+#' and constant-longitude crosshairs within the ellipses.  (These are drawn
+#' with 10 line segments each.) This can be helpful in cases where it is
+#' not desired to use \code{\link{mapGrid}} to draw the longitude/latitude
+#' grid.
 #'
 #' @param \dots extra arguments passed to plotting functions, e.g.
 #' \code{col="red"} yields red indicatrices.
@@ -1792,19 +1799,26 @@ mapText <- function(longitude, latitude, labels, ...)
 #' @author Dan Kelley
 #' @seealso A map must first have been created with \code{\link{mapPlot}}.
 #' @family functions related to maps
-mapTissot <- function(grid=rep(15, 2), scale=0.2, ...)
+mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 {
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     if (2 != length(grid) || !is.numeric(grid) || any(!is.finite(grid)))
         stop("grid must be of length 2, numeric, and finite")
-    theta <- seq(0, 2*pi, length.out=16)
+    ntheta <- 64
+    ncr <- 10
+    theta <- seq(0, 2*pi, length.out=ntheta)
     d <- scale * min(grid, na.rm=TRUE)
     for (lon in seq(-180, 180, grid[1])) {
         for (lat in seq(-90, 90, grid[2])) {
             LAT <- lat + d*sin(theta)
-            LON <- lon + d*cos(theta) / cos(lat * pi / 180)
+            factor <- 1 / cos(lat * pi / 180)
+            LON <- lon + d*cos(theta) * factor
             mapLines(LON, LAT, ...)
+            if (crosshairs) {
+                mapLines(rep(lon, ncr), seq(lat-d, lat+d, length.out=ncr), ...)
+                mapLines(seq(lon-d*factor, lon+d*factor, length.out=ncr), rep(lat, ncr), ...)
+            }
         }
     }
 }
