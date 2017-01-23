@@ -32,7 +32,7 @@ library(oce)
 data(coastlineWorld)
 par(mfrow=c(1, 1), mar=c(2, 2, 1, 1))
 p  <- "+proj=aea +lat_1=10 +lat_2=60 +lon_0=-45"
-mapPlot(coastlineWorld, projection=p, fill="gray",
+mapPlot(coastlineWorld, projection=p, col="gray",
 longitudelim=c(-90,0), latitudelim=c(0, 50))
 mapTissot(c(15, 15), col='red')
 }
