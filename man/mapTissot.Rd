@@ -4,7 +4,7 @@
 \alias{mapTissot}
 \title{Add Tissot Indicatrices to a Map}
 \usage{
-mapTissot(grid = rep(15, 2), scale = 0.2, ...)
+mapTissot(grid = rep(15, 2), scale = 0.2, crosshairs = FALSE, ...)
 }
 \arguments{
 \item{grid}{numeric vector of length 2, specifying the increment in
@@ -15,12 +15,19 @@ longitudes \code{seq(-180, 180, grid[1])}.}
 \code{min(grid)} and the result is the radius of the circle on the
 earth, in latitude degrees.}
 
+\item{crosshairs}{logical value indicating whether to draw constant-latitude
+and constant-longitude crosshairs within the ellipses.  (These are drawn
+with 10 line segments each.) This can be helpful in cases where it is
+not desired to use \code{\link{mapGrid}} to draw the longitude/latitude
+grid.}
+
 \item{\dots}{extra arguments passed to plotting functions, e.g.
 \code{col="red"} yields red indicatrices.}
 }
 \description{
 Plot ellipses at grid intersection points, as a method for
 indicating the distortion inherent in the projection [1].
+(Each ellipse is drawn with 64 segments.)
 }
 \details{
 The purpose and interpretation are outlined in [1], but should also be
@@ -32,7 +39,7 @@ library(oce)
 data(coastlineWorld)
 par(mfrow=c(1, 1), mar=c(2, 2, 1, 1))
 p  <- "+proj=aea +lat_1=10 +lat_2=60 +lon_0=-45"
-mapPlot(coastlineWorld, projection=p, fill="gray",
+mapPlot(coastlineWorld, projection=p, col="gray",
 longitudelim=c(-90,0), latitudelim=c(0, 50))
 mapTissot(c(15, 15), col='red')
 }

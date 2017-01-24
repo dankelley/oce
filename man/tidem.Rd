@@ -100,11 +100,28 @@ resolved unless the time series spans a time interval of at least
 \eqn{rc/(f_1-f_2)}{rc/(f1-f2)}. The value \code{rc=1} yields nominal
 resolution.
 
-A list of constituent names is created by the following: \preformatted{
-data(tidedata) print(tidedata$const$name) }
+A specific example may be of help in understanding the removal of unresolvable
+constitutents. For example, the \code{data(sealevel)} dataset is of length
+6718 hours, and this is too short to resolve the full list of constituents,
+with the conventional (and, really, necessary) limit of \code{rc=1}.
+From Table 1 of [1], this timeseries is too short to resolve the 
+\code{SA} constituent, so that \code{SA} will not be in the resultant.
+Similarly, Table 2 of [1] dictates the removal of
+\code{PI1}, \code{S1} and \code{PSI1} from the list. And, finally,
+Table 3 of [1] dictates the removal of
+\code{H1}, \code{H2}, \code{T2} and \code{R2}.  Also, since Table 3
+of [1] indiates that \code{GAM2} gets subsumed into \code{H1},
+and if \code{H1} is already being deleted in this test case, then
+\code{GAM2} will also be deleted.
+
+A list of constituent names is created by the following:
+\preformatted{
+data(tidedata)
+print(tidedata$const$name)
+}
 
 \strong{The text should include discussion of the (not yet performed) nodal
-correction treatement.}
+correction treatment.}
 }
 }
 \section{Bugs}{
