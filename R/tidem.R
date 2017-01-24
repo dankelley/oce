@@ -646,7 +646,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
     tc <- tidedata$const
     ntc <- length(tc$name)
 
-    if (debug > 0)
+    if (debug > 2)
         print(tc)
 
     name <- freq <- kmpr <- NULL
@@ -657,13 +657,15 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
         freq <- tc$freq[standard][-1]
         kmpr <- tc$kmpr[standard][-1]
         indices <- c(indices, seq(1:ntc)[standard]) # FIXME: why is Z0 not chopped, as for last 3 lines?
-        if (debug > 0)
+        if (debug > 2)
             print(name)
     } else {
+        message("tidem.R:663")
         nconst <- length(constituents)
+        oceDebug(debug, "tidem.R:655 indices=", paste(indices, collapse=" "), "\n")
+        oceDebug(debug, "tidem.R:656 nconst=", nconst, "\n")
         for (i in 1:nconst) {
-            if (debug > 0)
-                cat("[", constituents[i], "]\n", sep="")
+            ## if (debug > 0) cat("[", constituents[i], "]\n", sep="")
             if (constituents[i] == "standard") {
                 ## must be first!
                 if (i != 1)
@@ -672,8 +674,10 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
                 freq <- tc$freq[standard][-1]
                 kmpr <- tc$kmpr[standard][-1]
                 indices <- c(indices, seq(1:ntc)[tc$standard])
+                oceDebug(debug, "head(name): ", paste(head(name), collapse=" "), "\n")
             } else {
                 if (substr(constituents[i], 1, 1) == "-") {
+                    browser()
                     cc <- substr(constituents[i], 2, nchar(constituents[i]))
                     delete <- which(tc$name == cc)
                     if (length(delete) == 1)
@@ -691,8 +695,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
                     }
                 }
             }
-            if (debug > 0)
-                cat("<<", tc$name[indices], ">>\n")
+            oceDebug(debug, "tc$name[", paste(indices, collapse=" "), "] = ", paste(tc$name[indices], collapse=" "), "\n")
         }
     }
     ## FIXME: what's going on here?  we already have name, etc.  What is tc2 for??
@@ -709,7 +712,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
     freq <- vector("numeric", nc)
     kmpr <- vector("numeric", nc)
 
-    for (i in 1:nc) {                   
+    for (i in 1:nc) {
         ## Build up based on constituent names
         ic <- which(tc$name == name[i])
         if (!length(ic))
