@@ -516,11 +516,28 @@ tidemAstron <- function(t)
 #' \eqn{rc/(f_1-f_2)}{rc/(f1-f2)}. The value \code{rc=1} yields nominal
 #' resolution.
 #'
-#' A list of constituent names is created by the following: \preformatted{
-#' data(tidedata) print(tidedata$const$name) }
+#' A specific example may be of help in understanding the removal of unresolvable
+#' constitutents. For example, the \code{data(sealevel)} dataset is of length
+#' 6718 hours, and this is too short to resolve the full list of constituents,
+#' with the conventional (and, really, necessary) limit of \code{rc=1}.
+#' From Table 1 of [1], this timeseries is too short to resolve the 
+#' \code{SA} constituent, so that \code{SA} will not be in the resultant.
+#' Similarly, Table 2 of [1] dictates the removal of
+#' \code{PI1}, \code{S1} and \code{PSI1} from the list. And, finally,
+#' Table 3 of [1] dictates the removal of
+#' \code{H1}, \code{H2}, \code{T2} and \code{R2}.  Also, since Table 3
+#' of [1] indiates that \code{GAM2} gets subsumed into \code{H1},
+#' and if \code{H1} is already being deleted in this test case, then
+#' \code{GAM2} will also be deleted.
+#'
+#' A list of constituent names is created by the following:
+#' \preformatted{
+#' data(tidedata)
+#' print(tidedata$const$name)
+#' }
 #'
 #' \strong{The text should include discussion of the (not yet performed) nodal
-#' correction treatement.}
+#' correction treatment.}
 #' }
 #'
 #' @param t Either a \code{sealevel} object (e.g. produced by
@@ -660,7 +677,6 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
         if (debug > 2)
             print(name)
     } else {
-        message("tidem.R:663")
         nconst <- length(constituents)
         oceDebug(debug, "tidem.R:655 indices=", paste(indices, collapse=" "), "\n")
         oceDebug(debug, "tidem.R:656 nconst=", nconst, "\n")
@@ -673,11 +689,10 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
                 name <- tc$name[standard][-1]
                 freq <- tc$freq[standard][-1]
                 kmpr <- tc$kmpr[standard][-1]
-                indices <- c(indices, seq(1:ntc)[tc$standard])
+                indices <- c(indices, seq(1:ntc)[standard])
                 oceDebug(debug, "head(name): ", paste(head(name), collapse=" "), "\n")
             } else {
                 if (substr(constituents[i], 1, 1) == "-") {
-                    browser()
                     cc <- substr(constituents[i], 2, nchar(constituents[i]))
                     delete <- which(tc$name == cc)
                     if (length(delete) == 1)
@@ -698,7 +713,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
             oceDebug(debug, "tc$name[", paste(indices, collapse=" "), "] = ", paste(tc$name[indices], collapse=" "), "\n")
         }
     }
-    ## FIXME: what's going on here?  we already have name, etc.  What is tc2 for??
+    ## order them. Also, note that tc2 is for the Rayleigh calculations, later on.
     indices <- indices[order(indices)]
     tc2 <- list(name=tc$name[indices], freq=tc$freq[indices], kmpr=tc$kmpr[indices])
 
