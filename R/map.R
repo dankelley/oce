@@ -106,7 +106,7 @@ badFillFix1 <- function(x, y, latitude, projection="")
     ##xrange <- range(x, na.rm=TRUE)
     ##yrange <- range(y, na.rm=TRUE)
     n <- length(x)
-    ## 1181 necessitated this use of n>1000 (it was a case of 3 isolated islands)
+    ## 1181 necessitated this use of n>100 (it was a case of 3 isolated islands)
     if (n > 100) { # avoid getting confused by e.g. a view with two islands
         ## FIXME: below is a kludge to avoid weird horiz lines; it
         ## FIXME: would be better to complete the polygons, so they
