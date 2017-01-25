@@ -105,7 +105,9 @@ badFillFix1 <- function(x, y, latitude, projection="")
 {
     ##xrange <- range(x, na.rm=TRUE)
     ##yrange <- range(y, na.rm=TRUE)
-    if (TRUE) {
+    n <- length(x)
+    ## 1181 necessitated this use of n>1000 (it was a case of 3 isolated islands)
+    if (n > 100) { # avoid getting confused by e.g. a view with two islands
         ## FIXME: below is a kludge to avoid weird horiz lines; it
         ## FIXME: would be better to complete the polygons, so they
         ## FIXME: can be filled.  It might be smart to do this in C
@@ -116,6 +118,7 @@ badFillFix1 <- function(x, y, latitude, projection="")
         ##bad <- 0.1 < (d / diff(range(x, na.rm=TRUE)))
         antarctic <- latitude < -60
         bad <- ( (d / diff(range(x, na.rm=TRUE))) > 0.1 ) & !antarctic
+        ## if (length(options("oce1181")[[1]])) browser()
         ## FIXME: this should finish off polygons, but that is a bit tricky, e.g.
         ## FIXME: should we create a series of points to a trace along the edge
         ## FIXME: the visible earth?
@@ -2412,6 +2415,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
         y <- xy$y
         xorig <- xy$x
         yorig <- xy$y
+        ## 1181 necessitated a change in badFillFix1()
         xy <- badFillFix1(x=x, y=y, latitude=latitude, projection="")
         xy <- badFillFix2(x=xy$x, y=xy$y, xorig=xorig, yorig=yorig)
         x <- xy$x
