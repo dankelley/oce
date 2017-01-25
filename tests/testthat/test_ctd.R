@@ -12,7 +12,7 @@ test_that("as.ctd() with specified arguments, including salinity", {
           expect_equal(ctd[["pressure"]], ctd_ctd[["pressure"]])
           expect_equal(ctd_ctd[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
           expect_equal(ctd_ctd[["pressureType"]], "sea")
-          # check addition of a new column
+                                        # check addition of a new column
           fluo <- rep(1, length(ctd_ctd[["salinity"]]))
           ctd_ctd <- oceSetData(ctd_ctd, name="fluorescence", value=fluo,
                                 unit=list(unit=expression(mg/m^3), scale=""))
@@ -259,7 +259,7 @@ test_that("ODF file", {
           expect_equal(d4[["ship"]], "CCGS SIGMA T (Call Sign: unknown)")
           expect_equal(d4[["cruise"]], "Scotian Shelf")
           expect_equal(d4[["scientist"]], "Catherine Johnson")
-          #expect_null(d4[["waterDepth"]])
+                                        #expect_null(d4[["waterDepth"]])
           expect_equal(d4[["latitude"]], 44.267500)
           expect_equal(d4[["longitude"]], -63.317500)
           expect_equal(d4[['pressure']][1:3], c(0.5, 1.5, 2.0))

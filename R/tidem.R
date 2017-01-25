@@ -653,7 +653,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
     cl <- match.call()
     startTime <- t[1]
     endTime <- tail(t, 1)
-    centralTime <- numberAsPOSIXct( (as.numeric(startTime)+as.numeric(endTime))/2, tz=attr(startTime, "tzone"))
+    centralTime <- numberAsPOSIXct((as.numeric(startTime)+as.numeric(endTime))/2, tz=attr(startTime, "tzone"))
     years <- as.numeric(difftime(endTime, startTime, units="secs")) / 86400 / 365.25
     if (years > 18.6)
         warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
@@ -666,17 +666,17 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
     if (debug > 2)
         print(tc)
 
-    name <- freq <- kmpr <- NULL
-    indices <- NULL
     standard <- tc$ikmpr > 0
     if (missing(constituents)) {
+        ## Default 'name', 'freq', 'kmpr' and 'indices'. The -1 means to drop (intercept) Z0, which we handle separately
         name <- tc$name[standard][-1]
         freq <- tc$freq[standard][-1]
         kmpr <- tc$kmpr[standard][-1]
-        indices <- c(indices, seq(1:ntc)[standard]) # FIXME: why is Z0 not chopped, as for last 3 lines?
-        if (debug > 2)
-            print(name)
+        indices <- seq(1:ntc)[standard] # NB. Z0 need not be dropped; we work with indices later anyway
+        oceDebug(debug, "starting with default constituents: ", paste(name, collapse=" "), "\n")
     } else {
+        ## Build up 'name', 'freq', 'kmpr' and 'indices'
+        name <- freq <- kmpr <- indices <- NULL
         nconst <- length(constituents)
         oceDebug(debug, "tidem.R:655 indices=", paste(indices, collapse=" "), "\n")
         oceDebug(debug, "tidem.R:656 nconst=", nconst, "\n")
@@ -687,77 +687,121 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
                 if (i != 1)
                     stop("\"standard\" must occur first in constituents list")
                 name <- tc$name[standard][-1]
-                freq <- tc$freq[standard][-1]
-                kmpr <- tc$kmpr[standard][-1]
-                indices <- c(indices, seq(1:ntc)[standard])
+                ## freq <- tc$freq[standard][-1]
+                ## kmpr <- tc$kmpr[standard][-1]
+                ## indices <- c(indices, seq(1:ntc)[standard])
                 oceDebug(debug, "head(name): ", paste(head(name), collapse=" "), "\n")
             } else {
                 if (substr(constituents[i], 1, 1) == "-") {
-                    cc <- substr(constituents[i], 2, nchar(constituents[i]))
-                    delete <- which(tc$name == cc)
-                    if (length(delete) == 1)
-                        indices <- indices[indices != delete]
-                    else
-                        stop("cannot delete constituent '", cc, "' from the list because it is not there")
+                    ## Case 1: removal
+                    ## if it's not in the list already, just ignore the request.
+                    remove <- substr(constituents[i], 2, nchar(constituents[i]))
+                    delete <- which(name == remove)
+                    if (0 == length(delete)) {
+                        warning("'", remove, "' is not a known constituent; try one: ",
+                                paste(tc$name, collapse=" "), "\n")
+                    } else if (length(delete) == 1) {
+                        ##message("deleting constituent '", name[delete], "'; delete=", delete)
+                        ##message("before name=", paste(name, collapse=" "), " (length ", length(name), ")")
+                        name <- name[-delete]
+                        ##message(" after name=", paste(name, collapse=" "), " (length ", length(name), ")")
+                        ## freq <- freq[-delete]
+                        ## kmpr <- kmpr[-delete]
+                        ## message("before indices=", paste(indices, collapse=" "), " (length ", length(indices), ")")
+                        ## indices <- indices[-delete]
+                        ## message(" after indices=", paste(indices, collapse=" "), " (length ", length(indices), ")")
+                    } else {
+                        stop("problem removing '", remove, "'; please report this to the develop")
+                    }
                 } else {
+                    ## Case 2: addition. Check that it is a known constituent, and ignore
+                    ## repeated additions.
                     add <- which(tc$name == constituents[i])
                     if (length(add) == 1) {
-                        if (0 == sum(indices == add)) {
-                            indices <- c(indices, add) # avoid duplicates
+                        if (!(constituents[i] %in% name)) {
+                            name <- c(name, tc$name[add])
+                            ## freq <- c(freq, tc$freq[add])
+                            ## kmpr <- c(kmpr, tc$kmpr[add])
+                            ## indices <- c(indices, add)
                         } else {
-                            stop("cannot add constituent '", constituents[i], "' because it is not known; see ?tideconst")
+                            warning("'", constituents[i], "' is already in the list of constituents being used\n")
                         }
+                    } else {
+                        warning("'", constituents[i], "' is not a known constituent; try one of: ",
+                                paste(tc$name, collapse=" "), "\n")
                     }
-                }
+               }
             }
-            oceDebug(debug, "tc$name[", paste(indices, collapse=" "), "] = ", paste(tc$name[indices], collapse=" "), "\n")
+            ##oceDebug(debug, "tc$name[", paste(indices, collapse=" "), "] = ", paste(tc$name[indices], collapse=" "), "\n")
         }
     }
-    ## order them. Also, note that tc2 is for the Rayleigh calculations, later on.
-    indices <- indices[order(indices)]
-    tc2 <- list(name=tc$name[indices], freq=tc$freq[indices], kmpr=tc$kmpr[indices])
-
-    iZ0 <- which(tc2$name == "Z0")      # Remove Z0
-    name <- tc2$name
-    if (debug > 0)
-        print(name)
-    if (length(iZ0)) name <- name[-iZ0]
-    nc <- length(name)
-    index <- vector("numeric", nc)
-    freq <- vector("numeric", nc)
-    kmpr <- vector("numeric", nc)
-
-    for (i in 1:nc) {
-        ## Build up based on constituent names
-        ic <- which(tc$name == name[i])
-        if (!length(ic))
-            stop("there is no tidal constituent named \"", name[i], "\"")
-        index[i] <- ic
-        freq[i] <- tc$freq[ic]
-        kmpr[i] <- tc$kmpr[ic]
+    ## We let users add "Z0" as a constituent, but we remove it now since the
+    ## regression will have an intercept and that becomes Z0.
+    if ("Z0" %in% name)
+        name <- name[!which(name == "Z0")]
+    ## All of the names should be valid from the above, but to protect against code changes,
+    ## we check to be sure.
+    if (any(!(name %in% tc$name))) {
+        bad <- NULL
+        for (n in name)
+            if (!(n %in% tc$name))
+                bad <- c(bad, n)
+        stop("unknown constituent names: ", paste(bad, collapse=" "), " (please report this error to developer)")
     }
-    nc <- length(freq)
+    ## Infer indices from the names, sort them, and then look up freq and kmpr.
+    indices <- sort(unlist(lapply(name,function(name) which(tc$name==name))))
+    freq <- tc$freq[indices]
+    kmpr <- tc$kmpr[indices]
+
+    ## order them. FIXME: why?
+    ## message("before sorting indices=", paste(indices, collapse=" "), " (length ", length(indices), ")")
+    ## indices <- indices[order(indices)]
+    ## message(" after sorting indices=", paste(indices, collapse=" "), " (length ", length(indices), ")")
+    ## tc2 is for the Rayleigh calculations, later on.
+    ##tc2 <- list(name=tc$name[indices], freq=tc$freq[indices], kmpr=tc$kmpr[indices])
+    ##tc2 <- list(name=name, freq=freq, kmpr=kmpr)
+
+    ##iZ0 <- which(tc2$name == "Z0")      # Remove Z0
+    ##name <- tc2$name
+    ## if (debug > 0) print(name)
+    ##if (length(iZ0)) name <- name[-iZ0]
+    ## nc <- length(name)
+    ## index <- vector("numeric", nc)
+    ## freq <- vector("numeric", nc)
+    ## kmpr <- vector("numeric", nc)
+
+    ## message("tidem.R:742 FIXME rewrite logic here to work ONLY on names; more DRY that way")
+
+    ## for (i in 1:nc) {
+    ##     ## Build up based on constituent names
+    ##     ic <- which(tc$name == name[i])
+    ##     if (!length(ic))
+    ##         stop("there is no tidal constituent named \"", name[i], "\"")
+    ##     index[i] <- ic
+    ##     freq[i] <- tc$freq[ic]
+    ##     kmpr[i] <- tc$kmpr[ic]
+    ## }
+    nc <- length(name)
     ## Check Rayleigh criterion
     interval <- as.numeric(difftime(max(sl@data$time, na.rm=TRUE), min(sl@data$time, na.rm=TRUE), units="hours"))
-    drop.term <- NULL
+    dropTerm <- NULL
     for (i in 1:nc) {
-        cc <- which(tc2$name == kmpr[i])
+        cc <- which(tc$name == kmpr[i])
         if (length(cc)) {
-            cannot.fit <- (interval * abs(freq[i]-tc2$freq[cc])) < rc
-            ##cat("compare name=", name[i], "with", kmpr[i],":", cannot.fit,"\n")
-            if (cannot.fit)
-                drop.term <- c(drop.term, i)
+            cannotFit <- (interval * abs(freq[i]-tc$freq[cc])) < rc
+            ##cat("compare name=", name[i], "with", kmpr[i],":", cannotFit,"\n")
+            if (cannotFit)
+                dropTerm <- c(dropTerm, i)
         }
     }
-    if (length(drop.term) > 0) {
-        if (debug > 0)
-            cat("Record is too short to fit for constituents:", name[drop.term], "\n")
-        index <- index[-drop.term]
-        name <- name[-drop.term]
-        freq <- freq[-drop.term]
-        kmpr <- kmpr[-drop.term]
+    if (length(dropTerm) > 0) {
+        message("Note: the record is too short to fit for constituents: ", paste(name[dropTerm], collapse=" "))
+        indices <- indices[-dropTerm]
+        name <- name[-dropTerm]
+        freq <- freq[-dropTerm]
+        kmpr <- kmpr[-dropTerm]
     }
-    nc <- length(freq)
+    nc <- length(name)
     elevation <- sl[["elevation"]]
     time <- sl[["time"]]
     nt <- length(elevation)
@@ -831,9 +875,9 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
     res@data <- list(model=model,
                       call=cl,
                       tRef=tRef,
-                      const=c(1,   index),
+                      const=c(1, indices),
                       name=c("Z0", name),
-                      freq=c(0,    freq),
+                      freq=c(0, freq),
                       amplitude=amplitude,
                       phase=phase,
                       p=p)
