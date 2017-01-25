@@ -668,11 +668,11 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
 
     standard <- tc$ikmpr > 0
     if (missing(constituents)) {
-        ## Default 'name', 'freq', 'kmpr' and 'indices'
+        ## Default 'name', 'freq', 'kmpr' and 'indices'. The -1 means to drop (intercept) Z0, which we handle separately
         name <- tc$name[standard][-1]
         freq <- tc$freq[standard][-1]
         kmpr <- tc$kmpr[standard][-1]
-        indices <- seq(1:ntc)[standard] # FIXME: why is Z0 not chopped, as for last 3 lines?
+        indices <- seq(1:ntc)[standard] # NB. Z0 need not be dropped; we work with indices later anyway
         oceDebug(debug, "starting with default constituents: ", paste(name, collapse=" "), "\n")
     } else {
         ## Build up 'name', 'freq', 'kmpr' and 'indices'
