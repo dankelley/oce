@@ -865,7 +865,8 @@ setMethod(f="[[<-",
 #'
 #' @param profile optional positive integer specifying the number of the profile
 #' to extract from an object that has data in matrices, such as for some
-#' \code{argo} objects.
+#' \code{argo} objects. Currently the \code{profile} argument is only utilized for
+#' \link{argo-class} objects.
 #'
 ##1108 @param src optional string indicating data source.
 #'
@@ -1021,49 +1022,62 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ## if ("nitrite" %in% dnames) res@data$nitrite <- d$nitrite
         ## if ("phosphate" %in% dnames) res@data$phosphate <- d$phosphate
         ## if ("silicate" %in% dnames) res@data$silicate <- d$silicate
-        convertedMatrix <- FALSE
-        for (field in names(d)) {
-            if (field == "time") {
-                if (length(d$time) > 1) res@data$time <- d$time else res@metadata$time <- d$time
-            } else {
-                ##res <- ctdAddColumn(res, column=d[[field]], name=field, label=field, log=FALSE)
+        if (inherits(o, 'argo')) {
+            if (missing(profile)) {
+                profile <- 1
+                warning("using just column 1 of matrix data; use the 'profile' argument to select a specific profile or try as.section() to keep all columns")
+            }
+            if (!is.numeric(profile) || length(profile) != 1 || profile < 1) {
+                stop("profile must be a positive integer")
+            }
+            for (field in names(d)) {
                 dataInField <- d[[field]]
-                if (is.matrix(dataInField)) {
-                    ## Note that the tests are repeated for each datum. That may not
-                    ## be required, but this scheme will be kept unless/until we
-                    ## learn that the data are required to have the same dimensionality.
-                    if (missing(profile)) {
-                        profile <- 1
-                        warning("using just column 1 of matrix data; use the 'profile' argument to select a specific profile or try as.section() to keep all columns")
+                ## in argo objects there are both matrix (temperature,
+                ## salinity, etc) and vector (time, latitude, etc)
+                ## data fields. For the former we want to extract the
+                ## single column. For the latter we want to extract
+                ## the single value associated with that column
+                if (field == "time") { # apparently POSIXct class things aren't vectors
+                    res@metadata$startTime <- d[[field]][profile]
+                    res@data$time <- NULL
+                } else if (is.vector(dataInField)) {
+                    ncol <- length(d[[field]])
+                    if (profile > ncol)
+                        stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
+                    if (field %in% c('longitude', 'latitude')) {
+                        res@metadata[[field]] <- d[[field]][profile]
+                    } else {
+                        res@data[[field]] <- d[[field]][profile]
                     }
-                    if (!is.numeric(profile) || length(profile) != 1 || profile < 1) {
-                        stop("profile must be a positive integer")
-                    }
+                } else if (is.matrix(dataInField)) {
                     ncol <- ncol(d[[field]])
                     if (profile > ncol)
                         stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
-                    convertedMatrix <- TRUE
                     res@data[[field]] <- d[[field]][, profile]
-                } else {
+                }
+            }
+        } else {
+            for (field in names(d)) {
+                if (field != "time") {
                     res@data[[field]] <- d[[field]]
                 }
             }
-        }
-        if ("longitude" %in% dnames && "latitude" %in% dnames) {
-            longitude <- d$longitude
-            latitude <- d$latitude
-            if (length(longitude) != length(latitude))
-                stop("lengths of longitude and latitude must match")
-            if (length(longitude) == length(temperature)) {
-                res@data$longitude <- longitude
-                res@data$latitude <- latitude
-            } else {
-                res@metadata$longitude <- longitude[1]
-                res@metadata$latitude <- latitude[1]
+            if ("longitude" %in% dnames && "latitude" %in% dnames) {
+                longitude <- d$longitude
+                latitude <- d$latitude
+                if (length(longitude) != length(latitude))
+                    stop("lengths of longitude and latitude must match")
+                if (length(longitude) == length(temperature)) {
+                    res@data$longitude <- longitude
+                    res@data$latitude <- latitude
+                } else {
+                    res@metadata$longitude <- longitude[1]
+                    res@metadata$latitude <- latitude[1]
+                }
+            } else if ("longitude" %in% mnames && "latitude" %in% mnames) {
+                res@metadata$longitude <- m$longitude
+                res@metadata$latitude <- m$latitude
             }
-        } else if ("longitude" %in% mnames && "latitude" %in% mnames) {
-            res@metadata$longitude <- m$longitude
-            res@metadata$latitude <- m$latitude
         }
         res@metadata$deploymentType <- deploymentType
         res@metadata$dataNamesOriginal <- m$dataNamesOriginal
