@@ -866,7 +866,7 @@ setMethod(f="[[<-",
 #' @param profile optional positive integer specifying the number of the profile
 #' to extract from an object that has data in matrices, such as for some
 #' \code{argo} objects. Currently the \code{profile} argument is only utilized for
-#' \link{argo-class} objects.
+#' \code{\link{argo-class}} objects.
 #'
 ##1108 @param src optional string indicating data source.
 #'
