@@ -410,6 +410,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(degree*C), scale="ITS-90")
         } else if (1 == length(grep("^m$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(m), scale="")
+        } else if (1 == length(grep("^metres$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(m), scale="")
         } else if (ODFunits[i] == "mg/m^3") {
             list(unit=expression(mg/m^3), scale="")
         } else if (ODFunits[i] == "mg/m**3") {
