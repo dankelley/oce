@@ -44,8 +44,8 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{BEAM_*.*} \tab \code{a}                  \tab Used in \code{adp} objects                                 \cr
     \code{CNTR_*.*} \tab \code{scan}               \tab Used in \code{ctd} objects                                 \cr
     \code{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                                         \cr
-    \code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in S/m                                        \cr
-    \code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm                                        \cr
+    \code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)               \cr
+    \code{CNDC_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)               \cr
     \code{DEPH_*.*} \tab \code{pressure}           \tab Sensor depth below sea level                               \cr
     \code{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
