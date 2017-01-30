@@ -181,21 +181,30 @@ setMethod(f="summary",
 
 
 ## find first match in header
-findInHeader <- function(key, lines) # local function
+findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
 {
     i <- grep(key, lines)
     rval <- ""
-    if (length(i) > 0) {
+    rval <- list()
+    for (j in seq_along(i)) {
         ## ----------
         ## RISKY CODE: only look at first match
         ## ----------
-        i <- i[1]
         ## isolate the RHS of the eqquality
-        rval <- gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i], "=")[[1]][2]))))
+        tmp <- gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i[j]], "=")[[1]][2]))))
         ## convert e.g. D+00 to e+00
-        rval <- gsub("(.*)D([-+])([0-9]{2})", "\\1e\\2\\3", rval)
+        if (length(grep("[A-CF-Z ]", tmp))) {
+            rval[[j]] <- tmp
+        } else {
+            tmp <- gsub("(.*)D([-+])([0-9]{2})", "\\1e\\2\\3", tmp)
+            rval[[j]] <- as.numeric(tmp)
+        }
     }
-    rval
+    if (returnOnlyFirst) {
+        rval[[1]]
+    } else {
+        rval
+    }
 }
 
 #' @title Translate from ODF Names to Oce Names
@@ -745,7 +754,32 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ## date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
     startTime <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
     ## endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
-    NAvalue <- as.numeric(findInHeader("NULL_VALUE", lines))
+
+    ## FIXME: The next block tries to infer a single numeric NA value, if
+    ## FIXME: possible; otherwise it returns the first value.  Perhaps we should be
+    ## FIXME: keeping all these values and using them for individual columns, but (a)
+    ## FIXME: non-numeric values seem to be restricted to times, and times seem never
+    ## FIXME: to equal NULL_VALUE and (b) all files that I've seen have just a single
+    ## FIXME: numerical NULL_VALUE and (c) what should we do if there are elements in
+    ## FIXME: the header, which are not in columns?
+    NAvalue <- findInHeader("NULL_VALUE", lines, FALSE)
+    if (length(NAvalue) > 1) {
+        ##print(NAvalue)
+        isNumeric <- unlist(lapply(NAvalue, function(v) is.numeric(v)))
+        ##print(isNumeric)
+        if (any(!isNumeric))
+            warning("ignoring non-numeric NULL_VALUE")
+        if (any(isNumeric)) {
+            tmp <- NAvalue[isNumeric]
+            ##print(tmp)
+            if (1 != length(unique(tmp)))
+                warning("using first of ", length(unique(tmp)), " numeric NULL_VALUEs")
+            NAvalue <- tmp[[1]]
+        } else {
+            NAvalue <- NAvalue[[1]]
+        }
+        ##message("NAvalue:", NAvalue)
+    }
 
     depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
