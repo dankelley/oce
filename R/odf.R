@@ -257,6 +257,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
 #'     \code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                                       \cr
 #'     \code{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{TOTP_*.*} \tab \code{pressureAbsolute}   \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{UNKN_*.*} \tab \code{-}                  \tab The result is context-dependent                            \cr
 #'     \code{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                                 \cr
 #' }
@@ -372,6 +373,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("SYTM", "time", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("TE90", "temperature", names)
     names <- gsub("TEMP", "temperature", names)
+    names <- gsub("TOTP", "pressureAbsolute", names)
     names <- gsub("UNKN", "unknown", names)
     names <- gsub("VCSP", "w", names)
     ## Step 3: recognize something from moving-vessel CTDs

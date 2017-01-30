@@ -74,6 +74,7 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                                       \cr
     \code{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
     \code{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
+    \code{TOTP_*.*} \tab \code{pressureAbsolute}   \tab Used mainly in \code{ctd} objects                          \cr
     \code{UNKN_*.*} \tab \code{-}                  \tab The result is context-dependent                            \cr
     \code{VCSP_*.*} \tab \code{w}                  \tab Used in \code{adp} objects                                 \cr
 }
