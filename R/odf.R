@@ -840,8 +840,8 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     if (length(data) != length(namesUnits$names))
         stop("mismatch between length of data names (", length(namesUnits$names), ") and number of columns in data matrix (", length(data), ")")
     names(data) <- namesUnits$names
-    if (!is.na(nullValue)) {
-        data[data==nullValue] <- NA
+    if (!is.na(NAvalue)) {
+        data[data==NAvalue] <- NA
     }
     if ("time" %in% namesUnits$names)
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
