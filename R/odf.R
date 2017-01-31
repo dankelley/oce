@@ -741,10 +741,10 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ##message("below is ODFnames...")
     ##print(ODFnames)
 
-    oceDebug(debug, "ODFnames: ", paste(ODFnames, collapse="|"), "\n")
+    oceDebug(debug, "ODFnames: ", paste(ODFnames, collapse=" "), "\n")
     namesUnits <- ODFNames2oceNames(ODFnames, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
     ##names <- ODFName2oceName(ODFnames, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
-    oceDebug(debug, "oce names:", paste(namesUnits$names, collapse="|"), "\n")
+    oceDebug(debug, "oce names:", paste(namesUnits$names, collapse=" "), "\n")
     scientist <- findInHeader("CHIEF_SCIENTIST", lines)
     ship <- findInHeader("PLATFORM", lines) # maybe should rename, e.g. for helicopter
     institute <- findInHeader("ORGANIZATION", lines) # maybe should rename, e.g. for helicopter
@@ -806,7 +806,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         for (w in which) {
             ustring <- as.character(namesUnits$units[[w]]$unit)
             if (length(ustring) && ustring != "" && ustring != "ratio")
-                warning("\"", ODFnames[w], "\" should be a conductivity ratio, but setting unit to \"", ustring, "\" since that is in the data file; see ?read.odf for an example of rectifying this unit error.")
+                warning("\"", ODFnames[w], "\" should be unitless, i.e. \"\", but the file has \"", ustring, "\" so that is retained in the object metadata; see ?read.odf for an example of rectifying this unit error.")
         }
     }
 
