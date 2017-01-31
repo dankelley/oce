@@ -85,8 +85,8 @@ varies, a variety of approaches are taken to trimming the dataset.
   pre-cast pressure minimum must be less than the \code{minSoak}
   value. The default values of \code{minSoak} and \code{maxSoak}
   are 1 and 20 dbar, respectively.}
-  
-  \item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
+
+\item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
   value of \code{parameters}. If the latter is a logical vector of length matching data column
   length, then it is used directly for subsetting. If \code{parameters} is a numerical vector with
   two elements, then the index or scan values that lie between \code{parameters[1]}

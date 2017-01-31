@@ -49,9 +49,9 @@ divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).}
 \item{other}{optional list of other data columns that are not in the standard
 list}
 
-\item{units}{an optional list containing units.  If not supplied, 
+\item{units}{an optional list containing units.  If not supplied,
 defaults are set for \code{pressure}, \code{temperature}, \code{salinity},
-and \code{conductivity}. Since these are simply guesses, users 
+and \code{conductivity}. Since these are simply guesses, users
 are advised strongly to supply \code{units}. See \dQuote{Examples}.}
 
 \item{flags}{if supplied, this is a \code{\link{list}} containing data-quality
