@@ -95,7 +95,7 @@
 #' with \code{\link{ctdFindProfiles}}.  CTD data may be smoothed and/or cast onto
 #' specified pressure levels with \code{\link{ctdDecimate}}.
 #'
-#' As with all oce objects, low-level manipulation may be done with 
+#' As with all oce objects, low-level manipulation may be done with
 #' \code{\link{oceSetData}} and \code{\link{oceSetMetadata}}. Additionally,
 #' many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
 #' discussed above, and skilled users may also manipulate the contents directly.
@@ -303,7 +303,7 @@ setMethod("handleFlags",
 ##
 ## @name new,ctd-method
 ## @aliases new,ctd-method
-## @usage new,ctd-method(class, pressure, salinity, temperature, conductivity, units, 
+## @usage new,ctd-method(class, pressure, salinity, temperature, conductivity, units,
 ##    pressureType, deploymentType)
 ## @family things related to \code{ctd} data
 setMethod(f="initialize",
@@ -771,9 +771,9 @@ setMethod(f="[[<-",
 #' @param other optional list of other data columns that are not in the standard
 #' list
 #'
-#' @param units an optional list containing units.  If not supplied, 
+#' @param units an optional list containing units.  If not supplied,
 #' defaults are set for \code{pressure}, \code{temperature}, \code{salinity},
-#' and \code{conductivity}. Since these are simply guesses, users 
+#' and \code{conductivity}. Since these are simply guesses, users
 #' are advised strongly to supply \code{units}. See \dQuote{Examples}.
 #'
 #' @param flags if supplied, this is a \code{\link{list}} containing data-quality
@@ -1926,7 +1926,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'   pre-cast pressure minimum must be less than the \code{minSoak}
 #'   value. The default values of \code{minSoak} and \code{maxSoak}
 #'   are 1 and 20 dbar, respectively.}
-#'   
+#'
 #'   \item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
 #'   value of \code{parameters}. If the latter is a logical vector of length matching data column
 #'   length, then it is used directly for subsetting. If \code{parameters} is a numerical vector with
@@ -4089,7 +4089,7 @@ plotProfile <- function (x,
                        depth=rev(range(x[["depth"]], na.rm=TRUE)),
                        sigmaTheta=rev(range(x[["sigmaTheta"]], na.rm=TRUE)))
     ## issue 1137 Dec 27, 2016
-    ## Below, we used to trim the data to ylim, but this made it 
+    ## Below, we used to trim the data to ylim, but this made it
     ## look as though there were no data at top and bottom of the plot.
     ## The new scheme is to retain 5% of data outside the limit, which
     ## should be OK for the usual R convention of a 4% gap at axis ends.
@@ -4367,7 +4367,7 @@ plotProfile <- function (x,
                     mtext(resizableLabel("C", "x"), side=3, line=axisNameLoc, cex=par("cex"))
                 } else {
                     unitChar <- as.character(unit$unit)
-                    if (0 == length(unitChar)) {
+                    if (0 == length(unitChar) | unitChar == "ratio") {
                         mtext(resizableLabel("C", "x"), side=3, line=axisNameLoc, cex=par("cex"))
                     } else if (unitChar == "mS/cm") {
                         mtext(resizableLabel("conductivity mS/cm", "x"), side=3, line=axisNameLoc, cex=par("cex"))
@@ -4393,7 +4393,7 @@ plotProfile <- function (x,
                         mtext(resizableLabel("C", "x"), side=3, line=axisNameLoc, cex=par("cex"))
                     } else {
                         unitChar <- as.character(unit$unit)
-                        if (0 == length(unitChar)) {
+                        if (0 == length(unitChar) | unitChar == "ratio") {
                             mtext(resizableLabel("C", "x"), side=3, line=axisNameLoc, cex=par("cex"))
                         } else if (unitChar == "mS/cm") {
                             mtext(resizableLabel("conductivity mS/cm", "x"), side=3, line=axisNameLoc, cex=par("cex"))

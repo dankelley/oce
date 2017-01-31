@@ -459,6 +459,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(s), scale="")
         } else if (ODFunits[i] == "S/m") {
             list(unit=expression(S/m), scale="")
+        } else if (ODFunits[i] == "ratio") {
+            list(unit=expression(ratio), scale="")
         } else if (ODFunits[i] == "V") {
             list(unit=expression(V), scale="")
         } else if (1 == length(grep("^ug/l$", ODFunits[i], ignore.case=TRUE))) {
@@ -473,7 +475,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(), scale="")
         } else {
             warning("unable to interpret ODFunits[", i, "]='", ODFunits[i], "', for item named '", names[i], "'", sep="")
-            list(unit=as.expression(ODFunits[i]), scale=ODFunits[i])
+            list(unit=parse(text=ODFunits[i]), scale=ODFunits[i])
         }
     }
     ## Catch some problems I've seen in data
@@ -803,7 +805,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         which <- grep("CRAT", ODFnames)
         for (w in which) {
             ustring <- as.character(namesUnits$units[[w]]$unit)
-            if (length(ustring) && ustring != "")
+            if (length(ustring) && ustring != "" && ustring != "ratio")
                 warning("\"", ODFnames[w], "\" should be a conductivity ratio, but setting unit to \"", ustring, "\" since that is in the data file; see ?read.odf for an example of rectifying this unit error.")
         }
     }
