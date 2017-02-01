@@ -5,13 +5,17 @@
 \alias{met}
 \title{Sample Met Object}
 \source{
-Downloaded from the Environment Canada website on May 29, 2014, and
-processed as follows.
+Downloaded from the Environment Canada website on February 1, 2017, and
+processed as follows. (Note that the URL changes from time to time, and that it
+was discovered by reverse-engineering the website, since this agency provides
+no documentation on how to create URLs.)
 \preformatted{
-met <- read.met('http://climate.weather.gc.ca/climateData/bulkdata_e.html?format=csv&stationID=6358&Year=2003&Month=9&Day=17&timeframe=1&submit=Download+Data')
-met[['time']] <- met[['time']] + 4 * 3600
+met <- read.met('http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=6358&Year=2003&Month=9&timeframe=1&submit=Download+Data')
+met <- oceSetData(met, "time", met[["time"]] + 4 * 3600, note="add 4h to local time to get UTC time")
 }
-(Note the conversion from local standard time to UTC.)
+Note the conversion from local standard time to UTC, done with 
+\code{\link{oceSetData}} so that a comment will appear in the output
+from \code{summary(met)}.
 }
 \description{
 This is sample \code{met} object containing data for Halifax, Nova Scotia,
