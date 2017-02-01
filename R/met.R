@@ -306,7 +306,7 @@ read.met <- function(file, type=NULL, skip,
         on.exit(close(file))
     }
     res <- new('met', time=1)
-    text <- readLines(file, encoding="latin1")
+    text <- readLines(file, encoding="UTF-8")
     ##print(header[1:19])
     textItem <- function(text, name, numeric=TRUE) {
         if (length(i <- grep(name, text))) {
