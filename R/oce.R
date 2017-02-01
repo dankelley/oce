@@ -825,9 +825,9 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' so that autoscaling will yield limits for y that make sense within the
 #' window.
 #' @param ylim optional limit for y axis.
-#' @param drawTimeRange a boolean, set to \code{TRUE} to indicate the range of
-#' times in the top-left margin.
-#
+#' @param drawTimeRange an optional indication of whether/how to draw a time range,
+#' in the top-left margin of the plot; see \code{\link{oce.axis.POSIXct}} for details.
+#'
 #' @template adornTemplate
 #
 #' @param fill boolean, set \code{TRUE} to fill the curve to zero (which it
@@ -878,8 +878,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
 #' oce.plot.ts(t, y, type='l', xaxs='i')
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
-                        drawTimeRange=getOption("oceDrawTimeRange"),
-                        adorn=NULL, fill=FALSE,
+                        drawTimeRange, adorn=NULL, fill=FALSE,
                         xaxs=par("xaxs"), yaxs=par("yaxs"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
@@ -900,6 +899,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         xlab <- ""
     if (missing(ylab))
         ylab  <- deparse(substitute(y))
+    if (missing(drawTimeRange))
+        drawTimeRange <- getOption("oceDrawTimeRange", TRUE)
     ##ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
@@ -2112,11 +2113,25 @@ oceColorsPalette <- oce.colorsPalette
 #' @param tformat as \code{format} for \code{\link{axis.POSIXct}} for now, but
 #' may eventually have new features for multiline labels, e.g. day on one line
 #' and month on another.
+#'
 #' @param labels as for \code{\link{axis.POSIXct}}.
-#' @param drawTimeRange boolean, \code{TRUE} to draw a time range on the
-#' opposite side of the plot.
+#'
+#' @param drawTimeRange Optional indication of whether/how to draw the time range
+#' in the margin on the side of the the plot opposite the time axis. If this is
+#' not supplied, it defaults to the value returned by
+#' \code{\link{getOption}("oceDrawTimeRange")}, and if that option is not set,
+#' it defaults to \code{TRUE}. No time range is drawn if \code{drawTimeRange} is \code{FALSE}.
+#' If it is \code{TRUE}, the range will be shown. This range refers to
+#' range of the x axis (not the data). The format of the elements of that range is set by
+#' \code{\link{getOption}("oceTimeFormat")} (or with the default value
+#' of an empty string, if this option has not been set). The timezone will
+#' be indicated if the time range is under a week.  For preliminary work, it makes
+#' sense to use \code{drawTimeRange=TRUE}, but for published work it can be better
+#' to drop this label and indicate something about the time in the figure caption.
+#'
 #' @param drawFrequency boolean, \code{TRUE} to show the frequency of sampling
 #' in the data
+#'
 #' @param abbreviateTimeRange boolean, \code{TRUE} to abbreviate the second
 #' number in the time range, e.g. dropping the year if it is the same in the
 #' first number.
@@ -2133,7 +2148,7 @@ oceColorsPalette <- oce.colorsPalette
 #' @author Dan Kelley
 #' @seealso This is used mainly by \code{\link{oce.plot.ts}}.
 oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
-                              drawTimeRange=getOption("oceDrawTimeRange"),
+                              drawTimeRange,
                               abbreviateTimeRange=FALSE, drawFrequency=FALSE,
                               cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                               mar=par("mar"),
@@ -2147,6 +2162,8 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
     oceDebug(debug, "cex=", cex, " cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oceDebug(debug, vectorShow(x, "x"))
     tformatGiven <- !missing(tformat)
+    if (missing(drawTimeRange))
+        drawTimeRange <- getOption("oceDrawTimeRange")
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
     ## time zone in the data.  (Version 2.9.0 obeys the time zone.)
     if (missing(x))
@@ -2418,8 +2435,13 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         ## time.range.data <- range(x, na.rm=TRUE)
         ## what was this for?# time.range[1] <- max(time.range[1], time.range.data[1], na.rm=TRUE)
         ## what was this for?# time.range[2] <- min(time.range[2], time.range.data[2], na.rm=TRUE)
-        tr1 <- format(time.range[1], getOption("oceTimeFormat"))
-        tr2 <- format(time.range[2], getOption("oceTimeFormat"))
+        if (!is.null(getOption("oceTimeFormat"))) {
+            tr1 <- format(time.range[1], getOption("oceTimeFormat"))
+            tr2 <- format(time.range[2], getOption("oceTimeFormat"))
+        } else {
+            tr1 <- format(time.range[1])
+            tr2 <- format(time.range[2])
+        }
         if (abbreviateTimeRange) {
             if (time.range[1]$year == time.range[2]$year) {
                 tr2 <- substr(tr2, 6, nchar(tr2)) # remove the "YYYY-"
@@ -2440,7 +2462,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         oceDebug(debug, "round(time.range[2], 'days'):", format(round(time.range[2], 'days')), "\n")
         ## The below is not fool-proof, depending on how xlim might have been supplied; see
         ##    https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14449
-        if (time.range[1] == round(time.range[1], "days") && time.range[2] == round(time.range[2], "days")) {
+        if (diff(as.numeric(time.range)) > 7*86400) {
             label <- paste(tr1, tr2, sep=" to ")
         } else {
             label <- paste(tr1, attr(time.range[1], "tzone")[1], " to ", tr2,  attr(time.range[2], "tzone")[1], sep="")

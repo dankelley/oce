@@ -4,8 +4,7 @@
 \alias{oce.axis.POSIXct}
 \title{Oce Version of axis.POSIXct}
 \usage{
-oce.axis.POSIXct(side, x, at, tformat, labels = TRUE,
-  drawTimeRange = getOption("oceDrawTimeRange"),
+oce.axis.POSIXct(side, x, at, tformat, labels = TRUE, drawTimeRange,
   abbreviateTimeRange = FALSE, drawFrequency = FALSE, cex = par("cex"),
   cex.axis = par("cex.axis"), cex.main = par("cex.main"),
   mar = par("mar"), mgp = par("mgp"), main = "",
@@ -24,8 +23,18 @@ and month on another.}
 
 \item{labels}{as for \code{\link{axis.POSIXct}}.}
 
-\item{drawTimeRange}{boolean, \code{TRUE} to draw a time range on the
-opposite side of the plot.}
+\item{drawTimeRange}{Optional indication of whether/how to draw the time range
+in the margin on the side of the the plot opposite the time axis. If this is
+not supplied, it defaults to the value returned by
+\code{\link{getOption}("oceDrawTimeRange")}, and if that option is not set,
+it defaults to \code{TRUE}. No time range is drawn if \code{drawTimeRange} is \code{FALSE}.
+If it is \code{TRUE}, the range will be shown. This range refers to
+range of the x axis (not the data). The format of the elements of that range is set by
+\code{\link{getOption}("oceTimeFormat")} (or with the default value
+of an empty string, if this option has not been set). The timezone will
+be indicated if the time range is under a week.  For preliminary work, it makes
+sense to use \code{drawTimeRange=TRUE}, but for published work it can be better
+to drop this label and indicate something about the time in the figure caption.}
 
 \item{abbreviateTimeRange}{boolean, \code{TRUE} to abbreviate the second
 number in the time range, e.g. dropping the year if it is the same in the
