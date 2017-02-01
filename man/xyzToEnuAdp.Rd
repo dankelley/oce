@@ -40,7 +40,7 @@ The code handles every case individually, based on the table given below.
 The table comes from Clark Richards, a former PhD student at Dalhousie
 University [2], who developed it based on instrument documentation,
 discussion on user groups, and analysis of measurements acquired with RDI
-and Sontek acoustic current profilers in the SLEIWEX experiment [3].  In the
+and Sontek acoustic current profilers in the SLEIWEX experiment.  In the
 table, (X, Y, Z) denote instrument-coordinate velocities, (S, F, M) denote
 ship-coordinate velocities, and (H, P, R) denote heading, pitch, and roll.
 
@@ -84,8 +84,6 @@ Transformation, formulas and calculations.} P/N 951-6079-00 (July 1998).
 
 2. Clark Richards, 2012, PhD Dalhousie University Department of
 Oceanography.
-
-3. The SLEIWEX experiment (\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}).
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},

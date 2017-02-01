@@ -32,16 +32,11 @@ the projection and the fraction of the earth that is shown.
 \examples{
 \dontrun{
 library(oce)
-## Arctic Ocean
 data(coastlineWorld)
-latlim <- 90 + 25 * c(-1, 1)
-lonlim <- c(-130, -50)
-orientation <- c(90, -90, 0)
-proj <- "stereographic"
-fill <- "lightgray"
-mapPlot(coastlineWorld, latitudelim=latlim, longitudelim=lonlim,
-        proj=proj, orientation=orientation,
-        axes=FALSE, fill=fill)
+## Arctic Ocean
+par(mar=c(2.5, 2.5, 1, 1))
+mapPlot(coastlineWorld, latitudelim=c(60, 120), longitudelim=c(-130,-50),
+        col="lightgray", projection="+proj=stere +lat_0=90")
 mapScalebar()
 }
 }

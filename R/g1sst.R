@@ -24,7 +24,7 @@ setClass("satellite", contains="oce")
 #'
 #' @concept satellite
 #' @references
-#' 1. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+#' 1. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
 #' @author Dan Kelley
 #' @family things related to satellite data
 setClass("g1sst", contains="satellite")
@@ -37,7 +37,7 @@ setClass("g1sst", contains="satellite")
 setMethod(f="[[",
           signature(x="g1sst", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a G1SST Object
@@ -46,8 +46,8 @@ setMethod(f="[[",
 #' @family things related to \code{g1sst} data
 setMethod(f="[[<-",
           signature(x="g1sst", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 
@@ -95,7 +95,7 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #' @references
 #' 1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
-#' 2. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+#' 2. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
 #' @family things related to satellite data
 read.g1sst <- function(filename)
 {

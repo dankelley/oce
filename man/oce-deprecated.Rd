@@ -8,40 +8,57 @@
 Certain functions and function arguments are still provided for
 compatibility with older versions of \sQuote{oce}, but will be removed soon.
 The \sQuote{oce} scheme for removing functions is similar to that used by
-\sQuote{Bioconductor}: items are marked as "deprecated" in one release, as
-"defunct" in the next, and then removed entirely. This goal is to provide a
+\sQuote{Bioconductor}: items are marked as "deprecated" in one release, marked as
+"defunct" in the next, and removed in the next after that. This goal is to provide a
 gentle migration path for users who keep their packages reasonably
 up-to-date.
 }
 \details{
 Several \sQuote{oce} functions are marked "deprecated" in the present
 release of oce. Please use the replacement functions as listed below.
+The next CRAN release of \sQuote{oce} will designate these functions as
+"defunct".
 
 \tabular{lll}{
-\strong{Deprecated}    \tab \strong{Replacement}     \tab \strong{Notes}\cr
-\code{mapZones}        \tab \code{\link{mapGrid}}    \tab Improve name sensibility\cr
-\code{mapMeridians}    \tab \code{\link{mapGrid}}    \tab Improve name sensibility\cr
-\code{addColumn}       \tab \code{\link{oceSetData}} \tab Deprecated 2016-08-01\cr
-\code{oce.magic}       \tab \code{\link{oceMagic}}   \tab Deprecated 2016-09-01\cr
-\code{ctdAddColumn}    \tab \code{\link{oceSetData}} \tab Deprecated 2016-11-11\cr
-\code{ctdUpdateHeader} \tab -                        \tab Deprecated 2016-11-11\cr
+\strong{Deprecated}    \tab \strong{Replacement}              \tab \strong{Notes}\cr
+\code{mapZones}        \tab \code{\link{mapGrid}}             \tab Deprecated 2016-02-13\cr
+\code{mapMeridians}    \tab \code{\link{mapGrid}}             \tab Deprecated 2016-02-13\cr
+\code{addColumn}       \tab \code{\link{oceSetData}}          \tab Deprecated 2016-08-01\cr
+\code{oce.magic}       \tab \code{\link{oceMagic}}            \tab Deprecated 2016-09-01\cr
+\code{ctdAddColumn}    \tab \code{\link{oceSetData}}          \tab Deprecated 2016-11-11\cr
+\code{ctdUpdateHeader} \tab -                                 \tab Deprecated 2016-11-11\cr
+\code{oce.as.POSIXlt}  \tab \code{\link[lubridate]{parse_date_time}} \tab Deprecated 2016-12-17\cr
 }
 
-The next CRAN release of \sQuote{oce} will have these functions flagged as
-"defunct", which will mean that trying to use them will generate an error
-and a hint as to the replacement function.
-
-The following are marked "defunct", which means that calling them in the
-present version of oce will produce an error, and that they will be removed
-altogether in the next oce release on CRAN.
+The following are marked "defunct", so calling them in the
+the present version produces an error message that hints at a replacement
+function. Once a function is marked "defunct" on one CRAN release, it will
+be slated for outright deletion in the following release.
 
 \tabular{lll}{
 \strong{Defunct}   \tab \strong{Replacement}     \tab \strong{Notes}\cr
 \code{makeSection} \tab \code{\link{as.section}} \tab Improve utility and name sensibility\cr
-\code{columns}     \tab \code{\link{read.ctd}}   \tab Unnecessary, and never worked\cr
+\code{columns}     \tab \code{\link{read.ctd}}   \tab Unnecessary; never worked\cr
 }
 
-Several \sQuote{oce} function arguments are considered defunct, which
+Several \sQuote{oce} function arguments are considered "deprecated", which
+means they will be marked "defunct" in the next CRAN release. They are as follows.
+
+\itemize{
+
+\item The \code{parameters} argument of \code{\link{plot,ctd-method}}
+was deprecated on 2016-12-30.  It was once used by
+\code{\link{plot,coastline-method}} but has been ignored by that
+function since February 2016.
+
+\item The \code{orientation} argument of \code{\link{plot,ctd-method}}
+was deprecated on 2016-12-30.  It was once used by
+\code{\link{plot,coastline-method}} but has been ignored by that
+function since February 2016.
+
+}
+
+Several \sQuote{oce} function arguments are considered "defunct", which
 means they will be removed in the next CRAN release. They are as follows.
 
 \itemize{

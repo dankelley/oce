@@ -83,7 +83,7 @@ title("Numbers are the data")
 
 # 2. As 1, but blank out spots where data are sparse
 u <- interpBarnes(wind$x, wind$y, wind$z, trim=0.1)
-contour(u$xg, u$yg, u$zg, level=seq(0, 30, 1)) 
+contour(u$xg, u$yg, u$zg, level=seq(0, 30, 1))
 points(wind$x, wind$y, cex=1.5, pch=20, col="blue")
 
 # 3. As 1, but interpolate back to points, and display the percent mismatch

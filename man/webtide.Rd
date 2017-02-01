@@ -54,7 +54,7 @@ example is to set \code{xlim} and \code{ylim}, to focus a map region.}
 \value{
 If \code{action="map"} the return value is a
 list containing the index of the nearest node, along with the
-\code{latitude} and \code{longitude} of that node.  If 
+\code{latitude} and \code{longitude} of that node.  If
 \code{plot} is \code{FALSE}, this value is returned invisibly.
 
 If \code{action="predict"}, the return value is a list containing a vector
@@ -67,17 +67,18 @@ If \code{plot} is \code{FALSE}, this value is returned invisibly.
 \description{
 Get a tidal prediction from a WebTide database. There are two distinct cases.
 
-\emph{Case 1:} \code{action="map"}. In this case, if 
+\emph{Case 1:} \code{action="map"}. In this case, if
 \code{plot} is \code{FALSE}, a list is returned, containing
 all the \code{node}s in the selected database, along with all
-the \code{latitude}s and \code{longitude}s. This value is 
+the \code{latitude}s and \code{longitude}s. This value is
 also returned (silently) if \code{plot} is true, but in that case,
 a plot is drawn to indicate the node locations. If \code{latitude} and
 \code{longitude} are given, then the node nearest that spot is indicated on
 the map; otherwise, if \code{node} is given, then the location of that
-node is indicated. There is also a special case: if \code{node} is negative,
+node is indicated. There is also a special case: if \code{node} is negative
+and \code{interactive()} is \code{TRUE},
 then \code{\link{locator}} is called, and the node nearest the spot
-where the user clicks the mouse is indicated in the plot and in the 
+where the user clicks the mouse is indicated in the plot and in the
 return value.
 
 \code{Case 2:} \code{action="predict"}. If \code{plot} is \code{FALSE},

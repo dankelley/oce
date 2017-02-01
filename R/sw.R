@@ -1,23 +1,23 @@
 #' @title Convert from ITS-90 to IPTS-68 temperature
-#' 
+#'
 #' @template temperatureConversionTemplate
 #' @param temperature Vector of temperatures expressed in the ITS-90 scale.
 #' @return Temperature expressed in the IPTS-68 scale.
 T68fromT90 <- function(temperature) temperature * 1.00024
 
 #' @title Convert from IPTS-68 to ITS-90 temperature
-#' 
+#'
 #' @template temperatureConversionTemplate
 #' @param temperature Vector of temperatures expressed in the IPTS-68 scale.
 #' @return temperature Temperature expressed in the ITS-90 scale.
 T90fromT68 <- function(temperature) temperature / 1.00024
 
 #' @title Convert from ITS-48 to ITS-90 temperature
-#' 
+#'
 #' @template temperatureConversionTemplate
 #' @param temperature Vector of temperatures expressed in the ITS-48 scale.
 #' @return Temperature expressed in the ITS-90 scale.
-T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-temperature))/1.00024
+T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature * (100-temperature))/1.00024
 
 #' Look Within the First Element of a List for Replacement Values
 #'
@@ -34,7 +34,7 @@ T90fromT48 <- function(temperature) (temperature-4.4e-6*temperature*(100-tempera
 #' \item if the object stores \code{temperature} defined with the IPTS-68
 #' scale, then \code{\link{T90fromT68}} is used to convert to the ITS-90 scale,
 #' because this is what is expected in most seawater functions. (For example,
-#' the RMS difference between these temperature variants is 0.002C for the 
+#' the RMS difference between these temperature variants is 0.002C for the
 #' \code{\link{ctd}} dataset.)
 #' }
 #'
@@ -114,7 +114,7 @@ lookWithin <- function(list)
 #' plot(u, p, ylim=rev(range(p)), type='l', xlab=expression(R[rho]))
 #' lines(g, p, lty=2, col='red')
 #' legend("topright", lty=1:2, legend=c("unesco", "gsw"), col=c("black", "red"))
-#' 
+#'
 #' @family functions that calculate seawater properties
 swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
                    eos=getOption("oceEOS", default="gsw"))
@@ -357,7 +357,8 @@ swPressure <- function(depth, latitude=45, eos=getOption("oceEOS", default="gsw"
     eos <- match.arg(eos, c("unesco", "gsw"))
     ## Takes 3.55s for 15225 points
     if (eos == "unesco") {
-        for (i in 1:ndepth) {          # FIXME: this loop is slow and should be done in C, like swCStp()
+        for (i in 1:ndepth) {
+            ## FIXME: this loop is slow and should be done in C, like swCStp()
             res[i] <- if (depth[i] == 0) 0 else
                 uniroot(function(p) depth[i] - swDepth(p, latitude[i], eos), interval=depth[i]*c(0.9, 1.1))$root
         }
@@ -476,19 +477,25 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
 #' @examples
 #' swSCTp(1, T90fromT68(15), 0, eos="unesco") # 35
 #' swSCTp( 1,            15, 0, eos="gsw") # 35
-#' 
+#'
 #' @family functions that calculate seawater properties
 swSCTp <- function(conductivity, temperature=NULL, pressure=0,
-                   conductivityUnit=c("", "mS/cm", "S/m"),
-                   eos=getOption("oceEOS", default="gsw"))
+                   conductivityUnit, eos=getOption("oceEOS", default="gsw"))
 {
     ## FIXME-gsw add gsw version
     if (missing(conductivity)) stop("must supply conductivity (which may be S or a CTD object)")
-    if (is.list(conductivityUnit) && "unit" %in% names(conductivityUnit))
-        conductivityUnit <- conductivityUnit$unit
-    if (is.expression(conductivityUnit))
-        conductivityUnit <- as.character(conductivityUnit)
-    conductivityUnit <- match.arg(conductivityUnit)
+    if (missing(conductivityUnit)) {
+        conductivityUnit <- ""
+    } else {
+        if (is.list(conductivityUnit) && "unit" %in% names(conductivityUnit))
+            conductivityUnit <- conductivityUnit$unit
+        if (is.expression(conductivityUnit))
+            conductivityUnit <- as.character(conductivityUnit)
+        if (conductivityUnit == "ratio")
+            conductivityUnit <- ""
+    }
+    if (conductivityUnit != "" && conductivityUnit != "mS/cm" && conductivityUnit != "S/m")
+        stop("conductivity unit must be \"\", \"mS/cm\", or \"S/m\"")
     if (inherits(conductivity, "oce")) {
         if (inherits(conductivity, "rsk")) {
             ctd <- as.ctd(conductivity)
@@ -574,10 +581,10 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0,
 #' 1. Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
 #' fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
 #' Science}, \bold{44}, 53 pp
-#' 
+#'
 #' 2. Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
 #' York, 662 pp.
-#' 
+#'
 #' 3. IOC, SCOR, and IAPSO (2010). The international thermodynamic equation of
 #' seawater-2010: Calculation and use of thermodynamic properties.  Technical
 #' Report 56, Intergovernmental Oceanographic Commission, Manuals and Guide.
@@ -588,7 +595,7 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0,
 #' @examples
 #' swSTrho(10, 22, 0, eos="gsw") # 28.76285
 #' swSTrho(10, 22, 0, eos="unesco") # 28.651625
-#' 
+#'
 #' @family functions that calculate seawater properties
 swSTrho <- function(temperature, density, pressure, eos=getOption("oceEOS", default="gsw"))
 {
@@ -668,13 +675,14 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
         stop("lengths of salinity and rho must agree, but they are ", nS, " and ", nrho,  ", respectively")
     if (nS != np)
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    for (i in 1:nS) {                   # FIXME: avoid loops
-    	sig <- density[i]
-    	if (sig > 500) {
+    for (i in 1:nS) {
+        ## FIXME: avoid loops
+        sig <- density[i]
+        if (sig > 500) {
             sig <- sig - 1000
-    	}
+        }
         ## FIXME: is this right for all equations of state? I doubt it
-    	this.T <- .C("sw_tsrho",
+        this.T <- .C("sw_tsrho",
                      as.double(salinity[i]),
                      as.double(sig),
                      as.double(pressure[i]),
@@ -682,7 +690,7 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
                      temperature = double(1),
                      NAOK=TRUE, PACKAGE = "oce")$t
         this.T <- T90fromT68(this.T)
-    	if (i == 1) res <- this.T else res <- c(res, this.T)
+        if (i == 1) res <- this.T else res <- c(res, this.T)
     }
     dim(res) <- dim
     res
@@ -965,7 +973,7 @@ swThermalConductivity <- function (salinity, temperature=NULL, pressure=NULL)
         f <- 0.0690 + (-8e-5)*T + (-0.0020)*p + (-0.00010)*S # Caldwell eq 8
         cond <- K * (1 + f)                # Caldwell eq 7
     } else {
-        cond <- 0.001365*(1+0.003*T - 1.025e-5*T^2 + 0.0653 * p - 0.00029 * S)
+        cond <- 0.001365 * (1+0.003*T - 1.025e-5*T^2 + 0.0653 * p - 0.00029 * S)
     }
     418.400 * cond                     # convert from cal/(cm*sec*degC) to J/(m*sec*degC)
 }
@@ -1018,8 +1026,8 @@ swDepth <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"
     if (l$eos == "unesco") {
         l$latitude <- l$latitude * atan2(1, 1) / 45
         x <- sin(l$latitude)^2
-        gr <- 9.780318*(1.0+(5.2788e-3+2.36e-5*x)*x) + 1.092e-6*l$pressure
-        res <- (((-1.82e-15*l$pressure+2.279e-10)*l$pressure-2.2512e-5)*l$pressure+9.72659)*l$pressure / gr
+        gr <- 9.780318 * (1.0 + (5.2788e-3+2.36e-5*x)*x) + 1.092e-6*l$pressure
+        res <- ( ( (-1.82e-15*l$pressure+2.279e-10)*l$pressure-2.2512e-5)*l$pressure+9.72659)*l$pressure / gr
     } else if (l$eos == "gsw") {
         res <- -gsw::gsw_z_from_p(p=l$pressure, latitude=l$latitude)
     }
@@ -1135,7 +1143,7 @@ swDynamicHeight <- function(x, referencePressure=2000,
             rho <- swRho(ctd)
             if (sum(!is.na(rho)) < 2) return(NA)
             ## 1e4 converts decibar to Pa
-            dzdp <- ((1/rho - 1/swRho(rep(35,np),rep(0,np),ctd@data$pressure))/g)*1e4
+            dzdp <- ( (1/rho - 1/swRho(rep(35, np), rep(0, np), ctd@data$pressure)) / g )*1e4
             ## Scale both pressure and dz/dp to make integration work better (issue 499)
             max <- max(dzdp, na.rm=TRUE)
             integrand <- approxfun(ctd@data$pressure/referencePressure, dzdp/max, rule=2)
@@ -1371,7 +1379,7 @@ swSigma <- function(salinity, temperature=NULL, pressure=NULL,
 #' @examples
 #' swSigmaT(35, 13, 1000, eos="gsw")                # 26.396816
 #' swSigmaT(35, T90fromT68(13), 1000, eos="unesco") # 26.393538
-#' 
+#'
 #' @family functions that calculate seawater properties
 swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
@@ -1392,7 +1400,7 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 #' If the first argument is an \code{oce} object, then salinity, etc., are
 #' extracted from it, and used for the calculation instead of any values
 #' provided in the other arguments.
-#' 
+#'
 #' @inheritParams swRho
 #' @param referencePressure The reference pressure, in dbar.
 #' @return Potential density anomaly [kg/m\eqn{^3}{^3}], defined as
@@ -1403,7 +1411,7 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 #' @examples
 #' swSigmaTheta(35, 13, 1000)             # 26.42514 (gsw)
 #' swSigmaTheta(35, 13, 1000, eos="unesco") # 26.4219
-#' 
+#'
 #' @family functions that calculate seawater properties
 swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
                          longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
@@ -1421,14 +1429,14 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
 
 
 #' Seawater potential density anomaly referenced to surface pressure
-#' 
+#'
 #' Compute \eqn{\sigma_\theta}{sigma}, the potential density of seawater (minus
 #' 1000 kg/m\eqn{^3}{^3}), referenced to surface pressure.
-#' 
+#'
 #' Definition:
 #' \eqn{\sigma_0=\sigma_\theta=\rho(S,\theta(S,t,p),0}{sigma_0=sigma_theta=rho(S,theta(S,t,p),0)}
 #' - 1000 kg/m\eqn{^3}{^3}.
-#' 
+#'
 #' @inheritParams swRho
 #' @return Potential density anomaly [kg/m\eqn{^3}{^3}].
 #' @author Dan Kelley
@@ -1444,14 +1452,14 @@ swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
 }
 
 #' Seawater potential density anomaly referenced to 1000db pressure
-#' 
+#'
 #' Compute \eqn{\sigma_\theta}{sigma}, the potential density of seawater (minus
 #' 1000 kg/m\eqn{^3}{^3}), referenced to 1000db pressure.
-#' 
+#'
 #' Definition:
 #' \eqn{\sigma_1=\sigma_\theta=\rho(S,\theta(S,t,p),1000}{sigma_1=sigma_theta=rho(S,theta(S,t,p),1000)}
 #' - 1000 kg/m\eqn{^3}{^3}.
-#' 
+#'
 #' @inheritParams swRho
 #' @return Potential density anomaly [kg/m\eqn{^3}{^3}].
 #' @author Dan Kelley
@@ -1465,14 +1473,14 @@ swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
 }
 
 #' Seawater potential density anomaly referenced to 2000db pressure
-#' 
+#'
 #' Compute \eqn{\sigma_\theta}{sigma}, the potential density of seawater (minus
 #' 1000 kg/m\eqn{^3}{^3}), referenced to 2000db pressure.
-#' 
+#'
 #' Definition:
 #' \eqn{\sigma_1=\sigma_\theta=\rho(S,\theta(S,t,p),1000}{sigma_1=sigma_theta=rho(S,theta(S,t,p),2000)}
 #' - 2000 kg/m\eqn{^3}{^3}.
-#' 
+#'
 #' @inheritParams swRho
 #' @return Potential density anomaly [kg/m\eqn{^3}{^3}].
 #' @author Dan Kelley
@@ -1486,14 +1494,14 @@ swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
 }
 
 #' Seawater potential density anomaly referenced to 3000db pressure
-#' 
+#'
 #' Compute \eqn{\sigma_\theta}{sigma}, the potential density of seawater (minus
 #' 1000 kg/m\eqn{^3}{^3}), referenced to 3000db pressure.
-#' 
+#'
 #' Definition:
 #' \eqn{\sigma_1=\sigma_\theta=\rho(S,\theta(S,t,p),3000}{sigma_1=sigma_theta=rho(S,theta(S,t,p),3000)}
 #' - 1000 kg/m\eqn{^3}{^3}.
-#' 
+#'
 #' @inheritParams swRho
 #' @return Potential density anomaly [kg/m\eqn{^3}{^3}].
 #' @author Dan Kelley
@@ -1507,14 +1515,14 @@ swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
 }
 
 #' Seawater potential density anomaly referenced to 4000db pressure
-#' 
+#'
 #' Compute \eqn{\sigma_\theta}{sigma}, the potential density of seawater (minus
 #' 1000 kg/m\eqn{^3}{^3}), referenced to 4000db pressures.
-#' 
+#'
 #' Definition:
 #' \eqn{\sigma_1=\sigma_\theta=\rho(S,\theta(S,t,p),4000}{sigma_1=sigma_theta=rho(S,theta(S,t,p),4000)}
 #' - 1000 kg/m\eqn{^3}{^3}.
-#' 
+#'
 #' @inheritParams swRho
 #' @return Potential density anomaly [kg/m\eqn{^3}{^3}].
 #' @author Dan Kelley
@@ -1537,7 +1545,7 @@ swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
 #' shown at [3] for example.  For this reason, it is likely that more
 #' formulations will be added to this function, and entirely possible that the
 #' default may change.
-#' 
+#'
 #' @inheritParams swRho
 #' @param frequency The frequency of sound, in Hz.
 #' @param formulation character string indicating the formulation to use, either
@@ -1548,24 +1556,24 @@ swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
 #' @references
 #' 1. F. H. Fisher and V. P. Simmons, 1977.  Sound absorption in
 #' sea water.  J. Acoust. Soc. Am., 62(3), 558-564.
-#' 
+#'
 #' 2. R. E. Francois and G. R. Garrison, 1982.  Sound absorption based on
 #' ocean measurements.  Part II: Boric acid contribution and equation for total
 #' absorption.  J. Acoust. Soc. Am., 72(6):1879-1890.
-#' 
+#'
 #' 3. \url{http://resource.npl.co.uk/acoustics/techguides/seaabsorption/}
 #' @examples
 #' ## Fisher & Simmons (1977 table IV) gives 0.52 dB/km for 35 PSU, 5 degC, 500 atm
 #' ## (4990 dbar of water)a and 10 kHz
 #' alpha <- swSoundAbsorption(35, 4, 4990, 10e3)
-#' 
+#'
 #' ## reproduce part of Fig 8 of Francois and Garrison (1982 Fig 8)
 #' f <- 1e3 * 10^(seq(-1,3,0.1)) # in KHz
 #' plot(f/1000, 1e3*swSoundAbsorption(f, 35, 10, 0, formulation='fr'),
 #'      xlab=" Freq [kHz]", ylab=" dB/km", type='l', log='xy')
 #' lines(f/1000, 1e3*swSoundAbsorption(f, 0, 10, 0, formulation='fr'), lty='dashed')
 #' legend("topleft", lty=c("solid", "dashed"), legend=c("S=35", "S=0"))
-#' 
+#'
 #' @family functions that calculate seawater properties
 swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
                               formulation=c("fisher-simmons", "francois-garrison"))
@@ -1578,13 +1586,13 @@ swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
         T <- T68fromT90(temperature)
         f <- frequency
         A1 <- 1.03e-8 + 2.36e-10*T - 5.22e-12*T^2                       # (5)
-        f1 <- 1.32e3*(T + 273.1)*exp(-1700/(T + 273.1))                 # (6)
+        f1 <- 1.32e3 * (T + 273.1) * exp(-1700 / (T + 273.1))           # (6)
         A2 <- 5.62e-8 + 7.52e-10 * T                                    # (7)
-        f2 <- 1.55e7 * (T + 273.1)*exp(-3052/(T + 273.1))               # (8)
+        f2 <- 1.55e7 * (T + 273.1)*exp(-3052 / (T + 273.1))             # (8)
         P2 <- 1 - 10.3e-4 * p + 3.7e-7 * p^2                            # (9)
-        A3 <-(55.9 - 2.37 * T + 4.77e-2 * T^2  - 3.48e-4*T^3) * 1e-15   # (10)
+        A3 <- (55.9 - 2.37 * T + 4.77e-2 * T^2  - 3.48e-4*T^3) * 1e-15  # (10)
         P3 <- 1 - 3.84e-4 * p + 7.57e-8 * p^2                           # (11)
-        alpha <- (A1*f1*f^2)/(f1^2 + f^2) + (A2*P2*f2*f^2)/(f2^2 + f^2) + A3*P3*f^2 # (3a)
+        alpha <- (A1*f1*f^2) / (f1^2 + f^2) + (A2*P2*f2*f^2) / (f2^2 + f^2) + A3*P3*f^2 # (3a)
         alpha <- alpha * 8686 / 1000   # dB/m
     } else if (formulation == "francois-garrison") {
         S <- salinity
@@ -1593,18 +1601,21 @@ swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
         c <- 1412 + 3.21 * T + 1.19 * S + 0.0167 * D # sound speed m/s
         f <- frequency / 1000          # convert to kHz
         theta <- 273 + T
-        f1 <- 2.8 * sqrt(S / 35) * 10^(4 - 1245 / theta) # kHz
+        ## f1 in kHz
+        f1 <- 2.8 * sqrt(S / 35) * 10^(4 - 1245 / theta) # nolint (space before left parenthesis)
         ## subscript 1 for boric acid contribution
-        A1 <- 8.86 / c * 10^(0.78 * pH - 5) # dB / km / kHz
+        ## A1 in dB / km / kHz
+        A1 <- 8.86 / c * 10^(0.78 * pH - 5) # nolint (space before left parenthesis)
         P1 <- 1
         ## MgSO4 contribution
         A2 <- 21.44 * (S / c) * (1 + 0.025 * T) # dB / km / kHz
         P2 <- 1 - 1.37e-4 * D + 6.2e-9 * D^2
-        f2 <- (8.17 * 10^(8 - 1990 / theta)) / (1 + 0.0018 * (S - 35)) # kHz
+        ## f2 in kHz
+        f2 <- (8.17 * 10^(8 - 1990 / theta)) / (1 + 0.0018 * (S - 35)) # nolint (space before left parenthesis)
         ## pure water contribution
         A3 <- 3.964e-4 - 1.146e-5 * T + 1.45e-7 * T^2 - 6.5e-10 * T^3 # dB / km / kHz^2
         P3 <- 1 - 3.83e-5 * D + 4.9e-10 * D^2
-        alpha <- (A1 * P1 * f1 * f^2)/(f^2 + f1^2) + (A2 * P2 * f2 * f^2)/(f^2 + f2^2) + A3 * P3 * f^2
+        alpha <- (A1 * P1 * f1 * f^2) / (f^2 + f1^2) + (A2 * P2 * f2 * f^2) / (f^2 + f2^2) + A3 * P3 * f^2
         alpha <- alpha / 1000
     }
     alpha
@@ -1687,7 +1698,7 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
 #' Millero et. al., UNESCO report 38 (1981), 99-188.
 #' @examples
 #' swSpecificHeat(40, T90fromT68(40), 10000, eos="unesco") # 3949.499
-#' 
+#'
 #' @family functions that calculate seawater properties
 swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
                            longitude=300, latitude=30, eos=getOption("oceEOS", default="gsw"))
@@ -1823,7 +1834,7 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
 #' @examples
 #' library(oce)
 #' print(swTheta(40, T90fromT68(40), 10000, 0, eos="unesco")) # 36.89073 (Fofonoff et al., 1983)
-#' 	
+#'
 #' # Demonstrate that the UNESCO and GSW methods agree to a about 0.1C over a
 #' # typical span of values.
 #' S <- c(30,35,30,35)

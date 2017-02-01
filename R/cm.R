@@ -50,7 +50,7 @@ NULL
 setMethod(f="[[",
           signature(x="cm", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a CM Object
@@ -59,8 +59,8 @@ setMethod(f="[[",
 #' @family things related to \code{cm} data
 setMethod(f="[[<-",
           signature(x="cm", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 setMethod(f="initialize",
@@ -121,7 +121,7 @@ setMethod(f="summary",
               showMetadataItem(object, "model",         "Instrument model:   ")
               showMetadataItem(object, "serialNumber",  "Serial Number:      ")
               showMetadataItem(object, "version",       "Version:            ")
-              callNextMethod()
+              callNextMethod() # summary
           })
 
 
@@ -174,10 +174,10 @@ setMethod(f="subset",
                           res@data[[name]] <- x@data[[name]][keep] # FIXME: what about fast/slow
                       } else if (is.matrix(x@data[[name]])) {
                           oceDebug(debug, "subsetting x@data$", name, ", which is a matrix\n", sep="")
-                          res@data[[name]] <- x@data[[name]][keep,]
+                          res@data[[name]] <- x@data[[name]][keep, ]
                       } else if (is.array(x@data[[name]])) {
                           oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
-                          res@data[[name]] <- x@data[[name]][keep,,, drop=FALSE]
+                          res@data[[name]] <- x@data[[name]][keep, , , drop=FALSE]
                       }
                   }
               }
@@ -442,7 +442,7 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     longitude=NA, latitude=NA,
                     debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
 {
-    oceDebug(debug, "read.cm(file=\"",file,
+    oceDebug(debug, "read.cm(file=\"", file,
               "\", from=", format(from),
               ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) {\n", sep="", unindent=1)
     type <- match.arg(type)
@@ -460,7 +460,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     if (debug > 1)
         debug <- 1
-    oceDebug(debug, "read.cm.s4(file=\"",file,
+    oceDebug(debug, "read.cm.s4(file=\"", file,
               "\", from=", format(from),
               ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) {\n", sep="", unindent=1)
     if (is.character(file)) {
@@ -492,7 +492,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Skip through the rest of the header, and start paying attention when
     ## row number is 1, 2, and then 3.  These first rows give us the time
     ## sequence.
-    headerStart <- 0
     lines <- readLines(file, n=20)
     for (i in 2:20) {
         items <- strsplit(lines[i], "\t")[[1]]
@@ -500,7 +499,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (items[1] == "Sample #") {
             ## names <- sub('[ ]+$', '', sub('^[ ]+','', items))
             ## names <- ifelse(0 == nchar(names), paste("column", 1:length(names), sep=""), names)
-            headerStart <- i
         } else if (items[1] == "1") {
             start.day <- items[2]
         } else if (items[1] == "2") {
@@ -553,7 +551,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     # Finally, read the data and chop last 2 lines (which contain footer info
     pushBack(lines, file)
     d <- read.delim(file, skip=5, sep='\t', col.names=dnames, stringsAsFactors=FALSE)
-    d <- d[seq.int(1L, dim(d)[1]-2),]
+    d <- d[seq.int(1L, dim(d)[1]-2), ]
 
     res <- new("cm") # will fill in later
     ## namesOriginal[namesOriginal==""] <- "-"
@@ -592,7 +590,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     keep <- keep[1 <= keep]
     keep <- keep[keep <= n]
     d$time <- time
-    d <- d[keep,]
+    d <- d[keep, ]
     d <- as.list(d)
     for (dname in names(d)) {
         ##message("dname: ", dname)
@@ -729,7 +727,7 @@ setMethod(f="plot",
                               drawTimeRange=getOption("oceDrawTimeRange"),
                               drawZeroLine=FALSE,
                               mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
+                              mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
                               small=2000,
                               main="",
                               tformat,
@@ -742,12 +740,6 @@ setMethod(f="plot",
               if (3 != sum(c("time", "u", "v") %in% names(x@data))) {
                   warning("In plot,cm-method() :\n  cannot plot a cm object unless its 'data' slot contains 'time', 'u' and 'v'", call.=FALSE)
                   return(invisible(NULL))
-              }
-              ## if (!is.null(adorn))
-              ##     warning("In plot() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
-              if (!(is.null(x@metadata$have.actual.data) || x@metadata$have.actual.data)) {
-                  warning("there are no profiles in this dataset")
-                  return()
               }
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
@@ -796,10 +788,11 @@ setMethod(f="plot",
                                   xlab="", ylab=resizableLabel("v"),
                                   main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                   tformat=tformat)
-                  } else if (which[w] == 3) {     # or "progressive vector"
+                  } else if (which[w] == 3) {
+                      ## or "progressive vector"
                       oceDebug(debug, "progressive vector plot\n")
-                      dt <- as.numeric(difftime(x@data$time[2], x@data$time[1],units="sec")) # FIXME: assuming equal dt
-                      m.per.km <- 1000
+                      dt <- as.numeric(difftime(x@data$time[2], x@data$time[1], units="sec")) # FIXME: assuming equal dt
+                      mPerKm <- 1000
                       u <- x@data$u
                       v <- x@data$v
                       ## message("head(u): ", paste(head(u), collapse=" "))
@@ -807,14 +800,15 @@ setMethod(f="plot",
                       ## message("dt: ", dt)
                       u[is.na(u)] <- 0        # zero out missing
                       v[is.na(v)] <- 0
-                      x.dist <- cumsum(u) * dt / m.per.km
-                      y.dist <- cumsum(v) * dt / m.per.km
+                      x.dist <- cumsum(u) * dt / mPerKm
+                      y.dist <- cumsum(v) * dt / mPerKm
                       ## message("head(x.dist): ", paste(head(x.dist), collapse=" "))
                       ## message("head(y.dist): ", paste(head(y.dist), collapse=" "))
                       plot(x.dist, y.dist,
                            xlab=resizableLabel("distance km"), ylab=resizableLabel("distance km"),
                            type='l', asp=1, ...)
-                  } else if (which[w] %in% 4:6) {     # "uv" (if 4), "uv+ellipse" (if 5), or "uv+ellipse+arrow" (if 6)
+                  } else if (which[w] %in% 4:6) {
+                      ## "uv" (if 4), "uv+ellipse" (if 5), or "uv+ellipse+arrow" (if 6)
                       oceDebug(debug, "\"uv\", \"uv+ellipse\", or \"uv+ellipse+arrow\" plot\n")
                       if (len <= small)
                           plot(x@data$u, x@data$v, type=type,
@@ -833,12 +827,12 @@ setMethod(f="plot",
                           theta <- seq(0, 2*pi, length.out=360/5)
                           xx <- major * cos(theta)
                           yy <- minor * sin(theta)
-                          theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
+                          theta0 <- atan2(e$vectors[2, 1], e$vectors[1, 1])
                           rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
                           xxyy <- rotate %*% rbind(xx, yy)
                           col <- if ("col" %in% names(dots)) col else "darkblue"
-                          lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
-                          lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
+                          lines(xxyy[1, ], xxyy[2, ], lwd=5, col="yellow")
+                          lines(xxyy[1, ], xxyy[2, ], lwd=2, col=col)
                           if (which[w] >= 6) {
                               oceDebug(debug, "\"uv+ellipse+arrow\" plot\n")
                               umean <- mean(x@data$u, na.rm=TRUE)
@@ -901,4 +895,3 @@ setMethod(f="plot",
               oceDebug(debug, "} # plot.cm()\n", unindent=1)
               invisible()
           })
-

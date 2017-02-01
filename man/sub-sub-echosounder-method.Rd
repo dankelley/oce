@@ -46,7 +46,7 @@ Sv <- 20*log10(a) -
   10*log10(soundSpeed*x@metadata$pulseDuration/1e6*psi/2)
 }
 
-If \code{i} is the string \code{"TS"}, 
+If \code{i} is the string \code{"TS"},
 \preformatted{
 TS <- 20*log10(a) -
   (x@metadata$sourceLevel+x@metadata$receiverSensitivity+x@metadata$transmitPower) +

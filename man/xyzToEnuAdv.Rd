@@ -65,7 +65,7 @@ The code handles every case individually, based on the table given below.
 The table comes from Clark Richards, a former PhD student at Dalhousie
 University [2], who developed it based on instrument documentation,
 discussion on user groups, and analysis of measurements acquired with Nortek
-and Sontek velocimeters in the SLEIWEX experiment [3].
+and Sontek velocimeters in the SLEIWEX experiment.
 
 The column labelled ``Cabled'' indicates whether the sensor and the pressure
 case are connected with a flexible cable, and the column labelled ``H.case''
@@ -104,8 +104,6 @@ Dan Kelley, in collaboration with Clark Richards
 
 2. Clark Richards, 2012, PhD Dalhousie University Department of
 Oceanography.
-
-3. The SLEIWEX experiment (\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php})
 }
 \seealso{
 See \code{\link{read.adv}} for notes on functions relating to

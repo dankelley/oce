@@ -35,7 +35,7 @@ library(oce)
 rbr011855 <- read.oce(
  "/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/raw/pt_rbr_011855.dat")
 d <- subset(rbr011855, time < as.POSIXct("2008-06-25 10:05:00"))
-x <- undriftTime(d, 1)	  # clock lost 1 second over whole experiment
+x <- undriftTime(d, 1)   # clock lost 1 second over whole experiment
 summary(d)
 summary(x)
 }

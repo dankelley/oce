@@ -5,8 +5,9 @@
 #' Based on NASA-provided Fortran program, in turn (according to comments in
 #' the code) based on "The Astronomical Almanac".
 #' 
-#' @param t Time, a POSIXt object (must be in timezone UTC), or a numeric value
-#' that corresponds to such a time.
+#' @param t time, a POSIXt object (converted to timezone \code{"UTC"},
+#' if it is not already in that timezone), or a numeric value that
+#' corresponds to such a time.
 #' @param longitude observer longitude in degrees east
 #' @param latitude observer latitude in degrees north
 #' @param useRefraction boolean, set to \code{TRUE} to apply a correction for
@@ -70,6 +71,8 @@ sunAngle <- function(t, longitude=0, latitude=0, useRefraction=FALSE)
         }
     }
     t <- as.POSIXct(t) # so we can get length ... FIXME: silly, I know
+    if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
+        attributes(t)$tzone <- "UTC"
     tOrig <- t
     ok <- !is.na(t)
     ntOrig <- length(t)

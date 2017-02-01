@@ -23,7 +23,7 @@ Consult the built-in dataset \code{\link{tidedata}} for the permissible
 constituent names and their frequencies.}
 
 \item{sides}{an integer vector of length equal to that of \code{constituents},
-designating the side on which the constituent labels are to be drawn. As in 
+designating the side on which the constituent labels are to be drawn. As in
 all R graphics, the value \code{1} indicates the bottom of the plot, and
 \code{3} indicates the top. If \code{sides=NULL}, the default, then all labels
 are drawn at the top. Any value of \code{sides} that is not either 1 or 3

@@ -28,7 +28,7 @@ are ignored \emph{except} for two special cases:
 \item if the object stores \code{temperature} defined with the IPTS-68
 scale, then \code{\link{T90fromT68}} is used to convert to the ITS-90 scale,
 because this is what is expected in most seawater functions. (For example,
-the RMS difference between these temperature variants is 0.002C for the 
+the RMS difference between these temperature variants is 0.002C for the
 \code{\link{ctd}} dataset.)
 }
 }

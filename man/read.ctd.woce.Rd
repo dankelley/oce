@@ -70,7 +70,7 @@ Dan Kelley
 The WOCE-exchange format is described at
 \code{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
 and a sample file is at
-\url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
+\url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
 }
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},

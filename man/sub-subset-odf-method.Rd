@@ -5,18 +5,18 @@
 \alias{[[<-,odf-method}
 \title{Replace Parts of an ODF Object}
 \usage{
-\S4method{[[}{odf}(x, i, j) <- value
+\S4method{[[}{odf}(x, i, j, ...) <- value
 }
 \arguments{
-\item{x}{An \code{odf} object, i.e. inheriting from \code{\link{odf-class}}}
+\item{x}{an \code{odf} object, i.e. inheriting from \code{\link{odf-class}}}
 
 \item{i}{The item to replace.}
 
 \item{j}{Optional additional information on the \code{i} item.}
 
-\item{value}{The value to be placed into \code{x}, somewhere.}
-
 \item{...}{Optional additional information (ignored).}
+
+\item{value}{The value to be placed into \code{x}, somewhere.}
 }
 \description{
 The \code{[[<-} method works for all \code{oce} objects, i.e.
@@ -74,8 +74,10 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,windrose-method}}
 
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}}, \code{\link{odf-class}},
   \code{\link{plot,odf-method}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }

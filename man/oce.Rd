@@ -18,7 +18,7 @@ to read Oceanographic data in raw format. This uses
 \code{\link{oceMagic}} to try to detect the file type,
 based on the file name and contents. If it proves impossible
 to detect the type, users should next try a more specialized
-function, e.g. \code{\link{read.ctd}} for CTD files, or 
+function, e.g. \code{\link{read.ctd}} for CTD files, or
 \code{\link{read.ctd.sbe}} for Teledyne-Seabird files.
 }
 
@@ -29,11 +29,17 @@ A list of the generic methods in oce is provided by
 are as follows.
 \describe{
 \item{[[}{Find the value of an item in the object's
-    \code{metadata} or \code{data} slot.
+    \code{metadata} or \code{data} slot. If the item does
+    not exist, but can be calculated from the other items,
+    then the calculated value is returned. As an example of the
+    latter, consider the built-in \code{ctd} dataset, which does
+    not contain potential temperature, "\code{theta}". Using
+    \code{ctd[["theta"]]} therefore causes \code{\link{swTheta}}
+    to be called, to calculate \code{theta}.
     See \link{[[,oce-method} or type \code{?"[[,oce-method"}
     to learn more.}
 \item{[[<-}{Alters the named item in the object's \code{metadata} or
-    \code{data} slot.
+    \code{data} slot.  If the item does not exist, it is created.
     See \link{[[<-,oce-method} or type \code{?"[[<-,oce-method"}
     to learn more.}
 \item{summary}{Displays some information about the object named as an
@@ -50,7 +56,7 @@ are as follows.
 \section{Oceanographic data types handled}{
 
 Over a dozen specialized data types are handled by oce,
-with generic plots and summaries for each, along with 
+with generic plots and summaries for each, along with
 the specialized functions needed for typical Oceanographic
 analysis.
 }

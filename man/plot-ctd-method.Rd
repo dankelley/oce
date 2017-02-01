@@ -163,9 +163,11 @@ used, depending on whether the CTD station is within 70 degrees of the equator
 or at higher latitudes.  Finally, if this is a string in the format used by
 \code{\link{mapPlot}}, then it is is passed to that function.}
 
-\item{parameters}{Parameters for map, as for \code{projection}.}
+\item{parameters}{a \strong{deprecated} argument that has been ignored
+since February 2016; see \link{oce-deprecated}.}
 
-\item{orientation}{Orientation for map, as for \code{projection}.}
+\item{orientation}{a \strong{deprecated} argument that has been ignored
+since February 2016; see \link{oce-deprecated}.}
 
 \item{latlon.pch}{Symbol code for sample location (ignored if no map plotted).}
 

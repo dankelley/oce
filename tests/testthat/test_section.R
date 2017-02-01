@@ -63,7 +63,7 @@ test_that("as.section() works with vector of CTD objects", {
 })
 
 test_that("as.section() works with argo object", {
-          data(argo)
+          data("argo")
           sec <- as.section(subset(argo, profile < 10))
           expect_equal(9, length(sec[["station"]]))
 })

@@ -12,7 +12,7 @@ download.topo(west, east, south, north, resolution, destdir, destfile, format,
 
 \item{south, north}{Latitudes of the southern and northern sides of the box.}
 
-\item{resolution}{Optional grid spacing, in minutes. If not supplied, 
+\item{resolution}{Optional grid spacing, in minutes. If not supplied,
 a default value of 4 (corresponding to 7.4km, or 4 nautical
 miles) is used. Note that (as of August 2016) the original data are on
 a 1-minute grid, which limits the possibilities for \code{resolution}.}
@@ -45,7 +45,7 @@ be printed.}
 String indicating the full pathname to the downloaded file.
 }
 \description{
-Data are downloaded (from \code{http://maps.ngdc.noaa.gov/viewers/wcs-client/}, by 
+Data are downloaded (from \code{http://maps.ngdc.noaa.gov/viewers/wcs-client/}, by
 default) and a string containing the full path to the downloaded file is returned.
 Typically, this return value is used with \code{\link{read.topo}} to read the
 data. Subsequent calls to \code{download.topo}
@@ -76,6 +76,16 @@ recognized by \code{\link{read.topo}}.
 \code{\link{read.topo}} is extended to handle them, they will
 also be added here.)
 }
+\section{History}{
+
+When this function was created in August 2016, the default server was
+\code{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
+but this was found to fail in December 2016, so the default was changed to
+\code{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}, which
+is what is used by \code{\link[marmap]{getNOAA.bathy}} in the
+\CRANpkg{marmap} package.
+}
+
 \section{Warning}{
 
 All of the \code{download.*} functions are subject to change through the
@@ -90,7 +100,7 @@ because argument names and defaults may vary through the early development.
 \examples{
 \dontrun{
 library(oce)
-topoFile <- download.topo(west=-64, east=-60, south=43, north=46, 
+topoFile <- download.topo(west=-64, east=-60, south=43, north=46,
                           resolution=1, destdir="~/data/topo")
 topo <- read.topo(topoFile)
 imagep(topo, zlim=c(-400, 400), drawTriangles=TRUE)

@@ -54,7 +54,7 @@ For \code{eos="unesco"} the method of Fofonoff \emph{et al.} (1983), is used
 \examples{
 library(oce)
 print(swTheta(40, T90fromT68(40), 10000, 0, eos="unesco")) # 36.89073 (Fofonoff et al., 1983)
-	
+
 # Demonstrate that the UNESCO and GSW methods agree to a about 0.1C over a
 # typical span of values.
 S <- c(30,35,30,35)

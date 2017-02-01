@@ -9,7 +9,7 @@ as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
   missingValue = NULL, type = "", serialNumber = "", ship = "",
   cruise = "", station = "", startTime = NULL, longitude = NA,
   latitude = NA, deploymentType = "unknown", pressureAtmospheric = 0,
-  sampleInterval = NA, debug = getOption("oceDebug"))
+  sampleInterval = NA, profile, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{salinity}{There are three choices for \code{salinity}. (1) It can be a
@@ -19,8 +19,11 @@ something (a data frame, a list or an \code{oce}
 object) from which practical
 salinity, temperature, etc., can be inferred. In that case, the relevant information
 is extracted and the other arguments to \code{as.ctd} are ignored, except for
-\code{pressureAtmospheric}. Note that if this first argument is an
-object of \code{\link{rsk-class}}, the present function merely passes
+\code{pressureAtmospheric}. If the first argument has salinity, etc., in
+matrix form (as can happen with some objects of \code{\link{argo-class}}),
+then only the first column is used, and a warning to that effect is given, unless the \code{profile} argument is specified and then that specific profile is extracted.
+If the first argument is an object of \code{\link{rsk-class}},
+then \code{as.ctd} merely passes
 it and \code{pressureAtmospheric} to \code{\link{rsk2ctd}}, which
 does the real work. (3) It can be unspecified, in which
 case \code{conductivity} becomes a mandatory argument, because it will
@@ -46,9 +49,9 @@ divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).}
 \item{other}{optional list of other data columns that are not in the standard
 list}
 
-\item{units}{an optional list containing units.  If not supplied, 
+\item{units}{an optional list containing units.  If not supplied,
 defaults are set for \code{pressure}, \code{temperature}, \code{salinity},
-and \code{conductivity}. Since these are simply guesses, users 
+and \code{conductivity}. Since these are simply guesses, users
 are advised strongly to supply \code{units}. See \dQuote{Examples}.}
 
 \item{flags}{if supplied, this is a \code{\link{list}} containing data-quality
@@ -101,6 +104,11 @@ that is to be computed from \code{conductivity}, etc., using
 
 \item{sampleInterval}{optional numerical value indicating the time between
 samples in the profile.}
+
+\item{profile}{optional positive integer specifying the number of the profile
+to extract from an object that has data in matrices, such as for some
+\code{argo} objects. Currently the \code{profile} argument is only utilized for
+\code{\link{argo-class}} objects.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

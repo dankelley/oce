@@ -16,8 +16,9 @@ test_that("general", {
           oo2 <- oceSetData(oo, "a", 1:10)
           subset(oo2, a < 5)
           ## insert data
-          o[['no_such_thing']] <- 0    # for codecov test
-          expect_null(o[['no_such_thing']])
+          expect_null(o[['noSuchThing']])
+          o[['noSuchThing']] <- 0
+          expect_equal(o[['noSuchThing']], 0)
           ## ## built-in dataset
           ## data(adp)
           ## summary(adp)                 # for codecov test

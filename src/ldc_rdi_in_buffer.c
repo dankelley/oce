@@ -31,7 +31,7 @@ cat(i, calc, check, if(calc==check) "OK\n" else "BAD\n")
 
 */
 
-SEXP ldc_rdi(SEXP buf, SEXP max)
+SEXP ldc_rdi_in_buffer(SEXP buf, SEXP max)
 {
   /* Locate Data Chunk for RDI
    *   buf = buffer

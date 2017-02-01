@@ -25,7 +25,7 @@ setClass("bremen", contains="oce") # 20150528 may be called "geomar" or somethin
 
 setMethod(f="initialize",
           signature="bremen",
-          definition=function(.Object,filename="") {
+          definition=function(.Object, filename="") {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@metadata$filename <- filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
@@ -40,7 +40,7 @@ setMethod(f="initialize",
 setMethod(f="[[",
           signature(x="bremen", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' @title Replace Parts of a Bremen Object
@@ -49,8 +49,8 @@ setMethod(f="[[",
 #' @family things related to \code{bremen} data
 setMethod(f="[[<-",
           signature(x="bremen", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 #' @title Plot a Bremen Object
@@ -115,7 +115,7 @@ setMethod(f="summary",
               showMetadataItem(object, "ship",    "Vessel:              ")
               showMetadataItem(object, "station", "Station:             ")
               showMetadataItem(object, "profile", "Profile:             ")
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 
@@ -227,4 +227,3 @@ read.bremen <- function(file)
     }
     res
 }
-

@@ -30,7 +30,9 @@ test_that("Times", {
 test_that("Moon", {
           ## [2] example 45.a (pages 312-313)
           ## Do not check too many digits, because the code does not have all terms
-          ## in formulae.  (Note: this also tests eclipticalToEquatorial)
+          ## in formulae.
+          ## NB. this block also tests eclipticalToEquatorial(), julianDay(),
+          ## and julianCenturyAnomaly().
           t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
           m <- moonAngle(t, 0, 0) # lat and lon arbitrary
           expect_equal(m$lambda, 133.162659, tolerance=0.0002)
@@ -43,4 +45,29 @@ test_that("Moon", {
           ## moon illuminated fraction [1] ex 31.b page 156
           illfrac <- (1 + cos(RPD * 105.8493)) / 2
           expect_equal(moonAngle(ISOdatetime(1979,12,25,0,0,0,tz="UTC"),0,0)$illuminatedFraction,illfrac,tolerance=0.001)
+          ## Local time
+          tlocal <- t
+          attributes(tlocal)$tzone <- ""
+          mlocal <- moonAngle(tlocal, 0, 0)
+          expect_identical(m, mlocal)
+          ## Numerical time
+          expect_identical(m, moonAngle(as.numeric(t), 0, 0))
+})
+
+test_that("Sun", {
+          ## Testing against values that worked on 2016-12-06;
+          ## FIXME: replace by numbers from [2] if they can be found.
+          t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
+          s <- sunAngle(t, 0, 0) # lat and lon arbitrary
+          expect_equal(s$azimuth, 358.624168865654)
+          expect_equal(s$altitude, -81.3030909018573)
+          expect_equal(s$diameter, 0.531871759139675)
+          expect_equal(s$distance, 1.00249729533012)
+          ## Local time
+          tlocal <- t
+          attributes(tlocal)$tzone <- ""
+          slocal <- sunAngle(tlocal, 0, 0)
+          expect_identical(s, slocal)
+          ## Numerical time
+          expect_identical(s, sunAngle(as.numeric(t), 0, 0))
 })

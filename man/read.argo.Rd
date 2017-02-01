@@ -31,7 +31,7 @@ Metadata items such as \code{time}, \code{longitude} and \code{latitude}
 are inferred from the data file in a straightforward way, using
 \code{\link[ncdf4]{ncvar_get}} and data-variable names as listed in
 the Argo documentation [2,3]. The items listed in section 2.2.3
-of [3] is read from the file and stored in the \code{metadata} slot, 
+of [3] is read from the file and stored in the \code{metadata} slot,
 with the exception of \code{longitude} and \code{latitude},
 which are stored in the \code{data} slot.
 
@@ -44,7 +44,7 @@ in all files, but tests showed that this is not the case, and so
 them in returned object.
 
 Items are translated from upper-case Argo names to \code{oce} names
-using \code{\link{decodeDataNamesArgo}}.
+using \code{\link{argoNames2oceNames}}.
 
 It is assumed that the profile data are as listed in the NetCDF variable
 called \code{STATION_PARAMETERS}. Each item can have variants, as
@@ -56,7 +56,7 @@ then \code{PRES} (pressure) data are sought in the file, along with
 are stored with different names within the resultant \code{\link{argo-class}}
 object, to match with \code{oce} conventions. Thus, \code{PRES} gets renamed
 \code{pressure}, while \code{PRES_ADJUSTED} gets renamed \code{pressureAdjusted},
-and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are 
+and \code{PRES_ERROR} gets renamed \code{pressureError}; all of these are
 stored in the \code{data} slot. Meanwhile, the quality-control flags
 \code{PRES_QC} and \code{PRES_ADJUSTED_QC} are stored as \code{pressure}
 and \code{pressureAdjusted} in the \code{metadata$flags} slot.
@@ -64,16 +64,16 @@ and \code{pressureAdjusted} in the \code{metadata$flags} slot.
 \section{Data sources}{
 
 Argo data are made available at several websites. A bit of detective
-work can be required to track down the data.  
+work can be required to track down the data.
 
 Some servers provide  data for floats that surfaced in a given ocean
-on a given day, the anonymous FTP server 
+on a given day, the anonymous FTP server
 \url{ftp://usgodae.org/pub/outgoing/argo/geo/} being an example.
 
 Other servers provide data on a per-float basis. A complicating
 factor is that these data tend to be categorized by "dac" (data
 archiving centre), which makes it difficult to find a particular
-float. For example, 
+float. For example,
 \url{http://www.usgodae.org/ftp/outgoing/argo/} is the top level of
 a such a repository. If the ID of a float is known but not the
 "dac", then a first step is to download the text file
@@ -135,10 +135,9 @@ Dan Kelley
 1. \url{http://www.argo.ucsd.edu/}
 
 2. Argo User's Manual Version 3.2, Dec 29th, 2015, available at
-\samp{http://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
-(link checked 17 Nov 2016 several times in the months before, 
-but failed 18 Nov 2016).
-Table 2.2.2 of this document lists the codes used in Argo netCDF files.
+\url{https://archimer.ifremer.fr/doc/00187/29825/40575.pdf}
+(but note that this is a draft; newer versions may have
+replaced this by now).
 
 3. User's Manual (ar-um-02-01) 13 July 2010, available at
 \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
@@ -151,8 +150,8 @@ objects, and also outlines the other functions dealing with them.
 
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoGrid}}, \code{\link{argo}},
-  \code{\link{as.argo}},
+  \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
+  \code{\link{argo}}, \code{\link{as.argo}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{plot,argo-method}},
   \code{\link{subset,argo-method}},
