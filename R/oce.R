@@ -695,15 +695,13 @@ oce.approx <- oceApprox
 #' rm(n, x, y, theta, u, v)
 #'
 #' # Oceanographic example
-#' if (require(ocedata)) {
-#'     data(met)
-#'     t <- ISOdatetime(met[["Year"]], met[["Month"]], met[["Day"]], 0, 0, 0, tz="UTC")
-#'     u <- met[["u"]]
-#'     v <- met[["v"]]
-#'     temperature <- met[["temperature"]]
-#'     oce.plot.ts(t, temperature, type='p', ylim=c(-5, 30))
-#'     plotSticks(t, 5, u, v, yscale=2, add=TRUE)
-#' }
+#' data(met)
+#' t <- met[["time"]]
+#' u <- met[["u"]]
+#' v <- met[["v"]]
+#' p <- met[["pressure"]]
+#' oce.plot.ts(t, p)
+#' plotSticks(t, 99, u, v, yscale=25, add=TRUE)
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                        mgp=getOption("oceMgp"),
                        mar=c(mgp[1]+1, mgp[1]+1, 1, 1+par("cex")),

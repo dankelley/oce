@@ -5,7 +5,7 @@
 \title{Read a Met File}
 \usage{
 read.met(file, type = NULL, skip, tz = getOption("oceTz"),
-  debug = getOption("oceDebug"), processingLog, ...)
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -24,12 +24,6 @@ that to be header.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
-
-\item{processingLog}{if provided, the action item to be stored in the log.
-(Typically only provided for internal calls; the default that it provides is
-better for normal calls by a user.)}
-
-\item{\dots}{additional arguments, passed to called routines.}
 }
 \value{
 An object of \code{\link[base]{class}} \code{"met"}, of which the

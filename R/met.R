@@ -200,7 +200,16 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' Interoperability between oce functions requires that standardized data names
 #' be used, e.g. \code{"temperature"} for in-situ temperature. Very few
 #' data-file headers name the temperature column in exactly that way, however,
-#' and this function is provided to try to guess the names.
+#' and this function is provided to try to guess the names. The task is complicated
+#' by the fact that Environment Canada seems to change the names of the columns,
+#' e.g. sometimes a symbol is used for the degree sign, other times not.
+#'
+#' Several quantities in the returned object differ from their values in the source
+#' file. For example, speed is converted from km/h to m/s, and angles are converted
+#' from tens of degres to degrees. Also, some items are created from scratch, e.g.
+#' \code{u} and \code{v}, the eastward and northward velocity, are computed from speed
+#' and direction. (Note that e.g. u is positive if the wind blows to the east; the
+#' data are thus in the normal Physics convention.)
 #'
 #' @param names a vector of character strings with original names
 #' @param scheme an optional indication of the scheme that is employed. This may
@@ -218,17 +227,26 @@ metNames2oceNames <- function(names, scheme)
         if (scheme == "ODF") {
             res <- ODFNames2oceNames(ODFnames=names, ODFunits=NULL)
         } else if (scheme == "met") {
-            ## FIXME: capture the flags also
-            if (1 == length(i <- grep("^Temp.*C.*$", res))) res[i] <- "temperature"
-            if (1 == length(i <- grep("^Stn.*Press.*kPa.*$", res))) res[i] <- "pressure"
-            if (1 == length(i <- grep("^Wind.*Spd.*km.*$", res))) res[i] <- "wind"
-            if (1 == length(i <- grep("^Wind.*deg.*$", res))) res[i] <- "direction"
-            if (1 == length(i <- grep("^Visibility.*km.*$", res))) res[i] <- "visibility"
-            if (1 == length(i <- grep("^Rel\\.Hum\\.\\.\\.\\.$", res))) res[i] <- "humidity"
+            if (1 == length(i <- grep("^Data\\.Quality$", res))) res[i] <- "dataQuality"
             if (1 == length(i <- grep("^Dew\\.Point\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "dewPoint"
-            if (1 == length(i <- grep("^Wind\\.Chill$", res))) res[i] <- "windChill"
-            if (1 == length(i <- grep("^Weather$", res))) res[i] <- "weather"
+            if (1 == length(i <- grep("^Dew\\.Point\\.Temp\\.Flag$", res))) res[i] <- "dewPointFlag"
             if (1 == length(i <- grep("^Hmdx$", res))) res[i] <- "humidex"
+            if (1 == length(i <- grep("^Hmdx\\.Flag$", res))) res[i] <- "humidexFlag"
+            if (1 == length(i <- grep("^Rel\\.Hum\\.\\.\\.\\.$", res))) res[i] <- "humidity"
+            if (1 == length(i <- grep("^Rel\\.Hum\\.Flag$", res))) res[i] <- "humidityFlag"
+            if (1 == length(i <- grep("^Stn.*Press.*kPa.*$", res))) res[i] <- "pressure"
+            if (1 == length(i <- grep("^Stn.Press.Flag$", res))) res[i] <- "pressureFlag"
+            if (1 == length(i <- grep("^Temp.*C.*$", res))) res[i] <- "temperature"
+            if (1 == length(i <- grep("^Temp.*Flag$", res))) res[i] <- "temperatureFlag"
+            if (1 == length(i <- grep("^Visibility.*km.*$", res))) res[i] <- "visibility"
+            if (1 == length(i <- grep("^Visibility.*Flag$", res))) res[i] <- "visibilityFlag"
+            if (1 == length(i <- grep("^Wind.*Spd.*km.*$", res))) res[i] <- "wind"
+            if (1 == length(i <- grep("^Wind.*Spd.*Flag$", res))) res[i] <- "windFlag"
+            if (1 == length(i <- grep("^Wind\\.Dir\\.\\.10s\\.deg\\.$", res))) res[i] <- "direction"
+            if (1 == length(i <- grep("^Wind\\.Dir\\.Flag$", res))) res[i] <- "directionFlag"
+            if (1 == length(i <- grep("^Wind\\.Chill$", res))) res[i] <- "windChill"
+            if (1 == length(i <- grep("^Wind\\.Chill\\.Flag$", res))) res[i] <- "windChillFlag"
+            if (1 == length(i <- grep("^Weather$", res))) res[i] <- "weather"
         } else {
             warning("unknown scheme ", scheme)
         }
@@ -238,6 +256,9 @@ metNames2oceNames <- function(names, scheme)
         if (1 == length(col))
             res[col] <- "temperature"
     }
+    ## message("names,res >>")
+    ## print(data.frame(names, res))
+    ## message("<<")
     res
 }
 
@@ -263,10 +284,6 @@ metNames2oceNames <- function(names, scheme)
 #' @param tz timezone assumed for time data
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
-#' @param processingLog if provided, the action item to be stored in the log.
-#' (Typically only provided for internal calls; the default that it provides is
-#' better for normal calls by a user.)
-#' @param \dots additional arguments, passed to called routines.
 #' @return An object of \code{\link[base]{class}} \code{"met"}, of which the
 #' \code{data} slot contains vectors \code{time}, \code{temperature},
 #' \code{pressure}, \code{u}, and \code{v}.  The velocity components have units
@@ -287,9 +304,7 @@ metNames2oceNames <- function(names, scheme)
 #' }
 #'
 #' @family things related to \code{met} data
-read.met <- function(file, type=NULL, skip,
-                     tz=getOption("oceTz"),
-                     debug=getOption("oceDebug"), processingLog, ...)
+read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.met() {\n", unindent=1)
     if (is.character(file)) {
@@ -340,36 +355,14 @@ read.met <- function(file, type=NULL, skip,
     res@metadata$filename <- filename
     rawData <- read.csv(text=text, skip=skip, encoding="latin1", header=TRUE)
     time <- strptime(paste(rawData$Year, rawData$Month, rawData$Day, rawData$Time), "%Y %m %d %H:%M", tz=tz)
-    ##ntime <- length(time)
     names <- names(rawData)
-    ## Must use grep to identify columns, because the names are not fixed.  In some
-    ## test files, temperature was in a column named "..Temp...C.", but in others
-    ## it was in a column named "..Temp[*]C.", where "[*]" contains accented
-    ## symbols.  The other columns may need similar treatment at some point,
-    ## if files are encountered with e.g. a special symbol used for the degree
-    ## sign in a wind direction, but for now they are accessed directly,
-    ## partly to indicate the possibilities of coding, for those who find
-    ## it necessary to adjust this code to work with other files.
-    ##
-    ## It would be good if someone from Environment Canada would take pity on a
-    ## poor user, and convince the powers-that-be to settle on a single format
-    ## and even (gasp) to document it.
-    ##j <- grep("^Temp.*C.*$", names(rawData))[1]
-    ##temperature <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
-    ##j <- grep("^Stn.*Press.*kPa.*$", names(rawData))[1]
-    ##pressure <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
-    ##j <- grep("^Wind.*Spd.*km.*$", names(rawData))[1]
-    ##wind <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
-    ##speed <- wind * 1000 / 3600        # convert from km/h to m/s
-    ##j <- grep("^Wind.*deg.*$", names(rawData))[1]
-    ##direction <- if (1 == length(j)) as.numeric(rawData[,j]) else rep(NA, ntime)
-    rpd <- atan2(1, 1) / 45            # radian/degree
-
     names(rawData) <- metNames2oceNames(names, "met")
+    ## Quite a lot of things ae in weird units (km/h instead of m/s etc), so we will need to do some conversions.
     rawData[["speed"]] <- rawData[["wind"]] * 1000 / 3600 # convert km/h to m/s
 
 
     ## Note (90 - ) to get from "clockwise from north" to "anticlockwise from east"
+    rpd <- atan2(1, 1) / 45            # radian/degree
     theta <- (90 - 10 * rawData[["direction"]]) * rpd
     ## Note the (-) to get from "wind from" to "wind speed towards"
     rawData[["u"]] <- -rawData[["speed"]] * sin(theta)
@@ -378,20 +371,80 @@ read.met <- function(file, type=NULL, skip,
     rawData[["u"]][zero] <- 0
     rawData[["v"]][zero] <- 0
     rawData[["time"]] <- time
-    res@data <- rawData #list(time=time, temperature=temperature, pressure=pressure, u=u, v=v,
-                     #wind=wind, direction=direction)
-    if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLogAppend(res@processingLog, processingLog)
+    res@data <- rawData
+    pl <- paste("read.met(\"", filename, "\", type=", if (is.null(type)) "NULL" else type, ", tz=\"", tz, "\")", sep="")
+    res@processingLog <- processingLogAppend(res@processingLog, pl)
     names <- names(res@data)
-    if ("wind" %in% names) res@metadata$units$wind <- list(unit=expression(km/h), scale="")
-    if ("speed" %in% names) res@metadata$units$speed <- list(unit=expression(m/s), scale="")
+    res@metadata$dataNamesOriginal <- list()
+    res@metadata$flags <- list()
+    if ("dewPoint" %in% names) {
+        res@metadata$units$dataQuality <- list(unit=expression(), scale="")
+        res@metadata$dataNamesOriginal$dataQuality <- "Data Quality"
+    }
+    if ("dewPoint" %in% names) {
+        res@metadata$units$dewPoint <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$dewPoint <- "Dew Point Temp (\u00B0C)"
+    }
+    if ("direction" %in% names) {
+        res@metadata$units$direction <- list(unit=expression(degree), scale="")
+        res@metadata$dataNamesOriginal$direction <- "-" # we use deg, they use 10deg, so no original name
+    }
+    if ("humidex" %in% names) {
+        res@metadata$units$humidex <- list(unit=expression(degree*C), scale="")
+        res@metadata$dataNamesOriginal$humidex <- "Hmdx"
+    }
+    if ("humidity" %in% names) {
+        res@metadata$units$humidity <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$humidity <- "Rel Hum (%)"
+    }
+    if ("pressure" %in% names) {
+        res@metadata$units$pressure <- list(unit=expression(kPa), scale="")
+        res@metadata$dataNamesOriginal$pressure <- "Stn Press (kPa)"
+    }
+    if ("speed" %in% names) {
+        res@metadata$units$speed <- list(unit=expression(m/s), scale="")
+        res@metadata$dataNamesOriginal$speed <- "-"
+    }
+    if ("temperature" %in% names) {
+        res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$temperature <- "Temp (\u00B0C)"
+    }
     if ("u" %in% names) res@metadata$units$u <- list(unit=expression(m/s), scale="")
     if ("v" %in% names) res@metadata$units$v <- list(unit=expression(m/s), scale="")
-    if ("pressure" %in% names) res@metadata$units$pressure <- list(unit=expression(kPa), scale="")
-    if ("temperature" %in% names) res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
-    if ("dewPoint" %in% names) res@metadata$units$dewPoint <- list(unit=expression(degree*C), scale="ITS-90")
-    if ("visibility" %in% names) res@metadata$units$visibility <- list(unit=expression(km), scale="")
+    if ("visibility" %in% names) {
+        res@metadata$units$visibility <- list(unit=expression(km), scale="")
+        res@metadata$dataNamesOriginal$visibility <- "Visibility (km)"
+    }
+    if ("weather" %in% names) {
+        res@metadata$units$wind <- list(unit=expression(), scale="")
+        res@metadata$dataNamesOriginal$weather <- "Weather"
+    }
+
+    if ("wind" %in% names) {
+        res@metadata$units$wind <- list(unit=expression(km/h), scale="")
+        res@metadata$dataNamesOriginal$wind <- "Wind Spd (km/h)"
+    }
+    if ("windChill" %in% names) {
+        res@metadata$units$windChill <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$windChill <- "Wind Chill"
+    }
+    ## move flags from data to metadata@flags
+    for (flagType in c("dewPoint", "direction", "humidex", "humidity", "pressure", "temperature", "visibility", "wind",
+                       "windChill")) {
+        flagName <- paste(flagType, "Flag", sep="")
+        if (flagName %in% names) {
+            res@metadata$flags[[flagType]] <- res@data[[flagName]]
+            res@data[[flagName]] <- NULL
+        }
+    }
+    ## Remove various date things; we have time in our object so there is no need for these things,
+    ## and just because the agency repeats things, that's no reason for us to do the same.
+    ## (I would listen to argumetns to retain these, however.)
+    res@data$Date.Time <- NULL # no need for this
+    res@data$Year <- NULL # no need for this
+    res@data$Month <- NULL # no need for this
+    res@data$Day <- NULL # no need for this
+    res@data$Time <- NULL # no need for this
     res
 }
 
