@@ -73,9 +73,9 @@ setMethod(f="summary",
                           } else if (deltat < 3600) {
                               cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat/60, "min\n")
                           } else if (deltat < 24*3600) {
-                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat/3600, "hours\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat/3600, "hour\n")
                           } else {
-                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat/3600/24, "days\n")
+                              cat("* Time ranges from", format(from), "to", format(to), "with", nt, "samples and mean increment", deltat/3600/24, "day\n")
                           }
                       }
                   }

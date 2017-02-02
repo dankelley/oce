@@ -104,7 +104,7 @@ Towyow data can be split up into sets of profiles (ascending or descending)
 with \code{\link{ctdFindProfiles}}.  CTD data may be smoothed and/or cast onto
 specified pressure levels with \code{\link{ctdDecimate}}.
 
-As with all oce objects, low-level manipulation may be done with 
+As with all oce objects, low-level manipulation may be done with
 \code{\link{oceSetData}} and \code{\link{oceSetMetadata}}. Additionally,
 many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
 discussed above, and skilled users may also manipulate the contents directly.

@@ -48,13 +48,11 @@ test_that("as.ctd() with a list", {
           expect_equal(ctd[["pressure"]], ctd_l[["pressure"]])
 })
 
-test_that("as.ctd() with an argo object", {
-          S2 <- argo[['salinity']] / 2
-          argo2 <- oceSetData(argo, "S2", S2, unit=list(unit=expression(), scale="PSS-78"))
-          sec <- as.section(argo2)
-          station1 <- sec[["station", 1]]
-          expect_true("S2" %in% names(station1@data))
-          expect_equal(list(unit=expression(),scale="PSS-78"), station1[["S2Unit"]])
+test_that("as.ctd() with an argo object, by profile", {
+          ctdProfile1 <- as.ctd(argo, profile=1)
+          ctdProfile2 <- as.ctd(argo, profile=2)
+          expect_equal(ctdProfile1[["salinity"]], argo[["salinity"]][,1])
+          expect_equal(ctdProfile2[["salinity"]], argo[["salinity"]][,2])
 })
 
 
