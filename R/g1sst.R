@@ -24,7 +24,8 @@ setClass("satellite", contains="oce")
 #'
 #' @concept satellite
 #' @references
-#' 1. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
+#' 1. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+#' (link worked in 2016 but was seen to fail 2017 Feb 2).
 #' @author Dan Kelley
 #' @family things related to satellite data
 setClass("g1sst", contains="satellite")
@@ -95,7 +96,8 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #' @references
 #' 1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
-#' 2. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
+#' 2. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+#' (link worked in 2016 but was seen to fail 2017 Feb 2).
 #' @family things related to satellite data
 read.g1sst <- function(filename)
 {
