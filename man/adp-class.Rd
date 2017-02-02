@@ -237,7 +237,8 @@ Other classes provided by \code{oce}: \code{\link{adv-class}},
   \code{\link{windrose-class}}
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{adp}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},

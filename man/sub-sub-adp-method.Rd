@@ -116,7 +116,8 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[<-,adv-method}}
 
 Other things related to \code{adp} data: \code{\link{[[<-,adp-method}},
-  \code{\link{adp-class}}, \code{\link{adp}},
+  \code{\link{adp-class}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},

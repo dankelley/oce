@@ -3020,3 +3020,61 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
     res@data$g <- gbm
     res
 }
+
+##' Ensemble average an \code{adp} object in time
+##'
+##' Ensemble averaging of \code{adp} objects is often necessary to
+##' reduce the uncertainty in velocity estimates from single
+##' pings. Many types of ADPs can be configured to perform the
+##' ensemble averaging during the data collection, due to memory
+##' limitations for long deployments. In cases where the instrument is
+##' not memory limited, it may be desirable to perform the ensemble
+##' averaging during post-processing, thereby reducing the overall
+##' size of the data set and decreasing the uncertainty of the
+##' velocity estimates (by averaging out Doppler noise).
+##' 
+##' @title Ensemble average an \code{adp} object in time
+##' @param x an object of class \link{\code{adp-class}}
+##' @param n number of pings to average together. Must either specify \code{n} or \code{deltat}.
+##' @param deltat amount of time within which to average pings (not currently implemented)
+##' @param method method to use for constructing average. Default is to use \code{mean()} with the \code{na.rm=TRUE} argument to ignore any missing data. Can also be a user specified function, which takes a vector of numbers and returns a single value.
+##' @param ... extra arguments for the \code{method} function
+##' @return A reduced object of \link{\code{adp-class}} with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.
+##' @author Clark Richards
+##' @examples
+##'
+##' library(oce)
+##' data(adp)
+##' adpAvg <- adpEnsembleAverage(adp, n=2)
+##' plot(adpAvg)
+##' 
+##' @family things related to \code{adp} data
+adpEnsembleAverage <- function(x, n=5, deltat, method, ...) {
+    if (!inherits(x, 'adp')) error('Must be an object of class adp')
+    if (!missing(deltat)) error('deltat method not yet implemented. Use argument `n` instead')
+    if (missing(method)) method <- mean
+    if (!is.function(method)) error('method must be a function')
+    res <- new('adp', distance=x[['distance']])
+    res@metadata <- x@metadata
+    d <- x@data
+    t <- d$time
+    pings <- seq_along(t)
+    res@data$time <- numberAsPOSIXct(binAverage(pings, t, xinc=n)$y)
+    nt <- length(res@data$time)
+    for (field in names(d)) {
+        if (field != 'time' & field != 'distance') {
+            if (is.vector(d[[field]])) {
+                res@data[[field]] <- binAverage(pings, d[[field]], xinc=n)$y
+            } else if (is.array(d[[field]])) {
+                fdim <- dim(d[[field]])
+                res@data[[field]] <- array(NA, dim=c(length(res@data[['time']]), fdim[2], fdim[3]))
+                for (j in 1:fdim[3]) {
+                    for (i in 1:fdim[2]) {
+                        res@data[[field]][, i, j] <- binAverage(pings, d[[field]][, i, j], xinc=n)$y
+                    }
+                }
+            }
+        }
+    }
+    res
+}
