@@ -89,7 +89,7 @@ is what is used by \code{\link[marmap]{getNOAA.bathy}} in the
 \section{Warning}{
 
 All of the \code{download.*} functions are subject to change through the
-autumn of 2016. The plan is to create individual functions
+year 2017. The plan is to create individual functions
 as needs arise in everyday work, thereby discovering patterns of 
 arguments that might make sense more generally. Therefore, it is likely
 that argument order (and even name) may change up until approximately
@@ -124,7 +124,8 @@ NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
 The work is done with \code{\link[utils]{download.file}}.
 
 Other functions that download files: \code{\link{download.amsr}},
-  \code{\link{download.coastline}}
+  \code{\link{download.coastline}},
+  \code{\link{download.met}}
 
 Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},

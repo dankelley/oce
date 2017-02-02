@@ -53,7 +53,7 @@ data (or lake data, river data, etc) in any of three resolutions.
 \section{Warning}{
 
 All of the \code{download.*} functions are subject to change through the
-autumn of 2016. The plan is to create individual functions
+year 2017. The plan is to create individual functions
 as needs arise in everyday work, thereby discovering patterns of 
 arguments that might make sense more generally. Therefore, it is likely
 that argument order (and even name) may change up until approximately
@@ -80,7 +80,7 @@ plot(coastline)
 The work is done with \code{\link[utils]{download.file}}.
 
 Other functions that download files: \code{\link{download.amsr}},
-  \code{\link{download.topo}}
+  \code{\link{download.met}}, \code{\link{download.topo}}
 
 Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},

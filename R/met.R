@@ -194,6 +194,99 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
     new('met', time=time, temperature=temperature, pressure=pressure, u=u, v=v, filename=filename)
 }
 
+
+#' Download and Cache a met File
+#'
+#' Data are downloaded from \url{http://climate.weather.gc.ca} and cached locally.
+#'
+#' @details
+#' The data are downloaded with \code{\link[utils]{download.file}}
+#' pointed to the Environment Canada website \url{http://climate.weather.gc.ca},
+#' using queries that had to be devised by reverse-engineering, since the agency
+#' provides no documentation about the queries. Changes to query format are not
+#' by any means unheard-of; queries that worked in 2016 failed in early 2017, for
+#' example.
+#'
+#' The Station ID that is provided in the \code{id} argument
+#' becomes part of the query used to download the data.
+#' Confusingly, this is \emph{neither} the "Climate ID"
+#' \emph{nor} the "WMO ID". Instead, it seems to be a creation of Environment
+#' Canada.  Even worse, the Environment Canada documents state that the ID for 
+#' a particular location may be changed at any time. Users are therefore advised to
+#' look up the codes at
+#' \code{ftp://ftp.tor.ec.gc.ca/Pub/Get_More_Data_Plus_de_donnees//Station Inventory EN.csv}
+#' before using this function. This file can be searched by city name, and in other
+#' ways.  (A future version of \code{download.met} might use this file, if enough
+#' users request this feature.)
+#'
+#' @param id A number giving the "Station ID" of the station of interest. If not
+#' provided, \code{id} defaults to 6358, for Halifax International Airport. See
+#' \dQuote{Details}.
+#'
+#' @param year A number giving the year of interest. This defaults to the present
+#' year, if not given.
+#'
+#' @param month A number giving the month of interest. This defaults to the present
+#' month, if not given.
+#'
+#' @template downloadDestTemplate
+#'
+#' @template debugTemplate
+#'
+#' @return String indicating the full pathname to the downloaded file.
+#'
+#' @author Dan Kelley
+#'
+#' @examples
+#'\dontrun{
+#' library(oce)
+#' ## Download data for Halifax International Airport, in September
+#' ## of 2003. (This dataset is used for data(met) provided with oce.)
+#' metFileName <- download.met(6358, 2003, 9)
+#'}
+#'
+#' @seealso The work is done with \code{\link[utils]{download.file}}.
+#'
+#' @template downloadWarningTemplate
+#'
+#' @family functions that download files
+#' @family things related to \code{met} data
+download.met <- function(id, year, month, destdir="~/data/met", destfile, debug=getOption("oceDebug"))
+{
+    if (missing(id))
+        id <- 6358
+    id <- as.integer(id)
+    today <- as.POSIXlt(Sys.time())
+    if (missing(year))
+        year <- today$year + 1900
+    if (missing(month)) {
+        month <- today$mon + 1         # so 1=jan etc
+        month <- month - 1             # we want *previous* month, which should have data
+        if (month == 1) {
+            year <- year - 1
+            month <- 12
+        }
+    }
+    ## Next line is an example that worked as of Feb 2, 2017
+    ## http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=6358&Year=2003&Month=9&timeframe=1&submit=Download+Data
+    url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=",
+                 id, "&Year=", year, "&Month=", month, "&timeframe=1&submit=Download+Data", sep="")
+    oceDebug(debug, "url:", url, "\n")
+    if (missing(destfile))
+        destfile <- sprintf("met_%d_%d_%02d_%02d.csv", id, year, month, 1)
+    oceDebug(debug, "destdir:", destdir, "\n")
+    oceDebug(debug, "destfile:", destfile, "\n")
+    destination <- paste(destdir, destfile, sep="/")
+    oceDebug(debug, "destination:", destination, "\n")
+    if (1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
+        oceDebug(debug, "Not downloading", destfile, "because it is already present in", destdir, "\n")
+    } else {
+        download.file(url, destination)
+        oceDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
+    }
+    destination
+}
+
 #' Convert met Data Name to Oce Name
 #'
 #' @details
