@@ -449,14 +449,11 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
 }
 
 
-#' @title Plot Met Data
+#' @title Plot met Data
 #'
 #' @description
 #' Creates a multi-panel summary plot of data measured in a meteorological data
 #' set.  cast. The panels are controlled by the \code{which} argument.
-#' Normally, 4 panels are specified with the \code{which}, but it can also be
-#' useful to specify less than 4 panels, and then to draw other panels after
-#' this call.
 #'
 #' @details
 #' If more than one panel is drawn, then on exit from \code{plot.met}, the
@@ -467,36 +464,60 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
 #'
 #' @param x A \code{met} object, e.g. as read by \code{\link{read.met}}, or a
 #' list containing items named \code{salinity} and \code{temperature}.
-#' @param which list of desired plot types.  \itemize{ \item \code{which=1}
-#' gives a time-series plot of temperature \item \code{which=2} gives a
-#' time-series plot of pressure \item \code{which=3} gives a time-series plot
-#' of the x (eastward) component of velocity \item \code{which=4} gives a
-#' time-series plot of the y (northward) component of velocity }
+#'
+#' @param which list of desired plot types.
+#' \itemize{
+#' \item \code{which=1} gives a time-series plot of temperature
+#' \item \code{which=2} gives a time-series plot of pressure
+#' \item \code{which=3} gives a time-series plot of the x (eastward) component of velocity
+#' \item \code{which=4} gives a time-series plot of the y (northward) component of velocity
+#' \item \code{which=5} gives a time-series plot of speed
+#' \item \code{which=6} gives a time-series plot of direction (degrees clockwise from north;
+#' note that the values returned by \code{met[["direction"]]} must be multiplied by 10
+#' to get the direction plotted)
+#' }
+#'
 #' @param tformat optional argument passed to \code{\link{oce.plot.ts}}, for
 #' plot types that call that function.  (See \code{\link{strptime}} for the
 #' format used.)
-#' @param \dots optional arguments passed to plotting functions.
+#'
 #' @template mgpTemplate
 #' @template marTemplate
 #' @template debugTemplate
+#'
 #' @author Dan Kelley
+#'
 #' @examples
 #' library(oce)
 #' data(met)
 #' plot(met, which=3:4)
 #'
+#' ## Wind speed and direction during Hurricane Juan
+#' ## Compare with the final figure in a white paper by Chris Fogarty
+#' ## (available at http://www.novaweather.net/Hurricane_Juan_files/McNabs_plot.pdf 
+#' ## downloaded 2017-01-02).
+#' library(oce)
+#' data(met)
+#' t0 <- as.POSIXct("2003-09-29 04:00:00", tz="UTC")
+#' dt <- 12 * 3600 
+#' juan <- subset(met, t0 - dt <= time & time <= t0 + dt)
+#' par(mfrow=c(2,1))
+#' plot(juan, which=5)
+#' abline(v=t0)
+#' plot(juan, which=6)
+#' abline(v=t0)
+#'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{met} data
 setMethod(f="plot",
            signature=signature("met"),
-           definition=function(x, which = 1:4,
-                               mgp=getOption("oceMgp"),
-                               mar=c(mgp[1]+1, mgp[1]+1, mgp[1]+1, mgp[1]+1),
-                               tformat,
-                               debug=getOption("oceDebug"),
-                               ...)
+           definition=function(x, which = 1:4, mgp, mar, tformat, debug=getOption("oceDebug"))
            {
                oceDebug(debug, "plot.met() {\n", unindent=1)
+               if (missing(mgp))
+                   mgp <- getOption("oceMgp")
+               if (missing(mar))
+                   mar <- c(mgp[1]+1, mgp[1]+1, mgp[1]+1, mgp[1]+1)
                opar <- par(no.readonly = TRUE)
                nw <- length(which)
                if (nw > 1) on.exit(par(opar))
@@ -511,9 +532,13 @@ setMethod(f="plot",
                    } else if (which[w] == 2 && any(!is.na(x@data$pressure))) {
                        oce.plot.ts(x@data$time, x@data$pressure, ylab="Pressure [kPa]", tformat=tformat)
                    } else if (which[w] == 3 && any(!is.na(x@data$u))) {
-                       oce.plot.ts(x@data$time, x@data$u, ylab=resizableLabel("eastward", "y"), tformat=tformat)
+                       oce.plot.ts(x@data$time, x@data$u, ylab=resizableLabel("u [m/s]", "y"), tformat=tformat)
                    } else if (which[w] == 4 && any(!is.na(x@data$v))) {
-                       oce.plot.ts(x@data$time, x@data$v, ylab=resizableLabel("northward", "y"), tformat=tformat)
+                       oce.plot.ts(x@data$time, x@data$v, ylab=resizableLabel("v [m/s]", "y"), tformat=tformat)
+                   } else if (which[w] == 5 && any(!is.na(x@data$v))) {
+                       oce.plot.ts(x@data$time, x@data$speed, ylab=resizableLabel("Speed [m/s]", "y"), tformat=tformat)
+                   } else if (which[w] == 6) {
+                       oce.plot.ts(x@data$time, 10*x@data$direction, ylab=resizableLabel("Direction [deg]", "y"), tformat=tformat)
                    }
                }
                oceDebug(debug, "} # plot.met()\n", unindent=1)
