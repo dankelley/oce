@@ -425,10 +425,22 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
         pressure <- ctd[["pressure"]]
     }
     dim <- dim(salinity)
+    salinity <- as.vector(salinity)
+    temperature <- as.vector(temperature)
+    pressure <- as.vector(pressure)
+    n <- length(salinity)
+    if (length(temperature) != n)
+        temperature <- rep(temperature, length.out=n)
+    if (length(pressure) != n)
+        pressure <- rep(pressure, length.out=n)
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (eos == "unesco") {
-        n <- length(salinity)
-        res <- .C("sw_CSTp", as.integer(n), as.double(salinity), T68fromT90(as.double(temperature)), as.double(pressure), C=double(n), NAOK=TRUE, PACKAGE="oce")$C
+        cat("S= ", paste(salinity, collapse=" "), "\n")
+        cat("T= ", paste(temperature, collapse=" "), "\n")
+        cat("p= ", paste(pressure, collapse=" "), "\n")
+        res <- .C("sw_CSTp",
+                  as.integer(n), as.double(salinity), as.double(T68fromT90(temperature)), as.double(pressure),
+                  C=double(n), NAOK=TRUE, PACKAGE="oce")$C
     } else {
         ## for the use of a constant, as opposed to a function call with (35,15,0), see
         ## https://github.com/dankelley/oce/issues/746
