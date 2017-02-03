@@ -435,9 +435,9 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
         pressure <- rep(pressure, length.out=n)
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (eos == "unesco") {
-        cat("S= ", paste(salinity, collapse=" "), "\n")
-        cat("T= ", paste(temperature, collapse=" "), "\n")
-        cat("p= ", paste(pressure, collapse=" "), "\n")
+        ## cat("S= ", paste(salinity, collapse=" "), "\n")
+        ## cat("T= ", paste(temperature, collapse=" "), "\n")
+        ## cat("p= ", paste(pressure, collapse=" "), "\n")
         res <- .C("sw_CSTp",
                   as.integer(n), as.double(salinity), as.double(T68fromT90(temperature)), as.double(pressure),
                   C=double(n), NAOK=TRUE, PACKAGE="oce")$C

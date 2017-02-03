@@ -13,37 +13,37 @@ void bisect2(double ax, double bx, double (*f)(double x), double tol, double res
   //Rprintf("ax=%g bx=%g af=%g bf=%g\n", ax, bx, af, bf);
   if (af * bf > 0.0) { // no root in interval
     *zero = NA_REAL;
-    Rprintf("\nno root in %f < x < %f\n", ax, bx);
+    //Rprintf("\nno root in %f < x < %f\n", ax, bx);
     return;
   }
   int iter = 0;
-  Rprintf("\nstart bisection at f(%f)=%f and f(%f)=%f\n", ax, af, bx, bf);
+  //Rprintf("\nstart bisection at f(%f)=%f and f(%f)=%f\n", ax, af, bx, bf);
   while (fabs(ff = f(*zero = (ax + bx) / 2.0)) > tol || fabs (ax - bx) > res) {
     //Rprintf("bisect2 iter=%d af=%g bf=%g ff=%g\n", iter, af, bf, ff);
     if (++iter > maxiter) {
       *zero = NA_REAL; // too many iterations
-      Rprintf("Too many iterations; ax=%f bx=%f\n", ax, bx);
+      //Rprintf("Too many iterations; ax=%f bx=%f\n", ax, bx);
       return;
     }
     if (!ff) { // exact solution
-      Rprintf(" root=%f\n", *zero);
+      //Rprintf(" root=%f\n", *zero);
       return;
     }
     if (af * ff < 0) { // root is nearer ax than bx
-      Rprintf("-");
+      //Rprintf("-");
       bx = *zero;
       bf = ff;
     } else if (bf * ff < 0) { // root is nearer bx than ax
-      Rprintf("+");
+      //Rprintf("+");
       ax = *zero;
       af = ff;
     } else {	// problem
       *zero = NA_REAL;
-      Rprintf("Problem\n");
+      //Rprintf("Problem\n");
       return;
     }
   }
-  Rprintf(" at end, root=%f\n", *zero);
+  //Rprintf(" at end, root=%f\n", *zero);
 }
 
 void sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
@@ -212,7 +212,7 @@ void sw_CSTp(int *n, double *pS, double *pT, double *pp, double *value)
     Sglobal = pS[i];
     Tglobal = pT[i];
     pglobal = pp[i];
-    Rprintf("Sglobal=%f Tglobal=%f pglobal=%f\n", Sglobal, Tglobal, pglobal);
+    //Rprintf("Sglobal=%f Tglobal=%f pglobal=%f\n", Sglobal, Tglobal, pglobal);
     // Use 100 iterations as the limit, although 30 iterations should be sufficient
     // since 5/2^30 is 5e-9, and we are setting the res and tol to 1e-8.
     bisect2(0.0, 5.0, sw_salinity_C, 1e-10, 1e-10, 100, value+i);
