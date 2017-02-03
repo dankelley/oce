@@ -16,22 +16,27 @@ void bisect2(double ax, double bx, double (*f)(double x), double tol, double res
     return;
   }
   int iter = 0;
+  Rprintf("start bisection at f(%f)=%f and f(%f)=%f\n", ax, af, bx, bf);
   while (fabs(ff = f(*zero = (ax + bx) / 2.0)) > tol || fabs (ax - bx) > res) {
     //Rprintf("bisect2 iter=%d af=%g bf=%g ff=%g\n", iter, af, bf, ff);
     if (++iter > maxiter) {
       *zero = NA_REAL; // too many iterations
+      Rprintf("Too many iterations; ax=%f bx=%f\n", ax, bx);
       return;
     }
     if (!ff) // exact solution
       return;
     if (af * ff < 0) { // root is nearer ax than bx
+      Rprintf("-");
       bx = *zero;
       bf = ff;
     } else if (bf * ff < 0) { // root is nearer bx than ax
+      Rprintf("+");
       ax = *zero;
       af = ff;
     } else {	// problem
       *zero = NA_REAL;
+      Rprintf("Problem\n");
       return;
     }
   }
@@ -197,7 +202,7 @@ dyn.load("sw.so")
  */
 void sw_CSTp(int *n, double *pS, double *pT, double *pp, double *value)
 {
-  extern double Tglobal, pglobal;
+  extern double Sglobal, Tglobal, pglobal;
   for (int i = 0; i < *n; i++) {
     //Rprintf("sw_CSTp() i=%d\n", i);
     Sglobal = pS[i];
@@ -205,7 +210,7 @@ void sw_CSTp(int *n, double *pS, double *pT, double *pp, double *value)
     pglobal = pp[i];
     // Use 100 iterations as the limit, although 30 iterations should be sufficient
     // since 5/2^30 is 5e-9, and we are setting the res and tol to 1e-8.
-    bisect2(0.0, 5.0, sw_salinity_C, 1e-8, 1e-8, 100, value+i);
+    bisect2(0.0, 5.0, sw_salinity_C, 1e-10, 1e-10, 100, value+i);
     //Rprintf("sw_CSTp() set value[%d] = %f\n", i, value+i);
   }
 }
