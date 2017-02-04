@@ -42,23 +42,31 @@ Data are downloaded from \url{http://climate.weather.gc.ca} and cached locally.
 }
 \details{
 The data are downloaded with \code{\link[utils]{download.file}}
-pointed to the Environment Canada website \url{http://climate.weather.gc.ca},
+pointed to the Environment Canada website [1]
 using queries that had to be devised by reverse-engineering, since the agency
-provides no documentation about the queries. Changes to query format are not
-by any means unheard-of; queries that worked in 2016 failed in early 2017, for
-example.
+does not provide documentation about how to construct queries. Caution: the
+query format changes from time to time, so \code{download.met} may work one
+day, and fail the next.
 
-The Station ID that is provided in the \code{id} argument
-becomes part of the query used to download the data.
-Confusingly, this is \emph{neither} the "Climate ID"
-\emph{nor} the "WMO ID". Instead, it seems to be a creation of Environment
-Canada.  Even worse, the Environment Canada documents state that the ID for 
-a particular location may be changed at any time. Users are therefore advised to
-look up the codes at
-\code{ftp://ftp.tor.ec.gc.ca/Pub/Get_More_Data_Plus_de_donnees//Station Inventory EN.csv}
-before using this function. This file can be searched by city name, and in other
-ways.  (A future version of \code{download.met} might use this file, if enough
-users request this feature.)
+The constructed query contains Station ID, as provided in the \code{id} argument.
+Note that this seems to be a creation of Environment Canada, alone;
+it is distinct from the more standard "Climate ID" and "WMO ID".
+To make things more difficult, Environment Canada states that the
+Station ID is subject to change over time. (Whether this applies to existing
+data is unclear.)
+
+Given these difficulties with Station ID, users are advised to consult
+the Environment Canada website [1] before downloading any data,
+and to check it from time to time
+during the course of a research project, to see if the Station ID has changed.
+Another approach, would be to use Gavin Simpson's
+\code{canadaHCD} package [2] to look up Station IDs. This package maintains
+a copy of the Environment Canada listing of stations, and its
+\code{find_station} function provides an easy way to determine Station IDs.
+After that, its \code{hcd_hourly} function (and related functions) make
+it easy to read data. These data can then be converted to the 
+\code{met} class with \code{\link{as.met}}, although doing so leaves
+many important metadata blank.
 }
 \section{Warning}{
 
@@ -76,12 +84,20 @@ because argument names and defaults may vary through the early development.
 library(oce)
 ## Download data for Halifax International Airport, in September
 ## of 2003. (This dataset is used for data(met) provided with oce.)
-metFileName <- download.met(6358, 2003, 9)
+metFile <- download.met(6358, 2003, 9, destdir=".")
+met <- read.met(metFile)
 }
 
 }
 \author{
 Dan Kelley
+}
+\references{
+1. Environment Canada website for Historical Climate Data
+\url{http://climate.weather.gc.ca/index_e.html}
+
+2. Gavin Simpon's \code{canadaHCD} package on GitHub
+\url{https://github.com/gavinsimpson/canadaHCD}
 }
 \seealso{
 The work is done with \code{\link[utils]{download.file}}.

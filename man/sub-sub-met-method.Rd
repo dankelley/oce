@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,met-method}
 \alias{[[,met-method}
-\title{Extract Something From a Met Object}
+\title{Extract Something From a met Object}
 \usage{
 \S4method{[[}{met}(x, i, j, ...)
 }

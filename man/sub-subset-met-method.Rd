@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,met-method}
 \alias{[[<-,met-method}
-\title{Replace Parts of a Met Object}
+\title{Replace Parts of a met Object}
 \usage{
 \S4method{[[}{met}(x, i, j, ...) <- value
 }

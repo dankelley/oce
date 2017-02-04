@@ -37,7 +37,7 @@
 #' @family things related to \code{met} data
 setClass("met", contains="oce")
 
-#' @title Extract Something From a Met Object
+#' @title Extract Something From a met Object
 #' @param x A met object, i.e. one inheriting from \code{\link{met-class}}.
 #' @template sub_subTemplate
 #' @family things related to \code{met} data
@@ -47,7 +47,7 @@ setMethod(f="[[",
               callNextMethod()         # [[
           })
 
-#' @title Replace Parts of a Met Object
+#' @title Replace Parts of a met Object
 #' @param x An \code{met} object, i.e. inheriting from \code{\link{met-class}}
 #' @template sub_subsetTemplate
 #' @family things related to \code{met} data
@@ -58,26 +58,29 @@ setMethod(f="[[<-",
           })
 
 
-#' @title Sample Met Object
+#' @title Sample met Object
 #'
 #' @description
 #' This is sample \code{met} object containing data for Halifax, Nova Scotia,
 #' during September of 2003 (the period during which Hurricane Juan struck the
 #' city).
 #'
+#' @details
+#' The data file was downloaded with
+#' \preformatted{
+#'metFile <- download.met(6358, 2003, 9, destdir=".")
+#'met <- read.met(metFile)
+#'met <- oceSetData(met, "time", met[["time"]]+4*3600,
+#'                  note="add 4h to local time to get UTC time")
+#'}
+#' Using \code{\link{download.met}} avoids having to navigate the
+#' the awkward Environment Canada website, but it imposes the burden
+#' of having to know the station number. See the documentation for
+#' \code{\link{download.met}} for more details on station numbers.
+#'
 #' @name met
 #' @docType data
-#' @source Downloaded from the Environment Canada website on February 1, 2017, and
-#' processed as follows. (Note that the URL changes from time to time, and that it
-#' was discovered by reverse-engineering the website, since this agency provides
-#' no documentation on how to create URLs.)
-#' \preformatted{
-#' met <- read.met('http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=6358&Year=2003&Month=9&timeframe=1&submit=Download+Data')
-#' met <- oceSetData(met, "time", met[["time"]] + 4 * 3600, note="add 4h to local time to get UTC time")
-#'}
-#' Note the conversion from local standard time to UTC, done with 
-#' \code{\link{oceSetData}} so that a comment will appear in the output
-#' from \code{summary(met)}.
+#' @source Environment Canada website on February 1, 2017
 #'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{met} data
@@ -98,7 +101,7 @@ setMethod(f="initialize",
           })
 
 
-#' @title Summarize a Met Object
+#' @title Summarize a met Object
 #'
 #' @description
 #' Pertinent summary information is presented, including the sampling location,
@@ -123,7 +126,7 @@ setMethod(f="summary",
           })
 
 
-#' @title Subset a Met Object
+#' @title Subset a met Object
 #'
 #' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
@@ -159,15 +162,19 @@ setMethod(f="subset",
 
 
 
-#' @title Coerce Data into Met Object
+#' @title Coerce Data into met Object
 #'
 #' @description
-#' Coerces a dataset into a met dataset.
-#' This function is used by \code{\link{read.met}}, and may be used to
-#' construct objects that behave as though read by that function.
+#' Coerces a dataset into a met dataset. This fills in only a few of the typical
+#' data fields, so the returned object is much
+#' sparser than the output from \code{\link{read.met}}. Also, almost no
+#' metadata fields are filled in, so the resultant object does not store
+#' station location, units of the data, data-quality flags, etc. Anyone working
+#' with data from Environment Canada [2] is advised to use \code{\link{read.met}}
+#' instead of the present function.
 #'
-#' @param time Vector of obseration times (or character strings that can be
-#' coerced into times).
+#' @param time Either a vector of observation times (or character strings that can be
+#' coerced into times) or the output from \code{canadaHCD::hcd_hourly} (see [1]).
 #' @param temperature vector of temperatures.
 #' @param pressure vector of pressures.
 #' @param u vector of eastward wind speed in m/s.
@@ -175,21 +182,78 @@ setMethod(f="subset",
 #' @param filename optional string indicating data source
 #' @return An object of \code{\link{met-class}}.
 #' @author Dan Kelley
+#'
+#' @references
+#' 1. The \code{canadaHCD} package is in development by Gavin Simpson; see
+#' \url{https://github.com/gavinsimpson/canadaHCD} for instructions on how
+#' to download and install from GitHub.
+#'
+#' 2. Environment Canada website for Historical Climate Data
+#' \url{http://climate.weather.gc.ca/index_e.html}
+#'
 #' @family things related to \code{met} data
 as.met <- function(time, temperature, pressure, u, v, filename="(constructed from data)")
 {
     if (missing(time)) stop("must provide time")
-    time <- as.POSIXct(time) # in case it's POSIXlt or a string
-    n <- length(time)
-    if (missing(temperature)) temperature <- rep(NA, n)
-    else if (length(temperature) != n) stop("length of 'temperature' must match length of 'time'")
-    if (missing(pressure)) pressure <- rep(NA, n)
-    else if (length(pressure) != n) stop("length of 'pressure' must match length of 'time'")
-    if (missing(u)) u <- rep(NA, n)
-    else if (length(u) != n) stop("length of 'u' must match length of 'time'")
-    if (missing(v)) v <- rep(NA, n)
-    else if (length(v) != n) stop("length of 'v' must match length of 'time'")
-    new('met', time=time, temperature=temperature, pressure=pressure, u=u, v=v, filename=filename)
+    if (inherits(time, "data.frame")) {
+        ## Try to see whether this was created by a function in the canadaHCL package
+        canadaHCL <- inherits(time, "tbl") && "DateTime" %in% names(time)
+        ## Copy the data, renaming some things that we know are named differently
+        ## in canadaHSD::hcd_hourly().
+        res <- new("met")
+        ## Extract Station ID to the metadata
+        names <- names(time)
+        if ("Station" %in% names) {
+            res@metadata$station <- time$Station[1]
+            time$Station <- NULL
+            names <- names(time)
+        }
+        ## Change the following names.
+        ## DateTime Temp DewPointTemp RelHumidity WindDir WindSpeed Visibility Pressure Humidex WindChill Weather 
+        if ("WindDir" %in% names)
+            time$WindDir <- 10 * time$WindDir
+        if ("WindSpeed" %in% names)
+            time$WindSpeed <- (1000 / 3600) * time$WindSpeed
+        names[names=="DateTime"] <- "time"
+        names[names=="Temp"] <- "temperature"
+        names[names=="DewPointTemp"] <- "dewPoint"
+        names[names=="RelHumidity"] <- "humidity"
+        names[names=="WindDir"] <- "direction"
+        names[names=="WindSpeed"] <- "speed"
+        names[names=="Visibility"] <- "visibility"
+        names[names=="Pressure"] <- "pressure"
+        names[names=="Humidex"] <- "humidex"
+        names[names=="WindChill"] <- "windChill"
+        names[names=="Weather"] <- "weather"
+        names(time) <- names
+        for (item in names) {
+            res@data[[item]] <- time[[item]]
+        }
+        if (!("u" %in% names) && !("v" %in% names)) {
+            rpd <- atan2(1, 1) / 45            # radian/degree
+            theta <- (90 - time[["direction"]]) * rpd
+            u <- -time[["speed"]] * sin(theta)
+            v <- -time[["speed"]] * cos(theta)
+            zero <- is.na(time[["direction"]]) | time[["speed"]] == 0
+            u[zero] <- 0
+            v[zero] <- 0
+            res@data$u <- u
+            res@data$v <- v
+        }
+    } else {
+        time <- as.POSIXct(time) # in case it's POSIXlt or a string
+        n <- length(time)
+        if (missing(temperature)) temperature <- rep(NA, n)
+        else if (length(temperature) != n) stop("length of 'temperature' must match length of 'time'")
+        if (missing(pressure)) pressure <- rep(NA, n)
+        else if (length(pressure) != n) stop("length of 'pressure' must match length of 'time'")
+        if (missing(u)) u <- rep(NA, n)
+        else if (length(u) != n) stop("length of 'u' must match length of 'time'")
+        if (missing(v)) v <- rep(NA, n)
+        else if (length(v) != n) stop("length of 'v' must match length of 'time'")
+        res <- new("met", time=time, temperature=temperature, pressure=pressure, u=u, v=v, filename=filename)
+    }
+    res
 }
 
 
@@ -199,23 +263,31 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @details
 #' The data are downloaded with \code{\link[utils]{download.file}}
-#' pointed to the Environment Canada website \url{http://climate.weather.gc.ca},
+#' pointed to the Environment Canada website [1]
 #' using queries that had to be devised by reverse-engineering, since the agency
-#' provides no documentation about the queries. Changes to query format are not
-#' by any means unheard-of; queries that worked in 2016 failed in early 2017, for
-#' example.
+#' does not provide documentation about how to construct queries. Caution: the
+#' query format changes from time to time, so \code{download.met} may work one
+#' day, and fail the next.
 #'
-#' The Station ID that is provided in the \code{id} argument
-#' becomes part of the query used to download the data.
-#' Confusingly, this is \emph{neither} the "Climate ID"
-#' \emph{nor} the "WMO ID". Instead, it seems to be a creation of Environment
-#' Canada.  Even worse, the Environment Canada documents state that the ID for 
-#' a particular location may be changed at any time. Users are therefore advised to
-#' look up the codes at
-#' \code{ftp://ftp.tor.ec.gc.ca/Pub/Get_More_Data_Plus_de_donnees//Station Inventory EN.csv}
-#' before using this function. This file can be searched by city name, and in other
-#' ways.  (A future version of \code{download.met} might use this file, if enough
-#' users request this feature.)
+#' The constructed query contains Station ID, as provided in the \code{id} argument.
+#' Note that this seems to be a creation of Environment Canada, alone;
+#' it is distinct from the more standard "Climate ID" and "WMO ID".
+#' To make things more difficult, Environment Canada states that the
+#' Station ID is subject to change over time. (Whether this applies to existing
+#' data is unclear.)
+#'
+#' Given these difficulties with Station ID, users are advised to consult
+#' the Environment Canada website [1] before downloading any data,
+#' and to check it from time to time
+#' during the course of a research project, to see if the Station ID has changed.
+#' Another approach, would be to use Gavin Simpson's
+#' \code{canadaHCD} package [2] to look up Station IDs. This package maintains
+#' a copy of the Environment Canada listing of stations, and its
+#' \code{find_station} function provides an easy way to determine Station IDs.
+#' After that, its \code{hcd_hourly} function (and related functions) make
+#' it easy to read data. These data can then be converted to the 
+#' \code{met} class with \code{\link{as.met}}, although doing so leaves
+#' many important metadata blank.
 #'
 #' @param id A number giving the "Station ID" of the station of interest. If not
 #' provided, \code{id} defaults to 6358, for Halifax International Airport. See
@@ -240,16 +312,25 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' library(oce)
 #' ## Download data for Halifax International Airport, in September
 #' ## of 2003. (This dataset is used for data(met) provided with oce.)
-#' metFileName <- download.met(6358, 2003, 9)
+#' metFile <- download.met(6358, 2003, 9, destdir=".")
+#' met <- read.met(metFile)
 #'}
 #'
 #' @seealso The work is done with \code{\link[utils]{download.file}}.
 #'
 #' @template downloadWarningTemplate
 #'
+#' @references
+#' 1. Environment Canada website for Historical Climate Data
+#' \url{http://climate.weather.gc.ca/index_e.html}
+#'
+#' 2. Gavin Simpon's \code{canadaHCD} package on GitHub
+#' \url{https://github.com/gavinsimpson/canadaHCD}
+#'
 #' @family functions that download files
 #' @family things related to \code{met} data
-download.met <- function(id, year, month, destdir="~/data/met", destfile, debug=getOption("oceDebug"))
+download.met <- function(id, year, month, destdir="~/data/met", destfile,
+                         debug=getOption("oceDebug"))
 {
     if (missing(id))
         id <- 6358
@@ -355,19 +436,19 @@ metNames2oceNames <- function(names, scheme)
 
 
 
-#' @title Read a Met File
+#' @title Read a met File
 #'
 #' @description
-#' Reads a comma-separated value file in the format used by the Meteorological
-#' Service of Canada (MSC).  The agency does not publish a format for these
+#' Reads a comma-separated value file in the format used by the Environment
+#' Canada [1].  The agency does not publish a format for these
 #' files, so this function was based on a study of a few sample files, and it
-#' may fail for other files, if MSC changes the format.
+#' may fail for other files, if Environment Canada changes the format.
 #'
 #' @param file a connection or a character string giving the name of the file
 #' to load.
 #' @param type if \code{NULL}, then the first line is studied, in order to
 #' determine the file type.  If \code{type="msc"}, then a file as formatted by
-#' the Meteorological Service of Canada is assumed.
+#' Environment Canada is assumed.
 #' @param skip optional number of lines of header that occur before the actual
 #' data.  If this is not supplied, \code{read.met} scans the file until it
 #' finds a line starting with \code{"Date/Time"}, and considers all lines above
@@ -392,6 +473,10 @@ metNames2oceNames <- function(names, scheme)
 #' met <- read.met("ile-rouge-eng-hourly-06012008-06302008.csv")
 #' plot(met, which=3:4)
 #' }
+#'
+#' @references
+#' 1. Environment Canada website for Historical Climate Data
+#' \url{http://climate.weather.gc.ca/index_e.html}
 #'
 #' @family things related to \code{met} data
 read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOption("oceDebug"))
