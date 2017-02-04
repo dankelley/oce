@@ -18,11 +18,9 @@
 #' may be accessed as \code{m[["temperature"]]}, dew point (in degC) as
 #' \code{m[["dewPoint"]]}, pressure (in kPa) as \code{m[["pressure"]]},
 #' eastward wind component (in m/s) as \code{m[["u"]]}, northward wind
-#' component (in m/s) as \code{m[["v"]]}.  \strong{Caution:} the other elements
-#' stored in the dataset are mainly in the format of the source file, and thus
-#' their use requires some extra knowledge; for example,
-#' \code{m[["direction"]]} yields the wind direction, measured in 10-degree
-#' units positive clockwise from North.  The filename from which the data came
+#' component (in m/s) as \code{m[["v"]]}, and wind direction (in degrees
+#' clockwise of North) as \code{"direction"}.
+#' The filename from which the data came
 #' (if any) may be found with \code{m[["filename"]]}.  Items in \code{metadata}
 #' must be specifield by full name, but those in \code{data} may be
 #' abbreviated, so long as the abbreviation is unique.
@@ -383,9 +381,8 @@ metNames2oceNames <- function(names, scheme)
 #' m/s and are the components of the vector of wind direction.  In other words,
 #' the oceanographic convention on velocity is employed, not the meteorological
 #' one; the weather forecaster's "North wind" has positive \code{v} and zero
-#' \code{u}.  In addition to these things, \code{data} also contains items
-#' called \code{wind} (in km/h) and \code{direction} (in tenths of a degree),
-#' taken straight from the data file.
+#' \code{u}.  In addition to these things, \code{data} also contains 
+#' \code{wind} (in km/h), taken straight from the data file.
 #' @section Note: There seem to be several similar formats in use, so this
 #' function may not work in all cases.
 #' @author Dan Kelley
@@ -452,11 +449,11 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
     names(rawData) <- metNames2oceNames(names, "met")
     ## Quite a lot of things ae in weird units (km/h instead of m/s etc), so we will need to do some conversions.
     rawData[["speed"]] <- rawData[["wind"]] * 1000 / 3600 # convert km/h to m/s
-
+    rawData[["direction"]] <- 10 * rawData[["direction"]] # convert 10s of degrees to degrees
 
     ## Note (90 - ) to get from "clockwise from north" to "anticlockwise from east"
     rpd <- atan2(1, 1) / 45            # radian/degree
-    theta <- (90 - 10 * rawData[["direction"]]) * rpd
+    theta <- (90 - rawData[["direction"]]) * rpd
     ## Note the (-) to get from "wind from" to "wind speed towards"
     rawData[["u"]] <- -rawData[["speed"]] * sin(theta)
     rawData[["v"]] <- -rawData[["speed"]] * cos(theta)
@@ -631,7 +628,7 @@ setMethod(f="plot",
                    } else if (which[w] == 5 && any(!is.na(x@data$v))) {
                        oce.plot.ts(x@data$time, x@data$speed, ylab=resizableLabel("Speed [m/s]", "y"), tformat=tformat)
                    } else if (which[w] == 6) {
-                       oce.plot.ts(x@data$time, 10*x@data$direction, ylab=resizableLabel("Direction [deg]", "y"), tformat=tformat)
+                       oce.plot.ts(x@data$time, x@data$direction, ylab=resizableLabel("Direction [deg]", "y"), tformat=tformat)
                    }
                }
                oceDebug(debug, "} # plot.met()\n", unindent=1)
