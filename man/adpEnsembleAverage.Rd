@@ -4,18 +4,12 @@
 \alias{adpEnsembleAverage}
 \title{Ensemble average an \code{adp} object in time}
 \usage{
-adpEnsembleAverage(x, n = 5, deltat, method, ...)
+adpEnsembleAverage(x, n = 5)
 }
 \arguments{
 \item{x}{an object of class \link{\code{adp-class}}}
 
-\item{n}{number of pings to average together. Must either specify \code{n} or \code{deltat}.}
-
-\item{deltat}{amount of time within which to average pings (not currently implemented)}
-
-\item{method}{method to use for constructing average. Default is to use \code{mean()} with the \code{na.rm=TRUE} argument to ignore any missing data. Can also be a user specified function, which takes a vector of numbers and returns a single value.}
-
-\item{...}{extra arguments for the \code{method} function}
+\item{n}{number of pings to average together.}
 }
 \value{
 A reduced object of \link{\code{adp-class}} with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.

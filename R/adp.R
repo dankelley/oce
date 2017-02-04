@@ -3035,10 +3035,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 ##' 
 ##' @title Ensemble average an \code{adp} object in time
 ##' @param x an object of class \link{\code{adp-class}}
-##' @param n number of pings to average together. Must either specify \code{n} or \code{deltat}.
-##' @param deltat amount of time within which to average pings (not currently implemented)
-##' @param method method to use for constructing average. Default is to use \code{mean()} with the \code{na.rm=TRUE} argument to ignore any missing data. Can also be a user specified function, which takes a vector of numbers and returns a single value.
-##' @param ... extra arguments for the \code{method} function
+##' @param n number of pings to average together.
 ##' @return A reduced object of \link{\code{adp-class}} with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.
 ##' @author Clark Richards
 ##' @examples
@@ -3049,7 +3046,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 ##' plot(adpAvg)
 ##' 
 ##' @family things related to \code{adp} data
-adpEnsembleAverage <- function(x, n=5, deltat, method, ...) {
+adpEnsembleAverage <- function(x, n=5) {
     if (!inherits(x, 'adp')) error('Must be an object of class adp')
     if (!missing(deltat)) error('deltat method not yet implemented. Use argument `n` instead')
     if (missing(method)) method <- mean
@@ -3072,6 +3069,10 @@ adpEnsembleAverage <- function(x, n=5, deltat, method, ...) {
                     for (i in 1:fdim[2]) {
                         res@data[[field]][, i, j] <- binAverage(pings, d[[field]][, i, j], xinc=n)$y
                     }
+                }
+                if (is.raw(d[[field]])) {
+                    dims <- dim(res@data[[field]])
+                    res@data[[field]] <- array(as.raw(res@data[[field]]), dim=dims)
                 }
             }
         }
