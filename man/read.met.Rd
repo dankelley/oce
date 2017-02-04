@@ -2,7 +2,7 @@
 % Please edit documentation in R/met.R
 \name{read.met}
 \alias{read.met}
-\title{Read a Met File}
+\title{Read a met File}
 \usage{
 read.met(file, type = NULL, skip, tz = getOption("oceTz"),
   debug = getOption("oceDebug"))
@@ -13,7 +13,7 @@ to load.}
 
 \item{type}{if \code{NULL}, then the first line is studied, in order to
 determine the file type.  If \code{type="msc"}, then a file as formatted by
-the Meteorological Service of Canada is assumed.}
+Environment Canada is assumed.}
 
 \item{skip}{optional number of lines of header that occur before the actual
 data.  If this is not supplied, \code{read.met} scans the file until it
@@ -36,10 +36,10 @@ one; the weather forecaster's "North wind" has positive \code{v} and zero
 \code{wind} (in km/h), taken straight from the data file.
 }
 \description{
-Reads a comma-separated value file in the format used by the Meteorological
-Service of Canada (MSC).  The agency does not publish a format for these
+Reads a comma-separated value file in the format used by the Environment
+Canada [1].  The agency does not publish a format for these
 files, so this function was based on a study of a few sample files, and it
-may fail for other files, if MSC changes the format.
+may fail for other files, if Environment Canada changes the format.
 }
 \section{Note}{
  There seem to be several similar formats in use, so this
@@ -55,6 +55,10 @@ plot(met, which=3:4)
 }
 \author{
 Dan Kelley
+}
+\references{
+1. Environment Canada website for Historical Climate Data
+\url{http://climate.weather.gc.ca/index_e.html}
 }
 \seealso{
 Other things related to \code{met} data: \code{\link{[[,met-method}},

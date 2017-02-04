@@ -3,7 +3,7 @@
 \docType{methods}
 \name{subset,met-method}
 \alias{subset,met-method}
-\title{Subset a Met Object}
+\title{Subset a met Object}
 \usage{
 \S4method{subset}{met}(x, subset, ...)
 }

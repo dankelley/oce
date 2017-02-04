@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,met-method}
 \alias{summary,met-method}
-\title{Summarize a Met Object}
+\title{Summarize a met Object}
 \usage{
 \S4method{summary}{met}(object, ...)
 }
