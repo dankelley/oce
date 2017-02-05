@@ -4,7 +4,7 @@
 \alias{download.met}
 \title{Download and Cache a met File}
 \usage{
-download.met(id, year, month, destdir = "~/data/met", destfile,
+download.met(id, year, month, deltat, destdir = "~/data/met", destfile,
   debug = getOption("oceDebug"))
 }
 \arguments{
@@ -12,11 +12,16 @@ download.met(id, year, month, destdir = "~/data/met", destfile,
 provided, \code{id} defaults to 6358, for Halifax International Airport. See
 \dQuote{Details}.}
 
-\item{year}{A number giving the year of interest. This defaults to the present
-year, if not given.}
+\item{year}{A number giving the year of interest. Ignored unless \code{deltat}
+is \code{"hour"}. If \code{year} is not given, it defaults to the present year.}
 
-\item{month}{A number giving the month of interest. This defaults to the present
-month, if not given.}
+\item{month}{A number giving the month of interest. Ignored unless \code{deltat}
+is \code{"hour"}. If \code{month} is not given, it defaults to the present
+month.}
+
+\item{deltat}{Optional character string indicating the time step of the
+desired dataset. This may be \code{"hour"} or \code{"month"}.
+If \code{deltat} is not given, it defaults to \code{"hour"}.}
 
 \item{destdir}{Optional string indicating the directory in which to store
 downloaded files. If not supplied, \code{"."} is used, i.e. the data file

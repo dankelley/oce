@@ -2,6 +2,7 @@
 .RData
 .travis.yml
 ^.*.nc$
+^.*.csv$
 create_data
 README_developers.md
 R/.*.swo

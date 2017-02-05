@@ -68,7 +68,7 @@ setMethod(f="[[<-",
 #' @details
 #' The data file was downloaded with
 #' \preformatted{
-#'metFile <- download.met(6358, 2003, 9, destdir=".")
+#'metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
 #'met <- read.met(metFile)
 #'met <- oceSetData(met, "time", met[["time"]]+4*3600,
 #'                  note="add 4h to local time to get UTC time")
@@ -293,11 +293,16 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' provided, \code{id} defaults to 6358, for Halifax International Airport. See
 #' \dQuote{Details}.
 #'
-#' @param year A number giving the year of interest. This defaults to the present
-#' year, if not given.
+#' @param year A number giving the year of interest. Ignored unless \code{deltat}
+#' is \code{"hour"}. If \code{year} is not given, it defaults to the present year.
 #'
-#' @param month A number giving the month of interest. This defaults to the present
-#' month, if not given.
+#' @param month A number giving the month of interest. Ignored unless \code{deltat}
+#' is \code{"hour"}. If \code{month} is not given, it defaults to the present
+#' month.
+#'
+#' @param deltat Optional character string indicating the time step of the
+#' desired dataset. This may be \code{"hour"} or \code{"month"}.
+#' If \code{deltat} is not given, it defaults to \code{"hour"}.
 #'
 #' @template downloadDestTemplate
 #'
@@ -329,36 +334,52 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @family functions that download files
 #' @family things related to \code{met} data
-download.met <- function(id, year, month, destdir="~/data/met", destfile,
+download.met <- function(id, year, month, deltat, destdir="~/data/met", destfile,
                          debug=getOption("oceDebug"))
 {
     if (missing(id))
         id <- 6358
     id <- as.integer(id)
-    today <- as.POSIXlt(Sys.time())
-    if (missing(year))
-        year <- today$year + 1900
-    if (missing(month)) {
-        month <- today$mon + 1         # so 1=jan etc
-        month <- month - 1             # we want *previous* month, which should have data
-        if (month == 1) {
-            year <- year - 1
-            month <- 12
+    if (missing(deltat))
+        deltat <- "hour"
+    deltatChoices <- c("hour", "month") # FIXME: add "day"
+    deltatIndex <- pmatch(deltat, deltatChoices)
+    if (is.na(deltatIndex))
+        stop("deltat=\"", deltat, "\" is not supported; try \"hour\" or \"month\"")
+    deltat <- deltatChoices[deltatIndex]
+    if (deltat == "hour") {
+        today <- as.POSIXlt(Sys.time())
+        if (missing(year))
+            year <- today$year + 1900
+        if (missing(month)) {
+            month <- today$mon + 1         # so 1=jan etc
+            month <- month - 1             # we want *previous* month, which should have data
+            if (month == 1) {
+                year <- year - 1
+                month <- 12
+            }
         }
+        ## Next line is an example that worked as of Feb 2, 2017
+        ## http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=6358&Year=2003&Month=9&timeframe=1&submit=Download+Data
+        url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=",
+                     id, "&Year=", year, "&Month=", month, "&timeframe=1&submit=Download+Data", sep="")
+        if (missing(destfile))
+            destfile <- sprintf("met_%d_hourly_%04d_%02d_%02d.csv", id, year, month, 1)
+    } else if (deltat == "month") {
+        ## Next line reverse engineered from monthly data at Resolute. I don't imagine we
+        ## need Year and Month and Day.
+        url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?stationID=",
+                     id, "&format=csv&timeframe=3&submit=Download+Data", sep="")
+                     ##id, "&Year=2000&Month=1&Day=14&format=csv&timeframe=3&submit=%20Download+Data", sep="")
+        if (missing(destfile))
+            destfile <- sprintf("met_%d_monthly.csv", id)
+    } else {
+        stop("deltat must be \"hour\" or \"month\"")
     }
-    ## Next line is an example that worked as of Feb 2, 2017
-    ## http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=6358&Year=2003&Month=9&timeframe=1&submit=Download+Data
-    url <- paste("http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=",
-                 id, "&Year=", year, "&Month=", month, "&timeframe=1&submit=Download+Data", sep="")
-    oceDebug(debug, "url:", url, "\n")
-    if (missing(destfile))
-        destfile <- sprintf("met_%d_%d_%02d_%02d.csv", id, year, month, 1)
-    oceDebug(debug, "destdir:", destdir, "\n")
-    oceDebug(debug, "destfile:", destfile, "\n")
     destination <- paste(destdir, destfile, sep="/")
-    oceDebug(debug, "destination:", destination, "\n")
+    oceDebug(debug, "url:", url, "\n")
     if (1 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
-        oceDebug(debug, "Not downloading", destfile, "because it is already present in", destdir, "\n")
+        oceDebug(debug, "Not downloading \"", destfile, "\" because it is already present in the \"", destdir, "\" directory\n", sep="")
     } else {
         download.file(url, destination)
         oceDebug(debug, "Downloaded file stored as '", destination, "'\n", sep="")
