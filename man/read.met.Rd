@@ -48,7 +48,11 @@ function may not work in all cases.
 \examples{
 \dontrun{
 library(oce)
-met <- read.met("ile-rouge-eng-hourly-06012008-06302008.csv")
+# Recreate data(met) and plot u(t) and v(t)
+metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
+met <- read.met(metFile)
+met <- oceSetData(met, "time", met[["time"]]+4*3600,
+                 note="add 4h to local time to get UTC time")
 plot(met, which=3:4)
 }
 

@@ -64,7 +64,7 @@ Given these difficulties with Station ID, users are advised to consult
 the Environment Canada website [1] before downloading any data,
 and to check it from time to time
 during the course of a research project, to see if the Station ID has changed.
-Another approach, would be to use Gavin Simpson's
+Another approach would be to use Gavin Simpson's
 \code{canadaHCD} package [2] to look up Station IDs. This package maintains
 a copy of the Environment Canada listing of stations, and its
 \code{find_station} function provides an easy way to determine Station IDs.

@@ -197,7 +197,6 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
     if (missing(time)) stop("must provide time")
     if (inherits(time, "data.frame")) {
         ## Try to see whether this was created by a function in the canadaHCL package
-        canadaHCL <- inherits(time, "tbl") && "DateTime" %in% names(time)
         ## Copy the data, renaming some things that we know are named differently
         ## in canadaHSD::hcd_hourly().
         res <- new("met")
@@ -280,7 +279,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' the Environment Canada website [1] before downloading any data,
 #' and to check it from time to time
 #' during the course of a research project, to see if the Station ID has changed.
-#' Another approach, would be to use Gavin Simpson's
+#' Another approach would be to use Gavin Simpson's
 #' \code{canadaHCD} package [2] to look up Station IDs. This package maintains
 #' a copy of the Environment Canada listing of stations, and its
 #' \code{find_station} function provides an easy way to determine Station IDs.
@@ -420,6 +419,33 @@ metNames2oceNames <- function(names, scheme)
         if (scheme == "ODF") {
             res <- ODFNames2oceNames(ODFnames=names, ODFunits=NULL)
         } else if (scheme == "met") {
+            ## next block handles monthly data
+            if (1 == length(i <- grep("^Date\\.Time$", res))) res[i] <- "DateTime"
+            if (1 == length(i <- grep("^Year$", res))) res[i] <- "Year"
+            if (1 == length(i <- grep("^Month$", res))) res[i] <- "Month"
+            if (1 == length(i <- grep("^Mean\\.Max\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "temperatureMaximum"
+            if (1 == length(i <- grep("^Extr\\.Max\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "temperatureExtraMaximum"
+            if (1 == length(i <- grep("^Extr\\.Max\\.Temp\\.Flag$", res))) res[i] <- "temperatureExtraMaximumFlag"
+            if (1 == length(i <- grep("^Mean\\.Min\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "temperatureMinimum"
+            if (1 == length(i <- grep("^Extr\\.Min\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "temperatureExtraMinimum"
+            if (1 == length(i <- grep("^Extr\\.Min\\.Temp\\.Flag$", res))) res[i] <- "temperatureExtraMinimumFlag"
+            if (1 == length(i <- grep("^Mean\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "temperature"
+            if (1 == length(i <- grep("^Mean\\.Max\\.Temp\\.Flag$", res))) res[i] <- "temperatureMaximumFlag"
+            if (1 == length(i <- grep("^Mean\\.Min\\.Temp\\.Flag$", res))) res[i] <- "temperatureMinimumFlag"
+            if (1 == length(i <- grep("^Mean\\.Temp\\.Flag$", res))) res[i] <- "temperatureFlag"
+            if (1 == length(i <- grep("^Total\\.Rain\\.\\.mm\\.$", res))) res[i] <- "rain"
+            if (1 == length(i <- grep("^Total\\.Rain\\.Flag$", res))) res[i] <- "rainFlag"
+            if (1 == length(i <- grep("^Total\\.Snow\\.\\.cm\\.$", res))) res[i] <- "snow"
+            if (1 == length(i <- grep("^Snow\\.Grnd\\.Last\\.Day\\.\\.cm\\.$", res))) res[i] <- "snowGroundLastDay"
+            if (1 == length(i <- grep("^Snow\\.Grnd\\.Last\\.Day\\.Flag$", res))) res[i] <- "snowGroundLastDayFlag"
+            if (1 == length(i <- grep("^Total\\.Snow\\.Flag$", res))) res[i] <- "snowFlag"
+            if (1 == length(i <- grep("^Total\\.Precip\\.\\.mm", res))) res[i] <- "precipitation"
+            if (1 == length(i <- grep("^Total\\.Precip\\.Flag", res))) res[i] <- "precipitationFlag"
+            if (1 == length(i <- grep("^Dir\\.of\\.Max\\.Gust\\.\\.10\\.s\\.deg\\.$", res))) res[i] <- "directionMaximumGust"
+            if (1 == length(i <- grep("^Dir\\.of\\.Max\\.Gust\\.Flag$", res))) res[i] <- "directionMaximumGustFlag"
+            if (1 == length(i <- grep("^Spd\\.of\\.Max\\.Gust\\.\\.km\\.h\\.$", res))) res[i] <- "speedMaximumGust"
+            if (1 == length(i <- grep("^Spd\\.of\\.Max\\.Gust\\.Flag$", res))) res[i] <- "speedMaximumGustFlag"
+            ## next block handles hourly data
             if (1 == length(i <- grep("^Data\\.Quality$", res))) res[i] <- "dataQuality"
             if (1 == length(i <- grep("^Dew\\.Point\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "dewPoint"
             if (1 == length(i <- grep("^Dew\\.Point\\.Temp\\.Flag$", res))) res[i] <- "dewPointFlag"
@@ -489,11 +515,15 @@ metNames2oceNames <- function(names, scheme)
 #' function may not work in all cases.
 #' @author Dan Kelley
 #' @examples
-#' \dontrun{
-#' library(oce)
-#' met <- read.met("ile-rouge-eng-hourly-06012008-06302008.csv")
-#' plot(met, which=3:4)
-#' }
+#'\dontrun{
+#'library(oce)
+#'# Recreate data(met) and plot u(t) and v(t)
+#'metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
+#'met <- read.met(metFile)
+#'met <- oceSetData(met, "time", met[["time"]]+4*3600,
+#'                  note="add 4h to local time to get UTC time")
+#'plot(met, which=3:4)
+#'}
 #'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
@@ -550,30 +580,50 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
     res@metadata$TCIdentifier <- TCIdentifier
     res@metadata$filename <- filename
     rawData <- read.csv(text=text, skip=skip, encoding="latin1", header=TRUE)
-    time <- strptime(paste(rawData$Year, rawData$Month, rawData$Day, rawData$Time), "%Y %m %d %H:%M", tz=tz)
     names <- names(rawData)
+    ## FIXME: handle daily data, if the column names differ
+    if ("Day" %in% names && "Time" %in% names) {
+        ## hourly data
+        time <- strptime(paste(rawData$Year, rawData$Month, rawData$Day, rawData$Time),
+                         "%Y %m %d %H:%M", tz=tz)
+    } else {
+        ## monthly data
+        time <- ISOdatetime(rawData$Year, rawData$Month, 15, 0, 0, 0, tz="UTC")
+    }
+    ## deltat <- if ("Date.Time" %in% names) "monthly" else "hourly"
+    ## print(data.frame(old=names, new=metNames2oceNames(names, "met")))
     names(rawData) <- metNames2oceNames(names, "met")
+    names <- names(rawData)            # now names is in oce convention
+    ## add a proper time column
+    #browser()
     ## Quite a lot of things ae in weird units (km/h instead of m/s etc), so we will need to do some conversions.
-    rawData[["speed"]] <- rawData[["wind"]] * 1000 / 3600 # convert km/h to m/s
-    rawData[["direction"]] <- 10 * rawData[["direction"]] # convert 10s of degrees to degrees
+    if ("wind" %in% names)
+        rawData[["speed"]] <- rawData[["wind"]] * 1000 / 3600 # convert km/h to m/s
+    if ("direction" %in% names)
+        rawData[["direction"]] <- 10 * rawData[["direction"]] # convert 10s of degrees to degrees
+    if ("directionMaximumGust" %in% names)
+        rawData[["directionMaximumGust"]] <- 10 * rawData[["directionMaximumGust"]] # convert 10s of degrees to degrees
 
     ## Note (90 - ) to get from "clockwise from north" to "anticlockwise from east"
     rpd <- atan2(1, 1) / 45            # radian/degree
-    theta <- (90 - rawData[["direction"]]) * rpd
-    ## Note the (-) to get from "wind from" to "wind speed towards"
-    rawData[["u"]] <- -rawData[["speed"]] * sin(theta)
-    rawData[["v"]] <- -rawData[["speed"]] * cos(theta)
-    zero <- is.na(rawData[["direction"]]) & rawData[["wind"]] == 0
-    rawData[["u"]][zero] <- 0
-    rawData[["v"]][zero] <- 0
-    rawData[["time"]] <- time
+    ## message("names: ", paste(names, collapse=" "))
+    if ("direction" %in% names && "wind" %in% names) {
+        theta <- (90 - rawData[["direction"]]) * rpd
+        ## Note the (-) to get from "wind from" to "wind speed towards"
+        rawData[["u"]] <- -rawData[["wind"]] * 1000 / 3600 * sin(theta)
+        rawData[["v"]] <- -rawData[["wind"]] * 1000 / 3600 * cos(theta)
+        zero <- is.na(rawData[["direction"]]) & rawData[["wind"]] == 0
+        rawData[["u"]][zero] <- 0
+        rawData[["v"]][zero] <- 0
+    }
+    rawData$time <- time
     res@data <- rawData
     pl <- paste("read.met(\"", filename, "\", type=", if (is.null(type)) "NULL" else type, ", tz=\"", tz, "\")", sep="")
     res@processingLog <- processingLogAppend(res@processingLog, pl)
     names <- names(res@data)
     res@metadata$dataNamesOriginal <- list()
     res@metadata$flags <- list()
-    if ("dewPoint" %in% names) {
+    if ("dataQuality" %in% names) {
         res@metadata$units$dataQuality <- list(unit=expression(), scale="")
         res@metadata$dataNamesOriginal$dataQuality <- "Data Quality"
     }
@@ -585,6 +635,10 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
         res@metadata$units$direction <- list(unit=expression(degree), scale="")
         res@metadata$dataNamesOriginal$direction <- "-" # we use deg, they use 10deg, so no original name
     }
+    if ("directionMaximumGust" %in% names) {
+        res@metadata$units$directionMaximumGust <- list(unit=expression(degree), scale="")
+        res@metadata$dataNamesOriginal$directionMaximumGust <- "-" # we use deg, they use 10deg, so no original name
+    }
     if ("humidex" %in% names) {
         res@metadata$units$humidex <- list(unit=expression(degree*C), scale="")
         res@metadata$dataNamesOriginal$humidex <- "Hmdx"
@@ -593,17 +647,53 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
         res@metadata$units$humidity <- list(unit=expression(degree*C), scale="ITS-90")
         res@metadata$dataNamesOriginal$humidity <- "Rel Hum (%)"
     }
+    if ("precipitation" %in% names) {
+        res@metadata$units$precipitation <- list(unit=expression(mm), scale="")
+        res@metadata$dataNamesOriginal$precipitation <- "Total Precip (mm)"
+    }
     if ("pressure" %in% names) {
         res@metadata$units$pressure <- list(unit=expression(kPa), scale="")
         res@metadata$dataNamesOriginal$pressure <- "Stn Press (kPa)"
+    }
+    if ("rain" %in% names) {
+        res@metadata$units$rain <- list(unit=expression(mm), scale="")
+        res@metadata$dataNamesOriginal$rain <- "Total Rain (mm)"
+    }
+    if ("snow" %in% names) {
+        res@metadata$units$snow <- list(unit=expression(cm), scale="")
+        res@metadata$dataNamesOriginal$snow<- "Total Snow (cm)"
+    }
+    if ("snowGroundLastDay" %in% names) {
+        res@metadata$units$snowGroundLastDay <- list(unit=expression(cm), scale="")
+        res@metadata$dataNamesOriginal$snowGroundLastDay <- "Snow Grnd Last Day (cm)"
     }
     if ("speed" %in% names) {
         res@metadata$units$speed <- list(unit=expression(m/s), scale="")
         res@metadata$dataNamesOriginal$speed <- "-"
     }
+    if ("speedMaximumGust" %in% names) {
+        res@metadata$units$speedMaximumGust <- list(unit=expression(km/h), scale="")
+        res@metadata$dataNamesOriginal$speedMaximumGust <- "Spd of Max Gust (km/h)"
+    }
     if ("temperature" %in% names) {
         res@metadata$units$temperature <- list(unit=expression(degree*C), scale="ITS-90")
         res@metadata$dataNamesOriginal$temperature <- "Temp (\u00B0C)"
+    }
+    if ("temperatureExtraMaximum" %in% names) {
+        res@metadata$units$temperatureExtraMaximum <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$temperatureExtraMaximum <- "Extr Max Temp (\u00B0C)"
+    }
+    if ("temperatureExtraMinimum" %in% names) {
+        res@metadata$units$temperatureExtraMinimum <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$temperatureExtraMinimum <- "Extr Min Temp (\u00B0C)"
+    }
+     if ("temperatureMaximum" %in% names) {
+        res@metadata$units$temperatureMaximum <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$temperatureMaximum <- "Mean Max Temp (\u00B0C)"
+    }
+    if ("temperatureMinimum" %in% names) {
+        res@metadata$units$temperatureMinimum <- list(unit=expression(degree*C), scale="ITS-90")
+        res@metadata$dataNamesOriginal$temperatureMinimum <- "Mean Min Temp (\u00B0C)"
     }
     if ("u" %in% names) res@metadata$units$u <- list(unit=expression(m/s), scale="")
     if ("v" %in% names) res@metadata$units$v <- list(unit=expression(m/s), scale="")
@@ -625,7 +715,14 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
         res@metadata$dataNamesOriginal$windChill <- "Wind Chill"
     }
     ## move flags from data to metadata@flags
-    for (flagType in c("dewPoint", "direction", "humidex", "humidity", "pressure", "temperature", "visibility", "wind",
+    for (flagType in c("dewPoint",
+                       "direction", "directionMaximumGust",
+                       "humidex", "humidity", "pressure",
+                       "temperature", "temperatureMinimum", "temperatureMaximum",
+                       "temperatureExtra", "temperatureExtraMinimum", "temperatureExtraMaximum",
+                       "precipitation", "rain", "snow", "snowGroundLastDay",
+                       "speed", "speedMaximumGust",
+                       "visibility", "wind",
                        "windChill")) {
         flagName <- paste(flagType, "Flag", sep="")
         if (flagName %in% names) {
@@ -637,6 +734,7 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
     ## and just because the agency repeats things, that's no reason for us to do the same.
     ## (I would listen to argumetns to retain these, however.)
     res@data$Date.Time <- NULL # no need for this
+    res@data$DateTime <- NULL # no need for this
     res@data$Year <- NULL # no need for this
     res@data$Month <- NULL # no need for this
     res@data$Day <- NULL # no need for this
@@ -721,17 +819,18 @@ setMethod(f="plot",
                    par(mfrow=c(nw, 1), mgp=mgp, mar=mar)
                else
                    par(mgp=mgp, mar=mar)
+               dnames <- names(x@data)
                for (w in 1:nw) {
                    oceDebug(debug, "which=", w, "\n")
                    if (which[w] == 1 && any(!is.na(x@data$temperature))) {
                        oce.plot.ts(x@data$time, x@data$temperature, ylab=resizableLabel("T", "y"), tformat=tformat)
-                   } else if (which[w] == 2 && any(!is.na(x@data$pressure))) {
+                   } else if (which[w] == 2 && "pressure" %in% dnames && any(!is.na(x@data$pressure))) {
                        oce.plot.ts(x@data$time, x@data$pressure, ylab="Pressure [kPa]", tformat=tformat)
-                   } else if (which[w] == 3 && any(!is.na(x@data$u))) {
+                   } else if (which[w] == 3 && "u" %in% dnames && any(!is.na(x@data$u))) {
                        oce.plot.ts(x@data$time, x@data$u, ylab=resizableLabel("u [m/s]", "y"), tformat=tformat)
-                   } else if (which[w] == 4 && any(!is.na(x@data$v))) {
+                   } else if (which[w] == 4 && "v" %in% dnames && any(!is.na(x@data$v))) {
                        oce.plot.ts(x@data$time, x@data$v, ylab=resizableLabel("v [m/s]", "y"), tformat=tformat)
-                   } else if (which[w] == 5 && any(!is.na(x@data$v))) {
+                   } else if (which[w] == 5 && "speed" %in% dnames && any(!is.na(x@data$speed))) {
                        oce.plot.ts(x@data$time, x@data$speed, ylab=resizableLabel("Speed [m/s]", "y"), tformat=tformat)
                    } else if (which[w] == 6) {
                        oce.plot.ts(x@data$time, x@data$direction, ylab=resizableLabel("Direction [deg]", "y"), tformat=tformat)
