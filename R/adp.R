@@ -3048,9 +3048,6 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 ##' @family things related to \code{adp} data
 adpEnsembleAverage <- function(x, n=5) {
     if (!inherits(x, 'adp')) error('Must be an object of class adp')
-    if (!missing(deltat)) error('deltat method not yet implemented. Use argument `n` instead')
-    if (missing(method)) method <- mean
-    if (!is.function(method)) error('method must be a function')
     res <- new('adp', distance=x[['distance']])
     res@metadata <- x@metadata
     d <- x@data
@@ -3064,10 +3061,16 @@ adpEnsembleAverage <- function(x, n=5) {
                 res@data[[field]] <- binAverage(pings, d[[field]], xinc=n)$y
             } else if (is.array(d[[field]])) {
                 fdim <- dim(d[[field]])
-                res@data[[field]] <- array(NA, dim=c(length(res@data[['time']]), fdim[2], fdim[3]))
-                for (j in 1:fdim[3]) {
-                    for (i in 1:fdim[2]) {
-                        res@data[[field]][, i, j] <- binAverage(pings, d[[field]][, i, j], xinc=n)$y
+                cat(field, '\n')
+                browser()
+                res@data[[field]] <- array(NA, dim=c(length(res@data[['time']]), fdim[-1]))
+                for (j in 1:tail(fdim, 1)) {
+                    if (length(fdim) == 2) { # for fields like bottom range
+                        res@data[[field]][, j] <- binAverage(pings, d[[field]][, j], xinc=n)$y
+                    } else if (length(fdim) == 3) { # for array fields like v, a, q, etc
+                        for (i in 1:fdim[2]) {
+                            res@data[[field]][, i, j] <- binAverage(pings, d[[field]][, i, j], xinc=n)$y
+                        }
                     }
                 }
                 if (is.raw(d[[field]])) {
