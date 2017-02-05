@@ -3061,8 +3061,6 @@ adpEnsembleAverage <- function(x, n=5) {
                 res@data[[field]] <- binAverage(pings, d[[field]], xinc=n)$y
             } else if (is.array(d[[field]])) {
                 fdim <- dim(d[[field]])
-                cat(field, '\n')
-                browser()
                 res@data[[field]] <- array(NA, dim=c(length(res@data[['time']]), fdim[-1]))
                 for (j in 1:tail(fdim, 1)) {
                     if (length(fdim) == 2) { # for fields like bottom range
