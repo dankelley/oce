@@ -1335,6 +1335,16 @@ setMethod(f="plot",
 #' # 1. Default: anything not flagged as 1 is set to NA, to focus
 #' # solely on 'good', in the Argo scheme.
 #' argoNew <- handleFlags(argo)
+#' # demonstrate replacement, looking at the second profile
+#' f <- argo[["salinityFlag"]][,2] # first column with a flag=4 entry
+#' df <- data.frame(flag=f, orig=argo[["salinity"]][,2], new=argoNew[["salinity"]][,2])
+#' df[11:15,]
+#' ##    flag   orig    new
+#' ## 11    1 35.207 35.207
+#' ## 12    1 35.207 35.207
+#' ## 13    4 35.209     NA
+#' ## 14    1 35.207 35.207
+#' ## 15    1 35.207 35.207
 #'
 #' # 2. A less restrictive case: include also 'questionable' data,
 #' # and only apply this action to salinity.
