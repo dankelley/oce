@@ -28,6 +28,7 @@
 #' all the data in the \code{object}'s \code{data} slot are examined.
 #' Each element in the list must be set to an integer or vector of integers,
 #' specifying conditions to be met before actions are to be taken.
+#' See \dQuote{Details} for the default that is used if \code{flags} is not supplied.
 #'
 #' @param actions An optional \code{\link{list}} that contains items with
 #' names that match those in the \code{flags} argument.  If \code{actions}
@@ -37,6 +38,7 @@
 #' functions that calculate replacement values. These are provided
 #' with \code{object} as the single argument, and must return a
 #' replacement for the data item in question.
+#' See \dQuote{Details} for the default that is used if \code{actions} is not supplied.
 #'
 #' @section Implementation status: \code{handleFlags} is a new function as of March 2016,
 #' and it will probably continue to evolve through the rest of 2016.
