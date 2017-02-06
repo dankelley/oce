@@ -626,9 +626,9 @@ data.
 library(oce)
 d <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
 ```
-contains a column named `flags` that consists of a 3-digit number. THe first
+contains a column named `flags` that consists of a 3-digit number. The first
 digit is a flag for temperature, the second for conductivity, and the third for
-oxygen. Compute the individual flags and add them to the metdata of the `ctd` object.
+oxygen. Compute the individual flags and add them to the metadata of the `ctd` object.
 
 ## Using flags to manipulate data
 
