@@ -40,6 +40,8 @@
 #' replacement for the data item in question.
 #' See \dQuote{Details} for the default that is used if \code{actions} is not supplied.
 #'
+#' @template debugTemplate 
+#'
 #' @section Implementation status: \code{handleFlags} is a new function as of March 2016,
 #' and it will probably continue to evolve through the rest of 2016.
 #' Users are asked to be patient, and to provide help by

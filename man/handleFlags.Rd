@@ -4,7 +4,7 @@
 \alias{handleFlags}
 \title{Handle flags in oce objects}
 \usage{
-handleFlags(object, flags, actions)
+handleFlags(object, flags, actions, debug)
 }
 \arguments{
 \item{object}{An object of \code{\link{oce}}.}

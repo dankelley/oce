@@ -235,7 +235,9 @@ value of \code{which} does not match that in the previous plots.}
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 
 \item{...}{Optional arguments passed to plotting functions. A common example is
 to set \code{df}, for use in \link{swN2} calculations.}

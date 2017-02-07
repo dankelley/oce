@@ -5,7 +5,8 @@
 \alias{handleFlags,argo-method}
 \title{Handle Flags in ARGO Objects}
 \usage{
-\S4method{handleFlags}{argo}(object, flags = list(), actions = list())
+\S4method{handleFlags}{argo}(object, flags = list(), actions = list(),
+  debug = integer())
 }
 \arguments{
 \item{object}{An object of \code{\link{argo-class}}.}

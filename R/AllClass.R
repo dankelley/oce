@@ -469,7 +469,7 @@ setMethod("composite",
 #' for \code{flags} and \code{actions}.
 #' @param object An object of \code{\link{oce}}.
 #' @template handleFlagsTemplate
-setGeneric("handleFlags", function(object, flags, actions) {
+setGeneric("handleFlags", function(object, flags, actions, debug) {
            standardGeneric("handleFlags")
          })
 
@@ -478,15 +478,13 @@ setGeneric("handleFlags", function(object, flags, actions) {
 #' @param flags Ignored.
 #' @param actions Ignored.
 setMethod("handleFlags",
-          c(object="vector", flags="ANY", actions="ANY"),
-          function(object, flags=list(), actions=list()) {
+          c(object="vector", flags="ANY", actions="ANY", debug="ANY"),
+          function(object, flags=list(), actions=list(), debug=integer()) {
               stop("handleFlags() can only be applied to objects inheriting from \"oce\"")
           })
 
-handleFlagsInternal <- function(object, flags, actions) {
-    ## message("in handleFlagsInternal")
-    ## message("flags: ", paste(flags, collapse=" "))
-    debug <- options('oceDebug')$oceDebug # avoid an arg for this
+handleFlagsInternal <- function(object, flags, actions, debug) {
+    oceDebug(debug, "handleFlagsInternal() {\n", sep="", unindent=1)
     if (missing(flags)) {
         warning("no flags supplied (internal error; report to developer)")
         return(object)
@@ -495,43 +493,36 @@ handleFlagsInternal <- function(object, flags, actions) {
         warning("no actions supplied (internal error; report to developer)")
         return(object)
     }
+    if (missing(debug))
+        debug <- 0
     if (any(names(flags)!=names(actions)))
         stop("names of flags must match those of actions")
-    if (debug > 1) {
-        cat("in handleFlagsInternal, flags=\n")
-        str(flags)
-        cat("in handleFlagsInternal, actions=\n")
-        str(actions)
-    }
-    if (debug > 1) {
-        cat("flags follows...\n")
-        print(flags)
-        cat("actions follows...\n")
-        print(actions)
-    }
+    oceDebug(debug, "flags=", paste(as.vector(flags), collapse=","), "\n")
     if (length(object@metadata$flags)) {
         all <- is.null(names(flags)) # "ALL" %in% names(flags)
+        oceDebug(debug, "all=", all, "\n")
         if (all && length(flags) > 1)
             stop("if first flag is unnamed, no other flags can be specified")
         if (all && (length(actions) > 1 || !is.null(names(actions))))
             stop("if flags is a list of a single unnamed item, actions must be similar")
-        if (debug > 1)
-            message("all: ", all)
         for (name in names(object@data)) {
-            if (debug > 0)
-                cat(" ", name)
             flagsObject <- object@metadata$flags[[name]]
             if (!is.null(flagsObject)) {
+                dataItemLength <- length(object@data[[name]])
                 ##> message("name: ", name, ", flags: ", paste(object@metadata$flags[[name]], collapse=" "))
-                flagsThis<- if (all) flags[[1]] else flags[[name]]
+                flagsThis <- if (all) flags[[1]] else flags[[name]]
+                oceDebug(debug, "flagsThis=", paste(flagsThis, collapse=","), "\n")
+                oceDebug(debug, "flags[", name, "]=", paste(flagsThis, collapse=","), "\n")
                 actionsThis <- if (all) actions[[1]] else actions[[name]]
                 ##> message("flagsThis:");print(flagsThis)
                 if (name %in% names(object@metadata$flags)) {
                     actionNeeded <- object@metadata$flags[[name]] %in% flagsThis
-                    if (debug > 0)
+                    if (debug > 5)
                         print(data.frame(flagsObject=flagsObject, actionNeeded=actionNeeded))
                     if (any(actionNeeded)) {
-                        if (debug > 1) {
+                        oceDebug(debug, "\"", name, "\" has ", dataItemLength, " data, of which ",
+                                 100*sum(actionNeeded)/dataItemLength, "% are flagged\n", sep="")
+                        if (debug > 5) {
                             message("\nactionsThis follows...")
                             print(actionsThis)
                         }
@@ -547,10 +538,11 @@ handleFlagsInternal <- function(object, flags, actions) {
                             stop("action must be a character string or a function")
                         }
                     } else {
-                        if (debug > 0)
-                            message("\nno action needed")
+                        oceDebug(debug, "no action needed\n")
                     }
                 }
+            } else {
+                oceDebug(debug, "\"", name, "\" is not the subject of flags\n", sep="")
             }
         }
     }
@@ -560,5 +552,6 @@ handleFlagsInternal <- function(object, flags, actions) {
                                                       ", actions=",
                                                       substitute(actions, parent.frame()),
                                                       ")", collapse=" ", sep=""))
+    oceDebug(debug, "} # handleFlagsInternal()\n", sep="", unindent=1)
     object
 }

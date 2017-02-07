@@ -1354,8 +1354,8 @@ setMethod(f="plot",
 #'
 #' @family things related to \code{argo} data
 setMethod("handleFlags",
-          c(object="argo", flags="ANY", actions="ANY"),
-          function(object, flags=list(), actions=list()) {
+          c(object="argo", flags="ANY", actions="ANY", debug="ANY"),
+          function(object, flags=list(), actions=list(), debug=integer()) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               ## Default to the Argo QC system, with
               ## flags from 0 to 4, with flag=1 for acceptable data.
@@ -1368,5 +1368,7 @@ setMethod("handleFlags",
               if (any(names(actions)!=names(flags))) {
                   stop("names of flags and actions must match")
               }
-              handleFlagsInternal(object, flags, actions)
+              if (missing(debug))
+                  debug <- 0
+              handleFlagsInternal(object, flags, actions, debug)
           })
