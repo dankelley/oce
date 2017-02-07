@@ -1321,8 +1321,9 @@ setMethod(f="plot",
 #' value 1 indicates good data, and other values indicate either unchecked,
 #' suspicious, or bad data. Any data not flagged as good are set
 #' to \code{NA} in the returned value. Since Argo flag codes run
-#' from 0 to 4, this default is equivalent to
-#' setting \code{flags=list(c(0, 2:4))} along with
+#' from 0 to 9, with 1 indicating the highest level of confidence
+#' in the data, the defaults are
+#' \code{flags=list(c(0,2:9))} and
 #' \code{actions=list("NA")}.
 #' @param object An object of \code{\link{argo-class}}.
 #' @template handleFlagsTemplate
@@ -1359,7 +1360,7 @@ setMethod("handleFlags",
               ## Default to the Argo QC system, with
               ## flags from 0 to 4, with flag=1 for acceptable data.
               if (missing(flags))
-                  flags <- list(c(0, 2:4)) # DEVELOPER 2: alter this line to suit a newdata class
+                  flags <- list(c(0, 2:9)) # DEVELOPER 2: alter this line to suit a newdata class
               if (missing(actions)) {
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
