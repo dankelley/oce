@@ -16,7 +16,8 @@ or (b) a single unnamed item. In the first case, the attention is
 focussed on the named items, while in the second case the 
 all the data in the \code{object}'s \code{data} slot are examined.
 Each element in the list must be set to an integer or vector of integers,
-specifying conditions to be met before actions are to be taken.}
+specifying conditions to be met before actions are to be taken.
+See \dQuote{Details} for the default that is used if \code{flags} is not supplied.}
 
 \item{actions}{An optional \code{\link{list}} that contains items with
 names that match those in the \code{flags} argument.  If \code{actions}
@@ -25,7 +26,8 @@ is not supplied, the default will be to set all values identified by
 specifying \code{actions=list("NA")}. It is also possible to specify 
 functions that calculate replacement values. These are provided
 with \code{object} as the single argument, and must return a
-replacement for the data item in question.}
+replacement for the data item in question.
+See \dQuote{Details} for the default that is used if \code{actions} is not supplied.}
 }
 \description{
 Data-quality flags are stored in the \code{metadata}
@@ -57,8 +59,9 @@ default is to use ARGO flags [1], in which the
 value 1 indicates good data, and other values indicate either unchecked,
 suspicious, or bad data. Any data not flagged as good are set
 to \code{NA} in the returned value. Since Argo flag codes run
-from 0 to 4, this default is equivalent to
-setting \code{flags=list(c(0, 2:4))} along with
+from 0 to 9, with 1 indicating the highest level of confidence
+in the data, the defaults are
+\code{flags=list(c(0,2:9))} and
 \code{actions=list("NA")}.
 }
 \section{Implementation status}{
@@ -75,6 +78,16 @@ data(argo)
 # 1. Default: anything not flagged as 1 is set to NA, to focus
 # solely on 'good', in the Argo scheme.
 argoNew <- handleFlags(argo)
+# demonstrate replacement, looking at the second profile
+f <- argo[["salinityFlag"]][,2] # first column with a flag=4 entry
+df <- data.frame(flag=f, orig=argo[["salinity"]][,2], new=argoNew[["salinity"]][,2])
+df[11:15,]
+##    flag   orig    new
+## 11    1 35.207 35.207
+## 12    1 35.207 35.207
+## 13    4 35.209     NA
+## 14    1 35.207 35.207
+## 15    1 35.207 35.207
 
 # 2. A less restrictive case: include also 'questionable' data,
 # and only apply this action to salinity.

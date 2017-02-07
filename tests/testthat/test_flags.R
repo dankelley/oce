@@ -29,18 +29,30 @@ test_that("handleFLags works with ctd data", {
                        sum(ctd[['salinityFlag']] == 4 | ctd[['salinityFlag']] == 5, na.rm=TRUE))
 })
 
-test_that("handleFLags works with argo data", {
+test_that("handleFLags works with the built-in argo dataset", {
           data(argo)
           argoNew <- handleFlags(argo, flags=list(salinity=4:5))
-          ##print(head(data.frame(oldS=argo[['salinity']], flag=argo[['salinityFlag']], new=argoNew[['salinity']])))
-          ##cat("argo salinity: orig had", sum(is.na(argo[['salinity']])), "NA values; new has",
-          ##    sum(is.na(argoNew[['salinity']])), "\n")
+          ## Test a few that are identified by printing some values
+          ## for argo[["salinityFlag"]]. 
+          expect_true(is.na(argoNew[["salinity"]][13, 2]))
+          expect_true(is.na(argoNew[["salinity"]][53, 8]))
+          ## Test whether data with salinity flag of 4 get changed to NA
+          expect_true(all(is.na(argoNew[["salinity"]][4==argo[["salinityFlag"]]])))
+          expect_true(!all(is.na(argoNew[["salinity"]][1==argo[["salinityFlag"]]])))
+          ## Similar for temperature. First, check that it is *not* NA, with
+          ## the call to handleFlags() above, which was restricted to salinity.
+          expect_true(!is.na(argoNew[["temperature"]][10, 2]))
+          ## Now, handle *all* the flags, and check temperature again, and also salinity.
+          argoNew2 <- handleFlags(argo)
+          expect_true(is.na(argoNew2[["temperature"]][10, 2]))
+          expect_true(all(is.na(argoNew2[["temperature"]][4==argo[["temperatureFlag"]]])))
+          # Tests of overall numbers
           expect_equal(sum(is.na(argo[["salinity"]])), 90)
           expect_equal(sum(is.na(argoNew[["salinity"]])), 110)
           ## test replacement via function
           f <- function(object) rep(30, length.out=length(object[['salinity']]))
-          argoNew2 <- handleFlags(argo, flags=list(salinity=4:5), actions=list(salinity=f))
-          expect_equal(sum(argoNew2[['salinity']]==30, na.rm=TRUE),
+          argoNew3 <- handleFlags(argo, flags=list(salinity=4:5), actions=list(salinity=f))
+          expect_equal(sum(argoNew3[['salinity']]==30, na.rm=TRUE),
                        sum(argo[['salinityFlag']] == 4 | argo[['salinityFlag']] == 5, na.rm=TRUE))
 })
 

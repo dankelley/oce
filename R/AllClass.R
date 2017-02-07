@@ -484,6 +484,8 @@ setMethod("handleFlags",
           })
 
 handleFlagsInternal <- function(object, flags, actions) {
+    ## message("in handleFlagsInternal")
+    ## message("flags: ", paste(flags, collapse=" "))
     debug <- options('oceDebug')$oceDebug # avoid an arg for this
     if (missing(flags)) {
         warning("no flags supplied (internal error; report to developer)")
@@ -507,7 +509,7 @@ handleFlagsInternal <- function(object, flags, actions) {
         cat("actions follows...\n")
         print(actions)
     }
-    if (!is.null(object@metadata$flags) && length(object@metadata$flags)) {
+    if (length(object@metadata$flags)) {
         all <- is.null(names(flags)) # "ALL" %in% names(flags)
         if (all && length(flags) > 1)
             stop("if first flag is unnamed, no other flags can be specified")
@@ -516,7 +518,7 @@ handleFlagsInternal <- function(object, flags, actions) {
         if (debug > 1)
             message("all: ", all)
         for (name in names(object@data)) {
-            if (debug > 1)
+            if (debug > 0)
                 cat(" ", name)
             flagsObject <- object@metadata$flags[[name]]
             if (!is.null(flagsObject)) {

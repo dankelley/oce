@@ -1,6 +1,7 @@
 library(oce)
 library(canadaHCD)
 library(testthat) 
+## devtools::install <- github("gavinsimpson/canadaHCD")
 
 context("met")
 
