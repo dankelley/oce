@@ -1474,6 +1474,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is ctd/woce/exchange\n")
         return("ctd/woce/exchange")
     }
+    if (1 == length(grep("^EXPOCODE", line, useBytes=TRUE))) {
+        oceDebug(debug, "this is ctd/woce/other\n")
+        return("ctd/woce/other")
+    }
     if (1 == length(grep("^\\s*ODF_HEADER", line, useBytes=TRUE))){
         oceDebug(debug, "this is an ODF file\n")
         return("odf")
@@ -1604,6 +1608,8 @@ read.oce <- function(file, ...)
         return(read.ctd.sbe(file, processingLog=processingLog, ...))
     if (type == "ctd/woce/exchange")
         return(read.ctd.woce(file, processingLog=processingLog, ...))
+    if (type == "ctd/woce/other")
+        return(read.ctd.woce.other(file, processingLog=processingLog, ...))
     if (type == "ctd/odf" || type == "mctd/odf" || type == "mvctd/odf")
         return(read.ctd.odf(file, processingLog=processingLog, ...))
     if (length(grep("/odf$", type)))
