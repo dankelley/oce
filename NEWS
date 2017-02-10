@@ -1,4 +1,5 @@
 0.9-21
+- woce-exchange autodetection, plus read all data types
 - download.met() added
 - as.ctd() can specify columns within argo data
 - read.adp.rdi() handles more file types and larger RDI files
