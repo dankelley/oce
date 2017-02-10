@@ -477,6 +477,7 @@ setGeneric("handleFlags", function(object, flags, actions, debug) {
 #' @param object A vector, which cannot be the case for \code{oce} objects.
 #' @param flags Ignored.
 #' @param actions Ignored.
+#' @param debug Ignored.
 setMethod("handleFlags",
           c(object="vector", flags="ANY", actions="ANY", debug="ANY"),
           function(object, flags=list(), actions=list(), debug=integer()) {
@@ -520,7 +521,7 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
                     if (debug > 5)
                         print(data.frame(flagsObject=flagsObject, actionNeeded=actionNeeded))
                     if (any(actionNeeded)) {
-                        oceDebug(debug, "\"", name, "\" has ", dataItemLength, " data, of which ",
+                        oceDebug(debug, "  \"", name, "\" has ", dataItemLength, " data, of which ",
                                  100*sum(actionNeeded)/dataItemLength, "% are flagged\n", sep="")
                         if (debug > 5) {
                             message("\nactionsThis follows...")
@@ -538,7 +539,7 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
                             stop("action must be a character string or a function")
                         }
                     } else {
-                        oceDebug(debug, "no action needed\n")
+                        oceDebug(debug, "  no action needed, since no", name, " data are flagged as stated\n")
                     }
                 }
             } else {

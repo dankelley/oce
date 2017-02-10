@@ -14,6 +14,8 @@
 \item{flags}{Ignored.}
 
 \item{actions}{Ignored.}
+
+\item{debug}{Ignored.}
 }
 \description{
 Signal erroneous application to non-oce objects

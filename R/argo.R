@@ -1365,6 +1365,8 @@ setMethod("handleFlags",
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
               }
+              if (missing(debug))
+                  debug <- getOption("oceDebug")
               if (any(names(actions)!=names(flags))) {
                   stop("names of flags and actions must match")
               }

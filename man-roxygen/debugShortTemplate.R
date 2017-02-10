@@ -5,4 +5,3 @@
 #' be printed. If \code{debug} is not supplied, it defaults to
 #' \code{\link{getOption}("oceDebug")}.
 
-

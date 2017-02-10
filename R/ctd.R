@@ -223,8 +223,8 @@ NULL
 #'
 #' @family things related to \code{ctd} data
 setMethod("handleFlags",
-          c(object="ctd", flags="ANY", actions="ANY"),
-          function(object, flags=list(), actions=list()) {
+          c(object="ctd", flags="ANY", actions="ANY", debug="ANY"),
+          function(object, flags=list(), actions=list(), debug=integer()) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               ## Default to the World Hydrographic Program system, with
               ## flags from 1 to 9, with flag=2 for acceptable data.
@@ -234,17 +234,19 @@ setMethod("handleFlags",
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
               }
+              if (missing(debug))
+                  debug <- getOption("oceDebug")
               if (any(names(actions)!=names(flags))) {
                   stop("names of flags and actions must match")
               }
-              res <- handleFlagsInternal(object, flags, actions)
+              res <- handleFlagsInternal(object, flags, actions, debug)
               if ("salinity" %in% names(res@data) && "salinityBottle" %in% names(res@data)) {
                   nbadOrig <- sum(is.na(res@data$salinity))
                   if (nbadOrig > 0) {
                       res@data$salinity <- ifelse(is.na(res@data$salinity), res@data$salinityBottle, res@data$salinity)
                       nbadLater <- sum(is.na(res@data$salinity))
-                      if (nbadLater < nbadOrig)
-                          warning("Substituted bottle salinities for ", nbadOrig-nbadLater, " levels")
+                      if (debug > 0 && nbadLater < nbadOrig)
+                          cat("In the CTD station named ", object[["station"]], ", substituted bottle salinities for ", nbadOrig-nbadLater, " levels\n", sep="")
                   }
               }
               res
