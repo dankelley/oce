@@ -56,3 +56,18 @@ test_that("handleFLags works with the built-in argo dataset", {
                        sum(argo[['salinityFlag']] == 4 | argo[['salinityFlag']] == 5, na.rm=TRUE))
 })
 
+test_that("handleFLags works with the built-in section dataset", {
+          data(section)
+          SECTION <- handleFlags(section)
+          ## Inspection reveals that salinity are triggered in the first CTD entry, i.e.
+          ## the station named "3" in this dataset.
+
+          ## The default for `handleFlags,ctd-method` is the WOCE standard, with 2=good, 3=bad, ...
+          stn1 <- section[["station", 1]]
+          STN1 <- SECTION[["station", 1]]
+          expect_equal(c(2, 3, 3, 2, 2), stn1[["salinityFlag"]])
+          ok <- which(2 == stn1[["salinityFlag"]])
+          expect_equal(stn1[["salinity"]][ok], STN1[["salinity"]][ok]) 
+          replace <- which(2 != stn1[["salinityFlag"]])
+          expect_equal(stn1[["salinityBottle"]][replace], STN1[["salinity"]][replace]) 
+})

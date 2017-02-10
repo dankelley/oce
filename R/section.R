@@ -137,8 +137,8 @@ setMethod(f="initialize",
 #'
 #' @family things related to \code{section} data
 setMethod("handleFlags",
-          c(object="section", flags="ANY", actions="ANY"),
-          function(object, flags=list(), actions=list()) {
+          c(object="section", flags="ANY", actions="ANY", debug="ANY"),
+          function(object, flags=list(), actions=list(), debug=integer()) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               ## Default to the World Hydrographic Program system, with
               ## flags from 1 to 9, with flag=2 for acceptable data.
@@ -148,12 +148,14 @@ setMethod("handleFlags",
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
               }
+              if (missing(debug))
+                  debug <- getOption("oceDebug")
               if (any(names(actions)!=names(flags))) {
                   stop("names of flags and actions must match")
               }
               res <- object
               for (i in seq_along(res@data$station)) {
-                  res@data$station[[i]] <- handleFlags(res@data$station[[i]], flags, actions)
+                  res@data$station[[i]] <- handleFlags(res@data$station[[i]], flags, actions, debug)
               }
               res
           })

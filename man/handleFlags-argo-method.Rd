@@ -5,7 +5,8 @@
 \alias{handleFlags,argo-method}
 \title{Handle Flags in ARGO Objects}
 \usage{
-\S4method{handleFlags}{argo}(object, flags = list(), actions = list())
+\S4method{handleFlags}{argo}(object, flags = list(), actions = list(),
+  debug = integer())
 }
 \arguments{
 \item{object}{An object of \code{\link{argo-class}}.}
@@ -28,6 +29,13 @@ functions that calculate replacement values. These are provided
 with \code{object} as the single argument, and must return a
 replacement for the data item in question.
 See \dQuote{Details} for the default that is used if \code{actions} is not supplied.}
+
+\item{debug}{An optional integer specifying the degree of debugging, with
+value 0 meaning to skip debugging and 1 or higher meaning to print some
+information about the arguments and the data. It is usually a good idea to set
+this to 1 for initial work with a dataset, to see which flags are being
+handled for each data item. If not supplied, this defaults to the value of
+\code{\link{getOption}("oceDebug")}.}
 }
 \description{
 Data-quality flags are stored in the \code{metadata}
