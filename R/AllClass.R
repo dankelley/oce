@@ -138,7 +138,7 @@ setMethod(f="summary",
                   names(units) <- unitsNames
                   ##> message("units:");str(units)
                   if (!is.null(threes)) {
-                      rownames(threes) <- paste("    ", dataLabel(names, units))
+                      rownames(threes) <- paste("    ", dataLabel(names, units), sep="")
                       colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
                       cat("* Data\n\n")
                       if ("dataNamesOriginal" %in% names(object@metadata)) {
