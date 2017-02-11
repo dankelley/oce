@@ -138,9 +138,9 @@ setMethod(f="summary",
                   names(units) <- unitsNames
                   ##> message("units:");str(units)
                   if (!is.null(threes)) {
-                      rownames(threes) <- paste(dataLabel(names, units))
+                      rownames(threes) <- paste("    ", dataLabel(names, units))
                       colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
-                      cat("* Statistics of data\n\n")
+                      cat("* Data\n\n")
                       if ("dataNamesOriginal" %in% names(object@metadata)) {
                           if (is.list(object@metadata$dataNamesOriginal)) {
                               OriginalName <- unlist(lapply(names, function(n)
@@ -171,6 +171,25 @@ setMethod(f="summary",
                       options(width=owidth$width)
                       cat("\n")
                   }
+              }
+              ## Get flags specifically from metadata; using [["flags"]] could extract
+              ## it from data, if present there and not in metadata (as e.g. with
+              ## the data("ctd") that is provided with oce).
+              flags <- object@metadata$flags
+              if (length(flags)) {
+                  cat("* Data-quality Flags\n\n")
+                  width <- 1 + max(nchar(names(flags)))
+                  for (name in names(flags)) {
+                      padding <- rep(" ", width - nchar(name))
+                      cat("    ", name, ":", padding, sep="")
+                      flagTable <- table(flags[[name]])
+                      flagTableLength <- length(flagTable)
+                      for (i in 1:flagTableLength) {
+                          cat("\"", names(flagTable)[i], "\"", " ", flagTable[i], "", sep="")
+                          if (i != flagTableLength) cat(", ") else cat("\n")
+                      }
+                  }
+                  cat("\n")
               }
               processingLogShow(object)
               invisible(threes)
