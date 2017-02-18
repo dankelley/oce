@@ -339,6 +339,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
                 units[[names[i]]] <- list(unit=expression(degree*C), scale="ITS-90")
             else if (unitsOriginal[i] == "ITS-90 DEGC")
                 units[[names[i]]] <- list(unit=expression(degree*C), scale="ITS-90")
+            else if (unitsOriginal[i] == "IPTS-68")
+                units[[names[i]]] <- list(unit=expression(degree*C), scale="IPTS-68")
             else if (unitsOriginal[i] == "IPTS-68 DEGC")
                 units[[names[i]]] <- list(unit=expression(degree*C), scale="IPTS-68")
             else if (unitsOriginal[i] == "PSU")

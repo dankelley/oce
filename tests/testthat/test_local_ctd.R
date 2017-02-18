@@ -15,6 +15,11 @@ test_that("woce 1", {
               expect_equal(woce[["latitude"]], 47.5483)
               expect_equal(woce[["institute"]], "0513DFOBIOWGH")
               expect_equal(woce[["station"]], 3)
+              ## test units (issue 1194)
+              expect_equal(woce[["pressureUnit"]], list(unit=expression(dbar), scale=""))
+              expect_equal(woce[["temperatureUnit"]], list(unit=expression(degree*C), scale="IPTS-68"))
+              expect_equal(woce[["salinityUnit"]], list(unit=expression(), scale="PSS-78"))
+              expect_equal(woce[["oxygenUnit"]], list(unit=expression(mu*mol/kg), scale=""))
           }
 })
 
