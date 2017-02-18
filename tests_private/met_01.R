@@ -38,4 +38,5 @@ test_that("read.met() works on some files downloaded in 2009", {
           for (file in list.files(path=".", pattern="eng-hourly.*csv")) {
                d <- read.met(file)
           }
-}
+})
+
