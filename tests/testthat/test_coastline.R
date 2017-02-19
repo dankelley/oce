@@ -1,5 +1,4 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
-## test oce.R
 
 library(oce)
 
