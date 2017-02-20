@@ -12,14 +12,14 @@ test_that("enuToOther(adv) test of rotation", {
           ## 2. test with heading shift of 10deg
           heading <- 10 # heading shift
           adv3 <- enuToOther(adv, heading=heading)
-          expect_false(identical(adv3[['v']],adv[['v']]))
-          V <- adv[["v"]][,1:2]
+          expect_false(identical(adv3[['v']], adv[['v']]))
+          V <- adv[["v"]][, 1:2]
           theta <- heading * pi / 180
           S <- sin(theta)
           C <- cos(theta)
-          rotationMatrix <- matrix(c(C,-S,S,C), byrow=TRUE, nrow=2)
+          rotationMatrix <- matrix(c(C, -S, S, C), byrow=TRUE, nrow=2)
           VR <- V %*% rotationMatrix
-          expect_equal(VR[1:5,1], adv3[["v"]][1:5,1])
-          expect_equal(VR[1:5,2], adv3[["v"]][1:5,2])
+          expect_equal(VR[1:5, 1], adv3[["v"]][1:5, 1])
+          expect_equal(VR[1:5, 2], adv3[["v"]][1:5, 2])
 })
  
