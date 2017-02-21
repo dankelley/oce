@@ -38,6 +38,29 @@ woceNames2oceNames <- function(names)
     names
 }
 
+woceUnit2oceUnit <- function(woceUnit)
+{   
+    ## message("woceUnit2oceUnit(\"", woceUnit, "\")", sep="")
+    if (woceUnit == "DB" || woceUnit == "DBAR")
+        return(list(unit=expression(dbar), scale=""))
+    if (woceUnit == "ITS-90" || woceUnit == "ITS-90 DEGC")
+        return(list(unit=expression(degree*C), scale="ITS-90"))
+    if (woceUnit == "IPTS-68" || woceUnit == "ITS-68" || woceUnit == "ITS-68 DEGC")
+        return(list(unit=expression(degree*C), scale="IPTS-68"))
+    if (woceUnit == "PSU" || woceUnit == "PSS-78")
+        return(list(unit=expression(), scale="PSS-78"))
+    if (woceUnit == "ML/L")
+        return(list(unit=expression(ml/l), scale=""))
+    if (woceUnit == "UG/L")
+        return(list(unit=expression(mu*g/l), scale=""))
+    if (woceUnit == "UMOL/KG")
+        return(list(unit=expression(mu*mol/kg), scale=""))
+    if (woceUnit == "%")
+        return(list(unit=expression(percent), scale=""))
+    return(list(unit=expression(), scale=""))
+}
+
+
 #' Read a WOCE-type CTD file with First Word "CTD"
 #' @template readCtdTemplate
 #'
@@ -134,27 +157,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         ## FIXME: decode to real units
         units <- list()
         for (i in seq_along(names)) {
-            ##message("'", unitsOriginal[i], "'")
-            if (unitsOriginal[i] == "DB")
-                units[[names[i]]] <- list(unit=expression(dbar), scale="")
-            else if (unitsOriginal[i] == "ITS-90 DEGC")
-                units[[names[i]]] <- list(unit=expression(degree*C), scale="ITS-90")
-            else if (unitsOriginal[i] == "IPTS-68 DEGC")
-                units[[names[i]]] <- list(unit=expression(degree*C), scale="IPTS-68")
-            else if (unitsOriginal[i] == "PSU")
-                units[[names[i]]] <- list(unit=expression(), scale="PSS-78")
-            else if (unitsOriginal[i] == "PSS-78")
-                units[[names[i]]] <- list(unit=expression(), scale="PSS-78")
-            else if (unitsOriginal[i] == "ML/L")
-                units[[names[i]]] <- list(unit=expression(ml/l), scale="")
-            else if (unitsOriginal[i] == "UG/L")
-                units[[names[i]]] <- list(unit=expression(mu*g/l), scale="")
-            else if (unitsOriginal[i] == "UMOL/KG")
-                units[[names[i]]] <- list(unit=expression(mu*mol/kg), scale="")
-            else if (unitsOriginal[i] == "%")
-                units[[names[i]]] <- list(unit=expression(percent), scale="")
-            else
-                units[[names[i]]] <- list(unit=expression(), scale="")
+            units[[names[i]]] <- woceUnit2oceUnit(unitsOriginal[i])
         }
         for (i in seq_along(header)) {
             if (length(grep("CRUISE", header[i], ignore.case=TRUE))) {
@@ -331,30 +334,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         units <- list()
         for (i in seq_along(names)) {
             oceDebug(debug, "names[", i, "]='", names[i], "', unitsOriginal[", i, "]='", unitsOriginal[i], "'\n", sep="")
-            if (unitsOriginal[i] == "DB")
-                units[[names[i]]] <- list(unit=expression(dbar), scale="")
-            else if (unitsOriginal[i] == "DBAR")
-                units[[names[i]]] <- list(unit=expression(dbar), scale="")
-            else if (unitsOriginal[i] == "ITS-90")
-                units[[names[i]]] <- list(unit=expression(degree*C), scale="ITS-90")
-            else if (unitsOriginal[i] == "ITS-90 DEGC")
-                units[[names[i]]] <- list(unit=expression(degree*C), scale="ITS-90")
-            else if (unitsOriginal[i] == "IPTS-68 DEGC")
-                units[[names[i]]] <- list(unit=expression(degree*C), scale="IPTS-68")
-            else if (unitsOriginal[i] == "PSU")
-                units[[names[i]]] <- list(unit=expression(), scale="PSS-78")
-            else if (unitsOriginal[i] == "PSS-78")
-                units[[names[i]]] <- list(unit=expression(), scale="PSS-78")
-            else if (unitsOriginal[i] == "ML/L")
-                units[[names[i]]] <- list(unit=expression(ml/l), scale="")
-            else if (unitsOriginal[i] == "UG/L")
-                units[[names[i]]] <- list(unit=expression(mu*g/l), scale="")
-            else if (unitsOriginal[i] == "UMOL/KG")
-                units[[names[i]]] <- list(unit=expression(mu*mol/kg), scale="")
-            else if (unitsOriginal[i] == "%")
-                units[[names[i]]] <- list(unit=expression(percent), scale="")
-            else
-                units[[names[i]]] <- list(unit=expression(), scale="")
+            units[[names[i]]] <- woceUnit2oceUnit(unitsOriginal[i])
         }
 
         ##20161218 pcol <- pmatch("CTDPRS", varNames)
@@ -448,13 +428,38 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         ## trim units (there can be flag units in the list)
         units <- units[names(units) %in% names]
     }
-    res@data <- data
-    ## replace any missingValue with NA
+    ## replace any missingValue with NA. If missingValue is not supplied, look
+    ## for crazy S values, and if none are found, look for crazy T values.
+    if (missing(missingValue)) {
+        if ("salinity" %in% names(data) && "temperature" %in% names(data)) {
+            Smin <- min(data[["salinity"]], na.rm=TRUE)
+            Tmin <- min(data[["temperature"]], na.rm=TRUE)
+            mv <- NULL
+            if (!is.na(Smin) && Smin < -8)
+                mv <- c(mv, Smin)
+            if (!is.na(Tmin) && Tmin < -8)
+                mv <- c(mv, Tmin)
+            if (length(mv) == 1) {
+                missingValue <- mv
+                msg <- paste("missingValue inferred as ", missingValue, " from S or T minimum", sep="")
+                warning(msg)
+                res@processingLog <- processingLogAppend(res@processingLog, msg)
+            } else if (length(mv) == 2) {
+                if (mv[1] == mv[2]) {
+                    missingValue <- mv[1]
+                    msg <- paste("missingValue inferred as ", missingValue, " from S and T minima", sep="")
+                    warning(msg)
+                    res@processingLog <- processingLogAppend(res@processingLog, msg)
+                }
+            }
+        }
+    }
     if (!missing(missingValue) && !is.null(missingValue)) {
         for (item in names(data)) {
             data[[item]] <- ifelse(data[[item]]==missingValue, NA, data[[item]])
         }
     }
+    res@data <- data
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLogAppend(res@processingLog, processingLog)
@@ -490,7 +495,6 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, 
     examineHeaderLines <- 10
     header <- readLines(file, n=examineHeaderLines)
     station <- ""
-    startTime <- NULL
     for (i in 1: examineHeaderLines) {
         if (1 == length(grep("STNNBR.*", header[i]))) {
             res@metadata$station <- gsub(" .*", "", gsub("STNNBR[ ]*", "", header[i]))

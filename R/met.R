@@ -461,7 +461,8 @@ metNames2oceNames <- function(names, scheme)
             if (1 == length(i <- grep("^Visibility.*Flag$", res))) res[i] <- "visibilityFlag"
             if (1 == length(i <- grep("^Wind.*Spd.*km.*$", res))) res[i] <- "wind"
             if (1 == length(i <- grep("^Wind.*Spd.*Flag$", res))) res[i] <- "windFlag"
-            if (1 == length(i <- grep("^Wind\\.Dir\\.\\.10s\\.deg\\.$", res))) res[i] <- "direction"
+            ## some files have "10s" and others "10.s" (I think)
+            if (1 == length(i <- grep("^Wind\\.Dir\\.\\.10\\.*s\\.deg\\.$", res))) res[i] <- "direction"
             if (1 == length(i <- grep("^Wind\\.Dir\\.Flag$", res))) res[i] <- "directionFlag"
             if (1 == length(i <- grep("^Wind\\.Chill$", res))) res[i] <- "windChill"
             if (1 == length(i <- grep("^Wind\\.Chill\\.Flag$", res))) res[i] <- "windChillFlag"
@@ -547,7 +548,7 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
         on.exit(close(file))
     }
     res <- new('met', time=1)
-    text <- readLines(file, encoding="UTF-8")
+    text <- readLines(file, encoding="UTF-8", warn=FALSE)
     ##print(header[1:19])
     textItem <- function(text, name, numeric=TRUE) {
         if (length(i <- grep(name, text))) {
