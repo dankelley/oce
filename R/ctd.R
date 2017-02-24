@@ -3881,36 +3881,48 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' @param xtype Item(s) plotted on the x axis, either a vector of length equal
 #' to that of \code{pressure} in the \code{data} slot,
 #' or a text code from the list below.
-#' \describe{
-#' \item{list("salinity")}{Profile of salinity.}
-#' \item{list("conductivity")}{Profile of conductivity.}
-#' \item{list("temperature")}{Profile of \emph{in-situ} temperature.}
-#' \item{list("theta")}{Profile of \emph{potential} temperature.}
-#' \item{list("density")}{Profile of density (expressed as
-#' \eqn{\sigma_\theta}{sigma_theta}).} \item{list("index")}{Index of sample
-#' (very useful for working with \code{\link{ctdTrim}}).}
-#' \item{list("salinity+temperature")}{Profile of salinity and temperature
-#' within a single axis frame.}
-#' \item{list("N2")}{Profile of square of
-#' buoyancy frequency \eqn{N^2}{N^2}, calculated with \code{\link{swN2}} with
+#'
+#' \itemize{
+#'
+#' \item \code{"salinity"} Profile of salinity.
+#'
+#' \item \code{"conductivity"} Profile of conductivity.
+#'
+#' \item \code{"temperature"} Profile of \emph{in-situ} temperature.
+#'
+#' \item \code{"theta"} Profile of potential temperature.
+#'
+#' \item \code{"density"} Profile of density (expressed as \eqn{\sigma_\theta}{sigma_theta}).
+#'
+#' \item \code{"index"} Index of sample (useful for working with \code{\link{ctdTrim}}).
+#'
+#' \item \code{"salinity+temperature"} Profile of salinity and temperature within a single axis frame.
+#'
+#' \item \code{"N2"} Profile of square of buoyancy frequency \eqn{N^2}{N^2},
+#' calculated with \code{\link{swN2}} with
 #' an optional argument setting of \code{df=length(x[["pressure"]])/4} to do
-#' some smoothing.}
-#' \item{list("density+N2")}{Profile of sigma-theta and
-#' the square of buoyancy frequency within a single axis frame.}
-#' \item{list("density+dpdt")}{Profile of sigma-theta and dP/dt for the
+#' some smoothing.
+#'
+#' \item \code{"density+N2"} Profile of sigma-theta and
+#' the square of buoyancy frequency within a single axis frame.
+#'
+#' \item \code{"density+dpdt"} Profile of sigma-theta and dP/dt for the
 #' sensor.  The latter is useful in indicating problems with the deployment.
 #' It is calculated by first differencing pressure and then using a smoothing
 #' spline on the result (to avoid grid-point wiggles that result because the
 #' SBE software only writes 3 decimal places in pressure).  Note that dP/dt may
 #' be off by a scale factor; this should not be a problem if there is a
 #' \code{time} column in the \code{data} slot, or a \code{sample.rate} in the
-#' \code{metadata} slot. }
-#' \item{list("spice")}{Profile of spice}
-#' \item{list("Rrho")}{Profile of Rrho, defined in the diffusive sense}
-#' \item{list("RrhoSF")}{Profile of Rrho, defined in the salt-finger sense}
-#' \item{an expression}{an expression to be evaluated, in the calling
-#' environment, for some quantity; in this case, it makes sense to specify also
-#' \code{xlab}.} }
+#' \code{metadata} slot.
+#'
+#' \item \code{"spice"} Profile of spice.
+#'
+#' \item \code{"Rrho"} Profile of Rrho, defined in the diffusive sense.
+#'
+#' \item \code{"RrhoSF"} Profile of Rrho, defined in the salt-finger sense.
+#'
+#'}
+#'
 #' @param ytype variable to use on y axis; note that \code{z} is the negative
 #' of \code{depth}.
 #' @param eos equation of state to be used, either \code{"unesco"} or
