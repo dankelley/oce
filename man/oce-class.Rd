@@ -24,6 +24,7 @@ to store information on the units of the data, and the data quality.}
 \item{\code{processingLog}}{A list containing time-stamped processing steps,
 typically stored in the object by oce functions.}
 }}
+
 \examples{
 str(new("oce"))
 
@@ -40,4 +41,3 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 }
-

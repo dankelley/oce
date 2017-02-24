@@ -42,10 +42,9 @@ contour(x, y, u, asp=1, main=expression(u))
 contour(x, y, v, asp=1, main=expression(v))
 contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
 }
-\author{
-Dan Kelley, based on advice of Clark Richards, and mimicking a matlab function.
-}
 \seealso{
 Other functions relating to vector calculus: \code{\link{curl}}
 }
-
+\author{
+Dan Kelley, based on advice of Clark Richards, and mimicking a matlab function.
+}

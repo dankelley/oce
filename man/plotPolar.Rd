@@ -30,4 +30,3 @@ plotPolar(r, theta)
 \author{
 Dan Kelley
 }
-

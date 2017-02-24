@@ -86,10 +86,9 @@ decodeTime("2013-07-01 01:02:03")
 decodeTime("2013/07/01 01:02:03")
 decodeTime("2013/07/01")
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions relating to time: \code{\link{GMTOffsetFromTz}}
 }
-
+\author{
+Dan Kelley
+}

@@ -29,4 +29,3 @@ thirty.seven <- as.integer(as.raw(0x25))
 \author{
 Dan Kelley
 }
-

@@ -67,11 +67,10 @@ soirecent <- subset(soi, t > as.POSIXct("2000-01-01"))
 oce.plot.ts(soirecent$t, soirecent$index)
 }
 }
-\author{
-Dan Kelley
-}
 \references{
 See \url{http://www.esrl.noaa.gov/psd/data/climateindices/list/}
 for a list of indices.
 }
-
+\author{
+Dan Kelley
+}

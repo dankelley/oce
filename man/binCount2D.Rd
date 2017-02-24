@@ -34,13 +34,12 @@ between successive breaks.
 Count the number of elements of a given matrix z=z(x,y) that fall within
 successive pairs of breaks in x and y.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other bin-related functions: \code{\link{binApply1D}},
   \code{\link{binApply2D}}, \code{\link{binAverage}},
   \code{\link{binCount1D}}, \code{\link{binMean1D}},
   \code{\link{binMean2D}}
 }
-
+\author{
+Dan Kelley
+}

@@ -131,9 +131,6 @@ plot(trimmed)
 }
 
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \references{
 The Seabird CTD instrument is described at
 \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
@@ -157,4 +154,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

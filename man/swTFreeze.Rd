@@ -39,9 +39,6 @@ salinity and pressure values are extracted and used to for the calculation.
 swTFreeze(salinity=40, pressure=500, eos="unesco") # -2.588567 degC
 
 }
-\author{
-Dan Kelley
-}
 \references{
 [1] Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
 computation of fundamental properties of seawater. \emph{Unesco Technical
@@ -80,4 +77,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

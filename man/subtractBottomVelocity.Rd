@@ -18,12 +18,11 @@ subtracting 1.}
 Subtracts bottom tracking velocities from an \code{"adp"} object. Works for
 all coordinate systems (\code{beam}, \code{xyz}, and \code{enu}).
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \seealso{
 See \code{\link{read.adp}} for notes on functions relating to
 \code{"adp"} objects, and \code{\link{adp-class}} for notes on the ADP
 object class.
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

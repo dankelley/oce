@@ -44,9 +44,6 @@ longitudelim=c(-90,0), latitudelim=c(0, 50))
 mapTissot(c(15, 15), col='red')
 }
 }
-\author{
-Dan Kelley
-}
 \references{
 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 Professional Paper: 1395 (available at
@@ -68,4 +65,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapText}}, \code{\link{oceCRS}},
   \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley
+}

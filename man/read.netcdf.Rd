@@ -36,4 +36,3 @@ attributes in the netcdf file. These attributes include
 Before they are stored in the metadata, they are converted to
 lower case, since that is the oce convention.
 }
-

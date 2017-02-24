@@ -35,4 +35,3 @@ from tens of degres to degrees. Also, some items are created from scratch, e.g.
 and direction. (Note that e.g. u is positive if the wind blows to the east; the
 data are thus in the normal Physics convention.)
 }
-

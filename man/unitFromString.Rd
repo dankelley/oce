@@ -25,4 +25,3 @@ Other functions that interpret variable names and units from headers: \code{\lin
   \code{\link{unitFromStringRsk}},
   \code{\link{woceNames2oceNames}}
 }
-

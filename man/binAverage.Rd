@@ -49,13 +49,12 @@ plot(co2)
 avg <- binAverage(time(co2), co2, 1950, 2000, 2)
 points(avg$x, avg$y, col='red')
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other bin-related functions: \code{\link{binApply1D}},
   \code{\link{binApply2D}}, \code{\link{binCount1D}},
   \code{\link{binCount2D}}, \code{\link{binMean1D}},
   \code{\link{binMean2D}}
 }
-
+\author{
+Dan Kelley
+}

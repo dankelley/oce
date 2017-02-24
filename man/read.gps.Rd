@@ -26,13 +26,12 @@ An object of \code{\link[base]{class}} \code{"gps"}.
 Reads GPX format files by simply finding all longitudes and latitudes; in
 other words, information on separate tracks, or waypoints, etc., is lost.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{gps} data: \code{\link{[[,gps-method}},
   \code{\link{[[<-,gps-method}}, \code{\link{as.gps}},
   \code{\link{gps-class}}, \code{\link{plot,gps-method}},
   \code{\link{summary,gps-method}}
 }
-
+\author{
+Dan Kelley
+}

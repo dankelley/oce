@@ -25,9 +25,6 @@ data(topoWorld)
 summary(topoWorld)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
@@ -37,4 +34,6 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{topo-class}}, \code{\link{topoInterpolate}},
   \code{\link{topoWorld}}
 }
-
+\author{
+Dan Kelley
+}

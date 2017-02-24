@@ -168,6 +168,7 @@ used now, instead. Also, in February, 2016, the arguments named
 become nonfunctional about a year previously, in the transition to using
 the \code{rgdal} package to carry out map projections.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -181,9 +182,6 @@ plot(coastlineWorld, clongitude=-95, clatitude=65, span=5500,
      grid=10, projection='+proj=laea +lon_0=-100 +lat_0=55')
 }
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 The documentation for \code{\link{coastline-class}} explains the
@@ -225,4 +223,6 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
-
+\author{
+Dan Kelley
+}

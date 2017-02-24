@@ -70,9 +70,6 @@ copied over from the source data file and are not altered by e.g.
 decimation.  An exception is the lat-lon box, which is altered by
 \code{\link{landsatTrim}}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{landsat} data: \code{\link{landsat-class}},
   \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
@@ -80,7 +77,9 @@ Other things related to \code{landsat} data: \code{\link{landsat-class}},
   \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 }
+\author{
+Dan Kelley
+}
 \concept{
 satellite
 }
-

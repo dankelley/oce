@@ -24,9 +24,6 @@ Convert from ecliptical to equatorial coordinates, using
 equations 8.3 and 8.4 of [1], or, equivalently,
 equations 12.3 and 12.4 of [2].
 }
-\author{
-Dan Kelley, based on formulae in [1] and [2].
-}
 \references{
 1. Meeus, Jean, 1982. Astronomical formuae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages.
@@ -45,4 +42,6 @@ Other things related to astronomy: \code{\link{equatorialToLocalHorizontal}},
   \code{\link{julianDay}}, \code{\link{moonAngle}},
   \code{\link{siderealTime}}, \code{\link{sunAngle}}
 }
-
+\author{
+Dan Kelley, based on formulae in [1] and [2].
+}

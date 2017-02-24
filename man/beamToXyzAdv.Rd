@@ -30,9 +30,6 @@ x[["transformation.matrix"]] <- rbind(c(11100, -5771, -5321),
                                       c( 1409, 1409, 1409)) / 4096
 }
 }
-\author{
-Dan Kelley
-}
 \references{
 \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
 }
@@ -59,4 +56,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

@@ -21,11 +21,10 @@ Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude.
 \examples{
 C <- coriolis(45) # 1e-4
 }
-\author{
-Dan Kelley
-}
 \references{
 Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
 Press, New York, 662 pp.
 }
-
+\author{
+Dan Kelley
+}

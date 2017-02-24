@@ -27,9 +27,6 @@ Coerces a sequence of longitudes and latitudes into a coastline dataset.
 This may be used when \code{\link{read.coastline}} cannot read a file, or
 when the data have been manipulated.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
@@ -43,4 +40,6 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
-
+\author{
+Dan Kelley
+}

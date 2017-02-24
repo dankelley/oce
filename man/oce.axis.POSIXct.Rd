@@ -105,10 +105,9 @@ and small tick marks is not something that R does.
 Bear in mind that \code{tformat} may be set to alter the number format, but
 that the tick mark scheme cannot (presently) be controlled.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 This is used mainly by \code{\link{oce.plot.ts}}.
 }
-
+\author{
+Dan Kelley
+}

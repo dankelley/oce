@@ -27,4 +27,3 @@ possibly with a constant adjustment.
 \author{
 Dan Kelley
 }
-

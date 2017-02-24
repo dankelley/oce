@@ -44,6 +44,7 @@ from those data.  This function produces a warning to this effect. The
 recommended practice is to use \code{\link{handleFlags}} or some other means to
 deal with flags before calling the present function.
 }
+
 \examples{
 library(oce)
 data(argo)
@@ -56,9 +57,6 @@ imagep(t, z, t(g[['temperature']]), ylim=c(-100,0), zlim=c(0,20))
 imagep(t, z, t(g[['salinity']]), ylim=c(-100,0))
 
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \seealso{
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
@@ -69,4 +67,6 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

@@ -60,6 +60,7 @@ entries of the return value mimic those returned by \code{\link{spectrum}}.
 the values for one of the chunk spectra, and are thus incorrect.  That means
 the cross indicated on the graph is also incorrect.
 }
+
 \examples{
 
 library(oce)
@@ -87,13 +88,12 @@ title("Variance-preserving spectrum")
 pw <- pwelch(co2, nfft=256, plot=FALSE)
 lines(log10(pw$freq), pw$spec * pw$freq, col='red')
 }
-\author{
-Dan Kelley
-}
 \references{
 Welch, P. D., 1967. The Use of Fast Fourier Transform for the
 Estimation of Power Spectra: A Method Based on Time Averaging Over Short,
 Modified Periodograms. \emph{IEEE Transactions on Audio Electroacoustics},
 AU-15, 70--73.
 }
-
+\author{
+Dan Kelley
+}

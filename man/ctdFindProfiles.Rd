@@ -113,9 +113,6 @@ profiles <- ctdFindProfiles(ctd, breaks=breaks)
 }
 
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \seealso{
 The documentation for \code{\link{ctd-class}} explains the structure
 of CTD objects, and also outlines the other functions dealing with them.
@@ -136,4 +133,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

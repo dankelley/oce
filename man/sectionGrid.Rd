@@ -53,6 +53,7 @@ from those data.  This function produces a warning to this effect. The
 recommended practice is to use \code{\link{handleFlags}} or some other means to
 deal with flags before calling the present function.
 }
+
 \examples{
 # Gulf Stream
 library(oce)
@@ -61,9 +62,6 @@ GS <- subset(section, 109<=stationId&stationId<=129)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 plot(GSg, map.xlim=c(-80,-60))
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other things related to \code{section} data: \code{\link{[[,section-method}},
@@ -78,4 +76,6 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }
-
+\author{
+Dan Kelley
+}

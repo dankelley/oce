@@ -49,9 +49,6 @@ dist <- geodDist(result$par[1], result$par[2], lon.hfx, lat.hfx)
 cat(sprintf("Infer Halifax latitude \%.2f and longitude \%.2f; distance mismatch \%.0f km", 
             result$par[2], result$par[1], dist))
 }
-\author{
-Dan Kelley
-}
 \references{
 Based on Fortran code retrieved from
 ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f on
@@ -85,4 +82,6 @@ Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
   \code{\link{julianDay}}, \code{\link{moonAngle}},
   \code{\link{siderealTime}}
 }
-
+\author{
+Dan Kelley
+}

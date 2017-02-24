@@ -56,9 +56,6 @@ lines(f/1000, 1e3*swSoundAbsorption(f, 0, 10, 0, formulation='fr'), lty='dashed'
 legend("topleft", lty=c("solid", "dashed"), legend=c("S=35", "S=0"))
 
 }
-\author{
-Dan Kelley
-}
 \references{
 1. F. H. Fisher and V. P. Simmons, 1977.  Sound absorption in
 sea water.  J. Acoust. Soc. Am., 62(3), 558-564.
@@ -91,4 +88,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

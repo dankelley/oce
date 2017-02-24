@@ -30,4 +30,3 @@ that is the underpinning for the Nelder-Meade version of the R function
 Other functions relating to geodesy: \code{\link{geodDist}},
   \code{\link{geodGc}}, \code{\link{geodXy}}
 }
-

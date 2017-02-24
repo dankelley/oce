@@ -199,9 +199,6 @@ data(adv)
 plot(adv)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 The documentation for \code{\link{adv-class}} explains the structure
 of ADV objects, and also outlines the other functions dealing with them.
@@ -242,4 +239,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

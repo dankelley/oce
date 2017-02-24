@@ -24,6 +24,7 @@ coordinates.
 \section{Bugs}{
  This only works for 4-beam RDI ADP objects.
 }
+
 \examples{
 
 \dontrun{
@@ -39,9 +40,6 @@ plot(beam, which=5:8) # backscatter amplitude
 plot(beam2, which=5:8)
 }
 
-}
-\author{
-Dan Kelley and Clark Richards
 }
 \references{
 The method was devised by Clark Richards for use in his PhD work
@@ -71,4 +69,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

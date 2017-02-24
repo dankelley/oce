@@ -68,4 +68,3 @@ drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1, 1), v=c(1, -1), scalex=0.5, 
 \author{
 Dan Kelley
 }
-

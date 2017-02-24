@@ -142,6 +142,7 @@ Pawlowicz.
 
 }
 }
+
 \examples{
 library(oce)
 # The demonstration time series from Foreman (1977),
@@ -160,9 +161,6 @@ sl <- as.sealevel(eta)
 m <- tidem(sl)
 summary(m)
 
-}
-\author{
-Dan Kelley
 }
 \references{
 1. Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
@@ -188,4 +186,6 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{tidedata}}, \code{\link{tidem-class}},
   \code{\link{tidemAstron}}, \code{\link{tidemVuf}}
 }
-
+\author{
+Dan Kelley
+}

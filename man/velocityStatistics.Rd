@@ -42,9 +42,6 @@ lines(x, y, col='blue', lty="dashed", lwd=5)
 arrows(0, 0, a$uMean, a$vMean, lwd=5, length=1/10, col='blue', lty="dashed")
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
@@ -80,4 +77,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{xyzToEnuAdv}},
   \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

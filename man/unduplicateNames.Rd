@@ -22,4 +22,3 @@ unduplicateNames(c("a", "b", "a", "c", "b"))
 \seealso{
 used by \code{\link{read.ctd.sbe}}.
 }
-

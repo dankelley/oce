@@ -68,11 +68,6 @@ geodDist(section)
 geodDist(section, alongPath=TRUE)
 
 }
-\author{
-Dan Kelley based this on R code sent to him by Darren Gillis, who in
-2003 had modified Fortran code that, according to comments in the source,
-had been written in 1974 by L. Pfeifer and J. G. Gergen.
-}
 \references{
 T. Vincenty, "Direct and Inverse Solutions of Ellipsoid on the
 Ellipsoid with Application of Nested Equations", \emph{Survey Review}, April
@@ -85,4 +80,8 @@ Ellipsoid with Application of Nested Equations", \emph{Survey Review}, April
 Other functions relating to geodesy: \code{\link{geodGc}},
   \code{\link{geodXyInverse}}, \code{\link{geodXy}}
 }
-
+\author{
+Dan Kelley based this on R code sent to him by Darren Gillis, who in
+2003 had modified Fortran code that, according to comments in the source,
+had been written in 1974 by L. Pfeifer and J. G. Gergen.
+}

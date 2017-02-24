@@ -15,4 +15,3 @@ This returns so-called standard depths 0m, 10m, etc. below the sea surface.
 \author{
 Dan Kelley
 }
-

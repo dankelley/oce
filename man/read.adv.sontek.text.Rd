@@ -273,6 +273,7 @@ The \code{file} argument does not actually name a file. It names a basename
 for a file. The actual file names are created by appending suffix
 \code{.hd1} for one file and \code{.ts1} for another.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -282,9 +283,6 @@ d <- read.oce("/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_n
               to=as.POSIXct("2008-06-26 00:00:10", tz="UTC"))
 plot(d, which=c(1:3,15))
 }
-}
-\author{
-Dan Kelley
 }
 \references{
 1A. Nortek AS.  System Integrator Guide (paradopp family of products). June
@@ -324,4 +322,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

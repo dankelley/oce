@@ -31,4 +31,3 @@ o <- oceSetData(o, 'y', rnorm(10))
 o <- oceSetData(o, 'z', rnorm(10))
 plot(o)
 }
-

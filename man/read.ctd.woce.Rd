@@ -68,9 +68,6 @@ characters are ``\code{CTD,}''. It also also in a rarer format with
 the first 3 characters are \code{CTD}'' followed by a blank or the end
 of the line.
 }
-\author{
-Dan Kelley
-}
 \references{
 The WOCE-exchange format is described at
 \code{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
@@ -93,4 +90,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley
+}

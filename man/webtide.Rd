@@ -99,6 +99,7 @@ WebTide is not an open-source application, so the present function was
 designed based on little more than guesses about the WebTide file structure.
 Users should be on the lookout for odd results.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -111,4 +112,3 @@ mtext(sprintf("prediction at \%fN \%fE", lat, lon), line=0.75, side=3)
 \author{
 Dan Kelley
 }
-

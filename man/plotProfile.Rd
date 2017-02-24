@@ -186,9 +186,6 @@ data(ctd)
 plotProfile(ctd, xtype="temperature")
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 \code{\link{read.ctd}} scans ctd information from a file,
 \code{\link{plot,ctd-method}} is a general plotting function for \code{ctd}
@@ -233,4 +230,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley
+}

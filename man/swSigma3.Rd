@@ -44,9 +44,6 @@ Definition:
 \eqn{\sigma_1=\sigma_\theta=\rho(S,\theta(S,t,p),3000}{sigma_1=sigma_theta=rho(S,theta(S,t,p),3000)}
 - 1000 kg/m\eqn{^3}{^3}.
 }
-\author{
-Dan Kelley
-}
 \references{
 See citations provided in the \code{\link{swRho}} documentation.
 }
@@ -73,4 +70,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

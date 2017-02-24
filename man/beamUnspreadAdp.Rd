@@ -57,9 +57,6 @@ legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
 plot(adp.att, which="amplitude",col=oce.colorsJet(100))
 
 }
-\author{
-Dan Kelley
-}
 \references{
 The coefficient to convert to decibels is a personal
 communication.  The logarithmic term is explained in textbooks on acoustics,
@@ -85,4 +82,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

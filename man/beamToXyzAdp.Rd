@@ -51,9 +51,6 @@ In the above, \eqn{c=1}{c=1} if the beam geometry is convex, and
 \eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}, where \eqn{\theta}{theta} is the angle the
 beams make to the instrument \dQuote{vertical}.
 }
-\author{
-Dan Kelley
-}
 \references{
 1. R D Instruments, 1998. \emph{ADP Coordinate Transformation, formulas and
 calculations.} P/N 951-6079-00 (July 1998).
@@ -85,4 +82,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

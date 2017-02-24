@@ -8,13 +8,12 @@
 Class to store gps data. These objects may be read with
 \code{\link{read.gps}} or assembled with \code{\link{as.gps}}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{gps} data: \code{\link{[[,gps-method}},
   \code{\link{[[<-,gps-method}}, \code{\link{as.gps}},
   \code{\link{plot,gps-method}}, \code{\link{read.gps}},
   \code{\link{summary,gps-method}}
 }
-
+\author{
+Dan Kelley
+}

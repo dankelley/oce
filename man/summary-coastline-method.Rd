@@ -16,9 +16,6 @@ call to \code{\link{read.coastline}} or \code{\link{read.oce}}.}
 \description{
 Summarizes coastline length, bounding box, etc.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
@@ -32,4 +29,6 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{read.coastline.shapefile}},
   \code{\link{subset,coastline-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -54,9 +54,6 @@ Apart from the use of \code{d1} through \code{d6}, the naming and content
 follows \code{T_TIDE} (see Pawlowicz et al. 2002), which in turn builds upon
 the analysis of Foreman (1977).
 }
-\author{
-Dan Kelley
-}
 \references{
 Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
 prediction.  Pacific Marine Science Report 77-10, Institute of Ocean
@@ -75,4 +72,6 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{tidem-class}}, \code{\link{tidemAstron}},
   \code{\link{tidemVuf}}, \code{\link{tidem}}
 }
-
+\author{
+Dan Kelley
+}

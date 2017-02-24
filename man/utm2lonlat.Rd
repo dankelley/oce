@@ -36,9 +36,6 @@ library(oce)
 utm2lonlat(852863, 5029997, 19)
 
 }
-\author{
-Dan Kelley
-}
 \references{
 \url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
 downloaded May 31, 2014.
@@ -61,4 +58,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapText}}, \code{\link{mapTissot}},
   \code{\link{oceCRS}}, \code{\link{shiftLongitude}}
 }
-
+\author{
+Dan Kelley
+}

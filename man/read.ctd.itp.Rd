@@ -68,9 +68,6 @@ documentation on the format, the author constructed this function
 to work with some files that were on-hand. Whether the function will
 prove robust is an open question.
 }
-\author{
-Dan Kelley
-}
 \references{
 Information about ice-tethered profile data is provided at
 \url{http://www.whoi.edu/page.do?pid=23096}, which also provides a link for
@@ -93,4 +90,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley
+}

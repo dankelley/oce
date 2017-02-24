@@ -89,6 +89,7 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \examples{
 data(adv)
 head(adv[["q"]])            # in raw form
@@ -132,4 +133,3 @@ Other things related to \code{adv} data: \code{\link{[[<-,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-

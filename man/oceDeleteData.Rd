@@ -16,4 +16,3 @@ Return a copy of the supplied object that lacks the named
 element in its \code{data} slot, and that has a note
 about the deletion in its processing log.
 }
-

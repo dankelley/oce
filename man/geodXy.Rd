@@ -58,6 +58,7 @@ publications--hence the detailed discussion below.
 
  This is possibly useful, possibly not. The method changed in Oct, 2015.
 }
+
 \examples{
 library(oce)
 data(section)
@@ -88,13 +89,12 @@ mtext(sprintf("RMS dev / span: x \%.2g, y \%.2g",
       side=3, line=-2)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 \code{\link{geodDist}}
 
 Other functions relating to geodesy: \code{\link{geodDist}},
   \code{\link{geodGc}}, \code{\link{geodXyInverse}}
 }
-
+\author{
+Dan Kelley
+}

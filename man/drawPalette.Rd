@@ -99,6 +99,7 @@ adjustment is that multi-panel plots require that the initial margin be
 stored prior to the first call to \code{drawPalette}, and reset after each
 palette-plot pair.  This method is illustrated in \dQuote{Examples}.
 }
+
 \examples{
 
 library(oce)
@@ -134,10 +135,9 @@ image(volcano, col=oce.colorsJet(100), zlim=c(90, 200))
 contour(volcano, add=TRUE)
 drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsJet)
 }
-\author{
-Dan Kelley, with help from Clark Richards
-}
 \seealso{
 This is used by \code{\link{imagep}}.
 }
-
+\author{
+Dan Kelley, with help from Clark Richards
+}

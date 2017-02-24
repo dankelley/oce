@@ -34,13 +34,12 @@ Plot zones (lines of constant longitude) on a existing map.
 This function should not be used, since it will be removed soon.
 Please use mapGrid() instead.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdAddColumn}},
   \code{\link{ctdUpdateHeader}},
   \code{\link{mapMeridians}}, \code{\link{oce.as.POSIXlt}}
 }
-
+\author{
+Dan Kelley
+}

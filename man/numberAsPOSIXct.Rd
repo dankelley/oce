@@ -70,9 +70,6 @@ numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day
 numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
 
 }
-\author{
-Dan Kelley
-}
 \references{
 [1] Matlab times:
 \url{http://www.mathworks.com/help/matlab/ref/datenum.html}
@@ -91,4 +88,6 @@ Other things related to time: \code{\link{ctimeToSeconds}},
   \code{\link{secondsToCtime}},
   \code{\link{unabbreviateYear}}
 }
-
+\author{
+Dan Kelley
+}

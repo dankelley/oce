@@ -43,4 +43,3 @@ summary(x)
 \author{
 Dan Kelley
 }
-

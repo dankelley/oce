@@ -36,9 +36,6 @@ the \code{gsw} package [2,3] is used.
 d <- swDepth(10, 45)
 
 }
-\author{
-Dan Kelley
-}
 \references{
 1. Unesco 1983. Algorithms for computation of fundamental
 properties of seawater, 1983. \emph{Unesco Tech. Pap. in Mar. Sci.}, No. 44,
@@ -75,4 +72,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

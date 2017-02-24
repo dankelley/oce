@@ -30,6 +30,7 @@ may change.  Part of the development plan is to see if there is common
 ground between this and the \code{clipPolys} function in the
 \CRANpkg{PBSmapping} package.
 }
+
 \examples{
 library(oce)
 data(coastlineWorld)
@@ -52,4 +53,3 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
-

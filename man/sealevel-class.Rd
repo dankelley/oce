@@ -22,9 +22,7 @@ Everything that may be accessed may also be assigned, e.g.
 The \code{show} method displays information about the object, while
 \code{\link{summary,sealevel-method}} provides a statistical summary.
 }
-\author{
-Dan Kelley
-}
+
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
@@ -47,4 +45,6 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }
-
+\author{
+Dan Kelley
+}
