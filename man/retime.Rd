@@ -54,4 +54,3 @@ plot(adv[["time"]], adv2[["time"]]-adv[["time"]], type='l')
 \author{
 Dan Kelley
 }
-

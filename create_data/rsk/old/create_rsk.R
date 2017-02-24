@@ -1,6 +1,4 @@
 library(oce)
-source("~/src/oce/R/oce.R")
-source("~/src/oce/R/rsk.R")
 rsk <- read.oce("/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/manufacturer/pt_rbr_011855.dat", by=600)
 #patm <- rskPatm(rsk)[4] # value is 10.19443
 #rsk <- oceEdit(rsk, action="x@data$pressure <- x@data$pressure - 10.2")

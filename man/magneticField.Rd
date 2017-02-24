@@ -54,12 +54,6 @@ mapContour(lon, lat, incl, col='blue', levels=seq(-90, 90, 5))
 }
 
 }
-\author{
-Dan Kelley wrote the R code and a fortran wrapper to the
-\code{igrf12.f} subroutine, which was written by Susan Macmillan of the
-British Geological Survey and distributed ``without limitation'' (email from
-SM to DK dated June 5, 2015).
-}
 \references{
 1. The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
 website (\url{http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
@@ -68,4 +62,9 @@ website (\url{http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
 \seealso{
 Other things related to magnetism: \code{\link{applyMagneticDeclination}}
 }
-
+\author{
+Dan Kelley wrote the R code and a fortran wrapper to the
+\code{igrf12.f} subroutine, which was written by Susan Macmillan of the
+British Geological Survey and distributed ``without limitation'' (email from
+SM to DK dated June 5, 2015).
+}

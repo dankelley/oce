@@ -19,9 +19,6 @@ plotting method is provided with \code{\link{plot,bremen-method}}, and
 retrieved with \code{\link{[[,bremen-method}} or replaced with
 \code{\link{[[<-,bremen-method}}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
@@ -40,4 +37,6 @@ Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
   \code{\link{read.bremen}},
   \code{\link{summary,bremen-method}}
 }
-
+\author{
+Dan Kelley
+}

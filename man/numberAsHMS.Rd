@@ -27,9 +27,6 @@ t <- c("0900", "1234")
 numberAsHMS(t)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to time: \code{\link{ctimeToSeconds}},
   \code{\link{julianCenturyAnomaly}},
@@ -37,4 +34,6 @@ Other things related to time: \code{\link{ctimeToSeconds}},
   \code{\link{secondsToCtime}},
   \code{\link{unabbreviateYear}}
 }
-
+\author{
+Dan Kelley
+}

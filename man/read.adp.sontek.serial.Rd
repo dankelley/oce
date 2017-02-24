@@ -69,9 +69,6 @@ An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 Read a Sontek acoustic-Dopplerprofiler file, in a serial form that
 is possibly unique to Dalhousie University.
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
@@ -92,4 +89,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

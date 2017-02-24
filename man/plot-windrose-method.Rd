@@ -54,9 +54,6 @@ plot(wr, "fivenum")
 par(opar)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
@@ -87,4 +84,6 @@ Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
   \code{\link{summary,windrose-method}},
   \code{\link{windrose-class}}
 }
-
+\author{
+Dan Kelley
+}

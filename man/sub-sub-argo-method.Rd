@@ -73,6 +73,7 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \examples{
 data(argo)
 dim(argo[['temperature']])
@@ -110,4 +111,3 @@ Other things related to \code{argo} data: \code{\link{[[<-,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
-

@@ -43,13 +43,12 @@ polygon(c(q1$result, rev(q3$result)),
 c(q1$xmids, rev(q1$xmids)), col='gray')
 points(S, p, pch=20)
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other bin-related functions: \code{\link{binApply2D}},
   \code{\link{binAverage}}, \code{\link{binCount1D}},
   \code{\link{binCount2D}}, \code{\link{binMean1D}},
   \code{\link{binMean2D}}
 }
-
+\author{
+Dan Kelley
+}

@@ -346,6 +346,7 @@ meridians and (c) inaccurate filling of Antarctica in some projections.
 Generally, issues are tackled first for commonly used projections, such as
 those used in the examples.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -414,9 +415,6 @@ for (i in ilon) {
 dev.off()
 }
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \references{
 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 Professional Paper: 1395 (available at
@@ -470,4 +468,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapTissot}}, \code{\link{oceCRS}},
   \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

@@ -44,9 +44,6 @@ for (stn in section[["station", 1:9]])
     plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Sections can be read with \code{\link{read.section}} or created with
 \code{\link{read.section}} or created from CTD objects by using
@@ -86,4 +83,6 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -20,12 +20,11 @@ A matrix containing statistics of the elements of the \code{data} slot.
 Pertinent summary information is presented, including the station name,
 sampling location, data ranges, etc.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
   \code{\link{as.ladp}}, \code{\link{ladp-class}},
   \code{\link{plot,ladp-method}}
 }
-
+\author{
+Dan Kelley
+}

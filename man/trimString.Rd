@@ -16,4 +16,3 @@ from the elements of \code{s}.
 \description{
 Remove leading and trailing whitespace from strings
 }
-

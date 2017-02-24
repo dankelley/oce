@@ -49,4 +49,3 @@ Used by e.g. \code{\link{plot,ctd-method}}.
 \author{
 Dan Kelley
 }
-

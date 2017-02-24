@@ -28,9 +28,6 @@ data(argo)
 summary(argo)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
@@ -40,4 +37,6 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}}
 }
-
+\author{
+Dan Kelley
+}

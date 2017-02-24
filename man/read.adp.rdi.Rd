@@ -142,9 +142,7 @@ messages are printed to alert the user that the file will be decimated,
 and also \code{monitor} is set to \code{TRUE}, so that a textual progress bar
 is shown.
 }
-\author{
-Dan Kelley and Clark Richards
-}
+
 \references{
 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
 format.} P/N 957-6156-00 (November 2007).  (Section 5.3 h details the binary
@@ -180,4 +178,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

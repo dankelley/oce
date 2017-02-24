@@ -5,7 +5,8 @@
 \alias{handleFlags,argo-method}
 \title{Handle Flags in ARGO Objects}
 \usage{
-\S4method{handleFlags}{argo}(object, flags = list(), actions = list())
+\S4method{handleFlags}{argo}(object, flags = list(), actions = list(),
+  debug = integer())
 }
 \arguments{
 \item{object}{An object of \code{\link{argo-class}}.}
@@ -16,7 +17,8 @@ or (b) a single unnamed item. In the first case, the attention is
 focussed on the named items, while in the second case the 
 all the data in the \code{object}'s \code{data} slot are examined.
 Each element in the list must be set to an integer or vector of integers,
-specifying conditions to be met before actions are to be taken.}
+specifying conditions to be met before actions are to be taken.
+See \dQuote{Details} for the default that is used if \code{flags} is not supplied.}
 
 \item{actions}{An optional \code{\link{list}} that contains items with
 names that match those in the \code{flags} argument.  If \code{actions}
@@ -25,7 +27,15 @@ is not supplied, the default will be to set all values identified by
 specifying \code{actions=list("NA")}. It is also possible to specify 
 functions that calculate replacement values. These are provided
 with \code{object} as the single argument, and must return a
-replacement for the data item in question.}
+replacement for the data item in question.
+See \dQuote{Details} for the default that is used if \code{actions} is not supplied.}
+
+\item{debug}{An optional integer specifying the degree of debugging, with
+value 0 meaning to skip debugging and 1 or higher meaning to print some
+information about the arguments and the data. It is usually a good idea to set
+this to 1 for initial work with a dataset, to see which flags are being
+handled for each data item. If not supplied, this defaults to the value of
+\code{\link{getOption}("oceDebug")}.}
 }
 \description{
 Data-quality flags are stored in the \code{metadata}
@@ -57,8 +67,9 @@ default is to use ARGO flags [1], in which the
 value 1 indicates good data, and other values indicate either unchecked,
 suspicious, or bad data. Any data not flagged as good are set
 to \code{NA} in the returned value. Since Argo flag codes run
-from 0 to 4, this default is equivalent to
-setting \code{flags=list(c(0, 2:4))} along with
+from 0 to 9, with 1 indicating the highest level of confidence
+in the data, the defaults are
+\code{flags=list(c(0,2:9))} and
 \code{actions=list("NA")}.
 }
 \section{Implementation status}{
@@ -68,6 +79,7 @@ Users are asked to be patient, and to provide help by
 looking at the documentation and telling the developers
 whether the planned functioning seems reasonable.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -75,6 +87,16 @@ data(argo)
 # 1. Default: anything not flagged as 1 is set to NA, to focus
 # solely on 'good', in the Argo scheme.
 argoNew <- handleFlags(argo)
+# demonstrate replacement, looking at the second profile
+f <- argo[["salinityFlag"]][,2] # first column with a flag=4 entry
+df <- data.frame(flag=f, orig=argo[["salinity"]][,2], new=argoNew[["salinity"]][,2])
+df[11:15,]
+##    flag   orig    new
+## 11    1 35.207 35.207
+## 12    1 35.207 35.207
+## 13    4 35.209     NA
+## 14    1 35.207 35.207
+## 15    1 35.207 35.207
 
 # 2. A less restrictive case: include also 'questionable' data,
 # and only apply this action to salinity.
@@ -98,4 +120,3 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
-

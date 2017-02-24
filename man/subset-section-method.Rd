@@ -32,9 +32,6 @@ data(section)
 GS <- subset(section, 109<=stationId&stationId<=129)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
@@ -47,4 +44,6 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{sectionSort}}, \code{\link{section}},
   \code{\link{summary,section-method}}
 }
-
+\author{
+Dan Kelley
+}

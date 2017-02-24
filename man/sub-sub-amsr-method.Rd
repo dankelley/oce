@@ -116,6 +116,7 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \examples{
 \dontrun{
 # Show a daytime SST image, along with an indication of whether
@@ -133,9 +134,6 @@ asp <- 1 / cos(pi*mean(lat)/180)
 imagep(lon, lat, rainy, asp=asp)
 mtext("red: too rainy to sense SSTDay")
 }
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
@@ -160,4 +158,6 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 }
-
+\author{
+Dan Kelley
+}

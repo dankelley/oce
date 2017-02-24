@@ -18,10 +18,11 @@
 Uses \code{\link{plotProfile}} to create panels of depth variation of easterly
 and northerly velocity components.
 }
-\author{
-Dan Kelley
-}
 \seealso{
+Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
+  \code{\link{as.ladp}}, \code{\link{ladp-class}},
+  \code{\link{summary,ladp-method}}
+
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
@@ -44,9 +45,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,windrose-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
-
-Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
-  \code{\link{as.ladp}}, \code{\link{ladp-class}},
-  \code{\link{summary,ladp-method}}
 }
-
+\author{
+Dan Kelley
+}

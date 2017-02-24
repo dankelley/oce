@@ -21,9 +21,6 @@ with \code{x[["coordinate"]]}.
 \description{
 Get names of Acoustic-Doppler Beams
 }
-\author{
-Dan Kelley
-}
 \seealso{
 This is used by \code{\link{read.oce}}.
 
@@ -61,4 +58,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

@@ -31,4 +31,3 @@ print(match)
 \author{
 Dan Kelley
 }
-

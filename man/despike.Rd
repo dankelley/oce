@@ -103,4 +103,3 @@ plot(CTD)
 \author{
 Dan Kelley
 }
-

@@ -24,4 +24,3 @@ threenum(1:10)
 \author{
 Dan Kelley
 }
-

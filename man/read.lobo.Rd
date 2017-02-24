@@ -47,4 +47,3 @@ lobo <- read.lobo(uri)
 \author{
 Dan Kelley
 }
-

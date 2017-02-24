@@ -17,9 +17,6 @@ call to \code{\link{read.bremen}}.}
 Pertinent summary information is presented, including the station name,
 sampling location, data ranges, etc.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
   \code{\link{[[<-,bremen-method}},
@@ -27,4 +24,6 @@ Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
   \code{\link{plot,bremen-method}},
   \code{\link{read.bremen}}
 }
-
+\author{
+Dan Kelley
+}

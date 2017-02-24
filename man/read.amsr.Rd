@@ -32,9 +32,7 @@ downloading a similarly-named file (e.g. in the present example,
 about inability to read a 6-chunk file, but
 \code{read.amsr("f34_20160803v7.2.gz")} will work properly.
 }
-\author{
-Dan Kelley and Chantelle Layton
-}
+
 \seealso{
 \code{\link{plot,amsr-method}} for an example.
 
@@ -46,7 +44,9 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}
 }
+\author{
+Dan Kelley and Chantelle Layton
+}
 \concept{
 satellite
 }
-

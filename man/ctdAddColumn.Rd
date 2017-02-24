@@ -37,7 +37,9 @@ names might be used.}
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 A ctd object.
@@ -59,9 +61,6 @@ ctdNew <- ctdAddColumn(ctd, F, "temperatureF",
     unit=list(unit=expression(degree*F), scale="ITS-90"))
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 The documentation for \code{\link{ctd-class}} explains the structure
    of CTD objects, and also outlines the other functions dealing with them.
@@ -71,4 +70,6 @@ Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{mapMeridians}}, \code{\link{mapZones}},
   \code{\link{oce.as.POSIXlt}}
 }
-
+\author{
+Dan Kelley
+}

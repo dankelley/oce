@@ -33,9 +33,6 @@ fc <- subset(fclat , longitude <= -47 & longitude <= -43)
 plot(fc)
 }
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{amsr-class}},
@@ -44,4 +41,6 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
   \code{\link{summary,amsr-method}}
 }
-
+\author{
+Dan Kelley
+}

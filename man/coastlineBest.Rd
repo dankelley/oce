@@ -26,9 +26,6 @@ Checks \code{coastlineWorld}, \code{coastlineWorldFine} and
 \code{coastlineWorldCoarse}, in that order, to find the one most appropriate
 for the locale.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
@@ -42,4 +39,6 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
-
+\author{
+Dan Kelley
+}

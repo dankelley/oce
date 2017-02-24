@@ -57,9 +57,7 @@ If only one of these is present in the data file, the data will be called
 are present, then \code{CTDSAL} is stored as \code{salinity} and \code{SALNTY}
 is stored as \code{salinityBottle}.
 }
-\author{
-Dan Kelley
-}
+
 \references{
 Several repository sites provide section data. An example that is perhaps likely
 to exist for years is \url{http://cchdo.ucsd.edu}, but a search on \code{"WOCE
@@ -80,4 +78,6 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }
-
+\author{
+Dan Kelley
+}

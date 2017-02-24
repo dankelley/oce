@@ -90,9 +90,6 @@ any seawater-related function that takes conductivity ratio as an argument (see
   setup facilitates the conversion of \code{\link{rsk-class}} objects to
   \code{\link{ctd-class}} objects.
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \references{
 Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
 potassium chloride solution having the same electrical conductivity, at 15 C and
@@ -114,4 +111,6 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
   \code{\link{rsk}}, \code{\link{subset,rsk-method}},
   \code{\link{summary,rsk-method}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

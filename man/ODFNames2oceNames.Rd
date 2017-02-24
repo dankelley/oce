@@ -21,7 +21,9 @@ ODFNames2oceNames(ODFnames, ODFunits = NULL, columns = NULL,
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 A vector of strings.
@@ -97,9 +99,7 @@ There are disagreements on variable names. For example, the ``DFO
 Common Data Dictionary'' [1]
 has unit millmole/m^3 for NODC and MEDS, but it has unit mL/L for BIO and IML.
 }
-\author{
-Dan Kelley
-}
+
 \references{
 1. The Department of Fisheries and Oceans Common Data Dictionary may be
 available at \code{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
@@ -119,4 +119,6 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }
-
+\author{
+Dan Kelley
+}

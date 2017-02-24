@@ -30,7 +30,12 @@ missing-value flag found in the data. For Seabird (\code{.cnv}) files, there is
 usually no need to set \code{missingValue}, because it can be inferred from the
 header (typically as -9.990e-29). Set \code{missingValue=NULL} to turn off
 missing-value detection, even in \code{.cnv} files that contain missing-value
-codes in their headers.}
+codes in their headers. If \code{missingValue} is not specified,
+then an attempt is made to infer such a value from the data, by testing
+whether salinity and/or temperature has a minimum that is under -8 in value;
+this should catch common values in files, without false positives. A warning
+will be issued in this case, and a note inserted in the processing log of
+the return value.}
 
 \item{monitor}{Boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}
@@ -59,9 +64,6 @@ Read a CTD file in ODF format
 \details{
 \code{read.ctd.odf} reads files stored in Ocean Data Format, used in
 some Canadian hydrographic databases.
-}
-\author{
-Dan Kelley
 }
 \references{
 The ODF format, used by the Canadian Department of Fisheries and Oceans, is
@@ -109,4 +111,6 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -20,4 +20,3 @@ Extract The Start of an Oce Object
 \seealso{
 \code{\link{tail.oce}}, which yields the end of an \code{oce} object.
 }
-

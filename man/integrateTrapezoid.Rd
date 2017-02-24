@@ -38,6 +38,7 @@ rule.
 \section{Bugs}{
  There is no handling of \code{NA} values.
 }
+
 \examples{
 x <- seq(0, 1, length.out=10) # try larger length.out to see if area approaches 2
 y <- 2*x + 3*x^2
@@ -53,4 +54,3 @@ print(integrateTrapezoid(y))
 \author{
 Dan Kelley
 }
-

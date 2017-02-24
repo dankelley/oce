@@ -98,11 +98,13 @@ if there are more than 2000 points to plot.}
 \item{missingColor}{colour used to indicate \code{NA} values in images (see
 \code{\link{imagep}}); set to \code{NULL} to avoid this indication.}
 
-\item{mgp}{A three-element numerical vector to use for \code{par(mgp)}
-to control spacing of axis elements.  The default is tighter than the R
-default, in order to use more space for the data and less for the axes.}
+\item{mgp}{A 3-element numerical vector used with \code{\link{par}("mgp")}
+to control the spacing of axis elements.
+The default is tighter than the R default.}
 
-\item{mar}{A four-element numerical vector to be used with \code{\link{par}("mar")}.}
+\item{mar}{A 4-element numerical vector used with \code{\link{par}("mar")}
+to control the plot margins.
+The default is tighter than the R default.}
 
 \item{mai.palette}{margins, in inches, to be added to those calculated for
 the palette; alter from the default only with caution}
@@ -340,9 +342,6 @@ plot(adp, which=1:3)
 plot(adp, which='temperature', tformat='\%H:\%M')
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
@@ -386,4 +385,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

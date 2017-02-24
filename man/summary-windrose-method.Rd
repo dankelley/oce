@@ -15,9 +15,6 @@
 \description{
 Summarizes some of the data in a \code{windrose} object.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 The documentation for \code{\link{windrose-class}} explains the structure
 of \code{windrose} objects, and also outlines the other functions dealing with them.
@@ -28,4 +25,6 @@ Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
   \code{\link{plot,windrose-method}},
   \code{\link{windrose-class}}
 }
-
+\author{
+Dan Kelley
+}

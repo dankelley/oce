@@ -40,9 +40,6 @@ mapPlot(coastlineWorld, latitudelim=c(60, 120), longitudelim=c(-130,-50),
 mapScalebar()
 }
 }
-\author{
-Dan Kelley
-}
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
 
@@ -59,4 +56,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapTissot}}, \code{\link{oceCRS}},
   \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley
+}

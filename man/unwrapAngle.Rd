@@ -42,4 +42,3 @@ mtext("mean", at=mean(a), side=3, col="red")
 \author{
 Dan Kelley
 }
-

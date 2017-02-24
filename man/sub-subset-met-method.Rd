@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[<-,met-method}
 \alias{[[<-,met-method}
-\title{Replace Parts of a Met Object}
+\title{Replace Parts of a met Object}
 \usage{
 \S4method{[[}{met}(x, i, j, ...) <- value
 }
@@ -74,9 +74,9 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,windrose-method}}
 
 Other things related to \code{met} data: \code{\link{[[,met-method}},
-  \code{\link{as.met}}, \code{\link{met-class}},
-  \code{\link{met}}, \code{\link{plot,met-method}},
-  \code{\link{read.met}}, \code{\link{subset,met-method}},
+  \code{\link{as.met}}, \code{\link{download.met}},
+  \code{\link{met-class}}, \code{\link{met}},
+  \code{\link{plot,met-method}}, \code{\link{read.met}},
+  \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-

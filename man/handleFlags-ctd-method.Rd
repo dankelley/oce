@@ -5,7 +5,8 @@
 \alias{handleFlags,ctd-method}
 \title{Handle Flags in CTD Objects}
 \usage{
-\S4method{handleFlags}{ctd}(object, flags = list(), actions = list())
+\S4method{handleFlags}{ctd}(object, flags = list(), actions = list(),
+  debug = integer())
 }
 \arguments{
 \item{object}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -16,7 +17,8 @@ or (b) a single unnamed item. In the first case, the attention is
 focussed on the named items, while in the second case the 
 all the data in the \code{object}'s \code{data} slot are examined.
 Each element in the list must be set to an integer or vector of integers,
-specifying conditions to be met before actions are to be taken.}
+specifying conditions to be met before actions are to be taken.
+See \dQuote{Details} for the default that is used if \code{flags} is not supplied.}
 
 \item{actions}{An optional \code{\link{list}} that contains items with
 names that match those in the \code{flags} argument.  If \code{actions}
@@ -25,7 +27,15 @@ is not supplied, the default will be to set all values identified by
 specifying \code{actions=list("NA")}. It is also possible to specify 
 functions that calculate replacement values. These are provided
 with \code{object} as the single argument, and must return a
-replacement for the data item in question.}
+replacement for the data item in question.
+See \dQuote{Details} for the default that is used if \code{actions} is not supplied.}
+
+\item{debug}{An optional integer specifying the degree of debugging, with
+value 0 meaning to skip debugging and 1 or higher meaning to print some
+information about the arguments and the data. It is usually a good idea to set
+this to 1 for initial work with a dataset, to see which flags are being
+handled for each data item. If not supplied, this defaults to the value of
+\code{\link{getOption}("oceDebug")}.}
 }
 \description{
 Data-quality flags are stored in the \code{metadata}
@@ -71,6 +81,7 @@ Users are asked to be patient, and to provide help by
 looking at the documentation and telling the developers
 whether the planned functioning seems reasonable.
 }
+
 \examples{
 library(oce)
 data(section)
@@ -125,4 +136,3 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-

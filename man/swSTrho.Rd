@@ -42,9 +42,6 @@ swSTrho(10, 22, 0, eos="gsw") # 28.76285
 swSTrho(10, 22, 0, eos="unesco") # 28.651625
 
 }
-\author{
-Dan Kelley
-}
 \references{
 1. Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
 fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
@@ -86,4 +83,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

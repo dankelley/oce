@@ -40,6 +40,7 @@ The arguments are based on those to \code{\link{contour}} and
 As with \code{\link{mapLines}}, long lines should be subdivided
 into multiple segments so that e.g. great circle lines will be curved.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -54,9 +55,6 @@ lat <- topoWorld[['latitude']]
 z <- topoWorld[['z']]
 mapContour(lon, lat, z, levels=c(-100, -2000, -3000), col=1:3, lwd=2)
 }
-}
-\author{
-Dan Kelley
 }
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
@@ -74,4 +72,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
   \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley
+}

@@ -34,9 +34,6 @@ contains more than 42 columns, only the first 42 are used.  This is used by
 \code{\link{read.lisst}}, the documentation on which explains the meanings
 of the columns.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
   \code{\link{[[<-,lisst-method}},
@@ -45,4 +42,6 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
   \code{\link{read.lisst}},
   \code{\link{summary,lisst-method}}
 }
-
+\author{
+Dan Kelley
+}

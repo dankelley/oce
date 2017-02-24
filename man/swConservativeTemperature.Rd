@@ -41,9 +41,6 @@ The conservative temperature is calculated using the TEOS-10 function
 swConservativeTemperature(35,10,1000,188,4) # 9.86883
 
 }
-\author{
-Dan Kelley
-}
 \references{
 McDougall, T.J. and P.M. Barker, 2011: Getting started with
 TEOS-10 and the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp.,
@@ -76,4 +73,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

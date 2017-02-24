@@ -37,9 +37,6 @@ summary(tide)
 }
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{[[<-,tidem-method}},
@@ -48,4 +45,6 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{tidem-class}}, \code{\link{tidemAstron}},
   \code{\link{tidemVuf}}, \code{\link{tidem}}
 }
-
+\author{
+Dan Kelley
+}

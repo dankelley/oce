@@ -49,9 +49,6 @@ in section 9 of Fofonoff and Millard (1983). If \code{eos="gsw"}, then the
 swSoundSpeed(40, T90fromT68(40), 10000) # 1731.995 (p48 of Fofonoff + Millard 1983)
 
 }
-\author{
-Dan Kelley
-}
 \references{
 Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
 computation of fundamental properties of seawater. \emph{Unesco Technical
@@ -79,4 +76,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

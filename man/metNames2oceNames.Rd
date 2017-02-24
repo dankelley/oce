@@ -24,6 +24,14 @@ Convert met Data Name to Oce Name
 Interoperability between oce functions requires that standardized data names
 be used, e.g. \code{"temperature"} for in-situ temperature. Very few
 data-file headers name the temperature column in exactly that way, however,
-and this function is provided to try to guess the names.
-}
+and this function is provided to try to guess the names. The task is complicated
+by the fact that Environment Canada seems to change the names of the columns,
+e.g. sometimes a symbol is used for the degree sign, other times not.
 
+Several quantities in the returned object differ from their values in the source
+file. For example, speed is converted from km/h to m/s, and angles are converted
+from tens of degres to degrees. Also, some items are created from scratch, e.g.
+\code{u} and \code{v}, the eastward and northward velocity, are computed from speed
+and direction. (Note that e.g. u is positive if the wind blows to the east; the
+data are thus in the normal Physics convention.)
+}

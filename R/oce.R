@@ -695,15 +695,13 @@ oce.approx <- oceApprox
 #' rm(n, x, y, theta, u, v)
 #'
 #' # Oceanographic example
-#' if (require(ocedata)) {
-#'     data(met)
-#'     t <- ISOdatetime(met[["Year"]], met[["Month"]], met[["Day"]], 0, 0, 0, tz="UTC")
-#'     u <- met[["u"]]
-#'     v <- met[["v"]]
-#'     temperature <- met[["temperature"]]
-#'     oce.plot.ts(t, temperature, type='p', ylim=c(-5, 30))
-#'     plotSticks(t, 5, u, v, yscale=2, add=TRUE)
-#' }
+#' data(met)
+#' t <- met[["time"]]
+#' u <- met[["u"]]
+#' v <- met[["v"]]
+#' p <- met[["pressure"]]
+#' oce.plot.ts(t, p)
+#' plotSticks(t, 99, u, v, yscale=25, add=TRUE)
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                        mgp=getOption("oceMgp"),
                        mar=c(mgp[1]+1, mgp[1]+1, 1, 1+par("cex")),
@@ -1476,6 +1474,10 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is ctd/woce/exchange\n")
         return("ctd/woce/exchange")
     }
+    if (1 == length(grep("^EXPOCODE", line, useBytes=TRUE))) {
+        oceDebug(debug, "this is ctd/woce/other\n")
+        return("ctd/woce/other")
+    }
     if (1 == length(grep("^\\s*ODF_HEADER", line, useBytes=TRUE))){
         oceDebug(debug, "this is an ODF file\n")
         return("odf")
@@ -1606,6 +1608,8 @@ read.oce <- function(file, ...)
         return(read.ctd.sbe(file, processingLog=processingLog, ...))
     if (type == "ctd/woce/exchange")
         return(read.ctd.woce(file, processingLog=processingLog, ...))
+    if (type == "ctd/woce/other")
+        return(read.ctd.woce.other(file, processingLog=processingLog, ...))
     if (type == "ctd/odf" || type == "mctd/odf" || type == "mvctd/odf")
         return(read.ctd.odf(file, processingLog=processingLog, ...))
     if (length(grep("/odf$", type)))

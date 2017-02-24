@@ -56,4 +56,3 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{summary,topo-method}},
   \code{\link{topo-class}}, \code{\link{topoInterpolate}}
 }
-

@@ -114,7 +114,9 @@ to extract from an object that has data in matrices, such as for some
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 An object of \code{\link{ctd-class}}.
@@ -162,9 +164,6 @@ ctd <- as.ctd(salinity, temperature, pressure,
     pressure=list(unit=expression(dbar), scale="")))
 
 }
-\author{
-Dan Kelley
-}
 \references{
 Culkin, F., and Norman D. Smith, 1980. Determination of the
 concentration of potassium chloride solution having the same electrical
@@ -189,4 +188,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley
+}

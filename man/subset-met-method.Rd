@@ -3,7 +3,7 @@
 \docType{methods}
 \name{subset,met-method}
 \alias{subset,met-method}
-\title{Subset a Met Object}
+\title{Subset a met Object}
 \usage{
 \S4method{subset}{met}(x, subset, ...)
 }
@@ -27,14 +27,13 @@ data(met)
 plot(subset(met, time > as.POSIXct("2003-09-27", tz="UTC")))
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{met} data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
-  \code{\link{met-class}}, \code{\link{met}},
-  \code{\link{plot,met-method}}, \code{\link{read.met}},
-  \code{\link{summary,met-method}}
+  \code{\link{download.met}}, \code{\link{met-class}},
+  \code{\link{met}}, \code{\link{plot,met-method}},
+  \code{\link{read.met}}, \code{\link{summary,met-method}}
 }
-
+\author{
+Dan Kelley
+}

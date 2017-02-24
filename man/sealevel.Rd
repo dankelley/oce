@@ -17,9 +17,6 @@ This sample sea-level dataset is the 2003 record from Halifax Harbour in
 Nova Scotia, Canada.  For reasons that are not mentioned on the data archive
 website, the record ends on the 8th of October.
 }
-\author{
-Dan Kelley
-}
 \references{
 1. Fisheries and Oceans Canada \url{http://www.meds-sdmm.dfo-mpo.gc.ca/isdm-gdsi/index-eng.html}
 }
@@ -44,4 +41,6 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }
-
+\author{
+Dan Kelley
+}

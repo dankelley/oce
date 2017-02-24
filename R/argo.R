@@ -1321,8 +1321,9 @@ setMethod(f="plot",
 #' value 1 indicates good data, and other values indicate either unchecked,
 #' suspicious, or bad data. Any data not flagged as good are set
 #' to \code{NA} in the returned value. Since Argo flag codes run
-#' from 0 to 4, this default is equivalent to
-#' setting \code{flags=list(c(0, 2:4))} along with
+#' from 0 to 9, with 1 indicating the highest level of confidence
+#' in the data, the defaults are
+#' \code{flags=list(c(0,2:9))} and
 #' \code{actions=list("NA")}.
 #' @param object An object of \code{\link{argo-class}}.
 #' @template handleFlagsTemplate
@@ -1335,6 +1336,16 @@ setMethod(f="plot",
 #' # 1. Default: anything not flagged as 1 is set to NA, to focus
 #' # solely on 'good', in the Argo scheme.
 #' argoNew <- handleFlags(argo)
+#' # demonstrate replacement, looking at the second profile
+#' f <- argo[["salinityFlag"]][,2] # first column with a flag=4 entry
+#' df <- data.frame(flag=f, orig=argo[["salinity"]][,2], new=argoNew[["salinity"]][,2])
+#' df[11:15,]
+#' ##    flag   orig    new
+#' ## 11    1 35.207 35.207
+#' ## 12    1 35.207 35.207
+#' ## 13    4 35.209     NA
+#' ## 14    1 35.207 35.207
+#' ## 15    1 35.207 35.207
 #'
 #' # 2. A less restrictive case: include also 'questionable' data,
 #' # and only apply this action to salinity.
@@ -1343,19 +1354,23 @@ setMethod(f="plot",
 #'
 #' @family things related to \code{argo} data
 setMethod("handleFlags",
-          c(object="argo", flags="ANY", actions="ANY"),
-          function(object, flags=list(), actions=list()) {
+          c(object="argo", flags="ANY", actions="ANY", debug="ANY"),
+          function(object, flags=list(), actions=list(), debug=integer()) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               ## Default to the Argo QC system, with
               ## flags from 0 to 4, with flag=1 for acceptable data.
               if (missing(flags))
-                  flags <- list(c(0, 2:4)) # DEVELOPER 2: alter this line to suit a newdata class
+                  flags <- list(c(0, 2:9)) # DEVELOPER 2: alter this line to suit a newdata class
               if (missing(actions)) {
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
               }
+              if (missing(debug))
+                  debug <- getOption("oceDebug")
               if (any(names(actions)!=names(flags))) {
                   stop("names of flags and actions must match")
               }
-              handleFlagsInternal(object, flags, actions)
+              if (missing(debug))
+                  debug <- 0
+              handleFlagsInternal(object, flags, actions, debug)
           })

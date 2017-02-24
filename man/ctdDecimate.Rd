@@ -41,7 +41,9 @@ fit", a larger value of \code{"e"} should be used.}
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 An object of \code{\link{ctd-class}}, with pressures that are as set by
@@ -75,6 +77,7 @@ from those data.  This function produces a warning to this effect. The
 recommended practice is to use \code{\link{handleFlags}} or some other means to
 deal with flags before calling the present function.
 }
+
 \examples{
 library(oce)
 data(ctd)
@@ -88,9 +91,6 @@ ctd3 <- ctdDecimate(ctd, p=p, method=function(x, y, xout)
 lines(ctd3[["salinity"]], ctd3[["pressure"]], col="red")
 
 
-}
-\author{
-Dan Kelley
 }
 \references{
 R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
@@ -117,4 +117,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley
+}

@@ -75,4 +75,3 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
 
 Other things related to \code{g1sst} data: \code{\link{[[,g1sst-method}}
 }
-

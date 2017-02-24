@@ -56,6 +56,7 @@ At the moment, the function cannot determine which lines might
 work with labels on axes, but this could perhaps be added later, making
 this more analogous with \code{\link{grid}}.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -65,9 +66,6 @@ longitudelim=c(-80, 10), latitudelim=c(0, 120),
 projection="+proj=ortho")
 mapGrid(15, 15, polarCircle=15)
 }
-}
-\author{
-Dan Kelley
 }
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
@@ -85,4 +83,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
   \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley
+}

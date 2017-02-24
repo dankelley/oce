@@ -30,9 +30,6 @@ T90 <- T90fromT68(T68)
 sqrt(mean((T68-T90)^2))
 
 }
-\author{
-Dan Kelley
-}
 \references{
 P. M. Saunders, 1990. The international temperature scale of
 1990, ITS-90.  WOCE Newsletter, volume 10, September 1990, page 10.
@@ -61,4 +58,6 @@ Other functions that calculate seawater properties: \code{\link{T90fromT48}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

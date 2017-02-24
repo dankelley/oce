@@ -46,7 +46,9 @@ format used.)}
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 
 \item{\dots}{optional arguments passed to plotting functions. A common
 example is to set \code{xlim} and \code{ylim}, to focus a map region.}
@@ -97,6 +99,7 @@ WebTide is not an open-source application, so the present function was
 designed based on little more than guesses about the WebTide file structure.
 Users should be on the lookout for odd results.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -109,4 +112,3 @@ mtext(sprintf("prediction at \%fN \%fE", lat, lon), line=0.75, side=3)
 \author{
 Dan Kelley
 }
-

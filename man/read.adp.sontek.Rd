@@ -64,9 +64,6 @@ An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 \description{
 Read a Sontek acoustic-Dopplerprofiler file [1].
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \references{
 1. Information about Sontek profilers is available at
 
@@ -92,4 +89,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

@@ -36,4 +36,3 @@ head(ctd[["salinity"]]) # in data
 data(section)
 summary(section[["station", 1]])
 }
-

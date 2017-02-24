@@ -2,14 +2,14 @@
 % Please edit documentation in R/met.R
 \name{as.met}
 \alias{as.met}
-\title{Coerce Data into Met Object}
+\title{Coerce Data into met Object}
 \usage{
 as.met(time, temperature, pressure, u, v,
   filename = "(constructed from data)")
 }
 \arguments{
-\item{time}{Vector of obseration times (or character strings that can be
-coerced into times).}
+\item{time}{Either a vector of observation times (or character strings that can be
+coerced into times) or the output from \code{canadaHCD::hcd_hourly} (see [1]).}
 
 \item{temperature}{vector of temperatures.}
 
@@ -25,18 +25,30 @@ coerced into times).}
 An object of \code{\link{met-class}}.
 }
 \description{
-Coerces a dataset into a met dataset.
-This function is used by \code{\link{read.met}}, and may be used to
-construct objects that behave as though read by that function.
+Coerces a dataset into a met dataset. This fills in only a few of the typical
+data fields, so the returned object is much
+sparser than the output from \code{\link{read.met}}. Also, almost no
+metadata fields are filled in, so the resultant object does not store
+station location, units of the data, data-quality flags, etc. Anyone working
+with data from Environment Canada [2] is advised to use \code{\link{read.met}}
+instead of the present function.
 }
-\author{
-Dan Kelley
+\references{
+1. The \code{canadaHCD} package is in development by Gavin Simpson; see
+\url{https://github.com/gavinsimpson/canadaHCD} for instructions on how
+to download and install from GitHub.
+
+2. Environment Canada website for Historical Climate Data
+\url{http://climate.weather.gc.ca/index_e.html}
 }
 \seealso{
 Other things related to \code{met} data: \code{\link{[[,met-method}},
-  \code{\link{[[<-,met-method}}, \code{\link{met-class}},
+  \code{\link{[[<-,met-method}},
+  \code{\link{download.met}}, \code{\link{met-class}},
   \code{\link{met}}, \code{\link{plot,met-method}},
   \code{\link{read.met}}, \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-
+\author{
+Dan Kelley
+}

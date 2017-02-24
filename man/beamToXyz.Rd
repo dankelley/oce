@@ -21,9 +21,6 @@ in xyz coordinates instead of beam coordinates.
 Convert velocity data from an acoustic-Doppler velocimeter or
 acoustic-Doppler profiler from one coordinate system to another.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
@@ -59,4 +56,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

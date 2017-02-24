@@ -80,6 +80,7 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \examples{
 data(adp)
 # Tests for beam 1, distance bin 1, first 5 observation times
@@ -88,9 +89,6 @@ adp[["a"]][1:5,1,1]
 adp[["a", "numeric"]][1:5,1,1]
 as.numeric(adp[["a"]][1:5,1,1]) # same as above
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
@@ -135,4 +133,6 @@ Other things related to \code{adp} data: \code{\link{[[<-,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

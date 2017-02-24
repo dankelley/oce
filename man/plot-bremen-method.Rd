@@ -22,9 +22,6 @@ otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
 plot is created with \code{\link{plot,ladp-method}} to show velocity varation with
 pressure.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
@@ -54,4 +51,6 @@ Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
   \code{\link{bremen-class}}, \code{\link{read.bremen}},
   \code{\link{summary,bremen-method}}
 }
-
+\author{
+Dan Kelley
+}

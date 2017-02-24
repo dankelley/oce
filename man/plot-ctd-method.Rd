@@ -235,7 +235,9 @@ value of \code{which} does not match that in the previous plots.}
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 
 \item{...}{Optional arguments passed to plotting functions. A common example is
 to set \code{df}, for use in \link{swN2} calculations.}
@@ -270,6 +272,7 @@ Until February, 2016, \code{plot,ctd-method} relied on a now-defunct argument
 Also, now it is possible to set the edge of coasts and international
 boundaries, with \code{borderCoastline}.
 }
+
 \examples{
 ## 1. simple plot
 library(oce)
@@ -291,9 +294,6 @@ contour(tlon, tlat, tdep, drawlabels=FALSE,
 contour(tlon, tlat, tdep, vfont=c("sans serif", "bold"),
         levels=stn[['waterDepth']], col='red', lwd=2, add=TRUE)
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 The documentation for \code{\link{ctd-class}} explains the structure of CTD
@@ -337,4 +337,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley
+}

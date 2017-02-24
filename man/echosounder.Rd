@@ -13,9 +13,6 @@ This is degraded subsample of measurements that were made with a Biosonics
 scientific echousounder, as part of the St Lawrence Internal Wave Experiment
 (SLEIWEX).
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
@@ -37,4 +34,6 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
   \code{\link{subset,echosounder-method}},
   \code{\link{summary,echosounder-method}}
 }
-
+\author{
+Dan Kelley
+}

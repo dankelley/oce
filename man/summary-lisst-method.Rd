@@ -23,13 +23,12 @@ data(lisst)
 summary(lisst)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
   \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},
   \code{\link{lisst-class}},
   \code{\link{plot,lisst-method}}, \code{\link{read.lisst}}
 }
-
+\author{
+Dan Kelley
+}

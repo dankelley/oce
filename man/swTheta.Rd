@@ -72,9 +72,6 @@ legend("topleft", lty=1:2,
        bg='white', title="Station 70")
 
 }
-\author{
-Dan Kelley
-}
 \references{
 [1] Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
 fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
@@ -117,4 +114,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swThermalConductivity}},
   \code{\link{swViscosity}}, \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}
