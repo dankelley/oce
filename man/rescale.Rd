@@ -49,4 +49,3 @@ plot(x, z, type='p', pch=20, cex=3,
 \author{
 Dan Kelley
 }
-

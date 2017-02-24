@@ -35,9 +35,7 @@ m[["temperature"]] <- 1 + m[["temperature"]]
 }
 increases temperature by 1C.
 }
-\author{
-Dan Kelley
-}
+
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
@@ -57,4 +55,6 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
   \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-
+\author{
+Dan Kelley
+}

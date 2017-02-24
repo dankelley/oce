@@ -33,9 +33,6 @@ station location, units of the data, data-quality flags, etc. Anyone working
 with data from Environment Canada [2] is advised to use \code{\link{read.met}}
 instead of the present function.
 }
-\author{
-Dan Kelley
-}
 \references{
 1. The \code{canadaHCD} package is in development by Gavin Simpson; see
 \url{https://github.com/gavinsimpson/canadaHCD} for instructions on how
@@ -52,4 +49,6 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
   \code{\link{read.met}}, \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-
+\author{
+Dan Kelley
+}

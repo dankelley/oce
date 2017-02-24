@@ -20,4 +20,3 @@ processingLogShow(ctd)
 processingLog(ctd) <- "test"
 processingLogShow(ctd)
 }
-

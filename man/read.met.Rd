@@ -45,6 +45,7 @@ may fail for other files, if Environment Canada changes the format.
  There seem to be several similar formats in use, so this
 function may not work in all cases.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -56,9 +57,6 @@ met <- oceSetData(met, "time", met[["time"]]+4*3600,
 plot(met, which=3:4)
 }
 
-}
-\author{
-Dan Kelley
 }
 \references{
 1. Environment Canada website for Historical Climate Data
@@ -72,4 +70,6 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
   \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -35,9 +35,6 @@ ctd[["pressure"]] <- ctd[["pressure"]] + 3
 ctdNew <- ctdUpdateHeader(ctd)
 
 }
-\author{
-Dan Kelley
-}
 \references{
 The Seabird CTD instrument is described at
   \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
@@ -47,4 +44,6 @@ Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdAddColumn}}, \code{\link{mapMeridians}},
   \code{\link{mapZones}}, \code{\link{oce.as.POSIXlt}}
 }
-
+\author{
+Dan Kelley
+}

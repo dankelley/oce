@@ -471,7 +471,50 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
     ## FIXME: labels, using labcex and vfont
 }
 
-
+#' Draw a coordinate system
+#'
+#' @details This is a preliminary version of this function. It only 
+#' works if the lines of constant latitude are horizontal on the map. 
+#'
+#' @param latitude numeric value of latitude in degrees
+#' @param longitude numeric value of longiutde in degrees
+#' @param L axis length in km
+#' @param phi angle is degrees counterclockwise 
+#' @param ... plotting arguments, passed to \code{\link{mapArrows}}
+#'
+#' @examples
+#' library(oce)
+#' data(coastlineWorldFine, package='ocedata')
+#' HfxLon <- -(63+57/60)
+#' HfxLat <- 44+61/90
+#' mapPlot(coastlineWorldFine, proj='+proj=merc', 
+#'         longitudelim=HfxLon +c(-2,2), latitudelim=HfxLat+ c(-2,2),
+#'         col='lightgrey')
+#' mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
+#'
+#' @author Chantelle Layton
+mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
+{
+  if (missing(longitude)) 
+    stop('must supply longitude')
+  if (missing(latitude)) 
+    stop('must supply latitude')
+  R <- 6371
+  pi <- 4 * atan2(1, 1)
+  phirad <- phi*pi/180 + c(0, pi/2)
+  lonrad <- (longitude*pi)/180	
+  latrad <- (latitude*pi)/180
+  kmperlon <- (pi*R*cos(latrad))/180	
+  kmperlat <- (pi*R)/180
+  dx <- L*cos(phirad)	
+  dy <- L*sin(phirad)
+  dlon <- dx/kmperlon	
+  dlat <- dy/kmperlat
+  lonend <- longitude + dlon
+  latend <- latitude + dlat
+  mapArrows(longitude, latitude, lonend[1], latend[1], ...)
+  mapArrows(longitude, latitude, lonend[2], latend[2], ...)
+}
 
 #' Add a Direction Field to an Existing Map
 #'

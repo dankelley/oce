@@ -34,10 +34,6 @@ mapLines(l$longitude, l$latitude, col='red', lwd=2)
 }
 
 }
-\author{
-Dan Kelley, based on code from Clark Richards, in turn based on
-formulae provided by Ed Williams [1].
-}
 \references{
 1. \code{http://williams.best.vwh.net/avform.htm#Intermediate}
 (link worked for years but failed 2017-01-16).
@@ -46,4 +42,7 @@ formulae provided by Ed Williams [1].
 Other functions relating to geodesy: \code{\link{geodDist}},
   \code{\link{geodXyInverse}}, \code{\link{geodXy}}
 }
-
+\author{
+Dan Kelley, based on code from Clark Richards, in turn based on
+formulae provided by Ed Williams [1].
+}

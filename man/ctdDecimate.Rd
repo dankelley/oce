@@ -77,6 +77,7 @@ from those data.  This function produces a warning to this effect. The
 recommended practice is to use \code{\link{handleFlags}} or some other means to
 deal with flags before calling the present function.
 }
+
 \examples{
 library(oce)
 data(ctd)
@@ -90,9 +91,6 @@ ctd3 <- ctdDecimate(ctd, p=p, method=function(x, y, xout)
 lines(ctd3[["salinity"]], ctd3[["pressure"]], col="red")
 
 
-}
-\author{
-Dan Kelley
 }
 \references{
 R.F. Reiniger and C.K. Ross, 1968.  A method of interpolation with
@@ -119,4 +117,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley
+}

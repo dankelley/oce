@@ -51,6 +51,7 @@ December 2016. Users are advised to refer to arguments by name,
 i.e. not to rely on their order, and they are asked for patience,
 because argument names and defaults may vary through the early development.
 }
+
 \seealso{
 Other functions that download files: \code{\link{download.coastline}},
   \code{\link{download.met}}, \code{\link{download.topo}}
@@ -62,4 +63,3 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}
 }
-

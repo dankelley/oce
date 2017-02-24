@@ -35,4 +35,3 @@ points(U$x, U$y, col=oce.colorsJet(100)[rescale(U$grid, rlow=1, rhigh=100)], pch
 \author{
 Dan Kelley
 }
-

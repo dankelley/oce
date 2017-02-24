@@ -205,18 +205,10 @@ on the lookout for errors, since this is a rare situation.}
 within R or in the operating system.}
 }
 }
-\author{
-Dan Kelley
-}
 \references{
 1. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.
 }
 \seealso{
-Other functions that interpret variable names and units from headers: \code{\link{ODFNames2oceNames}},
-  \code{\link{unitFromStringRsk}},
-  \code{\link{unitFromString}},
-  \code{\link{woceNames2oceNames}}
-
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{ctd-class}}, \code{\link{ctdDecimate}},
@@ -232,5 +224,12 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
-}
 
+Other functions that interpret variable names and units from headers: \code{\link{ODFNames2oceNames}},
+  \code{\link{unitFromStringRsk}},
+  \code{\link{unitFromString}},
+  \code{\link{woceNames2oceNames}}
+}
+\author{
+Dan Kelley
+}

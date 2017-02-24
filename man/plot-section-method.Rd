@@ -227,9 +227,6 @@ points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 The documentation for \code{\link{section-class}} explains the
 structure of section objects, and also outlines the other functions dealing
@@ -269,4 +266,6 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -69,4 +69,3 @@ legend("bottomright", lwd=2, bg="white",
 \author{
 Dan Kelley
 }
-

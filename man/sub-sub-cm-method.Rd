@@ -73,6 +73,7 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
@@ -102,4 +103,3 @@ Other things related to \code{cm} data: \code{\link{[[<-,cm-method}},
   \code{\link{read.cm}}, \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
-

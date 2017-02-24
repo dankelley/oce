@@ -41,4 +41,3 @@ par(opar)
 \author{
 Dan Kelley
 }
-

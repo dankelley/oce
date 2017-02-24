@@ -46,9 +46,6 @@ be named \code{pressure}. No checks are made within \code{as.rsk} on any of
 these rules, but if they are broken, you may expect problems with any further
 processing.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
   \code{\link{[[<-,rsk-method}},
@@ -58,4 +55,6 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
   \code{\link{subset,rsk-method}},
   \code{\link{summary,rsk-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -43,4 +43,3 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swThermalConductivity}},
   \code{\link{swTheta}}, \code{\link{swViscosity}}
 }
-

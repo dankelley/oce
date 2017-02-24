@@ -21,9 +21,6 @@ slot.
 Pertinent summary information is presented, including the station name,
 sampling location, data ranges, etc.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{ODFNames2oceNames}},
@@ -33,4 +30,6 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
   \code{\link{subset,odf-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -14,9 +14,6 @@ data(lisst)
 LISST (Laser in-situ scattering and transmissometry) dataset, constructed
 artificially.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
@@ -28,4 +25,6 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 }
-
+\author{
+Dan Kelley
+}

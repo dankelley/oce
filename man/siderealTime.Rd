@@ -26,9 +26,6 @@ t <- ISOdatetime(1978, 11, 13, 0, 0, 0, tz="UTC")
 print(siderealTime(t))
 
 }
-\author{
-Dan Kelley
-}
 \references{
 Meeus, Jean, 1982.  Astronomical formuae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages
@@ -40,4 +37,6 @@ Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
   \code{\link{julianDay}}, \code{\link{moonAngle}},
   \code{\link{sunAngle}}
 }
-
+\author{
+Dan Kelley
+}

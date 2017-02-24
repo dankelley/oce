@@ -16,4 +16,3 @@ In contrast to the various \code{[[} functions, this is
 guaranteed to look only within the \code{metadata} slot. If
 the named item is not found, \code{NULL} is returned.
 }
-

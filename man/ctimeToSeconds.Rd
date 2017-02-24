@@ -23,9 +23,6 @@ cat("10      = ", ctimeToSeconds("10"), "s\\n", sep="")
 cat("01:04   = ", ctimeToSeconds("01:04"), "s\\n", sep="")
 cat("1:00:00 = ", ctimeToSeconds("1:00:00"), "s\\n", sep="")
 }
-\author{
-Dan Kelley
-}
 \seealso{
 See \code{\link{secondsToCtime}}, the inverse of this.
 
@@ -35,4 +32,6 @@ Other things related to time: \code{\link{julianCenturyAnomaly}},
   \code{\link{secondsToCtime}},
   \code{\link{unabbreviateYear}}
 }
-
+\author{
+Dan Kelley
+}

@@ -99,6 +99,7 @@ December 2016. Users are advised to refer to arguments by name,
 i.e. not to rely on their order, and they are asked for patience,
 because argument names and defaults may vary through the early development.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -110,9 +111,6 @@ data(coastlineWorldFine, package="ocedata")
 lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
 }
 
-}
-\author{
-Dan Kelley
 }
 \references{
 1. \url{http://www.ngdc.noaa.gov/mgg/global/global.html}
@@ -137,4 +135,6 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{topo-class}}, \code{\link{topoInterpolate}},
   \code{\link{topoWorld}}
 }
-
+\author{
+Dan Kelley
+}

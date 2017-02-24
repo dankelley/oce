@@ -60,4 +60,3 @@ oce.contour(lon, lat, z, levels=-130, drawlabels=FALSE, col='blue', add=TRUE)
 \author{
 Dan Kelley
 }
-

@@ -80,9 +80,6 @@ plot(gss2)
 }
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
@@ -96,4 +93,6 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }
-
+\author{
+Dan Kelley
+}

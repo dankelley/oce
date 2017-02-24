@@ -24,9 +24,6 @@ function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
 form or in physical units; \code{\link{plot,amsr-method}}, and
 \code{\link{summary,amsr-method}} work with physical units.
 }
-\author{
-Dan Kelley and Chantelle Layton
-}
 \references{
 1. \url{http://www.remss.com/missions/amsre}
 }
@@ -40,7 +37,9 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}
 }
+\author{
+Dan Kelley and Chantelle Layton
+}
 \concept{
 satellite
 }
-

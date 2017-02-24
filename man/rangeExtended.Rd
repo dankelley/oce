@@ -21,4 +21,3 @@ in the case where \code{xaxs="r"}.
 \author{
 Dan Kelley
 }
-

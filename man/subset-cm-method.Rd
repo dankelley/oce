@@ -28,9 +28,6 @@ plot(cm)
 plot(subset(cm, time < mean(range(cm[['time']]))))
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{cm} data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
@@ -38,4 +35,6 @@ Other things related to \code{cm} data: \code{\link{[[,cm-method}},
   \code{\link{plot,cm-method}}, \code{\link{read.cm}},
   \code{\link{summary,cm-method}}
 }
-
+\author{
+Dan Kelley
+}

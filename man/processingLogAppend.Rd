@@ -20,4 +20,3 @@ and the text notations of those entries..
 \description{
 Append an item to a processing log
 }
-

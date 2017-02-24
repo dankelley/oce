@@ -59,13 +59,12 @@ plot(x, y)
 contour(m$xmids, m$ymids, m$result, add=TRUE, levels=seq(0, 2, 0.5), labcex=1)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other bin-related functions: \code{\link{binApply1D}},
   \code{\link{binApply2D}}, \code{\link{binAverage}},
   \code{\link{binCount1D}}, \code{\link{binCount2D}},
   \code{\link{binMean1D}}
 }
-
+\author{
+Dan Kelley
+}

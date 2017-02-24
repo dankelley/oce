@@ -66,9 +66,6 @@ Read a WOCE-type CTD file with First Word "EXPOCODE"
 by the World Ocean Circulation Experiment (WOCE), in which the first
 word in the file is \code{EXPOCODE}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
@@ -84,4 +81,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley
+}

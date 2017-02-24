@@ -1,4 +1,5 @@
 0.9-21
+- mapCoordinateSystem() added
 - woce-exchange missing-value inference
 - woce-exchange autodetection, plus read all data types
 - download.met() added

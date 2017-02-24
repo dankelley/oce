@@ -29,9 +29,6 @@ plot(sealevel)
 plot(subset(sealevel, time < mean(range(sealevel[['time']]))))
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{[[<-,sealevel-method}},
@@ -43,4 +40,6 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{sealevel}},
   \code{\link{summary,sealevel-method}}
 }
-
+\author{
+Dan Kelley
+}

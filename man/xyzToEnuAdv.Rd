@@ -96,9 +96,6 @@ yes \tab yes \tab down \tab H-90 \tab R \tab P \tab X \tab -Y \tab -Z\cr 5
 \tab adv \tab - \tab - \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab
 Z\cr }
 }
-\author{
-Dan Kelley, in collaboration with Clark Richards
-}
 \references{
 1. \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
 
@@ -123,4 +120,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley, in collaboration with Clark Richards
+}

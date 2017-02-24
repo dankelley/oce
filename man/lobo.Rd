@@ -21,9 +21,6 @@ plot(lobo)
 }
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
@@ -41,4 +38,6 @@ Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{subset,lobo-method}},
   \code{\link{summary,lobo-method}}
 }
-
+\author{
+Dan Kelley
+}

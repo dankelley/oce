@@ -23,9 +23,6 @@ This uses \code{\link{map2lonlat}} to infer the location in
 geographical space; see the documentation for that function on its
 limitations.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
 
@@ -42,4 +39,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
   \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley
+}

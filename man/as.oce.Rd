@@ -56,4 +56,3 @@ but no other columns, then an object of class \code{\link{coastline-class}}
 is returned.
 }
 }
-

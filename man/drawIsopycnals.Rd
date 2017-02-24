@@ -42,10 +42,9 @@ Adds isopycnal lines to an existing temperature-salinity plot.  This is
 called by \code{\link{plotTS}}, and may be called by the user also, e.g. if
 an image plot is used to show TS data density.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 \code{\link{plotTS}}, which calls this.
 }
-
+\author{
+Dan Kelley
+}

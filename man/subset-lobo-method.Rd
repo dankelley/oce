@@ -22,9 +22,6 @@ A new \code{lobo} object.
 Subset an lobo object, in a way that is somewhat
 analogous to \code{\link{subset.data.frame}}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{[[<-,lobo-method}}, \code{\link{as.lobo}},
@@ -32,4 +29,6 @@ Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{summary,lobo-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -32,9 +32,6 @@ An object of \code{\link{lobo-class}}.
 \description{
 Coerce a dataset into a lobo dataset.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{[[<-,lobo-method}}, \code{\link{lobo-class}},
@@ -42,4 +39,6 @@ Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{subset,lobo-method}},
   \code{\link{summary,lobo-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -19,10 +19,9 @@ A character string.
 \description{
 Format a latitude-longitude pair, using "S" for negative latitudes, etc.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 \code{\link{latFormat}} and \code{\link{lonFormat}}.
 }
-
+\author{
+Dan Kelley
+}

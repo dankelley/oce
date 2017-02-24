@@ -46,9 +46,6 @@ cmPerM <- 100
 swThermalConductivity(31.5,10,1000) / joulePerCalorie / cmPerM
 
 }
-\author{
-Dan Kelley
-}
 \references{
 Caldwell, Douglas R., 1974. Thermal conductivity of seawater,
 \emph{Deep-sea Research}, \bold{21}, 131-137.
@@ -74,4 +71,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTSrho}}, \code{\link{swTheta}},
   \code{\link{swViscosity}}, \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

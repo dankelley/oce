@@ -32,9 +32,6 @@ Value in 1/degC.
 \description{
 Compute \eqn{\alpha}{alpha}, the thermal expansion coefficient for seawater.
 }
-\author{
-Dan Kelley
-}
 \references{
 The \code{eos="unesco"} formulae are based on the UNESCO
 equation of state, but are formulated empirically by Trevor J. McDougall,
@@ -65,4 +62,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

@@ -17,9 +17,6 @@ a call to \code{\link{read.echosounder}}, \code{\link{read.oce}}, or
 \description{
 Summarizes some of the data in an \code{echosounder} object.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
@@ -30,4 +27,6 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
   \code{\link{read.echosounder}},
   \code{\link{subset,echosounder-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -46,9 +46,7 @@ narrow beam, actually, given the confusing endian tricks being played).  In
 the split-beam case, only amplitude is read, with the x-axis and y-axis
 angle data being ignored.
 }
-\author{
-Dan Kelley, with help from Clark Richards
-}
+
 \references{
 Various echousounder instruments provided by BioSonics are
 described at the company website, \url{http://www.biosonicsinc.com/}.  The
@@ -74,4 +72,6 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
   \code{\link{subset,echosounder-method}},
   \code{\link{summary,echosounder-method}}
 }
-
+\author{
+Dan Kelley, with help from Clark Richards
+}

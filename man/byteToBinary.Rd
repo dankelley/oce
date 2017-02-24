@@ -29,4 +29,3 @@ print(byteToBinary(x))
 \author{
 Dan Kelley
 }
-

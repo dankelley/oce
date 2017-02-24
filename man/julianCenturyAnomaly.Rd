@@ -25,9 +25,6 @@ jca <- julianCenturyAnomaly(julianDay(t))
 cat(format(t), "is Julian Century anomaly", format(jca, digits=8), "\\n")
 
 }
-\author{
-Dan Kelley
-}
 \references{
 Meeus, Jean, 1982.  Astronomical formuae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages
@@ -44,4 +41,6 @@ Other things related to time: \code{\link{ctimeToSeconds}},
   \code{\link{secondsToCtime}},
   \code{\link{unabbreviateYear}}
 }
-
+\author{
+Dan Kelley
+}

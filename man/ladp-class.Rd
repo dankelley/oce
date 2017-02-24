@@ -23,12 +23,12 @@ known as ADCP) device.
     columns for \code{"temperature"} and \code{"salinity"}, and possibly other
     things. Use \code{names(ladp@data)} to find the names of the data.
 }
-\author{
-Dan Kelley
-}
+
 \seealso{
 Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
   \code{\link{as.ladp}}, \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
 }
-
+\author{
+Dan Kelley
+}

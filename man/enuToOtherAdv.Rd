@@ -41,9 +41,6 @@ NOTE: this function works similarly to \code{\link{xyzToEnuAdv}}, except
 that in the present function, it makes no difference whether the instrument
 points up or down, etc.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
@@ -59,4 +56,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

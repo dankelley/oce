@@ -61,9 +61,6 @@ ctdNew <- ctdAddColumn(ctd, F, "temperatureF",
     unit=list(unit=expression(degree*F), scale="ITS-90"))
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 The documentation for \code{\link{ctd-class}} explains the structure
    of CTD objects, and also outlines the other functions dealing with them.
@@ -73,4 +70,6 @@ Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{mapMeridians}}, \code{\link{mapZones}},
   \code{\link{oce.as.POSIXlt}}
 }
-
+\author{
+Dan Kelley
+}

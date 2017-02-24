@@ -134,9 +134,6 @@ data minus 1/3 of the \code{nir}-band data. (This is not a typo: the
 \code{blue} band is not used.)
 }
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{landsat-class}}, \code{\link{landsatAdd}},
@@ -144,7 +141,9 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 }
+\author{
+Dan Kelley
+}
 \concept{
 satellite
 }
-

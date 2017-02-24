@@ -39,4 +39,3 @@ pressure should be near zero at the ocean surface, but some additional adjustmen
 might be necessary, and this may be indicated by setting the argument \code{pressureAtmospheric} to
 a non-zero value to be subtracted from pressure.
 }
-

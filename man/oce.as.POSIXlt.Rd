@@ -22,13 +22,12 @@ oce, and also that \code{\link[lubridate]{parse_date_time}} in the
 \CRANpkg{lubridate} package was superior and therefore a better choice for
 \dQuote{oce} users.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdAddColumn}},
   \code{\link{ctdUpdateHeader}},
   \code{\link{mapMeridians}}, \code{\link{mapZones}}
 }
-
+\author{
+Dan Kelley
+}

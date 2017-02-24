@@ -79,6 +79,7 @@ Users are asked to be patient, and to provide help by
 looking at the documentation and telling the developers
 whether the planned functioning seems reasonable.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -119,4 +120,3 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
-

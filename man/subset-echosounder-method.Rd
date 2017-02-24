@@ -31,9 +31,6 @@ plot(subset(echosounder, depth < 10))
 plot(subset(echosounder, time < mean(range(echosounder[['time']]))))
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
@@ -44,4 +41,6 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
   \code{\link{read.echosounder}},
   \code{\link{summary,echosounder-method}}
 }
-
+\author{
+Dan Kelley
+}

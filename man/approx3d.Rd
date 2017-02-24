@@ -60,4 +60,3 @@ points(xout[m], f[n,n,n])
 \author{
 Dan Kelley and Clark Richards
 }
-

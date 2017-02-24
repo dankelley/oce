@@ -36,4 +36,3 @@ lines(x, angleRemap(heading))
 \author{
 Dan Kelley
 }
-

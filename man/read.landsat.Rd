@@ -89,9 +89,7 @@ the bands that are of interest.  It is also helpful to use
 to use \code{\link{decimate}} to get a coarse view of the domain, especially
 early in an analysis.
 }
-\author{
-Dan Kelley
-}
+
 \references{
 1. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
 Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.  Available at
@@ -112,7 +110,9 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{plot,landsat-method}},
   \code{\link{summary,landsat-method}}
 }
+\author{
+Dan Kelley
+}
 \concept{
 satellite
 }
-

@@ -86,6 +86,7 @@ December 2016. Users are advised to refer to arguments by name,
 i.e. not to rely on their order, and they are asked for patience,
 because argument names and defaults may vary through the early development.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -95,9 +96,6 @@ metFile <- download.met(6358, 2003, 9, destdir=".")
 met <- read.met(metFile)
 }
 
-}
-\author{
-Dan Kelley
 }
 \references{
 1. Environment Canada website for Historical Climate Data
@@ -120,4 +118,6 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
   \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-
+\author{
+Dan Kelley
+}

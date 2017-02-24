@@ -108,16 +108,29 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \examples{
 data(section)
 length(section[["latitude"]])
 length(section[["latitude", "byStation"]])
 
-}
-\author{
-Dan Kelley
+data(section)
+length(section[["latitude"]])
+length(section[["latitude", "byStation"]])
+
 }
 \seealso{
+Other things related to \code{section} data: \code{\link{[[<-,section-method}},
+  \code{\link{as.section}},
+  \code{\link{handleFlags,section-method}},
+  \code{\link{plot,section-method}},
+  \code{\link{read.section}}, \code{\link{section-class}},
+  \code{\link{sectionAddStation}},
+  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
+  \code{\link{sectionSort}}, \code{\link{section}},
+  \code{\link{subset,section-method}},
+  \code{\link{summary,section-method}}
+
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
@@ -139,16 +152,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
-
-Other things related to \code{section} data: \code{\link{[[<-,section-method}},
-  \code{\link{as.section}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{read.section}}, \code{\link{section-class}},
-  \code{\link{sectionAddStation}},
-  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
-  \code{\link{sectionSort}}, \code{\link{section}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
 }
-
+\author{
+Dan Kelley
+}

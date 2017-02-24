@@ -12,4 +12,3 @@ processingLogShow(x)
 \description{
 Show the processing log of an \code{oce} object
 }
-

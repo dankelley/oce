@@ -41,9 +41,7 @@ of velocity, given the results of a sample dataset:
 It was created to read some data being used in a particular research
 project, and will be rendered uselss if Bremen changes this data format.
 }
-\author{
-Dan Kelley
-}
+
 \seealso{
 Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
   \code{\link{[[<-,bremen-method}},
@@ -51,4 +49,6 @@ Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
   \code{\link{plot,bremen-method}},
   \code{\link{summary,bremen-method}}
 }
-
+\author{
+Dan Kelley
+}

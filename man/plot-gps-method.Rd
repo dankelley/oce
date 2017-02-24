@@ -106,9 +106,6 @@ To get an inset map inside another map, draw the first map, do
 \code{mar} that moves the inset plot to a desired location on the existing
 plot, and with \code{bg="white"}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
@@ -138,4 +135,6 @@ Other things related to \code{gps} data: \code{\link{[[,gps-method}},
   \code{\link{gps-class}}, \code{\link{read.gps}},
   \code{\link{summary,gps-method}}
 }
-
+\author{
+Dan Kelley
+}

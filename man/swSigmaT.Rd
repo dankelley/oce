@@ -49,9 +49,6 @@ swSigmaT(35, 13, 1000, eos="gsw")                # 26.396816
 swSigmaT(35, T90fromT68(13), 1000, eos="unesco") # 26.393538
 
 }
-\author{
-Dan Kelley
-}
 \references{
 See citations provided in the \code{\link{swRho}} documentation.
 }
@@ -78,4 +75,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}
