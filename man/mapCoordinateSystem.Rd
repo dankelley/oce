@@ -7,33 +7,37 @@
 mapCoordinateSystem(longitude, latitude, L = 100, phi = 0, ...)
 }
 \arguments{
-\item{longitude}{numeric value of longiutde in degrees}
+\item{longitude}{numeric value of longiutde in degrees.}
 
-\item{latitude}{numeric value of latitude in degrees}
+\item{latitude}{numeric value of latitude in degrees.}
 
-\item{L}{axis length in km}
+\item{L}{axis length in km.}
 
-\item{phi}{angle is degrees counterclockwise}
+\item{phi}{angle, in degrees counterclockwise, that the "x" axis makes to a line of latitude.}
 
-\item{...}{plotting arguments, passed to \code{\link{mapArrows}}}
+\item{...}{plotting arguments, passed to \code{\link{mapArrows}};
+see \dQuote{Examples} for how to control the arrow-head size.}
 }
 \description{
-Draw a coordinate system
+Draws arrows on a map to indicate a coordinate system, e.g. for an
+to indicate a coordinate system set up so that one axis is parallel
+to a coastline.
 }
 \details{
 This is a preliminary version of this function. It only 
-works if the lines of constant latitude are horizontal on the map.
+works if the lines of constant latitude are horizontal on the plot.
 }
 \examples{
+\dontrun{
 library(oce)
 data(coastlineWorldFine, package='ocedata')
-HfxLon <- -(63+57/60)
-HfxLat <- 44+61/90
+HfxLon <- -63.5752
+HfxLat <- 44.6488
 mapPlot(coastlineWorldFine, proj='+proj=merc', 
-        longitudelim=HfxLon +c(-2,2), latitudelim=HfxLat+ c(-2,2),
+        longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
         col='lightgrey')
 mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
-
+}
 }
 \author{
 Chantelle Layton
