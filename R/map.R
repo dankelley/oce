@@ -483,6 +483,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 #' @param ... plotting arguments, passed to \code{\link{mapArrows}}
 #'
 #' @examples
+#' \dontrun{
 #' library(oce)
 #' data(coastlineWorldFine, package='ocedata')
 #' HfxLon <- -(63+57/60)
@@ -491,7 +492,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 #'         longitudelim=HfxLon +c(-2,2), latitudelim=HfxLat+ c(-2,2),
 #'         col='lightgrey')
 #' mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
-#'
+#' }
 #' @author Chantelle Layton
 mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 {
