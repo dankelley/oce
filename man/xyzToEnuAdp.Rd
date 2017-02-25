@@ -75,9 +75,6 @@ bottom a vector of "mast" values.  Finally, the columns of
 \code{data$v[,,1:3]} are filled in with the result of the matrix
 multiplication.
 }
-\author{
-Dan Kelley
-}
 \references{
 1. RD Instruments, 1998.  \emph{ADCP Coordinate
 Transformation, formulas and calculations.} P/N 951-6079-00 (July 1998).
@@ -88,12 +85,12 @@ Oceanography.
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
-  \code{\link{adp}}, \code{\link{as.adp}},
-  \code{\link{beamName}}, \code{\link{beamToXyzAdp}},
-  \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
-  \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
-  \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
-  \code{\link{plot,adp-method}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
+  \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
+  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
+  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
+  \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -106,4 +103,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

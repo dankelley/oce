@@ -23,9 +23,6 @@ by specifying higher \code{debug} values.}
 \description{
 Convert an ADV Object to ENU Coordinates
 }
-\author{
-Dan Kelley
-}
 \references{
 \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
 }
@@ -48,4 +45,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

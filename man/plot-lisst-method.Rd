@@ -65,9 +65,6 @@ data(lisst)
 plot(lisst)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 The documentation for \code{\link{lisst-class}} explains the
 structure of lisst objects, and also outlines the other functions dealing
@@ -101,4 +98,6 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
   \code{\link{lisst-class}}, \code{\link{read.lisst}},
   \code{\link{summary,lisst-method}}
 }
-
+\author{
+Dan Kelley
+}

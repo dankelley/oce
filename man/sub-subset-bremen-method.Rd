@@ -79,4 +79,3 @@ Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
   \code{\link{read.bremen}},
   \code{\link{summary,bremen-method}}
 }
-

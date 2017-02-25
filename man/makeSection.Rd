@@ -15,4 +15,3 @@ makeSection(item, ...)
 This is a defunct function; use \code{\link{as.section}} instead, and
 see \link{oce-defunct} for more on the oce procedure for retiring functions.
 }
-

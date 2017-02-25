@@ -81,6 +81,7 @@ Users are asked to be patient, and to provide help by
 looking at the documentation and telling the developers
 whether the planned functioning seems reasonable.
 }
+
 \examples{
 library(oce)
 data(section)
@@ -135,4 +136,3 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-

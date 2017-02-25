@@ -164,9 +164,6 @@ ctd <- as.ctd(salinity, temperature, pressure,
     pressure=list(unit=expression(dbar), scale="")))
 
 }
-\author{
-Dan Kelley
-}
 \references{
 Culkin, F., and Norman D. Smith, 1980. Determination of the
 concentration of potassium chloride solution having the same electrical
@@ -191,4 +188,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley
+}

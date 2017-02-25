@@ -81,4 +81,3 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
   \code{\link{read.lisst}},
   \code{\link{summary,lisst-method}}
 }
-

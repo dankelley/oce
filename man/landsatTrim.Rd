@@ -44,9 +44,6 @@ previous version trimmed in UTM space, and in fact this may be done in future
 also, if a problem in lonlat/utm conversion is resolved.) An error results if
 there is no intersection between the trimming box and the image box.
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \seealso{
 The documentation for \code{\link{landsat-class}} explains the
 structure of landsat objects, and also outlines the other functions dealing
@@ -58,7 +55,9 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 }
+\author{
+Dan Kelley and Clark Richards
+}
 \concept{
 satellite
 }
-

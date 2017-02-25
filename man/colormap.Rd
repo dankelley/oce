@@ -222,9 +222,6 @@ grid()
 points(seq_along(cm$x1), cm$x1, pch=21, bg=cm$col1)
 }
 }
-\author{
-Dan Kelley
-}
 \references{
 Information on GMT software is given at
 \code{http://gmt.soest.hawaii.edu} (link worked for years but failed
@@ -239,4 +236,6 @@ Other things related to colors: \code{\link{colors}},
   \code{\link{oce.colorsGebco}},
   \code{\link{oce.colorsTwo}}
 }
-
+\author{
+Dan Kelley
+}

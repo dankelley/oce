@@ -57,9 +57,6 @@ plot(m)
 }
 
 }
-\author{
-Dan Kelley
-}
 \references{
 The Hawaii archive site at
 \code{http://ilikai.soest.hawaii.edu/uhslc/datai.html} provides a graphical
@@ -80,4 +77,6 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -21,10 +21,9 @@ Parse a latitude or longitude string, e.g. as in the header of a CTD file
 The following formats are understood (for, e.g. latitude) \preformatted{ *
 NMEA Latitude = 47 54.760 N ** Latitude: 47 53.27 N }
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Used by \code{\link{read.ctd}}.
 }
-
+\author{
+Dan Kelley
+}

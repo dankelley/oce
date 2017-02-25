@@ -25,4 +25,3 @@ ten.to.twenty <- rangeLimit(1:100, 10, 20)
 \author{
 Dan Kelley
 }
-

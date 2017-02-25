@@ -27,9 +27,6 @@ library(oce)
 data(lobo)
 summary(lobo)
 }
-\author{
-Dan Kelley
-}
 \references{
 \url{http://lobo.satlantic.com} \url{http://www.mbari.org/lobo/}
 }
@@ -44,4 +41,6 @@ Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{subset,lobo-method}}
 }
-
+\author{
+Dan Kelley
+}

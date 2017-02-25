@@ -382,6 +382,10 @@ setMethod(f="[[",
                       res <- c(res, x@data$station[[stn]]@data$pressure) # FIXME not really depth
               ##?20160328? } else {
               ##?20160328?     res <- unlist(lapply(x@data$station, function(X) X[[i]]))
+              } else if ("time" == i) {
+                  ## time is not in the overall metadata ... look in the individual objects
+                  res <- unlist(lapply(x@data$station, function(stn) stn[["time"]]))
+                  res <- numberAsPOSIXct(res)
               } else {
                   callNextMethod()     # [[
               }

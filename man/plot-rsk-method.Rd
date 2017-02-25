@@ -116,9 +116,6 @@ plot(rsk, which="pressure", ylim=c(10, 30))
 plot(rsk, which="temperature", ylim=c(2, 4))
 
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \seealso{
 The documentation for \code{\link{rsk-class}} explains the structure of
 \code{rsk} objects, and also outlines the other functions dealing with them.
@@ -153,4 +150,6 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
   \code{\link{rsk}}, \code{\link{subset,rsk-method}},
   \code{\link{summary,rsk-method}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

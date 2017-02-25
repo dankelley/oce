@@ -150,9 +150,6 @@ mapPolygon(coastlineWorld, col='gray')
 }
 
 }
-\author{
-Dan Kelley
-}
 \references{
 1. \url{http://codedocean.wordpress.com/2014/02/03/anti-aliasing-and-image-plots/}
 }
@@ -172,4 +169,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
   \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley
+}

@@ -21,9 +21,6 @@ be used to insert data.
 See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
 argo-related datasets that may be useful in a wider context.
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{bremen-class}},
@@ -45,4 +42,6 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

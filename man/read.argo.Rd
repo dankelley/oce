@@ -101,6 +101,7 @@ over time.
 
 Similar steps can be followed on other servers.
 }
+
 \examples{
 \dontrun{
 ## Example 1: read from a local file
@@ -128,9 +129,6 @@ summary(argo)
 
 
 }
-\author{
-Dan Kelley
-}
 \references{
 1. \url{http://www.argo.ucsd.edu/}
 
@@ -157,4 +155,6 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
-
+\author{
+Dan Kelley
+}

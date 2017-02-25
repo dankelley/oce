@@ -22,9 +22,6 @@ data(adv)
 summary(adv)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
@@ -40,4 +37,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

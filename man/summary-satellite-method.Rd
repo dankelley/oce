@@ -15,15 +15,14 @@
 \description{
 Summarize a satellite object
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to satellite data: \code{\link{g1sst-class}},
   \code{\link{plot,satellite-method}},
   \code{\link{read.g1sst}}, \code{\link{satellite-class}}
 }
+\author{
+Dan Kelley
+}
 \concept{
 satellite
 }
-

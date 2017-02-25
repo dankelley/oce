@@ -32,6 +32,7 @@ can be coerced to numeric.
 \item Only method \code{linear} is permitted now.
 }
 }
+
 \examples{
 library(oce)
 # Integers
@@ -46,4 +47,3 @@ print(data.frame(x,y))
 \author{
 Dan Kelley
 }
-

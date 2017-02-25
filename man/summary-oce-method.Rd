@@ -31,4 +31,3 @@ to learn about the \code{metadata}, etc.
 o <- new("oce")
 summary(o)
 }
-

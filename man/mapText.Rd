@@ -37,9 +37,6 @@ mapPoints(lon, lat, pch=20, col="red")
 mapText(lon, lat, "Halifax", col="red", pos=1, offset=1)
 }
 }
-\author{
-Dan Kelley
-}
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
 
@@ -56,4 +53,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapTissot}}, \code{\link{oceCRS}},
   \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley
+}

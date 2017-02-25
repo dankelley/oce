@@ -76,9 +76,6 @@ Read a General CTD File
 \code{\link{read.ctd.itp}} for ice-tethered-profiler data, or
 \code{\link{read.ctd.sbe}} for Seabird data.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
@@ -96,4 +93,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley
+}

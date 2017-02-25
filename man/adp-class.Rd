@@ -206,6 +206,7 @@ format.} P/N 957-6156-00 (November 2007).
 
 2. Teledyne-RDI, 2012. \emph{VmDas User's Guide, Ver. 1.46.5}.
 }
+
 \seealso{
 A file containing ADP data is usually recognized by Oce, and so
 \code{\link{read.oce}} will usually read the data.  If not, one may use the
@@ -237,7 +238,8 @@ Other classes provided by \code{oce}: \code{\link{adv-class}},
   \code{\link{windrose-class}}
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{adp}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
@@ -255,4 +257,3 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-

@@ -65,9 +65,6 @@ Read a CTD file in ODF format
 \code{read.ctd.odf} reads files stored in Ocean Data Format, used in
 some Canadian hydrographic databases.
 }
-\author{
-Dan Kelley
-}
 \references{
 The ODF format, used by the Canadian Department of Fisheries and Oceans, is
 described to some extent in the documentation for \code{\link{read.odf}}.  It
@@ -114,4 +111,6 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -138,9 +138,6 @@ data(echosounder)
 plot(echosounder, which=c(1,2), drawBottom=TRUE)
 }
 }
-\author{
-Dan Kelley, with extensive help from Clark Richards
-}
 \seealso{
 Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
@@ -151,4 +148,6 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
   \code{\link{subset,echosounder-method}},
   \code{\link{summary,echosounder-method}}
 }
-
+\author{
+Dan Kelley, with extensive help from Clark Richards
+}

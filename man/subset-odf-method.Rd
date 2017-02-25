@@ -21,9 +21,6 @@ A new \code{odf} object.
 \description{
 This function is somewhat analogous to \code{\link{subset.data.frame}}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{ODFNames2oceNames}},
@@ -33,4 +30,6 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
   \code{\link{summary,odf-method}}
 }
-
+\author{
+Dan Kelley
+}

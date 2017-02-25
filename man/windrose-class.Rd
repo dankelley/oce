@@ -32,4 +32,3 @@ Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
   \code{\link{plot,windrose-method}},
   \code{\link{summary,windrose-method}}
 }
-

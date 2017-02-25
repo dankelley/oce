@@ -25,9 +25,6 @@ data(sealevel)
 summary(sealevel)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{[[<-,sealevel-method}},
@@ -39,4 +36,6 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{sealevel}},
   \code{\link{subset,sealevel-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -108,9 +108,7 @@ and \code{tirs2} combined.  This may seem confusing, but it lets code like
 .------------------------------------------------------------------------------.
 }
 }
-\author{
-Dan Kelley and Clark Richards
-}
+
 \references{
 1. See the USGS "glovis" web site.
 
@@ -168,7 +166,9 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 }
+\author{
+Dan Kelley and Clark Richards
+}
 \concept{
 satellite
 }
-

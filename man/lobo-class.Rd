@@ -12,9 +12,6 @@ constructed with \code{\link{as.lobo}}.  Plots can be made with
 statistical summaries. Data within a \code{lobo} object may be retrieved with
 \code{\link{[[,lobo-method}} and altered with \code{\link{[[,lobo-method}}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
@@ -33,4 +30,6 @@ Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{subset,lobo-method}},
   \code{\link{summary,lobo-method}}
 }
-
+\author{
+Dan Kelley
+}

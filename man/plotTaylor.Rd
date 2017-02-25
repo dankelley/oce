@@ -57,12 +57,11 @@ M2 <- predict(tidem(sealevel, constituents="M2"))
 S2 <- predict(tidem(sealevel, constituents=c("S2")))
 plotTaylor(x, cbind(M2, S2))
 }
-\author{
-Dan Kelley
-}
 \references{
 Taylor, Karl E., 2001.  Summarizing multiple aspects of model
 performance in a single diagram, \emph{J. Geophys. Res.}, 106:D7,
 7183--7192.
 }
-
+\author{
+Dan Kelley
+}

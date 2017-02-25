@@ -20,9 +20,6 @@ no arguments to control the behaviour, but this function is really just a stop-g
 measure, since in practical work \code{odf} objects are usually cast to other types,
 and those types tend to have more useful plots.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
@@ -55,4 +52,6 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }
-
+\author{
+Dan Kelley
+}

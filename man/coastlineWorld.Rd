@@ -27,9 +27,7 @@ Then, whenever you need the file, use \code{\link{load}} to load it.  Most
 users find it convenient to do the loading in an \code{\link{Rprofile}}
 startup file.
 }
-\author{
-Dan Kelley
-}
+
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
@@ -53,4 +51,6 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
-
+\author{
+Dan Kelley
+}

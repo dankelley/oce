@@ -59,9 +59,6 @@ lines(g, p, lty=2, col='red')
 legend("topright", lty=1:2, legend=c("unesco", "gsw"), col=c("black", "red"))
 
 }
-\author{
-Dan Kelley and Chantelle Layton
-}
 \seealso{
 Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
@@ -85,4 +82,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley and Chantelle Layton
+}

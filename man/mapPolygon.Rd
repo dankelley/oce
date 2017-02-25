@@ -36,9 +36,6 @@ Plot a polygon on an existing map.
 Adds a polygon to an existing map, by analogy to
 \code{\link{polygon}}.  Used by \code{\link{mapImage}}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
 
@@ -55,4 +52,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapTissot}}, \code{\link{oceCRS}},
   \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley
+}

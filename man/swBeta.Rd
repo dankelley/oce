@@ -32,9 +32,6 @@ Value in 1/psu.
 \description{
 Compute \eqn{\beta}{beta}, the haline contraction coefficient for seawater.
 }
-\author{
-Dan Kelley
-}
 \references{
 The \code{eos="unesco"} formulae are based on the UNESCO
 equation of state, but are formulaed empirically by Trevor J. McDougall,
@@ -65,4 +62,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

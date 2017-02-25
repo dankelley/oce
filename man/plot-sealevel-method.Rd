@@ -77,9 +77,6 @@ plot(sealevel, which=1, xlim=juan+86400*c(-7, 7))
 abline(v=juan, col='red')
 
 }
-\author{
-Dan Kelley
-}
 \references{
 The example refers to Hurricane Juan, which caused a great deal
 of damage to Halifax in 2003.  Since this was in the era of the digital
@@ -128,4 +125,6 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }
-
+\author{
+Dan Kelley
+}

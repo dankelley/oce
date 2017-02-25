@@ -37,9 +37,6 @@ follows advice found at
 (downloaded June 2012)), which contains a typo in an early posting that is
 corrected later on.
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \references{
 1. Information on Nortek profilers (including the System
 Integrator Guide, which explains the data format byte-by-byte) is available
@@ -54,4 +51,6 @@ problems arise in dealing with data from Nortek instruments.
 Most users should employ the functions \code{\link{read.adp}} and
 \code{\link{read.adv}} instead of this one.
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

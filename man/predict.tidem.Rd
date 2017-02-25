@@ -52,9 +52,6 @@ legend=c("data","model"),lwd=1)
 }
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{[[<-,tidem-method}},
@@ -64,4 +61,6 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
   \code{\link{tidem}}
 }
-
+\author{
+Dan Kelley
+}

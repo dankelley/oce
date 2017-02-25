@@ -52,6 +52,7 @@ An argument named \code{labelIf} was removed in July 2016,
 because it was discovered never to have worked as documented, and
 because the more useful argument \code{constituents} had been added.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -60,9 +61,6 @@ tide <- tidem(sealevel)
 plot(tide)
 }
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
@@ -96,4 +94,6 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
   \code{\link{tidem}}
 }
-
+\author{
+Dan Kelley
+}

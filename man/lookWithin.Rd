@@ -32,4 +32,3 @@ the RMS difference between these temperature variants is 0.002C for the
 \code{\link{ctd}} dataset.)
 }
 }
-

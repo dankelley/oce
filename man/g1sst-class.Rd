@@ -22,9 +22,6 @@ gaps with model simulations.  It can be helpful to consult
 [1] for a given time, clicking and then unclicking the radio button
 that turns off the model-based filling of cloud gaps.
 }
-\author{
-Dan Kelley
-}
 \references{
 1. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
 (link worked in 2016 but was seen to fail 2017 Feb 2).
@@ -34,7 +31,9 @@ Other things related to satellite data: \code{\link{plot,satellite-method}},
   \code{\link{read.g1sst}}, \code{\link{satellite-class}},
   \code{\link{summary,satellite-method}}
 }
+\author{
+Dan Kelley
+}
 \concept{
 satellite
 }
-

@@ -272,6 +272,7 @@ Until February, 2016, \code{plot,ctd-method} relied on a now-defunct argument
 Also, now it is possible to set the edge of coasts and international
 boundaries, with \code{borderCoastline}.
 }
+
 \examples{
 ## 1. simple plot
 library(oce)
@@ -293,9 +294,6 @@ contour(tlon, tlat, tdep, drawlabels=FALSE,
 contour(tlon, tlat, tdep, vfont=c("sans serif", "bold"),
         levels=stn[['waterDepth']], col='red', lwd=2, add=TRUE)
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 The documentation for \code{\link{ctd-class}} explains the structure of CTD
@@ -339,4 +337,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley
+}

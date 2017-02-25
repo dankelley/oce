@@ -17,10 +17,9 @@ A character string.
 \description{
 Format a longitude, using "W" for west longitude.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 \code{\link{latFormat}} and \code{\link{latlonFormat}}.
 }
-
+\author{
+Dan Kelley
+}

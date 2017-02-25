@@ -15,9 +15,6 @@ with \code{\link{plot,lisst-method}}, and summarize them with
 with \code{\link{[[,lisst-method}} or replaced with
 \code{\link{[[<-,lisst-method}}.
 }
-\author{
-Dan Kelley
-}
 \references{
 A users's manual for the LISST-100 instrument is available at
 the manufacturer's website \url{http://www.sequoiasci.com}.
@@ -40,4 +37,6 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
   \code{\link{read.lisst}},
   \code{\link{summary,lisst-method}}
 }
-
+\author{
+Dan Kelley
+}

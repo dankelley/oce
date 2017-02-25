@@ -19,4 +19,3 @@ A function is used internally to initialize processing logs.
 Users will probably prefer to use \code{\link{processingLogAppend}}
 instead.
 }
-

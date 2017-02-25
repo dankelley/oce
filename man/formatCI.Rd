@@ -72,9 +72,6 @@ y <- rnorm(n=300, mean=10, sd=1) * x
 m <- lm(y~x)
 print(formatCI(model=m))
 }
-\author{
-Dan Kelley
-}
 \references{
 JCGM, 2008.  \emph{Evaluation of measurement data - Guide to the
 expression of uncertainty in measurement (JCGM 100:2008)}, published by the
@@ -89,4 +86,6 @@ Blackwell Science for the International Union of Pure and Applied Chemistry.
 (See section 4.1, page 83, for a summary of notation, which shows that a
 value to the right of a \code{+-} sign is to be halved if put in
 }
-
+\author{
+Dan Kelley
+}

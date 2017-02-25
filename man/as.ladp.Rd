@@ -41,12 +41,11 @@ An object of \code{\link{ladp-class}}.
 This function assembles vectors of pressure and velocity, possibly also with
 shears, salinity, temperature, etc.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
   \code{\link{ladp-class}}, \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
 }
-
+\author{
+Dan Kelley
+}

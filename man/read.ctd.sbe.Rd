@@ -88,9 +88,6 @@ d <- read.ctd(f, columns=list(
   salinity=list(name="salt", unit=list(expression(), scale="PSS-78"))))
 
 }
-\author{
-Dan Kelley
-}
 \references{
 1. The Sea-Bird SBE 19plus profiler is described at
 \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
@@ -115,4 +112,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley
+}

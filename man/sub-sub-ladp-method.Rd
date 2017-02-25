@@ -73,13 +73,11 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \examples{
 data(ctd)
 head(ctd[["temperature"]])
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
@@ -108,4 +106,6 @@ Other things related to \code{ladp} data: \code{\link{as.ladp}},
   \code{\link{ladp-class}}, \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
 }
-
+\author{
+Dan Kelley
+}

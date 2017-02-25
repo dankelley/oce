@@ -37,9 +37,6 @@ stopifnot(abs(35.671358392019094 - sa) < 00.000000000000010)
 }
 
 }
-\author{
-Dan Kelley
-}
 \references{
 McDougall, T.J. and P.M. Barker, 2011: Getting started with
 TEOS-10 and the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp.,
@@ -72,4 +69,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

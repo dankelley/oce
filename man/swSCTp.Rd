@@ -48,9 +48,6 @@ swSCTp(1, T90fromT68(15), 0, eos="unesco") # 35
 swSCTp( 1,            15, 0, eos="gsw") # 35
 
 }
-\author{
-Dan Kelley
-}
 \references{
 Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
 computation of fundamental properties of seawater. \emph{Unesco Technical
@@ -83,4 +80,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

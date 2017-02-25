@@ -43,4 +43,3 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
   \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-

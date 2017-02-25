@@ -40,9 +40,6 @@ An object of \code{\link{coastline-class}}
 \description{
 Read coastline data stored in the openstreetmap format [1].
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
@@ -56,4 +53,6 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -25,9 +25,6 @@ for some instruments, the declination is specified when the instrument is
 set up, so that the velocities as recorded are already.  Other times, the
 data need to be adjusted.  This function is for the latter case.
 }
-\author{
-Dan Kelley
-}
 \references{
 \url{http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
 }
@@ -37,4 +34,6 @@ inclination and intensity at a given spot on the world, at a given time.
 
 Other things related to magnetism: \code{\link{magneticField}}
 }
-
+\author{
+Dan Kelley
+}

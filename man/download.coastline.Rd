@@ -63,6 +63,7 @@ December 2016. Users are advised to refer to arguments by name,
 i.e. not to rely on their order, and they are asked for patience,
 because argument names and defaults may vary through the early development.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -96,4 +97,3 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
-

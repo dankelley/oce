@@ -18,4 +18,3 @@ oceSetMetadata(object, name, value, note = "")
 \description{
 Set something in the \code{metadata} slot of an \code{oce} object
 }
-

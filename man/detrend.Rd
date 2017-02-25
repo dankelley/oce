@@ -44,4 +44,3 @@ points(x, d$Y + d$a + d$b * x, col='blue', pch='+')
 \author{
 Dan Kelley
 }
-

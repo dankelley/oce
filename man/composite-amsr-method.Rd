@@ -29,13 +29,12 @@ final argument, except that the filename is set to a comma-separated list
 of the component filenames.
 }
 \seealso{
-Other functions that create composite objects: \code{\link{composite,list-method}},
-  \code{\link{composite}}
-
 Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{amsr-class}}, \code{\link{download.amsr}},
   \code{\link{plot,amsr-method}}, \code{\link{read.amsr}},
   \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}
-}
 
+Other functions that create composite objects: \code{\link{composite,list-method}},
+  \code{\link{composite}}
+}

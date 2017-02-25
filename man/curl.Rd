@@ -70,6 +70,7 @@ matrix dimensions are similarly reduced compared with the dimensions of
  This function is under active development as
 of December 2014 and is unlikely to be stabilized until February 2015.
 }
+
 \examples{
 library(oce)
 ## 1. Shear flow with uniform curl.
@@ -99,10 +100,9 @@ imagep(x, y, v, zlab="v", asp=1)
 imagep(x, y, C$curl, zlab="curl", asp=1)
 hist(C$curl, breaks=100)
 }
-\author{
-Dan Kelley and Chantelle Layton
-}
 \seealso{
 Other functions relating to vector calculus: \code{\link{grad}}
 }
-
+\author{
+Dan Kelley and Chantelle Layton
+}

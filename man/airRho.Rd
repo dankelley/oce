@@ -29,9 +29,6 @@ degC <- seq(0,30,length.out=100)
 p <- seq(98,102,length.out=100) * 1e3
 contour(x=degC, y=p, z=outer(degC,p,airRho), labcex=1)
 }
-\author{
-Dan Kelley
-}
 \references{
 National Oceanographic and Atmospheric Agency, 1976.  U.S.
 Standard Atmosphere, 1976.  NOAA-S/T 76-1562.  (A PDF of this document may
@@ -41,4 +38,6 @@ or
 \code{http://www.dtic.mil/cgi-bin/GetTRDoc?Location=U2&doc=GetTRDoc.pdf&AD=ADA035728}
 although neither link has proven to be reliable.)
 }
-
+\author{
+Dan Kelley
+}

@@ -38,4 +38,3 @@ understood.
 \author{
 Dan Kelley
 }
-

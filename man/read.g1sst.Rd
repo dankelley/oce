@@ -47,9 +47,6 @@ lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
 }
 
 }
-\author{
-Dan Kelley
-}
 \references{
 1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
 2. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
@@ -61,4 +58,6 @@ Other things related to satellite data: \code{\link{g1sst-class}},
   \code{\link{satellite-class}},
   \code{\link{summary,satellite-method}}
 }
-
+\author{
+Dan Kelley
+}

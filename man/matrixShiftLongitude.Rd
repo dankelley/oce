@@ -24,4 +24,3 @@ is at the left of the matrix, not in the middle.
 \seealso{
 \code{\link{shiftLongitude}} and \code{\link{standardizeLongitude}}.
 }
-

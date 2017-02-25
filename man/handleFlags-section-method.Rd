@@ -78,6 +78,7 @@ Users are asked to be patient, and to provide help by
 looking at the documentation and telling the developers
 whether the planned functioning seems reasonable.
 }
+
 \examples{
 library(oce)
 data(section)
@@ -106,4 +107,3 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }
-

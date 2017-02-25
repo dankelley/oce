@@ -12,4 +12,3 @@ firstFinite(v)
 \description{
 Get first finite value in a vector or array, or NULL if none
 }
-

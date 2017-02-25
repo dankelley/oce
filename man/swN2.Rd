@@ -98,9 +98,6 @@ d <- 100 * (N2u - N2g) / N2g
 plot(d, p, ylim=ylim, xlab="N2 UNESCO-GSW diff. [\%]", ylab="p", type="l")
 abline(v=0)
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
@@ -124,4 +121,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

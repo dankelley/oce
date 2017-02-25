@@ -261,6 +261,7 @@ a new (and separate) plotting window with \code{\link{dev.new}}.
 In doing so, they may find that this is preferable generally,
 given the limitations of one-window interfaces.
 }
+
 \examples{
 library(oce)
 
@@ -290,11 +291,10 @@ cm <- colormap(name="gmt_globe")
 imagep(topoWorld, colormap=cm)
 
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \seealso{
 This uses \code{\link{drawPalette}}, and is used by \code{\link{plot,adp-method}},
 \code{\link{plot,landsat-method}}, and other image-generating functions.
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

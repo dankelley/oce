@@ -24,6 +24,7 @@ coordinates.
 \section{Bugs}{
  This only works for 4-beam RDI ADP objects.
 }
+
 \examples{
 
 \dontrun{
@@ -40,9 +41,6 @@ plot(beam2, which=5:8)
 }
 
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \references{
 The method was devised by Clark Richards for use in his PhD work
 at Department of Oceanography at Dalhousie University.
@@ -53,10 +51,10 @@ and notes on the many functions dealing with them.
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
-  \code{\link{adp}}, \code{\link{as.adp}},
-  \code{\link{beamName}}, \code{\link{beamToXyzAdp}},
-  \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
-  \code{\link{beamUnspreadAdp}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
+  \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
+  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
   \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
@@ -71,4 +69,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

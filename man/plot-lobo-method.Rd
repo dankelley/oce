@@ -59,9 +59,6 @@ by specifying higher \code{debug} values.}
 \description{
 Plot a summary diagram for lobo data.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
@@ -92,4 +89,6 @@ Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{subset,lobo-method}},
   \code{\link{summary,lobo-method}}
 }
-
+\author{
+Dan Kelley
+}

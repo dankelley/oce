@@ -133,4 +133,3 @@ oce.plot.ts(t, y, type='l', xaxs='i')
 \author{
 Dan Kelley
 }
-

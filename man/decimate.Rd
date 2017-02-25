@@ -42,6 +42,7 @@ for which the decmation is done after applying a running median filter and
 then a boxcar filter, each of length equal to the corresponding component of
 \code{by}.
 }
+
 \examples{
 library(oce)
 data(adp)
@@ -49,12 +50,11 @@ plot(adp)
 adpDec <- decimate(adp,by=2,filter=c(1/4, 1/2, 1/4))
 plot(adpDec)
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Filter coefficients may be calculated using
 \code{\link{makeFilter}}.  (Note that \code{\link{ctdDecimate}} will be
 retired when the present function gains equivalent functionality.)
 }
-
+\author{
+Dan Kelley
+}

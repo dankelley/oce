@@ -33,4 +33,3 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapText}}, \code{\link{mapTissot}},
   \code{\link{oceCRS}}, \code{\link{utm2lonlat}}
 }
-

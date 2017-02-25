@@ -20,9 +20,6 @@ A \code{coastline} object.
 \description{
 Summarizes coastline length, bounding box, etc.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
   \code{\link{[[<-,coastline-method}},
@@ -36,4 +33,6 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{read.coastline.shapefile}},
   \code{\link{summary,coastline-method}}
 }
-
+\author{
+Dan Kelley
+}
