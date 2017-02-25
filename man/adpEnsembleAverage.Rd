@@ -7,12 +7,12 @@
 adpEnsembleAverage(x, n = 5)
 }
 \arguments{
-\item{x}{an object of class \link{\code{adp-class}}}
+\item{x}{an object of class \code{\link{adp-class}}}
 
 \item{n}{number of pings to average together.}
 }
 \value{
-A reduced object of \link{\code{adp-class}} with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.
+A reduced object of \code{\link{adp-class}} with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.
 }
 \description{
 Ensemble average an \code{adp} object in time
