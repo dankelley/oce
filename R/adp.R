@@ -3054,21 +3054,26 @@ adpEnsembleAverage <- function(x, n=5)
     d <- x@data
     t <- d$time
     pings <- seq_along(t)
-    res@data$time <- numberAsPOSIXct(binAverage(pings, t, xinc=n)$y)
+    fac <- cut(pings, breaks=length(t)/n) # used to split() data items
+    ##res@data$time <- numberAsPOSIXct(binAverage(pings, t, xinc=n)$y)
+    res@data$time <- numberAsPOSIXct(as.numeric(lapply(split(as.numeric(t), fac), mean)))
     nt <- length(res@data$time)
     for (field in names(d)) {
         if (field != 'time' & field != 'distance') {
             if (is.vector(d[[field]])) {
-                res@data[[field]] <- binAverage(pings, d[[field]], xinc=n)$y
+                ##res@data[[field]] <- binAverage(pings, d[[field]], xinc=n)$y
+                res@data[[field]] <- as.numeric(lapply(split(as.numeric(d[[field]]), fac), mean))
             } else if (is.array(d[[field]])) {
                 fdim <- dim(d[[field]])
                 res@data[[field]] <- array(NA, dim=c(length(res@data[['time']]), fdim[-1]))
                 for (j in 1:tail(fdim, 1)) {
                     if (length(fdim) == 2) { # for fields like bottom range
-                        res@data[[field]][, j] <- binAverage(pings, d[[field]][, j], xinc=n)$y
+                        ##res@data[[field]][, j] <- binAverage(pings, d[[field]][, j], xinc=n)$y
+                        res@data[[field]][, j] <- unlist(lapply(as.numeric(split(d[[field]][, j]), fac), mean))
                     } else if (length(fdim) == 3) { # for array fields like v, a, q, etc
                         for (i in 1:fdim[2]) {
-                            res@data[[field]][, i, j] <- binAverage(pings, d[[field]][, i, j], xinc=n)$y
+                            ##res@data[[field]][, i, j] <- binAverage(pings, d[[field]][, i, j], xinc=n)$y
+                            res@data[[field]][, i, j] <- unlist(lapply(split(as.numeric(d[[field]][, i, j]), fac), mean))
                         }
                     }
                 }
@@ -3079,5 +3084,7 @@ adpEnsembleAverage <- function(x, n=5)
             }
         }
     }
+    res@metadata$numberOfSamples <- length(res@data$time)
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }

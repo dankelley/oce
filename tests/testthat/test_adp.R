@@ -17,11 +17,18 @@ test_that("as.adp() inserts data properly", {
  
 test_that("adpEnsembleAverage() produces correctly-dimensioned results", {
           data(adp)
-          adpAvg <- adpEnsembleAverage(adp, n=5)
-          expect_equal(length(adp[["distance"]]), length(adpAvg[["distance"]]))
-          ## FIXME: uncomment these (or similar) tests here when we settle on what should be going on
-          ##>>  expect_equal(length(adp[["time"]]), 5*length(adpAvg[["time"]]))
-          ##>>  expect_equal(dim(adp[["v"]]), c(5, 1, 1) * dim(adpAvg[["v"]]))
+          n <- 5
+          adpAvg <- adpEnsembleAverage(adp, n=n)
+          expect_equal(length(adp[["time"]]), n*length(adpAvg[["time"]]))
+          expect_equal(dim(adp[["v"]]), c(n, 1, 1) * dim(adpAvg[["v"]]))
+          for (name in names(adp@data)) {
+            if (is.vector(adp[[name]]) && "distance" != name) {
+              expect_equal(adpAvg[[name]][1], mean(adp[[name]][1:n]))
+            }
+          }
+          expect_equal(adpAvg[["v"]][1,1,1], mean(adp[["v"]][1:n,1,1]))
+          expect_equal(adpAvg[["v"]][1,2,1], mean(adp[["v"]][1:n,2,1]))
+          expect_equal(adpAvg[["v"]][1,1,2], mean(adp[["v"]][1:n,1,2]))
 })
 
 
