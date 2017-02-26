@@ -476,7 +476,7 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
     ##t <- try(x <- data.frame(x), silent=TRUE)
     ##if (class(t) == "try-error")
     ##    stop("cannot coerce 'data' into a data.frame")
-    fSplit <- split(f, cut(x, xbreaks))
+    fSplit <- split(f, cut(x, xbreaks, labels=FALSE))
     res <- sapply(fSplit, FUN, ...)
     res[!is.finite(res)] <- NA
     names(res) <- NULL
@@ -547,10 +547,10 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
     nybreaks <- length(ybreaks)
     if (nybreaks < 2) stop("must have more than 1 ybreak")
     res <- matrix(nrow=nxbreaks-1, ncol=nybreaks-1)
-    A <- split(f, cut(y, ybreaks))
-    B <- split(x, cut(y, ybreaks))
+    A <- split(f, cut(y, ybreaks, labels=FALSE))
+    B <- split(x, cut(y, ybreaks, labels=FALSE))
     for (i in 1:length(A)) {
-        fSplit <- split(A[[i]], cut(B[[i]], xbreaks))
+        fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE))
         ##res[, i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
         res[, i] <- sapply(fSplit, FUN, ...)
     }

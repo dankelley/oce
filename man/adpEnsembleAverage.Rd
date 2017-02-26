@@ -2,22 +2,25 @@
 % Please edit documentation in R/adp.R
 \name{adpEnsembleAverage}
 \alias{adpEnsembleAverage}
-\title{Ensemble average an \code{adp} object in time}
+\title{Ensemble Average an ADP Object in Time}
 \usage{
-adpEnsembleAverage(x, n = 5)
+adpEnsembleAverage(x, n = 5, leftover = FALSE)
 }
 \arguments{
-\item{x}{an object of class \code{\link{adp-class}}}
+\item{x}{an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
 
 \item{n}{number of pings to average together.}
+
+\item{leftover}{a logical value indicating how to proceed in cases
+where \code{n} does not divide evenly into the number of ensembles
+in \code{x}. If \code{leftover} is \code{FALSE} (the default) then any extra
+ensembles at the end of \code{x} are ignored. Otherwise, they are used
+to create a final ensemble in the returned value.}
 }
 \value{
 A reduced object of \code{\link{adp-class}} with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.
 }
 \description{
-Ensemble average an \code{adp} object in time
-}
-\details{
 Ensemble averaging of \code{adp} objects is often necessary to
 reduce the uncertainty in velocity estimates from single
 pings. Many types of ADPs can be configured to perform the

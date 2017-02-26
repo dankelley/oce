@@ -1118,8 +1118,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' @param grid.col colour of grid
 #' @param grid.lty line type of grid
 #' @param grid.lwd line width of grid
-#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
-#' amount of debugging information, or to 2 to get more.
+#' @template debugTemplate
 #' @param \dots optional arguments passed to plotting functions.  For example,
 #' supplying \code{despike=TRUE} will cause time-series panels to be de-spiked
 #' with \code{\link{despike}}.  Another common action is to set the colour for
@@ -2399,8 +2398,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #' beams make to the instrument \dQuote{vertical}.
 #'
 #' @param x an object of class \code{"adp"}.
-#' @param debug a debugging flag, 0 for no debugging, and higher values for
-#' more and more debugging.
+#' @template debugTemplate
 #' @return An object with the first 3 velocitiy indices having been altered to
 #' represent velocity components in xyz (or instrument) coordinates.  (For
 #' \code{rdi} data, the values at the 4th velocity index are changed to
@@ -2571,8 +2569,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 #' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 #' @param declination magnetic declination to be added to the heading after
 #' "righting" (see below), to get ENU with N as "true" north.
-#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
-#' amount of debugging information, or to 2 to get more.
+#' @template debugTemplate
 #' @return An object with \code{data$v[,,1:3]} altered appropriately, and
 #' \code{metadata$oce.orientation} changed from \code{xyz} to \code{enu}.
 #' @author Dan Kelley
@@ -2874,9 +2871,7 @@ display.bytes <- function(b, label="", ...)
 #'
 #' @param x an object of class \code{"adp"}, which contains bottom tracking
 #' velocities.
-#' @param debug a flag that, if non-zero, turns on debugging.  Higher values
-#' yield more extensive debugging.  This is passed to called functions, after
-#' subtracting 1.
+#' @template debugTemplate
 #' @author Dan Kelley and Clark Richards
 #' @seealso See \code{\link{read.adp}} for notes on functions relating to
 #' \code{"adp"} objects, and \code{\link{adp-class}} for notes on the ADP
@@ -2908,9 +2903,8 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 #' instrument.  This only makes sense for ADP objects that are in beam
 #' coordinates.
 #'
-#' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
-#' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
-#' amount of debugging information, or to 2 to get more.
+#' @param x an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @template debugTemplate
 #' @return An object of \code{\link[base]{class}} \code{"adp"}.
 #' @section Bugs: This only works for 4-beam RDI ADP objects.
 #' @author Dan Kelley and Clark Richards
@@ -3021,7 +3015,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
     res
 }
 
-#' Ensemble average an \code{adp} object in time
+#' Ensemble Average an ADP Object in Time
 #'
 #' Ensemble averaging of \code{adp} objects is often necessary to
 #' reduce the uncertainty in velocity estimates from single
@@ -3033,9 +3027,14 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 #' size of the data set and decreasing the uncertainty of the
 #' velocity estimates (by averaging out Doppler noise).
 #' 
-#' @title Ensemble average an \code{adp} object in time
-#' @param x an object of class \code{\link{adp-class}}
+#' @param x an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 #' @param n number of pings to average together.
+#' @param leftover a logical value indicating how to proceed in cases
+#' where \code{n} does not divide evenly into the number of ensembles
+#' in \code{x}. If \code{leftover} is \code{FALSE} (the default) then any extra
+#' ensembles at the end of \code{x} are ignored. Otherwise, they are used
+#' to create a final ensemble in the returned value.
+#'
 #' @return A reduced object of \code{\link{adp-class}} with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.
 #' @author Clark Richards
 #' @examples
@@ -3046,29 +3045,39 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 #' plot(adpAvg)
 #' 
 #' @family things related to \code{adp} data
-adpEnsembleAverage <- function(x, n=5)
+adpEnsembleAverage <- function(x, n=5, leftover=FALSE)
 {
     if (!inherits(x, 'adp')) stop('Must be an object of class adp')
     res <- new('adp', distance=x[['distance']])
     res@metadata <- x@metadata
     d <- x@data
-    t <- d$time
+    t <- as.POSIXct(d$time) # ensure POSIXct so next line works right
+    ntx <- length(t)
     pings <- seq_along(t)
-    res@data$time <- numberAsPOSIXct(binAverage(pings, t, xinc=n)$y)
+    ## Note the limits of the breaks, below. We start at 0 to catch the first
+    ## pings value. If leftover is TRUE, we also extend at the right, to catch
+    ## the fractional chunk that will exist at the end, if n does not divide into ntx.
+    breaks <- if (leftover) seq(0, ntx+n, n) else seq(0, ntx, n)
+    fac <- cut(pings, breaks=breaks, labels=FALSE) # used to split() data items
+    ##res@data$time <- numberAsPOSIXct(binAverage(pings, t, xinc=n)$y)
+    res@data$time <- numberAsPOSIXct(as.numeric(lapply(split(as.numeric(t), fac), mean)))
     nt <- length(res@data$time)
     for (field in names(d)) {
         if (field != 'time' & field != 'distance') {
             if (is.vector(d[[field]])) {
-                res@data[[field]] <- binAverage(pings, d[[field]], xinc=n)$y
+                ##res@data[[field]] <- binAverage(pings, d[[field]], xinc=n)$y
+                res@data[[field]] <- as.numeric(lapply(split(as.numeric(d[[field]]), fac), mean))
             } else if (is.array(d[[field]])) {
                 fdim <- dim(d[[field]])
                 res@data[[field]] <- array(NA, dim=c(length(res@data[['time']]), fdim[-1]))
                 for (j in 1:tail(fdim, 1)) {
                     if (length(fdim) == 2) { # for fields like bottom range
-                        res@data[[field]][, j] <- binAverage(pings, d[[field]][, j], xinc=n)$y
+                        ##res@data[[field]][, j] <- binAverage(pings, d[[field]][, j], xinc=n)$y
+                        res@data[[field]][, j] <- unlist(lapply(as.numeric(split(d[[field]][, j]), fac), mean))
                     } else if (length(fdim) == 3) { # for array fields like v, a, q, etc
                         for (i in 1:fdim[2]) {
-                            res@data[[field]][, i, j] <- binAverage(pings, d[[field]][, i, j], xinc=n)$y
+                            ##res@data[[field]][, i, j] <- binAverage(pings, d[[field]][, i, j], xinc=n)$y
+                            res@data[[field]][, i, j] <- unlist(lapply(split(as.numeric(d[[field]][, i, j]), fac), mean))
                         }
                     }
                 }
@@ -3079,5 +3088,7 @@ adpEnsembleAverage <- function(x, n=5)
             }
         }
     }
+    res@metadata$numberOfSamples <- length(res@data$time)
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
