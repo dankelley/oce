@@ -508,10 +508,8 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
     R <- 6371
     pi <- 4 * atan2(1, 1)
     phirad <- phi*pi/180 + c(0, pi/2)
-    lonrad <- (longitude*pi)/180	
-    latrad <- (latitude*pi)/180
-    kmperlon <- (pi*R*cos(latrad))/180	
-    kmperlat <- (pi*R)/180
+    kmperlon <- pi*R*cos(latitude*pi/180)/180
+    kmperlat <- pi*R/180
     dx <- L*cos(phirad)	
     dy <- L*sin(phirad)
     dlon <- dx/kmperlon	

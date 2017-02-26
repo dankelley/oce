@@ -925,7 +925,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    pressureAtmospheric=0,
                    ##1108 waterDepth=NA,
                    sampleInterval=NA,
-                   profile,
+                   profile=NULL,
                    ##1108 src="",
                    debug=getOption("oceDebug"))
 {
@@ -1025,7 +1025,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ## if ("phosphate" %in% dnames) res@data$phosphate <- d$phosphate
         ## if ("silicate" %in% dnames) res@data$silicate <- d$silicate
         if (inherits(o, 'argo')) {
-            if (missing(profile)) {
+            if (is.null(profile)) {
                 profile <- 1
                 warning("using just column 1 of matrix data; use the 'profile' argument to select a specific profile or try as.section() to keep all columns")
             }

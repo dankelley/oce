@@ -59,7 +59,7 @@ test_that("alter units", {
 
 
 test_that("three methods for specifying units", {
-          data("ctd")
+          data(ctd)
           freezing <- swTFreeze(ctd)
           ctd <- oceSetData(ctd, "freezing", freezing, list(unit=expression(degree*C), scale="ITS-90"))
           feet <- 3.28048 * swDepth(ctd)
