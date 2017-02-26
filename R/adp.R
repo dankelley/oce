@@ -3021,7 +3021,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
     res
 }
 
-#' Ensemble average an \code{adp} object in time
+#' Ensemble Average an \code{adp} Object in Time
 #'
 #' Ensemble averaging of \code{adp} objects is often necessary to
 #' reduce the uncertainty in velocity estimates from single
@@ -3054,7 +3054,9 @@ adpEnsembleAverage <- function(x, n=5)
     d <- x@data
     t <- d$time
     pings <- seq_along(t)
-    fac <- cut(pings, breaks=length(t)/n) # used to split() data items
+    ## Note the limits of the breaks, below. We have to go *outside* the range
+    ## of 'pings' values.
+    fac <- cut(pings, breaks=seq(0, length(t)+n, n), labels=FALSE) # used to split() data items
     ##res@data$time <- numberAsPOSIXct(binAverage(pings, t, xinc=n)$y)
     res@data$time <- numberAsPOSIXct(as.numeric(lapply(split(as.numeric(t), fac), mean)))
     nt <- length(res@data$time)

@@ -15,7 +15,7 @@ adpEnsembleAverage(x, n = 5)
 A reduced object of \code{\link{adp-class}} with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.
 }
 \description{
-Ensemble average an \code{adp} object in time
+Ensemble Average an \code{adp} Object in Time
 }
 \details{
 Ensemble averaging of \code{adp} objects is often necessary to
