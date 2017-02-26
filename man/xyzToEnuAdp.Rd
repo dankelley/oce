@@ -12,8 +12,13 @@ xyzToEnuAdp(x, declination = 0, debug = getOption("oceDebug"))
 \item{declination}{magnetic declination to be added to the heading after
 "righting" (see below), to get ENU with N as "true" north.}
 
-\item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
-amount of debugging information, or to 2 to get more.}
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 An object with \code{data$v[,,1:3]} altered appropriately, and

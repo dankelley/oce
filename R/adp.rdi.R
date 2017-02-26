@@ -1509,7 +1509,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                            badVMDAS[nbadVMDAS], "\n")
                }
            }
-           class(time) <- c("POSIXt", "POSIXct")
+           class(time) <- c("POSIXct", "POSIXt")
            attr(time, "tzone") <- getOption("oceTz")
            if (bFound && !isVMDAS) {
                br[br == 0.0] <- NA    # clean up (not sure if needed)
