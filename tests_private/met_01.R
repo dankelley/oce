@@ -5,7 +5,7 @@ library(testthat)
 
 testthat::context("met")
 
-testtthat::test_that("as.met() works", {
+testthat::test_that("as.met() works", {
           a <- hcd_hourly(6358, 2003, 9)
           MET <- as.met(a)
           MET[["time"]] <- MET[["time"]] + 4 * 3600 # get into UTC
@@ -19,7 +19,7 @@ testtthat::test_that("as.met() works", {
           testthat::expect_equal(MET[["v"]], met[["v"]])
 })
 
-testtthat::test_that("download/read/plot works with hourly data", {
+testthat::test_that("download/read/plot works with hourly data", {
           f <- download.met(id=6358, year=2003, month=9, destdir=".")
           m <- read.met(f)
           summary(m)
@@ -27,14 +27,14 @@ testtthat::test_that("download/read/plot works with hourly data", {
 })
 
 
-testtthat::test_that("download/read/plot works with monthly data", {
+testthat::test_that("download/read/plot works with monthly data", {
           f <- download.met(id=1887, deltat="month", destdir=".")
           m <- read.met(f)
           summary(m)
           plot(m)
 })
 
-testtthat::test_that("read.met() works on some files downloaded in 2009", {
+testthat::test_that("read.met() works on some files downloaded in 2009", {
           for (file in list.files(path=".", pattern="eng-hourly.*csv")) {
                d <- read.met(file)
           }
