@@ -193,7 +193,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
         ## isolate the RHS of the eqquality
         tmp <- gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i[j]], "=")[[1]][2]))))
         ## convert e.g. D+00 to e+00
-        if (length(grep("[A-CF-Z ]", tmp))) {
+        if (length(grep("[-A-CF-Z ]", tmp))) {
             rval[[j]] <- tmp
         } else {
             tmp <- gsub("(.*)D([-+])([0-9]{2})", "\\1e\\2\\3", tmp)

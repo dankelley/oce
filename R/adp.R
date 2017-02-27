@@ -3061,7 +3061,6 @@ adpEnsembleAverage <- function(x, n=5, leftover=FALSE)
     fac <- cut(pings, breaks=breaks, labels=FALSE) # used to split() data items
     ##res@data$time <- numberAsPOSIXct(binAverage(pings, t, xinc=n)$y)
     res@data$time <- numberAsPOSIXct(as.numeric(lapply(split(as.numeric(t), fac), mean)))
-    nt <- length(res@data$time)
     for (field in names(d)) {
         if (field != 'time' & field != 'distance') {
             if (is.vector(d[[field]])) {

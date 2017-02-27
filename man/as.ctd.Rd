@@ -9,7 +9,7 @@ as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
   missingValue = NULL, type = "", serialNumber = "", ship = "",
   cruise = "", station = "", startTime = NULL, longitude = NA,
   latitude = NA, deploymentType = "unknown", pressureAtmospheric = 0,
-  sampleInterval = NA, profile, debug = getOption("oceDebug"))
+  sampleInterval = NA, profile = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{salinity}{There are three choices for \code{salinity}. (1) It can be a

@@ -1,5 +1,5 @@
 library(oce)
-require(testthat)
+library(testthat)
 options(width=100)                     # makes summaries easier to read
 options(warn=2)                        # die on warning, to catch unrecognized SBE names
 years <- 2003:2012

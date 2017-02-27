@@ -118,7 +118,7 @@ test_that("integration", {
 })
 
 test_that("interpBarnes", {
-          data("wind")
+          data(wind)
           u <- interpBarnes(wind$x, wind$y, wind$z)
           ## These tests are not in comparison to theory, or
           ## known values; they simply ensure that results have not

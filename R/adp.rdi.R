@@ -611,7 +611,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
     ##     return(list(index=middle, time=t))
     ## }
 
-    gaveFromTo <- !missing(from) && !missing(to)
+    ## gaveFromTo <- !missing(from) && !missing(to)
     ## if (gaveFromTo) {
     ##     oceDebug(debug, "class(from)=", class(from), "; class(to)=", class(to), "\n")
     ## }
@@ -993,7 +993,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ## FIXME: data seen to date.
             oceDebug(debug, "header$numberOfDataTypes: ", header$numberOfDataTypes, "\n")
 
-            profilesToShow <- 2 # only if debug>0
+            ##profilesToShow <- 2 # only if debug>0
             if (monitor)
                 progressBar = txtProgressBar(max=profilesToRead, style=3, title="Reading profiles")
 
