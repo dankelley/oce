@@ -1972,7 +1972,8 @@ fullFilename <- function(filename)
 #' parentheses or brackets that enclose it. If not provided, then
 #' \code{\link{getOption}("oceUnitSep")} is checked. If that exists, then it is
 #' used as the separator; if not, no separator is used.
-#' @param unit optional unit to use, an expression (ignored at present)
+#' @param unit optional unit to use, if the default is not satisfactory. This
+#' might be the case if for example temperature was not measured in Celcius.
 #' @return A character string or expression, in either a long or a shorter
 #' format, for use in the indicated axis at the present plot size.  Whether the
 #' unit is enclosed in parentheses or square brackets is determined by the
