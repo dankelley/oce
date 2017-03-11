@@ -2855,22 +2855,36 @@ interpBarnes <- function(x, y, z, w,
 
 #' Coriolis parameter on rotating earth
 #'
-#' Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude.
+#' Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude [1],
+#' assuming earth siderial angular rotation rate
+#' \eqn{omega}{omega}=7292115e-11 rad/s. See [1] for general notes, and
+#' see [2] for comments on temporal variations
+#' of \eqn{omega}{omega}.
 #'
 #' @param latitude Vector of latitudes in \eqn{^\circ}{deg}N or radians north of the equator.
 #' @param degrees Flag indicating whether degrees are used for latitude; if set
 #' to \code{FALSE}, radians are used.
 #' @return Coriolis parameter [radian/s].
 #' @author Dan Kelley
-#' @references Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
+#' @references
+#' 1. Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
 #' Press, New York, 662 pp.
+#'
+#' 2. Groten, E., 2004: Fundamental Parameters and Current, 2004. Best
+#'  Estimates of the Parameters of Common Relevance to Astronomy, Geodesy,
+#'  and Geodynamics. Journal of Geodesy, 77:724-797.
+#'  (downloaded from
+#' \code{http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf}
+#' March 11, 2017).
 #' @examples
 #' C <- coriolis(45) # 1e-4
 coriolis <- function(latitude, degrees=TRUE)
 {
     ## Siderial day 86164.1 s.
     if (degrees) latitude <- latitude * 0.0174532925199433
-    1.458423010785138e-4 * sin(latitude)
+    ## http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf
+    7292115e-11 
+    2 * 7292115e-11 * sin(latitude)
 }
 
 
