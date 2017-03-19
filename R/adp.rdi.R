@@ -212,8 +212,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     bits <- substr(byteToBinary(FLD[26], endian="big"), 4, 5)
     originalCoordinate <- "???"
     if (bits == "00") originalCoordinate <- "beam"
-    else if (bits == "01") originalCoordinate <- "instrument"
-    else if (bits == "10") originalCoordinate <- "xyz"
+    else if (bits == "01") originalCoordinate <- "xyz"
+    else if (bits == "10") originalCoordinate <- "sfm"
     else if (bits == "11") originalCoordinate <- "enu"
     if (isSentinel) {
         ## FIXME: does this apply to a workhorse instrument too?
