@@ -37,7 +37,7 @@
 #' \if{html}{\figure{adpgeometry2.png}{options: width=400px alt="Figure: adpgeometry2.png"}}
 #'
 #' Note that \code{adp[["oceCoordinate"]]} stores the present coordinate system
-#' of the object, and it has possible values \code{"beam"}, \code{"xyz"} or
+#' of the object, and it has possible values \code{"beam"}, \code{"xyz"}, \code{"sfm"} or
 #' \code{"enu"}.  (This should not be confused with
 #' \code{adp[["originalCoordinate"]]}, which stores the coordinate system used
 #' in the original data file.)
@@ -125,7 +125,7 @@
 #' For Teledyne-RDI profilers, there are four three-dimensional arrays
 #' holding beamwise data.  In these, the first index indicates time, the
 #' second bin number, and the third beam number (or coordinate number, for
-#' data in \code{xyz}, \code{enu} or \code{other} coordinate systems).  In
+#' data in \code{xyz}, \code{sfm}, \code{enu} or \code{other} coordinate systems).  In
 #' the list below, the quoted phrases are quantities as defined in Figure 9
 #' of reference 1.
 #'
@@ -2574,7 +2574,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 #' @template debugTemplate
 #' @return An object with \code{data$v[,,1:3]} altered appropriately, and
 #' \code{metadata$oce.orientation} changed from \code{xyz} to \code{enu}.
-#' @author Dan Kelley
+#' @author Dan Kelley and Clark Richards
 #' @references
 #' 1. RD Instruments, 1998.  \emph{ADCP Coordinate
 #' Transformation, formulas and calculations.} P/N 951-6079-00 (July 1998).
