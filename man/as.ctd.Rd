@@ -17,8 +17,8 @@ vector indicating the practical salinity through the water column. In that case,
 \code{as.ctd} employs the other arguments listed below. (2) It can be
 something (a data frame, a list or an \code{oce}
 object) from which practical
-salinity, temperature, etc., can be inferred. In that case, the relevant information
-is extracted and the other arguments to \code{as.ctd} are ignored, except for
+salinity, temperature, pressure, and conductivity can be inferred. In that case, the relevant information
+is extracted  and the other arguments to \code{as.ctd} are ignored, except for
 \code{pressureAtmospheric}. If the first argument has salinity, etc., in
 matrix form (as can happen with some objects of \code{\link{argo-class}}),
 then only the first column is used, and a warning to that effect is given, unless the \code{profile} argument is specified and then that specific profile is extracted.
