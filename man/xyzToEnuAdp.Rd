@@ -109,5 +109,5 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{xyzToEnu}}
 }
 \author{
-Dan Kelley
+Dan Kelley and Clark Richards
 }
