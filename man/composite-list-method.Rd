@@ -3,19 +3,21 @@
 \docType{methods}
 \name{composite,list-method}
 \alias{composite,list-method}
-\title{Create a composite object by averaging across good data stored in a list}
+\title{Composite by Averaging Across Data}
 \usage{
 \S4method{composite}{list}(object)
 }
 \arguments{
-\item{object}{A \code{\link{list}} of \link{oce-class} objects. This is done
+\item{object}{A \code{\link{list}} of \link{oce-class} objects.}
+}
+\description{
+This is done
 by calling a specialized version of the function defined in the given
 class. In the present
 version, the objects must inherit from \link{amsr-class}, so the
 action is to call
-\code{\link{composite,amsr-method}}.}
-}
-\description{
+\code{\link{composite,amsr-method}}.
+
 Items within the \code{data} slots of the
 objects that are supplied as arguments are averaged in a way that
 makes sense for the object class, i.e. taking into account
