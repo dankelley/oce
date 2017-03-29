@@ -32,7 +32,7 @@ not supplied, this defaults to \code{"gmt"}. See \dQuote{Details}.}
 
 \item{server}{Optional string indicating the server from which to get the data.
 If not supplied, the humorously-named default
-\code{"http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"}
+\samp{"http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"}
 will be used.}
 
 \item{debug}{an integer specifying whether debugging information is
@@ -47,7 +47,7 @@ by specifying higher \code{debug} values.}
 String indicating the full pathname to the downloaded file.
 }
 \description{
-Data are downloaded (from \code{http://maps.ngdc.noaa.gov/viewers/wcs-client/}, by
+Data are downloaded (from \samp{https://maps.ngdc.noaa.gov/viewers/wcs-client/}, by
 default) and a string containing the full path to the downloaded file is returned.
 Typically, this return value is used with \code{\link{read.topo}} to read the
 data. Subsequent calls to \code{download.topo}
@@ -81,9 +81,9 @@ also be added here.)
 \section{History}{
 
 When this function was created in August 2016, the default server was
-\code{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
+\samp{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
 but this was found to fail in December 2016, so the default was changed to
-\code{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}, which
+\samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}, which
 is what is used by \code{\link[marmap]{getNOAA.bathy}} in the
 \CRANpkg{marmap} package.
 }
@@ -113,7 +113,7 @@ lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
 
 }
 \references{
-1. \url{http://www.ngdc.noaa.gov/mgg/global/global.html}
+1. \samp{https://www.ngdc.noaa.gov/mgg/global/global.html}
 
 2. Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
 Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum

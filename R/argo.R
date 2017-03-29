@@ -672,9 +672,8 @@ argoDecodeFlags <- function(f) # local function
 #' replaced this by now).
 #'
 #' 3. User's Manual (ar-um-02-01) 13 July 2010, available at
-#' \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf}
-#' (link checked on 17 Nov 2016).
-#' This is the main document describing argo data.
+#' \url{http://www.argodatamgt.org/content/download/4729/34634/file/argo-dm-user-manual-version-2.3.pdf},
+#' which is the main document describing argo data.
 #'
 #' @section Data sources:
 #' Argo data are made available at several websites. A bit of detective

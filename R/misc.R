@@ -3602,7 +3602,7 @@ integerToAscii <- function(i)
 #' @author Dan Kelley
 #' @seealso Use \code{\link{magneticField}} to determine the declination,
 #' inclination and intensity at a given spot on the world, at a given time.
-#' @references \url{http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
+#' @references \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
 #'
 #' @family things related to magnetism
 applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
@@ -3634,7 +3634,7 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
 #'
 #' Implements the 12th generation International Geomagnetic Reference Field
 #' (IGRF), based on a reworked version of a Fortran program downloaded from a
-#' NOAA website [1,2].  The code (subroutine \code{igrf12syn}) seems to have
+#' NOAA website [1].  The code (subroutine \code{igrf12syn}) seems to have
 #' been written by Susan Macmillan of the British Geological Survey.  Comments
 #' in the code indicate that it employs coefficients agreed to in December 2014
 #' by the IAGA Working Group V-MOD.  Comments in the \code{igrf12syn} source
@@ -3655,8 +3655,9 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
 #' SM to DK dated June 5, 2015).
 #' @references
 #' 1. The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
-#' website (\url{http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
-#' 2015.
+#' website (\samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
+#' 2015. (That website suggests that there have been no update to the
+#' algorithm as of March 29, 2017.)
 #' @examples
 #' library(oce)
 #' # Halifax NS
