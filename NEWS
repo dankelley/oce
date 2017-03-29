@@ -3,13 +3,14 @@
 - mapCoordinateSystem() added
 - woce-exchange missing-value inference
 - woce-exchange autodetection, plus read all data types
+- download.amsr() updated for data-server change
 - download.met() added
 - as.ctd() can specify columns within argo data
 - read.adp.rdi() handles more file types and larger RDI files
 - read.odf() handles contradictory metadata better
 - oce.as.POSIXlt() deprecated
 - oceSetData() handles units better
-- clean up code flagged by lintr
+- address R_registerRoutines build-time warning
 - fix memory-usage error in coastlineCut()
 
 0.9-20
