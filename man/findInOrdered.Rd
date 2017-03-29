@@ -21,9 +21,8 @@ time taken is proportional to \code{length(f) * log2(length(x))}.
 }
 \examples{
 
-findInOrdered(seq(0,10,1), c(1.2,7.3))
+findInOrdered(seq(0, 10, 1), c(1.2, 7.3))
 }
 \author{
 Dan Kelley
 }
-

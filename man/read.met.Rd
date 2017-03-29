@@ -2,10 +2,10 @@
 % Please edit documentation in R/met.R
 \name{read.met}
 \alias{read.met}
-\title{Read a Met File}
+\title{Read a met File}
 \usage{
 read.met(file, type = NULL, skip, tz = getOption("oceTz"),
-  debug = getOption("oceDebug"), processingLog, ...)
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -13,7 +13,7 @@ to load.}
 
 \item{type}{if \code{NULL}, then the first line is studied, in order to
 determine the file type.  If \code{type="msc"}, then a file as formatted by
-the Meteorological Service of Canada is assumed.}
+Environment Canada is assumed.}
 
 \item{skip}{optional number of lines of header that occur before the actual
 data.  If this is not supplied, \code{read.met} scans the file until it
@@ -24,12 +24,6 @@ that to be header.}
 
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
 amount of debugging information, or to 2 to get more.}
-
-\item{processingLog}{if provided, the action item to be stored in the log.
-(Typically only provided for internal calls; the default that it provides is
-better for normal calls by a user.)}
-
-\item{\dots}{additional arguments, passed to called routines.}
 }
 \value{
 An object of \code{\link[base]{class}} \code{"met"}, of which the
@@ -38,37 +32,44 @@ An object of \code{\link[base]{class}} \code{"met"}, of which the
 m/s and are the components of the vector of wind direction.  In other words,
 the oceanographic convention on velocity is employed, not the meteorological
 one; the weather forecaster's "North wind" has positive \code{v} and zero
-\code{u}.  In addition to these things, \code{data} also contains items
-called \code{wind} (in km/h) and \code{direction} (in tenths of a degree),
-taken straight from the data file.
+\code{u}.  In addition to these things, \code{data} also contains 
+\code{wind} (in km/h), taken straight from the data file.
 }
 \description{
-Reads a comma-separated value file in the format used by the Meteorological
-Service of Canada (MSC).  The agency does not publish a format for these
+Reads a comma-separated value file in the format used by the Environment
+Canada [1].  The agency does not publish a format for these
 files, so this function was based on a study of a few sample files, and it
-may fail for other files, if MSC changes the format.
+may fail for other files, if Environment Canada changes the format.
 }
 \section{Note}{
  There seem to be several similar formats in use, so this
 function may not work in all cases.
 }
+
 \examples{
 \dontrun{
 library(oce)
-met <- read.met("ile-rouge-eng-hourly-06012008-06302008.csv")
+# Recreate data(met) and plot u(t) and v(t)
+metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
+met <- read.met(metFile)
+met <- oceSetData(met, "time", met[["time"]]+4*3600,
+                 note="add 4h to local time to get UTC time")
 plot(met, which=3:4)
 }
 
 }
-\author{
-Dan Kelley
+\references{
+1. Environment Canada website for Historical Climate Data
+\url{http://climate.weather.gc.ca/index_e.html}
 }
 \seealso{
 Other things related to \code{met} data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
-  \code{\link{met-class}}, \code{\link{met}},
-  \code{\link{plot,met-method}},
+  \code{\link{download.met}}, \code{\link{met-class}},
+  \code{\link{met}}, \code{\link{plot,met-method}},
   \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-
+\author{
+Dan Kelley
+}

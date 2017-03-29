@@ -28,7 +28,7 @@ test_that("ctd", {
           data("ctd")
           expect_equal(ctd[["latitude"]],   44.6842666666667)
           expect_equal(ctd[["longitude"]], -63.6438833333333)
-          expect_equal(ctd[["startTime"]], as.POSIXct("2003-10-15 11:38:38", tz="UTC"))
+          expect_equal(ctd[["time"]], as.POSIXct("2003-10-15 11:38:38", tz="UTC"))
           ## units are checked in test_accessors.R
           expect_equal(ctd[["pressureType"]], "sea")
 })

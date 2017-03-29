@@ -27,4 +27,3 @@ data.frame(x, oce.as.raw(x))
 \author{
 Dan Kelley
 }
-

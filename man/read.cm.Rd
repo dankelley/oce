@@ -114,6 +114,7 @@ Prior to late July, 2016, the direction of current flow was stored in the
 return value, but it is no longer stored, since it can be derived from the
 \code{u} and \code{v} values.
 }
+
 \examples{
 \dontrun{
   library(oce)
@@ -124,9 +125,6 @@ return value, but it is no longer stored, since it can be derived from the
 
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{cm} data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
@@ -135,4 +133,6 @@ Other things related to \code{cm} data: \code{\link{[[,cm-method}},
   \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
-
+\author{
+Dan Kelley
+}

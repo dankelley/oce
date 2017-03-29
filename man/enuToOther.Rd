@@ -23,11 +23,11 @@ Rotate acoustic-Doppler data to a new coordinate system
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
-  \code{\link{adp}}, \code{\link{as.adp}},
-  \code{\link{beamName}}, \code{\link{beamToXyzAdp}},
-  \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
-  \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
-  \code{\link{enuToOtherAdp}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
+  \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
+  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
+  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
   \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
@@ -55,4 +55,3 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-

@@ -2,6 +2,35 @@
 library(oce)
 context("General tests")
 
+test_that("binCount1D", {
+          bc1 <- binCount1D(1:100,seq(0,100,10))
+          expect_equal(bc1$xbreaks, seq(0, 100,10))
+          expect_equal(bc1$xmids, seq(5, 95, 10))
+          expect_equal(bc1$number, rep(10, 10))
+          ## following results checked by eye
+          set.seed(123)
+          x <- rnorm(10)
+          y <- rnorm(10)
+          bc2 <- binCount2D(x, y, seq(-2,2,1), seq(-2,2,1))
+          expect_equal(bc2$xbreaks, c(-2, -1, 0, 1, 2))
+          expect_equal(bc2$ybreaks, c(-2, -1, 0, 1, 2))
+          expect_equal(bc2$xmids, c(-1.5, -0.5, 0.5, 1.5))
+          expect_equal(bc2$ymids, c(-1.5, -0.5, 0.5, 1.5))
+          expect_equal(bc2$number,
+                       rbind(c(1, 0, 0, 0),
+                             c(0, 1, 2, 1),
+                             c(0, 1, 2, 0),
+                             c(0, 0, 1, 1)))
+})
+
+test_that("binCount2D", {
+          bc <- binCount1D(1:100,seq(0,100,10))
+          expect_equal(bc$xbreaks, seq(0, 100,10))
+          expect_equal(bc$xmids, seq(5, 95, 10))
+          expect_equal(bc$number, rep(10, 10))
+})
+
+
 test_that("times", {
           expect_equal(numberAsPOSIXct(719529, "matlab"), ISOdatetime(1970,1,1,0,0,0,tz="UTC"))
           expect_equal(numberAsPOSIXct(cbind(604,134351), type="gps"), as.POSIXct("2011-03-21 13:18:56",tz="UTC"))
@@ -18,6 +47,17 @@ test_that("times", {
           ## documenting what is essentially a kludge for this to work.
           expect_equal(as.numeric(numberAsPOSIXct(725738, "ncep2")), 
                        as.numeric(as.POSIXct("1988-01-01 00:00:00", tz="UTC")), tolerance=1)
+})
+
+test_that("integrateTrapezoid", {
+          x <- seq(0, 1, length.out=10)
+          y <- rep(1, length(x))
+          expect_equal(1, integrateTrapezoid(x, y))
+          expect_equal(4, integrateTrapezoid(x, y, xmin=-2, xmax=2))
+          expect_equal(9, integrateTrapezoid(rep(1, 10)))
+          x <- seq(0, 1, length.out=10)
+          y <- 2*x + 3*x^2
+          expect_equal(2, integrateTrapezoid(x, y), tolerance=0.01)
 })
 
 test_that("matchBytes", {
@@ -78,7 +118,7 @@ test_that("integration", {
 })
 
 test_that("interpBarnes", {
-          data("wind")
+          data(wind)
           u <- interpBarnes(wind$x, wind$y, wind$z)
           ## These tests are not in comparison to theory, or
           ## known values; they simply ensure that results have not
@@ -98,6 +138,24 @@ test_that("binAverage", {
           expect_equal(10, length(ba$y))
           expect_equal(ba$x[5], 45)
           expect_equal(ba$y[5], 1989.5)
+})
+
+test_that("binApply1D", {
+          set.seed(123)
+          n <- 3
+          x <- runif(n)
+          f <- x^2
+          b <- binApply1D(x, f, xbreaks=seq(0,1,0.25), FUN=mean)
+})
+
+
+test_that("binApply2D", {
+          set.seed(123)
+          n <- 10
+          x <- runif(n)
+          y <- runif(n)
+          z <- outer(x, y)
+          b <- binApply2D(x, y, z, xbreaks=seq(0,1,0.25), ybreaks=seq(0,1,0.25), FUN=mean)
 })
 
 test_that("get_bit (unused in oce)", {

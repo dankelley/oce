@@ -13,9 +13,6 @@ names, e.g. \code{colors$viridis} holds colours for the colour palette known
 as Viridis, which in 2015 became the default colour palette in the
 matplotlib 2.0 Python library [1].
 }
-\author{
-Authored by matplotlib contributes, packaged in oce by Dan Kelley
-}
 \references{
 1. Matplotlib is developed on github; see
 \url{https://github.com/matplotlib/matplotlib}
@@ -37,4 +34,6 @@ Other things related to colors: \code{\link{colormap}},
   \code{\link{oce.colorsGebco}},
   \code{\link{oce.colorsTwo}}
 }
-
+\author{
+Authored by matplotlib contributes, packaged in oce by Dan Kelley
+}

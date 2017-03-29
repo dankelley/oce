@@ -42,9 +42,6 @@ lines(coastlineWorldMedium[['longitude']], coastlineWorldMedium[['latitude']])
 }
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
@@ -76,7 +73,9 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}
 }
+\author{
+Dan Kelley
+}
 \concept{
 satellite
 }
-

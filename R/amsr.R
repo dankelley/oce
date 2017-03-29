@@ -8,12 +8,13 @@
 #' completes an ascending and descending pass during local daytime and nightime
 #' hours respectively. Each daily file contains 7 daytime and 7 nighttime
 #' maps of variables named as follows within the \code{data}
-#' slot of amsr objects: \code{timeDay}, 
+#' slot of amsr objects: \code{timeDay},
 #' \code{SSTDay}, \code{LFwindDay} (wind at 10m sensed in
 #' the 10.7GHz band), \code{MFwindDay} (wind at 10m sensed at 18.7GHz),
 #' \code{vaporDay}, \code{cloudDay}, and \code{rainDay}, along with
 #' similarly-named items that end in \code{Night}.
-#' See [1] for additional information on the instrument.
+#' See [1] for additional information on the instrument, how
+#' to cite the data source in a paper, etc.
 #'
 #' @details
 #' The bands are stored in \code{\link{raw}} form, to save storage. The accessor
@@ -24,7 +25,12 @@
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
 #' @references
-#' 1. \url{http://www.remss.com/missions/amsre}
+#' 1. Information on the satellite, how to cite the data, etc. is
+#' provided at \url{http://www.remss.com/missions/amsr}.
+#'
+#' 2. A simple interface for viewing and downloading data is at
+#' \url{http://images.remss.com/amsr/amsr2_data_daily.html}.
+#'
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 #'
 #' @family things related to \code{amsr} data
@@ -67,12 +73,12 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("Amsr Summary\n------------\n\n")
               showMetadataItem(object, "filename",   "Data file:           ")
-              cat(sprintf("* Longitude range:     %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude,1))) 
-              cat(sprintf("* Latitude range:      %.4fN to %.4fN\n", object@metadata$latitude[1], tail(object@metadata$latitude,1))) 
+              cat(sprintf("* Longitude range:     %.4fE to %.4fE\n", object@metadata$longitude[1], tail(object@metadata$longitude, 1)))
+              cat(sprintf("* Latitude range:      %.4fN to %.4fN\n", object@metadata$latitude[1], tail(object@metadata$latitude, 1)))
               for (name in names(object@data)) {
                   object@data[[name]] <- object[[name]] # translate to science units
               }
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 #' Extract Something From an amsr Object
@@ -107,7 +113,7 @@ setMethod(f="summary",
 #' \code{"SSTDay"}) is a request to try to find good
 #' data by looking at both the Day and Night measurements. The scheme
 #' employed is quite detailed. Denote by "A" the raw value of the desired field
-#' in the daytime pass, and by "B" the corresponding value in the 
+#' in the daytime pass, and by "B" the corresponding value in the
 #' nighttime pass. If either A or B is 255, the code for land, then the
 #' result will be 255. If A is 254 (i.e. there is no observation),
 #' then B is returned, and the reverse holds also. Similarly, if either
@@ -115,7 +121,7 @@ setMethod(f="summary",
 #' The same is done for code 252 (ice) and code 251 (rain).
 #'
 #' @return
-#' In all cases, the returned value is a matrix with 
+#' In all cases, the returned value is a matrix with
 #' with \code{NA} values inserted at locations where
 #' the raw data equal \code{as.raw(251:255)}, as explained
 #' in \dQuote{Details}.
@@ -131,7 +137,7 @@ setMethod(f="summary",
 #' earth <- read.amsr("f34_20160102v7.2.gz")
 #' fclat <- subset(earth , 35 <= latitude & latitude <= 55)
 #' fc <- subset(fclat , -70 <= longitude & longitude <= -30)
-#' par(mfrow=c(2,1))
+#' par(mfrow=c(2, 1))
 #' plot(fc, "SSTDay")
 #' rainy <- fc[["SSTDay", "raw"]] == as.raw(0xfb)
 #' lon <- fc[["longitude"]]
@@ -231,8 +237,8 @@ setMethod(f="[[",
 #' @template sub_subsetTemplate
 setMethod(f="[[<-",
           signature(x="amsr", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 #' Subset an amsr Object
@@ -270,13 +276,13 @@ setMethod(f="subset",
                   keep <- eval(substitute(subset),
                                envir=data.frame(longitude=x@metadata$longitude))
                   for (name in names(res@data))
-                      res@data[[name]] <- res@data[[name]][keep,]
+                      res@data[[name]] <- res@data[[name]][keep, ]
                   res@metadata$longitude <- x@metadata$longitude[keep]
               } else if (length(grep("latitude", subsetString))) {
                   keep <- eval(substitute(subset),
                                envir=data.frame(latitude=x@metadata$latitude))
                   for (name in names(res@data))
-                      res@data[[name]] <- res@data[[name]][,keep]
+                      res@data[[name]] <- res@data[[name]][, keep]
                   res@metadata$latitude <- res@metadata$latitude[keep]
               } else {
                   stop("may only subset by longitude or latitude")
@@ -284,7 +290,7 @@ setMethod(f="subset",
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               res
           })
- 
+
 
 #' Plot an amsr Object
 #'
@@ -355,7 +361,7 @@ setMethod(f="plot",
               if (5 != missingColorLength) {
                   stop("must have 5 elements in the missingColor argument")
               }
-              if (!all(sort(names(missingColor))==sort(c("land","none","bad","ice","rain"))))
+              if (!all(sort(names(missingColor))==sort(c("land", "none", "bad", "ice", "rain"))))
                   stop("missingColor names must be: 'land', 'none', 'bad', 'ice' and 'rain'")
               lonDecIndices <- seq(1L, length(lon), by=i$decimate[1])
               latDecIndices <- seq(1L, length(lat), by=i$decimate[2])
@@ -383,25 +389,35 @@ setMethod(f="plot",
 #' downloaded again. The default \code{destdir} is the present directory,
 #' but it probably makes more sense to use something like \code{"~/data/amsr"}
 #' to make it easy for scripts in other directories to use the cached data.
-#'
-#' @details
-#' This function relies on the system utility \code{ftp}, and also on local directories
-#' being separated by forward slashes in the file system. That means it will probably
-#' only work on unix-like systems.
+#' The file is downloaded with \code{\link{download.file}}.
 #'
 #' @param year,month,day Numerical values of the year, month, and day
-#' of the desired dataset. Note that one file is archived per day, 
+#' of the desired dataset. Note that one file is archived per day,
 #' so these three values uniquely identify a dataset.
 #' If \code{day} and \code{month} are not provided but \code{day} is,
 #' then the time is provided in a relative sense, based on the present
 #' date, with \code{day} indicating the number of days in the past.
 #' Owing to issues with timezones and the time when the data
 #' are uploaded to the server, \code{day=3} may yield the
-#' most recent available data. For this reason, there is a 
+#' most recent available data. For this reason, there is a
 #' third option, which is to leave \code{day} unspecified, which
 #' works as though \code{day=3} had been given.
-#' @param destdir String naming the directory in which to cache resultant files.
-#' @param server String naming the server from which data are to be acquired.
+#'
+#' @param destdir A string naming the directory in which to cache the downloaded file.
+#' The default is to store in the present directory, but many users find it more
+#' helpful to use something like \code{"~/data/amsr"} for this, to collect all
+#' downloaded amsr files in one place.
+#' @param server A string naming the server from which data
+#' are to be acquired. See \dQuote{History}.
+#'
+#' @section History:
+#' Until 25 March 2017, the default server was
+#' \code{"ftp.ssmi.com/amsr2/bmaps_v07.2"}, but this was changed when the author
+#' discovered that this FTP site had been changed to require users to create
+#' accounts to register for downloads.  The default was changed to
+#' \code{"http://data.remss.com/amsr2/bmaps_v07.2"} on the named date.
+#' This site was found by a web search, but it seems to provide proper data.
+#' It is assumed that users will do some checking on the best source.
 #'
 #' @return A character value indicating the filename of the result; if
 #' there is a problem of any kind, the result will be the empty
@@ -409,9 +425,21 @@ setMethod(f="plot",
 #'
 #' @template downloadWarningTemplate
 #'
+#' @examples
+#'\dontrun{
+#' ## The download takes several seconds.
+#' f <- download.amsr(2017, 1, 14) # Jan 14, 2017
+#' d <- read.amsr(f)
+#' plot(d)
+#' mtext(d[["filename"]], side=3, line=0, adj=0)
+#'}
 #' @family functions that download files
 #' @family things related to \code{amsr} data
-download.amsr <- function(year, month, day, destdir=".", server="ftp.ssmi.com/amsr2/bmaps_v07.2")
+#' @references
+#' \url{http://images.remss.com/amsr/amsr2_data_daily.html}
+#' provides daily images going back to 2012. Three-day,
+#' monthly, and monthly composites are also provided on that site.
+download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v07.2")
 {
     ## ftp ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/y2016/m08/f34_20160804v7.2.gz
     if (missing(year) && missing(month)) {
@@ -428,14 +456,14 @@ download.amsr <- function(year, month, day, destdir=".", server="ftp.ssmi.com/am
     day <- as.integer(day)
     destfile <- sprintf("f34_%4d%02d%02dv7.2.gz", year, month, day)
     destpath <- paste(destdir, destfile, sep="/")
-    if (tail(destpath,1)=="/") # remove trailing slash
+    ## example
+    ## http://data.remss.com/amsr2/bmaps_v07.2/y2015/m11/f34_20151101v7.2.gz
+    if (tail(destpath, 1)=="/") # remove trailing slash
         destpath <- substr(destpath, 1, length(destpath)-1)
     if (0 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
-        cmd <- sprintf("ftp ftp://%s/y%4d/m%02d/%s", server, year, month, destfile)
-        message("Downloading ", destfile)
-        message("    ", cmd)
-        system(cmd)
-        if (destdir != ".")
+        source <- sprintf("%s/y%4d/m%02d/%s", server, year, month, destfile)
+        bad <- download.file(source, destfile)
+        if (!bad && destdir != ".")
             system(paste("mv", destfile, destpath))
     } else {
         message("Not downloading ", destfile, " because it is already present in ", destdir)
@@ -462,7 +490,7 @@ download.amsr <- function(year, month, day, destdir=".", server="ftp.ssmi.com/am
 #' If \code{read.amsr} reports an error on the number of chunks, try
 #' downloading a similarly-named file (e.g. in the present example,
 #' \code{read.amsr("f34_20160803v7.2_d3d.gz")} will report an error
-#' about inability to read a 6-chunk file, but 
+#' about inability to read a 6-chunk file, but
 #' \code{read.amsr("f34_20160803v7.2.gz")} will work properly.
 #'
 #' @param file String indicating the name of a compressed file. See
@@ -490,7 +518,7 @@ read.amsr <- function(file, debug=getOption("oceDebug"))
     nbuf <- length(buf)
     dim <- c(1440, 720)
     nchunks <- nbuf / prod(dim)
-    if (nchunks != round(nchunks)) 
+    if (nchunks != round(nchunks))
         stop("error: the data length ", nbuf, " is not an integral multiple of ", dim[1], "*", dim[2])
     ## From an amsr webpage --
     ## Each binary data file available from our ftp site consists of fourteen (daily) or
@@ -603,11 +631,11 @@ setMethod("composite",
               for (name in names(object@data)) {
                   a <- array(as.raw(0xff), dim=dim)
                   ##message("A name='", name, "'")
-                  a[,,1] <- object@data[[name]]
+                  a[, , 1] <- object@data[[name]]
                   ##message("B")
                   for (idot in 1:ndots) {
                       ##message("C idot=", idot)
-                      a[,,1+idot] <- dots[[idot]]@data[[name]]
+                      a[, , 1+idot] <- dots[[idot]]@data[[name]]
                       ##message("D idot=", idot)
                   }
                   ##message("E")

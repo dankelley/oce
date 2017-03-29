@@ -37,18 +37,45 @@ oceDeleteData <- function(object, name)
 }
 
 #' Set something in the \code{data} slot of an \code{oce} object
+#'
+#' @details
+#' There are three possibilities for \code{unit}:
+#' \itemize{
+#' \item \emph{Case 1.} \code{unit} is a named or unnamed \code{\link{list}}
+#' that contains two items.
+#' If the list is named, the names must be
+#' \code{unit} and \code{scale}. If the list is unnamed, the stated names are assigned
+#' to the items, in the stated order. Either way, the \code{unit}
+#' item must be an \code{\link{expression}} that specifies the unit,
+#' and the \code{scale} item must be a string that describes the scale. For
+#' example, modern temperatures have
+#' \code{unit=list(unit=expression(degree*C), scale="ITS-90")}.
+#' \item \emph{Case 2.} \code{unit} is an \code{\link{expression}} giving the unit as above. In this
+#' case, the scale will be set to \code{""}.
+#' \item \emph{Case 3.} \code{unit} is a character string that is converted
+#' into an expression with \code{\link{parse}(text=unit)},
+#' and the scale set to \code{""}.
+#' }
+#'
 #' @param object an \code{oce} object
 #' @param name String indicating the name of the item to be set.
 #' @param value Value for the item.
-#' @param unit An optional list specifying units for the item, containing an element
-#' named \code{unit} that is an \code{\link{expression}}, and a string named
-#' \code{scale} that describes the scale used. For example, modern temperatures
-#' have \code{unit=list(unit=expression(degree*C), scale="ITS-90")}.
+#' @param unit An optional indication of the units for the item. This has
+#' three possible forms (see \dQuote{Details}).
 #' @param originalName Optional character string giving an 'original' name (e.g.
 #' as stored in the header of a data file).
 #' @param note A note to be stored in the processing log. If an empty string
 #' (the default) then an entry will be constructed from the function call. If
 #' \code{NULL}, then no entry will be added to the processing log.
+#'
+#' @examples
+#' data(ctd)
+#' Tf <- swTFreeze(ctd)
+#' ctd <- oceSetData(ctd, "freezing", Tf, list(unit=expression(degree*C), scale="ITS-90"))
+#' feet <- swDepth(ctd) / 0.3048
+#' ctd <- oceSetData(ctd, name="depthInFeet", value=feet, expression("feet"))
+#' fathoms <- feet / 6
+#' ctd <- oceSetData(ctd, "depthInFathoms", fathoms, "fathoms")
 oceSetData <- function(object, name, value, unit, originalName, note="")
 {
     if (!inherits(object, "oce"))
@@ -58,18 +85,43 @@ oceSetData <- function(object, name, value, unit, originalName, note="")
         object@processingLog <- processingLogAppend(object@processingLog, note)
     else if (!is.null(note))
         object@processingLog <- processingLogAppend(object@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    if (!missing(unit) && "units" %in% names(object@metadata)) {
-        if (!is.list(unit)||2!=length(unit)) stop("'unit' must be a list of length 2")
-        if (2 != sum(c("unit", "scale") %in% names(unit))) stop("'unit' must contain 'unit' and 'scale'")
-        if (!is.expression(unit$unit)) stop("'unit$unit' must be an expression")
-        if (!is.character(unit$scale)) stop("'unit$scale' must be a character string")
-        object@metadata$units[[name]] <- unit
+    if (!missing(unit)) {
+       if  (!("units" %in% names(object@metadata))) # some objects might not have units yet
+           object@metadata$units <- list()
+        if (is.list(unit)) {
+            ## message("case 1")
+            if (is.null(names(unit)))
+                names(unit) <- c("unit", "scale")
+            if (2 != sum(c("unit", "scale") %in% names(unit)))
+                stop("'unit' must contain 'unit' and 'scale'")
+            if (!is.expression(unit$unit))
+                stop("'unit$unit' must be an expression")
+            if (!is.character(unit$scale))
+                stop("'unit$scale' must be a character string")
+            object@metadata$units[[name]] <- unit
+        } else if (is.expression(unit)) {
+            ## message("case 2")
+            object@metadata$units[[name]] <- list(unit=unit, scale="")
+        } else if (is.character(unit)) {
+            ## message("case 3")
+            ## browser()
+            l <- list(unit=parse(text=unit), scale="")
+            attributes(l[[1]]) <- NULL # the parse() adds unwanted attributes
+            object@metadata$units[[name]] <- l
+        } else {
+            stop("'unit' must be a list, an expression, or a character string")
+        }
+        ## if (!is.list(unit)||2!=length(unit)) stop("'unit' must be a list of length 2")
+        ## if (2 != sum(c("unit", "scale") %in% names(unit))) stop("'unit' must contain 'unit' and 'scale'")
+        ## if (!is.expression(unit$unit)) stop("'unit$unit' must be an expression")
+        ## if (!is.character(unit$scale)) stop("'unit$scale' must be a character string")
+        ## object@metadata$units[[name]] <- unit
     }
     ## Handle originalName, if provided. Note that we have some code
     ## here to cover two types of storage.
     if (!missing(originalName)) {
         if ("dataNamesOriginal" %in% names(object@metadata)) {
-            if (is.list(object@metadata$dataNamesOriginal)) { 
+            if (is.list(object@metadata$dataNamesOriginal)) {
                 ## After 2016-07-24 (issue 1017) we use a list.
                 object@metadata$dataNamesOriginal[[name]] <- originalName
             } else {
@@ -136,4 +188,3 @@ oceSetMetadata <- function(object, name, value, note="")
         object@processingLog <- processingLogAppend(object@processingLog, note)
     object
 }
-

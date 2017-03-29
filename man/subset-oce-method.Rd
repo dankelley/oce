@@ -19,7 +19,7 @@ An oce object.
 }
 \description{
 This is a basic class for general oce objects.  It has specialised
-versions for most sub-classes, e.g. \code{\link{subset,ctd-method}} 
+versions for most sub-classes, e.g. \code{\link{subset,ctd-method}}
 for \code{ctd} objects.
 }
 \examples{
@@ -31,4 +31,3 @@ par(mfrow=c(1, 2))
 plotProfile(ctd)
 plotProfile(top10)
 }
-

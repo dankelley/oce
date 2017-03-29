@@ -24,4 +24,3 @@ cat("A=", A, "\\n")
 \author{
 Dan Kelley
 }
-

@@ -5,7 +5,7 @@
 \alias{[[<-,lisst-method}
 \title{Replace Parts of a LISST Object}
 \usage{
-\S4method{[[}{lisst}(x, i, j) <- value
+\S4method{[[}{lisst}(x, i, j, ...) <- value
 }
 \arguments{
 \item{x}{An \code{lisst} object, i.e. inheriting from \code{\link{lisst-class}}}
@@ -14,9 +14,9 @@
 
 \item{j}{Optional additional information on the \code{i} item.}
 
-\item{value}{The value to be placed into \code{x}, somewhere.}
-
 \item{...}{Optional additional information (ignored).}
+
+\item{value}{The value to be placed into \code{x}, somewhere.}
 }
 \description{
 Replace Parts of a LISST Object
@@ -81,4 +81,3 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
   \code{\link{read.lisst}},
   \code{\link{summary,lisst-method}}
 }
-

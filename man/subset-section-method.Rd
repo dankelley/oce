@@ -13,7 +13,8 @@
 \item{subset}{A condition to be applied to the \code{data} portion of \code{x}.
 See \sQuote{Details}.}
 
-\item{...}{May include \code{debug}, to set a debugging level.}
+\item{...}{Optional arguments, which may include \code{indices}, a vector
+of the indices of stations to be kept (starting at 1 for the first station).}
 }
 \value{
 A new \code{section} object.
@@ -31,9 +32,6 @@ data(section)
 GS <- subset(section, 109<=stationId&stationId<=129)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
@@ -46,4 +44,6 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{sectionSort}}, \code{\link{section}},
   \code{\link{summary,section-method}}
 }
-
+\author{
+Dan Kelley
+}

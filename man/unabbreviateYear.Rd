@@ -20,15 +20,13 @@ supplies 60, meaning year 2060 as opposed to 1960.
 
 fullYear <- unabbreviateYear(c(99, 8, 108))
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to time: \code{\link{ctimeToSeconds}},
   \code{\link{julianCenturyAnomaly}},
   \code{\link{julianDay}}, \code{\link{numberAsHMS}},
   \code{\link{numberAsPOSIXct}},
-  \code{\link{oce.as.POSIXlt}},
   \code{\link{secondsToCtime}}
 }
-
+\author{
+Dan Kelley
+}

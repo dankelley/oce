@@ -73,4 +73,3 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
 }
-

@@ -23,4 +23,3 @@ library(oce)
 data(ctd)
 dataLabel(names(ctd@data), ctd@metadata$units)
 }
-

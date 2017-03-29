@@ -20,19 +20,21 @@ as appropriate, and takes precendence over the lookup table in that function.}
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
-an object of class \code{oce}. It is up to a calling function to determine what to do with this object.
+An object of class \code{oce}. It is up to a calling function to determine what to do with this object.
 }
 \description{
-ODF (Ocean Data Format) is a 
+ODF (Ocean Data Format) is a
 format developed at the Bedford Institute of Oceanography and also used
 at other Canadian Department of Fisheries and Oceans (DFO) facilities.
 It can hold various types of time-series data, which includes a variety
-of instrument types. Thus, \code{read.odf} 
+of instrument types. Thus, \code{read.odf}
 is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2015,
-\code{read.odf} is still in development, with features being added as  a 
+\code{read.odf} is still in development, with features being added as  a
 project with DFO makes available more files.
 }
 \details{
@@ -43,12 +45,25 @@ and \code{SOUNDING}, respectively. In addition, the more common metadata
 item \code{waterDepth}, which is used in \code{ctd} objects to refer to
 the total water depth, is set to \code{sounding} if that is finite,
 or to \code{maxDepth} otherwise.
+
+The function \code{\link{ODFNames2oceNames}} is used to translate
+data names from the ODF file to standard \code{oce} names, and
+handles conversion for a few non-standard units. The documentation
+of \code{\link{ODFNames2oceNames}} should be consulted for more
+details.
 }
 \examples{
 library(oce)
-odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce")) 
+# Read a CTD cast made on the Scotian Shelf. Note that the file's metadata
+# states that conductivity is in S/m, but it is really conductivity ratio,
+# so we must alter the unit before converting to a CTD object. Note that
+# read.odf() on this data file produces a warning suggesting that the user
+# repair the unit, using the method outlined here.
+odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
+odf[["conductivityUnit"]] <- list(unit=expression(), scale="")
+#
 # Figure 1. make a CTD, and plot (with span to show NS)
-plot(as.ctd(odf), span=500, fill='lightgray')
+plot(as.ctd(odf), span=500)
 # show levels with bad QC flags
 subset(odf, flag!=0)
 # Figure 2. highlight bad data on TS diagram
@@ -65,5 +80,13 @@ in June 2011.)
 \seealso{
 \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
 package is released by the Canadian Department of Fisheries and Oceans.
-}
 
+Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFNames2oceNames}},
+  \code{\link{[[,odf-method}},
+  \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
+  \code{\link{plot,odf-method}},
+  \code{\link{read.ctd.odf}},
+  \code{\link{subset,odf-method}},
+  \code{\link{summary,odf-method}}
+}

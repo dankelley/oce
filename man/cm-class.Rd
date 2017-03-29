@@ -14,10 +14,13 @@ plotted with \code{\link{plot,cm-method}} or summarized with
 \code{\link{summary,cm-method}}.  Data may be retrieved with
 \code{\link{[[,cm-method}} or replaced with \ \code{\link{[[<-,cm-method}}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
+Other things related to \code{cm} data: \code{\link{[[,cm-method}},
+  \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
+  \code{\link{cm}}, \code{\link{plot,cm-method}},
+  \code{\link{read.cm}}, \code{\link{subset,cm-method}},
+  \code{\link{summary,cm-method}}
+
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}},
@@ -29,11 +32,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
-
-Other things related to \code{cm} data: \code{\link{[[,cm-method}},
-  \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
-  \code{\link{cm}}, \code{\link{plot,cm-method}},
-  \code{\link{read.cm}}, \code{\link{subset,cm-method}},
-  \code{\link{summary,cm-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -63,10 +63,9 @@ plot(early)
 bottom <- window(adp, start=0, end=20, which="distance")
 plot(bottom)
 }
-\author{
-Dan Kelley
-}
 \seealso{
 \code{\link{subset}} provides more flexible selection of subsets.
 }
-
+\author{
+Dan Kelley
+}

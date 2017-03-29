@@ -27,9 +27,6 @@ data(section)
 summary(section)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
@@ -42,4 +39,6 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{sectionSort}}, \code{\link{section}},
   \code{\link{subset,section-method}}
 }
-
+\author{
+Dan Kelley
+}

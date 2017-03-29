@@ -3,9 +3,9 @@
 \docType{methods}
 \name{[[<-,met-method}
 \alias{[[<-,met-method}
-\title{Replace Parts of a Met Object}
+\title{Replace Parts of a met Object}
 \usage{
-\S4method{[[}{met}(x, i, j) <- value
+\S4method{[[}{met}(x, i, j, ...) <- value
 }
 \arguments{
 \item{x}{An \code{met} object, i.e. inheriting from \code{\link{met-class}}}
@@ -14,9 +14,9 @@
 
 \item{j}{Optional additional information on the \code{i} item.}
 
-\item{value}{The value to be placed into \code{x}, somewhere.}
-
 \item{...}{Optional additional information (ignored).}
+
+\item{value}{The value to be placed into \code{x}, somewhere.}
 }
 \description{
 The \code{[[<-} method works for all \code{oce} objects, i.e.
@@ -74,9 +74,9 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,windrose-method}}
 
 Other things related to \code{met} data: \code{\link{[[,met-method}},
-  \code{\link{as.met}}, \code{\link{met-class}},
-  \code{\link{met}}, \code{\link{plot,met-method}},
-  \code{\link{read.met}}, \code{\link{subset,met-method}},
+  \code{\link{as.met}}, \code{\link{download.met}},
+  \code{\link{met-class}}, \code{\link{met}},
+  \code{\link{plot,met-method}}, \code{\link{read.met}},
+  \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-

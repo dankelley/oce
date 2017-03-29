@@ -21,11 +21,9 @@ east.
 may be accessed as \code{m[["temperature"]]}, dew point (in degC) as
 \code{m[["dewPoint"]]}, pressure (in kPa) as \code{m[["pressure"]]},
 eastward wind component (in m/s) as \code{m[["u"]]}, northward wind
-component (in m/s) as \code{m[["v"]]}.  \strong{Caution:} the other elements
-stored in the dataset are mainly in the format of the source file, and thus
-their use requires some extra knowledge; for example,
-\code{m[["direction"]]} yields the wind direction, measured in 10-degree
-units positive clockwise from North.  The filename from which the data came
+component (in m/s) as \code{m[["v"]]}, and wind direction (in degrees
+clockwise of North) as \code{"direction"}.
+The filename from which the data came
 (if any) may be found with \code{m[["filename"]]}.  Items in \code{metadata}
 must be specifield by full name, but those in \code{data} may be
 abbreviated, so long as the abbreviation is unique.
@@ -37,9 +35,7 @@ m[["temperature"]] <- 1 + m[["temperature"]]
 }
 increases temperature by 1C.
 }
-\author{
-Dan Kelley
-}
+
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
@@ -54,8 +50,11 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
 
 Other things related to \code{met} data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
-  \code{\link{met}}, \code{\link{plot,met-method}},
-  \code{\link{read.met}}, \code{\link{subset,met-method}},
+  \code{\link{download.met}}, \code{\link{met}},
+  \code{\link{plot,met-method}}, \code{\link{read.met}},
+  \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-
+\author{
+Dan Kelley
+}

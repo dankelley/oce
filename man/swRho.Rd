@@ -54,13 +54,18 @@ old code has to be modified, by replacing e.g. \code{swRho(S, T, p)} with
 \code{swRho(S, T90fromT68(T), p)}. At typical oceanic values, the difference
 between the two scales is a few millidegrees.
 }
+
 \examples{
 library(oce)
-rho <- swRho(35, 13, 1000)
+# The numbers in the comments are the check values listed in reference [1];
+# note that temperature in that reference was on the T68 scale, but that
+# the present function works with the ITS-90 scale, so a conversion
+# is required.
+swRho(35, T90fromT68(5),      0, eos="unesco") # 1027.67547
+swRho(35, T90fromT68(5),  10000, eos="unesco") # 1069.48914
+swRho(35, T90fromT68(25),     0, eos="unesco") # 1023.34306
+swRho(35, T90fromT68(25), 10000, eos="unesco") # 1062.53817
 
-}
-\author{
-Dan Kelley
 }
 \references{
 1. Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
@@ -105,4 +110,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

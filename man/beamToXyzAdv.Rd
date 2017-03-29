@@ -30,9 +30,6 @@ x[["transformation.matrix"]] <- rbind(c(11100, -5771, -5321),
                                       c( 1409, 1409, 1409)) / 4096
 }
 }
-\author{
-Dan Kelley
-}
 \references{
 \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
 }
@@ -42,11 +39,12 @@ See \code{\link{read.adv}} for notes on functions relating to
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
-  \code{\link{adp}}, \code{\link{as.adp}},
-  \code{\link{beamName}}, \code{\link{beamToXyzAdp}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
+  \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyz}},
+  \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
+  \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
+  \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -59,4 +57,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

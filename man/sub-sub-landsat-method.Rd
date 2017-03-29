@@ -63,15 +63,12 @@ images of land, where one might wish to account for the different
 emissivities of soil and vegetation, etc.; for example, Table 4 of [9]
 lists 0.9668 for soil and 0.9863 for vegetation, while Table 5 of [10]
 lists 0.971 and 0.987 for the same quantities.
-   
+
 \emph{Accessing metadata.} Anything in the metadata can be accessed by
 name, e.g. \code{landsat[["time"]]}.  Note that some items are simply
 copied over from the source data file and are not altered by e.g.
 decimation.  An exception is the lat-lon box, which is altered by
 \code{\link{landsatTrim}}.
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other things related to \code{landsat} data: \code{\link{landsat-class}},
@@ -80,7 +77,9 @@ Other things related to \code{landsat} data: \code{\link{landsat-class}},
   \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 }
+\author{
+Dan Kelley
+}
 \concept{
 satellite
 }
-

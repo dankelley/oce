@@ -83,7 +83,7 @@ title("Numbers are the data")
 
 # 2. As 1, but blank out spots where data are sparse
 u <- interpBarnes(wind$x, wind$y, wind$z, trim=0.1)
-contour(u$xg, u$yg, u$zg, level=seq(0, 30, 1)) 
+contour(u$xg, u$yg, u$zg, level=seq(0, 30, 1))
 points(wind$x, wind$y, cex=1.5, pch=20, col="blue")
 
 # 3. As 1, but interpolate back to points, and display the percent mismatch
@@ -108,9 +108,6 @@ g <- interpBarnes(p, y, S, xg=pg, xr=1)
 plot(S, p, cex=0.5, col="blue", ylim=rev(range(p)))
 lines(g$zg, g$xg, col="red")
 }
-\author{
-Dan Kelley
-}
 \references{
 S. E.  Koch and M.  DesJardins and P. J. Kocin, 1983.  ``An
 interactive Barnes objective map anlaysis scheme for use with satellite and
@@ -119,4 +116,6 @@ conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22, p. 1487-1503.
 \seealso{
 See \code{\link{wind}}.
 }
-
+\author{
+Dan Kelley
+}

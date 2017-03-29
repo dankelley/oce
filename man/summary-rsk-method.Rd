@@ -23,9 +23,6 @@ data(rsk)
 summary(rsk)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 The documentation for \code{\link{rsk-class}} explains the structure
 of CTD objects, and also outlines the other functions dealing with them.
@@ -37,4 +34,6 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
   \code{\link{rskToc}}, \code{\link{rsk}},
   \code{\link{subset,rsk-method}}
 }
-
+\author{
+Dan Kelley
+}

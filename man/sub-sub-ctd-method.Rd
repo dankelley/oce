@@ -183,6 +183,7 @@ computed with \code{\link{swTheta}(x)}. This is a synonym for
 
 }
 }
+
 \examples{
 data(ctd)
 head(ctd[["temperature"]])
@@ -227,4 +228,3 @@ Other things related to \code{ctd} data: \code{\link{[[<-,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-

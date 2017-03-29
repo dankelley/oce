@@ -29,8 +29,8 @@ with \code{\link{read.topo}} or \code{\link{as.topo}}.
 \examples{
 \dontrun{
 library(oce)
-data(topoWorld) 
-par(mfrow=c(2,1))
+data(topoWorld)
+par(mfrow=c(2, 1))
 plot(topoWorld, location=NULL)
 imagep(topoWorld)
 }
@@ -56,4 +56,3 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{summary,topo-method}},
   \code{\link{topo-class}}, \code{\link{topoInterpolate}}
 }
-

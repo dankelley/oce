@@ -9,7 +9,7 @@ coastlineCut(coastline, lon_0 = 0)
 \arguments{
 \item{coastline}{original coastline object}
 
-\item{lon_0}{longitude as would be given in a \code{+lon_0=} item in a 
+\item{lon_0}{longitude as would be given in a \code{+lon_0=} item in a
 call to \link[rgdal]{project} in the \CRANpkg{rgdal} package.}
 }
 \value{
@@ -30,6 +30,7 @@ may change.  Part of the development plan is to see if there is common
 ground between this and the \code{clipPolys} function in the
 \CRANpkg{PBSmapping} package.
 }
+
 \examples{
 library(oce)
 data(coastlineWorld)
@@ -52,4 +53,3 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
-

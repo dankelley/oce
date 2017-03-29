@@ -99,17 +99,18 @@ adjustment is that multi-panel plots require that the initial margin be
 stored prior to the first call to \code{drawPalette}, and reset after each
 palette-plot pair.  This method is illustrated in \dQuote{Examples}.
 }
+
 \examples{
 
 library(oce)
 par(mgp=getOption("oceMgp"))
 
 ## 1. A three-panel plot
-par(mfrow=c(3,1), mar=c(3, 3, 1, 1))
+par(mfrow=c(3, 1), mar=c(3, 3, 1, 1))
 omar <- par('mar')                 # save initial margin
 
 ## 1a. top panel: simple case
-drawPalette(zlim=c(0,1), col=oce.colorsJet(10))
+drawPalette(zlim=c(0, 1), col=oce.colorsJet(10))
 plot(1:10, 1:10, col=oce.colorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 par(mar=omar)                      # reset margin
 
@@ -134,10 +135,9 @@ image(volcano, col=oce.colorsJet(100), zlim=c(90, 200))
 contour(volcano, add=TRUE)
 drawPalette(c(90, 200), fullpage=TRUE, col=oce.colorsJet)
 }
-\author{
-Dan Kelley, with help from Clark Richards
-}
 \seealso{
 This is used by \code{\link{imagep}}.
 }
-
+\author{
+Dan Kelley, with help from Clark Richards
+}

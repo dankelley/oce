@@ -52,9 +52,6 @@ Creates an echosounder file.  The defaults for e.g.  \code{transmitPower}
 are taken from the \code{echosounder} dataset, and they are unlikely to make
 sense generally.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
@@ -65,4 +62,6 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
   \code{\link{subset,echosounder-method}},
   \code{\link{summary,echosounder-method}}
 }
-
+\author{
+Dan Kelley
+}

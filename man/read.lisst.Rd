@@ -32,9 +32,6 @@ line.  Even so, it is preferred to use the present function, because it
 gives the opportunity to specify the year and timezone, so that times can be
 calculated properly.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
   \code{\link{[[<-,lisst-method}}, \code{\link{as.lisst}},
@@ -42,4 +39,6 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{summary,lisst-method}}
 }
-
+\author{
+Dan Kelley
+}

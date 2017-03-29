@@ -42,9 +42,6 @@ extracted from it, and used for the calculation.
 swSpecificHeat(40, T90fromT68(40), 10000, eos="unesco") # 3949.499
 
 }
-\author{
-Dan Kelley
-}
 \references{
 Millero et. al., J. Geophys. Res. 78 (1973), 4499-4507
 
@@ -72,4 +69,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

@@ -37,18 +37,16 @@ package to handle projections. Only those projections that have inverses are
 permitted within \code{oce}, and even those can sometimes yield errors, owing
 to limitations in \CRANpkg{rgdal}.
 }
+
 \examples{
 \dontrun{
 library(oce)
 ## Cape Split, in the Minas Basin of the Bay of Fundy
-cs <- list(longitude=-64.49657,latitude=45.33462)
+cs <- list(longitude=-64.49657, latitude=45.33462)
 xy <- lonlat2map(cs, projection="+proj=merc")
 map2lonlat(xy)
 }
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 \code{\link{lonlat2map}} does the inverse operation.
@@ -68,4 +66,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{oceCRS}}, \code{\link{shiftLongitude}},
   \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley
+}

@@ -95,9 +95,6 @@ data(topoWorld)
 plot(topoWorld, clongitude=-60, clatitude=45, span=10000)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
@@ -130,4 +127,6 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{topo-class}}, \code{\link{topoInterpolate}},
   \code{\link{topoWorld}}
 }
-
+\author{
+Dan Kelley
+}

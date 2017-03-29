@@ -38,14 +38,16 @@ changes.  Since \code{ODF} has not been released yet, this should not affect
 any users except those involved in the development of \code{oce} and
 \code{ODF}.
 }
-\author{
-Dan Kelley
-}
+
 \seealso{
-Other things related to \code{odf} data: \code{\link{[[,odf-method}},
+Other things related to \code{odf} data: \code{\link{ODFNames2oceNames}},
+  \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
   \code{\link{plot,odf-method}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }
-
+\author{
+Dan Kelley
+}

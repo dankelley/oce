@@ -91,9 +91,6 @@ plot(dh.gs$distance[-1], v, type='l', col="blue",
 }
 
 }
-\author{
-Dan Kelley
-}
 \references{
 Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
 Press, New York, 662 pp.
@@ -121,4 +118,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

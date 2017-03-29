@@ -14,9 +14,9 @@ clipmin <- function(x, min=0)
 
 
 #' Abbreviate a vector of times by removing commonalities
-#' 
+#'
 #' Abbreviate a vector of times by removing commonalities (e.g. year)
-#' 
+#'
 #' @param t vector of times.
 #' @param \dots optional arguments passed to the \code{\link{format}}, e.g.
 #' \code{format}.
@@ -78,7 +78,7 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
     ## 2014-04-02 {
     ## Below, we will be using e.g. par('mai') to find margins.  If the user
     ## is employing layout(), the call will not give the right answer until the plot
-    ## has been established or initialized (not sure on right term).  So, we use 
+    ## has been established or initialized (not sure on right term).  So, we use
     ## a trick: call frame() to establish/initialize the plot, then call
     ## plot(new=TRUE) to prevent advancing to the next panel of the layout.
     ## A secondary trick is also required: we set to zero margins before
@@ -154,14 +154,14 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
     oceDebug(debug, "pc$mail1: ", paste(round(pc$mai1, 2), sep=" "), "\n")
     oceDebug(debug, "pc$mailf: ", paste(round(pc$mai1f, 2), sep=" "), "\n")
     oceDebug(debug, "} # paletteCalculations\n", unindent=1)
-    pc 
+    pc
 }
 
 
 #' Draw a palette, leaving margins suitable for accompanying plot
-#' 
+#'
 #' Draw a palette, leaving margins suitable for accompanying plot.
-#' 
+#'
 #' In the normal use, \code{drawPalette} draws an image palette near the
 #' right-hand side of the plotting device, and then adjusts the global margin
 #' settings in such a way as to cause the next plot to appear (with much larger
@@ -169,12 +169,12 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' \code{zlim} is not provided, to adjust the margin without drawing anything;
 #' this is useful in lining up the x axes of a stack of plots, some some of
 #' which will have palettes and others not.
-#' 
+#'
 #' The plot positioning is done entirely with margins, not with
 #' \code{par(mfrow)} or other R schemes for multi-panel plots.  This means that
 #' the user is free to use those schemes without worrying about nesting or
 #' conflicts.
-#' 
+#'
 #' @param zlim two-element vector containing the lower and upper limits of z.
 #' This may also be a vector of any length exceeding 1, in which case its range
 #' is used.
@@ -226,19 +226,19 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' @author Dan Kelley, with help from Clark Richards
 #' @seealso This is used by \code{\link{imagep}}.
 #' @examples
-#' 
+#'
 #' library(oce)
 #' par(mgp=getOption("oceMgp"))
-#' 
+#'
 #' ## 1. A three-panel plot
-#' par(mfrow=c(3,1), mar=c(3, 3, 1, 1))
+#' par(mfrow=c(3, 1), mar=c(3, 3, 1, 1))
 #' omar <- par('mar')                 # save initial margin
-#' 
+#'
 #' ## 1a. top panel: simple case
-#' drawPalette(zlim=c(0,1), col=oce.colorsJet(10))
+#' drawPalette(zlim=c(0, 1), col=oce.colorsJet(10))
 #' plot(1:10, 1:10, col=oce.colorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 #' par(mar=omar)                      # reset margin
-#' 
+#'
 #' ## 1b. middle panel: colormap
 #' cm <- colormap(name="gmt_globe")
 #' drawPalette(colormap=cm)
@@ -246,12 +246,12 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' plot(icol, cm$breaks[icol], pch=20, cex=2, col=cm$col,
 #'      xlab="Palette index", ylab="Palette breaks")
 #' par(mar=omar)                      # reset margin
-#' 
+#'
 #' ## 1c. bottom panel: space for palette (to line up graphs)
 #' drawPalette(plot=FALSE)
 #' plot(1:10, 1:10, col=oce.colorsJet(10)[1:10],pch=20,cex=3,xlab='x', ylab='y')
 #' par(mar=omar)                      # reset margin
-#' 
+#'
 #' # 2. Use layout to mimic the action of imagep(), with the width
 #' # of the palette region being 14 percent of figure width.
 #' d <- 0.14
@@ -288,8 +288,8 @@ drawPalette <- function(zlim, zlab="",
     if (zlimGiven)
         oceDebug(debug, "drawPalette(zlim=c(", zlim[1], ",",
                  zlim[2], "), zlab=", "\"", as.character(zlab), "\"",
-                 ", pos=", pos, 
-                 ", drawTriangles=c(", paste(drawTriangles, collapse=","), "), ...) {\n", 
+                 ", pos=", pos,
+                 ", drawTriangles=c(", paste(drawTriangles, collapse=","), "), ...) {\n",
                  unindent=1, sep="")
     else
         oceDebug(debug, "drawPalette() with no zlim argument\n", sep="", unindent=1)
@@ -364,8 +364,8 @@ drawPalette <- function(zlim, zlab="",
             par(mai=ifelse(pc$mai1f>0, pc$mai1f, 0))
         else
             par(mai=ifelse(pc$mai1>0, pc$mai1, 0))
-        oceDebug(debug, "A. par(mai=c(", paste(round(par('mai'),1), collapse=","), "))\n")
-        oceDebug(debug, "A. par(mar=c(", paste(round(par('mar'),1), collapse=","), "))\n")
+        oceDebug(debug, "A. par(mai=c(", paste(round(par('mai'), 1), collapse=","), "))\n")
+        oceDebug(debug, "A. par(mar=c(", paste(round(par('mar'), 1), collapse=","), "))\n")
         if (!breaksGiven) {
             palette <- seq(zlim[1], zlim[2], length.out=PLEN)
             if (pos == 1 || pos == 3) {
@@ -401,10 +401,10 @@ drawPalette <- function(zlim, zlab="",
                 ##message("in drawPalette(), breaks and col follow:");
                 ##str(breaksOrig)
                 ##str(col)
-                oceDebug(debug, "B. par(mai=c(", paste(round(par('mai'),1), collapse=","), "))\n")
+                oceDebug(debug, "B. par(mai=c(", paste(round(par('mai'), 1), collapse=","), "))\n")
                 oceDebug(debug, "B. x non-margin width: ", par('fin')[1] - par('mai')[2] - par('mai')[4], "\n")
                 oceDebug(debug, "B. y non-margin height: ", par('fin')[2] - par('mai')[1] - par('mai')[3], "\n")
-                oceDebug(debug, "B. par(mar=c(", paste(round(par('mar'),1), collapse=","), "))\n")
+                oceDebug(debug, "B. par(mar=c(", paste(round(par('mar'), 1), collapse=","), "))\n")
                 image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
                       breaks=breaksOrig, col=col, zlim=zlim)
             } else {
@@ -436,10 +436,10 @@ drawPalette <- function(zlim, zlab="",
                 if (pos == 1 || pos == 3) {
                     warning("horizontal triangles not working yet")
                 } else if (pos == 2 || pos == 4) {
-                    polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
-                            usr[4] + c(0, triangleHeight, 0), col=col[length(col)], 
+                    polygon(c(usr[1], 0.5 * (usr[1]+usr[2]), usr[2]),
+                            usr[4] + c(0, triangleHeight, 0), col=col[length(col)],
                             border=col[length(col)], xpd=TRUE)
-                    lines(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                    lines(c(usr[1], 0.5 * (usr[1]+usr[2]), usr[2]),
                           usr[4] + c(0, triangleHeight, 0),
                           xpd=TRUE)
                 }
@@ -448,10 +448,10 @@ drawPalette <- function(zlim, zlab="",
                 if (pos == 1 || pos == 3) {
                     warning("horizontal triangles not working yet")
                 } else if (pos == 2 || pos == 4) {
-                    polygon(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
-                            usr[3] + c(0, -triangleHeight, 0), col=col[1], 
+                    polygon(c(usr[1], 0.5 * (usr[1]+usr[2]), usr[2]),
+                            usr[3] + c(0, -triangleHeight, 0), col=col[1],
                             border=col[1], xpd=TRUE)
-                    lines(c(usr[1], 0.5*(usr[1]+usr[2]), usr[2]),
+                    lines(c(usr[1], 0.5 * (usr[1]+usr[2]), usr[2]),
                           usr[3] + c(0, -triangleHeight, 0),
                           xpd=TRUE)
                 }
@@ -485,19 +485,19 @@ drawPalette <- function(zlim, zlab="",
         if (!missing(axisPalette))
             axis <- axisPalette
         if (pos == 1) {
-            axis(side=1, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
+            axis(side=1, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis)
             if (haveZlab) mtext(zlab, side=1, line=getOption("oceMgp")[1],
                                 cex=par('cex'), cex.axis=cex.axis)
         } else if (pos == 2) {
-            axis(side=2, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
+            axis(side=2, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis)
             if (haveZlab) mtext(zlab, side=2, line=getOption("oceMgp")[1],
                                 cex=par('cex'), cex.axis=cex.axis)
         } else if (pos == 3) {
-            axis(side=3, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
+            axis(side=3, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis)
             if (haveZlab) mtext(zlab, side=3, line=getOption("oceMgp")[1],
                                 cex=par('cex'), cex.axis=cex.axis)
         } else if (pos == 4) {
-            axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0), cex.axis=cex.axis)
+            axis(side=4, at=at, labels=labels, mgp=c(2.5, 0.7, 0), cex.axis=cex.axis)
             if (haveZlab) mtext(zlab, side=4, line=getOption("oceMgp")[1],
                                 cex=par('cex'), cex.axis=cex.axis)
         } else {
@@ -522,10 +522,10 @@ drawPalette <- function(zlim, zlab="",
 
 
 #' Plot an Image with a Color Palette
-#' 
+#'
 #' Plot an image with a colour palette, in a way that does not conflict with
 #' \code{\link{par}(mfrow)} or \code{\link{layout}}.  To plot just a palette,
-#' e.g. to get an x-y plot with points coloured according to a palette, use 
+#' e.g. to get an x-y plot with points coloured according to a palette, use
 #' \code{\link{drawPalette}} and then draw the main diagram.
 #'
 #' @details
@@ -534,11 +534,11 @@ drawPalette <- function(zlim, zlab="",
 #' set the \code{\link{layout}} outside the function, which enables the creation
 #' of plots with many image-palette panels.  Note that the contour lines may not
 #' coincide with the colour transitions, in the case of coarse images.
-#' 
+#'
 #' Note that this does not use \code{\link{layout}} or any of the other screen
 #' splitting methods.  It simply manipulates margins, and draws two plots
 #' together.  This lets users employ their favourite layout schemes.
-#' 
+#'
 #' NOTE: \code{imagep} is an analogue of \code{\link{image}}, and from that
 #' it borrows a the convention that the number of rows in the matrix corresponds to
 #' to \code{x} axis, not the \code{y} axis.  (Actually, \code{\link{image}} permits
@@ -554,9 +554,9 @@ drawPalette <- function(zlim, zlab="",
 #'         transformed to put them in order.
 #'         ordered in a matching way).  \emph{Mode 2.}
 #'         If \code{z} is provided but not \code{x} and \code{y}, then the latter
-#'         are constructed to 
+#'         are constructed to
 #'         indicate the indices of the matrix, in contrast
-#'         to the range of 0 to 1, as is the case for \code{\link{image}}.  
+#'         to the range of 0 to 1, as is the case for \code{\link{image}}.
 #'         \emph{Mode 3.} If
 #'         \code{x} is a list, its components \code{x$x} and \code{x$y} are used
 #'         for \code{x} and \code{y}, respectively. If the list has component
@@ -566,17 +566,17 @@ drawPalette <- function(zlim, zlab="",
 #'         topographic object such as can be created with \code{\link{read.topo}}
 #'         or \code{\link{as.topo}}, then longitude and latitude are used for
 #'         axes, and topographic height is drawn.
-#' 
+#'
 #' @param z A matrix containing the values to be plotted (NAs are allowed). Note
 #'         that x can be used instead of z for convenience. (NOTE: these arguments
 #'         are meant to mimic those of \code{\link{image}}, which explains the same
-#'         description here.) 
+#'         description here.)
 #' @param  xlim,ylim Limits on x and y axes.
 #' @param  zlim If missing, the z scale is determined by the range of the data.
 #'         If provided, \code{zlim} may take several forms. First, it may be a pair
 #'         of numbers that specify the limits for the colour scale.  Second,
 #'         it could be the string \code{"histogram"}, to yield a flattened
-#'         histogram (i.e. to increase contrast). Third, it could be the 
+#'         histogram (i.e. to increase contrast). Third, it could be the
 #'         string \code{"symmetric"}, to yield limits that are symmetric
 #'         about zero, which can be helpful in drawing velocity fields,
 #'         for which a zero value has a particular meaning (in which case,
@@ -601,7 +601,7 @@ drawPalette <- function(zlim, zlab="",
 #'         If \code{decimate=TRUE}, then decimation will be done
 #'         in the horizontal or vertical direction (or both) if the length of the
 #'         corresponding edge of the \code{z} matrix exceeds 800. (This also creates
-#'         a warning message.) The decimation 
+#'         a warning message.) The decimation
 #'         factor is computed as the integet just below the ratio of \code{z} dimension
 #'         to 400. Thus, no decimation is done if the dimension is less than 800,
 #'         but if the dimension s between 800 and 1199, only every second grid
@@ -693,19 +693,19 @@ drawPalette <- function(zlim, zlab="",
 #' @param  debug A flag that turns on debugging.  Set to 1 to get a
 #'         moderate amount of debugging information, or to 2 to get more.
 #' @param  \dots Optional arguments passed to plotting functions.
-#' 
+#'
 #' @return A list is silently returned, containing \code{xat} and \code{yat},
 #'     values that can be used by \code{\link{oce.grid}} to add a grid to the
 #'     plot.
-#' 
+#'
 #' @seealso This uses \code{\link{drawPalette}}, and is used by \code{\link{plot,adp-method}},
 #' \code{\link{plot,landsat-method}}, and other image-generating functions.
-#' 
+#'
 #' @section Note for RStudio/OSX users:
 #' On OSX computers, some versions of RStudio produce a margin-size error when
 #' \code{imagep} is called. The problem is not isolated to \code{imagep};
 #' it occurs with other packages, and a web
-#' search reveals repeated bug reports submitted to RStudio. 
+#' search reveals repeated bug reports submitted to RStudio.
 #' The problem seems to come and go, as RStudio evolves. In the
 #' \code{imagep} case, things worked properly for
 #' RStudio version 0.99.451 (released late in 2015), but not
@@ -714,22 +714,22 @@ drawPalette <- function(zlim, zlab="",
 #' January 2016, with a minimal example that boiled the issue
 #' down to a few lines of basic R code (not using \code{imagep}
 #' or even \code{oce}).
-#' Although communications with RStudio gave 
+#' Although communications with RStudio gave
 #' reason for optimism, the problem persisted in version 0.99.892,
 #' released March 4. New versions of RStudio will be checked as they
 #' come out, with status updates here.
 #' Pending an RStudio solution, users can avoid the error
-#' simply by opening 
+#' simply by opening
 #' a new (and separate) plotting window with \code{\link{dev.new}}.
 #' In doing so, they may find that this is preferable generally,
 #' given the limitations of one-window interfaces.
 #'
 #' @examples
 #' library(oce)
-#' 
+#'
 #' # 1. simplest use
 #' imagep(volcano)
-#' 
+#'
 #' # 2. something oceanographic (internal-wave speed)
 #' h <- seq(0, 50, length.out=100)
 #' drho <- seq(1, 3, length.out=200)
@@ -737,7 +737,7 @@ drawPalette <- function(zlim, zlab="",
 #' imagep(h, drho, speed, xlab="Equivalent depth [m]",
 #' ylab=expression(paste(Delta*rho, " [kg/m^3]")),
 #' zlab="Internal-wave speed [m/s]")
-#' 
+#'
 #' # 3. fancy labelling on atan() function
 #' x <- seq(0, 1, 0.01)
 #' y <- seq(0, 1, 0.01)
@@ -746,12 +746,12 @@ drawPalette <- function(zlim, zlab="",
 #'        col=c("lightgray", "darkgray"),
 #'        at=c(0, pi/4, pi/2),
 #'        labels=c(0, expression(pi/4), expression(pi/2)))
-#' 
+#'
 #' # 4. a colormap case
 #' data(topoWorld)
 #' cm <- colormap(name="gmt_globe")
 #' imagep(topoWorld, colormap=cm)
-#' 
+#'
 #' @author Dan Kelley and Clark Richards
 imagep <- function(x, y, z,
                    xlim, ylim, zlim,
@@ -822,7 +822,7 @@ imagep <- function(x, y, z,
             iy <- seq(1L, length(y), by=decimate[2])
             if (is.function(col))
                 col <- col(n=length(breaks)-1)
-            image(x[ix], y[iy], z[ix,iy], breaks=breaks, col=col, add=TRUE)
+            image(x[ix], y[iy], z[ix, iy], breaks=breaks, col=col, add=TRUE)
             return(invisible(list(xat=NULL, yat=NULL, decimate=decimate)))
         }
     } else {
@@ -830,7 +830,7 @@ imagep <- function(x, y, z,
     }
 
     if (!is.null(adorn))
-        warning("In imagep() : the 'adorn' argument is defunct, and will be removed soon",call.=FALSE)
+        warning("In imagep() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
     xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
     zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot,adp-method
@@ -871,7 +871,7 @@ imagep <- function(x, y, z,
         if (length(dim(x)) > 2)
             stop("x must be a matrix, not an array with dim(x) = c(", paste(dim(x), collapse=","), ")\n")
         z <- x
-        z <- if (length(dim(x)) > 2) z <- x[,,1] else x
+        z <- if (length(dim(x)) > 2) z <- x[, , 1] else x
         ##y <- seq(0, 1, length.out=ncol(x))
         ##x <- seq(0, 1, length.out=nrow(x))
         y <- seq.int(1L, ncol(x))
@@ -903,11 +903,12 @@ imagep <- function(x, y, z,
     # Handle TRUE/FALSE decimation
     dim <- dim(z)
     decimateLogical <- is.logical(decimate)
-    if (decimateLogical) { # this block makes decimate be a vector of length 2
+    if (decimateLogical) {
+        ## this block makes decimate be a vector of length 2
         ## message("decimate is logical; decimate:", decimate)
         if (decimate) {
             cdim <- dim                    # (possibly) clipped dim
-            ## issue 827: decide whether to decimate based on just the data 
+            ## issue 827: decide whether to decimate based on just the data
             ## within the plot window.
             if (xlimGiven) {
                 nx <- cdim[1]
@@ -944,7 +945,7 @@ imagep <- function(x, y, z,
     if (decimate[1] > 1) {
         ilook <- seq.int(1, dim[1], by=decimate[1])
         x <- x[ilook]
-        z <- z[ilook,]
+        z <- z[ilook, ]
         oceDebug(debug, "ilook:", paste(ilook[1:4], collapse=" "), "...\n")
         if (decimateLogical)
             warning("auto-decimating first index of large image by ", decimate[1], "; use decimate=FALSE to prevent this")
@@ -967,7 +968,7 @@ imagep <- function(x, y, z,
         stop("nrow(image)=", nrow(z), " does not match length(x)=", length(x), sep="")
     if (ncol(z) != length(y) && (1+ncol(z)) != length(y))
         stop("ncol(image)=", ncol(z), " does not match length(y)=", length(y), sep="")
-    
+
     ## Ensure that x and y increase
     ## FIXME: should check on equal values
     ox <- order(x)
@@ -980,13 +981,13 @@ imagep <- function(x, y, z,
     if (any(diff(oy) < 0)) {
         ##warning("reordered some y values")
         y <- y[oy]
-        z <- z[,oy]
+        z <- z[, oy]
     }
 
     ## Adjust x and y, to match what image() does; save orig for filled contours
     xorig <- x
     yorig <- y
-    tz <- attr(x[1],"tzone")
+    tz <- attr(x[1], "tzone")
     if (length(x) > 1 && length(x) == nrow(z)) {
         dx <- 0.5 * diff(x)
         x <- c(x[1L] - dx[1L], x[-length(x)] + dx, x[length(x)] + dx[length(x) - 1])
@@ -995,11 +996,11 @@ imagep <- function(x, y, z,
         dy <- 0.5 * diff(y)
         y <- c(y[1L] - dy[1L], y[-length(y)] + dy, y[length(y)] + dy[length(y) - 1])
     }
-    attr(x,'tzone') <- tz
+    attr(x, 'tzone') <- tz
     ##omai <- par("mai")
     ocex <- par("cex")
     if (missing(mar))
-        mar <- c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2)
+        mar <- c(mgp[1]+if (nchar(xlab)>0) 1.5 else 1, mgp[1]+if (nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2)
     if (missing(mai.palette)) {
         ##mai.palette <- c(0, 1/8, 0, 3/8 + if (haveZlab && zlabPosition=="side") 1.5*par('cin')[2] else 0)
         mai.palette <- rep(0, 4)
@@ -1037,7 +1038,7 @@ imagep <- function(x, y, z,
                         if (breaks[length(breaks)] > zrange[2])
                             breaks[length(breaks)] <- zrange[2]
                     } else {
-                        breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))PLEN else 1+length(col))
+                        breaks <- seq(zrange[1], zrange[2], length.out=if (is.function(col))PLEN else 1+length(col))
                     }
                     breaksOrig <- breaks
                 } else {
@@ -1049,7 +1050,7 @@ imagep <- function(x, y, z,
                         oceDebug(debug, "inferred breaks:", head(breaks), "...\n")
                     } else {
                         breaks <- seq(zlim[1], zlim[2],
-                                      length.out=if(is.function(col))PLEN else 1+length(col))
+                                      length.out=if (is.function(col))PLEN else 1+length(col))
                         oceDebug(debug, "zlim and col given but not breaks; inferred head(breaks)=", head(breaks), "\n")
                     }
                     breaksOrig <- breaks
@@ -1115,18 +1116,19 @@ imagep <- function(x, y, z,
             oceDebug(debug, "infer zlim=c(", zlim[1], ",", zlim[2], ") from range(breaks)\n", sep="")
         }
     }
-    xlim <- if (!xlimGiven) range(x,na.rm=TRUE) else xlim
-    ylim <- if (!ylimGiven) range(y,na.rm=TRUE) else ylim
+    xlim <- if (!xlimGiven) range(x, na.rm=TRUE) else xlim
+    ylim <- if (!ylimGiven) range(y, na.rm=TRUE) else ylim
     ## oceDebug(debug, "zlimGiven: ", zlimGiven, "\n")
-    ## zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
+    ## zlim <- if (missing(zlim)) range(z, na.rm=TRUE) else zlim
     ## oceDebug(debug, "zlim=c(", paste(zlim, collapse=","), ")\n", sep="")
 
 
+
     if (drawPalette == "space") {
-        drawPalette(zlab=if(zlabPosition=="side") zlab else "", axisPalette=axisPalette, debug=debug-1)
+        drawPalette(zlab=if (zlabPosition=="side") zlab else "", axisPalette=axisPalette, debug=debug-1)
     } else if (drawPalette) {
         ## issue 542: put this above the block
-        ## if(missing(zlim)) {
+        ## if (missing(zlim)) {
         ##     ## use range of breaks preferably; otherwise use range z
         ##     if (missing(breaks)) {
         ##         zlim <- range(z, na.rm=TRUE)
@@ -1150,16 +1152,16 @@ imagep <- function(x, y, z,
             z <- approx(mids, density, z, rule=2)$y
             dim(z) <- dim
             labels <- round(approx(density, mids, seq(0, 1, 0.1), rule=2)$y, 3)
-            drawPalette(zlim=c(0,1), zlab=if(zlabPosition=="side") zlab else "",
-                        col=col, 
+            drawPalette(zlim=c(0, 1), zlab=if (zlabPosition=="side") zlab else "",
+                        col=col,
                         labels=labels, at=seq(0, 1, 0.1),
                         drawContours=drawContours,
                         drawTriangles=drawTriangles,
                         mai=mai.palette, debug=debug-1)
         } else {
             oceDebug(debug, "palette with zlim not \"histogram\"\n")
-            drawPalette(zlim=zlim, zlab=if(zlabPosition=="side") zlab else "",
-                        breaks=breaks, col=col, 
+            drawPalette(zlim=zlim, zlab=if (zlabPosition=="side") zlab else "",
+                        breaks=breaks, col=col,
                         labels=labels, at=at,
                         drawContours=drawContours,
                         drawTriangles=drawTriangles,
@@ -1169,10 +1171,10 @@ imagep <- function(x, y, z,
         }
     }
 
-    ## xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim
-    ## ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
+    ## xlim <- if (missing(xlim)) range(x, na.rm=TRUE) else xlim
+    ## ylim <- if (missing(ylim)) range(y, na.rm=TRUE) else ylim
     ## oceDebug(debug, "zlimGiven: ", zlimGiven, "\n")
-    ## zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
+    ## zlim <- if (missing(zlim)) range(z, na.rm=TRUE) else zlim
     ## oceDebug(debug, "zlim=c(", paste(zlim, collapse=","), ")\n", sep="")
 
     ## trim image to limits, so endpoint colours will indicate outliers
@@ -1218,7 +1220,7 @@ imagep <- function(x, y, z,
             oceDebug(debug, "not doing filled contours [2]\n")
             if (zlimHistogram) {
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col2,
-                      xlim=xlim, ylim=ylim, zlim=c(0,1), asp=asp, add=add, ...)
+                      xlim=xlim, ylim=ylim, zlim=c(0, 1), asp=asp, add=add, ...)
             } else {
                 ## issue 489: use breaks/col instead of breaks2/col2
                 ##image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks2, col=col2,
@@ -1233,7 +1235,8 @@ imagep <- function(x, y, z,
                                     mar=mar, mgp=mgp, tformat=tformat, debug=debug-1)
             yat <- axis(2)#, cex.axis=cex, cex.lab=cex)
         }
-    } else {                           # x is not a POSIXt
+    } else {
+        ## x is not a POSIXt
         oceDebug(debug, "the x axis does not represent time\n")
         if (filledContour) {
             oceDebug(debug, "doing filled contours [3]\n")
@@ -1267,12 +1270,12 @@ imagep <- function(x, y, z,
     }
     if (!is.null(missingColor)) {
         ## FIXME: the negation on is.na is confusing, but it comes from col and breaks together
-        image(x, y, !is.na(z), col=c(missingColor, "transparent"), breaks=c(0,1/2,1), add=TRUE)
+        image(x, y, !is.na(z), col=c(missingColor, "transparent"), breaks=c(0, 1/2, 1), add=TRUE)
         if (axes)
             box()
     }
     if (is.na(main)) {
-        mtext("", at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))        
+        mtext("", at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
     } else if (!(is.character(main) && main == "")) {
         mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
     }

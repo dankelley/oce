@@ -63,9 +63,24 @@ test_that("as.section() works with vector of CTD objects", {
 })
 
 test_that("as.section() works with argo object", {
-          data(argo)
-          sec <- as.section(subset(argo, profile < 5))
-          expect_equal(4, length(sec[["station"]]))
+          data("argo")
+          sec <- as.section(subset(argo, profile < 10))
+          expect_equal(9, length(sec[["station"]]))
+})
+
+test_that("subset(section)", {
+          data(section)
+          ## 1. by indices
+          sec2 <- subset(section, indices=3:6)
+          expect_equal(4, length(sec2[["station"]]))
+          expect_true(identical(sec2[["station", 1]], section[["station", 3]]))
+          ## 2. by longitude
+          secWest <- subset(section, longitude < -50)
+          expect_lt(max(secWest[["longitude"]]), -50)
 })
 
 
+test_that("sectionSort", {
+          data(section)
+          ss <- sectionSort(section)
+})

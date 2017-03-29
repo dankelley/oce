@@ -3,27 +3,34 @@
 \docType{methods}
 \name{plot,met-method}
 \alias{plot,met-method}
-\title{Plot Met Data}
+\title{Plot met Data}
 \usage{
-\S4method{plot}{met}(x, which = 1:4, mgp = getOption("oceMgp"),
-  mar = c(mgp[1] + 1, mgp[1] + 1, mgp[1] + 1, mgp[1] + 1), tformat,
-  debug = getOption("oceDebug"), ...)
+\S4method{plot}{met}(x, which = 1:4, mgp, mar, tformat,
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{A \code{met} object, e.g. as read by \code{\link{read.met}}, or a
 list containing items named \code{salinity} and \code{temperature}.}
 
-\item{which}{list of desired plot types.  \itemize{ \item \code{which=1}
-gives a time-series plot of temperature \item \code{which=2} gives a
-time-series plot of pressure \item \code{which=3} gives a time-series plot
-of the x (eastward) component of velocity \item \code{which=4} gives a
-time-series plot of the y (northward) component of velocity }}
+\item{which}{list of desired plot types.
+\itemize{
+\item \code{which=1} gives a time-series plot of temperature
+\item \code{which=2} gives a time-series plot of pressure
+\item \code{which=3} gives a time-series plot of the x (eastward) component of velocity
+\item \code{which=4} gives a time-series plot of the y (northward) component of velocity
+\item \code{which=5} gives a time-series plot of speed
+\item \code{which=6} gives a time-series plot of direction (degrees clockwise from north;
+note that the values returned by \code{met[["direction"]]} must be multiplied by 10
+to get the direction plotted)
+}}
 
-\item{mgp}{A three-element numerical vector to use for \code{par(mgp)}
-to control spacing of axis elements.  The default is tighter than the R
-default, in order to use more space for the data and less for the axes.}
+\item{mgp}{A 3-element numerical vector used with \code{\link{par}("mgp")}
+to control the spacing of axis elements.
+The default is tighter than the R default.}
 
-\item{mar}{A four-element numerical vector to be used with \code{\link{par}("mar")}.}
+\item{mar}{A 4-element numerical vector used with \code{\link{par}("mar")}
+to control the plot margins.
+The default is tighter than the R default.}
 
 \item{tformat}{optional argument passed to \code{\link{oce.plot.ts}}, for
 plot types that call that function.  (See \code{\link{strptime}} for the
@@ -33,16 +40,13 @@ format used.)}
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
-
-\item{\dots}{optional arguments passed to plotting functions.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \description{
 Creates a multi-panel summary plot of data measured in a meteorological data
 set.  cast. The panels are controlled by the \code{which} argument.
-Normally, 4 panels are specified with the \code{which}, but it can also be
-useful to specify less than 4 panels, and then to draw other panels after
-this call.
 }
 \details{
 If more than one panel is drawn, then on exit from \code{plot.met}, the
@@ -56,9 +60,21 @@ library(oce)
 data(met)
 plot(met, which=3:4)
 
-}
-\author{
-Dan Kelley
+## Wind speed and direction during Hurricane Juan
+## Compare with the final figure in a white paper by Chris Fogarty
+## (available at http://www.novaweather.net/Hurricane_Juan_files/McNabs_plot.pdf 
+## downloaded 2017-01-02).
+library(oce)
+data(met)
+t0 <- as.POSIXct("2003-09-29 04:00:00", tz="UTC")
+dt <- 12 * 3600 
+juan <- subset(met, t0 - dt <= time & time <= t0 + dt)
+par(mfrow=c(2,1))
+plot(juan, which=5)
+abline(v=t0)
+plot(juan, which=6)
+abline(v=t0)
+
 }
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
@@ -86,8 +102,11 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 
 Other things related to \code{met} data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
-  \code{\link{met-class}}, \code{\link{met}},
-  \code{\link{read.met}}, \code{\link{subset,met-method}},
+  \code{\link{download.met}}, \code{\link{met-class}},
+  \code{\link{met}}, \code{\link{read.met}},
+  \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-
+\author{
+Dan Kelley
+}

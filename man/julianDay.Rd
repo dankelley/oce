@@ -51,9 +51,6 @@ jd <- julianDay(t)
 cat(format(t), "is Julian Day", format(jd, digits=14), "\\n")
 
 }
-\author{
-Dan Kelley
-}
 \references{
 Meeus, Jean, 1982.  Astronomical formuae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages
@@ -68,8 +65,9 @@ Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
 Other things related to time: \code{\link{ctimeToSeconds}},
   \code{\link{julianCenturyAnomaly}},
   \code{\link{numberAsHMS}}, \code{\link{numberAsPOSIXct}},
-  \code{\link{oce.as.POSIXlt}},
   \code{\link{secondsToCtime}},
   \code{\link{unabbreviateYear}}
 }
-
+\author{
+Dan Kelley
+}

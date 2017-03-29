@@ -22,9 +22,6 @@ location, referenced to the object's \code{depth} vector.
 Finds the depth in a Biosonics echosounder file, by finding the strongest
 reflector and smoothing its trace.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 The documentation for \code{\link{echosounder-class}} explains the
 structure of \code{echosounder} objects, and also outlines the other
@@ -40,4 +37,6 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
   \code{\link{subset,echosounder-method}},
   \code{\link{summary,echosounder-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -4,9 +4,8 @@
 \alias{oce.plot.ts}
 \title{Oce Variant of plot.ts}
 \usage{
-oce.plot.ts(x, y, type = "l", xlim, ylim, xlab, ylab,
-  drawTimeRange = getOption("oceDrawTimeRange"), adorn = NULL,
-  fill = FALSE, xaxs = par("xaxs"), yaxs = par("yaxs"),
+oce.plot.ts(x, y, type = "l", xlim, ylim, xlab, ylab, drawTimeRange,
+  adorn = NULL, fill = FALSE, xaxs = par("xaxs"), yaxs = par("yaxs"),
   cex = par("cex"), cex.axis = par("cex.axis"),
   cex.main = par("cex.main"), mgp = getOption("oceMgp"), mar = c(mgp[1] +
   if (nchar(xlab) > 0) 1.5 else 1, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3/4),
@@ -32,8 +31,8 @@ window.}
 
 \item{ylab}{name for y axis; defaults to the plotted item.}
 
-\item{drawTimeRange}{a boolean, set to \code{TRUE} to indicate the range of
-times in the top-left margin.}
+\item{drawTimeRange}{an optional indication of whether/how to draw a time range,
+in the top-left margin of the plot; see \code{\link{oce.axis.POSIXct}} for details.}
 
 \item{adorn}{(\strong{Defunct})
 An \code{\link{expression}} or vector of expressions that contain
@@ -134,4 +133,3 @@ oce.plot.ts(t, y, type='l', xaxs='i')
 \author{
 Dan Kelley
 }
-

@@ -1,5 +1,4 @@
 library(oce)
-try(source("~/src/oce/R/lobo.R"))
 if (!length(dir(".", "lobo.dat"))) {
     cat("Downloading lobo.dat and creating lobo.rda\n")
     download.file("http://lobo.satlantic.com/cgi-data/nph-data.cgi?min_date=20070101&max_date=20121024&y=salinity,temperature,weather_temp", "lobo.dat")

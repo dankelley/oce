@@ -29,16 +29,13 @@ data(coastlineWorld)
 longitude <- coastlineWorld[['longitude']]
 latitude <- coastlineWorld[['latitude']]
 mapPlot(longitude, latitude, type='l', grid=5,
-        longitudelim=c(-70,-50), latitudelim=c(45,50),
+        longitudelim=c(-70,-50), latitudelim=c(45, 50),
         projection="+proj=merc")
 lon <- -63.5744 # Halifax
 lat <- 44.6479
 mapPoints(lon, lat, pch=20, col="red")
 mapText(lon, lat, "Halifax", col="red", pos=1, offset=1)
 }
-}
-\author{
-Dan Kelley
 }
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
@@ -56,4 +53,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapTissot}}, \code{\link{oceCRS}},
   \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley
+}

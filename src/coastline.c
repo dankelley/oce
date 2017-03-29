@@ -1,6 +1,6 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 
-//#define DEBUG 1
+// #define DEBUG 1
 
 #include <R.h>
 #include <Rdefines.h>
@@ -38,12 +38,12 @@ void polygon_subdivide_vertically_smash_1(int *n, double *x, double *y, double *
   int i = start;
   while (i < (*n)) {
     // Find first non-NA
-    while (ISNA(x[i]) && (i < (*n))) {
+    while ((i < (*n)) && ISNA(x[i])) {
       i++;
     }
     poly_start[npoly] = i;
     // Find last non-NA
-    while (!ISNA(x[i]) && (i < (*n))) {
+    while ((i < (*n)) && !ISNA(x[i])) {
       i++;
     }
     poly_end[npoly] = (i == (*n)) ? i - 1 : i;
@@ -81,11 +81,11 @@ void polygon_subdivide_vertically_smash_1(int *n, double *x, double *y, double *
     if (crossing) {
 #ifdef DEBUG
       Rprintf("CROSSING\n");
-      Rprintf("ipoly=%4d npoly=%d @ i=%d:%d (first y %.1f) CROSSES (recall *n=%d)\n", ipoly, npoly, poly_start[ipoly], poly_end[ipoly], y[poly_start[ipoly]], (*n));
+      Rprintf("ipoly=%4d npoly=%d @ i=%d:%d (first y %.1f) CROSSES (recall *n=%d) (no=%d)\n", ipoly, npoly, poly_start[ipoly], poly_end[ipoly], y[poly_start[ipoly]], (*n), *no);
 #endif
       for (i = poly_start[ipoly]; i <= poly_end[ipoly]; i++) {
 #ifdef DEBUG
-	Rprintf(" x[%d]=%.2f y[%d]=%.2f (ipoly=%d) LHS\n", i, x[i], i, y[i], ipoly);
+	Rprintf(" x[%d]=%.2f y[%d]=%.2f (ipoly=%d) LHS (no=%d)\n", i, x[i], i, y[i], ipoly, *no);
 #endif
 	if (i == (*n))
 	  return;
@@ -98,7 +98,7 @@ void polygon_subdivide_vertically_smash_1(int *n, double *x, double *y, double *
       SAVE(NA_REAL, NA_REAL);
       for (i = poly_start[ipoly]; i <= poly_end[ipoly]; i++) {
 #ifdef DEBUG
-	Rprintf(" x[%d]=%.2f y[%d]=%.2f (ipoly=%d) RHS\n", i, x[i], i, y[i], ipoly);
+	Rprintf(" x[%d]=%.2f y[%d]=%.2f (ipoly=%d) RHS (no=%d)\n", i, x[i], i, y[i], ipoly, *no);
 #endif
 	if (i == (*n))
 	  return;
@@ -111,7 +111,7 @@ void polygon_subdivide_vertically_smash_1(int *n, double *x, double *y, double *
     } else {
       for (i = poly_start[ipoly]; i <= poly_end[ipoly]; i++) {
 #ifdef DEBUG
-	Rprintf(" x[%d]=%.2f y[%d]=%.2f (ipoly=%d) NO CROSSING\n", i, x[i], i, y[i], ipoly);
+	Rprintf(" x[%d]=%.2f y[%d]=%.2f (ipoly=%d) NO CROSSING (no=%d)\n", i, x[i], i, y[i], ipoly, *no);
 #endif
 	if (i < (*n))
 	  SAVE(x[i], y[i])

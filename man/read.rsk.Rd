@@ -69,7 +69,7 @@ be converted to conductivity ratio (which is what many other instruments report)
 by dividing by 42.914 (see Culkin and Smith, 1980) which will be necessary in
 any seawater-related function that takes conductivity ratio as an argument (see
 \dQuote{Examples}).
-    
+
   \emph{A note on pressure.} RBR devices tend to record absolute pressure (i.e.
   sea pressure plus atmospheric pressure), unlike most oceanographic instruments
   that record sea pressure (or an estimate thereof).  The handling of pressure
@@ -89,9 +89,6 @@ any seawater-related function that takes conductivity ratio as an argument (see
   starting with \code{"sea"}.  See \code{\link{as.ctd}} for details of how this
   setup facilitates the conversion of \code{\link{rsk-class}} objects to
   \code{\link{ctd-class}} objects.
-}
-\author{
-Dan Kelley and Clark Richards
 }
 \references{
 Culkin, F., and Norman D. Smith, 1980. Determination of the concentration of
@@ -114,4 +111,6 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
   \code{\link{rsk}}, \code{\link{subset,rsk-method}},
   \code{\link{summary,rsk-method}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

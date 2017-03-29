@@ -30,7 +30,7 @@ less than 8GB of memory.  It is sensible to specify bands of interest when
 reading data with \code{\link{read.landsat}}, and also to use
 \code{\link{landsatTrim}} to isolate geographical regions that need
 processing.
-    
+
 Experts may need to get direct access to the data, and this is easy because
 all Landsat objects (regardless of satellite) use a similar storage form.
 Band information is stored in byte form, to conserve space.  Two bytes are
@@ -39,8 +39,8 @@ For example, if a Landsat-8 object named \code{L} contains the \code{tirs1}
 band, the most- and least-significant bytes will be stored in matrices
 \code{L@data$tirs1$msb} and \code{L@data$tirs1$lsb}.  A similar Landsat-7
 object would have the same items, but \code{msb} would be just the value
-\code{0x00}.  
-    
+\code{0x00}.
+
 Derived bands, which may be added to a landsat object with
 \code{\link{landsatAdd}}, are not stored in byte matrices.  Instead they
 are stored in numerical matrices, which means that they use 4X more storage
@@ -108,9 +108,7 @@ and \code{tirs2} combined.  This may seem confusing, but it lets code like
 .------------------------------------------------------------------------------.
 }
 }
-\author{
-Dan Kelley and Clark Richards
-}
+
 \references{
 1. See the USGS "glovis" web site.
 
@@ -144,7 +142,7 @@ Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.
 }
 \seealso{
 Data from AMSR satellites are handled with \code{\link{amsr-class}}.
-    
+
 A file containing Landsat data may be read with \code{\link{read.landsat}} or
 \code{\link{read.oce}}, and one such file is provided by the \CRANpkg{ocedata}
 package as a dataset named \code{landsat}.
@@ -168,7 +166,9 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 }
+\author{
+Dan Kelley and Clark Richards
+}
 \concept{
 satellite
 }
-

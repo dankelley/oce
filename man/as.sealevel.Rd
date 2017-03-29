@@ -78,9 +78,6 @@ time <- as.POSIXct("2000-01-01") + h * 3600
 sl <- as.sealevel(elevation, time)
 summary(sl)
 }
-\author{
-Dan Kelley
-}
 \references{
 \code{http://ilikai.soest.hawaii.edu/rqds/hourly.fmt} (this link
 worked for years but failed at least temporarily on December 4, 2016).
@@ -100,4 +97,6 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -27,4 +27,3 @@ Convert a String to a Unit
 This function is not presently used by any \code{oce} functions, and is
 provided as a convenience function for users.
 }
-

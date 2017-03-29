@@ -62,17 +62,14 @@ plotSticks(x, y, u, v, xlim=c(-2, 2), ylim=c(-2, 2))
 rm(n, x, y, theta, u, v)
 
 # Oceanographic example
-if (require(ocedata)) {
-    data(met)
-    t <- ISOdatetime(met[["Year"]], met[["Month"]], met[["Day"]], 0, 0, 0, tz="UTC")
-    u <- met[["u"]]
-    v <- met[["v"]]
-    temperature <- met[["temperature"]]
-    oce.plot.ts(t, temperature, type='p', ylim=c(-5, 30))
-    plotSticks(t, 5, u, v, yscale=2, add=TRUE)
-}
+data(met)
+t <- met[["time"]]
+u <- met[["u"]]
+v <- met[["v"]]
+p <- met[["pressure"]]
+oce.plot.ts(t, p)
+plotSticks(t, 99, u, v, yscale=25, add=TRUE)
 }
 \author{
 Dan Kelley
 }
-

@@ -5,7 +5,7 @@
 \alias{[[<-,coastline-method}
 \title{Replace Parts of a Coastline Object}
 \usage{
-\S4method{[[}{coastline}(x, i, j) <- value
+\S4method{[[}{coastline}(x, i, j, ...) <- value
 }
 \arguments{
 \item{x}{An \code{coastline} object, i.e. inheriting from \code{\link{coastline-class}}}
@@ -14,9 +14,9 @@
 
 \item{j}{Optional additional information on the \code{i} item.}
 
-\item{value}{The value to be placed into \code{x}, somewhere.}
-
 \item{...}{Optional additional information (ignored).}
+
+\item{value}{The value to be placed into \code{x}, somewhere.}
 }
 \description{
 The \code{[[<-} method works for all \code{oce} objects, i.e.
@@ -52,6 +52,18 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
+Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
+  \code{\link{as.coastline}},
+  \code{\link{coastline-class}},
+  \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
+  \code{\link{coastlineWorld}},
+  \code{\link{download.coastline}},
+  \code{\link{plot,coastline-method}},
+  \code{\link{read.coastline.openstreetmap}},
+  \code{\link{read.coastline.shapefile}},
+  \code{\link{subset,coastline-method}},
+  \code{\link{summary,coastline-method}}
+
 Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
   \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
@@ -72,17 +84,4 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,topo-method}},
   \code{\link{[[<-,windrose-method}}
-
-Other things related to \code{coastline} data: \code{\link{[[,coastline-method}},
-  \code{\link{as.coastline}},
-  \code{\link{coastline-class}},
-  \code{\link{coastlineBest}}, \code{\link{coastlineCut}},
-  \code{\link{coastlineWorld}},
-  \code{\link{download.coastline}},
-  \code{\link{plot,coastline-method}},
-  \code{\link{read.coastline.openstreetmap}},
-  \code{\link{read.coastline.shapefile}},
-  \code{\link{subset,coastline-method}},
-  \code{\link{summary,coastline-method}}
 }
-

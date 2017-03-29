@@ -24,18 +24,15 @@ Convert from ecliptical to equatorial coordinates, using
 equations 8.3 and 8.4 of [1], or, equivalently,
 equations 12.3 and 12.4 of [2].
 }
-\author{
-Dan Kelley, based on formulae in [1] and [2].
-}
 \references{
 1. Meeus, Jean, 1982. Astronomical formuae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages.
 
 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
 USA. 429 pages.
-The code is based on [1]; see help(moonAngle,"oce") for comments on 
+The code is based on [1]; see help(moonAngle,"oce") for comments on
 the differences in formulae found in [2].  Indeed, [2] is only cited
-here in case readers want to check the ideas of the formulae; DK 
+here in case readers want to check the ideas of the formulae; DK
 has found that [2] is available to him via his university library
 inter-library loan system, whereas he owns a copy of [1].
 }
@@ -45,4 +42,6 @@ Other things related to astronomy: \code{\link{equatorialToLocalHorizontal}},
   \code{\link{julianDay}}, \code{\link{moonAngle}},
   \code{\link{siderealTime}}, \code{\link{sunAngle}}
 }
-
+\author{
+Dan Kelley, based on formulae in [1] and [2].
+}

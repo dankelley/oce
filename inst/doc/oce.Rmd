@@ -67,20 +67,73 @@ As illustrated in Figure 1, each `oce` object contains three slots:
 
 # Accessing data in oce objects
 
-For detailed analysis, users may want to access data *within* oce objects. While it is possible to descend through the object using the "slot" and "list" notation (e.g. `d@data$salinity` yields the salinity within an oce object named `d`), this approach is not recommended. It is better to use the `[[` oce method, which derives from the generic "Extract" method for accessing parts of an object. To see the full help file, type:
-```{r extract, eval=FALSE}
+For detailed analysis, users may want to access data *within* oce objects. While it is possible to descend through the object using the "slot" and "list" notation (e.g. `d@data$salinity` yields the salinity within an oce object named `d`), this approach is not recommended. It is better to use the `[[` notation, which derives from the generic "Extract" method for accessing parts of an object. A general introduction is provided by
+```{r eval=FALSE}
 ?`[[,oce-method`
 ```
-For example, to access the `salinity` field in an `oce` object, instead of the slot/list notation above, one could type:
-```{r extractExample, eval=FALSE}
+and detaile are provided for individual object classes with e.g.
+```{r eval=FALSE}
+?`[[,ctd-method`
+```
+for the `ctd` class. The notation is very simple.  For example, suppose that `d` is an object that stores `salinity` in either its `data` slot or `metadata` slot. Then,
+```{r eval=FALSE}
 S <- d[['salinity']]
 ```
-The advantages of the `[[` method over directly accessing information in the slots are as follows.
+will extract the salinity.
 
-1. It does not require knowledge of where the desired field is contained in the object. (For example, some objects hold latitude in the `metadata` slot, while others might hold it in the `data` slot.)
-2. It should be familiar to users who understand the basics of R.
-3. It permits the extraction of derived values that are stored in the data. For example, if `d` is a CTD object, then `d[["N2"]]` will yield the square of the buoyancy frequency (by calling `swN2` with reasonable defaults for smoothing parameters).
-4. It permits oce to store data compactly, e.g. in 1-byte or 2-byte chunks, instead of using the 8 bytes that are required for numerical data (this permits e.g. working with landsat data in computers with typical memory sizes).
+The `[[` method first looks in the `metadata` slot, but if the item is not found there, it proceeds to look in the `data` slot. This two-step scheme is helpful because it frees the user from having to know where data are stored, e.g. in a `ctd` object it might be stored in the `metadata` (for a conventional CTD cast) or in the `data` slot (for the slantwise sampling of a glider).
+
+In addition to accessing data within an object, the `[[` notation also permits the extraction of *derived* information. There are two reasons for this.
+
+1. It can give valuable performance enhancements in some cases, e.g. the data in the `landsat` class are stored in two byte-level arrays, which yields a marked improvement over the 8-byte arrays that R generally uses on a 64-bit machine. The `[[` assembles these byte-scale chunks into a conventional R numerical matrix, which can be quite convenient for users who wish to operate on the data without learning how to assemble the bytes.
+2. It provides a uniformity of notation that can be helpful to users. In `oce`, objects derived from data files tend to hold just the information in those files, not derived information. For example, For example, CTD datasets often provide in-situ temperature but not potential temperature (since the latter is not measured). The in-situ temperature is found with e.g. `d[["temperature"]]`, and so it seems natural to write `d[["theta"]]` to get the potential temperature. If this is done, then the `ctd` version of `[[`` first looks in the data slot, and returns `theta` if it is found there, as may sometimes be the case (depending on the choice of the person who created the dataset). However, if it is not found, then `[[` calls `swTheta()` to calculate the value, and returns the result.
+
+Finally, it is also possible to extract the entirety of either the `metadata` or `data` slot, e.g.
+```{r eval=FALSE}
+data <- d[['data']]
+```
+yields the full data slot, which is a list with elements that can be accessed in the conventional way, e.g. for a `ctd` object,
+```{r eval=FALSE}
+data$temperature
+```
+retrieves the temperature. For obvious reasons, the method of derived-quantity access (e.g. the `theta` of the example above) will not work.
+
+# Modifying data in oce objects
+
+There are several schemes for modifying the data within `oce` objects. By analogy with the `[[` notation of the previous section, e.g. the following 
+```{r eval=FALSE}
+data(ctd)
+ctd[["temperatureAboveFreezing"]] <- ctd[["temperature"]] - swTFreeze(ctd)
+```
+will store the excess over freezing temperature into the `ctd` object.
+
+Further information on this notation is provided by
+```{r eval=FALSE}
+?"[[<-,oce-method"
+```
+
+The above works only within the `data` slot. To store within the `metadata` slot, consider using e.g.
+```{r extractExample, eval=FALSE}
+ctd[["metadata"]]$scientist <- "Dalhousie Oceanography 4120/5120 Class of 2003"
+```
+sets the "scientist".
+
+For archival work, it is important to store reasons for changing things in an object. Two functions are provided for this purpose: `oceSetData` and `oceSetMetadata`.  For example, a better way to change the scientist might be to write
+```{r eval=FALSE}
+ctd <- oceSetMetadata(ctd, name="scientist",
+                      value="Dalhousie Oceanography 4120/5120 Class of 2003",
+                      note="give credit where it's due")
+```
+and a better way to store `temperatureAboveFreezing` would be
+```{r eval=FALSE}
+ctd <- oceSetData(ctd, name="temperatureAboveFreezing",
+                      value=ctd[["temperature"]] - swTFreeze(ctd), 
+                      unit=list(unit=expression(degree*C), scale="ITS-90"),
+                      originalName="-",
+                      note="add temperatureAboveFreezing, for ice-related calculations")
+```
+which illustrates that this notation, as opposed to the `[[<-` notation, permits the specification of a unit and an `originalName`, both of which, together with the `note`, are displayed by `summary(ctd)`.
+
 
 # Oce functions
 
@@ -302,6 +355,8 @@ for (i in 1:length(files)) {
     }
 }
 ```
+The `[[` notation is explained in Section 3, but this example conveys the gist,
+that it permits accessing data, or derived data, from within an object.
 
 In the above, lines connect the points within a given profile. This can be a
 useful method for a quick scan looking for outliers. Another is to colour-code
@@ -360,11 +415,11 @@ group of functions is provided for plotting maps.  The first step is to call
 `mapPoints()`, lines with `mapLines()`, etc. For example, the following plots a
 world coastline in the Winkel Tripel projection, with the cruise track
 for the `section` dataset in red.
-```{r fig.cap="**Figure 5.** World in Winkel Tripel projection, with the `section` profile sites indicated.", fig.width=4, fig.height=2.6, dpi=72}
+```{r fig.cap="**Figure 5.** World in Robinson projection, with the `section` profile sites indicated.", fig.width=4, fig.height=2.6, dpi=72}
 library(oce)
 data(coastlineWorld)
 par(mar=rep(0, 4))
-mapPlot(coastlineWorld, projection="+proj=wintri", col="lightgray")
+mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
 data(section)
 lon <- section[["longitude", "byStation"]]
 lat <- section[["latitude", "byStation"]]
@@ -386,15 +441,14 @@ issue list, i.e. <https://github.com/dankelley/oce/issues/388>. In some instance
 
 ## Popular world-view projections
 
-A few common projections are worth highlighting. In addition to the Winkel Tripel
-projection shown in Figure 5, it is also common to employ Mollweide, Eckert IV
-or Robinson for world-wide views; these are achieved as follows.
-
-```{r fig.keep="none"}
-mapPlot(coastlineWorld, projection="+proj=moll") # Mollweide
-mapPlot(coastlineWorld, projection="+proj=eck4") # Eckert IV
-mapPlot(coastlineWorld, projection="+proj=robin") # Robinson
-```
+A few common projections are worth highlighting. In addition to the Robinson
+projection shown in Figure 5, it is also common to employ Mollweide
+(`projection="+proj=moll"`), Eckert IV (`projection="+eck4"`) or Winkel Tripel
+(`projection="+proj=wintri"`) for world-wide views. An attractive feature of
+the Winkel Tripel projection is familiarity, since it is used by the National
+Geographical Society, but its lack of a formal inverse can cause problems for
+plotting in `oce` unless the operating system has a recent version of the
+`gdal` library that is used for calculating projections.
 
 Before moving on to other projections, it may be helpful to show how to plot
 gridded data with projection, illustrated in Figure 6 with bathymetry near
@@ -572,9 +626,9 @@ data.
 library(oce)
 d <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
 ```
-contains a column named `flags` that consists of a 3-digit number. THe first
+contains a column named `flags` that consists of a 3-digit number. The first
 digit is a flag for temperature, the second for conductivity, and the third for
-oxygen. Compute the individual flags and add them to the metdata of the `ctd` object.
+oxygen. Compute the individual flags and add them to the metadata of the `ctd` object.
 
 ## Using flags to manipulate data
 

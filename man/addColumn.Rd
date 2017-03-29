@@ -22,14 +22,14 @@ column.
 \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
 Use \code{\link{oceSetData}} instead of the present function.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Please use \code{\link{oceSetData}} instead of the present function.
 
 Other functions that will be removed soon: \code{\link{ctdAddColumn}},
   \code{\link{ctdUpdateHeader}},
-  \code{\link{mapMeridians}}, \code{\link{mapZones}}
+  \code{\link{mapMeridians}}, \code{\link{mapZones}},
+  \code{\link{oce.as.POSIXlt}}
 }
-
+\author{
+Dan Kelley
+}

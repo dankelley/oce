@@ -25,7 +25,7 @@ setClass("lisst", contains="oce")
 setMethod(f="[[",
           signature(x="lisst", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()
+              callNextMethod()         # [[
           })
 
 #' Replace Parts of a LISST Object
@@ -34,8 +34,8 @@ setMethod(f="[[",
 #' @family things related to \code{lisst} data
 setMethod(f="[[<-",
           signature(x="lisst", i="ANY", j="ANY"),
-          definition=function(x, i, j, value) {
-              callNextMethod(x=x, i=i, j=j, value=value)
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
           })
 
 
@@ -62,8 +62,8 @@ setMethod(f="initialize",
               .Object@metadata$longitude <- longitude
               .Object@metadata$latitude <- latitude
               .Object@processingLog$time <- as.POSIXct(Sys.time())
-              .Object@processingLog$value <- paste("create 'lisst' object with", 
-                                                   " filename=\"", filename, "\"", 
+              .Object@processingLog$value <- paste("create 'lisst' object with",
+                                                   " filename=\"", filename, "\"",
                                                    ", longitude=", longitude,
                                                    ", latitude=",
                                                    latitude, sep="")
@@ -94,7 +94,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("LISST Summary\n-------------\n\n")
               showMetadataItem(object, "filename", "File source:        ")
-              callNextMethod()
+              callNextMethod()         # summary
           })
 
 
@@ -239,7 +239,7 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
         stop("data file must hold at least 42 space-separated columns")
     if (ncols > 42) {
         warning("data file has more than 42 columns; only first 42 are used")
-        data <- data[,1:42]
+        data <- data[, 1:42]
     }
     data <- data.frame(data)
     names <- rep("", length.out=42)
@@ -315,5 +315,3 @@ read.lisst <- function(file, year=0, tz="UTC", longitude=NA, latitude=NA)
     if ("temperature" %in% names) res@metadata$units$temperature <- list(unit=expression(degree*C), scale="")
     res
 }
-
-

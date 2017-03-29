@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{oce.as.POSIXlt}
 \alias{oce.as.POSIXlt}
-\title{Oce Variant of as.POSIXlt}
+\title{Oce Variant of as.POSIXlt [deprecated]}
 \usage{
 oce.as.POSIXlt(x, tz = "")
 }
@@ -16,27 +16,18 @@ the month name appears.}
 A POSIXlt object.
 }
 \description{
-Used in parsing headers, this function is built on the standard
-\code{\link{as.POSIXlt}} function.  the only difference is that this also
-recognizes dates of forms such as \code{"2002 100 1430"} (year day hhmm),
-\code{"Aug 23 2002"}, \code{"August 23 2002"}, \code{"2002 Aug 23"}, and
-\code{"2002 23 Aug"}.  (The month may appear in abbreviated form or written
-in full, and may be capitalized or not.)
+\strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+It was realized in December of 2016 that this function was not used within
+oce, and also that \code{\link[lubridate]{parse_date_time}} in the
+\CRANpkg{lubridate} package was superior and therefore a better choice for
+\dQuote{oce} users.
 }
-\examples{
-oce.as.POSIXlt("2016-11-06")
+\seealso{
+Other functions that will be removed soon: \code{\link{addColumn}},
+  \code{\link{ctdAddColumn}},
+  \code{\link{ctdUpdateHeader}},
+  \code{\link{mapMeridians}}, \code{\link{mapZones}}
 }
 \author{
 Dan Kelley
 }
-\seealso{
-\code{\link{as.POSIXlt}}, from which this is derived.
-
-Other things related to time: \code{\link{ctimeToSeconds}},
-  \code{\link{julianCenturyAnomaly}},
-  \code{\link{julianDay}}, \code{\link{numberAsHMS}},
-  \code{\link{numberAsPOSIXct}},
-  \code{\link{secondsToCtime}},
-  \code{\link{unabbreviateYear}}
-}
-

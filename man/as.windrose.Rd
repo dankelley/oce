@@ -49,9 +49,6 @@ summary(wr)
 plot(wr)
 
 }
-\author{
-Dan Kelley, with considerable help from Alex Deckmyn.
-}
 \seealso{
 Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
   \code{\link{[[<-,windrose-method}},
@@ -59,4 +56,6 @@ Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
   \code{\link{summary,windrose-method}},
   \code{\link{windrose-class}}
 }
-
+\author{
+Dan Kelley, with considerable help from Alex Deckmyn.
+}

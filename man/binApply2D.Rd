@@ -49,7 +49,7 @@ if (require(ocedata)) {
     colPalette <- rev(oce.colorsJet(length(breaksPalette)-1))
     drawPalette(zlim, "Secchi Depth", breaksPalette, colPalette)
     data(coastlineWorld)
-    mapPlot(coastlineWorld, longitudelim=c(-5,20), latitudelim=c(50,66),
+    mapPlot(coastlineWorld, longitudelim=c(-5, 20), latitudelim=c(50, 66),
       grid=5, fill='gray', projection="+proj=lcc +lat_1=50 +lat_2=65")
     bc <- binApply2D(secchi$longitude, secchi$latitude,
                      pretty(secchi$longitude, 80),
@@ -60,13 +60,12 @@ if (require(ocedata)) {
 }
 }
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other bin-related functions: \code{\link{binApply1D}},
   \code{\link{binAverage}}, \code{\link{binCount1D}},
   \code{\link{binCount2D}}, \code{\link{binMean1D}},
   \code{\link{binMean2D}}
 }
-
+\author{
+Dan Kelley
+}

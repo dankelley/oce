@@ -36,9 +36,6 @@ degres). The definition used here is that of Pierre Flament. (Other
 formulations exist.)  Note that pressure is ignored in the definition.
 Spiceness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
 }
-\author{
-Dan Kelley
-}
 \references{
 P. Flament, 2002. A state variable for characterizing water
 masses and their diffusive stability: spiciness.  \emph{Progr. Oceanog.},
@@ -66,4 +63,6 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swTheta}}, \code{\link{swViscosity}},
   \code{\link{swZ}}
 }
-
+\author{
+Dan Kelley
+}

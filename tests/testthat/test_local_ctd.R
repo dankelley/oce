@@ -8,7 +8,7 @@ test_that("ice-tethered profiler", {
           }
 })
 
-test_that("woce", {
+test_that("woce 1", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               woce <- read.ctd.woce("local_data/18HU2010014_00003_00001_ct1.csv")
               expect_equal(woce[["longitude"]], -52.5945)
@@ -17,6 +17,22 @@ test_that("woce", {
               expect_equal(woce[["station"]], 3)
           }
 })
+
+test_that("woce 2", {
+          if (1 == length(list.files(path=".", pattern="local_data"))) {
+              woce <- read.ctd.woce("local_data/example_ct1.csv")
+              expect_equal(woce[["latitude"]], -17.5102)
+              expect_equal(woce[["longitude"]], -150.4812)
+              expect_equal(woce[["institute"]], "SIO")
+              expect_equal(woce[["station"]], 221)
+              expect_equal(woce[["waterDepth"]], 3596)
+              expect_equal(woce[["pressureUnit"]], list(unit=expression(dbar), scale=""))
+              expect_equal(woce[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
+              expect_equal(woce[["salinityUnit"]], list(unit=expression(), scale="PSS-78"))
+              expect_equal(woce[["oxygenUnit"]], list(unit=expression(mu*mol/kg), scale=""))
+          }
+})
+
 
 ## I dump files here whenever I download new data. These files
 ## go back about 3 years, I think.
@@ -42,3 +58,32 @@ test_that("various ctd files", {
           }
 })
 
+
+test_that("a broken ODF file that has theta but no S", {
+          if (1 == length(list.files(pattern="local_data"))) {
+              d <- read.oce("local_data/CTD_98911_1P_1_DN.txt")
+
+              ## 1. test access
+              expect_equal(length(d[["theta"]]), 127)
+              expect_equal(head(d[['theta']]), c(0.0346, 0.1563, 0.2153, 0.1970, 0.1916, 0.2141))
+
+              ## 2. test assignment
+              d[["theta"]] <- seq_along(d[["pressure"]])
+              expect_equal(length(d[["theta"]]), 127)
+              expect_equal(head(d[['theta']]), 1:6)
+          }
+})
+
+test_that("autoconverts pressure in PSI to in dbar", {
+          if (1 == length(list.files(path=".", pattern="local_data"))) {
+              ## test creation of pressure [dbar] from pressure [PSI], using
+              ## the constructed file ctd_with_psi.cnv (in which the pressure column
+              ## was calculated and inserted into the file, and in which also the
+              ## header line was changed to say that pressure is in English units.
+              d1 <- read.oce("local_data/ctd.cnv")
+              d2 <- read.oce("local_data/ctd_with_psi.cnv")
+              ## use 1e-5 to reflect the number of digits I was using in creating
+              ## and then cut/pasting the fake data
+              expect_equal(d1[["pressure"]], d2[["pressure"]], tolerance=1e-5)
+          }
+})

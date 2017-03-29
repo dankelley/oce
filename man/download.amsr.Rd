@@ -5,24 +5,28 @@
 \title{Download and Cache an amsr File}
 \usage{
 download.amsr(year, month, day, destdir = ".",
-  server = "ftp.ssmi.com/amsr2/bmaps_v07.2")
+  server = "http://data.remss.com/amsr2/bmaps_v07.2")
 }
 \arguments{
 \item{year, month, day}{Numerical values of the year, month, and day
-of the desired dataset. Note that one file is archived per day, 
+of the desired dataset. Note that one file is archived per day,
 so these three values uniquely identify a dataset.
 If \code{day} and \code{month} are not provided but \code{day} is,
 then the time is provided in a relative sense, based on the present
 date, with \code{day} indicating the number of days in the past.
 Owing to issues with timezones and the time when the data
 are uploaded to the server, \code{day=3} may yield the
-most recent available data. For this reason, there is a 
+most recent available data. For this reason, there is a
 third option, which is to leave \code{day} unspecified, which
 works as though \code{day=3} had been given.}
 
-\item{destdir}{String naming the directory in which to cache resultant files.}
+\item{destdir}{A string naming the directory in which to cache the downloaded file.
+The default is to store in the present directory, but many users find it more
+helpful to use something like \code{"~/data/amsr"} for this, to collect all
+downloaded amsr files in one place.}
 
-\item{server}{String naming the server from which data are to be acquired.}
+\item{server}{A string naming the server from which data
+are to be acquired. See \dQuote{History}.}
 }
 \value{
 A character value indicating the filename of the result; if
@@ -34,16 +38,23 @@ If the file is already present in \code{destdir}, then it is not
 downloaded again. The default \code{destdir} is the present directory,
 but it probably makes more sense to use something like \code{"~/data/amsr"}
 to make it easy for scripts in other directories to use the cached data.
+The file is downloaded with \code{\link{download.file}}.
 }
-\details{
-This function relies on the system utility \code{ftp}, and also on local directories
-being separated by forward slashes in the file system. That means it will probably
-only work on unix-like systems.
+\section{History}{
+
+Until 25 March 2017, the default server was
+\code{"ftp.ssmi.com/amsr2/bmaps_v07.2"}, but this was changed when the author
+discovered that this FTP site had been changed to require users to create
+accounts to register for downloads.  The default was changed to
+\code{"http://data.remss.com/amsr2/bmaps_v07.2"} on the named date.
+This site was found by a web search, but it seems to provide proper data.
+It is assumed that users will do some checking on the best source.
 }
+
 \section{Warning}{
 
 All of the \code{download.*} functions are subject to change through the
-autumn of 2016. The plan is to create individual functions
+year 2017. The plan is to create individual functions
 as needs arise in everyday work, thereby discovering patterns of 
 arguments that might make sense more generally. Therefore, it is likely
 that argument order (and even name) may change up until approximately
@@ -51,9 +62,24 @@ December 2016. Users are advised to refer to arguments by name,
 i.e. not to rely on their order, and they are asked for patience,
 because argument names and defaults may vary through the early development.
 }
+
+\examples{
+\dontrun{
+## The download takes several seconds.
+f <- download.amsr(2017, 1, 14) # Jan 14, 2017
+d <- read.amsr(f)
+plot(d)
+mtext(d[["filename"]], side=3, line=0, adj=0)
+}
+}
+\references{
+\url{http://images.remss.com/amsr/amsr2_data_daily.html}
+provides daily images going back to 2012. Three-day,
+monthly, and monthly composites are also provided on that site.
+}
 \seealso{
 Other functions that download files: \code{\link{download.coastline}},
-  \code{\link{download.topo}}
+  \code{\link{download.met}}, \code{\link{download.topo}}
 
 Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{amsr-class}},
@@ -62,4 +88,3 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}
 }
-

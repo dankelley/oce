@@ -79,6 +79,7 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \examples{
 data(topoWorld)
 dim(topoWorld[['z']])
@@ -115,4 +116,3 @@ Other things related to \code{topo} data: \code{\link{[[<-,topo-method}},
   \code{\link{topo-class}}, \code{\link{topoInterpolate}},
   \code{\link{topoWorld}}
 }
-

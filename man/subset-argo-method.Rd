@@ -22,7 +22,7 @@ Subset an argo object, either by selecting just the "adjusted" data
 or by subsetting by pressure or other variables.
 }
 \details{
-If \code{subset} is the string \code{"adjusted"}, then \code{subset} 
+If \code{subset} is the string \code{"adjusted"}, then \code{subset}
 replaces the station variables with their adjusted counterparts. In
 the argo notation, e.g. \code{PSAL} is replaced with \code{PSAL_ADJUSTED};
 in the present notation, this means that \code{salinity} in the \code{data}
@@ -33,7 +33,7 @@ slot.
 If \code{subset} is an expression, then the action is somewhat similar
 to other \code{subset} functions, but with the restriction that
 only one independent variable may be
-used in in any call to the function, so that 
+used in in any call to the function, so that
 repeated calls will be necessary to subset based on more than one
 independent variable.  Subsetting may be done by anything
 stored in the data, e.g. \code{time},
@@ -53,7 +53,7 @@ plot(subset(argo, longitude > mean(longitude)))
 plot(subset(argoGrid(argo), pressure > 500 & pressure < 1000), which=5)
 
 # Example 2: restrict attention to delayed-mode profiles.
-par(mfrow=c(1,1))
+par(mfrow=c(1, 1))
 plot(subset(argo, dataMode == "D"))
 
 # Example 3: contrast corrected and uncorrected data
@@ -62,16 +62,15 @@ plotTS(argo)
 plotTS(subset(argo, "adjusted"))
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
-  \code{\link{argoGrid}}, \code{\link{argo}},
-  \code{\link{as.argo}},
+  \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
+  \code{\link{argo}}, \code{\link{as.argo}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{summary,argo-method}}
 }
-
+\author{
+Dan Kelley
+}

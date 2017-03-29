@@ -7,9 +7,6 @@
 \description{
 Class to store tidal-constituent models.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
@@ -43,4 +40,6 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{tidedata}}, \code{\link{tidemAstron}},
   \code{\link{tidemVuf}}, \code{\link{tidem}}
 }
-
+\author{
+Dan Kelley
+}

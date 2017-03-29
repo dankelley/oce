@@ -16,4 +16,3 @@ in upper case and others in lower case
 \description{
 This is used in making labels for data names in some ctd functions
 }
-

@@ -12,7 +12,7 @@ test_that("as.ctd() with specified arguments, including salinity", {
           expect_equal(ctd[["pressure"]], ctd_ctd[["pressure"]])
           expect_equal(ctd_ctd[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
           expect_equal(ctd_ctd[["pressureType"]], "sea")
-          # check addition of a new column
+                                        # check addition of a new column
           fluo <- rep(1, length(ctd_ctd[["salinity"]]))
           ctd_ctd <- oceSetData(ctd_ctd, name="fluorescence", value=fluo,
                                 unit=list(unit=expression(mg/m^3), scale=""))
@@ -48,28 +48,43 @@ test_that("as.ctd() with a list", {
           expect_equal(ctd[["pressure"]], ctd_l[["pressure"]])
 })
 
-test_that("as.ctd() with an argo object", {
-          S2 <- argo[['salinity']] / 2
-          argo2 <- oceSetData(argo, "S2", S2, unit=list(unit=expression(), scale="PSS-78"))
-          sec <- as.section(argo2)
-          station1 <- sec[["station", 1]]
-          expect_true("S2" %in% names(station1@data))
-          expect_equal(list(unit=expression(),scale="PSS-78"), station1[["S2Unit"]])
+test_that("as.ctd() with an argo object, by profile", {
+          ctdProfile1 <- as.ctd(argo, profile=1)
+          ctdProfile2 <- as.ctd(argo, profile=2)
+          expect_equal(ctdProfile1[["salinity"]], argo[["salinity"]][,1])
+          expect_equal(ctdProfile2[["salinity"]], argo[["salinity"]][,2])
 })
 
 
 test_that("ctd subsetting and trimming", {
           ## NOTE: this is brittle to changes in data(ctd), but that's a good thing, becausing
           ## changing the dataset should be done only when really necessary, e.g. the July 2015
-          ## transition to use ITS-90 based temperature. ... and the April 2016
-          ## transition back to IPTS-68 (FIXME: do we *really* want this??)
+          ## transition to use ITS-90 based temperature (because IPTS-68 was not
+          ## yet handled by oce at that time), and the April 2016
+          ## transition back to IPTS-68 for this dataset, once oce could handle
+          ## both scales.
+          ##
+          ## 1. SBE trimming method
+          p <- c(rep(4, 1000),
+                 seq(4, 0.5, length.out = 50),
+                 seq(0.5, 100, length.out=1000),
+                 rep(100, 100),
+                 seq(100, 0, length.out=1000))
+          S <- 35-p/100
+          T <- 10+(100-p)/50
+          d <- as.ctd(S, T, p)
+          plotScan(d)
+          dt <- ctdTrim(d, method="sbe")
+          dt2 <- ctdTrim(d)
+          ##  2. trim by scan
           scanRange <- range(ctd[['scan']])
           newScanRange <- c(scanRange[1] + 20, scanRange[2] - 20)
           ctdTrimmed <- ctdTrim(ctd, "scan", parameters=newScanRange)
           expect_equal(ctdTrimmed[["scan"]][1:3], c(150,151,152))
           expect_equal(ctdTrimmed[["salinity"]][1:3], c(30.8882,30.9301,30.8928))
           expect_equal(ctdTrimmed[["pressure"]][1:3], c(6.198,6.437,6.770))
-          expect_equal(ctdTrimmed[["temperature"]][1:3], c(11.73438375, 11.63030873, 11.42455811))
+          ## next changed in Dec 21, 2016, when data(ctd) was switched to ITS-90, to match data(ctdRaw)
+          expect_equal(ctdTrimmed[["temperature"]][1:3], c(11.7315681715393,11.6275181215566,11.4218168700057))
           ## next is form a test for issue 669
           n <- length(ctd[["salinity"]])
           set.seed(669)
@@ -84,6 +99,14 @@ test_that("ctd subsetting and trimming", {
           expect_equal(ctdnewSubset[['scan']], ctdnewTrim[['scan']])
           expect_equal(length(ctdnewSubset[['scan']]), length(ctdnewSubset[['longitude']]))
 })
+
+test_that("ctd subsetting by index", {
+          data(ctd)
+          n <- 3                       # number of data to retain
+          ctdTrimmed <- ctdTrim(ctd, "index", parameters=c(1, n))
+          expect_equal(length(ctdTrimmed[["salinity"]]), n)
+})
+
 
 test_that("alter ctd metadata", {
           ctd[["longitude"]] <- 1
@@ -234,7 +257,7 @@ test_that("ODF file", {
           expect_equal(d4[["ship"]], "CCGS SIGMA T (Call Sign: unknown)")
           expect_equal(d4[["cruise"]], "Scotian Shelf")
           expect_equal(d4[["scientist"]], "Catherine Johnson")
-          #expect_null(d4[["waterDepth"]])
+                                        #expect_null(d4[["waterDepth"]])
           expect_equal(d4[["latitude"]], 44.267500)
           expect_equal(d4[["longitude"]], -63.317500)
           expect_equal(d4[['pressure']][1:3], c(0.5, 1.5, 2.0))
@@ -307,3 +330,59 @@ test_that("as.ctd(rsk) transfers information properly", {
           ctd <- as.ctd(rsk, pressureAtmospheric=1)
           expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']] - 1)
 })
+
+test_that("ctdFindProfiles", {
+          data(ctd)
+          S <- ctd[["salinity"]] 
+          T <- ctd[["temperature"]]
+          p <- ctd[["pressure"]]
+          n <- 10                      # number of fake profiles
+          SS <- rep(c(S, rev(S)), n)
+          TT <- rep(c(T, rev(T)), n)
+          pp <- rep(c(p, rev(p)), n)
+          towyow <- as.ctd(SS, TT, pp, latitude=ctd[["latitude"]], longitude=ctd[["longitude"]])
+          casts <- ctdFindProfiles(towyow)
+          expect_equal(length(casts), n)
+})
+
+test_that("original names pair with final names", {
+          ## This should help to ensure that bug 1141 does not return
+          f <- system.file("extdata", "d201211_0011.cnv", package="oce")
+          d <- read.oce(f)
+          expect_equal(names(d[["data"]]),
+                       c("scan", "pressure", "depth", "temperature",
+                         "temperature2", "conductivity", "conductivity2",
+                         "oxygenRaw", "beamTransmission", "v1", "fluorescence",
+                         "v0", "fluorescence2", "v4", "upoly", "par", "spar",
+                         "altimeter", "oxygen", "salinity", "salinity2",
+                         "theta", "sigmaTheta", "soundSpeed", "nbin", "flag"))
+          dno <- d[["dataNamesOriginal"]]
+          expect_equal(dno$scan, "scan")
+          expect_equal(dno$pressure, "prDM")
+          expect_equal(dno$depth, "depSM")
+          expect_equal(dno$temperature, "t090C")
+          expect_equal(dno$temperature2, "t190C")
+          expect_equal(dno$conductivity, "c0mS/cm")
+          expect_equal(dno$conductivity2, "c1mS/cm")
+          expect_equal(dno$oxygenRaw, "sbeox0V")
+          expect_equal(dno$beamTransmission, "CStarTr0")
+          expect_equal(dno$v1, "v1")
+          expect_equal(dno$fluorescence, "flSP")
+          expect_equal(dno$v0, "v0")
+          expect_equal(dno$fluorescence2, "wetCDOM")
+          expect_equal(dno$v4, "v4")
+          expect_equal(dno$upoly, "upoly0")
+          expect_equal(dno$par, "par")
+          expect_equal(dno$spar, "spar")
+          expect_equal(dno$altimeter, "altM")
+          expect_equal(dno$oxygen, "sbeox0ML/L")
+          expect_equal(dno$salinity, "sal00")
+          expect_equal(dno$salinity2, "sal11")
+          expect_equal(dno$theta, "potemp090C")
+          ## nexttest is commented out because it may not work on windows
+          expect_equal(dno$sigmaTheta, "sigma-\xe900")
+          expect_equal(dno$soundSpeed, "svCM")
+          expect_equal(dno$nbin, "nbin")
+          expect_equal(dno$flag, "flag")
+})
+

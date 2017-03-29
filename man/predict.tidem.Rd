@@ -31,7 +31,7 @@ library(oce)
 data(sealevelTuktoyaktuk)
 time <- sealevelTuktoyaktuk[["time"]]
 elevation <- sealevelTuktoyaktuk[["elevation"]]
-oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2,6))
+oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2, 6))
 tide <- tidem(sealevelTuktoyaktuk)
 lines(time, elevation - predict(tide), col="red")
 abline(h=0, col="red")
@@ -52,9 +52,6 @@ legend=c("data","model"),lwd=1)
 }
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{[[<-,tidem-method}},
@@ -64,4 +61,6 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
   \code{\link{tidem}}
 }
-
+\author{
+Dan Kelley
+}

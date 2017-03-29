@@ -28,6 +28,7 @@ Create a coordinate reference string (CRS), suitable for use as a
 with the results being very likely to change through the autumn of 2016,
 guided by real-world usage.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -46,9 +47,6 @@ plot(pacific, proj=oceCRS("North Pacific"), span=12000, col=NULL)
 plot(pacific, proj=oceCRS("South Pacific"), span=12000, col=NULL)
 }
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},
@@ -63,4 +61,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapText}}, \code{\link{mapTissot}},
   \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley
+}

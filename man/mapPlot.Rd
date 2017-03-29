@@ -27,7 +27,7 @@ longitude lines that are shown (and possibly
 labelled on the axes). In some cases, e.g. for polar views,
 this can lead to odd results, with some expected longitude lines
 being left out of the plot.  Altering \code{longitudelim} can
-often help in such cases, e.g. \code{longitudelim=c(-180,180)} will
+often help in such cases, e.g. \code{longitudelim=c(-180, 180)} will
 force the drawing of lines all around the globe.}
 
 \item{latitudelim}{optional vector of length two, indicating
@@ -63,7 +63,7 @@ most projections this works quite well.  If not, one may set
 values in the lower and left margin, respectively.  This may not work well
 for some projections or scales.}
 
-\item{cex}{character expansion factor for plot symbols, 
+\item{cex}{character expansion factor for plot symbols,
 used if \code{type='p'} or any other value that yields symbols.}
 
 \item{cex.axis}{axis-label expansion factor (see \code{\link{par}}).}
@@ -90,7 +90,7 @@ will be used.}
 forms. First, it may be a character string in the "CRS" format that is
 used by the \code{rgdal} package (and in much of modern computer-based
 cartography). For example, \code{projection="+proj=merc"} specifies a
-Mercator projection. The second format is the output from 
+Mercator projection. The second format is the output from
 \code{\link[sp]{CRS}} in the \CRANpkg{sp} package, which is an object
 with a slot named \code{projarg} that gets used as a projection string.
 See \dQuote{Details}.}
@@ -346,6 +346,7 @@ meridians and (c) inaccurate filling of Antarctica in some projections.
 Generally, issues are tackled first for commonly used projections, such as
 those used in the examples.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -356,13 +357,13 @@ data(coastlineWorld)
 # for whole-globe views, below shown in a Pacific-focus view.
 # Note that filling is not employed when the prime meridian
 # is shifted, because this causes a problem with Antarctica
-par(mfrow=c(2,1), mar=c(3, 3, 1, 1))
+par(mfrow=c(2, 1), mar=c(3, 3, 1, 1))
 mapPlot(coastlineWorld, projection="+proj=moll", col='gray')
 mtext("Mollweide", adj=1)
 cl180 <- coastlineCut(coastlineWorld, lon_0=-180)
 mapPlot(cl180, projection="+proj=moll +lon_0=-180")
 mtext("Mollweide", adj=1)
-par(mfrow=c(1,1))
+par(mfrow=c(1, 1))
 
 # Example 2.
 # Orthographic projections resemble a globe, making them attractive for
@@ -379,7 +380,7 @@ mtext("Orthographic", adj=1)
 # recommended by [1], page 95, for regions of large east-west extent
 # away from the equator, here illustrated for the USA and Canada.
 par(mar=c(3, 3, 1, 1))
-mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35,60),
+mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35, 60),
         projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
 mtext("Lambert conformal", adj=1)
 
@@ -390,7 +391,7 @@ mtext("Lambert conformal", adj=1)
 # second longitudelim is 180 plus the first; this uses image points "over"
 # the pole.
 par(mar=c(3, 3, 1, 1))
-mapPlot(coastlineWorld, longitudelim=c(-130,50), latitudelim=c(70,110),
+mapPlot(coastlineWorld, longitudelim=c(-130, 50), latitudelim=c(70, 110),
         proj="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
 mtext("Stereographic", adj=1)
 
@@ -414,9 +415,6 @@ for (i in ilon) {
 dev.off()
 }
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \references{
 1. Snyder, John P., 1987.  Map Projections: A Working Manual.  USGS
 Professional Paper: 1395 (available at
@@ -434,8 +432,13 @@ prior to Nov 16, 2016, but was found to fail on that date.)
 5. The \code{PROJ.4} website is \url{http://trac.osgeo.org/proj}, and it is
 the place to start to learn about the code.
 
-6. \code{PROJ.4} projection details are at
-\url{http://www.remotesensing.org/geotiff/proj_list/}.
+6. \code{PROJ.4} projection details were once at
+\code{http://www.remotesensing.org/geotiff/proj_list/} but it was 
+discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
+seems to have been significant reorganization of websites related to this.
+The base website seems to be \url{https://trac.osgeo.org/geotiff/} and that
+lists only what is called an unofficial listing, on the wayback web-archiver server
+\url{http://web.archive.org/web/20160802172057/http://www.remotesensing.org/geotiff/proj_list/}
 
 7. A gallery of map plots is provided at
 \url{http://dankelley.github.io/r/2015/04/03/oce-proj.html}.
@@ -465,4 +468,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapTissot}}, \code{\link{oceCRS}},
   \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

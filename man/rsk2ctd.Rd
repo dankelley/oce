@@ -16,7 +16,9 @@ that is subtracted from the pressure in \code{object} before storing it in the r
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \description{
 A new \code{ctd} object is assembled from the contents of the \code{rsk} object.
@@ -25,16 +27,15 @@ The data and metadata are mostly unchanged, with an important exception: the
 instruments measure total pressure, not sea pressure; see \dQuote{Details}.
 }
 \details{
-The \code{pressureType} element of the 
+The \code{pressureType} element of the
 \code{metadata} of \code{rsk} objects defines the pressure type, and this controls
 how pressure is set up in the returned object. If \code{object@metadata$pressureType}
 is \code{"absolute"} (or \code{NULL}) then the resultant pressure will be adjusted
 to make it into \code{"sea"} pressure. To do this, the value of
 \code{object@metadata$pressureAtmospheric} is inspected. If this is present, then
-it is subtracted from \code{pressure}. If this is missing, then 
+it is subtracted from \code{pressure}. If this is missing, then
 standard pressure (10.1325 dbar) will be subtracted. At this stage, the
-pressure should be near zero at the ocean surface, but some additional adjustment 
-might be necessary, and this may be indicated by setting the argument \code{pressureAtmospheric} to 
+pressure should be near zero at the ocean surface, but some additional adjustment
+might be necessary, and this may be indicated by setting the argument \code{pressureAtmospheric} to
 a non-zero value to be subtracted from pressure.
 }
-

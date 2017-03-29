@@ -97,9 +97,6 @@ The panels are controlled by the \code{which} argument, as follows.
   plot(cm)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
@@ -130,4 +127,6 @@ Other things related to \code{cm} data: \code{\link{[[,cm-method}},
   \code{\link{read.cm}}, \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
-
+\author{
+Dan Kelley
+}

@@ -57,4 +57,3 @@ i <- plot(echosounder)
 oce.grid(i, col='pink', lty=1)
 
 }
-

@@ -39,7 +39,7 @@ test_that("a bioargo dataset", {
               expect_equal(a[["id"]][1], "5904179")
               expect_equal(dim(a[["pressure"]]), c(499,2))
               expect_equal(sort(names(a@data)),
-                           c("bbp700", "bbp700Adjusted", "bbp700AdjustedError",
+                           c("BBP700", "BBP700Adjusted", "BBP700AdjustedError",
                              "betaBackscattering700", "bphaseOxygen",
                              "chlorophyllA", "chlorophyllAAdjusted",
                              "chlorophyllAAdjustedError",
@@ -47,7 +47,7 @@ test_that("a bioargo dataset", {
                              "longitude", "nitrate", "nitrateAdjusted",
                              "nitrateAdjustedError", "oxygen", "oxygenAdjusted",
                              "oxygenAdjustedError", "pressure",
-                             "temperatureeratureOxygen", "time",
+                             "temperatureOxygen", "time",
                              "UVIntensityDarkNitrate", "UVIntensityNitrate"))
           }
 })

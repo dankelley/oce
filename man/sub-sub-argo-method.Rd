@@ -73,6 +73,7 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \examples{
 data(argo)
 dim(argo[['temperature']])
@@ -103,10 +104,10 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
 
 Other things related to \code{argo} data: \code{\link{[[<-,argo-method}},
   \code{\link{argo-class}}, \code{\link{argoGrid}},
-  \code{\link{argo}}, \code{\link{as.argo}},
+  \code{\link{argoNames2oceNames}}, \code{\link{argo}},
+  \code{\link{as.argo}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
-

@@ -30,10 +30,9 @@ This function is little more than a thin wrapper around
 are omitted here, making for a file format that is more conventional in
 Oceanography.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 \code{\link[utils]{write.table}}, which does the actual work.
 }
-
+\author{
+Dan Kelley
+}

@@ -40,9 +40,7 @@ code is getting close to working with depth contours.  This should be
 handled more internally, and a new object for depth contours should be
 constructed, of which coastlines could be a subset.
 }
-\author{
-Dan Kelley
-}
+
 \references{
 \itemize{
 \item 1. The ``shapefile'' format is described in \emph{ESRI Shapefile
@@ -67,4 +65,6 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
-
+\author{
+Dan Kelley
+}

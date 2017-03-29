@@ -27,9 +27,6 @@ it will be stored in numeric form, not raw form, and therefore
 it will require much more storage than data read with
 \code{\link{read.landsat}}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 The documentation for \code{\link{landsat-class}} explains the
 structure of landsat objects, and also outlines the other functions dealing
@@ -41,7 +38,9 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 }
+\author{
+Dan Kelley
+}
 \concept{
 satellite
 }
-

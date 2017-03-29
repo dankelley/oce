@@ -24,9 +24,9 @@ distinct; if values are out of order, they (and \code{z}) will be
 transformed to put them in order.
 ordered in a matching way).  \emph{Mode 2.}
 If \code{z} is provided but not \code{x} and \code{y}, then the latter
-are constructed to 
+are constructed to
 indicate the indices of the matrix, in contrast
-to the range of 0 to 1, as is the case for \code{\link{image}}.  
+to the range of 0 to 1, as is the case for \code{\link{image}}.
 \emph{Mode 3.} If
 \code{x} is a list, its components \code{x$x} and \code{x$y} are used
 for \code{x} and \code{y}, respectively. If the list has component
@@ -48,7 +48,7 @@ description here.)}
 If provided, \code{zlim} may take several forms. First, it may be a pair
 of numbers that specify the limits for the colour scale.  Second,
 it could be the string \code{"histogram"}, to yield a flattened
-histogram (i.e. to increase contrast). Third, it could be the 
+histogram (i.e. to increase contrast). Third, it could be the
 string \code{"symmetric"}, to yield limits that are symmetric
 about zero, which can be helpful in drawing velocity fields,
 for which a zero value has a particular meaning (in which case,
@@ -78,7 +78,7 @@ be represented by a pixel in the image. \strong{Case 2 (the default).}
 If \code{decimate=TRUE}, then decimation will be done
 in the horizontal or vertical direction (or both) if the length of the
 corresponding edge of the \code{z} matrix exceeds 800. (This also creates
-a warning message.) The decimation 
+a warning message.) The decimation
 factor is computed as the integet just below the ratio of \code{z} dimension
 to 400. Thus, no decimation is done if the dimension is less than 800,
 but if the dimension s between 800 and 1199, only every second grid
@@ -217,7 +217,7 @@ A list is silently returned, containing \code{xat} and \code{yat},
 \description{
 Plot an image with a colour palette, in a way that does not conflict with
 \code{\link{par}(mfrow)} or \code{\link{layout}}.  To plot just a palette,
-e.g. to get an x-y plot with points coloured according to a palette, use 
+e.g. to get an x-y plot with points coloured according to a palette, use
 \code{\link{drawPalette}} and then draw the main diagram.
 }
 \details{
@@ -242,7 +242,7 @@ here only the first is permitted.)
 On OSX computers, some versions of RStudio produce a margin-size error when
 \code{imagep} is called. The problem is not isolated to \code{imagep};
 it occurs with other packages, and a web
-search reveals repeated bug reports submitted to RStudio. 
+search reveals repeated bug reports submitted to RStudio.
 The problem seems to come and go, as RStudio evolves. In the
 \code{imagep} case, things worked properly for
 RStudio version 0.99.451 (released late in 2015), but not
@@ -251,16 +251,17 @@ in 2016). A bug report was sent to RStudio in
 January 2016, with a minimal example that boiled the issue
 down to a few lines of basic R code (not using \code{imagep}
 or even \code{oce}).
-Although communications with RStudio gave 
+Although communications with RStudio gave
 reason for optimism, the problem persisted in version 0.99.892,
 released March 4. New versions of RStudio will be checked as they
 come out, with status updates here.
 Pending an RStudio solution, users can avoid the error
-simply by opening 
+simply by opening
 a new (and separate) plotting window with \code{\link{dev.new}}.
 In doing so, they may find that this is preferable generally,
 given the limitations of one-window interfaces.
 }
+
 \examples{
 library(oce)
 
@@ -290,11 +291,10 @@ cm <- colormap(name="gmt_globe")
 imagep(topoWorld, colormap=cm)
 
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \seealso{
 This uses \code{\link{drawPalette}}, and is used by \code{\link{plot,adp-method}},
 \code{\link{plot,landsat-method}}, and other image-generating functions.
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

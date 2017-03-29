@@ -56,7 +56,7 @@ for January, February, etc.
 
 \dontrun{
 library(oce)
-par(mfrow=c(2,1))
+par(mfrow=c(2, 1))
 # 1. AO, Arctic oscillation
 ao <- read.index("http://www.esrl.noaa.gov/psd/data/correlation/ao.data")
 aorecent <- subset(ao, t > as.POSIXct("2000-01-01"))
@@ -67,11 +67,10 @@ soirecent <- subset(soi, t > as.POSIXct("2000-01-01"))
 oce.plot.ts(soirecent$t, soirecent$index)
 }
 }
-\author{
-Dan Kelley
-}
 \references{
 See \url{http://www.esrl.noaa.gov/psd/data/climateindices/list/}
 for a list of indices.
 }
-
+\author{
+Dan Kelley
+}

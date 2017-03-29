@@ -25,7 +25,7 @@ as \code{\link{as.ctd}} to construct specialized oce sub-classes.
 
 \code{as.oce} creates an oce object from data contained within its
 first argument, which may be a list, a data frame, or an object
-of \code{\link{oce-class}}.  (In the last case, \code{x} is 
+of \code{\link{oce-class}}.  (In the last case, \code{x} is
 simply returned, without modification.)
 
 If \code{x} is a list containing items named \code{longitude} and
@@ -36,18 +36,18 @@ If \code{x} is a list created by \code{read_odf} from the (as
 yet unreleased) ODF package developed by the Bedford Institute of
 Oceanography, then \code{\link{ODF2oce}} is called (with
 no arguments other than the first) to calculate a return value.
-If the sub-class inference made by \code{\link{ODF2oce}} is 
+If the sub-class inference made by \code{\link{ODF2oce}} is
 incorrect, users should call that function directly, specifying
 a value for its \code{coerce} argument.
 
 If \code{x} has not been created by \code{read_odf}, then the names
 of the items it contains are examined, and used to try to infer
 the proper return value.  There
-are only a few cases (although more may be added if there is 
+are only a few cases (although more may be added if there is
 sufficient user demand). The cases are as follows.
 \itemize{
 
-\item If \code{x} contains items named \code{temperature}, 
+\item If \code{x} contains items named \code{temperature},
 \code{pressure} and either \code{salinity} or \code{conductivity},
 then an object of type \code{\link{ctd-class}} will be returned.
 
@@ -56,4 +56,3 @@ but no other columns, then an object of class \code{\link{coastline-class}}
 is returned.
 }
 }
-

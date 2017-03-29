@@ -36,12 +36,12 @@ method can locates the requested item, \code{NULL} is returned.
 }
 \section{Details of the specialized section method}{
 
-If \code{i} is the string \code{"station"}, then the method 
-will return a \code{\link{list}} of 
-\code{\link{ctd-class}} objects holding the station data. If \code{j} 
+If \code{i} is the string \code{"station"}, then the method
+will return a \code{\link{list}} of
+\code{\link{ctd-class}} objects holding the station data. If \code{j}
 is also given and is an integer, then just the j-th station in the section is returned.
 
-If \code{i} is \code{"station ID"}, then the IDs of the stations in the 
+If \code{i} is \code{"station ID"}, then the IDs of the stations in the
 section are returned.
 
 If \code{i} is \code{"dynamic height"}, then an estimate of dynamic
@@ -54,13 +54,13 @@ If \code{i} is \code{"depth"}, then a vector containing the depths
 of the stations is returned.
 
 If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
-the potential temperatures of all the stations are returned in one 
+the potential temperatures of all the stations are returned in one
 vector.  Similarly, \code{"spice"} returns the property known
 as spice, using \code{\link{swSpice}}.
 
 If \code{i} is a string ending with \code{"Flag"}, then the characters
 prior to that ending are taken to be the name of a variable contained
-within the stations in the section. If this flag is available in 
+within the stations in the section. If this flag is available in
 the first station of the section, then the flag values are looked
 up for every station.
 
@@ -108,16 +108,29 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \examples{
 data(section)
 length(section[["latitude"]])
 length(section[["latitude", "byStation"]])
 
-}
-\author{
-Dan Kelley
+data(section)
+length(section[["latitude"]])
+length(section[["latitude", "byStation"]])
+
 }
 \seealso{
+Other things related to \code{section} data: \code{\link{[[<-,section-method}},
+  \code{\link{as.section}},
+  \code{\link{handleFlags,section-method}},
+  \code{\link{plot,section-method}},
+  \code{\link{read.section}}, \code{\link{section-class}},
+  \code{\link{sectionAddStation}},
+  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
+  \code{\link{sectionSort}}, \code{\link{section}},
+  \code{\link{subset,section-method}},
+  \code{\link{summary,section-method}}
+
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
@@ -139,16 +152,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
-
-Other things related to \code{section} data: \code{\link{[[<-,section-method}},
-  \code{\link{as.section}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{read.section}}, \code{\link{section-class}},
-  \code{\link{sectionAddStation}},
-  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
-  \code{\link{sectionSort}}, \code{\link{section}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
 }
-
+\author{
+Dan Kelley
+}

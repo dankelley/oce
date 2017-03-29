@@ -30,9 +30,6 @@ azimuth and altitude.
 The method is taken from equations 8.5 and 8.6 of [1], or, equivalently,
 from equations 12.5 and 12.6 of [2].
 }
-\author{
-Dan Kelley, based on formulae in [1] and [2].
-}
 \references{
 1. Meeus, Jean, 1982. Astronomical formulae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages.
@@ -46,4 +43,6 @@ Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
   \code{\link{julianDay}}, \code{\link{moonAngle}},
   \code{\link{siderealTime}}, \code{\link{sunAngle}}
 }
-
+\author{
+Dan Kelley, based on formulae in [1] and [2].
+}

@@ -118,7 +118,7 @@ Creates a multi-panel summary plot of data measured by an ADV.
 The panels are controlled by the \code{which} argument.  (Note the
 gaps in the sequence, e.g. 4 and 8 are not used.)
 
-\itemize{ 
+\itemize{
     \item \code{which=1} to \code{3} (or \code{"u1"} to \code{"u3"})
 
     yield timeseries of the first, second, and third components of
@@ -185,7 +185,7 @@ gaps in the sequence, e.g. 4 and 8 are not used.)
     timeseries, if voltage exists in the dataset.
 }
 In addition to the above, there are some groupings defined:
-\itemize{ 
+\itemize{
     \item \code{which="velocity"} equivalent to \code{which=1:3} (three velocity components)
     \item \code{which="amplitude"} equivalent to \code{which=5:7} (three amplitude components)
     \item \code{which="backscatter"} equivalent to \code{which=9:11} (three backscatter components)
@@ -198,9 +198,6 @@ library(oce)
 data(adv)
 plot(adv)
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 The documentation for \code{\link{adv-class}} explains the structure
@@ -242,4 +239,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

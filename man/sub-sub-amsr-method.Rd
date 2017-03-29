@@ -17,7 +17,7 @@
 \item{...}{Optional additional information (ignored).}
 }
 \value{
-In all cases, the returned value is a matrix with 
+In all cases, the returned value is a matrix with
 with \code{NA} values inserted at locations where
 the raw data equal \code{as.raw(251:255)}, as explained
 in \dQuote{Details}.
@@ -70,7 +70,7 @@ because the idea is that this syntax (as opposed to specifying
 \code{"SSTDay"}) is a request to try to find good
 data by looking at both the Day and Night measurements. The scheme
 employed is quite detailed. Denote by "A" the raw value of the desired field
-in the daytime pass, and by "B" the corresponding value in the 
+in the daytime pass, and by "B" the corresponding value in the
 nighttime pass. If either A or B is 255, the code for land, then the
 result will be 255. If A is 254 (i.e. there is no observation),
 then B is returned, and the reverse holds also. Similarly, if either
@@ -116,6 +116,7 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \examples{
 \dontrun{
 # Show a daytime SST image, along with an indication of whether
@@ -124,7 +125,7 @@ library(oce)
 earth <- read.amsr("f34_20160102v7.2.gz")
 fclat <- subset(earth , 35 <= latitude & latitude <= 55)
 fc <- subset(fclat , -70 <= longitude & longitude <= -30)
-par(mfrow=c(2,1))
+par(mfrow=c(2, 1))
 plot(fc, "SSTDay")
 rainy <- fc[["SSTDay", "raw"]] == as.raw(0xfb)
 lon <- fc[["longitude"]]
@@ -133,9 +134,6 @@ asp <- 1 / cos(pi*mean(lat)/180)
 imagep(lon, lat, rainy, asp=asp)
 mtext("red: too rainy to sense SSTDay")
 }
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
@@ -160,4 +158,6 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 }
-
+\author{
+Dan Kelley
+}

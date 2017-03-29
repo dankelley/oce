@@ -13,7 +13,9 @@ ctdUpdateHeader(x, debug = FALSE)
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 A new \code{\link{ctd-class}} object.
@@ -33,9 +35,6 @@ ctd[["pressure"]] <- ctd[["pressure"]] + 3
 ctdNew <- ctdUpdateHeader(ctd)
 
 }
-\author{
-Dan Kelley
-}
 \references{
 The Seabird CTD instrument is described at
   \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
@@ -43,6 +42,8 @@ The Seabird CTD instrument is described at
 \seealso{
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdAddColumn}}, \code{\link{mapMeridians}},
-  \code{\link{mapZones}}
+  \code{\link{mapZones}}, \code{\link{oce.as.POSIXlt}}
 }
-
+\author{
+Dan Kelley
+}

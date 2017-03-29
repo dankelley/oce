@@ -9,7 +9,7 @@ In addition to the usual extraction of elements by name, some shortcuts
 are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
 for the other velocity components. The \code{a} and \code{q}
 data can be retrieved in \code{\link{raw}} form or numeric
-form (see examples). The coordinate system may be 
+form (see examples). The coordinate system may be
 retrieved with e.g. \code{x[["coordinate"]]}.}
 \usage{
 \S4method{[[}{adp}(x, i, j, ...)
@@ -80,6 +80,7 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \examples{
 data(adp)
 # Tests for beam 1, distance bin 1, first 5 observation times
@@ -88,9 +89,6 @@ adp[["a"]][1:5,1,1]
 adp[["a", "numeric"]][1:5,1,1]
 as.numeric(adp[["a"]][1:5,1,1]) # same as above
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-method}},
@@ -116,7 +114,8 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adv-met
   \code{\link{[[<-,adv-method}}
 
 Other things related to \code{adp} data: \code{\link{[[<-,adp-method}},
-  \code{\link{adp-class}}, \code{\link{adp}},
+  \code{\link{adp-class}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
@@ -134,4 +133,6 @@ Other things related to \code{adp} data: \code{\link{[[<-,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

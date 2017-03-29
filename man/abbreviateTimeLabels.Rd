@@ -18,11 +18,10 @@ None.
 \description{
 Abbreviate a vector of times by removing commonalities (e.g. year)
 }
-\author{
-Dan Kelley, with help from Clark Richards
-}
 \seealso{
 This is used by various functions that draw time labels on axes,
 e.g.  \code{\link{plot,adp-method}}.
 }
-
+\author{
+Dan Kelley, with help from Clark Richards
+}

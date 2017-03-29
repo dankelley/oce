@@ -7,8 +7,9 @@
 moonAngle(t, longitude = 0, latitude = 0, useRefraction = TRUE)
 }
 \arguments{
-\item{t}{time, a POSIXt object (must be in timezone UTC), or a numeric value
-that corresponds to such a time.}
+\item{t}{time, a POSIXt object (converted to timezone \code{"UTC"},
+if it is not already in that timezone), or a numeric value that
+corresponds to such a time.}
 
 \item{longitude}{observer longitude in degrees east}
 
@@ -63,6 +64,7 @@ on Meeus [1982], reproduces the values provided in example 45.a of Meeus
 [1991] to 4 significant digits, e.g. with all angles matching to under 2
 minutes of arc.
 }
+
 \examples{
 
 library(oce)
@@ -90,9 +92,6 @@ for (i in 1:3) {
 }
 
 }
-\author{
-Dan Kelley, based on formulae in Meeus [1982].
-}
 \references{
 Meeus, Jean, 1982.  Astronomical formulae for calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages.
@@ -109,4 +108,6 @@ Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
   \code{\link{julianDay}}, \code{\link{siderealTime}},
   \code{\link{sunAngle}}
 }
-
+\author{
+Dan Kelley, based on formulae in Meeus [1982].
+}

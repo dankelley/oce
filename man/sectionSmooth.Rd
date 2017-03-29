@@ -54,7 +54,7 @@ data.  Although smoothing may be desirable to produce aesthetically-pleasing
 plots, it can also introduce artifacts that can lead to erroneous conclusions.
 The prudent analyst starts by comparing plots of the raw data with plots of the
 smoothed data.
-    
+
 For \code{method="spline"}, the section is smoothed using
 \code{\link{smooth.spline}} on individual pressure levels, with any parameters
 listed in \code{parameters} being passed to that function.  If \code{df} is not
@@ -80,9 +80,6 @@ plot(gss2)
 }
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
@@ -96,4 +93,6 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }
-
+\author{
+Dan Kelley
+}

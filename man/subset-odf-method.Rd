@@ -8,7 +8,7 @@
 \S4method{subset}{odf}(x, subset, ...)
 }
 \arguments{
-\item{x}{a \code{odf} object.}
+\item{x}{an \code{odf} object.}
 
 \item{subset}{a condition to be applied to the \code{data} portion of
 \code{x}.  See \sQuote{Details}.}
@@ -21,14 +21,15 @@ A new \code{odf} object.
 \description{
 This function is somewhat analogous to \code{\link{subset.data.frame}}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
   \code{\link{plot,odf-method}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
   \code{\link{summary,odf-method}}
 }
-
+\author{
+Dan Kelley
+}

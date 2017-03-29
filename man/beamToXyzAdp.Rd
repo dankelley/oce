@@ -9,8 +9,13 @@ beamToXyzAdp(x, debug = getOption("oceDebug"))
 \arguments{
 \item{x}{an object of class \code{"adp"}.}
 
-\item{debug}{a debugging flag, 0 for no debugging, and higher values for
-more and more debugging.}
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 An object with the first 3 velocitiy indices having been altered to
@@ -38,7 +43,7 @@ and \eqn{B_4}{B4} are used to calculate velocity components in a cartesian
 system referenced to the instrument using the following formulae:
 \eqn{u=ca(B_1-B_2)}{u=c*a*(B1-B2)}, \eqn{v=ca(B_4-B_3)}{v=c*a*(B4-B3)},
 \eqn{w=-b(B_1+B_2+B_3+B_4)}{w=-b*(B1+B2+B3+B4)}, and an estimate of the
-error in velocity is calculated using \eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1 +
+error in velocity is calculated using \eqn{e=d(B_1+B_2-B_3-B_4)}{e=d*(B1+
 B2 - B3 - B4)}
 
 (Note that the multiplier on \eqn{e}{e} is subject to discussion; RDI
@@ -50,9 +55,6 @@ In the above, \eqn{c=1}{c=1} if the beam geometry is convex, and
 \eqn{b=1/(4\cos\theta)}{b=1/(4*cos(theta))} and
 \eqn{d=a/\sqrt{2}}{d=a/sqrt(2)}, where \eqn{\theta}{theta} is the angle the
 beams make to the instrument \dQuote{vertical}.
-}
-\author{
-Dan Kelley
 }
 \references{
 1. R D Instruments, 1998. \emph{ADP Coordinate Transformation, formulas and
@@ -68,11 +70,12 @@ objects of class \code{"adp"}.
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
-  \code{\link{adp}}, \code{\link{as.adp}},
-  \code{\link{beamName}}, \code{\link{beamToXyzAdv}},
-  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
-  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
+  \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
+  \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
+  \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
+  \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -85,4 +88,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

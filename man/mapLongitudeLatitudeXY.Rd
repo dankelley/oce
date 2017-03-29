@@ -19,7 +19,7 @@ be inferred from the first argument.}
 A list containing \code{x} and \code{y}.
 }
 \description{
-Find (x,y) values corresponding to (longitude, latitude) values, using the
+Find (x, y) values corresponding to (longitude, latitude) values, using the
 present projection.
 }
 \details{
@@ -29,15 +29,12 @@ This is mainly a wrapper around \code{\link{lonlat2map}}.
 \dontrun{
 library(oce)
 data(coastlineWorld)
-par(mfrow=c(2,1), mar=rep(2, 4))
+par(mfrow=c(2, 1), mar=rep(2, 4))
 mapPlot(coastlineWorld, projection="+proj=moll") # sets a projection
 xy <- mapLongitudeLatitudeXY(coastlineWorld)
 plot(xy, type='l', asp=1)
 }
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 A map must first have been created with \code{\link{mapPlot}}.
@@ -54,4 +51,6 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapTissot}}, \code{\link{oceCRS}},
   \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
 }
-
+\author{
+Dan Kelley
+}

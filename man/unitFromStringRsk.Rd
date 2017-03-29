@@ -26,4 +26,3 @@ Other functions that interpret variable names and units from headers: \code{\lin
   \code{\link{unitFromString}},
   \code{\link{woceNames2oceNames}}
 }
-

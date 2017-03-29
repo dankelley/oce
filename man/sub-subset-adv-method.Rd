@@ -5,7 +5,7 @@
 \alias{[[<-,adv-method}
 \title{Replace Parts of an ADV Object}
 \usage{
-\S4method{[[}{adv}(x, i, j) <- value
+\S4method{[[}{adv}(x, i, j, ...) <- value
 }
 \arguments{
 \item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
@@ -14,9 +14,9 @@
 
 \item{j}{Optional additional information on the \code{i} item.}
 
-\item{value}{The value to be inserted into \code{x}.}
-
 \item{...}{Optional additional information (ignored).}
+
+\item{value}{The value to be inserted into \code{x}.}
 }
 \description{
 Replace Parts of an ADV Object
@@ -85,9 +85,7 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
-\author{
-Dan Kelley
-}
+
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
@@ -125,4 +123,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

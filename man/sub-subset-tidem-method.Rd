@@ -5,7 +5,7 @@
 \alias{[[<-,tidem-method}
 \title{Replace Parts of a Tidem Object}
 \usage{
-\S4method{[[}{tidem}(x, i, j) <- value
+\S4method{[[}{tidem}(x, i, j, ...) <- value
 }
 \arguments{
 \item{x}{An \code{tidem} object, i.e. inheriting from \code{\link{tidem-class}}}
@@ -14,9 +14,9 @@
 
 \item{j}{Optional additional information on the \code{i} item.}
 
-\item{value}{The value to be placed into \code{x}, somewhere.}
-
 \item{...}{Optional additional information (ignored).}
+
+\item{value}{The value to be placed into \code{x}, somewhere.}
 }
 \description{
 The \code{[[<-} method works for all \code{oce} objects, i.e.
@@ -81,4 +81,3 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
   \code{\link{tidem}}
 }
-

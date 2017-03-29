@@ -17,9 +17,6 @@ however, this last function is no equal to decent record-keeping at sea.  Data
 may be retrieved with \code{\link{[[,rsk-method}} or replaced with
 \code{\link{[[<-,rsk-method}}.
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \references{
 1. \href{https://www.rbr-global.com/products}{RBR website: www.rbr-global.com/products}
 }
@@ -42,4 +39,6 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
   \code{\link{rsk}}, \code{\link{subset,rsk-method}},
   \code{\link{summary,rsk-method}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

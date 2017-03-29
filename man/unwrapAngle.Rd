@@ -31,7 +31,7 @@ true <- 355
 a <- true + rnorm(100, sd=10)
 a <- ifelse(a > 360, a - 360, a)
 a2 <- unwrapAngle(a)
-par(mar=c(3,3,5,3))
+par(mar=c(3, 3, 5, 3))
 hist(a, breaks=360)
 abline(v=a2$mean, col="blue", lty="dashed")
 abline(v=true, col="blue")
@@ -42,4 +42,3 @@ mtext("mean", at=mean(a), side=3, col="red")
 \author{
 Dan Kelley
 }
-

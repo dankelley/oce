@@ -6,7 +6,7 @@ test_that("biosonics", {
               expect_equal("single-beam", e[["beamType"]])
               expect_equal(c(308, 3399), dim(e[["a"]]))
               summary(e)
-              ## plot(e)
+              plot(e)
           }
 })
 

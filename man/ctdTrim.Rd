@@ -24,7 +24,9 @@ section, unless \code{\link{ctdDecimate}} will be used, which will remove the in
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 An object of \code{\link{ctd-class}}, with data having been trimmed in some way.
@@ -44,7 +46,7 @@ This handles the case of pressure-binned data. However, if the pressure differen
 varies, a variety of approaches are taken to trimming the dataset.
 
 \itemize{
-  \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to only data for
+  \item{If \code{method[1]} is \code{"downcast"} then an attempt is made to keep only data for
   which the CTD is descending.  This is done in stages, with variants based on \code{method[2]}, if
   supplied.  \emph{Step 1.} The pressure data are despiked with a smooth() filter with method "3R".
   This removes wild spikes that arise from poor instrument connections, etc.  \emph{Step 2.} If no
@@ -85,8 +87,8 @@ varies, a variety of approaches are taken to trimming the dataset.
   pre-cast pressure minimum must be less than the \code{minSoak}
   value. The default values of \code{minSoak} and \code{maxSoak}
   are 1 and 20 dbar, respectively.}
-  
-  \item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
+
+\item{If \code{method="index"} or \code{"scan"}, then each column of data is subsetted according to the
   value of \code{parameters}. If the latter is a logical vector of length matching data column
   length, then it is used directly for subsetting. If \code{parameters} is a numerical vector with
   two elements, then the index or scan values that lie between \code{parameters[1]}
@@ -129,9 +131,6 @@ plot(trimmed)
 }
 
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \references{
 The Seabird CTD instrument is described at
 \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
@@ -155,4 +154,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

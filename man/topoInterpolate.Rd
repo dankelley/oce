@@ -32,9 +32,6 @@ data(topoWorld)
 topoInterpolate(45, -57, topoWorld)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{[[<-,topo-method}}, \code{\link{as.topo}},
@@ -44,4 +41,6 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
   \code{\link{summary,topo-method}},
   \code{\link{topo-class}}, \code{\link{topoWorld}}
 }
-
+\author{
+Dan Kelley
+}

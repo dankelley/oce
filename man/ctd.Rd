@@ -32,7 +32,7 @@ plot(ctd)
 }
 \seealso{
 The full profile (not trimmed to the downcast) is available as
-\link{ctdRaw}.
+\code{data(\link{ctdRaw})}.
 
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
@@ -60,4 +60,3 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-

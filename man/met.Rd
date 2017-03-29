@@ -3,20 +3,27 @@
 \docType{data}
 \name{met}
 \alias{met}
-\title{Sample Met Object}
+\title{Sample met Object}
 \source{
-Downloaded from the Environment Canada website on May 29, 2014, and
-processed as follows.
-\preformatted{
-met <- read.met('http://climate.weather.gc.ca/climateData/bulkdata_e.html?format=csv&stationID=6358&Year=2003&Month=9&Day=17&timeframe=1&submit=Download+Data')
-met[['time']] <- met[['time']] + 4 * 3600
-}
-(Note the conversion from local standard time to UTC.)
+Environment Canada website on February 1, 2017
 }
 \description{
 This is sample \code{met} object containing data for Halifax, Nova Scotia,
 during September of 2003 (the period during which Hurricane Juan struck the
 city).
+}
+\details{
+The data file was downloaded with
+\preformatted{
+metFile <- download.met(id=6358, year=2003, month=9, destdir=".")
+met <- read.met(metFile)
+met <- oceSetData(met, "time", met[["time"]]+4*3600,
+                 note="add 4h to local time to get UTC time")
+}
+Using \code{\link{download.met}} avoids having to navigate the
+the awkward Environment Canada website, but it imposes the burden
+of having to know the station number. See the documentation for
+\code{\link{download.met}} for more details on station numbers.
 }
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},
@@ -31,8 +38,8 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
 
 Other things related to \code{met} data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
-  \code{\link{met-class}}, \code{\link{plot,met-method}},
-  \code{\link{read.met}}, \code{\link{subset,met-method}},
+  \code{\link{download.met}}, \code{\link{met-class}},
+  \code{\link{plot,met-method}}, \code{\link{read.met}},
+  \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-

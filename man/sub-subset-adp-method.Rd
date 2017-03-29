@@ -5,7 +5,7 @@
 \alias{[[<-,adp-method}
 \title{Replace Parts of an ADP Object}
 \usage{
-\S4method{[[}{adp}(x, i, j) <- value
+\S4method{[[}{adp}(x, i, j, ...) <- value
 }
 \arguments{
 \item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
@@ -14,9 +14,9 @@
 
 \item{j}{Optional additional information on the \code{i} item.}
 
-\item{value}{The value to be placed into \code{x}, somewhere.}
-
 \item{...}{Optional additional information (ignored).}
+
+\item{value}{The value to be placed into \code{x}, somewhere.}
 }
 \description{
 The \code{[[<-} method works for all \code{oce} objects, i.e.
@@ -54,9 +54,6 @@ If none of these conditions is met, a warning is issued.
 In addition to the usual insertion of elements by name, note
 that e.g. \code{pitch} gets stored into \code{pitchSlow}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
@@ -80,7 +77,8 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,amsr-
   \code{\link{[[<-,windrose-method}}
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{adp-class}}, \code{\link{adp}},
+  \code{\link{adp-class}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
@@ -98,4 +96,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

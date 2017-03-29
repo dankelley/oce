@@ -20,14 +20,11 @@ webtide(action = c("map", "predict"), longitude, latitude, node, time,
 draw a map or \code{action="predict"} to get a prediction; see
 \sQuote{Details}.}
 
-\item{longitude}{longitude at which prediction is required (ignored if
+\item{longitude, latitude}{optional location at which prediction is required (ignored if
 \code{node} is given).}
 
-\item{latitude}{latitude at which prediction is required (ignored if
-\code{node} is given).}
-
-\item{node}{node to look up; only needed if \code{longitude} and
-\code{latitude} are not given.}
+\item{node}{optional integer specifying which node to look up; if this is given,
+then neither \code{latitude} nor \code{longitude} may be given.}
 
 \item{time}{times at which prediction is to be made.  If not supplied, this
 will be the week starting at the present time, incrementing by 15 minutes.}
@@ -49,42 +46,49 @@ format used.)}
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 
 \item{\dots}{optional arguments passed to plotting functions. A common
 example is to set \code{xlim} and \code{ylim}, to focus a map region.}
 }
 \value{
-If \code{action="map"} and \code{plot=TRUE}, the return value is a
+If \code{action="map"} the return value is a
 list containing the index of the nearest node, along with the
-\code{latitude} and \code{longitude} of that node.  If \code{action="map"}
-and \code{plot=FALSE}, the return value is a list of all nodes, longitude,
-and latitudes.
+\code{latitude} and \code{longitude} of that node.  If
+\code{plot} is \code{FALSE}, this value is returned invisibly.
 
 If \code{action="predict"}, the return value is a list containing a vector
 of times (\code{time}), as well as vectors of the predicted \code{elevation}
 in metres and the predicted horizontal components of velocity, \code{u} and
 \code{v}, along with the \code{node} number, and the \code{basedir} and
 \code{region} as supplied to this function.
+If \code{plot} is \code{FALSE}, this value is returned invisibly.
 }
 \description{
-Get a tidal prediction from a WebTide database.
+Get a tidal prediction from a WebTide database. There are two distinct cases.
 
-If \code{action="map"} then a map is drawn, with a dot for the lower-left
-corner of each triangle used in the finite-element tidal simulation upon
-which WebTide predictions are based.  If \code{node} is missing, then
-\code{\link{locator}} is called, so that the user can indicate a spot of
-interest on the map, and this point is indicated on the map (and in the
-return value).  If \code{node} is provided, however, the point is indicated
-but \code{\link{locator}} is not called.  (This second style is of use in
-documenting interactive work after the fact.)
+\emph{Case 1:} \code{action="map"}. In this case, if
+\code{plot} is \code{FALSE}, a list is returned, containing
+all the \code{node}s in the selected database, along with all
+the \code{latitude}s and \code{longitude}s. This value is
+also returned (silently) if \code{plot} is true, but in that case,
+a plot is drawn to indicate the node locations. If \code{latitude} and
+\code{longitude} are given, then the node nearest that spot is indicated on
+the map; otherwise, if \code{node} is given, then the location of that
+node is indicated. There is also a special case: if \code{node} is negative
+and \code{interactive()} is \code{TRUE},
+then \code{\link{locator}} is called, and the node nearest the spot
+where the user clicks the mouse is indicated in the plot and in the
+return value.
 
-If \code{action="predict"} then either a node number or the longitude and
-latitude must be specified.  If \code{plot=TRUE} (the default) then a plot
-is drawn, but no plot is produced otherwise.  In either case, the (silent)
-return value is a list as described in the next section.  The times used for
-prediction are specified with the \code{time} argument, and if this is not
-specified then a week following the present time is used.
+\code{Case 2:} \code{action="predict"}. If \code{plot} is \code{FALSE},
+then a list is returned, indicating \code{time}, predicted
+\code{elevation}, velocity components \code{u} and \code{v},
+\code{node} number, the name of the \code{basedir}, and
+the \code{region}. If \code{plot} is \code{TRUE}, this list is returned
+silently, and time-series plots are drawn for elevation, u, and v.
 
 Naturally, \code{webtide} will not work unless WebTide has been installed on
 the computer.
@@ -95,13 +99,16 @@ WebTide is not an open-source application, so the present function was
 designed based on little more than guesses about the WebTide file structure.
 Users should be on the lookout for odd results.
 }
+
 \examples{
 \dontrun{
 library(oce)
-prediction <- webtide("predict", longitude=-69.61, latitude=48.14)
+lon <- -69.61
+lat <- 48.14
+prediction <- webtide("predict", longitude=lon, latitude=lat)
+mtext(sprintf("prediction at \%fN \%fE", lat, lon), line=0.75, side=3)
 }
 }
 \author{
 Dan Kelley
 }
-

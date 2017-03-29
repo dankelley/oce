@@ -12,8 +12,13 @@ xyzToEnuAdp(x, declination = 0, debug = getOption("oceDebug"))
 \item{declination}{magnetic declination to be added to the heading after
 "righting" (see below), to get ENU with N as "true" north.}
 
-\item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
-amount of debugging information, or to 2 to get more.}
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 An object with \code{data$v[,,1:3]} altered appropriately, and
@@ -40,7 +45,7 @@ The code handles every case individually, based on the table given below.
 The table comes from Clark Richards, a former PhD student at Dalhousie
 University [2], who developed it based on instrument documentation,
 discussion on user groups, and analysis of measurements acquired with RDI
-and Sontek acoustic current profilers in the SLEIWEX experiment [3].  In the
+and Sontek acoustic current profilers in the SLEIWEX experiment.  In the
 table, (X, Y, Z) denote instrument-coordinate velocities, (S, F, M) denote
 ship-coordinate velocities, and (H, P, R) denote heading, pitch, and roll.
 
@@ -75,27 +80,22 @@ bottom a vector of "mast" values.  Finally, the columns of
 \code{data$v[,,1:3]} are filled in with the result of the matrix
 multiplication.
 }
-\author{
-Dan Kelley
-}
 \references{
 1. RD Instruments, 1998.  \emph{ADCP Coordinate
 Transformation, formulas and calculations.} P/N 951-6079-00 (July 1998).
 
 2. Clark Richards, 2012, PhD Dalhousie University Department of
 Oceanography.
-
-3. The SLEIWEX experiment (\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}).
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
-  \code{\link{adp}}, \code{\link{as.adp}},
-  \code{\link{beamName}}, \code{\link{beamToXyzAdp}},
-  \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
-  \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
-  \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
-  \code{\link{plot,adp-method}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
+  \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
+  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
+  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
+  \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
@@ -108,4 +108,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

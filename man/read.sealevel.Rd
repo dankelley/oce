@@ -23,7 +23,9 @@ better for normal calls by a user.)}
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 An object of \code{\link{sealevel-class}}.
@@ -55,9 +57,6 @@ plot(m)
 }
 
 }
-\author{
-Dan Kelley
-}
 \references{
 The Hawaii archive site at
 \code{http://ilikai.soest.hawaii.edu/uhslc/datai.html} provides a graphical
@@ -78,4 +77,6 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }
-
+\author{
+Dan Kelley
+}

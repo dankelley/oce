@@ -14,7 +14,7 @@ to load.}
 function is selected, based on the header.}
 }
 \value{
-An object of \code{\link{oce-class}} that is 
+An object of \code{\link{oce-class}} that is
 specialized to the data type, e.g. \code{\link{ctd-class}},
 if the data file contains \code{ctd} data.
 }
@@ -33,9 +33,6 @@ x <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
 plot(x) # summary with TS and profiles
 plotTS(x) # just the TS
 }
-\author{
-Dan Kelley
-}
 \seealso{
 The file type is determined by \code{\link{oceMagic}}.  If the file
 type can be determined, then one of the following is called:
@@ -43,4 +40,6 @@ type can be determined, then one of the following is called:
 \code{\link{read.lobo}}, \code{\link{read.rsk}},
 \code{\link{read.sealevel}}, etc.
 }
-
+\author{
+Dan Kelley
+}

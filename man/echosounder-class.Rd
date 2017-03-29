@@ -60,22 +60,7 @@ and \code{echosounder[["TS"]]} returns a matrix of target strength in dB.
 assigned, e.g.  \code{echosounder[["time"]] <- 3600 + echosounder[["time"]]}
 adds an hour to time.
 }
-\author{
-Dan Kelley
 
-Statistical summaries are provided by \code{\link{summary,echosounder-method}},
-while \code{\link{show}} displays an overview.  The \code{\link{findBottom}}
-function infers the ocean bottom from tracing the strongest reflector from
-ping to ping.
-
-Echosounder objects may be plotted with \code{\link{plot,echosounder-method}}.
-
-The contents of \code{echosounder} objects may be altered with
-\code{\link{subset,echosounder-method}}, or with the \code{[[]]} scheme
-discussed in the previous section; skilled users may also manipulate the
-contents directly, but this is not recommended because it is brittle to
-changes in the data structure.
-}
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
@@ -97,4 +82,19 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
   \code{\link{subset,echosounder-method}},
   \code{\link{summary,echosounder-method}}
 }
+\author{
+Dan Kelley
 
+Statistical summaries are provided by \code{\link{summary,echosounder-method}},
+while \code{\link{show}} displays an overview.  The \code{\link{findBottom}}
+function infers the ocean bottom from tracing the strongest reflector from
+ping to ping.
+
+Echosounder objects may be plotted with \code{\link{plot,echosounder-method}}.
+
+The contents of \code{echosounder} objects may be altered with
+\code{\link{subset,echosounder-method}}, or with the \code{[[]]} scheme
+discussed in the previous section; skilled users may also manipulate the
+contents directly, but this is not recommended because it is brittle to
+changes in the data structure.
+}

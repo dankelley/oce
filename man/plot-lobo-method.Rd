@@ -50,15 +50,14 @@ default, in order to use more space for the data and less for the axes.}
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 
 \item{\dots}{optional arguments passed to plotting functions.}
 }
 \description{
 Plot a summary diagram for lobo data.
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
@@ -90,4 +89,6 @@ Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{subset,lobo-method}},
   \code{\link{summary,lobo-method}}
 }
-
+\author{
+Dan Kelley
+}

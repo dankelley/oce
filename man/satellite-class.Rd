@@ -8,16 +8,15 @@
 This class holds satellite data of various types, including
 \code{\link{amsr-class}} and \code{\link{g1sst-class}}.
 }
-\author{
-Dan Kelley and Chantelle Layton
-}
 \seealso{
 Other things related to satellite data: \code{\link{g1sst-class}},
   \code{\link{plot,satellite-method}},
   \code{\link{read.g1sst}},
   \code{\link{summary,satellite-method}}
 }
+\author{
+Dan Kelley and Chantelle Layton
+}
 \concept{
 satellite
 }
-

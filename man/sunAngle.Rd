@@ -7,8 +7,9 @@
 sunAngle(t, longitude = 0, latitude = 0, useRefraction = FALSE)
 }
 \arguments{
-\item{t}{Time, a POSIXt object (must be in timezone UTC), or a numeric value
-that corresponds to such a time.}
+\item{t}{time, a POSIXt object (converted to timezone \code{"UTC"},
+if it is not already in that timezone), or a numeric value that
+corresponds to such a time.}
 
 \item{longitude}{observer longitude in degrees east}
 
@@ -48,9 +49,6 @@ dist <- geodDist(result$par[1], result$par[2], lon.hfx, lat.hfx)
 cat(sprintf("Infer Halifax latitude \%.2f and longitude \%.2f; distance mismatch \%.0f km", 
             result$par[2], result$par[1], dist))
 }
-\author{
-Dan Kelley
-}
 \references{
 Based on Fortran code retrieved from
 ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f on
@@ -84,4 +82,6 @@ Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
   \code{\link{julianDay}}, \code{\link{moonAngle}},
   \code{\link{siderealTime}}
 }
-
+\author{
+Dan Kelley
+}

@@ -21,7 +21,9 @@ scan, and 4 for salinity vs scan.}
 if necessary. In the latter case, an error results if the \code{data}
 slot of \code{x} lacks a variable called \code{time}.}
 
-\item{type}{Line type.}
+\item{type}{Character indicating the line type, as for \code{\link{plot.default}}. The default
+is \code{"l"}, meaning to connect data with line segments. Another good choice is
+\code{"o"}, to add points at the data.}
 
 \item{mgp}{Three-element numerical vector to use for \code{par(mgp)}, and also
 for \code{par(mar)}, computed from this.  The default is tighter than the R
@@ -43,9 +45,6 @@ data(ctdRaw)
 plotScan(ctdRaw)
 abline(v=c(130, 350), col='red') # useful for ctdTrim()
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
@@ -87,4 +86,6 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
 }
-
+\author{
+Dan Kelley
+}

@@ -46,7 +46,7 @@ None.
 }
 \description{
 The direction field is indicated variously, depending on the value of
-\code{type}:\itemize{  
+\code{type}:\itemize{
 \item For \code{type=1}, each indicator is drawn with a symbol, according to the
 value of \code{pch} (either supplied globally, or as an element of the
 \code{...} list) and of size \code{cex}, and colour \code{col}.   Then, a
@@ -60,12 +60,11 @@ the line.
 \examples{
 library(oce)
 plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type='n')
-drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1,1), v=c(1, -1), scalex=0.5, add=TRUE)
+drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1, 1), v=c(1, -1), scalex=0.5, add=TRUE)
 plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type='n')
-drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1,1), v=c(1, -1), scalex=0.5, add=TRUE,
+drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1, 1), v=c(1, -1), scalex=0.5, add=TRUE,
                    type=2)
 }
 \author{
 Dan Kelley
 }
-

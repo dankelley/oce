@@ -48,14 +48,11 @@ opar <- par(no.readonly = TRUE)
 xcomp <- rnorm(360) + 1
 ycomp <- rnorm(360)
 wr <- as.windrose(xcomp, ycomp)
-par(mfrow=c(1,2))
+par(mfrow=c(1, 2))
 plot(wr)
 plot(wr, "fivenum")
 par(opar)
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
@@ -87,4 +84,6 @@ Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
   \code{\link{summary,windrose-method}},
   \code{\link{windrose-class}}
 }
-
+\author{
+Dan Kelley
+}

@@ -270,6 +270,7 @@ mid-March 2016, because the developers do not have a test file with which to
 test.
 }
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -279,9 +280,6 @@ d <- read.oce("/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_n
               to=as.POSIXct("2008-06-26 00:00:10", tz="UTC"))
 plot(d, which=c(1:3,15))
 }
-}
-\author{
-Dan Kelley
 }
 \references{
 1A. Nortek AS.  System Integrator Guide (paradopp family of products). June
@@ -322,4 +320,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

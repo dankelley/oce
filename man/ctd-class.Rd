@@ -104,27 +104,13 @@ Towyow data can be split up into sets of profiles (ascending or descending)
 with \code{\link{ctdFindProfiles}}.  CTD data may be smoothed and/or cast onto
 specified pressure levels with \code{\link{ctdDecimate}}.
 
-As with all oce objects, low-level manipulation may be done with 
+As with all oce objects, low-level manipulation may be done with
 \code{\link{oceSetData}} and \code{\link{oceSetMetadata}}. Additionally,
 many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
 discussed above, and skilled users may also manipulate the contents directly.
 }
-\author{
-Dan Kelley
-}
-\seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}},
-  \code{\link{echosounder-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
 
+\seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
   \code{\link{cnvName2oceName}}, \code{\link{ctdDecimate}},
@@ -140,5 +126,19 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
-}
 
+Other classes provided by \code{oce}: \code{\link{adp-class}},
+  \code{\link{adv-class}}, \code{\link{argo-class}},
+  \code{\link{bremen-class}}, \code{\link{cm-class}},
+  \code{\link{coastline-class}},
+  \code{\link{echosounder-class}},
+  \code{\link{lisst-class}}, \code{\link{lobo-class}},
+  \code{\link{met-class}}, \code{\link{oce-class}},
+  \code{\link{odf-class}}, \code{\link{rsk-class}},
+  \code{\link{sealevel-class}},
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
+}
+\author{
+Dan Kelley
+}

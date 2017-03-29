@@ -12,7 +12,7 @@ object, if desired.
 \section{Slots}{
 
 \describe{
-\item{\code{metadata}}{A list containing information about the data. The 
+\item{\code{metadata}}{A list containing information about the data. The
 contents vary across sub-classes, e.g. an \code{\link{adp-class}}
 object has information about beam patterns, which obviously would
 not make sense for a \code{\link{ctd-class}} object. In addition,
@@ -24,6 +24,7 @@ to store information on the units of the data, and the data quality.}
 \item{\code{processingLog}}{A list containing time-stamped processing steps,
 typically stored in the object by oce functions.}
 }}
+
 \examples{
 str(new("oce"))
 
@@ -40,4 +41,3 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 }
-

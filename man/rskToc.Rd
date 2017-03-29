@@ -51,9 +51,6 @@ print(table)
 }
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
   \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
@@ -62,4 +59,6 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
   \code{\link{rsk}}, \code{\link{subset,rsk-method}},
   \code{\link{summary,rsk-method}}
 }
-
+\author{
+Dan Kelley
+}

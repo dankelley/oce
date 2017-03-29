@@ -7,10 +7,15 @@
 binmapAdp(x, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
+\item{x}{an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
 
-\item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
-amount of debugging information, or to 2 to get more.}
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 An object of \code{\link[base]{class}} \code{"adp"}.
@@ -24,10 +29,11 @@ coordinates.
 \section{Bugs}{
  This only works for 4-beam RDI ADP objects.
 }
+
 \examples{
 
 \dontrun{
-library(oce)    
+library(oce)
 beam <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
                  from=as.POSIXct("2008-06-26", tz="UTC"),
                  to=as.POSIXct("2008-06-26 00:10:00", tz="UTC"),
@@ -40,9 +46,6 @@ plot(beam2, which=5:8)
 }
 
 }
-\author{
-Dan Kelley and Clark Richards
-}
 \references{
 The method was devised by Clark Richards for use in his PhD work
 at Department of Oceanography at Dalhousie University.
@@ -53,10 +56,10 @@ and notes on the many functions dealing with them.
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
-  \code{\link{adp}}, \code{\link{as.adp}},
-  \code{\link{beamName}}, \code{\link{beamToXyzAdp}},
-  \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
-  \code{\link{beamUnspreadAdp}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
+  \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
+  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
   \code{\link{plot,adp-method}},
   \code{\link{read.adp.nortek}},
@@ -71,4 +74,6 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

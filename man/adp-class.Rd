@@ -28,7 +28,7 @@ conventions for three- and four-beam ADP devices, viewed as though the
 reader were looking towards the beams being emitted from the transducers.
 
 \if{html}{\figure{adp_beams.png}{options: width=400px alt="Figure: adp_beams.png"}}
-    
+
 The bin geometry of a four-beam profiler is illustrated below, for
 \code{adp[["beamAngle"]]} equal to 20 degrees, \code{adp[["bin1Distance"]]}
 equal to 2m, and \code{adp[["cellSize"]]} equal to 1m.   In the diagram, the
@@ -37,11 +37,11 @@ visible beams are separated by 40 degrees.  Circles indicate the centres of
 the range-gated bins within the beams.  The lines enclosing those circles
 indicate the coverage of beams that spread plus and minus 2.5 degrees from
 their centreline.
-    
+
 \if{html}{\figure{adpgeometry2.png}{options: width=400px alt="Figure: adpgeometry2.png"}}
 
 Note that \code{adp[["oceCoordinate"]]} stores the present coordinate system
-of the object, and it has possible values \code{"beam"}, \code{"xyz"} or
+of the object, and it has possible values \code{"beam"}, \code{"xyz"}, \code{"sfm"} or
 \code{"enu"}.  (This should not be confused with
 \code{adp[["originalCoordinate"]]}, which stores the coordinate system used
 in the original data file.)
@@ -67,7 +67,7 @@ plots an image of the eastward component of velocity as a function of time (the 
 and distance from sensor (y axis), since the \code{adp} dataset is
 in earth coordinates. Note the semidurnal tidal signal, and the pattern of missing
 data at the ocean surface (gray blotches at the top).
-    
+
 Corresponding to the velocity array are two arrays of type raw, and
 identical dimension, accessed by \code{adp[["a"]]} and \code{adp[["q"]]},
 holding measures of signal strength and data quality quality,
@@ -88,10 +88,10 @@ heading (\code{adp[["heading"]]}) pitch (\code{adp[["pitch"]]}), and roll
 The precise meanings of the data items depend on the instrument type.  All
 instruments have \code{v} (for velocity), \code{q} (for a measure of data
 quality) and \code{a} (for a measure of backscatter amplitude, also called
-echo intensity).  
+echo intensity).
 Teledyne-RDI profilers have an additional item \code{g} (for
-percent-good). 
-      
+percent-good).
+
 VmDas-equiped Teledyne-RDI profilers additional navigation data, with
 details listed in the table below; note that the RDI documentation [2] and
 the RDI gui use inconsistent names for most items.
@@ -129,7 +129,7 @@ the RDI gui use inconsistent names for most items.
 For Teledyne-RDI profilers, there are four three-dimensional arrays
 holding beamwise data.  In these, the first index indicates time, the
 second bin number, and the third beam number (or coordinate number, for
-data in \code{xyz}, \code{enu} or \code{other} coordinate systems).  In
+data in \code{xyz}, \code{sfm}, \code{enu} or \code{other} coordinate systems).  In
 the list below, the quoted phrases are quantities as defined in Figure 9
 of reference 1.
 
@@ -202,10 +202,11 @@ time wasted.
 \section{References}{
 
 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
-format.} P/N 957-6156-00 (November 2007).  
+format.} P/N 957-6156-00 (November 2007).
 
 2. Teledyne-RDI, 2012. \emph{VmDas User's Guide, Ver. 1.46.5}.
 }
+
 \seealso{
 A file containing ADP data is usually recognized by Oce, and so
 \code{\link{read.oce}} will usually read the data.  If not, one may use the
@@ -237,7 +238,8 @@ Other classes provided by \code{oce}: \code{\link{adv-class}},
   \code{\link{windrose-class}}
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{adp}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
@@ -255,4 +257,3 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }
-

@@ -14,11 +14,8 @@ call to \code{\link{read.landsat}}.}
 \item{...}{Ignored.}
 }
 \description{
-Provides a summary of a some information about an object of 
+Provides a summary of a some information about an object of
 \code{\link{landsat-class}}.
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
@@ -27,7 +24,9 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{plot,landsat-method}},
   \code{\link{read.landsat}}
 }
+\author{
+Dan Kelley
+}
 \concept{
 satellite
 }
-

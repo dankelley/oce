@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,met-method}
 \alias{[[,met-method}
-\title{Extract Something From a Met Object}
+\title{Extract Something From a met Object}
 \usage{
 \S4method{[[}{met}(x, i, j, ...)
 }
@@ -73,6 +73,7 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
@@ -97,9 +98,9 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[<-,adv-method}}
 
 Other things related to \code{met} data: \code{\link{[[<-,met-method}},
-  \code{\link{as.met}}, \code{\link{met-class}},
-  \code{\link{met}}, \code{\link{plot,met-method}},
-  \code{\link{read.met}}, \code{\link{subset,met-method}},
+  \code{\link{as.met}}, \code{\link{download.met}},
+  \code{\link{met-class}}, \code{\link{met}},
+  \code{\link{plot,met-method}}, \code{\link{read.met}},
+  \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
-

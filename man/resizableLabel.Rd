@@ -31,7 +31,8 @@ parentheses or brackets that enclose it. If not provided, then
 \code{\link{getOption}("oceUnitSep")} is checked. If that exists, then it is
 used as the separator; if not, no separator is used.}
 
-\item{unit}{optional unit to use, an expression (ignored at present)}
+\item{unit}{optional unit to use, if the default is not satisfactory. This
+might be the case if for example temperature was not measured in Celcius.}
 }
 \value{
 A character string or expression, in either a long or a shorter
@@ -49,4 +50,3 @@ Used by e.g. \code{\link{plot,ctd-method}}.
 \author{
 Dan Kelley
 }
-

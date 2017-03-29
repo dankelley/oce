@@ -30,4 +30,3 @@ last of the vector, which can be quite helpful in debugging.
 \author{
 Dan Kelley
 }
-

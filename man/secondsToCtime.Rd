@@ -22,9 +22,6 @@ cat("   10 s = ", secondsToCtime(10), "\\n", sep="")
 cat("   61 s = ", secondsToCtime(61), "\\n", sep="")
 cat("86400 s = ", secondsToCtime(86400), "\\n", sep="")
 }
-\author{
-Dan Kelley
-}
 \seealso{
 See \code{\link{ctimeToSeconds}}, the inverse of this.
 
@@ -32,7 +29,8 @@ Other things related to time: \code{\link{ctimeToSeconds}},
   \code{\link{julianCenturyAnomaly}},
   \code{\link{julianDay}}, \code{\link{numberAsHMS}},
   \code{\link{numberAsPOSIXct}},
-  \code{\link{oce.as.POSIXlt}},
   \code{\link{unabbreviateYear}}
 }
-
+\author{
+Dan Kelley
+}

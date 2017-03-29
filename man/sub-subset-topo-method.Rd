@@ -5,7 +5,7 @@
 \alias{[[<-,topo-method}
 \title{Replace Parts of a Topo Object}
 \usage{
-\S4method{[[}{topo}(x, i, j) <- value
+\S4method{[[}{topo}(x, i, j, ...) <- value
 }
 \arguments{
 \item{x}{An \code{topo} object, i.e. inheriting from \code{\link{topo-class}}}
@@ -14,9 +14,9 @@
 
 \item{j}{Optional additional information on the \code{i} item.}
 
-\item{value}{The value to be placed into \code{x}, somewhere.}
-
 \item{...}{Optional additional information (ignored).}
+
+\item{value}{The value to be placed into \code{x}, somewhere.}
 }
 \description{
 The \code{[[<-} method works for all \code{oce} objects, i.e.
@@ -52,6 +52,14 @@ The first item found (if any) is then updated to hold the value \code{result}.
 If none of these conditions is met, a warning is issued.
 }
 \seealso{
+Other things related to \code{topo} data: \code{\link{[[,topo-method}},
+  \code{\link{as.topo}}, \code{\link{download.topo}},
+  \code{\link{plot,topo-method}}, \code{\link{read.topo}},
+  \code{\link{subset,topo-method}},
+  \code{\link{summary,topo-method}},
+  \code{\link{topo-class}}, \code{\link{topoInterpolate}},
+  \code{\link{topoWorld}}
+
 Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-method}},
   \code{\link{[[<-,amsr-method}},
   \code{\link{[[<-,argo-method}},
@@ -72,13 +80,4 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,section-method}},
   \code{\link{[[<-,tidem-method}},
   \code{\link{[[<-,windrose-method}}
-
-Other things related to \code{topo} data: \code{\link{[[,topo-method}},
-  \code{\link{as.topo}}, \code{\link{download.topo}},
-  \code{\link{plot,topo-method}}, \code{\link{read.topo}},
-  \code{\link{subset,topo-method}},
-  \code{\link{summary,topo-method}},
-  \code{\link{topo-class}}, \code{\link{topoInterpolate}},
-  \code{\link{topoWorld}}
 }
-

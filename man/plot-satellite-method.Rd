@@ -22,10 +22,11 @@
 \description{
 For an example using \code{g1sst} data, see \code{\link{read.g1sst}}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
+Other things related to satellite data: \code{\link{g1sst-class}},
+  \code{\link{read.g1sst}}, \code{\link{satellite-class}},
+  \code{\link{summary,satellite-method}}
+
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,adv-method}},
   \code{\link{plot,amsr-method}},
@@ -48,12 +49,10 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,windrose-method}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
-
-Other things related to satellite data: \code{\link{g1sst-class}},
-  \code{\link{read.g1sst}}, \code{\link{satellite-class}},
-  \code{\link{summary,satellite-method}}
+}
+\author{
+Dan Kelley
 }
 \concept{
 satellite
 }
-

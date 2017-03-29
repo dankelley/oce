@@ -39,7 +39,7 @@ method can locates the requested item, \code{NULL} is returned.
 In addition to the usual extraction of elements by name, some shortcuts
 are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
 for the other velocity components. The \code{a} and \code{q}
-data can be retrived in \code{\link{raw}} form 
+data can be retrived in \code{\link{raw}} form
 or numeric form; see \dQuote{Examples}.
 
 It is also worth noting that heading, pitch, etc. may be stored in
@@ -89,6 +89,7 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \examples{
 data(adv)
 head(adv[["q"]])            # in raw form
@@ -132,4 +133,3 @@ Other things related to \code{adv} data: \code{\link{[[<-,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-

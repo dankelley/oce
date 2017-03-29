@@ -23,7 +23,7 @@ Consult the built-in dataset \code{\link{tidedata}} for the permissible
 constituent names and their frequencies.}
 
 \item{sides}{an integer vector of length equal to that of \code{constituents},
-designating the side on which the constituent labels are to be drawn. As in 
+designating the side on which the constituent labels are to be drawn. As in
 all R graphics, the value \code{1} indicates the bottom of the plot, and
 \code{3} indicates the top. If \code{sides=NULL}, the default, then all labels
 are drawn at the top. Any value of \code{sides} that is not either 1 or 3
@@ -52,6 +52,7 @@ An argument named \code{labelIf} was removed in July 2016,
 because it was discovered never to have worked as documented, and
 because the more useful argument \code{constituents} had been added.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -60,9 +61,6 @@ tide <- tidem(sealevel)
 plot(tide)
 }
 
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
@@ -96,4 +94,6 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
   \code{\link{tidem}}
 }
-
+\author{
+Dan Kelley
+}

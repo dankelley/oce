@@ -46,7 +46,7 @@ Sv <- 20*log10(a) -
   10*log10(soundSpeed*x@metadata$pulseDuration/1e6*psi/2)
 }
 
-If \code{i} is the string \code{"TS"}, 
+If \code{i} is the string \code{"TS"},
 \preformatted{
 TS <- 20*log10(a) -
   (x@metadata$sourceLevel+x@metadata$receiverSensitivity+x@metadata$transmitPower) +
@@ -97,6 +97,7 @@ match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
 }
+
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
@@ -129,4 +130,3 @@ Other things related to \code{echosounder} data: \code{\link{[[<-,echosounder-me
   \code{\link{subset,echosounder-method}},
   \code{\link{summary,echosounder-method}}
 }
-

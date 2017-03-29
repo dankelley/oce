@@ -21,7 +21,9 @@ be added to the heading.  See \dQuote{Details}.}
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
 turns off the printing, while higher values suggest that more information
-be printed.}
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \description{
 Convert ADV velocity components from an enu-based coordinate system to
@@ -39,9 +41,6 @@ NOTE: this function works similarly to \code{\link{xyzToEnuAdv}}, except
 that in the present function, it makes no difference whether the instrument
 points up or down, etc.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{[[<-,adv-method}}, \code{\link{adv-class}},
@@ -57,4 +56,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley
+}

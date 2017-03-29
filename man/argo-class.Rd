@@ -14,15 +14,12 @@ created with \code{\link{as.argo}}.  Argo data can be gridded to constant
 pressures with \code{\link{argoGrid}}.  Plots can be made with
 \code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}} produces statistical
 summaries and \code{show} produces overviews. The usual oce generic
-functions are available, e.g. \code{\link{[[,argo-method}} may 
+functions are available, e.g. \code{\link{[[,argo-method}} may
 be used to extract data, and \code{\link{[[<-,argo-method}} may
 be used to insert data.
 
 See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
 argo-related datasets that may be useful in a wider context.
-}
-\author{
-Dan Kelley and Clark Richards
 }
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
@@ -38,10 +35,13 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
 
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argoGrid}},
-  \code{\link{argo}}, \code{\link{as.argo}},
+  \code{\link{argoNames2oceNames}}, \code{\link{argo}},
+  \code{\link{as.argo}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
-
+\author{
+Dan Kelley and Clark Richards
+}

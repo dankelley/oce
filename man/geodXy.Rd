@@ -58,6 +58,7 @@ publications--hence the detailed discussion below.
 
  This is possibly useful, possibly not. The method changed in Oct, 2015.
 }
+
 \examples{
 library(oce)
 data(section)
@@ -75,7 +76,7 @@ kmperdeg <- geodDist(0, mean(lat)-0.5, 0, mean(lat)+0.5) # mid-latitude estimate
 X <- (lon - lonR) * kmperdeg * cos(lat * pi / 180)
 Y <- (lat - latR) * kmperdeg
 XY <- list(x=X, y=Y)
-## plot, with labels for sphere-ellipse deviations
+# plot, with labels for sphere-ellipse deviations
 par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 plot(lon, lat, asp=1/cos(median(lat*pi/180)))
 plot(xy$x, xy$y, asp=1, xlab="x [km]", ylab="y [km]")
@@ -88,13 +89,12 @@ mtext(sprintf("RMS dev / span: x \%.2g, y \%.2g",
       side=3, line=-2)
 
 }
-\author{
-Dan Kelley
-}
 \seealso{
 \code{\link{geodDist}}
 
 Other functions relating to geodesy: \code{\link{geodDist}},
   \code{\link{geodGc}}, \code{\link{geodXyInverse}}
 }
-
+\author{
+Dan Kelley
+}

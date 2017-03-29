@@ -65,7 +65,7 @@ The code handles every case individually, based on the table given below.
 The table comes from Clark Richards, a former PhD student at Dalhousie
 University [2], who developed it based on instrument documentation,
 discussion on user groups, and analysis of measurements acquired with Nortek
-and Sontek velocimeters in the SLEIWEX experiment [3].
+and Sontek velocimeters in the SLEIWEX experiment.
 
 The column labelled ``Cabled'' indicates whether the sensor and the pressure
 case are connected with a flexible cable, and the column labelled ``H.case''
@@ -96,16 +96,11 @@ yes \tab yes \tab down \tab H-90 \tab R \tab P \tab X \tab -Y \tab -Z\cr 5
 \tab adv \tab - \tab - \tab down \tab H-90 \tab R \tab -P \tab X \tab Y \tab
 Z\cr }
 }
-\author{
-Dan Kelley, in collaboration with Clark Richards
-}
 \references{
 1. \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
 
 2. Clark Richards, 2012, PhD Dalhousie University Department of
 Oceanography.
-
-3. The SLEIWEX experiment (\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php})
 }
 \seealso{
 See \code{\link{read.adv}} for notes on functions relating to
@@ -125,4 +120,6 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnu}}
 }
-
+\author{
+Dan Kelley, in collaboration with Clark Richards
+}

@@ -20,4 +20,3 @@ Extract the End of an Oce Object
 \seealso{
 \code{\link{head.oce}}, which yields the start of an \code{oce} object.
 }
-

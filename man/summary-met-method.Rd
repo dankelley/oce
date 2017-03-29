@@ -3,7 +3,7 @@
 \docType{methods}
 \name{summary,met-method}
 \alias{summary,met-method}
-\title{Summarize a Met Object}
+\title{Summarize a met Object}
 \usage{
 \S4method{summary}{met}(object, ...)
 }
@@ -16,14 +16,13 @@
 Pertinent summary information is presented, including the sampling location,
 data ranges, etc.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{met} data: \code{\link{[[,met-method}},
   \code{\link{[[<-,met-method}}, \code{\link{as.met}},
-  \code{\link{met-class}}, \code{\link{met}},
-  \code{\link{plot,met-method}}, \code{\link{read.met}},
-  \code{\link{subset,met-method}}
+  \code{\link{download.met}}, \code{\link{met-class}},
+  \code{\link{met}}, \code{\link{plot,met-method}},
+  \code{\link{read.met}}, \code{\link{subset,met-method}}
 }
-
+\author{
+Dan Kelley
+}

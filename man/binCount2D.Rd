@@ -17,7 +17,7 @@ binCount2D(x, y, xbreaks, ybreaks, flatten = FALSE)
 \item{ybreaks}{Vector of values of \code{y} at the boundaries between bins, calculated using
 \code{\link{pretty}(y)} if not supplied.}
 
-\item{flatten}{A logical value indicating whether 
+\item{flatten}{A logical value indicating whether
 the return value also contains equilength
 vectors \code{x}, \code{y}, \code{z} and \code{n}, a flattened
 representation of \code{xmids}, \code{ymids}, \code{result} and
@@ -27,15 +27,12 @@ representation of \code{xmids}, \code{ymids}, \code{result} and
 A list with the following elements: the breaks (\code{xbreaks}
 and \code{ybreaks}), the midpoints (\code{xmids} and \code{ymids})
 between those breaks, and
-the count (\code{number}) of \code{f} values in the boxes defined 
+the count (\code{number}) of \code{f} values in the boxes defined
 between successive breaks.
 }
 \description{
 Count the number of elements of a given matrix z=z(x,y) that fall within
 successive pairs of breaks in x and y.
-}
-\author{
-Dan Kelley
 }
 \seealso{
 Other bin-related functions: \code{\link{binApply1D}},
@@ -43,4 +40,6 @@ Other bin-related functions: \code{\link{binApply1D}},
   \code{\link{binCount1D}}, \code{\link{binMean1D}},
   \code{\link{binMean2D}}
 }
-
+\author{
+Dan Kelley
+}

@@ -37,10 +37,17 @@ Items stored in the object may be altered with e.g.  \code{odf[["salinity"]]
 The \code{show} method (e.g.  \code{show(odf)}) displays information about
 the object.
 }
-\author{
-Dan Kelley
-}
+
 \seealso{
+Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFNames2oceNames}},
+  \code{\link{[[,odf-method}},
+  \code{\link{[[<-,odf-method}},
+  \code{\link{plot,odf-method}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
+  \code{\link{subset,odf-method}},
+  \code{\link{summary,odf-method}}
+
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
@@ -51,12 +58,7 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{rsk-class}}, \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
-
-Other things related to \code{odf} data: \code{\link{ODF2oce}},
-  \code{\link{[[,odf-method}},
-  \code{\link{[[<-,odf-method}},
-  \code{\link{plot,odf-method}},
-  \code{\link{subset,odf-method}},
-  \code{\link{summary,odf-method}}
 }
-
+\author{
+Dan Kelley
+}

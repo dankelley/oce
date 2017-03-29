@@ -15,13 +15,12 @@
 \description{
 Summarize a \code{gps} object, i.e. one inheriting from \code{\link{gps-class}}.
 }
-\author{
-Dan Kelley
-}
 \seealso{
 Other things related to \code{gps} data: \code{\link{[[,gps-method}},
   \code{\link{[[<-,gps-method}}, \code{\link{as.gps}},
   \code{\link{gps-class}}, \code{\link{plot,gps-method}},
   \code{\link{read.gps}}
 }
-
+\author{
+Dan Kelley
+}

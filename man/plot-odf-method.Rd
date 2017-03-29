@@ -13,12 +13,12 @@
 \description{
 Plot data contained within an ODF object,
 using \code{\link{oce.plot.ts}} to create panels of time-series plots for all
-the columns contained in the \code{odf} object. This is crude, but \code{odf}
-objects are usually cast to other types, and those types have more useful
-plots.
-}
-\author{
-Dan Kelley
+the columns contained in the \code{odf} object. If the object's \code{data}
+slot does not contain \code{time}, then \code{\link{pairs}} is used to plot
+all the elements in the slot. These actions are both crude and there are
+no arguments to control the behaviour, but this function is really just a stop-gap
+measure, since in practical work \code{odf} objects are usually cast to other types,
+and those types tend to have more useful plots.
 }
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
@@ -45,9 +45,13 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plotTS}}, \code{\link{tidem-class}}
 
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
+  \code{\link{read.ctd.odf}}, \code{\link{read.odf}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }
-
+\author{
+Dan Kelley
+}
