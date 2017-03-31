@@ -2418,7 +2418,6 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #'
 #' 2. WHOI/USGS-provided Matlab code for beam-enu transformation
 #' \samp{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
-#' (link last checked 2016-08-05)
 #'
 #' @family things related to \code{adp} data
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
