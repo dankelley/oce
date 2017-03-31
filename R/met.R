@@ -580,7 +580,7 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
     res@metadata$WMOIdentifier <- WMOIdentifier
     res@metadata$TCIdentifier <- TCIdentifier
     res@metadata$filename <- filename
-    rawData <- read.csv(text=text, skip=skip, encoding="latin1", header=TRUE)
+    rawData <- read.csv(text=text, skip=skip, encoding="UTF-8", header=TRUE)
     names <- names(rawData)
     ## FIXME: handle daily data, if the column names differ
     if ("Day" %in% names && "Time" %in% names) {
@@ -740,6 +740,15 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
     res@data$Month <- NULL # no need for this
     res@data$Day <- NULL # no need for this
     res@data$Time <- NULL # no need for this
+    ## Remove non-ascii characters in original data names, since they caused a
+    ## build-check NOTE on CRAN.  (Actually, those characters are in the units
+    ## that are embedded within the names, e.g. the degree character.)
+    for (dno in seq_along(res@metadata$dataNamesOriginal)) {
+        o <- res@metadata$dataNamesOriginal[[dno]]
+        Encoding(o) <- "latin1"
+        o <- iconv(o, "latin1", "ASCII", sub="")
+        res@metadata$dataNamesOriginal[[dno]] <- o
+    }
     res
 }
 

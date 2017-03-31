@@ -1,3 +1,6 @@
+0.9-22
+- address a CRAN NOTE about UTF-8 strings in data
+
 0.9-21
 - adpEnsembleAverage() added
 - mapCoordinateSystem() added
