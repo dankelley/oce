@@ -5,41 +5,42 @@
 #'
 #' The method employs geodesic calculations of the distances along geodesic
 #' curves, i.e. akin to great-circle curves that go along the surface of the
-#' ellipsoidal earth; see \code{\link{geodDist}}. The results are minimally
-#' sensitive to the ellipsoidal geometry assumed, but this is not a matter in
-#' serious question today. Note that the results are quite unlike the values
-#' returned from a map projection; in the latter case, the results vary greatly
-#' across a range of popular projections. Use the present function for things
-#' like gridding data or calculating drifter speeds.
+#' ellipsoidal earth. See \dQuote{Caution}.
 #'
+#' The calculation is as follows.
 #' Consider the \code{i}-th point in the \code{longitude} and \code{latitude}
-#' vectors.  The value of \code{x[i]} is inferred from the distance along a
-#' geodesic curve from from (\code{longitude[i]}, \code{latitude[i]}) to
-#' (\code{longitudeRef[i]}, \code{latitude[i]}), i.e. the distance along a line
-#' of constant latitude.  Similarly, \code{y[i]} is inferred the geodesic
-#' distance from (\code{longitude[i]}, \code{latitude[i]}) to
-#' (\code{longitude[i]}, \code{latitudeRef}). Once the distances are inferred,
-#' signs are calculated from determining the sign of
-#' \code{longitude[i]-longitudeRef} for \code{x[i]} and similarly \code{y[i]}.
+#' vectors.  To calculate \code{x[i]}, \code{\link{geodDist}} is
+#' used is to find the distance \emph{along a
+#' geodesic curve} connecting (\code{longitude[i]}, \code{latitude[i]}) with
+#' (\code{longitudeRef}, \code{latitude[i]}). The resultant distance
+#' is multiplied by -1 if \code{longitude[i]-longitudeRef} is negative,
+#' and the result is assigned to \code{x[i]}. 
+#' A similar procedure is used for \code{y[i]}.
 #'
-#' @param longitude vector of longitudes
-#' @param latitude vector of latitudes
-#' @param longitudeRef numeric, reference longitude
-#' @param latitudeRef numeric, reference latitude
+#' @section Caution: This scheme is without known precedent in the literature, and
+#' users would be better off using \code{\link{lonlat2utm}} instead.
+#'
+#' @param longitude,latitude vector of longitude and latitude
+#' @param longitudeRef,latitudeRef numeric reference location. Poor results
+#' will be returned if these values are not close to the locations described
+#' by \code{longitude} and \code{latitude}. A sensible approach might be
+#' to set \code{longitudeRef} to \code{longitude[1]}, etc.
 #' @param rotate numeric, counterclockwise angle, in degrees, by which to
 #' rotate the (\code{x}, \code{y}) coordinates about the reference point.  This
 #' is useful in rotating the coordinate system to align with a coastline, a
 #' mean current, etc.
+#' @template debugTemplate
+#'
 #' @return Data frame of \code{x} and \code{y}, geodesic distance components,
 #' measured in metres. See \dQuote{Details} for the definitions.
 #'
-#' @section Change notification: Until 2015-11-02, the names of the arguments
+#' @section Change notifications: Until 2015-11-02, the names of the arguments
 #' were \code{lon}, \code{lat}, \code{lon.ref} and \code{lat.ref}; these were
-#' changed to be more in keeping with names in the rest of oce.
+#' changed to be more in keeping with names in the rest of oce. Until
+#' 2017-04-05, defaults of 0 and 0 were used for the reference location, but
+#' this is very seldom useful, and can yield bad results if the goal is to
+#' set up an x-y system for moorings or CTD locations.
 #'
-#' @section Caution: The calculation is devised by the author and is without known
-#' precedent in the literature, so users might have to explain it in their
-#' publications--hence the detailed discussion below.
 #' @author Dan Kelley
 #' @seealso \code{\link{geodDist}}
 #' @examples
@@ -70,19 +71,25 @@
 #'               rms(xy$x-XY$x)/diff(range(xy$x)),
 #'               rms(xy$y-XY$y)/diff(range(xy$y))),
 #'       side=3, line=-2)
-#'
-#' @section Caution: This is possibly useful, possibly not. The method changed in Oct, 2015.
 #' @family functions relating to geodesy
-geodXy <- function(longitude, latitude, longitudeRef=0, latitudeRef=0, rotate=0)
+geodXy <- function(longitude, latitude, longitudeRef=0, latitudeRef=0, rotate=0, debug=getOption("oceDebug"))
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
     if (missing(longitude) || missing(latitude)) stop("must provide longitude and latitude")
     n <- length(longitude)
     if (length(latitude) != n) stop("longitude and latitude vectors of unequal length")
-    xy  <- .C("geod_xy", as.integer(n), as.double(latitude), as.double(longitude),
-              as.double(latitudeRef), as.double(longitudeRef), as.double(a), as.double(f),
-              x=double(n), y=double(n), NAOK=TRUE, PACKAGE="oce")
+    xy  <- .C("geod_xy", NAOK=TRUE, PACKAGE="oce",
+              as.integer(n),
+              as.double(longitude),
+              as.double(latitude),
+              as.double(longitudeRef),
+              as.double(latitudeRef),
+              as.double(a),
+              as.double(f),
+              x=double(n),
+              y=double(n),
+              as.integer(debug))
     if (rotate != 0) {
         S <- sin(rotate * pi / 180)
         C <- cos(rotate * pi / 180)
@@ -98,27 +105,46 @@ geodXy <- function(longitude, latitude, longitudeRef=0, latitudeRef=0, rotate=0)
 #'
 #' The calculation is done by finding a minimum value of a cost
 #' function that is the vector difference between (\code{x},\code{y})
-#' and the corresponding values returned by \code{\link{geodXy}}. This
-#' minimum is calculated in C for speed, using the \code{nmmin} function
+#' and the corresponding values returned by \code{\link{geodXy}}.
+#' See \dQuote{Caution}.
+#'
+#' The minimum is calculated in C for speed, using the \code{nmmin} function
 #' that is the underpinning for the Nelder-Meade version of the R function
-#' \code{\link{optim}}.
+#' \code{\link{optim}}. If you find odd results, try setting \code{debug=1}
+#' and rerunning, to see whether this optimizer is having difficulting
+#' finding a minimum of the mismatch function.
 #'
 #' @param x value of x in metres, as given by \code{\link{geodXy}}
 #' @param y value of y in metres, as given by \code{\link{geodXy}}
 #' @param longitudeRef reference longitude, as supplied to \code{\link{geodXy}}
 #' @param latitudeRef reference latitude, as supplied to \code{\link{geodXy}}
+#' @template debugTemplate
+#'
+#' @section Caution: This scheme is without known precedent in the literature, and
+#' users would be better off using \code{\link{lonlat2utm}} instead.
+#'
 #' @return a data frame containing \code{longitude} and \code{latitude}
 #' @family functions relating to geodesy
-geodXyInverse <- function(x, y, longitudeRef=0, latitudeRef=0)
+geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceDebug"))
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
     if (missing(x) || missing(y)) stop("must provide x and y")
+    if (missing(longitudeRef)) stop("must provide longitudeRef")
+    if (missing(latitudeRef)) stop("must provide latitudeRef")
     n <- length(x)
     if (length(y) != n) stop("x and y vectors of unequal length")
-    ll <- .C("geod_xy_inverse", as.integer(n), as.double(x), as.double(y),
-             as.double(latitudeRef), as.double(longitudeRef), as.double(a), as.double(f),
-             longitude=double(n), latitude=double(n), NAOK=TRUE, PACKAGE="oce")
+    ll <- .C("geod_xy_inverse", NAOK=TRUE, PACKAGE="oce",
+             as.integer(n),
+             as.double(x),
+             as.double(y),
+             as.double(longitudeRef),
+             as.double(latitudeRef),
+             as.double(a),
+             as.double(f),
+             longitude=double(n),
+             latitude=double(n),
+             as.integer(debug))
     data.frame(longitude=ll$longitude, latitude=ll$latitude)
 }
 

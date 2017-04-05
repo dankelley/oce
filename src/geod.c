@@ -184,21 +184,24 @@ void geoddist_core(double *lat1, double *lon1, double *lat2, double *lon2, doubl
 }
 
 void geod_xy(int *n,
-    double *lat,		/* vector of latitudes */
     double *lon,		/* vector of longitudes */
-    double *latr,		/* single reference latitude */
+    double *lat,		/* vector of latitudes */
     double *lonr,		/* single reference longitude */
+    double *latr,		/* single reference latitude */
     double *a,		/* WGS84 major axis 6378137.00 */
     double *f,    /* WGS84 flattening parameter 1/298.257223563 */
-    double *x, double *y) /* output */
+    double *x, double *y, /* output */
+    int *debug)
 {
-  //Rprintf("%3s %10s %10s %10s %10s [geod_xy]\n", "i", "lon", "lat", "lon.ref", "lat.ref");
+  if (*debug)
+    Rprintf("%3s %10s %10s %10s %10s [geod_xy]\n", "i", "lon", "lat", "lon.ref", "lat.ref");
   for (int i = 0; i < *n; i++) {
     if (ISNA(lat[i]) || ISNA(lon[i])) {
       x[i] = NA_REAL;
       y[i] = NA_REAL;
     } else {
-      //Rprintf("%3d %10.3f %10.3f %10.2f %10.2f [geod_xy]\n", i, lon[i], lat[i], *lonr, *latr);
+      if (*debug)
+	Rprintf("%3d %10.3f %10.3f %10.2f %10.2f [geod_xy]\n", i, lon[i], lat[i], *lonr, *latr);
       double faz, baz, s; /* only s used here */
       geoddist_core(lat+i, lonr, latr, lonr, a, f, &faz, &baz, &s);
       double Y = s;
@@ -226,7 +229,8 @@ double lonlat_misfit(int n, double *par, void *ex)
   double x, y;
   int nn=1;
   //Rprintf("lonlat_misfit(): about to call geod_xy() with lon=%.3f lat=%.3f nn=%d\n", lon, lat, nn);
-  geod_xy(&nn, &lat, &lon, &latr, &lonr, &a, &f, &x, &y);
+  int debug = 0;
+  geod_xy(&nn, &lon, &lat, &lonr, &latr, &a, &f, &x, &y, &debug);
   double dist = sqrt(((x-X)*(x-X)+(y-Y)*(y-Y)));
   //Rprintf("lonlat_misfit(): lon=%.3f lat=%.3f x=%.0f y=%.0f X=%.0f Y=%.0f -> dist=%.0f\n",
   //    lon, lat, x, y, X, Y, dist);
@@ -241,13 +245,18 @@ void nmmin(int n, double *xin, double *x, double *Fmin, optimfn fn,
 void geod_xy_inverse(int *n,
     double *x, /* input vector of x values */
     double *y, /* input vector of y values */
-    double *latr,		/* single reference latitude */
     double *lonr,		/* single reference longitude */
+    double *latr,		/* single reference latitude */
     double *a,		/* WGS84 major axis 6378137.00 */
     double *f,    /* WGS84 flattening parameter 1/298.257223563 */
-    double *longitude, double *latitude)		/* output */
+    double *longitude, double *latitude, /* output */
+    int *debug)		/* =1 for debugging */
 {
-  //Rprintf("%3s %10s %10s %10s %10s %10s %10s [geod_xy_inverse]\n", "i", "x", "y", "lon.ref", "lat.ref", "xin[0]", "xin[1]");
+  if (*debug) {
+    Rprintf("geod_xy_inverse tracing code (for debugging by the author)\n");
+    Rprintf("NOTE: lonref=%g and latref=%g\n", *lonr, *latr);
+    Rprintf("%3s %12s %12s %12s %12s %20s %12s\n", "i", "input x", "input y", "output lon", "output lat", "# func calls", "func min");
+  }
   for (int i = 0; i < *n; i++) {
     if (ISNA(x[i]) || ISNA(y[i])) {
       longitude[i] = NA_REAL;
@@ -261,15 +270,17 @@ void geod_xy_inverse(int *n,
       ex[3] = *latr;
       int fail=0;
       // Re the two tolerances: 1e-5 in lat or lon is 1m in space
-      double abstol=1.0e-6;
-      double intol=1.0e-6;
-      xin[1] = y[i] / 111e3;
-      xin[0] = x[i] / 111e3 / cos(xin[1]*M_PI/180.0);
-      //Rprintf("%3d %10.0f %10.0f %10.2f %10.2f %10.2f %10.2f [geod_xy_inverse]\n", i, ex[0], ex[1], ex[2], ex[3], xin[0], xin[1]);
+      double abstol=1.0e-8;
+      double intol=1.0e-8;
+      // xin holds initial guess.
+      //old xin[1] = y[i] / 111e3;
+      //old xin[0] = x[i] / 111e3 / cos(xin[1]*M_PI/180.0);
+      xin[0] = *lonr;
+      xin[1] = *latr;
       double alpha=1.0, beta=0.5, gamma=2.0;
       double xout[2];
       double Fmin=0.0;
-      int trace=0, fncount=0, maxit=500;
+      int trace=0, fncount=0, maxit=900;
       int nn=2;
       nmmin(nn, xin, xout, &Fmin, 
 	  lonlat_misfit,
@@ -278,7 +289,8 @@ void geod_xy_inverse(int *n,
 	  &fncount, maxit);
       longitude[i] = xout[0];
       latitude[i] = xout[1];
-      //Rprintf("  ... fncount=%d Fmin=%f\n", fncount, Fmin);
+      if (*debug)
+	Rprintf("%3d %12.1f %12.1f %12.4f %12.4f %20d %12.6f\n", i, ex[0], ex[1], xin[0], xin[1], fncount, Fmin);
     }
   }
 }
