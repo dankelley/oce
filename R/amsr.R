@@ -13,7 +13,8 @@
 #' the 10.7GHz band), \code{MFwindDay} (wind at 10m sensed at 18.7GHz),
 #' \code{vaporDay}, \code{cloudDay}, and \code{rainDay}, along with
 #' similarly-named items that end in \code{Night}.
-#' See [1] for additional information on the instrument.
+#' See [1] for additional information on the instrument, how
+#' to cite the data source in a paper, etc.
 #'
 #' @details
 #' The bands are stored in \code{\link{raw}} form, to save storage. The accessor
@@ -24,7 +25,12 @@
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
 #' @references
-#' 1. \url{http://www.remss.com/missions/amsre}
+#' 1. Information on the satellite, how to cite the data, etc. is
+#' provided at \url{http://www.remss.com/missions/amsr}.
+#'
+#' 2. A simple interface for viewing and downloading data is at
+#' \url{http://images.remss.com/amsr/amsr2_data_daily.html}.
+#'
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 #'
 #' @family things related to \code{amsr} data
@@ -383,11 +389,7 @@ setMethod(f="plot",
 #' downloaded again. The default \code{destdir} is the present directory,
 #' but it probably makes more sense to use something like \code{"~/data/amsr"}
 #' to make it easy for scripts in other directories to use the cached data.
-#'
-#' @details
-#' This function relies on the system utility \code{ftp}, and also on local directories
-#' being separated by forward slashes in the file system. That means it will probably
-#' only work on unix-like systems.
+#' The file is downloaded with \code{\link{download.file}}.
 #'
 #' @param year,month,day Numerical values of the year, month, and day
 #' of the desired dataset. Note that one file is archived per day,
@@ -400,8 +402,22 @@ setMethod(f="plot",
 #' most recent available data. For this reason, there is a
 #' third option, which is to leave \code{day} unspecified, which
 #' works as though \code{day=3} had been given.
-#' @param destdir String naming the directory in which to cache resultant files.
-#' @param server String naming the server from which data are to be acquired.
+#'
+#' @param destdir A string naming the directory in which to cache the downloaded file.
+#' The default is to store in the present directory, but many users find it more
+#' helpful to use something like \code{"~/data/amsr"} for this, to collect all
+#' downloaded amsr files in one place.
+#' @param server A string naming the server from which data
+#' are to be acquired. See \dQuote{History}.
+#'
+#' @section History:
+#' Until 25 March 2017, the default server was
+#' \code{"ftp.ssmi.com/amsr2/bmaps_v07.2"}, but this was changed when the author
+#' discovered that this FTP site had been changed to require users to create
+#' accounts to register for downloads.  The default was changed to
+#' \code{"http://data.remss.com/amsr2/bmaps_v07.2"} on the named date.
+#' This site was found by a web search, but it seems to provide proper data.
+#' It is assumed that users will do some checking on the best source.
 #'
 #' @return A character value indicating the filename of the result; if
 #' there is a problem of any kind, the result will be the empty
@@ -409,9 +425,21 @@ setMethod(f="plot",
 #'
 #' @template downloadWarningTemplate
 #'
+#' @examples
+#'\dontrun{
+#' ## The download takes several seconds.
+#' f <- download.amsr(2017, 1, 14) # Jan 14, 2017
+#' d <- read.amsr(f)
+#' plot(d)
+#' mtext(d[["filename"]], side=3, line=0, adj=0)
+#'}
 #' @family functions that download files
 #' @family things related to \code{amsr} data
-download.amsr <- function(year, month, day, destdir=".", server="ftp.ssmi.com/amsr2/bmaps_v07.2")
+#' @references
+#' \url{http://images.remss.com/amsr/amsr2_data_daily.html}
+#' provides daily images going back to 2012. Three-day,
+#' monthly, and monthly composites are also provided on that site.
+download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v07.2")
 {
     ## ftp ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/y2016/m08/f34_20160804v7.2.gz
     if (missing(year) && missing(month)) {
@@ -428,14 +456,14 @@ download.amsr <- function(year, month, day, destdir=".", server="ftp.ssmi.com/am
     day <- as.integer(day)
     destfile <- sprintf("f34_%4d%02d%02dv7.2.gz", year, month, day)
     destpath <- paste(destdir, destfile, sep="/")
+    ## example
+    ## http://data.remss.com/amsr2/bmaps_v07.2/y2015/m11/f34_20151101v7.2.gz
     if (tail(destpath, 1)=="/") # remove trailing slash
         destpath <- substr(destpath, 1, length(destpath)-1)
     if (0 == length(list.files(path=destdir, pattern=paste("^", destfile, "$", sep="")))) {
-        cmd <- sprintf("ftp ftp://%s/y%4d/m%02d/%s", server, year, month, destfile)
-        message("Downloading ", destfile)
-        message("    ", cmd)
-        system(cmd)
-        if (destdir != ".")
+        source <- sprintf("%s/y%4d/m%02d/%s", server, year, month, destfile)
+        bad <- download.file(source, destfile)
+        if (!bad && destdir != ".")
             system(paste("mv", destfile, destpath))
     } else {
         message("Not downloading ", destfile, " because it is already present in ", destdir)

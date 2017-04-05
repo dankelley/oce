@@ -209,24 +209,22 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ##tpp.minutes <- readBin(FLD[23], "integer", n=1, size=1)
     ##tpp.seconds <- readBin(FLD[24], "integer", n=1, size=1)
     ##tpp.hundredths <- readBin(FLD[25], "integer", n=1, size=1)
-    bits <- substr(byteToBinary(FLD[26], endian="big"), 4, 5)
+    coordTransform <- byteToBinary(FLD[26], endian="big")
+    bits <- substr(byteToBinary(FLD[26], endian="big"), 4, 5)    
     originalCoordinate <- "???"
     if (bits == "00") originalCoordinate <- "beam"
-    else if (bits == "01") originalCoordinate <- "instrument"
-    else if (bits == "10") originalCoordinate <- "xyz"
+    else if (bits == "01") originalCoordinate <- "xyz"
+    else if (bits == "10") originalCoordinate <- "sfm"
     else if (bits == "11") originalCoordinate <- "enu"
-    if (isSentinel) {
-        ## FIXME: does this apply to a workhorse instrument too?
-        bits <- substr(byteToBinary(FLD[26], endian="big"), 6, 6)
-        if (bits == "1") tiltUsed <- TRUE
-        else tiltUsed <- FALSE
-        bits <- substr(byteToBinary(FLD[26], endian="big"), 7, 7)
-        if (bits == "1") threeBeamUsed <- TRUE
-        else threeBeamUsed <- FALSE
-        bits <- substr(byteToBinary(FLD[26], endian="big"), 8, 8)
-        if (bits == "1") binMappingUsed <- TRUE
-        else binMappingUsed <- FALSE
-    }
+    bits <- substr(byteToBinary(FLD[26], endian="big"), 6, 6)
+    if (bits == "1") tiltUsed <- TRUE
+    else tiltUsed <- FALSE
+    bits <- substr(byteToBinary(FLD[26], endian="big"), 7, 7)
+    if (bits == "1") threeBeamUsed <- TRUE
+    else threeBeamUsed <- FALSE
+    bits <- substr(byteToBinary(FLD[26], endian="big"), 8, 8)
+    if (bits == "1") binMappingUsed <- TRUE
+    else binMappingUsed <- FALSE
     headingAlignment <- 0.01 * readBin(FLD[27:28], "integer", n=1, size=2, endian="little") # WCODF p 130
     headingBias <- 0.01 * readBin(FLD[29:30], "integer", n=1, size=2, endian="little") # WCODF p 130
     oceDebug(debug, "headingAlignment=", headingAlignment, "; headingBias=", headingBias, "\n")
@@ -371,10 +369,11 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
                 ##tpp.minutes=tpp.minutes,
                 ##tpp.seconds=tpp.seconds,
                 ##tpp.hundredths=tpp.hundredths,
+                coordTransform=coordTransform,
                 originalCoordinate=originalCoordinate,
-                ## FIXME: tiltUsed?
-                ## FIXME: threeBeamUsed?
-                ## FIXME: binMappingUsed?
+                tiltUsed=tiltUsed,
+                threeBeamUsed=threeBeamUsed,
+                binMappingUsed=binMappingUsed,
                 headingAlignment=headingAlignment,
                 headingBias=headingBias,
                 sensorSource=sensorSource,

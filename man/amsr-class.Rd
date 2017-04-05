@@ -16,7 +16,8 @@ slot of amsr objects: \code{timeDay},
 the 10.7GHz band), \code{MFwindDay} (wind at 10m sensed at 18.7GHz),
 \code{vaporDay}, \code{cloudDay}, and \code{rainDay}, along with
 similarly-named items that end in \code{Night}.
-See [1] for additional information on the instrument.
+See [1] for additional information on the instrument, how
+to cite the data source in a paper, etc.
 }
 \details{
 The bands are stored in \code{\link{raw}} form, to save storage. The accessor
@@ -25,7 +26,11 @@ form or in physical units; \code{\link{plot,amsr-method}}, and
 \code{\link{summary,amsr-method}} work with physical units.
 }
 \references{
-1. \url{http://www.remss.com/missions/amsre}
+1. Information on the satellite, how to cite the data, etc. is
+provided at \url{http://www.remss.com/missions/amsr}.
+
+2. A simple interface for viewing and downloading data is at
+\url{http://images.remss.com/amsr/amsr2_data_daily.html}.
 }
 \seealso{
 \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.

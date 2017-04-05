@@ -38,7 +38,7 @@ setClass("topo", contains="oce")
 #'
 #' @source
 #' The binary ETOPO5 dataset was downloaded in late 2009 from the NOAA website,
-#' \samp{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5} (link last checked 2016-06-12),
+#' \samp{http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5},
 #' decoded, decimated from 1/12th degree resolution to 1/2 degree resolution, and
 #' passed through \code{\link{matrixShiftLongitude}} so that longitude is
 #' between -180 and 180 degrees.
@@ -183,7 +183,7 @@ setMethod(f="subset",
 
 #' Download and Cache a topo File
 #'
-#' Data are downloaded (from \code{http://maps.ngdc.noaa.gov/viewers/wcs-client/}, by
+#' Data are downloaded (from \samp{https://maps.ngdc.noaa.gov/viewers/wcs-client/}, by
 #' default) and a string containing the full path to the downloaded file is returned.
 #' Typically, this return value is used with \code{\link{read.topo}} to read the
 #' data. Subsequent calls to \code{download.topo}
@@ -230,7 +230,7 @@ setMethod(f="subset",
 #'
 #' @param server Optional string indicating the server from which to get the data.
 #' If not supplied, the humorously-named default
-#' \code{"http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"}
+#' \samp{"http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"}
 #' will be used.
 #'
 #' @template debugTemplate
@@ -252,9 +252,9 @@ setMethod(f="subset",
 #'
 #' @section History:
 #' When this function was created in August 2016, the default server was
-#' \code{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
+#' \samp{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
 #' but this was found to fail in December 2016, so the default was changed to
-#' \code{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}, which
+#' \samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}, which
 #' is what is used by \code{\link[marmap]{getNOAA.bathy}} in the
 #' \CRANpkg{marmap} package.
 #'
@@ -263,7 +263,7 @@ setMethod(f="subset",
 #' @template downloadWarningTemplate
 #'
 #' @references
-#' 1. \url{http://www.ngdc.noaa.gov/mgg/global/global.html}
+#' 1. \samp{https://www.ngdc.noaa.gov/mgg/global/global.html}
 #'
 #' 2. Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
 #' Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum

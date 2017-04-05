@@ -1842,7 +1842,7 @@ read.netcdf <- function(file, ...)
 #'
 #' [4] Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
 #' Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
-#' \samp{http://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html} (link last checked 2016-06-12).
+#' \samp{http://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}.
 #'
 #' [5] Stephenson, David B., 2005. Comment on ``Color schemes for improved data
 #' graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).

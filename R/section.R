@@ -361,6 +361,14 @@ setMethod(f="[[",
                   res <- NULL
                   for (stn in x[['station']])
                       res <- c(res, stn[['station']])
+              } else if ("CT" == i) {
+                  res <- NULL
+                  for (station in x[["station"]])
+                      res <- c(res, station[["CT"]])
+              } else if ("SA" == i) {
+                  res <- NULL
+                  for (station in x[["station"]])
+                      res <- c(res, station[["SA"]])
               } else if ("dynamic height" == i) {
                   res <- swDynamicHeight(x)
               } else if ("distance" == i) {

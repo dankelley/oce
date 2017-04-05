@@ -9,7 +9,7 @@ composite(object, ...)
 \arguments{
 \item{object}{Either a \code{\link{list}} of \link{oce-class} objects, in
 which case this is the only argument, or a single \link{oce-class} object,
-in which case at least one other argument (an object of the size)
+in which case at least one other argument (an object of the same size)
 must be supplied.}
 
 \item{...}{Ignored, if \code{object} is a list. Otherwise, one or more
@@ -20,9 +20,6 @@ Items within the \code{data} slots of the
 objects that are supplied as arguments are averaged in a way that
 makes sense for the object class, i.e. taking into account
 the particular bad-data codes of that particular class.
-}
-\details{
-This only works for objects inheriting from \code{\link{amsr-class}}.
 }
 \seealso{
 Other functions that create composite objects: \code{\link{composite,amsr-method}},

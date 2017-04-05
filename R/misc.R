@@ -1972,7 +1972,8 @@ fullFilename <- function(filename)
 #' parentheses or brackets that enclose it. If not provided, then
 #' \code{\link{getOption}("oceUnitSep")} is checked. If that exists, then it is
 #' used as the separator; if not, no separator is used.
-#' @param unit optional unit to use, an expression (ignored at present)
+#' @param unit optional unit to use, if the default is not satisfactory. This
+#' might be the case if for example temperature was not measured in Celcius.
 #' @return A character string or expression, in either a long or a shorter
 #' format, for use in the indicated axis at the present plot size.  Whether the
 #' unit is enclosed in parentheses or square brackets is determined by the
@@ -2854,22 +2855,36 @@ interpBarnes <- function(x, y, z, w,
 
 #' Coriolis parameter on rotating earth
 #'
-#' Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude.
+#' Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude [1],
+#' assuming earth siderial angular rotation rate
+#' \eqn{omega}{omega}=7292115e-11 rad/s. See [1] for general notes, and
+#' see [2] for comments on temporal variations
+#' of \eqn{omega}{omega}.
 #'
 #' @param latitude Vector of latitudes in \eqn{^\circ}{deg}N or radians north of the equator.
 #' @param degrees Flag indicating whether degrees are used for latitude; if set
 #' to \code{FALSE}, radians are used.
 #' @return Coriolis parameter [radian/s].
 #' @author Dan Kelley
-#' @references Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
+#' @references
+#' 1. Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic
 #' Press, New York, 662 pp.
+#'
+#' 2. Groten, E., 2004: Fundamental Parameters and Current, 2004. Best
+#'  Estimates of the Parameters of Common Relevance to Astronomy, Geodesy,
+#'  and Geodynamics. Journal of Geodesy, 77:724-797.
+#'  (downloaded from
+#' \code{http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf}
+#' March 11, 2017).
 #' @examples
 #' C <- coriolis(45) # 1e-4
 coriolis <- function(latitude, degrees=TRUE)
 {
     ## Siderial day 86164.1 s.
     if (degrees) latitude <- latitude * 0.0174532925199433
-    1.458423010785138e-4 * sin(latitude)
+    ## http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf
+    7292115e-11 
+    2 * 7292115e-11 * sin(latitude)
 }
 
 
@@ -3587,7 +3602,7 @@ integerToAscii <- function(i)
 #' @author Dan Kelley
 #' @seealso Use \code{\link{magneticField}} to determine the declination,
 #' inclination and intensity at a given spot on the world, at a given time.
-#' @references \url{http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
+#' @references \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
 #'
 #' @family things related to magnetism
 applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
@@ -3619,7 +3634,7 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
 #'
 #' Implements the 12th generation International Geomagnetic Reference Field
 #' (IGRF), based on a reworked version of a Fortran program downloaded from a
-#' NOAA website [1,2].  The code (subroutine \code{igrf12syn}) seems to have
+#' NOAA website [1].  The code (subroutine \code{igrf12syn}) seems to have
 #' been written by Susan Macmillan of the British Geological Survey.  Comments
 #' in the code indicate that it employs coefficients agreed to in December 2014
 #' by the IAGA Working Group V-MOD.  Comments in the \code{igrf12syn} source
@@ -3640,8 +3655,9 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
 #' SM to DK dated June 5, 2015).
 #' @references
 #' 1. The underlying Fortran code is from \code{igrf12.f}, downloaded the NOAA
-#' website (\url{http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
-#' 2015.
+#' website (\samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}) on June 7,
+#' 2015. (That website suggests that there have been no update to the
+#' algorithm as of March 29, 2017.)
 #' @examples
 #' library(oce)
 #' # Halifax NS

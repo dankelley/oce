@@ -41,7 +41,7 @@ their centreline.
 \if{html}{\figure{adpgeometry2.png}{options: width=400px alt="Figure: adpgeometry2.png"}}
 
 Note that \code{adp[["oceCoordinate"]]} stores the present coordinate system
-of the object, and it has possible values \code{"beam"}, \code{"xyz"} or
+of the object, and it has possible values \code{"beam"}, \code{"xyz"}, \code{"sfm"} or
 \code{"enu"}.  (This should not be confused with
 \code{adp[["originalCoordinate"]]}, which stores the coordinate system used
 in the original data file.)
@@ -129,7 +129,7 @@ the RDI gui use inconsistent names for most items.
 For Teledyne-RDI profilers, there are four three-dimensional arrays
 holding beamwise data.  In these, the first index indicates time, the
 second bin number, and the third beam number (or coordinate number, for
-data in \code{xyz}, \code{enu} or \code{other} coordinate systems).  In
+data in \code{xyz}, \code{sfm}, \code{enu} or \code{other} coordinate systems).  In
 the list below, the quoted phrases are quantities as defined in Figure 9
 of reference 1.
 

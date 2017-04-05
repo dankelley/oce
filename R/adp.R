@@ -37,7 +37,7 @@
 #' \if{html}{\figure{adpgeometry2.png}{options: width=400px alt="Figure: adpgeometry2.png"}}
 #'
 #' Note that \code{adp[["oceCoordinate"]]} stores the present coordinate system
-#' of the object, and it has possible values \code{"beam"}, \code{"xyz"} or
+#' of the object, and it has possible values \code{"beam"}, \code{"xyz"}, \code{"sfm"} or
 #' \code{"enu"}.  (This should not be confused with
 #' \code{adp[["originalCoordinate"]]}, which stores the coordinate system used
 #' in the original data file.)
@@ -125,7 +125,7 @@
 #' For Teledyne-RDI profilers, there are four three-dimensional arrays
 #' holding beamwise data.  In these, the first index indicates time, the
 #' second bin number, and the third beam number (or coordinate number, for
-#' data in \code{xyz}, \code{enu} or \code{other} coordinate systems).  In
+#' data in \code{xyz}, \code{sfm}, \code{enu} or \code{other} coordinate systems).  In
 #' the list below, the quoted phrases are quantities as defined in Figure 9
 #' of reference 1.
 #'
@@ -2275,6 +2275,8 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         x <- xyzToEnuAdp(beamToXyzAdp(x, debug=debug-1), declination=declination, debug=debug-1)
     } else if (coord == "xyz") {
         x <- xyzToEnuAdp(x, declination=declination, debug=debug-1)
+    } else if (coord == "sfm") {
+        x <- xyzToEnuAdp(x, declination=declination, debug=debug-1)
     } else if (coord == "enu") {
         ;
     } else {
@@ -2416,7 +2418,6 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #'
 #' 2. WHOI/USGS-provided Matlab code for beam-enu transformation
 #' \samp{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
-#' (link last checked 2016-08-05)
 #'
 #' @family things related to \code{adp} data
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
@@ -2572,7 +2573,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 #' @template debugTemplate
 #' @return An object with \code{data$v[,,1:3]} altered appropriately, and
 #' \code{metadata$oce.orientation} changed from \code{xyz} to \code{enu}.
-#' @author Dan Kelley
+#' @author Dan Kelley and Clark Richards
 #' @references
 #' 1. RD Instruments, 1998.  \emph{ADCP Coordinate
 #' Transformation, formulas and calculations.} P/N 951-6079-00 (July 1998).
@@ -2588,8 +2589,8 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     oceDebug(debug, "xyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="", unindent=1)
     if (!inherits(x, "adp"))
         stop("method is only for objects of class '", "adp", "'")
-    if (x@metadata$oceCoordinate != "xyz")
-        stop("input must be in xyz coordinates")
+    if (x@metadata$oceCoordinate != "xyz" & x@metadata$oceCoordinate != "sfm")
+        stop("input must be in xyz or sfm coordinates")
     res <- x
     heading <- res@data$heading
     pitch <- res@data$pitch
@@ -2601,8 +2602,20 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     if (1 == length(agrep("rdi", x@metadata$manufacturer, ignore.case=TRUE))) {
         ## "teledyn rdi"
         ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14, revised 2011-03-15
-        if (res@metadata$orientation == "upward") {
-            oceDebug(debug, "Case 1: RDI ADCP with upward-pointing sensor.\n")
+        if (res@metadata$oceCoordinate == "sfm") {
+            oceDebug(debug, "Case 1: RDI ADCP in SFM coordinates.\n")
+            oceDebug(debug, "        No coordinate changes required prior to ENU.\n")
+            starboard <- res@data$v[, , 1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            forward <- res@data$v[, , 2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            mast <- res@data$v[, , 3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            if (haveBv) {
+                ## bottom velocity
+                starboardBv <- res@data$bv[, 1]
+                forwardBv <- res@data$bv[, 2]
+                mastBv <- res@data$bv[, 3]
+            }
+        } else if (res@metadata$orientation == "upward") {
+            oceDebug(debug, "Case 2: RDI ADCP in XYZ coordinates with upward-pointing sensor.\n")
             oceDebug(debug, "        Using S=-X, F=Y, and M=-Z.\n")
             ## As an alternative to the next three lines, could just add 180 degrees to roll
             starboard <- -res@data$v[, , 1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
@@ -2615,7 +2628,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
                 mastBv <- -res@data$bv[, 3]
             }
         } else if (res@metadata$orientation == "downward") {
-            oceDebug(debug, "Case 2: RDI ADCP with downward-pointing sensor.\n")
+            oceDebug(debug, "Case 3: RDI ADCP in XYZ coordinates with downward-pointing sensor.\n")
             oceDebug(debug, "        Using roll=-roll, S=X, F=Y, and M=Z.\n")
             roll <- -roll
             starboard <- res@data$v[, , 1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
