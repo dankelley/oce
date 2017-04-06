@@ -3,9 +3,9 @@
 
 #' Convert From Geographical to Geodesic Coordinates
 #'
-#' The method employs geodesic calculations of the distances along geodesic
-#' curves, i.e. akin to great-circle curves that go along the surface of the
-#' ellipsoidal earth. See \dQuote{Caution}.
+#' The method, which may be useful in determining coordinate systems for a
+#' mooring array or a ship transect, employs geodesic calculations of the distances
+#' along geodesic curves.  See \dQuote{Caution}.
 #'
 #' The calculation is as follows.
 #' Consider the \code{i}-th point in the \code{longitude} and \code{latitude}
@@ -18,65 +18,57 @@
 #' A similar procedure is used for \code{y[i]}.
 #'
 #' @section Caution: This scheme is without known precedent in the literature, and
-#' users would be better off using \code{\link{lonlat2utm}} instead.
+#' users might be better off using \code{\link{lonlat2utm}} instead. Certainly,
+#' they should read the documentation very carefully, to see just what this
+#' function does.
 #'
 #' @param longitude,latitude vector of longitude and latitude
 #' @param longitudeRef,latitudeRef numeric reference location. Poor results
 #' will be returned if these values are not close to the locations described
 #' by \code{longitude} and \code{latitude}. A sensible approach might be
 #' to set \code{longitudeRef} to \code{longitude[1]}, etc.
-#' @param rotate numeric, counterclockwise angle, in degrees, by which to
-#' rotate the (\code{x}, \code{y}) coordinates about the reference point.  This
-#' is useful in rotating the coordinate system to align with a coastline, a
-#' mean current, etc.
 #' @template debugTemplate
 #'
-#' @return Data frame of \code{x} and \code{y}, geodesic distance components,
-#' measured in metres. See \dQuote{Details} for the definitions.
+#' @return \code{geodXy} returns a data frame of \code{x} and \code{y},
+#' geodesic distance components, measured in metres.
 #'
-#' @section Change notifications: Until 2015-11-02, the names of the arguments
-#' were \code{lon}, \code{lat}, \code{lon.ref} and \code{lat.ref}; these were
-#' changed to be more in keeping with names in the rest of oce. Until
-#' 2017-04-05, defaults of 0 and 0 were used for the reference location, but
-#' this is very seldom useful, and can yield bad results if the goal is to
-#' set up an x-y system for moorings or CTD locations.
+#' @section Change history:
+#' On 2015-11-02, the names of the arguments were changed from \code{lon}, etc., to
+#' \code{longitude}, etc., to be in keeping with other oce functions.
+#'
+#' On 2017-04-05, four changes were made.
+#' 1. Default values of \code{longitudeRef} and \code{latitudeRef} were removed,
+#' since the old defaults were inappropriate to most work.
+#' 2. The argument called \code{rotate} was eliminated, because it only made
+#' sense if the mean resultant x and y were zero.
+#' 3. The example was made more useful.
+#' 4. Pointers were made to \code{\link{lonlat2utm}}, which may be more useful.
 #'
 #' @author Dan Kelley
 #' @seealso \code{\link{geodDist}}
 #' @examples
+#' # Develop a transect-based axis system for western data(section) stations
 #' library(oce)
 #' data(section)
-#' lon <- section[["longitude", "byStation"]]
-#' lat<- section[["latitude", "byStation"]]
-#' lon <- lon
-#' lat <- lat
-#' lonR <- lon[1]
-#' latR <- lat[1]
-#' ## 1. ellipse
-#' km <- 1e3 # nicer for graphs
-#' xy <- geodXy(lon, lat, lonR, latR) / km
-#' ## 2. sphere, with scale tailored to mean local latitude
-#' kmperdeg <- geodDist(0, mean(lat)-0.5, 0, mean(lat)+0.5) # mid-latitude estimate
-#' X <- (lon - lonR) * kmperdeg * cos(lat * pi / 180)
-#' Y <- (lat - latR) * kmperdeg
-#' XY <- list(x=X, y=Y)
-#' # plot, with labels for sphere-ellipse deviations
-#' par(mfrow=c(2,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-#' plot(lon, lat, asp=1/cos(median(lat*pi/180)))
-#' plot(xy$x, xy$y, asp=1, xlab="x [km]", ylab="y [km]")
-#' rms<- function(x) sqrt(mean(x^2))
-#' mtext(sprintf("RMS dev.: x %.2f km, y %.2f km",
-#'               rms(xy$x-XY$x), rms(xy$y-XY$y)), side=3, line=-1)
-#' mtext(sprintf("RMS dev / span: x %.2g, y %.2g",
-#'               rms(xy$x-XY$x)/diff(range(xy$x)),
-#'               rms(xy$y-XY$y)/diff(range(xy$y))),
-#'       side=3, line=-2)
+#' lon <- tail(section[["longitude", "byStation"]], 26)
+#' lat <- tail(section[["latitude", "byStation"]], 26)
+#' lonR <- median(lon)
+#' latR <- median(lat)
+#' data(coastlineWorld)
+#' mapPlot(coastlineWorld, proj="+proj=merc",
+#'         longitudelim=c(-75,-65), latitudelim=c(30,45), fill="gray")
+#' mapPoints(lon, lat, col=2)
+#' XY <- geodXy(lon,lat,mean(lon), mean(lat))
+#' angle <- 180/pi*atan(coef(lm(y~x, data=XY))[2])
+#' mapCoordinateSystem(lonR, latR, 500, angle, col=3)
 #' @family functions relating to geodesy
-geodXy <- function(longitude, latitude, longitudeRef=0, latitudeRef=0, rotate=0, debug=getOption("oceDebug"))
+geodXy <- function(longitude, latitude, longitudeRef, latitudeRef, debug=getOption("oceDebug"))
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
     if (missing(longitude) || missing(latitude)) stop("must provide longitude and latitude")
+    if (missing(longitudeRef)) stop("must provide longitudeRef")
+    if (missing(latitudeRef)) stop("must provide latitudeRef")
     n <- length(longitude)
     if (length(latitude) != n) stop("longitude and latitude vectors of unequal length")
     xy  <- .C("geod_xy", NAOK=TRUE, PACKAGE="oce",
@@ -90,14 +82,14 @@ geodXy <- function(longitude, latitude, longitudeRef=0, latitudeRef=0, rotate=0,
               x=double(n),
               y=double(n),
               as.integer(debug))
-    if (rotate != 0) {
-        S <- sin(rotate * pi / 180)
-        C <- cos(rotate * pi / 180)
-        r <- matrix(c(C, S, -S, C), nrow=2)
-        rxy <- r %*% rbind(xy$x, xy$y)
-        xy$x <- rxy[1, ]
-        xy$y <- rxy[2, ]
-    }
+    ## if (rotate != 0) {
+    ##     S <- sin(rotate * pi / 180)
+    ##     C <- cos(rotate * pi / 180)
+    ##     r <- matrix(c(C, S, -S, C), nrow=2)
+    ##     rxy <- r %*% rbind(xy$x, xy$y)
+    ##     xy$x <- rxy[1, ]
+    ##     xy$y <- rxy[2, ]
+    ## }
     data.frame(x=xy$x, y=xy$y)
 }
 
@@ -121,7 +113,9 @@ geodXy <- function(longitude, latitude, longitudeRef=0, latitudeRef=0, rotate=0,
 #' @template debugTemplate
 #'
 #' @section Caution: This scheme is without known precedent in the literature, and
-#' users would be better off using \code{\link{lonlat2utm}} instead.
+#' users might be better off using \code{\link{lonlat2utm}} instead. Certainly,
+#' they should read the documentation very carefully, to see just what this
+#' function does.
 #'
 #' @return a data frame containing \code{longitude} and \code{latitude}
 #' @family functions relating to geodesy

@@ -41,7 +41,9 @@ finding a minimum of the mismatch function.
 }
 \section{Caution}{
  This scheme is without known precedent in the literature, and
-users would be better off using \code{\link{lonlat2utm}} instead.
+users might be better off using \code{\link{lonlat2utm}} instead. Certainly,
+they should read the documentation very carefully, to see just what this
+function does.
 }
 
 \seealso{
