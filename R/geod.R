@@ -56,7 +56,7 @@
 #' latR <- median(lat)
 #' data(coastlineWorld)
 #' mapPlot(coastlineWorld, proj="+proj=merc",
-#'         longitudelim=c(-75,-65), latitudelim=c(30,45), fill="gray")
+#'         longitudelim=c(-75,-65), latitudelim=c(30,45), col="gray")
 #' mapPoints(lon, lat, col=2)
 #' XY <- geodXy(lon,lat,mean(lon), mean(lat))
 #' angle <- 180/pi*atan(coef(lm(y~x, data=XY))[2])
