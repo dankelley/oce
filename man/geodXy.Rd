@@ -29,7 +29,7 @@ geodesic distance components, measured in metres.
 }
 \description{
 The method, which may be useful in determining coordinate systems for a
-mooring array or a ship transect, employs geodesic calculations of the distances
+mooring array or a ship transects, calculates (x,y) from distance calculations
 along geodesic curves.  See \dQuote{Caution}.
 }
 \details{
@@ -45,9 +45,7 @@ A similar procedure is used for \code{y[i]}.
 }
 \section{Caution}{
  This scheme is without known precedent in the literature, and
-users might be better off using \code{\link{lonlat2utm}} instead. Certainly,
-they should read the documentation very carefully, to see just what this
-function does.
+users should read the documentation carefully before deciding to use it.
 }
 
 \section{Change history}{
@@ -65,20 +63,26 @@ sense if the mean resultant x and y were zero.
 }
 
 \examples{
-# Develop a transect-based axis system for western data(section) stations
+# Develop a transect-based axis system for final data(section) stations
 library(oce)
 data(section)
 lon <- tail(section[["longitude", "byStation"]], 26)
 lat <- tail(section[["latitude", "byStation"]], 26)
-lonR <- median(lon)
-latR <- median(lat)
+lonR <- tail(lon, 1)
+latR <- tail(lat, 1)
 data(coastlineWorld)
 mapPlot(coastlineWorld, proj="+proj=merc",
-        longitudelim=c(-75,-65), latitudelim=c(30,45), col="gray")
-mapPoints(lon, lat, col=2)
+        longitudelim=c(-75,-65), latitudelim=c(35,43), col="gray")
+mapPoints(lon, lat)
 XY <- geodXy(lon,lat,mean(lon), mean(lat))
 angle <- 180/pi*atan(coef(lm(y~x, data=XY))[2])
-mapCoordinateSystem(lonR, latR, 500, angle, col=3)
+mapCoordinateSystem(lonR, latR, 500, angle, col=2)
+# Compare UTM calculation
+UTM <- lonlat2utm(lon, lat, zone=18) # we need to set the zone for this task!
+angleUTM <- 180/pi*atan(coef(lm(northing~easting, data=UTM))[2])
+mapCoordinateSystem(lonR, latR, 500, angleUTM, col=3)
+legend("topright", lwd=1, col=2:3, bg="white", title="Axis Rotation Angle", 
+       legend=c(sprintf("geod: \%.1f deg", angle), sprintf("utm: \%.1f deg",angleUTM)))
 }
 \seealso{
 \code{\link{geodDist}}
