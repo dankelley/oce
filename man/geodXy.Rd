@@ -4,21 +4,29 @@
 \alias{geodXy}
 \title{Convert From Geographical to Geodesic Coordinates}
 \usage{
-geodXy(longitude, latitude, longitudeRef = 0, latitudeRef = 0, rotate = 0)
+geodXy(longitude, latitude, longitudeRef = 0, latitudeRef = 0, rotate = 0,
+  debug = getOption("oceDebug"))
 }
 \arguments{
-\item{longitude}{vector of longitudes}
+\item{longitude, latitude}{vector of longitude and latitude}
 
-\item{latitude}{vector of latitudes}
-
-\item{longitudeRef}{numeric, reference longitude}
-
-\item{latitudeRef}{numeric, reference latitude}
+\item{longitudeRef, latitudeRef}{numeric reference location. Poor results
+will be returned if these values are not close to the locations described
+by \code{longitude} and \code{latitude}. A sensible approach might be
+to set \code{longitudeRef} to \code{longitude[1]}, etc.}
 
 \item{rotate}{numeric, counterclockwise angle, in degrees, by which to
 rotate the (\code{x}, \code{y}) coordinates about the reference point.  This
 is useful in rotating the coordinate system to align with a coastline, a
 mean current, etc.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 Data frame of \code{x} and \code{y}, geodesic distance components,
@@ -27,36 +35,31 @@ measured in metres. See \dQuote{Details} for the definitions.
 \description{
 The method employs geodesic calculations of the distances along geodesic
 curves, i.e. akin to great-circle curves that go along the surface of the
-ellipsoidal earth; see \code{\link{geodDist}}. The results are minimally
-sensitive to the ellipsoidal geometry assumed, but this is not a matter in
-serious question today. Note that the results are quite unlike the values
-returned from a map projection; in the latter case, the results vary greatly
-across a range of popular projections. Use the present function for things
-like gridding data or calculating drifter speeds.
+ellipsoidal earth. See \dQuote{Caution}.
 }
 \details{
+The calculation is as follows.
 Consider the \code{i}-th point in the \code{longitude} and \code{latitude}
-vectors.  The value of \code{x[i]} is inferred from the distance along a
-geodesic curve from from (\code{longitude[i]}, \code{latitude[i]}) to
-(\code{longitudeRef[i]}, \code{latitude[i]}), i.e. the distance along a line
-of constant latitude.  Similarly, \code{y[i]} is inferred the geodesic
-distance from (\code{longitude[i]}, \code{latitude[i]}) to
-(\code{longitude[i]}, \code{latitudeRef}). Once the distances are inferred,
-signs are calculated from determining the sign of
-\code{longitude[i]-longitudeRef} for \code{x[i]} and similarly \code{y[i]}.
+vectors.  To calculate \code{x[i]}, \code{\link{geodDist}} is
+used is to find the distance \emph{along a
+geodesic curve} connecting (\code{longitude[i]}, \code{latitude[i]}) with
+(\code{longitudeRef}, \code{latitude[i]}). The resultant distance
+is multiplied by -1 if \code{longitude[i]-longitudeRef} is negative,
+and the result is assigned to \code{x[i]}. 
+A similar procedure is used for \code{y[i]}.
 }
-\section{Change notification}{
+\section{Caution}{
+ This scheme is without known precedent in the literature, and
+users would be better off using \code{\link{lonlat2utm}} instead.
+}
+
+\section{Change notifications}{
  Until 2015-11-02, the names of the arguments
 were \code{lon}, \code{lat}, \code{lon.ref} and \code{lat.ref}; these were
-changed to be more in keeping with names in the rest of oce.
-}
-
-\section{Caution}{
- The calculation is devised by the author and is without known
-precedent in the literature, so users might have to explain it in their
-publications--hence the detailed discussion below.
-
- This is possibly useful, possibly not. The method changed in Oct, 2015.
+changed to be more in keeping with names in the rest of oce. Until
+2017-04-05, defaults of 0 and 0 were used for the reference location, but
+this is very seldom useful, and can yield bad results if the goal is to
+set up an x-y system for moorings or CTD locations.
 }
 
 \examples{
@@ -87,7 +90,6 @@ mtext(sprintf("RMS dev / span: x \%.2g, y \%.2g",
               rms(xy$x-XY$x)/diff(range(xy$x)),
               rms(xy$y-XY$y)/diff(range(xy$y))),
       side=3, line=-2)
-
 }
 \seealso{
 \code{\link{geodDist}}

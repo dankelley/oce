@@ -4,8 +4,8 @@ test_that("forward=inverse", {
           data(section)
           lon <- section[["longitude", "byStation"]]
           lat<- section[["latitude", "byStation"]]
-          xy <- geodXy(lon, lat)
-          LONLAT <- geodXyInverse(xy$x, xy$y)
+          xy <- geodXy(lon, lat, longitudeRef=lon[1], latitudeRef=lat[1])
+          LONLAT <- geodXyInverse(xy$x, xy$y, longitudeRef=lon[1], latitudeRef=lat[1])
           err <- mean(sqrt((lon-LONLAT$longitude)^2+(lat-LONLAT$latitude)^2))
           expect_equal(lon, LONLAT$longitude, tolerance=1e-5) # 1m criterion; basin-wide data
           expect_equal(lat, LONLAT$latitude, tolerance=1e-5) # 1m criterion; basin-wide data
@@ -14,10 +14,10 @@ test_that("forward=inverse", {
           lonNA[100] <- NA
           latNA <- lat
           latNA[100] <- NA
-          xyNA <- geodXy(lonNA, latNA)
+          xyNA <- geodXy(lonNA, latNA, longitudeRef=lon[1], latitudeRef=lat[1])
           expect_true(is.na(xyNA$x[100]))
           expect_true(is.na(xyNA$y[100]))
-          LONLATNA <- geodXyInverse(xyNA$x, xyNA$y)
+          LONLATNA <- geodXyInverse(xyNA$x, xyNA$y, longitudeRef=lon[1], latitudeRef=lat[1])
           expect_true(is.na(LONLATNA$longitude[100]))
           expect_true(is.na(LONLATNA$latitude[100]))
           i <- seq_along(lon)
