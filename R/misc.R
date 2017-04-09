@@ -476,11 +476,28 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
     ##t <- try(x <- data.frame(x), silent=TRUE)
     ##if (class(t) == "try-error")
     ##    stop("cannot coerce 'data' into a data.frame")
-    fSplit <- split(f, cut(x, xbreaks, labels=FALSE))
-    res <- sapply(fSplit, FUN, ...)
-    res[!is.finite(res)] <- NA
-    names(res) <- NULL
-    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=res)
+    fSplit <- split(f, cut(x, xbreaks, include.lowest=TRUE, labels=FALSE))
+    ##message("length(xbreaks)=", length(xbreaks))
+    ##message("length(fSplit)=", length(fSplit))
+    result <- sapply(fSplit, FUN, ...)
+    result[!is.finite(result)] <- NA
+    names(result) <- NULL
+    ## Put some NAs at start and end of 'result', if required because of
+    ## 'xbreaks' bins that have no 'x' data.
+    xmin <- min(x, na.rm=TRUE)
+    xmax <- max(x, na.rm=TRUE)
+    nxbreaks <- length(xbreaks)
+    if (xmin > xbreaks[2]) {
+        m <- which(xbreaks < xmin)[1]
+        ##message("condition 1; m=", m)
+        result <- c(rep(NA, m), result)
+    }
+    if (xmax < xbreaks[nxbreaks]) {
+        m <- which(xbreaks > xmax)[1]
+        ##message("condition 2; m=", m)
+        result <- c(result, rep(NA, nxbreaks-m))
+    }
+    list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks), result=result)
 }
 
 
