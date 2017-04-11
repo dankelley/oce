@@ -1463,6 +1463,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         ##} else if (as.integer(bytes[1]) == 87) {
         ##    warning("possibly this file is a sontek ADV (first byte is 87)")
     }
+    if (bytes[1] == 0xa5 && bytes[4] == 0x10) {
+        return("adp/nortek/ad2cp")
+    }
     if (bytes[1] == 0x9b && bytes[2] == 0x00) {
         warning(paste("Possibly this is an RDI CTD file. Oce cannot read such files yet, because\n",
                       " the author has not located file-format documents.  If you get such documents\n",
@@ -1597,6 +1600,8 @@ read.oce <- function(file, ...)
         return(read.aquadoppProfiler(file, processingLog=processingLog, ...))
     if (type == "adp/nortek/aquadoppHR")
         return(read.aquadoppHR(file, processingLog=processingLog, ...))
+    if (type == "adp/nortek/ad2cp")
+        stop("Nortek's AD2CP format is not handled yet")
     if (type == "adv/nortek/vector")
         return(read.adv.nortek(file, processingLog=processingLog, ...))
     if (type == "adv/sontek/adr")
