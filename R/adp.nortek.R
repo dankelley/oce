@@ -363,12 +363,13 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     fileSize <- seek(file, where=0)
     oceDebug(debug, "fileSize:", fileSize, "\n")
     buf <- readBin(file, what="raw", n=fileSize, size=1)
-    oceDebug(debug, "file starts: ", paste(paste("0x", buf[1:10], sep=""), collapse=" "), "\n")
+    oceDebug(debug, 'first 10 bytes in file: ',
+             paste(paste("0x", buf[1+0:9], sep=""), collapse=" "), "\n", sep="")
     headerSize <- as.integer(buf[2])
     oceDebug(debug, "headerSize:", headerSize, "\n")
     ID <- buf[3]
     oceDebug(debug, "ID: 0x", ID, " (NB: 0x15=burst data record; 0x16=avg data record; 0x17=bottom track record; 0x18=interleaved data record; 0xa0=string data record, e.g. GPS NMEA, comment from the FWRITE command\n", sep="")
-    dataSize <- readBin(buf[4:5], what="integer", n=1, size=2, endian="little", signed=FALSE)
+    dataSize <- readBin(buf[5:6], what="integer", n=1, size=2, endian="little", signed=FALSE)
     oceDebug(debug, "dataSize:", dataSize, "\n")
     if (ID == 0xa0) {
         oceDebug(debug, "type is 0xa0 so trying to read a string...\n")
@@ -376,8 +377,18 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         text <- gsub("\\r","",strsplit(a, "\\n")[[1]])
         print(text)
     }
-    BUF <<- buf
-    message("cannot yet read AD2CP files. returning the buffer, for some tests")
+    oceDebug(debug, "buf[1+headerSize+dataSize=", 1+headerSize+dataSize, "]=0x", buf[1+headerSize+dataSize], " (expect 0xa5)\n", sep="")
+    if (0xa5 == buf[1+headerSize+dataSize]) {
+        o <- 1 + headerSize + dataSize
+        oceDebug(debug, 'record 2 starts at BUF[', o, "]\n", sep="")
+        oceDebug(debug, 'first 10 bytes in record 2: ',
+                 paste(paste("0x", buf[o+0:9], sep=""), collapse=" "),
+                 "\n", sep="")
+        tst <- readBin(buf[o+headerSize+1:dataSize], "character", 1)
+        TST<<-tst
+    }
+    BUF <<- buf # FIXME: for coding
+    message("cannot yet read AD2CP files. returning the buffer as 'BUF', for some tests")
     buf
 }
  
