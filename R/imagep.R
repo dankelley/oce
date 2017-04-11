@@ -653,6 +653,10 @@ drawPalette <- function(zlim, zlab="",
 #' @param  missingColor A colour to be used to indicate missing data, or
 #'         \code{NULL} for transparent (to see this, try setting
 #'         \code{par("bg")<-"red"}).
+#' @param useRaster A logical value passed to \code{\link{image}}, in cases
+#'        where \code{filledContour} is \code{FALSE}. Setting \code{useRaster=TRUE}
+#'        can alleviate some anti-aliasing effects on some plot devices;
+#'        see the documentaiton for \code{\link{image}}.
 #' @param  mgp A 3-element numerical vector to use for \code{par(mgp)}, and
 #'         also for \code{par(mar)}, computed from this.  The default is
 #'         tighter than the R default, in order to use more space for the
@@ -766,6 +770,7 @@ imagep <- function(x, y, z,
                    drawTimeRange=getOption("oceDrawTimeRange"),
                    filledContour=FALSE,
                    missingColor=NULL,
+                   useRaster,
                    mgp=getOption("oceMgp"),
                    mar, mai.palette,
                    xaxs="i", yaxs="i",
@@ -822,7 +827,7 @@ imagep <- function(x, y, z,
             iy <- seq(1L, length(y), by=decimate[2])
             if (is.function(col))
                 col <- col(n=length(breaks)-1)
-            image(x[ix], y[iy], z[ix, iy], breaks=breaks, col=col, add=TRUE)
+            image(x[ix], y[iy], z[ix, iy], breaks=breaks, col=col, add=TRUE, useRaster=useRaster)
             return(invisible(list(xat=NULL, yat=NULL, decimate=decimate)))
         }
     } else {
@@ -1220,12 +1225,12 @@ imagep <- function(x, y, z,
             oceDebug(debug, "not doing filled contours [2]\n")
             if (zlimHistogram) {
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col2,
-                      xlim=xlim, ylim=ylim, zlim=c(0, 1), asp=asp, add=add, ...)
+                      xlim=xlim, ylim=ylim, zlim=c(0, 1), asp=asp, add=add, useRaster=useRaster, ...)
             } else {
                 ## issue 489: use breaks/col instead of breaks2/col2
                 ##image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks2, col=col2,
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, asp=asp, add=add, ...)
+                  xlim=xlim, ylim=ylim, zlim=zlim, asp=asp, add=add, useRaster=useRaster, ...)
             }
         }
         if (axes) {
@@ -1260,7 +1265,7 @@ imagep <- function(x, y, z,
             ## issue 489: use breaks/col instead of breaks2/col2
             ##image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks2, col=col2,
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
-                  xlim=xlim, ylim=ylim, asp=asp, ...)
+                  xlim=xlim, ylim=ylim, asp=asp, useRaster=useRaster, ...)
         }
         if (axes) {
             box()
@@ -1270,7 +1275,7 @@ imagep <- function(x, y, z,
     }
     if (!is.null(missingColor)) {
         ## FIXME: the negation on is.na is confusing, but it comes from col and breaks together
-        image(x, y, !is.na(z), col=c(missingColor, "transparent"), breaks=c(0, 1/2, 1), add=TRUE)
+        image(x, y, !is.na(z), col=c(missingColor, "transparent"), breaks=c(0, 1/2, 1), useRaster=useRaster, add=TRUE)
         if (axes)
             box()
     }
