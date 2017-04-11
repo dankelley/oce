@@ -342,7 +342,43 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                        monitor=FALSE, despike=FALSE, processingLog,
                        debug=getOption("oceDebug"), ...)
 {
-    stop("cannot yet read AD2CP files")
+    oceDebug(debug, "read.adp.nortek(...,from=", format(from), ",to=", if (missing(to)) "(missing)" else format(to), "...)\n")
+    res <- new("adp")
+    if (is.character(file)) {
+        filename <- fullFilename(file)
+        file <- file(file, "rb")
+        on.exit(close(file))
+    }
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
+    if (!isOpen(file)) {
+        filename <- "(connection)"
+        open(file, "rb")
+        on.exit(close(file))
+    }
+    seek(file, 0, "start")
+    seek(file, 0, "start")
+    ## go to the end, so the next seek (to get to the data) reveals file length
+    seek(file, where=0, origin="end")
+    fileSize <- seek(file, where=0)
+    oceDebug(debug, "fileSize:", fileSize, "\n")
+    buf <- readBin(file, what="raw", n=fileSize, size=1)
+    oceDebug(debug, "file starts: ", paste(paste("0x", buf[1:10], sep=""), collapse=" "), "\n")
+    headerSize <- as.integer(buf[2])
+    oceDebug(debug, "headerSize:", headerSize, "\n")
+    ID <- buf[3]
+    oceDebug(debug, "ID: 0x", ID, " (NB: 0x15=burst data record; 0x16=avg data record; 0x17=bottom track record; 0x18=interleaved data record; 0xa0=string data record, e.g. GPS NMEA, comment from the FWRITE command\n", sep="")
+    dataSize <- readBin(buf[4:5], what="integer", n=1, size=2, endian="little", signed=FALSE)
+    oceDebug(debug, "dataSize:", dataSize, "\n")
+    if (ID == 0xa0) {
+        oceDebug(debug, "type is 0xa0 so trying to read a string...\n")
+        a <- readBin(buf[headerSize+1:dataSize], "character", 1)
+        text <- gsub("\\r","",strsplit(a, "\\n")[[1]])
+        print(text)
+    }
+    BUF <<- buf
+    message("cannot yet read AD2CP files. returning the buffer, for some tests")
+    buf
 }
  
 #' Read a Nortek Aquadopp File
