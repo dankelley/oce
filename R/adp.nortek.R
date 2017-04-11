@@ -314,6 +314,37 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
     list(hardware=hardware, head=head, user=user, offset=o+1)
 }
 
+#' Read an AD2CP File
+#'
+#' This function, introduced in April 2017, is just a placeholder. It does no
+#' more than print an error message.
+#'
+#' @param orientation Optional character string specifying the orientation of the
+#' sensor, provided for those cases in which it cannot be inferred from the
+#' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
+#' \code{"sideward"}.
+#' @param distance Optional vector holding the distances of bin centres from the
+#' sensor.  This argument is ignored except for Nortek profilers, and need not
+#' be given if the function determines the distances correctly from the data.
+#' The problem is that the distance is poorly documented in the Nortek System
+#' Integrator Guide (2008 edition, page 31), so the function must rely on
+#' word-of-mouth formulae that do not work in all cases.
+#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' anomalous spikes in heading, etc.
+#' @template adpTemplate
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{adp} data
+read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+                       longitude=NA, latitude=NA,
+                       orientation, distance,
+                       monitor=FALSE, despike=FALSE, processingLog,
+                       debug=getOption("oceDebug"), ...)
+{
+    stop("cannot yet read AD2CP files")
+}
+ 
 #' Read a Nortek Aquadopp File
 #'
 #' The R code is based on information in
