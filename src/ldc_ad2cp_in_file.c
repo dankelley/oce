@@ -35,45 +35,56 @@
    a value of 1 means to retrieve all the profiles, while a value of 2
    means to get every second profile.
 
-   @value a list containing 'index', 'type', 'length'.
+   @value a list containing 'index', 'length' and 'id'. The last of
+   these mean: 0x16=21 for Burst Data Record; 0x16=22 for Average Data
+   Record; 0x17=23 for Bottom Track Data Record; 0x18=24 for
+   Interleaved Burst Data Record (beam 5); 0xA0=160 forString Data
+   Record, eg. GPS NMEA data, comment from the FWRITE command.
 
    @examples
 
    system("R CMD SHLIB ldc_ad2cp_in_file.c")
    f <- "/Users/kelley/Dropbox/oce_ad2cp/labtestsig3.ad2cp"
    dyn.load("ldc_ad2cp_in_file.so")
-   a <- .Call("ldc_ad2cp_in_file", f, 1, 0, 1)
+   a <- .Call("ldc_ad2cp_in_file", f, 1, 10, 1)
 
 @section: notes
 
 Table 6.1 (header definition):
 
-+--------------------------------------------------------------------------------------------
-|Sync	         | 8 bits             | Always 0xA5
-+----------------|--------------------|------------------------------------------------------
-|Header Size     | 8 bits (unsigned)  | Size (number of bytes) of the Header.
-+----------------|--------------------|------------------------------------------------------
-|ID              | 8 bits             | Defines type of the following Data Record
-|                |                    | 0x16 – Average Data Record.
-|                |                    | 0x17 – Bottom Track Data Record.
-|                |                    | 0x18 – Interleaved Burst Data Record (beam 5).
-|                |                    | 0xA0 - String Data Record, eg. GPS NMEA data,
-|                |                    |        comment from the FWRITE command.
-+----------------|--------------------|------------------------------------------------------
-|Family          | 8 bits             | Defines the Instrument Family. 0x10 – AD2CP Family
-+----------------|--------------------|------------------------------------------------------
-|Data Size       | 16 bits (unsigned) | Size (number of bytes) of the following Data Record.
-+----------------|--------------------|------------------------------------------------------
-|Data Checksum   | 16 bits            | Checksum of the following Data Record.
-+----------------|--------------------|------------------------------------------------------
-|Header Checksum | 16 bits            | Checksum of all fields of the Header
-|                |                    | (excepts the Header Checksum itself).
-+-------------------------------------_------------------------------------------------------
++-----------------+--------------------+------------------------------------------------------+
+| Sync	          | 8 bits             | Always 0xA5                                          |
++-----------------|--------------------|------------------------------------------------------+
+| Header Size     | 8 bits (unsigned)  | Size (number of bytes) of the Header.                |
++-----------------|--------------------|------------------------------------------------------+
+| ID              | 8 bits             | Defines type of the following Data Record            |
+|                 |                    | 0x16=21  – Burst Data Record.                        |
+|                 |                    | 0x16=22  – Average Data Record.                      |
+|                 |                    | 0x17=23  – Bottom Track Data Record.                 |
+|                 |                    | 0x18=24  – Interleaved Burst Data Record (beam 5).   |
+|                 |                    | 0xA0=160 - String Data Record, eg. GPS NMEA data,    |
+|                 |                    |            comment from the FWRITE command.          |
++-----------------|--------------------|------------------------------------------------------|
+| Family          | 8 bits             | Defines the Instrument Family. 0x10 – AD2CP Family   |
++-----------------|--------------------|------------------------------------------------------+
+| Data Size       | 16 bits (unsigned) | Size (number of bytes) of the following Data Record. |
++-----------------|--------------------|------------------------------------------------------+
+| Data Checksum   | 16 bits            | Checksum of the following Data Record.               |
++-----------------|--------------------|------------------------------------------------------+
+| Header Checksum | 16 bits            | Checksum of all fields of the Header                 |
+|                 |                    | (excepts the Header Checksum itself).                |
++-----------------+--------------------+------------------------------------------------------+
+
+Note that the code examples in [1] suggest that the checksums are also unsigned, although
+that is not stated in the table. I think the same can be said of [2]. But I may be wrong,
+since I am not getting checksums appropriately.
 
 @references
 
 1. "Integrators Guide AD2CP_A.pdf", provided to me privately by
 (person 1) in early April of 2017.
+
+2. https://github.com/aodn/imos-toolbox/blob/master/Parser/readAD2CPBinary.m
 
 @author
 
@@ -86,11 +97,12 @@ Dan Kelley
 // The code for this differs from that suggested by Nortek,
 // because we don't use a specific (msoft) compiler, 
 // which evidently provides misaligned_load16().
+#if 0
 unsigned short cs(unsigned char *data, unsigned short size)
 {
   //unsigned short checksum = 0xB58C;
   unsigned short checksum = (unsigned short)0xB5 + 256*(unsigned short)0x8C;
-  //Rprintf("checksum %d (initial)\n", checksum);
+  Rprintf("cs: checksum %d (initial ... should be 46476, so cs() is wrong)\n", checksum);
   if (2 * (size / 2) != size)
     error("HEADER_SIZE should be an even number but it is %d\n", size);
   for (int i = 0; i < size; i += 2) {
@@ -101,15 +113,33 @@ unsigned short cs(unsigned char *data, unsigned short size)
   //FIXME: use an extra byte (can be, with data)
   return(checksum);
 }
+#endif
 unsigned short cs2(unsigned char *data, unsigned short size)
 {
   //unsigned short checksum = 0xB58C;
-  unsigned short checksum = 256*(unsigned short)0xB5 + (unsigned short)0x8C;
-  //Rprintf("checksum %d (initial)\n", checksum);
-  if (2 * (size / 2) != size)
-    error("HEADER_SIZE should be an even number but it is %d\n", size);
+  // It might be worth checking the matlab code at
+  //     https://github.com/aodn/imos-toolbox/blob/master/Parser/readAD2CPBinary.m
+  // According to that, and in my octave check on an osx/intel
+  // machine, the initial checksum is 46476; I suppose either matlab/octave
+  // imposes an endian rule for the function hex2dec() or the code at
+  // the above-named url will fail on a big-endian machine.
+  //short checksum = 256*(short)0xB5 + (short)0x8C;
+  unsigned short checksum = 0xB58C;
+  //unsigned short checksum = (((unsigned short)0xB5) <<8 ) | (unsigned short)0x8c; // same as above
+  //if (checksum != 46476)
+  //  error("incorrect initial checksum\n");
+  //Rprintf("cs2: checksum %d (initial ... is this 46476?)\n", checksum);
+  //if (2 * (size / 2) != size)
+  //  error("HEADER_SIZE should be an even number but it is %d\n", size);
+  //unsigned short *sdata = (unsigned short*)data;
+  //for (int i = 0; i < size; i += 2) {
   for (int i = 0; i < size; i += 2) {
-    checksum += 256*(unsigned short)data[i] + (unsigned short)data[i+1];
+    // IMOS uses data[i]+256*data[i+1]
+    // Add assuming a little-endian convention, which is what Nortek
+    // specifies. The results are still wrong in my tests, though.
+    //checksum += 256*(short)data[i] + (short)data[i+1];
+    checksum += (unsigned short)data[i] + 256*(unsigned short)data[i+1];
+    //checksum += sdata[i];
     //Rprintf("checksum=%d (at i=%d)\n", checksum, i);
   }
   //Rprintf("checksum=%d (final)\n", checksum);
@@ -121,6 +151,7 @@ unsigned short cs2(unsigned char *data, unsigned short size)
 
 SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
 {
+
   const char *filenamestring = CHAR(STRING_ELT(filename, 0));
   FILE *fp = fopen(filenamestring, "rb");
   if (!fp)
@@ -140,11 +171,9 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
     error("'by' must be positive but it is %d", by_value);
   if (debug > 1) Rprintf("from=%d, to=%d, by=%d\n", from_value, to_value, by_value);
 
-  int n=10;
-
-  int c;
   // 305988694 from C
   // 305988694 from R
+  // FIXME: should we just get this from R? and do we even need it??
   fseek(fp, 0L, SEEK_END);
   unsigned long int fileSize = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
@@ -158,6 +187,7 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
   // But if the file does not start with a SYNC char, this works
   // along the file until it finds one, and adjusts cindex
   // appropriately.
+  int c;
   while (1) {
     c = getc(fp);
     if (EOF == c) {
@@ -179,8 +209,18 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
   unsigned char hbuf[HEADER_SIZE]; // header buffer
   unsigned int dbuflen = 10; // may be increased later
   unsigned char *dbuf = (unsigned char *)Calloc((size_t)dbuflen, unsigned char);
-  while (chunk < 1) {// FIXME: use whole file here
-    int ID, dataSize, dataChecksum, headerChecksum;
+  unsigned int nchunk = 10;
+  unsigned int *index_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
+  unsigned int *length_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
+  unsigned int *id_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
+  while (chunk < to_value) {// FIXME: use whole file here
+    if (chunk > nchunk) {
+      nchunk = (unsigned int) chunk * 1.4; // expand buffer by sqrt(2)
+      index_buf = (unsigned int*)Realloc(index_buf, nchunk, unsigned int);
+      length_buf = (unsigned int*)Realloc(length_buf, nchunk, unsigned int);
+      id_buf = (unsigned int*)Realloc(id_buf, nchunk, unsigned int);
+    }
+    int id, dataSize, dataChecksum, headerChecksum;
     size_t bytes_read;
     bytes_read = fread(hbuf, 1, HEADER_SIZE, fp);
     if (bytes_read != HEADER_SIZE) {
@@ -199,32 +239,41 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
     }
     // Rprintf("\t*%d %d %d %d %d %d %d %d %d |", 
     //     buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7], buf[8], buf[9]); 
-    // Rprintf("headerSize=%d ID=%d family=%d\n", buf[0], buf[1], buf[2]);
+    // Rprintf("headerSize=%d id=%d family=%d\n", buf[0], buf[1], buf[2]);
 
     // Check that it's an actual header
     if (hbuf[1] == HEADER_SIZE && hbuf[3] == FAMILY) {
-      chunk++;
-      ID = (int)hbuf[2];
+      id = (int)hbuf[2];
       dataSize = hbuf[4] + 256L * hbuf[5];
       //Rprintf("\n\tdataSize=%5d ", dataSize);
       dataChecksum = (unsigned short)hbuf[6] + 256*(unsigned short)hbuf[7];
       //Rprintf(" dataChecksum=%5d", dataChecksum);
       headerChecksum = (unsigned short)hbuf[8] + 256*(unsigned short)hbuf[9];
+      index_buf[chunk] = cindex;
+      length_buf[chunk] = dataSize;
+      id_buf[chunk] = id;
 
       // Check the header checksum.
-      // try two different ways
-      unsigned short hbufcs = cs(hbuf, HEADER_SIZE);
-      Rprintf("\t\t\t\t\thbufcs %d\n", hbufcs);
-      Rprintf("\t\t\t\t\tdesired hchecksum %d (?)\n", (unsigned short)hbuf[8] + 256*(unsigned short)hbuf[9]);
+      unsigned short hbufcs = cs2(hbuf, HEADER_SIZE-2);
+      //Rprintf("\t\t\t\t\thbufcs %d\n", hbufcs);
+      //Rprintf("\t\t\t\t\tdesired hchecksum %d (?)\n", (unsigned short)hbuf[8] + 256*(unsigned short)hbuf[9]);
+      if (hbufcs != headerChecksum) {
+	Rprintf("WARNING: at cindex=%d, computed checksum %d but expected %d\n",
+	    cindex, hbufcs, headerChecksum);
+      }
       // data cs
+#if 0
       unsigned short dbufcs = cs(dbuf, dataSize);
       Rprintf("\t\t\t\t\tdbufcs %d\n", dbufcs);
+#endif
       unsigned short dbufcs2 = cs2(dbuf, dataSize);
       Rprintf("\t\t\t\t\tdbufcs2 %d\n", dbufcs2);
-      Rprintf("\t\t\t\t\tdesired dchecksum %d (?)\n", (unsigned short)hbuf[6] + 256*(unsigned short)hbuf[7]);
-      Rprintf("\t\t\t\t\tdesired dchecksum %d (?)\n", 256*(unsigned short)hbuf[6] + (unsigned short)hbuf[7]);
+      Rprintf("\t\t\t\t\tdesired dchecksum  0x%02x 0x%02x -> %d\n",
+	  hbuf[6], hbuf[7], (unsigned short)hbuf[6] + 256*(unsigned short)hbuf[7]);
+      Rprintf("\t\t\t\t\tdesired dchecksum2 0x%02x 0x%02x -> %d\n",
+	  hbuf[6], hbuf[7], 256*(unsigned short)hbuf[6] + (unsigned short)hbuf[7]);
       //Rprintf(" headerChecksum=%5d\n", headerChecksum);
-      Rprintf("%6d %6d %6d %6d %6d %6d\n", cindex, chunk, ID, dataSize, dataChecksum, headerChecksum);
+      Rprintf("%6d %6d %6d %6d %6d %6d\n", cindex, chunk, id, dataSize, dataChecksum, headerChecksum);
       if (dataSize > dbuflen) { // expand the buffer if required
 	dbuflen = dataSize;
 	dbuf = (unsigned char *)Realloc(dbuf, dbuflen, unsigned char);
@@ -238,295 +287,36 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
       cindex += dataSize;
       if (debug > 2) Rprintf("got data; cindex=%d now\n", cindex);
     }
+    chunk++;
   }
   Rprintf("\nlast chunk=%d; cindex=%d\n", chunk, cindex);
 
-  SEXP res;
-  PROTECT(res = NEW_INTEGER(n));
-  int *pres = INTEGER_POINTER(res);
-  for (int i = 0; i < n; i++) {
-    pres[i] = i;
+  // prepare result (a list)
+  SEXP lres;
+  SEXP lres_names;
+  PROTECT(lres = allocVector(VECSXP, 3));
+  PROTECT(lres_names = allocVector(STRSXP, 3));
+  SEXP index, length, id;
+  PROTECT(index = NEW_INTEGER(chunk));
+  PROTECT(length = NEW_INTEGER(chunk));
+  PROTECT(id= NEW_INTEGER(chunk));
+  int *indexp = INTEGER_POINTER(index);
+  int *lengthp = INTEGER_POINTER(length);
+  int *idp = INTEGER_POINTER(id);
+  for (int i = 0; i < chunk; i++) {
+    indexp[i] = index_buf[i];
+    lengthp[i] = length_buf[i];
+    idp[i] = id_buf[i];
   }
-  Rprintf("B in ldc_ad2cp.c\n");
-  UNPROTECT(4);
-  Rprintf("C in ldc_ad2cp.c\n");
-  return(res);
+  SET_VECTOR_ELT(lres, 0, index);
+  SET_VECTOR_ELT(lres, 1, length);
+  SET_VECTOR_ELT(lres, 2, id);
+  SET_STRING_ELT(lres_names, 0, mkChar("index"));
+  SET_STRING_ELT(lres_names, 1, mkChar("length"));
+  SET_STRING_ELT(lres_names, 2, mkChar("id"));
+  setAttrib(lres, R_NamesSymbol, lres_names);
+  UNPROTECT(8);
+  return(lres);
 }
-#if 0
-struct tm etime; // time of the ensemble under examination
-time_t ensemble_time = 0; // integer-ish form of the above (only calculated if mode=1)
-time_t ensemble_time_last = 0; // we use this for 'by', if mode is 1
 
-/*
-
-# Test R code, used by developers whilst debugging:
-
-system("R CMD SHLIB src/ldc_rdi_in_file.c")
-f <- "/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
-dyn.load("src/ldc_rdi_2.so")
-a <- .Call("ldc_rdi_2", f, 1, 0, 0)
-b <- .Call("ldc_rdi_2", f, 1, 10, 0)
-stopifnot(all.equal(length(a), 79134))
-stopifnot(all.equal(a[1:10], b))
-
-*/
-
-int mode_value = *INTEGER_POINTER(mode);
-if (mode_value != 0 && mode_value != 1)
-  error("'mode' must be 0 or 1");
-
-  int c, clast=0x00;
-  int byte1 = 0x7f;
-  int byte2 = 0x7f;
-  unsigned short int check_sum, desired_check_sum;
-  unsigned int bytes_to_check = 0;
-  unsigned long int cindex = 0; // character index
-  clast = fgetc(fp);
-  cindex++;
-if (clast == EOF)
-  error("empty file '%s'", filenamestring);
-
-  // Growable buffers; see 'Realloc()' and 'Free()' calls later in the code.
-  // Note that we do not check the Calloc() results because the R docs say that
-  // Calloc() performs tests and R handles any problems.
-  unsigned long int nensembles = 100000;
-  int *ensembles = (int *)Calloc((size_t)nensembles, int);
-  int *times = (int *)Calloc((size_t)nensembles, int);
-  unsigned char *sec100s = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  unsigned long int nebuf = 5000;
-  unsigned char *ebuf = (unsigned char *)Calloc((size_t)nebuf, unsigned char);
-
-  // outbuf holds the output. It is growable
-  unsigned long int iobuf = 0;
-  unsigned long int nobuf = 100000;
-  unsigned char *obuf = (unsigned char *)Calloc((size_t)nobuf, unsigned char);
-
-  unsigned long int in_ensemble = 0, out_ensemble = 0;
-  int b1, b2;
-
-
-  unsigned long int counter = 0, counter_last = 0;
-  while (1) {
-    c = fgetc(fp);
-    if (c == EOF) break;
-    cindex++;
-    // Try to locate "ensemble starts", spots where a 0x7f is followed by a second 0x7f,
-    // then followed by data that match a checksum.
-    if (clast == byte1 && c == byte2) {
-      // The checksum includes the starting 0x7f, 0x7f pair, and also
-      // the two bytes that specify the number of bytes in the
-      // ensemble. So we start by adding these four bytes.
-      check_sum = (unsigned short int)byte1;
-      check_sum += (unsigned short int)byte2;
-      b1 = fgetc(fp);
-      if (b1 == EOF)
-	break;
-      cindex++;
-      check_sum += (unsigned short int)b1;
-      b2 = fgetc(fp);
-      if (b2 == EOF)
-	break;
-      cindex++;
-      check_sum += (unsigned short int)b2;
-      // Now we are ready to look at the rest of the bytes. Note that
-      // our loop starts at index 4, because we have already handled
-      // those 4 bytes of the ensemble (i.e. those 4 bytes are include
-      // in the bytes_to_check value that we now calculate).
-      bytes_to_check = (unsigned int)b1 + 256 * (unsigned int)b2;
-      //if (SHOW(in_ensemble)) Rprintf("NEW cindex=%d in_ensemble=%d bytes_to_check=%d\n",
-      // cindex, in_ensemble, bytes_to_check);
-      if (bytes_to_check < 5) { // this will only happen in error; we check so bytes_to_read won't be crazy
-	Free(ensembles);
-	Free(times);
-	Free(sec100s);
-	Free(ebuf);
-	Free(obuf);
-	error("cannot decode the length of ensemble number %d", in_ensemble);
-      }
-      unsigned int bytes_to_read = bytes_to_check - 4; // check_sum has used first 4 bytes already
-
-      // Expand the ensemble buffer, ebuf, if need be.
-      if (bytes_to_read > nebuf) {
-	Rprintf("increasing 'ebuf' buffer size from %d bytes to %d bytes\n", nebuf, bytes_to_read);
-	ebuf = (unsigned char *)Realloc(ebuf, bytes_to_read, unsigned char);
-	nebuf = bytes_to_read;
-      }
-      // Read the bytes in one operation, because fgetc() is too slow.
-      fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
-      if (feof(fp)) {
-	//Rprintf("NEW: end of file while reading ensemble number %d, at byte %d\n", in_ensemble+1, cindex);
-	break;
-      }
-      cindex += bytes_to_read;
-      for (int ib = 0; ib < bytes_to_read; ib++) {
-	check_sum += (unsigned short int)ebuf[ib];
-	//if (SHOW(in_ensemble)) Rprintf("NEW in_ensemble=%d ib=%d check_sum=%d\n", in_ensemble, ib, check_sum);
-      }
-
-      int cs1, cs2;
-      cs1 = fgetc(fp);
-      if (cs1 == EOF) break;
-      cindex++;
-      cs2 = fgetc(fp);
-      if (cs2 == EOF) break;
-      cindex++;
-      desired_check_sum = ((unsigned short int)cs1) | ((unsigned short int)(cs2 << 8));
-      //if (SHOW(in_ensemble)) Rprintf("NEW in_ensemble=%d icindex=%d check_sum %d desired_check_sum=%d b1=%d b2=%d bytes_to_check=%d\n",
-      // in_ensemble, cindex, check_sum, desired_check_sum, b1, b2, bytes_to_check);
-      if (check_sum == desired_check_sum) {
-	// The check_sum is ok, so we may want to store the results for
-	// this profile.
-	//
-	// First, ensure that there will be sufficient storage to store results.
-	// We do this before checking to see if we are actually going
-	// to store the results, so possibly this might get done one
-	// more time than required, before this function returns.
-	if (out_ensemble >= nensembles) {
-	  // Enlarge the buffer. We do not check the Realloc() result, because this
-	  // is an R macro that is supposed to check for errors and handle them.
-	  ensembles = (int *) Realloc(ensembles, 2*nensembles, int);
-	  times = (int *) Realloc(times, 2*nensembles, int);
-	  sec100s = (unsigned char *)Realloc(sec100s, 2*nensembles, unsigned char);
-	  nensembles = 2 * nensembles;
-	  //Rprintf("            : upgraded storage starts at 0x%x and can contain %d elements...\n", ensembles, nensembles);
-	}
-	// We will decide whether to keep this ensemble, based on ensemble
-	// number, if mode_value==0 or on time, if mode_value==1. That
-	// means we only need to compute a time if mode_value==1.
-	unsigned int time_pointer = (unsigned int)ebuf[4] + 256 * (unsigned int) ebuf[5];
-	etime.tm_year = 100 + (int) ebuf[time_pointer+0];
-	etime.tm_mon = -1 + (int) ebuf[time_pointer+1];
-	etime.tm_mday = (int) ebuf[time_pointer+2];
-	etime.tm_hour = (int) ebuf[time_pointer+3];
-	etime.tm_min = (int) ebuf[time_pointer+4];
-	etime.tm_sec = (int) ebuf[time_pointer+5];
-	etime.tm_isdst = 0;
-	// below should work even with windows
-	ensemble_time = oce_timegm(&etime);
-	//Rprintf("C %d\n", ensemble_time);
-	//Rprintf(" estimet %d %s after_from=%d before_to=%d",
-	//    ensemble_time, ctime(&ensemble_time),
-	//    ensemble_time > from_value, ensemble_time < to_value);
-
-
-	// See whether we are past the 'from' condition. Note the "-1"
-	// for the ensemble case, because R starts counts at 1, not 0,
-	// and the calling R code is (naturally) in R notation.
-	if ((mode_value == 0 && in_ensemble >= (from_value-1)) ||
-	    (mode_value == 1 && ensemble_time >= from_value)) {
-
-	  // Handle the 'by' value.
-	  //
-	  // FIXME: best to have a 'last' variable and to count from
-	  // FIXME: that, instead of using the '%' method'
-	  if ((mode_value == 0 && (counter - counter_last) >= by_value) ||
-	      (mode_value == 1 && (ensemble_time - ensemble_time_last) >= by_value)) {
-	    // Expand the output buffer if needed.
-	    if ((iobuf + 6 + bytes_to_read) >= nobuf) {
-	      nobuf = 2 * nobuf;
-	      // Rprintf("growing obuf (iobuf=%d, bytes_to_read=%d; new nobuf=%d)\n", 
-	      //         iobuf, bytes_to_read, nobuf);
-	      obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
-	    }
-	    // Copy ensemble to output buffer, after 6 bytes of header
-	    //Rprintf("starting outbuf chunk at iobuf=%d, value 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
-	    //iobuf, byte1, byte2, b1, b2, cs1, cs2);
-
-	    ensembles[out_ensemble] = iobuf + 1; // the +1 puts in R notation
-	    times[out_ensemble] = ensemble_time;
-	    obuf[iobuf++] = byte1; // 0x7f
-	    obuf[iobuf++] = byte2; // 0x7f
-	    obuf[iobuf++] = b1; // this and b2 yield bytes_to_read
-	    obuf[iobuf++] = b2;
-	    //obuf[iobuf++] = cs1; // this and cs2 form the checksum
-	    //obuf[iobuf++] = cs2;
-	    for (unsigned int i = 0; i < 6 + bytes_to_read; i++) { // FIXME: 4 here, or 6, or maybe 2???
-	      obuf[iobuf++] = ebuf[i];
-	    }
-	    //Rprintf("AFTER saving, iobuf=%d, nobuf=%d, bytes_to_read=%d\n", iobuf, nobuf, bytes_to_read);
-	    // Increment counter (can be of two types)
-	    if (mode_value == 1) {
-	      ensemble_time_last = ensemble_time;
-	    } else {
-	      counter_last = counter;
-	    }
-	    //Rprintf("saving at in_ensemble=%d, counter=%d, by=%d\n", in_ensemble, counter, by_value);
-	    //	    ensembles[out_ensemble] = last_start;
-	    unsigned int timePointer = (unsigned int)ebuf[4] + 256 * (unsigned int) ebuf[5];
-	    sec100s[out_ensemble] = ebuf[timePointer+6];
-	    out_ensemble++;
-	  } else {
-	    //Rprintf("skipping at in_ensemble=%d, counter=%d, by=%d\n", in_ensemble, counter, by_value);
-	  }
-	  counter++;
-	}
-	in_ensemble++;
-	// If 'max' is positive, check that we return only that many
-	// ensemble pointers.
-	if ((mode_value == 0 && (to_value > 0 && in_ensemble > to_value)) ||
-	    (mode_value == 1 && (ensemble_time > to_value))) {
-	  //Rprintf("breaking at out_ensemble=%d, in_ensemble=%d, from=%d, to=%d, ensemble_time=%d, mode_value=%d\n",
-	  //    out_ensemble, in_ensemble, from_value, to_value, ensemble_time, mode_value);
-	  break;
-	}
-      } // if it doesn't match the check_sum, we just ignore it as a coincidence of a 0x7f 0x7f pair
-      R_CheckUserInterrupt(); // only check once per ensemble, for speed
-      clast = c;
-    }
-    clast = c;
-    c = fgetc(fp);
-    if (c == EOF) break;
-    cindex++;
-  }
-fclose(fp);
-
-// We will not return the whole buffers, but only the fraction that
-// stores data.
-SEXP ensemble;
-PROTECT(ensemble = NEW_INTEGER(out_ensemble));
-SEXP time;
-PROTECT(time = NEW_INTEGER(out_ensemble));
-SEXP sec100;
-PROTECT(sec100 = NEW_RAW(out_ensemble));
-
-SEXP outbuf;
-PROTECT(outbuf = NEW_RAW(iobuf)); // FIXME: check ok
-
-int *pensemble = INTEGER_POINTER(ensemble);
-unsigned char *psec100 = RAW_POINTER(sec100);
-int *ptime = INTEGER_POINTER(time);
-unsigned char *poutbuf = RAW_POINTER(outbuf);
-
-for (long int i = 0; i < out_ensemble; i++) {
-  pensemble[i] = ensembles[i];
-  ptime[i] = times[i];
-  psec100[i] = sec100s[i];
-}
-for (long int i = 0; i < iobuf; i++) {
-  poutbuf[i] = obuf[i];
-}
-Free(ensembles);
-Free(times);
-Free(sec100s);
-Free(ebuf);
-Free(obuf);
-
-SEXP lres;
-SEXP lres_names;
-PROTECT(lres = allocVector(VECSXP, 4));
-PROTECT(lres_names = allocVector(STRSXP, 4));
-int i = 0;
-SET_VECTOR_ELT(lres, i, ensemble);
-SET_STRING_ELT(lres_names, i, mkChar("ensembleStart"));
-SET_VECTOR_ELT(lres, ++i, time);
-SET_STRING_ELT(lres_names, i, mkChar("time"));
-SET_VECTOR_ELT(lres, ++i, sec100);
-SET_STRING_ELT(lres_names, i, mkChar("sec100"));
-SET_VECTOR_ELT(lres, ++i, outbuf);
-SET_STRING_ELT(lres_names, i, mkChar("outbuf"));
-setAttrib(lres, R_NamesSymbol, lres_names);
-UNPROTECT(10); 
-return(lres);
-}
-#endif
 
