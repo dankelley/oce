@@ -333,6 +333,12 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 #' anomalous spikes in heading, etc.
 #' @template adpTemplate
 #'
+#' @examples
+#' \dontrun{
+#' f <- "/Users/kelley/Dropbox/oce_ad2cp/labtestsig3.ad2cp"
+#' d <- read.ad2cp(f, 1, 10, 1)
+#'}
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to \code{adp} data
@@ -378,18 +384,17 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         print(text)
     }
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1+headerSize+dataSize, "]=0x", buf[1+headerSize+dataSize], " (expect 0xa5)\n", sep="")
-    if (0xa5 == buf[1+headerSize+dataSize]) {
-        o <- 1 + headerSize + dataSize
-        oceDebug(debug, 'record 2 starts at BUF[', o, "]\n", sep="")
-        oceDebug(debug, 'first 10 bytes in record 2: ',
-                 paste(paste("0x", buf[o+0:9], sep=""), collapse=" "),
-                 "\n", sep="")
-        tst <- readBin(buf[o+headerSize+1:dataSize], "character", 1)
-        TST<<-tst
-    }
-    BUF <<- buf # FIXME: for coding
-    message("cannot yet read AD2CP files. returning the buffer as 'BUF', for some tests")
-    buf
+    ## if (0xa5 == buf[1+headerSize+dataSize]) {
+    ##     o <- 1 + headerSize + dataSize
+    ##     oceDebug(debug, 'record 2 starts at BUF[', o, "]\n", sep="")
+    ##     oceDebug(debug, 'first 10 bytes in record 2: ',
+    ##              paste(paste("0x", buf[o+0:9], sep=""), collapse=" "),
+    ##              "\n", sep="")
+    ##     tst <- readBin(buf[o+headerSize+1:dataSize], "character", 1)
+    ## }
+    nav <- .Call("ldc_ad2cp_in_file", filename, from, to, by)
+    message("PRELIMINARY FUNCTION -- for use only by developers")
+    list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
 }
  
 #' Read a Nortek Aquadopp File

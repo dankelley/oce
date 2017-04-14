@@ -209,16 +209,18 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
   unsigned char hbuf[HEADER_SIZE]; // header buffer
   unsigned int dbuflen = 10; // may be increased later
   unsigned char *dbuf = (unsigned char *)Calloc((size_t)dbuflen, unsigned char);
-  unsigned int nchunk = 10;
+  unsigned int nchunk = 100;
   unsigned int *index_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
   unsigned int *length_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
   unsigned int *id_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
   while (chunk < to_value) {// FIXME: use whole file here
-    if (chunk > nchunk) {
-      nchunk = (unsigned int) chunk * 1.4; // expand buffer by sqrt(2)
+    if (chunk > nchunk - 1) {
+      Rprintf(" > must increase buffers from nchunk=%d\n", nchunk);
+      nchunk = (unsigned int) chunk * 2; // expand buffer by sqrt(2)
       index_buf = (unsigned int*)Realloc(index_buf, nchunk, unsigned int);
       length_buf = (unsigned int*)Realloc(length_buf, nchunk, unsigned int);
       id_buf = (unsigned int*)Realloc(id_buf, nchunk, unsigned int);
+      Rprintf(" > increased buffers to have nchunk=%d\n", nchunk);
     }
     int id, dataSize, dataChecksum, headerChecksum;
     size_t bytes_read;
@@ -249,8 +251,11 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
       dataChecksum = (unsigned short)hbuf[6] + 256*(unsigned short)hbuf[7];
       //Rprintf(" dataChecksum=%5d", dataChecksum);
       headerChecksum = (unsigned short)hbuf[8] + 256*(unsigned short)hbuf[9];
+      Rprintf(" > saved to chunk %d (id=%d)\n", chunk, id);
       index_buf[chunk] = cindex;
       length_buf[chunk] = dataSize;
+      if (id < 21 || (id > 24 && id != 160))
+	Rprintf(" *** odd id (%d) at chunk %d, index=%d\n", id, chunk, cindex);
       id_buf[chunk] = id;
 
       // Check the header checksum.
@@ -275,6 +280,7 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
       //Rprintf(" headerChecksum=%5d\n", headerChecksum);
       Rprintf("%6d %6d %6d %6d %6d %6d\n", cindex, chunk, id, dataSize, dataChecksum, headerChecksum);
       if (dataSize > dbuflen) { // expand the buffer if required
+	Rprintf(" > must increase dbuf from %d to %d\n", dbuflen, dataSize);
 	dbuflen = dataSize;
 	dbuf = (unsigned char *)Realloc(dbuf, dbuflen, unsigned char);
 	if (debug > 1) Rprintf("\n *** increased dbuflen to %d\n", dbuflen);
