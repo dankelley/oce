@@ -316,8 +316,9 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 
 #' Read an AD2CP File
 #'
-#' This function, introduced in April 2017, is just a placeholder. It does no
-#' more than print an error message.
+#' This function, introduced in April 2017, is just a temporary interface
+#' for separate interpretation code that lives in the 1219 issue
+#' directory. THIS IS ONLY FOR DEVELOPERS.
 #'
 #' @param orientation Optional character string specifying the orientation of the
 #' sensor, provided for those cases in which it cannot be inferred from the
@@ -377,12 +378,12 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "ID: 0x", ID, " (NB: 0x15=burst data record; 0x16=avg data record; 0x17=bottom track record; 0x18=interleaved data record; 0xa0=string data record, e.g. GPS NMEA, comment from the FWRITE command\n", sep="")
     dataSize <- readBin(buf[5:6], what="integer", n=1, size=2, endian="little", signed=FALSE)
     oceDebug(debug, "dataSize:", dataSize, "\n")
-    if (ID == 0xa0) {
-        oceDebug(debug, "type is 0xa0 so trying to read a string...\n")
-        a <- readBin(buf[headerSize+1:dataSize], "character", 1)
-        text <- gsub("\\r","",strsplit(a, "\\n")[[1]])
-        print(text)
-    }
+    ## if (ID == 0xa0) {
+    ##     oceDebug(debug, "type is 0xa0 so trying to read a string...\n")
+    ##     a <- readBin(buf[headerSize+1:dataSize], "character", 1)
+    ##     text <- gsub("\\r","",strsplit(a, "\\n")[[1]])
+    ##     print(text)
+    ## }
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1+headerSize+dataSize, "]=0x", buf[1+headerSize+dataSize], " (expect 0xa5)\n", sep="")
     ## if (0xa5 == buf[1+headerSize+dataSize]) {
     ##     o <- 1 + headerSize + dataSize
@@ -393,7 +394,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ##     tst <- readBin(buf[o+headerSize+1:dataSize], "character", 1)
     ## }
     nav <- .Call("ldc_ad2cp_in_file", filename, from, to, by)
-    message("PRELIMINARY FUNCTION -- for use only by developers")
+    warning("this is a PRELIMINARY FUNCTION, for use only by developers")
     list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
 }
  

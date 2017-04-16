@@ -71,8 +71,9 @@ amount of debugging information, or to 2 to get more.}
 An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 }
 \description{
-This function, introduced in April 2017, is just a placeholder. It does no
-more than print an error message.
+This function, introduced in April 2017, is just a temporary interface
+for separate interpretation code that lives in the 1219 issue
+directory. THIS IS ONLY FOR DEVELOPERS.
 }
 \examples{
 \dontrun{
