@@ -3370,22 +3370,31 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 }
 
 
-#' Format bytes as binary
+#' Format bytes as binary [deprecated]
+#'
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+#' Use \code{\link{oceSetData}} instead of the present function.
 #'
 #' @param x an integer to be interpreted as a byte.
 #' @param endian character string indicating the endian-ness ("big" or
-#' "little").  The PC/intel convention is to use "little", and so most data
-#' files are in that format.
+#' "little").
 #' @return A character string representing the bit strings for the elements of
-#' \code{x}.
+#' \code{x}, in order of significance for the \code{endian="big"} case.
+#' (The \code{"little"} case should not be used.)
+#' See \dQuote{Examples} for how this relates to the output from
+#' \link{rawToBits}.
 #' @author Dan Kelley
 #' @examples
-#'
 #' library(oce)
-#' x <- 0:16
-#' print(byteToBinary(x))
+#' ## In the big-endian case, the results match those of byteToBinary(),
+#' ## but reversed.
+#' a <- as.raw(0x0a)
+#' byteToBinary(a, "big")
+#' rev(rawToBits(a))
 byteToBinary <- function(x, endian=c("little", "big"))
 {
+    .Deprecated("rawToBits",
+                msg="byteToBinary() will be removed soon; use rawToBits() instead. See ?'oce-deprecated'.")
     onebyte2binary <- function(x)
     {
         c("0000", "0001", "0010", "0011",

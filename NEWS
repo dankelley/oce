@@ -1,4 +1,5 @@
 0.9-22
+- deprecate byteToBinary()
 - address a CRAN NOTE about UTF-8 strings in data
 
 0.9-21

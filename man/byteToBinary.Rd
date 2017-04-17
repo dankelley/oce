@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{byteToBinary}
 \alias{byteToBinary}
-\title{Format bytes as binary}
+\title{Format bytes as binary [deprecated]}
 \usage{
 byteToBinary(x, endian = c("little", "big"))
 }
@@ -10,21 +10,26 @@ byteToBinary(x, endian = c("little", "big"))
 \item{x}{an integer to be interpreted as a byte.}
 
 \item{endian}{character string indicating the endian-ness ("big" or
-"little").  The PC/intel convention is to use "little", and so most data
-files are in that format.}
+"little").}
 }
 \value{
 A character string representing the bit strings for the elements of
-\code{x}.
+\code{x}, in order of significance for the \code{endian="big"} case.
+(The \code{"little"} case should not be used.)
+See \dQuote{Examples} for how this relates to the output from
+\link{rawToBits}.
 }
 \description{
-Format bytes as binary
+\strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+Use \code{\link{oceSetData}} instead of the present function.
 }
 \examples{
-
 library(oce)
-x <- 0:16
-print(byteToBinary(x))
+## In the big-endian case, the results match those of byteToBinary(),
+## but reversed.
+a <- as.raw(0x0a)
+byteToBinary(a, "big")
+rev(rawToBits(a))
 }
 \author{
 Dan Kelley
