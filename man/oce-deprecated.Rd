@@ -21,6 +21,7 @@ The next CRAN release of \sQuote{oce} will designate these functions as
 
 \tabular{lll}{
 \strong{Deprecated}    \tab \strong{Replacement}              \tab \strong{Notes}\cr
+\code{byteToBinary}    \tab \code{\link{rawToBits}}           \tab Deprecated 2017-04-17\cr
 \code{mapZones}        \tab \code{\link{mapGrid}}             \tab Deprecated 2016-02-13\cr
 \code{mapMeridians}    \tab \code{\link{mapGrid}}             \tab Deprecated 2016-02-13\cr
 \code{addColumn}       \tab \code{\link{oceSetData}}          \tab Deprecated 2016-08-01\cr
@@ -33,7 +34,7 @@ The next CRAN release of \sQuote{oce} will designate these functions as
 The following are marked "defunct", so calling them in the
 the present version produces an error message that hints at a replacement
 function. Once a function is marked "defunct" on one CRAN release, it will
-be slated for outright deletion in the following release.
+be slated for outright deletion in a subsequent release.
 
 \tabular{lll}{
 \strong{Defunct}   \tab \strong{Replacement}     \tab \strong{Notes}\cr
