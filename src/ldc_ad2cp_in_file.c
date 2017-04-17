@@ -95,55 +95,21 @@ Dan Kelley
 // Check the header checksum.
 //
 // The code for this differs from that suggested by Nortek,
-// because we don't use a specific (msoft) compiler, 
-// which evidently provides misaligned_load16().
-#if 0
+// because we don't use a specific (msoft) compiler, so we
+// do not have access to misaligned_load16(). Also, I don't
+// think this will work properly if the number of bytes
+// is odd.
+//
+// FIXME: handle odd-numbered byte case.
 unsigned short cs(unsigned char *data, unsigned short size)
 {
-  //unsigned short checksum = 0xB58C;
-  unsigned short checksum = (unsigned short)0xB5 + 256*(unsigned short)0x8C;
-  Rprintf("cs: checksum %d (initial ... should be 46476, so cs() is wrong)\n", checksum);
-  if (2 * (size / 2) != size)
-    error("HEADER_SIZE should be an even number but it is %d\n", size);
-  for (int i = 0; i < size; i += 2) {
-    checksum += (unsigned short)data[i] + 256*(unsigned short)data[i+1];
-    //Rprintf("checksum=%d (at i=%d)\n", checksum, i);
-  }
-  //Rprintf("checksum=%d (final)\n", checksum);
-  //FIXME: use an extra byte (can be, with data)
-  return(checksum);
-}
-#endif
-unsigned short cs2(unsigned char *data, unsigned short size)
-{
-  //unsigned short checksum = 0xB58C;
   // It might be worth checking the matlab code at
   //     https://github.com/aodn/imos-toolbox/blob/master/Parser/readAD2CPBinary.m
-  // According to that, and in my octave check on an osx/intel
-  // machine, the initial checksum is 46476; I suppose either matlab/octave
-  // imposes an endian rule for the function hex2dec() or the code at
-  // the above-named url will fail on a big-endian machine.
-  //short checksum = 256*(short)0xB5 + (short)0x8C;
+  // for context, if problems ever arise.
   unsigned short checksum = 0xB58C;
-  //unsigned short checksum = (((unsigned short)0xB5) <<8 ) | (unsigned short)0x8c; // same as above
-  //if (checksum != 46476)
-  //  error("incorrect initial checksum\n");
-  //Rprintf("cs2: checksum %d (initial ... is this 46476?)\n", checksum);
-  //if (2 * (size / 2) != size)
-  //  error("HEADER_SIZE should be an even number but it is %d\n", size);
-  //unsigned short *sdata = (unsigned short*)data;
-  //for (int i = 0; i < size; i += 2) {
   for (int i = 0; i < size; i += 2) {
-    // IMOS uses data[i]+256*data[i+1]
-    // Add assuming a little-endian convention, which is what Nortek
-    // specifies. The results are still wrong in my tests, though.
-    //checksum += 256*(short)data[i] + (short)data[i+1];
     checksum += (unsigned short)data[i] + 256*(unsigned short)data[i+1];
-    //checksum += sdata[i];
-    //Rprintf("checksum=%d (at i=%d)\n", checksum, i);
   }
-  //Rprintf("checksum=%d (final)\n", checksum);
-  //FIXME: use an extra byte (can be, with data)
   return(checksum);
 }
 
@@ -171,8 +137,6 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
     error("'by' must be positive but it is %d", by_value);
   if (debug > 1) Rprintf("from=%d, to=%d, by=%d\n", from_value, to_value, by_value);
 
-  // 305988694 from C
-  // 305988694 from R
   // FIXME: should we just get this from R? and do we even need it??
   fseek(fp, 0L, SEEK_END);
   unsigned long int fileSize = ftell(fp);
@@ -201,9 +165,6 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
     }
     cindex++;
   }
-
-  Rprintf("%6s %6s %6s %6s %6s %6s\n", 
-      "cindex", "chunk", "id", "dsize", "dcs", "hcs");
   // The table in [1 sec 6.1] says header pieces are 10 bytes
   // long, so once we get an 0xA5, we'll try to get 9 more bytes.
   unsigned char hbuf[HEADER_SIZE]; // header buffer
@@ -222,7 +183,8 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
       id_buf = (unsigned int*)Realloc(id_buf, nchunk, unsigned int);
       Rprintf(" > increased buffers to have nchunk=%d\n", nchunk);
     }
-    int id, dataSize, dataChecksum, headerChecksum;
+    int id, dataSize;
+    unsigned short dataChecksum, headerChecksum;
     size_t bytes_read;
     bytes_read = fread(hbuf, 1, HEADER_SIZE, fp);
     if (bytes_read != HEADER_SIZE) {
@@ -239,64 +201,48 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
       error("coding error in reading the header at cindex=%d; expecting 0x%x but found 0x%x\n",
 	  cindex, SYNC, hbuf[0]);
     }
-    // Rprintf("\t*%d %d %d %d %d %d %d %d %d |", 
-    //     buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7], buf[8], buf[9]); 
-    // Rprintf("headerSize=%d id=%d family=%d\n", buf[0], buf[1], buf[2]);
-
     // Check that it's an actual header
     if (hbuf[1] == HEADER_SIZE && hbuf[3] == FAMILY) {
       id = (int)hbuf[2];
-      dataSize = hbuf[4] + 256L * hbuf[5];
+      dataSize = hbuf[4] + 256 * hbuf[5];
       //Rprintf("\n\tdataSize=%5d ", dataSize);
-      dataChecksum = (unsigned short)hbuf[6] + 256*(unsigned short)hbuf[7];
+      dataChecksum = hbuf[6] + 256 * hbuf[7];
       //Rprintf(" dataChecksum=%5d", dataChecksum);
-      headerChecksum = (unsigned short)hbuf[8] + 256*(unsigned short)hbuf[9];
-      Rprintf(" > saved to chunk %d (id=%d)\n", chunk, id);
+      headerChecksum = hbuf[8] + 256 * hbuf[9];
+      //Rprintf(" > saved to chunk %d (id=%d)\n", chunk, id);
       index_buf[chunk] = cindex;
       length_buf[chunk] = dataSize;
       if (id < 21 || (id > 24 && id != 160))
 	Rprintf(" *** odd id (%d) at chunk %d, index=%d\n", id, chunk, cindex);
       id_buf[chunk] = id;
-
       // Check the header checksum.
-      unsigned short hbufcs = cs2(hbuf, HEADER_SIZE-2);
-      //Rprintf("\t\t\t\t\thbufcs %d\n", hbufcs);
-      //Rprintf("\t\t\t\t\tdesired hchecksum %d (?)\n", (unsigned short)hbuf[8] + 256*(unsigned short)hbuf[9]);
+      unsigned short hbufcs = cs(hbuf, HEADER_SIZE-2);
       if (hbufcs != headerChecksum) {
-	Rprintf("WARNING: at cindex=%d, computed checksum %d but expected %d\n",
+	Rprintf("WARNING: at cindex=%d, header checksum is %d but it should be %d\n",
 	    cindex, hbufcs, headerChecksum);
       }
-      // data cs
-#if 0
-      unsigned short dbufcs = cs(dbuf, dataSize);
-      Rprintf("\t\t\t\t\tdbufcs %d\n", dbufcs);
-#endif
-      unsigned short dbufcs2 = cs2(dbuf, dataSize);
-      Rprintf("\t\t\t\t\tdbufcs2 %d\n", dbufcs2);
-      Rprintf("\t\t\t\t\tdesired dchecksum  0x%02x 0x%02x -> %d\n",
-	  hbuf[6], hbuf[7], (unsigned short)hbuf[6] + 256*(unsigned short)hbuf[7]);
-      Rprintf("\t\t\t\t\tdesired dchecksum2 0x%02x 0x%02x -> %d\n",
-	  hbuf[6], hbuf[7], 256*(unsigned short)hbuf[6] + (unsigned short)hbuf[7]);
-      //Rprintf(" headerChecksum=%5d\n", headerChecksum);
-      Rprintf("%6d %6d %6d %6d %6d %6d\n", cindex, chunk, id, dataSize, dataChecksum, headerChecksum);
+      // Increase size of data buffer, if required.
       if (dataSize > dbuflen) { // expand the buffer if required
-	Rprintf(" > must increase dbuf from %d to %d\n", dbuflen, dataSize);
 	dbuflen = dataSize;
 	dbuf = (unsigned char *)Realloc(dbuf, dbuflen, unsigned char);
-	if (debug > 1) Rprintf("\n *** increased dbuflen to %d\n", dbuflen);
       }
-      if (debug > 2) Rprintf("about to read data; cindex=%d now\n", cindex);
+      // Read the data
       bytes_read = fread(dbuf, 1, dataSize, fp);
+      // Check that we got all the data
       if (bytes_read != dataSize)
 	error("ran out of file on data chunk near cindex=%d; wanted %d bytes but got only %d\n",
 	    cindex, dataSize, bytes_read);
+      // Compare data checksum to the value stated in the header
+      unsigned short dbufcs;
+      dbufcs = cs(dbuf, dataSize);
+      if (dbufcs != dataChecksum) {
+	Rprintf("WARNING: at cindex=%d, data checksum is %d but it should be %d\n",
+	    cindex, dbufcs, dataChecksum);
+      }
       cindex += dataSize;
-      if (debug > 2) Rprintf("got data; cindex=%d now\n", cindex);
     }
     chunk++;
   }
-  Rprintf("\nlast chunk=%d; cindex=%d\n", chunk, cindex);
-
   // prepare result (a list)
   SEXP lres;
   SEXP lres_names;
