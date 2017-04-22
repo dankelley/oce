@@ -457,7 +457,6 @@ setMethod(f="summary",
 #' IPTS-68.  Again, temperature on the IPTS-68
 #' scale is returned with \code{x@@data$temperature}.
 #'
-#'
 #' This preference for computed over stored quantities is accomplished
 #' by first checking for computed quantities, and then falling
 #' back to the general \code{[[} method if no match is found.
@@ -478,6 +477,10 @@ setMethod(f="summary",
 #'
 #' \item \code{CT} or \code{Conservative Temperature}: Conservative Temperature,
 #' computed with \code{\link[gsw]{gsw_CT_from_t}} in the \code{gsw} package.
+#'
+#' \item \code{density}: seawater density, computed with \code{\link{swRho}(x)}.
+#' (Note that it may be better to call that function directly, to gain
+#' control of the choice of equation of state, etc.)
 #'
 #' \item \code{depth}: Depth in metres below the surface, computed
 #' with \code{\link{swDepth}(x)}.
@@ -531,7 +534,7 @@ setMethod(f="summary",
 #' \item \code{z}: Vertical coordinate in metres above the surface, computed with
 #' \code{\link{swZ}(x)}.
 #'
-#' }
+#'}
 #'
 #' @family things related to \code{ctd} data
 setMethod(f="[[",
@@ -603,6 +606,8 @@ setMethod(f="[[",
                   if ("latitude" %in% dataNames) x@data$latitude else x@metadata$latitude
               } else if (i == "N2") {
                   swN2(x)
+              } else if (i == "density") {
+                  swRho(x)
               } else if (i == "sigmaTheta") {
                   swSigmaTheta(x)
               } else if (i == "sigma0") {
@@ -1912,7 +1917,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'   called method \code{"C"}; the old \code{"B"} method was judged useless and was removed.}
 #'
 #'   \item{If \code{method="upcast"}, a sort of reverse of \code{"downcast"} is used. This
-#'   was added in late April 2017 and has not been well tested yet.
+#'   was added in late April 2017 and has not been well tested yet.}
 #'
 #'   \item{If \code{method="sbe"}, a method similar to that described
 #'   in the SBE Data Processing manual is used to remove the "soak"

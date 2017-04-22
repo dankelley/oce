@@ -107,7 +107,6 @@ returned in the ITS-90 scale, with a conversion having been performed with
 IPTS-68.  Again, temperature on the IPTS-68
 scale is returned with \code{x@data$temperature}.
 
-
 This preference for computed over stored quantities is accomplished
 by first checking for computed quantities, and then falling
 back to the general \code{[[} method if no match is found.
@@ -128,6 +127,10 @@ within \code{.cnv} files.)
 
 \item \code{CT} or \code{Conservative Temperature}: Conservative Temperature,
 computed with \code{\link[gsw]{gsw_CT_from_t}} in the \code{gsw} package.
+
+\item \code{density}: seawater density, computed with \code{\link{swRho}(x)}.
+(Note that it may be better to call that function directly, to gain
+control of the choice of equation of state, etc.)
 
 \item \code{depth}: Depth in metres below the surface, computed
 with \code{\link{swDepth}(x)}.
