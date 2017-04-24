@@ -70,6 +70,9 @@ varies, a variety of approaches are taken to trimming the dataset.
   much sense, but it might help in some cases). Note that, prior to early 2016, method \code{"B"} was
   called method \code{"C"}; the old \code{"B"} method was judged useless and was removed.}
 
+\item{If \code{method="upcast"}, a sort of reverse of \code{"downcast"} is used. This
+  was added in late April 2017 and has not been well tested yet.}
+
 \item{If \code{method="sbe"}, a method similar to that described
   in the SBE Data Processing manual is used to remove the "soak"
   period at the beginning of a cast (see Section 6 under subsection

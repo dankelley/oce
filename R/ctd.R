@@ -457,7 +457,6 @@ setMethod(f="summary",
 #' IPTS-68.  Again, temperature on the IPTS-68
 #' scale is returned with \code{x@@data$temperature}.
 #'
-#'
 #' This preference for computed over stored quantities is accomplished
 #' by first checking for computed quantities, and then falling
 #' back to the general \code{[[} method if no match is found.
@@ -478,6 +477,10 @@ setMethod(f="summary",
 #'
 #' \item \code{CT} or \code{Conservative Temperature}: Conservative Temperature,
 #' computed with \code{\link[gsw]{gsw_CT_from_t}} in the \code{gsw} package.
+#'
+#' \item \code{density}: seawater density, computed with \code{\link{swRho}(x)}.
+#' (Note that it may be better to call that function directly, to gain
+#' control of the choice of equation of state, etc.)
 #'
 #' \item \code{depth}: Depth in metres below the surface, computed
 #' with \code{\link{swDepth}(x)}.
@@ -531,7 +534,7 @@ setMethod(f="summary",
 #' \item \code{z}: Vertical coordinate in metres above the surface, computed with
 #' \code{\link{swZ}(x)}.
 #'
-#' }
+#'}
 #'
 #' @family things related to \code{ctd} data
 setMethod(f="[[",
@@ -603,6 +606,8 @@ setMethod(f="[[",
                   if ("latitude" %in% dataNames) x@data$latitude else x@metadata$latitude
               } else if (i == "N2") {
                   swN2(x)
+              } else if (i == "density") {
+                  swRho(x)
               } else if (i == "sigmaTheta") {
                   swSigmaTheta(x)
               } else if (i == "sigma0") {
@@ -1911,6 +1916,9 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'   much sense, but it might help in some cases). Note that, prior to early 2016, method \code{"B"} was
 #'   called method \code{"C"}; the old \code{"B"} method was judged useless and was removed.}
 #'
+#'   \item{If \code{method="upcast"}, a sort of reverse of \code{"downcast"} is used. This
+#'   was added in late April 2017 and has not been well tested yet.}
+#'
 #'   \item{If \code{method="sbe"}, a method similar to that described
 #'   in the SBE Data Processing manual is used to remove the "soak"
 #'   period at the beginning of a cast (see Section 6 under subsection
@@ -2033,7 +2041,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 stop("if provided, 'method' must be of length 1 or 2")
             }
         }
-        method <- match.arg(method, c("downcast", "index", "scan", "range", "sbe"))
+        method <- match.arg(method, c("downcast", "upcast", "index", "scan", "range", "sbe"))
         oceDebug(debug, paste("ctdTrim() using method \"", method, "\"\n", sep=""))
         keep <- rep(TRUE, n)
         if (method == "index") {
@@ -2180,6 +2188,72 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 oceDebug(debug-1, "scanStart:", scanStart, "\n")
                 keep <- keep & (x[["scan"]] > scanStart)
             }
+        } else if (method == "upcast") {
+            pmin <- -5
+            pminGiven <- FALSE
+            if (!missing(parameters)) {
+                if ("pmin" %in% names(parameters)) {
+                    pmin <- parameters$pmin
+                    pminGiven <- TRUE
+                } else {
+                    stop("parameter not understood for this method")
+                }
+            }
+            oceDebug(debug, 'pmin=', pmin, '\n')
+            keep <- (pressure > pmin) # 2. in water (or below start depth)
+            pressureSmoothed <- smooth(pressure, kind="3R")
+            max.location <- which.max(pressureSmoothed)
+            max.pressure <- pressureSmoothed[max.location]
+            keep[1:max.location] <- FALSE
+            oceDebug(debug, "removed data at indices from 1 to ", max.location,
+                     " (where pressure is ", pressure[max.location], "\n", sep="")
+            if (!pminGiven) {
+                ## new method, after Feb 2008
+                submethodChoices <- c("A", "B")
+                sm <- pmatch(submethod, submethodChoices)
+                if (is.na(submethod))
+                    stop("unknown submethod '", submethod, "'")
+                submethod <- submethodChoices[sm]
+                pp <- pressure[keep]
+                pp <- despike(pp) # some, e.g. data(ctdRaw), have crazy points in air
+                ss <- x[["scan"]][keep]
+                end <- which(smooth(pp) > 1/2*max.pressure)[1]
+                if (!is.na(end)) {
+                    pp <- pp[1:end]
+                    ss <- ss[1:end]
+                }
+                s0 <- ss[0.25*length(ss)]
+                p0 <- pp[1]
+                ##p1 <- max(pp) #pp[0.9*length(pp)]
+                if (length(ss) > 2)
+                    dpds0 <-  diff(range(pp, na.rm=TRUE)) / diff(range(ss, na.rm=TRUE))
+                else
+                    dpds0 <- 0
+                ## Handle submethods.
+                if (submethod == "A") {
+                    oceDebug(debug, "method[2]=\"A\"\n")
+                    t <- try(m <- nls(pp ~ function(ss, s0, p0, dpds) {
+                                          oceDebug(debug-1, "bilinearA s0=", s0, "p0=",
+                                                   p0, "dpds=", dpds, "\n")
+                                          ifelse(s < s0, p0, p0+dpds * (s-s0))
+                                      },
+                                      start=list(s0=s0, p0=0, dpds=dpds0)), silent=TRUE)
+                    scanStart <- if (class(t) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
+                } else if (submethod == "B") {
+                    oceDebug(debug, "method[3]=\"B\" so using two-segment model with zero near-surface pressure\n")
+                    t <- try(m <- nls(pp ~ function(ss, s0, dpds) {
+                                          oceDebug(debug-1, "bilinearB s0=", s0, "dpds=", dpds, "\n")
+                                          ifelse(s < s0, 0, dpds * (s-s0))
+                                      },
+                                      start=list(s0=s0, dpds=dpds0)), silent=TRUE)
+                    scanStart <- if (class(t) == "try-error") 1 else max(1, floor(0.5 + coef(m)["s0"]))
+                } else {
+                    stop("unknown submethod '", submethod, "'")
+                }
+                oceDebug(debug-1, "scanStart:", scanStart, "\n")
+                keep <- keep & (x[["scan"]] > scanStart)
+            }
+ 
         } else if (method == "range") {
             if (!("item" %in% names(parameters)))
                 stop("'parameters' must be a list containing 'item'")
