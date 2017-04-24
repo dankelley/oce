@@ -201,7 +201,7 @@ setMethod(f="summary",
                       thisStn <- object@data$station[[i]]
                       id <- if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
                           thisStn@metadata$station else ""
-                      depth <- if (is.null(thisStn@metadata$waterDepth))
+                      depth <- if (is.null(thisStn@metadata$waterDepth) || 0 == thisStn@metadata$waterDepth)
                           max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
                       cat(sprintf("%5d %5s %7.2f %7.2f %5.0f\n",
                                   i, id, thisStn@metadata$longitude[1], thisStn@metadata$latitude[1], depth))
