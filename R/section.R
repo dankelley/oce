@@ -201,7 +201,7 @@ setMethod(f="summary",
                       thisStn <- object@data$station[[i]]
                       id <- if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
                           thisStn@metadata$station else ""
-                      depth <- if (is.null(thisStn@metadata$waterDepth) || 0 == thisStn@metadata$waterDepth)
+                      depth <- if (!is.finite(thisStn@metadata$waterDepth) || 0 == thisStn@metadata$waterDepth)
                           max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
                       cat(sprintf("%5d %5s %7.2f %7.2f %5.0f\n",
                                   i, id, thisStn@metadata$longitude[1], thisStn@metadata$latitude[1], depth))
@@ -2703,11 +2703,18 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
         if (inherits(thelist[[1]], "oce")) {
             nstation <- length(salinity)
             ctds <- vector("list", nstation)
+            badDepths <- NULL
             for (i in 1:nstation) {
                 if (!("pressure" %in% names(thelist[[i]]@data)))
                     stop("cannot create a section from this list because element number ", i, " lacks pressure")
+                if (is.na(thelist[[i]][["waterDepth"]])) {
+                    thelist[[i]][["waterDepth"]] <- max(thelist[[i]][["pressure"]], na.rm=TRUE)
+                    badDepths <- c(badDepths, i)
+                }
                 ctds[[i]] <- thelist[[i]]
             }
+            if (length(badDepths))
+                warning("estimated waterDepth as max(pressure) for CTDs numbered: ", paste(badDepths, collapse=" "))
         } else {
             stop("first argument must be a salinity vector, or a list of oce objects")
         }
