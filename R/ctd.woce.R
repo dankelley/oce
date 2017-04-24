@@ -217,11 +217,11 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         tmp <- sub("(.*), ", "", line)
         date <- substr(tmp, 1, 8)
         ##cat("DATE '", date, "'\n", sep="")
-        diw <- substr(tmp, 9, nchar(tmp)) # really, divisionINSTITUTEwho
-        institute <- diw # BUG: really, it is division, institute, who, strung together
-        ## Kludge: recognize some institutes
-        if (0 < regexpr("SIO", diw))
-            institute <- "SIO"
+        ## 20170424 diw <- substr(tmp, 9, nchar(tmp)) # really, divisionINSTITUTEwho
+        ## 20170424 institute <- diw # BUG: really, it is division, institute, who, strung together
+        ## 20170424 ## Kludge: recognize some institutes
+        ## 20170424 if (0 < regexpr("SIO", diw))
+        ## 20170424     institute <- "SIO"
         gotHeader <- FALSE
         gotDate <- FALSE
         gotTime <- FALSE
