@@ -458,6 +458,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(kg/m^3), scale="")
         } else if (1 == length(grep("^\\s*kg/m\\*\\*3\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(kg/m^3), scale="")
+        } else if (1 == length(grep("^\\s*micromoles/m\\*\\*2/sec\\s*$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(mu*mol/m^2/s), scale="")
         } else if (1 == length(grep("^sigma-theta,\\s*kg/m\\^3$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(kg/m^3), scale="")
         } else if (1 == length(grep("^seconds$", ODFunits[i], ignore.case=TRUE))) {
@@ -775,10 +777,12 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     NAvalue <- findInHeader("NULL_VALUE", lines, FALSE)
     if (length(NAvalue) > 1) {
         ##print(NAvalue)
-        isNumeric <- unlist(lapply(NAvalue, function(v) is.numeric(v)))
+        NAvalue <- try({as.numeric(unlist(NAvalue))}, silent=TRUE)
+        isNumeric <- is.numeric(NAvalue)
         ##print(isNumeric)
-        if (any(!isNumeric))
-            warning("ignoring non-numeric NULL_VALUE")
+        if (any(!isNumeric)) {
+            warning("ignoring non-numeric NULL_VALUE (", NAvalue, ")")
+        }
         if (any(isNumeric)) {
             tmp <- NAvalue[isNumeric]
             ##print(tmp)

@@ -1473,7 +1473,8 @@ setMethod(f="plot",
                       if (!grid && axes)
                           Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
                       bottom.x <- c(xx[1], xx, xx[length(xx)])
-                      bottom.y <- c(graph.bottom, -waterDepth, graph.bottom)
+                      bottom.y <- if (any(is.finite(waterDepth))) c(graph.bottom, -waterDepth, graph.bottom)
+                          else rep(NA, length(bottom.x)+2)
                       ##cat("bottom.x: (length", length(bottom.x),")");print(bottom.x)
                       ##cat("bottom.y: (length", length(bottom.y),")");print(bottom.y)
 
@@ -2085,6 +2086,7 @@ read.section <- function(file, directory, sectionId="", flags,
     ##         flags$phosphate  <- as.numeric(data[, wf - col.start + 1])
     ## } else phosphate <- NULL
     waterDepth  <- as.numeric(data[, which(var.names=="DEPTH") - col.start + 1])
+    waterDepth <- ifelse(waterDepth == missingValue, NA, waterDepth)
     ## FIXME: we have both 'latitude' and 'lat'; this is too confusing
     longitude <- as.numeric(data[, which(var.names=="LONGITUDE") - col.start + 1])
     latitude  <- as.numeric(data[, which(var.names=="LATITUDE") - col.start + 1])
@@ -2192,7 +2194,6 @@ read.section <- function(file, directory, sectionId="", flags,
         thisStation@metadata$longitude <- longitude[select[1]]
         thisStation@metadata$latitude <- latitude[select[1]]
         thisStation@metadata$waterDepth <- waterDepth[select[1]]
-
         thisStation@metadata$units <- dataUnits
         ## if (length(salinityBottle)) {
         ##     thisStation@metadata$units$salinityBottle <- salinityBottleUnit
@@ -2306,12 +2307,12 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
         p.max <- 0
         for (i in 1:n) {
             p <- section@data$station[[i]]@data$pressure
-            dp.list <- c(dp.list, mean(diff(p)), na.rm=TRUE)
+            dp.list <- c(dp.list, mean(diff(p), na.rm=TRUE))
             p.max <- max(c(p.max, p), na.rm=TRUE)
             ## message("i: ", i, ", p.max: ", p.max)
         }
         dp <- mean(dp.list, na.rm=TRUE) / 1.5 # make it a little smaller
-        pt <- pretty(c(0, p.max), n=min(200, floor(p.max / dp)))
+        pt <- pretty(c(0, p.max), n=min(200, floor(abs(p.max / dp))))
         oceDebug(debug, "p.max=", p.max, "; dp=", dp, "\n")
         oceDebug(debug, "pt=", pt, "\n")
     } else {
