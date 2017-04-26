@@ -302,7 +302,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             ## Handle the case of missing UNITS
             ODFunits <- rep("", n)
         } else {
-            stop("length of ODFnames and ODFunits must agree but they are ", n, " and ", length(ODFunits))
+            warning("length of ODFnames and ODFunits should agree but they are ", n, " and ", length(ODFunits), ". Padding with empty units" )
+            ODFunits <- c(ODFunits, rep("", n-length(ODFunits)))
         }
     }
     names <- ODFnames
