@@ -63,14 +63,6 @@ to the data and the analysis goals.
 Each specialized variant of this function has its own defaults
 for \code{flags} and \code{actions}.
 }
-\section{Implementation status}{
- \code{handleFlags} is a new function as of March 2016,
-and it will probably continue to evolve through the rest of 2016.
-Users are asked to be patient, and to provide help by
-looking at the documentation and telling the developers
-whether the planned functioning seems reasonable.
-}
-
 \seealso{
 Other functions that handle data-quality flags: \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,ctd-method}},

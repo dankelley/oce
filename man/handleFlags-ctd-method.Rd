@@ -74,14 +74,6 @@ from 1 to 9, this default is equivalent to
 setting \code{flags=list(all=c(1, 3:9))} along with
 \code{action=list("NA")}.
 }
-\section{Implementation status}{
- \code{handleFlags} is a new function as of March 2016,
-and it will probably continue to evolve through the rest of 2016.
-Users are asked to be patient, and to provide help by
-looking at the documentation and telling the developers
-whether the planned functioning seems reasonable.
-}
-
 \examples{
 library(oce)
 data(section)
