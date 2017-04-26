@@ -254,6 +254,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
 #'     \code{QCFF_*.*} \tab \code{flag}               \tab Overall flag                                               \cr
 #'     \code{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objecs                           \cr
 #'     \code{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                          \cr
+#'     \code{SNCN_*.*} \tab \code{scanCounter}        \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                                       \cr
 #'     \code{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
@@ -298,6 +299,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     oceDebug(debug, "ODFNames2oceNames() {\n", unindent=1, sep="")
     n <- length(ODFnames)
     if (n != length(ODFunits)) {
+        if (debug>0) message("ODFnames: ", paste(ODFnames, collapse=" "))
+        if (debug>0) message("ODFunits: ", paste(ODFunits, collapse=" "))
         if (0 == length(ODFunits)) {
             ## Handle the case of missing UNITS
             ODFunits <- rep("", n)
@@ -372,6 +375,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("QCFF", "flag", names) # overall flag
     names <- gsub("SIGP", "sigmaTheta", names)
     names <- gsub("SIGT", "sigmat", names) # in a moored ctd file examined 2014-05-15
+    names <- gsub("SNCN", "scanCounter", names)
     names <- gsub("SYTM", "time", names) # in a moored ctd file examined 2014-05-15
     names <- gsub("TE90", "temperature", names)
     names <- gsub("TEMP", "temperature", names)
