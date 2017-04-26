@@ -17,6 +17,10 @@ Translate WOCE-style names to \code{oce} names, using \code{\link{gsub}}
 to match patterns. For example, the pattern \code{"CTDOXY.*"} is taken
 to mean \code{oxygen}.
 }
+\references{
+Several online sources list WOCE names. An example is
+\url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
+}
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},

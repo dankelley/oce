@@ -10,6 +10,11 @@
 #'
 #' @return vector of strings holding \code{oce}-style names.
 #' @author Dan Kelley
+#'
+#' @references
+#' Several online sources list WOCE names. An example is
+#' \url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
+#'
 #' @family things related to \code{ctd} data
 #' @family functions that interpret variable names and units from headers
 woceNames2oceNames <- function(names)
@@ -21,19 +26,27 @@ woceNames2oceNames <- function(names)
     ## SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
     names <- gsub("_FLAG_W", "Flag", names)
     names <- gsub("_FLAG_I", "Flag", names)
+    names <- gsub("ALKALI", "totalAlkalinity", names)
+    names <- gsub("CFC-12", "CFC12", names)
     names <- gsub("CTDOXY", "oxygen", names)
     names <- gsub("CTDPRS", "pressure", names)
     names <- gsub("CTDSAL", "salinity", names)
     names <- gsub("CTDTMP", "temperature", names)
     names <- gsub("FLUOR", "fluorescence", names)
+    names <- gsub("NH4", "ammonium", names)
     names <- gsub("PHSPHT", "phosphate", names)
+    names <- gsub("PH_TOT", "pHTotal", names)
+    names <- gsub("PH_TMP", "pHTemperature", names) # what is this??
+    names <- gsub("NITRAT", "nitrate", names)
     names <- gsub("NITRIT", "nitrite", names)
     names <- gsub("NUMBER", "number", names)
     names <- gsub("NO2+NO3", "nitrite+nitrate", names)
     names <- gsub("OXYGEN", "oxygen", names)
     names <- gsub("QUALT", "quality", names) # flags, really, but we are not capturing that info yet
     names <- gsub("SALNTY", "salinityBottle", names)
+    names <- gsub("SF6", "SF6", names)
     names <- gsub("SILCAT", "silicate", names)
+    names <- gsub("TCARBN", "totalCarbon", names)
     names <- gsub("TRANS", "transmission", names)
     names
 }

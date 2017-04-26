@@ -1880,7 +1880,8 @@ setMethod(f="plot",
 #' to exist for years is \url{http://cchdo.ucsd.edu}, but a search on \code{"WOCE
 #'   bottle data"} should turn up other sites, if this one ceases to exist. Only
 #' the so-called \emph{exchange BOT} data format can be processed by read.section()
-#' at this time.
+#' at this time. Data names are inferred from column headings using
+#' \code{\link{woceNames2oceNames}}.
 #'
 #' @author Dan Kelley
 #'
@@ -1890,6 +1891,7 @@ read.section <- function(file, directory, sectionId="", flags,
                          missingValue=-999,
                          debug=getOption("oceDebug"), processingLog)
 {
+    oceDebug(debug, "read.section(file=\"", file, "\", ...) {\n", unindent=1)
     if (!missing(directory)) {
         if (!missing(file))
             stop("cannot specify both 'file' and 'directory'")
@@ -1930,7 +1932,7 @@ read.section <- function(file, directory, sectionId="", flags,
     n <- length(lines)
     header <- lines[1]
     for (l in (2:n)) {
-        oceDebug(debug, lines[l], "\n")
+        oceDebug(debug>4, lines[l], "\n")
         if ("#" != substr(lines[l], 1, 1)) {
             header <- c(header, lines[l])
             break
@@ -2120,7 +2122,6 @@ read.section <- function(file, directory, sectionId="", flags,
     }
     ## print(data.frame(dataNames, dataNamesOriginal))
     ## print(dataUnits)
-
 
     ## print(data.frame(oceNames, dataNamesOriginal))
     ## Names and units are the same for every station, so determine them
