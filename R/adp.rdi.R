@@ -100,7 +100,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     } else {
         isSentinel <- FALSE
     }
-    oceDebug(debug, "isSentinel=", isSentinel, " as inferred from the codes matrix, near adp.rdi.R line 102\n")
+    oceDebug(debug, "isSentinel=", isSentinel, " as inferred from the codes matrix, near adp.rdi.R line 103\n")
     ##
     ## Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
     FLD <- buf[dataOffset[1]+1:(dataOffset[2] - dataOffset[1])]
@@ -649,7 +649,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         cellSize <- header$cellSize
         #message("1. isSentinel=", isSentinel)
         isSentinel <- header$instrumentSubtype == "sentinelV"
-        oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 532\n")
+        oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 652\n")
         oceDebug(debug, "about to call ldc_rdi_in_file\n")
         if (is.numeric(from) && is.numeric(to) && is.numeric(by) ) {
             ## check for large files
@@ -685,7 +685,12 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
 
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
         buf <- ldc$outbuf
+        bufSize <- length(buf)
         ensembleStart <- ldc$ensembleStart
+        message("DEBUGGING: exporting 'buf' and 'ensembleStart' to calling environment")
+        buf<<-buf
+        ensembleStart<<-ensembleStart
+
         ## 20170108 ## These three things no longer make sense, since we are not reading
         ## 20170108 ## the file to the end, in this updated scheme.
         ## 20170108 measurementStart <- as.POSIXct(ldc$time[1] + 0.01 * as.integer(ldc$sec100[1]),
@@ -996,12 +1001,11 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             if (monitor)
                 progressBar = txtProgressBar(max=profilesToRead, style=3, title="Reading profiles")
 
+            oceDebug(debug, "profilesToRead=", profilesToRead, " (issue 1228: expect 8324 or 8323)\n")
             for (i in 1:profilesToRead) {
                 ## recall: these start at 0x80 0x00
                 for (chunk in 1:header$numberOfDataTypes) {
                     o <- ensembleStart[i] + header$dataOffset[chunk]
-                    ##slow if (i <= profilesToShow)
-                    ##slow     oceDebug(debug, "profile:", i, ", chunk:", chunk, ", buf: 0x", buf[o], " 0x", buf[1+o], "\n", sep="")
                     if (buf[o] == 0x00 & buf[1+o] == 0x00) {
                         ##slow if (i <= profilesToShow) oceDebug(debug, "  fixed leader skipped\n")
                     } else if (buf[o] == 0x80 & buf[1+o] == 0x00) {
@@ -1165,6 +1169,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         } else {
                             warning("Detected vertical beam percent good chunk, but this is not a SentinelV\n")
                         }
+                    } else {
+                        message("unknown buf[o]=0x", buf[o], " or buf[1+o]=0x", buf[1+o])
+                        browser()
                     }
                     if (monitor)
                         setTxtProgressBar(progressBar, i)
@@ -1341,8 +1348,12 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 ##VMDAS             cat(i, "\n", ...)
                 ##VMDAS     }
                 ##VMDAS }
-                if (o >= fileSize) {
-                    warning("got to end of file")
+                ##if (o >= fileSize) {
+                if (o >= bufSize) {
+                    message("got to end of file; o=", o, ", fileSize=", bufSize, " (for 1228, expect fileSize=", 6168576, ")")
+                    message("head(ensembleStart) = ", paste(head(ensembleStart), collapse=" "))
+                    message("tail(ensembleStart) = ", paste(tail(ensembleStart), collapse=" "))
+                    warning("got to end of file; o=", o, ", fileSize=", bufSize, "\n")
                     break
                 }
             }
@@ -1511,7 +1522,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
            class(time) <- c("POSIXct", "POSIXt")
            attr(time, "tzone") <- getOption("oceTz")
            if (bFound && !isVMDAS) {
+               oceDebug(debug, "creating data slot for a file with bFound&&!isVMDAS\n")
                br[br == 0.0] <- NA    # clean up (not sure if needed)
+               ## issue1228
                res@data <- list(v=v, q=q, a=a, g=g,
                                 br=br, bv=bv, bc=bc, ba=ba, bg=bg,
                                 distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
@@ -1537,6 +1550,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                 attitude=attitude,
                                 contaminationSensor=contaminationSensor)
            } else if (bFound && isVMDAS) {
+               oceDebug(debug, "creating data slot for a file with bFound&&isVMDAS\n")
                br[br == 0.0] <- NA    # clean up (not sure if needed)
                res@data <- list(v=v, q=q, a=a, g=g,
                                 br=br, bv=bv,
@@ -1590,6 +1604,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                 speedMadeGoodEast=speedMadeGoodEast,
                                 speedMadeGoodNorth=speedMadeGoodNorth)
            } else if (isSentinel) {
+               oceDebug(debug, "creating data slot for a SentinelV file\n")
                res@data <- list(v=v, q=q, a=a, g=g,
                                 vv=vv, vq=vq, va=va, vg=vg,
                                 vdistance=seq(firstCellRange, b=depthCellSize, length.out=numberOfVCells),
@@ -1616,6 +1631,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                 attitude=attitude,
                                 contaminationSensor=contaminationSensor)
            } else {
+               oceDebug(debug, "creating data slot for a non-SentinelV file\n")
                res@data <- list(v=v, q=q, a=a, g=g,
                                 distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                                 time=time,

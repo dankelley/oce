@@ -223,6 +223,13 @@ stopifnot(all.equal(a[1:10], b))
   if (clast == EOF)
     error("empty file '%s'", filenamestring);
 
+
+  // outbuf holds the output. It is growable
+  unsigned long int nobuf = 100000;
+  unsigned char *obuf = (unsigned char *)Calloc((size_t)nobuf, unsigned char);
+  unsigned long int iobuf = 0;
+  obuf[iobuf++] = clast; // FIXME
+
   // Growable buffers; see 'Realloc()' and 'Free()' calls later in the code.
   // Note that we do not check the Calloc() results because the R docs say that
   // Calloc() performs tests and R handles any problems.
@@ -233,19 +240,16 @@ stopifnot(all.equal(a[1:10], b))
   unsigned long int nebuf = 5000;
   unsigned char *ebuf = (unsigned char *)Calloc((size_t)nebuf, unsigned char);
   
-  // outbuf holds the output. It is growable
-  unsigned long int iobuf = 0;
-  unsigned long int nobuf = 100000;
-  unsigned char *obuf = (unsigned char *)Calloc((size_t)nobuf, unsigned char);
-
   unsigned long int in_ensemble = 0, out_ensemble = 0;
   int b1, b2;
 
-
   unsigned long int counter = 0, counter_last = 0;
+  unsigned int warnings = 0;
   while (1) {
     c = fgetc(fp);
-    if (c == EOF) break;
+    obuf[iobuf++] = c; // FIXME
+    if (c == EOF)
+      break;
     cindex++;
     // Try to locate "ensemble starts", spots where a 0x7f is followed by a second 0x7f,
     // then followed by data that match a checksum.
@@ -256,11 +260,13 @@ stopifnot(all.equal(a[1:10], b))
       check_sum = (unsigned short int)byte1;
       check_sum += (unsigned short int)byte2;
       b1 = fgetc(fp);
+      obuf[iobuf++] = b1; // FIXME
       if (b1 == EOF)
 	break;
       cindex++;
       check_sum += (unsigned short int)b1;
       b2 = fgetc(fp);
+      obuf[iobuf++] = b2; // FIXME
       if (b2 == EOF)
 	break;
       cindex++;
@@ -280,7 +286,7 @@ stopifnot(all.equal(a[1:10], b))
 	Free(obuf);
 	error("cannot decode the length of ensemble number %d", in_ensemble);
       }
-      unsigned int bytes_to_read = bytes_to_check - 4; // check_sum has used first 4 bytes already
+      unsigned int bytes_to_read = bytes_to_check - 4; // byte1&byte2&check_sum used 4 bytes already
 
       // Expand the ensemble buffer, ebuf, if need be.
       if (bytes_to_read > nebuf) {
@@ -289,11 +295,20 @@ stopifnot(all.equal(a[1:10], b))
 	  nebuf = bytes_to_read;
       }
       // Read the bytes in one operation, because fgetc() is too slow.
-      fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
+      unsigned int bytesRead;
+      bytesRead = fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
+
       if (feof(fp)) {
-	//Rprintf("NEW: end of file while reading ensemble number %d, at byte %d\n", in_ensemble+1, cindex);
+	Rprintf("NEW: end of file while reading ensemble number %d; cindex=%d; iobuf=%d; byte_to_read=%d; bytesRead=%d\n",
+	    in_ensemble+1, cindex, iobuf, bytes_to_read, bytesRead);
 	break;
       }
+      for (unsigned int i = 0; i < bytes_to_read; i++) { // FIXME: 4 here, or 6, or maybe 2???
+	obuf[iobuf++] = ebuf[i];
+      }
+
+
+
       cindex += bytes_to_read;
       for (int ib = 0; ib < bytes_to_read; ib++) {
 	check_sum += (unsigned short int)ebuf[ib];
@@ -302,10 +317,14 @@ stopifnot(all.equal(a[1:10], b))
       
       int cs1, cs2;
       cs1 = fgetc(fp);
-      if (cs1 == EOF) break;
+      obuf[iobuf++] = cs1; // FIXME
+      if (cs1 == EOF)
+	break;
       cindex++;
       cs2 = fgetc(fp);
-      if (cs2 == EOF) break;
+      obuf[iobuf++] = cs2; // FIXME
+      if (cs2 == EOF)
+	break;
       cindex++;
       desired_check_sum = ((unsigned short int)cs1) | ((unsigned short int)(cs2 << 8));
       //if (SHOW(in_ensemble)) Rprintf("NEW in_ensemble=%d icindex=%d check_sum %d desired_check_sum=%d b1=%d b2=%d bytes_to_check=%d\n",
@@ -338,7 +357,7 @@ stopifnot(all.equal(a[1:10], b))
 	etime.tm_min = (int) ebuf[time_pointer+4];
 	etime.tm_sec = (int) ebuf[time_pointer+5];
 	etime.tm_isdst = 0;
-	// below should work even with windows
+	// Below should work even on Microsoft Windows, I hope.
 	ensemble_time = oce_timegm(&etime);
 	//Rprintf("C %d\n", ensemble_time);
 	//Rprintf(" estimet %d %s after_from=%d before_to=%d",
@@ -361,25 +380,29 @@ stopifnot(all.equal(a[1:10], b))
 	    // Expand the output buffer if needed.
 	    if ((iobuf + 6 + bytes_to_read) >= nobuf) {
 	      nobuf = 2 * nobuf;
-	      // Rprintf("growing obuf (iobuf=%d, bytes_to_read=%d; new nobuf=%d)\n", 
-	      //         iobuf, bytes_to_read, nobuf);
+	      Rprintf("growing obuf (iobuf=%d, bytes_to_read=%d; new nobuf=%d)\n", 
+		  iobuf, bytes_to_read, nobuf);
 	      obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
 	    }
 	    // Copy ensemble to output buffer, after 6 bytes of header
-	    //Rprintf("starting outbuf chunk at iobuf=%d, value 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
-		//iobuf, byte1, byte2, b1, b2, cs1, cs2);
+	    if (warnings++ < 10)
+	      Rprintf("starting outbuf chunk at iobuf=%d, value 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+		  iobuf, byte1, byte2, b1, b2, cs1, cs2);
 
 	    ensembles[out_ensemble] = iobuf + 1; // the +1 puts in R notation
 	    times[out_ensemble] = ensemble_time;
-	    obuf[iobuf++] = byte1; // 0x7f
-	    obuf[iobuf++] = byte2; // 0x7f
-	    obuf[iobuf++] = b1; // this and b2 yield bytes_to_read
-	    obuf[iobuf++] = b2;
+	    ////1228 obuf[iobuf++] = byte1; // 0x7f
+	    ////1228 obuf[iobuf++] = byte2; // 0x7f
+	    ////1228 obuf[iobuf++] = b1; // this and b2 yield bytes_to_read
+	    ////1228 obuf[iobuf++] = b2;
 	    //obuf[iobuf++] = cs1; // this and cs2 form the checksum
 	    //obuf[iobuf++] = cs2;
-	    for (unsigned int i = 0; i < 6 + bytes_to_read; i++) { // FIXME: 4 here, or 6, or maybe 2???
+	    ///FIXME: was 6 below
+#if 0
+	    for (unsigned int i = 0; i < bytes_to_read; i++) { // FIXME: 4 here, or 6, or maybe 2???
 	      obuf[iobuf++] = ebuf[i];
 	    }
+#endif
 	    //Rprintf("AFTER saving, iobuf=%d, nobuf=%d, bytes_to_read=%d\n", iobuf, nobuf, bytes_to_read);
 	    // Increment counter (can be of two types)
 	    if (mode_value == 1) {
@@ -412,8 +435,14 @@ stopifnot(all.equal(a[1:10], b))
     }
     clast = c;
     c = fgetc(fp);
-    if (c == EOF) break;
+    obuf[iobuf++] = c; // FIXME
+    if (c == EOF)
+      break;
     cindex++;
+    if (cindex != iobuf && warnings < 20) {
+      Rprintf("WARNING cindex=%d iobuf=%d\n", cindex, iobuf);
+      warnings++;
+    }
   }
   fclose(fp);
   
