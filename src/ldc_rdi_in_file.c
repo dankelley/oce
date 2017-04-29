@@ -303,12 +303,18 @@ stopifnot(all.equal(a[1:10], b))
 	    in_ensemble+1, cindex, iobuf, bytes_to_read, bytesRead);
 	break;
       }
-      for (unsigned int i = 0; i < bytes_to_read; i++) { // FIXME: 4 here, or 6, or maybe 2???
+      // Expand the output buffer if needed. Note that the '100' in
+      // the test only really needs to be 6, but nothing is lost
+      // by being cautious.
+      if ((iobuf + 100 + bytes_to_read) >= nobuf) {
+	nobuf = 2 * nobuf;
+	//Rprintf("growing obuf (iobuf=%d, bytes_to_read=%d; new nobuf=%d)\n", 
+	//    iobuf, bytes_to_read, nobuf);
+	obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
+      }
+      for (unsigned int i = 0; i < bytes_to_read; i++) {
 	obuf[iobuf++] = ebuf[i];
       }
-
-
-
       cindex += bytes_to_read;
       for (int ib = 0; ib < bytes_to_read; ib++) {
 	check_sum += (unsigned short int)ebuf[ib];
@@ -377,13 +383,6 @@ stopifnot(all.equal(a[1:10], b))
 	  // FIXME: that, instead of using the '%' method'
 	  if ((mode_value == 0 && (counter - counter_last) >= by_value) ||
 	      (mode_value == 1 && (ensemble_time - ensemble_time_last) >= by_value)) {
-	    // Expand the output buffer if needed.
-	    if ((iobuf + 6 + bytes_to_read) >= nobuf) {
-	      nobuf = 2 * nobuf;
-	      Rprintf("growing obuf (iobuf=%d, bytes_to_read=%d; new nobuf=%d)\n", 
-		  iobuf, bytes_to_read, nobuf);
-	      obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
-	    }
 	    // Copy ensemble to output buffer, after 6 bytes of header
 	    if (warnings++ < 10)
 	      Rprintf("starting outbuf chunk at iobuf=%d, value 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
