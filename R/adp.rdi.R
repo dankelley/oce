@@ -1177,7 +1177,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         }
                     } else {
                         message("unknown buf[o]=0x", buf[o], " or buf[1+o]=0x", buf[1+o])
-                        browser()
+                        ##browser()
                     }
                     if (monitor)
                         setTxtProgressBar(progressBar, i)
