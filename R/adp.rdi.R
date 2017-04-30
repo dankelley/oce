@@ -684,12 +684,18 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         by <- 1
 
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
-        buf <- ldc$outbuf
-        bufSize <- length(buf)
         ensembleStart <- ldc$ensembleStart
-        message("DEBUGGING: exporting 'buf' and 'ensembleStart' to calling environment")
+
+        ## FIXME: do we really want to use this buffer? Why not
+        ## use seek()+readBin() on the file itself?
+        buf <- ldc$outbuf
+
+        ###################
+        message("IMPORTANT DEBUGGING MESSAGE:\n\tread.adp.rdi() is exporting a variable 'buf' for checking.\n\tIf you see this message after May 5, 2017,\n\tplease update your oce from github,\n\tand report an error if the message persists")
         buf<<-buf
-        ensembleStart<<-ensembleStart
+        ###################
+
+        bufSize <- length(buf)
 
         ## 20170108 ## These three things no longer make sense, since we are not reading
         ## 20170108 ## the file to the end, in this updated scheme.
@@ -1350,9 +1356,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 ##VMDAS }
                 ##if (o >= fileSize) {
                 if (o >= bufSize) {
-                    message("got to end of file; o=", o, ", fileSize=", bufSize, " (for 1228, expect fileSize=", 6168576, ")")
-                    message("head(ensembleStart) = ", paste(head(ensembleStart), collapse=" "))
-                    message("tail(ensembleStart) = ", paste(tail(ensembleStart), collapse=" "))
                     warning("got to end of file; o=", o, ", fileSize=", bufSize, "\n")
                     break
                 }
