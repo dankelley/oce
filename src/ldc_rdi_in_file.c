@@ -1,6 +1,15 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 //#define SHOW(iensemble) (4 > abs((int)iensemble-29555))
 
+// If memory-fault problems occur, look at the Calloc() and Realloc()
+// calls, and at the spots where information is stored in the relevant
+// arrays. Note that arrows grow by a factor of 3/2 whenever needed;
+// this is close to the Golden Ratio, which some analysts feel is
+// efficient. Apparently, Java uses 1.5 also, but 2 is another choice
+// that we've used here, in an earlier version. The initial sizes of
+// the arrays are chosen to be reasonable for small to medium files,
+// to avoid wasting time reallocating over and over.
+
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -69,31 +78,6 @@ double oce_timegm(struct tm *t)
 #undef days_in_year
 }
 
-// // Below is based upon the hint given by 'man timegm', with (a)
-// // renaming to _FCN() for these msdn equivalents and (b) a strdup()
-// // and free() which may help make things threadsafe (I am not too sure
-// // on this; in any case, a pair like this is used in parse.cc of the
-// // RccpTOML source).
-// time_t oce_timegm(struct tm *tm) {
-// #if __WIN32
-//     char *tz = _getenv("TZ");
-//     if (tz) tz = strdup(tz);
-//     _setenv("TZ", "", 1);
-//     _tzset();
-//     time_t ret = mktime(tm);
-//     if (tz) {
-//         _setenv("TZ", tz, 1);
-//         free(tz);
-//     } else
-//         _unsetenv("TZ");
-//     _tzset();
-//     return ret;
-// #else
-//     return timegm(tm);
-// #endif
-// }
-
-
 //#define DEBUG
 
 
@@ -120,6 +104,10 @@ buffer that contained the whole file contents. This scheme was dropped
 because of limitations on the size of vectors in R, which is set by
 the R use of 32-bit integers. (Note: 2^32-1 corresponds to a data file
 of roughly 4.3Gb.)
+
+THIS IS A FUNCTION STILL IN DEVELOPMENT, and much of what is said
+about the behaviour is aspirational. At present, it reads the *whole*
+file, ignoring all arguments except the file name.
 
 @param filename character string indicating the name of an RDI adp
 file.
@@ -225,7 +213,7 @@ stopifnot(all.equal(a[1:10], b))
 
 
   // outbuf holds the output. It is growable
-  unsigned long int nobuf = 100000;
+  unsigned long int nobuf = 100000; // BUFFER SIZE
   unsigned char *obuf = (unsigned char *)Calloc((size_t)nobuf, unsigned char);
   unsigned long int iobuf = 0;
   obuf[iobuf++] = clast; // FIXME
@@ -233,11 +221,11 @@ stopifnot(all.equal(a[1:10], b))
   // Growable buffers; see 'Realloc()' and 'Free()' calls later in the code.
   // Note that we do not check the Calloc() results because the R docs say that
   // Calloc() performs tests and R handles any problems.
-  unsigned long int nensembles = 100000;
+  unsigned long int nensembles = 100000; // BUFFER SIZE
   int *ensembles = (int *)Calloc((size_t)nensembles, int);
   int *times = (int *)Calloc((size_t)nensembles, int);
   unsigned char *sec100s = (unsigned char *)Calloc((size_t)nensembles, unsigned char);
-  unsigned long int nebuf = 5000;
+  unsigned long int nebuf = 50000; // BUFFER SIZE
   unsigned char *ebuf = (unsigned char *)Calloc((size_t)nebuf, unsigned char);
   
   unsigned long int in_ensemble = 0, out_ensemble = 0;
@@ -307,7 +295,7 @@ stopifnot(all.equal(a[1:10], b))
       // the test only really needs to be 6, but nothing is lost
       // by being cautious.
       if ((iobuf + 100 + bytes_to_read) >= nobuf) {
-	nobuf = 2 * nobuf;
+	nobuf = 3 * nobuf / 2;
 	//Rprintf("growing obuf (iobuf=%d, bytes_to_read=%d; new nobuf=%d)\n", 
 	//    iobuf, bytes_to_read, nobuf);
 	obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
@@ -349,7 +337,7 @@ stopifnot(all.equal(a[1:10], b))
 	  ensembles = (int *) Realloc(ensembles, 2*nensembles, int);
 	  times = (int *) Realloc(times, 2*nensembles, int);
 	  sec100s = (unsigned char *)Realloc(sec100s, 2*nensembles, unsigned char);
-	  nensembles = 2 * nensembles;
+	  nensembles = 3 * nensembles / 2;
 	  //Rprintf("            : upgraded storage starts at 0x%x and can contain %d elements...\n", ensembles, nensembles);
 	}
 	// We will decide whether to keep this ensemble, based on ensemble
@@ -363,13 +351,14 @@ stopifnot(all.equal(a[1:10], b))
 	etime.tm_min = (int) ebuf[time_pointer+4];
 	etime.tm_sec = (int) ebuf[time_pointer+5];
 	etime.tm_isdst = 0;
-	// Below should work even on Microsoft Windows, I hope.
+	// Use local timegm code, which I suppose is risky, but it
+	// does not seem that Microsoft Windows provides this function
+	// in a workable form.
 	ensemble_time = oce_timegm(&etime);
 	//Rprintf("C %d\n", ensemble_time);
 	//Rprintf(" estimet %d %s after_from=%d before_to=%d",
 	//    ensemble_time, ctime(&ensemble_time),
 	//    ensemble_time > from_value, ensemble_time < to_value);
-
 
 	// See whether we are past the 'from' condition. Note the "-1"
 	// for the ensemble case, because R starts counts at 1, not 0,
@@ -390,19 +379,6 @@ stopifnot(all.equal(a[1:10], b))
 
 	    ensembles[out_ensemble] = iobuf + 1; // the +1 puts in R notation
 	    times[out_ensemble] = ensemble_time;
-	    ////1228 obuf[iobuf++] = byte1; // 0x7f
-	    ////1228 obuf[iobuf++] = byte2; // 0x7f
-	    ////1228 obuf[iobuf++] = b1; // this and b2 yield bytes_to_read
-	    ////1228 obuf[iobuf++] = b2;
-	    //obuf[iobuf++] = cs1; // this and cs2 form the checksum
-	    //obuf[iobuf++] = cs2;
-	    ///FIXME: was 6 below
-#if 0
-	    for (unsigned int i = 0; i < bytes_to_read; i++) { // FIXME: 4 here, or 6, or maybe 2???
-	      obuf[iobuf++] = ebuf[i];
-	    }
-#endif
-	    //Rprintf("AFTER saving, iobuf=%d, nobuf=%d, bytes_to_read=%d\n", iobuf, nobuf, bytes_to_read);
 	    // Increment counter (can be of two types)
 	    if (mode_value == 1) {
 	      ensemble_time_last = ensemble_time;
@@ -445,8 +421,8 @@ stopifnot(all.equal(a[1:10], b))
   }
   fclose(fp);
   
-  // We will not return the whole buffers, but only the fraction that
-  // stores data.
+  // Finally, copy into some R memory. Possibly we should have been
+  // using this all along, but I wasn't clear on how to reallocate it.
   SEXP ensemble;
   PROTECT(ensemble = NEW_INTEGER(out_ensemble));
   SEXP time;
