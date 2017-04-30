@@ -1176,8 +1176,16 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                             warning("Detected vertical beam percent good chunk, but this is not a SentinelV\n")
                         }
                     } else {
-                        message("unknown buf[o]=0x", buf[o], " or buf[1+o]=0x", buf[1+o])
-                        ##browser()
+                        ## FIXME: maybe should handle all possible combinations here. But
+                        ## FIXME: how could we know the possibilities? I've seen the following
+                        ## FIXME: in a winriver file file from CR:
+                        ## FIXME: 0x00 0x37
+                        ## FIXME: 0x01 0x21
+                        ## FIXME: 0x02 0x21
+                        ## FIXME: 0x03 0x21
+                        ## FIXME: ... and over 1000 more. These cannot be real codes, surely.
+                        ## FIXME: So, for now, let's just ignore unknown codes.
+                        ##> warning("unknown buf[o]=0x", buf[o], " and buf[1+o]=0x", buf[1+o])
                     }
                     if (monitor)
                         setTxtProgressBar(progressBar, i)
