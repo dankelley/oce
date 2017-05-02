@@ -171,9 +171,9 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
 
 system("R CMD SHLIB src/ldc_rdi_in_file.c")
 f <- "/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
-dyn.load("src/ldc_rdi_2.so")
-a <- .Call("ldc_rdi_2", f, 1, 0, 0)
-b <- .Call("ldc_rdi_2", f, 1, 10, 0)
+dyn.load("src/ldc_rdi_in_file.so")
+a <- .Call("ldc_rdi_in_file", f, 1, 0, 0, 0)
+b <- .Call("ldc_rdi_in_file", f, 1, 10, 0, 0)
 stopifnot(all.equal(length(a), 79134))
 stopifnot(all.equal(a[1:10], b))
     
