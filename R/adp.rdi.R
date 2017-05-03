@@ -678,17 +678,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ldc <- .Call("ldc_rdi_in_file", filename,
                          as.integer(from), as.integer(to), ctimeToSeconds(by), 1L)
         }
-        ## Must now reset from,to,by in the *subsetted* data item, ldc.
-        from <- 1
-        to <- length(ldc$ensembleStart)
-        by <- 1
 
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
         ensembleStart <- ldc$ensembleStart
-
-        ## FIXME: do we really want to use this buffer? Why not
-        ## use seek()+readBin() on the file itself?
-        buf <- ldc$outbuf
 
         ###################
         message("IMPORTANT DEBUGGING MESSAGE:\n\tread.adp.rdi() is exporting a variable 'ldc' for checking.\n\tIf you see this message after Monday, May 9, 2017,\n\tplease update your oce from github,\n\tand report an error if the message persists")

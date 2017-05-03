@@ -194,7 +194,8 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
   int byte2 = 0x7f;
   unsigned short int check_sum, desired_check_sum;
   unsigned int bytes_to_check = 0;
-  unsigned long int cindex = 0, cindex_prior=0; // character index
+  unsigned long int cindex = 0;
+  unsigned long outEnsemblePointer = 1;
   clast = fgetc(fp);
   cindex++;
   if (clast == EOF)
@@ -354,22 +355,25 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
 	// See whether we are past the 'from' condition. Note the "-1"
 	// for the ensemble case, because R starts counts at 1, not 0,
 	// and the calling R code is (naturally) in R notation.
-	if (out_ensemble<50) Rprintf("STAGE 0 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
+	if (out_ensemble<50) Rprintf("STAGE 1 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
 	    in_ensemble, from_value, counter,  counter_last);
 	if ((mode_value == 0 && in_ensemble >= (from_value-1)) ||
 	    (mode_value == 1 && ensemble_time >= from_value)) {
 
-	  if (out_ensemble<50) Rprintf("STAGE 2 in_ensemble=%d\n", in_ensemble);
+	  if (out_ensemble<50) Rprintf("  STAGE 2 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
+	      in_ensemble, from_value, counter,  counter_last);
 	  // Handle the 'by' value.
 	  //
 	  // FIXME: best to have a 'last' variable and to count from
 	  // FIXME: that, instead of using the '%' method'
 	  if ((mode_value == 0 && (counter==from_value-1 || (counter - counter_last) >= by_value)) ||
 	      (mode_value == 1 && (ensemble_time - ensemble_time_last) >= by_value)) {
-	    if (out_ensemble<50) Rprintf("STAGE 3 in_ensemble=%d\n", in_ensemble);
+	    if (out_ensemble<50) Rprintf("    STAGE 3 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
+		in_ensemble, from_value, counter,  counter_last);
 	    // Copy ensemble to output buffer, after 6 bytes of header
-	    ensembles[out_ensemble] = cindex_prior + 1; // the +1 puts in R notation
-	    cindex_prior = cindex;
+	    // FIXME: next is wrong. should have a cumsum
+	    ensembles[out_ensemble] = outEnsemblePointer;
+	    outEnsemblePointer = outEnsemblePointer + 6 + bytes_to_read; // 6 bytes for: 0x7f,0x7f,b1,b2,cs1,cs2
 	    times[out_ensemble] = ensemble_time;
 	    // Increment counter (can be of two types)
 	    if (mode_value == 1) {
