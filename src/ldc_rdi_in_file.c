@@ -1,7 +1,8 @@
-#define USE_OUTBUF
+// vim:noexpandtab:shiftwidth=2:softtabstop=2:tw=70:foldmethod=marker:foldlevel=0:
+
+//#define USE_OBUF
 //#define DEBUG
 
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 //#define SHOW(iensemble) (4 > abs((int)iensemble-29555))
 
 // If memory-fault problems occur, look at the Calloc() and Realloc()
@@ -12,6 +13,7 @@
 // that we've used here, in an earlier version. The initial sizes of
 // the arrays are chosen to be reasonable for small to medium files,
 // to avoid wasting time reallocating over and over.
+
 
 #include <R.h>
 #include <Rdefines.h>
@@ -215,13 +217,20 @@ stopifnot(all.equal(a[1:10], b))
   if (clast == EOF)
     error("empty file '%s'", filenamestring);
 
-#ifdef USE_OUTBUF
-  // outbuf holds the output. It is growable
+//#ifdef USE_OBUF
+//  // obuf holds the output. It is growable
+//  unsigned long int nobuf = 100000; // BUFFER SIZE
+//  unsigned char *obuf = (unsigned char *)Calloc((size_t)nobuf, unsigned char);
+//  unsigned long int iobuf = 0;
+//  obuf[iobuf++] = clast; // FIXME
+//#endif
+
+  // 'obuf' is a growable C buffer to hold the output, which eventually
+  // gets saved in the R item "outbuf".
   unsigned long int nobuf = 100000; // BUFFER SIZE
   unsigned char *obuf = (unsigned char *)Calloc((size_t)nobuf, unsigned char);
   unsigned long int iobuf = 0;
-  obuf[iobuf++] = clast; // FIXME
-#endif
+
 
   // Growable buffers; see 'Realloc()' and 'Free()' calls later in the code.
   // Note that we do not check the Calloc() results because the R docs say that
@@ -240,9 +249,9 @@ stopifnot(all.equal(a[1:10], b))
   unsigned int warnings = 0;
   while (1) {
     c = fgetc(fp);
-#ifdef USE_OUTBUF
-    obuf[iobuf++] = c; // FIXME
-#endif
+//#ifdef USE_OBUF
+//    obuf[iobuf++] = c; // FIXME
+//#endif
     if (c == EOF)
       break;
     cindex++;
@@ -255,17 +264,17 @@ stopifnot(all.equal(a[1:10], b))
       check_sum = (unsigned short int)byte1;
       check_sum += (unsigned short int)byte2;
       b1 = fgetc(fp);
-#ifdef USE_OUTBUF
-      obuf[iobuf++] = b1; // FIXME
-#endif
+//#ifdef USE_OBUF
+//      obuf[iobuf++] = b1; // FIXME
+//#endif
       if (b1 == EOF)
 	break;
       cindex++;
       check_sum += (unsigned short int)b1;
       b2 = fgetc(fp);
-#ifdef USE_OUTBUF
-      obuf[iobuf++] = b2; // FIXME
-#endif
+//#ifdef USE_OBUF
+//      obuf[iobuf++] = b2; // FIXME
+//#endif
       if (b2 == EOF)
 	break;
       cindex++;
@@ -282,9 +291,9 @@ stopifnot(all.equal(a[1:10], b))
 	Free(times);
 	Free(sec100s);
 	Free(ebuf);
-#ifdef USE_OUTBUF
-	Free(obuf);
-#endif
+//#ifdef USE_OBUF
+//	Free(obuf);
+//#endif
 	error("cannot decode the length of ensemble number %d", in_ensemble);
       }
       unsigned int bytes_to_read = bytes_to_check - 4; // byte1&byte2&check_sum used 4 bytes already
@@ -307,24 +316,24 @@ stopifnot(all.equal(a[1:10], b))
 #endif
 	break;
       }
-#ifdef USE_OUTBUF
-      // Expand the output buffer if needed. Note that the '100' in
-      // the test only really needs to be 6, but nothing is lost
-      // by being cautious.
-      if ((iobuf + 100 + bytes_to_read) >= nobuf) {
-	nobuf = 3 * nobuf / 2;
-#ifdef DEBUG	
-	Rprintf("about to enlarge obuf storage to %d elements ...\n", nobuf);
-#endif
-	obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
-#ifdef DEBUG
-	  Rprintf("    ... allocation was successful\n");
-#endif
-      }
-      for (unsigned int i = 0; i < bytes_to_read; i++) {
-	obuf[iobuf++] = ebuf[i];
-      }
-#endif
+//#ifdef USE_OBUF
+//      // Expand the output buffer if needed. Note that the '100' in
+//      // the test only really needs to be 6, but nothing is lost
+//      // by being cautious.
+//      if ((iobuf + 100 + bytes_to_read) >= nobuf) {
+//	nobuf = 3 * nobuf / 2;
+//#ifdef DEBUG	
+//	Rprintf("about to enlarge obuf storage to %d elements ...\n", nobuf);
+//#endif
+//	obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
+//#ifdef DEBUG
+//	  Rprintf("    ... allocation was successful\n");
+//#endif
+//      }
+//      for (unsigned int i = 0; i < bytes_to_read; i++) {
+//	obuf[iobuf++] = ebuf[i];
+//      }
+//#endif
       cindex += bytes_to_read;
       for (int ib = 0; ib < bytes_to_read; ib++) {
 	check_sum += (unsigned short int)ebuf[ib];
@@ -333,16 +342,16 @@ stopifnot(all.equal(a[1:10], b))
       
       int cs1, cs2;
       cs1 = fgetc(fp);
-#ifdef USE_OUTBUF
-      obuf[iobuf++] = cs1; // FIXME
-#endif
+//#ifdef USE_OBUF
+//      obuf[iobuf++] = cs1; // FIXME
+//#endif
       if (cs1 == EOF)
 	break;
       cindex++;
       cs2 = fgetc(fp);
-#ifdef USE_OUTBUF
-      obuf[iobuf++] = cs2; // FIXME
-#endif
+//#ifdef USE_OBUF
+//      obuf[iobuf++] = cs2; // FIXME
+//#endif
       if (cs2 == EOF)
 	break;
       cindex++;
@@ -394,21 +403,20 @@ stopifnot(all.equal(a[1:10], b))
 	// See whether we are past the 'from' condition. Note the "-1"
 	// for the ensemble case, because R starts counts at 1, not 0,
 	// and the calling R code is (naturally) in R notation.
+	if (out_ensemble<5) Rprintf("STAGE 0 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
+	    in_ensemble, from_value, coiunter,  counter_last);
 	if ((mode_value == 0 && in_ensemble >= (from_value-1)) ||
 	    (mode_value == 1 && ensemble_time >= from_value)) {
 
+	  if (out_ensemble<5) Rprintf("STAGE 2 in_ensemble=%d\n", in_ensemble);
 	  // Handle the 'by' value.
 	  //
 	  // FIXME: best to have a 'last' variable and to count from
 	  // FIXME: that, instead of using the '%' method'
 	  if ((mode_value == 0 && (counter - counter_last) >= by_value) ||
 	      (mode_value == 1 && (ensemble_time - ensemble_time_last) >= by_value)) {
+	    if (out_ensemble<5) Rprintf("STAGE 3 in_ensemble=%d\n", in_ensemble);
 	    // Copy ensemble to output buffer, after 6 bytes of header
-#ifdef DEBUG
-	    if (warnings++ < 10)
-	      Rprintf("starting outbuf chunk at cindex=%d, value 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
-		  cindex, byte1, byte2, b1, b2, cs1, cs2);
-#endif
 	    ensembles[out_ensemble] = cindex + 1; // the +1 puts in R notation
 	    times[out_ensemble] = ensemble_time;
 	    // Increment counter (can be of two types)
@@ -422,6 +430,26 @@ stopifnot(all.equal(a[1:10], b))
 	    unsigned int timePointer = (unsigned int)ebuf[4] + 256 * (unsigned int) ebuf[5];
 	    sec100s[out_ensemble] = ebuf[timePointer+6];
 	    out_ensemble++;
+
+            // {{{
+            // Save to output buffer ...
+            if ((iobuf + 100 + bytes_to_read) >= nobuf) {
+                nobuf = nobuf + 100 + bytes_to_read + nobuf / 2;
+                Rprintf("about to enlarge obuf storage to %d elements ...\n", nobuf);
+                obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
+                Rprintf("    ... allocation was successful\n");
+            }
+            obuf[iobuf++] = byte1; // 0x7f
+            obuf[iobuf++] = byte2; // 0x7f
+            obuf[iobuf++] = b1; // length of ensemble, byte 1
+            obuf[iobuf++] = b2; // length of ensemble, byte 1
+            for (int i = 0; i < bytes_to_read; i++)
+                obuf[iobuf++] = ebuf[i]; // data, not including the checksum
+            obuf[iobuf++] = cs1; // checksum  byte 1
+            obuf[iobuf++] = cs2; // checksum  byte 2
+	    // ... finished saving to output buffer.
+            // }}}
+
 	  } else {
 #ifdef DEBUG
 	    Rprintf("skipping at in_ensemble=%d, counter=%d, by=%d\n", in_ensemble, counter, by_value);
@@ -444,18 +472,18 @@ stopifnot(all.equal(a[1:10], b))
     }
     clast = c;
     c = fgetc(fp);
-#ifdef USE_OUTBUF
-    obuf[iobuf++] = c; // FIXME
-#endif
+//#ifdef USE_OBUF
+//    obuf[iobuf++] = c; // FIXME
+//#endif
     if (c == EOF)
       break;
     cindex++;
-#ifdef USE_OUTBUF
-    if (cindex != iobuf && warnings < 20) {
-      Rprintf("WARNING cindex=%d iobuf=%d\n", cindex, iobuf);
-      warnings++;
-    }
-#endif
+//#ifdef USE_OBUF
+//    if (cindex != iobuf && warnings < 20) {
+//      Rprintf("WARNING cindex=%d iobuf=%d\n", cindex, iobuf);
+//      warnings++;
+//    }
+//#endif
   }
   fclose(fp);
   
@@ -468,10 +496,8 @@ stopifnot(all.equal(a[1:10], b))
   SEXP sec100;
   PROTECT(sec100 = NEW_RAW(out_ensemble));
 
-#ifdef USE_OUTBUF
   SEXP outbuf;
-  PROTECT(outbuf = NEW_RAW(iobuf)); // FIXME: check ok
-#endif
+  PROTECT(outbuf = NEW_RAW(iobuf));
 
   int *pensemble = INTEGER_POINTER(ensemble);
   unsigned char *psec100 = RAW_POINTER(sec100);
@@ -487,12 +513,10 @@ stopifnot(all.equal(a[1:10], b))
   Free(times);
   Free(sec100s);
   Free(ebuf);
-#ifdef USE_OUTBUF
   for (long int i = 0; i < iobuf; i++) {
     poutbuf[i] = obuf[i];
   }
   Free(obuf);
-#endif
 
   SEXP lres;
   SEXP lres_names;
@@ -505,10 +529,8 @@ stopifnot(all.equal(a[1:10], b))
   SET_STRING_ELT(lres_names, i, mkChar("time"));
   SET_VECTOR_ELT(lres, ++i, sec100);
   SET_STRING_ELT(lres_names, i, mkChar("sec100"));
-#ifdef USE_OUTBUF
   SET_VECTOR_ELT(lres, ++i, outbuf);
   SET_STRING_ELT(lres_names, i, mkChar("outbuf"));
-#endif
   setAttrib(lres, R_NamesSymbol, lres_names);
   UNPROTECT(10); 
   return(lres);

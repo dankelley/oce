@@ -691,8 +691,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         buf <- ldc$outbuf
 
         ###################
-        message("IMPORTANT DEBUGGING MESSAGE:\n\tread.adp.rdi() is exporting a variable 'buf' for checking.\n\tIf you see this message after May 5, 2017,\n\tplease update your oce from github,\n\tand report an error if the message persists")
-        buf<<-buf
+        message("IMPORTANT DEBUGGING MESSAGE:\n\tread.adp.rdi() is exporting a variable 'ldc' for checking.\n\tIf you see this message after Monday, May 9, 2017,\n\tplease update your oce from github,\n\tand report an error if the message persists")
+        ldc<<-ldc
         ###################
 
         bufSize <- length(buf)
