@@ -1414,8 +1414,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             salinity <- readBin(buf[profileStart2 + 24], "integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
             temperature <- 0.01 * readBin(buf[profileStart2 + 26], "integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
             pressure <- 0.001 * readBin(buf[profileStart4 + 48], "integer", n=profilesToRead, size=4, endian="little")
-            cat("l1424 pressure= ", paste(pressure), "\n")
-            cat("l1425 profileStart= ", paste(profileStart), "\n")
             if (despike) {
                 temperature <- despike(temperature, reference="trim", min=-3, max=101)
                 pressure <- despike(pressure, reference="trim", min=1, max=10000)
