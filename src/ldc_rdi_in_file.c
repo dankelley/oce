@@ -167,20 +167,6 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
   time_t ensemble_time = 0; // integer-ish form of the above (only calculated if mode=1)
   time_t ensemble_time_last = 0; // we use this for 'by', if mode is 1
 
-  /*
-     
-# Test R code, used by developers whilst debugging:
-
-system("R CMD SHLIB src/ldc_rdi_in_file.c")
-f <- "/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000"
-dyn.load("src/ldc_rdi_in_file.so")
-a <- .Call("ldc_rdi_in_file", f, 1, 0, 0, 0)
-b <- .Call("ldc_rdi_in_file", f, 1, 10, 0, 0)
-stopifnot(all.equal(length(a), 79134))
-stopifnot(all.equal(a[1:10], b))
-    
-   */
-
   const char *filenamestring = CHAR(STRING_ELT(filename, 0));
   FILE *fp = fopen(filenamestring, "rb");
   if (!fp)
@@ -202,10 +188,7 @@ stopifnot(all.equal(a[1:10], b))
   int mode_value = *INTEGER_POINTER(mode);
   if (mode_value != 0 && mode_value != 1)
     error("'mode' must be 0 or 1");
-
-#ifdef DEBUG
-  Rprintf("from=%d, to=%d, by=%d, mode_value=%d\n", from_value, to_value, by_value, mode_value);
-#endif
+  //Rprintf("from=%d, to=%d, by=%d, mode_value=%d\n", from_value, to_value, by_value, mode_value);
   int c, clast=0x00;
   int byte1 = 0x7f;
   int byte2 = 0x7f;
@@ -217,24 +200,19 @@ stopifnot(all.equal(a[1:10], b))
   if (clast == EOF)
     error("empty file '%s'", filenamestring);
 
-//#ifdef USE_OBUF
-//  // obuf holds the output. It is growable
-//  unsigned long int nobuf = 100000; // BUFFER SIZE
-//  unsigned char *obuf = (unsigned char *)Calloc((size_t)nobuf, unsigned char);
-//  unsigned long int iobuf = 0;
-//  obuf[iobuf++] = clast; // FIXME
-//#endif
-
   // 'obuf' is a growable C buffer to hold the output, which eventually
   // gets saved in the R item "outbuf".
   unsigned long int nobuf = 100000; // BUFFER SIZE
   unsigned char *obuf = (unsigned char *)Calloc((size_t)nobuf, unsigned char);
   unsigned long int iobuf = 0;
 
-
-  // Growable buffers; see 'Realloc()' and 'Free()' calls later in the code.
+  // 'ensembles', 'times' and 'sec100s' are growable buffers of equal length, with one
+  // element for each ensemble.  We also use 'ebuf', another growable buffer, for
+  // storage of data within the ensemble that is under consideration
+  // at the moment.
+  // 
   // Note that we do not check the Calloc() results because the R docs say that
-  // Calloc() performs tests and R handles any problems.
+  // Calloc() performs its won tests, and that R will handle any problems.
   unsigned long int nensembles = 100000; // BUFFER SIZE
   int *ensembles = (int *)Calloc((size_t)nensembles, int);
   int *times = (int *)Calloc((size_t)nensembles, int);
@@ -249,34 +227,32 @@ stopifnot(all.equal(a[1:10], b))
   unsigned int warnings = 0;
   while (1) {
     c = fgetc(fp);
-//#ifdef USE_OBUF
-//    obuf[iobuf++] = c; // FIXME
-//#endif
-    if (c == EOF)
+    if (c == EOF) {
+      Rprintf("out of data while trying to get first byte of an ensemble of an RDI file (cindex=%d)\n", cindex);
       break;
+    }
     cindex++;
-    // Try to locate "ensemble starts", spots where a 0x7f is followed by a second 0x7f,
+    // Locate "ensemble starts", spots where a 0x7f is followed by a second 0x7f,
     // then followed by data that match a checksum.
     if (clast == byte1 && c == byte2) {
-      // The checksum includes the starting 0x7f, 0x7f pair, and also
-      // the two bytes that specify the number of bytes in the
-      // ensemble. So we start by adding these four bytes.
+      // The checksum includes the starting (0x7f, 0x7f) sequence, the
+      // two bytes that specify the number of bytes in the
+      // ensemble, and the data in the ensemble (sans the two bytes
+      // at the end of the data, which store the checksum).
       check_sum = (unsigned short int)byte1;
       check_sum += (unsigned short int)byte2;
       b1 = fgetc(fp);
-//#ifdef USE_OBUF
-//      obuf[iobuf++] = b1; // FIXME
-//#endif
-      if (b1 == EOF)
+      if (b1 == EOF) {
+	Rprintf("out of data while trying to get 'b1' of an RDI file (cindex=%d)\n", cindex);
 	break;
+      }
       cindex++;
       check_sum += (unsigned short int)b1;
       b2 = fgetc(fp);
-//#ifdef USE_OBUF
-//      obuf[iobuf++] = b2; // FIXME
-//#endif
-      if (b2 == EOF)
+      if (b2 == EOF) {
+	Rprintf("out of data while trying to get 'b2' of an RDI file (cindex=%d)\n", cindex);
 	break;
+      }
       cindex++;
       check_sum += (unsigned short int)b2;
       // Now we are ready to look at the rest of the bytes. Note that
@@ -291,9 +267,6 @@ stopifnot(all.equal(a[1:10], b))
 	Free(times);
 	Free(sec100s);
 	Free(ebuf);
-//#ifdef USE_OBUF
-//	Free(obuf);
-//#endif
 	error("cannot decode the length of ensemble number %d", in_ensemble);
       }
       unsigned int bytes_to_read = bytes_to_check - 4; // byte1&byte2&check_sum used 4 bytes already
@@ -309,51 +282,30 @@ stopifnot(all.equal(a[1:10], b))
       // Read the bytes in one operation, because fgetc() is too slow.
       unsigned int bytesRead;
       bytesRead = fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
-
       if (feof(fp)) {
 #ifdef DEBUG
 	Rprintf("NEW: end of file while reading ensemble number %d; cindex=%d; byte_to_read=%d; bytesRead=%d\n", in_ensemble+1, cindex, bytes_to_read, bytesRead);
 #endif
+	Rprintf("out of data while trying to read data of an RDI file (cindex=%d)\n", cindex);
 	break;
       }
-//#ifdef USE_OBUF
-//      // Expand the output buffer if needed. Note that the '100' in
-//      // the test only really needs to be 6, but nothing is lost
-//      // by being cautious.
-//      if ((iobuf + 100 + bytes_to_read) >= nobuf) {
-//	nobuf = 3 * nobuf / 2;
-//#ifdef DEBUG	
-//	Rprintf("about to enlarge obuf storage to %d elements ...\n", nobuf);
-//#endif
-//	obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
-//#ifdef DEBUG
-//	  Rprintf("    ... allocation was successful\n");
-//#endif
-//      }
-//      for (unsigned int i = 0; i < bytes_to_read; i++) {
-//	obuf[iobuf++] = ebuf[i];
-//      }
-//#endif
       cindex += bytes_to_read;
       for (int ib = 0; ib < bytes_to_read; ib++) {
 	check_sum += (unsigned short int)ebuf[ib];
 	//if (SHOW(in_ensemble)) Rprintf("NEW in_ensemble=%d ib=%d check_sum=%d\n", in_ensemble, ib, check_sum);
       }
-      
       int cs1, cs2;
       cs1 = fgetc(fp);
-//#ifdef USE_OBUF
-//      obuf[iobuf++] = cs1; // FIXME
-//#endif
-      if (cs1 == EOF)
+      if (cs1 == EOF) {
+	Rprintf("out of data while trying to get first byte of checksum of an RDI file (cindex=%d)\n", cindex);
 	break;
+      }
       cindex++;
       cs2 = fgetc(fp);
-//#ifdef USE_OBUF
-//      obuf[iobuf++] = cs2; // FIXME
-//#endif
-      if (cs2 == EOF)
+      if (cs2 == EOF) {
+	Rprintf("out of data while trying to get second byte of checksum of an RDI file (cindex=%d)\n", cindex);
 	break;
+      }
       cindex++;
       desired_check_sum = ((unsigned short int)cs1) | ((unsigned short int)(cs2 << 8));
       //if (SHOW(in_ensemble)) Rprintf("NEW in_ensemble=%d icindex=%d check_sum %d desired_check_sum=%d b1=%d b2=%d bytes_to_check=%d\n",
@@ -431,14 +383,13 @@ stopifnot(all.equal(a[1:10], b))
 	    unsigned int timePointer = (unsigned int)ebuf[4] + 256 * (unsigned int) ebuf[5];
 	    sec100s[out_ensemble] = ebuf[timePointer+6];
 	    out_ensemble++;
-
+            // Save to output buffer.
             // {{{
-            // Save to output buffer ...
             if ((iobuf + 100 + bytes_to_read) >= nobuf) {
                 nobuf = nobuf + 100 + bytes_to_read + nobuf / 2;
-                Rprintf("about to enlarge obuf storage to %d elements ...\n", nobuf);
+                //Rprintf("about to enlarge obuf storage to %d elements ...\n", nobuf);
                 obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
-                Rprintf("    ... allocation was successful\n");
+                //Rprintf("    ... allocation was successful\n");
             }
             obuf[iobuf++] = byte1; // 0x7f
             obuf[iobuf++] = byte2; // 0x7f
@@ -448,9 +399,7 @@ stopifnot(all.equal(a[1:10], b))
                 obuf[iobuf++] = ebuf[i]; // data, not including the checksum
             obuf[iobuf++] = cs1; // checksum  byte 1
             obuf[iobuf++] = cs2; // checksum  byte 2
-	    // ... finished saving to output buffer.
             // }}}
-
 	  } else {
 #ifdef DEBUG
 	    Rprintf("skipping at in_ensemble=%d, counter=%d, by=%d\n", in_ensemble, counter, by_value);
@@ -467,7 +416,9 @@ stopifnot(all.equal(a[1:10], b))
 	  //    out_ensemble, in_ensemble, from_value, to_value, ensemble_time, mode_value);
 	  break;
 	}
-      } // if it doesn't match the check_sum, we just ignore it as a coincidence of a 0x7f 0x7f pair
+      } else {
+	Rprintf("poor checksum at cindex=%d\n", cindex);
+      }
       R_CheckUserInterrupt(); // only check once per ensemble, for speed
       clast = c;
     }
