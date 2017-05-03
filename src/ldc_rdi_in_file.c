@@ -224,7 +224,6 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
   int b1, b2;
 
   unsigned long int counter = 0, counter_last = 0;
-  unsigned int warnings = 0;
   while (1) {
     c = fgetc(fp);
     if (c == EOF) {
@@ -355,19 +354,19 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
 	// See whether we are past the 'from' condition. Note the "-1"
 	// for the ensemble case, because R starts counts at 1, not 0,
 	// and the calling R code is (naturally) in R notation.
-	if (out_ensemble<10) Rprintf("STAGE 0 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
+	if (out_ensemble<50) Rprintf("STAGE 0 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
 	    in_ensemble, from_value, counter,  counter_last);
 	if ((mode_value == 0 && in_ensemble >= (from_value-1)) ||
 	    (mode_value == 1 && ensemble_time >= from_value)) {
 
-	  if (out_ensemble<10) Rprintf("STAGE 2 in_ensemble=%d\n", in_ensemble);
+	  if (out_ensemble<50) Rprintf("STAGE 2 in_ensemble=%d\n", in_ensemble);
 	  // Handle the 'by' value.
 	  //
 	  // FIXME: best to have a 'last' variable and to count from
 	  // FIXME: that, instead of using the '%' method'
-	  if ((mode_value == 0 && (counter==0 || (counter - counter_last) >= by_value)) ||
+	  if ((mode_value == 0 && (counter==from_value-1 || (counter - counter_last) >= by_value)) ||
 	      (mode_value == 1 && (ensemble_time - ensemble_time_last) >= by_value)) {
-	    if (out_ensemble<10) Rprintf("STAGE 3 in_ensemble=%d\n", in_ensemble);
+	    if (out_ensemble<50) Rprintf("STAGE 3 in_ensemble=%d\n", in_ensemble);
 	    // Copy ensemble to output buffer, after 6 bytes of header
 	    ensembles[out_ensemble] = cindex_prior + 1; // the +1 puts in R notation
 	    cindex_prior = cindex;
