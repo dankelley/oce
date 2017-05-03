@@ -678,17 +678,16 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ldc <- .Call("ldc_rdi_in_file", filename,
                          as.integer(from), as.integer(to), ctimeToSeconds(by), 1L)
         }
-
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
         ensembleStart <- ldc$ensembleStart
-
-        ###################
-        message("IMPORTANT DEBUGGING MESSAGE:\n\tread.adp.rdi() is exporting a variable 'ldc' for checking.\n\tIf you see this message after Monday, May 9, 2017,\n\tplease update your oce from github,\n\tand report an error if the message persists")
-        ldc<<-ldc
-        ###################
-
         buf <- ldc$outbuf
         bufSize <- length(buf)
+        ## Now, 'buf' contains *only* the profiles we want, so we may
+        ## redefine 'from', 'to' and 'by' to specify each and every profile.
+        from <- 1
+        to <- length(ensembleStart)
+        by <- 1
+        oceDebug(debug, "NEW method from=", from, ", by=", by, ", to=", to, "\n", sep="")
 
         ## 20170108 ## These three things no longer make sense, since we are not reading
         ## 20170108 ## the file to the end, in this updated scheme.
@@ -702,15 +701,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         ## 20170108 measurementDeltat <- (ldc$time[2] + 0.01 * as.integer(ldc$sec100[2])) - (ldc$time[1] + 0.01 * as.integer(ldc$sec100[2]))
         ## 20170108 oceDebug(debug, "measurementDeltat:", measurementDeltat, "s\n")
 
-        ## Now, 'buf' contains *only* the profiles we want, so we may
-        ## redefine 'from', 'to' and 'by' to specify each and every profile.
-        from <- 1
-        to <- length(ensembleStart)
-        by <- 1
-        oceDebug(debug, "NEW method from=", from, ", by=", by, ", to=", to, "\n", sep="")
-
         if (isSentinel) {
-            oceDebug(debug, "SentinelV type detected, skipping first ensemble\n")
+            warning("skipping the first ensemble (a temporary solution that eases reading of SentinelV files)\n")
             ensembleStart <- ensembleStart[-1] # remove the first ensemble to simplify parsing
             to <- to - 1
             ## re-read the numberOfDataTypes and dataOffsets from the second ensemble
@@ -788,7 +780,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             }
             ii <- which(codes[, 1]==0x01 & codes[, 2]==0x0f)
             if (isSentinel & length(ii) < 1) {
-                warning("Didn't find V series leader data ID, treating as a 4 beam ADCP")
+                warning("Didn't find V series leader data ID, treating as a 4 beam ADCP\n")
                 isSentinel <- FALSE
             }
             if (isSentinel) {
