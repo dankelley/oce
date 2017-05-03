@@ -404,7 +404,7 @@ stopifnot(all.equal(a[1:10], b))
 	// for the ensemble case, because R starts counts at 1, not 0,
 	// and the calling R code is (naturally) in R notation.
 	if (out_ensemble<5) Rprintf("STAGE 0 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
-	    in_ensemble, from_value, coiunter,  counter_last);
+	    in_ensemble, from_value, counter,  counter_last);
 	if ((mode_value == 0 && in_ensemble >= (from_value-1)) ||
 	    (mode_value == 1 && ensemble_time >= from_value)) {
 
