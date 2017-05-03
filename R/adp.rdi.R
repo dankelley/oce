@@ -687,6 +687,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         ldc<<-ldc
         ###################
 
+        buf <- ldc$outbuf
         bufSize <- length(buf)
 
         ## 20170108 ## These three things no longer make sense, since we are not reading
@@ -724,6 +725,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         ## location for these, based on the "Always Output" indication in Fig 46
         ## on page 145 of teledyne2014ostm.
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
+        cat("ensembleStart=", paste(ensembleStart, collapse=" "), "\n")
+        cat("profileStart=", paste(profileStart, collapse=" "), "\n")
         if (any(profileStart < 1))
             stop("difficulty detecting ensemble (profile) start indices")
         # offset for data type 1 (velocity)
@@ -1393,6 +1396,10 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
 
             profileStart2 <- sort(c(profileStart, profileStart + 1)) # lets us index two-byte chunks
             profileStart4 <- sort(c(profileStart, profileStart + 1, profileStart + 2, profileStart + 3)) # lets us index four-byte chunks
+
+            cat("profileStart=", paste(profileStart, collapse=" "), "\n")
+            cat("profileStart2=", paste(profileStart2, collapse=" "), "\n")
+            cat("profileStart4=", paste(profileStart4, collapse=" "), "\n")
             soundSpeed <- readBin(buf[profileStart2 + 14], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
             depth <- 0.1 * readBin(buf[profileStart2 + 16], "integer", n=profilesToRead, size=2, endian="little")
             ## Note that the headingBias needs to be removed
@@ -1415,6 +1422,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             salinity <- readBin(buf[profileStart2 + 24], "integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
             temperature <- 0.01 * readBin(buf[profileStart2 + 26], "integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
             pressure <- 0.001 * readBin(buf[profileStart4 + 48], "integer", n=profilesToRead, size=4, endian="little")
+            cat("l1424 pressure= ", paste(pressure), "\n")
+            cat("l1425 profileStart= ", paste(profileStart), "\n")
             if (despike) {
                 temperature <- despike(temperature, reference="trim", min=-3, max=101)
                 pressure <- despike(pressure, reference="trim", min=1, max=10000)
