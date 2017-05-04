@@ -1,9 +1,6 @@
 // vim:noexpandtab:shiftwidth=2:softtabstop=2:tw=70:foldmethod=marker:foldlevel=0:
 
-//#define USE_OBUF
 //#define DEBUG
-
-//#define SHOW(iensemble) (4 > abs((int)iensemble-29555))
 
 // If memory-fault problems occur, look at the Calloc() and Realloc()
 // calls, and at the spots where information is stored in the relevant
@@ -132,8 +129,8 @@ means to get every second profile.
 @param mode integer, 0 if 'from' etc are profile numbers or 1 if they
 are the numerical values of unix times.
 
-@value a list containing "ensembleStart", "time", "sec100", and "outbuf",
-all used in the calling R function, read.adp.rdi().
+@value a list containing "ensembleStart", "time", "sec100", and
+"outbuf", which are used in the calling R function, read.adp.rdi().
  
 @examples
 
@@ -228,7 +225,7 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
   while (1) {
     c = fgetc(fp);
     if (c == EOF) {
-      Rprintf("out of data while trying to get first byte of an ensemble of an RDI file (cindex=%d)\n", cindex);
+      Rprintf("Got to end of data while trying to read the first header byte of an RDI file (cindex=%d)\n", cindex);
       break;
     }
     cindex++;
@@ -243,14 +240,14 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
       check_sum += (unsigned short int)byte2;
       b1 = fgetc(fp);
       if (b1 == EOF) {
-	Rprintf("out of data while trying to get 'b1' of an RDI file (cindex=%d)\n", cindex);
+	Rprintf("Got to end of data while trying to read the 'b1' byte of an RDI file (cindex=%d)\n", cindex);
 	break;
       }
       cindex++;
       check_sum += (unsigned short int)b1;
       b2 = fgetc(fp);
       if (b2 == EOF) {
-	Rprintf("out of data while trying to get 'b2' of an RDI file (cindex=%d)\n", cindex);
+	Rprintf("Got to end of data while trying to read the 'b2' byte of an RDI file (cindex=%d)\n", cindex);
 	break;
       }
       cindex++;
@@ -260,8 +257,6 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
       // those 4 bytes of the ensemble (i.e. those 4 bytes are include
       // in the bytes_to_check value that we now calculate).
       bytes_to_check = (unsigned int)b1 + 256 * (unsigned int)b2;
-      //if (SHOW(in_ensemble)) Rprintf("NEW cindex=%d in_ensemble=%d bytes_to_check=%d\n",
-      // cindex, in_ensemble, bytes_to_check);
       if (bytes_to_check < 5) { // this will only happen in error; we check so bytes_to_read won't be crazy
 	Free(ensembles);
 	Free(times);
@@ -274,7 +269,7 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
       // Expand the ensemble buffer, ebuf, if need be.
       if (bytes_to_read > nebuf) {
 #ifdef DEBUG
-	  Rprintf("increasing 'ebuf' buffer size from %d bytes to %d bytes\n", nebuf, bytes_to_read);
+	  Rprintf("Increasing 'ebuf' buffer size from %d bytes to %d bytes\n", nebuf, bytes_to_read); // DEBUG
 #endif
 	  ebuf = (unsigned char *)Realloc(ebuf, bytes_to_read, unsigned char);
 	  nebuf = bytes_to_read;
@@ -283,33 +278,27 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
       unsigned int bytesRead;
       bytesRead = fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
       if (feof(fp)) {
-#ifdef DEBUG
-	Rprintf("NEW: end of file while reading ensemble number %d; cindex=%d; byte_to_read=%d; bytesRead=%d\n", in_ensemble+1, cindex, bytes_to_read, bytesRead);
-#endif
-	Rprintf("out of data while trying to read data of an RDI file (cindex=%d)\n", cindex);
+	Rprintf("Got to end of data while trying to read an RDI file (cindex=%d)\n", cindex);
 	break;
       }
       cindex += bytes_to_read;
       for (int ib = 0; ib < bytes_to_read; ib++) {
 	check_sum += (unsigned short int)ebuf[ib];
-	//if (SHOW(in_ensemble)) Rprintf("NEW in_ensemble=%d ib=%d check_sum=%d\n", in_ensemble, ib, check_sum);
       }
       int cs1, cs2;
       cs1 = fgetc(fp);
       if (cs1 == EOF) {
-	Rprintf("out of data while trying to get first byte of checksum of an RDI file (cindex=%d)\n", cindex);
+	Rprintf("Got to end of data while trying to get the first checksum byte in an RDI file (cindex=%d)\n", cindex);
 	break;
       }
       cindex++;
       cs2 = fgetc(fp);
       if (cs2 == EOF) {
-	Rprintf("out of data while trying to get second byte of checksum of an RDI file (cindex=%d)\n", cindex);
+	Rprintf("Got to end of data while trying to get second checksum byte in an RDI file (cindex=%d)\n", cindex);
 	break;
       }
       cindex++;
       desired_check_sum = ((unsigned short int)cs1) | ((unsigned short int)(cs2 << 8));
-      //if (SHOW(in_ensemble)) Rprintf("NEW in_ensemble=%d icindex=%d check_sum %d desired_check_sum=%d b1=%d b2=%d bytes_to_check=%d\n",
-      // in_ensemble, cindex, check_sum, desired_check_sum, b1, b2, bytes_to_check);
       if (check_sum == desired_check_sum) {
 	// The check_sum is ok, so we may want to store the results for
 	// this profile.
@@ -323,14 +312,11 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
 	  // is an R macro that is supposed to check for errors and handle them.
 	  nensembles = 3 * nensembles / 2;
 #ifdef DEBUG
-	  Rprintf("about to enlarge ensembles,times,sec100s storage to %d elements ...\n", nensembles);
+	  Rprintf("Increasing ensembles,times,sec100s storage to %d elements ...\n", nensembles); // DEBUG
 #endif
 	  ensembles = (int *) Realloc(ensembles, nensembles, int);
 	  times = (int *) Realloc(times, nensembles, int);
 	  sec100s = (unsigned char *)Realloc(sec100s, nensembles, unsigned char);
-#ifdef DEBUG
-	  Rprintf("    ... allocation was successful\n");
-#endif
 	}
 	// We will decide whether to keep this ensemble, based on ensemble
 	// number, if mode_value==0 or on time, if mode_value==1. That
@@ -347,33 +333,23 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
 	// does not seem that Microsoft Windows provides this function
 	// in a workable form.
 	ensemble_time = oce_timegm(&etime);
-	//Rprintf("C %d\n", ensemble_time);
-	//Rprintf(" estimet %d %s after_from=%d before_to=%d",
-	//    ensemble_time, ctime(&ensemble_time),
-	//    ensemble_time > from_value, ensemble_time < to_value);
-
 	// See whether we are past the 'from' condition. Note the "-1"
 	// for the ensemble case, because R starts counts at 1, not 0,
 	// and the calling R code is (naturally) in R notation.
 #ifdef DEBUG
-	if (out_ensemble<50) Rprintf("STAGE 1 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
-	    in_ensemble, from_value, counter,  counter_last);
+	if (out_ensemble<50) Rprintf("STAGE 1 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n", in_ensemble, from_value, counter,  counter_last); // DEBUG
 #endif
+	// Have we got to the starting location yet?
 	if ((mode_value == 0 && in_ensemble >= (from_value-1)) ||
 	    (mode_value == 1 && ensemble_time >= from_value)) {
 #ifdef DEBUG
-	  if (out_ensemble<50) Rprintf("  STAGE 2 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
-	      in_ensemble, from_value, counter,  counter_last);
+	  if (out_ensemble<50) Rprintf("  STAGE 2 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n", in_ensemble, from_value, counter,  counter_last); // DEBUG
 #endif
 	  // Handle the 'by' value.
-	  //
-	  // FIXME: best to have a 'last' variable and to count from
-	  // FIXME: that, instead of using the '%' method'
 	  if ((mode_value == 0 && (counter==from_value-1 || (counter - counter_last) >= by_value)) ||
 	      (mode_value == 1 && (ensemble_time - ensemble_time_last) >= by_value)) {
 #ifdef DEBUG
-	    if (out_ensemble<50) Rprintf("    STAGE 3 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
-	    	in_ensemble, from_value, counter,  counter_last);
+	    if (out_ensemble<50) Rprintf("    STAGE 3 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n", in_ensemble, from_value, counter,  counter_last); // DEBUG
 #endif
 	    // Copy ensemble to output buffer, after 6 bytes of header
 	    // FIXME: next is wrong. should have a cumsum
@@ -410,7 +386,7 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
             // }}}
 	  } else {
 #ifdef DEBUG
-	    Rprintf("skipping at in_ensemble=%d, counter=%d, by=%d\n", in_ensemble, counter, by_value);
+	    Rprintf("Skipping at in_ensemble=%d, counter=%d, by=%d\n", in_ensemble, counter, by_value); // DEBUG
 #endif
 	  }
 	  counter++;
@@ -420,31 +396,21 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
 	// ensemble pointers.
 	//> Rprintf("L417 in_ensemble=%d from_value=%d to_value=%d\n", in_ensemble, from_value, to_value);
 	if ((mode_value == 0 && (to_value > 0 && in_ensemble > to_value)) ||
-	    (mode_value == 1 && (ensemble_time > to_value))) {
-	  //Rprintf("breaking at out_ensemble=%d, in_ensemble=%d, from=%d, to=%d, ensemble_time=%d, mode_value=%d\n",
-	  //    out_ensemble, in_ensemble, from_value, to_value, ensemble_time, mode_value);
+	    (mode_value == 1 && (ensemble_time >= to_value))) {
 	  break;
 	}
       } else {
-	Rprintf("poor checksum at cindex=%d\n", cindex);
+	// FIXME: possibly we should warn of poor checksums.
+	// Rprintf("poor checksum at cindex=%d\n", cindex);
       }
       R_CheckUserInterrupt(); // only check once per ensemble, for speed
       clast = c;
     }
     clast = c;
     c = fgetc(fp);
-//#ifdef USE_OBUF
-//    obuf[iobuf++] = c; // FIXME
-//#endif
     if (c == EOF)
       break;
     cindex++;
-//#ifdef USE_OBUF
-//    if (cindex != iobuf && warnings < 20) {
-//      Rprintf("WARNING cindex=%d iobuf=%d\n", cindex, iobuf);
-//      warnings++;
-//    }
-//#endif
   }
   fclose(fp);
   

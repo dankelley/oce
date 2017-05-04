@@ -675,8 +675,15 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ldc <- .Call("ldc_rdi_in_file", filename,
                          as.integer(from), as.integer(to), as.integer(by), 0L)
         } else {
+            if (is.character(from))
+                from <- as.POSIXct(from, tz="UTC")
+            if (is.character(to))
+                to <- as.POSIXct(to, tz="UTC")
+            if (is.character(by))
+                by <- ctimeToSeconds(by)
+            ## message("from=", format(from), " to=", format(to), " by=" , format(by))
             ldc <- .Call("ldc_rdi_in_file", filename,
-                         as.integer(from), as.integer(to), ctimeToSeconds(by), 1L)
+                         as.integer(from), as.integer(to), as.integer(by), 1L)
         }
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
         if (debug > 99) {
