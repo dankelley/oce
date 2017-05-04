@@ -3379,7 +3379,7 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 #' Format bytes as binary [deprecated]
 #'
 #' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
-#' Use \code{\link{oceSetData}} instead of the present function.
+#' Use \code{\link{rawToBits}} instead of the present function.
 #'
 #' @param x an integer to be interpreted as a byte.
 #' @param endian character string indicating the endian-ness ("big" or
