@@ -21,7 +21,7 @@ See \dQuote{Examples} for how this relates to the output from
 }
 \description{
 \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
-Use \code{\link{oceSetData}} instead of the present function.
+Use \code{\link{rawToBits}} instead of the present function.
 }
 \examples{
 library(oce)

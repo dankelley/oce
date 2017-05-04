@@ -675,27 +675,30 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ldc <- .Call("ldc_rdi_in_file", filename,
                          as.integer(from), as.integer(to), as.integer(by), 0L)
         } else {
+            if (is.character(from))
+                from <- as.POSIXct(from, tz="UTC")
+            if (is.character(to))
+                to <- as.POSIXct(to, tz="UTC")
+            if (is.character(by))
+                by <- ctimeToSeconds(by)
+            ## message("from=", format(from), " to=", format(to), " by=" , format(by))
             ldc <- .Call("ldc_rdi_in_file", filename,
-                         as.integer(from), as.integer(to), ctimeToSeconds(by), 1L)
+                         as.integer(from), as.integer(to), as.integer(by), 1L)
         }
-        ## Must now reset from,to,by in the *subsetted* data item, ldc.
-        from <- 1
-        to <- length(ldc$ensembleStart)
-        by <- 1
-
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
+        if (debug > 99) {
+            ldc <<- ldc
+            cat("NOTE: debug>99, so read.adp.rdi() exports 'ldc', for use by the developer\n")
+        }
         ensembleStart <- ldc$ensembleStart
-
-        ## FIXME: do we really want to use this buffer? Why not
-        ## use seek()+readBin() on the file itself?
         buf <- ldc$outbuf
-
-        ###################
-        message("IMPORTANT DEBUGGING MESSAGE:\n\tread.adp.rdi() is exporting a variable 'buf' for checking.\n\tIf you see this message after May 5, 2017,\n\tplease update your oce from github,\n\tand report an error if the message persists")
-        buf<<-buf
-        ###################
-
         bufSize <- length(buf)
+        ## Now, 'buf' contains *only* the profiles we want, so we may
+        ## redefine 'from', 'to' and 'by' to specify each and every profile.
+        from <- 1
+        to <- length(ensembleStart)
+        by <- 1
+        oceDebug(debug, "NEW method from=", from, ", by=", by, ", to=", to, "\n", sep="")
 
         ## 20170108 ## These three things no longer make sense, since we are not reading
         ## 20170108 ## the file to the end, in this updated scheme.
@@ -709,15 +712,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         ## 20170108 measurementDeltat <- (ldc$time[2] + 0.01 * as.integer(ldc$sec100[2])) - (ldc$time[1] + 0.01 * as.integer(ldc$sec100[2]))
         ## 20170108 oceDebug(debug, "measurementDeltat:", measurementDeltat, "s\n")
 
-        ## Now, 'buf' contains *only* the profiles we want, so we may
-        ## redefine 'from', 'to' and 'by' to specify each and every profile.
-        from <- 1
-        to <- length(ensembleStart)
-        by <- 1
-        oceDebug(debug, "NEW method from=", from, ", by=", by, ", to=", to, "\n", sep="")
-
         if (isSentinel) {
-            oceDebug(debug, "SentinelV type detected, skipping first ensemble\n")
+            warning("skipping the first ensemble (a temporary solution that eases reading of SentinelV files)\n")
             ensembleStart <- ensembleStart[-1] # remove the first ensemble to simplify parsing
             to <- to - 1
             ## re-read the numberOfDataTypes and dataOffsets from the second ensemble
@@ -732,6 +728,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         ## location for these, based on the "Always Output" indication in Fig 46
         ## on page 145 of teledyne2014ostm.
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
+        ##cat("ensembleStart=", paste(ensembleStart, collapse=" "), "\n")
+        ##cat("profileStart=", paste(profileStart, collapse=" "), "\n")
         if (any(profileStart < 1))
             stop("difficulty detecting ensemble (profile) start indices")
         # offset for data type 1 (velocity)
@@ -793,7 +791,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             }
             ii <- which(codes[, 1]==0x01 & codes[, 2]==0x0f)
             if (isSentinel & length(ii) < 1) {
-                warning("Didn't find V series leader data ID, treating as a 4 beam ADCP")
+                warning("Didn't find V series leader data ID, treating as a 4 beam ADCP\n")
                 isSentinel <- FALSE
             }
             if (isSentinel) {
@@ -1401,6 +1399,10 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
 
             profileStart2 <- sort(c(profileStart, profileStart + 1)) # lets us index two-byte chunks
             profileStart4 <- sort(c(profileStart, profileStart + 1, profileStart + 2, profileStart + 3)) # lets us index four-byte chunks
+
+            ## cat("profileStart=", paste(profileStart, collapse=" "), "\n")
+            ## cat("profileStart2=", paste(profileStart2, collapse=" "), "\n")
+            ## cat("profileStart4=", paste(profileStart4, collapse=" "), "\n")
             soundSpeed <- readBin(buf[profileStart2 + 14], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
             depth <- 0.1 * readBin(buf[profileStart2 + 16], "integer", n=profilesToRead, size=2, endian="little")
             ## Note that the headingBias needs to be removed
