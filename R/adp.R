@@ -2614,8 +2614,22 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
                 forwardBv <- res@data$bv[, 2]
                 mastBv <- res@data$bv[, 3]
             }
+        } else if (res@metadata$oceCoordinate == "sfm" & res@metadata$tiltUsed) {
+          oceDebug(debug, "Case 2: RDI ADCP in SFM coordinates, but with tilts already applied.\n")
+          oceDebug(debug, "        No coordinate changes required prior to ENU.\n")
+          starboard <- res@data$v[, , 1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+          forward <- res@data$v[, , 2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+          mast <- res@data$v[, , 3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+          pitch <- rep(0, length(heading))
+          roll <- rep(0, length(heading))
+          if (haveBv) {
+            ## bottom velocity
+            starboardBv <- res@data$bv[, 1]
+            forwardBv <- res@data$bv[, 2]
+            mastBv <- res@data$bv[, 3]
+          }
         } else if (res@metadata$orientation == "upward") {
-            oceDebug(debug, "Case 2: RDI ADCP in XYZ coordinates with upward-pointing sensor.\n")
+            oceDebug(debug, "Case 3: RDI ADCP in XYZ coordinates with upward-pointing sensor.\n")
             oceDebug(debug, "        Using S=-X, F=Y, and M=-Z.\n")
             ## As an alternative to the next three lines, could just add 180 degrees to roll
             starboard <- -res@data$v[, , 1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
@@ -2628,7 +2642,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
                 mastBv <- -res@data$bv[, 3]
             }
         } else if (res@metadata$orientation == "downward") {
-            oceDebug(debug, "Case 3: RDI ADCP in XYZ coordinates with downward-pointing sensor.\n")
+            oceDebug(debug, "Case 4: RDI ADCP in XYZ coordinates with downward-pointing sensor.\n")
             oceDebug(debug, "        Using roll=-roll, S=X, F=Y, and M=Z.\n")
             roll <- -roll
             starboard <- res@data$v[, , 1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
