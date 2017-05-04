@@ -221,7 +221,7 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
   unsigned long int nebuf = 50000; // BUFFER SIZE
   unsigned char *ebuf = (unsigned char *)Calloc((size_t)nebuf, unsigned char);
   
-  unsigned long int in_ensemble = 0, out_ensemble = 0;
+  unsigned long int in_ensemble = 1, out_ensemble = 0;
   int b1, b2;
 
   unsigned long int counter = 0, counter_last = 0;
@@ -355,22 +355,26 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
 	// See whether we are past the 'from' condition. Note the "-1"
 	// for the ensemble case, because R starts counts at 1, not 0,
 	// and the calling R code is (naturally) in R notation.
-	//+if (out_ensemble<50) Rprintf("STAGE 1 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
-	//+    in_ensemble, from_value, counter,  counter_last);
+#ifdef DEBUG
+	if (out_ensemble<50) Rprintf("STAGE 1 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
+	    in_ensemble, from_value, counter,  counter_last);
+#endif
 	if ((mode_value == 0 && in_ensemble >= (from_value-1)) ||
 	    (mode_value == 1 && ensemble_time >= from_value)) {
-
-	  //+if (out_ensemble<50) Rprintf("  STAGE 2 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
-	  //+    in_ensemble, from_value, counter,  counter_last);
+#ifdef DEBUG
+	  if (out_ensemble<50) Rprintf("  STAGE 2 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
+	      in_ensemble, from_value, counter,  counter_last);
+#endif
 	  // Handle the 'by' value.
 	  //
 	  // FIXME: best to have a 'last' variable and to count from
 	  // FIXME: that, instead of using the '%' method'
 	  if ((mode_value == 0 && (counter==from_value-1 || (counter - counter_last) >= by_value)) ||
 	      (mode_value == 1 && (ensemble_time - ensemble_time_last) >= by_value)) {
-	    //+if (out_ensemble<50) Rprintf("    STAGE 3 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
-	    //+	in_ensemble, from_value, counter,  counter_last);
-
+#ifdef DEBUG
+	    if (out_ensemble<50) Rprintf("    STAGE 3 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n",
+	    	in_ensemble, from_value, counter,  counter_last);
+#endif
 	    // Copy ensemble to output buffer, after 6 bytes of header
 	    // FIXME: next is wrong. should have a cumsum
 	    ensembles[out_ensemble] = outEnsemblePointer;
@@ -414,6 +418,7 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
 	in_ensemble++;
 	// If 'max' is positive, check that we return only that many
 	// ensemble pointers.
+	//> Rprintf("L417 in_ensemble=%d from_value=%d to_value=%d\n", in_ensemble, from_value, to_value);
 	if ((mode_value == 0 && (to_value > 0 && in_ensemble > to_value)) ||
 	    (mode_value == 1 && (ensemble_time > to_value))) {
 	  //Rprintf("breaking at out_ensemble=%d, in_ensemble=%d, from=%d, to=%d, ensemble_time=%d, mode_value=%d\n",

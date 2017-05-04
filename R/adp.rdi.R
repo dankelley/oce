@@ -679,6 +679,10 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          as.integer(from), as.integer(to), ctimeToSeconds(by), 1L)
         }
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
+        if (debug > 99) {
+            ldc <<- ldc
+            cat("NOTE: debug>99, so read.adp.rdi() exports 'ldc', for use by the developer\n")
+        }
         ensembleStart <- ldc$ensembleStart
         buf <- ldc$outbuf
         bufSize <- length(buf)
@@ -717,8 +721,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         ## location for these, based on the "Always Output" indication in Fig 46
         ## on page 145 of teledyne2014ostm.
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
-        cat("ensembleStart=", paste(ensembleStart, collapse=" "), "\n")
-        cat("profileStart=", paste(profileStart, collapse=" "), "\n")
+        ##cat("ensembleStart=", paste(ensembleStart, collapse=" "), "\n")
+        ##cat("profileStart=", paste(profileStart, collapse=" "), "\n")
         if (any(profileStart < 1))
             stop("difficulty detecting ensemble (profile) start indices")
         # offset for data type 1 (velocity)
@@ -1389,9 +1393,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             profileStart2 <- sort(c(profileStart, profileStart + 1)) # lets us index two-byte chunks
             profileStart4 <- sort(c(profileStart, profileStart + 1, profileStart + 2, profileStart + 3)) # lets us index four-byte chunks
 
-            cat("profileStart=", paste(profileStart, collapse=" "), "\n")
-            cat("profileStart2=", paste(profileStart2, collapse=" "), "\n")
-            cat("profileStart4=", paste(profileStart4, collapse=" "), "\n")
+            ## cat("profileStart=", paste(profileStart, collapse=" "), "\n")
+            ## cat("profileStart2=", paste(profileStart2, collapse=" "), "\n")
+            ## cat("profileStart4=", paste(profileStart4, collapse=" "), "\n")
             soundSpeed <- readBin(buf[profileStart2 + 14], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
             depth <- 0.1 * readBin(buf[profileStart2 + 16], "integer", n=profilesToRead, size=2, endian="little")
             ## Note that the headingBias needs to be removed
