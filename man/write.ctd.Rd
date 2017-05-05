@@ -4,12 +4,18 @@
 \alias{write.ctd}
 \title{Write a CTD Data Object as a CSV File}
 \usage{
-write.ctd(object, file, metadata = FALSE)
+write.ctd(object, file, metadata = TRUE, flags = TRUE)
 }
 \arguments{
 \item{object}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{file}{Either a character string (the file name) or a connection.}
+
+\item{metadata}{a logical value indicating whether to put some selected
+metadata elements at the start of the output file.}
+
+\item{flags}{a logical value indicating whether to show data-quality flags
+as well as data}
 }
 \description{
 Writes a comma-separated file containing the data frame stored in
@@ -30,7 +36,7 @@ plot(as.ctd(d$salinity, d$temperature, d$pressure))
 }
 \seealso{
 The documentation for \code{\link{ctd-class}} explains the structure
-of CTD objects, and also outlines the other functions dealing with them.
+of CTD objects.
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},

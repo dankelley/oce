@@ -1089,6 +1089,16 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@metadata$deploymentType <- deploymentType
         res@metadata$dataNamesOriginal <- m$dataNamesOriginal
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        ## move e.g. salinityFlag from data slot to metadata$flags
+        dataNames <- names(res@data)
+        flagNameIndices <- grep(".*Flag$", dataNames)
+        if (length(flagNameIndices)) {
+            for (iflag in flagNameIndices) {
+                fname <- gsub("Flag$", "", dataNames[iflag])
+                res@metadata$flags[[fname]] <- res@data[[dataNames[iflag]]]
+                res@data[[dataNames[iflag]]] <- NULL
+            }
+        }
     } else if (is.list(salinity) || is.data.frame(salinity)) {
         oceDebug(debug, "salinity is a list or data frame\n")
         ## 2. coerce a data-frame or list
@@ -2419,8 +2429,14 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #'
 #' @param file Either a character string (the file name) or a connection.
 #'
+#' @param metadata a logical value indicating whether to put some selected
+#' metadata elements at the start of the output file.
+#'
+#' @param flags a logical value indicating whether to show data-quality flags
+#' as well as data
+#'
 #' @seealso The documentation for \code{\link{ctd-class}} explains the structure
-#' of CTD objects, and also outlines the other functions dealing with them.
+#' of CTD objects.
 #'
 #' @examples
 #' \dontrun{
@@ -2434,7 +2450,7 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #' @author Dan Kelley
 #'
 #' @family things related to \code{ctd} data
-write.ctd <- function(object, file, metadata=FALSE)
+write.ctd <- function(object, file, metadata=TRUE, flags=TRUE)
 {
     if (!inherits(object, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
@@ -2448,17 +2464,24 @@ write.ctd <- function(object, file, metadata=FALSE)
         con <- file
     }
     if (metadata) {
-        cat(paste("Source file =", object[["filename"]], "\n"), file=con)
+        cat(paste("R/oce file exported at time", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n"), file=con)
+        cat(paste("Source file = \"", object[["filename"]], "\"\n", sep=""), file=con)
         cat(paste("Ship =", object[["ship"]], "\n"), file=con)
         cat(paste("Cruise =", object[["cruise"]], "\n"), file=con)
         cat(paste("Station =", object[["station"]], "\n"), file=con)
         cat(paste("Longitude =", object[["longitude"]], "\n"), file=con)
         cat(paste("Latitude =", object[["latitude"]], "\n"), file=con)
         cat(paste("Depth =", object[["waterDepth"]], "\n"), file=con)
-        cat(paste("Start time =", object[["startTime"]], "\n"), file=con)
+        cat(paste("Start time =", format(object[["startTime"]], "%Y-%m-%d %H:%M:%S %Z"), "\n"), file=con)
         cat("\n", file=con)
     }
-    write.table(object@data, col.names=TRUE, row.names=FALSE, sep=",", file=con)
+    df <- as.data.frame(object@data)
+    if (flags && "flags" %in% names(object@metadata)) {
+        fdf <- as.data.frame(object@metadata$flags)
+        names(fdf) <- paste(names(fdf), "Flag", sep="")
+        df <- data.frame(df, fdf)
+    }
+    write.table(df, col.names=TRUE, row.names=FALSE, sep=",", file=con)
     close(con)
 }
 
