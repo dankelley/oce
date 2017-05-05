@@ -2476,7 +2476,8 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE)
         cat("\n", file=con)
     }
     df <- as.data.frame(object@data)
-    if (flags && "flags" %in% names(object@metadata)) {
+    ## Optionally paste flags into the data frame, for display
+    if (flags && length(object@metadata$flags)) {
         fdf <- as.data.frame(object@metadata$flags)
         names(fdf) <- paste(names(fdf), "Flag", sep="")
         df <- data.frame(df, fdf)
