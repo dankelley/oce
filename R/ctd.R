@@ -2412,13 +2412,12 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #' Writes a comma-separated file containing the data frame stored in
 #' the \code{data} slot of the first argument.  The file is suitable
 #' for reading with a spreadsheet, or
-#' with \code{\link{read.csv}}.  Note that the output file will retain none of the
-#' meta-data stored in \code{object}.
+#' with \code{\link{read.csv}}.  This output file will contain
+#' some of the metadata in \code{x}, if \code{metadata} is \code{TRUE}.
 #'
 #' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #'
-#' @param file Either a character string (the file name) or a connection.  This is
-#' a mandatory argument.
+#' @param file Either a character string (the file name) or a connection.
 #'
 #' @seealso The documentation for \code{\link{ctd-class}} explains the structure
 #' of CTD objects, and also outlines the other functions dealing with them.
@@ -2435,16 +2434,27 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #' @author Dan Kelley
 #'
 #' @family things related to \code{ctd} data
-write.ctd <- function(object, file=stop("'file' must be specified"))
+write.ctd <- function(object, file, metadata=FALSE)
 {
     if (!inherits(object, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
+    if (missing(file))
+        stop("file must be specified")
     if (is.character(file)) {
         if (file == "")
             stop("'file' must be a non-empty string")
         con <- file(file, "w")
     } else if (inherits(file, "connection")) {
         con <- file
+    }
+    if (metadata) {
+        cat(paste("Station: ", object[["station"]], "\n"), file=con)
+        cat(paste("Source file: ", object[["filename"]], "\n"), file=con)
+        cat(paste("Ship: ", object[["ship"]], "\n"), file=con)
+        cat(paste("Cruise: ", object[["cruise"]], "\n"), file=con)
+        cat(paste("Depth: ", object[["waterDepth"]], "\n"), file=con)
+        cat(paste("Start time: ", object[["startTime"]], "\n"), file=con)
+        cat("\n", file=con)
     }
     write.table(object@data, col.names=TRUE, row.names=FALSE, sep=",", file=con)
     close(con)

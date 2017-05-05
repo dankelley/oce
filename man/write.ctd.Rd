@@ -4,20 +4,19 @@
 \alias{write.ctd}
 \title{Write a CTD Data Object as a CSV File}
 \usage{
-write.ctd(object, file = stop("'file' must be specified"))
+write.ctd(object, file, metadata = FALSE)
 }
 \arguments{
 \item{object}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
-\item{file}{Either a character string (the file name) or a connection.  This is
-a mandatory argument.}
+\item{file}{Either a character string (the file name) or a connection.}
 }
 \description{
 Writes a comma-separated file containing the data frame stored in
 the \code{data} slot of the first argument.  The file is suitable
 for reading with a spreadsheet, or
-with \code{\link{read.csv}}.  Note that the output file will retain none of the
-meta-data stored in \code{object}.
+with \code{\link{read.csv}}.  This output file will contain
+some of the metadata in \code{x}, if \code{metadata} is \code{TRUE}.
 }
 \examples{
 \dontrun{
