@@ -2448,12 +2448,14 @@ write.ctd <- function(object, file, metadata=FALSE)
         con <- file
     }
     if (metadata) {
-        cat(paste("Station: ", object[["station"]], "\n"), file=con)
-        cat(paste("Source file: ", object[["filename"]], "\n"), file=con)
-        cat(paste("Ship: ", object[["ship"]], "\n"), file=con)
-        cat(paste("Cruise: ", object[["cruise"]], "\n"), file=con)
-        cat(paste("Depth: ", object[["waterDepth"]], "\n"), file=con)
-        cat(paste("Start time: ", object[["startTime"]], "\n"), file=con)
+        cat(paste("Source file =", object[["filename"]], "\n"), file=con)
+        cat(paste("Ship =", object[["ship"]], "\n"), file=con)
+        cat(paste("Cruise =", object[["cruise"]], "\n"), file=con)
+        cat(paste("Station =", object[["station"]], "\n"), file=con)
+        cat(paste("Longitude =", object[["longitude"]], "\n"), file=con)
+        cat(paste("Latitude =", object[["latitude"]], "\n"), file=con)
+        cat(paste("Depth =", object[["waterDepth"]], "\n"), file=con)
+        cat(paste("Start time =", object[["startTime"]], "\n"), file=con)
         cat("\n", file=con)
     }
     write.table(object@data, col.names=TRUE, row.names=FALSE, sep=",", file=con)
