@@ -126,11 +126,16 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ## FLD[5] = SYSTEM CONFIGURATION LSB (Table 5.2, page 126, System Integrator Guide, Nov 2007)
     ## FLD[6] = SYSTEM CONFIGURATION MSB
     systemConfiguration <- paste(byteToBinary(FLD[5], endian="big"), byteToBinary(FLD[6], endian="big"), sep="-")
+    oceDebug(debug, "systemConfiguration='", systemConfiguration, "'\n", sep="")
     oceDebug(debug, "FLD[4]=", byteToBinary(FLD[4], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
     oceDebug(debug, "FLD[5]=", byteToBinary(FLD[5], endian="big"), "(should be one of the systemConfiguration bytes)\n")
     oceDebug(debug, "FLD[6]=", byteToBinary(FLD[6], endian="big"), "(should be one of the systemConfiguration bytes)\n")
     oceDebug(debug, "FLD[7]=", byteToBinary(FLD[7], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
     bits <- substr(systemConfiguration, 6, 8)
+    bitsFLD5 <- rawToBits(FLD[5])
+    oceDebug(debug, "LSB=", paste(bitsFLD5, collapse=" "), "\n", sep="")
+    bitsFLD6 <- rawToBits(FLD[6])
+    oceDebug(debug, "MSB=", paste(bitsFLD6, collapse=" "), "\n", sep="")
     ## NOTE: the nearby code should perhaps use .Call("get_bit", ...) for speed and clarity
     if (isSentinel) {
         if (bits == "010") frequency <- 250        # kHz
