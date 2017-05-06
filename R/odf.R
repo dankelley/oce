@@ -200,10 +200,14 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
             rval[[j]] <- as.numeric(tmp)
         }
     }
-    if (returnOnlyFirst) {
-        rval[[1]]
+    if (0 < length(rval)) {
+        if (returnOnlyFirst) {
+            rval[[1]]
+        } else {
+            rval
+        }
     } else {
-        rval
+        NULL
     }
 }
 
@@ -803,8 +807,14 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
     sounding <- as.numeric(findInHeader("SOUNDING", lines))
-    waterDepth <- ifelse(sounding!=NAvalue, sounding, ifelse(depthMax!=NAvalue, depthMax, NA)) # also see later
-
+    ## Compute waterDepth from "SOUNDING" by preference, or from "MAX_DEPTH" if necessary
+    waterDepth <- NA
+    if (length(sounding)) {
+        waterDepth <- sounding[1]
+    } else {
+        if (length(depthMax))
+            waterDepth <- depthMax[1]
+    }
     type <- findInHeader("INST_TYPE", lines)
     if (length(grep("sea", type, ignore.case=TRUE)))
         type <- "SBE"
@@ -853,11 +863,14 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     res@metadata$filename <- filename
     ##> ## fix issue 768
     ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
-    data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
+    ## issue1226 data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
+    data <- scan(file, skip=dataStart, quiet=TRUE)
+    data <- matrix(data, ncol=length(namesUnits$names), byrow=TRUE)
+    data <- as.data.frame(data)
     if (length(data) != length(namesUnits$names))
         stop("mismatch between length of data names (", length(namesUnits$names), ") and number of columns in data matrix (", length(data), ")")
     names(data) <- namesUnits$names
-    if (!is.na(NAvalue)) {
+    if (length(NAvalue) > 1 && !is.na(NAvalue)) {
         data[data==NAvalue] <- NA
     }
     if ("time" %in% namesUnits$names)
