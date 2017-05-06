@@ -864,9 +864,20 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ##> ## fix issue 768
     ##> lines <- lines[grep('%[0-9.]*f', lines,invert=TRUE)]
     ## issue1226 data <- read.table(file, skip=dataStart, stringsAsFactors=FALSE)
-    data <- scan(file, skip=dataStart, quiet=TRUE)
+    data <- scan(file, what="character", skip=dataStart, quiet=TRUE)
     data <- matrix(data, ncol=length(namesUnits$names), byrow=TRUE)
-    data <- as.data.frame(data)
+    data <- as.data.frame(data, stringsAsFactors=FALSE)
+    ## some files have text string (e.g. dates)
+    colIsChar <- as.logical(lapply(data[1,], function(l) length(grep("[a-zA-Z]", l))))
+    for (j in 1:dim(data)[2]) {
+        if (!colIsChar[j]) {
+            ##message("colIsChar[", j, "]=", colIsChar[j], " so making col ", j, " be numeric. First value=", data[1,j])
+            data[[j]] <- as.numeric(data[[j]])
+        } else {
+            data[[j]] <- as.character(data[[j]])
+            ##message("colIsChar[", j, "]=", colIsChar[j], " so leaving col ", j, " alone. First value=", data[1,j])
+        }
+    }
     if (length(data) != length(namesUnits$names))
         stop("mismatch between length of data names (", length(namesUnits$names), ") and number of columns in data matrix (", length(data), ")")
     names(data) <- namesUnits$names
