@@ -110,16 +110,36 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             if (2 * head$size != headerLengthHead)
                 stop("size of head header expected to be ", headerLengthHead, "but got ", head$size)
             oceDebug(debug, "head$size=", head$size, "\n")
-            head$config <- byteToBinary(buf[o+5:6], endian="little")
-            oceDebug(debug, "head$config=", head$config, "\n")
-            head$configPressureSensor <- substr(head$config[1], 1, 1) == "1"
+
+            ## Nortek doc "system-integrator-manual_Mar2016.pdf" (page 23) says for the "head configuration":
+            ## bit 0: Pressure sensor (0=no, 1=yes)
+            ## bit 1: Magnetometer sensor (0=no, 1=yes)
+            ## bit 2: Tilt sensor (0=no, 1=yes)
+            ## bit 3: Tilt sensor mounting (0=up, 1=down)
+            ## issue1220 debug <- debug + 10
+            ## issue1220 head$config <- byteToBinary(buf[o+5:6], endian="little")
+            ## issue1220 oceDebug(debug, "head$config=", head$config, "\n")
+            ## issue1220 configTEST <- rawToBits(buf[o+5:6])
+            ## issue1220 oceDebug(debug, "configTEST=", configTEST, "\n")
+            ## issue1220 oceDebug(debug, "head$config=", head$config, "\n")
+            ## issue1220 head$configPressureSensor <- substr(head$config[1], 1, 1) == "1"
+            ## issue1220 oceDebug(debug, "head$configPressureSensor=", head$configPressureSensor, "\n")
+            ## issue1220 head$configMagnetometerSensor <- substr(head$config[1], 2, 2) == "1"
+            ## issue1220 oceDebug(debug, "head$configMagnetometerSensor=", head$configMagnetometerSensor, "\n")
+            ## issue1220 head$configTiltSensor <- substr(head$config[1], 3, 3) == "1"
+            ## issue1220 oceDebug(debug, "head$configTiltSensor=", head$configTiltSensor, "\n")
+            ## issue1220 head$tiltSensorOrientation <- if (substr(head$config[1], 4, 4) == "1") "downward" else "upward"
+            ## issue1220 oceDebug(debug, "head$tiltSensorOrientation=", head$tiltSensorOrientation, "\n")
+            tmpBits <- rawToBits(buf[o+5])
+            head$configPressureSensor <- tmpBits[1] == as.raw(0x1) 
+            head$configMagnetometerSensor <- tmpBits[2] == as.raw(0x1) 
+            head$configTiltSensor <- tmpBits[3] == as.raw(0x1) 
+            head$configTiltSensorOrientation <- ifelse(tmpBits[4] == as.raw(0x1), "downward", "upward")
             oceDebug(debug, "head$configPressureSensor=", head$configPressureSensor, "\n")
-            head$configMagnetometerSensor <- substr(head$config[1], 2, 2) == "1"
             oceDebug(debug, "head$configMagnetometerSensor=", head$configMagnetometerSensor, "\n")
-            head$configTiltSensor <- substr(head$config[1], 3, 3) == "1"
             oceDebug(debug, "head$configTiltSensor=", head$configTiltSensor, "\n")
-            head$tiltSensorOrientation <- if (substr(head$config[1], 4, 4) == "1") "downward" else "upward"
-            oceDebug(debug, "head$tiltSensorOrientation=", head$tiltSensorOrientation, "\n")
+            oceDebug(debug, "head$configTiltSensorOrientation=", head$configTiltSensorOrientation, "\n")
+
             head$frequency <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "head$frequency=", head$frequency, "kHz\n")
             head$headType <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little")
@@ -185,10 +205,25 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             user$comments <- readBin(buf[o+257+0:179], "character", n=1, size=180)
             oceDebug(debug, "user$comments=", user$comments, "\n")
 
-            user$mode <- byteToBinary(buf[o+59:60], endian="little")
+            ## Nortek doc "system-integrator-manual_Mar2016.pdf" (page 24-25) says for the "mode":
+            ##   bit 0: use user specified sound speed (0=no, 1=yes)
+            ##   bit 1: diagnostics/wave mode 0=disable, 1=enable)
+            ##   bit 2: analog output mode (0=disable, 1=enable)
+            ##   bit 3: output format (0=Vector, 1=ADV)
+            ##   bit 4: scaling (0=1 mm, 1=0.1 mm)
+            ##   bit 5: serial output (0=disable, 1=enable)
+            ##   bit 6: reserved EasyQ
+            ##   bit 7: stage (0=disable, 1=enable)
+            ##   bit 8: output power for analog input (0=disable, 1=enable)
+            ## and we want bit 4. In R notation, that is rawToBits()[5]
+            ##
+            ## issue1220 user$mode <- byteToBinary(buf[o+59:60], endian="little")
+            ## issue1220 user$velocityScale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.0001
+            user$mode <- rawToBits(buf[o+59:60])
             oceDebug(debug, "user$mode: ", user$mode, "\n")
-            user$velocityScale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.0001
+            user$velocityScale <- ifelse(user$mode[5] == 0x00, 0.001, 0.0001)
             oceDebug(debug, "user$velocityScale: ", user$velocityScale, "\n")
+
             tmp.cs <- readBin(buf[o+33:34], "integer", n=1, size=2, endian="little")
             if (tmp.cs == 0) user$originalCoordinate <- "enu" # page 31 of System Integrator Guide
             else if (tmp.cs == 1) user$originalCoordinate <- "xyz"
@@ -888,7 +923,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
 
     if (missing(orientation)) {
-        orientation <- header$head$tiltSensorOrientation
+        orientation <- header$head$configTiltSensorOrientation # FIXME: is there a 'header$head'?
     } else {
         orientation <- match.arg(orientation, c("sideward", "upward", "downward"))
     }

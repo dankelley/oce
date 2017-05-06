@@ -21,7 +21,6 @@ The next CRAN release of \sQuote{oce} will designate these functions as
 
 \tabular{lll}{
 \strong{Deprecated}    \tab \strong{Replacement}              \tab \strong{Notes}\cr
-\code{byteToBinary}    \tab \code{\link{rawToBits}}           \tab Deprecated 2017-04-17\cr
 \code{mapZones}        \tab \code{\link{mapGrid}}             \tab Deprecated 2016-02-13\cr
 \code{mapMeridians}    \tab \code{\link{mapGrid}}             \tab Deprecated 2016-02-13\cr
 \code{addColumn}       \tab \code{\link{oceSetData}}          \tab Deprecated 2016-08-01\cr
@@ -46,6 +45,9 @@ Several \sQuote{oce} function arguments are considered "deprecated", which
 means they will be marked "defunct" in the next CRAN release. They are as follows.
 
 \itemize{
+
+The \code{endian} argument of \code{\link{byteToBinary}} will be removed sometime
+in the year 2017, and should be set to \code{"big"} in the meantime.
 
 \item The \code{parameters} argument of \code{\link{plot,ctd-method}}
 was deprecated on 2016-12-30.  It was once used by

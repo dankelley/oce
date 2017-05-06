@@ -3376,59 +3376,67 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 }
 
 
-#' Format bytes as binary [deprecated]
+#' Format bytes as binary
 #'
-#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
-#' Use \code{\link{rawToBits}} instead of the present function.
+#' \strong{WARNING:} The \code{endian} argument will soon be removed
+#' from this function; see \link{oce-deprecated}.
+#' This is because the actions for \code{endian="little"} made
+#' no sense in practical work. The default value for \code{endian}
+#' was changed to \code{"big"} on 2017 May 6.
 #'
 #' @param x an integer to be interpreted as a byte.
 #' @param endian character string indicating the endian-ness ("big" or
-#' "little").
+#' "little"). \strong{This argument will be removed in the upcoming CRAN
+#' release.}
 #' @return A character string representing the bit strings for the elements of
 #' \code{x}, in order of significance for the \code{endian="big"} case.
-#' (The \code{"little"} case should not be used.)
+#' (The nibbles, or 4-bit sequences, are interchanged in the now-deprecated
+#' \code{"little"} case.)
 #' See \dQuote{Examples} for how this relates to the output from
 #' \link{rawToBits}.
 #' @author Dan Kelley
 #' @examples
 #' library(oce)
-#' ## In the big-endian case, the results match those of byteToBinary(),
-#' ## but reversed.
+#' ## Note comparison with rawToBits():
 #' a <- as.raw(0x0a)
-#' byteToBinary(a, "big")
-#' rev(rawToBits(a))
-byteToBinary <- function(x, endian=c("little", "big"))
+#' byteToBinary(a, "big") # "00001010"
+#' rev(rawToBits(a))      # 00 00 00 00 01 00 01 00
+byteToBinary <- function(x, endian)
 {
-    .Deprecated("rawToBits",
-                msg="byteToBinary() will be removed soon; use rawToBits() instead. See ?'oce-deprecated'.")
-    onebyte2binary <- function(x)
-    {
-        c("0000", "0001", "0010", "0011",
-          "0100", "0101", "0110", "0111",
-          "1000", "1001", "1010", "1011",
-          "1100", "1101", "1110", "1111")[x+1]
-    }
-    endian <- match.arg(endian)
-    res <- NULL
-    if (class(x) == "raw")
-        x <- readBin(x, "int", n=length(x), size=1, signed=FALSE)
-    for (i in 1:length(x)) {
-        if (x[i] < 0) {
-            res <- c(res, "??")
-        } else {
-            ## FIXME: these are not bytes here; they are nibbles.  I don't think endian="little"
-            ## makes ANY SENSE at all.  2012-11-22
-            byte1 <- as.integer(floor(x[i] / 16))
-            byte2 <- x[i] - 16 * byte1
-            ##cat("input=",x[i],"byte1=",byte1,"byte2=",byte2,"\n")
-            if (endian == "little")
-                res <- c(res, paste(onebyte2binary(byte2), onebyte2binary(byte1), sep=""))
-            else
-                res <- c(res, paste(onebyte2binary(byte1), onebyte2binary(byte2), sep=""))
-            ##cat(" res=",res,"\n")
-        }
-    }
-    res
+    if (missing(endian))
+        endian <- "big"
+    if (endian != "big")
+        .Deprecated("rawToBits",
+                    msg="byteToBinary(): the endian=\"little\" argument will be disallowed soon; see ?'oce-deprecated'.")
+    ## onebyte2binary <- function(x)
+    ## {
+    ##     c("0000", "0001", "0010", "0011",
+    ##       "0100", "0101", "0110", "0111",
+    ##       "1000", "1001", "1010", "1011",
+    ##       "1100", "1101", "1110", "1111")[x+1]
+    ## }
+    ## res <- NULL
+    ## if (class(x) == "raw")
+    ##     x <- readBin(x, "int", n=length(x), size=1, signed=FALSE)
+    ## for (i in 1:length(x)) {
+    ##     if (x[i] < 0) {
+    ##         res <- c(res, "??")
+    ##     } else {
+    ##         ## FIXME: these are not bytes here; they are nibbles.  I don't think endian="little"
+    ##         ## makes ANY SENSE at all.  2012-11-22
+    ##         byte1 <- as.integer(floor(x[i] / 16))
+    ##         byte2 <- x[i] - 16 * byte1
+    ##         ##cat("input=",x[i],"byte1=",byte1,"byte2=",byte2,"\n")
+    ##         if (endian == "little")
+    ##             res <- c(res, paste(onebyte2binary(byte2), onebyte2binary(byte1), sep=""))
+    ##         else
+    ##             res <- c(res, paste(onebyte2binary(byte1), onebyte2binary(byte2), sep=""))
+    ##         ##cat(" res=",res,"\n")
+    ##     }
+    ## }
+    ## res
+    x <- as.raw(x)
+    paste(ifelse(rev(rawToBits(x)==as.raw(0x01)), "1", "0"),collapse="")
 }
 
 
