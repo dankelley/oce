@@ -439,6 +439,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(m/s), scale="")
         } else if (1 == length(grep("^\\s*m/sec\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(m/s), scale="")
+        } else if (1 == length(grep("^\\s*m\\^-1/sr\\s*$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(1/m/sr), scale="")
         } else if (1 == length(grep("^\\s*mho[s]{0,1}/m\\s*$", ODFunits[i], ignore.case=TRUE))) {
             warning('Changed unit mho/m to S/m for conductivity')
             list(unit=expression(S/m), scale="")
@@ -468,14 +470,16 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(S/m), scale="")
         } else if (ODFunits[i] == "ratio") {
             list(unit=expression(ratio), scale="")
-        } else if (ODFunits[i] == "V") {
-            list(unit=expression(V), scale="")
-        } else if (1 == length(grep("^ug/l$", ODFunits[i], ignore.case=TRUE))) {
-            list(unit=expression(mu*g/l), scale="")
-        } else if (1 == length(grep("^ueinsteins/s/m\\*\\*2$", ODFunits[i], ignore.case=TRUE))) {
-            list(unit=expression(mu*einstein/s/m^2), scale="")
         } else if (1 == length(grep("^uA$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(mu*amp), scale="")
+        } else if (1 == length(grep("^ueinsteins/s/m\\*\\*2$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(mu*einstein/s/m^2), scale="")
+        } else if (1 == length(grep("^ug/l$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(mu*g/l), scale="")
+        } else if (1 == length(grep("^UTC$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(), scale="")
+        } else if (ODFunits[i] == "V") {
+            list(unit=expression(V), scale="")
         } else if (1 == length(grep("^%$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression("%"), scale="")
         } else if (nchar(ODFunits[i]) == 0) {
@@ -774,9 +778,9 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ## FIXME: to equal NULL_VALUE and (b) all files that I've seen have just a single
     ## FIXME: numerical NULL_VALUE and (c) what should we do if there are elements in
     ## FIXME: the header, which are not in columns?
-    NAvalue <- findInHeader("NULL_VALUE", lines, FALSE)
+    NAvalue <- unlist(findInHeader("NULL_VALUE", lines, FALSE))
+    NAvalue <- NAvalue[!grepl("[a-zA-Z]+", NAvalue)] # remove e.g. times
     if (length(NAvalue) > 1) {
-        ##print(NAvalue)
         NAvalue <- try({as.numeric(unlist(NAvalue))}, silent=TRUE)
         isNumeric <- is.numeric(NAvalue)
         ##print(isNumeric)
@@ -785,9 +789,10 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         }
         if (any(isNumeric)) {
             tmp <- NAvalue[isNumeric]
+            tmp <- tmp[is.finite(tmp)]
             ##print(tmp)
             if (1 != length(unique(tmp)))
-                warning("using first of ", length(unique(tmp)), " numeric NULL_VALUEs")
+                warning("using first of ", length(unique(tmp)), " unique numeric NULL_VALUEs")
             NAvalue <- tmp[[1]]
         } else {
             NAvalue <- NAvalue[[1]]

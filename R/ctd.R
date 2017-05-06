@@ -2464,15 +2464,15 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE)
         con <- file
     }
     if (metadata) {
-        cat(paste("R/oce file exported at time", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n"), file=con)
+        cat(paste("R/oce file exported at time ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n", sep=""), file=con)
         cat(paste("Source file = \"", object[["filename"]], "\"\n", sep=""), file=con)
-        cat(paste("Ship =", object[["ship"]], "\n"), file=con)
-        cat(paste("Cruise =", object[["cruise"]], "\n"), file=con)
-        cat(paste("Station =", object[["station"]], "\n"), file=con)
-        cat(paste("Longitude =", object[["longitude"]][1], "\n"), file=con)
-        cat(paste("Latitude =", object[["latitude"]][1], "\n"), file=con)
-        cat(paste("Depth =", object[["waterDepth"]], "\n"), file=con)
-        cat(paste("Start time =", format(object[["startTime"]], "%Y-%m-%d %H:%M:%S %Z"), "\n"), file=con)
+        cat(paste("Ship = ", object[["ship"]], "\n", sep=""), file=con)
+        cat(paste("Cruise = ", object[["cruise"]], "\n", sep=""), file=con)
+        cat(paste("Station = ", object[["station"]], "\n", sep=""), file=con)
+        cat(paste("Longitude = ", object[["longitude"]][1], "\n", sep=""), file=con)
+        cat(paste("Latitude = ", object[["latitude"]][1], "\n", sep=""), file=con)
+        cat(paste("Depth = ", object[["waterDepth"]], "\n", sep=""), file=con)
+        cat(paste("Start time = ", format(object[["startTime"]], "%Y-%m-%d %H:%M:%S %Z"), "\n", sep=""), file=con)
         cat("\n", file=con)
     }
     df <- as.data.frame(object@data)
