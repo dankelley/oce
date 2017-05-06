@@ -106,7 +106,7 @@ NULL
 #'
 #' \itemize{
 #'
-#' The \code{endian} argument of \code{\link{byteToBinary}} will be removed sometime
+#' \item The \code{endian} argument of \code{\link{byteToBinary}} will be removed sometime
 #' in the year 2017, and should be set to \code{"big"} in the meantime.
 #'
 #' \item The \code{parameters} argument of \code{\link{plot,ctd-method}}
