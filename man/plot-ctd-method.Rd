@@ -269,7 +269,7 @@ analysis with \code{\link{locator}} to flag bad data, etc.
 
 Until February, 2016, \code{plot,ctd-method} relied on a now-defunct argument
 \code{fill} to control colours; \code{colCoastline} is to be used now, instead.
-Also, now it is possible to set the edge of coasts and international
+Also, now it is possible to set the colour of coasts and international
 boundaries, with \code{borderCoastline}.
 }
 
