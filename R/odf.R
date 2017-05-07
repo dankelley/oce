@@ -736,6 +736,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         nullValue <- findInHeader("NULL_VALUE", lines)[1]
     }
     options(warn=options$warn)
+    oceDebug(debug, "nullValue=", nullValue, "; it's class is ", class(nullValue), "\n")
 
     ODFunits <- lines[grep("^\\s*UNITS\\s*=", lines)]
     ODFunits <- gsub("^[^']*'(.*)'.*$", "\\1", ODFunits) # e.g.  "  UNITS= 'none',"
@@ -803,6 +804,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         }
         ##message("NAvalue:", NAvalue)
     }
+    oceDebug(debug, "NAvalue=", NAvalue, "; it's class is ", class(NAvalue), "\n")
 
     depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
@@ -881,8 +883,8 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     if (length(data) != length(namesUnits$names))
         stop("mismatch between length of data names (", length(namesUnits$names), ") and number of columns in data matrix (", length(data), ")")
     names(data) <- namesUnits$names
-    if (length(NAvalue) > 1 && !is.na(NAvalue)) {
-        data[data==NAvalue] <- NA
+    if (length(NAvalue) > 0 && !is.na(NAvalue)) {
+        data[data==NAvalue[1]] <- NA
     }
     if ("time" %in% namesUnits$names)
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
