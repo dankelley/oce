@@ -986,7 +986,6 @@ sectionAddCtd <- sectionAddStation
 #' @param ... Optional arguments passed to the contouring function, e.g. using
 #' \code{labcex=1} will increase the size of contour labels.
 #'
-#'
 #' @return If the original section was gridded, the return value is that section.
 #' Otherwise, the gridded section that was constructed for the plot is returned.
 #' In both cases, the value is returned silently. The
@@ -1098,7 +1097,6 @@ setMethod(f="plot",
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
               lw <- length(which)
               whichOriginal <- which
-              oceDebug(debug, "whichOriginal=", paste(whichOriginal, collapse=" "))
               ##which <- oce.pmatch(which,
               ##                    list(temperature=1, salinity=2,
               ##                         sigmaTheta=3, nitrate=4, nitrite=5, oxygen=6,
@@ -1125,17 +1123,18 @@ setMethod(f="plot",
               oceDebug(debug, "plot.section(, ..., which=c(",
                        paste(which, collapse=","), "), eos=\"", eos,
                        "\", ztype=\"", ztype, "\", ...) {\n", sep="", unindent=1)
-              ## Ensure data on levels, for plots requiring pressure (e.g. sections)
+              ## Ensure data on levels, for plots requiring pressure (e.g. sections). Note
+              ## that we break out of the loop, once we grid the section.
               if (is.na(which[1]) || which != "data" || which != 'map') {
                   p1 <- x[["station", 1]][["pressure"]]
                   numStations <- length(x@data$station)
+                  gridded <- FALSE
                   for (ix in 2:numStations) {
                       thisStation <- x@data$station[[ix]]
                       thisPressure <- thisStation[["pressure"]]
                       if ("points" != ztype && !identical(p1, thisPressure)) {
-                          ## any(p1 != x[["station", ix]][["pressure"]])) {
+                          oceDebug(debug, "must grid section because pressure levels at ", ix, "th station differ from those at the first\n")
                           x <- sectionGrid(x, debug=debug-1)
-                          ##warning("plot.section() gridded the data for plotting", call.=FALSE)
                           break
                       }
                   }
@@ -2272,14 +2271,11 @@ read.section <- function(file, directory, sectionId="", flags,
 #' @param method The method to use to decimate data within the stations; see
 #' \code{\link{ctdDecimate}}, which is used for the decimation.
 #'
-#' @param debug A flag that turns on debugging.  The value indicates the depth
-#' within the call stack to which debugging applies.  For example,
-#' \code{read.adv.nortek()} calls \code{read.header.nortek()}, so that
-#' \code{read.adv.nortek(...,debug=2)} provides information about not just the
-#' main body of the data file, but also the details of the header.
+#' @template debugTemplate                                        
 #'
-#' @param ... Optional arguments to be supplied to \code{\link{ctdDecimate}}.
-#'
+#' @param ... Optional arguments to be supplied to \code{\link{ctdDecimate}},
+#' e.g. \code{rule} controls extrapolation beyond the observed pressure range,
+#' in the case where \code{method} equals \code{"approx"}.
 #'
 #' @return An object of \code{\link{section-class}} that contains stations whose
 #' pressure values match identically.
@@ -2336,7 +2332,8 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
                          "Removed flags from gridded section object. Use handleFlags() first to remove bad data.")
     for (i in 1:n) {
         ##message("i: ", i, ", p before decimation: ", paste(section@data$station[[i]]@data$pressure, " "))
-        suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...))
+        suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, 
+                                                              debug=debug-1, ...))
         res@data$station[[i]]@metadata$flags <- NULL
         ##message("i: ", i, ", p after decimation: ", paste(res@data$station[[i]]@data$pressure, " "))
     }
