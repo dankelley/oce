@@ -94,7 +94,7 @@ setClass("section", contains="oce")
 #' @usage data(section)
 #'
 #' @source This is based on the WOCE file named \code{a03_hy1.csv}, downloaded
-#' from \url{http://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
+#' from \url{https://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
 #'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{section} data
@@ -1878,7 +1878,7 @@ setMethod(f="plot",
 #'
 #' @references
 #' Several repository sites provide section data. An example that is perhaps likely
-#' to exist for years is \url{http://cchdo.ucsd.edu}, but a search on \code{"WOCE
+#' to exist for years is \url{https://cchdo.ucsd.edu}, but a search on \code{"WOCE
 #'   bottle data"} should turn up other sites, if this one ceases to exist. Only
 #' the so-called \emph{exchange BOT} data format can be processed by read.section()
 #' at this time. Data names are inferred from column headings using

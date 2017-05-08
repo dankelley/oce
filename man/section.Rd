@@ -6,7 +6,7 @@
 \title{Hydrographic section}
 \source{
 This is based on the WOCE file named \code{a03_hy1.csv}, downloaded
-from \url{http://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
+from \url{https://cchdo.ucsd.edu/cruise/90CT40_1}, 13 April 2015.
 }
 \usage{
 data(section)
