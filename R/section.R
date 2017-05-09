@@ -460,6 +460,8 @@ setMethod(f="show",
 #'
 #' @param ... Optional arguments, which may include \code{indices}, a vector
 #' of the indices of stations to be kept (starting at 1 for the first station).
+#' Some actions may be passed to the \code{\link{subset,ctd-method}}, for station-by-station
+#' subsetting.
 #'
 #' @return A new \code{section} object.
 #'
@@ -518,6 +520,13 @@ setMethod(f="subset",
                   res@metadata$latitude <- x@metadata$latitude[keep]
                   res@metadata$time <- x@metadata$time[keep]
                   res@data$station <- x@data$station[keep]
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+              } else if (length(grep("pressure", subsetString))) {
+                  n <- length(x@data$station)
+                  res <- x
+                  for (i in 1:n) {
+                      res@data$station[[i]] <- subset(x@data$station[[i]], subset)
+                  }
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               } else {
                   ## subset within the stations

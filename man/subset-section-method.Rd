@@ -14,7 +14,9 @@
 See \sQuote{Details}.}
 
 \item{...}{Optional arguments, which may include \code{indices}, a vector
-of the indices of stations to be kept (starting at 1 for the first station).}
+of the indices of stations to be kept (starting at 1 for the first station).
+Some actions may be passed to the \code{\link{subset,ctd-method}}, for station-by-station
+subsetting.}
 }
 \value{
 A new \code{section} object.
