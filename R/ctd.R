@@ -600,8 +600,8 @@ setMethod(f="[[",
                   }
                   if (!haveLatLon)
                       warning("object lacks location information, so computation uses 30N and 60W")
-                  message("lon=", paste(lon, collapse=" "))
-                  message("lat=", paste(lat, collapse=" "))
+                  ##message("lon=", paste(lon, collapse=" "))
+                  ##message("lat=", paste(lat, collapse=" "))
 
                   SA <- gsw::gsw_SA_from_SP(SP=x[["salinity"]], p=x[["pressure"]],
                                             longitude=lon, latitude=lat)
