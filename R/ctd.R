@@ -495,7 +495,10 @@ setMethod(f="summary",
 #' \item \code{Rrho}: Density ratio, computed with \code{\link{swRrho}(x)}.
 #'
 #' \item \code{SA} or \code{Absolute Salinity}: Absolute Salinity,
-#' computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.
+#' computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package. 
+#' The calculation involves location as well as measured water properties.
+#' If the object \code{x} does not containin information on the location,
+#' then 30N and 60W is used for the calculation, and a warning is generated.
 #'
 #' \item \code{sigmaTheta}: A form of potential density anomaly, computed with
 #' \code{\link{swSigmaTheta}(x)}.
@@ -526,6 +529,7 @@ setMethod(f="summary",
 #'
 #' \item \code{Sstar}: Preformed Salinity computed with
 #' \code{\link[gsw]{gsw_SR_from_SP}} in the \code{gsw} package.
+#' See \code{SA} for a note on longitude and latitude.
 #'
 #' \item \code{theta}: potential temperature in the UNESCO formulation,
 #' computed with \code{\link{swTheta}(x)}. This is a synonym for
@@ -577,12 +581,32 @@ setMethod(f="[[",
               } else if (i == "SR") {
                   gsw::gsw_SR_from_SP(SP=x[["salinity"]])
               } else if (i == "Sstar") {
+                  n <- length(x@data$salinity)
+                  lon <- x@metadata$longitude
+                  if (n != length(lon))
+                      lon <- rep(x@metadata$longitude, length.out=n)
+                  lon <- ifelse(lon < 0, lon + 360, lon)
+                  haveLatLon <- TRUE
+                  if (!any(is.finite(lon))) {
+                      lon <- rep(300, n)
+                      haveLatLon <- FALSE
+                  }
+                  lat <- x@metadata$latitude
+                  if (n != length(lat))
+                      lat <- rep(x@metadata$latitude, length.out=n)
+                  if (!any(is.finite(lat))) {
+                      lat <- rep(30, n)
+                      haveLatLon <- FALSE
+                  }
+                  if (!haveLatLon)
+                      warning("object lacks location information, so computation uses 30N and 60W")
+                  message("lon=", paste(lon, collapse=" "))
+                  message("lat=", paste(lat, collapse=" "))
+
                   SA <- gsw::gsw_SA_from_SP(SP=x[["salinity"]], p=x[["pressure"]],
-                                            longitude=x@metadata$longitude,
-                                            latitude=x@metadata$latitude)
+                                            longitude=lon, latitude=lat)
                   gsw::gsw_Sstar_from_SA(SA=SA, p=x[["pressure"]],
-                                         longitude=x@metadata$longitude,
-                                         latitude=x@metadata$latitude)
+                                            longitude=lon, latitude=lat)
               } else if (i == "temperature") {
                   scale <- x@metadata$units[["temperature"]]$scale
                   if (!is.null(scale) && "IPTS-68" == scale)
@@ -646,10 +670,14 @@ setMethod(f="[[",
                       lat <- rep(30, n)
                       haveLatLon <- FALSE
                   }
+                  if (!haveLatLon)
+                      warning("object lacks location information, so computation uses 30N and 60W")
                   SP[is.nan(SP)] <- NA
                   p[is.nan(p)] <- NA
                   lat[is.nan(lat)] <- NA
                   lon[is.nan(lon)] <- NA
+                  message("lat=", paste(lat, collapse=" "))
+                  message("lon=", paste(lon, collapse=" "))
                   gsw::gsw_SA_from_SP(SP, p, lon, lat)
               } else if (i %in% c("conservative temperature", "CT")) {
                   gsw::gsw_CT_from_t(SA=x[["SA"]], t=x[["temperature"]], p=x[["pressure"]])
