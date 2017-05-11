@@ -676,8 +676,8 @@ setMethod(f="[[",
                   p[is.nan(p)] <- NA
                   lat[is.nan(lat)] <- NA
                   lon[is.nan(lon)] <- NA
-                  message("lat=", paste(lat, collapse=" "))
-                  message("lon=", paste(lon, collapse=" "))
+                  ##message("lat=", paste(lat, collapse=" "))
+                  ##message("lon=", paste(lon, collapse=" "))
                   gsw::gsw_SA_from_SP(SP, p, lon, lat)
               } else if (i %in% c("conservative temperature", "CT")) {
                   gsw::gsw_CT_from_t(SA=x[["SA"]], t=x[["temperature"]], p=x[["pressure"]])
