@@ -573,9 +573,15 @@ setMethod(f="subset",
                       res@processingLog <- x@processingLog
                   } else {
                       n <- length(x@data$station)
-                      r <- eval(substitute(subset), x@data$station[[1]]@data, parent.frame(2))
+                      ##message("n=", n)
                       for (i in 1:n) {
-                          res@data$station[[i]]@data <- x@data$station[[i]]@data[r, ]
+                          r <- eval(substitute(subset), x@data$station[[i]]@data, parent.frame(2))
+                          ##message("i=", i, ", r=", paste(r, collapse=" "))
+                          for (field in names(res@data$station[[i]]@data)) {
+                              ##message("  IN  ", field, " = ", paste(x@data$station[[i]]@data[field], collapse=" "))
+                              res@data$station[[i]]@data[[field]] <- x@data$station[[i]]@data[[field]][r]
+                              ##message("  OUT ", field, " = ", paste(res@data$station[[i]]@data[field], collapse=" "))
+                          }
                       }
                   }
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
