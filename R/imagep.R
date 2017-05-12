@@ -1005,7 +1005,7 @@ imagep <- function(x, y, z,
     ##omai <- par("mai")
     ocex <- par("cex")
     if (missing(mar))
-        mar <- c(mgp[1]+if (nchar(xlab)>0) 1.5 else 1, mgp[1]+if (nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2)
+        mar <- c(mgp[1]+if (nchar(xlab[1])>0) 1.5 else 1, mgp[1]+if (nchar(ylab[1])>0) 1.5 else 1, mgp[2]+1/2, 1/2)
     if (missing(mai.palette)) {
         ##mai.palette <- c(0, 1/8, 0, 3/8 + if (haveZlab && zlabPosition=="side") 1.5*par('cin')[2] else 0)
         mai.palette <- rep(0, 4)
