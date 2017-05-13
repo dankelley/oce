@@ -84,6 +84,7 @@ setMethod(f="[[<-",
 #' @return A new \code{odf} object.
 #' @author Dan Kelley
 #' @family things related to \code{odf} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="odf",
           definition=function(x, subset, ...) {

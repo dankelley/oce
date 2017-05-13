@@ -3419,7 +3419,8 @@ setMethod(f="plot",
 
 #' Subset a CTD Object
 #'
-#' @description
+#' Return a subset of a section object.
+#'
 #' This function is somewhat analogous to
 #' \code{\link{subset.data.frame}}, but only one independent variable may be
 #' used in \code{subset} in any call to the function, which means that
@@ -3429,7 +3430,7 @@ setMethod(f="plot",
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @param subset An expression indicating how to subset \code{x}.
 #' @param ... Ignored.
-#' @return A \code{ctd} object.
+#' @return A \code{\link{ctd-class}} object.
 #' @examples
 #' library(oce)
 #' data(ctd)
@@ -3439,10 +3440,11 @@ setMethod(f="plot",
 #' @author Dan Kelley
 #'
 #' @family things related to \code{ctd} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
-              res <- new("ctd") # start afresh in case x@data is a data.frame
+              res <- new("ctd")
               res@metadata <- x@metadata
               res@processingLog <- x@processingLog
               for (i in seq_along(x@data)) {

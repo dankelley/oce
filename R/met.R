@@ -143,6 +143,7 @@ setMethod(f="summary",
 #' plot(subset(met, time > as.POSIXct("2003-09-27", tz="UTC")))
 #'
 #' @family things related to \code{met} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="met",
           definition=function(x, subset, ...) {

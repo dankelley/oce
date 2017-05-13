@@ -8,33 +8,66 @@
 \S4method{subset}{section}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \code{\link{section-class}} object.}
+\item{x}{A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.}
 
-\item{subset}{A condition to be applied to the \code{data} portion of \code{x}.
-See \sQuote{Details}.}
+\item{subset}{an optional indication of either (a) stations to be kept,
+or (b) data to be kept within the stations.  Mode (a)
+is enabled if the subset string contains \code{distance}
+(in which case stations are kept only when the distance in km
+from the first stations matches the specification), either
+\code{longitude} or \code{latitude} (in which case stations
+are selected by location), or \code{stationId} (in which case stations
+are selected by the station-ID stored within the CTDs within
+the section). If none of these words is present
+in \code{subset}, then mode (b) is used, and the subset is applied
+within each station, by passing it as the argument of the same
+name to \code{\link{subset,ctd-method}}.}
 
-\item{...}{Optional arguments, which may include \code{indices}, a vector
-of the indices of stations to be kept (starting at 1 for the first station).
-Some actions may be passed to the \code{\link{subset,ctd-method}}, for station-by-station
-subsetting.}
+\item{...}{optional arguments, of which only the first is examined. The only
+possibility is that this argument be named \code{indices}, and that it be
+a numeric or logical vector specifying the indices of stations to be kept,
+starting at 1 for the first station.}
 }
 \value{
-A new \code{section} object.
+A \code{\link{section-class}} object.
 }
 \description{
-This function is somewhat analogous to \code{\link{subset.data.frame}}.  The
-condition set by \code{subset} may be in terms of \code{stationId} or any
-combination of \code{longitude}, \code{latitude} and \code{time}.  However,
-\code{stationId} may not be combined with the others; to get that effect, call
-this function more than once.
+Return a subset of a section object.
+}
+\details{
+This function that may be used to subset data within the
+stations of a section, or to choose a subset of the stations
+themselves. The first case is handled with the \code{subset} argument,
+while the second is handled if \code{...} contains a vector named
+\code{indices}.
 }
 \examples{
 library(oce)
 data(section)
+# Gulf Stream
 GS <- subset(section, 109<=stationId&stationId<=129)
+# Sections with more than 5 levels
+long <- subset(section,
+   indices=unlist(lapply(section[["station"]], function(s) 10<length(s[["pressure"]]))))
 
 }
 \seealso{
+Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+  \code{\link{subset,adv-method}},
+  \code{\link{subset,amsr-method}},
+  \code{\link{subset,argo-method}},
+  \code{\link{subset,cm-method}},
+  \code{\link{subset,coastline-method}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{subset,echosounder-method}},
+  \code{\link{subset,lobo-method}},
+  \code{\link{subset,met-method}},
+  \code{\link{subset,oce-method}},
+  \code{\link{subset,odf-method}},
+  \code{\link{subset,rsk-method}},
+  \code{\link{subset,sealevel-method}},
+  \code{\link{subset,topo-method}}
+
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},

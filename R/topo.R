@@ -150,6 +150,7 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #'
 #' @family things related to \code{topo} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="topo",
           definition=function(x, subset, ...) {

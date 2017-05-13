@@ -156,6 +156,7 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley
 #' @family things related to \code{rsk} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="rsk",
           definition=function(x, subset, ...) {

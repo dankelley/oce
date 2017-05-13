@@ -305,6 +305,7 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' @author Dan Kelley
 #'
 #' @family things related to \code{argo} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {

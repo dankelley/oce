@@ -145,6 +145,7 @@ setMethod(f="summary",
 #' @return A new \code{lobo} object.
 #' @author Dan Kelley
 #' @family things related to \code{lobo} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="lobo",
           definition=function(x, subset, ...) {

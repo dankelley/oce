@@ -15,9 +15,12 @@
 \item{...}{Ignored.}
 }
 \value{
-A \code{ctd} object.
+A \code{\link{ctd-class}} object.
 }
 \description{
+Return a subset of a section object.
+}
+\details{
 This function is somewhat analogous to
 \code{\link{subset.data.frame}}, but only one independent variable may be
 used in \code{subset} in any call to the function, which means that
@@ -46,6 +49,22 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
+
+Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+  \code{\link{subset,adv-method}},
+  \code{\link{subset,amsr-method}},
+  \code{\link{subset,argo-method}},
+  \code{\link{subset,cm-method}},
+  \code{\link{subset,coastline-method}},
+  \code{\link{subset,echosounder-method}},
+  \code{\link{subset,lobo-method}},
+  \code{\link{subset,met-method}},
+  \code{\link{subset,oce-method}},
+  \code{\link{subset,odf-method}},
+  \code{\link{subset,rsk-method}},
+  \code{\link{subset,sealevel-method}},
+  \code{\link{subset,section-method}},
+  \code{\link{subset,topo-method}}
 }
 \author{
 Dan Kelley

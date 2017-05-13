@@ -241,6 +241,7 @@ setMethod(f="[[<-",
 #' plot(subset(echosounder, time < mean(range(echosounder[['time']]))))
 #'
 #' @family things related to \code{echosounder} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="echosounder",
           definition=function(x, subset, ...) {

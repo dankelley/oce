@@ -580,6 +580,7 @@ setValidity("adp",
 #' @author Dan Kelley
 #'
 #' @family things related to \code{adp} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="adp",
           definition=function(x, subset, ...) {

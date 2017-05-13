@@ -1,6 +1,9 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 
+## Many of these tests will fail if data(section) is changed. This is on
+## purpose, because changing a long-standing dataset is to be avoided!
+
 context("section")
 
 test_that("data(section) has not altered", {
@@ -70,11 +73,16 @@ test_that("as.section() works with argo object", {
 
 test_that("subset(section)", {
           data(section)
-          ## 1. by indices
+          ## 1. by numeric indices
           sec2 <- subset(section, indices=3:6)
           expect_equal(4, length(sec2[["station"]]))
           expect_true(identical(sec2[["station", 1]], section[["station", 3]]))
-          ## 2. by longitude
+          ## 2. by logical indices (example from the man page)
+          long <- subset(section,
+                         indices=unlist(lapply(section[["station"]], function(s) 10<length(s[["pressure"]]))))
+          expect_equal(120, length(long[["station"]]))
+          expect_equal(section[["station",2]], long[["station",1]])
+          ## 3. by longitude
           secWest <- subset(section, longitude < -50)
           expect_lt(max(secWest[["longitude"]]), -50)
 })

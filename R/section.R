@@ -430,7 +430,7 @@ setMethod(f="show",
                       cat("Unnamed section has ", n, " stations:\n", sep="")
                   else
                       cat("Section '", id, "' has ", n, " stations:\n", sep="")
-                  cat(sprintf("%5s %5s %7s %7s %5s\n", "Index", "ID", "Lon", "Lat", "Depth"))
+                  cat(sprintf("%5s %5s %7s %7s %7s %5s\n", "Index", "ID", "Lon", "Lat", "Levels", "Depth"))
                   ##cat(sprintf("%4s %5s %10.2f %10.2f %10.0f\n", "Index", "ID", "Lon", "Lat", "Depth\n"))
                   for (i in 1:n) {
                       thisStn <- object@data$station[[i]]
@@ -438,38 +438,52 @@ setMethod(f="show",
                           thisStn@metadata$station else ""
                       depth <- if (is.null(thisStn@metadata$waterDepth))
                           max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
-                      cat(sprintf("%5d %5s %7.2f %7.2f %5.0f\n",
-                                  i, id, thisStn@metadata$longitude[1], thisStn@metadata$latitude[1], depth))
+                      cat(sprintf("%5d %5s %7.2f %7.2f %7.0f %5.0f\n",
+                                  i, id, thisStn@metadata$longitude[1], thisStn@metadata$latitude[1], length(thisStn@data$pressure), depth))
                   }
               }
           })
 
-#' @title Subset a Section Object
+#' Subset a Section Object
 #'
-#' @description
-#' This function is somewhat analogous to \code{\link{subset.data.frame}}.  The
-#' condition set by \code{subset} may be in terms of \code{stationId} or any
-#' combination of \code{longitude}, \code{latitude} and \code{time}.  However,
-#' \code{stationId} may not be combined with the others; to get that effect, call
-#' this function more than once.
+#' Return a subset of a section object.
 #'
-#' @param x A \code{\link{section-class}} object.
+#' This function that may be used to subset data within the
+#' stations of a section, or to choose a subset of the stations
+#' themselves. The first case is handled with the \code{subset} argument,
+#' while the second is handled if \code{...} contains a vector named
+#' \code{indices}.
 #'
-#' @param subset A condition to be applied to the \code{data} portion of \code{x}.
-#' See \sQuote{Details}.
+#' @param x A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.
+#' @param subset an optional indication of either (a) stations to be kept,
+#' or (b) data to be kept within the stations.  Mode (a)
+#' is enabled if the subset string contains \code{distance}
+#' (in which case stations are kept only when the distance in km
+#' from the first stations matches the specification), either
+#' \code{longitude} or \code{latitude} (in which case stations
+#' are selected by location), or \code{stationId} (in which case stations
+#' are selected by the station-ID stored within the CTDs within
+#' the section). If none of these words is present
+#' in \code{subset}, then mode (b) is used, and the subset is applied
+#' within each station, by passing it as the argument of the same
+#' name to \code{\link{subset,ctd-method}}.
+#' @param ... optional arguments, of which only the first is examined. The only
+#' possibility is that this argument be named \code{indices}, and that it be
+#' a numeric or logical vector specifying the indices of stations to be kept,
+#' starting at 1 for the first station.
 #'
-#' @param ... Optional arguments, which may include \code{indices}, a vector
-#' of the indices of stations to be kept (starting at 1 for the first station).
-#' Some actions may be passed to the \code{\link{subset,ctd-method}}, for station-by-station
-#' subsetting.
-#'
-#' @return A new \code{section} object.
+#' @return A \code{\link{section-class}} object.
 #'
 #' @examples
 #' library(oce)
 #' data(section)
+#' # Gulf Stream
 #' GS <- subset(section, 109<=stationId&stationId<=129)
+#' # Sections with more than 5 levels
+#' long <- subset(section,
+#'    indices=unlist(lapply(section[["station"]], function(s) 10<length(s[["pressure"]]))))
 #'
+#' @family functions that subset \code{oce} objects
 #' @family things related to \code{section} data
 #'
 #' @author Dan Kelley
@@ -487,23 +501,23 @@ setMethod(f="subset",
               if (indicesGiven) {
                   ## select a portion of the stations
                   if (!missing(subset))
-                      stop("cannot give both 'subset' and 'indices'")
+                      stop("cannot specify both 'subset' and 'indices'")
                   oceDebug(debug, "subsetting by indices\n")
                   res <- new("section")
                   indices <- dots$indices
                   n <- length(indices)
+                  print(indices)
                   if (is.logical(indices))
                       indices <- (1:n)[indices]
-                  station <- vector("list", n)
-                  stn <- vector("character", n)
-                  lon <- vector("numeric", n)
-                  lat <- vector("numeric", n)
-                  for (i in 1:n) {
-                      ii <- indices[i]
-                      stn[i] <- x@metadata$stationId[ii]
-                      lat[i] <- firstFinite(x@metadata$latitude[ii])
-                      lon[i] <- firstFinite(x@metadata$longitude[ii])
-                      station[[i]] <- x@data$station[[ii]]
+                  if (min(indices) < 1) stop("cannot have negative indices")
+                  if (max(indices) > length(x@data$station)) stop("cannot indices exceeding # stations")
+                  print(indices)
+                  stn <- x@metadata$stationId[indices]
+                  lat <- x@metadata$lat[indices]
+                  lon <- x@metadata$lon[indices]
+                  station <- vector("list", length(indices))
+                  for (i in seq_along(indices)) {
+                      station[[i]] <- x@data$station[[indices[i]]]
                   }
                   data <- list(station=station)
                   res@metadata$stationId <- stn
@@ -531,7 +545,7 @@ setMethod(f="subset",
               } else {
                   ## subset within the stations
                   if ("indices" %in% dotsNames)
-                      stop("2. cannot give both 'subset' and 'indices'")
+                      stop("cannot specify both 'subset' and 'indices'.")
                   oceDebug(debug, "subsetting by 'subset'\n")
                   ##subsetString <- deparse(substitute(subset))
                   ##oceDebug(debug, "subsetString='", subsetString, "'\n")

@@ -147,6 +147,7 @@ setMethod(f="summary",
 #'
 #' @author Dan Kelley
 #' @family things related to \code{cm} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="cm",
           definition=function(x, subset, ...) {
