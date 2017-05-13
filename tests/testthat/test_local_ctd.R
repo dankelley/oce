@@ -13,7 +13,6 @@ test_that("woce 1", {
               woce <- read.ctd.woce("local_data/18HU2010014_00003_00001_ct1.csv")
               expect_equal(woce[["longitude"]], -52.5945)
               expect_equal(woce[["latitude"]], 47.5483)
-              expect_equal(woce[["institute"]], "0513DFOBIOWGH")
               expect_equal(woce[["station"]], 3)
           }
 })
@@ -23,7 +22,6 @@ test_that("woce 2", {
               woce <- read.ctd.woce("local_data/example_ct1.csv")
               expect_equal(woce[["latitude"]], -17.5102)
               expect_equal(woce[["longitude"]], -150.4812)
-              expect_equal(woce[["institute"]], "SIO")
               expect_equal(woce[["station"]], 221)
               expect_equal(woce[["waterDepth"]], 3596)
               expect_equal(woce[["pressureUnit"]], list(unit=expression(dbar), scale=""))
