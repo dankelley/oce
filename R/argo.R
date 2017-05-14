@@ -92,9 +92,9 @@ maybeLC <- function(s, lower)
 
 getData <- function(file, name) # a local function -- no need to pollute namesapce with it
 {
-    res <- try(ncdf4::ncvar_get(file, name), silent=TRUE)
+    tmp <- capture.output(res <- try(ncdf4::ncvar_get(file, name), silent=TRUE))
     if (inherits(res, "try-error")) {
-        cat(file$filename, " has no variable named '", name, "'\n", sep='')
+        warning(file$filename, " has no variable named '", name, "'\n", sep='')
         res <- NULL
     }
     res
@@ -743,8 +743,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     if (debug > 0) {
         if (debug > 10)
             message("This netcdf file contains the following $var: ", paste(names(file$var), collapse=" "))
-        columnNames <- gsub(" *$", "",
-                            unique(as.vector(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc)))))
+        columnNames <- gsub(" *$", "", gsub("^ *", "", unique(as.vector(ncvar_get(ff, maybeLC("STATION_PARAMETERS", lc))))))
+        ##columnNames <- gsub(" *$", "", unique(as.vector(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc)))))
         message("columnNames: '", paste(columnNames, collapse="' '"), "' (from ", maybeLC("STATION_PARAMETERS", lc), ")")
         QCNames <- paste(columnNames, "_QC",  sep="")
         message("QCnames: ", paste(QCNames, collapse=" "), " (inferred from above)")
