@@ -263,7 +263,8 @@ test_that("Beaufort sea data II", {
 ## An ODF file measured aboard CCGS SIGMA T, with 
 ## Catherine Johnson as chief scientist.
 test_that("ODF file", {
-          d4 <- read.ctd.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
+          expect_warning(d4 <- read.ctd.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce")),
+                         "\"CRAT_01\" should be unitless")
           expect_equal(d4[["temperatureUnit"]]$unit, expression(degree*C))
           expect_equal(d4[["temperatureUnit"]]$scale, "ITS-90")
           ## FIXME: following works manually but fails in Rstudio build
@@ -313,7 +314,8 @@ test_that("salinity accessor computes value from conductivity", {
           ctd@metadata$units$salinity <- NULL
           ## add new
           ctd2 <- oceSetData(ctd, name="conductivity", value=C, unit=list(unit=expression(), scale="PSS-78"))
-          expect_equal(Sorig, ctd2[['salinity']], tolerance=0.0001)
+          expect_warning(S <- ctd2[["salinity"]], "constructed salinity from temperature, conductivity-ratio and pressure")
+          expect_equal(Sorig, S, tolerance=0.0001)
 })
 
 test_that("nitrate can be inferred from nitrite and NO2+NO3", {

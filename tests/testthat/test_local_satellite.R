@@ -10,7 +10,7 @@ test_that("amsr", {
                              "vaporNight"), 
                            sort(names(amsr@data)))
               summary(amsr)
-              plot(amsr)
+              expect_warning(plot(amsr), "auto-decimating first index of large image by 3")
           }
 })
 

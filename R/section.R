@@ -506,12 +506,10 @@ setMethod(f="subset",
                   res <- new("section")
                   indices <- dots$indices
                   n <- length(indices)
-                  print(indices)
                   if (is.logical(indices))
                       indices <- (1:n)[indices]
                   if (min(indices) < 1) stop("cannot have negative indices")
                   if (max(indices) > length(x@data$station)) stop("cannot indices exceeding # stations")
-                  print(indices)
                   stn <- x@metadata$stationId[indices]
                   lat <- x@metadata$lat[indices]
                   lon <- x@metadata$lon[indices]

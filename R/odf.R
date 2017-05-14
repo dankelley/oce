@@ -606,7 +606,9 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     nd <- length(resNames)
     for (i in 1:nd) {
         if (is.numeric(res@data[[i]])) {
-            NAvalue <- as.numeric(ODF$PARAMETER_HEADER[[i]]$NULL_VALUE)
+            ##message("NULL_VALUE='", ODF$PARAMETER_HEADER[[i]]$NULL_VALUE, "'")
+            NAvalue <- as.numeric(gsub("D", "e", ODF$PARAMETER_HEADER[[i]]$NULL_VALUE))
+            ##message("NAvalue=", NAvalue)
             ## message("NAvalue: ", NAvalue)
             res@data[[i]][res@data[[i]] == NAvalue] <- NA
         }
@@ -785,7 +787,11 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ## FIXME: numerical NULL_VALUE and (c) what should we do if there are elements in
     ## FIXME: the header, which are not in columns?
     NAvalue <- unlist(findInHeader("NULL_VALUE", lines, FALSE))
-    NAvalue <- NAvalue[!grepl("[a-zA-Z]+", NAvalue)] # remove e.g. times
+    ##> message("NAvalue=", paste(NAvalue, collapse=" "))
+    NAvalue <- gsub("D([+-])+", "e\\1", NAvalue)
+    ##> message("NAvalue=", paste(NAvalue, collapse=" "))
+    NAvalue <- NAvalue[!grepl("[a-df-zA-DFZ]+", NAvalue)] # remove e.g. times
+    ##> message("NAvalue=", paste(NAvalue, collapse=" "))
     if (length(NAvalue) > 1) {
         NAvalue <- try({as.numeric(unlist(NAvalue))}, silent=TRUE)
         isNumeric <- is.numeric(NAvalue)

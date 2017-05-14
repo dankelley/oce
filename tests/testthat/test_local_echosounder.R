@@ -6,7 +6,8 @@ test_that("biosonics", {
               expect_equal("single-beam", e[["beamType"]])
               expect_equal(c(308, 3399), dim(e[["a"]]))
               summary(e)
-              plot(e)
+              expect_warning(plot(e),
+                             "auto-decimating second index of large image by 8; use decimate=FALSE to prevent this")
           }
 })
 

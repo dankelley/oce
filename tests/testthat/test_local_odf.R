@@ -53,7 +53,8 @@ test_that("Bedford Basin CTD profiles", {
                                     fluorometer="FLOR_01", par="PSAR_01", salinity="PSAL_01", oxygen="DOXY_01",
                                     sigmaTheta="SIGP_01", flagArchaic="FFFF_01"))
 
-              d <- read.oce("local_data/bedford_basin/CTD_BCD2014667_001_01_DN.ODF")
+              expect_warning(d <- read.oce("local_data/bedford_basin/CTD_BCD2014667_001_01_DN.ODF"),
+                             "\"CRAT_01\" should be unitless")
               expect_equal(d[['startTime']], as.POSIXct("2014-01-08 13:37:15", tz="UTC"))
               expect_equal(names(d[["data"]]),
                            c("scan", "pressure", "temperature", "conductivity", "oxygenVoltage", "unknown",
@@ -63,8 +64,8 @@ test_that("Bedford Basin CTD profiles", {
                                     oxygenVoltage="OXYV_01", unknown="UNKN_01",
                                     fluorometer="FLOR_01", par="PSAR_01", salinity="PSAL_01", oxygen="DOXY_01",
                                     sigmaTheta="SIGP_01", flagArchaic="FFFF_01"))
-
-              d <- read.oce("local_data/bedford_basin/CTD_BCD2015667_001_01_DN.ODF")
+              expect_warning(d <- read.oce("local_data/bedford_basin/CTD_BCD2015667_001_01_DN.ODF"),
+                             "\"CRAT_01\" should be unitless")
               expect_equal(d[['startTime']], as.POSIXct("2015-01-07 13:28:34", tz="UTC"))
               expect_equal(names(d[["data"]]),
                            c("scan", "pressure", "temperature", "conductivity", "oxygenVoltage", "fluorometer",
@@ -73,8 +74,8 @@ test_that("Bedford Basin CTD profiles", {
                                list(scan="CNTR_01", pressure="PRES_01", temperature="TEMP_01", conductivity="CRAT_01",
                                     oxygenVoltage="OXYV_01", fluorometer="FLOR_01", par="PSAR_01",
                                     salinity="PSAL_01", oxygen="DOXY_01", sigmaTheta="SIGP_01", flagArchaic="FFFF_01"))
-
-              d <- read.oce("local_data/bedford_basin/D16667001.ODF")
+              expect_warning(d <- read.oce("local_data/bedford_basin/D16667001.ODF"),
+                             "\"CRAT_01\" should be unitless")
               expect_equal(d[['startTime']], as.POSIXct("2016-01-06 13:17:37",tz="UTC"))
               expect_equal(names(d[["data"]]),
                            c("scan", "pressure", "temperature", "conductivity", "oxygenVoltage", "unknown",
