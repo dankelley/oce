@@ -21,6 +21,21 @@ test_that("as.ctd() with specified arguments, including salinity", {
           expect_true("fluorescence" %in% names(ctd_ctd[["data"]]))
 })
 
+test_that("ctd[[\"CT\"]] requires lon and lat", {
+          a <- as.ctd(35,10,0)
+          expect_error(a[["CT"]])
+})
+
+test_that("ctd[[\"Sstar\"]] requires lon and lat", {
+          a <- as.ctd(35,10,0)
+          expect_error(a[["Sstar"]])
+})
+
+test_that("ctd[[\"SA\"]] requires lon and lat", {
+          a <- as.ctd(35,10,0)
+          expect_error(a[["SA"]])
+})
+
 test_that("as.ctd() with specified arguments, not including salinity", {
           S <- ctd[["salinity"]]
           T <- ctd[["temperature"]]

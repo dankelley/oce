@@ -62,9 +62,11 @@
 #' Conservative Temperature defined according to TEOS-2010 is calculated with
 #' \code{ctd[["CT"]]} or \code{ctd[["conservative temperature"]]}.  Absolute
 #' salinity is calculated with \code{ctd[["SA"]]} or \code{ctd[["absolute
-#' salinity"]]}. Note that the salinity calculation requires a latitude and
-#' longitude, and if the \code{ctd} object lacks those data, the values 300E and
-#' 30N will be used as a default.
+#' salinity"]]}. Note that the \code{CT}, \code{SA} and \code{Sstar} calculations
+#' require latitude and longitude, and so errors result if these items
+#' are sought for a \code{ctd} object that lacks latitude or longitude.
+#' (Until 2017 May 14, defaults of 300E and 30N were used if position
+#' was not stored in the object.)
 #'
 #' The square of buoyancy frequency is retrieved with \code{ctd[["N2"]]} or
 #' \code{\link{swN2}}, density ratio with \code{ctd[["Rrho"]]} and spiciness with
@@ -581,32 +583,20 @@ setMethod(f="[[",
               } else if (i == "SR") {
                   gsw::gsw_SR_from_SP(SP=x[["salinity"]])
               } else if (i == "Sstar") {
+                  if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
+                      stop("object lacks location information, so Sstar cannot be computed")
                   n <- length(x@data$salinity)
+                  ## Lengthen lon and lat if necessary, by repeating.
                   lon <- x@metadata$longitude
                   if (n != length(lon))
                       lon <- rep(x@metadata$longitude, length.out=n)
-                  lon <- ifelse(lon < 0, lon + 360, lon)
-                  haveLatLon <- TRUE
-                  if (!any(is.finite(lon))) {
-                      lon <- rep(300, n)
-                      haveLatLon <- FALSE
-                  }
                   lat <- x@metadata$latitude
                   if (n != length(lat))
                       lat <- rep(x@metadata$latitude, length.out=n)
-                  if (!any(is.finite(lat))) {
-                      lat <- rep(30, n)
-                      haveLatLon <- FALSE
-                  }
-                  if (!haveLatLon)
-                      warning("object lacks location information, so computation uses 30N and 60W")
-                  ##message("lon=", paste(lon, collapse=" "))
-                  ##message("lat=", paste(lat, collapse=" "))
-
-                  SA <- gsw::gsw_SA_from_SP(SP=x[["salinity"]], p=x[["pressure"]],
-                                            longitude=lon, latitude=lat)
-                  gsw::gsw_Sstar_from_SA(SA=SA, p=x[["pressure"]],
-                                            longitude=lon, latitude=lat)
+                  lon <- ifelse(lon < 0, lon + 360, lon) # not required because gsw_saar() does this ... but UNDOCUMENTED
+                  ## Do the calculation in two steps
+                  SA <- gsw::gsw_SA_from_SP(SP=x[["salinity"]], p=x[["pressure"]], longitude=lon, latitude=lat)
+                  gsw::gsw_Sstar_from_SA(SA=SA, p=x[["pressure"]], longitude=lon, latitude=lat)
               } else if (i == "temperature") {
                   scale <- x@metadata$units[["temperature"]]$scale
                   if (!is.null(scale) && "IPTS-68" == scale)
@@ -651,35 +641,34 @@ setMethod(f="[[",
               } else if (i == "spice") {
                   swSpice(x)
               } else if (i %in% c("absolute salinity", "SA")) {
+                  if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
+                      stop("object lacks location information, so SA cannot be computed")
                   SP <- x[["salinity"]]
                   p <- x[["pressure"]]
                   n <- length(SP)
+                  ## Lengthen lon and lat if necessary, by repeating.
                   lon <- x@metadata$longitude
                   if (n != length(lon))
                       lon <- rep(x@metadata$longitude, length.out=n)
-                  lon <- ifelse(lon < 0, lon + 360, lon)
-                  haveLatLon <- TRUE
-                  if (!any(is.finite(lon))) {
-                      lon <- rep(300, n)
-                      haveLatLon <- FALSE
-                  }
                   lat <- x@metadata$latitude
                   if (n != length(lat))
                       lat <- rep(x@metadata$latitude, length.out=n)
-                  if (!any(is.finite(lat))) {
-                      lat <- rep(30, n)
-                      haveLatLon <- FALSE
-                  }
-                  if (!haveLatLon)
-                      warning("object lacks location information, so computation uses 30N and 60W")
-                  SP[is.nan(SP)] <- NA
-                  p[is.nan(p)] <- NA
-                  lat[is.nan(lat)] <- NA
-                  lon[is.nan(lon)] <- NA
-                  ##message("lat=", paste(lat, collapse=" "))
-                  ##message("lon=", paste(lon, collapse=" "))
+                  lon <- ifelse(lon < 0, lon + 360, lon) # not required because gsw_saar() does this ... but UNDOCUMENTED
+                  ##: Change e.g. NaN to NA ... FIXME: tests show that this is not required:
+                  ##:     > a<-as.ctd(10:11, c(35, asin(3)), 1:2, lon=-60, lat=50)
+                  ##:                        a[["SA"]]
+                  ##:     [1] 10.0472934071578 11.0520223880037
+                  ##:     > a<-as.ctd(10:11, c(35, NA), 1:2, lon=-60, lat=50)
+                  ##:     > a[["SA"]]
+                  ##:     [1] 10.0472934071578 11.0520223880037
+                  ##: SP[!is.finite(SP)] <- NA
+                  ##: p[!is.finite(p)] <- NA
+                  ##: lon[!is.finite(lon)] <- NA
+                  ##: lat[!is.finite(lat)] <- NA
                   gsw::gsw_SA_from_SP(SP, p, lon, lat)
               } else if (i %in% c("conservative temperature", "CT")) {
+                  if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
+                      stop("object lacks location information, so CT cannot be computed")
                   gsw::gsw_CT_from_t(SA=x[["SA"]], t=x[["temperature"]], p=x[["pressure"]])
               } else if (i == "nitrate") {
                   if ("nitrate" %in% dataNames) {
