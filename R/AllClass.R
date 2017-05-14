@@ -181,12 +181,16 @@ setMethod(f="summary",
                   width <- 1 + max(nchar(names(flags)))
                   for (name in names(flags)) {
                       padding <- rep(" ", width - nchar(name))
-                      cat("    ", name, ":", padding, sep="")
-                      flagTable <- table(flags[[name]])
-                      flagTableLength <- length(flagTable)
-                      for (i in 1:flagTableLength) {
-                          cat("\"", names(flagTable)[i], "\"", " ", flagTable[i], "", sep="")
-                          if (i != flagTableLength) cat(", ") else cat("\n")
+                      if (!all(is.na(flags[[name]]))) {
+                          cat("    ", name, ":", padding, sep="")
+                          flagTable <- table(flags[[name]])
+                          flagTableLength <- length(flagTable)
+                          if (flagTableLength) {
+                              for (i in seq_len(flagTableLength)) {
+                                  cat("\"", names(flagTable)[i], "\"", " ", flagTable[i], "", sep="")
+                                  if (i != flagTableLength) cat(", ") else cat("\n")
+                              }
+                          }
                       }
                   }
                   cat("\n")

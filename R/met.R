@@ -732,11 +732,6 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
             res@data[[flagName]] <- NULL
         }
     }
-    ## Discard any flags that are all NA (which, we presume, means the data are OK)
-    for (flagName in names(res@metadata$flags)) {
-        if (all(is.na(res@metadata$flags[[flagName]])))
-            res@metadata$flags[[flagName]] <- NULL
-    }
     ## Remove various date things; we have time in our object so there is no need for these things,
     ## and just because the agency repeats things, that's no reason for us to do the same.
     ## (I would listen to argumetns to retain these, however.)
