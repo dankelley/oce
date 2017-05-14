@@ -740,18 +740,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     varNames <- names(file$var)
     lc <- "data_type" %in% varNames
     res <- new("argo")
-    if (debug > 0) {
-        if (debug > 10)
-            message("This netcdf file contains the following $var: ", paste(names(file$var), collapse=" "))
-        columnNames <- gsub(" *$", "", gsub("^ *", "", unique(as.vector(ncvar_get(ff, maybeLC("STATION_PARAMETERS", lc))))))
-        ##columnNames <- gsub(" *$", "", unique(as.vector(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc)))))
-        message("columnNames: '", paste(columnNames, collapse="' '"), "' (from ", maybeLC("STATION_PARAMETERS", lc), ")")
-        QCNames <- paste(columnNames, "_QC",  sep="")
-        message("QCnames: ", paste(QCNames, collapse=" "), " (inferred from above)")
-        ## browser()
-        ## physicalNames <- ODFNames2oceNames(columnNames, ODFunits=NULL)
-        ## message("Therefore need @data items: ", paste(physicalNames, collapse=" "), " (in addition to longitude etc)")
-    }
+    ## columnNames <- gsub(" *$", "", gsub("^ *", "", unique(as.vector(ncvar_get(f, maybeLC("STATION_PARAMETERS", lc))))))
+    ## QCNames <- paste(columnNames, "_QC",  sep="")
 
     ## Grab all information listed in table 2.2.3 of [3], with exceptions as listed in the
     ## docs, e.g. STATION_PARAMETERS is really of no use.
