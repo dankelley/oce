@@ -85,6 +85,18 @@ test_that("subset(section)", {
           ## 3. by longitude
           secWest <- subset(section, longitude < -50)
           expect_lt(max(secWest[["longitude"]]), -50)
+          ## 4. by pressure (visual tests)
+          top2km <- subset(section, pressure < 2000)
+          section100 <- section[["station", 100]]
+          top2km100 <- top2km[["station", 100]]
+          expect_equal(tail(section100[["pressure"]]), c(3530.9, 3746.1, 3970.6, 4189.5, 4346.7, 4398.3))
+          expect_equal(tail(top2km100[["pressure"]]), c(777.1, 926.5, 1189.5, 1590.1, 1699.8, 1859.5))
+          ## 5. by pressure (algorithmic tests)
+          deep <- subset(section, pressure > 1000)
+          w <- which(section[["station", 100]][["pressure"]] > 1000)
+          d <- data.frame(section[["station", 100]][["data"]])[w, ]
+          rownames(d) <- 1:dim(d)[1]
+          expect_equal(d, as.data.frame(deep[["station", 100]][["data"]]))
 })
 
 
