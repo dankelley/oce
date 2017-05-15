@@ -2078,6 +2078,26 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
         var <- gettext("Potential density anomaly", domain="R-oce")
         full <- bquote(.(var)*.(L)*kg/m^3*.(R))
         abbreviated <- bquote(sigma[theta]*.(L)*kg/m^3*.(R))
+    } else if (item == "sigma0") {
+        var <- gettext("Potential density anomaly wrt surface", domain="R-oce")
+        full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- bquote(sigma[0]*.(L)*kg/m^3*.(R))
+    } else if (item == "sigma1") {
+        var <- gettext("Potential density anomaly wrt 1000 dbar", domain="R-oce")
+        full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- bquote(sigma[1]*.(L)*kg/m^3*.(R))
+    } else if (item == "sigma2") {
+        var <- gettext("Potential density anomaly wrt 2000 dbar", domain="R-oce")
+        full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- bquote(sigma[2]*.(L)*kg/m^3*.(R))
+    } else if (item == "sigma3") {
+        var <- gettext("Potential density anomaly wrt 3000 dbar", domain="R-oce")
+        full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- bquote(sigma[3]*.(L)*kg/m^3*.(R))
+    } else if (item == "sigma4") {
+        var <- gettext("Potential density anomaly wrt 4000 dbar", domain="R-oce")
+        full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- bquote(sigma[4]*.(L)*kg/m^3*.(R))
     } else if (item == "theta") {
         var <- gettext("Potential Temperature", domain="R-oce")
         full <- bquote(.(var)*.(L)*degree*"C"*.(R))

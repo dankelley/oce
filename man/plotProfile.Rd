@@ -56,6 +56,10 @@ be off by a scale factor; this should not be a problem if there is a
 \code{time} column in the \code{data} slot, or a \code{sample.rate} in the
 \code{metadata} slot.
 
+\item \code{"sigma0"}, \code{"sigma1"}, \code{"sigma2"}, \code{"sigma3"}
+and \code{"sigma4"} Profile of potential density referenced
+to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
+
 \item \code{"spice"} Profile of spice.
 
 \item \code{"Rrho"} Profile of Rrho, defined in the diffusive sense.

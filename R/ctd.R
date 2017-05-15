@@ -4051,6 +4051,10 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' \code{time} column in the \code{data} slot, or a \code{sample.rate} in the
 #' \code{metadata} slot.
 #'
+#' \item \code{"sigma0"}, \code{"sigma1"}, \code{"sigma2"}, \code{"sigma3"}
+#' and \code{"sigma4"} Profile of potential density referenced
+#' to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
+#'
 #' \item \code{"spice"} Profile of spice.
 #'
 #' \item \code{"Rrho"} Profile of Rrho, defined in the diffusive sense.
@@ -4572,14 +4576,17 @@ plotProfile <- function (x,
                             keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium",
-                            "u", "v")) {
+                            "u", "v") || 0 < length(grep("^sigma[0-4]$", xtype))) {
         unit <- x@metadata$units[[xtype]][[1]]
-        if (!(xtype %in% names(x@data)))
-            stop("no ", xtype, " in this station")
-        if (!any(!is.na(x@data[[xtype]])))
+        ##if (!(xtype %in% names(x@data)))
+        ##    stop("no ", xtype, " in this station")
+        xvar <- x[[xtype]]
+        if (is.null(xvar))
+            stop("no '", xtype, "' in this ctd object")
+        if (all(is.na(xvar)))
             stop("all ", xtype, " values in this station are NA")
         if (useSmoothScatter) {
-            smoothScatter(x@data[[xtype]], y, ylim=ylim, xlab="", ylab=resizableLabel("pressure", "y"), axes=FALSE, ...)
+            smoothScatter(xvar, y, ylim=ylim, xlab="", ylab=resizableLabel("pressure", "y"), axes=FALSE, ...)
             axis(2)
             axis(3)
             box()
@@ -4587,17 +4594,17 @@ plotProfile <- function (x,
             unit <- x@metadata$units[[xtype]]
             mtext(resizableLabel(xtype, "x", unit=unit), side=3, line=axisNameLoc, cex=par("cex"))
         } else {
-            look <- if (keepNA) 1:length(y) else !is.na(x@data[[xtype]]) & !is.na(y)
+            look <- if (keepNA) 1:length(y) else !is.na(xvar) & !is.na(y)
             if (!add) {
                 if (ylimGiven) {
-                    plot(x@data[[xtype]][look], y[look],
-                         ylim=ylim, lty=lty,
-                         type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                    ylimsorted <- sort(ylim)
+                    look <- look & (ylimsorted[1] <= y[look] & y[look] <= ylimsorted[2])
+                    xlim <- range(xvar[look], na.rm=TRUE)
+                    plot(xvar[look], y[look], xlim=xlim, ylim=ylim,
+                         lty=lty, type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 } else {
-                    plot(x@data[[xtype]][look], y[look],
-                         #ylim=rev(range(y[look])), lty=lty,
-                         ylim=ylim, lty=lty,
-                         type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                    plot(xvar[look], y[look], ylim=rev(range(y[look])),
+                         lty=lty, type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 }
                 mtext(resizableLabel(xtype, "x", unit=unit), side=3, line=axisNameLoc, cex=par("cex"))
                 axis(2)
@@ -4611,7 +4618,7 @@ plotProfile <- function (x,
                 }
             }
             ## 2014-02-07: use col here, since no second axis to worry about
-            plotJustProfile(x@data[[xtype]][look], y[look], type=type, lwd=lwd, lty=lty,
+            plotJustProfile(xvar[look], y[look], type=type, lwd=lwd, lty=lty,
                             cex=cex, col=col, pch=pch, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
