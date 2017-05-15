@@ -533,13 +533,13 @@ setMethod(f="subset",
                   res@metadata$time <- x@metadata$time[keep]
                   res@data$station <- x@data$station[keep]
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
-              } else if (length(grep("pressure", subsetString))) {
-                  n <- length(x@data$station)
-                  res <- x
-                  for (i in 1:n) {
-                      res@data$station[[i]] <- subset(x@data$station[[i]], subset)
-                  }
-                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+              ##1238 } else if (length(grep("pressure", subsetString))) {
+              ##1238     n <- length(x@data$station)
+              ##1238     res <- x
+              ##1238     for (i in 1:n) {
+              ##1238         res@data$station[[i]] <- subset(x@data$station[[i]], subset)
+              ##1238     }
+              ##1238     res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               } else {
                   ## subset within the stations
                   if ("indices" %in% dotsNames)
