@@ -1,4 +1,4 @@
-/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
+// vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: 
 
 #include <R.h>
 #include <Rdefines.h>
@@ -192,10 +192,10 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
       break; // FIXME: maybe we should stop here, actually
     }
     cindex += bytes_read;
-    if (debug > 1) 
-      Rprintf("buf: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\n", 
+    if (debug > 1)
+      Rprintf("buf: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\n",
           hbuf[0], hbuf[1], hbuf[2], hbuf[3], hbuf[4],
-          hbuf[5], hbuf[6], hbuf[7], hbuf[8], hbuf[9]); 
+          hbuf[5], hbuf[6], hbuf[7], hbuf[8], hbuf[9]);
     // It's prudent to check.
     if (hbuf[0] != SYNC) {
       error("coding error in reading the header at cindex=%d; expecting 0x%x but found 0x%x\n",
@@ -270,5 +270,3 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
   UNPROTECT(8);
   return(lres);
 }
-
-
