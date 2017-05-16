@@ -4190,6 +4190,8 @@ plotProfile <- function (x,
     {
         oceDebug(debug, "plotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type,
                  "\", col[1:3]=c(\"", paste(col[1:3], collapse='","'), "\"), ...) {\n", sep="", unindent=1)
+        x <- as.vector(x) # because e.g. argo may be a 1-col matrix
+        y <- as.vector(y)
         if (!keepNA) {
             keep <- !is.na(x) & !is.na(y)
             x <- x[keep]
@@ -4291,6 +4293,7 @@ plotProfile <- function (x,
     }
     y <- if (ytype == "pressure") x[["pressure"]] else if (ytype == "z") x[["z"]]
         else if (ytype == "depth") x[["depth"]] else if (ytype == "sigmaTheta") x[["sigmaTheta"]]
+    y <- as.vector(y)
 
     if (!add)
         par(mar=mar, mgp=mgp)
@@ -4347,6 +4350,7 @@ plotProfile <- function (x,
         if (missing(densitylim))
             densitylim <- range(x[["sigmaTheta"]], na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
+        look <- as.vector(look)
         plot(st[look], y[look], xlim=densitylim, ylim=ylim, cex=cex, pch=pch,
              type=type, col=col.rho, lty=lty, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         ## lines(st[look], y[look])
@@ -4395,6 +4399,7 @@ plotProfile <- function (x,
             densitylim <- range(x[["sigmaTheta"]], na.rm=TRUE)
         st <- swSigmaTheta(x)
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
+        look <- as.vector(look)
         plot(st[look], y[look],
              xlim=densitylim, ylim=ylim, col=col.rho, lty=lty, cex=cex, pch=pch,
              type=type, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
@@ -4594,11 +4599,19 @@ plotProfile <- function (x,
             unit <- x@metadata$units[[xtype]]
             mtext(resizableLabel(xtype, "x", unit=unit), side=3, line=axisNameLoc, cex=par("cex"))
         } else {
-            look <- if (keepNA) 1:length(y) else !is.na(xvar) & !is.na(y)
+            look <- as.vector(if (keepNA) 1:length(y) else !is.na(xvar) & !is.na(y))
             if (!add) {
                 if (ylimGiven) {
                     ylimsorted <- sort(ylim)
-                    look <- look & (ylimsorted[1] <= y[look] & y[look] <= ylimsorted[2])
+                    ## message("length(ylimsorted) ", length(ylimsorted))
+                    ## message("ylimsorted vector? ", is.vector(ylimsorted))
+                    ## message("length(look) ", length(look))
+                    ## message("look vector? ", is.vector(look))
+                    ## message("length(xvar) ", length(xvar))
+                    ## message("xvar vector? ", is.vector(xvar))
+                    ## message("length(y) ", length(y))
+                    ## message("y vector? ", is.vector(y))
+                    look <- look & (ylimsorted[1] <= y) & (y <= ylimsorted[2])
                     xlim <- range(xvar[look], na.rm=TRUE)
                     plot(xvar[look], y[look], xlim=xlim, ylim=ylim,
                          lty=lty, type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
