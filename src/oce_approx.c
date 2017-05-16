@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 
 //#define DEBUG
 //#define DEBUG_INTERP
@@ -63,8 +63,8 @@ static double interp(double *xoutp, double *xp, double *yp, int i, int j, int ok
     double num = 1.0, den = 1.0;
     for (int m = 0; m < ngood; m++) {
       if (m != l) {
-	num *= x - xx[m];
-	den *= xx[l] - xx[m];
+        num *= x - xx[m];
+        den *= xx[l] - xx[m];
       }
     }
     y += yy[l] * num / den;
@@ -185,10 +185,10 @@ static double phi_R(int i0, double z0, double *z, double *phi, int len) /* Reini
     double denom = SQR(phi23 - phi34) + SQR(phi12 - phi23);
 #ifdef DEBUG
     Rprintf("i0=%d phi_R phi12=%f phi23=%f phi34=%f numer=%f denom=%f BAD? %d\n",
-	i0, phi12, phi23, phi34,
-	SQR(phi23 - phi34) * phi12 + SQR(phi12 - phi23) * phi34,
-	SQR(phi23 - phi34) + SQR(phi12 - phi23),
-	0.0==denom);
+        i0, phi12, phi23, phi34,
+        SQR(phi23 - phi34) * phi12 + SQR(phi12 - phi23) * phi34,
+        SQR(phi23 - phi34) + SQR(phi12 - phi23),
+        0.0==denom);
     if (0.0 == denom) Rprintf("zero denom\n");
 #endif
     if (denom != 0)
@@ -206,8 +206,8 @@ static double phi_P1(int i0, double z0, double *z, double *phi, int len) /* Rein
 {
   if (0 < i0 && i0 < (len - 1)) {
     return (gamma_ijk(i0-1, i0  , i0+1, z0, z, len) * phi[i0-1] + 
-	gamma_ijk(i0  , i0+1, i0-1, z0, z, len) * phi[i0  ] +
-	gamma_ijk(i0+1, i0-1, i0  , z0, z, len) * phi[i0+1]);
+        gamma_ijk(i0  , i0+1, i0-1, z0, z, len) * phi[i0  ] +
+        gamma_ijk(i0+1, i0-1, i0  , z0, z, len) * phi[i0+1]);
   } else {
     error("phi_P1 given bad i0=%d", i0);
     return (0.0); // never reached
@@ -217,8 +217,8 @@ static double phi_P2(int i0, double z0, double *z, double *phi, int len) /* Rein
 {
   if (0 < i0 && i0 < (len - 2)) {
     return (gamma_ijk(i0  , i0+1, i0+2, z0, z, len) * phi[i0  ] +
-	gamma_ijk(i0+1, i0+2, i0  , z0, z, len) * phi[i0+1] +
-	gamma_ijk(i0+2, i0  , i0+1, z0, z, len) * phi[i0+2]);
+        gamma_ijk(i0+1, i0+2, i0  , z0, z, len) * phi[i0+1] +
+        gamma_ijk(i0+2, i0  , i0+1, z0, z, len) * phi[i0+2]);
   } else {
     error("phi_P2 given bad i0=%d", i0);
     return (0.0); // never reached
@@ -296,76 +296,76 @@ SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP method) // , SEXP n, SEXP m)
       // Handle region below 5m, by finding j such that xp[j] <= xout[i] <= xp[j+1]
       for (int j = 0; j < x_len - 1; j++) {
 #ifdef DEBUG
-	//Rprintf("x[%d]=%.1f\n", j, *(xp + j));
+        //Rprintf("x[%d]=%.1f\n", j, *(xp + j));
 #endif
-	double xx = xoutp[i];
-	//Rprintf("xoutp[%d]:%f, xp[%d]:%.1f, Method:%d\n", i, xoutp[i], j, xp[j], Method);
-	// Look for neighbors
-	if (xx == xp[j]) {
-	  // Exact match with point above
-	  val = yp[j];
-	  found = 1;
+        double xx = xoutp[i];
+        //Rprintf("xoutp[%d]:%f, xp[%d]:%.1f, Method:%d\n", i, xoutp[i], j, xp[j], Method);
+        // Look for neighbors
+        if (xx == xp[j]) {
+          // Exact match with point above
+          val = yp[j];
+          found = 1;
 #ifdef DEBUG
-	  Rprintf("i=%d j=%d exact match with point above\n", i, j);
+          Rprintf("i=%d j=%d exact match with point above\n", i, j);
 #endif
-	} else if (xx == xp[j + 1]) {
-	  // Exact match with point below
-	  val = yp[j + 1];
-	  found = 1;
+        } else if (xx == xp[j + 1]) {
+          // Exact match with point below
+          val = yp[j + 1];
+          found = 1;
 #ifdef DEBUG
-	  Rprintf("i=%d j=%d exact match with point below\n", i, j);
+          Rprintf("i=%d j=%d exact match with point below\n", i, j);
 #endif
-	} else if (xp[j] < xx && xx < xp[j + 1]) {
+        } else if (xp[j] < xx && xx < xp[j + 1]) {
 #ifdef DEBUG
-	  Rprintf("i=%d j=%d has a neighbor above and below\n", i, j);
+          Rprintf("i=%d j=%d has a neighbor above and below\n", i, j);
 #endif
-	  // Has a neeighbor above and below
-	  if (j == 0) {           /* catch exact match (just in case there is a problem with such) */
-	    val = yp[0] + (xx - xp[0]) * (yp[1] - yp[0]) / (xp[1] - xp[0]);
+          // Has a neeighbor above and below
+          if (j == 0) {           /* catch exact match (just in case there is a problem with such) */
+            val = yp[0] + (xx - xp[0]) * (yp[1] - yp[0]) / (xp[1] - xp[0]);
 #ifdef DEBUG
-	    Rprintf("j=0 ... xx=%f yields val=%f since x[0,1]=%f , %f have y[0,1]=%f , %f\n",
-		xx, val, xp[0], xp[1], yp[0], yp[1]);
+            Rprintf("j=0 ... xx=%f yields val=%f since x[0,1]=%f , %f have y[0,1]=%f , %f\n",
+                xx, val, xp[0], xp[1], yp[0], yp[1]);
 #endif
-	  } else if (j == x_len - 1) {
-	    val = yp[j - 1] + (xx - xp[j - 1]) * (yp[j] - yp[j - 1]) / (xp[j] - xp[j - 1]);
-	  } else {
-	    if (j >= x_len - 2) {
-	      //Rprintf("j >= x_len - 2\n");
-	      //val = NA_REAL;
-	      val = yp[x_len - 1]; // trim to endpoint
-	    } else {
-	      //if (j > 2 && j < (xout_len - 2)) {
-	      //  Rprintf("xout[i=%d]:%.1f, xp[j-1]:%.1f xp[j=%d]:%.1f | xp[j+1]:%.1f xp[j+2]:%.1f\n",
-	      //      i, xoutp[i], xp[j-1], j, xp[j], xp[j+1], xp[j+2]);
-	      //}
-	      val = phi_z(j, xx, xp, yp, x_len);
-	      if (Method == 1) {
-		fence(xoutp, xp, i, j, x_len);
-		if (4 != fok[0] + fok[1] + fok[2] + fok[3]) {
+          } else if (j == x_len - 1) {
+            val = yp[j - 1] + (xx - xp[j - 1]) * (yp[j] - yp[j - 1]) / (xp[j] - xp[j - 1]);
+          } else {
+            if (j >= x_len - 2) {
+              //Rprintf("j >= x_len - 2\n");
+              //val = NA_REAL;
+              val = yp[x_len - 1]; // trim to endpoint
+            } else {
+              //if (j > 2 && j < (xout_len - 2)) {
+              //  Rprintf("xout[i=%d]:%.1f, xp[j-1]:%.1f xp[j=%d]:%.1f | xp[j+1]:%.1f xp[j+2]:%.1f\n",
+              //      i, xoutp[i], xp[j-1], j, xp[j], xp[j+1], xp[j+2]);
+              //}
+              val = phi_z(j, xx, xp, yp, x_len);
+              if (Method == 1) {
+                fence(xoutp, xp, i, j, x_len);
+                if (4 != fok[0] + fok[1] + fok[2] + fok[3]) {
 #ifdef DEBUG_INTERP
-		  Rprintf("# using 3-point lagrangian interpolation at i:%d, fok: %d %d %d %d\n",
-		      i, fok[0], fok[1], fok[2], fok[3]);
+                  Rprintf("# using 3-point lagrangian interpolation at i:%d, fok: %d %d %d %d\n",
+                      i, fok[0], fok[1], fok[2], fok[3]);
 #endif
-		  val = interp(xoutp, xp, yp, i, j, fok);
-		}
-		//Rprintf("xoutp[%d]:%.1f, j:%d, val:%.1f, xp[j-1]:%.1f, xp[j]:%.1f, xp[j+1]:%.1f, yp[j]:%.1f, yp[j+1]:%.1f\n",
-		//    i, xoutp[i], j, val, xp[j-1], xp[j], xp[j+1], yp[j], yp[j+1]);
-		if (!between(val, yp[j], yp[j+1])) {
-		  val = yp[j] + (xoutp[i] - xp[j]) * (yp[j+1] - yp[j]) / (xp[j+1] - xp[j]);
+                  val = interp(xoutp, xp, yp, i, j, fok);
+                }
+                //Rprintf("xoutp[%d]:%.1f, j:%d, val:%.1f, xp[j-1]:%.1f, xp[j]:%.1f, xp[j+1]:%.1f, yp[j]:%.1f, yp[j+1]:%.1f\n",
+                //    i, xoutp[i], j, val, xp[j-1], xp[j], xp[j+1], yp[j], yp[j+1]);
+                if (!between(val, yp[j], yp[j+1])) {
+                  val = yp[j] + (xoutp[i] - xp[j]) * (yp[j+1] - yp[j]) / (xp[j+1] - xp[j]);
 #ifdef DEBUG_INTERP
-		  Rprintf("# using linear interp at xout[%d]=%.1f since %.1f is not bounded by %.1f and %.1f\n",
-		      i, xoutp[i], val, yp[j], yp[j+1]);
+                  Rprintf("# using linear interp at xout[%d]=%.1f since %.1f is not bounded by %.1f and %.1f\n",
+                      i, xoutp[i], val, yp[j], yp[j+1]);
 #endif
-		}
-	      }
-	    }
-	  }
+                }
+              }
+            }
+          }
 #ifdef DEBUG
-	  Rprintf("oce_approx() got rval[%d] = %f\n\n", i, val);
+          Rprintf("oce_approx() got rval[%d] = %f\n\n", i, val);
 #endif
-	  found = 1;
-	  break;
-	}
+          found = 1;
+          break;
+        }
       }
     }
     ansp[i] = found?val:NA_REAL;

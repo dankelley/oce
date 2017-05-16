@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 
 // NB. breaking work up into two functions may slow things down but
 // it makes it simpler to check.
@@ -64,7 +64,7 @@ SEXP landsat_transpose_flip(SEXP m)
     for (int j = 0; j < ncol; j++) {
 #ifdef DEBUG
       Rprintf("i %d, j %d, ij_res(i,j) %d, ij_m(j, i) %d\n",
-	  i, j, ij_res(i,j), ij_m(j,i));
+          i, j, ij_res(i,j), ij_m(j,i));
 #endif
       resp[ij_res(j, i)] = mp[ij_m(i, j)];
     }
@@ -79,9 +79,9 @@ SEXP landsat_transpose_flip(SEXP m)
     for (int j = 0; j < ncol_res_half; j++) {
 #ifdef DEBUG
       Rprintf("i %d, j %d, ncol_res-j-1 %d, ij_res(i,j) %d, ij_res(i,ncol_res-j-1) %d (%f -> %f)\n",
-	  i, j, ncol_res-j-1,
-	  ij_res(i,j), ij_res(i, ncol_res-j-1),
-	  resp[ij_res(i, j)], resp[ij_res(i,ncol_res-j-1)]);
+          i, j, ncol_res-j-1,
+          ij_res(i,j), ij_res(i, ncol_res-j-1),
+          resp[ij_res(i, j)], resp[ij_res(i,ncol_res-j-1)]);
 #endif
       double tmp = resp[ij_res(i, j)];
       resp[ij_res(i, j)] = resp[ij_res(i, ncol_res-j-1)];
@@ -141,54 +141,54 @@ SEXP landsat_numeric_to_bytes(SEXP m, SEXP bits)
       unsigned int mij_int;
       unsigned char ms, ls;
       for (int i = 0; i < n; i++) {
-	//double mij = mp[i];
-	mij_int = (unsigned int)(65535*mp[i]);
-	ms = (mij_int & 0xFF00) >> 8;
-	ls = mij_int & 0x00FF;
+        //double mij = mp[i];
+        mij_int = (unsigned int)(65535*mp[i]);
+        ms = (mij_int & 0xFF00) >> 8;
+        ls = mij_int & 0x00FF;
 #ifdef DEBUG
-	Rprintf("i %d, m: %f -> %d -> msb 0x%02x lsb 0x%02x (little endian two-byte)\n", i, m[i], mij_int, ms, ls);
+        Rprintf("i %d, m: %f -> %d -> msb 0x%02x lsb 0x%02x (little endian two-byte)\n", i, m[i], mij_int, ms, ls);
 #endif
-	lsbp[i] = ls;
-	msbp[i] = ms;
+        lsbp[i] = ls;
+        msbp[i] = ms;
       }
     } else {
       // big endian below
       for (int i = 0; i < n; i++) {
-	double mij = mp[i];
-	unsigned int mij_int = (unsigned int)(65535*mij);
-	unsigned char ls = (mij_int & 0xFF00) >> 8;
-	unsigned char ms = mij_int & 0x00FF;
+        double mij = mp[i];
+        unsigned int mij_int = (unsigned int)(65535*mij);
+        unsigned char ls = (mij_int & 0xFF00) >> 8;
+        unsigned char ms = mij_int & 0x00FF;
 #ifdef DEBUG
-	Rprintf("i %d, m: %f -> %d -> msb 0x%02x lsb 0x%02x (big endian two-byte)\n", i, mij, mij_int, ms, ls);
+        Rprintf("i %d, m: %f -> %d -> msb 0x%02x lsb 0x%02x (big endian two-byte)\n", i, mij, mij_int, ms, ls);
 #endif
-	lsbp[i] = ls;
-	msbp[i] = ms;
+        lsbp[i] = ls;
+        msbp[i] = ms;
       }
    }
   } else {
     // !two_byte: msb is scalar 0; just fill up lsb
     if (little_endian) {
       for (int i = 0; i < n; i++) {
-	double mij = mp[i];
-	unsigned int mij_int = (unsigned int)(255*mij);
-	unsigned char ls = mij_int; // & 0xFF00;
+        double mij = mp[i];
+        unsigned int mij_int = (unsigned int)(255*mij);
+        unsigned char ls = mij_int; // & 0xFF00;
 #ifdef DEBUG
-	Rprintf("i=%d   %f -> %d -> lsb 0x%02x (little endian one-byte)\n", i, mij, mij_int, ls);
+        Rprintf("i=%d   %f -> %d -> lsb 0x%02x (little endian one-byte)\n", i, mij, mij_int, ls);
 #endif
-	lsbp[i] = ls;
+        lsbp[i] = ls;
       }
     } else {
       // big endian
       unsigned int mij_int;
       unsigned char ls;
       for (int i = 0; i < n; i++) {
-	//double mij = mp[i];
-	mij_int = (unsigned int)(255*mp[i]);
-	ls = mij_int; // & 0x00FF;
+        //double mij = mp[i];
+        mij_int = (unsigned int)(255*mp[i]);
+        ls = mij_int; // & 0x00FF;
 #ifdef DEBUG
-	Rprintf("i=%d   %f -> %d -> lsb 0x%02x (big endian one-byte)\n", i, m[i], mij_int, ls);
+        Rprintf("i=%d   %f -> %d -> lsb 0x%02x (big endian one-byte)\n", i, m[i], mij_int, ls);
 #endif
-	lsbp[i] = ls;
+        lsbp[i] = ls;
       }
     }
   }

@@ -1,4 +1,4 @@
-// vim:noexpandtab:shiftwidth=2:softtabstop=2:tw=70:foldmethod=marker:foldlevel=0:
+// vim:expandtab:shiftwidth=2:softtabstop=2:tw=70:foldmethod=marker:foldlevel=0:
 
 //#define DEBUG
 
@@ -240,15 +240,15 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
       check_sum += (unsigned short int)byte2;
       b1 = fgetc(fp);
       if (b1 == EOF) {
-	Rprintf("Got to end of data while trying to read the 'b1' byte of an RDI file (cindex=%d)\n", cindex);
-	break;
+        Rprintf("Got to end of data while trying to read the 'b1' byte of an RDI file (cindex=%d)\n", cindex);
+        break;
       }
       cindex++;
       check_sum += (unsigned short int)b1;
       b2 = fgetc(fp);
       if (b2 == EOF) {
-	Rprintf("Got to end of data while trying to read the 'b2' byte of an RDI file (cindex=%d)\n", cindex);
-	break;
+        Rprintf("Got to end of data while trying to read the 'b2' byte of an RDI file (cindex=%d)\n", cindex);
+        break;
       }
       cindex++;
       check_sum += (unsigned short int)b2;
@@ -258,150 +258,150 @@ SEXP ldc_rdi_in_file(SEXP filename, SEXP from, SEXP to, SEXP by, SEXP mode)
       // in the bytes_to_check value that we now calculate).
       bytes_to_check = (unsigned int)b1 + 256 * (unsigned int)b2;
       if (bytes_to_check < 5) { // this will only happen in error; we check so bytes_to_read won't be crazy
-	Free(ensembles);
-	Free(times);
-	Free(sec100s);
-	Free(ebuf);
-	error("cannot decode the length of ensemble number %d", in_ensemble);
+        Free(ensembles);
+        Free(times);
+        Free(sec100s);
+        Free(ebuf);
+        error("cannot decode the length of ensemble number %d", in_ensemble);
       }
       unsigned int bytes_to_read = bytes_to_check - 4; // byte1&byte2&check_sum used 4 bytes already
 
       // Expand the ensemble buffer, ebuf, if need be.
       if (bytes_to_read > nebuf) {
 #ifdef DEBUG
-	  Rprintf("Increasing 'ebuf' buffer size from %d bytes to %d bytes\n", nebuf, bytes_to_read); // DEBUG
+        Rprintf("Increasing 'ebuf' buffer size from %d bytes to %d bytes\n", nebuf, bytes_to_read); // DEBUG
 #endif
-	  ebuf = (unsigned char *)Realloc(ebuf, bytes_to_read, unsigned char);
-	  nebuf = bytes_to_read;
+        ebuf = (unsigned char *)Realloc(ebuf, bytes_to_read, unsigned char);
+        nebuf = bytes_to_read;
       }
       // Read the bytes in one operation, because fgetc() is too slow.
       unsigned int bytesRead;
       bytesRead = fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
       if (feof(fp)) {
-	Rprintf("Got to end of data while trying to read an RDI file (cindex=%d)\n", cindex);
-	break;
+        Rprintf("Got to end of data while trying to read an RDI file (cindex=%d)\n", cindex);
+        break;
       }
       cindex += bytes_to_read;
       for (int ib = 0; ib < bytes_to_read; ib++) {
-	check_sum += (unsigned short int)ebuf[ib];
+        check_sum += (unsigned short int)ebuf[ib];
       }
       int cs1, cs2;
       cs1 = fgetc(fp);
       if (cs1 == EOF) {
-	Rprintf("Got to end of data while trying to get the first checksum byte in an RDI file (cindex=%d)\n", cindex);
-	break;
+        Rprintf("Got to end of data while trying to get the first checksum byte in an RDI file (cindex=%d)\n", cindex);
+        break;
       }
       cindex++;
       cs2 = fgetc(fp);
       if (cs2 == EOF) {
-	Rprintf("Got to end of data while trying to get second checksum byte in an RDI file (cindex=%d)\n", cindex);
-	break;
+        Rprintf("Got to end of data while trying to get second checksum byte in an RDI file (cindex=%d)\n", cindex);
+        break;
       }
       cindex++;
       desired_check_sum = ((unsigned short int)cs1) | ((unsigned short int)(cs2 << 8));
       if (check_sum == desired_check_sum) {
-	// The check_sum is ok, so we may want to store the results for
-	// this profile.
-	//
-	// First, ensure that there will be sufficient storage to store results.
-	// We do this before checking to see if we are actually going
-	// to store the results, so possibly this might get done one
-	// more time than required, before this function returns.
-	if (out_ensemble >= nensembles) {
-	  // Enlarge the buffer. We do not check the Realloc() result, because this
-	  // is an R macro that is supposed to check for errors and handle them.
-	  nensembles = 3 * nensembles / 2;
+        // The check_sum is ok, so we may want to store the results for
+        // this profile.
+        //
+        // First, ensure that there will be sufficient storage to store results.
+        // We do this before checking to see if we are actually going
+        // to store the results, so possibly this might get done one
+        // more time than required, before this function returns.
+        if (out_ensemble >= nensembles) {
+          // Enlarge the buffer. We do not check the Realloc() result, because this
+          // is an R macro that is supposed to check for errors and handle them.
+          nensembles = 3 * nensembles / 2;
 #ifdef DEBUG
-	  Rprintf("Increasing ensembles,times,sec100s storage to %d elements ...\n", nensembles); // DEBUG
+          Rprintf("Increasing ensembles,times,sec100s storage to %d elements ...\n", nensembles); // DEBUG
 #endif
-	  ensembles = (int *) Realloc(ensembles, nensembles, int);
-	  times = (int *) Realloc(times, nensembles, int);
-	  sec100s = (unsigned char *)Realloc(sec100s, nensembles, unsigned char);
-	}
-	// We will decide whether to keep this ensemble, based on ensemble
-	// number, if mode_value==0 or on time, if mode_value==1. That
-	// means we only need to compute a time if mode_value==1.
-	unsigned int time_pointer = (unsigned int)ebuf[4] + 256 * (unsigned int) ebuf[5];
-	etime.tm_year = 100 + (int) ebuf[time_pointer+0];
-	etime.tm_mon = -1 + (int) ebuf[time_pointer+1];
-	etime.tm_mday = (int) ebuf[time_pointer+2];
-	etime.tm_hour = (int) ebuf[time_pointer+3];
-	etime.tm_min = (int) ebuf[time_pointer+4];
-	etime.tm_sec = (int) ebuf[time_pointer+5];
-	etime.tm_isdst = 0;
-	// Use local timegm code, which I suppose is risky, but it
-	// does not seem that Microsoft Windows provides this function
-	// in a workable form.
-	ensemble_time = oce_timegm(&etime);
-	// See whether we are past the 'from' condition. Note the "-1"
-	// for the ensemble case, because R starts counts at 1, not 0,
-	// and the calling R code is (naturally) in R notation.
+          ensembles = (int *) Realloc(ensembles, nensembles, int);
+          times = (int *) Realloc(times, nensembles, int);
+          sec100s = (unsigned char *)Realloc(sec100s, nensembles, unsigned char);
+        }
+        // We will decide whether to keep this ensemble, based on ensemble
+        // number, if mode_value==0 or on time, if mode_value==1. That
+        // means we only need to compute a time if mode_value==1.
+        unsigned int time_pointer = (unsigned int)ebuf[4] + 256 * (unsigned int) ebuf[5];
+        etime.tm_year = 100 + (int) ebuf[time_pointer+0];
+        etime.tm_mon = -1 + (int) ebuf[time_pointer+1];
+        etime.tm_mday = (int) ebuf[time_pointer+2];
+        etime.tm_hour = (int) ebuf[time_pointer+3];
+        etime.tm_min = (int) ebuf[time_pointer+4];
+        etime.tm_sec = (int) ebuf[time_pointer+5];
+        etime.tm_isdst = 0;
+        // Use local timegm code, which I suppose is risky, but it
+        // does not seem that Microsoft Windows provides this function
+        // in a workable form.
+        ensemble_time = oce_timegm(&etime);
+        // See whether we are past the 'from' condition. Note the "-1"
+        // for the ensemble case, because R starts counts at 1, not 0,
+        // and the calling R code is (naturally) in R notation.
 #ifdef DEBUG
-	if (out_ensemble<50) Rprintf("STAGE 1 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n", in_ensemble, from_value, counter,  counter_last); // DEBUG
+        if (out_ensemble<50) Rprintf("STAGE 1 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n", in_ensemble, from_value, counter,  counter_last); // DEBUG
 #endif
-	// Have we got to the starting location yet?
-	if ((mode_value == 0 && in_ensemble >= (from_value-1)) ||
-	    (mode_value == 1 && ensemble_time >= from_value)) {
+        // Have we got to the starting location yet?
+        if ((mode_value == 0 && in_ensemble >= (from_value-1)) ||
+            (mode_value == 1 && ensemble_time >= from_value)) {
 #ifdef DEBUG
-	  if (out_ensemble<50) Rprintf("  STAGE 2 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n", in_ensemble, from_value, counter,  counter_last); // DEBUG
+          if (out_ensemble<50) Rprintf("  STAGE 2 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n", in_ensemble, from_value, counter,  counter_last); // DEBUG
 #endif
-	  // Handle the 'by' value.
-	  if ((mode_value == 0 && (counter==from_value-1 || (counter - counter_last) >= by_value)) ||
-	      (mode_value == 1 && (ensemble_time - ensemble_time_last) >= by_value)) {
+          // Handle the 'by' value.
+          if ((mode_value == 0 && (counter==from_value-1 || (counter - counter_last) >= by_value)) ||
+              (mode_value == 1 && (ensemble_time - ensemble_time_last) >= by_value)) {
 #ifdef DEBUG
-	    if (out_ensemble<50) Rprintf("    STAGE 3 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n", in_ensemble, from_value, counter,  counter_last); // DEBUG
+            if (out_ensemble<50) Rprintf("    STAGE 3 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n", in_ensemble, from_value, counter,  counter_last); // DEBUG
 #endif
-	    // Copy ensemble to output buffer, after 6 bytes of header
-	    // FIXME: next is wrong. should have a cumsum
-	    ensembles[out_ensemble] = outEnsemblePointer;
-	    outEnsemblePointer = outEnsemblePointer + 6 + bytes_to_read; // 6 bytes for: 0x7f,0x7f,b1,b2,cs1,cs2
-	    times[out_ensemble] = ensemble_time;
-	    // Increment counter (can be of two types)
-	    if (mode_value == 1) {
-	      ensemble_time_last = ensemble_time;
-	    } else {
-	      counter_last = counter;
-	    }
-	    //Rprintf("saving at in_ensemble=%d, counter=%d, by=%d\n", in_ensemble, counter, by_value);
-	    //	    ensembles[out_ensemble] = last_start;
-	    unsigned int timePointer = (unsigned int)ebuf[4] + 256 * (unsigned int) ebuf[5];
-	    sec100s[out_ensemble] = ebuf[timePointer+6];
-	    out_ensemble++;
+            // Copy ensemble to output buffer, after 6 bytes of header
+            // FIXME: next is wrong. should have a cumsum
+            ensembles[out_ensemble] = outEnsemblePointer;
+            outEnsemblePointer = outEnsemblePointer + 6 + bytes_to_read; // 6 bytes for: 0x7f,0x7f,b1,b2,cs1,cs2
+            times[out_ensemble] = ensemble_time;
+            // Increment counter (can be of two types)
+            if (mode_value == 1) {
+              ensemble_time_last = ensemble_time;
+            } else {
+              counter_last = counter;
+            }
+            //Rprintf("saving at in_ensemble=%d, counter=%d, by=%d\n", in_ensemble, counter, by_value);
+            //    ensembles[out_ensemble] = last_start;
+            unsigned int timePointer = (unsigned int)ebuf[4] + 256 * (unsigned int) ebuf[5];
+            sec100s[out_ensemble] = ebuf[timePointer+6];
+            out_ensemble++;
             // Save to output buffer.
             // {{{
             if ((iobuf + 100 + bytes_to_read) >= nobuf) {
-                nobuf = nobuf + 100 + bytes_to_read + nobuf / 2;
-                //Rprintf("about to enlarge obuf storage to %d elements ...\n", nobuf);
-                obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
-                //Rprintf("    ... allocation was successful\n");
+              nobuf = nobuf + 100 + bytes_to_read + nobuf / 2;
+              //Rprintf("about to enlarge obuf storage to %d elements ...\n", nobuf);
+              obuf = (unsigned char *)Realloc(obuf, nobuf, unsigned char);
+              //Rprintf("    ... allocation was successful\n");
             }
             obuf[iobuf++] = byte1; // 0x7f
             obuf[iobuf++] = byte2; // 0x7f
             obuf[iobuf++] = b1; // length of ensemble, byte 1
             obuf[iobuf++] = b2; // length of ensemble, byte 1
             for (int i = 0; i < bytes_to_read; i++)
-                obuf[iobuf++] = ebuf[i]; // data, not including the checksum
+              obuf[iobuf++] = ebuf[i]; // data, not including the checksum
             obuf[iobuf++] = cs1; // checksum  byte 1
             obuf[iobuf++] = cs2; // checksum  byte 2
             // }}}
-	  } else {
+          } else {
 #ifdef DEBUG
-	    Rprintf("Skipping at in_ensemble=%d, counter=%d, by=%d\n", in_ensemble, counter, by_value); // DEBUG
+            Rprintf("Skipping at in_ensemble=%d, counter=%d, by=%d\n", in_ensemble, counter, by_value); // DEBUG
 #endif
-	  }
-	  counter++;
-	}
-	in_ensemble++;
-	// If 'max' is positive, check that we return only that many
-	// ensemble pointers.
-	//> Rprintf("L417 in_ensemble=%d from_value=%d to_value=%d\n", in_ensemble, from_value, to_value);
-	if ((mode_value == 0 && (to_value > 0 && in_ensemble > to_value)) ||
-	    (mode_value == 1 && (ensemble_time >= to_value))) {
-	  break;
-	}
+          }
+          counter++;
+        }
+        in_ensemble++;
+        // If 'max' is positive, check that we return only that many
+        // ensemble pointers.
+        //> Rprintf("L417 in_ensemble=%d from_value=%d to_value=%d\n", in_ensemble, from_value, to_value);
+        if ((mode_value == 0 && (to_value > 0 && in_ensemble > to_value)) ||
+            (mode_value == 1 && (ensemble_time >= to_value))) {
+          break;
+        }
       } else {
-	// FIXME: possibly we should warn of poor checksums.
-	// Rprintf("poor checksum at cindex=%d\n", cindex);
+        // FIXME: possibly we should warn of poor checksums.
+        // Rprintf("poor checksum at cindex=%d\n", cindex);
       }
       R_CheckUserInterrupt(); // only check once per ensemble, for speed
       clast = c;

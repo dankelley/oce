@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 //#define SHOW(ires) (4 > abs((int)ires-29556))
 
 #include <R.h>
@@ -65,21 +65,21 @@ SEXP ldc_rdi_in_buffer(SEXP buf, SEXP max)
       R_CheckUserInterrupt();
       bytes_to_check = (unsigned int)(pbuf[i+2]) + 256 * (unsigned int)(pbuf[i+3]);
       if ((i + bytes_to_check) < lbuf) {
-	check_sum = 0;
-	for (int ic = 0; ic < bytes_to_check; ic++) {
-	  check_sum += (unsigned short int)pbuf[i + ic];
-	  //if (matches < 1 && (ic < 5 || ic > (bytes_to_check-10)))
-	  //if (matches==LOOK) Rprintf("  ic %d, byte 0x%02x, check_sum %d [OLD METHOD]\n", ic, pbuf[i+ic], check_sum);
-	}
-	desired_check_sum = ((unsigned short int)pbuf[i+bytes_to_check]) | ((unsigned short int)pbuf[i+bytes_to_check+1] << 8);
-	if (check_sum == desired_check_sum) {
-	  matches++;
-	  if (max_lres != 0 && matches >= max_lres) {
-	    break;
-	  }
-	} else {
-	  //Rprintf("matches=%d; buf[%d] incorrect checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
-	}
+        check_sum = 0;
+        for (int ic = 0; ic < bytes_to_check; ic++) {
+          check_sum += (unsigned short int)pbuf[i + ic];
+          //if (matches < 1 && (ic < 5 || ic > (bytes_to_check-10)))
+          //if (matches==LOOK) Rprintf("  ic %d, byte 0x%02x, check_sum %d [OLD METHOD]\n", ic, pbuf[i+ic], check_sum);
+        }
+        desired_check_sum = ((unsigned short int)pbuf[i+bytes_to_check]) | ((unsigned short int)pbuf[i+bytes_to_check+1] << 8);
+        if (check_sum == desired_check_sum) {
+          matches++;
+          if (max_lres != 0 && matches >= max_lres) {
+            break;
+          }
+        } else {
+          //Rprintf("matches=%d; buf[%d] incorrect checksum %d (needed %d)\n", matches, i, check_sum, desired_check_sum);
+        }
       }
       i += bytes_to_check+1; // skip to the next ensemble
     }
@@ -95,34 +95,34 @@ SEXP ldc_rdi_in_buffer(SEXP buf, SEXP max)
     int ires = 0;
     for (int i = 0; i < lbuf - 1; i++) { /* note that we don't look to the very end */
       if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
-	R_CheckUserInterrupt();
-	bytes_to_check = (unsigned int)pbuf[i+2] + 256 * (unsigned int)pbuf[i+3];
-	//if (SHOW(ires)) Rprintf("OLD ires=%d i=%d b1=%d b2=%d bytes_to_check=%d\n",
-	   // ires, i, (int)pbuf[i+2], (int)pbuf[i+3], bytes_to_check);
-	//if (bytes_to_check > 1000) Rprintf("OLD i=%d ires=%d odd b1=%d b2=%d bytes_to_check=%d\n",
-	//    i, ires, (int)pbuf[i+2], (int)pbuf[i+3], bytes_to_check);
-	if ((i + bytes_to_check) < lbuf) {
-	  check_sum = 0;
-	  for (int ic = 0; ic < bytes_to_check; ic++) {
-	    check_sum += (unsigned short int)pbuf[i + ic];
-	    //if (SHOW(ires)) Rprintf("OLD ires=%d ic=%d check_sum=%d\n", ires, ic, check_sum);
-	  }
-	  desired_check_sum = ((unsigned short int)pbuf[i+bytes_to_check]) | ((unsigned short int)pbuf[i+bytes_to_check+1] << 8);
-	  //if (SHOW(ires)) Rprintf("OLD ires=%d check_sum=%d desired_check_sum=%d bytes_to_check=%d\n",
-	      //ires, check_sum, desired_check_sum, bytes_to_check);
-	  if (check_sum == desired_check_sum) {
-	    pres[ires++] = i + 1; /* the +1 is to get R pointers */
-	  } else {
-	    // if (ires==LOOK) Rprintf("no match at i=%d\n", i);
-	  }
-	}
-	if (ires >= lres) {
-	  //Rprintf("OLD: got to end of pres buffer (i=%d ires=%d lres=%d), breaking now\n", i, ires, lres);
-	  break;
-	}
-	i += bytes_to_check+1; // skip to the next ensemble
-	if (pbuf[i+1] != byte1) Rprintf("pbuf[%d] is 0x%02x, not 0x%02x\n", i+1, pbuf[i+1], byte1);
-	if (pbuf[i+2] != byte1) Rprintf("pbuf[%d] is 0x%02x, not 0x%02x\n", i+2, pbuf[i+2], byte1);
+        R_CheckUserInterrupt();
+        bytes_to_check = (unsigned int)pbuf[i+2] + 256 * (unsigned int)pbuf[i+3];
+        //if (SHOW(ires)) Rprintf("OLD ires=%d i=%d b1=%d b2=%d bytes_to_check=%d\n",
+        // ires, i, (int)pbuf[i+2], (int)pbuf[i+3], bytes_to_check);
+        //if (bytes_to_check > 1000) Rprintf("OLD i=%d ires=%d odd b1=%d b2=%d bytes_to_check=%d\n",
+        //    i, ires, (int)pbuf[i+2], (int)pbuf[i+3], bytes_to_check);
+        if ((i + bytes_to_check) < lbuf) {
+          check_sum = 0;
+          for (int ic = 0; ic < bytes_to_check; ic++) {
+            check_sum += (unsigned short int)pbuf[i + ic];
+            //if (SHOW(ires)) Rprintf("OLD ires=%d ic=%d check_sum=%d\n", ires, ic, check_sum);
+          }
+          desired_check_sum = ((unsigned short int)pbuf[i+bytes_to_check]) | ((unsigned short int)pbuf[i+bytes_to_check+1] << 8);
+          //if (SHOW(ires)) Rprintf("OLD ires=%d check_sum=%d desired_check_sum=%d bytes_to_check=%d\n",
+          //ires, check_sum, desired_check_sum, bytes_to_check);
+          if (check_sum == desired_check_sum) {
+            pres[ires++] = i + 1; /* the +1 is to get R pointers */
+          } else {
+            // if (ires==LOOK) Rprintf("no match at i=%d\n", i);
+          }
+        }
+        if (ires >= lres) {
+          //Rprintf("OLD: got to end of pres buffer (i=%d ires=%d lres=%d), breaking now\n", i, ires, lres);
+          break;
+        }
+        i += bytes_to_check+1; // skip to the next ensemble
+        if (pbuf[i+1] != byte1) Rprintf("pbuf[%d] is 0x%02x, not 0x%02x\n", i+1, pbuf[i+1], byte1);
+        if (pbuf[i+2] != byte1) Rprintf("pbuf[%d] is 0x%02x, not 0x%02x\n", i+2, pbuf[i+2], byte1);
       }
     }
   } else {

@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <Rdefines.h>
 int tsrho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos);
@@ -37,7 +37,7 @@ void bisect2(double ax, double bx, double (*f)(double x), double tol, double res
       //Rprintf("+");
       ax = *zero;
       af = ff;
-    } else {	// problem
+    } else { // problem
       *zero = NA_REAL;
       //Rprintf("Problem\n");
       return;
@@ -58,11 +58,11 @@ void sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *
     } else {
       S -= 35.0;
       *value++ = (0.665157e-1 + theta * (0.170907e-1 + theta * (-0.203814e-3 + theta * (0.298357e-5 + theta * (-0.255019e-7)))))
-	+ S * ((0.378110e-2 + theta * (-0.846960e-4)) + p * (-0.164759e-6 + p * (-0.251520e-11)))
-	+ S * S * (-0.678662e-5)
-	+ p * (0.380374e-4 + theta * (-0.933746e-6 + theta * (0.791325e-8)))
-	+ 0.512857e-12* p * p * theta *theta
-	+ -0.302285e-13 * p * p * p;
+        + S * ((0.378110e-2 + theta * (-0.846960e-4)) + p * (-0.164759e-6 + p * (-0.251520e-11)))
+        + S * S * (-0.678662e-5)
+        + p * (0.380374e-4 + theta * (-0.933746e-6 + theta * (0.791325e-8)))
+        + 0.512857e-12* p * p * theta *theta
+        + -0.302285e-13 * p * p * p;
     }
   }
 }
@@ -79,11 +79,11 @@ void sw_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
     } else {
       S -= 35.0;
       *value++ = 0.785567e-3 + theta * (-0.301985e-5 + theta * (0.555579e-7 + theta *(-0.415613e-9)))
-	+ S * (-0.356603e-6 + 0.788212e-8 * theta + p * (0.408195e-10 + p * (-0.602281e-15)))
-	+ S * S * (0.515032e-8)
-	+ p * (-0.121555e-7 + theta * (0.192867e-9 + theta * (-0.213127e-11)))
-	+ p * p * (0.176621e-12 + theta * (-0.175379e-14))
-	+ p * p * p * (0.121551e-17);
+        + S * (-0.356603e-6 + 0.788212e-8 * theta + p * (0.408195e-10 + p * (-0.602281e-15)))
+        + S * S * (0.515032e-8)
+        + p * (-0.121555e-7 + theta * (0.192867e-9 + theta * (-0.213127e-11)))
+        + p * p * (0.176621e-12 + theta * (-0.175379e-14))
+        + p * p * p * (0.121551e-17);
     }
   }
 }
@@ -114,10 +114,10 @@ void sw_lapserate(int *n, double *pS, double *pT, double *pp, double *value)
       *value++ = NA_REAL;
     } else {
       double lf = a[0] + T * (a[1] + T * (a[2] + T * a[3]))
-	+ (b[0] + b[1] * T) * (S - 35.0)
-	+ (c[0] + T * (c[1] + T * (c[2] + T * c[3]))
-	    + (d[0] + T * d[1]) * (S - 35.0)) * p
-	+ (e[0] + T * (e[1] + T * e[2])) * p * p;
+        + (b[0] + b[1] * T) * (S - 35.0)
+        + (c[0] + T * (c[1] + T * (c[2] + T * c[3]))
+            + (d[0] + T * d[1]) * (S - 35.0)) * p
+        + (e[0] + T * (e[1] + T * e[2])) * p * p;
       *value++ = lf;
     }
   }
@@ -136,49 +136,49 @@ void sw_rho(int *n, double *pS, double *pT, double *pp, double *value)
       *value++ = NA_REAL;
     } else {
       rho_w = 999.842594 +
-	T * (6.793952e-2 +
-	    T * (-9.095290e-3 +
-	      T * (1.001685e-4 +
-		T * (-1.120083e-6 + T * 6.536332e-9))));
+        T * (6.793952e-2 +
+            T * (-9.095290e-3 +
+              T * (1.001685e-4 +
+                T * (-1.120083e-6 + T * 6.536332e-9))));
       Kw = 19652.21
-	+ T * (148.4206 +
-	    T * (-2.327105 +
-	      T * (1.360477e-2 - T * 5.155288e-5)));
+        + T * (148.4206 +
+            T * (-2.327105 +
+              T * (1.360477e-2 - T * 5.155288e-5)));
       Aw = 3.239908 +
-	T * (1.43713e-3 +
-	    T * (1.16092e-4 -
-	      T * 5.77905e-7));
+        T * (1.43713e-3 +
+            T * (1.16092e-4 -
+              T * 5.77905e-7));
       Bw = 8.50935e-5 +
-	T * (-6.12293e-6 +
-	    T * 5.2787e-8);
+        T * (-6.12293e-6 +
+            T * 5.2787e-8);
       p1 = 0.1 * p;
       S12 = sqrt(S);
       ro = rho_w +
-	S * (8.24493e-1 +
-	    T * (-4.0899e-3 +
-	      T * (7.6438e-5 +
-		T * (-8.2467e-7 + T * 5.3875e-9))) +
-	    S12 * (-5.72466e-3 +
-	      T * (1.0227e-4 -
-		T * 1.6546e-6) +
-	      S12 * 4.8314e-4));
+        S * (8.24493e-1 +
+            T * (-4.0899e-3 +
+              T * (7.6438e-5 +
+                T * (-8.2467e-7 + T * 5.3875e-9))) +
+            S12 * (-5.72466e-3 +
+              T * (1.0227e-4 -
+                T * 1.6546e-6) +
+              S12 * 4.8314e-4));
       xkst = Kw +
-	S * (54.6746 +
-	    T * (-0.603459 +
-	      T * (1.09987e-2 -
-		T * 6.1670e-5)) +
-	    S12 * (7.944e-2 +
-	      T * (1.6483e-2 +
-		T * (-5.3009e-4)))) +
-	p1 * (Aw +
-	    S * (2.2838e-3 +
-	      T * (-1.0981e-5 +
-		T * (-1.6078e-6)) +
-	      S12 * (1.91075e-4)) +
-	    p1 * (Bw +
-	      S * (-9.9348e-7 +
-		T * (2.0816e-8 +
-		  T * (9.1697e-10)))));
+        S * (54.6746 +
+            T * (-0.603459 +
+              T * (1.09987e-2 -
+                T * 6.1670e-5)) +
+            S12 * (7.944e-2 +
+              T * (1.6483e-2 +
+                T * (-5.3009e-4)))) +
+        p1 * (Aw +
+            S * (2.2838e-3 +
+              T * (-1.0981e-5 +
+                T * (-1.6078e-6)) +
+              S12 * (1.91075e-4)) +
+            p1 * (Bw +
+              S * (-9.9348e-7 +
+                T * (2.0816e-8 +
+                  T * (9.1697e-10)))));
       *value++ = (ro / (1.0 - p1 / xkst));
     }
   }
@@ -232,10 +232,10 @@ void sw_salinity(int *n, double *pC, double *pT, double *pp, double *value)
     2.070e-5, -6.370e-10, 3.989e-15
   };
   static double a[6] = {
-    0.0080, -0.1692, 25.3851, 14.0941,	-7.0261, 2.7081
+    0.0080, -0.1692, 25.3851, 14.0941, -7.0261, 2.7081
   };
   static double b[6] = {
-    0.0005,	-0.0056, -0.0066, -0.0375, 0.0636, -0.0144
+    0.0005, -0.0056, -0.0066, -0.0375, 0.0636, -0.0144
   };
   static double k = 0.0162;
   double rt, Rp, Rt, Rtx, del_T, del_S, S;
@@ -262,13 +262,13 @@ void sw_salinity(int *n, double *pC, double *pT, double *pp, double *value)
       rt = c[0] + T*(c[1] + T*(c[2] + T*(c[3] + T*c[4])));
       /* Rp, eqn (4) p.8 FM83 */
       Rp = 1 + ( p * (e[0] + p * (e[1] + p * e[2]))) /
-	(1 + T *(d[0] + T * d[1]) + (d[2] + T * d[3]) * C);
+        (1 + T *(d[0] + T * d[1]) + (d[2] + T * d[3]) * C);
       Rt = C / (Rp * rt);
       /* Eqn (1) & (2) p6 and 7 FM83 */
       Rtx = sqrt(Rt);
       del_T = T - 15;
       del_S = (del_T / (1 + k * del_T) ) *
-	(b[0] + (b[1] + (b[2]+ (b[3] + (b[4] + b[5]*Rtx)*Rtx)*Rtx)*Rtx)*Rtx);
+        (b[0] + (b[1] + (b[2]+ (b[3] + (b[4] + b[5]*Rtx)*Rtx)*Rtx)*Rtx)*Rtx);
       S = a[0] + (a[1] + (a[2] + (a[3] + (a[4] + a[5]*Rtx)*Rtx)*Rtx)*Rtx)*Rtx;
       S = S + del_S;
       *value++ = S;
@@ -298,12 +298,12 @@ void sw_spice(int *n, double *pS, double *pT, double *pp, double *value)
       T2 = 1.0;
       spice = 0.0;
       for (int ii = 0; ii < 6; ii++) {
-	S2 = 1.0;
-	for (int jj = 0; jj < 5; jj++) {
-	  spice += b[ii][jj] * T2 * S2;
-	  S2 *= Sdev;
-	}
-	T2 *= T;
+        S2 = 1.0;
+        for (int jj = 0; jj < 5; jj++) {
+          spice += b[ii][jj] * T2 * S2;
+          S2 *= Sdev;
+        }
+        T2 *= T;
       }
       *value++ = spice;
     }
@@ -340,8 +340,8 @@ void sw_strho(int *n, double *pT, double *prho, double *pp, int *teos, double *r
   for (int i = 0; i < *n; i++) {
     //Rprintf("i: %d\n", i);
     T = pT[i];
-    sig_0 = prho[i];			/* target density */
-    p_ref = pp[i];				/* target pressure */
+    sig_0 = prho[i];  /* target density */
+    p_ref = pp[i];    /* target pressure */
     res[i] = NA_REAL;
     if (!ISNA(pT[i]) && !ISNA(prho[i]) && !ISNA(pp[i])) {
       //Rprintf("  sw_strho(pT=%f, prho=%f, pp=%f, res=%f, teos=%d) about to do bisection\n", *pT, *prho, *pp, S, *teos);
@@ -362,53 +362,53 @@ void sw_strho(int *n, double *pT, double *prho, double *pp, int *teos, double *r
 double
 gsw_rho(double sa, double ct, double p)
 {
-	double	v01 =  9.998420897506056e+2, v02 =  2.839940833161907e0,
-		v03 = -3.147759265588511e-2, v04 =  1.181805545074306e-3,
-		v05 = -6.698001071123802e0,  v06 = -2.986498947203215e-2,
-		v07 =  2.327859407479162e-4, v08 = -3.988822378968490e-2,
-		v09 =  5.095422573880500e-4, v10 = -1.426984671633621e-5,
-		v11 =  1.645039373682922e-7, v12 = -2.233269627352527e-2,
-		v13 = -3.436090079851880e-4, v14 =  3.726050720345733e-6,
-		v15 = -1.806789763745328e-4, v16 =  6.876837219536232e-7,
-		v17 = -3.087032500374211e-7, v18 = -1.988366587925593e-8,
-		v19 = -1.061519070296458e-11,v20 =  1.550932729220080e-10,
-		v21 =  1.0e0,
-		v22 =  2.775927747785646e-3, v23 = -2.349607444135925e-5,
-		v24 =  1.119513357486743e-6, v25 =  6.743689325042773e-10,
-		v26 = -7.521448093615448e-3, v27 = -2.764306979894411e-5,
-		v28 =  1.262937315098546e-7, v29 =  9.527875081696435e-10,
-		v30 = -1.811147201949891e-11, v31 = -3.303308871386421e-5,
-		v32 =  3.801564588876298e-7, v33 = -7.672876869259043e-9,
-		v34 = -4.634182341116144e-11, v35 =  2.681097235569143e-12,
-		v36 =  5.419326551148740e-6, v37 = -2.742185394906099e-5,
-		v38 = -3.212746477974189e-7, v39 =  3.191413910561627e-9,
-		v40 = -1.931012931541776e-12, v41 = -1.105097577149576e-7,
-		v42 =  6.211426728363857e-10, v43 = -1.119011592875110e-10,
-		v44 = -1.941660213148725e-11, v45 = -1.864826425365600e-14,
-		v46 =  1.119522344879478e-14, v47 = -1.200507748551599e-15,
-		v48 =  6.057902487546866e-17;
-	double	sqrtsa, v_hat_denominator, v_hat_numerator;
+  double v01 =  9.998420897506056e+2, v02 =  2.839940833161907e0,
+         v03 = -3.147759265588511e-2, v04 =  1.181805545074306e-3,
+         v05 = -6.698001071123802e0,  v06 = -2.986498947203215e-2,
+         v07 =  2.327859407479162e-4, v08 = -3.988822378968490e-2,
+         v09 =  5.095422573880500e-4, v10 = -1.426984671633621e-5,
+         v11 =  1.645039373682922e-7, v12 = -2.233269627352527e-2,
+         v13 = -3.436090079851880e-4, v14 =  3.726050720345733e-6,
+         v15 = -1.806789763745328e-4, v16 =  6.876837219536232e-7,
+         v17 = -3.087032500374211e-7, v18 = -1.988366587925593e-8,
+         v19 = -1.061519070296458e-11,v20 =  1.550932729220080e-10,
+         v21 =  1.0e0,
+         v22 =  2.775927747785646e-3, v23 = -2.349607444135925e-5,
+         v24 =  1.119513357486743e-6, v25 =  6.743689325042773e-10,
+         v26 = -7.521448093615448e-3, v27 = -2.764306979894411e-5,
+         v28 =  1.262937315098546e-7, v29 =  9.527875081696435e-10,
+         v30 = -1.811147201949891e-11, v31 = -3.303308871386421e-5,
+         v32 =  3.801564588876298e-7, v33 = -7.672876869259043e-9,
+         v34 = -4.634182341116144e-11, v35 =  2.681097235569143e-12,
+         v36 =  5.419326551148740e-6, v37 = -2.742185394906099e-5,
+         v38 = -3.212746477974189e-7, v39 =  3.191413910561627e-9,
+         v40 = -1.931012931541776e-12, v41 = -1.105097577149576e-7,
+         v42 =  6.211426728363857e-10, v43 = -1.119011592875110e-10,
+         v44 = -1.941660213148725e-11, v45 = -1.864826425365600e-14,
+         v46 =  1.119522344879478e-14, v47 = -1.200507748551599e-15,
+         v48 =  6.057902487546866e-17;
+  double sqrtsa, v_hat_denominator, v_hat_numerator;
 
-	sqrtsa			= sqrt(sa);
+  sqrtsa = sqrt(sa);
 
-	v_hat_denominator	=
-			v01 + ct*(v02 + ct*(v03 + v04*ct))  
-			+ sa*(v05 + ct*(v06 + v07*ct) 
-			+ sqrtsa*(v08 + ct*(v09 + ct*(v10 + v11*ct)))) 
-			+ p*(v12 + ct*(v13 + v14*ct) + sa*(v15 + v16*ct) 
-			+ p*(v17 + ct*(v18 + v19*ct) + v20*sa));
+  v_hat_denominator =
+    v01 + ct*(v02 + ct*(v03 + v04*ct))  
+    + sa*(v05 + ct*(v06 + v07*ct) 
+        + sqrtsa*(v08 + ct*(v09 + ct*(v10 + v11*ct)))) 
+    + p*(v12 + ct*(v13 + v14*ct) + sa*(v15 + v16*ct) 
+        + p*(v17 + ct*(v18 + v19*ct) + v20*sa));
 
-	v_hat_numerator		=
-			v21 + ct*(v22 + ct*(v23 + ct*(v24 + v25*ct))) 
-			+ sa*(v26 + ct*(v27 + ct*(v28 + ct*(v29 + v30*ct)))
-			+ v36*sa 
-			+ sqrtsa*(v31 + ct*(v32 + ct*(v33 + ct*(v34+v35*ct)))))
-			+ p*(v37 + ct*(v38 + ct*(v39 + v40*ct))  
-			+ sa*(v41 + v42*ct) 
-			+ p*(v43 + ct*(v44 + v45*ct + v46*sa) 
-			+ p*(v47 + v48*ct)));
+  v_hat_numerator =
+    v21 + ct*(v22 + ct*(v23 + ct*(v24 + v25*ct))) 
+    + sa*(v26 + ct*(v27 + ct*(v28 + ct*(v29 + v30*ct)))
+        + v36*sa 
+        + sqrtsa*(v31 + ct*(v32 + ct*(v33 + ct*(v34+v35*ct)))))
+    + p*(v37 + ct*(v38 + ct*(v39 + v40*ct))  
+        + sa*(v41 + v42*ct) 
+        + p*(v43 + ct*(v44 + v45*ct + v46*sa) 
+          + p*(v47 + v48*ct)));
 
-	return (v_hat_denominator/v_hat_numerator);
+  return (v_hat_denominator/v_hat_numerator);
 }
 
 #endif
@@ -465,7 +465,7 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
       x1 = *x;
       g1 = g;
       /* printf("bs CASE 2.  x1=%f  x2=%f  g1=%f  g2=%f\n",x1,x2,g1,g2); */
-    } else {	/* not bracketed BUG */
+    } else { /* not bracketed BUG */
       /* printf("bs CASE 3 (not bracketed)  x1=%f  x2=%f  g1=%f  g2=%f\n",x1,x2,g1,g2);*/
       *x = NA_REAL;
       //Rprintf("  strho_bisection_search() NON BRACKET bug\n");
@@ -473,7 +473,7 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
     }
   }
   //Rprintf("  strho_bisection_search() returning %.4f\n",*x);
-  return (0); 		/* converged by default */
+  return (0);  /* converged by default */
 }
 
 void sw_svel(int *n, double *pS, double *pT, double *pp, double *value)
@@ -508,8 +508,8 @@ void sw_svel(int *n, double *pS, double *pT, double *pp, double *value)
     double Cw = c00 
       + T * (c01 + T * (c02 + T * (c03 + T * (c04 + T * c05))))
       + p * (c10 + T * (c11 + T * (c12 + T * (c13 + T * c14)))
-	     + p * (c20 + T * (c21 + T * (c22 + T * (c23 + T * c24)))
-		    + p * (c30 + T * (c31 + T * c32))));
+          + p * (c20 + T * (c21 + T * (c22 + T * (c23 + T * c24)))
+            + p * (c30 + T * (c31 + T * c32))));
     /*
      * eqn 35. p.47
      */
@@ -533,9 +533,9 @@ void sw_svel(int *n, double *pS, double *pT, double *pp, double *value)
     double A = a00
       + T * (a01 + T * (a02 + T * (a03 + T * a04)))
       + p * (a10 + T * (a11 + T * (a12 + T * (a13 + T * a14)))
-	     + p * (a20 + T * (a21 + T * (a22 + T * a23))
-		    + p * (a30 + T * (a31 + T * a32))));
-    
+          + p * (a20 + T * (a21 + T * (a22 + T * a23))
+            + p * (a30 + T * (a31 + T * a32))));
+
     /*
      * eqn 36 p.47
      */
@@ -571,10 +571,10 @@ void theta_Bryden_1973(int *n, double *pS, double *pT, double *pp, double *value
       S -= 35.0;
       p /= 10.0; /* formula is in bars, but argument is in decibars! */
       *value++ = T
-	- p * (((3.6504e-4 + T * (8.3198e-5 + T * (-5.4065e-7 + T * 4.0274e-9)))
-	      + S * (1.7439e-5 - T * 2.9778e-7))
-	    + p * ((8.9309e-7 + T * (-3.1628e-8 + T * 2.1987e-10) - S * 4.1057e-9)
-	      + p * (-1.6056e-10 + T * 5.0484e-12)));
+        - p * (((3.6504e-4 + T * (8.3198e-5 + T * (-5.4065e-7 + T * 4.0274e-9)))
+              + S * (1.7439e-5 - T * 2.9778e-7))
+            + p * ((8.9309e-7 + T * (-3.1628e-8 + T * 2.1987e-10) - S * 4.1057e-9)
+              + p * (-1.6056e-10 + T * 5.0484e-12)));
     }
   }
 }
@@ -598,10 +598,10 @@ double atg_UNESCO_1983(double S, double T, double p)
    */
   S -= 35.0;
   return(3.5803e-5 + (8.5258e-6 + (-6.836e-8 + 6.6228e-10*T)*T)*T
-	 + (1.8932e-6 - 4.2393e-8*T)*S  
-	 + ((1.8741e-8 + (-6.7795e-10 + (8.733e-12 - 5.4481e-14*T)*T)*T)
-	    + (-1.1351e-10 + 2.7759e-12*T)*S)*p
-	 + (-4.6206e-13 + (1.8676e-14 - 2.1687e-16*T)*T)*p*p);
+      + (1.8932e-6 - 4.2393e-8*T)*S  
+      + ((1.8741e-8 + (-6.7795e-10 + (8.733e-12 - 5.4481e-14*T)*T)*T)
+        + (-1.1351e-10 + 2.7759e-12*T)*S)*p
+      + (-4.6206e-13 + (1.8676e-14 - 2.1687e-16*T)*T)*p*p);
 }
 
 /*
@@ -647,8 +647,8 @@ void theta_UNESCO_1983(int *n, double *pS, double *pT, double *pp, double *ppref
 void sw_tsrho(double *pS, double *prho, double *pp, int *teos, double *res)
 {
   S = *pS;
-  sig_0 = *prho;		/* target density */
-  p_ref = *pp;		/* target pressure */
+  sig_0 = *prho;  /* target density */
+  p_ref = *pp;  /* target pressure */
   *res = NA_REAL;
   if (ISNA(S) || ISNA(sig_0) || ISNA(p_ref))
     return;
@@ -703,11 +703,11 @@ int tsrho_bisection_search(double *x, double x1, double x2, double xresolution, 
       x1 = *x;
       g1 = g;
       /* printf("bs CASE 2.  x1=%f  x2=%f  g1=%f  g2=%f\n",x1,x2,g1,g2); */
-    } else {	/* not bracketed BUG */
+    } else { /* not bracketed BUG */
       /* printf("bs CASE 3 (not bracketed)  x1=%f  x2=%f  g1=%f  g2=%f\n",x1,x2,g1,g2); */
       *x = NA_REAL;
       return (1); /* exact solution */
     }
   }
-  return (0); 		/* converged by default */
+  return (0); /* converged by default */
 }

@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -72,7 +72,7 @@ SEXP adv_vector_time(SEXP vvdStart, SEXP vsdStart, SEXP vsdTime, SEXP vvdhStart,
 #endif
     while(vvdStartp[0] > vsdStartp[ivsd]) {
       if (++ivsd >= nvsd)
-	error("cannot interpret times for velocities, because no Vector System Data precede first velocity datum");
+        error("cannot interpret times for velocities, because no Vector System Data precede first velocity datum");
 #ifdef DEBUG
       Rprintf("ivsd=%d\n", ivsd);
 #endif
@@ -88,8 +88,8 @@ SEXP adv_vector_time(SEXP vvdStart, SEXP vsdStart, SEXP vsdTime, SEXP vvdhStart,
     double toffset = 0.0;
     for (ivvd = 0; ivvd < nvvd; ivvd++) {
       if (ivsd < (nvsd - 1) && vsdStartp[ivsd+1] < vvdStartp[ivvd]) {
-	  ivsd++; // enter new time era
-	  toffset = 0.0;
+        ivsd++; // enter new time era
+        toffset = 0.0;
       }
       resp[ivvd] = vsdTimep[ivsd] + toffset;
       toffset += dt;
@@ -102,9 +102,9 @@ SEXP adv_vector_time(SEXP vvdStart, SEXP vsdStart, SEXP vsdTime, SEXP vvdhStart,
     // Pin time to start, if vvd precede vvdh (perhaps not possible).
     for (ivvd = 0; ivvd < nvvd; ivvd++) {
       if (vvdStartp[ivvd] < vvdhStartp[ivvdh]) {
-	resp[ivvd] = NA_REAL;
+        resp[ivvd] = NA_REAL;
       } else {
-	break;
+        break;
       }
     }
 #ifdef DEBUG
@@ -112,19 +112,19 @@ SEXP adv_vector_time(SEXP vvdStart, SEXP vsdStart, SEXP vsdTime, SEXP vvdhStart,
 #endif
     if (ivvd < nvvd) {
       for (; ivvd < nvvd; ivvd++) {
-	//#ifdef DEBUG
-	//      Rprintf("ivvd=%d (%f)     ivvdh=%d (%f)\n", ivvd, vvdStartp[ivvd], ivvdh, vvdhStartp[ivvdh]);
-	//#endif
-	// use largest vvdh that is still has vvdhStart < vvdStart
-	if (ivvdh < (nvvdh - 1) && vvdStartp[ivvd] > vvdhStartp[ivvdh + 1]) {
-	  ivvdh += 1;
-	  t = vvdhTimep[ivvdh];
+        //#ifdef DEBUG
+        //      Rprintf("ivvd=%d (%f)     ivvdh=%d (%f)\n", ivvd, vvdStartp[ivvd], ivvdh, vvdhStartp[ivvdh]);
+        //#endif
+        // use largest vvdh that is still has vvdhStart < vvdStart
+        if (ivvdh < (nvvdh - 1) && vvdStartp[ivvd] > vvdhStartp[ivvdh + 1]) {
+          ivvdh += 1;
+          t = vvdhTimep[ivvdh];
 #ifdef DEBUG
-	  Rprintf("ivvd = %d ; update to ivvdh = %d, yielding t=%f)\n", ivvd, ivvdh, t);
+          Rprintf("ivvd = %d ; update to ivvdh = %d, yielding t=%f)\n", ivvd, ivvdh, t);
 #endif
-	}
-	t += dt;
-	resp[ivvd] = t;
+        }
+        t += dt;
+        resp[ivvd] = t;
       }
     }
   }
