@@ -71,32 +71,61 @@ test_that("as.section() works with argo object", {
           expect_equal(9, length(sec[["station"]]))
 })
 
-test_that("subset(section)", {
+test_that("subset(section, indices=(NUMERIC))", {
           data(section)
-          ## 1. by numeric indices
           sec2 <- subset(section, indices=3:6)
           expect_equal(4, length(sec2[["station"]]))
           expect_true(identical(sec2[["station", 1]], section[["station", 3]]))
-          ## 2. by logical indices (example from the man page)
+})
+
+test_that("subset(section, indices=(LOGICAL))", {
+          data(section)
           long <- subset(section,
                          indices=unlist(lapply(section[["station"]], function(s) 10<length(s[["pressure"]]))))
           expect_equal(120, length(long[["station"]]))
           expect_equal(section[["station",2]], long[["station",1]])
-          ## 3. by longitude
+})
+
+test_that("subset(section, longitude < (NUMERIC))", {
+          data(section)
           secWest <- subset(section, longitude < -50)
           expect_lt(max(secWest[["longitude"]]), -50)
-          ## 4. by pressure (visual tests)
-          top2km <- subset(section, pressure < 2000)
+})
+
+test_that("subset(section, pressure < 2000)", {
+          data(section)
+          top2km <- subset(section, pressure < 2000) # drops stn 56 and 62
           section100 <- section[["station", 100]]
-          top2km100 <- top2km[["station", 100]]
+          top2km98 <- top2km[["station", 98]]
           expect_equal(tail(section100[["pressure"]]), c(3530.9, 3746.1, 3970.6, 4189.5, 4346.7, 4398.3))
-          expect_equal(tail(top2km100[["pressure"]]), c(777.1, 926.5, 1189.5, 1590.1, 1699.8, 1859.5))
-          ## 5. by pressure (algorithmic tests)
-          deep <- subset(section, pressure > 1000)
+          expect_equal(tail(top2km98[["pressure"]]), c(777.1, 926.5, 1189.5, 1590.1, 1699.8, 1859.5))
+})
+
+test_that("subset(section, pressure > 1000)", {
+          data(section)
+          deep <- subset(section, pressure > 1000) # drops stn 1, 2, 123, 124
           w <- which(section[["station", 100]][["pressure"]] > 1000)
           d <- data.frame(section[["station", 100]][["data"]])[w, ]
           rownames(d) <- 1:dim(d)[1]
-          expect_equal(d, as.data.frame(deep[["station", 100]][["data"]]))
+          expect_equal(d, as.data.frame(deep[["station", 98]][["data"]]))
+})
+
+test_that("subset(section, min(pressure)<100)", {
+          data(section)
+          SEC <- subset(section, min(pressure) < 100)
+          ptop <- unlist(lapply(section[["station"]],
+                                function(s) min(s[["pressure"]])))
+          bad <- sum(ptop >= 100)
+          expect_equal(length(SEC[["station"]]), length(section[["station"]]) - bad)
+})
+
+test_that("subset(section, length(pressure) > 5)", {
+          data(section)
+          SEC <- subset(section, length(pressure) > 5)
+          plen <- unlist(lapply(section[["station"]],
+                                function(s) length(s[["pressure"]])))
+          bad <- sum(plen <= 5)
+          expect_equal(length(SEC[["station"]]), length(section[["station"]]) - bad)
 })
 
 

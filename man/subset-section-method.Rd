@@ -44,9 +44,9 @@ while the second is handled if \code{...} contains a vector named
 \examples{
 library(oce)
 data(section)
-# Gulf Stream
+# 1. Gulf Stream
 GS <- subset(section, 109<=stationId&stationId<=129)
-# Sections with more than 5 levels
+# 2. Sections with more than 5 levels (chops out 2 odd stations)
 long <- subset(section,
    indices=unlist(lapply(section[["station"]], function(s) 10<length(s[["pressure"]]))))
 

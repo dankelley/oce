@@ -477,9 +477,9 @@ setMethod(f="show",
 #' @examples
 #' library(oce)
 #' data(section)
-#' # Gulf Stream
+#' # 1. Gulf Stream
 #' GS <- subset(section, 109<=stationId&stationId<=129)
-#' # Sections with more than 5 levels
+#' # 2. Sections with more than 5 levels (chops out 2 odd stations)
 #' long <- subset(section,
 #'    indices=unlist(lapply(section[["station"]], function(s) 10<length(s[["pressure"]]))))
 #'
@@ -524,33 +524,32 @@ setMethod(f="subset",
                   res@data <- data
                   res@processingLog <- x@processingLog
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
-              } else if (length(grep("stationId", subsetString))) {
-                  keep <- eval(substitute(subset),
-                               envir=data.frame(stationId=as.numeric(x@metadata$stationId)))
-                  res@metadata$stationId <- x@metadata$stationId[keep]
-                  res@metadata$longitude <- x@metadata$longitude[keep]
-                  res@metadata$latitude <- x@metadata$latitude[keep]
-                  res@metadata$time <- x@metadata$time[keep]
-                  res@data$station <- x@data$station[keep]
-                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
-              ##1238 } else if (length(grep("pressure", subsetString))) {
-              ##1238     n <- length(x@data$station)
-              ##1238     res <- x
-              ##1238     for (i in 1:n) {
-              ##1238         res@data$station[[i]] <- subset(x@data$station[[i]], subset)
-              ##1238     }
-              ##1238     res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               } else {
-                  ## subset within the stations
-                  if ("indices" %in% dotsNames)
-                      stop("cannot specify both 'subset' and 'indices'.")
+                  if (missing(subset))
+                      stop("must give 'subset' or (in ...) 'indices'")
                   oceDebug(debug, "subsetting by 'subset'\n")
                   ##subsetString <- deparse(substitute(subset))
                   ##oceDebug(debug, "subsetString='", subsetString, "'\n")
                   res <- x
-                  if (length(grep("distance", subsetString))) {
+                  if (length(grep("stationId", subsetString))) {
+                      keep <- eval(substitute(subset),
+                                   envir=data.frame(stationId=as.numeric(x@metadata$stationId)))
+                      res@metadata$stationId <- x@metadata$stationId[keep]
+                      res@metadata$longitude <- x@metadata$longitude[keep]
+                      res@metadata$latitude <- x@metadata$latitude[keep]
+                      res@metadata$time <- x@metadata$time[keep]
+                      res@data$station <- x@data$station[keep]
+                      res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
+                  } else if (length(grep("distance", subsetString))) {
                       l <- list(distance=geodDist(res))
                       keep <- eval(substitute(subset), l, parent.frame(2))
+                      res@metadata$longitude <- res@metadata$longitude[keep]
+                      res@metadata$latitude <- res@metadata$latitude[keep]
+                      res@metadata$stationId <- res@metadata$stationId[keep]
+                      res@data$station <- res@data$station[keep]
+                  } else if (length(grep("levels", subsetString))) {
+                      levels <- unlist(lapply(x[["station"]], function(stn) length(stn[["pressure"]])))
+                      keep <- eval(substitute(subset), list(levels=levels))
                       res@metadata$longitude <- res@metadata$longitude[keep]
                       res@metadata$latitude <- res@metadata$latitude[keep]
                       res@metadata$stationId <- res@metadata$stationId[keep]
@@ -585,14 +584,45 @@ setMethod(f="subset",
                       res@processingLog <- x@processingLog
                   } else {
                       n <- length(x@data$station)
-                      ##message("n=", n)
+                      j <- 1
                       for (i in 1:n) {
                           r <- eval(substitute(subset), x@data$station[[i]]@data, parent.frame(2))
-                          ##message("i=", i, ", r=", paste(r, collapse=" "))
-                          for (field in names(res@data$station[[i]]@data)) {
-                              ##message("  IN  ", field, " = ", paste(x@data$station[[i]]@data[field], collapse=" "))
-                              res@data$station[[i]]@data[[field]] <- x@data$station[[i]]@data[[field]][r]
-                              ##message("  OUT ", field, " = ", paste(res@data$station[[i]]@data[field], collapse=" "))
+                          oceDebug(debug, "i =", i, ", j = ", j, " | ")
+                          if (sum(r) > 0) {
+                              if (length(r) > 1) {
+                                  ## Multi-valued, for e.g.
+                                  ##     subset(sec, S > 35)
+                                  ## to select salty levels
+                                  for (field in names(res@data$station[[i]]@data)) {
+                                      oceDebug(debug, field, " ", sep="")
+                                      res@data$station[[j]]@data[[field]] <- x@data$station[[i]]@data[[field]][r]
+                                  }
+                                  oceDebug(debug, "\n")
+                              } else {
+                                  ## Single-valued, for e.g.
+                                  ##     subset(sec, min(pressure) < 100)
+                                  ## to select stations that have some near-surface data.
+                                  for (field in names(res@data$station[[i]]@data)) {
+                                      oceDebug(debug, field, " ", sep="")
+                                      res@data$station[[j]]@data[[field]] <- x@data$station[[i]]@data[[field]]
+                                  }
+                                  oceDebug(debug, "\n")
+                              }
+                              res@metadata$stationId[j] <- x@metadata$stationId[i]
+                              res@metadata$latitude[j] <- x@metadata$latitude[i]
+                              res@metadata$longitude[j] <- x@metadata$longitude[i]
+                              j <- j + 1
+                          } else {
+                              oceDebug(debug, "skipping this station\n")
+                          }
+                      }
+                      if (j <= n) {
+                          for (jj in seq.int(n, j)) {
+                              oceDebug(debug, "erase item at j =", jj, "\n")
+                              res@data$station[[jj]] <- NULL
+                              res@metadata$stationId[jj] <- TRUE
+                              res@metadata$latitude[jj] <- TRUE
+                              res@metadata$longitude[jj] <- TRUE
                           }
                       }
                   }
