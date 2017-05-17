@@ -10,23 +10,11 @@
 \arguments{
 \item{x}{A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.}
 
-\item{subset}{an optional indication of either (a) stations to be kept,
-or (b) data to be kept within the stations.  Mode (a)
-is enabled if the subset string contains \code{distance}
-(in which case stations are kept only when the distance in km
-from the first stations matches the specification), either
-\code{longitude} or \code{latitude} (in which case stations
-are selected by location), or \code{stationId} (in which case stations
-are selected by the station-ID stored within the CTDs within
-the section). If none of these words is present
-in \code{subset}, then mode (b) is used, and the subset is applied
-within each station, by passing it as the argument of the same
-name to \code{\link{subset,ctd-method}}.}
+\item{subset}{an optional indication of either the stations to be kept,
+or the data to be kept within the stations.  See \dQuote{Details}.}
 
 \item{...}{optional arguments, of which only the first is examined. The only
-possibility is that this argument be named \code{indices}, and that it be
-a numeric or logical vector specifying the indices of stations to be kept,
-starting at 1 for the first station.}
+possibility is that this argument be named \code{indices}. See \dQuote{Details}.}
 }
 \value{
 A \code{\link{section-class}} object.
@@ -39,16 +27,62 @@ This function that may be used to subset data within the
 stations of a section, or to choose a subset of the stations
 themselves. The first case is handled with the \code{subset} argument,
 while the second is handled if \code{...} contains a vector named
-\code{indices}.
+\code{indices}. Either \code{subset} or \code{indices} must be
+provided, but not both.
+
+\strong{In the "subset" method}, \code{subset} indicates
+either stations to be kept, or data to be kept within the stations.
+
+The first step in processing is to check for the presence of certain
+key words in the \code{subset} expression. If \code{distance}
+is present, then stations are selected according to a condition on the
+distance (in km) from the first station to the given station (Example 1).
+If either \code{longitude} or \code{latitude} is given, then
+stations are selected according to the stated condition (Example 2).
+If \code{stationId} is present, then selection is in terms of the
+station ID (not the sequence number) is used (Example 3). In all of these
+cases, stations are either selected in their entirety or dropped
+in their entirety.
+
+If none of these keywords is present, then the \code{subset} expression is
+evaluated in the context of the \code{data} slot of each of the CTD stations
+stored within \code{x}. (Note that this slot does not normally
+contain any of the keywords that are listed in the previous
+paragraph; it does, then odd results may occur.) Each station is examined
+in turn, with \code{subset} being evaluated individually in each. The evaluation
+produces a logical vector. If that vector has length 1 (Examples 4 and 5)
+then the station is retained or discarded, accordingly. If the vector is longer,
+then the logical vector is used as a sieve to subsample that individual CTD
+profile.
+
+\strong{In the "indices" method}, stations are selected using
+\code{indices}, which may be a vector of integers that indicate sequence
+number, or a logical vector, again indicating which stations to keep.
 }
 \examples{
 library(oce)
 data(section)
-# 1. Gulf Stream
-GS <- subset(section, 109<=stationId&stationId<=129)
-# 2. Sections with more than 5 levels (chops out 2 odd stations)
+
+# 1. Stations within 500 km of the first station
+starting <- subset(section, distance < 500)
+
+# 2. Stations east of 50W
+east <- subset(section, longitude > (-50))
+
+# 3. Gulf Stream
+GS <- subset(section, 109 <= stationId & stationId <= 129)
+
+# 4. Only stations with more than 5 pressure levels
+long <- subset(section, length(pressure) > 5)
+
+# 5. Only stations that have some data in top 50 dbar
+surfacing <- subset(section, min(pressure) < 50)
+
+# 6. Similar to #4, but done in more detailed way
 long <- subset(section,
-   indices=unlist(lapply(section[["station"]], function(s) 10<length(s[["pressure"]]))))
+   indices=unlist(lapply(section[["station"]],
+                  function(s)
+                    5 < length(s[["pressure"]]))))
 
 }
 \seealso{
