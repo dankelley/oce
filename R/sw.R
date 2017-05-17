@@ -1434,7 +1434,7 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
     theta <- swTheta(salinity=l$salinity, temperature=l$temperature, pressure=l$pressure,
                      referencePressure=referencePressure,
                      longitude=l$longitude, latitude=l$latitude, eos=l$eos)
-    swRho(salinity=l$salinity, temperature=theta, pressure=0,
+    swRho(salinity=l$salinity, temperature=theta, pressure=referencePressure,
           longitude=l$longitude, latitude=l$latitude, eos=l$eos) - 1000
 }
 
