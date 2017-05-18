@@ -1511,9 +1511,9 @@ setMethod(f="plot",
                           if (variable != "data") {
                               if (drawPoints) {
                                   p <- x@data$station[[stationIndices[i]]]@data$pressure
-                                  if (eos == "teos" && variable == "temperature")
+                                  if (eos == "gsw" && variable == "temperature")
                                       v <- swConservativeTemperature(x@data$station[[stationIndices[i]]])
-                                  else if (eos == "teos" && variable == "salinity")
+                                  else if (eos == "gsw" && variable == "salinity")
                                       v <- swAbsoluteSalinity(x@data$station[[stationIndices[i]]])
                                   else
                                       v <- x@data$station[[stationIndices[i]]][[variable]]
@@ -1521,9 +1521,9 @@ setMethod(f="plot",
                                          pch=pch, cex=cex,
                                          col=zcol[rescale(v, xlow=zlim[1], xhigh=zlim[2], rlow=1, rhigh=nbreaks)])
                               } else {
-                                  if (eos == "teos" && variable == "temperature") {
+                                  if (eos == "gsw" && variable == "temperature") {
                                       zz[i, ] <- rev(swConservativeTemperature(x@data$station[[stationIndices[i]]]))
-                                  } else if (eos == "teos" && variable == "salinity") {
+                                  } else if (eos == "gsw" && variable == "salinity") {
                                       zz[i, ] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
                                   } else {
                                       zz[i, ] <- rev(x@data$station[[stationIndices[i]]][[variable]])
