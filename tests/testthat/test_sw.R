@@ -96,7 +96,7 @@ test_that("potential_temperature, SA and CT, sound speed (GSW)", {
           ctd <- as.ctd(SP, t, p, longitude=lon, latitude=lat)
           SA <- gsw::gsw_SA_from_SP(SP, p, longitude=lon, latitude=lat)
           thetaGSW <- gsw::gsw_pt_from_t(SA, t, p, p_ref=0)
-          theta <- swTheta(SP, t, p, eos="gsw")
+          theta <- swTheta(SP, t, p, longitude=lon, latitude=lat, eos="gsw")
           expect_equal(thetaGSW, theta)
           theta <- swTheta(ctd, eos="gsw")
           expect_equal(thetaGSW, theta)
@@ -197,9 +197,12 @@ test_that("alpha and beta", {
           p <- 100
           expect_equal(1, swAlpha(S,T,p)/swBeta(S,T,p)/swAlphaOverBeta(S,T,p))
           eos <- "gsw"
-          expect_equal(1, swAlpha(S,T,p,eos=eos)/swBeta(S,T,p,eos=eos)/swAlphaOverBeta(S,T,p,eos=eos))
+          expect_equal(swAlphaOverBeta(S, T, p, longitude=lon, latitude=lat, eos=eos), 
+                       swAlpha(S, T, p, longitude=lon, latitude=lat, eos=eos) /
+                       swBeta(S, T, p, longitude=lon, latitude=lat, eos=eos))
           eos <- "unesco"
-          expect_equal(1, swAlpha(S,T,p,eos=eos)/swBeta(S,T,p,eos=eos)/swAlphaOverBeta(S,T,p,eos=eos))
+          expect_equal(swAlphaOverBeta(S,T,p,eos=eos),
+                       swAlpha(S,T,p,eos=eos)/swBeta(S,T,p,eos=eos))
 })
 
 test_that("swSTrho", {

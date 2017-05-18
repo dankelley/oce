@@ -48,6 +48,7 @@ test_that("various ctd files", {
                          "18HU2010014_00003_00001_ct1.csv",
                          "18HU20130507_00235_00001_ct1.csv")
               for (file in files) {
+                  cat(file, "\n")
                   if (file == "18HU20130507_00235_00001_ct1.csv")
                       expect_warning(d <- read.oce(paste("local_data", file, sep="/")),
                                      "missingValue inferred as -999 from S and T minima")

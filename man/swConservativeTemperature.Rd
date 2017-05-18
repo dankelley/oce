@@ -5,7 +5,7 @@
 \title{Seawater conservative temperature, in GSW formulation}
 \usage{
 swConservativeTemperature(salinity, temperature = NULL, pressure = NULL,
-  longitude = 300, latitude = 30)
+  longitude, latitude = 30)
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}

@@ -5,8 +5,8 @@
 \title{Seawater potential density anomaly}
 \usage{
 swSigmaTheta(salinity, temperature = NULL, pressure = NULL,
-  referencePressure = 0, longitude = 300, latitude = 30,
-  eos = getOption("oceEOS", default = "gsw"))
+  referencePressure = 0, longitude, latitude, eos = getOption("oceEOS",
+  default = "gsw"))
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}
@@ -50,8 +50,8 @@ extracted from it, and used for the calculation instead of any values
 provided in the other arguments.
 }
 \examples{
-swSigmaTheta(35, 13, 1000)             # 26.42514 (gsw)
-swSigmaTheta(35, 13, 1000, eos="unesco") # 26.4219
+swSigmaTheta(35, 13, 1000, longitude=300, latitude=30, eos="gsw") # 26.42456
+swSigmaTheta(35, 13, 1000, eos="unesco") # 26.42066
 
 }
 \references{

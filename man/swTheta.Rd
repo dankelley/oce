@@ -5,8 +5,8 @@
 \title{Seawater potential temperature}
 \usage{
 swTheta(salinity, temperature = NULL, pressure = NULL,
-  referencePressure = 0, longitude = 300, latitude = 30,
-  eos = getOption("oceEOS", default = "gsw"))
+  referencePressure = 0, longitude, latitude, eos = getOption("oceEOS",
+  default = "gsw"))
 }
 \arguments{
 \item{salinity}{either salinity [PSU] (in which case \code{temperature} and
@@ -60,7 +60,9 @@ print(swTheta(40, T90fromT68(40), 10000, 0, eos="unesco")) # 36.89073 (Fofonoff 
 S <- c(30,35,30,35)
 T <- c(-2,-2,30,30)
 p <- 1000 * runif(n=4)
-print(max(abs(swTheta(S,T90fromT68(T),p) - swTheta(S,T,p,0,eos="gsw"))))
+thetaU <- swTheta(S, T90fromT68(T), p)
+thetaG <- swTheta(S, T, p, 0, longitude=300, latitude=30, eos="gsw")
+print(max(abs(thetaU - thetaG)))
 
 # Example from a cross-Atlantic section
 data(section)

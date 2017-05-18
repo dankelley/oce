@@ -137,7 +137,9 @@ test_that("derived quantities handled properly (ctd)", {
                                              ctd[["pressure"]], eos="unesco"))
           expect_equal(swTheta(ctd, eos="gsw"), swTheta(ctd[["salinity"]],
                                              ctd[["temperature"]],
-                                             ctd[["pressure"]], eos="gsw"))
+                                             ctd[["pressure"]],
+                                             longitude=ctd[["longitude"]],
+                                             latitude=ctd[["latitude"]], eos="gsw"))
 })
 
 test_that("accessor operations (adp)", {
