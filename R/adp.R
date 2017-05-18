@@ -2832,10 +2832,16 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
         stop("input must be in enu coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     res <- x
     np <- dim(x@data$v)[1]           # number of profiles
+    if (length(heading) != np)
+        heading <- rep(heading, length.out=np)
+    if (length(pitch) != np)
+        pitch <- rep(pitch, length.out=np)
+    if (length(roll) != np)
+        roll <- rep(roll, length.out=np)
     nc <- dim(x@data$v)[2]           # numberOfCells
     for (c in 1:nc) {
         other <- .C("sfm_enu",
-                    as.integer(length(heading)),
+                    as.integer(np),
                     as.double(heading),
                     as.double(pitch),
                     as.double(roll),
