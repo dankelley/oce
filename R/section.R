@@ -609,7 +609,7 @@ setMethod(f="subset",
                               j <- j + 1
                           }
                       }
-                      res <- new('section')
+                      res <- new("section")
                       res@data$station <- station
                       res@metadata$header <- x@metadata$header
                       res@metadata$sectionId <- x@metadata$sectionId
@@ -618,48 +618,53 @@ setMethod(f="subset",
                       res@metadata$latitude <- lat
                       res@processingLog <- x@processingLog
                   } else {
+                      res <- new("section")
+                      res@data$station <- list()
+                      res@metadata$header <- x@metadata$header
+                      res@metadata$sectionId <- NULL
+                      res@metadata$stationId <- NULL
+                      res@metadata$longitude <- NULL
+                      res@metadata$latitude <- NULL
+                      res@processingLog <- x@processingLog
                       n <- length(x@data$station)
                       j <- 1
                       for (i in 1:n) {
                           r <- eval(substitute(subset), x@data$station[[i]]@data, parent.frame(2))
-                          oceDebug(debug, "i =", i, ", j = ", j, " | ")
+                          oceDebug(debug, "i=", i, ", j=", j, ", sum(r)=", sum(r), "\n", sep="")
                           if (sum(r) > 0) {
+                              ## copy whole station  ...
+                              res@data$station[[j]] <- x@data$station[[i]]
+                              ## ... but if we are looking for a subset, go through the data fields and do that
                               if (length(r) > 1) {
-                                  ## Multi-valued, for e.g.
-                                  ##     subset(sec, S > 35)
-                                  ## to select salty levels
-                                  for (field in names(res@data$station[[i]]@data)) {
-                                      oceDebug(debug, field, " ", sep="")
-                                      res@data$station[[j]]@data[[field]] <- x@data$station[[i]]@data[[field]][r]
+                                  ## Select certain levels. This occurs e.g. for
+                                  ##    subset(sec, S > 35)
+                                  ## but not for station-by-station selection, e.g. as a result of
+                                  ##    subset(sec, length(S) > 3)
+                                  ## since the length of the latter is 1, which means to copy
+                                  ## the whole station.
+                                  for (field in names(res@data$station[[j]]@data)) {
+                                      oceDebug(debug, "    field='", field, "', i=", i, ", j=", j, " (case A)\n", sep="")
+                                      res@data$station[[j]]@data[[field]] <- res@data$station[[j]]@data[[field]][r]
                                   }
-                                  oceDebug(debug, "\n")
-                              } else {
-                                  ## Single-valued, for e.g.
-                                  ##     subset(sec, min(pressure) < 100)
-                                  ## to select stations that have some near-surface data.
-                                  for (field in names(res@data$station[[i]]@data)) {
-                                      oceDebug(debug, field, " ", sep="")
-                                      res@data$station[[j]]@data[[field]] <- x@data$station[[i]]@data[[field]]
-                                  }
-                                  oceDebug(debug, "\n")
                               }
+                              ## copy section metadata
                               res@metadata$stationId[j] <- x@metadata$stationId[i]
                               res@metadata$latitude[j] <- x@metadata$latitude[i]
                               res@metadata$longitude[j] <- x@metadata$longitude[i]
                               j <- j + 1
                           } else {
-                              oceDebug(debug, "skipping this station\n")
+                              oceDebug(debug, "    skipping this station\n")
                           }
                       }
-                      if (j <= n) {
-                          for (jj in seq.int(n, j)) {
-                              oceDebug(debug, "erase item at j =", jj, "\n")
-                              res@data$station[[jj]] <- NULL
-                              res@metadata$stationId[jj] <- TRUE
-                              res@metadata$latitude[jj] <- TRUE
-                              res@metadata$longitude[jj] <- TRUE
-                          }
-                      }
+                      ## if (j <= n) {
+                      ##     for (jj in seq.int(n, j)) {
+                      ##         oceDebug(debug, "erase item at j =", jj, "\n")
+                      ##         res@data$station[[jj]] <- NULL
+                      ##         res@metadata$stationId[jj] <- TRUE
+                      ##         res@metadata$latitude[jj] <- TRUE
+                      ##         res@metadata$longitude[jj] <- TRUE
+                      ##     }
+                      ## }
                   }
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               }
