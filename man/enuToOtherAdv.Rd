@@ -11,7 +11,8 @@ enuToOtherAdv(x, heading = 0, pitch = 0, roll = 0,
 \item{x}{An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.}
 
 \item{heading}{number or vector of numbers, giving the angle, in degrees, to
-be added to the heading.  See \dQuote{Details}.}
+be added to the heading. If this has length less than the number of velocity
+sampling times, then it will be extended using \code{\link{rep}}.}
 
 \item{pitch}{as \code{heading} but for pitch.}
 

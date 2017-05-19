@@ -2739,16 +2739,21 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     oceDebug(debug, vectorShow(heading, "heading (after adjustment)"))
     oceDebug(debug, vectorShow(pitch, "pitch (after adjustment)"))
     oceDebug(debug, vectorShow(roll, "roll (after adjustment)"))
-    np <- dim(x@data$v)[1]           # number of profiles
     nc <- dim(x@data$v)[2]           # numberOfCells
+    np <- dim(x@data$v)[1]           # number of profiles
+    if (length(heading) < np)
+        heading <- rep(heading, length.out=np)
+    if (length(pitch) < np)
+        pitch <- rep(pitch, length.out=np)
+    if (length(roll) < np)
+        roll <- rep(roll, length.out=np)
     ## ADP and ADV calculations are both handled by sfm_enu
     for (c in 1:nc) {
         enu <- .C("sfm_enu",
-                  as.integer(length(x@data$heading)), # need not equal np
+                  as.integer(np),
                   as.double(heading + declination),
                   as.double(pitch),
                   as.double(roll),
-                  as.integer(np),
                   as.double(starboard[, c]),
                   as.double(forward[, c]),
                   as.double(mast[, c]),
@@ -2763,11 +2768,10 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     }
     if (haveBv) {
         enu <- .C("sfm_enu",
-                  as.integer(length(x@data$heading)), # need not equal np
+                  as.integer(np),
                   as.double(heading + declination),
                   as.double(pitch),
                   as.double(roll),
-                  as.integer(np),
                   as.double(starboardBv),
                   as.double(forwardBv),
                   as.double(mastBv),
@@ -2845,7 +2849,6 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
                     as.double(heading),
                     as.double(pitch),
                     as.double(roll),
-                    as.integer(np),
                     as.double(x@data$v[, c, 1]),
                     as.double(x@data$v[, c, 2]),
                     as.double(x@data$v[, c, 3]),
@@ -2860,11 +2863,10 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
     }
     if ("bv" %in% names(x@data)) {
         other <- .C("sfm_enu",
-                    as.integer(length(heading)),
+                    as.integer(np),
                     as.double(heading),
                     as.double(pitch),
                     as.double(roll),
-                    as.integer(np),
                     as.double(x@data$bv[, 1]),
                     as.double(x@data$bv[, 2]),
                     as.double(x@data$bv[, 3]),
