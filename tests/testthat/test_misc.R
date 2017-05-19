@@ -58,6 +58,7 @@ test_that("integrateTrapezoid", {
           x <- seq(0, 1, length.out=10)
           y <- 2*x + 3*x^2
           expect_equal(2, integrateTrapezoid(x, y), tolerance=0.01)
+          expect_equal(integrateTrapezoid(x,y), integrateTrapezoid(y) * (x[2]-x[1]))
 })
 
 test_that("matchBytes", {

@@ -4143,9 +4143,10 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
         }
         yout <- approx(x, y, xout, rule=2)$y
     }
-    ## message("xout: ", paste(xout, collapse=" "))
-    ## message("yout: ", paste(yout, collapse=" "))
-    res <- .Call("trap", xout, yout, switch(match.arg(type), A=0, dA=1, cA=2))
+    ## message("\nabout to .Call(\"trap\", xout, yout, ...) with:\n")
+    ## message("xout as follows:\n", paste(head(xout, 10), collapse="\n"))
+    ## message("yout as follows:\n", paste(head(yout, 10), collapse="\n"))
+    res <- .Call("trap", xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
     res
 }
 
