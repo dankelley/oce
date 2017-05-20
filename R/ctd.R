@@ -497,7 +497,7 @@ setMethod(f="summary",
 #' \item \code{Rrho}: Density ratio, computed with \code{\link{swRrho}(x)}.
 #'
 #' \item \code{SA} or \code{Absolute Salinity}: Absolute Salinity,
-#' computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package. 
+#' computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.
 #' The calculation involves location as well as measured water properties.
 #' If the object \code{x} does not containin information on the location,
 #' then 30N and 60W is used for the calculation, and a warning is generated.
@@ -723,13 +723,14 @@ setMethod(f="[[<-",
 #' Assemble data into a \code{\link{ctd-class}} dataset.
 #'
 #' If the first argument is an \code{\link{rsk-class}} object, the pressure it
-#' contains may need to be adjusted, because \code{rsk} objects may contain either
-#' absolute pressure or sea pressure. This adjustment is handled automatically by
-#' \code{as.ctd}, by examination of the metadata item named \code{pressureType}
-#' (described in the documentation for \code{\link{read.rsk}}).  Once the sea
-#' pressure is determined, adjustments may be made with the
-#' \code{pressureAtmospheric} argument, although in that case it is better
-#' considered a pressure adjustment than the atmospheric pressure.
+#' contains may need to be adjusted, because \code{rsk} objects may contain
+#' either absolute pressure or sea pressure. This adjustment is handled
+#' automatically by \code{as.ctd}, by examination of the metadata item
+#' named \code{pressureType} (described in the documentation for
+#' \code{\link{read.rsk}}).  Once the sea pressure is determined,
+#' adjustments may be made with the \code{pressureAtmospheric} argument,
+#' although in that case it is better considered a pressure adjustment
+#' than the atmospheric pressure.
 #'
 #' \code{\link{rsk-class}} objects may store sea pressure or absolute pressure (the
 #' sum of sea pressure and atmospheric pressure), depending on how the object was
@@ -746,11 +747,14 @@ setMethod(f="[[<-",
 #' \code{as.ctd} employs the other arguments listed below. (2) It can be
 #' something (a data frame, a list or an \code{oce}
 #' object) from which practical
-#' salinity, temperature, pressure, and conductivity can be inferred. In that case, the relevant information
+#' salinity, temperature, pressure, and conductivity can be inferred. In that
+#' case, the relevant information
 #' is extracted  and the other arguments to \code{as.ctd} are ignored, except for
 #' \code{pressureAtmospheric}. If the first argument has salinity, etc., in
 #' matrix form (as can happen with some objects of \code{\link{argo-class}}),
-#' then only the first column is used, and a warning to that effect is given, unless the \code{profile} argument is specified and then that specific profile is extracted.
+#' then only the first column is used, and a warning to that effect is given,
+#' unless the \code{profile} argument is specified and then that specific
+#' profile is extracted.
 #' If the first argument is an object of \code{\link{rsk-class}},
 #' then \code{as.ctd} merely passes
 #' it and \code{pressureAtmospheric} to \code{\link{rsk2ctd}}, which
@@ -2287,7 +2291,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 oceDebug(debug-1, "scanStart:", scanStart, "\n")
                 keep <- keep & (x[["scan"]] > scanStart)
             }
- 
+
         } else if (method == "range") {
             if (!("item" %in% names(parameters)))
                 stop("'parameters' must be a list containing 'item'")

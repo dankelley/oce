@@ -145,7 +145,7 @@ This is a synonym for \code{theta}.
 \item \code{Rrho}: Density ratio, computed with \code{\link{swRrho}(x)}.
 
 \item \code{SA} or \code{Absolute Salinity}: Absolute Salinity,
-computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package. 
+computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.
 The calculation involves location as well as measured water properties.
 If the object \code{x} does not containin information on the location,
 then 30N and 60W is used for the calculation, and a warning is generated.
