@@ -77,19 +77,14 @@ test_that("can use original names", {
           expect_equal(ctd[["depth"]], ctd[["depS"]])
           expect_equal(ctd[["temperature"]], ctd[["t068"]])
           expect_equal(ctd[["salinity"]], ctd[["sal00"]])
-})          
+})
 
-
-## vim:textwidth=80:expandtab
-
-## These tests are likely to go into the built-test suite. Note that if the
-## built-in datasets change, these tests will fail. That is intentional,
-## actually, because it makes some extra tests against inadvertent changes to
-## those datasets ... or, put another way, it imposes a cost to altering the
-## datasets.
-
-library(oce)
-library(testthat)
+test_that("alter ctd profiles within a section", {
+          data("section")
+          section[["station", 1]][["S2"]] <- 2 * section[["station", 1]][["salinity"]]
+          expect_equal(section[["station", 1]][["S2"]],
+                       2 * section[["station", 1]][["salinity"]])
+})
 
 ## Tests with a funky file, from 1154 (we may need to chop these,
 ## since it does not make sense to use space in a CRAN package
