@@ -414,7 +414,12 @@ setMethod(f="[[",
 setMethod(f="[[<-",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
-              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
+              if (i == "station") {
+                  x@data$station[[j]] <- value
+                  x
+              } else {
+                  callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
+              }
           })
 
 
