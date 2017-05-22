@@ -1017,6 +1017,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res@metadata$units <- units
         if (!is.null(flags))
             res@metadata$flags <- flags
+        if (!is.null(o@metadata$flags))
+            res@metadata$flags <- o@metadata$flags
         ##1108 res@metadata$pressureType <- pressureType
         res@metadata$startTime <- startTime
         ## copy relevant metadata.

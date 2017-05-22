@@ -280,7 +280,7 @@ test_that("ODF file", {
           expect_equal(d4[['temperature']][1:3], c(5.885, 5.9124, 5.9188))
           expect_equal(d4[['salinity']][1:3], c(30.8514,30.8593,30.8596))
           ## there are some flagged data in this file
-          expect_equal(d4[['pressure']][which(d4[['flag']]!=0)], c(55.5, 60.5, 61.0 ,71.5))
+          expect_equal(d4[['pressure']][which(d4[['QCFlag']]!=0)], c(55.5, 60.5, 61.0 ,71.5))
 }) 
 
 test_that("pressure accessor handles psi unit", {

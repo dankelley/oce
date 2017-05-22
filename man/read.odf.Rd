@@ -52,6 +52,15 @@ handles conversion for a few non-standard units. The documentation
 of \code{\link{ODFNames2oceNames}} should be consulted for more
 details.
 }
+\section{Caution}{
+
+ODF files do not store information on the temperature or salinity scale, and \code{read.odf}
+assumes them to be ITS-90 and PSS-78, respectively. These scales will not be correct for old
+data files. Note that the temperature scale can be converted from old scales
+using \code{\link{T90fromT68}} and \code{\link{T90fromT48}}, although the change will be in
+a fraction of a millidegree, which probably exceeds reasonable confidence in old data.
+}
+
 \examples{
 library(oce)
 # Read a CTD cast made on the Scotian Shelf. Note that the file's metadata
@@ -64,11 +73,9 @@ odf[["conductivityUnit"]] <- list(unit=expression(), scale="")
 #
 # Figure 1. make a CTD, and plot (with span to show NS)
 plot(as.ctd(odf), span=500)
-# show levels with bad QC flags
-subset(odf, flag!=0)
 # Figure 2. highlight bad data on TS diagram
 plotTS(odf, type='o') # use a line to show loops
-bad <- odf[["flag"]]!=0
+bad <- odf[["QCFlag"]]!=0
 points(odf[['salinity']][bad],odf[['temperature']][bad],col='red',pch=20)
 
 }
