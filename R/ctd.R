@@ -2165,7 +2165,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 ## new method, after Feb 2008
                 submethodChoices <- c("A", "B")
                 sm <- pmatch(submethod, submethodChoices)
-                if (is.na(submethod))
+                if (is.na(sm))
                     stop("unknown submethod '", submethod, "'")
                 submethod <- submethodChoices[sm]
                 ## bilinearAold<-function(param) { # param=c(s0,p0,dpds); this uses ss and pp
@@ -2454,14 +2454,18 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #' some of the metadata in \code{x}, if \code{metadata} is \code{TRUE}.
 #'
 #' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
-#'
-#' @param file Either a character string (the file name) or a connection.
+#' @param file Either a character string (the file name) or a connection. If not
+#' provided, \code{file} defaults to \code{\link{stdout}()}.
 #'
 #' @param metadata a logical value indicating whether to put some selected
 #' metadata elements at the start of the output file.
 #'
 #' @param flags a logical value indicating whether to show data-quality flags
-#' as well as data
+#' as well as data.
+#'
+#' @param format string indicating the format to use. This may be \code{"csv"}
+#' for a simple CSV format, or \code{"whp"} for the World Hydrographic
+#' Program format, described at [1] and exemplified at [2].
 #'
 #' @seealso The documentation for \code{\link{ctd-class}} explains the structure
 #' of CTD objects.
@@ -2477,13 +2481,18 @@ ctdUpdateHeader <- function (x, debug=FALSE)
 #'
 #' @author Dan Kelley
 #'
+#' @references
+#' 1. https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm
+#'
+#' 2. https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv
+#'
 #' @family things related to \code{ctd} data
-write.ctd <- function(object, file, metadata=TRUE, flags=TRUE)
+write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 {
     if (!inherits(object, "ctd"))
         stop("method is only for objects of class '", "ctd", "'")
     if (missing(file))
-        stop("file must be specified")
+        file <- stdout()
     if (is.character(file)) {
         if (file == "")
             stop("'file' must be a non-empty string")
@@ -2491,17 +2500,39 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE)
     } else if (inherits(file, "connection")) {
         con <- file
     }
+    fc <- c("csv", "whp")
+    fm <- pmatch(format, fc)
+    if (is.na(fm))
+        stop("unknown format '", format, "'; valid choices are \"csv\" and \"whp\"")
+    format <- fc[fm]
+
     if (metadata) {
-        cat(paste("R/oce file exported at time ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n", sep=""), file=con)
-        cat(paste("Source file = \"", object[["filename"]], "\"\n", sep=""), file=con)
-        cat(paste("Ship = ", object[["ship"]], "\n", sep=""), file=con)
-        cat(paste("Cruise = ", object[["cruise"]], "\n", sep=""), file=con)
-        cat(paste("Station = ", object[["station"]], "\n", sep=""), file=con)
-        cat(paste("Longitude = ", object[["longitude"]][1], "\n", sep=""), file=con)
-        cat(paste("Latitude = ", object[["latitude"]][1], "\n", sep=""), file=con)
-        cat(paste("Depth = ", object[["waterDepth"]], "\n", sep=""), file=con)
-        cat(paste("Start time = ", format(object[["startTime"]], "%Y-%m-%d %H:%M:%S %Z"), "\n", sep=""), file=con)
-        cat("\n", file=con)
+        if (format == "csv") {
+            cat(paste("R/oce file exported at time ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n", sep=""), file=con)
+            cat(paste("Source file = \"", object[["filename"]], "\"\n", sep=""), file=con)
+            cat(paste("Ship = ", object[["ship"]], "\n", sep=""), file=con)
+            cat(paste("Cruise = ", object[["cruise"]], "\n", sep=""), file=con)
+            cat(paste("Station = ", object[["station"]], "\n", sep=""), file=con)
+            cat(paste("Longitude = ", object[["longitude"]][1], "\n", sep=""), file=con)
+            cat(paste("Latitude = ", object[["latitude"]][1], "\n", sep=""), file=con)
+            cat(paste("Depth = ", object[["waterDepth"]], "\n", sep=""), file=con)
+            cat(paste("Start time = ", format(object[["startTime"]], "%Y-%m-%d %H:%M:%S %Z"), "\n", sep=""), file=con)
+            cat("\n", file=con)
+        } else if (format == "whp") {
+            cat(paste("CTD,", format(object[["startTime"]], "%Y%m%d"), "divINSwho\n", sep=""), file=con)
+            cat("NUMBER_HEADERS = 10\n", file=con)
+            cat("EXPOCODE = UNKNOWN\n", file=con)
+            cat("SECT = UNKNOWN\n", file=con)
+            cat("STNNBR =", gsub(" ", "", object[["station"]]), "\n", file=con)
+            cat("CASTNO = 1\n", file=con)
+            cat("DATE = ", format(object[["startTime"]], "%Y%m%d"), "\n", file=con)
+            cat("TIME = ", format(object[["startTime"]], "%H%M"), "\n", file=con)
+            cat("LATITUDE = ", sprintf("%8.4f", object[["latitude"]]), "\n", sep="", file=con)
+            cat("LONGITUDE = ", sprintf("%9.4f", object[["longitude"]]), "\n", sep="", file=con)
+            cat("DEPTH = ", sprintf("%5.0f", object[["waterDepth"]]), "\n", sep="", file=con)
+        } else {
+            stop("unknown format \"", format, "\"; should be \"csv\" or \"whp\"")
+        }
     }
     df <- as.data.frame(object@data)
     ## Optionally paste flags into the data frame, for display
@@ -2510,8 +2541,22 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE)
         names(fdf) <- paste(names(fdf), "Flag", sep="")
         df <- data.frame(df, fdf)
     }
-    write.table(df, col.names=TRUE, row.names=FALSE, sep=",", file=con)
-    close(con)
+    if (format == "csv") {
+        write.table(df, col.names=TRUE, row.names=FALSE, sep=",", file=con)
+    } else if (format == "whp") {
+        names <- names(df)
+        names(df) <- oceNames2whpNames(names)
+        cat(paste(names(df), collapse=","), "\n", file=con)
+        u <- unlist(lapply(object[["units"]], function(u) as.character(u$unit)))
+        s <- unlist(lapply(object[["units"]], function(u) u$scale))
+        cat(paste(oceUnits2whpUnits(u[names], s[names]), collapse=","), "\n", file=con)
+        write.table(df, col.names=FALSE, row.names=FALSE, sep=",", file=con)
+        cat("END_DATA\n", file=con)
+    } else {
+        stop("unknown format \"", format, "\"; should be \"csv\" or \"whp\"")
+    }
+    if (con != stdout())
+        close(con)
 }
 
 

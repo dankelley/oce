@@ -108,9 +108,12 @@ although that link seems to be unreliable.
 }
 \seealso{
 Other functions that interpret variable names and units from headers: \code{\link{cnvName2oceName}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{unitFromStringRsk}},
   \code{\link{unitFromString}},
-  \code{\link{woceNames2oceNames}}
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}
 
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{[[,odf-method}},
