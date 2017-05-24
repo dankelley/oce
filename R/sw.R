@@ -534,7 +534,7 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0,
     if (conductivityUnit == "mS/cm")
         conductivity <- conductivity / C0
     else if (conductivityUnit == "S/m")
-        conductivity <- conductivity / C0 / 10
+        conductivity <- conductivity / (C0 / 10)
     else
         conductivity <- conductivity
     ## Now, "conductivity" is in ratio form
