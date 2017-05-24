@@ -3848,10 +3848,10 @@ plotTS <- function (x,
                     ...)
 {
     oceDebug(debug, "plotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho,
-             "eos=\"", eos, "\", ",
-             "mgp=c(", paste(mgp, collapse=","), "), ",
-             "mar=c(", paste(mar, collapse=","), "), ",
-             "...) {\n", sep="", unindent=1)
+             ", eos=\"", eos, "\", ",
+             ", mgp=c(", paste(mgp, collapse=","), "), ",
+             ", mar=c(", paste(mar, collapse=","), "), ",
+             ", ...) {\n", sep="", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
     xat <- NULL
     yat <- NULL
@@ -3957,8 +3957,12 @@ plotTS <- function (x,
     drawIsopycnals(nlevels=nlevels, levels=levels, rotate=rotate, rho1000=rho1000, digits=2,
                    eos=eos, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
-    Sr <- c(max(0, usr[1]), usr[2])
-    lines(Sr, swTFreeze(salinity=Sr, pressure=0)) # old: darkblue that looked black
+    Sr <- seq(max(0, usr[1]), usr[2], length.out=10)
+    if (eos == "unesco") {
+        lines(Sr, swTFreeze(salinity=Sr, pressure=0, eos=eos)) # old: darkblue that looked black
+    } else if (eos == "gsw") {
+        lines(Sr, swTFreeze(salinity=Sr, pressure=0, longitude=x[["longitude"]], latitude=x[["latitude"]], eos=eos))
+    } else stop("unknown eos; must be \"unesco\" or \"gsw\"")
     box()                              # redraw box (otherwise overdrawn with isopycnals)
     oceDebug(debug, "} # plotTS(...)\n", sep="", unindent=1)
     ## infer from par()
@@ -4008,10 +4012,12 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     Tcorners <- c(TAxisMin, TAxisMin, TAxisMax, TAxisMax)
     if (eos == "gsw") {
         rhoCorners <- gsw::gsw_rho(Scorners, Tcorners, rep(0, 4)) - 1000
-    } else {
+    } else if (eos == "unesco") {
         rhoCorners <- swSigma(c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
                               c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
-                              rep(0, 4))
+                              rep(0, 4), eos=eos)
+    } else {
+        stop("unknown eos, \"", eos, "\"; please use \"unesco\" or \"gsw\"")
     }
     rhoMin <- min(rhoCorners, na.rm=TRUE)
     rhoMax <- max(rhoCorners, na.rm=TRUE)

@@ -5,6 +5,19 @@ data("argo")
 
 context("CTD")
 
+test_that("plotTS() handles differently EOSs correctly", {
+          data(ctd)
+          options(oceEOS="unesco")
+          plotTS(ctd)
+          plotTS(ctd, eos="unesco")
+          plotTS(ctd, eos="gsw")
+          options(oceEOS="gsw")
+          plotTS(ctd)
+          plotTS(ctd, eos="unesco")
+          plotTS(ctd, eos="gsw")
+})
+
+
 test_that("as.ctd() with specified arguments, including salinity", {
           ctd_ctd <- as.ctd(salinity=ctd[["salinity"]], temperature=ctd[["temperature"]], pressure=ctd[["pressure"]])
           expect_equal(ctd[["salinity"]], ctd_ctd[["salinity"]])
@@ -41,6 +54,14 @@ test_that("as.ctd() with specified arguments, not including salinity", {
           T <- ctd[["temperature"]]
           p <- ctd[["pressure"]]
           C <- swCSTp(S, T, p)
+          options(oceEOS="unesco")
+          ctdNew <- as.ctd(conductivity=C, temperature=T, pressure=p)
+          ## Test that all fields were created accurately.
+          expect_equal(S, ctdNew[["salinity"]])
+          expect_equal(T, ctdNew[["temperature"]])
+          expect_equal(p, ctdNew[["pressure"]])
+          ##
+          options(oceEOS="gsw")
           ctdNew <- as.ctd(conductivity=C, temperature=T, pressure=p)
           ## Test that all fields were created accurately.
           expect_equal(S, ctdNew[["salinity"]])

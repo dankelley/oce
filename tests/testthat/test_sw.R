@@ -195,14 +195,12 @@ test_that("alpha and beta", {
           S <- 34
           T <- 10
           p <- 100
-          expect_equal(1, swAlpha(S,T,p)/swBeta(S,T,p)/swAlphaOverBeta(S,T,p))
-          eos <- "gsw"
-          expect_equal(swAlphaOverBeta(S, T, p, longitude=lon, latitude=lat, eos=eos), 
-                       swAlpha(S, T, p, longitude=lon, latitude=lat, eos=eos) /
-                       swBeta(S, T, p, longitude=lon, latitude=lat, eos=eos))
-          eos <- "unesco"
-          expect_equal(swAlphaOverBeta(S,T,p,eos=eos),
-                       swAlpha(S,T,p,eos=eos)/swBeta(S,T,p,eos=eos))
+          expect_equal(swAlphaOverBeta(S, T, p, longitude=300, latitude=30, eos="gsw"), 
+                       swAlpha(S, T, p, longitude=300, latitude=30, eos="gsw") /
+                       swBeta(S, T, p, longitude=300, latitude=30, eos="gsw"))
+          expect_equal(swAlphaOverBeta(S, T, p, eos="unesco"), 
+                       swAlpha(S, T, p, eos="unesco") /
+                       swBeta(S, T, p, eos="unesco"))
 })
 
 test_that("swSTrho", {
