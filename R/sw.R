@@ -495,6 +495,7 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
 swSCTp <- function(conductivity, temperature=NULL, pressure=0,
                    conductivityUnit, eos=getOption("oceEOS", default="gsw"))
 {
+    C0 <- 42.9140 # Culkin and Smith (1980)
     ## FIXME-gsw add gsw version
     if (missing(conductivity)) stop("must supply conductivity (which may be S or a CTD object)")
     if (missing(conductivityUnit)) {
@@ -531,9 +532,9 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0,
     if (!length(conductivityUnit))
         conductivityUnit <- ""
     if (conductivityUnit == "mS/cm")
-        conductivity <- conductivity / 42.914
+        conductivity <- conductivity / C0
     else if (conductivityUnit == "S/m")
-        conductivity <- conductivity / 4.2914
+        conductivity <- conductivity / C0 / 10
     else
         conductivity <- conductivity
     ## Now, "conductivity" is in ratio form
@@ -556,7 +557,6 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0,
                    value = double(nC),
                    NAOK=TRUE, PACKAGE = "oce")$value
     } else if (eos == "gsw") {
-        C0 <- gsw::gsw_C_from_SP(35, 15, 0)
         res <- gsw::gsw_SP_from_C(C0 * conductivity, temperature, pressure)
     }
     dim(res) <- dim
