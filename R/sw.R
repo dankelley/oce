@@ -489,7 +489,7 @@ swCSTp <- function(salinity=35, temperature=15, pressure=0,
 #' Papers in Marine Science}, \bold{44}, 53 pp
 #' @examples
 #' swSCTp(1, T90fromT68(15), 0, eos="unesco") # 35
-#' swSCTp( 1,            15, 0, eos="gsw") # 35
+#' swSCTp(1, T90fromT68(15), 0, eos="gsw")    # 35
 #'
 #' @family functions that calculate seawater properties
 swSCTp <- function(conductivity, temperature=NULL, pressure=0,
