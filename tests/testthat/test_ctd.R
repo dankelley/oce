@@ -188,6 +188,7 @@ test_that("accessors work as functions and [[", {
 
 test_that("ability to change conductivityUnit", {
           ## These came from issue 731
+          data(ctd)
           ctd2 <- ctd
           ctd2@data$conductivity <- swCSTp(ctd2) * 42.914
           ctd2[['conductivityUnit']] <- list(unit=expression(mS/cm), scale="")
