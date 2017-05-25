@@ -1,6 +1,4 @@
 library(oce)
-library(testthat)
-library(gsw)
 context("sw")
 ## Table of contents.
 ##  1. rho and sigma

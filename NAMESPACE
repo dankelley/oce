@@ -20,6 +20,7 @@ importFrom("stats", "approx", "approxfun", "coef", "confint", "cor", "cov",
            "weighted.mean", "window")
 importFrom("utils", "data", "head", "flush.console", "read.csv", "read.table",
            "setTxtProgressBar", "str", "tail", "txtProgressBar", "write.table")
+importFrom("testthat", "expect_equal")
 
 
 exportMethods(plot)

@@ -409,10 +409,9 @@ swPressure <- function(depth, latitude=45, eos=getOption("oceEOS", default="gsw"
 #' (Chlorinity 19.37394 ppt). \emph{IEEE Journal of Oceanic Engineering},
 #' \bold{5}, pp 22-23.
 #' @examples
-#' swCSTp(35, T90fromT68(15), 0, eos="unesco") # 1, by definition of cond. ratio
-#' swCSTp(34.25045, T90fromT68(15), 2000, eos="unesco") # 1
-#' swCSTp(34.25045, 15, 2000, eos="unesco") # 1.000081
-#' swCSTp(34.25045, 15, 2000, eos="gsw")  # 0.9999982
+#' expect_equal(1, swCSTp(35, T90fromT68(15), 0, eos="unesco")) # by definition of cond. ratio
+#' expect_equal(1, swCSTp(34.25045, T90fromT68(15), 2000, eos="unesco"), tolerance=1e-7)
+#' expect_equal(1, swCSTp(34.25045, T90fromT68(15), 2000, eos="gsw"), tolerance=1e-7)
 #'
 #' @family functions that calculate seawater properties
 swCSTp <- function(salinity=35, temperature=15, pressure=0,

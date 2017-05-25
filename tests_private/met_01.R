@@ -1,5 +1,4 @@
 library(oce)
-library(testthat) 
 ## devtools::install <- github("gavinsimpson/canadaHCD")
 library(canadaHCD)
 
