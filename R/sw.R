@@ -307,6 +307,7 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
         ok <- !is.na(p) & !is.na(SA) & !is.na(CT)
         if (missing(df))
             df <- round(length(p[ok]) / 10)
+        df <- max(df, 2) # smooth.spline won't work if df<2
         if (length(p[ok]) > 4 && is.finite(df)) {
             SA <- predict(smooth.spline(p[ok], SA[ok], df=df), p)$y
             CT <- predict(smooth.spline(p[ok], CT[ok], df=df), p)$y
