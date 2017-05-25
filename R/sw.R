@@ -302,7 +302,7 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
         ctd <- pressure
         SA <- ctd[["SA"]]
         CT <- ctd[["CT"]]
-        p <- ctd[["p"]]
+        p <- ctd[["pressure"]]
         ##np <- length(p)
         ok <- !is.na(p) & !is.na(SA) & !is.na(CT)
         if (missing(df))
@@ -312,9 +312,9 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
             CT <- predict(smooth.spline(p[ok], CT[ok], df=df), p)$y
         }
         latitude <- ctd[["latitude"]]
-        if (is.na(latitude))
+        if (is.na(latitude[1]))
             latitude <- 0
-        l <- gsw::gsw_Nsquared(SA=SA, CT=CT, p=p, latitude=latitude)
+        l <- gsw::gsw_Nsquared(SA=SA, CT=CT, p=p, latitude=latitude[1])
         ## approx back to the given pressures
         res <- approx(l$p_mid, l$N2, p, rule=2)$y
     }
