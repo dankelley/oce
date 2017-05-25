@@ -251,12 +251,22 @@ test_that("thermal conductivity", {
           expect_equal(test, 1478e-6, scale=1, tolerance=0.6e-6)
 })
 
-test_that("electrical conductivity", {
+test_that("electrical conductivity: definitional check values", {
           expect_equal(swCSTp(35, T90fromT68(15), 0, eos="unesco"),  1)
           expect_equal(swCSTp(35, T90fromT68(15), 0, eos="gsw"), 1)
           expect_equal(swSCTp( 1, T90fromT68(15), 0, eos="unesco"), 35)
           expect_equal(swSCTp( 1, T90fromT68(15), 0, eos="gsw"), 35)
+})
 
+test_that("electrical conductivity: semi-definitional check values (AUTHOR IS CONFUSED ON THESE)", {
+          ## the C=1 value can be tested directly in gsw, but others are tested against gsw.
+          SP <- swSCTp(1.2, T90fromT68(20), 2000, eos="gsw")
+          expect_equal(1.2, gsw::gsw_C_from_SP(SP, T90fromT68(20), 2000) / gsw::gsw_C_from_SP(35, T90fromT68(15), 0))
+          SP <- swSCTp(0.65, T90fromT68(5), 1500, eos="gsw")
+          expect_equal(0.65, gsw::gsw_C_from_SP(SP, T90fromT68(5), 1500) / gsw::gsw_C_from_SP(35, T90fromT68(15), 0))
+})
+
+test_that("electrical conductivity: real-data checks", {
           data(ctd)
           ## This does not have conductivity, so add it
           salinity <- ctd[["salinity"]]
@@ -270,20 +280,6 @@ test_that("electrical conductivity", {
           cond1 <- swCSTp(salinity, temperature, pressure, eos="unesco")
           cond2 <- swCSTp(ctd)
           expect_equal(cond1, cond2)
-
-          ## the C=1 value can be tested directly in gsw, but others are tested against gsw.
-          expect_equal(swSCTp(1, T90fromT68(15), 0, eos="unesco"), 35.0)
-          expect_equal(swSCTp(1, T90fromT68(15), 0, eos="gsw"), 35.0)
-          SP <- swSCTp(1.2, 20, 2000, eos="gsw")
-          expect_equal(1.2, gsw::gsw_C_from_SP(SP, 20, 2000) / gsw::gsw_C_from_SP(35, 15, 0))
-          SP <- swSCTp(0.65, 5, 1500, eos="gsw")
-          expect_equal(0.65, gsw::gsw_C_from_SP(SP, 5, 1500) / gsw::gsw_C_from_SP(35, 15, 0))
-          if (FALSE) {
-              ## As above, see https://github.com/dankelley/oce/issues/746 for why these
-              ## tests of conductivity ratio are FALSEd out.
-              expect_equal(1.2, swCSTp(SP, 20, 2000, eos="gsw"))
-              expect_equal(0.65, swCSTp(SP, 5, 1500, eos="gsw"))
-          }
 })
 
 test_that("depth and pressure", {
