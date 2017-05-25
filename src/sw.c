@@ -10,7 +10,7 @@ void bisect2(double ax, double bx, double (*f)(double x), double tol, double res
   double af, bf, ff;
   af = f(ax);
   bf = f(bx);
-  //Rprintf("ax=%g bx=%g af=%g bf=%g\n", ax, bx, af, bf);
+  //Rprintf("bisect2() ax=%g bx=%g af=%g bf=%g\n", ax, bx, af, bf);
   if (af * bf > 0.0) { // no root in interval
     *zero = NA_REAL;
     //Rprintf("\nno root in %f < x < %f\n", ax, bx);
@@ -22,19 +22,19 @@ void bisect2(double ax, double bx, double (*f)(double x), double tol, double res
     //Rprintf("bisect2 iter=%d af=%g bf=%g ff=%g\n", iter, af, bf, ff);
     if (++iter > maxiter) {
       *zero = NA_REAL; // too many iterations
-      //Rprintf("Too many iterations; ax=%f bx=%f\n", ax, bx);
+      //Rprintf("Too many iterations; iter=%d ax=%f bx=%f\n", iter, ax, bx);
       return;
     }
     if (!ff) { // exact solution
-      //Rprintf(" root=%f\n", *zero);
+      //Rprintf(" exact solution; root=%f\n", *zero);
       return;
     }
     if (af * ff < 0) { // root is nearer ax than bx
-      //Rprintf("-");
+      //Rprintf("ff=%.9f, *ax=%.9f, bx=%.9f\n", ff, ax, bx);
       bx = *zero;
       bf = ff;
     } else if (bf * ff < 0) { // root is nearer bx than ax
-      //Rprintf("+");
+      //Rprintf("ff=%.9f, ax=%.9f, *bx=%.9f\n", ff, ax, bx);
       ax = *zero;
       af = ff;
     } else { // problem

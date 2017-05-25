@@ -122,7 +122,7 @@ test_that("freezing temperature", {
           ## 5.1 UNESCO freezing temperature [1 p29]
           Tf <- swTFreeze(40, 500, eos="unesco")
           expect_equal(Tf, T90fromT68(-2.588567), scale=1, tolerance=1e-6)
-                                        # 5.2 GSW freezing temperature 
+          ## 5.2 GSW freezing temperature 
           SA <- gsw::gsw_SA_from_SP(SP=40, p=500, longitude=300, latitude=30)
           TfGSW <- gsw::gsw_t_freezing(SA=SA, p=500, saturation_fraction=1)
           Tf <- swTFreeze(40, 500, longitude=300, latitude=30, eos="gsw")
@@ -227,38 +227,35 @@ test_that("misc sw calculations", {
           stopifnot(all.equal(T68fromT90(T), 26.1130113601685, scale=1, tolerance=1e-8))
           stopifnot(all.equal(swRho(35, T, 0, eos="unesco"), 1023, scale=1, tolerance=1e-5))
 
-                                        # 10. sound absorption
-                                        # Compared with Table IV of Fisher & Simmons 1977.
+})
+
+test_that("sound absorption", {
+          ## Compared with Table IV of Fisher & Simmons 1977.
           alpha <- swSoundAbsorption(100e3, 35, 4, 4990) # at 500 atm (4990 dbar of water)
           expect_equal(alpha, 0.0175, tolerance=0.01) # 1% test
           alpha <- swSoundAbsorption(10e3, 35, 4, 0) # expect 0.00083 at 1 atm (0dbar of water)
           expect_equal(alpha, 0.000829, tolerance=0.01) # 1% test
+})
 
 
-                                        # 11. viscosity
-                                        # Merely a test against future changes; the original reference did not provide a test value.
+test_that("viscosity", {
+          ## Merely a test against future changes; the original reference did not provide a test value.
           stopifnot(all.equal(swViscosity(30, 10), 0.001383779, scale=1, tolerance=0.000000001))
+})
 
-
-                                        # 12. thermal conductivity
+test_that("thermal conductivity", {
           ## Caldwell 1975 table 1 gives 4 digits, i.e. to 1e-6
           joulePerCalorie <- 4.18400
           cmPerM <- 100
           test <- swThermalConductivity(31.5,10,1000) / joulePerCalorie / cmPerM
           expect_equal(test, 1478e-6, scale=1, tolerance=0.6e-6)
+})
 
-                                        # 13. electrical conductivity
+test_that("electrical conductivity", {
           expect_equal(swCSTp(35, T90fromT68(15), 0, eos="unesco"),  1)
+          expect_equal(swCSTp(35, T90fromT68(15), 0, eos="gsw"), 1)
           expect_equal(swSCTp( 1, T90fromT68(15), 0, eos="unesco"), 35)
-          ## Previously, there were tests on the gsw-style conductivities. However, these
-          ## do not work to within testthat tolerances, because the gsw style of conductivity
-          ## ratio is not equal to 1, when S=35 pSU, T68=15, p=0 ... it equals something
-          ## about 1e-4 different from 1.
-          ## For more on this matter, see https://github.com/dankelley/oce/issues/746
-          if (FALSE) {
-              expect_equal(swCSTp(35,            15,  0, eos="gsw"),     1)
-              expect_equal(swSCTp( 1,            15,  0, eos="gsw"),    35)
-          }
+          expect_equal(swSCTp( 1, T90fromT68(15), 0, eos="gsw"), 35)
 
           data(ctd)
           ## This does not have conductivity, so add it
@@ -275,7 +272,8 @@ test_that("misc sw calculations", {
           expect_equal(cond1, cond2)
 
           ## the C=1 value can be tested directly in gsw, but others are tested against gsw.
-          expect_equal(swSCTp(1,   15,   0, eos="gsw"), 35.000000, tolerance=1e-6)
+          expect_equal(swSCTp(1, T90fromT68(15), 0, eos="unesco"), 35.0)
+          expect_equal(swSCTp(1, T90fromT68(15), 0, eos="gsw"), 35.0)
           SP <- swSCTp(1.2, 20, 2000, eos="gsw")
           expect_equal(1.2, gsw::gsw_C_from_SP(SP, 20, 2000) / gsw::gsw_C_from_SP(35, 15, 0))
           SP <- swSCTp(0.65, 5, 1500, eos="gsw")
@@ -286,11 +284,13 @@ test_that("misc sw calculations", {
               expect_equal(1.2, swCSTp(SP, 20, 2000, eos="gsw"))
               expect_equal(0.65, swCSTp(SP, 5, 1500, eos="gsw"))
           }
+})
 
-                                        # 14. depth and pressure
-                                        # The UNESCO test is basically for consistency with old versions, I think, 
-                                        # but the GSW test is against gsw_z_from_p(), which is well-tested in
-                                        # the building of the gsw package.
+test_that("depth and pressure", {
+          ## 14. depth and pressure
+          ## The UNESCO test is basically for consistency with old versions, I think, 
+          ## but the GSW test is against gsw_z_from_p(), which is well-tested in
+          ## the building of the gsw package.
           depth <- swDepth(10000, 30, eos="unesco")
           expect_equal(depth, 9712.653, scale=1, tolerance=0.001)
           depth <- swDepth(10000, 30, eos="gsw")
@@ -300,7 +300,9 @@ test_that("misc sw calculations", {
           pressure <- swPressure(9712.653, 30, eos="gsw")
           expect_equal(pressure, gsw::gsw_p_from_z(-9712.653, 30), scale=1, tolerance=0.001)
 
-                                        # 15. spiciness
+})
+
+test_that("spiciness", {
           sp <- swSpice(35, T90fromT68(10), 100)
           expect_equal(sp, 1.131195, tolerance=0.0000015)
 })

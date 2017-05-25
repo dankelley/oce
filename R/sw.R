@@ -549,14 +549,18 @@ swSCTp <- function(conductivity, temperature=NULL, pressure=0,
     if (nC != np)
         stop("lengths of conductivity and pressure must agree, but they are ", nC, " and ", np)
     if (eos == "unesco") {
+        ##> message("swSCTp() unesco; conductivity[1]=", conductivity[1], ", temperature[1]=", temperature[1], ", pressure[1]=", pressure[1])
         res <- .C("sw_salinity",
                    as.integer(nC),
                    as.double(conductivity),
-                   as.double(T68fromT90(temperature)),
+                   as.double(T68fromT90(temperature)), # original formula is in IPTS-68 but we now use ITS-90
                    as.double(pressure),
                    value = double(nC),
                    NAOK=TRUE, PACKAGE = "oce")$value
     } else if (eos == "gsw") {
+        ## we don't need to convert to IPTS-68 for the gsw formulation, because it is already formulated
+        ## to work with ITS-90
+        ##> message("swSCTp() gsw; conductivity[1]=", conductivity[1], ", temperature[1]=", temperature[1], ", pressure[1]=", pressure[1])
         res <- gsw::gsw_SP_from_C(C0 * conductivity, temperature, pressure)
     }
     dim(res) <- dim
