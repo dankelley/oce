@@ -876,7 +876,6 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
 {
     ## FIXME-gsw need a gsw version
     if (missing(salinity)) stop("must provide salinity")
-    message("swAlphaOverBeta 1; eos=", eos)
     if (eos == "gsw") {
         if (missing(longitude)) stop("must supply longitude")
         if (missing(latitude)) stop("must supply latitude")
@@ -885,7 +884,6 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
     } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
     }
-    message("swAlphaOverBeta 2")
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     if (is.null(l$temperature)) stop("must provide temperature")
@@ -896,25 +894,19 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
     if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    message("swAlphaOverBeta 3")
     if (l$eos == "unesco") {
-        message("swAlphaOverBeta 4.1a")
         theta <- swTheta(l$salinity, l$temperature, l$pressure, eos=l$eos)
         res <- .C("sw_alpha_over_beta", as.integer(nS),
                    as.double(l$salinity), as.double(theta), as.double(l$pressure),
                    value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
-        message("swAlphaOverBeta 4.1b")
     } else if (l$eos == "gsw") {
-        message("swAlphaOverBeta 4.2a")
         ## not likely to be called since gsw has a direct function for alpha, but put this here anyway
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
         alpha <- gsw::gsw_alpha(SA=SA, CT=CT, p=l$pressure)
         beta <- gsw::gsw_beta(SA=SA, CT=CT, p=l$pressure)
         res <- alpha / beta
-        message("swAlphaOverBeta 4.2b")
     }
-    message("swAlphaOverBeta 5")
     if (Smatrix) dim(res) <- dim
     res
 }
