@@ -1191,23 +1191,26 @@ swDynamicHeight <- function(x, referencePressure=2000,
     eos <- match.arg(eos, c("unesco", "gsw"))
     if (eos == "gsw")
         warning("using unesco because gsw toolbox v3.03 lacks dynamic height calculation")
+    eos <- "unesco"
     height <- function(ctd, referencePressure, subdivisions, rel.tol, eos=getOption("oceEOS", default="gsw"))
     {
-        if (sum(!is.na(ctd@data$pressure)) < 2) return(NA) # cannot integrate then
+        if (sum(!is.na(ctd@data$pressure)) < 2)
+            return(NA)
         ## 2015-Jan-10: the C library does not have gsw::gsw_geo_strf_dyn_height() as of vsn 3.0.3
-        #if (eos == "unesco") {
-            g <- if (is.na(ctd@metadata$latitude)) 9.8 else gravity(ctd@metadata$latitude)
-            np <- length(ctd@data$pressure)
-            rho <- swRho(ctd)
-            if (sum(!is.na(rho)) < 2) return(NA)
-            ## 1e4 converts decibar to Pa
-            dzdp <- ( (1/rho - 1/swRho(rep(35, np), rep(0, np), ctd@data$pressure)) / g )*1e4
-            ## Scale both pressure and dz/dp to make integration work better (issue 499)
-            max <- max(dzdp, na.rm=TRUE)
-            integrand <- approxfun(ctd@data$pressure/referencePressure, dzdp/max, rule=2)
-            ##plot(dzdp/max, ctd@data$pressure/referencePressure, type='l')
-            res <- integrate(integrand, 0, 1,
-                              subdivisions=subdivisions, rel.tol=rel.tol)$value * referencePressure * max
+        ##if (eos == "unesco") {
+        g <- if (is.na(ctd@metadata$latitude)) 9.8 else gravity(ctd@metadata$latitude)
+        np <- length(ctd@data$pressure)
+        rho <- swRho(ctd, eos=eos)
+        if (sum(!is.na(rho)) < 2)
+            return(NA)
+        ## 1e4 converts decibar to Pa
+        dzdp <- ( (1/rho - 1/swRho(rep(35, np), rep(0, np), ctd@data$pressure, eos=eos)) / g )*1e4
+        ## Scale both pressure and dz/dp to make integration work better (issue 499)
+        max <- max(dzdp, na.rm=TRUE)
+        integrand <- approxfun(ctd@data$pressure/referencePressure, dzdp/max, rule=2)
+        ##plot(dzdp/max, ctd@data$pressure/referencePressure, type='l')
+        res <- integrate(integrand, 0, 1,
+                         subdivisions=subdivisions, rel.tol=rel.tol)$value * referencePressure * max
         #} else if (eos == "gsw") {
         #     SA <- ctd[["SA"]]
         #     CT <- ctd[["CT"]]
@@ -1371,12 +1374,10 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
 #'
 #' @family functions that calculate seawater properties
 swRho <- function(salinity, temperature=NULL, pressure=NULL,
-                  longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                  longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
-        if (missing(longitude)) stop("must supply longitude")
-        if (missing(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
     } else { # must be "unesco"

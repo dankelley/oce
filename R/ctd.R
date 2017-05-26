@@ -647,12 +647,12 @@ setMethod(f="[[",
                   p <- x[["pressure"]]
                   n <- length(SP)
                   ## Lengthen lon and lat if necessary, by repeating.
-                  lon <- x@metadata$longitude
+                  lon <- x[["longitude"]]
                   if (n != length(lon))
-                      lon <- rep(x@metadata$longitude, length.out=n)
-                  lat <- x@metadata$latitude
+                      lon <- rep(lon, length.out=n)
+                  lat <- x[["latitude"]]
                   if (n != length(lat))
-                      lat <- rep(x@metadata$latitude, length.out=n)
+                      lat <- rep(lat, length.out=n)
                   lon <- ifelse(lon < 0, lon + 360, lon) # not required because gsw_saar() does this ... but UNDOCUMENTED
                   ##: Change e.g. NaN to NA ... FIXME: tests show that this is not required:
                   ##:     > a<-as.ctd(10:11, c(35, asin(3)), 1:2, lon=-60, lat=50)
@@ -3088,7 +3088,7 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                   } else if (which[w] == 11) {
+                  } else if (which[w] == 11) {
                       plotProfile(x, xtype="density",
                                   plim=plim,
                                   densitylim=densitylim,
@@ -3857,13 +3857,29 @@ plotTS <- function (x,
     yat <- NULL
     if (!inherits(x, "ctd")) {
         if (inherits(x, "section")) {
-            x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]])
+            if (eos == "gsw") {
+                x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]],
+                            longitude=x[["longitude"]], latitude=x[["latitude"]])
+            } else {
+                x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]])
+            }
         } else {
             names <- names(x)
             if ("temperature" %in% names && "salinity" %in% names) {
-                x <- as.ctd(x$salinity, x$temperature, x$pressure)
+                if (eos == "gsw") {
+                    if (!("longitude" %in% names))
+                        stop("need to know longitude and latitude if eos=\"gsw\"")
+                    x <- as.ctd(x$salinity, x$temperature, x$pressure, longitude=x$longitude, latitude=x$latitude)
+                } else {
+                    x <- as.ctd(x$salinity, x$temperature, x$pressure)
+                }
             } else {
-                x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]])
+                if (eos == "gsw") {
+                    x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]], longitude=x[["longitude"]],
+                                latitude=x[["latitude"]])
+                } else {
+                    x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]])
+                }
             }
         }
     }
