@@ -753,19 +753,19 @@ swTSrho <- function(salinity, density, pressure=NULL, eos=getOption("oceEOS", de
 #'
 #' @family functions that calculate seawater properties
 swTFreeze <- function(salinity, pressure=0,
-                      longitude, latitude, saturation_fraction=1,
+                      longitude=NULL, latitude=NULL, saturation_fraction=1,
                       eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must supply salinity (which may be S or a CTD object)")
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
-            if (missing(longitude)) 
+            if (is.null(longitude)) 
                 longitude <- salinity[["longitude"]]
-            if (missing(latitude)) 
+            if (is.null(latitude)) 
                 latitude <- salinity[["latitude"]]
         }
-        if (missing(longitude)) stop("must supply longitude")
-        if (missing(latitude)) stop("must supply latitude")
+        if (is.null(longitude)) stop("must supply longitude")
+        if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, pressure=pressure,
                              longitude=longitude, latitude=latitude,
                              saturation_fraction=saturation_fraction, eos=eos))
@@ -811,18 +811,18 @@ swTFreeze <- function(salinity, pressure=0,
 #' the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
 swAlpha <- function(salinity, temperature=NULL, pressure=0,
-                    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
-            if (missing(longitude)) 
+            if (is.null(longitude)) 
                 longitude <- salinity[["longitude"]]
-            if (missing(latitude)) 
+            if (is.null(latitude)) 
                 latitude <- salinity[["latitude"]]
         }
-        if (missing(longitude)) stop("must supply longitude")
-        if (missing(latitude)) stop("must supply latitude")
+        if (is.null(longitude)) stop("must supply longitude")
+        if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
     } else {
@@ -872,13 +872,19 @@ swAlpha <- function(salinity, temperature=NULL, pressure=0,
 #'
 #' @family functions that calculate seawater properties
 swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
-                   longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                   longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     ## FIXME-gsw need a gsw version
     if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
-        if (missing(longitude)) stop("must supply longitude")
-        if (missing(latitude)) stop("must supply latitude")
+        if (inherits(salinity, "oce")) {
+            if (is.null(longitude)) 
+                longitude <- salinity[["longitude"]]
+            if (is.null(latitude)) 
+                latitude <- salinity[["latitude"]]
+        }
+        if (is.null(longitude)) stop("must supply longitude")
+        if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
     } else {
@@ -937,18 +943,18 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
 #' the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
 swBeta <- function(salinity, temperature=NULL, pressure=0,
-                   longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                   longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
-            if (missing(longitude)) 
+            if (is.null(longitude)) 
                 longitude <- salinity[["longitude"]]
-            if (missing(latitude)) 
+            if (is.null(latitude)) 
                 latitude <- salinity[["latitude"]]
         }
-        if (missing(longitude)) stop("must supply longitude")
-        if (missing(latitude)) stop("must supply latitude")
+        if (is.null(longitude)) stop("must supply longitude")
+        if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
     } else {
@@ -1270,12 +1276,18 @@ swDynamicHeight <- function(x, referencePressure=2000,
 #'
 #' @family functions that calculate seawater properties
 swLapseRate <- function(salinity, temperature=NULL, pressure=NULL,
-                        longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                        longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
-        if (missing(longitude)) stop("must supply longitude")
-        if (missing(latitude)) stop("must supply latitude")
+        if (inherits(salinity, "oce")) {
+            if (is.null(longitude)) 
+                longitude <- salinity[["longitude"]]
+            if (is.null(latitude)) 
+                latitude <- salinity[["latitude"]]
+        }
+        if (is.null(longitude)) stop("must supply longitude")
+        if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
     } else {
@@ -1378,6 +1390,14 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL,
 {
     if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
+        if (inherits(salinity, "oce")) {
+            if (is.null(longitude)) 
+                longitude <- salinity[["longitude"]]
+            if (is.null(latitude)) 
+                latitude <- salinity[["latitude"]]
+        }
+        if (is.null(longitude)) stop("must supply longitude")
+        if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
     } else { # must be "unesco"
@@ -1453,12 +1473,18 @@ swSigma <- function(salinity, temperature=NULL, pressure=NULL,
 #'
 #' @family functions that calculate seawater properties
 swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
-                     longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                     longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
-        if (missing(longitude)) stop("must supply longitude")
-        if (missing(latitude)) stop("must supply latitude")
+        if (inherits(salinity, "oce")) {
+            if (is.null(longitude)) 
+                longitude <- salinity[["longitude"]]
+            if (is.null(latitude)) 
+                latitude <- salinity[["latitude"]]
+        }
+        if (is.null(longitude)) stop("must supply longitude")
+        if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
         swRho(l$salinity, l$temperature, pressure=rep(0, length(l$salinity)),
@@ -1493,18 +1519,18 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 #'
 #' @family functions that calculate seawater properties
 swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
-                         longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                         longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
-            if (missing(longitude)) 
+            if (is.null(longitude)) 
                 longitude <- salinity[["longitude"]]
-            if (missing(latitude)) 
+            if (is.null(latitude)) 
                 latitude <- salinity[["latitude"]]
         }
-        if (missing(longitude)) stop("must supply longitude")
-        if (missing(latitude)) stop("must supply latitude")
+        if (is.null(longitude)) stop("must supply longitude")
+        if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
         theta <- swTheta(salinity=l$salinity, temperature=l$temperature, pressure=l$pressure,
@@ -1735,12 +1761,18 @@ swSoundAbsorption <- function(frequency, salinity, temperature, pressure, pH=8,
 #'
 #' @family functions that calculate seawater properties
 swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
-                         longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                         longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
-        if (missing(longitude)) stop("must supply longitude")
-        if (missing(latitude)) stop("must supply latitude")
+        if (inherits(salinity, "oce")) {
+            if (is.null(longitude)) 
+                longitude <- salinity[["longitude"]]
+            if (is.null(latitude)) 
+                latitude <- salinity[["latitude"]]
+        }
+        if (is.null(longitude)) stop("must supply longitude")
+        if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
     } else {
@@ -1800,12 +1832,18 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL,
 #'
 #' @family functions that calculate seawater properties
 swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
-                           longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                           longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
-        if (missing(longitude)) stop("must supply longitude")
-        if (missing(latitude)) stop("must supply latitude")
+        if (inherits(salinity, "oce")) {
+            if (is.null(longitude)) 
+                longitude <- salinity[["longitude"]]
+            if (is.null(latitude)) 
+                latitude <- salinity[["latitude"]]
+        }
+        if (is.null(longitude)) stop("must supply longitude")
+        if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
     } else {
@@ -1960,19 +1998,18 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
 #'
 #' @family functions that calculate seawater properties
 swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
-                    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
-            if (missing(longitude)) 
+            if (is.null(longitude)) 
                 longitude <- salinity[["longitude"]]
-            if (missing(latitude)) 
+            if (is.null(latitude)) 
                 latitude <- salinity[["latitude"]]
-        } else {
-            if (missing(longitude)) stop("must supply longitude")
-            if (missing(latitude)) stop("must supply latitude")
         }
+        if (is.null(longitude)) stop("must supply longitude")
+        if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
     } else {
@@ -2085,18 +2122,17 @@ swViscosity <- function(salinity, temperature=NULL)
 #'
 #' @family functions that calculate seawater properties
 swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
-                                      longitude, latitude=30)
+                                      longitude=NULL, latitude=NULL)
 {
     if (missing(salinity)) stop("must provide salinity")
     if (inherits(salinity, "oce")) {
-        if (missing(longitude)) 
+        if (is.null(longitude)) 
             longitude <- salinity[["longitude"]]
-        if (missing(latitude)) 
+        if (is.null(latitude)) 
             latitude <- salinity[["latitude"]]
-    } else {
-        if (missing(longitude)) stop("must supply longitude")
-        if (missing(latitude)) stop("must supply latitude")
     }
+    if (is.null(longitude)) stop("must supply longitude")
+    if (is.null(latitude)) stop("must supply latitude")
     l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                          longitude=longitude, latitude=latitude))
     Smatrix <- is.matrix(l$salinity)
@@ -2148,18 +2184,17 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
 #' }
 #'
 #' @family functions that calculate seawater properties
-swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude, latitude)
+swAbsoluteSalinity <- function(salinity, pressure=NULL, longitude=NULL, latitude=NULL)
 {
     if (missing(salinity)) stop("must provide salinity")
     if (inherits(salinity, "oce")) {
-        if (missing(longitude)) 
+        if (is.null(longitude)) 
             longitude <- salinity[["longitude"]]
-        if (missing(latitude)) 
+        if (is.null(latitude)) 
             latitude <- salinity[["latitude"]]
-    } else {
-        if (missing(longitude)) stop("must supply longitude")
-        if (missing(latitude)) stop("must supply latitude")
     }
+    if (is.null(longitude)) stop("must supply longitude")
+    if (is.null(latitude)) stop("must supply latitude")
     l <- lookWithin(list(salinity=salinity, pressure=pressure, longitude=longitude, latitude=latitude))
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
