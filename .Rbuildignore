@@ -1,4 +1,5 @@
 ^.*.org$
+.github
 .RData
 .travis.yml
 ^.*.nc$
