@@ -5,8 +5,9 @@
 \title{Ratio of seawater thermal expansion coefficient to haline contraction
 coefficient}
 \usage{
-swAlphaOverBeta(salinity, temperature = NULL, pressure = NULL, longitude,
-  latitude, eos = getOption("oceEOS", default = "gsw"))
+swAlphaOverBeta(salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default =
+  "gsw"))
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}

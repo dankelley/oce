@@ -4,8 +4,9 @@
 \alias{swLapseRate}
 \title{Seawater lapse rate}
 \usage{
-swLapseRate(salinity, temperature = NULL, pressure = NULL, longitude,
-  latitude, eos = getOption("oceEOS", default = "gsw"))
+swLapseRate(salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default =
+  "gsw"))
 }
 \arguments{
 \item{salinity}{either salinity [PSU] (in which case \code{temperature} and

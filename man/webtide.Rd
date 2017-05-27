@@ -5,10 +5,9 @@
 \title{Get a Tidal Prediction from a WebTide Database}
 \source{
 The WebTide software may be downloaded for free at the
-Department of Fisheries and Oceans (Canada) website, which in February 2016
-was
-\code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php},
-although this site seems not to be particularly static.
+Department of Fisheries and Oceans (Canada) website at
+\code{http://www.bio.gc.ca/science/research-recherche/ocean/webtide/index-en.php}
+(checked February 2016 and May 2017).
 }
 \usage{
 webtide(action = c("map", "predict"), longitude, latitude, node, time,
@@ -65,6 +64,11 @@ in metres and the predicted horizontal components of velocity, \code{u} and
 \code{v}, along with the \code{node} number, and the \code{basedir} and
 \code{region} as supplied to this function.
 If \code{plot} is \code{FALSE}, this value is returned invisibly.
+
+a list containing \code{node}, \code{longitude} and \code{latitude}. If
+no node was provided to \code{webtide} then this list will cover the whole
+set of nodes in the WebTide model; otherwise, it will be just the node that
+was requested.
 }
 \description{
 Get a tidal prediction from a WebTide database. There are two distinct cases.
@@ -102,11 +106,15 @@ Users should be on the lookout for odd results.
 
 \examples{
 \dontrun{
+## needs WebTide at the system level
 library(oce)
-lon <- -69.61
-lat <- 48.14
-prediction <- webtide("predict", longitude=lon, latitude=lat)
-mtext(sprintf("prediction at \%fN \%fE", lat, lon), line=0.75, side=3)
+## 1. prediction at Halifax NS
+longitude <- -63.57
+latitude <- 44.65
+prediction <- webtide("predict", longitude=longitude, latitude=latitude)
+mtext(sprintf("prediction at \%fN \%fE", latitude, longitude), line=0.75, side=3)
+## 2. map
+webtide(lon=-63.57,lat=44.65,xlim=c(-64,-63),ylim=c(43.0,46))
 }
 }
 \author{

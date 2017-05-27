@@ -4,7 +4,8 @@
 \alias{swAbsoluteSalinity}
 \title{Seawater absolute salinity, in GSW formulation}
 \usage{
-swAbsoluteSalinity(salinity, pressure = NULL, longitude, latitude)
+swAbsoluteSalinity(salinity, pressure = NULL, longitude = NULL,
+  latitude = NULL)
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}

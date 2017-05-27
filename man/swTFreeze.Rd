@@ -4,7 +4,7 @@
 \alias{swTFreeze}
 \title{Seawater freezing temperature}
 \usage{
-swTFreeze(salinity, pressure = 0, longitude, latitude,
+swTFreeze(salinity, pressure = 0, longitude = NULL, latitude = NULL,
   saturation_fraction = 1, eos = getOption("oceEOS", default = "gsw"))
 }
 \arguments{
