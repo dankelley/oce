@@ -1092,7 +1092,6 @@ webtide <- function(action=c("map", "predict"),
             ##data(best, envir=environment(), debug=debug-1)
             ##coastline <- get(best)
             lines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
-            dan<<-triangles
             ## use lon and lat, if node not given
             if (!nodeGiven && longitudeGiven && latitudeGiven) {
                 closest <- which.min(geodDist(triangles$longitude, triangles$latitude, longitude, latitude))
