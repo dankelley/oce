@@ -1446,7 +1446,7 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL,
 #'
 #' @family functions that calculate seawater properties
 swSigma <- function(salinity, temperature=NULL, pressure=NULL,
-                    longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must provide salinity")
     swRho(salinity, temperature, pressure,
@@ -1564,7 +1564,7 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
 #' swSigma0(35, 13, 1000)
 #' @family functions that calculate seawater properties
 swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
-                     longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                     longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=0,
                  longitude=longitude, latitude=latitude, eos=eos)
@@ -1585,7 +1585,7 @@ swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
 swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
-                     longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                     longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=1000,
                  longitude=longitude, latitude=latitude, eos=eos)
@@ -1606,7 +1606,7 @@ swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
 swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
-                     longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                     longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=2000,
                  longitude=longitude, latitude=latitude, eos=eos)
@@ -1627,7 +1627,7 @@ swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
 swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
-                     longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                     longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=3000,
                  longitude=longitude, latitude=latitude, eos=eos)
@@ -1648,7 +1648,7 @@ swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @family functions that calculate seawater properties
 swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
-                     longitude, latitude, eos=getOption("oceEOS", default="gsw"))
+                     longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     swSigmaTheta(salinity, temperature, pressure, referencePressure=4000,
                  longitude=longitude, latitude=latitude, eos=eos)
