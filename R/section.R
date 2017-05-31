@@ -434,7 +434,7 @@ setMethod(f="show",
               if (n == 0) {
                   cat("Section has no stations\n")
               } else {
-                  if (id == "")
+                  if (is.null(id) || id == "")
                       cat("Unnamed section has ", n, " stations:\n", sep="")
                   else
                       cat("Section '", id, "' has ", n, " stations:\n", sep="")
