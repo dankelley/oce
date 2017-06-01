@@ -1540,13 +1540,17 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
                              longitude=l$longitude, latitude=l$latitude, eos=l$eos)
             swRho(salinity=l$salinity, temperature=theta, pressure=referencePressure,
                   longitude=l$longitude, latitude=l$latitude, eos=l$eos) - 1000
-        } else {
-            ## new way
+        } else if (1 == getOption("oceDeveloper")) {
+            ## first new way
             SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
             CT <- gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
             gsw_rho(SA, CT, p=referencePressure) - 1000
+        } else if (2 == getOption("oceDeveloper")) {
+            ## second new way
+            SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+            gsw_pot_rho_t_exact(SA=SA, t=l$temperature, p=l$pressure, p_ref=0) - 1000
         }
-     } else {
+    } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
         theta <- swTheta(salinity=l$salinity, temperature=l$temperature, pressure=l$pressure,
                          referencePressure=referencePressure, eos=l$eos)
