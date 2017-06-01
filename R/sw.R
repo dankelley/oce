@@ -1533,11 +1533,19 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
         if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
-        theta <- swTheta(salinity=l$salinity, temperature=l$temperature, pressure=l$pressure,
-                         referencePressure=referencePressure,
-                         longitude=l$longitude, latitude=l$latitude, eos=l$eos)
-        swRho(salinity=l$salinity, temperature=theta, pressure=referencePressure,
-              longitude=l$longitude, latitude=l$latitude, eos=l$eos) - 1000
+        if (is.null(getOption("oceDeveloper"))) {
+            ## old way
+            theta <- swTheta(salinity=l$salinity, temperature=l$temperature, pressure=l$pressure,
+                             referencePressure=referencePressure,
+                             longitude=l$longitude, latitude=l$latitude, eos=l$eos)
+            swRho(salinity=l$salinity, temperature=theta, pressure=referencePressure,
+                  longitude=l$longitude, latitude=l$latitude, eos=l$eos) - 1000
+        } else {
+            ## new way
+            SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+            CT <- gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
+            gsw_rho(SA, CT, p=referencePressure) - 1000
+        }
      } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
         theta <- swTheta(salinity=l$salinity, temperature=l$temperature, pressure=l$pressure,
