@@ -31,45 +31,33 @@ see \sQuote{Details}).}
 [3,4].}
 }
 \value{
-Potential temperature [\eqn{^\circ}{deg}C] of seawater.
+Potential temperature [\eqn{^\circ}{deg}C] of seawater, referenced
+to pressure \code{referencePressure}.
 }
 \description{
 Compute \eqn{\theta}{theta}, the potential temperature of seawater.
 }
 \details{
-The potential temperature is defined to be the temperature that a water
-parcel of salinity \code{S}, \emph{in-situ} temperature \code{t} and
-pressure \code{p} would have if were to be moved adiabatically to a location
-with pressure \code{referencePressure}. This quantity is commonly denoted
-\eqn{\theta}{theta} in the oceanographic literature.
+Different formulae are used depending on the equation of state. If \code{eos}
+is \code{"unesco"}, the method of Fofonoff \emph{et al.} (1983) is used [1,2].
+Otherwise, \code{swTheta} uses \code{\link[gsw]{gsw_pt_from_t}} from
+the \code{gsw} package.
 
 If the first argument is a \code{ctd} or \code{section} object, then values
 for salinity, etc., are extracted from it, and used for the calculation, and
 the corresponding arguments to the present function are ignored.
-
-For \code{eos="unesco"} the method of Fofonoff \emph{et al.} (1983), is used
-[1,2].  For \code{eos="gsw"}, \code{\link[gsw]{gsw_pt_from_t}} is used
-[3,4].
 }
 \examples{
 library(oce)
-print(swTheta(40, T90fromT68(40), 10000, 0, eos="unesco")) # 36.89073 (Fofonoff et al., 1983)
-
-# Demonstrate that the UNESCO and GSW methods agree to a about 0.1C over a
-# typical span of values.
-S <- c(30,35,30,35)
-T <- c(-2,-2,30,30)
-p <- 1000 * runif(n=4)
-thetaU <- swTheta(S, T90fromT68(T), p)
-thetaG <- swTheta(S, T, p, 0, longitude=300, latitude=30, eos="gsw")
-print(max(abs(thetaU - thetaG)))
+## test value from Fofonoff et al., 1983
+expect_equal(36.89073, swTheta(40, T90fromT68(40), 10000, 0, eos="unesco"), tolerance=0.00001)
 
 # Example from a cross-Atlantic section
 data(section)
 stn <- section[['station', 70]]
 plotProfile(stn, 'theta', ylim=c(6000, 1000))
 lines(stn[['temperature']], stn[['pressure']], lty=2)
-legend("topleft", lty=1:2,
+legend("bottomright", lty=1:2,
        legend=c("potential", "in-situ"),
        bg='white', title="Station 70")
 
@@ -91,10 +79,6 @@ the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
 ISBN 978-0-646-55621-5.
 }
 \seealso{
-The corresponding potential density anomaly
-\eqn{\sigma_\theta}{sigma-theta} can be calculated with
-\code{\link{swSigmaTheta}}.
-
 Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{T90fromT48}}, \code{\link{T90fromT68}},
   \code{\link{swAbsoluteSalinity}},

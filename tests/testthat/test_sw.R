@@ -82,7 +82,7 @@ test_that("potential_temperature (UNESCO)", {
           expect_equal(swTheta(as.ctd(40, T90fromT68(40), 10000), eos="unesco"), 36.89073, scale=1, tolerance=0.00002)
 })
 
-test_that("potential_temperature, SA and CT, sound speed (GSW)", {
+test_that("SA and CT, sound speed (GSW)", {
           ## 2.2 GSW potential temperature
           ## 
           ## Since gsw_ functions are tested in the gsw package, we just need a consistency check.
@@ -94,8 +94,6 @@ test_that("potential_temperature, SA and CT, sound speed (GSW)", {
           ctd <- as.ctd(SP, t, p, longitude=lon, latitude=lat)
           SA <- gsw::gsw_SA_from_SP(SP, p, longitude=lon, latitude=lat)
           thetaGSW <- gsw::gsw_pt_from_t(SA, t, p, p_ref=0)
-          theta <- swTheta(SP, t, p, longitude=lon, latitude=lat, eos="gsw")
-          expect_equal(thetaGSW, theta)
           theta <- swTheta(ctd, eos="gsw")
           expect_equal(thetaGSW, theta)
           CT <- gsw::gsw_CT_from_t(SA=SA, t=t, p=p)

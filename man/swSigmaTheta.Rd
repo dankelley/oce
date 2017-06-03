@@ -50,8 +50,7 @@ extracted from it, and used for the calculation instead of any values
 provided in the other arguments.
 }
 \examples{
-swSigmaTheta(35, 13, 1000, longitude=300, latitude=30, eos="gsw") # 26.42456
-swSigmaTheta(35, 13, 1000, eos="unesco") # 26.42066
+expect_equal(26.42066, swSigmaTheta(35, 13, 1000, eos="unesco"), tolerance=0.00001)
 
 }
 \references{

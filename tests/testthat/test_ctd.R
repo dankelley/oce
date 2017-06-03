@@ -50,23 +50,23 @@ test_that("ctd[[\"SA\"]] requires lon and lat", {
 })
 
 test_that("as.ctd() with specified arguments, not including salinity", {
-          S <- ctd[["salinity"]]
-          T <- ctd[["temperature"]]
-          p <- ctd[["pressure"]]
-          C <- swCSTp(S, T, p)
+          salinity <- ctd[["salinity"]]
+          temperature <- ctd[["temperature"]]
+          pressure <- ctd[["pressure"]]
+          conductivity <- swCSTp(salinity, temperature, pressure)
           options(oceEOS="unesco")
-          ctdNew <- as.ctd(conductivity=C, temperature=T, pressure=p)
+          ctdNew <- as.ctd(conductivity=conductivity, temperature=temperature, pressure=pressure)
           ## Test that all fields were created accurately.
-          expect_equal(S, ctdNew[["salinity"]])
-          expect_equal(T, ctdNew[["temperature"]])
-          expect_equal(p, ctdNew[["pressure"]])
+          expect_equal(salinity, ctdNew[["salinity"]])
+          expect_equal(temperature, ctdNew[["temperature"]])
+          expect_equal(pressure, ctdNew[["pressure"]])
           ##
           options(oceEOS="gsw")
-          ctdNew <- as.ctd(conductivity=C, temperature=T, pressure=p)
+          ctdNew <- as.ctd(conductivity=conductivity, temperature=temperature, pressure=pressure)
           ## Test that all fields were created accurately.
-          expect_equal(S, ctdNew[["salinity"]])
-          expect_equal(T, ctdNew[["temperature"]])
-          expect_equal(p, ctdNew[["pressure"]])
+          expect_equal(salinity, ctdNew[["salinity"]])
+          expect_equal(temperature, ctdNew[["temperature"]])
+          expect_equal(pressure, ctdNew[["pressure"]])
 })
 
 

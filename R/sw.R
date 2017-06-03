@@ -874,10 +874,11 @@ swAlpha <- function(salinity, temperature=NULL, pressure=0,
 swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
                    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
-    ## FIXME-gsw need a gsw version
     if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
+            temperature <- salinity[["temperature"]]
+            pressure <- salinity[["temperature"]]
             if (is.null(longitude)) 
                 longitude <- salinity[["longitude"]]
             if (is.null(latitude)) 
@@ -897,21 +898,17 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL,
     nt <- length(l$temperature)
     if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
     if (is.null(l$pressure)) pressure <- 0
-    if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
-    np <- length(l$pressure)
-    if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    if (l$eos == "unesco") {
-        theta <- swTheta(l$salinity, l$temperature, l$pressure, eos=l$eos)
-        res <- .C("sw_alpha_over_beta", as.integer(nS),
-                   as.double(l$salinity), as.double(theta), as.double(l$pressure),
-                   value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
-    } else if (l$eos == "gsw") {
+    if (length(l$pressure) != nS) l$pressure <- rep(l$pressure, length.out=nS)
+    if (l$eos == "gsw") {
         ## not likely to be called since gsw has a direct function for alpha, but put this here anyway
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
-        alpha <- gsw::gsw_alpha(SA=SA, CT=CT, p=l$pressure)
-        beta <- gsw::gsw_beta(SA=SA, CT=CT, p=l$pressure)
-        res <- alpha / beta
+        res <- gsw::gsw_alpha_on_beta(SA=SA, CT=CT, p=l$pressure)
+    } else if (l$eos == "unesco") {
+        theta <- swTheta(l$salinity, l$temperature, l$pressure, eos="unesco")
+        res <- .C("sw_alpha_over_beta", as.integer(nS),
+                   as.double(l$salinity), as.double(theta), as.double(l$pressure),
+                   value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     }
     if (Smatrix) dim(res) <- dim
     res
@@ -946,13 +943,15 @@ swBeta <- function(salinity, temperature=NULL, pressure=0,
                    longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must provide salinity")
+    if (inherits(salinity, "oce")) {
+        temperature <- salinity[["temperature"]]
+        pressure <- salinity[["temperature"]]
+        if (is.null(longitude)) 
+            longitude <- salinity[["longitude"]]
+        if (is.null(latitude)) 
+            latitude <- salinity[["latitude"]]
+    }
     if (eos == "gsw") {
-        if (inherits(salinity, "oce")) {
-            if (is.null(longitude)) 
-                longitude <- salinity[["longitude"]]
-            if (is.null(latitude)) 
-                latitude <- salinity[["latitude"]]
-        }
         if (is.null(longitude)) stop("must supply longitude")
         if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
@@ -968,15 +967,15 @@ swBeta <- function(salinity, temperature=NULL, pressure=0,
     if (length(l$pressure) == 1) l$pressure <- rep(l$pressure, length.out=nS)
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    if (l$eos == "unesco") {
-        theta <- swTheta(l$salinity, l$temperature, l$pressure, eos=l$eos) # the formula is i.t.o. theta
-        res <- .C("sw_beta", as.integer(nS),
-                   as.double(l$salinity), as.double(theta), as.double(l$pressure),
-                   value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
-    } else if (l$eos == "gsw") {
+    if (eos == "gsw") {
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         CT <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
         res <- gsw::gsw_beta(SA=SA, CT=CT, p=l$pressure)
+    } else if (eos == "unesco") {
+        theta <- swTheta(l$salinity, l$temperature, l$pressure, eos="unesco") # the formula is i.t.o. theta
+        res <- .C("sw_beta", as.integer(nS),
+                   as.double(l$salinity), as.double(theta), as.double(l$pressure),
+                   value = double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     }
     if (Smatrix) dim(res) <- dim
     res
@@ -1514,50 +1513,54 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 #' @author Dan Kelley
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @examples
-#' swSigmaTheta(35, 13, 1000, longitude=300, latitude=30, eos="gsw") # 26.42456
-#' swSigmaTheta(35, 13, 1000, eos="unesco") # 26.42066
+#' expect_equal(26.42066, swSigmaTheta(35, 13, 1000, eos="unesco"), tolerance=0.00001)
 #'
 #' @family functions that calculate seawater properties
 swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
                          longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
-    if (missing(salinity)) stop("must provide salinity")
+   if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
-            if (is.null(longitude)) 
+            if (missing(longitude)) 
                 longitude <- salinity[["longitude"]]
-            if (is.null(latitude)) 
+            if (missing(latitude)) 
                 latitude <- salinity[["latitude"]]
+        } else {
+            if (missing(longitude)) stop("must supply longitude")
+            if (missing(latitude)) stop("must supply latitude")
         }
-        if (is.null(longitude)) stop("must supply longitude")
-        if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))
-        if (is.null(getOption("oceDeveloper"))) {
-            ## old way
-            theta <- swTheta(salinity=l$salinity, temperature=l$temperature, pressure=l$pressure,
-                             referencePressure=referencePressure,
-                             longitude=l$longitude, latitude=l$latitude, eos=l$eos)
-            swRho(salinity=l$salinity, temperature=theta, pressure=referencePressure,
-                  longitude=l$longitude, latitude=l$latitude, eos=l$eos) - 1000
-        } else if (1 == getOption("oceDeveloper")) {
-            ## first new way
-            SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-            CT <- gsw_CT_from_t(SA=SA, t=l$temperature, p=l$pressure)
-            gsw_rho(SA, CT, p=referencePressure) - 1000
-        } else if (2 == getOption("oceDeveloper")) {
-            ## second new way
-            SA <- gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-            gsw_pot_rho_t_exact(SA=SA, t=l$temperature, p=l$pressure, p_ref=0) - 1000
-        }
     } else {
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
+    }
+    if (is.null(l$temperature)) stop("must provide temperature")
+    if (is.null(l$pressure)) stop("must provide pressure")
+    Smatrix <- is.matrix(l$salinity)
+    dim <- dim(l$salinity)
+    nS <- length(l$salinity)
+    nt <- length(l$temperature)
+    if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    np <- length(l$pressure)
+    if (np == 1)
+        l$pressure <- rep(l$pressure, length.out=nS)
+    np <- length(l$pressure)
+    if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    referencePressure <- rep(referencePressure[1], length.out=nS)
+    if (l$eos == "unesco") {
         theta <- swTheta(salinity=l$salinity, temperature=l$temperature, pressure=l$pressure,
-                         referencePressure=referencePressure, eos=l$eos)
-        swRho(salinity=l$salinity, temperature=theta, pressure=referencePressure, eos=l$eos) - 1000
-    }   
+                         referencePressure=referencePressure,
+                         longitude=l$longitude, latitude=l$latitude, eos=l$eos)
+        res <- swRho(salinity=l$salinity, temperature=theta, pressure=referencePressure,
+                     longitude=l$longitude, latitude=l$latitude, eos=l$eos) - 1000
+    } else if (l$eos == "gsw") {
+        SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
+        res <- gsw::gsw_pot_rho_t_exact(SA=SA, t=l$temperature, p=l$pressure, p_ref=referencePressure) - 1000
+    }
+    if (Smatrix) dim(res) <- dim
+    res
 }
-
 
 #' Seawater potential density anomaly referenced to surface pressure
 #'
@@ -1572,13 +1575,11 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
 #' @return Potential density anomaly [kg/m\eqn{^3}{^3}].
 #' @author Dan Kelley
 #' @references See citations provided in the \code{\link{swRho}} documentation.
-#' @examples
-#' swSigma0(35, 13, 1000)
 #' @family functions that calculate seawater properties
 swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
-    swSigmaTheta(salinity, temperature, pressure, referencePressure=0,
+    swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=0,
                  longitude=longitude, latitude=latitude, eos=eos)
 }
 
@@ -1599,7 +1600,7 @@ swSigma0 <- function(salinity, temperature=NULL, pressure=NULL,
 swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
-    swSigmaTheta(salinity, temperature, pressure, referencePressure=1000,
+    swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=1000,
                  longitude=longitude, latitude=latitude, eos=eos)
 }
 
@@ -1620,7 +1621,7 @@ swSigma1 <- function(salinity, temperature=NULL, pressure=NULL,
 swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
-    swSigmaTheta(salinity, temperature, pressure, referencePressure=2000,
+    swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=2000,
                  longitude=longitude, latitude=latitude, eos=eos)
 }
 
@@ -1641,7 +1642,7 @@ swSigma2 <- function(salinity, temperature=NULL, pressure=NULL,
 swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
-    swSigmaTheta(salinity, temperature, pressure, referencePressure=3000,
+    swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=3000,
                  longitude=longitude, latitude=latitude, eos=eos)
 }
 
@@ -1662,7 +1663,7 @@ swSigma3 <- function(salinity, temperature=NULL, pressure=NULL,
 swSigma4 <- function(salinity, temperature=NULL, pressure=NULL,
                      longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
-    swSigmaTheta(salinity, temperature, pressure, referencePressure=4000,
+    swSigmaTheta(salinity=salinity, temperature=temperature, pressure=pressure, referencePressure=4000,
                  longitude=longitude, latitude=latitude, eos=eos)
 }
 
@@ -1937,19 +1938,14 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
 #'
 #' Compute \eqn{\theta}{theta}, the potential temperature of seawater.
 #'
-#' The potential temperature is defined to be the temperature that a water
-#' parcel of salinity \code{S}, \emph{in-situ} temperature \code{t} and
-#' pressure \code{p} would have if were to be moved adiabatically to a location
-#' with pressure \code{referencePressure}. This quantity is commonly denoted
-#' \eqn{\theta}{theta} in the oceanographic literature.
+#' Different formulae are used depending on the equation of state. If \code{eos}
+#' is \code{"unesco"}, the method of Fofonoff \emph{et al.} (1983) is used [1,2].
+#' Otherwise, \code{swTheta} uses \code{\link[gsw]{gsw_pt_from_t}} from
+#' the \code{gsw} package.
 #'
 #' If the first argument is a \code{ctd} or \code{section} object, then values
 #' for salinity, etc., are extracted from it, and used for the calculation, and
 #' the corresponding arguments to the present function are ignored.
-#'
-#' For \code{eos="unesco"} the method of Fofonoff \emph{et al.} (1983), is used
-#' [1,2].  For \code{eos="gsw"}, \code{\link[gsw]{gsw_pt_from_t}} is used
-#' [3,4].
 #'
 #' @param salinity either salinity [PSU] (in which case \code{temperature} and
 #' \code{pressure} must be provided) \strong{or} an \code{oce} object (in which
@@ -1965,11 +1961,12 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
 #' \sQuote{Details}).
 #' @param eos equation of state, either \code{"unesco"} [1,2] or \code{"gsw"}
 #' [3,4].
-#' @return Potential temperature [\eqn{^\circ}{deg}C] of seawater.
+##'
+#' @return Potential temperature [\eqn{^\circ}{deg}C] of seawater, referenced
+#' to pressure \code{referencePressure}.
+#'
 #' @author Dan Kelley
-#' @seealso The corresponding potential density anomaly
-#' \eqn{\sigma_\theta}{sigma-theta} can be calculated with
-#' \code{\link{swSigmaTheta}}.
+#'
 #' @references
 #'
 #' [1] Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
@@ -1986,25 +1983,18 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
 #' [4] McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and
 #' the Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
 #' ISBN 978-0-646-55621-5.
+#'
 #' @examples
 #' library(oce)
-#' print(swTheta(40, T90fromT68(40), 10000, 0, eos="unesco")) # 36.89073 (Fofonoff et al., 1983)
-#'
-#' # Demonstrate that the UNESCO and GSW methods agree to a about 0.1C over a
-#' # typical span of values.
-#' S <- c(30,35,30,35)
-#' T <- c(-2,-2,30,30)
-#' p <- 1000 * runif(n=4)
-#' thetaU <- swTheta(S, T90fromT68(T), p)
-#' thetaG <- swTheta(S, T, p, 0, longitude=300, latitude=30, eos="gsw")
-#' print(max(abs(thetaU - thetaG)))
+#' ## test value from Fofonoff et al., 1983
+#' expect_equal(36.89073, swTheta(40, T90fromT68(40), 10000, 0, eos="unesco"), tolerance=0.00001)
 #'
 #' # Example from a cross-Atlantic section
 #' data(section)
 #' stn <- section[['station', 70]]
 #' plotProfile(stn, 'theta', ylim=c(6000, 1000))
 #' lines(stn[['temperature']], stn[['pressure']], lty=2)
-#' legend("topleft", lty=1:2,
+#' legend("bottomright", lty=1:2,
 #'        legend=c("potential", "in-situ"),
 #'        bg='white', title="Station 70")
 #'
@@ -2013,22 +2003,24 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
                     longitude=NULL, latitude=NULL, eos=getOption("oceEOS", default="gsw"))
 {
     if (missing(salinity)) stop("must provide salinity")
-    if (eos == "gsw") {
-        if (inherits(salinity, "oce")) {
+    if (inherits(salinity, "oce")) {
+        temperature <- salinity[["temperature"]]
+        pressure <- salinity[["temperature"]]
+        if (eos == "gsw") {
             if (is.null(longitude)) 
                 longitude <- salinity[["longitude"]]
             if (is.null(latitude)) 
                 latitude <- salinity[["latitude"]]
         }
+    }
+    if (eos == "gsw") {
         if (is.null(longitude)) stop("must supply longitude")
         if (is.null(latitude)) stop("must supply latitude")
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
-                             longitude=longitude, latitude=latitude, eos=eos))
+                             longitude=longitude, latitude=latitude))
     } else {
-        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure, eos=eos))
+        l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure))
     }
-    if (is.null(l$temperature)) stop("must provide temperature")
-    if (is.null(l$pressure)) stop("must provide pressure")
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
     nS <- length(l$salinity)
@@ -2040,16 +2032,18 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
     np <- length(l$pressure)
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     referencePressure <- rep(referencePressure[1], length.out=nS)
-    if (eos == "unesco") {
-        res <- .C("theta_UNESCO_1983",
-                   as.integer(nS), as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
-                   as.double(referencePressure),
-                   value=double(nS), NAOK=TRUE, PACKAGE = "oce")$value
-    } else if (eos == "gsw") {
+    if (eos == "gsw") {
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         res <- gsw::gsw_pt_from_t(SA=SA, t=l$temperature, p=l$pressure, p_ref=referencePressure)
+    } else if (eos == "unesco") {
+        res <- .C("theta_UNESCO_1983",
+                  as.integer(nS),
+                  as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
+                  as.double(referencePressure),
+                  value=double(nS), NAOK=TRUE, PACKAGE = "oce")$value
     }
-    if (Smatrix) dim(res) <- dim
+    if (Smatrix)
+        dim(res) <- dim
     res
 }
 
@@ -2156,7 +2150,7 @@ swConservativeTemperature <- function(salinity, temperature=NULL, pressure=NULL,
     if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     bad <- is.na(l$salinity) | is.na(l$temperature) | is.na(l$pressure)
     SA <- gsw::gsw_SA_from_SP(SP=l$salinity[!bad], p=l$pressure[!bad],
-                         longitude=l$longitude[!bad], latitude=l$latitude[!bad])
+                              longitude=l$longitude[!bad], latitude=l$latitude[!bad])
     good <- gsw::gsw_CT_from_t(SA=SA, t=l$temperature[!bad], p=l$pressure[!bad])
     res <- rep(NA, nS)
     res[!bad] <- good

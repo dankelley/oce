@@ -44,10 +44,10 @@ calculated with \code{\link{swN2}} with
 an optional argument setting of \code{df=length(x[["pressure"]])/4} to do
 some smoothing.
 
-\item \code{"density+N2"} Profile of sigma-theta and
+\item \code{"density+N2"} Profile of sigma0 and
 the square of buoyancy frequency within a single axis frame.
 
-\item \code{"density+dpdt"} Profile of sigma-theta and dP/dt for the
+\item \code{"density+dpdt"} Profile of sigma0 and dP/dt for the
 sensor.  The latter is useful in indicating problems with the deployment.
 It is calculated by first differencing pressure and then using a smoothing
 spline on the result (to avoid grid-point wiggles that result because the

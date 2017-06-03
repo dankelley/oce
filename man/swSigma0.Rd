@@ -44,9 +44,6 @@ Definition:
 \eqn{\sigma_0=\sigma_\theta=\rho(S,\theta(S,t,p),0}{sigma_0=sigma_theta=rho(S,theta(S,t,p),0)}
 - 1000 kg/m\eqn{^3}{^3}.
 }
-\examples{
-swSigma0(35, 13, 1000)
-}
 \references{
 See citations provided in the \code{\link{swRho}} documentation.
 }

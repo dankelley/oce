@@ -4112,10 +4112,10 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' an optional argument setting of \code{df=length(x[["pressure"]])/4} to do
 #' some smoothing.
 #'
-#' \item \code{"density+N2"} Profile of sigma-theta and
+#' \item \code{"density+N2"} Profile of sigma0 and
 #' the square of buoyancy frequency within a single axis frame.
 #'
-#' \item \code{"density+dpdt"} Profile of sigma-theta and dP/dt for the
+#' \item \code{"density+dpdt"} Profile of sigma0 and dP/dt for the
 #' sensor.  The latter is useful in indicating problems with the deployment.
 #' It is calculated by first differencing pressure and then using a smoothing
 #' spline on the result (to avoid grid-point wiggles that result because the
@@ -4417,25 +4417,24 @@ plotProfile <- function (x,
     } else if (xtype == "density+time") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+time\"")
-        st <- if (eos == "unesco") swSigmaTheta(x[["salinity"]], x[["temperature"]], x[["pressure"]]) else
-            swSigmaTheta(x[["salinity"]], x[["temperature"]], x[["pressure"]],
-                         longitude=x[["longitude"]], latitude=x[["latitude"]], eos=eos)
+        sig0 <- if (eos == "unesco") swSigma0(x[["salinity"]], x[["temperature"]], x[["pressure"]]) else
+            swSigma0(x[["salinity"]], x[["temperature"]], x[["pressure"]],
+                     longitude=x[["longitude"]], latitude=x[["latitude"]], eos=eos)
         if (missing(densitylim))
-            densitylim <- range(x[["sigmaTheta"]], na.rm=TRUE)
-        look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
+            densitylim <- range(sig0, na.rm=TRUE)
+        look <- if (keepNA) 1:length(y) else !is.na(sig0) & !is.na(y)
         look <- as.vector(look)
-        plot(st[look], y[look], xlim=densitylim, ylim=ylim, cex=cex, pch=pch,
+        plot(sig0[look], y[look], xlim=densitylim, ylim=ylim, cex=cex, pch=pch,
              type=type, col=col.rho, lty=lty, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-        ## lines(st[look], y[look])
         axis(3, col=col.rho, col.axis=col.rho, col.lab=col.rho)
         ## FIXME: do next with resizable label; also for the N2
         ##br <- if (getOption("oceUnitBracket") == '[') c("[", "]") else c("(", ")")
         if (getOption("oceUnitBracket") == '[') {
             label <- if (eos == "unesco") expression(paste(sigma[theta], " [", kg/m^3, "]")) else
-                expression(paste(sigma[1], " [", kg/m^3, "]"))
+                expression(paste(sigma[0], " [", kg/m^3, "]"))
         } else {
             label <- if (eos == "unesco") expression(paste(sigma[theta], " (", kg/m^3, ")")) else
-                expression(paste(sigma[1], " (", kg/m^3, ")"))
+                expression(paste(sigma[0], " (", kg/m^3, ")"))
         }
         mtext(label, side=3, line=axisNameLoc, col=col.rho, cex=par("cex"))
         axis(2)
@@ -4784,7 +4783,7 @@ plotProfile <- function (x,
                             keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "theta" || xtype == "potential temperature") {
-        theta <- if ("theta" %in% names(x@data)) x@data$theta else swTheta(x, eos=eos)
+        theta <- if ("theta" %in% names(x@data)) x@data$theta else swTheta(x)
         if (missing(Tlim)) {
             if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(theta, na.rm=TRUE)
         }
@@ -4901,15 +4900,15 @@ plotProfile <- function (x,
     } else if (xtype == "density+N2") {
         if (add)
             warning("argument 'add' is ignored for xtype=\"density+dpdt\"")
-        st <- swSigmaTheta(x, eos=eos)
-        if (!any(is.finite(st))) {
-            warning("no valid sigma-theta data")
+        sig0 <- swSigma0(x)
+        if (!any(is.finite(sig0))) {
+            warning("no valid sigma-0 data")
             return(invisible())
         }
-        look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
+        look <- if (keepNA) 1:length(y) else !is.na(sig0) & !is.na(y)
         if (missing(densitylim))
-            densitylim <- range(st, na.rm=TRUE)
-        plot(st[look], y[look], lty=lty,
+            densitylim <- range(sig0, na.rm=TRUE)
+        plot(sig0[look], y[look], lty=lty,
              xlim=densitylim, ylim=ylim, cex=cex, pch=pch,
              type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col=col.rho, col.axis=col.rho, col.lab=col.rho)
@@ -4926,12 +4925,12 @@ plotProfile <- function (x,
         axis(2)
         box()
         if (type == 'l') {
-            lines(st, y, col=col.rho, lwd=lwd, lty=lty)
+            lines(sig0, y, col=col.rho, lwd=lwd, lty=lty)
         } else if (type == 'p') {
-            points(st, y, col=col.rho, pch=pch, cex=cex)
+            points(sig0, y, col=col.rho, pch=pch, cex=cex)
         } else {
-            points(st, y, col=col.rho, pch=pch, cex=cex)
-            lines(st, y, col=col.rho, lwd=lwd, lty=lty)
+            points(sig0, y, col=col.rho, pch=pch, cex=cex)
+            lines(sig0, y, col=col.rho, lwd=lwd, lty=lty)
         }
         par(new=TRUE)
         N2 <- swN2(x, df=df, eos=eos)
