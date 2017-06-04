@@ -1936,8 +1936,9 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
 
 #' Seawater potential temperature
 #'
-#' Compute \eqn{\theta}{theta}, the potential temperature of seawater.
-#'
+#' Compute the potential temperature of seawater, denoted \eqn{\theta}{theta}
+#' in the UNESCO system, and \code{pt} in the GSW system.
+#' 
 #' Different formulae are used depending on the equation of state. If \code{eos}
 #' is \code{"unesco"}, the method of Fofonoff \emph{et al.} (1983) is used [1,2].
 #' Otherwise, \code{swTheta} uses \code{\link[gsw]{gsw_pt_from_t}} from
@@ -2095,7 +2096,7 @@ swViscosity <- function(salinity, temperature=NULL)
 
 #' Seawater conservative temperature, in GSW formulation
 #'
-#' Compute seawater conservative temperature, according to the GSW/TEOS-10
+#' Compute seawater Conservative Temperature, according to the GSW/TEOS-10
 #' formulation.
 #'
 #' If the first argument is an \code{oce} object, then values for salinity,

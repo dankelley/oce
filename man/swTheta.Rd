@@ -35,7 +35,8 @@ Potential temperature [\eqn{^\circ}{deg}C] of seawater, referenced
 to pressure \code{referencePressure}.
 }
 \description{
-Compute \eqn{\theta}{theta}, the potential temperature of seawater.
+Compute the potential temperature of seawater, denoted \eqn{\theta}{theta}
+in the UNESCO system, and \code{pt} in the GSW system.
 }
 \details{
 Different formulae are used depending on the equation of state. If \code{eos}
