@@ -61,16 +61,26 @@ SEXP topo_interpolate(SEXP lat, SEXP lon, SEXP grid_lat, SEXP grid_lon, SEXP gri
         int grid_lat_index, grid_lon_index;
         grid_lat_index = (int)floor((latp[i] - grid_latp[0]) / grid_lat_increment);
         if (grid_lat_index < 0 || grid_lat_index > grid_lat_len - 1) {
+#ifdef DEBUG
+            Rprintf("NA #A: latp[%d]=%lf, grid_latp[0]=%lf, grid_lat_index=%d, grid_lat_len=%d\n",
+                    i, latp[i], grid_latp[0], grid_lat_index, grid_lat_len);
+#endif
             ansp[i] = NA_REAL;
         } else {
             grid_lon_index = (int)floor((lonp[i] - grid_lonp[0]) / grid_lon_increment);
             if (grid_lon_index < 0 || grid_lon_index > grid_lon_len - 1) {
+#ifdef DEBUG
+                Rprintf("NA #B: i=%d, grid_lon_index=%d, grid_lon_len=%d\n", i, grid_lon_index, grid_lon_len);
+#endif
                 ansp[i] = NA_REAL;
             } else {
                 int l = look(grid_lat_index, grid_lon_index);
-                if (l < 0 || l > grid_z_len - 1)
+                if (l < 0 || l > grid_z_len - 1) {
+#ifdef DEBUG
+                    Rprintf("NA #C: i=%d, l=%d, grid_z_len=%d\n", i, l, grid_z_len);
+#endif
                     ansp[i] = NA_REAL;
-                else {
+                } else {
                     // http://en.wikipedia.org/wiki/Bilinear_interpolation
                     double x = (lonp[i] - grid_lonp[grid_lon_index]) / grid_lon_increment;
                     double y = (latp[i] - grid_latp[grid_lat_index]) / grid_lat_increment;
@@ -83,7 +93,7 @@ SEXP topo_interpolate(SEXP lat, SEXP lon, SEXP grid_lat, SEXP grid_lon, SEXP gri
                         zul * (1.0 - x) * y +
                         zur * x * y;
 #ifdef DEBUG
-                    if (i < 5)
+                    if (i < 50)
                         Rprintf("lat %.3f [%d] lon %.3f [%d] | ll %.1f [%4d] lr %.1f [%4d] ur %.1f [%4d] ul %.1f [%4d] | xy %f %f | ans %.1f\n",
                                 latp[i], grid_lat_index, lonp[i], grid_lon_index,
                                 l, zll,
