@@ -3484,6 +3484,8 @@ setMethod(f="plot",
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
+              if (missing(subset))
+                  stop("in subset,ctd-method() : 'subset' missing", call.=FALSE)
               res <- new("ctd")
               res@metadata <- x@metadata
               res@processingLog <- x@processingLog
