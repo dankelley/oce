@@ -27,7 +27,8 @@ CTD is in profiling mode (i.e. if \code{deploymentType} in the \code{metadata}
 slot equals \code{"profile"},
 or is missing) or
 \code{"thermosalinograph"}, the default will be \code{c(30, 3, 31, 5)}.  If it
-is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as follows.
+is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as
+follows.
 
 \itemize{
     \item \code{which=1} or \code{which="salinity+temperature"} gives
@@ -63,6 +64,8 @@ is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as follows.
     \item \code{which=15} or \code{which="Rrho"} gives an Rrho profile
     \item \code{which=16} or \code{which="RrhoSF"} gives an RrhoSF profile
     \item \code{which=17} or \code{which="conductivity"} gives a conductivity profile
+    \item \code{which=20} or \code{which="CT"} gives a Conservative Temperature profile
+    \item \code{which=21} or \code{which="SA"} gives an Absolute Salinity profile
 }}
 
 \item{col}{Colour of lines or symbols.}

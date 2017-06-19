@@ -2594,7 +2594,8 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' slot equals \code{"profile"},
 #' or is missing) or
 #' \code{"thermosalinograph"}, the default will be \code{c(30, 3, 31, 5)}.  If it
-#' is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as follows.
+#' is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as
+#' follows.
 #'
 #' \itemize{
 #'     \item \code{which=1} or \code{which="salinity+temperature"} gives
@@ -2630,6 +2631,8 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'     \item \code{which=15} or \code{which="Rrho"} gives an Rrho profile
 #'     \item \code{which=16} or \code{which="RrhoSF"} gives an RrhoSF profile
 #'     \item \code{which=17} or \code{which="conductivity"} gives a conductivity profile
+#'     \item \code{which=20} or \code{which="CT"} gives a Conservative Temperature profile
+#'     \item \code{which=21} or \code{which="SA"} gives an Absolute Salinity profile
 #' }
 #'
 #' @param col Colour of lines or symbols.
@@ -2999,6 +3002,8 @@ setMethod(f="plot",
                                        Rrho=15,
                                        RrhoSF=16,
                                        "conductivity"=17,
+                                       CT=20,
+                                       SA=21,
                                        "Sts"=30,
                                        "Tts"=31,
                                        "pts"=32,
@@ -3431,6 +3436,23 @@ setMethod(f="plot",
                                     side=3, adj=1, cex=0.8*par("cex"), line=1.125)
                       }
                       oceDebug(debug, "} # plot(ctd, ...) of type \"map\"\n", unindent=1)
+                  } else if (which[w] == 20) { # CT
+                      plotProfile(x, xtype="CT", xlab=resizableLabel("CT"),
+                                  Tlim=Tlim, plim=plim, eos="gsw",
+                                  useSmoothScatter=useSmoothScatter,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  debug=debug-1,
+                                  ...)
+                  } else if (which[w] == 21) { # SA
+                      plotProfile(x, xtype="SA", xlab=resizableLabel("SA"),
+                                  Tlim=Tlim, plim=plim, eos="gsw",
+                                  useSmoothScatter=useSmoothScatter,
+                                  grid=grid, col.grid="lightgray", lty.grid="dotted",
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
+                                  debug=debug-1,
+                                  ...)
+                       plotProfile(...)
                   } else if (which[w] ==30) {
                       ## S timeseries
                       oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S", "y"))
@@ -4522,8 +4544,8 @@ plotProfile <- function (x,
             at <- par("xaxp")
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
-    } else if (xtype == "S" || xtype == "salinity") {
-        salinity <- if (eos == "gsw") swAbsoluteSalinity(x) else x[["salinity"]]
+    } else if (xtype == "S" || xtype == "SA" || xtype == "salinity") {
+        salinity <- if (eos == "gsw" || xtype == "SA") swAbsoluteSalinity(x) else x[["salinity"]]
         if (!any(is.finite(salinity))) {
             warning("no valid salinity data")
             return(invisible())
@@ -4737,8 +4759,8 @@ plotProfile <- function (x,
         plotJustProfile(Rrho, y[look], type=type, lwd=lwd, lty=lty,
                         cex=cex, col=col, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
-    } else if (xtype == "T" || xtype == "temperature") {
-        temperature <- if (eos == "gsw") swConservativeTemperature(x) else x[["temperature"]]
+    } else if (xtype == "T" || xtype == "CT" || xtype == "temperature") {
+        temperature <- if (eos == "gsw" || xtype == "CT") swConservativeTemperature(x) else x[["temperature"]]
         unit <- x@metadata$units[["temperature"]]
         if (!any(is.finite(temperature))) {
             warning("no valid temperature data")
