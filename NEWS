@@ -1,4 +1,5 @@
 0.9-22
+- lowpass() added
 - ctdTrim() can isolate upcasts
 - deprecate byteToBinary()
 - address a CRAN NOTE about UTF-8 strings in data

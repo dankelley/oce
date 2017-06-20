@@ -4266,3 +4266,60 @@ trimString <- function(s)
 {
     gsub("^ *", "", gsub(" *$", "", s))
 }
+
+#' Perform lowpass digital filtering
+#'
+#' Filter coefficients are constructed, and then \link[stats]{filter}
+#' in the \pkg{stats} package is used to filter the data. This leaves \code{NA}
+#' values within half the filter length of the ends of the time series, but
+#' these may be replaced with the original \code{x} values, if the argument
+#' \code{replace} is set to \code{TRUE}.
+#'
+#' @param x a vector to be smoothed
+#' @param filter name of filter; at present, only \code{"hamming"} is permitted.
+#' @param n length of filter (must be an odd integer exceeding 1)
+#' @param replace a logical value indicating whether points near the
+#' ends of \code{x} should be copied into the end regions, replacing
+#' the \code{NA} values that would otherwise be placed there by
+#' \link[stats]{filter}.
+#'
+#' @return \code{lowpass} returns a filtered version of \code{x}.
+#' @author Dan Kelley
+#' @examples
+#'
+#' library(oce)
+#' x <- seq(-5, 5) + rnorm(11)
+#' plot(1:11, x, type='o')
+#' X <- lowpass(x, n=5)
+#' lines(1:11, X, col=2)
+#' points(1:11, X, col=2)
+lowpass <- function(x, filter="hamming", n, replace=TRUE)
+{
+    # .Call("hammingFilter", x, n)
+    if (missing(x))
+        stop("must supply x")
+    if (missing(n))
+        stop("must supply n")
+    if (n < 1)
+        stop("n must be be an integer exceeding 1")
+    n2 <- n %/% 2 # half width
+    if (2 * n2 == n)
+        stop("n must be an odd integer")
+    nx <- length(x)
+    if (nx < n) return(x)
+    twopi <- 8 * atan2(1, 1)
+    if (filter == "hamming")
+        f <- 0.54 - 0.46 * cos(twopi * (n2 + seq.int(-n2, n2, 1)) / (n - 1))
+    else
+        stop("filter must be \"hamming\"")
+    f <- f / sum(f)
+    rval <- as.numeric(stats::filter(x=x, filter=f, method="convolution"))
+    if (replace) {
+        start <- seq.int(1, n2)
+        rval[start] <- x[start]
+        end <- seq.int(nx-n2+1, nx)
+        rval[end] <- x[end]
+    }
+    rval
+}
+

@@ -1,5 +1,9 @@
 /* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 
+// NOTE: maybe I should just do this in R, with e.g.
+// as.numeric(stats::filter(x=x, filter=c(.1, .8, .1), method="convolution"))
+// and then fixing the endpoints.
+
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -11,20 +15,40 @@
 system("R CMD SHLIB filtering.c")
 dyn.load("filtering.so");
 
-#' Perform hamming filtering
+#' Perform Hamming filtering
 #'
-#' NOTE that this is not in the namespace. Also, the behaviour is not in a final
-#' form, since this just copies over at the ends of x. (I'm not even sure
-#' that is bad, come to think of it.)
+#' Interior points are filtered using \link[stats]{filter} in the
+#' \CRANpkg{stats} package for interior points, while leaving untouched
+#' those points near the start and end of the vector.
 #'
 #' @param x a vector to be smoothed
 #' @param n length of filter (must be an odd integer exceeding 1)
-hamming <- function(x, n)
-    .Call("hamming", x, n)
+#'
+#' @value a filtered version of \code{x}.
+hammingFilter <- function(x, n)
+{
+    # .Call("hammingFilter", x, n)
+    if (missing(x)) stop("must supply x")
+    if (missing(n)) stop("must supply n")
+    if (n < 1) stop("n must be be an integer exceeding 1")
+    n2 <- n %/% 2 # half width
+    if (2 * n2 == n) stop("n must be an odd integer")
+    nx <- length(x)
+    if (nx < n) return(x)
+    twopi <- 8 * atan2(1, 1)
+    f <- 0.54 - 0.46 * cos(twopi * (n2 + seq.int(-n2, n2, 1)) / (n - 1));
+    f <- f / sum(f)
+    rval <- as.numeric(stats::filter(x=x, filter=F, method="convolution"))
+    start <- seq.int(1, n2)
+    rval[start] <- x[start]
+    end <- seq.int(nx-n2+1, nx)
+    rval[end] <- x[end]
+    rval
+}
 
-
+set.seed(123)
 x <- seq(-6, 6) + rnorm(13, sd=0.5)
-y <- hamming(x, 5)
+y <- hammingFilter(x, 5)
 print(data.frame(x, y))
 ## next work in my testing, so I'm doing the formula right. But note
 ## that we need to normalize the filters ... why the heck are they
@@ -41,7 +65,7 @@ grid()
 */
 
 
-SEXP hamming(SEXP x, SEXP n)
+SEXP hammingFilter(SEXP x, SEXP n)
 {
     PROTECT(x = AS_NUMERIC(x));
     PROTECT(n = AS_INTEGER(n));
