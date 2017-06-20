@@ -4269,8 +4269,9 @@ trimString <- function(s)
 
 #' Perform lowpass digital filtering
 #'
-#' Filter coefficients are constructed, and then \link[stats]{filter}
-#' in the \pkg{stats} package is used to filter the data. This leaves \code{NA}
+#' Filter coefficients are constructed using standard definitions,
+#' and then \link[stats]{filter} in the \pkg{stats} package is
+#' used to filter the data. This leaves \code{NA}
 #' values within half the filter length of the ends of the time series, but
 #' these may be replaced with the original \code{x} values, if the argument
 #' \code{replace} is set to \code{TRUE}.
@@ -4282,21 +4283,31 @@ trimString <- function(s)
 #' ends of \code{x} should be copied into the end regions, replacing
 #' the \code{NA} values that would otherwise be placed there by
 #' \link[stats]{filter}.
+#' @param coefficients logical value indicating whether to return
+#' the filter coefficients, instead of the filtered values. In accordance
+#' with conventions in the literature, the returned values are not
+#' normalized to sum to 1, although of course that normalization
+#' is done in the actual filtering.
 #'
-#' @return \code{lowpass} returns a filtered version of \code{x}.
+#' @return By default, \code{lowpass} returns a filtered version
+#' of \code{x}, but if \code{coefficients} is \code{TRUE} then it
+#' returns the filter coefficients.
 #' @author Dan Kelley
 #' @examples
 #'
 #' library(oce)
+#' par(mfrow=c(1, 2), mar=c(4, 4, 1, 1))
+#' coef <- lowpass(n=5, coefficients=TRUE)
+#' plot(-2:2, coef, ylim=c(0, 1), xlab="Lag", ylab="Coefficient")
 #' x <- seq(-5, 5) + rnorm(11)
-#' plot(1:11, x, type='o')
+#' plot(1:11, x, type='o', xlab="time", ylab="x and X")
 #' X <- lowpass(x, n=5)
 #' lines(1:11, X, col=2)
 #' points(1:11, X, col=2)
-lowpass <- function(x, filter="hamming", n, replace=TRUE)
+lowpass <- function(x, filter="hamming", n, replace=TRUE, coefficients=FALSE)
 {
     # .Call("hammingFilter", x, n)
-    if (missing(x))
+    if (missing(x) && !coefficients)
         stop("must supply x")
     if (missing(n))
         stop("must supply n")
@@ -4305,20 +4316,26 @@ lowpass <- function(x, filter="hamming", n, replace=TRUE)
     n2 <- n %/% 2 # half width
     if (2 * n2 == n)
         stop("n must be an odd integer")
-    nx <- length(x)
-    if (nx < n) return(x)
     twopi <- 8 * atan2(1, 1)
+    ii <- n2 + seq.int(-n2, n2, 1)
     if (filter == "hamming")
-        f <- 0.54 - 0.46 * cos(twopi * (n2 + seq.int(-n2, n2, 1)) / (n - 1))
+        f <- 0.54 - 0.46 * cos(twopi * ii / (n - 1))
+    else if (filter == "hanning")
+        f <- 0.5 * (1 - cos(twopi * ii / (n - 1)))
     else
-        stop("filter must be \"hamming\"")
-    f <- f / sum(f)
-    rval <- as.numeric(stats::filter(x=x, filter=f, method="convolution"))
-    if (replace) {
-        start <- seq.int(1, n2)
-        rval[start] <- x[start]
-        end <- seq.int(nx-n2+1, nx)
-        rval[end] <- x[end]
+        stop("filter must be \"hanning\" or \"hamming\"")
+    if (coefficients) {
+        rval <- f
+    } else {
+        f <- f / sum(f)
+        rval <- as.numeric(stats::filter(x=x, filter=f, method="convolution"))
+        if (replace) {
+            start <- seq.int(1, n2)
+            rval[start] <- x[start]
+            nx <- length(x)
+            end <- seq.int(nx-n2+1, nx)
+            rval[end] <- x[end]
+        }
     }
     rval
 }

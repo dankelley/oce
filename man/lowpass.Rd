@@ -4,7 +4,7 @@
 \alias{lowpass}
 \title{Perform lowpass digital filtering}
 \usage{
-lowpass(x, filter = "hamming", n, replace = TRUE)
+lowpass(x, filter = "hamming", n, replace = TRUE, coefficients = FALSE)
 }
 \arguments{
 \item{x}{a vector to be smoothed}
@@ -17,13 +17,22 @@ lowpass(x, filter = "hamming", n, replace = TRUE)
 ends of \code{x} should be copied into the end regions, replacing
 the \code{NA} values that would otherwise be placed there by
 \link[stats]{filter}.}
+
+\item{coefficients}{logical value indicating whether to return
+the filter coefficients, instead of the filtered values. In accordance
+with conventions in the literature, the returned values are not
+normalized to sum to 1, although of course that normalization
+is done in the actual filtering.}
 }
 \value{
-\code{lowpass} returns a filtered version of \code{x}.
+By default, \code{lowpass} returns a filtered version
+of \code{x}, but if \code{coefficients} is \code{TRUE} then it
+returns the filter coefficients.
 }
 \description{
-Filter coefficients are constructed, and then \link[stats]{filter}
-in the \pkg{stats} package is used to filter the data. This leaves \code{NA}
+Filter coefficients are constructed using standard definitions,
+and then \link[stats]{filter} in the \pkg{stats} package is
+used to filter the data. This leaves \code{NA}
 values within half the filter length of the ends of the time series, but
 these may be replaced with the original \code{x} values, if the argument
 \code{replace} is set to \code{TRUE}.
@@ -31,8 +40,11 @@ these may be replaced with the original \code{x} values, if the argument
 \examples{
 
 library(oce)
+par(mfrow=c(1, 2), mar=c(4, 4, 1, 1))
+coef <- lowpass(n=5, coefficients=TRUE)
+plot(-2:2, coef, ylim=c(0, 1), xlab="Lag", ylab="Coefficient")
 x <- seq(-5, 5) + rnorm(11)
-plot(1:11, x, type='o')
+plot(1:11, x, type='o', xlab="time", ylab="x and X")
 X <- lowpass(x, n=5)
 lines(1:11, X, col=2)
 points(1:11, X, col=2)
