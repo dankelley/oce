@@ -4269,12 +4269,18 @@ trimString <- function(s)
 
 #' Perform lowpass digital filtering
 #'
-#' Filter coefficients are constructed using standard definitions,
+#' The filter coefficients are constructed using standard definitions,
 #' and then \link[stats]{filter} in the \pkg{stats} package is
 #' used to filter the data. This leaves \code{NA}
 #' values within half the filter length of the ends of the time series, but
 #' these may be replaced with the original \code{x} values, if the argument
 #' \code{replace} is set to \code{TRUE}.
+#'
+#' @section Caution: This function was added in June of 2017,
+#' and it may be extended during the rest of 2017. New arguments
+#' may appear between \code{n} and \code{replace}, so users are
+#' advised to call this function with named arguments, not positional
+#' arguments.
 #'
 #' @param x a vector to be smoothed
 #' @param filter name of filter; at present, only \code{"hamming"} is permitted.
