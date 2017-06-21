@@ -4559,7 +4559,7 @@ plotProfile <- function (x,
             axis(3)
             box()
             if (is.null(xlab)) {
-                if (eos == "gsw") {
+                if (eos == "gsw" || xtype == "SA") {
                     mtext(resizableLabel("absolute salinity", "x"), side=3, line=axisNameLoc, cex=par("cex"))
                 } else {
                     mtext(resizableLabel("S", "x"), side=3, line=axisNameLoc, cex=par("cex"))
@@ -4774,7 +4774,7 @@ plotProfile <- function (x,
             axis(2)
             axis(3)
             box()
-            if (eos == "gsw")
+            if (eos == "gsw" || xtype == "CT")
                 mtext(resizableLabel("conservative temperature", "x", unit=unit), side=3, line=axisNameLoc, cex=par("cex"))
             else
                 mtext(resizableLabel("T", "x", unit=unit), side=3, line=axisNameLoc, cex=par("cex"))
