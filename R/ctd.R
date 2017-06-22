@@ -1020,9 +1020,15 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         if (!is.null(o@metadata$flags))
             res@metadata$flags <- o@metadata$flags
         ##1108 res@metadata$pressureType <- pressureType
-        res@metadata$startTime <- startTime
         ## copy relevant metadata.
         ##1108 if ("date" %in% mnames) res@metadata$date <- o@metadata$date
+
+        ## if any changes here, update oce.R @ ODF_CTD_LINK {
+        res@metadata$startTime <- startTime
+        if ("eventNumber" %in% mnames) res@metadata$eventNumber <- o@metadata$eventNumber
+        if ("eventQualifier" %in% mnames) res@metadata$eventQualifier <- o@metadata$eventQualifier
+        ## } ODF_CTD_LINK
+
         if ("deploymentType" %in% mnames) res@metadata$deploymentType <- o@metadata$deploymentType
         if ("filename" %in% mnames) res@metadata$filename <- o@metadata$filename
         if ("serialNumber" %in% mnames) res@metadata$serialNumber <- o@metadata$serialNumber

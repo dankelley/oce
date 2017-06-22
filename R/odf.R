@@ -779,7 +779,6 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         if (length(grep("QQQQ", CODE))) {
             iNAME <- grep("^\\s*NAME\\s*=\\s*'", lines[lstart:lend])
             if (length(iNAME) == 1) {
-                message("    THIS IS A FLAG...")
                 NAME <- paste(gsub("^.*:\\s*'?(.*)([_0-9]*)'?.*$", "\\1", lines[lstart+iNAME-1]), "Flag", sep="")
             } else {
                 stop("cannot link flag to variable name in a PARAMETER_HEADER block starting at line ", lstart-1)
@@ -904,7 +903,13 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     DATA_TYPE <- trimws(findInHeader("DATA_TYPE", lines))
     deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
     ## date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
+
+    ## if any changes here, update ctd.R @ ODF_CTD_LINK {
     startTime <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
+    eventNumber <- findInHeader("EVENT_NUMBER", lines) # synchronize with ctd.R at ODFMETADATA tag
+    eventQualifier <- findInHeader("EVENT_QUALIFIER", lines)# synchronize with ctd.R at ODFMETADATA tag
+    ## } ODF_CTD_LINK
+
     ## endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
 
     ## FIXME: The next block tries to infer a single numeric NA value, if
@@ -978,6 +983,8 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     res@metadata$type <- type
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber
+    res@metadata$eventNumber <- eventNumber
+    res@metadata$eventQualifier <- eventQualifier
     res@metadata$ship <- ship
     res@metadata$scientist <- scientist
     res@metadata$institute <- institute
