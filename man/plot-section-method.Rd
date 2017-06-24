@@ -126,11 +126,17 @@ defunct \code{oce} features.)}
 \item{showStart}{Logical indicating whether to indicate the first station with
 a different symbol than the others.}
 
-\item{showBottom}{Logical indicating whether to draw the bottom, or a character
-string indicating the method for plotting the bottom.  The allowed methods are:
-\code{polygon}, which fills the space to the bottom, or \code{lines}, which
-draws lines from stations to the bottom, or \code{points}, which draws points
-at the bottom.}
+\item{showBottom}{An indication of whether (and how) to indicate the ocean bottom.
+If \code{FALSE}, then the bottom is not rendered. If \code{TRUE}, then it
+is rendered with a gray polygon. If \code{showBottom} is a character string,
+then there are three possibilities: is the string is \code{"polygon"} then
+a polygon is drawn, if it is \code{"lines"} then a line is drawn, and if it
+is \code{"points"} then points are drawn. If \code{showBottom} is an object
+inherinting from \code{\link{topo-class}} then the station locations are
+interpolated to that topography and the results are shown with a polygon.
+In this last case, the interpolation is set at a grid that is roughly
+in accordance with the resolution of the latitudes in the \code{topo} object.
+See \dQuote{Examples}.}
 
 \item{axes}{Logical value indicating whether to draw axes.}
 
@@ -225,6 +231,16 @@ col <- oce.colorsJet(100)[rescale(T, rlow=1, rhigh=100)]
 points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 
+
+\dontrun{
+## 4. Image of Absolute Salinity, with 4-minute bathymetry
+## It's easy to calculate the desired area for the bathymetry,
+## but for brevity we'll hard-code it. Note that download.topo()
+## caches the file locally.
+f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
+t <- read.topo(f)
+plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
+}
 
 }
 \seealso{

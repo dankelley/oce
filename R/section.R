@@ -1065,11 +1065,17 @@ sectionAddCtd <- sectionAddStation
 #' @param showStart Logical indicating whether to indicate the first station with
 #' a different symbol than the others.
 #'
-#' @param showBottom Logical indicating whether to draw the bottom, or a character
-#' string indicating the method for plotting the bottom.  The allowed methods are:
-#' \code{polygon}, which fills the space to the bottom, or \code{lines}, which
-#' draws lines from stations to the bottom, or \code{points}, which draws points
-#' at the bottom.
+#' @param showBottom An indication of whether (and how) to indicate the ocean bottom.
+#' If \code{FALSE}, then the bottom is not rendered. If \code{TRUE}, then it
+#' is rendered with a gray polygon. If \code{showBottom} is a character string,
+#' then there are three possibilities: is the string is \code{"polygon"} then
+#' a polygon is drawn, if it is \code{"lines"} then a line is drawn, and if it
+#' is \code{"points"} then points are drawn. If \code{showBottom} is an object
+#' inherinting from \code{\link{topo-class}} then the station locations are
+#' interpolated to that topography and the results are shown with a polygon.
+#' In this last case, the interpolation is set at a grid that is roughly
+#' in accordance with the resolution of the latitudes in the \code{topo} object.
+#' See \dQuote{Examples}.
 #'
 #' @param axes Logical value indicating whether to draw axes.
 #'
@@ -1141,6 +1147,16 @@ sectionAddCtd <- sectionAddStation
 ## #' spice <- section[["spice"]]
 ## #' look <- spice > 1.8 & depth > 500
 ## #' points(distance[look], depth[look], col='red')
+#'
+#' \dontrun{
+#' ## 4. Image of Absolute Salinity, with 4-minute bathymetry
+#' ## It's easy to calculate the desired area for the bathymetry,
+#' ## but for brevity we'll hard-code it. Note that download.topo()
+#' ## caches the file locally.
+#' f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
+#' t <- read.topo(f)
+#' plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
+#'}
 #'
 #' @author Dan Kelley
 #'
@@ -1589,9 +1605,11 @@ setMethod(f="plot",
                       ## Put x in order, if it's not already
                       ox <- order(xx)
                       xxOrig <- xx
+                      ii <- seq_along(xxOrig) # so we can use it later for drawing bottoms
                       if (any(xx[ox] != xx)) {
                           xx <- xx[ox]
                           zz <- zz[ox, ] ## FIXME keep this???
+                          ii <- ii[ox]
                           ##warning("plot.section() reordered the stations to make x monotonic")
                           bottom.x <- c(min(xxOrig), xxOrig[ox], max(xxOrig))
                           bottom.y <- c(graph.bottom, -waterDepth[ox], graph.bottom)
@@ -1706,7 +1724,7 @@ setMethod(f="plot",
                               }
                           }
                       }
-                      if (is.character(showBottom) || showBottom) {
+                      if (is.character(showBottom) || (is.logical(showBottom) && showBottom)) {
                           type <- "polygon"
                           if (is.character(showBottom))
                               type <- showBottom
@@ -1723,6 +1741,24 @@ setMethod(f="plot",
                               }
                           }
                           box()
+                      } else if (inherits(showBottom, "topo")) {
+                          oceDebug(debug, "using a topo object for the bottom\n")
+                          ## Fine longitude and latitude: roughly
+                          topoResolution <- geodDist(0, 0, 0, diff(showBottom[["latitude"]][1:2]))
+                          slon <- x[["longitude", "byStation"]]
+                          slat <- x[["latitude", "byStation"]]
+                          sectionSpan <- geodDist(min(slon, na.rm=TRUE), min(slat, na.rm=TRUE),
+                                                  max(slon, na.rm=TRUE), max(slat, na.rm=TRUE))
+                          nin <- length(slon)
+                          nout <- as.integer(1 + sectionSpan / topoResolution)
+                          blon <- approx(1:nin, slon[ii], n=nout)$y
+                          blat <- approx(1:nin, slat[ii], n=nout)$y
+                          bottom.y <- topoInterpolate(blon, blat, showBottom)
+                          bottom.x <- approx(1:nin, xx, n=nout)$y
+                          bottom.x <- c(bottom.x[1], bottom.x, tail(bottom.x, 1))
+                          usr3 <- par('usr')[3]
+                          bottom.y <- c(usr3, bottom.y, usr3)
+                          polygon(bottom.x, bottom.y, col="lightgray")
                       }
                       ##axis(1, pretty(xxOrig))
                       if (axes) {
@@ -1782,11 +1818,11 @@ setMethod(f="plot",
                   lat0 <- firstStation[["latitude"]][1]
                   for (ix in 1:numStations) {
                       j <- stationIndices[ix]
-                      if (which.xtype == 1) {
+                      if (which.xtype == 1) { # distance from first station
                           xx[ix] <- geodDist(lon0, lat0,
                                              x@data$station[[j]][["longitude"]][1],
                                              x@data$station[[j]][["latitude"]][1])
-                      } else if (which.xtype == 2) {
+                      } else if (which.xtype == 2) { # distance along the cruise track
                           if (ix == 1) {
                               xx[ix] <- 0
                           } else {

@@ -1,4 +1,5 @@
 0.9-22
+- plot,section-method() can use external bathymetry
 - lowpass() added
 - ctdTrim() can isolate upcasts
 - deprecate byteToBinary()
