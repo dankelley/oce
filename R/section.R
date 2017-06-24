@@ -1750,7 +1750,8 @@ setMethod(f="plot",
                           sectionSpan <- geodDist(min(slon, na.rm=TRUE), min(slat, na.rm=TRUE),
                                                   max(slon, na.rm=TRUE), max(slat, na.rm=TRUE))
                           nin <- length(slon)
-                          nout <- as.integer(1 + sectionSpan / topoResolution)
+                          ## double up on resolution, although perhaps not needed
+                          nout <- as.integer(1 + 2 * sectionSpan / topoResolution)
                           blon <- approx(1:nin, slon[ii], n=nout)$y
                           blat <- approx(1:nin, slat[ii], n=nout)$y
                           bottom.y <- topoInterpolate(blon, blat, showBottom)
