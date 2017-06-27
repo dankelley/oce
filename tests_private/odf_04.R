@@ -1,7 +1,7 @@
 library(oce)
 options(warn=1) # print warnings as they occur
 
-dir <- "/data/odf"
+dir <- "/data/odf/ctd"
 files <- system(sprintf("find '%s' -name '*.ODF'", dir), intern=TRUE)
 
 i <- 0
