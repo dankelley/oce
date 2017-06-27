@@ -449,6 +449,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
         } else if (1 == length(grep("^\\s*mho[s]{0,1}/m\\s*$", ODFunits[i], ignore.case=TRUE))) {
             warning('Changed unit mho/m to S/m for conductivity')
             list(unit=expression(S/m), scale="")
+        #} else if (1 == length(grep("^\\s*micro[ ]?mols/m2/s\\s*$", ODFunits[i], ignore.case=TRUE))) {
+        #    list(unit=expression(mu*mol/m^2/s), scale="")
         } else if (1 == length(grep("^\\s*mmho[s]?/cm\\s*$", ODFunits[i], ignore.case=TRUE))) {
             warning('Changed unit mmho/cm to mS/cm for conductivity')
             list(unit=expression(mS/cm), scale="")
@@ -465,7 +467,9 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(kg/m^3), scale="")
         } else if (1 == length(grep("^\\s*kg/m\\*\\*3\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(kg/m^3), scale="")
-        } else if (1 == length(grep("^\\s*micromoles/m\\*\\*2/sec\\s*$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (1 == length(grep("^\\s*ma\\s*$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(ma), scale="")
+        } else if (1 == length(grep("^\\s*micro[ ]?mol[e]?s/m2/s(ec)?\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(mu*mol/m^2/s), scale="")
         } else if (1 == length(grep("^sigma-theta,\\s*kg/m\\^3$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(kg/m^3), scale="")
@@ -927,18 +931,29 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ##> message("NAvalue=", paste(NAvalue, collapse=" "))
     if (length(NAvalue) > 1) {
         NAvalue <- gsub("D", "e", NAvalue) # R does not like e.g. "-.99D+02"
+        options <- options('warn')
+        options(warn=-1)
         NAvalue <- try({as.numeric(unlist(NAvalue))}, silent=TRUE)
+        options(warn=options$warn)
         isNumeric <- is.numeric(NAvalue)
         if (any(!isNumeric)) {
             warning("ignoring non-numeric NULL_VALUE (", NAvalue, ")")
         }
         if (any(isNumeric)) {
             tmp <- NAvalue[isNumeric]
-            tmp <- tmp[is.finite(tmp)]
-            ##print(tmp)
-            if (1 != length(unique(tmp)))
-                warning("using first of ", length(unique(tmp)), " unique numeric NULL_VALUEs")
-            NAvalue <- tmp[[1]]
+            if (any(!is.finite(tmp)))
+                tmp <- tmp[is.finite(tmp)]
+            tmp <- unique(tmp)
+            ltmp <- length(tmp)
+            if (ltmp == 0) {
+                NAvalue <- NA
+            } else if (1 == ltmp) {
+                NAvalue <- tmp
+            } else if (1 < ltmp) {
+                warning("using first of ", ltmp, " unique NULL_VALUEs")
+                tmp <- tmp[is.finite(tmp)]
+                NAvalue <- tmp[[1]]
+            } 
         } else {
             NAvalue <- NAvalue[[1]]
         }
