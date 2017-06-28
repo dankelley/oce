@@ -9,23 +9,20 @@ if (length(files)) {
     for (file in files) {
         cat("\n# ", file, "\n")
         d <- read.oce(file)
+        ## Can we summarize?
         summary(d)                     # VISUALLY: check .out file for incorrect units or unmatched names
+        ## Are temperatures or velocities crazy? (Checks handling of missing codes of -99.)
         if ("temperature" %in% names(d[["data"]]) && min(d[["temperature"]], na.rm=TRUE) < -5)
             stop("bad min temperature in file '", file,
                  "'; value is ", min(d[["temperature"]], na.rm=TRUE), "; did read.oce() catch the NullValue?")
         if ("u" %in% names(d[["data"]]) && min(d[["u"]], na.rm=TRUE) < -5)
             stop("bad min u in file '", file,
                  "'; value is ", min(d[["u"]], na.rm=TRUE), "; did read.oce() catch the NullValue?")
+        ## Do read.odf() and read.ctd() give the same fields?
+        dd <- read.odf(file)
+        expect_equal(sort(names(d@metadata)), sort(names(dd@metadata)))
+        expect_equal(sort(names(d@data)), sort(names(dd@data)))
         i <- i + 1
     }
     cat("Successfully checked", i, "ODF files in ", dir, "\n")
-
-    ## test for issue 1263 (a particular file)
-    if (file.exists("/data/odf/ctd/CTD_HUD2000009_1_1_DN.ODF")) {
-        oce <- read.oce("/data/odf/ctd/CTD_HUD2000009_1_1_DN.ODF")
-        odf <- read.odf("/data/odf/ctd/CTD_HUD2000009_1_1_DN.ODF")
-        print(setdiff(names(oce@metadata), names(odf@metadata)))
-        ## expect_equal(names(odf@metadata), names(oce@metadata))
-        expect_equal(names(odf@data), names(oce@data))
-    }
 }

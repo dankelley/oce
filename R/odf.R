@@ -1069,6 +1069,8 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         res@metadata$dataNamesOriginal <- res@metadata$dataNamesOrigina[res@metadata$dataNamesOriginal!=""]
         ##res@metadata$dataNamesOriginal[[iflags]] <- NULL
     }
+    if (exists("DATA_TYPE") && DATA_TYPE == "CTD")
+        res@metadata$pressureType <- "sea"
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # read.odf()\n")
     res
