@@ -288,7 +288,7 @@ test_that("ODF file", {
           expect_warning(d4 <- read.ctd.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce")),
                          "\"CRAT_01\" should be unitless")
           expect_equal(d4[["temperatureUnit"]]$unit, expression(degree*C))
-          expect_equal(d4[["temperatureUnit"]]$scale, "ITS-90")
+          expect_equal(d4[["temperatureUnit"]]$scale, "IPTS-68")
           ## FIXME: following works manually but fails in Rstudio build
           ## expect_equal(d4[["conductivityUnit"]]$unit, expression()) # was S/m in the .cnv but ratio in ODF
           expect_equal(d4[["pressureType"]], "sea")
@@ -299,7 +299,7 @@ test_that("ODF file", {
           expect_equal(d4[["latitude"]], 44.267500)
           expect_equal(d4[["longitude"]], -63.317500)
           expect_equal(d4[['pressure']][1:3], c(0.5, 1.5, 2.0))
-          expect_equal(d4[['temperature']][1:3], c(5.885, 5.9124, 5.9188))
+          expect_equal(d4[['temperature']][1:3], c(5.883587939, 5.910981364, 5.917379829))
           expect_equal(d4[['salinity']][1:3], c(30.8514,30.8593,30.8596))
           ## there are some flagged data in this file
           expect_equal(d4[['pressure']][which(d4[['QCFlag']]!=0)], c(55.5, 60.5, 61.0 ,71.5))
