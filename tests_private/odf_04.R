@@ -8,20 +8,20 @@ if (length(files)) {
     i <- 0
     for (file in files) {
         cat("\n# ", file, "\n")
-        d <- read.oce(file)
-        ## Can we summarize?
-        summary(d)                     # VISUALLY: check .out file for incorrect units or unmatched names
+        oce <- read.oce(file)
+        ## Can we summarize? (visual check on incorrect units or mismatched names)
+        summary(oce)
         ## Are temperatures or velocities crazy? (Checks handling of missing codes of -99.)
-        if ("temperature" %in% names(d[["data"]]) && min(d[["temperature"]], na.rm=TRUE) < -5)
+        if ("temperature" %in% names(oce[["data"]]) && min(oce[["temperature"]], na.rm=TRUE) < -5)
             stop("bad min temperature in file '", file,
-                 "'; value is ", min(d[["temperature"]], na.rm=TRUE), "; did read.oce() catch the NullValue?")
-        if ("u" %in% names(d[["data"]]) && min(d[["u"]], na.rm=TRUE) < -5)
+                 "'; value is ", min(oce[["temperature"]], na.rm=TRUE), "; did read.oce() catch the NullValue?")
+        if ("u" %in% names(oce[["data"]]) && min(oce[["u"]], na.rm=TRUE) < -5)
             stop("bad min u in file '", file,
-                 "'; value is ", min(d[["u"]], na.rm=TRUE), "; did read.oce() catch the NullValue?")
+                 "'; value is ", min(oce[["u"]], na.rm=TRUE), "; did read.oce() catch the NullValue?")
         ## Do read.odf() and read.ctd() give the same fields?
-        dd <- read.odf(file)
-        expect_equal(sort(names(d@metadata)), sort(names(dd@metadata)))
-        expect_equal(sort(names(d@data)), sort(names(dd@data)))
+        odf <- read.odf(file)
+        expect_equal(0, length(setdiff(names(oce@metadata), names(odf@metadata))))
+        expect_equal(0, length(setdiff(names(oce@data), names(odf@data))))
         i <- i + 1
     }
     cat("Successfully checked", i, "ODF files in ", dir, "\n")
