@@ -469,7 +469,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(kg/m^3), scale="")
         } else if (1 == length(grep("^\\s*ma\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(ma), scale="")
-        } else if (1 == length(grep("^\\s*micro[ ]?mol[e]?s/m2/s(ec)?\\s*$", ODFunits[i], ignore.case=TRUE))) {
+        } else if (1 == length(grep("^\\s*micro[ ]?mol[e]?s/m(\\*){0,2}2/s(ec)?\\s*$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(mu*mol/m^2/s), scale="")
         } else if (1 == length(grep("^sigma-theta,\\s*kg/m\\^3$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(kg/m^3), scale="")
