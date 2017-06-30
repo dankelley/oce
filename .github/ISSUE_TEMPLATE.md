@@ -30,3 +30,7 @@ before submitting the issue.*
 
 *Replace this line with an indication of how pressing this is. Can you wait a few days?*
 
+### Output from sessionInfo()
+
+*Replace this line with the output from sessionInfo().*
+
