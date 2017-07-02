@@ -23,7 +23,7 @@ A \code{\link{section-class}} object.
 Return a subset of a section object.
 }
 \details{
-This function that may be used to subset data within the
+This function is used to subset data within the
 stations of a section, or to choose a subset of the stations
 themselves. The first case is handled with the \code{subset} argument,
 while the second is handled if \code{...} contains a vector named

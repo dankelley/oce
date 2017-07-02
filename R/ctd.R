@@ -3489,21 +3489,28 @@ setMethod(f="plot",
 #'
 #' Return a subset of a section object.
 #'
-#' This function is somewhat analogous to
-#' \code{\link{subset.data.frame}}, but only one independent variable may be
-#' used in \code{subset} in any call to the function, which means that
-#' repeated calls will be necessary to subset based on more than one
-#' independent variable (e.g. time and distance).
+#' This function is used to subset data within the
+#' levels of a ctd object. There are two ways of working. If
+#' \code{subset} is supplied, then it is a logical expression
+#' that is evaluated within the environment of the \code{data}
+#' slot of the object (see Example 1). Alternatively, if the
+#' \code{...} list contains an expression defining \code{indices},
+#' then that expression is used to subset each item within the
+#' \code{data} slot (see Example 2).
 #'
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @param subset An expression indicating how to subset \code{x}.
-#' @param ... Ignored.
+#' @param ... optional arguments, of which only the first is examined. The only
+#' possibility is that this argument be named \code{indices}. See \dQuote{Details}.
 #' @return A \code{\link{ctd-class}} object.
 #' @examples
 #' library(oce)
 #' data(ctd)
 #' plot(ctd)
+#' ## Example 1
 #' plot(subset(ctd, pressure<10))
+#' ## Example 2
+#' plot(subset(ctd, indices=1:10))
 #'
 #' @author Dan Kelley
 #'
@@ -3512,9 +3519,24 @@ setMethod(f="plot",
 setMethod(f="subset",
           signature="ctd",
           definition=function(x, subset, ...) {
-              if (missing(subset))
-                  stop("in subset,ctd-method() : 'subset' missing", call.=FALSE)
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              dots <- list(...)
+              dotsNames <- names(dots)
+              indicesGiven <- length(dots) && ("indices" %in% dotsNames)
+              if (indicesGiven) {
+                  if (!missing(subset))
+                      stop("cannot specify both 'subset' and 'indices'")
+                  res <- x
+                  indices <- dots[["indices"]]
+                  for (datum in names(x@data)) {
+                      res[[datum]] <- x[[datum]][indices]
+                  }
+                  subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+                  return(res)
+              }
               res <- new("ctd")
+              
               res@metadata <- x@metadata
               res@processingLog <- x@processingLog
               for (i in seq_along(x@data)) {

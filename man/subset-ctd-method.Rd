@@ -12,7 +12,8 @@
 
 \item{subset}{An expression indicating how to subset \code{x}.}
 
-\item{...}{Ignored.}
+\item{...}{optional arguments, of which only the first is examined. The only
+possibility is that this argument be named \code{indices}. See \dQuote{Details}.}
 }
 \value{
 A \code{\link{ctd-class}} object.
@@ -21,17 +22,23 @@ A \code{\link{ctd-class}} object.
 Return a subset of a section object.
 }
 \details{
-This function is somewhat analogous to
-\code{\link{subset.data.frame}}, but only one independent variable may be
-used in \code{subset} in any call to the function, which means that
-repeated calls will be necessary to subset based on more than one
-independent variable (e.g. time and distance).
+This function is used to subset data within the
+levels of a ctd object. There are two ways of working. If
+\code{subset} is supplied, then it is a logical expression
+that is evaluated within the environment of the \code{data}
+slot of the object (see Example 1). Alternatively, if the
+\code{...} list contains an expression defining \code{indices},
+then that expression is used to subset each item within the
+\code{data} slot (see Example 2).
 }
 \examples{
 library(oce)
 data(ctd)
 plot(ctd)
+## Example 1
 plot(subset(ctd, pressure<10))
+## Example 2
+plot(subset(ctd, indices=1:10))
 
 }
 \seealso{
