@@ -395,7 +395,7 @@ setMethod(f="[[",
                   res <- unlist(lapply(x@data$station, function(stn) stn[["time"]]))
                   res <- numberAsPOSIXct(res)
               } else {
-                  callNextMethod()     # [[
+                  res <- callNextMethod()     # [[
               }
               res
           })

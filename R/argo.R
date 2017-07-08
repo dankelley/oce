@@ -46,18 +46,56 @@ setClass("argo", contains="oce")
 #' @family things related to \code{argo} data
 NULL
 
+
+
+
 #' @title Extract Something From an Argo Object
 #' @param x An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.
 #' @examples
 #' data(argo)
 #' dim(argo[['temperature']])
 #'
+#' @section Details of the specialized argo method:
+#'\itemize{
+#' \item If \code{i} is the string \code{"SA"}, then the method
+#' computes Absolute Salinity using \code{\link[gsw]{gsw_SA_from_SP}},
+#' using \code{salinityAdjusted} (etc) if available in the \code{data}
+#' slot of \code{x}, otherwise using \code{salinity}.
+#' \item Similarly, for \code{"CT"}, Conservative Temperature is returned.
+#' \item Otherwise, if \code{i} is in the \code{data} slot of \code{x},
+#' then it is returned, otherwise if it is in the \code{metadata} slot,
+#' then that is returned, otherwise \code{NULL} is returned.
+#'}
+#'
 #' @template sub_subTemplate
 #' @family things related to \code{argo} data
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()         # [[
+              res <- NULL
+              if (i == "SA" || i == "CT") {
+                  ## FIXME: should we prefer e.g. salinityAdjusted or salinity?
+                  names <- names(x@data)
+                  SAname <- if ("salinityAdjusted" %in% names) "salinityAdjusted" else "salinity"
+                  SP <- x@data[[SAname]]
+                  pname <- if ("pressureAdjusted" %in% names) "pressureAdjusted" else "pressure"
+                  p <- x@data[[pname]]
+                  dim <- dim(SP)
+                  lon <- rep(x@data$longitude, each=dim[1])
+                  lat <- rep(x@data$latitude, each=dim[1])
+                  SA <- gsw_SA_from_SP(SP, p, longitude=lon, latitude=lat)
+                  if (i == "SA") {
+                      res <- SA
+                  } else {
+                      tname <- if ("temperatureAdjusted" %in% names) "temperatureAdjusted" else "temperature"
+                      t <- x@data[[tname]]
+                      res <- gsw_CT_from_t(SA, t, p)
+                  }
+                  dim(res) <- dim
+              } else {
+                  res <- callNextMethod()         # [[
+              }
+              res
           })
 
 #' @title Replace Parts of an Argo Object
