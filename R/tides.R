@@ -997,10 +997,14 @@ predict.tidem <- function(object, newdata, ...)
 #' \sQuote{Details}.
 #' @param longitude,latitude optional location at which prediction is required (ignored if
 #' \code{node} is given).
-#' @param node optional integer specifying which node to look up; if this is given,
-#' then neither \code{latitude} nor \code{longitude} may be given.
-#' @param time times at which prediction is to be made.  If not supplied, this
-#' will be the week starting at the present time, incrementing by 15 minutes.
+#' @param node optional integer relating to a node in the database. If \code{node}
+#' is given, then neither \code{latitude} nor \code{longitude} may be given.
+#' If \code{node} is positive, then specifies indicates the node. If it is negative,
+#' \code{\link{locator}} is called so that the user can click (once) on the map, after
+#' which the node is displayed on the map.
+#' @param time a vector of times at which prediction is to be made.
+#' If not supplied, this will be the week starting at the present time,
+#' incrementing by 15 minutes.
 #' @param basedir directory containing the \code{WebTide} application.
 #' @param region database region, given as a directory name in the WebTide
 #' directory.  For example, \code{h3o} is for Halifax Harbour, \code{nwatl} is
