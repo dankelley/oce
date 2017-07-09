@@ -36,7 +36,9 @@ test_that("as.section() data-quality flags", {
 
 test_that("section station extraction", {
           data(section)
-          expect_equal(length(section@data$station), length(section@data$station))
+          expect_equal(length(section@data$station), length(section[["station"]]))
+          expect_equal(section[["station", 1]][["station"]], "3")
+          expect_equal(section[["station", "103"]][["station"]], "103")
 })
 
 

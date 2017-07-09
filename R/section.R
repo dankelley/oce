@@ -223,33 +223,41 @@ setMethod(f="summary",
 #' length(section[["latitude", "byStation"]])
 #'
 #' @section Details of the specialized section method:
-#' If \code{i} is the string \code{"station"}, then the method
-#' will return a \code{\link{list}} of
-#' \code{\link{ctd-class}} objects holding the station data. If \code{j}
-#' is also given and is an integer, then just the j-th station in the section is returned.
+#' There are several possibilities, depending on the nature of \code{i}.
+#'\itemize{
 #'
-#' If \code{i} is \code{"station ID"}, then the IDs of the stations in the
+#' \item If \code{i} is the string \code{"station"}, then the method
+#' will return a \code{\link{list}} of
+#' \code{\link{ctd-class}} objects holding the station data.
+#' If \code{j} is also given, it specifies a station (or set of stations) to be returned.
+#' if \code{j} contains just a single value, then that station is returned, but otherwise
+#' a list is returned. If \code{j} is an integer, then the stations are specified by index,
+#' but if it is character, then stations are specified by the names stored within
+#' their metadata. (Missing stations yield \code{NULL} in the return value.)
+#'
+#' \item If \code{i} is \code{"station ID"}, then the IDs of the stations in the
 #' section are returned.
 #'
-#' If \code{i} is \code{"dynamic height"}, then an estimate of dynamic
+#' \item If \code{i} is \code{"dynamic height"}, then an estimate of dynamic
 #' height is returned (as calculated with \code{\link{swDynamicHeight}(x)}).
 #'
-#' If \code{i} is \code{"distance"}, then the distance along the section is
+#' \item If \code{i} is \code{"distance"}, then the distance along the section is
 #' returned, using \code{\link{geodDist}}.
 #'
-#' If \code{i} is \code{"depth"}, then a vector containing the depths
+#' \item If \code{i} is \code{"depth"}, then a vector containing the depths
 #' of the stations is returned.
 #'
-#' If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
+#' \item If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
 #' the potential temperatures of all the stations are returned in one
 #' vector.  Similarly, \code{"spice"} returns the property known
 #' as spice, using \code{\link{swSpice}}.
 #'
-#' If \code{i} is a string ending with \code{"Flag"}, then the characters
+#' \item If \code{i} is a string ending with \code{"Flag"}, then the characters
 #' prior to that ending are taken to be the name of a variable contained
 #' within the stations in the section. If this flag is available in
 #' the first station of the section, then the flag values are looked
 #' up for every station.
+#'}
 #'
 ## #' If \code{j} is \code{"grid:distance-pressure"}, then a gridded
 ## #' representation of \code{i} is returned, as a list with elements
@@ -348,13 +356,28 @@ setMethod(f="[[",
                   if (missing(j)) {
                       res <- x@data$station
                   } else {
-                      nj <- length(j)
-                      if (nj == 1) {
-                          res <- x@data$station[[j]]
+                      if (is.character(j)) {
+                          nj <- length(j)
+                          stationNames <- unlist(lapply(x@data$station, function(x) x@metadata$station))
+                          if (nj == 1) {
+                              w <- which(stationNames == j)
+                              res <- if (length(w)) x@data$station[[w[1]]] else NULL
+                          } else {
+                              res <- vector("list", nj)
+                              for (jj in j) {
+                                  w <- which(stationNames == j)
+                                  res[[jj]] <- if (length(w)) x@data$station[[w[1]]] else NULL
+                              }
+                          }
                       } else {
-                          res <- vector("list", nj)
-                          for (jj in j)
-                              res[[jj]] <- x@data$station[[jj]]
+                          nj <- length(j)
+                          if (nj == 1) {
+                              res <- x@data$station[[j]]
+                          } else {
+                              res <- vector("list", nj)
+                              for (jj in j)
+                                  res[[jj]] <- x@data$station[[jj]]
+                          }
                       }
                   }
               } else if ("station ID" == i) {

@@ -893,6 +893,13 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ##> oceDebug(debug, "ODFnames: ", paste(ODFnames, collapse=" "), "\n")
 
     namesUnits <- ODFNames2oceNames(ODFnames, ODFunits, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
+    ## check for missing units, and warn if pressure and/or temperature lack units
+    w <- which(namesUnits[[1]]=="pressure")
+    if (length(w)) {
+        if (!length(namesUnits[[2]]["pressure"][[1]]$unit))
+            warning("source file does not indicate a unit for pressure (and perhaps for other items)\n")
+    }
+
     ##names <- ODFName2oceName(ODFnames, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
     oceDebug(debug, "oce names:", paste(namesUnits$names, collapse=" "), "\n")
     scientist <- findInHeader("CHIEF_SCIENTIST", lines)

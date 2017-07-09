@@ -10,7 +10,7 @@ context("ODF files (a format used by BIO and some other DFO sites)")
 test_that("Flemish Cap adcp file (with malformed CODE tokens that lack ' characters)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               expect_warning(d <- read.oce("local_data/flemish_cap/MADCPS_hud2013021_1840_12556-106_3600.ODF"),
-                             "using first of 2 unique numeric NULL_VALUEs")
+                             "using first of 2 unique NULL_VALUEs")
               ## oce names
               expect_equal(names(d[["data"]]), c("u", "v", "w", "error", "a", "unknown", "time"))
               ## original names
@@ -130,7 +130,8 @@ test_that("Bedford Basin CTD profile 3 (with proper CODE tokens)", {
 test_that("Bedford Basin CTD profile 4 (with proper CODE tokens but no units for OCUR_01, OTMP_01, CRAT_01, FLOR_01, PSAR_01, PSAL_01,
           DOXY_01, or SIGP_01)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              d <- read.oce("local_data/bedford_basin/CTD_BCD2013667_001_01_DN.ODF")
+              expect_warning(d <- read.oce("local_data/bedford_basin/CTD_BCD2013667_001_01_DN.ODF"),
+                             "source file does not indicate a unit for pressure \\(and perhaps for other items\\)")
               expect_equal(d[['startTime']], as.POSIXct("2013-01-02 15:04:39", tz="UTC"))
               ## oce names
               expect_equal(names(d[["data"]]),
@@ -143,9 +144,9 @@ test_that("Bedford Basin CTD profile 4 (with proper CODE tokens but no units for
                            fluorometer="FLOR_01", par="PSAR_01",
                            salinity="PSAL_01", oxygen="DOXY_01", sigmaTheta="SIGP_01")
               expect_identical(d[["dataNamesOriginal"]], orig)
-              ## units
-              expect_equal(d[["pressureUnit"]]$unit, expression(dbar))
-              expect_equal(d[["temperatureUnit"]]$unit, expression(degree*C))
+              ## units -- note that this is a weird file, which lacks units.
+              expect_equal(d[["pressureUnit"]]$unit, expression())
+              expect_equal(d[["temperatureUnit"]]$unit, expression())
               ## expect_equal(d[["conductivityUnit"]]$unit, expression(S/m))
               ## expect_equal(d[["oxygenCurrentUnit"]]$unit, expression(mu*a))
               ## expect_equal(d[["oxygenTemperatureUnit"]]$unit, expression(degree*C))
