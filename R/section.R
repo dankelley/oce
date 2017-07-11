@@ -1800,9 +1800,9 @@ setMethod(f="plot",
                       R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
                       if (is.character(vtitle) && vtitle == "sigmaTheta")
                           vtitle <- expression(sigma[theta])
-                      vtitle <- if (length(unit) == 0) vtitle else bquote(.(vtitle)*.(L)*.(unit[[1]])*.(R))
+                      vtitleOrig <- vtitle
+                      vtitle <- if (length(unit) == 0) vtitle else bquote(.(vtitle[[1]])*.(L)*.(unit[[1]])*.(R))
                       if (nchar(legend.loc)) {
-
                           legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5, cex=1)
                       }
                       ##lines(xx, -waterDepth[ox], col='red')
@@ -1861,13 +1861,15 @@ setMethod(f="plot",
                           xx[ix] <- x@data$station[[j]][["latitude"]][1]
                       } else if (which.xtype == 5) {
                           ## use ix as a desparate last measure, if there are no times.
-                          if (is.null(x@data$station[[j]]@metadata$startTime)) {
+                          if (!is.null(x@data$station[[j]]@metadata$startTime)) {
+                              xx[ix] <- as.POSIXct(x@data$station[[j]]@metadata$startTime)
+                          } else if (!is.null(x@metadata$time[[j]])) {
+                              xx[ix] <- x@metadata$time[[j]]
+                          } else {
                               xx[ix] <- ix
                               if (ix == 1)
                                   warning("In plot,section-method() :\n  section stations do not contain startTime; using integers for time axis",
                                           call.=FALSE)
-                          } else {
-                              xx[ix] <- as.POSIXct(x@data$station[[j]]@metadata$startTime)
                           }
                       } else {
                           stop('unknown xtype; it must be one of: "distance", "track", "longitude", "latitude", or "time"')
@@ -1920,6 +1922,7 @@ setMethod(f="plot",
               R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
               for (w in 1:lw) {
                   ## See whether we have this item in station 1 (directly, or by calculation)
+                  oceDebug(debug, "which[", w, "]=", which[w], "\n", sep="")
                   station1 <- x[["station", 1]]
                   haveWhich <- length(station1[[which[w]]]) || which[w] == "map"
                   unit <- station1[[paste(which[w], "Unit", sep="")]][[1]]
@@ -1929,6 +1932,7 @@ setMethod(f="plot",
                   if (!missing(contourLevels)) {
                       contourLabels <- format(contourLevels)
                       if (which[w] == "temperature") {
+                          oceDebug(debug, "plotting temperature with contourLevels provided\n")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "temperature", if (eos=="unesco") "T" else expression(Theta), unit=unit,
                                          eos=eos, ylab="",
@@ -1949,7 +1953,7 @@ setMethod(f="plot",
                       }
                    } else {
                       if (which[w] == "temperature") {
-                          ##message("*** temperature ***")
+                          oceDebug(debug, "plotting temperature with contourLevels not provided\n")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "temperature", if (eos == "unesco") "T" else expression(Theta), unit=unit,
                                          eos=eos,
@@ -2892,10 +2896,11 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
         stop("first argument is not understood")
     }
     ## In each case, we now have a vector of CTD objects.
-    res@metadata$sectionId<- ""
-    res@metadata$stationId<- unlist(lapply(ctds, function(x) x[["station"]][1]))
-    res@metadata$longitude<- unlist(lapply(ctds, function(x) x[["longitude"]][1]))
-    res@metadata$latitude<- unlist(lapply(ctds, function(x) x[["latitude"]][1]))
+    res@metadata$sectionId <- ""
+    res@metadata$stationId <- unlist(lapply(ctds, function(x) x[["station"]][1]))
+    res@metadata$longitude <- unlist(lapply(ctds, function(x) x[["longitude"]][1]))
+    res@metadata$latitude <- unlist(lapply(ctds, function(x) x[["latitude"]][1]))
+    res@metadata$time <- numberAsPOSIXct(unlist(lapply(ctds, function(x) x[["time"]][1])))
     res@data <- list(station=ctds)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
