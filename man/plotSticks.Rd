@@ -19,7 +19,7 @@ are ignored.}
 
 \item{v}{y component of stick length.}
 
-\item{yscale}{scale from u and v to y (see \dQuote{Details}).}
+\item{yscale}{scale from u and v to y (see \dQuote{Description}).}
 
 \item{add}{boolean, set \code{TRUE} to add to an existing plot.}
 
@@ -44,7 +44,7 @@ relative to the units of the \code{y} axis, according to the value of
 \code{yscale}, which has the unit of \code{v} divided by the unit of
 \code{y}.
 The interpretation of diagrams produced by \code{plotSticks} can be
-difficult, owing to overlap in the arrows.  For this reason, it It is often
+difficult, owing to overlap in the arrows.  For this reason, it is often
 a good idea to smooth \code{u} and \code{v} before using this function.
 }
 \examples{
