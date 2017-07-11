@@ -4283,7 +4283,7 @@ trimString <- function(s)
 #' arguments.
 #'
 #' @param x a vector to be smoothed
-#' @param filter name of filter; at present, only \code{"hamming"} is permitted.
+#' @param filter name of filter; at present, \code{"hamming"}, \code{"hanning"}, and \code{"boxcar"} are permitted.
 #' @param n length of filter (must be an odd integer exceeding 1)
 #' @param replace a logical value indicating whether points near the
 #' ends of \code{x} should be copied into the end regions, replacing
@@ -4328,8 +4328,10 @@ lowpass <- function(x, filter="hamming", n, replace=TRUE, coefficients=FALSE)
         f <- 0.54 - 0.46 * cos(twopi * ii / (n - 1))
     else if (filter == "hanning")
         f <- 0.5 * (1 - cos(twopi * ii / (n - 1)))
+    else if (filter == "boxcar")
+        f <- rep(1/n, n)
     else
-        stop("filter must be \"hanning\" or \"hamming\"")
+        stop("filter must be \"hanning\", \"hamming\", or \"boxcar\"")
     if (coefficients) {
         rval <- f
     } else {
