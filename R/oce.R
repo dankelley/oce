@@ -679,6 +679,7 @@ oce.approx <- oceApprox
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar value to be used with \code{\link{par}("mar")}.
+#' @param xlab,ylab labels for the plot axes. The default is not to label them.
 #' @param \dots graphical parameters passed down to \code{\link{arrows}}.  It
 #' is common, for example, to use smaller arrow heads than \code{\link{arrows}}
 #' uses; see \dQuote{Examples}.
@@ -708,25 +709,15 @@ oce.approx <- oceApprox
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                        mgp=getOption("oceMgp"),
                        mar=c(mgp[1]+1, mgp[1]+1, 1, 1+par("cex")),
-                       ...)
+                       xlab="", ylab="", ...)
 {
-    dots <- list(...)
-    dotsnames <- names(dots)
     pin <- par("pin")
     page.ratio <- pin[2]/pin[1]
     if (missing(x))
         stop("must supply x")
     nx <- length(x)
-    if (missing(y)) {
+    if (missing(y))
         y <- rep(0, nx)
-        if (!("ylab" %in% dotsnames))
-            ylab <- ""
-    } else {
-        if (!("ylab" %in% dotsnames))
-            ylab <- deparse(substitute(y))
-    }
-    if (!("xlab" %in% dotsnames))
-        xlab <- deparse(substitute(x))
     if (length(y) < nx)
         y <- rep(y[1], nx)
     if (missing(u))
@@ -741,15 +732,8 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
     if (length(v) != n)
         stop("lenghts of x and v must match, but they are ", n, " and ", length(v))
     par(mar=mar, mgp=mgp)
-    if (!add) {
-        if ("xlab" %in% dotsnames && "ylab" %in% dotsnames) {
-            plot(range(x), range(y), type='n', ...)
-        } else {
-            ##plot(range(x), range(y), type='n', xlab="x", ylab="y", ...)
-            ## Below is ugly if y has been rep() into a vector, as is often the case
-            plot(range(x), range(y), type='n', xlab=xlab, ylab=ylab, ...)
-        }
-    }
+    if (!add)
+        plot(range(x), range(y), type='n', xlab=xlab, ylab=ylab, ...)
     usr <- par("usr")
     yrxr <- (usr[4] - usr[3]) / (usr[2] - usr[1])
     warn <- options("warn")$warn # FIXME: fails to quieten arrows()
