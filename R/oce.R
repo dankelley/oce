@@ -731,8 +731,14 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
     if (length(v) != n)
         stop("lenghts of x and v must match, but they are ", n, " and ", length(v))
     par(mar=mar, mgp=mgp)
-    if (!add)
-        plot(range(x), range(y), type='n', ...)
+    if (!add) {
+        dots <- list(...)
+        dotsnames <- names(dots)
+        if ("xlab" %in% dotsnames && "ylab" %in% dotsnames)
+            plot(range(x), range(y), type='n', ...)
+        else
+            plot(range(x), range(y), type='n', xlab="x", ylab="y", ...)
+    }
     usr <- par("usr")
     yrxr <- (usr[4] - usr[3]) / (usr[2] - usr[1])
     warn <- options("warn")$warn # FIXME: fails to quieten arrows()
