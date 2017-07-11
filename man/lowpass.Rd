@@ -9,7 +9,7 @@ lowpass(x, filter = "hamming", n, replace = TRUE, coefficients = FALSE)
 \arguments{
 \item{x}{a vector to be smoothed}
 
-\item{filter}{name of filter; at present, only \code{"hamming"} is permitted.}
+\item{filter}{name of filter; at present, \code{"hamming"}, \code{"hanning"}, and \code{"boxcar"} are permitted.}
 
 \item{n}{length of filter (must be an odd integer exceeding 1)}
 
