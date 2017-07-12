@@ -206,9 +206,17 @@ NULL
 #' # and only apply this action to salinity.
 #' STN <- handleFlags(stn, flags=list(salinity=c(1, 4:9)))
 #'
-#' # 3. Use smoothed TS relationship to nudge questionable data.
-#' # This is perhaps a silly idea, but at least it illustrates
-#' # how to write a nontrivial function for an action.
+#' # 3. A Canadian Department of Fisheries and Oceans convention for
+#' # some of its data files lists flags as 0=unchecked, 1=good,
+#' # 2=uncertain, 3=doubtful, 4=wrong, and 5=changed, so a
+#' # trusting arrangement would be to discard 2:4, and a more
+#' # cautious approach would be to also discard 0.
+#' STN <- handleFlags(stn, flags=list(2:4))
+#' STN <- handleFlags(stn, flags=list(c(0,2:4)))
+#'
+#' # 4. Use smoothed TS relationship to nudge questionable data.
+#' # This is not a recommended procedure, but rather just a simple
+#' # illustration of how to supply a function for an action.
 #' f<-function(x) {
 #'   S <- x[["salinity"]]
 #'   T <- x[["temperature"]]
