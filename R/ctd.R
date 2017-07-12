@@ -1258,9 +1258,11 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         names <- names(data)
         ##labels <- titleCase(names) # paste(toupper(substring(names,1,1)),substring(names,2),sep="")
         if (length(longitude) != length(latitude))
-            stop("lengths of longitude and latitude must match")
+            stop("lengths of longitude and latitude must match, but they are ",
+                 length(longitude), " and ", length(latitude), ", respectively")
         if (1 < length(longitude) && length(longitude) != length(salinity))
-            stop("lengths of salinity and longitude must match")
+            stop("lengths of salinity and longitude must match but they are ",
+                 length(longitude), " and ", length(salinity), ", respectively")
         ## FIXME: should sampleInterval be a default?
         ##res@metadata$names <- names
         ##res@metadata$labels <- labels
@@ -3923,6 +3925,24 @@ plotTS <- function (x,
             } else {
                 x <- as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]])
             }
+        } else if (inherits(x, "argo")) {
+            ## Copy fields into a CTD object.
+            SP <- x[["salinity"]]
+            dim <- dim(SP)
+            SP <- as.vector(SP)
+            t <- as.vector(x[["temperature"]])
+            p <- as.vector(x[["pressure"]])
+            lon <- x[["longitude"]]
+            lat <- x[["latitude"]]
+            if (length(lon) < length(SP)) {
+                ## Copy across depths. This is inside a conditional because
+                ## possibly argo[["longitude"]] should mimic section[["longitude"]],
+                ## in doing the lengthing by itself unless the second argument is
+                ## "byStation" (issue 1273 ... under consideration 2017jul12)
+                longitude <- rep(x[["longitude"]], each=dim[1])
+                latitude <- rep(x[["latitude"]], each=dim[1])
+            }
+            x <- as.ctd(SP, t, p, longitude=longitude, latitude=latitude)
         } else {
             names <- names(x)
             if ("temperature" %in% names && "salinity" %in% names) {

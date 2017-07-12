@@ -25,14 +25,20 @@ setClass("argo", contains="oce")
 
 #' ARGO float dataset
 #'
-#' This is an ARGO float data object, for float 6900388, downloaded as
-#' \code{6900388_prof.nc} from \code{usgodae.org} in March 2012.
+#' This holds data from ARGO 6900388 in the North Atlantic.
 #'
 #' To quote Argo's website: "These data were collected and made freely
 #' available by the International Argo Program and the national programs
 #' that contribute to it.  (http://www.argo.ucsd.edu,
 #' http://argo.jcommops.org).  The Argo Program is part of the
 #' Global Ocean Observing System."
+#'
+#' Below is the official citation (note that this DOI has web links for
+#' downloads):
+#' Argo (2017). Argo float data and metadata from Global Data Assembly Centre
+#' (Argo GDAC) - Snapshot of Argo GDAC of July, 8st 2017. SEANOE.
+#' \url{http://doi.org/10.17882/42182#50865}
+#'
 #' @name argo
 #' @docType data
 #'
@@ -45,8 +51,10 @@ setClass("argo", contains="oce")
 #' plot(argo, which="trajectory", coastline=coastlineWorld)
 #' }
 #'
-#' @source This is the profile stored in the file \code{6900388_prof.nc}
-#' downloaded from the \code{usgodae.org} website in March 2012.
+#' @source This file was downloaded using the unix command
+#'\preformatted{
+#' ftp ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc
+#'} issued on 2017 July 7. 
 #'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{argo} data
