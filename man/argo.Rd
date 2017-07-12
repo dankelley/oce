@@ -12,6 +12,13 @@ downloaded from the \code{usgodae.org} website in March 2012.
 This is an ARGO float data object, for float 6900388, downloaded as
 \code{6900388_prof.nc} from \code{usgodae.org} in March 2012.
 }
+\details{
+To quote Argo's website: "These data were collected and made freely
+available by the International Argo Program and the national programs
+that contribute to it.  (http://www.argo.ucsd.edu,
+http://argo.jcommops.org).  The Argo Program is part of the
+Global Ocean Observing System."
+}
 \examples{
 \dontrun{
 library(oce)
