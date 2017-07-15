@@ -42,6 +42,13 @@ test_that("section station extraction", {
 })
 
 
+test_that("accessors for 'z' and 'depth' work", {
+          data(section)
+          z <- section[["z"]]
+          depth <- section[["depth"]]
+          expect_equal(z, -depth)
+})
+
 test_that("as.section() works with names of CTD objects", {
           data(ctd)
           fake <- ctd

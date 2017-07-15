@@ -247,6 +247,9 @@ setMethod(f="summary",
 #' \item If \code{i} is \code{"depth"}, then a vector containing the depths
 #' of the stations is returned.
 #'
+#' \item If \code{i} is \code{"z"}, then a vector containing the z
+#' coordinates is returned.
+#'
 #' \item If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
 #' the potential temperatures of all the stations are returned in one
 #' vector.  Similarly, \code{"spice"} returns the property known
@@ -408,11 +411,11 @@ setMethod(f="[[",
 
                   }
               } else if ("depth" == i) {
-                  res <- NULL
-                  for (stn in seq_along(x@data$station))
-                      res <- c(res, x@data$station[[stn]]@data$pressure) # FIXME not really depth
-              ##?20160328? } else {
-              ##?20160328?     res <- unlist(lapply(x@data$station, function(X) X[[i]]))
+                  res <- unlist(lapply(x[["station"]], function(x) x[["depth"]]))
+              } else if ("pressure" == i) {
+                  res <- unlist(lapply(x[["station"]], function(x) x[["pressure"]]))
+              } else if ("z" == i) {
+                  res <- unlist(lapply(x[["station"]], function(x) x[["z"]]))
               } else if ("time" == i) {
                   ## time is not in the overall metadata ... look in the individual objects
                   res <- unlist(lapply(x@data$station, function(stn) stn[["time"]]))

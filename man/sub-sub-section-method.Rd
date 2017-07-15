@@ -60,6 +60,9 @@ returned, using \code{\link{geodDist}}.
 \item If \code{i} is \code{"depth"}, then a vector containing the depths
 of the stations is returned.
 
+\item If \code{i} is \code{"z"}, then a vector containing the z
+coordinates is returned.
+
 \item If \code{i} is \code{"theta"} or \code{"potential temperature"}, then
 the potential temperatures of all the stations are returned in one
 vector.  Similarly, \code{"spice"} returns the property known
