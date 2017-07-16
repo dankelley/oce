@@ -671,6 +671,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     ## Header
     scientist <- ship <- institute <- address <- cruise <- hexfilename <- ""
     sampleInterval <- NA
+    sampleIntervalUnits <- ""
     systemUploadTime <- NULL
     latitude <- longitude <- NA
     startTime <- NULL
@@ -871,7 +872,23 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                 warning("cannot interpret water depth from '", lline, "'")
             }
         }
-        if (0 < (r<-regexpr("^. sample rate =", lline))) {
+        ## [1] "# interval = seconds: 1  
+        ## [1] "# interval = decibars: 1  
+        if (length(grep("^# interval = .*$", lline))) {
+            ##print(lline)
+            value <- gsub("^.*:[ ]*([0-9.]*)[ ]*$", "\\1", lline)
+            ##cat("value='", value, "'\n", sep="")
+            ##cat("value='", as.numeric(value), "'\n", sep="")
+            units <- gsub("^.*=[ ]*(.*):(.*)$", "\\1", lline)
+            ##cat("units='", units, "'\n", sep="")
+            sampleInterval <- as.numeric(value)
+            if (units == "seconds")
+                units <- "s"
+            else if (units == "decibars")
+                units <- "dbar"
+            ##cat("units='", units, "'\n", sep="")
+            sampleIntervalUnits <- units
+        } else if (0 < (r<-regexpr("^. sample rate =", lline))) {
             ## * sample rate = 1 scan every 5.0 seconds
             rtmp <- lline;
             rtmp <- sub("(.*) sample rate = ", "", rtmp)
@@ -880,6 +897,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             ##      if (length(rtmp[[1]]) != 3)
             ##        warning("cannot parse sample-rate string in `",line,"'")
             sampleInterval <- as.double(rtmp[[1]][2]) / as.double(rtmp[[1]][1])
+            sampleIntervalUnits <- "s"
             if (rtmp[[1]][3] == "seconds") {
                 ;
             } else {
@@ -937,6 +955,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$recovery <- recovery
     res@metadata$waterDepth <- waterDepth # if NA, will update later
     res@metadata$sampleInterval <- sampleInterval
+    res@metadata$sampleIntervalUnits <- sampleIntervalUnits
     ##res@metadata$names <- colNamesInferred
     ##res@metadata$labels <- colNamesInferred
     res@metadata$filename <- filename

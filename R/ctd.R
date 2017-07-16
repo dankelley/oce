@@ -385,7 +385,8 @@ setMethod(f="summary",
               cat("CTD Summary\n-----------\n\n")
               type <- object@metadata$type
               model <- object@metadata$model
-              if (!is.null(type)) {
+              mnames <- names(object@metadata)
+              if (!is.null(type) && nchar(type)) {
                   if (is.null(model)) {
                       cat("* Instrument:         ", type, "\n")
                   } else {
@@ -404,6 +405,9 @@ setMethod(f="summary",
               ##showMetadataItem(object, "date",                      "Date:                ", isdate=TRUE)
               showMetadataItem(object, "startTime",                 "Start time:          ", isdate=TRUE)
               ##showMetadataItem(object, "systemUploadTime",          "System upload time:  ", isdate=TRUE)
+              if ("sampleInterval" %in% mnames && "sampleIntervalUnits" %in% mnames)
+                  cat("* Sample interval:     ",
+                      object@metadata$sampleInterval, " ", object@metadata$sampleIntervalUnits, "\n", sep="")
               showMetadataItem(object, "cruise",                    "Cruise:              ")
               showMetadataItem(object, "ship",                      "Vessel:              ")
               showMetadataItem(object, "station",                   "Station:             ")
@@ -414,12 +418,10 @@ setMethod(f="summary",
                   cat("* Mean location:      ",       latlonFormat(mean(object@data$latitude, na.rm=TRUE),
                                                                    mean(object@data$longitude, na.rm=TRUE),
                                                                    digits=5), "\n")
-              } else if ("longitude" %in% names(object@metadata)) {
+              } else if ("longitude" %in% names(object@metadata) && !is.na(object@metadata$longitude)) {
                   cat("* Location:           ",       latlonFormat(object@metadata$latitude,
                                                                    object@metadata$longitude,
                                                                    digits=5), "\n")
-              } else {
-                  cat("* Mean location:       unknown\n")
               }
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
