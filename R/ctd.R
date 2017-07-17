@@ -239,7 +239,7 @@ setMethod("handleFlags",
               ## Default to the World Hydrographic Program system, with
               ## flags from 1 to 9, with flag=2 for acceptable data.
               if (missing(flags))
-                  flags <- list(c(1, 3:9)) # DEVELOPER 2: alter this line to suit a newdata class
+                  flags <- list(c(1, 3:9)) # DEVELOPER 2: alter this line to suit a new data class
               if (missing(actions)) {
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
@@ -4111,9 +4111,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
     if (eos == "gsw") {
         rhoCorners <- gsw::gsw_rho(Scorners, Tcorners, rep(0, 4)) - 1000
     } else if (eos == "unesco") {
-        rhoCorners <- swSigma(c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
-                              c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
-                              rep(0, 4), eos=eos)
+        rhoCorners <- swSigma(Scorners, Tcorners, rep(0, 4), eos=eos)
     } else {
         stop("unknown eos, \"", eos, "\"; please use \"unesco\" or \"gsw\"")
     }
