@@ -26,7 +26,7 @@ Suggests:
     knitr,
     marmap,
     lubridate
-BugReports: <https://github.com/dankelley/oce/issues>
+BugReports: https://github.com/dankelley/oce/issues
 Description: Supports the analysis of Oceanographic data, including 'ADCP'
     measurements, measurements made with 'argo' floats, 'CTD' measurements,
     sectional data, sea-level time series, coastline and topographic data, etc.
@@ -35,7 +35,7 @@ Description: Supports the analysis of Oceanographic data, including 'ADCP'
     Produces graphical displays that conform to the conventions of the Oceanographic
     literature.
 License: GPL (>= 2)
-URL: <http://dankelley.github.com/oce/>
+URL: <https://dankelley.github.com/oce/>
 LazyLoad: yes
 LazyData: no
 Packaged: Dan Kelley
