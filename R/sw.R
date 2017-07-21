@@ -1217,7 +1217,7 @@ swDynamicHeight <- function(x, referencePressure=2000,
             CT <- ctd[["CT"]]
             p <- ctd[["pressure"]]
             ## FIXME: check TEOS-10 docs on whether we are meant to use local g or a constant
-            res <- gsw_geo_strf_dyn_height(SA=SA, CT=CT, p=p, p_ref=referencePressure)[1] / g
+            res <- gsw::gsw_geo_strf_dyn_height(SA=SA, CT=CT, p=p, p_ref=referencePressure)[1] / g
             res[is.nan(res)] <- NA
         }
         res
