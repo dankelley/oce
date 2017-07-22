@@ -35,7 +35,7 @@ Description: Supports the analysis of Oceanographic data, including 'ADCP'
     Produces graphical displays that conform to the conventions of the Oceanographic
     literature.
 License: GPL (>= 2)
-URL: <https://dankelley.github.com/oce/>
+URL: <http://dankelley.github.io/oce/>
 LazyLoad: yes
 LazyData: no
 Packaged: Dan Kelley
