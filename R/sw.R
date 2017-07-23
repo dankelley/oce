@@ -1135,12 +1135,19 @@ swZ <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
 #' are scaled before the integration, making both independent and dependent
 #' variables be of order one.)
 #'
-#' NOTE: As of early 2015, the \code{eos="gsw"} case is handled exactly the
-#' same as the \code{"unesco"} case, because the GSW C code (version 3.0.3)
-#' lacks the requisite functions.
+#' If \code{eos="gsw"}, \code{\link[gsw]{gsw_geo_strf_dyn_height}} is used
+#' to calculate a result in m^2/s^2, and this is divided by the acceleration
+#' due to gravity, calculated with \code{\link{gravity}} if latitude is
+#' discoverable, otherwise by 9.8m/s^2.
+#' If any pressure is repeated, only the first level is used.
+#' If there are under 4 remaining distinct
+#' pressures, \code{NA} is returned, with a warning. 
 #'
 #' @param x a \code{section} object, \strong{or} a \code{ctd} object.
-#' @param referencePressure reference pressure [dbar]
+#' @param referencePressure reference pressure [dbar]. If this exceeds the
+#' highest pressure supplied to \code{swDynamicHeight}, then that highest
+#' pressure is used, instead of the supplied value of
+#' \code{referencePressure}.
 #' @param subdivisions number of subdivisions for call to
 #' \code{\link{integrate}}.  (The default value is considerably larger than the
 #' default for \code{\link{integrate}}, because otherwise some test profiles
@@ -1199,26 +1206,48 @@ swDynamicHeight <- function(x, referencePressure=2000,
         if (sum(!is.na(ctd@data$pressure)) < 2)
             return(NA)
         g <- if (is.na(ctd@metadata$latitude)) 9.8 else gravity(ctd@metadata$latitude)
+        p <- ctd[["pressure"]]
+        np <- length(p)
+        p_ref <- min(max(p, na.rm=TRUE), referencePressure)
         if (eos == "unesco") {
-            np <- length(ctd@data$pressure)
             rho <- swRho(ctd, eos=eos)
             if (sum(!is.na(rho)) < 2)
                 return(NA)
             ## 1e4 converts decibar to Pa
-            dzdp <- ( (1/rho - 1/swRho(rep(35, np), rep(0, np), ctd@data$pressure, eos=eos)) / g )*1e4
+            dzdp <- ( (1/rho - 1/swRho(rep(35, np), rep(0, np), p, eos=eos)) / g )*1e4
             ## Scale both pressure and dz/dp to make integration work better (issue 499)
             max <- max(dzdp, na.rm=TRUE)
-            integrand <- approxfun(ctd@data$pressure/referencePressure, dzdp/max, rule=2)
+            integrand <- approxfun(p/p_ref, dzdp/max, rule=2)
             ##plot(dzdp/max, ctd@data$pressure/referencePressure, type='l')
             res <- integrate(integrand, 0, 1,
-                             subdivisions=subdivisions, rel.tol=rel.tol)$value * referencePressure * max
+                             subdivisions=subdivisions, rel.tol=rel.tol)$value * p_ref * max
         } else {                       # "gsw"
-            SA <- ctd[["SA"]]
-            CT <- ctd[["CT"]]
-            p <- ctd[["pressure"]]
-            ## FIXME: check TEOS-10 docs on whether we are meant to use local g or a constant
-            res <- gsw::gsw_geo_strf_dyn_height(SA=SA, CT=CT, p=p, p_ref=referencePressure)[1] / g
-            res[is.nan(res)] <- NA
+            if (np > 3) {
+                o <- order(p)
+                p <- p[o]
+                SA <- ctd[["SA"]][o]
+                CT <- ctd[["CT"]][o]
+                ## handle repeated values
+                dp0 <- diff(p) == 0
+                if (any(dp0)) {
+                    SA <- SA[!dp0]
+                    CT <- CT[!dp0]
+                    p <- p[!dp0]
+                    if (length(p) < 4) {
+                        warning("In swDynamicHeight() : returning NA since < 4 levels", call.=FALSE)
+                        res <- NA
+                    } else {
+                        res <- gsw::gsw_geo_strf_dyn_height(SA=SA, CT=CT, p=p, p_ref=p_ref)[1] / g
+                    }
+                } else {
+                    ## FIXME: check TEOS-10 docs on whether we are meant to use local g or a constant
+                    res <- gsw::gsw_geo_strf_dyn_height(SA=SA, CT=CT, p=p, p_ref=p_ref)[1] / g
+                }
+                res[is.nan(res)] <- NA
+            } else {
+                warning("In swDynamicHeight() : returning NA since < 4 levels", call.=FALSE)
+                res <- NA
+            }
         }
         res
     }
