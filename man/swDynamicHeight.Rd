@@ -59,10 +59,10 @@ are scaled before the integration, making both independent and dependent
 variables be of order one.)
 
 If \code{eos="gsw"}, \code{\link[gsw]{gsw_geo_strf_dyn_height}} is used
-to calculate a result in m^2/s^2, and this is divided by the acceleration
-due to gravity, calculated with \code{\link{gravity}} if latitude is
-discoverable, otherwise by 9.8m/s^2.
-If any pressure is repeated, only the first level is used.
+to calculate a result in m^2/s^2, and this is divided by
+9.7963\eqn{m/s^2}{m/s^2}.
+If pressures are out of order, the data are sorted. If any pressure
+is repeated, only the first level is used.
 If there are under 4 remaining distinct
 pressures, \code{NA} is returned, with a warning.
 }

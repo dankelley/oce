@@ -1136,10 +1136,10 @@ swZ <- function(pressure, latitude=45, eos=getOption("oceEOS", default="gsw"))
 #' variables be of order one.)
 #'
 #' If \code{eos="gsw"}, \code{\link[gsw]{gsw_geo_strf_dyn_height}} is used
-#' to calculate a result in m^2/s^2, and this is divided by the acceleration
-#' due to gravity, calculated with \code{\link{gravity}} if latitude is
-#' discoverable, otherwise by 9.8m/s^2.
-#' If any pressure is repeated, only the first level is used.
+#' to calculate a result in m^2/s^2, and this is divided by
+#' 9.7963\eqn{m/s^2}{m/s^2}.
+#' If pressures are out of order, the data are sorted. If any pressure
+#' is repeated, only the first level is used.
 #' If there are under 4 remaining distinct
 #' pressures, \code{NA} is returned, with a warning. 
 #'
@@ -1233,6 +1233,7 @@ swDynamicHeight <- function(x, referencePressure=2000,
                     SA <- SA[!dp0]
                     CT <- CT[!dp0]
                     p <- p[!dp0]
+                    g <- 9.7963 # NOTE: do not use local gravity; the gsw is defined to use this value
                     if (length(p) < 4) {
                         warning("In swDynamicHeight() : returning NA since < 4 levels", call.=FALSE)
                         res <- NA
@@ -1240,7 +1241,6 @@ swDynamicHeight <- function(x, referencePressure=2000,
                         res <- gsw::gsw_geo_strf_dyn_height(SA=SA, CT=CT, p=p, p_ref=p_ref)[1] / g
                     }
                 } else {
-                    ## FIXME: check TEOS-10 docs on whether we are meant to use local g or a constant
                     res <- gsw::gsw_geo_strf_dyn_height(SA=SA, CT=CT, p=p, p_ref=p_ref)[1] / g
                 }
                 res[is.nan(res)] <- NA
