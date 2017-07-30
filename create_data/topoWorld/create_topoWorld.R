@@ -4,18 +4,17 @@ plot <- FALSE
 ## File format described at
 ## http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO5/TOPO/ETOPO5/ETOPO5.txt
 library(oce)
-library(testthat)
 f <- file("etopo5.dat", "rb")
 seek(f, 0, "end", rw="read")
 fileSize <- seek(f, 0, origin="start", rw="read")
 nlon <- 360*12
 nlat <- 180*12
 n <- fileSize / 2
-testthat::expect_equal(n, nlon*nlat)
+expect_equal(n, nlon*nlat)
 z <- readBin(f, integer(), size=2, endian="big", n=n)
 z <- t(matrix(z, nrow=nlat, byrow=TRUE)) # the nlat vs nlon is confusing
-testthat::expect_equal(nlon, dim(z)[1])
-testthat::expect_equal(nlat, dim(z)[2])
+expect_equal(nlon, dim(z)[1])
+expect_equal(nlat, dim(z)[2])
 latitude <- seq(90, by=-1/12, length.out=nlat)
 longitude <- seq(0, by=1/12, length.out=nlon)
 zOrig <- z

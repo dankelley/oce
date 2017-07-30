@@ -5,6 +5,19 @@ data("argo")
 
 context("CTD")
 
+test_that("plotTS() handles differently EOSs correctly", {
+          data(ctd)
+          options(oceEOS="unesco")
+          plotTS(ctd)
+          plotTS(ctd, eos="unesco")
+          plotTS(ctd, eos="gsw")
+          options(oceEOS="gsw")
+          plotTS(ctd)
+          plotTS(ctd, eos="unesco")
+          plotTS(ctd, eos="gsw")
+})
+
+
 test_that("as.ctd() with specified arguments, including salinity", {
           ctd_ctd <- as.ctd(salinity=ctd[["salinity"]], temperature=ctd[["temperature"]], pressure=ctd[["pressure"]])
           expect_equal(ctd[["salinity"]], ctd_ctd[["salinity"]])
@@ -21,16 +34,39 @@ test_that("as.ctd() with specified arguments, including salinity", {
           expect_true("fluorescence" %in% names(ctd_ctd[["data"]]))
 })
 
+test_that("ctd[[\"CT\"]] requires lon and lat", {
+          a <- as.ctd(35,10,0)
+          expect_error(a[["CT"]])
+})
+
+test_that("ctd[[\"Sstar\"]] requires lon and lat", {
+          a <- as.ctd(35,10,0)
+          expect_error(a[["Sstar"]])
+})
+
+test_that("ctd[[\"SA\"]] requires lon and lat", {
+          a <- as.ctd(35,10,0)
+          expect_error(a[["SA"]])
+})
+
 test_that("as.ctd() with specified arguments, not including salinity", {
-          S <- ctd[["salinity"]]
-          T <- ctd[["temperature"]]
-          p <- ctd[["pressure"]]
-          C <- swCSTp(S, T, p)
-          ctdNew <- as.ctd(conductivity=C, temperature=T, pressure=p)
+          salinity <- ctd[["salinity"]]
+          temperature <- ctd[["temperature"]]
+          pressure <- ctd[["pressure"]]
+          conductivity <- swCSTp(salinity, temperature, pressure)
+          options(oceEOS="unesco")
+          ctdNew <- as.ctd(conductivity=conductivity, temperature=temperature, pressure=pressure)
           ## Test that all fields were created accurately.
-          expect_equal(S, ctdNew[["salinity"]])
-          expect_equal(T, ctdNew[["temperature"]])
-          expect_equal(p, ctdNew[["pressure"]])
+          expect_equal(salinity, ctdNew[["salinity"]])
+          expect_equal(temperature, ctdNew[["temperature"]])
+          expect_equal(pressure, ctdNew[["pressure"]])
+          ##
+          options(oceEOS="gsw")
+          ctdNew <- as.ctd(conductivity=conductivity, temperature=temperature, pressure=pressure)
+          ## Test that all fields were created accurately.
+          expect_equal(salinity, ctdNew[["salinity"]])
+          expect_equal(temperature, ctdNew[["temperature"]])
+          expect_equal(pressure, ctdNew[["pressure"]])
 })
 
 
@@ -152,6 +188,7 @@ test_that("accessors work as functions and [[", {
 
 test_that("ability to change conductivityUnit", {
           ## These came from issue 731
+          data(ctd)
           ctd2 <- ctd
           ctd2@data$conductivity <- swCSTp(ctd2) * 42.914
           ctd2[['conductivityUnit']] <- list(unit=expression(mS/cm), scale="")
@@ -248,9 +285,10 @@ test_that("Beaufort sea data II", {
 ## An ODF file measured aboard CCGS SIGMA T, with 
 ## Catherine Johnson as chief scientist.
 test_that("ODF file", {
-          d4 <- read.ctd.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
+          expect_warning(d4 <- read.ctd.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce")),
+                         "\"CRAT_01\" should be unitless")
           expect_equal(d4[["temperatureUnit"]]$unit, expression(degree*C))
-          expect_equal(d4[["temperatureUnit"]]$scale, "ITS-90")
+          expect_equal(d4[["temperatureUnit"]]$scale, "IPTS-68")
           ## FIXME: following works manually but fails in Rstudio build
           ## expect_equal(d4[["conductivityUnit"]]$unit, expression()) # was S/m in the .cnv but ratio in ODF
           expect_equal(d4[["pressureType"]], "sea")
@@ -261,10 +299,10 @@ test_that("ODF file", {
           expect_equal(d4[["latitude"]], 44.267500)
           expect_equal(d4[["longitude"]], -63.317500)
           expect_equal(d4[['pressure']][1:3], c(0.5, 1.5, 2.0))
-          expect_equal(d4[['temperature']][1:3], c(5.885, 5.9124, 5.9188))
+          expect_equal(d4[['temperature']][1:3], c(5.883587939, 5.910981364, 5.917379829))
           expect_equal(d4[['salinity']][1:3], c(30.8514,30.8593,30.8596))
           ## there are some flagged data in this file
-          expect_equal(d4[['pressure']][which(d4[['flag']]!=0)], c(55.5, 60.5, 61.0 ,71.5))
+          expect_equal(d4[['pressure']][which(d4[['QCFlag']]!=0)], c(55.5, 60.5, 61.0 ,71.5))
 }) 
 
 test_that("pressure accessor handles psi unit", {
@@ -298,7 +336,8 @@ test_that("salinity accessor computes value from conductivity", {
           ctd@metadata$units$salinity <- NULL
           ## add new
           ctd2 <- oceSetData(ctd, name="conductivity", value=C, unit=list(unit=expression(), scale="PSS-78"))
-          expect_equal(Sorig, ctd2[['salinity']], tolerance=0.0001)
+          expect_warning(S <- ctd2[["salinity"]], "constructed salinity from temperature, conductivity-ratio and pressure")
+          expect_equal(Sorig, S, tolerance=0.0001)
 })
 
 test_that("nitrate can be inferred from nitrite and NO2+NO3", {

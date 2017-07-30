@@ -58,6 +58,7 @@ test_that("integrateTrapezoid", {
           x <- seq(0, 1, length.out=10)
           y <- 2*x + 3*x^2
           expect_equal(2, integrateTrapezoid(x, y), tolerance=0.01)
+          expect_equal(integrateTrapezoid(x,y), integrateTrapezoid(y) * (x[2]-x[1]))
 })
 
 test_that("matchBytes", {
@@ -140,7 +141,7 @@ test_that("binAverage", {
           expect_equal(ba$y[5], 1989.5)
 })
 
-test_that("binApply1D", {
+test_that("binApply1D simple", {
           set.seed(123)
           n <- 3
           x <- runif(n)
@@ -148,6 +149,29 @@ test_that("binApply1D", {
           b <- binApply1D(x, f, xbreaks=seq(0,1,0.25), FUN=mean)
 })
 
+test_that("binApply1D with missing bins", {
+          ## 'result' should have no NA values
+          x <- seq(0, 95)
+          xbreaks <- seq(0, 100, 10)
+          y <- x
+          b <- binApply1D(x, y, xbreaks, mean)
+          expect_equal(length(b$xmids), length(b$result))
+          ## should be one NA at the end of 'result'
+          x <- seq(0, 89)
+          xbreaks <- seq(0, 100, 10)
+          y <- x
+          b <- binApply1D(x, y, xbreaks, mean)
+          expect_equal(length(b$xmids), length(b$result))
+          expect_true(is.na(tail(b$result, 1)))
+          ## should be an NA at both start and end of 'result'
+          x <- seq(11, 89)
+          xbreaks <- seq(0, 100, 10)
+          y <- x
+          b <- binApply1D(x, y, xbreaks, mean)
+          expect_equal(length(b$xmids), length(b$result))
+          expect_true(is.na(b$result[1]))
+          expect_true(is.na(tail(b$result, 1)))
+})
 
 test_that("binApply2D", {
           set.seed(123)

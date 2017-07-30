@@ -16,7 +16,8 @@
 quantities to plot.  These are stacked in a single column.  The possible
 values for \code{which} are as follows: \code{1} or \code{"temperature"} for
 a time series of temperature; \code{2} or \code{"salinity"} for salinity;
-\code{3} or \code{"TS"} for a TS diagram; \code{4} or \code{"u"} for a
+\code{3} or \code{"TS"} for a TS diagram (which uses \code{eos="unesco"}),
+\code{4} or \code{"u"} for a
 timeseries of the u component of velocity; \code{5} or \code{"v"} for a
 timeseries of the v component of velocity; \code{6} or \code{"nitrate"} for
 a timeseries of nitrate concentration; \code{7} or \code{"fluorescence"} for

@@ -326,8 +326,9 @@ setMethod(f="summary",
                                       config=object@metadata$config,
                                       configPressureSensor=object@metadata$configPressureSensor,
                                       configMagnetometerSensor=object@metadata$configMagnetometerSensor,
-                                      configTiltSensor=object@metadata$configPressureSensor,
-                                      configPressureSensor=object@metadata$configTiltSensor,
+                                      configPressureSensor=object@metadata$configPressureSensor,
+                                      configTiltSensor=object@metadata$configTiltSensor,
+                                      configTiltSensorOrientation=object@metadata$configTiltSensorOrientation,
                                       serialNumberHead=object@metadata$serialNumberHead,
                                       blankingDistance=object@metadata$blankingDistance,
                                       measurementInterval=object@metadata$measurementInterval,
@@ -579,6 +580,7 @@ setValidity("adp",
 #' @author Dan Kelley
 #'
 #' @family things related to \code{adp} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="adp",
           definition=function(x, subset, ...) {
@@ -2614,8 +2616,22 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
                 forwardBv <- res@data$bv[, 2]
                 mastBv <- res@data$bv[, 3]
             }
+        } else if (res@metadata$oceCoordinate == "sfm" & res@metadata$tiltUsed) {
+          oceDebug(debug, "Case 2: RDI ADCP in SFM coordinates, but with tilts already applied.\n")
+          oceDebug(debug, "        No coordinate changes required prior to ENU.\n")
+          starboard <- res@data$v[, , 1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+          forward <- res@data$v[, , 2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+          mast <- res@data$v[, , 3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+          pitch <- rep(0, length(heading))
+          roll <- rep(0, length(heading))
+          if (haveBv) {
+            ## bottom velocity
+            starboardBv <- res@data$bv[, 1]
+            forwardBv <- res@data$bv[, 2]
+            mastBv <- res@data$bv[, 3]
+          }
         } else if (res@metadata$orientation == "upward") {
-            oceDebug(debug, "Case 2: RDI ADCP in XYZ coordinates with upward-pointing sensor.\n")
+            oceDebug(debug, "Case 3: RDI ADCP in XYZ coordinates with upward-pointing sensor.\n")
             oceDebug(debug, "        Using S=-X, F=Y, and M=-Z.\n")
             ## As an alternative to the next three lines, could just add 180 degrees to roll
             starboard <- -res@data$v[, , 1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
@@ -2628,7 +2644,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
                 mastBv <- -res@data$bv[, 3]
             }
         } else if (res@metadata$orientation == "downward") {
-            oceDebug(debug, "Case 3: RDI ADCP in XYZ coordinates with downward-pointing sensor.\n")
+            oceDebug(debug, "Case 4: RDI ADCP in XYZ coordinates with downward-pointing sensor.\n")
             oceDebug(debug, "        Using roll=-roll, S=X, F=Y, and M=Z.\n")
             roll <- -roll
             starboard <- res@data$v[, , 1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
@@ -2723,16 +2739,21 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     oceDebug(debug, vectorShow(heading, "heading (after adjustment)"))
     oceDebug(debug, vectorShow(pitch, "pitch (after adjustment)"))
     oceDebug(debug, vectorShow(roll, "roll (after adjustment)"))
-    np <- dim(x@data$v)[1]           # number of profiles
     nc <- dim(x@data$v)[2]           # numberOfCells
+    np <- dim(x@data$v)[1]           # number of profiles
+    if (length(heading) < np)
+        heading <- rep(heading, length.out=np)
+    if (length(pitch) < np)
+        pitch <- rep(pitch, length.out=np)
+    if (length(roll) < np)
+        roll <- rep(roll, length.out=np)
     ## ADP and ADV calculations are both handled by sfm_enu
     for (c in 1:nc) {
         enu <- .C("sfm_enu",
-                  as.integer(length(x@data$heading)), # need not equal np
+                  as.integer(np),
                   as.double(heading + declination),
                   as.double(pitch),
                   as.double(roll),
-                  as.integer(np),
                   as.double(starboard[, c]),
                   as.double(forward[, c]),
                   as.double(mast[, c]),
@@ -2747,11 +2768,10 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     }
     if (haveBv) {
         enu <- .C("sfm_enu",
-                  as.integer(length(x@data$heading)), # need not equal np
+                  as.integer(np),
                   as.double(heading + declination),
                   as.double(pitch),
                   as.double(roll),
-                  as.integer(np),
                   as.double(starboardBv),
                   as.double(forwardBv),
                   as.double(mastBv),
@@ -2816,14 +2836,19 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
         stop("input must be in enu coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     res <- x
     np <- dim(x@data$v)[1]           # number of profiles
+    if (length(heading) != np)
+        heading <- rep(heading, length.out=np)
+    if (length(pitch) != np)
+        pitch <- rep(pitch, length.out=np)
+    if (length(roll) != np)
+        roll <- rep(roll, length.out=np)
     nc <- dim(x@data$v)[2]           # numberOfCells
     for (c in 1:nc) {
         other <- .C("sfm_enu",
-                    as.integer(length(heading)),
+                    as.integer(np),
                     as.double(heading),
                     as.double(pitch),
                     as.double(roll),
-                    as.integer(np),
                     as.double(x@data$v[, c, 1]),
                     as.double(x@data$v[, c, 2]),
                     as.double(x@data$v[, c, 3]),
@@ -2838,11 +2863,10 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
     }
     if ("bv" %in% names(x@data)) {
         other <- .C("sfm_enu",
-                    as.integer(length(heading)),
+                    as.integer(np),
                     as.double(heading),
                     as.double(pitch),
                     as.double(roll),
-                    as.integer(np),
                     as.double(x@data$bv[, 1]),
                     as.double(x@data$bv[, 2]),
                     as.double(x@data$bv[, 3]),

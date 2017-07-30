@@ -241,6 +241,7 @@ setMethod(f="[[<-",
 #' plot(subset(echosounder, time < mean(range(echosounder[['time']]))))
 #'
 #' @family things related to \code{echosounder} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="echosounder",
           definition=function(x, subset, ...) {
@@ -735,9 +736,10 @@ setMethod(f="plot",
 #' to load.
 #' @param channel sequence number of channel to extract, for multi-channel
 #' files.
-#' @param soundSpeed sound speed, in m/s.  (The documents on Biosonics
-#' instruments suggest that this could be inferred from values in the file
-#' header, but test files proved this to be false.)
+#' @param soundSpeed sound speed, in m/s. If not provided, this is calculated
+#' using \code{\link{swSoundSpeed}(35, 15, 30, eos="unesco")}.  (In theory,
+#' it could be calculated using the temperature and salinity that are stored
+#' in the data file, but these will just be nominal values, anyway.
 #' @param tz character string indicating time zone to be assumed in the data.
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
 #' amount of debugging information, or to 2 to get more.
@@ -768,7 +770,7 @@ setMethod(f="plot",
 #' Advanced Digital Hydroacoustics. July, 2010.  SOFTWARE AND ENGINEERING
 #' LIBRARY REPORT BS&E-2004-07-0009-2.0.
 #' @family things related to \code{echosounder} data
-read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50),
+read.echosounder <- function(file, channel=1, soundSpeed,
                              tz=getOption("oceTz"), debug=getOption("oceDebug"),
                              processingLog)
 {
@@ -980,7 +982,8 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             if (debug > 1) cat("temperature=", res@metadata$temperature, "degC (expect 14 for 1-Fish.dt4)\n")
             res@metadata$salinity <- 0.01*.C("uint16_le", buf[offset+10+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             if (debug > 1) cat("salinity=", res@metadata$salinity, "PSU (expect 30 for 1-Fish.dt4)\n")
-            res@metadata$soundSpeed <- swSoundSpeed(res@metadata$salinity, res@metadata$temperature, 30)
+            ## res@metadata$soundSpeed <- swSoundSpeed(res@metadata$salinity, res@metadata$temperature, 30,
+            ##                                        eos="unesco")
             res@metadata$transmitPower <- 0.01*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             if (debug > 1) cat("transmitPower=", res@metadata$transmitPower, "(expect 0 for 1-Fish.dt4; called mTransmitPower)\n")
             res@metadata$tz <- readBin(buf[offset+16+1:2], "integer", size=2)
@@ -1028,7 +1031,12 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     res@metadata$channel <- channel
     res@metadata$fileType <- fileType
     res@metadata$blankedSamples <- blankedSamples
-    res@metadata$soundSpeed <- soundSpeed
+    if (missing(soundSpeed)) {
+        res@metadata$soundSpeed <- swSoundSpeed(35, 10, 30, eos="unesco") 
+    } else {
+        res@metadata$soundSpeed <- soundSpeed
+    }
+    res@metadata$soundSpeed <- if (missing(soundSpeed)) swSoundSpeed(35, 10, 30, eos="unesco") else soundSpeed
     res@metadata$samplingDeltat <- channelDeltat[1] # nanoseconds
     res@metadata$pingsInFile <- pingsInFile
     res@metadata$samplesPerPing <- samplesPerPing

@@ -72,14 +72,6 @@ in the data, the defaults are
 \code{flags=list(c(0,2:9))} and
 \code{actions=list("NA")}.
 }
-\section{Implementation status}{
- \code{handleFlags} is a new function as of March 2016,
-and it will probably continue to evolve through the rest of 2016.
-Users are asked to be patient, and to provide help by
-looking at the documentation and telling the developers
-whether the planned functioning seems reasonable.
-}
-
 \examples{
 \dontrun{
 library(oce)

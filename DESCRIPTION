@@ -1,18 +1,18 @@
 Package: oce
-Version: 0.9-21
-Date: 2017-03-29
+Version: 0.9-22
+Date: 2017-07-24
 Title: Analysis of Oceanographic Data
 Authors@R: c(person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre")),
  person(given="Clark", family="Richards", email="clark.richards@gmail.com", role=c("aut")),
  person(given="Chantelle", family="Layton", email="chantelle.layton@dal.ca", role=c("ctb"), comment="curl() coauthor"),
- person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field subroutine"),
- person(given="Pablo", family="Valdés", role=c("ctb"), comment="Spanish translation of messages"))
+ person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field subroutine"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
 Depends:
     R (>= 2.15),
     utils,
     methods,
-    gsw
+    gsw,
+    testthat
 Suggests:
     ocedata,
     foreign,
@@ -23,7 +23,6 @@ Suggests:
     DBI,
     rgdal (>= 1.1-9),
     R.utils,
-    testthat,
     knitr,
     marmap,
     lubridate
@@ -36,7 +35,7 @@ Description: Supports the analysis of Oceanographic data, including 'ADCP'
     Produces graphical displays that conform to the conventions of the Oceanographic
     literature.
 License: GPL (>= 2)
-URL: http://dankelley.github.com/oce/
+URL: https://dankelley.github.io/oce
 LazyLoad: yes
 LazyData: no
 Packaged: Dan Kelley

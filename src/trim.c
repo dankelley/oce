@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 // Find start and stop indices in x that enclose xlim with
 // one extra element less than xlim[1] and one more than xlim[2].
 

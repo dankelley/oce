@@ -6,7 +6,7 @@
 \usage{
 plotSticks(x, y, u, v, yscale = 1, add = FALSE, length = 1/20,
   mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1 +
-  par("cex")), ...)
+  par("cex")), xlab = "", ylab = "", ...)
 }
 \arguments{
 \item{x}{x coordinates of stick origins.}
@@ -19,7 +19,7 @@ are ignored.}
 
 \item{v}{y component of stick length.}
 
-\item{yscale}{scale from u and v to y (see \dQuote{Details}).}
+\item{yscale}{scale from u and v to y (see \dQuote{Description}).}
 
 \item{add}{boolean, set \code{TRUE} to add to an existing plot.}
 
@@ -33,6 +33,8 @@ default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
 
+\item{xlab, ylab}{labels for the plot axes. The default is not to label them.}
+
 \item{\dots}{graphical parameters passed down to \code{\link{arrows}}.  It
 is common, for example, to use smaller arrow heads than \code{\link{arrows}}
 uses; see \dQuote{Examples}.}
@@ -44,7 +46,7 @@ relative to the units of the \code{y} axis, according to the value of
 \code{yscale}, which has the unit of \code{v} divided by the unit of
 \code{y}.
 The interpretation of diagrams produced by \code{plotSticks} can be
-difficult, owing to overlap in the arrows.  For this reason, it It is often
+difficult, owing to overlap in the arrows.  For this reason, it is often
 a good idea to smooth \code{u} and \code{v} before using this function.
 }
 \examples{

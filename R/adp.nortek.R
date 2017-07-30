@@ -110,16 +110,36 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             if (2 * head$size != headerLengthHead)
                 stop("size of head header expected to be ", headerLengthHead, "but got ", head$size)
             oceDebug(debug, "head$size=", head$size, "\n")
-            head$config <- byteToBinary(buf[o+5:6], endian="little")
-            oceDebug(debug, "head$config=", head$config, "\n")
-            head$configPressureSensor <- substr(head$config[1], 1, 1) == "1"
+
+            ## Nortek doc "system-integrator-manual_Mar2016.pdf" (page 23) says for the "head configuration":
+            ## bit 0: Pressure sensor (0=no, 1=yes)
+            ## bit 1: Magnetometer sensor (0=no, 1=yes)
+            ## bit 2: Tilt sensor (0=no, 1=yes)
+            ## bit 3: Tilt sensor mounting (0=up, 1=down)
+            ## issue1220 debug <- debug + 10
+            ## issue1220 head$config <- byteToBinary(buf[o+5:6], endian="little")
+            ## issue1220 oceDebug(debug, "head$config=", head$config, "\n")
+            ## issue1220 configTEST <- rawToBits(buf[o+5:6])
+            ## issue1220 oceDebug(debug, "configTEST=", configTEST, "\n")
+            ## issue1220 oceDebug(debug, "head$config=", head$config, "\n")
+            ## issue1220 head$configPressureSensor <- substr(head$config[1], 1, 1) == "1"
+            ## issue1220 oceDebug(debug, "head$configPressureSensor=", head$configPressureSensor, "\n")
+            ## issue1220 head$configMagnetometerSensor <- substr(head$config[1], 2, 2) == "1"
+            ## issue1220 oceDebug(debug, "head$configMagnetometerSensor=", head$configMagnetometerSensor, "\n")
+            ## issue1220 head$configTiltSensor <- substr(head$config[1], 3, 3) == "1"
+            ## issue1220 oceDebug(debug, "head$configTiltSensor=", head$configTiltSensor, "\n")
+            ## issue1220 head$tiltSensorOrientation <- if (substr(head$config[1], 4, 4) == "1") "downward" else "upward"
+            ## issue1220 oceDebug(debug, "head$tiltSensorOrientation=", head$tiltSensorOrientation, "\n")
+            tmpBits <- rawToBits(buf[o+5])
+            head$configPressureSensor <- tmpBits[1] == as.raw(0x1) 
+            head$configMagnetometerSensor <- tmpBits[2] == as.raw(0x1) 
+            head$configTiltSensor <- tmpBits[3] == as.raw(0x1) 
+            head$configTiltSensorOrientation <- ifelse(tmpBits[4] == as.raw(0x1), "downward", "upward")
             oceDebug(debug, "head$configPressureSensor=", head$configPressureSensor, "\n")
-            head$configMagnetometerSensor <- substr(head$config[1], 2, 2) == "1"
             oceDebug(debug, "head$configMagnetometerSensor=", head$configMagnetometerSensor, "\n")
-            head$configTiltSensor <- substr(head$config[1], 3, 3) == "1"
             oceDebug(debug, "head$configTiltSensor=", head$configTiltSensor, "\n")
-            head$tiltSensorOrientation <- if (substr(head$config[1], 4, 4) == "1") "downward" else "upward"
-            oceDebug(debug, "head$tiltSensorOrientation=", head$tiltSensorOrientation, "\n")
+            oceDebug(debug, "head$configTiltSensorOrientation=", head$configTiltSensorOrientation, "\n")
+
             head$frequency <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "head$frequency=", head$frequency, "kHz\n")
             head$headType <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little")
@@ -185,10 +205,25 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             user$comments <- readBin(buf[o+257+0:179], "character", n=1, size=180)
             oceDebug(debug, "user$comments=", user$comments, "\n")
 
-            user$mode <- byteToBinary(buf[o+59:60], endian="little")
+            ## Nortek doc "system-integrator-manual_Mar2016.pdf" (page 24-25) says for the "mode":
+            ##   bit 0: use user specified sound speed (0=no, 1=yes)
+            ##   bit 1: diagnostics/wave mode 0=disable, 1=enable)
+            ##   bit 2: analog output mode (0=disable, 1=enable)
+            ##   bit 3: output format (0=Vector, 1=ADV)
+            ##   bit 4: scaling (0=1 mm, 1=0.1 mm)
+            ##   bit 5: serial output (0=disable, 1=enable)
+            ##   bit 6: reserved EasyQ
+            ##   bit 7: stage (0=disable, 1=enable)
+            ##   bit 8: output power for analog input (0=disable, 1=enable)
+            ## and we want bit 4. In R notation, that is rawToBits()[5]
+            ##
+            ## issue1220 user$mode <- byteToBinary(buf[o+59:60], endian="little")
+            ## issue1220 user$velocityScale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.0001
+            user$mode <- rawToBits(buf[o+59:60])
             oceDebug(debug, "user$mode: ", user$mode, "\n")
-            user$velocityScale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.0001
+            user$velocityScale <- ifelse(user$mode[5] == 0x00, 0.001, 0.0001)
             oceDebug(debug, "user$velocityScale: ", user$velocityScale, "\n")
+
             tmp.cs <- readBin(buf[o+33:34], "integer", n=1, size=2, endian="little")
             if (tmp.cs == 0) user$originalCoordinate <- "enu" # page 31 of System Integrator Guide
             else if (tmp.cs == 1) user$originalCoordinate <- "xyz"
@@ -314,6 +349,90 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
     list(hardware=hardware, head=head, user=user, offset=o+1)
 }
 
+#' Read an AD2CP File
+#'
+#' This function, introduced in April 2017, is just a temporary interface
+#' for separate interpretation code that lives in the 1219 issue
+#' directory. THIS IS ONLY FOR DEVELOPERS.
+#'
+#' @param orientation Optional character string specifying the orientation of the
+#' sensor, provided for those cases in which it cannot be inferred from the
+#' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
+#' \code{"sideward"}.
+#' @param distance Optional vector holding the distances of bin centres from the
+#' sensor.  This argument is ignored except for Nortek profilers, and need not
+#' be given if the function determines the distances correctly from the data.
+#' The problem is that the distance is poorly documented in the Nortek System
+#' Integrator Guide (2008 edition, page 31), so the function must rely on
+#' word-of-mouth formulae that do not work in all cases.
+#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
+#' anomalous spikes in heading, etc.
+#' @template adpTemplate
+#'
+#' @examples
+#' \dontrun{
+#' f <- "/Users/kelley/Dropbox/oce_ad2cp/labtestsig3.ad2cp"
+#' d <- read.ad2cp(f, 1, 10, 1)
+#'}
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{adp} data
+read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+                       longitude=NA, latitude=NA,
+                       orientation, distance,
+                       monitor=FALSE, despike=FALSE, processingLog,
+                       debug=getOption("oceDebug"), ...)
+{
+    oceDebug(debug, "read.adp.nortek(...,from=", format(from), ",to=", if (missing(to)) "(missing)" else format(to), "...)\n")
+    res <- new("adp")
+    if (is.character(file)) {
+        filename <- fullFilename(file)
+        file <- file(file, "rb")
+        on.exit(close(file))
+    }
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
+    if (!isOpen(file)) {
+        filename <- "(connection)"
+        open(file, "rb")
+        on.exit(close(file))
+    }
+    seek(file, 0, "start")
+    seek(file, 0, "start")
+    ## go to the end, so the next seek (to get to the data) reveals file length
+    seek(file, where=0, origin="end")
+    fileSize <- seek(file, where=0)
+    oceDebug(debug, "fileSize:", fileSize, "\n")
+    buf <- readBin(file, what="raw", n=fileSize, size=1)
+    oceDebug(debug, 'first 10 bytes in file: ',
+             paste(paste("0x", buf[1+0:9], sep=""), collapse=" "), "\n", sep="")
+    headerSize <- as.integer(buf[2])
+    oceDebug(debug, "headerSize:", headerSize, "\n")
+    ID <- buf[3]
+    oceDebug(debug, "ID: 0x", ID, " (NB: 0x15=burst data record; 0x16=avg data record; 0x17=bottom track record; 0x18=interleaved data record; 0xa0=string data record, e.g. GPS NMEA, comment from the FWRITE command\n", sep="")
+    dataSize <- readBin(buf[5:6], what="integer", n=1, size=2, endian="little", signed=FALSE)
+    oceDebug(debug, "dataSize:", dataSize, "\n")
+    ## if (ID == 0xa0) {
+    ##     oceDebug(debug, "type is 0xa0 so trying to read a string...\n")
+    ##     a <- readBin(buf[headerSize+1:dataSize], "character", 1)
+    ##     text <- gsub("\\r","",strsplit(a, "\\n")[[1]])
+    ##     print(text)
+    ## }
+    oceDebug(debug, "buf[1+headerSize+dataSize=", 1+headerSize+dataSize, "]=0x", buf[1+headerSize+dataSize], " (expect 0xa5)\n", sep="")
+    ## if (0xa5 == buf[1+headerSize+dataSize]) {
+    ##     o <- 1 + headerSize + dataSize
+    ##     oceDebug(debug, 'record 2 starts at BUF[', o, "]\n", sep="")
+    ##     oceDebug(debug, 'first 10 bytes in record 2: ',
+    ##              paste(paste("0x", buf[o+0:9], sep=""), collapse=" "),
+    ##              "\n", sep="")
+    ##     tst <- readBin(buf[o+headerSize+1:dataSize], "character", 1)
+    ## }
+    nav <- .Call("ldc_ad2cp_in_file", filename, from, to, by)
+    warning("this is a PRELIMINARY FUNCTION, for use only by developers")
+    list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
+}
+ 
 #' Read a Nortek Aquadopp File
 #'
 #' The R code is based on information in
@@ -804,7 +923,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
 
     if (missing(orientation)) {
-        orientation <- header$head$tiltSensorOrientation
+        orientation <- header$head$configTiltSensorOrientation # FIXME: is there a 'header$head'?
     } else {
         orientation <- match.arg(orientation, c("sideward", "upward", "downward"))
     }

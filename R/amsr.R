@@ -265,6 +265,7 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #'
 #' @family things related to \code{amsr} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="amsr",
           definition=function(x, subset, ...) {

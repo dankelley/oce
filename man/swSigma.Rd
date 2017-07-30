@@ -4,8 +4,8 @@
 \alias{swSigma}
 \title{Seawater density anomaly}
 \usage{
-swSigma(salinity, temperature = NULL, pressure = NULL, longitude = 300,
-  latitude = 30, eos = getOption("oceEOS", default = "gsw"))
+swSigma(salinity, temperature = NULL, pressure = NULL, longitude = NULL,
+  latitude = NULL, eos = getOption("oceEOS", default = "gsw"))
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}
@@ -42,7 +42,7 @@ kg/m\eqn{^3}{^3}.
 }
 \examples{
 library(oce)
-swSigma(35, 13, 1000, eos="gsw")                   # 30.82397
+swSigma(35, 13, 1000, longitude=300, latitude=30, eos="gsw") # 30.82374
 swSigma(35, T90fromT68(13), 1000, eos="unesco")    # 30.8183
 
 }

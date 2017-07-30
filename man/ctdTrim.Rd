@@ -70,6 +70,9 @@ varies, a variety of approaches are taken to trimming the dataset.
   much sense, but it might help in some cases). Note that, prior to early 2016, method \code{"B"} was
   called method \code{"C"}; the old \code{"B"} method was judged useless and was removed.}
 
+\item{If \code{method="upcast"}, a sort of reverse of \code{"downcast"} is used. This
+  was added in late April 2017 and has not been well tested yet.}
+
 \item{If \code{method="sbe"}, a method similar to that described
   in the SBE Data Processing manual is used to remove the "soak"
   period at the beginning of a cast (see Section 6 under subsection
@@ -144,6 +147,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
@@ -152,7 +157,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
 \author{
 Dan Kelley and Clark Richards

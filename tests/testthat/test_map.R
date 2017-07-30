@@ -5,7 +5,7 @@ context("Map and geod calculations")
 
 if (requireNamespace("rgdal", quietly=TRUE)) {
 
-  test_that("utm2lonlat() on some points known from Landsat metadata", {
+  test_that("utm2lonlat() and lonlat2utm() on some points known from Landsat metadata", {
             longitude <- c(-40.27900, -38.22680, -40.28255, -38.22465,
                            -64.12716, -61.13114, -64.08660, -61.19836)
             latitude <- c(-3.28874,-3.28927, -5.39159, -5.39245,

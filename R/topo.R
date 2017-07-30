@@ -150,6 +150,7 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #'
 #' @family things related to \code{topo} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="topo",
           definition=function(x, subset, ...) {
@@ -229,8 +230,8 @@ setMethod(f="subset",
 #' not supplied, this defaults to \code{"gmt"}. See \dQuote{Details}.
 #'
 #' @param server Optional string indicating the server from which to get the data.
-#' If not supplied, the humorously-named default
-#' \samp{"http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"}
+#' If not supplied, the default
+#' \samp{"https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"}
 #' will be used.
 #'
 #' @template debugTemplate
@@ -250,13 +251,27 @@ setMethod(f="subset",
 #' lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
 #'}
 #'
-#' @section History:
-#' When this function was created in August 2016, the default server was
+#' @section Webserver history:
+#' All versions of \code{download.topo} to date have used a NOAA server as
+#' the data source, but the URL has not been static. A list of the
+#' servers that have been used is provided below,
+#' in hopes that it can help users to make guesses
+#' for \code{server}, should \code{download.topo} fail because of 
+#' a fail to download the data. Another
+#' hint is to look at the source code for
+#' \code{\link[marmap]{getNOAA.bathy}} in the \CRANpkg{marmap} package,
+#' which is also forced to track the moving target that is NOAA.
+#'
+#' \itemize{
+#' \item August 2016. 
 #' \samp{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
-#' but this was found to fail in December 2016, so the default was changed to
-#' \samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}, which
-#' is what is used by \code{\link[marmap]{getNOAA.bathy}} in the
-#' \CRANpkg{marmap} package.
+#'
+#' \item December 2016.
+#' \samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
+#'
+#' \item June 2017.
+#' \samp{https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
+#' }
 #'
 #' @seealso The work is done with \code{\link[utils]{download.file}}.
 #'
@@ -276,9 +291,11 @@ download.topo <- function(west, east, south, north, resolution,
                            destdir, destfile, format,
                            server, debug=getOption("oceDebug"))
 {
-    if (missing(server))
-        server <- "http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"
-        ##server <- "http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"
+    if (missing(server)) {
+        server <- "https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"
+        ## server <- "http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz" 
+        ## server <- "http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"
+    }
     if (missing(destdir))
         destdir <- "."
     if (missing(format))

@@ -13,6 +13,19 @@ test_that("subset.argo(argo, \"adjusted\") correctly alters metadata and data", 
           expect_equal(a@metadata$flags$salinity, argo@metadata$flags$salinityAdjusted) 
           expect_equal(a@metadata$flags$temperature, argo@metadata$flags$temperatureAdjusted) 
 })
+
+test_that("argo [[ handles SA and CT", {
+          SA <- argo[["SA"]]
+          CT <- argo[["CT"]]
+          SP <- argo[["salinityAdjusted"]]
+          t <- argo[["temperatureAdjusted"]]
+          p <- argo[["pressureAdjusted"]]
+          lon <- rep(argo[["longitude"]], each=dim(SP)[1])
+          lat <- rep(argo[["latitude"]], each=dim(SP)[1])
+          expect_equal(SA, gsw_SA_from_SP(SP=SP, p=p, longitude=lon, latitude=lat))
+          expect_equal(CT, gsw_CT_from_t(SA=SA, t=t, p=p))
+})
+
 test_that("argo name conversion", {
           table <- "BBP BBP
           BETA_BACKSCATTERING betaBackscattering

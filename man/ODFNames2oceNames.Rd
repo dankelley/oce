@@ -73,6 +73,7 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{QCFF_*.*} \tab \code{flag}               \tab Overall flag                                               \cr
     \code{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objecs                           \cr
     \code{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                          \cr
+    \code{SNCN_*.*} \tab \code{scanCounter}        \tab Used mainly in \code{ctd} objects                          \cr
     \code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                                       \cr
     \code{TE90_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
     \code{TEMP_*.*} \tab \code{temperature}        \tab Used mainly in \code{ctd} objects                          \cr
@@ -107,9 +108,12 @@ although that link seems to be unreliable.
 }
 \seealso{
 Other functions that interpret variable names and units from headers: \code{\link{cnvName2oceName}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{unitFromStringRsk}},
   \code{\link{unitFromString}},
-  \code{\link{woceNames2oceNames}}
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}
 
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{[[,odf-method}},

@@ -275,6 +275,7 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley
 #' @family things related to \code{adv} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="adv",
           definition=function(x, subset, ...) {
@@ -1351,7 +1352,7 @@ xyzToEnuAdv <- function(x, declination=0,
                         cabled=FALSE, horizontalCase, sensorOrientation,
                         debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "xyzToEnuAdv(x, declination=", declination,
+    oceDebug(debug, "xyzToEnuAdv(x, declination[1]=", declination[1],
               ",cabled=", cabled,
               ",horizontalCase=", if (missing(horizontalCase)) "(not provided)" else horizontalCase,
               ",sensorOrientation=", if (missing(sensorOrientation)) "(not provided)" else sensorOrientation,
@@ -1473,15 +1474,18 @@ xyzToEnuAdv <- function(x, declination=0,
     } else {
         stop("unknown type of instrument; x@metadata$manufacturer must contain either \"sontek\" or \"nortek\"")
     }
-    np <- dim(x@data$v)[1]
-    if (np != length(heading))
-        stop("heading length (", length(heading), ") does not match number of velocity samples (", np, ")")
+    np <- dim(x@data$v)[1]           # number of profiles
+    if (length(heading) < np)
+        heading <- rep(heading, length.out=np)
+    if (length(pitch) < np)
+        pitch <- rep(pitch, length.out=np)
+    if (length(roll) < np)
+        roll <- rep(roll, length.out=np)
     enu <- .C("sfm_enu",
-              as.integer(length(heading)), # need not equal np
+              as.integer(np), 
               as.double(heading + declination),
               as.double(pitch),
               as.double(roll),
-              as.integer(np),
               as.double(starboard),
               as.double(forward),
               as.double(mast),
@@ -1524,7 +1528,8 @@ xyzToEnuAdv <- function(x, declination=0,
 #'
 #' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #' @param heading number or vector of numbers, giving the angle, in degrees, to
-#' be added to the heading.  See \dQuote{Details}.
+#' be added to the heading. If this has length less than the number of velocity
+#' sampling times, then it will be extended using \code{\link{rep}}.
 #' @param pitch as \code{heading} but for pitch.
 #' @param roll as \code{heading} but for roll.
 #' @template debugTemplate
@@ -1538,13 +1543,18 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDeb
         stop("input must be in \"enu\" coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     oceDebug(debug, "enuToOtherAdv(x, heading=", heading, ", pitch=",
              pitch, ", roll=", roll, ", debug=", debug, ")", unindent=1)
-    np <- dim(x@data$v)[1]
+    np <- dim(x@data$v)[1]           # number of profiles
+    if (length(heading) < np)
+        heading <- rep(heading, length.out=np)
+    if (length(pitch) < np)
+        pitch <- rep(pitch, length.out=np)
+    if (length(roll) < np)
+        roll <- rep(roll, length.out=np)
     other <- .C("sfm_enu",
-              as.integer(length(heading)), # need not equal np
+              as.integer(np),
               as.double(heading),
               as.double(pitch),
               as.double(roll),
-              as.integer(np),
               as.double(x@data$v[, 1]),
               as.double(x@data$v[, 2]),
               as.double(x@data$v[, 3]),

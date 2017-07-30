@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 
 // Curl calculated with either of two methods, the
 // difference being how derivatives are estimated.
@@ -172,16 +172,16 @@ SEXP curl2(SEXP u, SEXP v, SEXP x, SEXP y, SEXP geographical)
       curlp[IJ(i, j)] = dv/dx - du/dy;
 #ifdef DEBUG
       if (i == 0 && j == 0) {
-	Rprintf("du = 0.5*(%g + %g) - 0.5*(%g + %g)\n", up[ij(i,j+1)],up[ij(i+1,j+1)],up[ij(i,j)],up[ij(i+1,j)]);
-	Rprintf("dv = 0.5*(%g + %g) - 0.5*(%g + %g)\n", vp[ij(i+1,j)],vp[ij(i+1,j+1)],vp[ij(i,j)],vp[ij(i,j+1)]);
-	Rprintf("TEST INDEXING\n");
-	Rprintf(" u[0,0] = u[%d] = %g\n", ij(0, 0), up[ij(0, 0)]);
-	Rprintf(" u[0,1] = u[%d] = %g\n", ij(0, 1), up[ij(0, 1)]);
-	Rprintf(" u[1,0] = u[%d] = %g\n", ij(1, 0), up[ij(1, 0)]);
-	Rprintf(" u[1,1] = u[%d] = %g\n", ij(1, 1), up[ij(1, 1)]);
-	Rprintf("x[i=%d,%d]=(%.1f,%.1f), y[j=%d,%d]=(%.1f,%.1f)\n", i, i+1, xp[i], xp[i+1], j,j+1,yp[j], yp[j+1]);
-	Rprintf("du=%.4f dv=%.4f dx=%g dy=%g dv/dx=%.3e du/dy=%.3e curl=%.3e\n",
-	    du,dv,dx,dy,dv/dx,du/dy,curlp[ij(i,j)]);
+        Rprintf("du = 0.5*(%g + %g) - 0.5*(%g + %g)\n", up[ij(i,j+1)],up[ij(i+1,j+1)],up[ij(i,j)],up[ij(i+1,j)]);
+        Rprintf("dv = 0.5*(%g + %g) - 0.5*(%g + %g)\n", vp[ij(i+1,j)],vp[ij(i+1,j+1)],vp[ij(i,j)],vp[ij(i,j+1)]);
+        Rprintf("TEST INDEXING\n");
+        Rprintf(" u[0,0] = u[%d] = %g\n", ij(0, 0), up[ij(0, 0)]);
+        Rprintf(" u[0,1] = u[%d] = %g\n", ij(0, 1), up[ij(0, 1)]);
+        Rprintf(" u[1,0] = u[%d] = %g\n", ij(1, 0), up[ij(1, 0)]);
+        Rprintf(" u[1,1] = u[%d] = %g\n", ij(1, 1), up[ij(1, 1)]);
+        Rprintf("x[i=%d,%d]=(%.1f,%.1f), y[j=%d,%d]=(%.1f,%.1f)\n", i, i+1, xp[i], xp[i+1], j,j+1,yp[j], yp[j+1]);
+        Rprintf("du=%.4f dv=%.4f dx=%g dy=%g dv/dx=%.3e du/dy=%.3e curl=%.3e\n",
+            du,dv,dx,dy,dv/dx,du/dy,curlp[ij(i,j)]);
       }
 #endif
     }

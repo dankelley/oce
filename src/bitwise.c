@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 
 /*
  * References:
@@ -147,18 +147,18 @@ pressure <- readBin(buf[sort(c(p, p+1))+18], "integer", signed=TRUE, size=2, end
       Rprintf("tentative match %d at i = %d ... ", matches, i);
 #endif
       for (int c = 0; c < 20; c++)
-	check_sum += (unsigned short int)pbuf[i + c];
+        check_sum += (unsigned short int)pbuf[i + c];
       desired_check_sum = ((unsigned short)pbuf[i+20]) | ((unsigned short)pbuf[i+21] << 8);
       if (check_sum == desired_check_sum) {
-	matches++;
+        matches++;
 #ifdef DEBUG
-	Rprintf("good match (check_sum=%d)\n", check_sum);
+        Rprintf("good match (check_sum=%d)\n", check_sum);
 #endif
-	if (max_lres != 0 && matches >= max_lres)
-	  break;
+        if (max_lres != 0 && matches >= max_lres)
+          break;
       } else {
 #ifdef DEBUG
-	Rprintf("bad checksum\n");
+        Rprintf("bad checksum\n");
 #endif
       }
     }
@@ -175,14 +175,14 @@ pressure <- readBin(buf[sort(c(p, p+1))+18], "integer", signed=TRUE, size=2, end
     for (int i = 0; i < lbuf - byte2; i++) { /* note that we don't look to the very end */
       check_sum = check_sum_start;
       if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
-	for (int c = 0; c < 20; c++)
-	  check_sum += (unsigned short int)pbuf[i + c];
-	desired_check_sum = ((unsigned short)pbuf[i+20]) | ((unsigned short)pbuf[i+21] << 8);
-	if (check_sum == desired_check_sum) {
-	  pres[ires++] = i + 1; /* the +1 is to get R pointers */
-	}
-	if (ires > lres)        /* FIXME: or +1? */
-	  break;
+        for (int c = 0; c < 20; c++)
+          check_sum += (unsigned short int)pbuf[i + c];
+        desired_check_sum = ((unsigned short)pbuf[i+20]) | ((unsigned short)pbuf[i+21] << 8);
+        if (check_sum == desired_check_sum) {
+          pres[ires++] = i + 1; /* the +1 is to get R pointers */
+        }
+        if (ires > lres)        /* FIXME: or +1? */
+          break;
       }
     }
     UNPROTECT(3);
@@ -283,20 +283,20 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
   for (i = 0; i < n - 1; i++) {
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p) {
       if (ds) {
-	seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
-	// if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
-	if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
-	  n_match++;
-	  ++i;			// skip
-	  seq_last = seq_this;
-	  // if (nnn > 0) Rprintf("KEEP\n");
-	} else {
-	  // if (nnn > 0) Rprintf("DISCARD\n");
-	}
-	//nnn--;
+        seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
+        // if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
+        if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
+          n_match++;
+          ++i;   // skip
+          seq_last = seq_this;
+          // if (nnn > 0) Rprintf("KEEP\n");
+        } else {
+          // if (nnn > 0) Rprintf("DISCARD\n");
+        }
+        //nnn--;
       } else {
-	n_match++;
-	++i;			// skip
+        n_match++;
+        ++i;   // skip
       }
     }
   }
@@ -314,21 +314,21 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
     //    Rprintf("[%d]:", i);
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p) {
       if (ds) {
-	seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
-	//if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
-	if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
-	  n_match++;
-	  resp[j++] = i + 1;	/* the 1 is to offset from C to R */
-	  ++i;			/* skip */
-	  seq_last = seq_this;
-	  //if (nnn > 0) Rprintf("KEEP\n");
-	} else {
-	  //if (nnn > 0) Rprintf("DISCARD\n");
-	}
-	nnn--;
+        seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
+        //if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
+        if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
+          n_match++;
+          resp[j++] = i + 1; /* the 1 is to offset from C to R */
+          ++i;   /* skip */
+          seq_last = seq_this;
+          //if (nnn > 0) Rprintf("KEEP\n");
+        } else {
+          //if (nnn > 0) Rprintf("DISCARD\n");
+        }
+        nnn--;
       } else {
-	resp[j++] = i + 1;	/* the 1 is to offset from C to R */
-	++i;			/* skip */
+        resp[j++] = i + 1; /* the 1 is to offset from C to R */
+        ++i;   /* skip */
       }
     }
   }
@@ -394,30 +394,30 @@ SEXP locate_vector_imu_sequences(SEXP buf)
       //if (check-- > 0) Rprintf("IMU test: buf[%d]=0x%02x, buf[%d+2]=0x%02x, buf[%d+5]=0x%02x\n", i, bufp[i], i, bufp[i+2], i, bufp[i+5]);
       // Check at offset=5, which must be 1 of 3 choices.
       if (bufp[i+5] == 0xc3) {
-	// FIXME: should verify this length check, which I got by inspecting dolfyn code
-	// and a file provided privately in March 2016.
-	if (bufp[i+2] == 0x24 && bufp[i+3] == 0x00) {
-	  resp[resn++] = i + 1; // add 1 for R notation
-	  i++; //FIXME: skip to end, when we really trust identification
-	}
+        // FIXME: should verify this length check, which I got by inspecting dolfyn code
+        // and a file provided privately in March 2016.
+        if (bufp[i+2] == 0x24 && bufp[i+3] == 0x00) {
+          resp[resn++] = i + 1; // add 1 for R notation
+          i++; //FIXME: skip to end, when we really trust identification
+        }
       } else if (bufp[i+5] == 0xcc) {
-	// length indication should be 0x2b=43=86/2 (SIG2, top of page 31)
-	if (bufp[i+2] == 0x2b && bufp[i+3] == 0x00) {
-	  resp[resn++] = i + 1; // add 1 for R notation
-	  i++; //FIXME: skip to end, when we really trust identification
-	}
+        // length indication should be 0x2b=43=86/2 (SIG2, top of page 31)
+        if (bufp[i+2] == 0x2b && bufp[i+3] == 0x00) {
+          resp[resn++] = i + 1; // add 1 for R notation
+          i++; //FIXME: skip to end, when we really trust identification
+        }
       } else if (bufp[i+5] == 0xd2) { // decimal 210
-	// length indication should be 0x19=25=50/2 (SIG2, middle of page 31)
-	if (bufp[i+2] == 0x19 && bufp[i+3] == 0x00) {
-	  resp[resn++] = i + 1; // add 1 for R notation
-	  i++; //FIXME: skip to end, when we really trust identification
-	}
+        // length indication should be 0x19=25=50/2 (SIG2, middle of page 31)
+        if (bufp[i+2] == 0x19 && bufp[i+3] == 0x00) {
+          resp[resn++] = i + 1; // add 1 for R notation
+          i++; //FIXME: skip to end, when we really trust identification
+        }
       } else if (bufp[i+5] ==0xd3) { // decimal 211
-	// length indication should be 0x19=25=50/2 (SIG2, page 32)
-	if (bufp[i+2] == 0x19 && bufp[i+3] == 0x00) {
-	  resp[resn++] = i + 1; // add 1 for R notation
-	  i++; //FIXME: skip to end, when we really trust identification
-	}
+        // length indication should be 0x19=25=50/2 (SIG2, page 32)
+        if (bufp[i+2] == 0x19 && bufp[i+3] == 0x00) {
+          resp[resn++] = i + 1; // add 1 for R notation
+          i++; //FIXME: skip to end, when we really trust identification
+        }
       }
     }
   }
@@ -489,28 +489,28 @@ SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key, SEXP max)
     int found = 0;
     for (int m = 0; m < lmatch; m++) {
       if (pbuf[i+m] == pmatch[m]) 
-	found++;
+        found++;
       else
-	break;
+        break;
     }
     if (found == lmatch) {
       /* FIXME: should bit-twiddle this to work on all endian types */
       short *check = (short*)(pbuf+i);
       /*Rprintf(" %d", check_value);*/
       for (int cc = 0; cc < lsequence2 - 1; cc++) { /* last 2-byte chunk is the test value */
-	check_value += *check++;
-	/*Rprintf(" %d", check_value);*/
+        check_value += *check++;
+        /*Rprintf(" %d", check_value);*/
       }
       short check_sum = (((short)pbuf[i+lsequence-1]) << 8) | (short)pbuf[i+lsequence-2];
 #ifdef DEBUG
       Rprintf("i=%d lbuf=%d ires=%d  lres=%d  check_value=%d vs check_sum %d match=%d\n", i, lbuf, ires, lres, check_value, check_sum, check_value==check_sum);
 #endif
       if (check_value == check_sum) {
-	pres[ires++] = i + 1;
-	i += lsequence - lmatch; /* no need to check within sequence */
+        pres[ires++] = i + 1;
+        i += lsequence - lmatch; /* no need to check within sequence */
       }
       if (ires >= lres)
-	break;
+        break;
     }
     i += lmatch - 1;           /* skip over matched bytes */
     if (i > (lbuf - lsequence)) 
@@ -540,8 +540,8 @@ SEXP match3bytes(SEXP buf, SEXP m1, SEXP m2, SEXP m3)
   for (i = 0; i < n - 2; i++) {
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p && bufp[i + 2] == *m3p) {
       n_match++;
-      ++i;			/* skip */
-      ++i;			/* skip */
+      ++i;   /* skip */
+      ++i;   /* skip */
     }
   }
   PROTECT(res = NEW_NUMERIC(n_match));
@@ -549,7 +549,7 @@ SEXP match3bytes(SEXP buf, SEXP m1, SEXP m2, SEXP m3)
   j = 0;
   for (i = 0; i < n - 2; i++) {
     if (j <= n_match && bufp[i] == *m1p && bufp[i + 1] == *m2p && bufp[i + 2] == *m3p) {
-      resp[j++] = i + 1;	/* the 1 is to offset from C to R */
+      resp[j++] = i + 1; /* the 1 is to offset from C to R */
     }
   }
   UNPROTECT(5);
@@ -704,7 +704,6 @@ SEXP bisect_d(SEXP x, SEXP find, SEXP side)
 
 #endif
 
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 // 2016-10-13 This code is NOT used; it is being kept just in case it might be
 // 2016-10-13 useful later. 
 #if 0

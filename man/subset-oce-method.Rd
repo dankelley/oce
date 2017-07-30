@@ -8,11 +8,11 @@
 \S4method{subset}{oce}(x, subset, ...)
 }
 \arguments{
-\item{x}{An oce object.}
+\item{x}{an oce object.}
 
-\item{subset}{A logical expression indicating how to take the subset; the form depends on the sub-class.}
+\item{subset}{a logical expression indicating how to take the subset; the form depends on the sub-class.}
 
-\item{...}{Ignored.}
+\item{...}{optional arguments, used in some specialized methods (e.g. \code{\link{subset,section-method}}).}
 }
 \value{
 An oce object.
@@ -30,4 +30,21 @@ top10 <- subset(ctd, pressure < 10)
 par(mfrow=c(1, 2))
 plotProfile(ctd)
 plotProfile(top10)
+}
+\seealso{
+Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+  \code{\link{subset,adv-method}},
+  \code{\link{subset,amsr-method}},
+  \code{\link{subset,argo-method}},
+  \code{\link{subset,cm-method}},
+  \code{\link{subset,coastline-method}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{subset,echosounder-method}},
+  \code{\link{subset,lobo-method}},
+  \code{\link{subset,met-method}},
+  \code{\link{subset,odf-method}},
+  \code{\link{subset,rsk-method}},
+  \code{\link{subset,sealevel-method}},
+  \code{\link{subset,section-method}},
+  \code{\link{subset,topo-method}}
 }

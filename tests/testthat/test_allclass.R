@@ -10,7 +10,7 @@ test_that("general", {
           expect_null(o[['no_such_thing']])
           summary(o)
           show(o)
-          plot(o)
+          expect_warning(plot(o), "no data to plot")
           ## subsets of base oce object
           oo <- new("oce")
           oo2 <- oceSetData(oo, "a", 1:10)

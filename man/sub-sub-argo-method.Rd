@@ -34,6 +34,20 @@ Second, if no match is found, a general function is used
 (see \sQuote{Details of the general method}). If neither
 method can locates the requested item, \code{NULL} is returned.
 }
+\section{Details of the specialized argo method}{
+
+\itemize{
+\item If \code{i} is the string \code{"SA"}, then the method
+computes Absolute Salinity using \code{\link[gsw]{gsw_SA_from_SP}},
+using \code{salinityAdjusted} (etc) if available in the \code{data}
+slot of \code{x}, otherwise using \code{salinity}.
+\item Similarly, for \code{"CT"}, Conservative Temperature is returned.
+\item Otherwise, if \code{i} is in the \code{data} slot of \code{x},
+then it is returned, otherwise if it is in the \code{metadata} slot,
+then that is returned, otherwise \code{NULL} is returned.
+}
+}
+
 \section{Details of the general method}{
 
 

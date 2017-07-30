@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <Rinternals.h>
 #include <time.h>
@@ -33,10 +33,10 @@ inline double exp_approx(double x)
 {
   return 1.0 / (0.999448 
       + x * (1.023820 
-	+ x * (0.3613967
-	  + x * (0.4169646
-	    + x * (-0.1292509
-	      + x * 0.0499565)))));
+        + x * (0.3613967
+          + x * (0.4169646
+            + x * (-0.1292509
+              + x * 0.0499565)))));
 }
 #endif
 
@@ -94,10 +94,10 @@ static double weight_barnes(double xx, double yy,
 
 
 SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w */
-    SEXP xg, SEXP yg,		   /* grid */
+    SEXP xg, SEXP yg, /* grid */
     SEXP xr, SEXP yr, /* influence radii */
-    SEXP gamma,	     /* radius-reduction factor */
-    SEXP iterations) /* number of iterations */
+    SEXP gamma,       /* radius-reduction factor */
+    SEXP iterations)  /* number of iterations */
 {
   start = time(NULL);
   int nx = length(x);
@@ -145,21 +145,21 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
     /* update grid */
     for (int i = 0; i < nxg; i++) {
       for (int j = 0; j < nyg; j++) {
-	zz[i + nxg*j] = interpolate_barnes(rxg[i], ryg[j], zz[i + nxg*j],
-	    -1, /* no skip */
-	    nx, rx, ry, rz, rw,
-	    z_last,
-	    xr2, yr2, i==(nxg-1)&&j==(nyg-1));
-	R_CheckUserInterrupt();
+        zz[i + nxg*j] = interpolate_barnes(rxg[i], ryg[j], zz[i + nxg*j],
+            -1, /* no skip */
+            nx, rx, ry, rz, rw,
+            z_last,
+            xr2, yr2, i==(nxg-1)&&j==(nyg-1));
+        R_CheckUserInterrupt();
       }
     }
     /* interpolate grid back to data locations */
     for (int k = 0; k < nx; k++) {
       rzd[k] = interpolate_barnes(rx[k], ry[k], z_last[k],
-	  -1, /* BUG: why not skip? */
-	  nx, rx, ry, rz, rw,
-	  z_last,
-	  xr2, yr2, 0);
+          -1, /* BUG: why not skip? */
+          nx, rx, ry, rz, rw,
+          z_last,
+          xr2, yr2, 0);
     }
     R_CheckUserInterrupt();
     for (int k = 0; k < nx; k++)
@@ -181,9 +181,9 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
   for (int i = 0; i < nxg; i++) {
     for (int j = 0; j < nyg; j++) {
       rwg[i + nxg*j] = weight_barnes(rxg[i], ryg[j],
-	  -1, /* no skip */
-	  nx, rx, ry, rz, rw,
-	  xr2, yr2);
+          -1, /* no skip */
+          nx, rx, ry, rz, rw,
+          xr2, yr2);
     }
     R_CheckUserInterrupt();
   }

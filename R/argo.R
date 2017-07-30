@@ -25,8 +25,20 @@ setClass("argo", contains="oce")
 
 #' ARGO float dataset
 #'
-#' This is an ARGO float data object, for float 6900388, downloaded as
-#' \code{6900388_prof.nc} from \code{usgodae.org} in March 2012.
+#' This holds data from ARGO 6900388 in the North Atlantic.
+#'
+#' To quote Argo's website: "These data were collected and made freely
+#' available by the International Argo Program and the national programs
+#' that contribute to it.  (http://www.argo.ucsd.edu,
+#' http://argo.jcommops.org).  The Argo Program is part of the
+#' Global Ocean Observing System."
+#'
+#' Below is the official citation (note that this DOI has web links for
+#' downloads):
+#' Argo (2017). Argo float data and metadata from Global Data Assembly Centre
+#' (Argo GDAC) - Snapshot of Argo GDAC of July, 8st 2017. SEANOE.
+#' \url{http://doi.org/10.17882/42182#50865}
+#'
 #' @name argo
 #' @docType data
 #'
@@ -39,12 +51,17 @@ setClass("argo", contains="oce")
 #' plot(argo, which="trajectory", coastline=coastlineWorld)
 #' }
 #'
-#' @source This is the profile stored in the file \code{6900388_prof.nc}
-#' downloaded from the \code{usgodae.org} website in March 2012.
+#' @source This file was downloaded using the unix command
+#'\preformatted{
+#' ftp ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc
+#'} issued on 2017 July 7. 
 #'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{argo} data
 NULL
+
+
+
 
 #' @title Extract Something From an Argo Object
 #' @param x An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.
@@ -52,12 +69,47 @@ NULL
 #' data(argo)
 #' dim(argo[['temperature']])
 #'
+#' @section Details of the specialized argo method:
+#'\itemize{
+#' \item If \code{i} is the string \code{"SA"}, then the method
+#' computes Absolute Salinity using \code{\link[gsw]{gsw_SA_from_SP}},
+#' using \code{salinityAdjusted} (etc) if available in the \code{data}
+#' slot of \code{x}, otherwise using \code{salinity}.
+#' \item Similarly, for \code{"CT"}, Conservative Temperature is returned.
+#' \item Otherwise, if \code{i} is in the \code{data} slot of \code{x},
+#' then it is returned, otherwise if it is in the \code{metadata} slot,
+#' then that is returned, otherwise \code{NULL} is returned.
+#'}
+#'
 #' @template sub_subTemplate
 #' @family things related to \code{argo} data
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()         # [[
+              res <- NULL
+              if (i == "SA" || i == "CT") {
+                  ## FIXME: should we prefer e.g. salinityAdjusted or salinity?
+                  names <- names(x@data)
+                  SAname <- if ("salinityAdjusted" %in% names) "salinityAdjusted" else "salinity"
+                  SP <- x@data[[SAname]]
+                  pname <- if ("pressureAdjusted" %in% names) "pressureAdjusted" else "pressure"
+                  p <- x@data[[pname]]
+                  dim <- dim(SP)
+                  lon <- rep(x@data$longitude, each=dim[1])
+                  lat <- rep(x@data$latitude, each=dim[1])
+                  SA <- gsw_SA_from_SP(SP, p, longitude=lon, latitude=lat)
+                  if (i == "SA") {
+                      res <- SA
+                  } else {
+                      tname <- if ("temperatureAdjusted" %in% names) "temperatureAdjusted" else "temperature"
+                      t <- x@data[[tname]]
+                      res <- gsw_CT_from_t(SA, t, p)
+                  }
+                  dim(res) <- dim
+              } else {
+                  res <- callNextMethod()         # [[
+              }
+              res
           })
 
 #' @title Replace Parts of an Argo Object
@@ -92,9 +144,9 @@ maybeLC <- function(s, lower)
 
 getData <- function(file, name) # a local function -- no need to pollute namesapce with it
 {
-    res <- try(ncdf4::ncvar_get(file, name), silent=TRUE)
+    tmp <- capture.output(res <- try(ncdf4::ncvar_get(file, name), silent=TRUE))
     if (inherits(res, "try-error")) {
-        cat(file$filename, " has no variable named '", name, "'\n", sep='')
+        warning(file$filename, " has no variable named '", name, "'\n", sep='')
         res <- NULL
     }
     res
@@ -305,6 +357,7 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' @author Dan Kelley
 #'
 #' @family things related to \code{argo} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
@@ -739,18 +792,8 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     varNames <- names(file$var)
     lc <- "data_type" %in% varNames
     res <- new("argo")
-    if (debug > 0) {
-        if (debug > 10)
-            message("This netcdf file contains the following $var: ", paste(names(file$var), collapse=" "))
-        columnNames <- gsub(" *$", "",
-                            unique(as.vector(ncdf4::ncvar_get(file, maybeLC("STATION_PARAMETERS", lc)))))
-        message("columnNames: '", paste(columnNames, collapse="' '"), "' (from ", maybeLC("STATION_PARAMETERS", lc), ")")
-        QCNames <- paste(columnNames, "_QC",  sep="")
-        message("QCnames: ", paste(QCNames, collapse=" "), " (inferred from above)")
-        ## browser()
-        ## physicalNames <- ODFNames2oceNames(columnNames, ODFunits=NULL)
-        ## message("Therefore need @data items: ", paste(physicalNames, collapse=" "), " (in addition to longitude etc)")
-    }
+    ## columnNames <- gsub(" *$", "", gsub("^ *", "", unique(as.vector(ncvar_get(f, maybeLC("STATION_PARAMETERS", lc))))))
+    ## QCNames <- paste(columnNames, "_QC",  sep="")
 
     ## Grab all information listed in table 2.2.3 of [3], with exceptions as listed in the
     ## docs, e.g. STATION_PARAMETERS is really of no use.

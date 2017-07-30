@@ -162,6 +162,7 @@ setMethod(f="summary",
 #' plot(subset(sealevel, time < mean(range(sealevel[['time']]))))
 #'
 #' @family things related to \code{sealevel} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="sealevel",
           definition=function(x, subset, ...) {

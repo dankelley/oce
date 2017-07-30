@@ -4,8 +4,8 @@
 \alias{swAlpha}
 \title{Seawater thermal expansion coefficient}
 \usage{
-swAlpha(salinity, temperature = NULL, pressure = 0, longitude = 300,
-  latitude = 30, eos = getOption("oceEOS", default = "gsw"))
+swAlpha(salinity, temperature = NULL, pressure = 0, longitude = NULL,
+  latitude = NULL, eos = getOption("oceEOS", default = "gsw"))
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}

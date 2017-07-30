@@ -33,7 +33,7 @@ The next CRAN release of \sQuote{oce} will designate these functions as
 The following are marked "defunct", so calling them in the
 the present version produces an error message that hints at a replacement
 function. Once a function is marked "defunct" on one CRAN release, it will
-be slated for outright deletion in the following release.
+be slated for outright deletion in a subsequent release.
 
 \tabular{lll}{
 \strong{Defunct}   \tab \strong{Replacement}     \tab \strong{Notes}\cr
@@ -45,6 +45,9 @@ Several \sQuote{oce} function arguments are considered "deprecated", which
 means they will be marked "defunct" in the next CRAN release. They are as follows.
 
 \itemize{
+
+\item The \code{endian} argument of \code{\link{byteToBinary}} will be removed sometime
+in the year 2017, and should be set to \code{"big"} in the meantime.
 
 \item The \code{parameters} argument of \code{\link{plot,ctd-method}}
 was deprecated on 2016-12-30.  It was once used by

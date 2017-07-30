@@ -40,9 +40,9 @@ setClass("rsk", contains="oce")
 #' @examples
 #' library(oce)
 #' data(rsk)
+#' ## The object doesn't "know" it is CTD until told so
 #' plot(rsk)
 #' plot(as.ctd(rsk))
-#' plot(subset(as.ctd(rsk),pressure<10))
 #'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{rsk} data
@@ -156,6 +156,7 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley
 #' @family things related to \code{rsk} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="rsk",
           definition=function(x, subset, ...) {

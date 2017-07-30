@@ -1,0 +1,254 @@
+ODF_HEADER,
+  FILE_SPECIFICATION ='CTD_LSL2000076_1_1_DN',
+CRUISE_HEADER,
+  COUNTRY_INSTITUTE_CODE =1810,
+  CRUISE_NUMBER ='LSL2000076',
+  ORGANIZATION ='Ocean Sciences',
+  CHIEF_SCIENTIST ='Hamilton',
+  START_DATE ='',
+  END_DATE ='',
+  PLATFORM ='CCGS Louis St Laurent',
+  CRUISE_NAME ='Barrow Strait East',
+  CRUISE_DESCRIPTION ='' 
+EVENT_HEADER,
+  DATA_TYPE='CTD',
+  EVENT_NUMBER='1',
+  EVENT_QUALIFIER1='1',
+  EVENT_QUALIFIER2='DN',
+  CREATION_DATE='04-JUN-2002 10:25:24.00',
+  ORIG_CREATION_DATE='10-MAY-2002 14:36:36.00',
+  START_DATE_TIME='06-AUG-2000 14:21:00.00',
+  END_DATE_TIME='',
+  INITIAL_LATITUDE=74.043667,
+  INITIAL_LONGITUDE=-91.101167,
+  END_LATITUDE=-99.000000,
+  END_LONGITUDE=-99.000000,
+  MIN_DEPTH=3.463771,
+  MAX_DEPTH=50.960980,
+  SAMPLING_INTERVAL=-99.000000,
+  SOUNDING=53.000000,
+  DEPTH_OFF_BOTTOM=-99.000000,
+  EVENT_COMMENTS='no ice  30 kt easterly winds' 
+INSTRUMENT_HEADER,
+  INST_TYPE='Seabird',
+  MODEL='SBE 25',
+  SERIAL_NUMBER='026',
+  DESCRIPTION='CTD'
+HISTORY_HEADER,
+  CREATION_DATE='10-MAY-2002 14:36:36.00',
+  PROCESS='Conversion',
+  PROCESS='Edit Cruise: Country_Institute_Code=1810',
+  PROCESS='Edit Cruise: Cruise_Number=LSL2000076',
+  PROCESS='Edit Cruise: Organization=Ocean Sciences',
+  PROCESS='Edit Cruise: Cruise_Name=Barrow Strait East',
+  PROCESS='Edit Cruise: Platform=CCGS Louis St Laurent',
+  PROCESS='Edit Cruise: Chief_Scientist=Hamilton',
+  PROCESS='Edit Event: Data_Type=CTD',
+  PROCESS='Edit Event: Event_Number=1',
+  PROCESS='Edit Event: Event_Qualifier1=1',
+  PROCESS='Edit Event: Event_Qualifier2=DN',
+  PROCESS='Edit Event: Initial_Latitude=74.043667',
+  PROCESS='Edit Event: Initial_Longitude=-91.101167',
+  PROCESS='Edit Event: Sounding=53',
+  PROCESS='Edit Instrument: Description=CTD',
+  PROCESS='Edit Instrument: Inst_Type=Seabird',
+  PROCESS='Edit Instrument: Serial_number=026',
+  PROCESS='Edit Instrument: Model=SBE 25' 
+HISTORY_HEADER,
+  CREATION_DATE='04-JUN-2002 10:25:23.00',
+  PROCESS='GF3 Name Checking and Code Formatting',
+  PROCESS='Name check performed' 
+PARAMETER_HEADER,
+  TYPE='DOUB',
+  NAME='Counter',
+  UNITS='(none)',
+  CODE=CNTR_01,
+  NULL_VALUE=,
+  PRINT_FIELD_WIDTH=10,
+  PRINT_DECIMAL_PLACES=3,
+  ANGLE_OF_SECTION=0.000000,
+  MAGNETIC_VARIATION=0.000000,
+  DEPTH=0.000000 ,
+  MINIMUM_VALUE=1668,
+  MAXIMUM_VALUE=2827,
+  NUMBER_VALID=97,
+  NUMBER_NULL=0 
+PARAMETER_HEADER,
+  TYPE='DOUB',
+  NAME='Sea Temperature',
+  UNITS='degrees C',
+  CODE=TEMP_01,
+  NULL_VALUE=,
+  PRINT_FIELD_WIDTH=10,
+  PRINT_DECIMAL_PLACES=3,
+  ANGLE_OF_SECTION=0.000000,
+  MAGNETIC_VARIATION=0.000000,
+  DEPTH=0.000000 ,
+  MINIMUM_VALUE=-1.364,
+  MAXIMUM_VALUE=-1.186,
+  NUMBER_VALID=97,
+  NUMBER_NULL=0 
+PARAMETER_HEADER,
+  TYPE='DOUB',
+  NAME='Practical Salinity',
+  UNITS='psu',
+  CODE=PSAL_01,
+  NULL_VALUE=,
+  PRINT_FIELD_WIDTH=10,
+  PRINT_DECIMAL_PLACES=3,
+  ANGLE_OF_SECTION=0.000000,
+  MAGNETIC_VARIATION=0.000000,
+  DEPTH=0.000000 ,
+  MINIMUM_VALUE=31.907,
+  MAXIMUM_VALUE=32.597,
+  NUMBER_VALID=97,
+  NUMBER_NULL=0 
+PARAMETER_HEADER,
+  TYPE='DOUB',
+  NAME='Sea Pressure (sea surface - 0)',
+  UNITS='decibars',
+  CODE=PRES_01,
+  NULL_VALUE=,
+  PRINT_FIELD_WIDTH=10,
+  PRINT_DECIMAL_PLACES=3,
+  ANGLE_OF_SECTION=0.000000,
+  MAGNETIC_VARIATION=0.000000,
+  DEPTH=0.000000 ,
+  MINIMUM_VALUE=3.5,
+  MAXIMUM_VALUE=51.5,
+  NUMBER_VALID=97,
+  NUMBER_NULL=0 
+PARAMETER_HEADER,
+  TYPE='DOUB',
+  NAME='Sigma-T',
+  UNITS='kg/m**3',
+  CODE=SIGT_01,
+  NULL_VALUE=,
+  PRINT_FIELD_WIDTH=10,
+  PRINT_DECIMAL_PLACES=3,
+  ANGLE_OF_SECTION=0.000000,
+  MAGNETIC_VARIATION=0.000000,
+  DEPTH=0.000000 ,
+  MINIMUM_VALUE=25.652,
+  MAXIMUM_VALUE=26.216,
+  NUMBER_VALID=97,
+  NUMBER_NULL=0 
+PARAMETER_HEADER,
+  TYPE='DOUB',
+  NAME='Quality Control Flag',
+  UNITS='code',
+  CODE=FFFF_01,
+  NULL_VALUE=,
+  PRINT_FIELD_WIDTH=10,
+  PRINT_DECIMAL_PLACES=3,
+  ANGLE_OF_SECTION=0.000000,
+  MAGNETIC_VARIATION=0.000000,
+  DEPTH=0.000000 ,
+  MINIMUM_VALUE=0,
+  MAXIMUM_VALUE=0,
+  NUMBER_VALID=97,
+  NUMBER_NULL=0 
+RECORD_HEADER,
+  NUM_CALIBRATION=0,
+  NUM_SWING=0,
+  NUM_HISTORY=2,
+  NUM_CYCLE=97,
+  NUM_PARAM=6 
+ -- DATA -- 
+   1668.000      -1.188      31.920       3.500      25.663       0.000 
+   1693.000      -1.188      31.909       4.000      25.654       0.000 
+   1696.000      -1.186      31.907       4.500      25.652       0.000 
+   1701.000      -1.188      31.911       5.000      25.655       0.000 
+   1719.000      -1.192      31.918       5.500      25.662       0.000 
+   1742.000      -1.192      31.919       6.000      25.662       0.000 
+   1744.000      -1.204      31.941       6.500      25.681       0.000 
+   1747.000      -1.210      31.952       7.000      25.690       0.000 
+   1749.000      -1.209      31.950       7.500      25.688       0.000 
+   1752.000      -1.212      31.956       8.000      25.693       0.000 
+   1755.000      -1.213      31.957       8.500      25.694       0.000 
+   1759.000      -1.215      31.960       9.000      25.696       0.000 
+   1776.000      -1.218      31.966       9.500      25.701       0.000 
+   1798.000      -1.221      31.971      10.000      25.705       0.000 
+   1800.000      -1.221      31.972      10.500      25.706       0.000 
+   1803.000      -1.223      31.975      11.000      25.708       0.000 
+   1806.000      -1.223      31.976      11.500      25.709       0.000 
+   1808.000      -1.223      31.976      12.000      25.709       0.000 
+   1811.000      -1.223      31.975      12.500      25.708       0.000 
+   1814.000      -1.223      31.976      13.000      25.709       0.000 
+   1819.000      -1.228      31.985      13.500      25.716       0.000 
+   1833.000      -1.238      32.009      14.000      25.736       0.000 
+   1852.000      -1.244      32.021      14.500      25.746       0.000 
+   1857.000      -1.251      32.036      15.000      25.759       0.000 
+   1860.000      -1.258      32.054      15.500      25.773       0.000 
+   1864.000      -1.266      32.070      16.000      25.787       0.000 
+   1867.000      -1.272      32.083      16.500      25.797       0.000 
+   1871.000      -1.286      32.114      17.000      25.823       0.000 
+   1874.000      -1.298      32.141      17.500      25.845       0.000 
+   1878.000      -1.300      32.146      18.000      25.849       0.000 
+   1883.000      -1.304      32.152      18.500      25.854       0.000 
+   1888.000      -1.317      32.181      19.000      25.878       0.000 
+   1894.000      -1.332      32.216      19.500      25.906       0.000 
+   1900.000      -1.339      32.232      20.000      25.920       0.000 
+   1906.000      -1.351      32.256      20.500      25.940       0.000 
+   1913.000      -1.359      32.275      21.000      25.955       0.000 
+   1918.000      -1.360      32.275      21.500      25.955       0.000 
+   1922.000      -1.362      32.279      22.000      25.959       0.000 
+   1926.000      -1.364      32.286      22.500      25.965       0.000 
+   1930.000      -1.364      32.291      23.000      25.968       0.000 
+   1936.000      -1.363      32.306      23.500      25.981       0.000 
+   1942.000      -1.362      32.324      24.000      25.995       0.000 
+   1946.000      -1.361      32.340      24.500      26.008       0.000 
+   1951.000      -1.362      32.367      25.000      26.030       0.000 
+   1989.000      -1.361      32.399      25.500      26.056       0.000 
+   2007.000      -1.361      32.397      26.000      26.055       0.000 
+   2032.000      -1.360      32.406      26.500      26.061       0.000 
+   2064.000      -1.359      32.413      27.000      26.068       0.000 
+   2071.000      -1.357      32.433      27.500      26.084       0.000 
+   2077.000      -1.354      32.463      28.000      26.108       0.000 
+   2098.000      -1.354      32.476      28.500      26.119       0.000 
+   2127.000      -1.354      32.481      29.000      26.122       0.000 
+   2133.000      -1.353      32.484      29.500      26.125       0.000 
+   2155.000      -1.352      32.490      30.000      26.130       0.000 
+   2184.000      -1.351      32.494      30.500      26.133       0.000 
+   2187.000      -1.350      32.501      31.000      26.139       0.000 
+   2195.000      -1.348      32.506      31.500      26.143       0.000 
+   2225.000      -1.345      32.509      32.000      26.145       0.000 
+   2244.000      -1.337      32.521      32.500      26.154       0.000 
+   2248.000      -1.334      32.532      33.000      26.163       0.000 
+   2255.000      -1.333      32.537      33.500      26.167       0.000 
+   2288.000      -1.332      32.543      34.000      26.172       0.000 
+   2305.000      -1.331      32.546      34.500      26.174       0.000 
+   2310.000      -1.330      32.547      35.000      26.175       0.000 
+   2331.000      -1.329      32.548      35.500      26.176       0.000 
+   2365.000      -1.329      32.550      36.000      26.177       0.000 
+   2367.000      -1.329      32.557      36.500      26.183       0.000 
+   2371.000      -1.331      32.562      37.000      26.188       0.000 
+   2376.000      -1.333      32.567      37.500      26.191       0.000 
+   2401.000      -1.334      32.568      38.000      26.192       0.000 
+   2427.000      -1.336      32.571      38.500      26.195       0.000 
+   2431.000      -1.337      32.575      39.000      26.198       0.000 
+   2456.000      -1.339      32.577      39.500      26.199       0.000 
+   2483.000      -1.339      32.577      40.000      26.200       0.000 
+   2488.000      -1.340      32.579      40.500      26.201       0.000 
+   2515.000      -1.341      32.579      41.000      26.201       0.000 
+   2535.000      -1.340      32.578      41.500      26.201       0.000 
+   2542.000      -1.342      32.579      42.000      26.202       0.000 
+   2550.000      -1.344      32.581      42.500      26.203       0.000 
+   2579.000      -1.344      32.582      43.000      26.204       0.000 
+   2597.000      -1.344      32.583      43.500      26.205       0.000 
+   2600.000      -1.345      32.586      44.000      26.208       0.000 
+   2606.000      -1.345      32.586      44.500      26.208       0.000 
+   2630.000      -1.344      32.587      45.000      26.208       0.000 
+   2655.000      -1.344      32.587      45.500      26.208       0.000 
+   2657.000      -1.344      32.587      46.000      26.208       0.000 
+   2662.000      -1.344      32.588      46.500      26.209       0.000 
+   2679.000      -1.344      32.592      47.000      26.212       0.000 
+   2713.000      -1.344      32.595      47.500      26.215       0.000 
+   2714.000      -1.344      32.595      48.000      26.215       0.000 
+   2731.000      -1.344      32.596      48.500      26.215       0.000 
+   2762.000      -1.344      32.596      49.000      26.215       0.000 
+   2766.000      -1.344      32.596      49.500      26.216       0.000 
+   2782.000      -1.344      32.596      50.000      26.215       0.000 
+   2809.000      -1.344      32.596      50.500      26.215       0.000 
+   2815.000      -1.345      32.597      51.000      26.216       0.000 
+   2827.000      -1.344      32.596      51.500      26.215       0.000 

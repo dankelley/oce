@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -50,25 +50,25 @@ SEXP bisect(SEXP x, SEXP X)
       resp[iX] = 0;
     } else {
       if (Xp[iX] <= xp[0]) {
-	resp[iX] = 1;
+        resp[iX] = 1;
       } else if (xp[nx-1] <= Xp[iX]) {
-	resp[iX] = nx;
+        resp[iX] = nx;
       } else {
-	unsigned int lower = 0, upper = nx-1, middle = nx / 2;
-	int npass = floor(5.0 + log2(0.0 + nx)); // for safety, add 5; should never get close
-	for (unsigned int pass = 0; pass < npass; pass++) {
-	  middle = (int)floor((upper + lower) / 2.0);
-	  if (Xp[iX] <= xp[middle])
-	    upper = middle;
-	  else
-	    lower = middle;
-	  if ((upper - lower) < 2)
-	    break;
+        unsigned int lower = 0, upper = nx-1, middle = nx / 2;
+        int npass = floor(5.0 + log2(0.0 + nx)); // for safety, add 5; should never get close
+        for (unsigned int pass = 0; pass < npass; pass++) {
+          middle = (int)floor((upper + lower) / 2.0);
+          if (Xp[iX] <= xp[middle])
+            upper = middle;
+          else
+            lower = middle;
+          if ((upper - lower) < 2)
+            break;
 #ifdef DEBUG
-	  Rprintf("pass %d   lower %d   upper %d   middle %d\n", pass, lower, upper, middle);
+          Rprintf("pass %d   lower %d   upper %d   middle %d\n", pass, lower, upper, middle);
 #endif
-	}	
-	resp[iX] = middle + 1.0;
+        }
+        resp[iX] = middle + 1.0;
       }
     }
   }

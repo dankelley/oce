@@ -5,7 +5,7 @@
 \title{Seawater conservative temperature, in GSW formulation}
 \usage{
 swConservativeTemperature(salinity, temperature = NULL, pressure = NULL,
-  longitude = 300, latitude = 30)
+  longitude = NULL, latitude = NULL)
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}
@@ -26,7 +26,7 @@ on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
 Conservative temperature in degrees Celcius.
 }
 \description{
-Compute seawater conservative temperature, according to the GSW/TEOS-10
+Compute seawater Conservative Temperature, according to the GSW/TEOS-10
 formulation.
 }
 \details{

@@ -23,13 +23,17 @@ vector numerical values is provided, then it is used as is.}
 \item{method}{The method to use to decimate data within the stations; see
 \code{\link{ctdDecimate}}, which is used for the decimation.}
 
-\item{debug}{A flag that turns on debugging.  The value indicates the depth
-within the call stack to which debugging applies.  For example,
-\code{read.adv.nortek()} calls \code{read.header.nortek()}, so that
-\code{read.adv.nortek(...,debug=2)} provides information about not just the
-main body of the data file, but also the details of the header.}
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 
-\item{...}{Optional arguments to be supplied to \code{\link{ctdDecimate}}.}
+\item{...}{Optional arguments to be supplied to \code{\link{ctdDecimate}},
+e.g. \code{rule} controls extrapolation beyond the observed pressure range,
+in the case where \code{method} equals \code{"approx"}.}
 }
 \value{
 An object of \code{\link{section-class}} that contains stations whose

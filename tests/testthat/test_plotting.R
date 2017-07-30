@@ -1,5 +1,4 @@
 library(oce)
-library(testthat)
 context("Plotting")
 test_that("multi-panel plots leave usr as it was originally", {
           skip_on_cran()

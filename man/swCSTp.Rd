@@ -36,10 +36,9 @@ pressure (see \code{\link{swSCTp}}).  If it is \code{"gsw"} then the
 Gibbs-SeaWater formulation is used, via \code{\link{gsw_C_from_SP}}.
 }
 \examples{
-swCSTp(35, T90fromT68(15), 0, eos="unesco") # 1, by definition of cond. ratio
-swCSTp(34.25045, T90fromT68(15), 2000, eos="unesco") # 1
-swCSTp(34.25045, 15, 2000, eos="unesco") # 1.000081
-swCSTp(34.25045, 15, 2000, eos="gsw")  # 0.9999982
+expect_equal(1, swCSTp(35, T90fromT68(15), 0, eos="unesco")) # by definition of cond. ratio
+expect_equal(1, swCSTp(34.25045, T90fromT68(15), 2000, eos="unesco"), tolerance=1e-7)
+expect_equal(1, swCSTp(34.25045, T90fromT68(15), 2000, eos="gsw"), tolerance=1e-7)
 
 }
 \references{

@@ -4,7 +4,7 @@
 \alias{ctdDecimate}
 \title{Decimate a CTD profile}
 \usage{
-ctdDecimate(x, p = 1, method = "boxcar", e = 1.5,
+ctdDecimate(x, p = 1, method = "boxcar", rule = 1, e = 1.5,
   debug = getOption("oceDebug"))
 }
 \arguments{
@@ -18,7 +18,8 @@ these pressures.}
 \item{method}{the method to be used for calculating decimated values.  This may
 be a function or a string naming a built-in method.  The built-in methods are
 \code{"boxcar"} (based on a local average), \code{"approx"} (based on linear
-interpolation between neighboring points), \code{"lm"} (based on local
+interpolation between neighboring points, using \code{\link{approx}}
+with the \code{rule} argument specified here), \code{"lm"} (based on local
 regression, with \code{e} setting the size of the local region), \code{"rr"}
 (for the Reineger and Ross method, carried out with \code{\link{oce.approx}})
 and \code{"unesco"} (for the UNESCO method, carried out with.
@@ -27,6 +28,12 @@ three arguments, the first being pressure, the second being an arbitrary
 variable in another column of the data, and the third being a vector of target
 pressures at which the calculation is carried out, and the return value must be
 a vector.  See \dQuote{Examples}.}
+
+\item{rule}{an integer that is passed to \code{\link{approx}}, in the
+case where \code{method} is \code{"approx"}. Note that the default value
+for \code{rule} is 1, which will inhibit extrapolation beyond the observed
+pressure range. This is a change from the behaviour previous to May 8, 2017,
+when a \code{rule} of 2 was used (without stating so as an argument).}
 
 \item{e}{is an expansion coefficient used to calculate the local neighbourhoods
 for the \code{"boxcar"} and \code{"lm"} methods.  If \code{e=1}, then the
@@ -107,6 +114,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
@@ -115,7 +124,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
 \author{
 Dan Kelley

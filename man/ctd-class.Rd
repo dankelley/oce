@@ -67,9 +67,11 @@ retrieved with \code{ctd[["S"]]} or \code{ctd[["salinity"]]}.
 Conservative Temperature defined according to TEOS-2010 is calculated with
 \code{ctd[["CT"]]} or \code{ctd[["conservative temperature"]]}.  Absolute
 salinity is calculated with \code{ctd[["SA"]]} or \code{ctd[["absolute
-salinity"]]}. Note that the salinity calculation requires a latitude and
-longitude, and if the \code{ctd} object lacks those data, the values 300E and
-30N will be used as a default.
+salinity"]]}. Note that the \code{CT}, \code{SA} and \code{Sstar} calculations
+require latitude and longitude, and so errors result if these items
+are sought for a \code{ctd} object that lacks latitude or longitude.
+(Until 2017 May 14, defaults of 300E and 30N were used if position
+was not stored in the object.)
 
 The square of buoyancy frequency is retrieved with \code{ctd[["N2"]]} or
 \code{\link{swN2}}, density ratio with \code{ctd[["Rrho"]]} and spiciness with
@@ -117,6 +119,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
@@ -125,7 +129,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},

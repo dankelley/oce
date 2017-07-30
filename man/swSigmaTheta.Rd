@@ -5,7 +5,7 @@
 \title{Seawater potential density anomaly}
 \usage{
 swSigmaTheta(salinity, temperature = NULL, pressure = NULL,
-  referencePressure = 0, longitude = 300, latitude = 30,
+  referencePressure = 0, longitude = NULL, latitude = NULL,
   eos = getOption("oceEOS", default = "gsw"))
 }
 \arguments{
@@ -41,8 +41,10 @@ Potential density anomaly [kg/m\eqn{^3}{^3}], defined as
 - 1000 kg/m\eqn{^3}{^3}.
 }
 \description{
-Compute \eqn{\sigma_\theta}{sigma-theta}, the potential density of seawater,
-minus 1000 kg/m\eqn{^3}{^3}.
+Compute the potential density (minus 1000 kg/m^3) that seawater would have if raised
+adiabatically to the surface.  In the UNESCO system, this quantity is
+is denoted \eqn{\sigma_\theta}{sigma-theta} (hence the function name), but in
+the GSW system, it is denoted \code{sigma0}.
 }
 \details{
 If the first argument is an \code{oce} object, then salinity, etc., are
@@ -50,8 +52,7 @@ extracted from it, and used for the calculation instead of any values
 provided in the other arguments.
 }
 \examples{
-swSigmaTheta(35, 13, 1000)             # 26.42514 (gsw)
-swSigmaTheta(35, 13, 1000, eos="unesco") # 26.4219
+expect_equal(26.42066, swSigmaTheta(35, 13, 1000, eos="unesco"), tolerance=0.00001)
 
 }
 \references{

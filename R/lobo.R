@@ -145,6 +145,7 @@ setMethod(f="summary",
 #' @return A new \code{lobo} object.
 #' @author Dan Kelley
 #' @family things related to \code{lobo} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="lobo",
           definition=function(x, subset, ...) {
@@ -248,7 +249,8 @@ plot.lobo.TS <- function(lobo, ...)
 #' quantities to plot.  These are stacked in a single column.  The possible
 #' values for \code{which} are as follows: \code{1} or \code{"temperature"} for
 #' a time series of temperature; \code{2} or \code{"salinity"} for salinity;
-#' \code{3} or \code{"TS"} for a TS diagram; \code{4} or \code{"u"} for a
+#' \code{3} or \code{"TS"} for a TS diagram (which uses \code{eos="unesco"}),
+#' \code{4} or \code{"u"} for a
 #' timeseries of the u component of velocity; \code{5} or \code{"v"} for a
 #' timeseries of the v component of velocity; \code{6} or \code{"nitrate"} for
 #' a timeseries of nitrate concentration; \code{7} or \code{"fluorescence"} for
@@ -296,21 +298,23 @@ setMethod(f="plot",
               par(mfrow=c(nw, 1))
               for (w in which2) {
                   if (w == 1) {
-                      oce.plot.ts(x[["time"]], x[["temperature"]], ylab=resizableLabel("T"), ...)
+                      oce.plot.ts(x[["time"]], x[["temperature"]], ylab=resizableLabel("T"), debug=debug-1, ...)
                   } else if (w == 2) {
-                      oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S"), ...)
+                      oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S"), debug=debug-1, ...)
                   } else if (w == 3) {
-                      if (any(!is.na(x[['pressure']])))
-                          plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), ...) else
-                              plotTS(as.ctd(x[["salinity"]], x[["temperature"]], 0), ...)
+                      if (any(!is.na(x[['pressure']]))) {
+                          plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), eos="unesco", debug=debug-1, ...) 
+                      } else {
+                          plotTS(as.ctd(x[["salinity"]], x[["temperature"]], 0), eos="unesco", debug=debug-1, ...)
+                      }
                   } else if (w == 4) {
-                      oce.plot.ts(x[["time"]], x[["u"]], ylab=resizableLabel("u"), ...)
+                      oce.plot.ts(x[["time"]], x[["u"]], ylab=resizableLabel("u"), debug=debug-1, ...)
                   } else if (w == 5) {
-                      oce.plot.ts(x[["time"]], x[["v"]], ylab=resizableLabel("v"), ...)
+                      oce.plot.ts(x[["time"]], x[["v"]], ylab=resizableLabel("v"), debug=debug-1, ...)
                   } else if (w == 6) {
-                      oce.plot.ts(x[["time"]], x[["nitrate"]], ylab=resizableLabel("nitrate", axis="y"), ...)
+                      oce.plot.ts(x[["time"]], x[["nitrate"]], ylab=resizableLabel("nitrate", axis="y"), debug=debug-1, ...)
                   } else if (w == 7) {
-                      oce.plot.ts(x[["time"]], x[["fluorescence"]], ylab=resizableLabel("fluorescence", axis="y"), ...)
+                      oce.plot.ts(x[["time"]], x[["fluorescence"]], ylab=resizableLabel("fluorescence", axis="y"), debug=debug-1, ...)
                   }
                   if (adornLength > 0) {
                       t <- try(eval(adorn[1]), silent=TRUE)

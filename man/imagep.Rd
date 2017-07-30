@@ -9,10 +9,10 @@ imagep(x, y, z, xlim, ylim, zlim, zclip = FALSE, flipy = FALSE, xlab = "",
   decimate = TRUE, breaks, col, colormap, labels = NULL, at = NULL,
   drawContours = FALSE, drawPalette = TRUE, drawTriangles = FALSE,
   tformat, drawTimeRange = getOption("oceDrawTimeRange"),
-  filledContour = FALSE, missingColor = NULL, mgp = getOption("oceMgp"),
-  mar, mai.palette, xaxs = "i", yaxs = "i", asp = NA, cex = par("cex"),
-  adorn = NULL, axes = TRUE, main = "", axisPalette, add = FALSE,
-  debug = getOption("oceDebug"), ...)
+  filledContour = FALSE, missingColor = NULL, useRaster,
+  mgp = getOption("oceMgp"), mar, mai.palette, xaxs = "i", yaxs = "i",
+  asp = NA, cex = par("cex"), adorn = NULL, axes = TRUE, main = "",
+  axisPalette, add = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x, y}{These have different meanings in different modes of operation.
@@ -142,6 +142,11 @@ contours to plot the image.}
 \item{missingColor}{A colour to be used to indicate missing data, or
 \code{NULL} for transparent (to see this, try setting
 \code{par("bg")<-"red"}).}
+
+\item{useRaster}{A logical value passed to \code{\link{image}}, in cases
+where \code{filledContour} is \code{FALSE}. Setting \code{useRaster=TRUE}
+can alleviate some anti-aliasing effects on some plot devices;
+see the documentaiton for \code{\link{image}}.}
 
 \item{mgp}{A 3-element numerical vector to use for \code{par(mgp)}, and
 also for \code{par(mar)}, computed from this.  The default is

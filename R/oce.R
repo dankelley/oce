@@ -93,7 +93,7 @@ NULL
 #' The following are marked "defunct", so calling them in the
 #' the present version produces an error message that hints at a replacement
 #' function. Once a function is marked "defunct" on one CRAN release, it will
-#' be slated for outright deletion in the following release.
+#' be slated for outright deletion in a subsequent release.
 #'
 #' \tabular{lll}{
 #' \strong{Defunct}   \tab \strong{Replacement}     \tab \strong{Notes}\cr
@@ -105,6 +105,9 @@ NULL
 #' means they will be marked "defunct" in the next CRAN release. They are as follows.
 #'
 #' \itemize{
+#'
+#' \item The \code{endian} argument of \code{\link{byteToBinary}} will be removed sometime
+#' in the year 2017, and should be set to \code{"big"} in the meantime.
 #'
 #' \item The \code{parameters} argument of \code{\link{plot,ctd-method}}
 #' was deprecated on 2016-12-30.  It was once used by
@@ -658,7 +661,7 @@ oce.approx <- oceApprox
 #' \code{yscale}, which has the unit of \code{v} divided by the unit of
 #' \code{y}.
 #' The interpretation of diagrams produced by \code{plotSticks} can be
-#' difficult, owing to overlap in the arrows.  For this reason, it It is often
+#' difficult, owing to overlap in the arrows.  For this reason, it is often
 #' a good idea to smooth \code{u} and \code{v} before using this function.
 #'
 #' @param x x coordinates of stick origins.
@@ -667,7 +670,7 @@ oce.approx <- oceApprox
 #' are ignored.
 #' @param u x component of stick length.
 #' @param v y component of stick length.
-#' @param yscale scale from u and v to y (see \dQuote{Details}).
+#' @param yscale scale from u and v to y (see \dQuote{Description}).
 #' @param add boolean, set \code{TRUE} to add to an existing plot.
 #' @param length value to be provided to \code{\link{arrows}}; here, we set a
 #' default that is smaller than normally used, because these plots tend to be
@@ -676,6 +679,7 @@ oce.approx <- oceApprox
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar value to be used with \code{\link{par}("mar")}.
+#' @param xlab,ylab labels for the plot axes. The default is not to label them.
 #' @param \dots graphical parameters passed down to \code{\link{arrows}}.  It
 #' is common, for example, to use smaller arrow heads than \code{\link{arrows}}
 #' uses; see \dQuote{Examples}.
@@ -705,7 +709,7 @@ oce.approx <- oceApprox
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                        mgp=getOption("oceMgp"),
                        mar=c(mgp[1]+1, mgp[1]+1, 1, 1+par("cex")),
-                       ...)
+                       xlab="", ylab="", ...)
 {
     pin <- par("pin")
     page.ratio <- pin[2]/pin[1]
@@ -729,7 +733,7 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
         stop("lenghts of x and v must match, but they are ", n, " and ", length(v))
     par(mar=mar, mgp=mgp)
     if (!add)
-        plot(range(x), range(y), type='n', ...)
+        plot(range(x), range(y), type='n', xlab=xlab, ylab=ylab, ...)
     usr <- par("usr")
     yrxr <- (usr[4] - usr[3]) / (usr[2] - usr[1])
     warn <- options("warn")$warn # FIXME: fails to quieten arrows()
@@ -1463,6 +1467,9 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         ##} else if (as.integer(bytes[1]) == 87) {
         ##    warning("possibly this file is a sontek ADV (first byte is 87)")
     }
+    if (bytes[1] == 0xa5 && bytes[4] == 0x10) {
+        return("adp/nortek/ad2cp")
+    }
     if (bytes[1] == 0x9b && bytes[2] == 0x00) {
         warning(paste("Possibly this is an RDI CTD file. Oce cannot read such files yet, because\n",
                       " the author has not located file-format documents.  If you get such documents\n",
@@ -1597,6 +1604,8 @@ read.oce <- function(file, ...)
         return(read.aquadoppProfiler(file, processingLog=processingLog, ...))
     if (type == "adp/nortek/aquadoppHR")
         return(read.aquadoppHR(file, processingLog=processingLog, ...))
+    if (type == "adp/nortek/ad2cp")
+        return(read.ad2cp(file, processingLog=processingLog, ...))
     if (type == "adv/nortek/vector")
         return(read.adv.nortek(file, processingLog=processingLog, ...))
     if (type == "adv/sontek/adr")

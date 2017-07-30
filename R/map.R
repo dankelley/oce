@@ -510,9 +510,9 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
     phirad <- phi*pi/180 + c(0, pi/2)
     kmperlon <- pi*R*cos(latitude*pi/180)/180
     kmperlat <- pi*R/180
-    dx <- L*cos(phirad)	
+    dx <- L*cos(phirad)
     dy <- L*sin(phirad)
-    dlon <- dx/kmperlon	
+    dlon <- dx/kmperlon
     dlat <- dy/kmperlat
     lonend <- longitude + dlon
     latend <- latitude + dlat

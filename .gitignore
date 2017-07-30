@@ -22,5 +22,8 @@ oce.Rproj
 autom4te.cache
 *.nc
 *.zip
-
 *.csv
+test*.R
+
+*.out
+oce_[a-zA-Z]*.Rproj

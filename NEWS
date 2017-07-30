@@ -1,3 +1,10 @@
+0.9-22
+- plot,section-method() can use external bathymetry
+- lowpass() added
+- ctdTrim() can isolate upcasts
+- deprecate byteToBinary()
+- address a CRAN NOTE about UTF-8 strings in data
+
 0.9-21
 - adpEnsembleAverage() added
 - mapCoordinateSystem() added
