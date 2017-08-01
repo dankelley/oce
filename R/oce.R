@@ -3003,7 +3003,11 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, skip, length=0.05, ad
         stop("must supply x, y, u, and v")
     if ( (missing(scalex) && missing(scaley)) || (!missing(scalex) && !missing(scaley)) )
         stop("either 'scalex' or 'scaley' must be specified (but not both)")
-    if (is.matrix(u) & is.matrix(v)) {
+    if (is.matrix(u) && !is.matrix(v))
+        stop("if 'u' is a matrix, then 'v' must also be a matrix")
+    if (is.matrix(v) && !is.matrix(u))
+        stop("if 'v' is a matrix, then 'u' must also be a matrix")
+    if (is.matrix(u) && is.matrix(v)) {
         oceDebug(debug, "u, v are matrices")
         if ( (dim(u)[1] != dim(v)[1]) & (dim(u)[2] != dim(v)[2]) )
             stop("dimensions of u and v must match")
