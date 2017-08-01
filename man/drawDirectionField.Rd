@@ -4,42 +4,63 @@
 \alias{drawDirectionField}
 \title{Draw a Direction Field}
 \usage{
-drawDirectionField(x, y, u, v, scalex, scaley, length = 0.05, add = FALSE,
-  type = 1, col = par("fg"), pch = 1, cex = par("cex"),
-  lwd = par("lwd"), lty = par("lty"), debug = getOption("oceDebug"))
+drawDirectionField(x, y, u, v, scalex, scaley, skip, length = 0.05,
+  add = FALSE, type = 1, col = par("fg"), pch = 1, cex = par("cex"),
+  lwd = par("lwd"), lty = par("lty"), xlab = "", ylab = "",
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x, y}{coordinates at which velocities are specified.}
+\item{x, y}{coordinates at which velocities are specified. The
+length of \code{x} and \code{y} depends on the form of \code{u}
+and \code{v} (vectors or matrices).}
 
-\item{u, v}{velocity components in the x and y directions.}
+\item{u, v}{velocity components in the x and y directions. Can be
+either vectors with the same length as \code{x, y}, or
+matrices, of dimension \code{length(x)} by \code{length(y)}.}
 
-\item{scalex, scaley}{scale to be used for the velocity arrows.  Exactly one
-of these must be specified.  Arrows that have \code{u^2+v^2=1} will
-have length \code{scalex} along the x axis, or \code{scaley} along the
-y axis, according to which argument is given.}
+\item{scalex, scaley}{scale to be used for the velocity arrows.
+Exactly one of these must be specified.  Arrows that have
+\code{u^2+v^2=1} will have length \code{scalex} along the x
+axis, or \code{scaley} along the y axis, according to which
+argument is given.}
 
-\item{length}{indication of \strong{width} of arrowheads. The somewhat
-confusing name of this argument is a consequence of the fact
-that it is passed to \code{\link{arrows}} for drawing arrows.
-Note that the present default is smaller than the default used
-by \code{\link{arrows}}.}
+\item{skip}{either an integer, or a two-element vector indicating
+the number of points to skip when plotting arrows (for the
+matrix \code{u, v} case). If a single value, the same
+\code{skip} is applied to both the \code{x} and \code{y}
+directions. If a two-element vector, specifies different values
+for the \code{x} and \code{y} directions.}
 
-\item{add}{if \code{TRUE}, the arrows are added to an existing plot;
-otherwise, a new plot is started by calling \code{\link{plot}} with
-\code{x}, \code{y} and \code{type="n"}.  In other words, the plot
-will be very basic. In most cases, the user will probably want to
-draw a diagram first, and \code{add} the direction field later.}
+\item{length}{indication of \strong{width} of arrowheads. The
+somewhat confusing name of this argument is a consequence of
+the fact that it is passed to \code{\link{arrows}} for drawing
+arrows.  Note that the present default is smaller than the
+default used by \code{\link{arrows}}.}
 
-\item{type}{indication of the style of arrow-like indication of the direction.}
+\item{add}{if \code{TRUE}, the arrows are added to an existing
+plot; otherwise, a new plot is started by calling
+\code{\link{plot}} with \code{x}, \code{y} and \code{type="n"}.
+In other words, the plot will be very basic. In most cases, the
+user will probably want to draw a diagram first, and \code{add}
+the direction field later.}
+
+\item{type}{indication of the style of arrow-like indication of the
+direction.}
 
 \item{col}{colour of line segments or arrows}
 
-\item{pch, cex}{plot character and expansion factor, used for \code{type=1}}
+\item{pch, cex}{plot character and expansion factor, used for
+\code{type=1}}
 
 \item{lwd, lty}{line width and type, used for \code{type=2}}
 
-\item{debug}{debugging value; set to a positive integer to get debugging
-information.}
+\item{xlab, }{ylab \code{x} and \code{y} axis labels}
+
+\item{debug}{debugging value; set to a positive integer to get
+debugging information.}
+
+\item{...}{other arguments to be passed to plotting functions
+(e.g. axis labels, etc).}
 }
 \value{
 None.
@@ -64,7 +85,17 @@ drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1, 1), v=c(1, -1), scalex=0.5, 
 plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type='n')
 drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1, 1), v=c(1, -1), scalex=0.5, add=TRUE,
                    type=2)
+
+## 2D example
+x <- seq(-2, 2, 0.1)
+y <- x
+xx <- expand.grid(x, y)[,1]
+yy <- expand.grid(x, y)[,2]
+z <- matrix(xx*exp(-xx^2 -yy^2), nrow=length(x))
+gz <- grad(z, x, y)
+drawDirectionField(x, y, gz$gx, gz$gy, scalex=0.5, type=2, len=0.02)
+oceContour(x, y, z, add=TRUE)
 }
 \author{
-Dan Kelley
+Dan Kelley and Clark Richards
 }
