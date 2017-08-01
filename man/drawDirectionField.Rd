@@ -54,7 +54,7 @@ direction.}
 
 \item{lwd, lty}{line width and type, used for \code{type=2}}
 
-\item{xlab, }{ylab \code{x} and \code{y} axis labels}
+\item{xlab, ylab}{\code{x} and \code{y} axis labels}
 
 \item{debug}{debugging value; set to a positive integer to get
 debugging information.}

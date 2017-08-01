@@ -2965,7 +2965,7 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 #' @param pch,cex plot character and expansion factor, used for
 #'     \code{type=1}
 #' @param lwd,lty line width and type, used for \code{type=2}
-#' @param xlab, ylab \code{x} and \code{y} axis labels
+#' @param xlab,ylab \code{x} and \code{y} axis labels
 #' @param debug debugging value; set to a positive integer to get
 #'     debugging information.
 #' @param ... other arguments to be passed to plotting functions
