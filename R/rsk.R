@@ -212,6 +212,13 @@ unitFromStringRsk <- function(s)
     ## "dbar" vs "dBar", both of which have been seen in files. Still, it
     ## was decided not to use ignore.case=TRUE in the grep() commands,
     ## because that seems to overly blunt the tool.
+    ##
+    ## Here's how to figure out special characters:
+    ## print(s)
+    ## [1] "µMol/m²/s"
+    ## Browse[1]> Encoding(s)<-"bytes"
+    ## Browse[2]> print(s)
+    ## [1] "\\xc2\\xb5Mol/m\\xc2\\xb2/s"
     if (1 == length(grep("mg/[lL]", s, useBytes=TRUE)))
         list(unit=expression(mg/l), scale="")
     else if (1 == length(grep("m[lL]/[lL]", s, useBytes=TRUE)))
@@ -234,6 +241,8 @@ unitFromStringRsk <- function(s)
         list(unit=expression(NTU), scale="")
     else if (1 == length(grep("\xB0", s, useBytes=TRUE)))
         list(unit=expression(degree*C), scale="ITS-90") # guessing on scale
+    else if (1 == length(grep("\\xc2\\xb5Mol/m\\xc2\\xb2/s", s, useBytes=TRUE))) # µMol/m²/s
+        list(unit=expression(mu*mol/m^2/s), scale="")
     else {
         warning("'", s, "' is not in the list of known .rsk units", sep="")
         list(unit=as.expression(s), scale="")
