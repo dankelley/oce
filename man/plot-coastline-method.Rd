@@ -8,8 +8,8 @@
 \S4method{plot}{coastline}(x, xlab = "", ylab = "", showHemi = TRUE, asp,
   clongitude, clatitude, span, lonlabel = NULL, latlabel = NULL,
   sides = NULL, projection = NULL, expand = 1,
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1), bg,
-  fill, border = NULL, col = "lightgray", axes = TRUE,
+  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1),
+  type = NULL, bg, fill, border = NULL, col = "lightgray", axes = TRUE,
   cex.axis = par("cex.axis"), add = FALSE, inset = FALSE,
   geographical = 0, longitudelim, latitudelim,
   debug = getOption("oceDebug"), ...)
@@ -81,6 +81,9 @@ for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
+
+\item{type}{optional indication of type; may be \code{NULL} for auto-selected,
+\code{"l"}, or \code{"p"}.}
 
 \item{bg}{optional colour to be used for the background of the map.  This
 comes in handy for drawing insets (see \dQuote{details}).}

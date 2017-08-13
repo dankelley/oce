@@ -246,6 +246,8 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar value to be used with \code{\link{par}("mar")}.
+#' @param type optional indication of type; may be \code{NULL} for auto-selected,
+#' \code{"l"}, or \code{"p"}.
 #' @param bg optional colour to be used for the background of the map.  This
 #' comes in handy for drawing insets (see \dQuote{details}).
 #' @param fill a legacy parameter that will be permitted only temporarily; see
@@ -316,6 +318,7 @@ setMethod(f="plot",
                                projection=NULL,
                                expand=1,
                                mgp=getOption("oceMgp"), mar=c(mgp[1]+1, mgp[1]+1, 1, 1),
+                               type=NULL,
                                bg,
                                fill, # just so we catch it's use ... will be removed at some later time
                                border=NULL, col="lightgray", # OLD: border and col did not exist
@@ -332,6 +335,7 @@ setMethod(f="plot",
                        ", clongitude=", if (missing(clongitude)) "(missing)" else clongitude,
                        ", clatitude=", if (missing(clatitude)) "(missing)" else clatitude,
                        ", span=", if (missing(span)) "(missing)" else span,
+                       ", type=", type,
                        ", geographical=", geographical,
                        ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
                        ", cex.axis=", cex.axis,
@@ -358,7 +362,7 @@ setMethod(f="plot",
                           col <- NULL
                       }
                   }
-                  warning("In plot,coastline-method() : 'fill' being accepted for backwards compatibility; please use 'col' instead", call.=FALSE)
+                  warning("In plot,coastline-method() : 'fill' being accepted for backwards compatibility; please use 'border' and 'col' instead", call.=FALSE)
               }
               ##> message("fill: ", if (missing(fill)) "MISSING" else fill)
               ##> message("col: ", if (missing(col)) "MISSING" else col)
@@ -493,31 +497,31 @@ setMethod(f="plot",
                       oceDebug(debug, "xr=", xr, " yr=", yr, "\n")
                   }
                   ## Trim lat or lon, to avoid empty margin space
-                  if (FALSE) {
-                      ## disable for issue 677 (as a test, or maybe permanently)
-                      asp.page <- par("fin")[2] / par("fin")[1] # dy / dx
-                      oceDebug(debug, "par('pin')=", par('pin'), "\n")
-                      oceDebug(debug, "par('fin')=", par('fin'), "\n")
-                      oceDebug(debug, "asp=", asp, "\n")
-                      oceDebug(debug, "asp.page=", asp.page, "\n")
-                      if (!is.finite(asp))
-                          asp <- 1 / cos(clatitude * atan2(1, 1) / 45)
-                      if (asp < asp.page) {
-                          oceDebug(debug, "type 1 (will narrow x range)\n")
-                          d <- asp.page / asp * diff(xr)
-                          oceDebug(debug, "  xr original:", xr, "\n")
-                          xr <- mean(xr) + d * c(-1/2, 1/2)
-                          oceDebug(debug, "  xr narrowed:", xr, "\n")
-                      } else {
-                          oceDebug(debug, "type 2 (will narrow y range)\n")
-                          d <- asp.page / asp * diff(yr)
-                          oceDebug(debug, "  yr original:", yr, ", yielding approx span", 111*diff(yr),
-                                   "km\n")
-                          yr <- mean(yr) + d * c(-1/2, 1/2)
-                          oceDebug(debug, "  yr narrowed:", yr, "\n")
-                          oceDebug(debug, "corner-to-corner span=", geodDist(xr[1], yr[1], xr[2], yr[2]), " km\n")
-                      }
-                  }
+                  ##> if (FALSE) {
+                  ##>     ## disable for issue 677 (as a test, or maybe permanently)
+                  ##>     asp.page <- par("fin")[2] / par("fin")[1] # dy / dx
+                  ##>     oceDebug(debug, "par('pin')=", par('pin'), "\n")
+                  ##>     oceDebug(debug, "par('fin')=", par('fin'), "\n")
+                  ##>     oceDebug(debug, "asp=", asp, "\n")
+                  ##>     oceDebug(debug, "asp.page=", asp.page, "\n")
+                  ##>     if (!is.finite(asp))
+                  ##>         asp <- 1 / cos(clatitude * atan2(1, 1) / 45)
+                  ##>     if (asp < asp.page) {
+                  ##>         oceDebug(debug, "type 1 (will narrow x range)\n")
+                  ##>         d <- asp.page / asp * diff(xr)
+                  ##>         oceDebug(debug, "  xr original:", xr, "\n")
+                  ##>         xr <- mean(xr) + d * c(-1/2, 1/2)
+                  ##>         oceDebug(debug, "  xr narrowed:", xr, "\n")
+                  ##>     } else {
+                  ##>         oceDebug(debug, "type 2 (will narrow y range)\n")
+                  ##>         d <- asp.page / asp * diff(yr)
+                  ##>         oceDebug(debug, "  yr original:", yr, ", yielding approx span", 111*diff(yr),
+                  ##>                  "km\n")
+                  ##>         yr <- mean(yr) + d * c(-1/2, 1/2)
+                  ##>         oceDebug(debug, "  yr narrowed:", yr, "\n")
+                  ##>         oceDebug(debug, "corner-to-corner span=", geodDist(xr[1], yr[1], xr[2], yr[2]), " km\n")
+                  ##>     }
+                  ##> }
                   ## Avoid looking beyond the poles, or the dateline
                   if (xr[1] < (-180)) {
                       xr[1] <- (-180)
@@ -606,17 +610,43 @@ setMethod(f="plot",
                       oceDebug(debug, "trimming latitdue; yaxp=", yaxp, "FIXME: not working\n")
                       ##yscale <- 180 / (yaxp[2] - yaxp[1])
                       ##> if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
-                      polygon(x[["longitude"]], x[["latitude"]], border=border, col=col, ...)
-                      ##> } else {
-                      lines(x[["longitude"]], x[["latitude"]], ...)
-                      ##> }
+                      ##>> polygon(x[["longitude"]], x[["latitude"]], border=border, col=col, ...)
+                      ##>> ##> } else {
+                      ##>> lines(x[["longitude"]], x[["latitude"]], ...)
+                      ##>> ##> }
+                      if (is.null(col))
+                          col <- "black"
+                      if (is.null(type)) {
+                          message("coastline.R:619 about to call polygon")
+                          polygon(longitude, latitude, border=border, col=col, ...)
+                          ##lines(longitude, latitude, col=col, ...)
+                      } else if (type == "l") {
+                          lines(longitude, latitude, col=col, ...)
+                      } else if (type == "p") {
+                          points(longitude, latitude, col=col, ...)
+                      } else if (type == "o") {
+                          points(longitude, latitude, col=col, ...)
+                          lines(longitude, latitude, col=col, ...)
+                      }
                   } else {
                       ##> if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
-                      polygon(longitude, latitude, border=border, col=col, ...)
+                      if (is.null(col))
+                          col <- "black"
+                      if (is.null(type)) {
+                          message("coastline.R:636 about to call polygon")
+                          polygon(longitude, latitude, border=border, col=col, ...)
+                          ##lines(longitude, latitude, col=col, ...)
+                      } else if (type == "l") {
+                          lines(longitude, latitude, col=col, ...)
+                      } else if (type == "p") {
+                          points(longitude, latitude, col=col, ...)
+                      } else if (type == "o") {
+                          points(longitude, latitude, col=col, ...)
+                          lines(longitude, latitude, col=col, ...)
+                      }
                       if (axes)
                           rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
                       ##> } else {
-                      lines(longitude, latitude, ...)
                       ##>     if (axes)
                       ##>         rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
                       ##> }
