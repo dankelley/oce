@@ -534,7 +534,7 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 }
 
 
-#' Interpolate 1D Data with Unesco or Reiniger-Ross Algorithm
+#' Interpolate 1D Data with UNESCO or Reiniger-Ross Algorithm
 #'
 #' Interpolate one-dimensional data using schemes that permit curvature but
 #' tends minimize extrema that are not well-indicated by the data.
@@ -612,15 +612,14 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 #' library(oce)
 #' if (require(ocedata)) {
 #'     data(RRprofile)
-#'     zz <- seq(0, 2000, 5)
+#'     zz <- seq(0, 2000, 2)
 #'     plot(RRprofile$temperature, RRprofile$depth, ylim=c(500, 0), xlim=c(2, 11))
 #'     ## Contrast two methods
 #'     a1 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "rr")
 #'     a2 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "unesco")
 #'     lines(a1, zz)
 #'     lines(a2, zz, col='red')
-#'     legend("bottomright", lwd=1, col=1:2,
-#'     legend=c("Unesco", "Reiniger-Ross"), cex=3/4)
+#'     legend("bottomright",lwd=1,col=1:2, legend=c("rr","unesco"),cex=3/4)
 #' }
 oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
 {
