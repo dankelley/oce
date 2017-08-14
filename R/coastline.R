@@ -335,7 +335,9 @@ setMethod(f="plot",
                        ", clongitude=", if (missing(clongitude)) "(missing)" else clongitude,
                        ", clatitude=", if (missing(clatitude)) "(missing)" else clatitude,
                        ", span=", if (missing(span)) "(missing)" else span,
-                       ", type=", type,
+                       ", type=\"", type, "\"",
+                       ", border=\"", if (is.null(border)) "NULL" else border, "\"",
+                       ", col=\"", if (is.null(col)) "NULL" else col, "\"",
                        ", geographical=", geographical,
                        ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
                        ", cex.axis=", cex.axis,
@@ -366,12 +368,12 @@ setMethod(f="plot",
               }
               ##> message("fill: ", if (missing(fill)) "MISSING" else fill)
               ##> message("col: ", if (missing(col)) "MISSING" else col)
-              if (is.character(col)) {
-                  if (!("fillable" %in% names(x@metadata) && x@metadata$fillable)) {
-                      col <- NULL
-                      warning("In plot,coastlinemethod() : setting col=NULL because the coastline is not fillable", call.=FALSE)
-                  }
-              }
+              ##>> if (is.character(col)) {
+              ##>>     if (!("fillable" %in% names(x@metadata) && x@metadata$fillable)) {
+              ##>>         col <- NULL
+              ##>>         warning("In plot,coastlinemethod() : setting col=NULL because the coastline is not fillable", call.=FALSE)
+              ##>>     }
+              ##>> }
               if (inherits(x, "coastline") && !missing(longitudelim) && !missing(latitudelim) && !missing(projection)) {
                   oceDebug(debug, "plot,coastline-method calling mapPlot (code location 1)\n")
                   mapPlot(x[["longitude"]], x[["latitude"]], projection=projection,
@@ -452,6 +454,8 @@ setMethod(f="plot",
               par(mgp=mgp)
               if (add) {
                   ##> if (is.character(fill) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
+                  ## FIXME: handle 'type' values 'p', 'l' and 'o' here
+                  warning("BUG: ignoring 'type' because add=TRUE (FIXME)\n")
                   polygon(longitude, latitude, border=border, col=col, ...)
                   if (axes)
                       box()                      # clean up edges
@@ -606,37 +610,18 @@ setMethod(f="plot",
                   oceDebug(debug, "par('yaxp')", par("yaxp"), "\n")
                   oceDebug(debug, "par('pin')", par("pin"), "\n")
                   if (yaxp[1] < -90 | yaxp[2] > 90) {
-                      oceDebug(debug, "trimming latitude; pin=", par("pin"), "FIXME: not working\n")
-                      oceDebug(debug, "trimming latitdue; yaxp=", yaxp, "FIXME: not working\n")
-                      ##yscale <- 180 / (yaxp[2] - yaxp[1])
-                      ##> if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
-                      ##>> polygon(x[["longitude"]], x[["latitude"]], border=border, col=col, ...)
-                      ##>> ##> } else {
-                      ##>> lines(x[["longitude"]], x[["latitude"]], ...)
-                      ##>> ##> }
+                      warning("FIXME: should trim poles on this coastline plot\n")
+                  }
+                  if (type == "polygon") {
+                      if (is.null(border))
+                          border <- "black"
                       if (is.null(col))
-                          col <- "black"
-                      if (is.null(type)) {
-                          message("coastline.R:619 about to call polygon")
-                          polygon(longitude, latitude, border=border, col=col, ...)
-                          ##lines(longitude, latitude, col=col, ...)
-                      } else if (type == "l") {
-                          lines(longitude, latitude, col=col, ...)
-                      } else if (type == "p") {
-                          points(longitude, latitude, col=col, ...)
-                      } else if (type == "o") {
-                          points(longitude, latitude, col=col, ...)
-                          lines(longitude, latitude, col=col, ...)
-                      }
+                          col <- "lightgray"
+                      polygon(longitude, latitude, border=border, col=col, ...)
                   } else {
-                      ##> if ((is.logical(fill) && fill || is.character(fill)) && (!is.null(x@metadata$fillable) && x@metadata$fillable)) {
                       if (is.null(col))
                           col <- "black"
-                      if (is.null(type)) {
-                          message("coastline.R:636 about to call polygon")
-                          polygon(longitude, latitude, border=border, col=col, ...)
-                          ##lines(longitude, latitude, col=col, ...)
-                      } else if (type == "l") {
+                      if (type == "l") {
                           lines(longitude, latitude, col=col, ...)
                       } else if (type == "p") {
                           points(longitude, latitude, col=col, ...)
@@ -644,12 +629,6 @@ setMethod(f="plot",
                           points(longitude, latitude, col=col, ...)
                           lines(longitude, latitude, col=col, ...)
                       }
-                      if (axes)
-                          rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
-                      ##> } else {
-                      ##>     if (axes)
-                      ##>         rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
-                      ##> }
                   }
               }
               ##box()

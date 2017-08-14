@@ -8,8 +8,8 @@
 \S4method{plot}{coastline}(x, xlab = "", ylab = "", showHemi = TRUE, asp,
   clongitude, clatitude, span, lonlabel = NULL, latlabel = NULL,
   sides = NULL, projection = NULL, expand = 1,
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1),
-  type = NULL, bg, fill, border = NULL, col = "lightgray", axes = TRUE,
+  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1), bg,
+  fill, type = "polygon", border = NULL, col = NULL, axes = TRUE,
   cex.axis = par("cex.axis"), add = FALSE, inset = FALSE,
   geographical = 0, longitudelim, latitudelim,
   debug = getOption("oceDebug"), ...)
@@ -82,21 +82,21 @@ default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
 
-\item{type}{optional indication of type; may be \code{NULL} for auto-selected,
-\code{"l"}, or \code{"p"}.}
-
 \item{bg}{optional colour to be used for the background of the map.  This
 comes in handy for drawing insets (see \dQuote{details}).}
 
 \item{fill}{a legacy parameter that will be permitted only temporarily; see
 \dQuote{History}.}
 
-\item{border}{colour of coastlines and international borders (passed to
-\code{\link{polygon}}, which does the drawing).}
+\item{type}{indication of type; may be \code{"polygon"}, for a filled polygon,
+\code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
+overlain with line segments.}
 
-\item{col}{the colour with which to fill (passed to \code{\link{polygon}},
-which does the drawing.) This is ignored unless the coastline object is
-fillable.}
+\item{border}{colour of coastlines and international borders (ignored unless
+\code{type="polygon"}.}
+
+\item{col}{either the colour for filling polygons (if \code{type="polygon"})
+or the colour of the points and line segments.}
 
 \item{axes}{boolean, set to \code{TRUE} to plot axes.}
 
