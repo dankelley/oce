@@ -246,17 +246,17 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar value to be used with \code{\link{par}("mar")}.
-#' @param type optional indication of type; may be \code{NULL} for auto-selected,
-#' \code{"l"}, or \code{"p"}.
 #' @param bg optional colour to be used for the background of the map.  This
 #' comes in handy for drawing insets (see \dQuote{details}).
 #' @param fill a legacy parameter that will be permitted only temporarily; see
 #' \dQuote{History}.
-#' @param border colour of coastlines and international borders (passed to
-#' \code{\link{polygon}}, which does the drawing).
-#' @param col the colour with which to fill (passed to \code{\link{polygon}},
-#' which does the drawing.) This is ignored unless the coastline object is
-#' fillable.
+#' @param type indication of type; may be \code{"polygon"}, for a filled polygon,
+#' \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
+#' overlain with line segments.
+#' @param border colour of coastlines and international borders (ignored unless
+#' \code{type="polygon"}.
+#' @param col either the colour for filling polygons (if \code{type="polygon"})
+#' or the colour of the points and line segments.
 #' @param axes boolean, set to \code{TRUE} to plot axes.
 #' @param cex.axis value for axis font size factor.
 #' @param add boolean, set to \code{TRUE} to draw the coastline on an existing
@@ -318,10 +318,10 @@ setMethod(f="plot",
                                projection=NULL,
                                expand=1,
                                mgp=getOption("oceMgp"), mar=c(mgp[1]+1, mgp[1]+1, 1, 1),
-                               type=NULL,
                                bg,
                                fill, # just so we catch it's use ... will be removed at some later time
-                               border=NULL, col="lightgray", # OLD: border and col did not exist
+                               type="polygon",
+                               border=NULL, col=NULL, # OLD: border and col did not exist
                                axes=TRUE, cex.axis=par('cex.axis'),
                                add=FALSE, inset=FALSE,
                                geographical=0,
