@@ -50,7 +50,8 @@ in this case, it is not permitted to also specify \code{longitudelim} and
 The plotted span is usually close to the suggestion, although the details
 depend on the plot aspect ratio and other factors, so some adjustment may be
 required to fine-tune a plot.  A value for \code{span} must be supplied, if
-\code{clongitude} and \code{clatitude} are supplied (or inferred from \code{projection}).}
+\code{clongitude} and \code{clatitude} are supplied
+(or inferred from \code{projection}).}
 
 \item{lonlabel, latlabel, sides}{optional vectors of longitude and latitude to
 label on the indicated sides of plot, passed to
@@ -96,7 +97,8 @@ overlain with line segments.}
 \code{type="polygon"}.}
 
 \item{col}{either the colour for filling polygons (if \code{type="polygon"})
-or the colour of the points and line segments.}
+or the colour of the points and line segments (if \code{type="p"},
+\code{type="l"}, or \code{type="o"}).}
 
 \item{axes}{boolean, set to \code{TRUE} to plot axes.}
 

@@ -5,9 +5,9 @@
 \title{Draw a Map}
 \usage{
 mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg, fill,
-  border = NULL, col = NA, type = "l", axes = TRUE, cex, cex.axis = 1,
-  mgp = c(0, 0.5, 0), drawBox = TRUE, showHemi = TRUE, polarCircle = 0,
-  lonlabel = NULL, latlabel = NULL, sides = NULL,
+  border = NULL, col = NULL, type = "polygon", axes = TRUE, cex,
+  cex.axis = 1, mgp = c(0, 0.5, 0), drawBox = TRUE, showHemi = TRUE,
+  polarCircle = 0, lonlabel = NULL, latlabel = NULL, sides = NULL,
   projection = "+proj=moll", tissot = FALSE, trim = TRUE,
   debug = getOption("oceDebug"), ...)
 }
@@ -49,15 +49,16 @@ most projections this works quite well.  If not, one may set
 \item{fill}{\strong{(deprecated)} is a deprecated argument; see
 \link{oce-deprecated}.}
 
-\item{border}{colour of coastlines and international borders. The default,
-\code{NULL}, means to use \code{\link{par}("fg")}; see
-\code{\link{polygon}}.}
+\item{border}{colour of coastlines and international borders (ignored unless
+\code{type="polygon"}.}
 
-\item{col}{colour with which to fill coastline elements. The default,
-\code{NA}, is not to fill; see \code{\link{polygon}}.}
+\item{col}{either the colour for filling polygons (if \code{type="polygon"})
+or the colour of the points and line segments (if \code{type="p"},
+\code{type="l"}, or \code{type="o"}).}
 
-\item{type}{value to indicate type of plot, as with
-\code{\link{par}("plot")}.}
+\item{type}{indication of type; may be \code{"polygon"}, for a filled polygon,
+\code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
+overlain with line segments.}
 
 \item{axes}{logical value indicating whether to draw longitude and latitude
 values in the lower and left margin, respectively.  This may not work well

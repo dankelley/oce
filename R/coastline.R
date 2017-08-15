@@ -195,9 +195,12 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' or created by \code{\link{as.coastline}}, or a list containing items named
 #' \code{longitude} and \code{latitude}.
 #' @param xlab label for x axis
+#'
 #' @param ylab label for y axis
+#'
 #' @param showHemi logical indicating whether to show the hemisphere in axis
 #' tick labels.
+#'
 #' @param asp Aspect ratio for plot.  The default is for \code{plot,coastline-method}
 #' to set the aspect ratio to give natural latitude-longitude scaling somewhere
 #' near the centre latitude on the plot. Often, it makes sense to set
@@ -207,6 +210,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' \code{ylim} to be symmetric about zero. Any given value of \code{asp} is
 #' ignored, if \code{clongitude} and \code{clatitude} are given (or
 #' if the latter two are inferred from \code{projection}.
+#'
 #' @param clongitude,clatitude optional center latitude of map, in decimal
 #' degrees.  If both \code{clongitude} and \code{clatitude} are provided,
 #' or alternatively if they can be inferred from substrings \code{+lon_0}
@@ -216,16 +220,20 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' \code{clatitude} are known, then \code{span} must also be provided, and
 #' in this case, it is not permitted to also specify \code{longitudelim} and
 #' \code{latitudelim}.
+#'
 #' @param span optional suggested diagonal span of the plot, in kilometers.
 #' The plotted span is usually close to the suggestion, although the details
 #' depend on the plot aspect ratio and other factors, so some adjustment may be
 #' required to fine-tune a plot.  A value for \code{span} must be supplied, if
-#' \code{clongitude} and \code{clatitude} are supplied (or inferred from \code{projection}).
+#' \code{clongitude} and \code{clatitude} are supplied
+#' (or inferred from \code{projection}).
+#'
 #' @param lonlabel,latlabel,sides optional vectors of longitude and latitude to
 #' label on the indicated sides of plot, passed to
 #' \code{\link{plot,coastline-method}}.  Using these arguments permits reasonably
 #' simple customization.  If they are are not provided, reasonable defaults
 #' will be used.
+#'
 #' @param projection optional map projection to use (see
 #' the \code{\link{mapPlot}} argument of the same name).
 #' If set to \code{FALSE} then no projection is used,
@@ -238,35 +246,49 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' Stereopoloar one is used as if \code{projection="+proj=stere"}.  Otherwise,
 #' \code{projection} must be a character string identifying a projection
 #' accepted by \code{\link{mapPlot}}.
+#'
 #' @param expand numerical factor for the expansion of plot limits, showing
 #' area outside the plot, e.g. if showing a ship track as a coastline, and then
 #' an actual coastline to show the ocean boundary.  The value of \code{expand}
 #' is ignored if either \code{xlim} or \code{ylim} is given.
+#'
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
+#'
 #' @param mar value to be used with \code{\link{par}("mar")}.
+#'
 #' @param bg optional colour to be used for the background of the map.  This
 #' comes in handy for drawing insets (see \dQuote{details}).
+#'
 #' @param fill a legacy parameter that will be permitted only temporarily; see
 #' \dQuote{History}.
+#'
 #' @param type indication of type; may be \code{"polygon"}, for a filled polygon,
 #' \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
 #' overlain with line segments.
+#'
 #' @param border colour of coastlines and international borders (ignored unless
 #' \code{type="polygon"}.
+#'
 #' @param col either the colour for filling polygons (if \code{type="polygon"})
-#' or the colour of the points and line segments.
+#' or the colour of the points and line segments (if \code{type="p"},
+#' \code{type="l"}, or \code{type="o"}).
+#'
 #' @param axes boolean, set to \code{TRUE} to plot axes.
+#'
 #' @param cex.axis value for axis font size factor.
+#'
 #' @param add boolean, set to \code{TRUE} to draw the coastline on an existing
 #' plot.  Note that this retains the aspect ratio of that existing plot, so it
 #' is important to set that correctly, e.g. with \code{asp=1/cos(lat * pi /
 #' 180)}, where \code{clat} is the central latitude of the plot.
+#'
 #' @param inset set to \code{TRUE} for use within \code{\link{plotInset}}.  The
 #' effect is to prevent the present function from adjusting margins, which is
 #' necessary because margin adjustment is the basis for the method used by
 #' \code{\link{plotInset}}.
+#'
 #' @param geographical flag indicating the style of axes.  If
 #' \code{geographical=0}, the axes are conventional, with decimal degrees as
 #' the unit, and negative signs indicating the southern and western
@@ -274,25 +296,34 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' values being in decreasing order within the southern and western
 #' hemispheres.  If \code{geographical=2}, the signs are dropped and the axes
 #' are labelled with degrees, minutes and seconds, as appropriate.
+#'
 #' @param longitudelim this and \code{latitudelim} provide a second way to
 #' suggest plot ranges. Note that these may not be supplied if
 #' \code{clongitude}, \code{clatitude} and \code{span} are given.
+#'
 #' @param latitudelim see \code{longitudelim}.
+#'
 #' @param debug set to \code{TRUE} to get debugging information during
 #' processing.
+#'
 #' @param \dots optional arguments passed to plotting functions.  For example,
 #' set \code{yaxp=c(-90,90,4)} for a plot extending from pole to pole.
+#'
 #' @return None.
+#'
 #' @section History: Until February, 2016, \code{plot,coastline-method} relied on a
 #' now-defunct argument \code{fill} to control colours; \code{col} is to be
 #' used now, instead. Also, in February, 2016, the arguments named
 #' \code{parameters} and \code{orientation} were both removed, as they had
 #' become nonfunctional about a year previously, in the transition to using
 #' the \code{rgdal} package to carry out map projections.
+#'
 #' @author Dan Kelley
+#'
 #' @seealso The documentation for \code{\link{coastline-class}} explains the
 #' structure of coastline objects, and also outlines the other functions
 #' dealing with them.
+#'
 #' @examples
 #' \dontrun{
 #' library(oce)
@@ -422,7 +453,7 @@ setMethod(f="plot",
                   mapPlot(x[['longitude']], x[['latitude']], longitudelim, latitudelim,
                           showHemi=showHemi,
                           mgp=mgp, mar=mar,
-                          bg="white", border=border, col=col, type='l', axes=TRUE, ## FIXME: use bg and col here; delete fill
+                          bg="white", border=border, col=col, type=type, axes=TRUE, ## FIXME: use bg and col here; delete fill
                           lonlabel=lonlabel, latlabel=latlabel, sides=sides,
                           projection=projection,
                           debug=debug-1, ...)

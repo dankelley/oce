@@ -701,15 +701,16 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @param fill \strong{(deprecated)} is a deprecated argument; see
 #' \link{oce-deprecated}.
 #'
-#' @param border colour of coastlines and international borders. The default,
-#' \code{NULL}, means to use \code{\link{par}("fg")}; see
-#' \code{\link{polygon}}.
+#' @param border colour of coastlines and international borders (ignored unless
+#' \code{type="polygon"}.
 #'
-#' @param col colour with which to fill coastline elements. The default,
-#' \code{NA}, is not to fill; see \code{\link{polygon}}.
+#' @param col either the colour for filling polygons (if \code{type="polygon"})
+#' or the colour of the points and line segments (if \code{type="p"},
+#' \code{type="l"}, or \code{type="o"}).
 #'
-#' @param type value to indicate type of plot, as with
-#' \code{\link{par}("plot")}.
+#' @param type indication of type; may be \code{"polygon"}, for a filled polygon,
+#' \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
+#' overlain with line segments.
 #'
 #' @param axes logical value indicating whether to draw longitude and latitude
 #' values in the lower and left margin, respectively.  This may not work well
@@ -1102,8 +1103,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @family functions related to maps
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill,
-                    border=NULL, col=NA, # 'col' default differs from plot.coastline(), owing to ugly-horiz.-line issue
-                    type='l', axes=TRUE, cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
+                    border=NULL, col=NULL,
+                    type='polygon', axes=TRUE, cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
                     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
                     projection="+proj=moll", tissot=FALSE, trim=TRUE,
                     debug=getOption("oceDebug"),
@@ -1119,6 +1120,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "mapPlot(longitude, latitude",
              ", longitudelim=", if (missing(longitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
              ", longitudelim=", if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
+             ", type=\"", type, "\"",
              ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
              ", grid=", grid,
              ", ...) {\n", sep="", unindent=1)
@@ -1230,14 +1232,39 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             box$x <- box$x[!bad3]
             box$y <- box$y[!bad3]
             #message("FIXME: box is NA")
-            plot(x, y, type=type,
-                 xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
-                 xlab="", ylab="", asp=1, axes=FALSE, ...)
+            if (type == "polygon") {
+                plot(x, y, type="n",
+                     xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
+                     xlab="", ylab="", asp=1, axes=FALSE, ...)
+                if (is.null(border))
+                    border <- "black"
+                if (is.null(col))
+                    col <- "lightgray"
+                polygon(x, y, border=border, col=col)
+            } else {
+                if (is.null(col))
+                    col <- "black"
+                plot(x, y, type=type, col=col,
+                     xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
+                     xlab="", ylab="", asp=1, axes=FALSE, ...)
+            }
             ## points(jitter(box$x), jitter(box$y), pch=1, col='red')
         } else {
             oceDebug(debug, "neither latitudelim nor longitudelim was given\n")
-            plot(x, y, type=type,
-                 xlab="", ylab="", asp=1, axes=FALSE, ...)
+            if (type == "polygon") {
+                plot(x, y, type="n",
+                     xlab="", ylab="", asp=1, axes=FALSE, ...)
+                if (is.null(border))
+                    border <- "black"
+                if (is.null(col))
+                    col <- "lightgray"
+                polygon(x, y, border=border, col=col)
+            } else {
+                if (is.null(col))
+                    col <- "black"
+                plot(x, y, type=type, col=col,
+                     xlab="", ylab="", asp=1, axes=FALSE, ...)
+            }
         }
     }
     ## Remove any island/lake that is entirely offscale.  This is not a
@@ -1250,9 +1277,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         y <- xy$y
     }
     if (type != 'n') {
-        if (!is.null(col)) {
-            polygon(x, y, border=border, col=col, ...)
-        }
+        ## if (!is.null(col)) {
+        ##     polygon(x, y, border=border, col=col, ...)
+        ## }
         if (isTopo) {
             mapContour(topo[["longitude"]], topo[["latitude"]], topo[["z"]], ...)
         }
