@@ -2800,7 +2800,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     ## map_check_polygons tries to fix up longitude cut-point problem, which
     ## otherwise leads to lines crossing the graph horizontally because the
     ## x value can sometimes alternate from one end of the domain to the other.
-    Z <- matrix(z)
+    ## Z <- matrix(z)
+    Z <- as.vector(z)
     r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
                diff(par('usr'))[1:2]/5, par('usr'),
                NAOK=TRUE, PACKAGE="oce")
@@ -2808,7 +2809,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     breaksMax <- max(breaks, na.rm=TRUE)
     if (filledContour) {
         oceDebug(debug, "using filled contours\n")
-        zz <- as.vector(z)
+        zz <- Z # as.vector(z)
         g <- expand.grid(longitude, latitude)
         longitudeGrid <- g[, 1]
         latitudeGrid <- g[, 2]
@@ -2891,7 +2892,46 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             else
                 return(missingColor)
         }
-        colPolygon <- sapply(1:(ni*nj), colorLookup)
+        ## mapImage(topoWorld) profiling
+        ## Note that 1/3 of the time is spent here, the rest in polygon().
+        ## Profile times in seconds, as below. (is 0.1 to 0.2s meaningful?)
+        ## Caution: profile times depend on Rstudio window size etc, so
+        ## be careful in testing! The values below were from a particular
+        ## window and panel size but results were 1s different when I 
+        ## resized.
+        ##   with sapply: 3.480 3.640 3.520
+        ##   with loop:   3.260 3.440 3.430
+        method <- options()$mapPolygonMethod
+        if (0 == length(method))
+            method <- 3 # method tested in issue 1284
+        if (method==1) {
+            colPolygon <- sapply(1:(ni*nj), colorLookup)
+        } else if (method==2) {
+            colPolygon <- character(ni*nj)
+            for (ij in 1:(ni*nj)) {
+                zval <- Z[ij]
+                if (!is.finite(zval)) {
+                    colPolygon[ij] <- missingColor   # whether clipping or not
+                } else if (zval < breaksMin) {
+                    colPolygon[ij] <- if (zclip) missingColor else colFirst
+                } else if (zval > breaksMax) {
+                    colPolygon[ij] <- if (zclip) missingColor else colLast
+                } else {
+                    w <- which(zval <= breaks)[1]
+                    colPolygon[ij] <- if (!is.na(w) && w > 1) col[-1 + w] else missingColor
+                }
+            }
+        } else if (method == 3) {
+            colPolygon <- rep(missingColor, ni*nj)
+            ii <- findInterval(Z, breaks, left.open=TRUE)
+            ##colPolygon <- col[-1 + ii]
+            colPolygon <- col[ii]
+            colPolygon[!is.finite(Z)] <- missingColor
+            colPolygon[Z < min(breaks)] <- if (zclip) missingColor else colFirst
+            colPolygon[Z > max(breaks)] <- if (zclip) missingColor else colLast
+        } else {
+            stop("unknown options(mapPolygonMethod)")
+        }
         polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
                 col=colPolygon[r$okPolygon & !r$clippedPolygon],
                 border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
