@@ -2903,7 +2903,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ##   with loop:   3.260 3.440 3.430
         method <- options()$mapPolygonMethod
         if (0 == length(method))
-            method <- 1
+            method <- 3 # method tested in issue 1284
         if (method==1) {
             colPolygon <- sapply(1:(ni*nj), colorLookup)
         } else if (method==2) {
