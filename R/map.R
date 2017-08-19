@@ -2873,27 +2873,12 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ## }
         colorLookup <- function (ij) {
             zval <- Z[ij]
-            if (is.na(zval)) {
-                if (debug > 10) {
-                    ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("z is NA")
-                }
+            if (is.na(zval))
                 return(missingColor)   # whether clipping or not
-            }
-            if (zval < breaksMin) {
-                if (debug > 10) {
-                    ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("z: ", zval, " is < breaksMin")
-                }
+            if (zval < breaksMin)
                 return(if (zclip) missingColor else colFirst)
-            }
-            if (zval > breaksMax) {
-                if (debug > 10) {
-                    ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("z: ", zval, " is > breaksMax")
-                }
+            if (zval > breaksMax)
                 return(if (zclip) missingColor else colLast)
-            }
             ## IMPORTANT: whether to write 'breaks' or 'breaks+small' below
             ## IMPORTANT: is at the heart of several issues, including
             ## IMPORTANT: issues 522, 655 and possibly 726.
@@ -2901,19 +2886,10 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             ## issue655: this was w <- which(zval <= breaks)[1]
             ## sometime later: w <- which(zval < breaks + 1*small)[1]
             w <- which(zval <= breaks)[1]
-            if (!is.na(w) && w > 1) {
-                if (debug > 10) {
-                    ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("z: ", zval, ", w: ", w, ", using non-missing col: ", col[-1+w])
-                }
+            if (!is.na(w) && w > 1)
                 return(col[-1 + w])
-            } else {
-                if (debug > 10) {
-                    ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("z: ", zval, ", w: ", w, ", using missing col: ", missingColor)
-                }
+            else
                 return(missingColor)
-            }
         }
         colPolygon <- sapply(1:(ni*nj), colorLookup)
         polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
