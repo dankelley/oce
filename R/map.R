@@ -2905,10 +2905,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         if (0 == length(method))
             method <- 1
         if (method==1) {
-            message("mapPolygonMethod=1")
             colPolygon <- sapply(1:(ni*nj), colorLookup)
         } else if (method==2) {
-            message("mapPolygonMethod=2")
             colPolygon <- character(ni*nj)
             for (ij in 1:(ni*nj)) {
                 zval <- Z[ij]
@@ -2924,7 +2922,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                 }
             }
         } else if (method == 3) {
-            message("mapPolygonMethod=3")
             colPolygon <- rep(missingColor, ni*nj)
             ii <- findInterval(Z, breaks, left.open=TRUE)
             ##colPolygon <- col[-1 + ii]
