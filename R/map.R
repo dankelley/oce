@@ -2934,7 +2934,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         }
         polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
                 col=colPolygon[r$okPolygon & !r$clippedPolygon],
-                border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
+                border=colPolygon[r$okPolygon & !r$clippedPolygon],
+                lwd=lwd, lty=lty, fillOddEven=FALSE)
     }
     oceDebug(debug, "} # mapImage()\n", unindent=1)
     invisible()
