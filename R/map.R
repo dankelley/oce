@@ -701,15 +701,16 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @param fill \strong{(deprecated)} is a deprecated argument; see
 #' \link{oce-deprecated}.
 #'
-#' @param border colour of coastlines and international borders. The default,
-#' \code{NULL}, means to use \code{\link{par}("fg")}; see
-#' \code{\link{polygon}}.
+#' @param border colour of coastlines and international borders (ignored unless
+#' \code{type="polygon"}.
 #'
-#' @param col colour with which to fill coastline elements. The default,
-#' \code{NA}, is not to fill; see \code{\link{polygon}}.
+#' @param col either the colour for filling polygons (if \code{type="polygon"})
+#' or the colour of the points and line segments (if \code{type="p"},
+#' \code{type="l"}, or \code{type="o"}).
 #'
-#' @param type value to indicate type of plot, as with
-#' \code{\link{par}("plot")}.
+#' @param type indication of type; may be \code{"polygon"}, for a filled polygon,
+#' \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
+#' overlain with line segments.
 #'
 #' @param axes logical value indicating whether to draw longitude and latitude
 #' values in the lower and left margin, respectively.  This may not work well
@@ -1102,8 +1103,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' @family functions related to maps
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill,
-                    border=NULL, col=NA, # 'col' default differs from plot.coastline(), owing to ugly-horiz.-line issue
-                    type='l', axes=TRUE, cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
+                    border=NULL, col=NULL,
+                    type='polygon', axes=TRUE, cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
                     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
                     projection="+proj=moll", tissot=FALSE, trim=TRUE,
                     debug=getOption("oceDebug"),
@@ -1119,6 +1120,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     oceDebug(debug, "mapPlot(longitude, latitude",
              ", longitudelim=", if (missing(longitudelim)) "(missing)" else c("c(", paste(format(longitudelim, digits=4), collapse=","), ")"),
              ", longitudelim=", if (missing(latitudelim)) "(missing)" else c("c(", paste(format(latitudelim, digits=4), collapse=","), ")"),
+             ", type=\"", type, "\"",
              ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
              ", grid=", grid,
              ", ...) {\n", sep="", unindent=1)
@@ -1230,14 +1232,39 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
             box$x <- box$x[!bad3]
             box$y <- box$y[!bad3]
             #message("FIXME: box is NA")
-            plot(x, y, type=type,
-                 xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
-                 xlab="", ylab="", asp=1, axes=FALSE, ...)
+            if (type == "polygon") {
+                plot(x, y, type="n",
+                     xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
+                     xlab="", ylab="", asp=1, axes=FALSE, ...)
+                if (is.null(border))
+                    border <- "black"
+                if (is.null(col))
+                    col <- "lightgray"
+                polygon(x, y, border=border, col=col)
+            } else {
+                if (is.null(col))
+                    col <- "black"
+                plot(x, y, type=type, col=col,
+                     xlim=range(box$x, na.rm=TRUE), ylim=range(box$y, na.rm=TRUE),
+                     xlab="", ylab="", asp=1, axes=FALSE, ...)
+            }
             ## points(jitter(box$x), jitter(box$y), pch=1, col='red')
         } else {
             oceDebug(debug, "neither latitudelim nor longitudelim was given\n")
-            plot(x, y, type=type,
-                 xlab="", ylab="", asp=1, axes=FALSE, ...)
+            if (type == "polygon") {
+                plot(x, y, type="n",
+                     xlab="", ylab="", asp=1, axes=FALSE, ...)
+                if (is.null(border))
+                    border <- "black"
+                if (is.null(col))
+                    col <- "lightgray"
+                polygon(x, y, border=border, col=col)
+            } else {
+                if (is.null(col))
+                    col <- "black"
+                plot(x, y, type=type, col=col,
+                     xlab="", ylab="", asp=1, axes=FALSE, ...)
+            }
         }
     }
     ## Remove any island/lake that is entirely offscale.  This is not a
@@ -1250,9 +1277,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         y <- xy$y
     }
     if (type != 'n') {
-        if (!is.null(col)) {
-            polygon(x, y, border=border, col=col, ...)
-        }
+        ## if (!is.null(col)) {
+        ##     polygon(x, y, border=border, col=col, ...)
+        ## }
         if (isTopo) {
             mapContour(topo[["longitude"]], topo[["latitude"]], topo[["z"]], ...)
         }
@@ -2773,7 +2800,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     ## map_check_polygons tries to fix up longitude cut-point problem, which
     ## otherwise leads to lines crossing the graph horizontally because the
     ## x value can sometimes alternate from one end of the domain to the other.
-    Z <- matrix(z)
+    ## Z <- matrix(z)
+    Z <- as.vector(z)
     r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
                diff(par('usr'))[1:2]/5, par('usr'),
                NAOK=TRUE, PACKAGE="oce")
@@ -2781,7 +2809,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     breaksMax <- max(breaks, na.rm=TRUE)
     if (filledContour) {
         oceDebug(debug, "using filled contours\n")
-        zz <- as.vector(z)
+        zz <- Z # as.vector(z)
         g <- expand.grid(longitude, latitude)
         longitudeGrid <- g[, 1]
         latitudeGrid <- g[, 2]
@@ -2846,27 +2874,12 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ## }
         colorLookup <- function (ij) {
             zval <- Z[ij]
-            if (is.na(zval)) {
-                if (debug > 10) {
-                    ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("z is NA")
-                }
+            if (is.na(zval))
                 return(missingColor)   # whether clipping or not
-            }
-            if (zval < breaksMin) {
-                if (debug > 10) {
-                    ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("z: ", zval, " is < breaksMin")
-                }
+            if (zval < breaksMin)
                 return(if (zclip) missingColor else colFirst)
-            }
-            if (zval > breaksMax) {
-                if (debug > 10) {
-                    ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("z: ", zval, " is > breaksMax")
-                }
+            if (zval > breaksMax)
                 return(if (zclip) missingColor else colLast)
-            }
             ## IMPORTANT: whether to write 'breaks' or 'breaks+small' below
             ## IMPORTANT: is at the heart of several issues, including
             ## IMPORTANT: issues 522, 655 and possibly 726.
@@ -2874,24 +2887,55 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             ## issue655: this was w <- which(zval <= breaks)[1]
             ## sometime later: w <- which(zval < breaks + 1*small)[1]
             w <- which(zval <= breaks)[1]
-            if (!is.na(w) && w > 1) {
-                if (debug > 10) {
-                    ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("z: ", zval, ", w: ", w, ", using non-missing col: ", col[-1+w])
-                }
+            if (!is.na(w) && w > 1)
                 return(col[-1 + w])
-            } else {
-                if (debug > 10) {
-                    ## FIXME (issue 522): retain this test code until 2014-oct
-                    message("z: ", zval, ", w: ", w, ", using missing col: ", missingColor)
-                }
+            else
                 return(missingColor)
-            }
         }
-        colPolygon <- sapply(1:(ni*nj), colorLookup)
+        ## mapImage(topoWorld) profiling
+        ## Note that 1/3 of the time is spent here, the rest in polygon().
+        ## Profile times in seconds, as below. (is 0.1 to 0.2s meaningful?)
+        ## Caution: profile times depend on Rstudio window size etc, so
+        ## be careful in testing! The values below were from a particular
+        ## window and panel size but results were 1s different when I 
+        ## resized.
+        ##   with sapply: 3.480 3.640 3.520
+        ##   with loop:   3.260 3.440 3.430
+        method <- options()$mapPolygonMethod
+        if (0 == length(method))
+            method <- 3 # method tested in issue 1284
+        if (method==1) {
+            colPolygon <- sapply(1:(ni*nj), colorLookup)
+        } else if (method==2) {
+            colPolygon <- character(ni*nj)
+            for (ij in 1:(ni*nj)) {
+                zval <- Z[ij]
+                if (!is.finite(zval)) {
+                    colPolygon[ij] <- missingColor   # whether clipping or not
+                } else if (zval < breaksMin) {
+                    colPolygon[ij] <- if (zclip) missingColor else colFirst
+                } else if (zval > breaksMax) {
+                    colPolygon[ij] <- if (zclip) missingColor else colLast
+                } else {
+                    w <- which(zval <= breaks)[1]
+                    colPolygon[ij] <- if (!is.na(w) && w > 1) col[-1 + w] else missingColor
+                }
+            }
+        } else if (method == 3) {
+            colPolygon <- rep(missingColor, ni*nj)
+            ii <- findInterval(Z, breaks, left.open=TRUE)
+            ##colPolygon <- col[-1 + ii]
+            colPolygon <- col[ii]
+            colPolygon[!is.finite(Z)] <- missingColor
+            colPolygon[Z < min(breaks)] <- if (zclip) missingColor else colFirst
+            colPolygon[Z > max(breaks)] <- if (zclip) missingColor else colLast
+        } else {
+            stop("unknown options(mapPolygonMethod)")
+        }
         polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
                 col=colPolygon[r$okPolygon & !r$clippedPolygon],
-                border=border, lwd=lwd, lty=lty, fillOddEven=FALSE)
+                border=colPolygon[r$okPolygon & !r$clippedPolygon],
+                lwd=lwd, lty=lty, fillOddEven=FALSE)
     }
     oceDebug(debug, "} # mapImage()\n", unindent=1)
     invisible()

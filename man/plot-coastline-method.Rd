@@ -9,7 +9,7 @@
   clongitude, clatitude, span, lonlabel = NULL, latlabel = NULL,
   sides = NULL, projection = NULL, expand = 1,
   mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1), bg,
-  fill, border = NULL, col = "lightgray", axes = TRUE,
+  fill, type = "polygon", border = NULL, col = NULL, axes = TRUE,
   cex.axis = par("cex.axis"), add = FALSE, inset = FALSE,
   geographical = 0, longitudelim, latitudelim,
   debug = getOption("oceDebug"), ...)
@@ -50,7 +50,8 @@ in this case, it is not permitted to also specify \code{longitudelim} and
 The plotted span is usually close to the suggestion, although the details
 depend on the plot aspect ratio and other factors, so some adjustment may be
 required to fine-tune a plot.  A value for \code{span} must be supplied, if
-\code{clongitude} and \code{clatitude} are supplied (or inferred from \code{projection}).}
+\code{clongitude} and \code{clatitude} are supplied
+(or inferred from \code{projection}).}
 
 \item{lonlabel, latlabel, sides}{optional vectors of longitude and latitude to
 label on the indicated sides of plot, passed to
@@ -88,12 +89,16 @@ comes in handy for drawing insets (see \dQuote{details}).}
 \item{fill}{a legacy parameter that will be permitted only temporarily; see
 \dQuote{History}.}
 
-\item{border}{colour of coastlines and international borders (passed to
-\code{\link{polygon}}, which does the drawing).}
+\item{type}{indication of type; may be \code{"polygon"}, for a filled polygon,
+\code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
+overlain with line segments.}
 
-\item{col}{the colour with which to fill (passed to \code{\link{polygon}},
-which does the drawing.) This is ignored unless the coastline object is
-fillable.}
+\item{border}{colour of coastlines and international borders (ignored unless
+\code{type="polygon"}.}
+
+\item{col}{either the colour for filling polygons (if \code{type="polygon"})
+or the colour of the points and line segments (if \code{type="p"},
+\code{type="l"}, or \code{type="o"}).}
 
 \item{axes}{boolean, set to \code{TRUE} to plot axes.}
 
