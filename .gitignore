@@ -24,6 +24,7 @@ autom4te.cache
 *.zip
 *.csv
 test*.R
-
 *.out
 oce_[a-zA-Z]*.Rproj
+inst/doc
+

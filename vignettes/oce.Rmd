@@ -4,18 +4,11 @@ author: "Dan Kelley and Clark Richards"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
-    toc: true
-    number_sections: true
     fig_caption: yes
-    fig_width: 5
-    fig_height: 5
-    dpi: 72
-    dev.args: list(pointsize=11)
-
 vignette: >
   %\VignetteIndexEntry{oce}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 <!-- edit vignettes/oce.Rmd then run with -->
 <!-- devtools::build_vignettes() -->
