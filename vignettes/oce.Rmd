@@ -15,11 +15,11 @@ output:
 vignette: >
   %\VignetteIndexEntry{oce}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  \usepackage[utf8]{inputenc}
 ---
 <!-- edit vignettes/oce.Rmd then run with -->
 <!-- devtools::build_vignettes() -->
-<!-- in the console. -->
+<!-- in the console, when in the oce directory. -->
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
@@ -514,7 +514,7 @@ possibilities for plotting, including a cumulative spectrum that can be quite
 informative
 (use `help("plot,sealevel-method")` to learn more).
 
-```{r fig.cap="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=16)}
+```{r fig.cap="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour.", fig.width=5, fig.height=4, dpi=72, dev.args=list(pointsize=16)}
 library(oce)
 data(sealevel)
 plot(sealevel)
