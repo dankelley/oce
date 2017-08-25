@@ -26,5 +26,4 @@ autom4te.cache
 test*.R
 *.out
 oce_[a-zA-Z]*.Rproj
-inst/doc
 
