@@ -15,7 +15,6 @@ src-x86_64
 README.rst
 .Rhistory
 .gitignore
-inst/doc/oce.R
 ^.*\.Rproj$
 ^\.Rproj\.user$
 src/*.o$
