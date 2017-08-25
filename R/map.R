@@ -706,7 +706,10 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @param col either the colour for filling polygons (if \code{type="polygon"})
 #' or the colour of the points and line segments (if \code{type="p"},
-#' \code{type="l"}, or \code{type="o"}).
+#' \code{type="l"}, or \code{type="o"}). If \code{col=NULL} then a default
+#' will be set: no coastline filling for the \code{type="polygon"} case,
+#' or black coastlines, for \code{type="p"}, \code{type="l"}, or
+#' \code{type="o"}.
 #'
 #' @param type indication of type; may be \code{"polygon"}, for a filled polygon,
 #' \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
@@ -1194,8 +1197,14 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         y <- xy$y
     }
 
-    xrange <- range(x, na.rm=TRUE)
-    yrange <- range(y, na.rm=TRUE)
+    ## range gets caught up on Inf values, so we make tmp variables xtmp and ytmp
+    xtmp <- x
+    xtmp[!is.finite(x)] <- NA
+    ytmp <- y
+    ytmp[!is.finite(y)] <- NA
+    xrange <- range(xtmp, na.rm=TRUE)
+    yrange <- range(ytmp, na.rm=TRUE)
+    rm(xtmp, ytmp)
     if (any(!is.finite(xrange)) || any(!is.finite(yrange)))
         stop("All the data are 'on the other side of the world' for this map projection")
 
@@ -1242,7 +1251,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 if (is.null(border))
                     border <- "black"
                 if (is.null(col))
-                    col <- "lightgray"
+                    col <- "white"
                 polygon(x, y, border=border, col=col)
             } else {
                 if (is.null(col))
@@ -1260,7 +1269,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                 if (is.null(border))
                     border <- "black"
                 if (is.null(col))
-                    col <- "lightgray"
+                    col <- "white"
                 polygon(x, y, border=border, col=col)
             } else {
                 if (is.null(col))

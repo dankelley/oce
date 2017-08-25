@@ -54,7 +54,10 @@ most projections this works quite well.  If not, one may set
 
 \item{col}{either the colour for filling polygons (if \code{type="polygon"})
 or the colour of the points and line segments (if \code{type="p"},
-\code{type="l"}, or \code{type="o"}).}
+\code{type="l"}, or \code{type="o"}). If \code{col=NULL} then a default
+will be set: no coastline filling for the \code{type="polygon"} case,
+or black coastlines, for \code{type="p"}, \code{type="l"}, or
+\code{type="o"}.}
 
 \item{type}{indication of type; may be \code{"polygon"}, for a filled polygon,
 \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
