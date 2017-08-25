@@ -1196,6 +1196,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 
     xrange <- range(x, na.rm=TRUE)
     yrange <- range(y, na.rm=TRUE)
+    if (any(!is.finite(xrange)) || any(!is.finite(yrange)))
+        stop("All the data are 'on the other side of the world' for this map projection")
+
     oceDebug(debug, "xrange=", paste(xrange, collapse=" "), "\n")
     oceDebug(debug, "yrange=", paste(yrange, collapse=" "), "\n")
 
