@@ -1,15 +1,16 @@
 ---
-title: "oce"
+title: "Oce"
 author: "Dan Kelley and Clark Richards"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
     fig_caption: yes
 vignette: >
-  %\VignetteIndexEntry{oce}
+  %\VignetteIndexEntry{Oce}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  \usepackage[utf8]{inputenc}
 ---
+
 <!-- edit vignettes/oce.Rmd then run with -->
 <!-- devtools::build_vignettes() -->
 <!-- in the console, when in the oce directory. -->
