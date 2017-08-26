@@ -1,4 +1,4 @@
-^vignettes/figures$
+^vignettes/figure$
 ^build$
 _site
 TAGS

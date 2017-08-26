@@ -1,3 +1,4 @@
+^vignettes/figure$
 ^.*.org$
 .github
 .RData
