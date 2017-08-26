@@ -22,5 +22,5 @@
 #    grep -5 "Invalid read" valgrind_tests.out
 #
 
-cd .. ; echo 'library(oce); library(ocedata); library(testthat); test_check("oce")' | R --vanilla -d "valgrind --tool=memcheck --leak-check=full"
+cd .. ; echo 'library(oce); library(ocedata); library(testthat); test_check("oce")' | R --vanilla -d "valgrind --tool=memcheck --leak-check=full --track-origins=yes -v"
 
