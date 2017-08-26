@@ -1,3 +1,4 @@
+^build$
 ^.*.org$
 .github
 .RData
@@ -24,7 +25,6 @@ tests/testthat/*png
 tests/testthat/*pdf
 man/figures/Makefile
 man/figures/*.R
-vignettes
 tests_private
 tests/testthat/Rplots.pdf
 tests/testthat/test_local_*.R

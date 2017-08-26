@@ -21,7 +21,7 @@ Description: Supports the analysis of Oceanographic data, including 'ADCP'
 License: GPL (>= 2)
 Encoding: UTF-8
 URL: https://dankelley.github.io/oce
-LazyData: no
+LazyData: true
 RoxygenNote: 6.0.1
 BuildVignettes: true
 VignetteBuilder: knitr
