@@ -1,3 +1,4 @@
+^vignettes/figure$
 ^build$
 _site
 TAGS
