@@ -136,7 +136,7 @@ plot(trimmed)
 }
 \references{
 The Seabird CTD instrument is described at
-\url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
+\code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 
 Seasoft V2: SBE Data Processing, SeaBird Scientific, 05/26/2016
 }
