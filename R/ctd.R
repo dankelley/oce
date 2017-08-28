@@ -2055,7 +2055,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' @references
 #' The Seabird CTD instrument is described at
-#' \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
+#' \code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 #'
 #' Seasoft V2: SBE Data Processing, SeaBird Scientific, 05/26/2016
 #'
@@ -2425,7 +2425,7 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 #'
 #' @references
 #' The Seabird CTD instrument is described at
-#'   \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
+#'   \code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 #'
 #' @author Dan Kelley
 #'
