@@ -90,7 +90,7 @@ d <- read.ctd(f, columns=list(
 }
 \references{
 1. The Sea-Bird SBE 19plus profiler is described at
-\url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
+\code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
 information is given in the Sea-Bird data-processing manaual
 \url{http://www.seabird.com/document/sbe-data-processing-manual}.
 
