@@ -10,15 +10,24 @@
     function(new) if (!missing(new)) val <<- new else val
 })
 
-#' Local function to trace along box to see if any lon or lat lines can be
-#' excluded from consideration.
+#' Calculate lon-lat coordinates of plot-box trace
+#'
+#' Trace along the plot box, converting from xy coordinates to lonlat
+#' coordinates. The results are used by \code{\link{mapGrid}}
+#' and \code{\link{mapAxis}} to ignore out-of-frame grid
+#' lines and axis labels. 
 #' @param n number of points to check along each side of the plot box
 #' @template debugTemplate
-#' @return list containing lonmin, lonmax, latmin, latmax
-computeUsrLonLat <- function(n=25, debug=getOption("oceDebug"))
+#' @return a list containing \code{lonmin}, \code{lonmax},
+#' \code{latmin}, \code{latmax}, and \code{ok}; the last
+#' of which indicates whether at least one point on the plot box
+#' is invertable.
+#' @author Dan Kelley
+#' @family functions related to maps
+usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 {
     usr <- par("usr")
-    message("in mapGrid. usr=", paste(usr, collapse=" "))
+    oceDebug(debug, "usrLonLat(): usr=", paste(usr, collapse=" "), "\n", unindent=1, sep="")
     x <- c(seq(usr[1], usr[2], length.out=n),
            rep(usr[2], n), 
            seq(usr[2], usr[1], length.out=n),
@@ -27,20 +36,24 @@ computeUsrLonLat <- function(n=25, debug=getOption("oceDebug"))
            seq(usr[3], usr[4], length.out=n), 
            rep(usr[4], n),
            seq(usr[4], usr[3], length.out=n))
-    ##points(x, y, pch=20, cex=3, col=2)
+    if (debug > 2)
+        points(x, y, pch=20, cex=3, col=2)
     ll <- map2lonlat(x, y)
     ## Convert -Inf and +Inf to NA
     bad <- !is.finite(ll$longitude) | !is.finite(ll$latitude)
     ll$longitude[bad] <- NA
     ll$latitude[bad] <- NA
-    ##mapPoints(ll$longitude, ll$latitude, pch=20, cex=2, col=3)
+    if (debug > 2)
+        mapPoints(ll$longitude, ll$latitude, pch=20, cex=2, col=3)
     lonmin <- min(ll$longitude, na.rm=TRUE)
     lonmax <- max(ll$longitude, na.rm=TRUE)
     latmin <- min(ll$latitude, na.rm=TRUE)
     latmax <- max(ll$latitude, na.rm=TRUE)
     oceDebug(debug, sprintf("lonmin=%.3f, lonmax=%.3f, latmin=%.3f, latmax=%.3f\n",
                             lonmin, lonmax, latmin, latmax))
-    list(lonmin=lonmin, lonmax=lonmax, latmin=latmin, latmax=latmax)
+    oceDebug(debug, "} # usrLonLat()\n", unindent=1)
+    list(lonmin=lonmin, lonmax=lonmax, latmin=latmin, latmax=latmax,
+         ok=is.finite(lonmin)&&is.finite(lonmax)&&is.finite(latmin)&&is.finite(latmax))
 }
  
 #' Coordinate Reference System strings for some oceans
@@ -275,16 +288,28 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
              ", longitude=", if (length(longitude)) c(longitude[1], "...") else "NULL",
              ", latitude=", if (length(latitude)) c(latitude[1], "...") else "NULL",
              ") { \n", unindent=1, sep="")
+    boxLonLat <- usrLonLat()
     axis <- .axis()
     #if (debug > 0) print(axis)
     if (is.null(longitude) && is.null(latitude)) {
         longitude <- axis$longitude
         latitude <- axis$latitude
     }
-    message("mapAxis: longitude=", paste(longitude, collapse=" "))
-    message("mapAxis: latitude=", paste(latitude, collapse=" "))
     if (is.null(longitude) && is.null(latitude))
         return()
+    oceDebug(debug, "mapAxis: initially, longitude=", paste(longitude, collapse=" "), "\n")
+    if (!is.null(longitude)) {
+        ok <- boxLonLat$lonmin <= longitude & longitude <= boxLonLat$lonmax
+        longitude <- longitude[ok]
+    }
+    oceDebug(debug, "mapAxis: after box-trimming, longitude=", paste(longitude, collapse=" "), "\n")
+    oceDebug(debug, "mapAxis: initially, latitude=", paste(latitude, collapse=" "), "\n")
+    if (!is.null(latitude)) {
+        ok <- boxLonLat$latmin <= latitude & latitude <= boxLonLat$latmax
+        latitude <- latitude[ok]
+    }
+    oceDebug(debug, "mapAxis: after box-trimming, latitude=", paste(latitude, collapse=" "), "\n")
+
     ## if (is.null(axis$longitude)) oceDebug(debug, "should auto generate longitude grid and then axis\n")
     ## if (is.null(axis$latitude)) oceDebug(debug, "should auto generate latitude grid and then axis\n")
     ## if (missing(longitude)) longitude <- axis$longitude
@@ -1523,7 +1548,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     longitudelim, latitudelim,
                     debug=getOption("oceDebug"))
 {
-    usrLonLat <- computeUsrLonLat()
+    boxLonLat <- usrLonLat()
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     if (!missing(longitude) && is.null(longitude) && !missing(latitude) && is.null(latitude))
@@ -1595,7 +1620,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         oceDebug(debug, "drawing latitude line:")
     for (l in latitude) {
         ## FIXME: maybe we should use mapLines here
-        if (is.finite(l) && usrLonLat$latmin <= l & l <= usrLonLat$latmax) {
+        if (is.finite(l) && boxLonLat$latmin <= l & l <= boxLonLat$latmax) {
             if (debug > 0) cat(l, " ")
             line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
             x <- line$x
@@ -1637,7 +1662,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         oceDebug(debug, "drawing longitude line:")
     for (l in longitude) {
         ## FIXME: should use mapLines here
-        if (is.finite(l) && usrLonLat$lonmin <= l & l <= usrLonLat$lonmax) {
+        if (is.finite(l) && boxLonLat$lonmin <= l & l <= boxLonLat$lonmax) {
             if (debug > 0) cat(l, " ")
             line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
             x <- line$x
