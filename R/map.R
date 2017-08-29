@@ -10,6 +10,39 @@
     function(new) if (!missing(new)) val <<- new else val
 })
 
+#' Local function to trace along box to see if any lon or lat lines can be
+#' excluded from consideration.
+#' @param n number of points to check along each side of the plot box
+#' @template debugTemplate
+#' @return list containing lonmin, lonmax, latmin, latmax
+computeUsrLonLat <- function(n=25, debug=getOption("oceDebug"))
+{
+    usr <- par("usr")
+    message("in mapGrid. usr=", paste(usr, collapse=" "))
+    x <- c(seq(usr[1], usr[2], length.out=n),
+           rep(usr[2], n), 
+           seq(usr[2], usr[1], length.out=n),
+           rep(usr[1], n)) 
+    y <- c(rep(usr[3], n),
+           seq(usr[3], usr[4], length.out=n), 
+           rep(usr[4], n),
+           seq(usr[4], usr[3], length.out=n))
+    ##points(x, y, pch=20, cex=3, col=2)
+    ll <- map2lonlat(x, y)
+    ## Convert -Inf and +Inf to NA
+    bad <- !is.finite(ll$longitude) | !is.finite(ll$latitude)
+    ll$longitude[bad] <- NA
+    ll$latitude[bad] <- NA
+    ##mapPoints(ll$longitude, ll$latitude, pch=20, cex=2, col=3)
+    lonmin <- min(ll$longitude, na.rm=TRUE)
+    lonmax <- max(ll$longitude, na.rm=TRUE)
+    latmin <- min(ll$latitude, na.rm=TRUE)
+    latmax <- max(ll$latitude, na.rm=TRUE)
+    oceDebug(debug, sprintf("lonmin=%.3f, lonmax=%.3f, latmin=%.3f, latmax=%.3f\n",
+                            lonmin, lonmax, latmin, latmax))
+    list(lonmin=lonmin, lonmax=lonmax, latmin=latmin, latmax=latmax)
+}
+ 
 #' Coordinate Reference System strings for some oceans
 #'
 #' Create a coordinate reference string (CRS), suitable for use as a
@@ -248,6 +281,8 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
         longitude <- axis$longitude
         latitude <- axis$latitude
     }
+    message("mapAxis: longitude=", paste(longitude, collapse=" "))
+    message("mapAxis: latitude=", paste(latitude, collapse=" "))
     if (is.null(longitude) && is.null(latitude))
         return()
     ## if (is.null(axis$longitude)) oceDebug(debug, "should auto generate longitude grid and then axis\n")
@@ -1488,6 +1523,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     longitudelim, latitudelim,
                     debug=getOption("oceDebug"))
 {
+    usrLonLat <- computeUsrLonLat()
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     if (!missing(longitude) && is.null(longitude) && !missing(latitude) && is.null(latitude))
@@ -1501,10 +1537,6 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
              ", latitudelim=", if (missing(latitudelim)) "(missing)" else
                  paste("c(", paste(latitudelim, collapse=", "), ")"),
              ", debug) {\n", unindent=1, sep="")
-    if (missing(longitude) || !is.null(longitude))
-        oceDebug(debug, "will draw longitude lines\n")
-    if (missing(latitude) || !is.null(latitude))
-        oceDebug(debug, "will draw latitude lines\n")
     if (!missing(longitudelim) && !missing(longitude) && !is.null(longitude)) {
         longitudelim <- shiftLongitude(longitudelim)
         oceDebug(debug, "shifted longitudelim to c(",
@@ -1563,7 +1595,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         oceDebug(debug, "drawing latitude line:")
     for (l in latitude) {
         ## FIXME: maybe we should use mapLines here
-        if (is.finite(l)) {
+        if (is.finite(l) && usrLonLat$latmin <= l & l <= usrLonLat$latmax) {
             if (debug > 0) cat(l, " ")
             line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
             x <- line$x
@@ -1605,7 +1637,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         oceDebug(debug, "drawing longitude line:")
     for (l in longitude) {
         ## FIXME: should use mapLines here
-        if (is.finite(l)) {
+        if (is.finite(l) && usrLonLat$lonmin <= l & l <= usrLonLat$lonmax) {
             if (debug > 0) cat(l, " ")
             line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
             x <- line$x
