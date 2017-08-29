@@ -298,13 +298,13 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
     if (is.null(longitude) && is.null(latitude))
         return()
     oceDebug(debug, "mapAxis: initially, longitude=", paste(longitude, collapse=" "), "\n")
-    if (!is.null(longitude)) {
+    if (!is.null(longitude) && boxLonLat$ok) {
         ok <- boxLonLat$lonmin <= longitude & longitude <= boxLonLat$lonmax
         longitude <- longitude[ok]
     }
     oceDebug(debug, "mapAxis: after box-trimming, longitude=", paste(longitude, collapse=" "), "\n")
     oceDebug(debug, "mapAxis: initially, latitude=", paste(latitude, collapse=" "), "\n")
-    if (!is.null(latitude)) {
+    if (!is.null(latitude) && boxLonLat$ok) {
         ok <- boxLonLat$latmin <= latitude & latitude <= boxLonLat$latmax
         latitude <- latitude[ok]
     }
@@ -1620,7 +1620,9 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         oceDebug(debug, "drawing latitude line:")
     for (l in latitude) {
         ## FIXME: maybe we should use mapLines here
-        if (is.finite(l) && boxLonLat$latmin <= l & l <= boxLonLat$latmax) {
+        if (is.finite(l)) {
+            if (boxLonLat$ok && !(boxLonLat$latmin <= l & l <= boxLonLat$latmax))
+                next
             if (debug > 0) cat(l, " ")
             line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
             x <- line$x
@@ -1662,7 +1664,9 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         oceDebug(debug, "drawing longitude line:")
     for (l in longitude) {
         ## FIXME: should use mapLines here
-        if (is.finite(l) && boxLonLat$lonmin <= l & l <= boxLonLat$lonmax) {
+        if (is.finite(l)) {
+            if (boxLonLat$ok && !(boxLonLat$lonmin <= l & l <= boxLonLat$lonmax))
+                next
             if (debug > 0) cat(l, " ")
             line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
             x <- line$x
