@@ -1,3 +1,6 @@
+0.9-23
+- NA
+
 0.9-22
 - plot,section-method() can use external bathymetry
 - lowpass() added
