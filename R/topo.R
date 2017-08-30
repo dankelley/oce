@@ -191,7 +191,8 @@ setMethod(f="subset",
 #' with identical parameters will simply return the name of the cached file,
 #' assuming the user has not deleted it in the meantime.
 #' For convenience, if \code{destfile} is not
-#' given, then \code{download.topo} will construct a filename from the other arguments.
+#' given, then \code{download.topo} will construct a filename from the other arguments,
+#' rounding longitude and latitude limits to 0.01 degrees.
 #'
 #' @details
 #' The data are downloaded with \code{\link[utils]{download.file}}, using a URL
@@ -305,10 +306,10 @@ download.topo <- function(west, east, south, north, resolution,
         west <- west - 360
     if (east > 180)
         east <- east - 360
-    wName <- paste(abs(west), if (west <= 0) "W" else "E", sep="")
-    eName <- paste(abs(east), if (east <= 0) "W" else "E", sep="")
-    sName <- paste(abs(south), if (south <= 0) "S" else "N", sep="")
-    nName <- paste(abs(north), if (north <= 0) "S" else "N", sep="")
+    wName <- paste(abs(round(west,2)), if (west <= 0) "W" else "E", sep="")
+    eName <- paste(abs(round(east,2)), if (east <= 0) "W" else "E", sep="")
+    sName <- paste(abs(round(south,2)), if (south <= 0) "S" else "N", sep="")
+    nName <- paste(abs(round(north,2)), if (north <= 0) "S" else "N", sep="")
     resolutionName <- paste(resolution, "min", sep="")
     if (missing(destfile))
         destfile <- paste("topo", wName, eName, sName, nName, resolutionName, sep="_")
