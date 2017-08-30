@@ -54,7 +54,8 @@ data. Subsequent calls to \code{download.topo}
 with identical parameters will simply return the name of the cached file,
 assuming the user has not deleted it in the meantime.
 For convenience, if \code{destfile} is not
-given, then \code{download.topo} will construct a filename from the other arguments.
+given, then \code{download.topo} will construct a filename from the other arguments,
+rounding longitude and latitude limits to 0.01 degrees.
 }
 \details{
 The data are downloaded with \code{\link[utils]{download.file}}, using a URL
