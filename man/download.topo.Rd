@@ -97,21 +97,9 @@ which is also forced to track the moving target that is NOAA.
 \item December 2016.
 \samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
 
-\item June 2017.
+\item June-September 2017.
 \samp{https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
 }
-}
-
-\section{Warning}{
-
-All of the \code{download.*} functions are subject to change through the
-year 2017. The plan is to create individual functions
-as needs arise in everyday work, thereby discovering patterns of 
-arguments that might make sense more generally. Therefore, it is likely
-that argument order (and even name) may change up until approximately
-December 2016. Users are advised to refer to arguments by name,
-i.e. not to rely on their order, and they are asked for patience,
-because argument names and defaults may vary through the early development.
 }
 
 \examples{
@@ -132,7 +120,7 @@ lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
 2. Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
 Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
 NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
-[access date: Aug 20, 2016].
+[access date: Aug 30, 2017].
 }
 \seealso{
 The work is done with \code{\link[utils]{download.file}}.

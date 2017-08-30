@@ -323,8 +323,6 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @seealso The work is done with \code{\link[utils]{download.file}}.
 #'
-#' @template downloadWarningTemplate
-#'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
 #' \url{http://climate.weather.gc.ca/index_e.html}

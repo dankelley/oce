@@ -700,8 +700,6 @@ setMethod(f="plot",
 #'
 #' @seealso The work is done with \code{\link[utils]{download.file}}.
 #'
-#' @template downloadWarningTemplate
-#'
 #' @examples
 #'\dontrun{
 #' library(oce)
