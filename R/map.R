@@ -45,10 +45,10 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
     ll$latitude[bad] <- NA
     if (debug > 2)
         mapPoints(ll$longitude, ll$latitude, pch=20, cex=2, col=3)
-    lonmin <- min(ll$longitude, na.rm=TRUE)
-    lonmax <- max(ll$longitude, na.rm=TRUE)
-    latmin <- min(ll$latitude, na.rm=TRUE)
-    latmax <- max(ll$latitude, na.rm=TRUE)
+    lonmin <- if (any(is.finite(ll$longitude))) min(ll$longitude, na.rm=TRUE) else NA
+    lonmax <- if (any(is.finite(ll$longitude))) max(ll$longitude, na.rm=TRUE) else NA
+    latmin <- if (any(is.finite(ll$latitude))) min(ll$latitude, na.rm=TRUE) else NA
+    latmax <- if (any(is.finite(ll$latitude))) max(ll$latitude, na.rm=TRUE) else NA
     oceDebug(debug, sprintf("lonmin=%.3f, lonmax=%.3f, latmin=%.3f, latmax=%.3f\n",
                             lonmin, lonmax, latmin, latmax))
     oceDebug(debug, "} # usrLonLat()\n", unindent=1)
