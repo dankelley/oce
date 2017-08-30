@@ -1581,6 +1581,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                 xJumpMedian <- median(xJump, na.rm=TRUE)
                 if (!is.na(xJumpMedian)) {
                     horizontalJump <- c(FALSE, xJump > 3 * xJumpMedian)
+                    horizontalJump <- horizontalJump[!is.na(horizontalJump)]
                     if (any(horizontalJump)) {
                         x[horizontalJump] <- NA
                     }
@@ -2935,6 +2936,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             }
         } else if (method == 3) {
             colPolygon <- rep(missingColor, ni*nj)
+            breaks <- sort(breaks)
             ii <- findInterval(Z, breaks, left.open=TRUE)
             ##colPolygon <- col[-1 + ii]
             colPolygon <- col[ii]
