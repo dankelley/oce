@@ -269,13 +269,11 @@ setMethod(f="subset",
 #' \item December 2016.
 #' \samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
 #'
-#' \item June 2017.
+#' \item June-September 2017.
 #' \samp{https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
 #' }
 #'
 #' @seealso The work is done with \code{\link[utils]{download.file}}.
-#'
-#' @template downloadWarningTemplate
 #'
 #' @references
 #' 1. \samp{https://www.ngdc.noaa.gov/mgg/global/global.html}
@@ -283,7 +281,7 @@ setMethod(f="subset",
 #' 2. Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
 #' Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
 #' NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
-#' [access date: Aug 20, 2016].
+#' [access date: Aug 30, 2017].
 #'
 #' @family functions that download files
 #' @family things related to \code{topo} data

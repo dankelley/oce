@@ -424,8 +424,6 @@ setMethod(f="plot",
 #' there is a problem of any kind, the result will be the empty
 #' string.
 #'
-#' @template downloadWarningTemplate
-#'
 #' @examples
 #'\dontrun{
 #' ## The download takes several seconds.
