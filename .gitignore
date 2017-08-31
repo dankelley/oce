@@ -1,4 +1,3 @@
-inst/doc
 ^vignettes/figure$
 ^build$
 _site
