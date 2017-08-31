@@ -26,7 +26,7 @@
 #' @concept satellite
 #' @references
 #' 1. Information on the satellite, how to cite the data, etc. is
-#' provided at \url{http://www.remss.com/missions/amsr}.
+#' provided at \url{http://www.remss.com/missions/amsr.html}.
 #'
 #' 2. A simple interface for viewing and downloading data is at
 #' \url{http://images.remss.com/amsr/amsr2_data_daily.html}.
