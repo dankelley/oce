@@ -395,7 +395,8 @@ plot(GSg, which=c(1,99), map.xlim=c(-85,-(64+13/60)))
 
 **Exercise 4.** Draw a $T$-$S$ diagram for the section data, using black
 symbols to the east of 30W and gray symbols to the west, thus highlighting
-Mediterranean-derived waters. (Hint: use the accessor function `[[`.)
+Mediterranean-derived waters. Use `handleFlags()` to discard questionable
+data, and use the accessor function `[[`.
 
 **Exercise 5.** Plot dynamic height and geostrophic velocity across the Gulf
 Stream. (Hint: use the `swDynamicHeight()` function.)
@@ -675,7 +676,7 @@ effort, if they have knowledge of how nautical words such as *Pitch* and *Roll*
 and technical terms such as *Absolute Salinity* and *Potential Temperature*
 should be written in various languages.
 
-# Advanced use of oce
+# Extending oce
 
 ## Initializing oce objects
 
@@ -872,15 +873,19 @@ and quality.  This is all in a common pattern for open-source software.
 
 # Answers to exercises
 
-**Exercise 1.** Seawater properties.
+**Exercise 1.** Seawater properties. In the UNESCO system we
+may write
 ```{r fig.width=5, fig.height=5, fig.keep="none"}
 library(oce)
-swRho(34, 10, 100)
-swTheta(34, 10, 100)
-swRho(34, swTheta(34, 10, 100), 0)
-swRho(34, swTheta(34, 10, 100, 200), 200)
-plotTS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
+swRho(34, 10, 100, eos="unesco")
+swTheta(34, 10, 100, eos="unesco")
+swRho(34, swTheta(34, 10, 100, eos="unesco"), 0, eos="unesco")
+swRho(34, swTheta(34, 10, 100, 200, eos="unesco"), 200, eos="unesco")
+plotTS(as.ctd(c(30,40),c(-2,20),rep(0,2)), eos="unesco", grid=TRUE, col="white")
 ```
+and in the Gibbs SeaWater system, we use `eos="gws"` and must supply
+`longitude` and `latitude` arguments to the `sw*()` calls and also
+to the `as.ctd()` call.
 
 **Exercise 2.** Plot a profile of $\sigma_\theta$ and $N^2$, for the data in
 the pycnocline. (Hint: use `subset()`.)
@@ -942,14 +947,19 @@ dev.off()
 
 **Exercise 4.** Draw a $T$-$S$ diagram for the section data, using black
 symbols to the east of 30W and gray symbols to the west, thus highlighting
-Mediterranean-derived waters. (Hint: use the accessor function `[[`.)
+Mediterranean-derived waters.  Use `handleFlags()` to discard questionable
+data, and use the accessor function `[[`.
+
+We will use the Gibbs SeaWater system, so `as.ctd()` needs location information.
 
 ```{r fig.width=5, fig.height=5, fig.keep="none"}
 library(oce)
 data(section)
-ctd <- as.ctd(section[["salinity"]], section[["temperature"]], section[["pressure"]])
-col <- ifelse(section[["longitude"]] > -30, "black", "gray")
-plotTS(ctd, col=col)
+s <- handleFlags(section)
+ctd <- as.ctd(s[["salinity"]], s[["temperature"]], s[["pressure"]],
+              longitude=s[["longitude"]], latitude=s[["latitude"]])
+col <- ifelse(s[["longitude"]] > -30, "black", "gray")
+plotTS(ctd, col=col, eos="gsw")
 ```
 
 **Exercise 5.** Plot dynamic height and geostrophic velocity across the Gulf
