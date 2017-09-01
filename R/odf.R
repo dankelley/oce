@@ -962,7 +962,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
                 warning("using first of ", ltmp, " unique NULL_VALUEs")
                 tmp <- tmp[is.finite(tmp)]
                 NAvalue <- tmp[[1]]
-            } 
+            }
         } else {
             NAvalue <- NAvalue[[1]]
         }
@@ -1070,7 +1070,10 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     iflags <- grep("Flag", dnames)
     if (length(iflags)) {
         for (iflag in iflags) {
-            res@metadata$flags[[gsub("Flag", "", dnames[iflag])]] <- res@data[[iflag]]
+            fname <- gsub("Flag", "", dnames[iflag])
+            if (fname == "C")
+                fname <- "QC"
+            res@metadata$flags[[fname]] <- res@data[[iflag]]
             res@metadata$dataNamesOriginal[[iflag]] <- ""
         }
         ## remove flags from data, and then remove their orig names

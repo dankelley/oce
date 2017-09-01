@@ -229,7 +229,7 @@ test_that("Dalhousie-produced cnv file", {
 
 ## A file containing CTD data acquired in the Beaufort Sea in 2003.
 ## I am not sure if this was a standardized format, but I had to work
-## with these data so I added support for it.  The files end in .ctd, 
+## with these data so I added support for it.  The files end in .ctd,
 ## but oceMagic() recognizes them from the first line.  Note the trailing
 ## space in the sample data:
 ##
@@ -282,7 +282,7 @@ test_that("Beaufort sea data II", {
           expect_equal(d3[['salinity']][1:3], c(25.1637,25.1964,25.3011))
 })
 
-## An ODF file measured aboard CCGS SIGMA T, with 
+## An ODF file measured aboard CCGS SIGMA T, with
 ## Catherine Johnson as chief scientist.
 test_that("ODF file", {
           expect_warning(d4 <- read.ctd.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce")),
@@ -295,7 +295,7 @@ test_that("ODF file", {
           expect_equal(d4[["ship"]], "CCGS SIGMA T (Call Sign: unknown)")
           expect_equal(d4[["cruise"]], "Scotian Shelf")
           expect_equal(d4[["scientist"]], "Catherine Johnson")
-                                        #expect_null(d4[["waterDepth"]])
+          ## expect_null(d4[["waterDepth"]])
           expect_equal(d4[["latitude"]], 44.267500)
           expect_equal(d4[["longitude"]], -63.317500)
           expect_equal(d4[['pressure']][1:3], c(0.5, 1.5, 2.0))
@@ -303,7 +303,7 @@ test_that("ODF file", {
           expect_equal(d4[['salinity']][1:3], c(30.8514,30.8593,30.8596))
           ## there are some flagged data in this file
           expect_equal(d4[['pressure']][which(d4[['QCFlag']]!=0)], c(55.5, 60.5, 61.0 ,71.5))
-}) 
+})
 
 test_that("pressure accessor handles psi unit", {
           data(ctd)
@@ -356,14 +356,14 @@ test_that("as.ctd(rsk) transfers information properly", {
               expect_equal(rsk@metadata[[item]], ctd@metadata[[item]],
                            label=paste("checking metadata$", item, sep=""),
                            expected.label=rsk@metadata[[item]],
-                           info=paste("failed while checking metadata$", item, sep="")) 
+                           info=paste("failed while checking metadata$", item, sep=""))
           }
           for (item in names(rsk@data)) {
             if (item != "pressure")
               expect_equal(rsk@data[[item]], ctd@data[[item]],
                            label=paste("checking data$", item, sep=""),
                            expected.label=rsk@data[[item]],
-                           info=paste("failed while checking data$", item, sep="")) 
+                           info=paste("failed while checking data$", item, sep=""))
           }
           expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']])
           ctd <- as.ctd(rsk, pressureAtmospheric=1)
@@ -372,7 +372,7 @@ test_that("as.ctd(rsk) transfers information properly", {
 
 test_that("ctdFindProfiles", {
           data(ctd)
-          S <- ctd[["salinity"]] 
+          S <- ctd[["salinity"]]
           T <- ctd[["temperature"]]
           p <- ctd[["pressure"]]
           n <- 10                      # number of fake profiles
