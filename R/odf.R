@@ -398,6 +398,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             ##message("names[", i, "] = '", names[i], "'")
             if (1 == length(grep("^QQQQ", names[i])))
                 names[i] <- paste(names[i-1], "Flag", sep="")
+            if (substr(names[i], 1, 1) == "Q")
+                names[i] <- gsub("Q(.*)", "\\1Flag", names[i])
         }
     }
     oceDebug(debug, "STAGE 3 names: ", paste(names, collapse=" "), "\n")
@@ -549,7 +551,6 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
 #' @family things related to \code{odf} data
 ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 {
-    message("DAN")
     ## Stage 1. insert metadata (with odfHeader holding entire ODF header info)
     ## FIXME: add other types, starting with ADCP perhaps
     isCTD <- FALSE
@@ -626,6 +627,8 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
             }
         }
     }
+    ## FIXME: accept the IML-style flags, e.g. QPSAL for salinity
+
     ## use old (FFFF) flag if there is no modern (QCFF) flag
     ##if ("overall2Flag" %in% names && !("flag" %in% names))
     ##    names <- gsub("flagArchaic", "flag", names)
@@ -803,7 +806,6 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         ODFnames <- c(ODFnames, NAME)
         ODFunits <- c(ODFunits, UNITS)
         ODForiginalNames <- c(ODForiginalNames, CODE)
-
 
         ##> for (ll in seq.int(l+1, min(l+100, nlines))) {
         ##>     ## message("; ll=", ll)
