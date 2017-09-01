@@ -296,7 +296,9 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
 #' @references
 #' 1. The Department of Fisheries and Oceans Common Data Dictionary may be
 #' available at \code{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
-#' although that link seems to be unreliable.
+#' although that link seems to be unreliable. As of September 2017, the
+#' link \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
+#' seems to be a good place to start.
 #' @family things related to \code{odf} data
 ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                               columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
@@ -702,9 +704,12 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' @seealso \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
 #' package is released by the Canadian Department of Fisheries and Oceans.
 #'
-#' @references Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+#' @references [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
 #' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 #' in June 2011.)
+#'
+#' [2] The St Lawrence Global Observatory website has information on ODF format at
+#' \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
 #'
 #' @family things related to \code{odf} data
 read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
