@@ -296,7 +296,9 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
 #' @references
 #' 1. The Department of Fisheries and Oceans Common Data Dictionary may be
 #' available at \code{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
-#' although that link seems to be unreliable.
+#' although that link seems to be unreliable. As of September 2017, the
+#' link \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
+#' seems to be a good place to start.
 #' @family things related to \code{odf} data
 ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                               columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
@@ -398,6 +400,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             ##message("names[", i, "] = '", names[i], "'")
             if (1 == length(grep("^QQQQ", names[i])))
                 names[i] <- paste(names[i-1], "Flag", sep="")
+            if (substr(names[i], 1, 1) == "Q")
+                names[i] <- gsub("Q(.*)", "\\1Flag", names[i])
         }
     }
     oceDebug(debug, "STAGE 3 names: ", paste(names, collapse=" "), "\n")
@@ -549,7 +553,6 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
 #' @family things related to \code{odf} data
 ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 {
-    message("DAN")
     ## Stage 1. insert metadata (with odfHeader holding entire ODF header info)
     ## FIXME: add other types, starting with ADCP perhaps
     isCTD <- FALSE
@@ -626,6 +629,8 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
             }
         }
     }
+    ## FIXME: accept the IML-style flags, e.g. QPSAL for salinity
+
     ## use old (FFFF) flag if there is no modern (QCFF) flag
     ##if ("overall2Flag" %in% names && !("flag" %in% names))
     ##    names <- gsub("flagArchaic", "flag", names)
@@ -699,9 +704,12 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' @seealso \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
 #' package is released by the Canadian Department of Fisheries and Oceans.
 #'
-#' @references Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+#' @references [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
 #' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 #' in June 2011.)
+#'
+#' [2] The St Lawrence Global Observatory website has information on ODF format at
+#' \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
 #'
 #' @family things related to \code{odf} data
 read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
@@ -803,7 +811,6 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         ODFnames <- c(ODFnames, NAME)
         ODFunits <- c(ODFunits, UNITS)
         ODForiginalNames <- c(ODForiginalNames, CODE)
-
 
         ##> for (ll in seq.int(l+1, min(l+100, nlines))) {
         ##>     ## message("; ll=", ll)
@@ -960,7 +967,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
                 warning("using first of ", ltmp, " unique NULL_VALUEs")
                 tmp <- tmp[is.finite(tmp)]
                 NAvalue <- tmp[[1]]
-            } 
+            }
         } else {
             NAvalue <- NAvalue[[1]]
         }
@@ -1068,7 +1075,10 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     iflags <- grep("Flag", dnames)
     if (length(iflags)) {
         for (iflag in iflags) {
-            res@metadata$flags[[gsub("Flag", "", dnames[iflag])]] <- res@data[[iflag]]
+            fname <- gsub("Flag", "", dnames[iflag])
+            if (fname == "C")
+                fname <- "QC"
+            res@metadata$flags[[fname]] <- res@data[[iflag]]
             res@metadata$dataNamesOriginal[[iflag]] <- ""
         }
         ## remove flags from data, and then remove their orig names

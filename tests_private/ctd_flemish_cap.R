@@ -2,6 +2,8 @@ library(oce)
 require(testthat)
 options(width=100)                     # makes summaries easier to read
 options(warn=2)                        # die to reveal unknown SBE names
+Sys.setenv(TZ="America/Halifax")       # without a TZ, problems on macos high-sierra beta
+
 years <- 2011:2014
 path <- paste("/data/flemishCap/CTD/", years, sep="")
 files <- list.files(path=path, pattern=".cnv", full.names=TRUE)
