@@ -2611,7 +2611,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' CTD is in profiling mode (i.e. if \code{deploymentType} in the \code{metadata}
 #' slot equals \code{"profile"},
 #' or is missing) or
-#' \code{"thermosalinograph"}, the default will be \code{c(30, 3, 31, 5)}.  If it
+#' \code{"moored"}/\code{"thermosalinograph"}, the default will be \code{c(30, 3, 31, 5)}.  If it
 #' is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as
 #' follows.
 #'
@@ -2651,6 +2651,10 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'     \item \code{which=17} or \code{which="conductivity"} gives a conductivity profile
 #'     \item \code{which=20} or \code{which="CT"} gives a Conservative Temperature profile
 #'     \item \code{which=21} or \code{which="SA"} gives an Absolute Salinity profile
+#'     \item \code{which=30} gives a time series of Salinity
+#'     \item \code{which=31} gives a time series of Temperature
+#'     \item \code{which=32} gives a time series of pressure
+#'     \item \code{which=33} gives a time series of sigmaTheta
 #' }
 #'
 #' @param col Colour of lines or symbols.
