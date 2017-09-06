@@ -1046,8 +1046,9 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 #' Find indices of times in an ordered vector
 #'
 #' The indices point to the largest items in \code{x} that are less than or
-#' equal the values in \code{f}.  The method uses a bisection search, so the
-#' time taken is proportional to \code{length(f) * log2(length(x))}.
+#' equal the values in \code{f}.  This works by simply calling
+#' \code{\link{findInterval}(x=f, vec=x)}, and users are probably
+#' better off using \code{\link{findInterval}} directly.
 #'
 #' @param x a numeric vector, in increasing order by value.
 #' @param f a numeric vector of items whose indices are sought.
@@ -1058,11 +1059,7 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 #' findInOrdered(seq(0, 10, 1), c(1.2, 7.3))
 findInOrdered <- function(x, f)
 {
-    if (missing(x))
-        stop("'x' missing")
-    if (missing(f))
-        stop("'f' missing")
-    .Call("bisect", x, f)
+    findInterval(f, x)
 }
 
 
