@@ -20,14 +20,15 @@ The next CRAN release of \sQuote{oce} will designate these functions as
 "defunct".
 
 \tabular{lll}{
-\strong{Deprecated}    \tab \strong{Replacement}              \tab \strong{Notes}\cr
-\code{mapZones}        \tab \code{\link{mapGrid}}             \tab Deprecated 2016-02-13\cr
-\code{mapMeridians}    \tab \code{\link{mapGrid}}             \tab Deprecated 2016-02-13\cr
-\code{addColumn}       \tab \code{\link{oceSetData}}          \tab Deprecated 2016-08-01\cr
-\code{oce.magic}       \tab \code{\link{oceMagic}}            \tab Deprecated 2016-09-01\cr
-\code{ctdAddColumn}    \tab \code{\link{oceSetData}}          \tab Deprecated 2016-11-11\cr
-\code{ctdUpdateHeader} \tab -                                 \tab Deprecated 2016-11-11\cr
-\code{oce.as.POSIXlt}  \tab \code{\link[lubridate]{parse_date_time}} \tab Deprecated 2016-12-17\cr
+\strong{Deprecated}       \tab \strong{Replacement}            \tab \strong{Notes}\cr
+\code{findInOrdered(x,f)} \tab \code{\link{findInterval}(f,x)} \tab Deprecated 2017-09-07\cr
+\code{mapZones}           \tab \code{\link{mapGrid}}           \tab Deprecated 2016-02-13\cr
+\code{mapMeridians}       \tab \code{\link{mapGrid}}           \tab Deprecated 2016-02-13\cr
+\code{addColumn}          \tab \code{\link{oceSetData}}        \tab Deprecated 2016-08-01\cr
+\code{oce.magic}          \tab \code{\link{oceMagic}}          \tab Deprecated 2016-09-01\cr
+\code{ctdAddColumn}       \tab \code{\link{oceSetData}}        \tab Deprecated 2016-11-11\cr
+\code{ctdUpdateHeader}    \tab -                               \tab Deprecated 2016-11-11\cr
+\code{oce.as.POSIXlt}     \tab \code{\link[lubridate]{parse_date_time}} \tab Deprecated 2016-12-17\cr
 }
 
 The following are marked "defunct", so calling them in the
@@ -39,6 +40,13 @@ be slated for outright deletion in a subsequent release.
 \strong{Defunct}   \tab \strong{Replacement}     \tab \strong{Notes}\cr
 \code{makeSection} \tab \code{\link{as.section}} \tab Improve utility and name sensibility\cr
 \code{columns}     \tab \code{\link{read.ctd}}   \tab Unnecessary; never worked\cr
+}
+
+The following were removed in recent years.
+
+\tabular{lll}{
+\strong{Function}  \tab \strong{Replacement}     \tab \strong{Notes}\cr
+FILL IN           \tab FILL IN                  \tab FILL IN
 }
 
 Several \sQuote{oce} function arguments are considered "deprecated", which

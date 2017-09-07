@@ -1043,7 +1043,13 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 }
 
 
-#' Find indices of times in an ordered vector
+#' Find indices of times in an ordered vector [deprecated]
+#'
+#' \strong{WARNING:} This function will be removed soon;
+#' see \link{oce-deprecated}.  The replacement is trivial:
+#' just change a call like e.g. \code{findInOrdered(x,f)}
+#' to \code{\link{findInterval}(f,x)} (which is what the function
+#' started doing, on 2017-09-07, after a major bug was found).
 #'
 #' The indices point to the largest items in \code{x} that are less than or
 #' equal the values in \code{f}.  This works by simply calling
@@ -1059,6 +1065,8 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 #' findInOrdered(seq(0, 10, 1), c(1.2, 7.3))
 findInOrdered <- function(x, f)
 {
+    .Deprecated("mapGrid",
+                msg="findInOrdered(f,x) will be removed soon; use findInterval(f,x) instead. See ?'oce-deprecated'.")
     findInterval(f, x)
 }
 
