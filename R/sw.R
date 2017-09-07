@@ -60,8 +60,10 @@ lookWithin <- function(list)
         }
         if (inherits(list1, "ctd")) {
             nrows <- length(list[[names[1]]])
-            list[["longitude"]] <- rep(list[["longitude"]][1], nrows)
-            list[["latitude"]] <- rep(list[["latitude"]][1], nrows)
+            if (length(list[["longitude"]]))
+                list[["longitude"]] <- rep(mean(list[["longitude"]], na.rm=TRUE), nrows)
+            if (length(list[["latitude"]]))
+                list[["latitude"]] <- rep(mean(list[["latitude"]], na.rm=TRUE), nrows)
         }
         ## FIXME: should special-case some other object types
     }
@@ -1551,13 +1553,13 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePre
    if (missing(salinity)) stop("must provide salinity")
     if (eos == "gsw") {
         if (inherits(salinity, "oce")) {
-            if (missing(longitude)) 
+            if (is.null(longitude)) 
                 longitude <- salinity[["longitude"]]
-            if (missing(latitude)) 
+            if (is.null(latitude)) 
                 latitude <- salinity[["latitude"]]
         } else {
-            if (missing(longitude)) stop("must supply longitude")
-            if (missing(latitude)) stop("must supply latitude")
+            if (is.null(longitude)) stop("must supply longitude")
+            if (is.null(latitude)) stop("must supply latitude")
         }
         l <- lookWithin(list(salinity=salinity, temperature=temperature, pressure=pressure,
                              longitude=longitude, latitude=latitude, eos=eos))

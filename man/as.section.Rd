@@ -43,14 +43,15 @@ mode is preferred, because it permits the storage of much more data and metadata
 in the CTD object.
 
 Case 2. If the first argument is a list containing oce objects, then those
-objects are taken as profiles of something.  The only requirement for this
-to work are that every element of the list must contain both \code{longitude}
-and latitude in its \code{metadata} slot and that every element also contains
-\code{pressure} in its \code{data} slot.
+objects are taken as profiles of something.  A requirement for this
+to work is that every element of the list contains both \code{longitude}
+and \code{latitude} in either the \code{metadata} or \code{data} slot (in
+the latter case, the mean value is recorded in the section object)
+and that every element also contains \code{pressure} in its \code{data} slot.
 
-Case 3. If the first argument is a \code{\link{argo-class}} object, then the profiles it
-contains are turned into \code{\link{ctd-class}} objects, and these are assembled
-into a section to be returned.
+Case 3. If the first argument is a \code{\link{argo-class}} object, then
+the profiles it contains are turned into \code{\link{ctd-class}} objects,
+and these are assembled into a section to be returned.
 }
 \examples{
 library(oce)
