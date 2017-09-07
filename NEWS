@@ -1,4 +1,5 @@
 0.9-23
+- deprecate findInOrdered()
 - fix bug in findInOrdered()
 
 0.9-22
