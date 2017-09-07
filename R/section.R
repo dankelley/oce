@@ -1313,7 +1313,11 @@ setMethod(f="plot",
                                          col=par("col"),
                                          ...)
               {
-                  oceDebug(debug, "plotSubsection(variable=\"", variable, "\", eos=\"", eos, "\", ztype=\"", ztype, "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
+                  oceDebug(debug, "plotSubsection(variable=\"", variable,
+                           "\", eos=\"", eos,
+                           "\", ztype=\"", ztype,
+                           "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
+                           "\", span=", if (missing(span)) "(missing)" else span,
                            ", axes=", axes, ", ...) {\n", sep="", unindent=1)
                   ztype <- match.arg(ztype)
                   drawPoints <- "points" == ztype
@@ -1976,7 +1980,7 @@ setMethod(f="plot",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
-                      } else {
+                      } else if (which[w] != "map" && which[w] != 99) {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          which[w], which[w], eos=eos, # ylab="",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
@@ -1987,7 +1991,7 @@ setMethod(f="plot",
                   if (!is.na(which[w]) && which[w] == 20)
                       plotSubsection(xx, yy, zz, which.xtype, which.ytype, "data", "", unit=unit,
                                      xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
-                  if (!is.na(which[w]) && which[w] == 99) {
+                  if (!is.na(which[w]) && (which[w] == 99 || which[w] == "map")) {
                       plotSubsection(xx, yy, zz, which.xtype, which.ytype, "map", unit=unit,
                                      indicate.stations=FALSE,
                                      clongitude=clongitude, clatitude=clatitude, span=span,
