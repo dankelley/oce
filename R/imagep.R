@@ -839,7 +839,11 @@ imagep <- function(x, y, z,
     xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
     zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot,adp-method
-    xlimGiven <- !missing(xlim)
+    ## Guard against poor setup
+    if (xlimGiven && length(xlim) != 2) stop("length of xlim must be 2")
+    if (ylimGiven && length(ylim) != 2) stop("length of ylim must be 2")
+    if (zlimGiven && length(zlim) != 2) stop("length of zlim must be 2")
+
     if (zlimGiven && is.character(zlim)) {
         if ("symmetric" == zlim) {
             zlim <- c(-1, 1) * max(abs(z), na.rm=TRUE)
