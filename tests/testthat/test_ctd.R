@@ -93,7 +93,7 @@ test_that("as.ctd() with an argo object, by profile", {
 
 
 test_that("ctd subsetting and trimming", {
-          ## NOTE: this is brittle to changes in data(ctd), but that's a good thing, becausing
+          ## NOTE: this is brittle to changes in data(ctd), but that's a good thing, because
           ## changing the dataset should be done only when really necessary, e.g. the July 2015
           ## transition to use ITS-90 based temperature (because IPTS-68 was not
           ## yet handled by oce at that time), and the April 2016
@@ -116,12 +116,21 @@ test_that("ctd subsetting and trimming", {
           scanRange <- range(ctd[['scan']])
           newScanRange <- c(scanRange[1] + 20, scanRange[2] - 20)
           ctdTrimmed <- ctdTrim(ctd, "scan", parameters=newScanRange)
+          ## below are the data at the top of this trim spot
+          ## 150    149.000      6.198      6.148    11.7372    30.8882  0.000e+00
+          ## 151    150.000      6.437      6.384    11.6331    30.9301  0.000e+00
+          ## 152    151.000      6.770      6.715    11.4273    30.8928  0.000e+00
           expect_equal(ctdTrimmed[["scan"]][1:3], c(150,151,152))
           expect_equal(ctdTrimmed[["salinity"]][1:3], c(30.8882,30.9301,30.8928))
           expect_equal(ctdTrimmed[["pressure"]][1:3], c(6.198,6.437,6.770))
-          ## next changed in Dec 21, 2016, when data(ctd) was switched to ITS-90, to match data(ctdRaw)
-          expect_equal(ctdTrimmed[["temperature"]][1:3], c(11.7315681715393,11.6275181215566,11.4218168700057))
-          ## next is form a test for issue 669
+          ## The next two lines check on whether the data in the object match
+          ## exactly the data file, and then whether the accessor converts from
+          ## the old temperature scale that is in the data file to the new one
+          ## that formulas are based on. There are changes here to account for
+          ## a change to data(ctd) that addressed a bug discussed in issue 1293.
+          expect_equal(ctdTrimmed@data$temperature[1:3], c(11.7372,11.6331,11.4273))
+          expect_equal(ctdTrimmed[["temperature"]][1:3], T90fromT68(c(11.7372,11.6331,11.4273)))
+          ## next is from a test for issue 669
           n <- length(ctd[["salinity"]])
           set.seed(669)
           lon <- ctd[["longitude"]] + rnorm(n, sd=0.05)
@@ -223,8 +232,16 @@ test_that("Dalhousie-produced cnv file", {
           expect_equal(d1[["longitude"]], -(63+38.633/60))
           expect_equal(d1[['salinity']][1:3], c(29.9210, 29.9205, 29.9206))
           expect_equal(d1[['pressure']][1:3], c(1.480, 1.671, 2.052))
-          ## FIXME: check on IPTS-68 vs ITS-90 issue (changed following numbers 2016-05-06)
+          ## Check on IPTS-68 vs ITS-90 issue[s]
+          expect_equal(d1@data$temperature[1:3], c(14.2245, 14.2299, 14.2285))
           expect_equal(d1[['temperature']][1:3], c(14.22108694, 14.22648564, 14.22508598))
+          ## Check that what we read here matches exactly data(ctd), as an
+          ## ensurance that any code changes to read.ctd.sbe() are always
+          ## followed by updates to data(ctd) via "make clean ; make ; make
+          ## install" carried out by the Makefile in the create_data/ctd directory.
+          expect_equal(d1@data$temperature, ctd@data$temperature)
+          expect_equal(d1[["temperature"]], ctd[["temperature"]])
+
 })
 
 ## A file containing CTD data acquired in the Beaufort Sea in 2003.
