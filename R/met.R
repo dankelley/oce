@@ -332,7 +332,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @family functions that download files
 #' @family things related to \code{met} data
-download.met <- function(id, year, month, deltat, destdir="~/data/met", destfile,
+download.met <- function(id, year, month, deltat, destdir=".", destfile,
                          debug=getOption("oceDebug"))
 {
     if (missing(id))
