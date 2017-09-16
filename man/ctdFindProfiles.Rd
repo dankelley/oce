@@ -29,11 +29,15 @@ simple first difference, set \code{smoother} to \code{NULL}.}
 
 \item{direction}{String indicating the travel direction to be selected.}
 
-\item{breaks}{optional logical vector indicating the indices of data
-at the edges of profiles. If this is given, then the preceding arguments
-\code{cutoff} through \code{direction} are ignored. This argument
-can be handy when the other scheme fails, because it gives complete
-control to the user (example 3).}
+\item{breaks}{optional integer vector indicating the indices of last
+datum in each profile stored within \code{x}. Thus, the first profile
+in the return value will contain the \code{x} data from indices 1
+to \code{breaks[1]}.  If \code{breaks} is given, then all
+other arguments except \code{x} are ignored. Using \code{breaks}
+is handy in cases where other schemes fail, or when the author
+has independent knowledge of how the profiles are strung together
+in \code{x}; see example 3 for how \code{breaks} might be used
+for towyo data.}
 
 \item{arr.ind}{Logical indicating whether the array indices should be returned;
 the alternative is to return a vector of ctd objects.}

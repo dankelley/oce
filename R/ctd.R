@@ -1735,11 +1735,15 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #'
 #' @param direction String indicating the travel direction to be selected.
 #'
-#' @param breaks optional logical vector indicating the indices of data
-#' at the edges of profiles. If this is given, then the preceding arguments
-#' \code{cutoff} through \code{direction} are ignored. This argument
-#' can be handy when the other scheme fails, because it gives complete
-#' control to the user (example 3).
+#' @param breaks optional integer vector indicating the indices of last
+#' datum in each profile stored within \code{x}. Thus, the first profile
+#' in the return value will contain the \code{x} data from indices 1
+#' to \code{breaks[1]}.  If \code{breaks} is given, then all
+#' other arguments except \code{x} are ignored. Using \code{breaks}
+#' is handy in cases where other schemes fail, or when the author
+#' has independent knowledge of how the profiles are strung together
+#' in \code{x}; see example 3 for how \code{breaks} might be used
+#' for towyo data.
 #'
 #' @param arr.ind Logical indicating whether the array indices should be returned;
 #' the alternative is to return a vector of ctd objects.
@@ -1901,13 +1905,12 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
         oceDebug(debug, "end:", head(end[keep]), "... (using minHeight)\n")
         indices <- data.frame(start=start[keep], end=end[keep])
     } else {
-        ## handle case where 'breaks' was given
-        indices <- data.frame(start=c(1, breaks+1), end=c(breaks-1, length(x[['pressure']])))
+        ## Obey user-defined breaks but note what we do by adding and subtracting
+        ## 1 just after ... this is because of what we do with "e", ~13 lines below.
+        indices <- data.frame(start=c(1, breaks+1), end=c(breaks, length(x[['pressure']])))
+        indices$start <- indices$start + 1 
+        indices$end <- indices$end - 1 
     }
-    ## if (debug>100) {                   # HIDDEN feature, may be removed at any time
-    ##     abline(v=start, col='green', lwd=2)
-    ##     abline(v=end, col='red', lwd=2)
-    ## }
 
     if (is.logical(arr.ind) && arr.ind) {
         oceDebug(debug, "} # ctdFindProfiles()\n", sep="", unindent=1)
@@ -1918,9 +1921,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
         npts <- length(x@data$pressure)
         for (i in 1:ncasts) {
             oceDebug(debug, "profile", i, "of", ncasts, "\n")
-            ## oceDebug(debug, "indices$start: ", paste(head(indices$start), collapse=" "))
-            ## oceDebug(debug, "indices$end: ", paste(head(indices$end), collapse=" "))
-            ## extend indices to catch turnaround spots
+            ## Extend indices to catch turnaround spots (see ~13 lines above)
             e <- 1
             iStart <- max(1L, indices$start[i] - e)
             iEnd <- min(npts, indices$end[i] + e)
