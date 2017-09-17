@@ -4,7 +4,7 @@
 \alias{download.met}
 \title{Download and Cache a met File}
 \usage{
-download.met(id, year, month, deltat, destdir = "~/data/met", destfile,
+download.met(id, year, month, deltat, destdir = ".", destfile,
   debug = getOption("oceDebug"))
 }
 \arguments{

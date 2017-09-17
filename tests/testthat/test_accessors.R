@@ -43,9 +43,9 @@ test_that("retrieve units", {
           ## pre 20160430 expect_equal(ctd[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
           ## pre 20160430 expect_equal(ctd[["temperature unit"]], expression(degree*C))
           ## pre 20160430 expect_equal(ctd[["temperature scale"]], "ITS-90")
-          expect_equal(ctd[["temperatureUnit"]], list(unit=expression(degree*C), scale="ITS-90"))
+          expect_equal(ctd[["temperatureUnit"]], list(unit=expression(degree*C), scale="IPTS-68"))
           expect_equal(ctd[["temperature unit"]], expression(degree*C))
-          expect_equal(ctd[["temperature scale"]], "ITS-90")
+          expect_equal(ctd[["temperature scale"]], "IPTS-68")
           expect_equal(ctd[["pressureUnit"]], list(unit=expression(dbar), scale=""))
           expect_equal(ctd[["pressure unit"]], expression(dbar))
           expect_equal(ctd[["pressure scale"]], "")
@@ -75,7 +75,7 @@ test_that("can use original names", {
           expect_equal(ctd[["time"]], as.POSIXct("2003-10-15 11:38:38", tz="UTC"))
           expect_equal(ctd[["pressure"]], ctd[["pr"]])
           expect_equal(ctd[["depth"]], ctd[["depS"]])
-          expect_equal(ctd[["temperature"]], ctd[["t068"]])
+          expect_equal(ctd[["temperature"]], T90fromT68(ctd[["t068"]]))
           expect_equal(ctd[["salinity"]], ctd[["sal00"]])
 })
 
@@ -120,13 +120,10 @@ test_that("derived quantities handled properly (ctd)", {
           ctd[["S"]] <- ctd[["S"]] + 0.01 # alter S
           ## next values are just what I got from these data, i.e. they only
           ## form a consistency check, if the data or if swTheta() ever change.
-          expect_equal(head(swTheta(ctd, eos="unesco")), c(14.22088184, 14.22625401,
-                                             14.22480154, 14.22187581,
-                                             14.22632183, 14.23281351))
-          ## may as well try with both EOSs. Start with the default.
-          expect_equal(swTheta(ctd), swTheta(ctd[["salinity"]],
-                                             ctd[["temperature"]],
-                                             ctd[["pressure"]]))
+          expect_equal(head(swTheta(ctd, eos="unesco")),
+                       c(14.2242948612084, 14.2296683217362, 14.2282155138992,
+                         14.2252890748517, 14.2297361749213, 14.2362294084130)) 
+          ## Try both EOSs; need loction for GSW
           expect_equal(swTheta(ctd, eos="unesco"), swTheta(ctd[["salinity"]],
                                              ctd[["temperature"]],
                                              ctd[["pressure"]], eos="unesco"))

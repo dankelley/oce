@@ -6,8 +6,9 @@
 #' the present function is based on inspection of a suite of CNV files
 #' available to the \code{oce} developers.
 #'
-#' A few sample header lines to be decoded are as follows.
+#' A few sample header lines that have been encountered are:
 #'\preformatted{
+#' # name 4 = t068: temperature, IPTS-68 [deg C]
 #' # name 3 = t090C: Temperature [ITS-90, deg C]
 #' # name 4 = t190C: Temperature, 2 [ITS-90, deg C]
 #'}
@@ -16,13 +17,13 @@
 #' and "\code{:}" characters, because the material after the colon
 #' seems to vary more between sample files.
 #'
-#' The table given below indicates the translation patterns used. These are 
+#' The table given below indicates the translation patterns used. These are
 #' taken from [1]. The \code{.cnv} convention for multiple sensors is to
 #' include optional extra digits in the name, and these are indicated
 #' with \code{~} in the table; their decoding is done with \code{\link{grep}}.
 #'
 #' It is important to note that this table is by no means complete, since there
-#' are a great many SBE names listed in their document [1], plus names 
+#' are a great many SBE names listed in their document [1], plus names
 #' not listed there but present in data files
 #' supplied by prominent archiving agencies. If an SBE name is not recogized,
 #' then the oce name is set to that SBE name. This can cause problems in
@@ -121,10 +122,11 @@
 #'   \code{specc}       \tab \code{conductivity}                 \tab uS/cm                \tab   \cr
 #'   \code{sva}         \tab \code{specificVolumeAnomaly}        \tab 1e-8 m^3/kg;         \tab   \cr
 #'   \code{svCM~}       \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
-#'   \code{T2~68C}      \tab \code{temperatureDifference}        \tab degC; IPTS-68        \tab   \cr 
-#'   \code{T2~90C}      \tab \code{temperatureDifference}        \tab degC; ITS-90         \tab   \cr 
-#'   \code{t~68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
-#'   \code{t~90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
+#'   \code{T2~68C}      \tab \code{temperatureDifference}        \tab degC; IPTS-68        \tab   \cr
+#'   \code{T2~90C}      \tab \code{temperatureDifference}        \tab degC; ITS-90         \tab   \cr
+#'   \code{t~68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+#'   \code{t~90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+#'   \code{t~68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t~68C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t~90C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{t090Cm}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
@@ -395,10 +397,10 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
     } else if (1 == length(grep("^potemp[0-9]*68C$", name, useBytes=TRUE))) {
         name <- "theta"
-        unit <- list(unit=expression(degree*C), scale="ITS-68") # FIXME: guess on scale
+        unit <- list(unit=expression(degree*C), scale="ITS-68")
     } else if (1 == length(grep("^potemp[0-9]*90C$", name, useBytes=TRUE))) {
         name <- "theta"
-        unit <- list(unit=expression(degree*C), scale="ITS-90") # FIXME: guess on scale
+        unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (1 == length(grep("^pumps$", name, useBytes=TRUE))) {
         name <- "pumpStatus"
         unit <- list(unit=expression(), scale="")
@@ -603,20 +605,40 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' @details
 #' This function reads files stored in Seabird \code{.cnv} format.
 #' Note that these files can contain multiple sensors for a given field. For example,
-#' the file might contain a column named \code{t090C} for one 
+#' the file might contain a column named \code{t090C} for one
 #' temperature sensor and \code{t190C} for a second. The first will be denoted
 #' \code{temperature} in the \code{data} slot of the return value, and the second
 #' will be denoted \code{temperature1}. This means that the first sensor
 #' will be used in any future processing that accesses \code{temperature}. This
 #' is for convenience of processing, and it does not pose a limitation, because the
 #' data from the second sensor are also available as e.g. \code{x[["temperature1"]]},
-#' where \code{x} is the name of the returned value.  For the details of the 
+#' where \code{x} is the name of the returned value.  For the details of the
 #' mapping from \code{.cnv} names to \code{ctd} names, see \code{\link{cnvName2oceName}}.
 #'
 #' The original data names as stored in \code{file} are stored within the \code{metadata}
 #' slot as \code{dataNamesOriginal}, and are displayed with \code{summary} alongside the
 #' numerical summary. See the Appendix VI of [2] for the meanings of these
 #' names (in the "Short Name" column of the table spanning pages 161 through 172).
+#'
+#' @section A note on scales:
+#' The user may encounter data files with a variety of scales for temperature and
+#' salinity. Oce keeps track of these scales in the units it sets up for the stored
+#' variables. For example, if \code{A} is a CTD object, then
+#' \code{A[["temperatureUnit"]]$scale} is a character string that will indicate the scale.
+#' Modern-day data will have \code{"ITS-90"} for that scale, and old data may have
+#' \code{"IPTS-68"}. The point of saving the scale in this way is so that the various
+#' formulas that deal with water properties can account for the scale, e.g. converting
+#' from numerical values saved on the \code{"IPTS-68"} scale to the newer scale, using
+#' \code{\link{T90fromT68}} before doing calculations that are expressed in
+#' terms of the \code{"ITS-90"} scale. This is taken care of by retrieving temperatures
+#' with the accessor function, e.g. writing \code{A[["temperature"]]} will either
+#' retrieve the stored values (if the scale is ITS-90) or converted values (if
+#' the scale is IPTS-68). Even though this procedure should work, users who
+#' really care about the details of their data are well-advised to do a couple
+#' of tests after examining the first data line of their data file in an editor.
+#'
+#' Note that reading a file that contains IPTS-68 temperatures produces a warning.
+#'
 #'
 #' @examples
 #' f <- system.file("extdata", "ctd.cnv", package="oce")
@@ -872,8 +894,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                 warning("cannot interpret water depth from '", lline, "'")
             }
         }
-        ## [1] "# interval = seconds: 1  
-        ## [1] "# interval = decibars: 1  
+        ## [1] "# interval = seconds: 1
+        ## [1] "# interval = decibars: 1
         if (length(grep("^# interval = .*$", lline))) {
             ##print(lline)
             value <- gsub("^.*:[ ]*([0-9.]*)[ ]*$", "\\1", lline)
@@ -966,7 +988,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     }
     ## Read the data as a table.
     pushBack(lines, file)
-    ##if (is.null(columns)) {
     oceDebug(debug, "About to read these names: c(\"", paste(colNamesInferred, collapse='","'), "\")\n", sep="")
     ##message("skipping ", iline-1, " lines at top of file")
     data <- as.list(read.table(file, skip=iline-1, header=FALSE))
@@ -1046,7 +1067,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             ## colNamesOriginal <- c(colNamesOriginal, "NA")
         }
         if ("pressurePSI" %in% names && !("pressure" %in% names)) {
-            ## DK 20170114: I cannot find what I consider to be a definitive source, so 
+            ## DK 20170114: I cannot find what I consider to be a definitive source, so
             ## I am taking the wikipedia value.
             ## 0.6894757293168  https://en.wikipedia.org/wiki/Pounds_per_square_inch
             ## 0.689475728      http://www.convertunits.com/from/psi/to/decibar
@@ -1068,22 +1089,17 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     ##res@metadata$dataNamesOriginal <- colNamesOriginal
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
 
-    ## update to temperature IPTS-90, if have an older version
-    ## if (!("temperature" %in% names(res@data)) && ("temperature68" %in% names(res@data))) {
-    ##     res <- ctdAddColumn(res, T90fromT68(res@data$temperature68),
-    ##                         name="temperature", label="Temperature",
-    ##                         unit=c(unit=expression(degree*C), scale="ITS-90"), debug=debug-1)
-    ##     warning("converted temperature from IPTS-68 to ITS-90")
-    ##     res@processingLog <- processingLogAppend(res@processingLog, "converted temperature from IPTS-68 to ITS-90")
-    ## }
-    ## if (!("scan" %in% names(res@data))) {
-    ##     res <- ctdAddColumn(res, 1:length(res@data[[1]]), name="scan", label="scan",
-    ##                         unit=c(unit=expression(), scale=""), debug=debug-1)
-    ## }
-    ## ## FIXME(20160429): do we need/want next 3 lines?
-    ## if (!("salinity" %in% names(res@metadata$units))) res@metadata$units$salinity <- list(unit=expression(), scale="PSS-78")
-    ## if (!("pressure" %in% names(res@metadata$units))) res@metadata$units$pressure <- list(unit=expression(dbar), scale="")
-    ## if (!("depth" %in% names(res@metadata$units))) res@metadata$units$depth <- list(unit=expression(m), scale="")
+    if (("temperature" %in% names(res@metadata$units)) && res@metadata$units$temperature$scale == "IPTS-68") {
+        warning("this CNV file has temperature in the IPTS-68 scale, and this is stored in the object; note that [[\"temperature\"]] and the sw* functions will convert to the modern ITS-90 value")
+    }
+
+    ## Note: previously, at this spot, there was code to switch from the IPTS-68 scale
+    ## to the ITS-90 scale. The old-scale data were saved in a column named
+    ## "temperature68". However, that scheme could be confusing both in oce code and
+    ## in user code, and it became unnecessary when the scale started being
+    ## stored in the unit. See the "note on scales" in the documentation for
+    ## the scheme used to prevent problems.
+
     oceDebug(debug, "} # read.ctd.sbe()\n")
     res
 }
