@@ -61,7 +61,10 @@ by specifying higher \code{debug} values.}
 }
 \value{
 If \code{arr.ind=TRUE}, a data frame with columns \code{start} and \code{end}, the indices
-of the downcasts.  Otherwise, a vector of \code{ctd} objects.
+of the downcasts.  Otherwise, a vector of \code{ctd} objects. In this second case,
+the station names are set to a form like \code{"10/3"}, for the third profile within an
+original ctd object with station name \code{"10"}, or to \code{"3"}, if the original
+ctd object had no station name defined.
 }
 \description{
 Examine the pressure record looking for extended periods of either ascent or descent, and return

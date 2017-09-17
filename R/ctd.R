@@ -1760,7 +1760,10 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
 #' @param ... Optional extra arguments that are passed to the smoothing function, \code{smoother}.
 #'
 #' @return If \code{arr.ind=TRUE}, a data frame with columns \code{start} and \code{end}, the indices
-#' of the downcasts.  Otherwise, a vector of \code{ctd} objects.
+#' of the downcasts.  Otherwise, a vector of \code{ctd} objects. In this second case,
+#' the station names are set to a form like \code{"10/3"}, for the third profile within an
+#' original ctd object with station name \code{"10"}, or to \code{"3"}, if the original
+#' ctd object had no station name defined.
 #'
 #' @seealso The documentation for \code{\link{ctd-class}} explains the structure
 #' of CTD objects, and also outlines the other functions dealing with them.
@@ -1926,6 +1929,11 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
             iStart <- max(1L, indices$start[i] - e)
             iEnd <- min(npts, indices$end[i] + e)
             cast <- ctdTrim(x, "index", parameters=c(iStart, iEnd))
+            if (!is.null(x@metadata$station) && "" != x@metadata$station) {
+                cast@metadata$station <- paste(x@metadata$station, i, paste="/")
+            } else {
+                cast@metadata$station <- i
+            }
             cast@processingLog <- processingLogAppend(cast@processingLog,
                                                       paste(paste(deparse(match.call()), sep="", collapse=""),
                                                             " # profile ", i, " of ", ncasts))
