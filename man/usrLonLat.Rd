@@ -29,6 +29,14 @@ coordinates. The results are used by \code{\link{mapGrid}}
 and \code{\link{mapAxis}} to ignore out-of-frame grid
 lines and axis labels.
 }
+\details{
+Note: this procedure does not work for projections that have trouble
+inverting points that are "off the globe". For this reason, this function
+examines .Projection()$projection and if it contains the string
+\code{"wintri"}, then the above-stated procedure is skipped, and
+the return value has each of the numerical quantities set to \code{NA},
+and \code{ok} set to \code{FALSE}.
+}
 \seealso{
 Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{lonlat2utm}}, \code{\link{map2lonlat}},

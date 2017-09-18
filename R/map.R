@@ -16,6 +16,14 @@
 #' coordinates. The results are used by \code{\link{mapGrid}}
 #' and \code{\link{mapAxis}} to ignore out-of-frame grid
 #' lines and axis labels. 
+#'
+#' Note: this procedure does not work for projections that have trouble
+#' inverting points that are "off the globe". For this reason, this function
+#' examines .Projection()$projection and if it contains the string
+#' \code{"wintri"}, then the above-stated procedure is skipped, and
+#' the return value has each of the numerical quantities set to \code{NA},
+#' and \code{ok} set to \code{FALSE}.
+#'
 #' @param n number of points to check along each side of the plot box
 #' @template debugTemplate
 #' @return a list containing \code{lonmin}, \code{lonmax},
@@ -26,8 +34,11 @@
 #' @family functions related to maps
 usrLonLat <- function(n=25, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "usrLonLat(n=", n, ", debug=", debug, "\n", unindent=1, sep="")
     usr <- par("usr")
-    oceDebug(debug, "usrLonLat(): usr=", paste(usr, collapse=" "), "\n", unindent=1, sep="")
+    oceDebug(debug, "usr=", paste(usr, collapse=" "), "\n", sep="")
+    if (length(grep("wintri", .Projection()$projection)))
+        return(list(lonmin=NA, lonmax=NA, latmin=NA, latmax=NA, ok=FALSE))
     x <- c(seq(usr[1], usr[2], length.out=n),
            rep(usr[2], n), 
            seq(usr[2], usr[1], length.out=n),
@@ -36,13 +47,16 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
            seq(usr[3], usr[4], length.out=n), 
            rep(usr[4], n),
            seq(usr[4], usr[3], length.out=n))
-    if (debug > 2)
-        points(x, y, pch=20, cex=3, col=2)
+    ## if (debug > 2)
+    ##     points(x, y, pch=20, cex=3, col=2)
+    oceDebug(debug, "about to call map2lonlat\n")
     ll <- map2lonlat(x, y)
     ## Convert -Inf and +Inf to NA
+    oceDebug(debug, "DONE with call map2lonlat\n")
     bad <- !is.finite(ll$longitude) | !is.finite(ll$latitude)
     ll$longitude[bad] <- NA
     ll$latitude[bad] <- NA
+    oceDebug(debug, "sum(bad)/length(bad)=", sum(bad)/length(bad), "\n", sep="")
     if (debug > 2)
         mapPoints(ll$longitude, ll$latitude, pch=20, cex=2, col=3)
     lonmin <- if (any(is.finite(ll$longitude))) min(ll$longitude, na.rm=TRUE) else NA
@@ -1424,7 +1438,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     else if (difflongitudelim < 180) 15
                     else 15
                 grid[2] <- grid[1]
-                oceDebug(debug, "limits given (or inferred): set grid=", paste(grid, collapse=" "), "\n")
+                oceDebug(debug, "limits given (or inferred) near map.R:1427 -- set grid=", paste(grid, collapse=" "), "\n")
             } else {
                 usr <- par('usr')
                 x0 <- 0.5 * sum(usr[1:2])
@@ -1461,12 +1475,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     grid <- rep(g, 2)
                     oceDebug(debug, "grid:", grid[1], "\n")
                 }
-                oceDebug(debug, "limits not given (or inferred): set grid=", paste(grid, collapse=" "), "\n")
+                oceDebug(debug, "limits not given (or inferred) near map.R:1464 -- set grid=", paste(grid, collapse=" "), "\n")
             }
         }
         if (drawGrid) {
             mapGrid(longitude=NULL, dlatitude=grid[2], polarCircle=polarCircle,
-                    longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
+                    longitudelim=longitudelim, latitudelim=latitudelim, debug=debug)#-1)
             mapGrid(dlongitude=grid[1], latitude=NULL, polarCircle=polarCircle,
                     longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }
@@ -1548,9 +1562,11 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     longitudelim, latitudelim,
                     debug=getOption("oceDebug"))
 {
-    boxLonLat <- usrLonLat()
+    oceDebug(debug, "mapGrid(dlongitude=", dlongitude,
+             ", dlatitude=", dlatitude, "(etc) ...) {\n", unindent=1, sep="")
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
+    boxLonLat <- usrLonLat(debug=debug-1)
     if (!missing(longitude) && is.null(longitude) && !missing(latitude) && is.null(latitude))
         return()
     if (!missing(longitudelim))
