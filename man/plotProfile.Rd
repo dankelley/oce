@@ -4,17 +4,17 @@
 \alias{plotProfile}
 \title{Plot a CTD Profile}
 \usage{
-plotProfile(x, xtype = "salinity+temperature", ytype = c("pressure", "z",
-  "depth", "sigmaTheta"), eos = getOption("oceEOS", default = "gsw"),
-  lty = 1, xlab = NULL, ylab = NULL, col = "black",
-  col.salinity = "darkgreen", col.temperature = "red", col.rho = "blue",
-  col.N2 = "brown", col.dpdt = "darkgreen", col.time = "darkgreen",
-  pt.bg = "transparent", grid = TRUE, col.grid = "lightgray",
-  lty.grid = "dotted", Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim,
-  timelim, plim, ylim, lwd = par("lwd"), xaxs = "r", yaxs = "r",
-  cex = 1, pch = 1, useSmoothScatter = FALSE, df, keepNA = FALSE,
-  type = "l", mgp = getOption("oceMgp"), mar, add = FALSE,
-  inset = FALSE, debug = getOption("oceDebug"), ...)
+plotProfile(x, xtype = "salinity+temperature", ytype = "pressure",
+  eos = getOption("oceEOS", default = "gsw"), lty = 1, xlab = NULL,
+  ylab = NULL, col = "black", col.salinity = "darkgreen",
+  col.temperature = "red", col.rho = "blue", col.N2 = "brown",
+  col.dpdt = "darkgreen", col.time = "darkgreen", pt.bg = "transparent",
+  grid = TRUE, col.grid = "lightgray", lty.grid = "dotted", Slim, Clim,
+  Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim, ylim,
+  lwd = par("lwd"), xaxs = "r", yaxs = "r", cex = 1, pch = 1,
+  useSmoothScatter = FALSE, df, keepNA = FALSE, type = "l",
+  mgp = getOption("oceMgp"), mar, add = FALSE, inset = FALSE,
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -68,8 +68,9 @@ to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
 
 }}
 
-\item{ytype}{variable to use on y axis; note that \code{z} is the negative
-of \code{depth}.}
+\item{ytype}{variable to use on y axis. The valid choices are:
+\code{"pressure"} (the default), \code{"z"},
+\code{"depth"} and \code{"sigmaTheta"}.}
 
 \item{eos}{equation of state to be used, either \code{"unesco"} or
 \code{"gsw"}.}

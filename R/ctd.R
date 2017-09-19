@@ -4229,8 +4229,10 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #'
 #'}
 #'
-#' @param ytype variable to use on y axis; note that \code{z} is the negative
-#' of \code{depth}.
+#' @param ytype variable to use on y axis. The valid choices are:
+#' \code{"pressure"} (the default), \code{"z"},
+#' \code{"depth"} and \code{"sigmaTheta"}.
+#'
 #' @param eos equation of state to be used, either \code{"unesco"} or
 #' \code{"gsw"}.
 #' @param xlab optional label for x axis (at top of plot).
@@ -4306,8 +4308,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{ctd} data
 plotProfile <- function (x,
-                         xtype="salinity+temperature",
-                         ytype=c("pressure", "z", "depth", "sigmaTheta"),
+                         xtype="salinity+temperature", ytype="pressure",
                          eos=getOption("oceEOS", default="gsw"),
                          lty=1,
                          xlab=NULL, ylab=NULL,
@@ -4391,7 +4392,11 @@ plotProfile <- function (x,
     ylimGiven <- !missing(ylim)
     densitylimGiven <- !missing(densitylim)
     dots <- list(...)
-    ytype <- match.arg(ytype)
+    ytypeChoices <- c("pressure", "z", "depth", "sigmaTheta")
+    ytypeIndex <- pmatch(ytype, ytypeChoices)
+    if (is.na(ytypeIndex))
+        stop('ytype must be one of: "pressure", "z", "depth", "sigmaTheta", but it is "', ytype, '"')
+    ytype <- ytypeChoices[ytypeIndex]
     if (!is.null(ylab) && ylab == "") {
         yname <- ""
     } else {
