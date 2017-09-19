@@ -4156,7 +4156,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
                     ## to right of box
                     i <- match(TRUE, Sok > SAxisMax)
                     if (rotate)
-                        mtext(rhoLabel, side=4, at=Tline[i], line=0, cex=cex, col=col)
+                        mtext(rhoLabel, side=4, at=Tline[i], line=0.2, cex=cex, col=col)
                     else
                         text(usr[2], Tline[i], rhoLabel, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
                 } else {
