@@ -70,7 +70,7 @@ test_that("as.section() works with vector of CTD objects", {
           fake[["longitude"]] <- ctd[["longitude"]] + 0.01
           fake[["station"]] <- "fake"
           ctds[[2]] <- fake
-          expect_warning(sec <- as.section(ctds), "estimated waterDepth as max\\(pressure\\) for CTDs numbered: 1 2")
+          expect_warning(sec <- as.section(ctds), "estimated waterDepth as max\\(pressure\\) for CTDs numbered 1:2")
           expect_equal(2, length(sec[["station"]]))
 })
 
