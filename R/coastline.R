@@ -295,7 +295,10 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' hemispheres.  If \code{geographical=1}, the signs are dropped, with axis
 #' values being in decreasing order within the southern and western
 #' hemispheres.  If \code{geographical=2}, the signs are dropped and the axes
-#' are labelled with degrees, minutes and seconds, as appropriate.
+#' are labelled with degrees, minutes and seconds, as appropriate, and
+#' hemispheres are indicated with letters. If \code{geographical=3}, things
+#' are the same as for \code{geographical=2}, but the hemisphere indication
+#' is omitted.
 #'
 #' @param longitudelim this and \code{latitudelim} provide a second way to
 #' suggest plot ranges. Note that these may not be supplied if
@@ -461,8 +464,8 @@ setMethod(f="plot",
                   return(invisible())
               }
               geographical <- round(geographical)
-              if (geographical < 0 || geographical > 2)
-                  stop("argument geographical must be 0, 1, or 2")
+              if (geographical < 0 || geographical > 3)
+                  stop("argument geographical must be 0, 1, 2, or 3")
               if (is.list(x) && "latitude" %in% names(x)) {
                   if (!("longitude" %in% names(x)))
                       stop("list must contain item named 'longitude'")
@@ -621,12 +624,15 @@ setMethod(f="plot",
                           xlabels <- sub("-", "", xlabels)
                           ylabels <- sub("-", "", ylabels)
                       }
-                      if (geographical == 2) {
+                      if (geographical == 2 || geographical == 3) {
                           xr.pretty <- prettyPosition(xr.pretty, debug=debug-1)
                           yr.pretty <- prettyPosition(yr.pretty, debug=debug-1)
-                          xlabels <- formatPosition(xr.pretty, isLat=FALSE, type='expression')
-                          ylabels <- formatPosition(yr.pretty, isLat=TRUE, type='expression')
+                          xlabels <- formatPosition(xr.pretty, isLat=FALSE, type='expression',
+                                                    showHemi=geographical==3)
+                          ylabels <- formatPosition(yr.pretty, isLat=TRUE, type='expression',
+                                                    showHemi=geographical==3)
                       }
+ 
                       axis(1, at=xr.pretty, labels=xlabels, pos=usrTrimmed[3], cex.axis=cex.axis)
                       oceDebug(debug, "putting bottom x axis at", usrTrimmed[3], "with labels:", xlabels, "\n")
                       axis(2, at=yr.pretty, labels=ylabels, pos=usrTrimmed[1], cex.axis=cex.axis, cex=cex.axis)
