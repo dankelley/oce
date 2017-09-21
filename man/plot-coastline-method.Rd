@@ -120,7 +120,10 @@ the unit, and negative signs indicating the southern and western
 hemispheres.  If \code{geographical=1}, the signs are dropped, with axis
 values being in decreasing order within the southern and western
 hemispheres.  If \code{geographical=2}, the signs are dropped and the axes
-are labelled with degrees, minutes and seconds, as appropriate.}
+are labelled with degrees, minutes and seconds, as appropriate, and
+hemispheres are indicated with letters. If \code{geographical=3}, things
+are the same as for \code{geographical=2}, but the hemisphere indication
+is omitted.}
 
 \item{longitudelim}{this and \code{latitudelim} provide a second way to
 suggest plot ranges. Note that these may not be supplied if
