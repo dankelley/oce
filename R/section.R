@@ -2896,7 +2896,8 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
                 ctds[[i]] <- thelist[[i]]
             }
             if (length(badDepths))
-                warning("estimated waterDepth as max(pressure) for CTDs numbered: ", paste(badDepths, collapse=" "))
+                warning("estimated waterDepth as max(pressure) for CTDs numbered ",
+                        paste(abbreviateVector(badDepths), collapse=" "))
         } else {
             stop("first argument must be a salinity vector, or a list of oce objects")
         }

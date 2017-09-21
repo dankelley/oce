@@ -1,5 +1,15 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+abbreviateVector <- function(x)
+{
+    if (1 >= length(x)) {
+        return(x)
+    } else {
+        ud <- unique(diff(x))
+        if (1 == length(ud) && 1 == ud) return(paste(x[1], ":", tail(x, 1), sep="")) else return(x)
+    }
+}
+
 shortenTimeString <- function(t, debug=getOption("oceDebug"))
 {
     tc <- as.character(t)
