@@ -624,8 +624,8 @@ setMethod(f="plot",
                       if (geographical == 2) {
                           xr.pretty <- prettyPosition(xr.pretty, debug=debug-1)
                           yr.pretty <- prettyPosition(yr.pretty, debug=debug-1)
-                          xlabels <- formatPosition(xr.pretty, type='expression')
-                          ylabels <- formatPosition(yr.pretty, type='expression')
+                          xlabels <- formatPosition(xr.pretty, isLat=FALSE, type='expression')
+                          ylabels <- formatPosition(yr.pretty, isLat=TRUE, type='expression')
                       }
                       axis(1, at=xr.pretty, labels=xlabels, pos=usrTrimmed[3], cex.axis=cex.axis)
                       oceDebug(debug, "putting bottom x axis at", usrTrimmed[3], "with labels:", xlabels, "\n")
