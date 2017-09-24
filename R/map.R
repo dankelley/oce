@@ -29,7 +29,8 @@
 #' @return a list containing \code{lonmin}, \code{lonmax},
 #' \code{latmin}, \code{latmax}, and \code{ok}; the last
 #' of which indicates whether at least one point on the plot box
-#' is invertable.
+#' is invertable. Note that longitude are expressed in the
+#' range from -180 to 180 degrees.
 #' @author Dan Kelley
 #' @family functions related to maps
 usrLonLat <- function(n=25, debug=getOption("oceDebug"))
@@ -63,6 +64,24 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
     lonmax <- if (any(is.finite(ll$longitude))) max(ll$longitude, na.rm=TRUE) else NA
     latmin <- if (any(is.finite(ll$latitude))) min(ll$latitude, na.rm=TRUE) else NA
     latmax <- if (any(is.finite(ll$latitude))) max(ll$latitude, na.rm=TRUE) else NA
+    ## To simplify later use, put lon in range -180 to 180, and order if needed
+    lonmin <- min(lonmin, 180, na.rm=TRUE)
+    lonmin <- max(lonmin, -180, na.rm=TRUE)
+    lonmax <- min(lonmax, 180, na.rm=TRUE)
+    lonmax <- max(lonmax, -180, na.rm=TRUE)
+    if (lonmin > lonmax) {
+        tmp <- lonmin
+        lonmin <- lonmax
+        lonmax <- tmp
+    }
+    ## special case: if we are showing more than half the earth, assume
+    ## it's a global view, and extend accordingly
+    if ((lonmax - lonmin) > 180) {
+        lonmin <- -180
+        lonmax <- 180
+        latmin <- -90
+        latmax <- 90
+    }
     oceDebug(debug, sprintf("lonmin=%.3f, lonmax=%.3f, latmin=%.3f, latmax=%.3f\n",
                             lonmin, lonmax, latmin, latmax))
     oceDebug(debug, "} # usrLonLat()\n", unindent=1)
@@ -1632,14 +1651,17 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
     axisOLD <- .axis()
     .axis(list(longitude=if (!missing(longitude) && length(longitude)) longitude else axisOLD$longitude,
                latitude=if (!missing(latitude) && length(latitude)) latitude else axisOLD$latitude))
-    if (length(latitude))
-        oceDebug(debug, "drawing latitude line:")
+    if (!length(latitude))
+        oceDebug(debug, "not drawing latitude lines")
     for (l in latitude) {
         ## FIXME: maybe we should use mapLines here
         if (is.finite(l)) {
-            if (boxLonLat$ok && !(boxLonLat$latmin <= l & l <= boxLonLat$latmax))
+            if (boxLonLat$ok && !(boxLonLat$latmin <= l & l <= boxLonLat$latmax)) {
+                oceDebug(debug, "SKIPPING latitude =", l, "line\n")
+                print(boxLonLat)
                 next
-            if (debug > 0) cat(l, " ")
+            }
+            oceDebug(debug, "drawing longitude =", l, "line\n")
             line <- lonlat2map(seq(-180+small, 180-small, length.out=n), rep(l, n))
             x <- line$x
             y <- line$y
@@ -1677,14 +1699,23 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         diff <- diff(longitude)[1]
         longitude <- seq(-180, 180, diff)
     }
-    if (length(longitude))
-        oceDebug(debug, "drawing longitude line:")
+    if (!length(longitude))
+        oceDebug(debug, "not drawing longitude lines")
     for (l in longitude) {
+        ## put l in range -180 to 180 for comparison with boxLonLat
+        while (l < -180)
+            l <- l + 360
+        while (l > 180)
+            l <- l - 360
         ## FIXME: should use mapLines here
         if (is.finite(l)) {
-            if (boxLonLat$ok && !(boxLonLat$lonmin <= l & l <= boxLonLat$lonmax))
+            if (boxLonLat$ok && !(boxLonLat$lonmin <= l & l <= boxLonLat$lonmax)) {
+                oceDebug(debug, "SKIPPING longitude =", l, "line\n")
+                print(boxLonLat)
+                browser()
                 next
-            if (debug > 0) cat(l, " ")
+            }
+            oceDebug(debug, "drawing longitude =", l, "line\n")
             line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
             x <- line$x
             y <- line$y

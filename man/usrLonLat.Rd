@@ -21,7 +21,8 @@ by specifying higher \code{debug} values.}
 a list containing \code{lonmin}, \code{lonmax},
 \code{latmin}, \code{latmax}, and \code{ok}; the last
 of which indicates whether at least one point on the plot box
-is invertable.
+is invertable. Note that longitude are expressed in the
+range from -180 to 180 degrees.
 }
 \description{
 Trace along the plot box, converting from xy coordinates to lonlat
