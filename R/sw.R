@@ -781,7 +781,7 @@ swTFreeze <- function(salinity, pressure=0,
         res <- T90fromT68(res)
     } else if (eos == "gsw") {
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        res <- gsw::gsw_t_freezing(SA=SA, p=l$pressure, saturation_fraction=l$saturation_fraction)
+        res <- gsw::gsw_t_freezing(SA=SA, p=0, saturation_fraction=l$saturation_fraction)
     }
     if (Smatrix) dim(res) <- dim
     res
