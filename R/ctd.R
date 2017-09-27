@@ -3865,6 +3865,11 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' @param Slim optional limits for salinity axis, otherwise inferred from data.
 #' @param Tlim optional limits for temperature axis, otherwise inferred from
 #' data.
+#' @param drawFreezing logical indication of whether to draw a freezing-point
+#' line. This is based on zero pressure. If \code{eos="unesco"} then
+#' \code{\link{swTFreeze}} is used to compute the curve, whereas if
+#' \code{eos="gsw"} then \code{\link[gsw]{gsw_CT_freezing}} is used;
+#' in each case, zero pressure is used.
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
@@ -3916,6 +3921,7 @@ plotTS <- function (x,
                     useSmoothScatter=FALSE,
                     xlab, ylab,
                     Slim, Tlim,
+                    drawFreezing=TRUE,
                     mgp=getOption("oceMgp"),
                     mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1], mgp[1]),
                     lwd=par('lwd'), lty=par('lty'),
@@ -4068,12 +4074,14 @@ plotTS <- function (x,
     drawIsopycnals(nlevels=nlevels, levels=levels, rotate=rotate, rho1000=rho1000, digits=2,
                    eos=eos, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
-    Sr <- seq(max(0, usr[1]), usr[2], length.out=10)
-    if (eos == "unesco") {
-        lines(Sr, swTFreeze(salinity=Sr, pressure=0, eos=eos)) # old: darkblue that looked black
-    } else if (eos == "gsw") {
-        lines(Sr, swTFreeze(salinity=Sr, pressure=0, longitude=x[["longitude"]], latitude=x[["latitude"]], eos=eos))
-    } else stop("unknown eos; must be \"unesco\" or \"gsw\"")
+    Sr <- seq(max(0, usr[1]), usr[2], length.out=100)
+    if (drawFreezing) {
+        if (eos == "unesco") {
+            lines(Sr, swTFreeze(salinity=Sr, pressure=0, eos=eos)) # old: darkblue that looked black
+        } else if (eos == "gsw") {
+            lines(Sr, gsw_CT_freezing(SA=Sr, p=0, saturation_fraction=1)) # Sr==SA since eos=="gsw"
+        } else stop("unknown eos; must be \"unesco\" or \"gsw\"")
+    }
     box()                              # redraw box (otherwise overdrawn with isopycnals)
     oceDebug(debug, "} # plotTS(...)\n", sep="", unindent=1)
     ## infer from par()
