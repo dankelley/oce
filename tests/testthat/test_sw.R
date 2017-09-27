@@ -120,7 +120,7 @@ test_that("freezing temperature", {
           expect_equal(Tf, T90fromT68(-2.588567), scale=1, tolerance=1e-6)
           ## 5.2 GSW freezing temperature 
           SA <- gsw::gsw_SA_from_SP(SP=40, p=500, longitude=300, latitude=30)
-          TfGSW <- gsw::gsw_t_freezing(SA=SA, p=500, saturation_fraction=1)
+          TfGSW <- gsw::gsw_t_freezing(SA=SA, p=0, saturation_fraction=1)
           Tf <- swTFreeze(40, 500, longitude=300, latitude=30, eos="gsw")
           expect_equal(TfGSW, Tf)
 })
