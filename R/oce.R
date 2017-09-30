@@ -113,7 +113,7 @@ NULL
 #'
 #' \itemize{
 #'
-#' \item The \code{lcca} projection of \code{\link{mapProj}} was removed
+#' \item The \code{lcca} projection of \code{\link{mapPlot}} was removed
 #' from the documentation 2018-08-30, and generated a warning starting
 #' then. It will be marked defunction after the next CRAN release.
 #"
