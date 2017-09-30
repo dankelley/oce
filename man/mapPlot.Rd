@@ -223,7 +223,7 @@ Longitude and latitude                    \tab \code{lonlat}   \tab - \cr
 Longitude and latitude                    \tab \code{longlat}   \tab - \cr
 Longitude and latitude                    \tab \code{latlon}   \tab - \cr
 Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
-Lambert conformal conic alternative       \tab \code{lcca}     \tab \code{lat_0}\cr
+Lambert conformal conic alt. [DEPRECATED] \tab \code{lcca}     \tab \code{lat_0}\cr
 Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
 Loximuthal                                \tab \code{loxim}    \tab\cr
 Space oblique for Landsat                 \tab \code{lsat}     \tab \code{lsat}, \code{path}\cr
@@ -349,6 +349,15 @@ the occurrence of horizontal lines in maps that have prime meridians
 meridians and (c) inaccurate filling of Antarctica in some projections.
 Generally, issues are tackled first for commonly used projections, such as
 those used in the examples.
+}
+
+\section{Changes}{
+
+\itemize{
+\item 2017-09-30: \code{lcca} deprecated, because its inverse was
+wildly inaccurate in a Pacific Antartic-Alaska application
+(see \url{https://github.com/dankelley/oce/issues/1303}).
+}
 }
 
 \examples{

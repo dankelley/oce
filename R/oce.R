@@ -113,6 +113,10 @@ NULL
 #'
 #' \itemize{
 #'
+#' \item The \code{lcca} projection of \code{\link{mapProj}} was removed
+#' from the documentation 2018-08-30, and generated a warning starting
+#' then. It will be marked defunction after the next CRAN release.
+#"
 #' \item The \code{endian} argument of \code{\link{byteToBinary}} will be removed sometime
 #' in the year 2017, and should be set to \code{"big"} in the meantime.
 #'

@@ -947,7 +947,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' Longitude and latitude                    \tab \code{longlat}   \tab - \cr
 #' Longitude and latitude                    \tab \code{latlon}   \tab - \cr
 #' Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
-#' Lambert conformal conic alternative       \tab \code{lcca}     \tab \code{lat_0}\cr
+#' Lambert conformal conic alt. [DEPRECATED] \tab \code{lcca}     \tab \code{lat_0}\cr
 #' Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
 ## Lee oblated stereographic                 \tab \code{lee_os}   \tab\cr
 #' Loximuthal                                \tab \code{loxim}    \tab\cr
@@ -1068,6 +1068,13 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' Generally, issues are tackled first for commonly used projections, such as
 #' those used in the examples.
 #'
+#' @section Changes:
+#' \itemize{
+#' \item 2017-09-30: \code{lcca} deprecated, because its inverse was
+#' wildly inaccurate in a Pacific Antartic-Alaska application
+#' (see \url{https://github.com/dankelley/oce/issues/1303}).
+#' }
+#'
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -1127,6 +1134,9 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
              ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
              ", grid=", grid,
              ", ...) {\n", sep="", unindent=1)
+    if (length(grep("=[ ]*lcca", projection)))
+        .Deprecated("mapPlot",
+                    msg="proj=lcca will be removed soon. See ?'oce-deprecated'.")
     if (missing(longitude)) {
         data("coastlineWorld", package="oce", envir=environment())
         longitude <- get("coastlineWorld")
@@ -3146,6 +3156,7 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
                 ##"igh","imw_p", "isea", "kav5", "kav7", "krovak", "labrd",
                 "igh",  "imw_p",         "kav5", "kav7",
                 ##"laea", "lonlat", "latlon", "lcc", "lcca", "leac", "lee_os",
+                ## 20190930 deprecate lcca
                 "laea",   "lonlat", "longlat", "latlon", "lcc", "lcca", "leac",
                 "loxim", "lsat", "mbt_s", "mbt_fps", "mbtfpp", "mbtfpq",
                 "mbtfps", "merc", "mil_os", "mill", "moll", "murd1", "murd2",
