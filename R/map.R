@@ -1721,8 +1721,6 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         diff <- diff(longitude)[1]
         longitude <- seq(-180, 180, diff)
     }
-    if (!length(longitude))
-        oceDebug(debug, "not drawing longitude lines")
     for (l in longitude) {
         ## put l in range -180 to 180 for comparison with boxLonLat
         while (l < -180)
@@ -1743,10 +1741,13 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
             y <- line$y
             ok <- !is.na(x) & !is.na(y)
             x <- x[ok]
-            if (0 == length(x)) next
             y <- y[ok]
-            if (0 == length(y)) next
-            lines(x, y, lty=lty, lwd=lwd, col=col)
+            if (0 == length(x) || 0 == length(y)) {
+                oceDebug(debug, "SKIPPING longitude graticule", l, "E\n")
+            } else {
+                oceDebug(debug, "longitude graticule", l, "E has ", length(x), "segments\n")
+                lines(x, y, lty=lty, lwd=lwd, col=col)
+            }
         }
     }
     if (length(longitude))
