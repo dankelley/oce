@@ -828,7 +828,8 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' # recommended by [1], page 95, for regions of large east-west extent
 #' # away from the equator, here illustrated for the USA and Canada.
 #' par(mar=c(3, 3, 1, 1))
-#' mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35, 60),
+#' mapPlot(coastlineCut(coastlineWorld, -100),
+#'         longitudelim=c(-130,-55), latitudelim=c(35, 60),
 #'         projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
 #' mtext("Lambert conformal", adj=1)
 #'
@@ -839,24 +840,26 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' # second longitudelim is 180 plus the first; this uses image points "over"
 #' # the pole.
 #' par(mar=c(3, 3, 1, 1))
-#' mapPlot(coastlineWorld, longitudelim=c(-130, 50), latitudelim=c(70, 110),
+#' mapPlot(coastlineCut(coastlineWorld, -135),
+#'         longitudelim=c(-130, 50), latitudelim=c(70, 110),
 #'         proj="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
 #' mtext("Stereographic", adj=1)
 #'
 #' # Example 5.
 #' # Spinning globe: create PNG files that can be assembled into a movie
-#' png("539B-\%03d.png")
+#' png("globe-%03d.png")
 #' lons <- seq(360, 0, -15)
-#' ilon <- seq_along(lons)
 #' par(mar=rep(0, 4))
-#' for (i in ilon) {
+#' for (i in seq_along(lons)) {
 #'     p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
 #'     if (i == 1) {
-#'         mapPlot(coastlineWorld, projection=p, col="blue", lwd=1.4)
+#'         mapPlot(coastlineCut(coastlineWorld, lons[i]),
+#'                 projection=p, col="lightgray")
 #'         xlim <- par("usr")[1:2]
 #'         ylim <- par("usr")[3:4]
 #'     } else {
-#'         mapPlot(coastlineWorld, projection=p, col="blue", lwd=1.4,
+#'         mapPlot(coastlineCut(coastlineWorld, lons[i]),
+#'                 projection=p, col="lightgray",
 #'                 xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
 #'     }
 #' }
@@ -1225,7 +1228,16 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     if ("xlim" %in% dotnames || "ylim" %in% dotnames || "xaxs" %in% dotnames || "yaxs" %in% dotnames) {
         ## for issue 539, i.e. repeated scales
         oceDebug(debug, "xlim, ylim, xaxs, or yaxs was given\n")
-        plot(x, y, type=type, xlab="", ylab="", asp=1, axes=FALSE, ...)
+        if (type == "polygon") {
+            plot(x, y, type="n", xlab="", ylab="", asp=1, axes=FALSE, ...)
+            if (is.null(border))
+                border <- "black"
+            if (is.null(col))
+                col <- "white"
+            polygon(x, y, border=border, col=col)
+        } else {
+            plot(x, y, type=type, xlab="", ylab="", asp=1, axes=FALSE, col=col, ...)
+        }
     } else {
         oceDebug(debug, "xlim, ylim, xaxs, and yaxs were not given\n")
         if (limitsGiven) {
