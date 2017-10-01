@@ -1624,21 +1624,21 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         diff <- diff(longitude)[1]
         longitude <- seq(-180, 180, diff)
     }
-    if (length(longitude))
-        oceDebug(debug, "drawing longitude line:")
     for (l in longitude) {
         ## FIXME: should use mapLines here
         if (is.finite(l)) {
-            if (debug > 0) cat(l, " ")
             line <- lonlat2map(rep(l, n), seq(-90+polarCircle+small, 90-polarCircle-small, length.out=n))
             x <- line$x
             y <- line$y
             ok <- !is.na(x) & !is.na(y)
             x <- x[ok]
-            if (0 == length(x)) next
             y <- y[ok]
-            if (0 == length(y)) next
-            lines(x, y, lty=lty, lwd=lwd, col=col)
+            if (0 == length(x) || 0 == length(y)) {
+                oceDebug(debug, "SKIPPING longitude graticule", l, "E\n")
+            } else {
+                oceDebug(debug, "longitude graticule", l, "E has ", length(x), "segments\n")
+                lines(x, y, lty=lty, lwd=lwd, col=col)
+            }
         }
     }
     if (length(longitude))
