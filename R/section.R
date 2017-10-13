@@ -1277,7 +1277,6 @@ setMethod(f="plot",
               if (is.na(which[1]) || which != "data" || which != 'map') {
                   p1 <- x[["station", 1]][["pressure"]]
                   numStations <- length(x@data$station)
-                  gridded <- FALSE
                   for (ix in 2:numStations) {
                       thisStation <- x@data$station[[ix]]
                       thisPressure <- thisStation[["pressure"]]

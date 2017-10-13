@@ -792,7 +792,6 @@ Next, customize `summary` for this new class:
 setMethod(f="summary",
           signature="uv",
           definition=function(object, ...) {
-              mnames <- names(object@metadata)
               cat("uv Summary\n-----------\n\n", ...)
               cat(paste("* Location:           ",
                         sprintf("%.5f N", object@metadata$latitude), ", ",
@@ -800,7 +799,7 @@ setMethod(f="summary",
               callNextMethod()
           })
 ```
-The `callNextMethod` will summaries the entries in the `data` slot adequately for this case. Let's try it:
+The `callNextMethod` will summarize the entries in the `data` slot adequately for this case. Let's try it:
 ```{r}
 summary(oo)
 ```

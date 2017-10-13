@@ -1911,8 +1911,8 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
         ## Obey user-defined breaks but note what we do by adding and subtracting
         ## 1 just after ... this is because of what we do with "e", ~13 lines below.
         indices <- data.frame(start=c(1, breaks+1), end=c(breaks, length(x[['pressure']])))
-        indices$start <- indices$start + 1 
-        indices$end <- indices$end - 1 
+        indices$start <- indices$start + 1
+        indices$end <- indices$end - 1
     }
 
     if (is.logical(arr.ind) && arr.ind) {
@@ -3561,7 +3561,7 @@ setMethod(f="subset",
                   return(res)
               }
               res <- new("ctd")
-              
+
               res@metadata <- x@metadata
               res@processingLog <- x@processingLog
               for (i in seq_along(x@data)) {
@@ -3953,9 +3953,9 @@ plotTS <- function (x,
             SP <- as.vector(SP)
             t <- as.vector(x[["temperature"]])
             p <- as.vector(x[["pressure"]])
-            lon <- x[["longitude"]]
-            lat <- x[["latitude"]]
-            if (length(lon) < length(SP)) {
+            longitude <- x[["longitude"]]
+            latitude <- x[["latitude"]]
+            if (length(longitude) < length(SP)) {
                 ## Copy across depths. This is inside a conditional because
                 ## possibly argo[["longitude"]] should mimic section[["longitude"]],
                 ## in doing the lengthing by itself unless the second argument is

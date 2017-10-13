@@ -1,4 +1,5 @@
 library(oce)
+require(testthat)
 
 ## One day of in-water data.
 cm <- read.oce("/data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab",

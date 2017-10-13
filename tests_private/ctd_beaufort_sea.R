@@ -1,4 +1,5 @@
 library(oce)
+require(testthat)
 options(width=100)                     # makes summaries easier to read
 options(warn=2)                        # die on warning, to catch unrecognized SBE names
 Sys.setenv(TZ="America/Halifax")       # without a TZ, problems on macos high-sierra beta
