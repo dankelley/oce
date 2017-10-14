@@ -4,16 +4,16 @@
 \alias{swCSTp}
 \title{Electrical conductivity ratio from salinity, temperature and pressure}
 \usage{
-swCSTp(salinity = 35, temperature = 15, pressure = 0,
-  eos = getOption("oceEOS", default = "gsw"))
+swCSTp(salinity, temperature = 15, pressure = 0, eos = getOption("oceEOS",
+  default = "gsw"))
 }
 \arguments{
 \item{salinity}{practical salinity, or a CTD object (in which case its
 temperature and pressure are used, and the next two arguments are ignored)}
 
 \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
-on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
-\code{\link{swRho}}.}
+on the ITS-90 scale; see the examples, as well as the
+\dQuote{Temperature units} section in the documentation for \code{\link{swRho}}.}
 
 \item{pressure}{pressure [dbar]}
 
@@ -22,7 +22,9 @@ on the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
 \value{
 Conductivity ratio [unitless], i.e. the ratio of conductivity to the
 conductivity at salinity=35, temperature=15 (IPTS-68 scale) and pressure=0,
-which has numerical value 42.9140 (see Culkin and Smith, 1980).
+which has numerical value 42.9140 mS/cm = 4.29140 S/m (see
+Culkin and Smith, 1980, in the regression result cited at the bottom of
+the left-hand column on page 23).
 }
 \description{
 Compute electrical conductivity ratio based on salinity, temperature, and

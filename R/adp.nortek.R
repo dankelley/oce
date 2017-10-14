@@ -385,7 +385,6 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                        debug=getOption("oceDebug"), ...)
 {
     oceDebug(debug, "read.adp.nortek(...,from=", format(from), ",to=", if (missing(to)) "(missing)" else format(to), "...)\n")
-    res <- new("adp")
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")

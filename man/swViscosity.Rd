@@ -4,7 +4,7 @@
 \alias{swViscosity}
 \title{Seawater viscosity}
 \usage{
-swViscosity(salinity, temperature = NULL)
+swViscosity(salinity, temperature)
 }
 \arguments{
 \item{salinity}{either salinity [PSU] (in which case \code{temperature} and
