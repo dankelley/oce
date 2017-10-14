@@ -2592,7 +2592,8 @@ numberAsHMS <- function(t, default=0)
 #' \item \code{"gps"} employs the GPS convention. For this, \code{t} is a
 #' two-column matrix, with the first column being the the GPS "week"
 #' (referenced to 1999-08-22) and the second being the GPS "second" (i.e. the
-#' second within the week).
+#' second within the week). Since the GPS satellites do not handle leap
+#' seconds, the R-defined \code{.leap.seconds} is used for corrections.
 #'
 #' \item \code{"argo"} employs Argo times, measured in days since the start of
 #' the year 1900.
@@ -2637,7 +2638,7 @@ numberAsHMS <- function(t, default=0)
 #'
 #' numberAsPOSIXct(0)                     # unix time 0
 #' numberAsPOSIXct(1, type="matlab")      # matlab time 1
-#' numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day
+#' numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
 #' numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
 #'
 #' @family things related to time
@@ -2670,18 +2671,30 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
 
         ## Account for leap seconds since the GPS start time in 1980 (for the present week wraparound grouping).
-        ## See http://en.wikipedia.org/wiki/Leap_second and other sources for a list.  Updates can happen
-        ## on June 30 and December 31 of any given year.  The information below was last updated
-        ## in January, 2017.
-        leaps <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-12-31",
-                                       "1989-12-31", "1990-12-31", "1992-07-01", "1993-07-01", "1994-07-01",
-                                       "1995-12-31", "1997-07-01", "1998-12-31", "2005-12-31", "2008-12-31",
-                                       "2012-07-01", "2015-07-01", "2016-12-31"),
-                                     format="%Y-%m-%d", tz="UTC"))
+        ##20171014 See http://en.wikipedia.org/wiki/Leap_second and other sources for a list.  Updates can happen
+        ##20171014 # on June 30 and December 31 of any given year.  The information below was last updated
+        ##20171014 # in January, 2017.
+        ##20171014 # leapsOLD <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-12-31",
+        ##20171014 #                                   "1989-12-31", "1990-12-31", "1992-07-01", "1993-07-01", "1994-07-01",
+        ##20171014 #                                   "1995-12-31", "1997-07-01", "1998-12-31", "2005-12-31", "2008-12-31",
+        ##20171014 #                                   "2012-07-01", "2015-07-01", "2016-12-31"),
+        ##20171014 #                                 format="%Y-%m-%d", tz="UTC"))
+        ##20171014 message("leapsOLD ", paste(leapsOLD, collapse=" "))
+        leaps <- as.POSIXlt(.leap.seconds, tz="UTC")
+        ##20171014 message("leaps A ", paste(leaps, collapse=" "))
+        leaps <- leaps[leaps > as.POSIXlt("1980-01-01 00:00:00", tz="UTC")]
+        ##20171014 message("leaps B ", paste(leaps, collapse=" "))
+        leaps <- leaps[leaps > as.POSIXlt("1980-01-01 00:00:00", tz="UTC")]
+        ##20171014 message("leaps C ", paste(leaps, collapse=" "))
         t <- as.POSIXct("1999-08-22 00:00:00", tz="UTC") + 86400*7*t[, 1] + t[, 2]
+        toffset <- 0
+        ##>message("initially, t=", paste(t, collapse=" "))
         for (l in 1:length(leaps)) {
             t <- t - ifelse(t >= leaps[l], 1, 0)
+            ##20171014 message("l=", l, ", leaps[l]=", leaps[l],
+            ##20171014         ", t=", paste(t, collapse=" "), ", t>=leaps[l] ", t>=leaps[l])
         }
+        ##20171014 print(leapsOLD - leaps) # mostly 0 but a few one-day shifts; I trust .leap.seconds more
     } else if (type == "spss") {
         t <- as.POSIXct(t, origin="1582-10-14", tz=tz)
     } else if (type == "sas") {

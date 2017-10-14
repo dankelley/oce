@@ -33,19 +33,27 @@ test_that("binCount2D", {
 
 test_that("times", {
           expect_equal(numberAsPOSIXct(719529, "matlab"), ISOdatetime(1970,1,1,0,0,0,tz="UTC"))
-          expect_equal(numberAsPOSIXct(cbind(604,134351), type="gps"), as.POSIXct("2011-03-21 13:18:56",tz="UTC"))
+          ## The GPS test value was calculated as follows:
+          ## https://www.labsat.co.uk/index.php/en/gps-time-calculator
+          ## gives week=604 and sec=134336 (for the indicated date), IGNORING
+          ## leap seconds. However, 
+          ## https://confluence.qps.nl/display/KBE/UTC+to+GPS+Time+Correction#UTCtoGPSTimeCorrection-UTC(CoordinatedUniversalTime)
+          ## indicates that a 15-second correction was needed for GPS to UTC, so
+          ## we do that in the test value.
+          expect_equal(numberAsPOSIXct(cbind(604, 134336+15), type="gps"),
+                       as.POSIXct("2011-03-21 13:18:56",tz="UTC"))
           ## Matlab times; see http://www.mathworks.com/help/matlab/ref/datenum.html
           mt <- 7.362007209411687e5
           expect_equal(as.numeric(numberAsPOSIXct(mt, "matlab", tz="UTC")),
                        as.numeric(as.POSIXct("2015-08-24 17:18:09", tz="UTC")), tolerance=1)
           ## NCEP1 times; test value from
           ## http://coastwatch.pfeg.noaa.gov/erddap/convert/time.html?isoTime=2015-09-04T12%3A00%3A00Z&units=hours+since+1800-01-01
-          expect_equal(as.numeric(numberAsPOSIXct(1890564, "ncep1")), 
+          expect_equal(as.numeric(numberAsPOSIXct(1890564, "ncep1")),
                        as.numeric(as.POSIXct("2015-09-04 12:00:00", tz="UTC")), tolerance=1)
           ## NCEP2 times; see http://www.esrl.noaa.gov/psd/data/gridded/faq.html#3
           ## and also https://github.com/dankelley/oce/issues/739, the latter
           ## documenting what is essentially a kludge for this to work.
-          expect_equal(as.numeric(numberAsPOSIXct(725738, "ncep2")), 
+          expect_equal(as.numeric(numberAsPOSIXct(725738, "ncep2")),
                        as.numeric(as.POSIXct("1988-01-01 00:00:00", tz="UTC")), tolerance=1)
 })
 
