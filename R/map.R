@@ -1680,7 +1680,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         if (is.finite(l)) {
             if (boxLonLat$ok && !(boxLonLat$latmin <= l & l <= boxLonLat$latmax)) {
                 oceDebug(debug, "SKIPPING latitude =", l, "line\n")
-                print(boxLonLat)
+                if (debug > 1) print(boxLonLat)
                 next
             }
             oceDebug(debug, "drawing longitude =", l, "line\n")
@@ -1731,7 +1731,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         if (is.finite(l)) {
             if (boxLonLat$ok && !(boxLonLat$lonmin <= l & l <= boxLonLat$lonmax)) {
                 oceDebug(debug, "SKIPPING longitude =", l, "line\n")
-                print(boxLonLat)
+                if (debug > 1) print(boxLonLat)
                 ##browser()
                 next
             }
