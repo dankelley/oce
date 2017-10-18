@@ -951,63 +951,76 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         par(mai=the.mai, cex=cex)
         drawPalette(mai=rep(0, 4))
     }
-    if (fill) {
-        xx <- c(x[1], x, x[length(x)])
-        yy <- c(0, y, 0)
-        plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
-             xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
-             xlab=xlab, ylab=ylab,
-             type=type, cex=cex, ...)
-        fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
-        do.call(polygon, list(x=xx, y=yy, col=fillcol))
-    } else {
-        plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
-             xlim=if (missing(xlim)) NULL else xlim,
-             ylim=if (missing(ylim)) NULL else ylim,
-             xlab=xlab, ylab=ylab,
-             type=type, cex=cex, ...)
-    }
-    xat <- NULL
-    yat <- NULL
-    if (axes) {
-        xaxt <- list(...)["xaxt"]
-        drawxaxis <- !is.null(xaxt) && xaxt != 'n'
-        yaxt <- list(...)["yaxt"]
-        drawyaxis <- !is.null(yaxt) && yaxt != 'n'
-        if (drawxaxis) {
-            xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
-                                      mgp=mgp,
-                                      xlim=if (missing(xlim)) range(x) else xlim,
-                                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                                      tformat=tformat,
-                                      debug=debug-1)
-            xat <- xlabs
-            oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse=","), ")", "\n", sep="")
-        }
-        if (grid) {
-            lwd <- par("lwd")
-            if (drawxaxis)
-                abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
-            yaxp <- par("yaxp")
-            abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
-                   col="lightgray", lty="dotted", lwd=lwd)
-        }
+    xrange <- range(x, na.rm=TRUE)
+    yrange <- range(y, na.rm=TRUE)
+    if (!is.finite(yrange[1])) {
+        plot(xrange, c(0, 1), axes=FALSE, xaxs=xaxs, yaxs=yaxs,
+             xlim=if (xlimGiven) xlim else xrange,
+             xlab=xlab, ylab=ylab, type='n')
+        oce.axis.POSIXct(1, drawTimeRange=FALSE)
         box()
-        ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
-        if (drawyaxis)
-            axis(2, cex.axis=cex.axis, cex=cex.axis)
-        yat <- axis(4, labels=FALSE)
+        mtext("bad data", side=3, line=-1, cex=cex)
+        warning("no valid data for '", ylab, "'", sep="")
+        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
+        return()
+     } else {
+        if (fill) {
+            xx <- c(x[1], x, x[length(x)])
+            yy <- c(0, y, 0)
+            plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
+                 xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
+                 xlab=xlab, ylab=ylab,
+                 type=type, cex=cex, ...)
+            fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
+            do.call(polygon, list(x=xx, y=yy, col=fillcol))
+        } else {
+            plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
+                 xlim=if (missing(xlim)) NULL else xlim,
+                 ylim=if (missing(ylim)) NULL else ylim,
+                 xlab=xlab, ylab=ylab,
+                 type=type, cex=cex, ...)
+        }
+        xat <- NULL
+        yat <- NULL
+        if (axes) {
+            xaxt <- list(...)["xaxt"]
+            drawxaxis <- !is.null(xaxt) && xaxt != 'n'
+            yaxt <- list(...)["yaxt"]
+            drawyaxis <- !is.null(yaxt) && yaxt != 'n'
+            if (drawxaxis) {
+                xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
+                                          mgp=mgp,
+                                          xlim=if (missing(xlim)) range(x) else xlim,
+                                          cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                          tformat=tformat,
+                                          debug=debug-1)
+                xat <- xlabs
+                oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse=","), ")", "\n", sep="")
+            }
+            if (grid) {
+                lwd <- par("lwd")
+                if (drawxaxis)
+                    abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
+                yaxp <- par("yaxp")
+                abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
+                       col="lightgray", lty="dotted", lwd=lwd)
+            }
+            box()
+            ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
+            if (drawyaxis)
+                axis(2, cex.axis=cex.axis, cex=cex.axis)
+            yat <- axis(4, labels=FALSE)
+        }
+        if (grid)
+            grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
+        if (!is.null(adorn)) {
+            t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
+            if (class(t) == "try-error")
+                warning("cannot evaluate adorn {", format(adorn), "}")
+        }
+        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
+        invisible(list(xat=xat, yat=yat))
     }
-    if (grid)
-        grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
-    if (!is.null(adorn)) {
-        t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
-        if (class(t) == "try-error")
-            warning("cannot evaluate adorn {", format(adorn), "}")
-    }
-    ##par(cex=ocex)
-    oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
-    invisible(list(xat=xat, yat=yat))
 }
 
 

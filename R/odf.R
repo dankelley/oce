@@ -119,34 +119,69 @@ setMethod(f="subset",
 #' and those types tend to have more useful plots.
 #'
 #' @param x A \code{odf} object, e.g. one inheriting from \code{\link{odf-class}}.
+#'
+#' @param useBlanks A logical value that indicates whether to include dummy
+#' plots for data items that lack any finite values.
+#'
+#' @template debugTemplate
+#'
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{odf} data
 setMethod(f="plot",
           signature=signature("odf"),
-          definition=function(x) {
+          definition=function(x, useBlanks=TRUE,
+                              debug=getOption("oceDebug")) {
+              oceDebug(debug, "plot,odf-method(..., useBlanks=", useBlanks, "...) {\n", sep="", unindent=1)
               data <- x@data
               dataNames <- names(data)
+              ## At the start, n is the number of non-time variables, but
+              ## later on we might switch it to equal nok, which is the 
+              ## number of non-time variables that contain finite data.
               n <- length(dataNames)
+              if ("time" %in% dataNames)
+                  n <- n - 1
+              if (useBlanks) {
+                  nok <- n
+              } else {
+                  nok <- 0
+                  for (i in 1:n) {
+                      if (dataNames[i] != "time" && any(is.finite(data[[i]])))
+                          nok <- nok + 1
+                  }
+              }
               time <- data$time
               if (!is.null(time)) {
+                  if (!useBlanks)
+                      n <- nok
                   if (n > 5) {
-                      N <- 1 + as.integer(sqrt(n - 1))
-                      par(mfrow=c(N, N))
-                      ## NOTE: this will often leave blank spots
+                      ## make a roughly square grid
+                      N <- as.integer(0.5 + sqrt(n - 1))
+                      M <- as.integer(n / N)
+                      ## may need to add 1, but use a loop in case my logic is mixed up
+                      ## if that would 
+                      while (N * M < n)
+                          M <- M + 1
+                      par(mfrow=c(N, M))
+                      oceDebug(debug, "N=", N, ", M=", M, ", prod=", N*M, ", n=", n, "\n", sep="")
                   } else {
                       par(mfrow=c(n-1, 1))
                   }
-                  for (i in 1:n) {
+                  for (i in seq_along(dataNames)) {
                       if (dataNames[i] != "time") {
-                          oce.plot.ts(time, data[[dataNames[i]]],
-                                      ylab=dataNames[i], mar=c(2, 3, 0.5, 1), drawTimeRange=FALSE)
+                          y <- data[[dataNames[i]]]
+                          yok <- any(is.finite(y))
+                          if (useBlanks || yok)
+                              oce.plot.ts(time, y, ylab=dataNames[i], mar=c(2, 3, 0.5, 1), drawTimeRange=FALSE)
+                          if (!yok)
+                              warning(paste("In plot,odf-method() : '", dataNames[i], "' has no finite data", sep=""), call.=FALSE)
                       }
                   }
               } else {
                   flags <- grepl("^.*[fF]lag$", dataNames)
                   pairs(data.frame(data)[,!flags], labels=dataNames[!flags])
               }
+              oceDebug(debug, "} # plot,odf-method\n", sep="", unindent=1)
           })
 
 
