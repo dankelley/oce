@@ -130,7 +130,13 @@ setMethod(f="plot",
               n <- length(dataNames)
               time <- data$time
               if (!is.null(time)) {
-                  par(mfrow=c(n-1, 1))
+                  if (n > 5) {
+                      N <- 1 + as.integer(sqrt(n - 1))
+                      par(mfrow=c(N, N))
+                      ## NOTE: this will often leave blank spots
+                  } else {
+                      par(mfrow=c(n-1, 1))
+                  }
                   for (i in 1:n) {
                       if (dataNames[i] != "time") {
                           oce.plot.ts(time, data[[dataNames[i]]],
