@@ -5,12 +5,12 @@
 \alias{plot,odf-method}
 \title{Plot an ODF Object}
 \usage{
-\S4method{plot}{odf}(x, useBlanks = TRUE, debug = getOption("oceDebug"))
+\S4method{plot}{odf}(x, blanks = TRUE, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{A \code{odf} object, e.g. one inheriting from \code{\link{odf-class}}.}
 
-\item{useBlanks}{A logical value that indicates whether to include dummy
+\item{blanks}{A logical value that indicates whether to include dummy
 plots for data items that lack any finite values.}
 
 \item{debug}{an integer specifying whether debugging information is
@@ -23,13 +23,17 @@ by specifying higher \code{debug} values.}
 }
 \description{
 Plot data contained within an ODF object,
-using \code{\link{oce.plot.ts}} to create panels of time-series plots for all
-the columns contained in the \code{odf} object. If the object's \code{data}
-slot does not contain \code{time}, then \code{\link{pairs}} is used to plot
-all the elements in the slot. These actions are both crude and there are
-no arguments to control the behaviour, but this function is really just a stop-gap
-measure, since in practical work \code{odf} objects are usually cast to other types,
-and those types tend to have more useful plots.
+using \code{\link{oce.plot.ts}} to create panels of time-series plots for
+all the columns contained in the \code{odf} object (or just those that
+contain at least one finite value, if \code{blanks} is \code{FALSE}).
+If the object's \code{data} slot does not contain \code{time}, then
+\code{\link{pairs}} is used to plot all the elements in the \code{data}
+slot that contain at least one finite value.
+These actions are both
+crude and there are no arguments to control the behaviour, but this
+function is really just a stop-gap measure, since in practical work
+\code{odf} objects are usually cast to other types, and those types
+tend to have more useful plots.
 }
 \seealso{
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
