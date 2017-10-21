@@ -814,6 +814,18 @@ imagep <- function(x, y, z,
             } else {
                 breaks <- colormap$breaks
                 col <- colormap$col
+                zlim <- colormap$zlim
+                ## FIXME: need to check zclip here too
+                zclip <- colormap$zclip
+            }
+            if (!zclip) {
+                oceDebug(debug, "using zlim[1:2]=c(", zlim[1], ",", zlim[2], ") for out-of-range values\n")
+                z[z < zlim[1]] <- zlim[1]
+                z[z > zlim[2]] <- zlim[2]
+            } else {
+              oceDebug(debug, "using missingColour for out-of-range values")
+                z[z < zlim[1]] <- NA
+                z[z > zlim[2]] <- NA
             }
             oceDebug(debug, "decimate: ", paste(decimate, collapse=" "), " (before calculation)\n")
             if (is.logical(decimate)) {
@@ -827,7 +839,8 @@ imagep <- function(x, y, z,
             iy <- seq(1L, length(y), by=decimate[2])
             if (is.function(col))
                 col <- col(n=length(breaks)-1)
-            image(x[ix], y[iy], z[ix, iy], breaks=breaks, col=col, add=TRUE, useRaster=useRaster)
+            image(x[ix], y[iy], z[ix, iy], breaks=breaks, col=col, useRaster=useRaster, #why useRaster?
+                  add=TRUE)
             return(invisible(list(xat=NULL, yat=NULL, decimate=decimate)))
         }
     } else {
