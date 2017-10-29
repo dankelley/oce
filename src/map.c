@@ -8,7 +8,6 @@
 
 /*
 
-
    system("R CMD SHLIB map.c") 
    dyn.load("map.so")
    D <- .Call("assemble_polygons", c(0, 1, 2), c(10, 11, 12))
@@ -317,8 +316,10 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
             }
         }
     }
-    SET_LENGTH(xc, j);
-    SET_LENGTH(yc, j);
+    if (j > 0 && j < xlen) {
+        SET_LENGTH(xc, j);
+        SET_LENGTH(yc, j);
+    }
 
     SEXP res;
     SEXP res_names;
