@@ -239,3 +239,90 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
 #undef ij
 }
 
+SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vectors
+{
+    //int nrow = INTEGER(GET_DIM(z))[0];
+    //int ncol = INTEGER(GET_DIM(z))[1];
+    PROTECT(x = AS_NUMERIC(x));
+    PROTECT(y = AS_NUMERIC(y));
+    PROTECT(usr = AS_NUMERIC(usr));
+    int nusr = LENGTH(usr);
+    if (nusr != 4) error("'usr' must hold 4 values");
+    double *usrp = REAL(usr); // left right bottom top
+    double *xp = REAL(x);
+    double *yp = REAL(y);
+    int xlen = length(x);
+    int ylen = length(y);
+    if (xlen != ylen)
+        error("'x' and 'y' must be of same length");
+    if (xlen < 2)
+        error("must have at least two 'x' and 'y' pairs");
+    // will copy into xc and yc . FIXME: how to set their length?
+    SEXP xc;
+    PROTECT(xc = allocVector(REALSXP, xlen));
+    double *xcp = REAL(xc);
+    SEXP yc;
+    PROTECT(yc = allocVector(REALSXP, xlen));
+    double *ycp = REAL(yc);
+    double distMIN = 10e6; // FIXME: temporary to find problem in Greenland
+    // Find chunks, and copy over any of them that contain at least 1 datum in
+    // the usr window.
+    int i, j = 0;
+    Rprintf("usrp=%.0f %.0f %.0f %.0f\n", usrp[0], usrp[1], usrp[2], usrp[3]);
+    for (i = 0; i < xlen; i++) { 
+        if (ISNA(xp[i])) {
+            // i points to the NA at the end of a sequence; only emit one NA
+            // even if there might be multiples
+            Rprintf("TOP NA i=%d j=%d; xlen=%d\n", i, j, xlen);
+            if (j == 0 || !ISNA(xcp[j-1])) {
+                xcp[j] = NA_REAL;
+                ycp[j] = NA_REAL;
+                j++;
+            }
+        } else {
+            if (usrp[0] <= xp[i] && xp[i] <= usrp[1] && usrp[2] <= yp[i] && yp[i] <= usrp[3]) {
+                for (int ii = i; ii < xlen; ii++) {
+                    if (ISNAN(xp[ii])) {
+                        Rprintf("NA (end of trace) i=%d ii=%d j=%d\n", i, ii, j);
+                        xcp[j] = NA_REAL;
+                        ycp[j] = NA_REAL;
+                        j++;
+                        i = j; // FIXME: or -1 or +1?
+                        break;
+                    } else {
+                        double dx = xp[ii] - (-1.0e6);
+                        double dy = yp[ii] - (-0.5e6);
+                        double dist = sqrt(dx*dx + dy*dy) / 1000.0;
+                        Rprintf("INSIDE i=%d ii=%d j=%d xp[i]=%.0f yp[i]=%.0f\n", i, ii, j, xp[i], yp[i]);
+                        if (dist < distMIN) {
+                            Rprintf("CLOSEST\n");
+                            distMIN = dist;
+                        }
+                        xcp[j] = xp[ii];
+                        ycp[j] = yp[ii];
+                        j++;
+                    }
+                }
+            } else {
+                Rprintf("OUTSIDE i=%d j=%d xp[i]=%.0f yp[i]=%.0f\n", i, j, xp[i], yp[i]);
+            }
+        }
+    }
+    if (j > 0 && j < xlen) {
+        SET_LENGTH(xc, j-1);
+        SET_LENGTH(yc, j-1);
+    }
+
+    SEXP res;
+    SEXP res_names;
+    PROTECT(res = allocVector(VECSXP, 2));
+    PROTECT(res_names = allocVector(STRSXP, 2));
+    SET_VECTOR_ELT(res, 0, xc);
+    SET_STRING_ELT(res_names, 0, mkChar("x"));
+    SET_VECTOR_ELT(res, 1, yc);
+    SET_STRING_ELT(res_names, 1, mkChar("y"));
+    setAttrib(res, R_NamesSymbol, res_names);
+    UNPROTECT(7);
+    return(res);
+}
+ 

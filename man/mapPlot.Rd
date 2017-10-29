@@ -5,10 +5,10 @@
 \title{Draw a Map}
 \usage{
 mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg, fill,
-  border = NULL, col = NULL, type = "polygon", axes = TRUE, cex,
-  cex.axis = 1, mgp = c(0, 0.5, 0), drawBox = TRUE, showHemi = TRUE,
-  polarCircle = 0, lonlabel = NULL, latlabel = NULL, sides = NULL,
-  projection = "+proj=moll", tissot = FALSE, trim = TRUE,
+  border = NULL, col = NULL, clip = TRUE, type = "polygon",
+  axes = TRUE, cex, cex.axis = 1, mgp = c(0, 0.5, 0), drawBox = TRUE,
+  showHemi = TRUE, polarCircle = 0, lonlabel = NULL, latlabel = NULL,
+  sides = NULL, projection = "+proj=moll", tissot = FALSE, trim = TRUE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -58,6 +58,14 @@ or the colour of the points and line segments (if \code{type="p"},
 will be set: no coastline filling for the \code{type="polygon"} case,
 or black coastlines, for \code{type="p"}, \code{type="l"}, or
 \code{type="o"}.}
+
+\item{clip}{logical value indicating whether to trim any coastline elements that lie wholly
+outside the plot region. This can prevent e.g. a problem of filling the whole plot area of
+an Arctic stereopolar view, because the projected trace for Antarctica lies outside all 
+other regions so the whole of the world ends up being "land".  Setting \code{clip=FALSE}
+disables this action, which may be of benefit in rare instances in the line connecting
+two points on a coastline may cross the plot domain, even if those points are outside
+that domain.}
 
 \item{type}{indication of type; may be \code{"polygon"}, for a filled polygon,
 \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
