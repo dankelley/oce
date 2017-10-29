@@ -250,8 +250,6 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
 
 SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vectors
 {
-    //int nrow = INTEGER(GET_DIM(z))[0];
-    //int ncol = INTEGER(GET_DIM(z))[1];
     PROTECT(x = AS_NUMERIC(x));
     PROTECT(y = AS_NUMERIC(y));
     PROTECT(usr = AS_NUMERIC(usr));
@@ -266,30 +264,25 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
         error("'x' and 'y' must be of same length");
     if (xlen < 2)
         error("must have at least two 'x' and 'y' pairs");
-    // Growable buffers
+    // xcb and ycb are growable buffers; we copy to xc and yc near the end.
     int clen = xlen - 100; // FIXME make +100; the -100 is for testing
     double *xcb = (double*)Calloc((size_t)clen, double);
     double *ycb = (double*)Calloc((size_t)clen, double);
-    // will copy into xc and yc . FIXME: how to set their length?
-    //SEXP xc;
-    // FIXME: allocating double length, which is guaranteed to be enough
-    // FIXME: to add in a few close-the-polygon points
-    //> int clen = xlen - 100;
-    //> PROTECT(xc = allocVector(REALSXP, clen));
-    //> double *xcp = REAL(xc);
-    //> SEXP yc;
-    //> PROTECT(yc = allocVector(REALSXP, clen));
-    //> double *ycp = REAL(yc);
+#ifdef DEBUG
     double distMIN = 10e6; // FIXME: temporary to find problem in Greenland
-    // Find chunks, and copy over any of them that contain at least 1 datum in
-    // the usr window.
+#endif
+    // Find chunks, and copy any with 1 or more datum in the usr window.
     int i, j = 0;
+#ifdef DEBUG
     Rprintf("usrp=%.0f %.0f %.0f %.0f\n", usrp[0], usrp[1], usrp[2], usrp[3]);
+#endif
     for (i = 0; i < xlen; i++) { 
         if (ISNA(xp[i])) {
             // i points to the NA at the end of a sequence; only emit one NA
             // even if there might be multiples
+#ifdef DEBUG
             Rprintf("TOP NA i=%d j=%d; xlen=%d\n", i, j, xlen);
+#endif
             if (j == 0 || !ISNA(xcb[j-1])) {
                 xcb[j] = NA_REAL;
                 ycb[j] = NA_REAL;
@@ -299,10 +292,13 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
             if (usrp[0] <= xp[i] && xp[i] <= usrp[1] && usrp[2] <= yp[i] && yp[i] <= usrp[3]) {
                 for (int ii = i; ii < xlen; ii++) {
                     if (ISNAN(xp[ii])) {
+#ifdef DEBUG
                         Rprintf("NA (end of trace) i=%d ii=%d j=%d\n", i, ii, j);
+#endif
                         if (ii > 0 && xp[ii-1] != xp[i] && yp[ii-1] != yp[i]) { // FIXME: close polygons
-                            Rprintf("COMPLETING broken polygon at i=%d ii=%d j=%d, repeating xp=%f yp=%f\n",
-                                    i,ii,j,xp[i],yp[i]);
+#ifdef DEBUG
+                            Rprintf("COMPLETING broken polygon at i=%d ii=%d j=%d, repeating xp=%f yp=%f\n", i,ii,j,xp[i],yp[i]);
+#endif
                             xcb[j] = xp[i];
                             ycb[j] = yp[i];
                             INCREMENT_J;
@@ -313,6 +309,7 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
                         i = ii; // FIXME: or -1 or +1?
                         break;
                     } else {
+#ifdef DEBUG
                         double dx = xp[ii] - (-1.0e6);
                         double dy = yp[ii] - (-0.5e6);
                         double dist = sqrt(dx*dx + dy*dy) / 1000.0;
@@ -321,13 +318,16 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
                             Rprintf("CLOSEST\n");
                             distMIN = dist;
                         }
+#endif
                         xcb[j] = xp[ii];
                         ycb[j] = yp[ii];
                         INCREMENT_J;
                     }
                 }
             } else {
+#ifdef DEBUG
                 Rprintf("OUTSIDE i=%d j=%d xp[i]=%.0f yp[i]=%.0f\n", i, j, xp[i], yp[i]);
+#endif
             }
         }
     }
