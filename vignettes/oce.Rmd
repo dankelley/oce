@@ -17,6 +17,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+<!-- HOW TO BUILD THE VIGNETTE. -->
+<!-- 1. edit this file in vignettes/oce.Rmd -->
+<!-- 2. run devtools::build_vignettes() -->
+<!-- 3. build oce -->
+
+
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
@@ -460,7 +466,7 @@ lat <- topo[["latitude"]]
 z <- topo[["z"]]
 cm <- colormap(name="gmt_globe")
 drawPalette(colormap=cm)
-mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
+mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE, col="lightgray")
 mapImage(lon, lat, z, colormap=cm)
 ```
 
@@ -473,16 +479,16 @@ par(mar=c(2, 2, 1, 1))
 lonlim <- c(-80, 0)
 latlim <- c(20, 60)
 mapPlot(coastlineWorld, projection="+proj=lcc +lat_1=30 +lat_2=50 +lon_0=-40",
-        longitudelim=lonlim, latitudelim=latlim)
+        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
 ```
 
 Other common mid-latitude projections include Mercator and Albers Equal-Area
 Conic, produced as follows.
 ```{r , fig.keep="none"}
 mapPlot(coastlineWorld, projection="+proj=merc",
-        longitudelim=lonlim, latitudelim=latlim)
+        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
 mapPlot(coastlineWorld, projection="+proj=aea +lat_1=30 +lat_2=70 +lon_0=-40",
-        longitudelim=lonlim, latitudelim=latlim)
+        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
 ```
 
 ## Popular high-latitude projections
@@ -492,7 +498,7 @@ Figure 8 was produced with the following.
 ```{r fig.cap="**Figure 8.** Arctic coastlines in stereopolar projection.", fig.width=3, fig.height=3, dpi=72}
 par(mar=c(2, 2, 1, 1))
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-        longitudelim=c(-80,0), latitudelim=c(70, 110))
+        col="lightgray", longitudelim=c(-80,0), latitudelim=c(70, 110))
 ```
 
 

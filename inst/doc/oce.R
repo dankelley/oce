@@ -115,7 +115,7 @@ lat <- topo[["latitude"]]
 z <- topo[["z"]]
 cm <- colormap(name="gmt_globe")
 drawPalette(colormap=cm)
-mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
+mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE, col="lightgray")
 mapImage(lon, lat, z, colormap=cm)
 
 ## ----fig.cap="**Figure 7.** North Atlantic in Lambert Conformal Conic projection.", fig.width=5, fig.height=3, dpi=72----
@@ -123,18 +123,18 @@ par(mar=c(2, 2, 1, 1))
 lonlim <- c(-80, 0)
 latlim <- c(20, 60)
 mapPlot(coastlineWorld, projection="+proj=lcc +lat_1=30 +lat_2=50 +lon_0=-40",
-        longitudelim=lonlim, latitudelim=latlim)
+        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
 
 ## ---- fig.keep="none"----------------------------------------------------
 mapPlot(coastlineWorld, projection="+proj=merc",
-        longitudelim=lonlim, latitudelim=latlim)
+        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
 mapPlot(coastlineWorld, projection="+proj=aea +lat_1=30 +lat_2=70 +lon_0=-40",
-        longitudelim=lonlim, latitudelim=latlim)
+        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
 
 ## ----fig.cap="**Figure 8.** Arctic coastlines in stereopolar projection.", fig.width=3, fig.height=3, dpi=72----
 par(mar=c(2, 2, 1, 1))
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-        longitudelim=c(-80,0), latitudelim=c(70, 110))
+        col="lightgray", longitudelim=c(-80,0), latitudelim=c(70, 110))
 
 ## ----fig.cap="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour.", fig.width=5, fig.height=4, dpi=72, dev.args=list(pointsize=16)----
 library(oce)
@@ -251,7 +251,6 @@ oo <- new("uv", t, u, v, lon, lat)
 setMethod(f="summary",
           signature="uv",
           definition=function(object, ...) {
-              mnames <- names(object@metadata)
               cat("uv Summary\n-----------\n\n", ...)
               cat(paste("* Location:           ",
                         sprintf("%.5f N", object@metadata$latitude), ", ",
