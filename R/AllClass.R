@@ -196,7 +196,6 @@ setMethod(f="summary",
                   cat("\n")
               }
               processingLogShow(object)
-              invisible()
           })
 
 
