@@ -732,46 +732,23 @@ setMethod(f="[[<-",
 #'
 #' Assemble data into a \code{\link{ctd-class}} dataset.
 #'
-#' If the first argument is an \code{\link{rsk-class}} object, the pressure it
-#' contains may need to be adjusted, because \code{rsk} objects may contain
-#' either absolute pressure or sea pressure. This adjustment is handled
-#' automatically by \code{as.ctd}, by examination of the metadata item
-#' named \code{pressureType} (described in the documentation for
-#' \code{\link{read.rsk}}).  Once the sea pressure is determined,
-#' adjustments may be made with the \code{pressureAtmospheric} argument,
-#' although in that case it is better considered a pressure adjustment
-#' than the atmospheric pressure.
-#'
-#' \code{\link{rsk-class}} objects may store sea pressure or absolute pressure (the
-#' sum of sea pressure and atmospheric pressure), depending on how the object was
-#' created with \code{\link{as.rsk}} or \code{\link{read.rsk}}.  However,
-#' \code{\link{ctd-class}} objects store sea pressure, which is needed for
-#' plotting, calculating density, etc. This poses no difficulities, however,
-#' because \code{as.ctd} automatically converts absolute pressure to sea pressure,
-#' if the metadata in the \code{\link{rsk-class}} object indicates that this is
-#' appropriate. Further alteration of the pressure can be accomplished with the
-#' \code{pressureAtmospheric} argument, as noted above.
-#'
-#' @param salinity There are three choices for \code{salinity}. (1) It can be a
+#' @param salinity There are several distinct choices for \code{salinity}.
+#' (1) It can be a
 #' vector indicating the practical salinity through the water column. In that case,
-#' \code{as.ctd} employs the other arguments listed below. (2) It can be
-#' something (a data frame, a list or an \code{oce}
-#' object) from which practical
-#' salinity, temperature, pressure, and conductivity can be inferred. In that
-#' case, the relevant information
+#' \code{as.ctd} employs the other arguments listed below. (2)
+#' it can be something (a data frame, a list or an \code{oce} object)
+#' from which practical salinity, temperature, pressure, and conductivity
+#' can be inferred. In this case, the relevant information
 #' is extracted  and the other arguments to \code{as.ctd} are ignored, except for
 #' \code{pressureAtmospheric}. If the first argument has salinity, etc., in
 #' matrix form (as can happen with some objects of \code{\link{argo-class}}),
 #' then only the first column is used, and a warning to that effect is given,
 #' unless the \code{profile} argument is specified and then that specific
-#' profile is extracted.
-#' If the first argument is an object of \code{\link{rsk-class}},
-#' then \code{as.ctd} passes
-#' it, \code{pressureAtmospheric}, \code{longitude} and \code{latitude}
-#' to \code{\link{rsk2ctd}}, which
-#' does the real work. (3) It can be unspecified, in which
-#' case \code{conductivity} becomes a mandatory argument, because it will
-#' be needed for computing actual salinity, using \code{\link{swSCTp}}.
+#' profile is extracted. (3) It can be an object of \code{\link{rsk-class}},
+#' (see \dQuote{Converting rsk objects} for details). (4)
+#' It can be unspecified, in whch case \code{conductivity} becomes a mandatory
+#' argument, because it will be needed for computing actual salinity,
+#' using \code{\link{swSCTp}}.
 #'
 #' @param temperature \emph{in-situ} temperature [\eqn{^\circ deg}C], defined on
 #' the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
@@ -819,23 +796,10 @@ setMethod(f="[[<-",
 #' flags. The elements of this list must have names that match the data
 #' provided to the object.
 #'
-##1108 @param pressureType a character string indicating the type of pressure; may be
-##1108 \code{"absolute"}, for total pressure, i.e. the sum of atmospheric pressure
-##1108 and sea pressure, or \code{"sea"}.
-#'
 #' @param missingValue optional missing value, indicating data that should be
 #' taken as \code{NA}. Set to \code{NULL} to turn off this feature.
 #'
-##1108 @param quality \strong{(deprecated)} optional quality flag, e.g. from the salinity quality flag in WOCE data.
-##1108 (In WOCE, \code{quality=2} indicates good data, \code{quality=3} means
-##1108 questionable data, and \code{quality=4} means bad data.
-##1108 This was deprecated in March 2016; see \link{oce-deprecated}.
-#'
-##1108 @param filename optional source filename to be stored in the object
-#'
 #' @param type optional type of CTD, e.g. "SBE"
-#'
-##1108 @param model optional model of instrument
 #'
 #' @param serialNumber optional serial number of instrument
 #'
@@ -911,6 +875,38 @@ setMethod(f="[[<-",
 #'
 #' @template debugTemplate
 #'
+#' @section Converting rsk objects:
+#' If the \code{salinity} argument is an object of \code{\link{rsk-class}},
+#' then \code{as.ctd} passes it,
+#' \code{pressureAtmospheric},
+#' \code{longitude},
+#' \code{latitude}
+#' \code{ship},
+#' \code{cruise},
+#' and
+#' \code{station}
+#' to \code{\link{rsk2ctd}}, which returns a ctd object.
+#'
+#' Note that \code{\link{rsk-class}} object contain pressure in a form that
+#' may need to be adjusted, because \code{rsk} objects may contain
+#' either absolute pressure or sea pressure. This adjustment is handled
+#' automatically by \code{as.ctd}, by examination of the metadata item
+#' named \code{pressureType} (described in the documentation for
+#' \code{\link{read.rsk}}).  Once the sea pressure is determined,
+#' adjustments may be made with the \code{pressureAtmospheric} argument,
+#' although in that case it is better considered a pressure adjustment
+#' than the atmospheric pressure.
+#'
+#' \code{\link{rsk-class}} objects may store sea pressure or absolute pressure (the
+#' sum of sea pressure and atmospheric pressure), depending on how the object was
+#' created with \code{\link{as.rsk}} or \code{\link{read.rsk}}.  However,
+#' \code{\link{ctd-class}} objects store sea pressure, which is needed for
+#' plotting, calculating density, etc. This poses no difficulities, however,
+#' because \code{as.ctd} automatically converts absolute pressure to sea pressure,
+#' if the metadata in the \code{\link{rsk-class}} object indicates that this is
+#' appropriate. Further alteration of the pressure can be accomplished with the
+#' \code{pressureAtmospheric} argument, as noted above.
+#'
 #' @return An object of \code{\link{ctd-class}}.
 #'
 #' @examples
@@ -949,11 +945,8 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    ##1108 pressureType="sea",
                    missingValue=NULL,
                    ##1108 quality=NULL, filename="",
-                   type="",
-                   ##1108 model="",
-                   serialNumber="", ship="",
-                   ##1108 scientist="", institute="", address="",
-                   cruise="", station="",
+                   type="", serialNumber="",
+                   ship="", cruise="", station="",
                    ##1108 date=NULL,
                    startTime=NULL,
                    ##1108 recovery=NULL,
@@ -970,6 +963,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
         res <- rsk2ctd(salinity, pressureAtmospheric=pressureAtmospheric, 
                        longitude=longitude, latitude=latitude, 
+                       ship=ship, station=station, cruise=cruise,
                        debug=debug-1)
         oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
         return(res)

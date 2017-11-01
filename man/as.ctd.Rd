@@ -12,26 +12,23 @@ as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
   sampleInterval = NA, profile = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{salinity}{There are three choices for \code{salinity}. (1) It can be a
+\item{salinity}{There are several distinct choices for \code{salinity}.
+(1) It can be a
 vector indicating the practical salinity through the water column. In that case,
-\code{as.ctd} employs the other arguments listed below. (2) It can be
-something (a data frame, a list or an \code{oce}
-object) from which practical
-salinity, temperature, pressure, and conductivity can be inferred. In that
-case, the relevant information
+\code{as.ctd} employs the other arguments listed below. (2)
+it can be something (a data frame, a list or an \code{oce} object)
+from which practical salinity, temperature, pressure, and conductivity
+can be inferred. In this case, the relevant information
 is extracted  and the other arguments to \code{as.ctd} are ignored, except for
 \code{pressureAtmospheric}. If the first argument has salinity, etc., in
 matrix form (as can happen with some objects of \code{\link{argo-class}}),
 then only the first column is used, and a warning to that effect is given,
 unless the \code{profile} argument is specified and then that specific
-profile is extracted.
-If the first argument is an object of \code{\link{rsk-class}},
-then \code{as.ctd} passes
-it, \code{pressureAtmospheric}, \code{longitude} and \code{latitude}
-to \code{\link{rsk2ctd}}, which
-does the real work. (3) It can be unspecified, in which
-case \code{conductivity} becomes a mandatory argument, because it will
-be needed for computing actual salinity, using \code{\link{swSCTp}}.}
+profile is extracted. (3) It can be an object of \code{\link{rsk-class}},
+(see \dQuote{Converting rsk objects} for details). (4)
+It can be unspecified, in whch case \code{conductivity} becomes a mandatory
+argument, because it will be needed for computing actual salinity,
+using \code{\link{swSCTp}}.}
 
 \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ deg}C], defined on
 the ITS-90 scale; see \dQuote{Temperature units} in the documentation for
@@ -128,9 +125,21 @@ An object of \code{\link{ctd-class}}.
 \description{
 Assemble data into a \code{\link{ctd-class}} dataset.
 }
-\details{
-If the first argument is an \code{\link{rsk-class}} object, the pressure it
-contains may need to be adjusted, because \code{rsk} objects may contain
+\section{Converting rsk objects}{
+
+If the \code{salinity} argument is an object of \code{\link{rsk-class}},
+then \code{as.ctd} passes it,
+\code{pressureAtmospheric},
+\code{longitude},
+\code{latitude}
+\code{ship},
+\code{cruise},
+and
+\code{station}
+to \code{\link{rsk2ctd}}, which returns a ctd object.
+
+Note that \code{\link{rsk-class}} object contain pressure in a form that
+may need to be adjusted, because \code{rsk} objects may contain
 either absolute pressure or sea pressure. This adjustment is handled
 automatically by \code{as.ctd}, by examination of the metadata item
 named \code{pressureType} (described in the documentation for
@@ -149,6 +158,7 @@ if the metadata in the \code{\link{rsk-class}} object indicates that this is
 appropriate. Further alteration of the pressure can be accomplished with the
 \code{pressureAtmospheric} argument, as noted above.
 }
+
 \examples{
 library(oce)
 ## 1. fake data, with default units

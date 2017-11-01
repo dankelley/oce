@@ -1171,16 +1171,24 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
 #' @param x An \code{rsk} object, i.e. one inheriting from \code{\link{rsk-class}}.
 #' @param pressureAtmospheric A numerical value (a constant or a vector),
 #' that is subtracted from the pressure in \code{object} before storing it in the return value.
-#' @param longitude numerical value of longitude, in degrees East
-#' @param latitude numerical value of latitude, in degrees North
+#' @param longitude numerical value of longitude, in degrees East.
+#' @param latitude numerical value of latitude, in degrees North.
+#' @param ship optional string containing the ship from which the observations were made.
+#' @param cruise optional string containing a cruise identifier.
+#' @param station optional string containing a station identifier.
 #' @template debugTemplate
-rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NA, latitude=NA, debug=getOption("oceDebug"))
+rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NA, latitude=NA,
+                    ship="", cruise="", station="",
+                    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "rsk2ctd(...) {\n", sep="", unindent=1)
     res <- new("ctd")
     res@metadata <- x@metadata
     res@metadata$longitude <- longitude
     res@metadata$latitude <- latitude
+    res@metadata$ship <- ship
+    res@metadata$station <- station
+    res@metadata$cruise <- cruise
     res@data <- x@data
     if (!("pressure" %in% names(res@data)))
         stop("there is no pressure in this rsk object, so it cannot be converted to a ctd object")
