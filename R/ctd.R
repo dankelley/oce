@@ -766,8 +766,9 @@ setMethod(f="[[<-",
 #' unless the \code{profile} argument is specified and then that specific
 #' profile is extracted.
 #' If the first argument is an object of \code{\link{rsk-class}},
-#' then \code{as.ctd} merely passes
-#' it and \code{pressureAtmospheric} to \code{\link{rsk2ctd}}, which
+#' then \code{as.ctd} passes
+#' it, \code{pressureAtmospheric}, \code{longitude} and \code{latitude}
+#' to \code{\link{rsk2ctd}}, which
 #' does the real work. (3) It can be unspecified, in which
 #' case \code{conductivity} becomes a mandatory argument, because it will
 #' be needed for computing actual salinity, using \code{\link{swSCTp}}.
@@ -967,7 +968,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 {
     if (!missing(salinity) && inherits(salinity, "rsk")) {
         oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
-        res <- rsk2ctd(salinity, pressureAtmospheric=pressureAtmospheric, debug=debug-1)
+        res <- rsk2ctd(salinity, pressureAtmospheric=pressureAtmospheric, 
+                       longitude=longitude, latitude=latitude, 
+                       debug=debug-1)
         oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
         return(res)
     }
