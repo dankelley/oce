@@ -136,9 +136,15 @@ then \code{as.ctd} passes it,
 \code{cruise},
 \code{station} and
 \code{deploymentType}
-to \code{\link{rsk2ctd}}, which returns a ctd object.
+to \code{\link{rsk2ctd}}, which builds the ctd object that is
+returned by \code{as.ctd}. The other arguments to \code{as.ctd}
+are ignored in this instance, because \code{rsk} objects already
+contain their information. If required, any data or metadata
+element can be added to the value returned by \code{as.ctd}
+using \code{\link{oceSetData}} or \code{\link{oceSetMetadata}},
+erspectively.
 
-Note that \code{\link{rsk-class}} object contain pressure in a form that
+The returned \code{\link{rsk-class}} object contains pressure in a form that
 may need to be adjusted, because \code{rsk} objects may contain
 either absolute pressure or sea pressure. This adjustment is handled
 automatically by \code{as.ctd}, by examination of the metadata item
