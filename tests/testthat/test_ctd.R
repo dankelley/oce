@@ -369,22 +369,40 @@ test_that("as.ctd(rsk) transfers information properly", {
           ctd <- as.ctd(rsk)
           expect_equal(ctd@metadata$units$pressure$scale, "sea")
           for (item in names(rsk@metadata)) {
-            if (item != "units" && item != "flags" && item != "dataNamesOriginal")
+            if (item != "units" && item != "flags" && item != "dataNamesOriginal") {
               expect_equal(rsk@metadata[[item]], ctd@metadata[[item]],
                            label=paste("checking metadata$", item, sep=""),
                            expected.label=rsk@metadata[[item]],
                            info=paste("failed while checking metadata$", item, sep=""))
+            }
           }
           for (item in names(rsk@data)) {
-            if (item != "pressure")
+            if (item != "pressure") {
               expect_equal(rsk@data[[item]], ctd@data[[item]],
                            label=paste("checking data$", item, sep=""),
                            expected.label=rsk@data[[item]],
                            info=paste("failed while checking data$", item, sep=""))
+            }
           }
           expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']])
           ctd <- as.ctd(rsk, pressureAtmospheric=1)
           expect_equal(ctd[['pressure']], rsk[['pressure']] - rsk[['pressureAtmospheric']] - 1)
+          ## specify some values to check that we can over-ride some metadata
+          latitude <- 42.244
+          longitude <- -8.76
+          ctd <- as.ctd(rsk,
+                        latitude=latitude,
+                        longitude=longitude,
+                        ship="SHIP",
+                        cruise="CRUISE",
+                        station="STATION",
+                        deploymentType="DEPLOYMENTTYPE")
+          expect_equal(ctd[["latitude"]], latitude)
+          expect_equal(ctd[["longitude"]], longitude)
+          expect_equal(ctd[["cruise"]], "CRUISE")
+          expect_equal(ctd[["ship"]], "SHIP")
+          expect_equal(ctd[["station"]], "STATION")
+          expect_equal(ctd[["deploymentType"]], "DEPLOYMENTTYPE")
 })
 
 test_that("ctdFindProfiles", {

@@ -144,7 +144,6 @@ setMethod(f="plot",
               ## number of non-time variables that contain finite data.
               if (!("time" %in% dataNames)) {
                   finite <- unlist(lapply(data, function(col) any(is.finite(col))))
-                  df <- data.frame(data)[, finite]
                   pairs(data.frame(data)[, finite], labels=dataNames[finite])
               } else {
                   ## Define n as the number of non-time data items and nok as the
