@@ -2700,7 +2700,6 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
         leaps <- leaps[leaps > as.POSIXlt("1980-01-01 00:00:00", tz="UTC")]
         ##20171014 message("leaps C ", paste(leaps, collapse=" "))
         t <- as.POSIXct("1999-08-22 00:00:00", tz="UTC") + 86400*7*t[, 1] + t[, 2]
-        toffset <- 0
         ##>message("initially, t=", paste(t, collapse=" "))
         for (l in 1:length(leaps)) {
             t <- t - ifelse(t >= leaps[l], 1, 0)
