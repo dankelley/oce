@@ -883,8 +883,8 @@ setMethod(f="[[<-",
 #' \code{latitude}
 #' \code{ship},
 #' \code{cruise},
-#' and
-#' \code{station}
+#' \code{station} and
+#' \code{deploymentType}
 #' to \code{\link{rsk2ctd}}, which returns a ctd object.
 #'
 #' Note that \code{\link{rsk-class}} object contain pressure in a form that
@@ -946,11 +946,11 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    missingValue=NULL,
                    ##1108 quality=NULL, filename="",
                    type="", serialNumber="",
-                   ship="", cruise="", station="",
+                   ship, cruise, station,
                    ##1108 date=NULL,
                    startTime=NULL,
                    ##1108 recovery=NULL,
-                   longitude=NA, latitude=NA,
+                   longitude, latitude,
                    deploymentType="unknown",
                    pressureAtmospheric=0,
                    ##1108 waterDepth=NA,
@@ -964,10 +964,21 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         res <- rsk2ctd(salinity, pressureAtmospheric=pressureAtmospheric, 
                        longitude=longitude, latitude=latitude, 
                        ship=ship, station=station, cruise=cruise,
+                       deploymentType=deploymentType,
                        debug=debug-1)
         oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
         return(res)
     }
+    if (missing(ship))
+        ship <- ""
+    if (missing(cruise))
+        cruise <- ""
+    if (missing(station))
+        station <- ""
+    if (missing(longitude))
+        longitude <- NA
+    if (missing(latitude))
+        latitude <- NA
     oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     res <- new('ctd')
     waterDepth <- NA

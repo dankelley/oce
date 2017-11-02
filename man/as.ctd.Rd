@@ -6,9 +6,9 @@
 \usage{
 as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
   scan = NULL, time = NULL, other = NULL, units = NULL, flags = NULL,
-  missingValue = NULL, type = "", serialNumber = "", ship = "",
-  cruise = "", station = "", startTime = NULL, longitude = NA,
-  latitude = NA, deploymentType = "unknown", pressureAtmospheric = 0,
+  missingValue = NULL, type = "", serialNumber = "", ship, cruise,
+  station, startTime = NULL, longitude, latitude,
+  deploymentType = "unknown", pressureAtmospheric = 0,
   sampleInterval = NA, profile = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
@@ -134,8 +134,8 @@ then \code{as.ctd} passes it,
 \code{latitude}
 \code{ship},
 \code{cruise},
-and
-\code{station}
+\code{station} and
+\code{deploymentType}
 to \code{\link{rsk2ctd}}, which returns a ctd object.
 
 Note that \code{\link{rsk-class}} object contain pressure in a form that

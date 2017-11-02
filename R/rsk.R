@@ -1176,19 +1176,28 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
 #' @param ship optional string containing the ship from which the observations were made.
 #' @param cruise optional string containing a cruise identifier.
 #' @param station optional string containing a station identifier.
+#' @param deploymentType character string indicating the type of deployment (see
+#' \code{\link{as.ctd}}).
 #' @template debugTemplate
-rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NA, latitude=NA,
-                    ship="", cruise="", station="",
+rsk2ctd <- function(x, pressureAtmospheric=0, longitude, latitude,
+                    ship, cruise, station, deploymentType,
                     debug=getOption("oceDebug"))
 {
     oceDebug(debug, "rsk2ctd(...) {\n", sep="", unindent=1)
     res <- new("ctd")
     res@metadata <- x@metadata
-    res@metadata$longitude <- longitude
-    res@metadata$latitude <- latitude
-    res@metadata$ship <- ship
-    res@metadata$station <- station
-    res@metadata$cruise <- cruise
+    if (!missing(longitude))
+        res@metadata$longitude <- longitude
+    if (!missing(latitude))
+        res@metadata$latitude <- latitude
+    if (!missing(ship))
+        res@metadata$ship <- ship
+    if (!missing(station))
+        res@metadata$station <- station
+    if (!missing(cruise))
+        res@metadata$cruise <- cruise
+    if (!missing(deploymentType))
+        res@metadata$deploymentType <- deploymentType
     res@data <- x@data
     if (!("pressure" %in% names(res@data)))
         stop("there is no pressure in this rsk object, so it cannot be converted to a ctd object")
