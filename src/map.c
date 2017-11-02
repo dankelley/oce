@@ -8,7 +8,6 @@
 
 /*
 
-
    system("R CMD SHLIB map.c") 
    dyn.load("map.so")
    D <- .Call("assemble_polygons", c(0, 1, 2), c(10, 11, 12))
@@ -239,3 +238,120 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
 #undef ij
 }
 
+#define INCREMENT_J                                                               \
+    if (j > (clen - 2)) {                                                         \
+        /*Rprintf("INCREASE storage from %d to %d [a]\n", clen, (int)(100 + clen));*/ \
+        clen += 100;                                                              \
+        xcb = (double*)Realloc(xcb, clen, double);                                \
+        ycb = (double*)Realloc(ycb, clen, double);                                \
+    }                                                                             \
+    j++;
+
+
+SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vectors
+{
+    PROTECT(x = AS_NUMERIC(x));
+    PROTECT(y = AS_NUMERIC(y));
+    PROTECT(usr = AS_NUMERIC(usr));
+    int nusr = LENGTH(usr);
+    if (nusr != 4) error("'usr' must hold 4 values");
+    double *usrp = REAL(usr); // left right bottom top
+    double *xp = REAL(x);
+    double *yp = REAL(y);
+    int xlen = length(x);
+    int ylen = length(y);
+    if (xlen != ylen)
+        error("'x' and 'y' must be of same length");
+    if (xlen < 2)
+        error("must have at least two 'x' and 'y' pairs");
+    // xcb and ycb are growable buffers; we copy to xc and yc near the end.
+    int clen = xlen - 100; // FIXME make +100; the -100 is for testing
+    double *xcb = (double*)Calloc((size_t)clen, double);
+    double *ycb = (double*)Calloc((size_t)clen, double);
+#ifdef DEBUG
+    double distMIN = 10e6; // FIXME: temporary to find problem in Greenland
+#endif
+    // Find chunks, and copy any with 1 or more datum in the usr window.
+    int i, j = 0;
+#ifdef DEBUG
+    Rprintf("usrp=%.0f %.0f %.0f %.0f\n", usrp[0], usrp[1], usrp[2], usrp[3]);
+#endif
+    for (i = 0; i < xlen; i++) { 
+        if (ISNA(xp[i])) {
+            // i points to the NA at the end of a sequence; only emit one NA
+            // even if there might be multiples
+#ifdef DEBUG
+            Rprintf("TOP NA i=%d j=%d; xlen=%d\n", i, j, xlen);
+#endif
+            if (j == 0 || !ISNA(xcb[j-1])) {
+                xcb[j] = NA_REAL;
+                ycb[j] = NA_REAL;
+                INCREMENT_J;
+            }
+        } else {
+            if (usrp[0] <= xp[i] && xp[i] <= usrp[1] && usrp[2] <= yp[i] && yp[i] <= usrp[3]) {
+                for (int ii = i; ii < xlen; ii++) {
+                    if (ISNAN(xp[ii])) {
+#ifdef DEBUG
+                        Rprintf("NA (end of trace) i=%d ii=%d j=%d\n", i, ii, j);
+#endif
+                        if (ii > 0 && xp[ii-1] != xp[i] && yp[ii-1] != yp[i]) { // FIXME: close polygons
+#ifdef DEBUG
+                            Rprintf("COMPLETING broken polygon at i=%d ii=%d j=%d, repeating xp=%f yp=%f\n", i,ii,j,xp[i],yp[i]);
+#endif
+                            xcb[j] = xp[i];
+                            ycb[j] = yp[i];
+                            INCREMENT_J;
+                        }
+                        xcb[j] = NA_REAL;
+                        ycb[j] = NA_REAL;
+                        INCREMENT_J;
+                        i = ii; // FIXME: or -1 or +1?
+                        break;
+                    } else {
+#ifdef DEBUG
+                        double dx = xp[ii] - (-1.0e6);
+                        double dy = yp[ii] - (-0.5e6);
+                        double dist = sqrt(dx*dx + dy*dy) / 1000.0;
+                        Rprintf("INSIDE i=%d ii=%d j=%d xp[i]=%.0f yp[i]=%.0f\n", i, ii, j, xp[i], yp[i]);
+                        if (dist < distMIN) {
+                            Rprintf("CLOSEST\n");
+                            distMIN = dist;
+                        }
+#endif
+                        xcb[j] = xp[ii];
+                        ycb[j] = yp[ii];
+                        INCREMENT_J;
+                    }
+                }
+            } else {
+#ifdef DEBUG
+                Rprintf("OUTSIDE i=%d j=%d xp[i]=%.0f yp[i]=%.0f\n", i, j, xp[i], yp[i]);
+#endif
+            }
+        }
+    }
+    SEXP xc;
+    PROTECT(xc = NEW_NUMERIC(j));
+    double *xcp = REAL(xc);
+    SEXP yc;
+    PROTECT(yc = NEW_NUMERIC(j));
+    double *ycp = REAL(yc);
+    for (int jj = 0; jj < j; jj++) {
+        xcp[jj] = xcb[jj];
+        ycp[jj] = ycb[jj];
+    }
+
+    SEXP res;
+    SEXP res_names;
+    PROTECT(res = allocVector(VECSXP, 2));
+    PROTECT(res_names = allocVector(STRSXP, 2));
+    SET_VECTOR_ELT(res, 0, xc);
+    SET_STRING_ELT(res_names, 0, mkChar("x"));
+    SET_VECTOR_ELT(res, 1, yc);
+    SET_STRING_ELT(res_names, 1, mkChar("y"));
+    setAttrib(res, R_NamesSymbol, res_names);
+    UNPROTECT(7);
+    return(res);
+}
+ 

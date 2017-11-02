@@ -804,6 +804,14 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' or black coastlines, for \code{type="p"}, \code{type="l"}, or
 #' \code{type="o"}.
 #'
+#' @param clip logical value indicating whether to trim any coastline elements that lie wholly
+#' outside the plot region. This can prevent e.g. a problem of filling the whole plot area of
+#' an Arctic stereopolar view, because the projected trace for Antarctica lies outside all 
+#' other regions so the whole of the world ends up being "land".  Setting \code{clip=FALSE}
+#' disables this action, which may be of benefit in rare instances in the line connecting
+#' two points on a coastline may cross the plot domain, even if those points are outside
+#' that domain.
+#'
 #' @param type indication of type; may be \code{"polygon"}, for a filled polygon,
 #' \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
 #' overlain with line segments.
@@ -1210,7 +1218,9 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     bg, fill,
                     border=NULL, col=NULL,
-                    type='polygon', axes=TRUE, cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
+                    clip=TRUE,
+                    type='polygon',
+                    axes=TRUE, cex, cex.axis=1, mgp=c(0, 0.5, 0), drawBox=TRUE, showHemi=TRUE,
                     polarCircle=0, lonlabel=NULL, latlabel=NULL, sides=NULL,
                     projection="+proj=moll", tissot=FALSE, trim=TRUE,
                     debug=getOption("oceDebug"),
@@ -1367,7 +1377,14 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     border <- "black"
                 if (is.null(col))
                     col <- "white"
-                polygon(x, y, border=border, col=col)
+                if (clip) {
+                    oceDebug(debug, "about to draw clipped polygon\n")
+                    cl <- .Call("map_clip_xy", x, y, par("usr"))
+                    polygon(cl$x, cl$y, border=border, col=col)
+                } else {
+                    oceDebug(debug, "about to draw unclipped polygon\n")
+                    polygon(x, y, border=border, col=col)
+                }
             } else {
                 if (is.null(col))
                     col <- "black"
