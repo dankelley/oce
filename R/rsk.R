@@ -1171,12 +1171,40 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
 #' @param x An \code{rsk} object, i.e. one inheriting from \code{\link{rsk-class}}.
 #' @param pressureAtmospheric A numerical value (a constant or a vector),
 #' that is subtracted from the pressure in \code{object} before storing it in the return value.
+#' @param longitude numerical value of longitude, in degrees East.
+#' @param latitude numerical value of latitude, in degrees North.
+#' @param ship optional string containing the ship from which the observations were made.
+#' @param cruise optional string containing a cruise identifier.
+#' @param station optional string containing a station identifier.
+#' @param deploymentType character string indicating the type of deployment (see
+#' \code{\link{as.ctd}}).
 #' @template debugTemplate
-rsk2ctd <- function(x, pressureAtmospheric=0, debug=getOption("oceDebug"))
+rsk2ctd <- function(x, pressureAtmospheric=0, longitude, latitude,
+                    ship, cruise, station, deploymentType,
+                    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "rsk2ctd(...) {\n", sep="", unindent=1)
     res <- new("ctd")
     res@metadata <- x@metadata
+    ## The user may have already inserted some metadata, even if read.rsk() didn't, so
+    ## we have to take care of two cases in deciding on some things. The procedure is
+    ## to use the argument to rsk2ctd if one is given, otherwise to use the value already
+    ## in x@metadata, otherwise to set a default that matches as.ctd().
+    res@metadata$longitude <- if (!missing(longitude)) longitude else
+        if (is.null(res@metadata$longitude)) NA else res@metadata$longitude
+    res@metadata$latitude <- if (!missing(latitude)) latitude else
+        if (is.null(res@metadata$latitude)) NA else res@metadata$latitude
+    res@metadata$ship <- if (!missing(ship)) ship else
+        if (is.null(res@metadata$ship)) "" else res@metadata$ship
+    res@metadata$cruise <- if (!missing(cruise)) cruise else
+        if (is.null(res@metadata$cruise)) "" else res@metadata$cruise
+    res@metadata$station <- if (!missing(station)) station else
+        if (is.null(res@metadata$station)) "" else res@metadata$station
+    res@metadata$deploymentType <- if (!missing(deploymentType)) deploymentType else
+        if (is.null(res@metadata$deploymentType)) "unknown" else res@metadata$deploymentType
+
+    ## We start by copying the data, but we may need to do some fancy footwork for pressure, because
+    ## RBR devices store absolute pressure, not the sea pressure that we have in CTD objects.
     res@data <- x@data
     if (!("pressure" %in% names(res@data)))
         stop("there is no pressure in this rsk object, so it cannot be converted to a ctd object")
