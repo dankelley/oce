@@ -967,9 +967,13 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 {
     if (!missing(salinity) && inherits(salinity, "rsk")) {
         oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
-        res <- rsk2ctd(salinity, pressureAtmospheric=pressureAtmospheric, 
-                       longitude=longitude, latitude=latitude, 
-                       ship=ship, station=station, cruise=cruise,
+        res <- rsk2ctd(salinity,
+                       pressureAtmospheric=pressureAtmospheric, 
+                       longitude=longitude,
+                       latitude=latitude, 
+                       ship=ship,
+                       station=station,
+                       cruise=cruise,
                        deploymentType=deploymentType,
                        debug=debug-1)
         oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
