@@ -439,7 +439,7 @@ setMethod(f="subset",
                   if (length(grep("pressure", subsetString))) {
                       fieldname <- names(x@data)
                       for (field in fieldname) {
-                          if (field != 'time' & field != 'longitude' & field != 'latitude') {
+                          if (field != 'time') { # & field != 'longitude' & field != 'latitude') {
                               ifield <- which(field == fieldname)
                               res@data[[ifield]] <- if (is.matrix(res@data[[ifield]]))
                                   res@data[[ifield]][, keep] else res@data[[ifield]][keep]
