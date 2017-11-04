@@ -1187,7 +1187,19 @@ setMethod(f="plot",
               }
               if (missing(level) || level == "all")
                   level <- seq(1L, dim(x@data$temperature)[1])
+              longitude <- x[["longitude"]]
+              latitude <- x[["latitude"]]
+              dim <- dim(x@data$salinity)
+              if (length(longitude) < prod(dim)) {
+                  ## Copy across depths. This is inside a conditional because
+                  ## possibly argo[["longitude"]] should mimic section[["longitude"]],
+                  ## in doing the lengthing by itself unless the second argument is
+                  ## "byStation" (issue 1273 ... under consideration 2017jul12)
+                  longitude <- rep(x[["longitude"]], each=dim[1])
+                  latitude <- rep(x[["latitude"]], each=dim[1])
+              }
               ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
+                            longitude=longitude, latitude=latitude,
                             units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
                                        conductivity=list(list=expression(), scale=""))) # guess on units
               which <- oce.pmatch(which,
