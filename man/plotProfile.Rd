@@ -4,17 +4,17 @@
 \alias{plotProfile}
 \title{Plot a CTD Profile}
 \usage{
-plotProfile(x, xtype = "salinity+temperature", ytype = c("pressure", "z",
-  "depth", "sigmaTheta"), eos = getOption("oceEOS", default = "gsw"),
-  lty = 1, xlab = NULL, ylab = NULL, col = "black",
-  col.salinity = "darkgreen", col.temperature = "red", col.rho = "blue",
-  col.N2 = "brown", col.dpdt = "darkgreen", col.time = "darkgreen",
-  pt.bg = "transparent", grid = TRUE, col.grid = "lightgray",
-  lty.grid = "dotted", Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim,
-  timelim, plim, ylim, lwd = par("lwd"), xaxs = "r", yaxs = "r",
-  cex = 1, pch = 1, useSmoothScatter = FALSE, df, keepNA = FALSE,
-  type = "l", mgp = getOption("oceMgp"), mar, add = FALSE,
-  inset = FALSE, debug = getOption("oceDebug"), ...)
+plotProfile(x, xtype = "salinity+temperature", ytype = "pressure",
+  eos = getOption("oceEOS", default = "gsw"), lty = 1, xlab = NULL,
+  ylab = NULL, col = "black", col.salinity = "darkgreen",
+  col.temperature = "red", col.rho = "blue", col.N2 = "brown",
+  col.dpdt = "darkgreen", col.time = "darkgreen", pt.bg = "transparent",
+  grid = TRUE, col.grid = "lightgray", lty.grid = "dotted", Slim, Clim,
+  Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim, ylim,
+  lwd = par("lwd"), xaxs = "r", yaxs = "r", cex = 1, pch = 1,
+  useSmoothScatter = FALSE, df, keepNA = FALSE, type = "l",
+  mgp = getOption("oceMgp"), mar, add = FALSE, inset = FALSE,
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -44,10 +44,10 @@ calculated with \code{\link{swN2}} with
 an optional argument setting of \code{df=length(x[["pressure"]])/4} to do
 some smoothing.
 
-\item \code{"density+N2"} Profile of sigma-theta and
+\item \code{"density+N2"} Profile of sigma0 and
 the square of buoyancy frequency within a single axis frame.
 
-\item \code{"density+dpdt"} Profile of sigma-theta and dP/dt for the
+\item \code{"density+dpdt"} Profile of sigma0 and dP/dt for the
 sensor.  The latter is useful in indicating problems with the deployment.
 It is calculated by first differencing pressure and then using a smoothing
 spline on the result (to avoid grid-point wiggles that result because the
@@ -55,6 +55,10 @@ SBE software only writes 3 decimal places in pressure).  Note that dP/dt may
 be off by a scale factor; this should not be a problem if there is a
 \code{time} column in the \code{data} slot, or a \code{sample.rate} in the
 \code{metadata} slot.
+
+\item \code{"sigma0"}, \code{"sigma1"}, \code{"sigma2"}, \code{"sigma3"}
+and \code{"sigma4"} Profile of potential density referenced
+to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
 
 \item \code{"spice"} Profile of spice.
 
@@ -64,8 +68,9 @@ be off by a scale factor; this should not be a problem if there is a
 
 }}
 
-\item{ytype}{variable to use on y axis; note that \code{z} is the negative
-of \code{depth}.}
+\item{ytype}{variable to use on y axis. The valid choices are:
+\code{"pressure"} (the default), \code{"z"},
+\code{"depth"} and \code{"sigmaTheta"}.}
 
 \item{eos}{equation of state to be used, either \code{"unesco"} or
 \code{"gsw"}.}
@@ -221,6 +226,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{read.ctd.itp}},
   \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
@@ -228,7 +235,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
 \author{
 Dan Kelley

@@ -374,7 +374,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             S  <- 1 / (3 * sin(beamAngle * pi / 180)) # 0.7887339
             CS <- 1 / cos(30*pi/180) / sin(beamAngle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
             C  <- 1 / (3 * cos(beamAngle * pi / 180))             # 0.3677926
-            warning("*****FIXME: check up and down; also read it and check*****")
+            ## warning("*****FIXME: check up and down; also read it and check*****")
             res@metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
                                                             0,  CS, -CS,
                                                            -C,  -C,  -C),

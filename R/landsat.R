@@ -139,7 +139,7 @@
 #' 10. Rajeshwari, A., and N. D. Mani, 2014.  Estimation of land surface
 #' temperature of Dindigul district using Landsat 8 data.  \emph{International
 #'     Journal of Research in Engineering and Technology}, 3(5), 122-126.
-#' \url{http://www.academia.edu/7655089/ESTIMATION_OF_LAND_SURFACE_TEMPERATURE_OF_DINDIGUL_DISTRICT_USING_LANDSAT_8_DATA}
+#' \code{http://www.academia.edu/7655089/ESTIMATION_OF_LAND_SURFACE_TEMPERATURE_OF_DINDIGUL_DISTRICT_USING_LANDSAT_8_DATA}
 #'
 #' 11. Konda, M. Imasato N., Nishi, K., and T. Toda, 1994.  Measurement of the Sea
 #' Surface Emissivity.  \emph{Journal of Oceanography}, 50, 17:30.

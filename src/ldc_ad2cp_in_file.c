@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+// vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: 
 
 #include <R.h>
 #include <Rdefines.h>
@@ -53,7 +53,7 @@
 Table 6.1 (header definition):
 
 +-----------------+--------------------+------------------------------------------------------+
-| Sync	          | 8 bits             | Always 0xA5                                          |
+| Sync            | 8 bits             | Always 0xA5                                          |
 +-----------------|--------------------|------------------------------------------------------+
 | Header Size     | 8 bits (unsigned)  | Size (number of bytes) of the Header.                |
 +-----------------|--------------------|------------------------------------------------------+
@@ -192,14 +192,14 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
       break; // FIXME: maybe we should stop here, actually
     }
     cindex += bytes_read;
-    if (debug > 1) 
-      Rprintf("buf: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\n", 
-	  hbuf[0], hbuf[1], hbuf[2], hbuf[3], hbuf[4],
-	  hbuf[5], hbuf[6], hbuf[7], hbuf[8], hbuf[9]); 
+    if (debug > 1)
+      Rprintf("buf: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\n",
+          hbuf[0], hbuf[1], hbuf[2], hbuf[3], hbuf[4],
+          hbuf[5], hbuf[6], hbuf[7], hbuf[8], hbuf[9]);
     // It's prudent to check.
     if (hbuf[0] != SYNC) {
       error("coding error in reading the header at cindex=%d; expecting 0x%x but found 0x%x\n",
-	  cindex, SYNC, hbuf[0]);
+          cindex, SYNC, hbuf[0]);
     }
     // Check that it's an actual header
     if (hbuf[1] == HEADER_SIZE && hbuf[3] == FAMILY) {
@@ -213,31 +213,31 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
       index_buf[chunk] = cindex;
       length_buf[chunk] = dataSize;
       if (id < 21 || (id > 24 && id != 160))
-	Rprintf(" *** odd id (%d) at chunk %d, index=%d\n", id, chunk, cindex);
+        Rprintf(" *** odd id (%d) at chunk %d, index=%d\n", id, chunk, cindex);
       id_buf[chunk] = id;
       // Check the header checksum.
       unsigned short hbufcs = cs(hbuf, HEADER_SIZE-2);
       if (hbufcs != headerChecksum) {
-	Rprintf("WARNING: at cindex=%d, header checksum is %d but it should be %d\n",
-	    cindex, hbufcs, headerChecksum);
+        Rprintf("WARNING: at cindex=%d, header checksum is %d but it should be %d\n",
+            cindex, hbufcs, headerChecksum);
       }
       // Increase size of data buffer, if required.
       if (dataSize > dbuflen) { // expand the buffer if required
-	dbuflen = dataSize;
-	dbuf = (unsigned char *)Realloc(dbuf, dbuflen, unsigned char);
+        dbuflen = dataSize;
+        dbuf = (unsigned char *)Realloc(dbuf, dbuflen, unsigned char);
       }
       // Read the data
       bytes_read = fread(dbuf, 1, dataSize, fp);
       // Check that we got all the data
       if (bytes_read != dataSize)
-	error("ran out of file on data chunk near cindex=%d; wanted %d bytes but got only %d\n",
-	    cindex, dataSize, bytes_read);
+        error("ran out of file on data chunk near cindex=%d; wanted %d bytes but got only %d\n",
+            cindex, dataSize, bytes_read);
       // Compare data checksum to the value stated in the header
       unsigned short dbufcs;
       dbufcs = cs(dbuf, dataSize);
       if (dbufcs != dataChecksum) {
-	Rprintf("WARNING: at cindex=%d, data checksum is %d but it should be %d\n",
-	    cindex, dbufcs, dataChecksum);
+        Rprintf("WARNING: at cindex=%d, data checksum is %d but it should be %d\n",
+            cindex, dbufcs, dataChecksum);
       }
       cindex += dataSize;
     }
@@ -270,5 +270,3 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
   UNPROTECT(8);
   return(lres);
 }
-
-

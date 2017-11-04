@@ -1,5 +1,15 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+abbreviateVector <- function(x)
+{
+    if (1 >= length(x)) {
+        return(x)
+    } else {
+        ud <- unique(diff(x))
+        if (1 == length(ud) && 1 == ud) return(paste(x[1], ":", tail(x, 1), sep="")) else return(x)
+    }
+}
+
 shortenTimeString <- function(t, debug=getOption("oceDebug"))
 {
     tc <- as.character(t)
@@ -54,12 +64,18 @@ unitFromString <- function(s)
     ##> message("unitFromString(", s, ")")
     if (s == "DB" || s == "DBAR")
         return(list(unit=expression(db), scale=""))
+    if (s == "DEG C")
+        return(list(unit=expression(degree*C), scale="")) # unknown scale
+    if (s == "FMOL/KG")
+        return(list(unit=expression(fmol/kg), scale=""))
     if (s == "ITS-90 DEGC" || s == "ITS-90")
         return(list(unit=expression(degree*C), scale="ITS-90"))
     if (s == "IPTS-68 DEGC" || s == "IPTS-68")
         return(list(unit=expression(degree*C), scale="IPTS-68"))
     if (s == "PSS-78")
         return(list(unit=expression(), scale="PSS-78"))
+    if (s == "PMOL/KG")
+        return(list(unit=expression(pmol/kg), scale=""))
     if (s == "PSU")
         return(list(unit=expression(), scale="PSS-78"))
     if (s == "ML/L")
@@ -1037,11 +1053,18 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 }
 
 
-#' Find indices of times in an ordered vector
+#' Find indices of times in an ordered vector [deprecated]
+#'
+#' \strong{WARNING:} This function will be removed soon;
+#' see \link{oce-deprecated}.  The replacement is trivial:
+#' just change a call like e.g. \code{findInOrdered(x,f)}
+#' to \code{\link{findInterval}(f,x)} (which is what the function
+#' started doing, on 2017-09-07, after a major bug was found).
 #'
 #' The indices point to the largest items in \code{x} that are less than or
-#' equal the values in \code{f}.  The method uses a bisection search, so the
-#' time taken is proportional to \code{length(f) * log2(length(x))}.
+#' equal the values in \code{f}.  This works by simply calling
+#' \code{\link{findInterval}(x=f, vec=x)}, and users are probably
+#' better off using \code{\link{findInterval}} directly.
 #'
 #' @param x a numeric vector, in increasing order by value.
 #' @param f a numeric vector of items whose indices are sought.
@@ -1052,11 +1075,9 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 #' findInOrdered(seq(0, 10, 1), c(1.2, 7.3))
 findInOrdered <- function(x, f)
 {
-    if (missing(x))
-        stop("'x' missing")
-    if (missing(f))
-        stop("'f' missing")
-    .Call("bisect", x, f)
+    .Deprecated("mapGrid",
+                msg="findInOrdered(f,x) will be removed soon; use findInterval(f,x) instead. See ?'oce-deprecated'.")
+    findInterval(f, x)
 }
 
 
@@ -2072,6 +2093,26 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
         var <- gettext("Potential density anomaly", domain="R-oce")
         full <- bquote(.(var)*.(L)*kg/m^3*.(R))
         abbreviated <- bquote(sigma[theta]*.(L)*kg/m^3*.(R))
+    } else if (item == "sigma0") {
+        var <- gettext("Potential density anomaly wrt surface", domain="R-oce")
+        full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- bquote(sigma[0]*.(L)*kg/m^3*.(R))
+    } else if (item == "sigma1") {
+        var <- gettext("Potential density anomaly wrt 1000 dbar", domain="R-oce")
+        full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- bquote(sigma[1]*.(L)*kg/m^3*.(R))
+    } else if (item == "sigma2") {
+        var <- gettext("Potential density anomaly wrt 2000 dbar", domain="R-oce")
+        full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- bquote(sigma[2]*.(L)*kg/m^3*.(R))
+    } else if (item == "sigma3") {
+        var <- gettext("Potential density anomaly wrt 3000 dbar", domain="R-oce")
+        full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- bquote(sigma[3]*.(L)*kg/m^3*.(R))
+    } else if (item == "sigma4") {
+        var <- gettext("Potential density anomaly wrt 4000 dbar", domain="R-oce")
+        full <- bquote(.(var)*.(L)*kg/m^3*.(R))
+        abbreviated <- bquote(sigma[4]*.(L)*kg/m^3*.(R))
     } else if (item == "theta") {
         var <- gettext("Potential Temperature", domain="R-oce")
         full <- bquote(.(var)*.(L)*degree*"C"*.(R))
@@ -3370,59 +3411,67 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 }
 
 
-#' Format bytes as binary [deprecated]
+#' Format bytes as binary
 #'
-#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
-#' Use \code{\link{oceSetData}} instead of the present function.
+#' \strong{WARNING:} The \code{endian} argument will soon be removed
+#' from this function; see \link{oce-deprecated}.
+#' This is because the actions for \code{endian="little"} made
+#' no sense in practical work. The default value for \code{endian}
+#' was changed to \code{"big"} on 2017 May 6.
 #'
 #' @param x an integer to be interpreted as a byte.
 #' @param endian character string indicating the endian-ness ("big" or
-#' "little").
+#' "little"). \strong{This argument will be removed in the upcoming CRAN
+#' release.}
 #' @return A character string representing the bit strings for the elements of
 #' \code{x}, in order of significance for the \code{endian="big"} case.
-#' (The \code{"little"} case should not be used.)
+#' (The nibbles, or 4-bit sequences, are interchanged in the now-deprecated
+#' \code{"little"} case.)
 #' See \dQuote{Examples} for how this relates to the output from
 #' \link{rawToBits}.
 #' @author Dan Kelley
 #' @examples
 #' library(oce)
-#' ## In the big-endian case, the results match those of byteToBinary(),
-#' ## but reversed.
+#' ## Note comparison with rawToBits():
 #' a <- as.raw(0x0a)
-#' byteToBinary(a, "big")
-#' rev(rawToBits(a))
-byteToBinary <- function(x, endian=c("little", "big"))
+#' byteToBinary(a, "big") # "00001010"
+#' rev(rawToBits(a))      # 00 00 00 00 01 00 01 00
+byteToBinary <- function(x, endian)
 {
-    .Deprecated("rawToBits",
-                msg="byteToBinary() will be removed soon; use rawToBits() instead. See ?'oce-deprecated'.")
-    onebyte2binary <- function(x)
-    {
-        c("0000", "0001", "0010", "0011",
-          "0100", "0101", "0110", "0111",
-          "1000", "1001", "1010", "1011",
-          "1100", "1101", "1110", "1111")[x+1]
-    }
-    endian <- match.arg(endian)
-    res <- NULL
-    if (class(x) == "raw")
-        x <- readBin(x, "int", n=length(x), size=1, signed=FALSE)
-    for (i in 1:length(x)) {
-        if (x[i] < 0) {
-            res <- c(res, "??")
-        } else {
-            ## FIXME: these are not bytes here; they are nibbles.  I don't think endian="little"
-            ## makes ANY SENSE at all.  2012-11-22
-            byte1 <- as.integer(floor(x[i] / 16))
-            byte2 <- x[i] - 16 * byte1
-            ##cat("input=",x[i],"byte1=",byte1,"byte2=",byte2,"\n")
-            if (endian == "little")
-                res <- c(res, paste(onebyte2binary(byte2), onebyte2binary(byte1), sep=""))
-            else
-                res <- c(res, paste(onebyte2binary(byte1), onebyte2binary(byte2), sep=""))
-            ##cat(" res=",res,"\n")
-        }
-    }
-    res
+    if (missing(endian))
+        endian <- "big"
+    if (endian != "big")
+        .Deprecated("rawToBits",
+                    msg="byteToBinary(): the endian=\"little\" argument will be disallowed soon; see ?'oce-deprecated'.")
+    ## onebyte2binary <- function(x)
+    ## {
+    ##     c("0000", "0001", "0010", "0011",
+    ##       "0100", "0101", "0110", "0111",
+    ##       "1000", "1001", "1010", "1011",
+    ##       "1100", "1101", "1110", "1111")[x+1]
+    ## }
+    ## res <- NULL
+    ## if (class(x) == "raw")
+    ##     x <- readBin(x, "int", n=length(x), size=1, signed=FALSE)
+    ## for (i in 1:length(x)) {
+    ##     if (x[i] < 0) {
+    ##         res <- c(res, "??")
+    ##     } else {
+    ##         ## FIXME: these are not bytes here; they are nibbles.  I don't think endian="little"
+    ##         ## makes ANY SENSE at all.  2012-11-22
+    ##         byte1 <- as.integer(floor(x[i] / 16))
+    ##         byte2 <- x[i] - 16 * byte1
+    ##         ##cat("input=",x[i],"byte1=",byte1,"byte2=",byte2,"\n")
+    ##         if (endian == "little")
+    ##             res <- c(res, paste(onebyte2binary(byte2), onebyte2binary(byte1), sep=""))
+    ##         else
+    ##             res <- c(res, paste(onebyte2binary(byte1), onebyte2binary(byte2), sep=""))
+    ##         ##cat(" res=",res,"\n")
+    ##     }
+    ## }
+    ## res
+    x <- as.raw(x)
+    paste(ifelse(rev(rawToBits(x)==as.raw(0x01)), "1", "0"),collapse="")
 }
 
 
@@ -4109,9 +4158,10 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
         }
         yout <- approx(x, y, xout, rule=2)$y
     }
-    ## message("xout: ", paste(xout, collapse=" "))
-    ## message("yout: ", paste(yout, collapse=" "))
-    res <- .Call("trap", xout, yout, switch(match.arg(type), A=0, dA=1, cA=2))
+    ## message("\nabout to .Call(\"trap\", xout, yout, ...) with:\n")
+    ## message("xout as follows:\n", paste(head(xout, 10), collapse="\n"))
+    ## message("yout as follows:\n", paste(head(yout, 10), collapse="\n"))
+    res <- .Call("trap", xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
     res
 }
 
@@ -4231,3 +4281,85 @@ trimString <- function(s)
 {
     gsub("^ *", "", gsub(" *$", "", s))
 }
+
+#' Perform lowpass digital filtering
+#'
+#' The filter coefficients are constructed using standard definitions,
+#' and then \link[stats]{filter} in the \pkg{stats} package is
+#' used to filter the data. This leaves \code{NA}
+#' values within half the filter length of the ends of the time series, but
+#' these may be replaced with the original \code{x} values, if the argument
+#' \code{replace} is set to \code{TRUE}.
+#'
+#' @section Caution: This function was added in June of 2017,
+#' and it may be extended during the rest of 2017. New arguments
+#' may appear between \code{n} and \code{replace}, so users are
+#' advised to call this function with named arguments, not positional
+#' arguments.
+#'
+#' @param x a vector to be smoothed
+#' @param filter name of filter; at present, \code{"hamming"}, \code{"hanning"}, and \code{"boxcar"} are permitted.
+#' @param n length of filter (must be an odd integer exceeding 1)
+#' @param replace a logical value indicating whether points near the
+#' ends of \code{x} should be copied into the end regions, replacing
+#' the \code{NA} values that would otherwise be placed there by
+#' \link[stats]{filter}.
+#' @param coefficients logical value indicating whether to return
+#' the filter coefficients, instead of the filtered values. In accordance
+#' with conventions in the literature, the returned values are not
+#' normalized to sum to 1, although of course that normalization
+#' is done in the actual filtering.
+#'
+#' @return By default, \code{lowpass} returns a filtered version
+#' of \code{x}, but if \code{coefficients} is \code{TRUE} then it
+#' returns the filter coefficients.
+#' @author Dan Kelley
+#' @examples
+#'
+#' library(oce)
+#' par(mfrow=c(1, 2), mar=c(4, 4, 1, 1))
+#' coef <- lowpass(n=5, coefficients=TRUE)
+#' plot(-2:2, coef, ylim=c(0, 1), xlab="Lag", ylab="Coefficient")
+#' x <- seq(-5, 5) + rnorm(11)
+#' plot(1:11, x, type='o', xlab="time", ylab="x and X")
+#' X <- lowpass(x, n=5)
+#' lines(1:11, X, col=2)
+#' points(1:11, X, col=2)
+lowpass <- function(x, filter="hamming", n, replace=TRUE, coefficients=FALSE)
+{
+    # .Call("hammingFilter", x, n)
+    if (missing(x) && !coefficients)
+        stop("must supply x")
+    if (missing(n))
+        stop("must supply n")
+    if (n < 1)
+        stop("n must be be an integer exceeding 1")
+    n2 <- n %/% 2 # half width
+    if (2 * n2 == n)
+        stop("n must be an odd integer")
+    twopi <- 8 * atan2(1, 1)
+    ii <- n2 + seq.int(-n2, n2, 1)
+    if (filter == "hamming")
+        f <- 0.54 - 0.46 * cos(twopi * ii / (n - 1))
+    else if (filter == "hanning")
+        f <- 0.5 * (1 - cos(twopi * ii / (n - 1)))
+    else if (filter == "boxcar")
+        f <- rep(1/n, n)
+    else
+        stop("filter must be \"hanning\", \"hamming\", or \"boxcar\"")
+    if (coefficients) {
+        rval <- f
+    } else {
+        f <- f / sum(f)
+        rval <- as.numeric(stats::filter(x=x, filter=f, method="convolution"))
+        if (replace) {
+            start <- seq.int(1, n2)
+            rval[start] <- x[start]
+            nx <- length(x)
+            end <- seq.int(nx-n2+1, nx)
+            rval[end] <- x[end]
+        }
+    }
+    rval
+}
+

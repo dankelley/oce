@@ -4,7 +4,7 @@
 \alias{download.met}
 \title{Download and Cache a met File}
 \usage{
-download.met(id, year, month, deltat, destdir = "~/data/met", destfile,
+download.met(id, year, month, deltat, destdir = ".", destfile,
   debug = getOption("oceDebug"))
 }
 \arguments{
@@ -75,18 +75,6 @@ it easy to read data. These data can then be converted to the
 \code{met} class with \code{\link{as.met}}, although doing so leaves
 many important metadata blank.
 }
-\section{Warning}{
-
-All of the \code{download.*} functions are subject to change through the
-year 2017. The plan is to create individual functions
-as needs arise in everyday work, thereby discovering patterns of 
-arguments that might make sense more generally. Therefore, it is likely
-that argument order (and even name) may change up until approximately
-December 2016. Users are advised to refer to arguments by name,
-i.e. not to rely on their order, and they are asked for patience,
-because argument names and defaults may vary through the early development.
-}
-
 \examples{
 \dontrun{
 library(oce)

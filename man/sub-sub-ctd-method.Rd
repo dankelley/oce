@@ -146,6 +146,9 @@ This is a synonym for \code{theta}.
 
 \item \code{SA} or \code{Absolute Salinity}: Absolute Salinity,
 computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.
+The calculation involves location as well as measured water properties.
+If the object \code{x} does not containin information on the location,
+then 30N and 60W is used for the calculation, and a warning is generated.
 
 \item \code{sigmaTheta}: A form of potential density anomaly, computed with
 \code{\link{swSigmaTheta}(x)}.
@@ -176,6 +179,7 @@ calculated with \code{\link{swSpice}(x)}.
 
 \item \code{Sstar}: Preformed Salinity computed with
 \code{\link[gsw]{gsw_SR_from_SP}} in the \code{gsw} package.
+See \code{SA} for a note on longitude and latitude.
 
 \item \code{theta}: potential temperature in the UNESCO formulation,
 computed with \code{\link{swTheta}(x)}. This is a synonym for
@@ -221,6 +225,8 @@ Other things related to \code{ctd} data: \code{\link{[[<-,ctd-method}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
@@ -229,5 +235,6 @@ Other things related to \code{ctd} data: \code{\link{[[<-,ctd-method}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }

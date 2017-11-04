@@ -147,6 +147,7 @@ setMethod(f="summary",
 #'
 #' @author Dan Kelley
 #' @family things related to \code{cm} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="cm",
           definition=function(x, subset, ...) {
@@ -594,15 +595,12 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     d <- as.list(d)
     for (dname in names(d)) {
         ##message("dname: ", dname)
-        if (dname != "Date" && dname != "Time" && dname != "time") {
-            ##message("  dname: ", dname, " needs transform")
-            ##message("    is.numeric=", is.numeric(d[[dname]]), " BEFORE")
+        if (dname != "Date" && dname != "Time" && dname != "time" && dname != "SRB.Time")
             d[[dname]] <- as.numeric(d[[dname]])
-            ##message("    is.numeric=", is.numeric(d[[dname]]), " AFTER")
-        }
         if (length(grep("^X[.0-9]*$", dname)))
             res@metadata$dataNamesOriginal[[dname]] <- "-"
     }
+    message("B")
     res@data <- d
     ## res <- new("cm", sample=as.numeric(sample[keep]), time=time[keep],
     ##            u=u[keep], v=v[keep], direction=direction[keep],

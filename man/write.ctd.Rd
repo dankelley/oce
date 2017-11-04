@@ -4,20 +4,30 @@
 \alias{write.ctd}
 \title{Write a CTD Data Object as a CSV File}
 \usage{
-write.ctd(object, file = stop("'file' must be specified"))
+write.ctd(object, file, metadata = TRUE, flags = TRUE, format = "csv")
 }
 \arguments{
 \item{object}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
-\item{file}{Either a character string (the file name) or a connection.  This is
-a mandatory argument.}
+\item{file}{Either a character string (the file name) or a connection. If not
+provided, \code{file} defaults to \code{\link{stdout}()}.}
+
+\item{metadata}{a logical value indicating whether to put some selected
+metadata elements at the start of the output file.}
+
+\item{flags}{a logical value indicating whether to show data-quality flags
+as well as data.}
+
+\item{format}{string indicating the format to use. This may be \code{"csv"}
+for a simple CSV format, or \code{"whp"} for the World Hydrographic
+Program format, described at [1] and exemplified at [2].}
 }
 \description{
 Writes a comma-separated file containing the data frame stored in
 the \code{data} slot of the first argument.  The file is suitable
 for reading with a spreadsheet, or
-with \code{\link{read.csv}}.  Note that the output file will retain none of the
-meta-data stored in \code{object}.
+with \code{\link{read.csv}}.  This output file will contain
+some of the metadata in \code{x}, if \code{metadata} is \code{TRUE}.
 }
 \examples{
 \dontrun{
@@ -29,9 +39,14 @@ plot(as.ctd(d$salinity, d$temperature, d$pressure))
 }
 
 }
+\references{
+1. https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm
+
+2. https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv
+}
 \seealso{
 The documentation for \code{\link{ctd-class}} explains the structure
-of CTD objects, and also outlines the other functions dealing with them.
+of CTD objects.
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
@@ -39,6 +54,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
@@ -47,7 +64,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}}
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}
 }
 \author{
 Dan Kelley

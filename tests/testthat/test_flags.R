@@ -47,8 +47,8 @@ test_that("handleFLags works with the built-in argo dataset", {
           expect_true(is.na(argoNew2[["temperature"]][10, 2]))
           expect_true(all(is.na(argoNew2[["temperature"]][4==argo[["temperatureFlag"]]])))
           # Tests of overall numbers
-          expect_equal(sum(is.na(argo[["salinity"]])), 90)
-          expect_equal(sum(is.na(argoNew[["salinity"]])), 110)
+          expect_equal(sum(is.na(argo[["salinity"]])), 106)
+          expect_equal(sum(is.na(argoNew[["salinity"]])), 140)
           ## test replacement via function
           f <- function(object) rep(30, length.out=length(object[['salinity']]))
           argoNew3 <- handleFlags(argo, flags=list(salinity=4:5), actions=list(salinity=f))

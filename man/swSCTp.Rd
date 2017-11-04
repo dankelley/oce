@@ -4,7 +4,7 @@
 \alias{swSCTp}
 \title{Salinity from electrical conductivity, temperature and pressure}
 \usage{
-swSCTp(conductivity, temperature = NULL, pressure = 0, conductivityUnit,
+swSCTp(conductivity, temperature = NULL, pressure = NULL, conductivityUnit,
   eos = getOption("oceEOS", default = "gsw"))
 }
 \arguments{
@@ -45,7 +45,7 @@ the UNESCO algorithm described by Fofonoff and Millard (1983); if it is
 }
 \examples{
 swSCTp(1, T90fromT68(15), 0, eos="unesco") # 35
-swSCTp( 1,            15, 0, eos="gsw") # 35
+swSCTp(1, T90fromT68(15), 0, eos="gsw")    # 35
 
 }
 \references{

@@ -100,7 +100,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     } else {
         isSentinel <- FALSE
     }
-    oceDebug(debug, "isSentinel=", isSentinel, " as inferred from the codes matrix, near adp.rdi.R line 102\n")
+    oceDebug(debug, "isSentinel=", isSentinel, " as inferred from the codes matrix, near adp.rdi.R line 103\n")
     ##
     ## Fixed Leader Data, abbreviated FLD, pointed to by the dataOffset
     FLD <- buf[dataOffset[1]+1:(dataOffset[2] - dataOffset[1])]
@@ -126,11 +126,16 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ## FLD[5] = SYSTEM CONFIGURATION LSB (Table 5.2, page 126, System Integrator Guide, Nov 2007)
     ## FLD[6] = SYSTEM CONFIGURATION MSB
     systemConfiguration <- paste(byteToBinary(FLD[5], endian="big"), byteToBinary(FLD[6], endian="big"), sep="-")
+    oceDebug(debug, "systemConfiguration='", systemConfiguration, "'\n", sep="")
     oceDebug(debug, "FLD[4]=", byteToBinary(FLD[4], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
     oceDebug(debug, "FLD[5]=", byteToBinary(FLD[5], endian="big"), "(should be one of the systemConfiguration bytes)\n")
     oceDebug(debug, "FLD[6]=", byteToBinary(FLD[6], endian="big"), "(should be one of the systemConfiguration bytes)\n")
     oceDebug(debug, "FLD[7]=", byteToBinary(FLD[7], endian="big"), "(looking near the systemConfiguration bytes to find a problem)\n")
     bits <- substr(systemConfiguration, 6, 8)
+    bitsFLD5 <- rawToBits(FLD[5])
+    oceDebug(debug, "LSB=", paste(bitsFLD5, collapse=" "), "\n", sep="")
+    bitsFLD6 <- rawToBits(FLD[6])
+    oceDebug(debug, "MSB=", paste(bitsFLD6, collapse=" "), "\n", sep="")
     ## NOTE: the nearby code should perhaps use .Call("get_bit", ...) for speed and clarity
     if (isSentinel) {
         if (bits == "010") frequency <- 250        # kHz
@@ -649,7 +654,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         cellSize <- header$cellSize
         #message("1. isSentinel=", isSentinel)
         isSentinel <- header$instrumentSubtype == "sentinelV"
-        oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 532\n")
+        oceDebug(debug, "isSentinel=", isSentinel, " near adp.rdi.R line 652\n")
         oceDebug(debug, "about to call ldc_rdi_in_file\n")
         if (is.numeric(from) && is.numeric(to) && is.numeric(by) ) {
             ## check for large files
@@ -675,17 +680,31 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ldc <- .Call("ldc_rdi_in_file", filename,
                          as.integer(from), as.integer(to), as.integer(by), 0L)
         } else {
+            if (is.character(from))
+                from <- as.POSIXct(from, tz="UTC")
+            if (is.character(to))
+                to <- as.POSIXct(to, tz="UTC")
+            if (is.character(by))
+                by <- ctimeToSeconds(by)
+            ## message("from=", format(from), " to=", format(to), " by=" , format(by))
             ldc <- .Call("ldc_rdi_in_file", filename,
-                         as.integer(from), as.integer(to), ctimeToSeconds(by), 1L)
+                         as.integer(from), as.integer(to), as.integer(by), 1L)
         }
-        ## Must now reset from,to,by in the *subsetted* data item, ldc.
-        from <- 1
-        to <- length(ldc$ensembleStart)
-        by <- 1
-
         oceDebug(debug, "successfully called ldc_rdi_in_file\n")
-        buf <- ldc$outbuf
+        if (debug > 99) {
+            ldc <<- ldc
+            cat("NOTE: debug>99, so read.adp.rdi() exports 'ldc', for use by the developer\n")
+        }
         ensembleStart <- ldc$ensembleStart
+        buf <- ldc$outbuf
+        bufSize <- length(buf)
+        ## Now, 'buf' contains *only* the profiles we want, so we may
+        ## redefine 'from', 'to' and 'by' to specify each and every profile.
+        from <- 1
+        to <- length(ensembleStart)
+        by <- 1
+        oceDebug(debug, "NEW method from=", from, ", by=", by, ", to=", to, "\n", sep="")
+
         ## 20170108 ## These three things no longer make sense, since we are not reading
         ## 20170108 ## the file to the end, in this updated scheme.
         ## 20170108 measurementStart <- as.POSIXct(ldc$time[1] + 0.01 * as.integer(ldc$sec100[1]),
@@ -698,15 +717,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         ## 20170108 measurementDeltat <- (ldc$time[2] + 0.01 * as.integer(ldc$sec100[2])) - (ldc$time[1] + 0.01 * as.integer(ldc$sec100[2]))
         ## 20170108 oceDebug(debug, "measurementDeltat:", measurementDeltat, "s\n")
 
-        ## Now, 'buf' contains *only* the profiles we want, so we may
-        ## redefine 'from', 'to' and 'by' to specify each and every profile.
-        from <- 1
-        to <- length(ensembleStart)
-        by <- 1
-        oceDebug(debug, "NEW method from=", from, ", by=", by, ", to=", to, "\n", sep="")
-
         if (isSentinel) {
-            oceDebug(debug, "SentinelV type detected, skipping first ensemble\n")
+            warning("skipping the first ensemble (a temporary solution that eases reading of SentinelV files)\n")
             ensembleStart <- ensembleStart[-1] # remove the first ensemble to simplify parsing
             to <- to - 1
             ## re-read the numberOfDataTypes and dataOffsets from the second ensemble
@@ -721,6 +733,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         ## location for these, based on the "Always Output" indication in Fig 46
         ## on page 145 of teledyne2014ostm.
         profileStart <- ensembleStart + as.numeric(buf[ensembleStart[1]+8]) + 256*as.numeric(buf[ensembleStart[1]+9])
+        ##cat("ensembleStart=", paste(ensembleStart, collapse=" "), "\n")
+        ##cat("profileStart=", paste(profileStart, collapse=" "), "\n")
         if (any(profileStart < 1))
             stop("difficulty detecting ensemble (profile) start indices")
         # offset for data type 1 (velocity)
@@ -782,7 +796,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             }
             ii <- which(codes[, 1]==0x01 & codes[, 2]==0x0f)
             if (isSentinel & length(ii) < 1) {
-                warning("Didn't find V series leader data ID, treating as a 4 beam ADCP")
+                warning("Didn't find V series leader data ID, treating as a 4 beam ADCP\n")
                 isSentinel <- FALSE
             }
             if (isSentinel) {
@@ -996,12 +1010,11 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             if (monitor)
                 progressBar = txtProgressBar(max=profilesToRead, style=3, title="Reading profiles")
 
+            oceDebug(debug, "profilesToRead=", profilesToRead, " (issue 1228: expect 8324 or 8323)\n")
             for (i in 1:profilesToRead) {
                 ## recall: these start at 0x80 0x00
                 for (chunk in 1:header$numberOfDataTypes) {
                     o <- ensembleStart[i] + header$dataOffset[chunk]
-                    ##slow if (i <= profilesToShow)
-                    ##slow     oceDebug(debug, "profile:", i, ", chunk:", chunk, ", buf: 0x", buf[o], " 0x", buf[1+o], "\n", sep="")
                     if (buf[o] == 0x00 & buf[1+o] == 0x00) {
                         ##slow if (i <= profilesToShow) oceDebug(debug, "  fixed leader skipped\n")
                     } else if (buf[o] == 0x80 & buf[1+o] == 0x00) {
@@ -1165,6 +1178,17 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         } else {
                             warning("Detected vertical beam percent good chunk, but this is not a SentinelV\n")
                         }
+                    } else {
+                        ## FIXME: maybe should handle all possible combinations here. But
+                        ## FIXME: how could we know the possibilities? I've seen the following
+                        ## FIXME: in a winriver file file from CR:
+                        ## FIXME: 0x00 0x37
+                        ## FIXME: 0x01 0x21
+                        ## FIXME: 0x02 0x21
+                        ## FIXME: 0x03 0x21
+                        ## FIXME: ... and over 1000 more. These cannot be real codes, surely.
+                        ## FIXME: So, for now, let's just ignore unknown codes.
+                        ##> warning("unknown buf[o]=0x", buf[o], " and buf[1+o]=0x", buf[1+o])
                     }
                     if (monitor)
                         setTxtProgressBar(progressBar, i)
@@ -1341,8 +1365,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 ##VMDAS             cat(i, "\n", ...)
                 ##VMDAS     }
                 ##VMDAS }
-                if (o >= fileSize) {
-                    warning("got to end of file")
+                ##if (o >= fileSize) {
+                if (o >= bufSize) {
+                    warning("got to end of file; o=", o, ", fileSize=", bufSize, "\n")
                     break
                 }
             }
@@ -1379,6 +1404,10 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
 
             profileStart2 <- sort(c(profileStart, profileStart + 1)) # lets us index two-byte chunks
             profileStart4 <- sort(c(profileStart, profileStart + 1, profileStart + 2, profileStart + 3)) # lets us index four-byte chunks
+
+            ## cat("profileStart=", paste(profileStart, collapse=" "), "\n")
+            ## cat("profileStart2=", paste(profileStart2, collapse=" "), "\n")
+            ## cat("profileStart4=", paste(profileStart4, collapse=" "), "\n")
             soundSpeed <- readBin(buf[profileStart2 + 14], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
             depth <- 0.1 * readBin(buf[profileStart2 + 16], "integer", n=profilesToRead, size=2, endian="little")
             ## Note that the headingBias needs to be removed
@@ -1511,7 +1540,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
            class(time) <- c("POSIXct", "POSIXt")
            attr(time, "tzone") <- getOption("oceTz")
            if (bFound && !isVMDAS) {
+               oceDebug(debug, "creating data slot for a file with bFound&&!isVMDAS\n")
                br[br == 0.0] <- NA    # clean up (not sure if needed)
+               ## issue1228
                res@data <- list(v=v, q=q, a=a, g=g,
                                 br=br, bv=bv, bc=bc, ba=ba, bg=bg,
                                 distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
@@ -1537,6 +1568,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                 attitude=attitude,
                                 contaminationSensor=contaminationSensor)
            } else if (bFound && isVMDAS) {
+               oceDebug(debug, "creating data slot for a file with bFound&&isVMDAS\n")
                br[br == 0.0] <- NA    # clean up (not sure if needed)
                res@data <- list(v=v, q=q, a=a, g=g,
                                 br=br, bv=bv,
@@ -1590,6 +1622,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                 speedMadeGoodEast=speedMadeGoodEast,
                                 speedMadeGoodNorth=speedMadeGoodNorth)
            } else if (isSentinel) {
+               oceDebug(debug, "creating data slot for a SentinelV file\n")
                res@data <- list(v=v, q=q, a=a, g=g,
                                 vv=vv, vq=vq, va=va, vg=vg,
                                 vdistance=seq(firstCellRange, b=depthCellSize, length.out=numberOfVCells),
@@ -1616,6 +1649,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                 attitude=attitude,
                                 contaminationSensor=contaminationSensor)
            } else {
+               oceDebug(debug, "creating data slot for a non-SentinelV file\n")
                res@data <- list(v=v, q=q, a=a, g=g,
                                 distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                                 time=time,

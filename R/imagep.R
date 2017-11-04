@@ -814,6 +814,18 @@ imagep <- function(x, y, z,
             } else {
                 breaks <- colormap$breaks
                 col <- colormap$col
+                zlim <- colormap$zlim
+                ## FIXME: need to check zclip here too
+                zclip <- colormap$zclip
+            }
+            if (!zclip) {
+                oceDebug(debug, "using zlim[1:2]=c(", zlim[1], ",", zlim[2], ") for out-of-range values\n")
+                z[z < zlim[1]] <- zlim[1]
+                z[z > zlim[2]] <- zlim[2]
+            } else {
+              oceDebug(debug, "using missingColour for out-of-range values")
+                z[z < zlim[1]] <- NA
+                z[z > zlim[2]] <- NA
             }
             oceDebug(debug, "decimate: ", paste(decimate, collapse=" "), " (before calculation)\n")
             if (is.logical(decimate)) {
@@ -827,7 +839,8 @@ imagep <- function(x, y, z,
             iy <- seq(1L, length(y), by=decimate[2])
             if (is.function(col))
                 col <- col(n=length(breaks)-1)
-            image(x[ix], y[iy], z[ix, iy], breaks=breaks, col=col, add=TRUE, useRaster=useRaster)
+            image(x[ix], y[iy], z[ix, iy], breaks=breaks, col=col, useRaster=useRaster, #why useRaster?
+                  add=TRUE)
             return(invisible(list(xat=NULL, yat=NULL, decimate=decimate)))
         }
     } else {
@@ -839,7 +852,11 @@ imagep <- function(x, y, z,
     xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
     zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot,adp-method
-    xlimGiven <- !missing(xlim)
+    ## Guard against poor setup
+    if (xlimGiven && length(xlim) != 2) stop("length of xlim must be 2")
+    if (ylimGiven && length(ylim) != 2) stop("length of ylim must be 2")
+    if (zlimGiven && length(zlim) != 2) stop("length of zlim must be 2")
+
     if (zlimGiven && is.character(zlim)) {
         if ("symmetric" == zlim) {
             zlim <- c(-1, 1) * max(abs(z), na.rm=TRUE)
@@ -1005,7 +1022,7 @@ imagep <- function(x, y, z,
     ##omai <- par("mai")
     ocex <- par("cex")
     if (missing(mar))
-        mar <- c(mgp[1]+if (nchar(xlab)>0) 1.5 else 1, mgp[1]+if (nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2)
+        mar <- c(mgp[1]+if (nchar(xlab[1])>0) 1.5 else 1, mgp[1]+if (nchar(ylab[1])>0) 1.5 else 1, mgp[2]+1/2, 1/2)
     if (missing(mai.palette)) {
         ##mai.palette <- c(0, 1/8, 0, 3/8 + if (haveZlab && zlabPosition=="side") 1.5*par('cin')[2] else 0)
         mai.palette <- rep(0, 4)

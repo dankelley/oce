@@ -5,7 +5,7 @@
 \title{Seawater sound speed}
 \usage{
 swSoundSpeed(salinity, temperature = NULL, pressure = NULL,
-  longitude = 300, latitude = 30, eos = getOption("oceEOS", default =
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default =
   "gsw"))
 }
 \arguments{

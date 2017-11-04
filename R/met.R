@@ -143,6 +143,7 @@ setMethod(f="summary",
 #' plot(subset(met, time > as.POSIXct("2003-09-27", tz="UTC")))
 #'
 #' @family things related to \code{met} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="met",
           definition=function(x, subset, ...) {
@@ -322,8 +323,6 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @seealso The work is done with \code{\link[utils]{download.file}}.
 #'
-#' @template downloadWarningTemplate
-#'
 #' @references
 #' 1. Environment Canada website for Historical Climate Data
 #' \url{http://climate.weather.gc.ca/index_e.html}
@@ -333,7 +332,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #'
 #' @family functions that download files
 #' @family things related to \code{met} data
-download.met <- function(id, year, month, deltat, destdir="~/data/met", destfile,
+download.met <- function(id, year, month, deltat, destdir=".", destfile,
                          debug=getOption("oceDebug"))
 {
     if (missing(id))

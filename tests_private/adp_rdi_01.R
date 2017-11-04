@@ -2,6 +2,7 @@ library(oce)
 
 path <- "~/Dropbox/oce-working-notes/tests/adp-rdi"
 files <- list.files(path, "*", recursive=TRUE, full.names=TRUE)
+options(warn=1)                        # see warnings when they occur
 
 n <- 0
 for (file in files) {
@@ -17,4 +18,5 @@ for (file in files) {
     })
 }
 cat("Successfully checked", n, "ADP files in", path, "\n")
+
 

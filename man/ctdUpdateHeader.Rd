@@ -37,7 +37,7 @@ ctdNew <- ctdUpdateHeader(ctd)
 }
 \references{
 The Seabird CTD instrument is described at
-  \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
+  \code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 }
 \seealso{
 Other functions that will be removed soon: \code{\link{addColumn}},

@@ -181,18 +181,22 @@ setMethod(f="summary",
                   width <- 1 + max(nchar(names(flags)))
                   for (name in names(flags)) {
                       padding <- rep(" ", width - nchar(name))
-                      cat("    ", name, ":", padding, sep="")
-                      flagTable <- table(flags[[name]])
-                      flagTableLength <- length(flagTable)
-                      for (i in 1:flagTableLength) {
-                          cat("\"", names(flagTable)[i], "\"", " ", flagTable[i], "", sep="")
-                          if (i != flagTableLength) cat(", ") else cat("\n")
+                      if (!all(is.na(flags[[name]]))) {
+                          cat("    ", name, ":", padding, sep="")
+                          flagTable <- table(flags[[name]])
+                          flagTableLength <- length(flagTable)
+                          if (flagTableLength) {
+                              for (i in seq_len(flagTableLength)) {
+                                  cat("\"", names(flagTable)[i], "\"", " ", flagTable[i], "", sep="")
+                                  if (i != flagTableLength) cat(", ") else cat("\n")
+                              }
+                          }
                       }
                   }
                   cat("\n")
               }
               processingLogShow(object)
-              invisible(threes)
+              invisible()
           })
 
 
@@ -243,9 +247,9 @@ setMethod(f="plot",
 #' versions for most sub-classes, e.g. \code{\link{subset,ctd-method}}
 #' for \code{ctd} objects.
 #'
-#' @param x An oce object.
-#' @param subset A logical expression indicating how to take the subset; the form depends on the sub-class.
-#' @param ... Ignored.
+#' @param x an oce object.
+#' @param subset a logical expression indicating how to take the subset; the form depends on the sub-class.
+#' @param ... optional arguments, used in some specialized methods (e.g. \code{\link{subset,section-method}}).
 #' @return An oce object.
 #' @examples
 #' library(oce)
@@ -255,6 +259,7 @@ setMethod(f="plot",
 #' par(mfrow=c(1, 2))
 #' plotProfile(ctd)
 #' plotProfile(top10)
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="oce",
           definition=function(x, subset, ...) {

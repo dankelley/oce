@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 //
 // FIXME: this code should be altered to handle dual- and split-beam data.
 // In single-beam data, the procedure is to work in 2-byte chunks (as
@@ -76,28 +76,28 @@ void rle(unsigned char *samp, int ns, int spp, int byte_per_sample)
       Rprintf("zero-fill %d samples at i=%d k=%d\n", n, i, k);
 #endif
       while (n > 0) {
-	if (k < SPP) {
-	  buffer[k++] = 0x00;
-	  buffer[k++] = 0x00;
-	  if (byte_per_sample == 4) {
-	    buffer[k++] = 0x00;
-	    buffer[k++] = 0x00;
-	  }
+        if (k < SPP) {
+          buffer[k++] = 0x00;
+          buffer[k++] = 0x00;
+          if (byte_per_sample == 4) {
+            buffer[k++] = 0x00;
+            buffer[k++] = 0x00;
+          }
           --n;
-	} else { 
-	  break; // prevent overfill (probably will never happen)
-	}
+        } else { 
+          break; // prevent overfill (probably will never happen)
+        }
       }
     } else {
       if (k < SPP) {
-	buffer[k++] = b1;
-	buffer[k++] = b2;
-	if (byte_per_sample == 4) {
-	  buffer[k++] = b3;
-	  buffer[k++] = b4;
-	}
+        buffer[k++] = b1;
+        buffer[k++] = b2;
+        if (byte_per_sample == 4) {
+          buffer[k++] = b3;
+          buffer[k++] = b4;
+        }
       } else {
-	break;
+        break;
       }
     }
   }

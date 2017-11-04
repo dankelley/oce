@@ -60,10 +60,11 @@ is stored as \code{salinityBottle}.
 
 \references{
 Several repository sites provide section data. An example that is perhaps likely
-to exist for years is \url{http://cchdo.ucsd.edu}, but a search on \code{"WOCE
+to exist for years is \url{https://cchdo.ucsd.edu}, but a search on \code{"WOCE
   bottle data"} should turn up other sites, if this one ceases to exist. Only
 the so-called \emph{exchange BOT} data format can be processed by read.section()
-at this time.
+at this time. Data names are inferred from column headings using
+\code{\link{woceNames2oceNames}}.
 }
 \seealso{
 Other things related to \code{section} data: \code{\link{[[,section-method}},

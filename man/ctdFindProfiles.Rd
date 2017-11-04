@@ -29,11 +29,15 @@ simple first difference, set \code{smoother} to \code{NULL}.}
 
 \item{direction}{String indicating the travel direction to be selected.}
 
-\item{breaks}{optional logical vector indicating the indices of data
-at the edges of profiles. If this is given, then the preceding arguments
-\code{cutoff} through \code{direction} are ignored. This argument
-can be handy when the other scheme fails, because it gives complete
-control to the user (example 3).}
+\item{breaks}{optional integer vector indicating the indices of last
+datum in each profile stored within \code{x}. Thus, the first profile
+in the return value will contain the \code{x} data from indices 1
+to \code{breaks[1]}.  If \code{breaks} is given, then all
+other arguments except \code{x} are ignored. Using \code{breaks}
+is handy in cases where other schemes fail, or when the author
+has independent knowledge of how the profiles are strung together
+in \code{x}; see example 3 for how \code{breaks} might be used
+for towyo data.}
 
 \item{arr.ind}{Logical indicating whether the array indices should be returned;
 the alternative is to return a vector of ctd objects.}
@@ -57,7 +61,10 @@ by specifying higher \code{debug} values.}
 }
 \value{
 If \code{arr.ind=TRUE}, a data frame with columns \code{start} and \code{end}, the indices
-of the downcasts.  Otherwise, a vector of \code{ctd} objects.
+of the downcasts.  Otherwise, a vector of \code{ctd} objects. In this second case,
+the station names are set to a form like \code{"10/3"}, for the third profile within an
+original ctd object with station name \code{"10"}, or to \code{"3"}, if the original
+ctd object had no station name defined.
 }
 \description{
 Examine the pressure record looking for extended periods of either ascent or descent, and return
@@ -123,6 +130,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
@@ -131,7 +140,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
 \author{
 Dan Kelley and Clark Richards

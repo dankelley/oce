@@ -20,6 +20,7 @@ importFrom("stats", "approx", "approxfun", "coef", "confint", "cor", "cov",
            "weighted.mean", "window")
 importFrom("utils", "data", "head", "flush.console", "read.csv", "read.table",
            "setTxtProgressBar", "str", "tail", "txtProgressBar", "write.table")
+importFrom("testthat", "expect_equal")
 
 
 exportMethods(plot)
@@ -129,6 +130,7 @@ export(abbreviateTimeLabels,
        lonlat2utm,
        lonlat2map,
        lonFormat,
+       lowpass,
        magneticField,
        makeFilter,
        makeSection,
@@ -193,6 +195,8 @@ export(abbreviateTimeLabels,
        oce.convolve, oceConvolve,
        oce.contour, oceContour,
        oce.grid,
+       oceNames2whpNames,
+       oceUnits2whpUnits,
        oce.plot.ts,
        oce.pmatch, ocePmatch,
        oce.smooth, oceSmooth,
@@ -333,6 +337,7 @@ export(abbreviateTimeLabels,
        unduplicateNames,
        unitFromString,
        unitFromStringRsk,
+       usrLonLat,
        utm2lonlat,
        xyzToEnu,
        xyzToEnuAdp,

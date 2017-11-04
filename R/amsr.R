@@ -26,7 +26,7 @@
 #' @concept satellite
 #' @references
 #' 1. Information on the satellite, how to cite the data, etc. is
-#' provided at \url{http://www.remss.com/missions/amsr}.
+#' provided at \url{http://www.remss.com/missions/amsr/}.
 #'
 #' 2. A simple interface for viewing and downloading data is at
 #' \url{http://images.remss.com/amsr/amsr2_data_daily.html}.
@@ -265,6 +265,7 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #'
 #' @family things related to \code{amsr} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="amsr",
           definition=function(x, subset, ...) {
@@ -422,8 +423,6 @@ setMethod(f="plot",
 #' @return A character value indicating the filename of the result; if
 #' there is a problem of any kind, the result will be the empty
 #' string.
-#'
-#' @template downloadWarningTemplate
 #'
 #' @examples
 #'\dontrun{

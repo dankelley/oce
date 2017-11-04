@@ -17,6 +17,10 @@ Translate WOCE-style names to \code{oce} names, using \code{\link{gsub}}
 to match patterns. For example, the pattern \code{"CTDOXY.*"} is taken
 to mean \code{oxygen}.
 }
+\references{
+Several online sources list WOCE names. An example is
+\url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
+}
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
@@ -24,6 +28,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
@@ -31,12 +37,16 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
-  \code{\link{summary,ctd-method}}, \code{\link{write.ctd}}
+  \code{\link{summary,ctd-method}},
+  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 
 Other functions that interpret variable names and units from headers: \code{\link{ODFNames2oceNames}},
   \code{\link{cnvName2oceName}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{unitFromStringRsk}},
-  \code{\link{unitFromString}}
+  \code{\link{unitFromString}},
+  \code{\link{woceUnit2oceUnit}}
 }
 \author{
 Dan Kelley

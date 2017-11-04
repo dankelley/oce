@@ -74,14 +74,6 @@ from 1 to 9, this default is equivalent to
 setting \code{flags=list(all=c(1, 3:9))} along with
 \code{action=list("NA")}.
 }
-\section{Implementation status}{
- \code{handleFlags} is a new function as of March 2016,
-and it will probably continue to evolve through the rest of 2016.
-Users are asked to be patient, and to provide help by
-looking at the documentation and telling the developers
-whether the planned functioning seems reasonable.
-}
-
 \examples{
 library(oce)
 data(section)
@@ -95,9 +87,17 @@ data.frame(old=stn[['salinity']], flag=stn[['salinityFlag']], new=STN[['salinity
 # and only apply this action to salinity.
 STN <- handleFlags(stn, flags=list(salinity=c(1, 4:9)))
 
-# 3. Use smoothed TS relationship to nudge questionable data.
-# This is perhaps a silly idea, but at least it illustrates
-# how to write a nontrivial function for an action.
+# 3. A Canadian Department of Fisheries and Oceans convention for
+# some of its data files lists flags as 0=unchecked, 1=good,
+# 2=uncertain, 3=doubtful, 4=wrong, and 5=changed, so a
+# trusting arrangement would be to discard 2:4, and a more
+# cautious approach would be to also discard 0.
+STN <- handleFlags(stn, flags=list(2:4))
+STN <- handleFlags(stn, flags=list(c(0,2:4)))
+
+# 4. Use smoothed TS relationship to nudge questionable data.
+# This is not a recommended procedure, but rather just a simple
+# illustration of how to supply a function for an action.
 f<-function(x) {
   S <- x[["salinity"]]
   T <- x[["temperature"]]
@@ -126,13 +126,16 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
-  \code{\link{ctd}}, \code{\link{plot,ctd-method}},
-  \code{\link{plotProfile}}, \code{\link{plotScan}},
-  \code{\link{plotTS}}, \code{\link{read.ctd.itp}},
-  \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
+  \code{\link{ctd}}, \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
+  \code{\link{plotScan}}, \code{\link{plotTS}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }

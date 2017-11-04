@@ -47,11 +47,11 @@
 #' handled for each data item. If not supplied, this defaults to the value of
 #' \code{\link{getOption}("oceDebug")}.
 #'
-#' @section Implementation status: \code{handleFlags} is a new function as of March 2016,
-#' and it will probably continue to evolve through the rest of 2016.
-#' Users are asked to be patient, and to provide help by
-#' looking at the documentation and telling the developers
-#' whether the planned functioning seems reasonable.
+## @section Implementation status: \code{handleFlags} is a new function as of March 2016,
+## and it will probably continue to evolve through the rest of 2016.
+## Users are asked to be patient, and to provide help by
+## looking at the documentation and telling the developers
+## whether the planned functioning seems reasonable.
 #'
 #' @family functions that handle data-quality flags
 

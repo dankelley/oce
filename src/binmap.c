@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <Rdefines.h>
 
@@ -16,7 +16,7 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
  *  Copyright (C) 1995-2001   Robert Gentleman, Ross Ihaka and the
- *			      R Development Core Team
+ *  R Development Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@
 */
 
 /* NB:  R_interv(.) in ./interv.c  is conceptually a special case of
- *	this, where y = 1:n */
+ * this, where y = 1:n */
 
 typedef struct {
     double ylow;
@@ -54,7 +54,7 @@ typedef struct {
 } appr_meth;
 
 static double approx1(double v, double *x, double *y, int n,
-		      appr_meth *Meth)
+    appr_meth *Meth)
 {
     /* Approximate  y(v),  given (x,y)[i], i = 0,..,n-1 */
     int i, j, ij;
@@ -72,10 +72,10 @@ static double approx1(double v, double *x, double *y, int n,
     /* find the correct interval by bisection */
 
     while(i < j - 1) { /* x[i] <= v <= x[j] */
-	ij = (i + j)/2; /* i+1 <= ij <= j-1 */
-	if(v < x[ij]) j = ij;
-	else i = ij;
-	/* still i < j */
+      ij = (i + j)/2; /* i+1 <= ij <= j-1 */
+      if(v < x[ij]) j = ij;
+      else i = ij;
+      /* still i < j */
     }
     /* provably have i == j-1 */
 
@@ -86,18 +86,18 @@ static double approx1(double v, double *x, double *y, int n,
     /* impossible: if(x[j] == x[i]) return y[i]; */
 
     if(Meth->kind == 1) { /* linear */
-	return y[i] + (y[j] - y[i]) * ((v - x[i])/(x[j] - x[i]));
+      return y[i] + (y[j] - y[i]) * ((v - x[i])/(x[j] - x[i]));
     }
     else { /* 2 : constant */
-	return y[i] * Meth->f1 + y[j] * Meth->f2;
+      return y[i] * Meth->f1 + y[j] * Meth->f2;
     }
 }/* approx1() */
 
 
-	/* R Frontend for Linear and Constant Interpolation */
+/* R Frontend for Linear and Constant Interpolation */
 
 void R_approx(double *x, double *y, int *nxy, double *xout, int *nout,
-	      int *method, double *yleft, double *yright, double *f)
+    int *method, double *yleft, double *yright, double *f)
 {
     int i;
     appr_meth M = {0.0, 0.0, 0.0, 0.0, 0}; /* -Wall */
@@ -105,24 +105,24 @@ void R_approx(double *x, double *y, int *nxy, double *xout, int *nout,
     /* check interpolation method */
 
     switch(*method) {
-    case 1: /* linear */
-	break;
-    case 2: /* constant */
-	if(!R_FINITE(*f) || *f < 0 || *f > 1)
-	    error("approx(): invalid f value");
-	M.f2 = *f;
-	M.f1 = 1 - *f;
-	break;
-    default:
-	error("approx(): invalid interpolation method");
-	break;
+      case 1: /* linear */
+        break;
+      case 2: /* constant */
+        if(!R_FINITE(*f) || *f < 0 || *f > 1)
+          error("approx(): invalid f value");
+        M.f2 = *f;
+        M.f1 = 1 - *f;
+        break;
+      default:
+        error("approx(): invalid interpolation method");
+        break;
     }
 
     // CODE ALTERATION: permit NA here
 #if 0
     for(i = 0 ; i < *nxy ; i++)
-	if(ISNA(x[i]) || ISNA(y[i]))
-	    error("approx(): attempted to interpolate NA values");
+      if(ISNA(x[i]) || ISNA(y[i]))
+        error("approx(): attempted to interpolate NA values");
 #endif
 
     M.kind = *method;
@@ -133,9 +133,9 @@ void R_approx(double *x, double *y, int *nxy, double *xout, int *nout,
     // NA in such cases.
     for(i = 0 ; i < *nout; i++) {
       if (ISNA(x[i]) || ISNA(y[i]) || ISNA(xout[i])) {
-	xout[i] = NA_REAL;
+        xout[i] = NA_REAL;
       } else {
-	xout[i] = approx1(xout[i], x, y, *nxy, &M);
+        xout[i] = approx1(xout[i], x, y, *nxy, &M);
       }
     }
 }

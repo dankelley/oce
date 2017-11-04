@@ -8,31 +8,100 @@
 \S4method{subset}{section}(x, subset, ...)
 }
 \arguments{
-\item{x}{A \code{\link{section-class}} object.}
+\item{x}{A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.}
 
-\item{subset}{A condition to be applied to the \code{data} portion of \code{x}.
-See \sQuote{Details}.}
+\item{subset}{an optional indication of either the stations to be kept,
+or the data to be kept within the stations.  See \dQuote{Details}.}
 
-\item{...}{Optional arguments, which may include \code{indices}, a vector
-of the indices of stations to be kept (starting at 1 for the first station).}
+\item{...}{optional arguments, of which only the first is examined. The only
+possibility is that this argument be named \code{indices}. See \dQuote{Details}.}
 }
 \value{
-A new \code{section} object.
+A \code{\link{section-class}} object.
 }
 \description{
-This function is somewhat analogous to \code{\link{subset.data.frame}}.  The
-condition set by \code{subset} may be in terms of \code{stationId} or any
-combination of \code{longitude}, \code{latitude} and \code{time}.  However,
-\code{stationId} may not be combined with the others; to get that effect, call
-this function more than once.
+Return a subset of a section object.
+}
+\details{
+This function is used to subset data within the
+stations of a section, or to choose a subset of the stations
+themselves. The first case is handled with the \code{subset} argument,
+while the second is handled if \code{...} contains a vector named
+\code{indices}. Either \code{subset} or \code{indices} must be
+provided, but not both.
+
+\strong{In the "subset" method}, \code{subset} indicates
+either stations to be kept, or data to be kept within the stations.
+
+The first step in processing is to check for the presence of certain
+key words in the \code{subset} expression. If \code{distance}
+is present, then stations are selected according to a condition on the
+distance (in km) from the first station to the given station (Example 1).
+If either \code{longitude} or \code{latitude} is given, then
+stations are selected according to the stated condition (Example 2).
+If \code{stationId} is present, then selection is in terms of the
+station ID (not the sequence number) is used (Example 3). In all of these
+cases, stations are either selected in their entirety or dropped
+in their entirety.
+
+If none of these keywords is present, then the \code{subset} expression is
+evaluated in the context of the \code{data} slot of each of the CTD stations
+stored within \code{x}. (Note that this slot does not normally
+contain any of the keywords that are listed in the previous
+paragraph; it does, then odd results may occur.) Each station is examined
+in turn, with \code{subset} being evaluated individually in each. The evaluation
+produces a logical vector. If that vector has length 1 (Examples 4 and 5)
+then the station is retained or discarded, accordingly. If the vector is longer,
+then the logical vector is used as a sieve to subsample that individual CTD
+profile.
+
+\strong{In the "indices" method}, stations are selected using
+\code{indices}, which may be a vector of integers that indicate sequence
+number, or a logical vector, again indicating which stations to keep.
 }
 \examples{
 library(oce)
 data(section)
-GS <- subset(section, 109<=stationId&stationId<=129)
+
+# 1. Stations within 500 km of the first station
+starting <- subset(section, distance < 500)
+
+# 2. Stations east of 50W
+east <- subset(section, longitude > (-50))
+
+# 3. Gulf Stream
+GS <- subset(section, 109 <= stationId & stationId <= 129)
+
+# 4. Only stations with more than 5 pressure levels
+long <- subset(section, length(pressure) > 5)
+
+# 5. Only stations that have some data in top 50 dbar
+surfacing <- subset(section, min(pressure) < 50)
+
+# 6. Similar to #4, but done in more detailed way
+long <- subset(section,
+   indices=unlist(lapply(section[["station"]],
+                  function(s)
+                    5 < length(s[["pressure"]]))))
 
 }
 \seealso{
+Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+  \code{\link{subset,adv-method}},
+  \code{\link{subset,amsr-method}},
+  \code{\link{subset,argo-method}},
+  \code{\link{subset,cm-method}},
+  \code{\link{subset,coastline-method}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{subset,echosounder-method}},
+  \code{\link{subset,lobo-method}},
+  \code{\link{subset,met-method}},
+  \code{\link{subset,oce-method}},
+  \code{\link{subset,odf-method}},
+  \code{\link{subset,rsk-method}},
+  \code{\link{subset,sealevel-method}},
+  \code{\link{subset,topo-method}}
+
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},

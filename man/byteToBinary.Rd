@@ -2,34 +2,38 @@
 % Please edit documentation in R/misc.R
 \name{byteToBinary}
 \alias{byteToBinary}
-\title{Format bytes as binary [deprecated]}
+\title{Format bytes as binary}
 \usage{
-byteToBinary(x, endian = c("little", "big"))
+byteToBinary(x, endian)
 }
 \arguments{
 \item{x}{an integer to be interpreted as a byte.}
 
 \item{endian}{character string indicating the endian-ness ("big" or
-"little").}
+"little"). \strong{This argument will be removed in the upcoming CRAN
+release.}}
 }
 \value{
 A character string representing the bit strings for the elements of
 \code{x}, in order of significance for the \code{endian="big"} case.
-(The \code{"little"} case should not be used.)
+(The nibbles, or 4-bit sequences, are interchanged in the now-deprecated
+\code{"little"} case.)
 See \dQuote{Examples} for how this relates to the output from
 \link{rawToBits}.
 }
 \description{
-\strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
-Use \code{\link{oceSetData}} instead of the present function.
+\strong{WARNING:} The \code{endian} argument will soon be removed
+from this function; see \link{oce-deprecated}.
+This is because the actions for \code{endian="little"} made
+no sense in practical work. The default value for \code{endian}
+was changed to \code{"big"} on 2017 May 6.
 }
 \examples{
 library(oce)
-## In the big-endian case, the results match those of byteToBinary(),
-## but reversed.
+## Note comparison with rawToBits():
 a <- as.raw(0x0a)
-byteToBinary(a, "big")
-rev(rawToBits(a))
+byteToBinary(a, "big") # "00001010"
+rev(rawToBits(a))      # 00 00 00 00 01 00 01 00
 }
 \author{
 Dan Kelley

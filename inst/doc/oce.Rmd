@@ -1,5 +1,5 @@
 ---
-title: "oce"
+title: "Oce"
 author: "Dan Kelley and Clark Richards"
 date: "`r Sys.Date()`"
 output:
@@ -11,15 +11,17 @@ output:
     fig_height: 5
     dpi: 72
     dev.args: list(pointsize=11)
-
 vignette: >
-  %\VignetteIndexEntry{oce}
+  %\VignetteIndexEntry{Oce}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-<!-- edit vignettes/oce.Rmd then run with -->
-<!-- devtools::build_vignettes() -->
-<!-- in the console. -->
+
+<!-- HOW TO BUILD THE VIGNETTE. -->
+<!-- 1. edit this file in vignettes/oce.Rmd -->
+<!-- 2. run devtools::build_vignettes() -->
+<!-- 3. build oce -->
+
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
@@ -399,7 +401,8 @@ plot(GSg, which=c(1,99), map.xlim=c(-85,-(64+13/60)))
 
 **Exercise 4.** Draw a $T$-$S$ diagram for the section data, using black
 symbols to the east of 30W and gray symbols to the west, thus highlighting
-Mediterranean-derived waters. (Hint: use the accessor function `[[`.)
+Mediterranean-derived waters. Use `handleFlags()` to discard questionable
+data, and use the accessor function `[[`.
 
 **Exercise 5.** Plot dynamic height and geostrophic velocity across the Gulf
 Stream. (Hint: use the `swDynamicHeight()` function.)
@@ -463,7 +466,7 @@ lat <- topo[["latitude"]]
 z <- topo[["z"]]
 cm <- colormap(name="gmt_globe")
 drawPalette(colormap=cm)
-mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
+mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE, col="lightgray")
 mapImage(lon, lat, z, colormap=cm)
 ```
 
@@ -476,16 +479,16 @@ par(mar=c(2, 2, 1, 1))
 lonlim <- c(-80, 0)
 latlim <- c(20, 60)
 mapPlot(coastlineWorld, projection="+proj=lcc +lat_1=30 +lat_2=50 +lon_0=-40",
-        longitudelim=lonlim, latitudelim=latlim)
+        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
 ```
 
 Other common mid-latitude projections include Mercator and Albers Equal-Area
 Conic, produced as follows.
 ```{r , fig.keep="none"}
 mapPlot(coastlineWorld, projection="+proj=merc",
-        longitudelim=lonlim, latitudelim=latlim)
+        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
 mapPlot(coastlineWorld, projection="+proj=aea +lat_1=30 +lat_2=70 +lon_0=-40",
-        longitudelim=lonlim, latitudelim=latlim)
+        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
 ```
 
 ## Popular high-latitude projections
@@ -495,7 +498,7 @@ Figure 8 was produced with the following.
 ```{r fig.cap="**Figure 8.** Arctic coastlines in stereopolar projection.", fig.width=3, fig.height=3, dpi=72}
 par(mar=c(2, 2, 1, 1))
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-        longitudelim=c(-80,0), latitudelim=c(70, 110))
+        col="lightgray", longitudelim=c(-80,0), latitudelim=c(70, 110))
 ```
 
 
@@ -514,7 +517,7 @@ possibilities for plotting, including a cumulative spectrum that can be quite
 informative
 (use `help("plot,sealevel-method")` to learn more).
 
-```{r fig.cap="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour.", fig.width=5, fig.height=3, dpi=72, dev.args=list(pointsize=16)}
+```{r fig.cap="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour.", fig.width=5, fig.height=4, dpi=72, dev.args=list(pointsize=16)}
 library(oce)
 data(sealevel)
 plot(sealevel)
@@ -679,6 +682,172 @@ effort, if they have knowledge of how nautical words such as *Pitch* and *Roll*
 and technical terms such as *Absolute Salinity* and *Potential Temperature*
 should be written in various languages.
 
+# Extending oce
+
+## Initializing oce objects
+
+Oce handles a wide variety of data types, creating sub-classes the inherit from
+the base class that is named `oce`. However, even if a dataset does not fit
+within these sub-classes, it is still possible to use some of the features of
+`oce`, such as (FILL IN ... accessors, plotting, summaries ??).
+
+For example, suppose that there is a dataset that contains two variables, `mm`
+and `ss`, that have been measured at times `t`. Suppose that the data are
+recorded at a fixed location. To illustrate how to deal with such data, we
+first create some fake data:
+```{r}
+lon <- -60
+lat <- -30
+t <- seq(as.POSIXct("2017-08-30"), as.POSIXct("2017-09-01"), by="15 min")
+tsec <- as.numeric(t)
+u <- sin(tsec * 2 * pi / (3600 * 12.4206))
+v <- 0.5 * cos(tsec * 2 * pi / (3600 * 12.4206))
+```
+```{r echo=FALSE, eval=FALSE}
+plot(t, u, type="l")
+lines(t, v, col=2)
+```
+
+These may be inserted into an `oce` object as follows. First, create the object.
+```{R}
+o <- new("oce")
+```
+This contains slots without data:
+```{R}
+str(o)
+```
+
+As noted previously, it's possible to insert `t`, `u`, and `v` directly into
+the `data` slot, but it's better to use `oceSetData` to do that, because it 
+can set up units, and it leaves a trail in the processing log.
+```{R}
+o <- oceSetData(o, "t", t, list(unit=expression(s), scale=""))
+o <- oceSetData(o, "u", u, list(unit=expression(m/s), scale=""))
+o <- oceSetData(o, "v", v, list(unit=expression(m/s), scale=""))
+```
+
+Astute readers will realize that these data are akin to tidal velocities, and
+so might agree with the author that `lon` and `lat` belong in the `metadata`
+slot, not the `data` slot. 
+```{R}
+o <- oceSetMetadata(o, "longitude", lon)
+o <- oceSetMetadata(o, "latitude", lat)
+```
+
+At this stage, `o` is a full-fledged `oce` object. It may be summarized with
+```{r}
+summary(o)
+```
+and individual data components may be extracted with the `[[` notation
+```{r}
+o[["latitude"]]                        # from metadata
+head(o[["t"]])                         # from data
+head(o[["u"]])
+head(o[["v"]])
+```
+
+A crude plot can be done with
+```{r fig.cap="**Figure 11.** Crude plot of constructed `oce` object.", fig.width=4, fig.height=4, dpi=72}
+plot(o)
+```
+
+Note that the plot uses the `pairs` function to show how all elements of the
+`data` slot vary with each other. To customize the plot, a new object class
+should be created, as in the next section.
+
+
+## Creating new oce object classes
+
+Let's call this new object class `uv`. With this, inventing a new object
+sub-class is as simple as invoking
+```{r}
+setClass("uv", contains="oce")
+```
+
+For most objects, it makes sense to define three specialized methods: one to
+create new objects (called `"initialize"`), one to plot them (`"plot"`), and
+one to summarize them (`"summary"`).
+
+The initialization can be handled with
+```{r}
+setMethod(f="initialize",
+          signature="uv",
+          definition=function(.Object, time, u, v, longitude, latitude) {
+              if (missing(time)) stop("must provide 'time'")
+              ## repeat the above also for u, v, longitude, and latitude
+              .Object@metadata$units$u <- list(unit=expression(m/s), scale="")
+              .Object@metadata$units$v <- list(unit=expression(m/s), scale="")
+              .Object@metadata$longitude <- longitude
+              .Object@metadata$latitude <- latitude
+              .Object@data$time <- time
+              .Object@data$u <- u
+              .Object@data$v <- v
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'uv' object"
+              return(.Object)
+          })
+```
+This is fairly arcane, but simply copying and pasting this will be enough to get the
+reader started. Let's try it:
+```{r}
+oo <- new("uv", t, u, v, lon, lat)
+```
+
+Next, customize `summary` for this new class:
+```{r}
+setMethod(f="summary",
+          signature="uv",
+          definition=function(object, ...) {
+              cat("uv Summary\n-----------\n\n", ...)
+              cat(paste("* Location:           ",
+                        sprintf("%.5f N", object@metadata$latitude), ", ",
+                        sprintf("%.5f E", object@metadata$longitude), "\n", sep=''))
+              callNextMethod()
+          })
+```
+The `callNextMethod` will summarize the entries in the `data` slot adequately for this case. Let's try it:
+```{r}
+summary(oo)
+```
+
+Finally, let's make a custom method for `plot`. This is usually the most
+complicated part of handling any new object class, because there are usually
+many ways to look at data. (Some `oce` objects have over a dozen specialized
+plot styles.) Let's suppose there are only two desired plot styles: one showing
+timeseries of `u` and `v` in a two panel plot, and the other showing how `u`
+and `v` covary.
+
+```{r}
+setMethod(f="plot",
+          signature=signature("uv"),
+          definition=function(x, which=1, ...)
+          {
+              if (which == 1) {
+                  oce.plot.ts(x[["time"]], x[["u"]], ylab="u [m/s]", ...)
+              } else if (which == 2) {
+                  oce.plot.ts(x[["time"]], x[["v"]], ylab="v [m/s]", ...)
+              } else if (which == 3) {
+                  plot(x[["u"]], x[["v"]], xlab="u [m/s]", ylab="v [m/s]", ...)
+              }
+          })
+```
+
+```{r echo=FALSE}
+par(mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0)) # thin margins
+```
+
+An now, we can try it out
+```{r fig.cap="**Figure 12.** Time-series u(t) plot of newly-constructed `uv` object.", fig.width=4, fig.height=4, dpi=72}
+par(mfrow=c(2,1))
+plot(oo, which=1)
+plot(oo, which=2)
+```
+```{r fig.cap="**Figure 13.** Hodograph plot of newly-constructed `uv` object.", fig.width=4, fig.height=4, dpi=72}
+plot(oo, which=3, asp=1)
+```
+
+
+
 # The future of oce
 
 The present version of `oce` can only handle data types that the authors have
@@ -694,6 +863,7 @@ with which the additions can be made.  One might call this
 development-by-triage, by analogy to the scheme used in Emergency Rooms to
 organize medical effort efficiently.
 
+
 # Development website
 
 The site [http://github.com/dankelley/oce](http://github.com/dankelley/oce)
@@ -708,15 +878,19 @@ and quality.  This is all in a common pattern for open-source software.
 
 # Answers to exercises
 
-**Exercise 1.** Seawater properties.
+**Exercise 1.** Seawater properties. In the UNESCO system we
+may write
 ```{r fig.width=5, fig.height=5, fig.keep="none"}
 library(oce)
-swRho(34, 10, 100)
-swTheta(34, 10, 100)
-swRho(34, swTheta(34, 10, 100), 0)
-swRho(34, swTheta(34, 10, 100, 200), 200)
-plotTS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
+swRho(34, 10, 100, eos="unesco")
+swTheta(34, 10, 100, eos="unesco")
+swRho(34, swTheta(34, 10, 100, eos="unesco"), 0, eos="unesco")
+swRho(34, swTheta(34, 10, 100, 200, eos="unesco"), 200, eos="unesco")
+plotTS(as.ctd(c(30,40),c(-2,20),rep(0,2)), eos="unesco", grid=TRUE, col="white")
 ```
+and in the Gibbs SeaWater system, we use `eos="gws"` and must supply
+`longitude` and `latitude` arguments to the `sw*()` calls and also
+to the `as.ctd()` call.
 
 **Exercise 2.** Plot a profile of $\sigma_\theta$ and $N^2$, for the data in
 the pycnocline. (Hint: use `subset()`.)
@@ -778,14 +952,19 @@ dev.off()
 
 **Exercise 4.** Draw a $T$-$S$ diagram for the section data, using black
 symbols to the east of 30W and gray symbols to the west, thus highlighting
-Mediterranean-derived waters. (Hint: use the accessor function `[[`.)
+Mediterranean-derived waters.  Use `handleFlags()` to discard questionable
+data, and use the accessor function `[[`.
+
+We will use the Gibbs SeaWater system, so `as.ctd()` needs location information.
 
 ```{r fig.width=5, fig.height=5, fig.keep="none"}
 library(oce)
 data(section)
-ctd <- as.ctd(section[["salinity"]], section[["temperature"]], section[["pressure"]])
-col <- ifelse(section[["longitude"]] > -30, "black", "gray")
-plotTS(ctd, col=col)
+s <- handleFlags(section)
+ctd <- as.ctd(s[["salinity"]], s[["temperature"]], s[["pressure"]],
+              longitude=s[["longitude"]], latitude=s[["latitude"]])
+col <- ifelse(s[["longitude"]] > -30, "black", "gray")
+plotTS(ctd, col=col, eos="gsw")
 ```
 
 **Exercise 5.** Plot dynamic height and geostrophic velocity across the Gulf

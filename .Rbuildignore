@@ -1,4 +1,6 @@
+^vignettes/figure$
 ^.*.org$
+.github
 .RData
 .travis.yml
 ^.*.nc$
@@ -14,7 +16,6 @@ src-x86_64
 README.rst
 .Rhistory
 .gitignore
-inst/doc/oce.R
 ^.*\.Rproj$
 ^\.Rproj\.user$
 src/*.o$
@@ -24,10 +25,10 @@ tests/testthat/*png
 tests/testthat/*pdf
 man/figures/Makefile
 man/figures/*.R
-vignettes
 tests_private
 tests/testthat/Rplots.pdf
 tests/testthat/test_local_*.R
 tests/testthat/local_data
 tests/testthat/valgrind_tests.*
 .lintr
+^cran-comments\.md$

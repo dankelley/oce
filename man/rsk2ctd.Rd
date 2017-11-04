@@ -4,13 +4,27 @@
 \alias{rsk2ctd}
 \title{Create a ctd Object from an rsk Object}
 \usage{
-rsk2ctd(x, pressureAtmospheric = 0, debug = getOption("oceDebug"))
+rsk2ctd(x, pressureAtmospheric = 0, longitude, latitude, ship, cruise,
+  station, deploymentType, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{An \code{rsk} object, i.e. one inheriting from \code{\link{rsk-class}}.}
 
 \item{pressureAtmospheric}{A numerical value (a constant or a vector),
 that is subtracted from the pressure in \code{object} before storing it in the return value.}
+
+\item{longitude}{numerical value of longitude, in degrees East.}
+
+\item{latitude}{numerical value of latitude, in degrees North.}
+
+\item{ship}{optional string containing the ship from which the observations were made.}
+
+\item{cruise}{optional string containing a cruise identifier.}
+
+\item{station}{optional string containing a station identifier.}
+
+\item{deploymentType}{character string indicating the type of deployment (see
+\code{\link{as.ctd}}).}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

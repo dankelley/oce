@@ -5,10 +5,10 @@
 \title{Draw a Map}
 \usage{
 mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg, fill,
-  border = NULL, col = NA, type = "l", axes = TRUE, cex, cex.axis = 1,
-  mgp = c(0, 0.5, 0), drawBox = TRUE, showHemi = TRUE, polarCircle = 0,
-  lonlabel = NULL, latlabel = NULL, sides = NULL,
-  projection = "+proj=moll", tissot = FALSE, trim = TRUE,
+  border = NULL, col = NULL, clip = TRUE, type = "polygon",
+  axes = TRUE, cex, cex.axis = 1, mgp = c(0, 0.5, 0), drawBox = TRUE,
+  showHemi = TRUE, polarCircle = 0, lonlabel = NULL, latlabel = NULL,
+  sides = NULL, projection = "+proj=moll", tissot = FALSE, trim = TRUE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -49,15 +49,27 @@ most projections this works quite well.  If not, one may set
 \item{fill}{\strong{(deprecated)} is a deprecated argument; see
 \link{oce-deprecated}.}
 
-\item{border}{colour of coastlines and international borders. The default,
-\code{NULL}, means to use \code{\link{par}("fg")}; see
-\code{\link{polygon}}.}
+\item{border}{colour of coastlines and international borders (ignored unless
+\code{type="polygon"}.}
 
-\item{col}{colour with which to fill coastline elements. The default,
-\code{NA}, is not to fill; see \code{\link{polygon}}.}
+\item{col}{either the colour for filling polygons (if \code{type="polygon"})
+or the colour of the points and line segments (if \code{type="p"},
+\code{type="l"}, or \code{type="o"}). If \code{col=NULL} then a default
+will be set: no coastline filling for the \code{type="polygon"} case,
+or black coastlines, for \code{type="p"}, \code{type="l"}, or
+\code{type="o"}.}
 
-\item{type}{value to indicate type of plot, as with
-\code{\link{par}("plot")}.}
+\item{clip}{logical value indicating whether to trim any coastline elements that lie wholly
+outside the plot region. This can prevent e.g. a problem of filling the whole plot area of
+an Arctic stereopolar view, because the projected trace for Antarctica lies outside all 
+other regions so the whole of the world ends up being "land".  Setting \code{clip=FALSE}
+disables this action, which may be of benefit in rare instances in the line connecting
+two points on a coastline may cross the plot domain, even if those points are outside
+that domain.}
+
+\item{type}{indication of type; may be \code{"polygon"}, for a filled polygon,
+\code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
+overlain with line segments.}
 
 \item{axes}{logical value indicating whether to draw longitude and latitude
 values in the lower and left margin, respectively.  This may not work well
@@ -219,7 +231,7 @@ Longitude and latitude                    \tab \code{lonlat}   \tab - \cr
 Longitude and latitude                    \tab \code{longlat}   \tab - \cr
 Longitude and latitude                    \tab \code{latlon}   \tab - \cr
 Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
-Lambert conformal conic alternative       \tab \code{lcca}     \tab \code{lat_0}\cr
+Lambert conformal conic alt. [DEPRECATED] \tab \code{lcca}     \tab \code{lat_0}\cr
 Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
 Loximuthal                                \tab \code{loxim}    \tab\cr
 Space oblique for Landsat                 \tab \code{lsat}     \tab \code{lsat}, \code{path}\cr
@@ -347,6 +359,15 @@ Generally, issues are tackled first for commonly used projections, such as
 those used in the examples.
 }
 
+\section{Changes}{
+
+\itemize{
+\item 2017-09-30: \code{lcca} deprecated, because its inverse was
+wildly inaccurate in a Pacific Antartic-Alaska application
+(see \url{https://github.com/dankelley/oce/issues/1303}).
+}
+}
+
 \examples{
 \dontrun{
 library(oce)
@@ -380,7 +401,8 @@ mtext("Orthographic", adj=1)
 # recommended by [1], page 95, for regions of large east-west extent
 # away from the equator, here illustrated for the USA and Canada.
 par(mar=c(3, 3, 1, 1))
-mapPlot(coastlineWorld, longitudelim=c(-130,-55), latitudelim=c(35, 60),
+mapPlot(coastlineCut(coastlineWorld, -100),
+        longitudelim=c(-130,-55), latitudelim=c(35, 60),
         projection="+proj=lcc +lat_0=30 +lat_1=60 +lon_0=-100", col='gray')
 mtext("Lambert conformal", adj=1)
 
@@ -391,24 +413,26 @@ mtext("Lambert conformal", adj=1)
 # second longitudelim is 180 plus the first; this uses image points "over"
 # the pole.
 par(mar=c(3, 3, 1, 1))
-mapPlot(coastlineWorld, longitudelim=c(-130, 50), latitudelim=c(70, 110),
+mapPlot(coastlineCut(coastlineWorld, -135),
+        longitudelim=c(-130, 50), latitudelim=c(70, 110),
         proj="+proj=stere +lat_0=90 +lon_0=-135", col='gray')
 mtext("Stereographic", adj=1)
 
 # Example 5.
 # Spinning globe: create PNG files that can be assembled into a movie
-png("539B-\\\%03d.png")
+png("globe-\%03d.png")
 lons <- seq(360, 0, -15)
-ilon <- seq_along(lons)
 par(mar=rep(0, 4))
-for (i in ilon) {
+for (i in seq_along(lons)) {
     p <- paste("+proj=ortho +lat_0=30 +lon_0=", lons[i], sep="")
     if (i == 1) {
-        mapPlot(coastlineWorld, projection=p, col="blue", lwd=1.4)
+        mapPlot(coastlineCut(coastlineWorld, lons[i]),
+                projection=p, col="lightgray")
         xlim <- par("usr")[1:2]
         ylim <- par("usr")[3:4]
     } else {
-        mapPlot(coastlineWorld, projection=p, col="blue", lwd=1.4,
+        mapPlot(coastlineCut(coastlineWorld, lons[i]),
+                projection=p, col="lightgray",
                 xlim=xlim, ylim=ylim, xaxs="i", yaxs="i")
     }
 }
@@ -466,7 +490,8 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{mapPoints}}, \code{\link{mapPolygon}},
   \code{\link{mapScalebar}}, \code{\link{mapText}},
   \code{\link{mapTissot}}, \code{\link{oceCRS}},
-  \code{\link{shiftLongitude}}, \code{\link{utm2lonlat}}
+  \code{\link{shiftLongitude}}, \code{\link{usrLonLat}},
+  \code{\link{utm2lonlat}}
 }
 \author{
 Dan Kelley and Clark Richards

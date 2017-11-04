@@ -136,7 +136,7 @@ plot(trimmed)
 }
 \references{
 The Seabird CTD instrument is described at
-\url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
+\code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 
 Seasoft V2: SBE Data Processing, SeaBird Scientific, 05/26/2016
 }
@@ -147,6 +147,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{plotTS}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
@@ -155,7 +157,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
 \author{
 Dan Kelley and Clark Richards

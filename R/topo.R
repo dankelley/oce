@@ -150,6 +150,7 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #'
 #' @family things related to \code{topo} data
+#' @family functions that subset \code{oce} objects
 setMethod(f="subset",
           signature="topo",
           definition=function(x, subset, ...) {
@@ -190,7 +191,8 @@ setMethod(f="subset",
 #' with identical parameters will simply return the name of the cached file,
 #' assuming the user has not deleted it in the meantime.
 #' For convenience, if \code{destfile} is not
-#' given, then \code{download.topo} will construct a filename from the other arguments.
+#' given, then \code{download.topo} will construct a filename from the other arguments,
+#' rounding longitude and latitude limits to 0.01 degrees.
 #'
 #' @details
 #' The data are downloaded with \code{\link[utils]{download.file}}, using a URL
@@ -229,8 +231,8 @@ setMethod(f="subset",
 #' not supplied, this defaults to \code{"gmt"}. See \dQuote{Details}.
 #'
 #' @param server Optional string indicating the server from which to get the data.
-#' If not supplied, the humorously-named default
-#' \samp{"http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"}
+#' If not supplied, the default
+#' \samp{"https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"}
 #' will be used.
 #'
 #' @template debugTemplate
@@ -250,17 +252,29 @@ setMethod(f="subset",
 #' lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
 #'}
 #'
-#' @section History:
-#' When this function was created in August 2016, the default server was
+#' @section Webserver history:
+#' All versions of \code{download.topo} to date have used a NOAA server as
+#' the data source, but the URL has not been static. A list of the
+#' servers that have been used is provided below,
+#' in hopes that it can help users to make guesses
+#' for \code{server}, should \code{download.topo} fail because of 
+#' a fail to download the data. Another
+#' hint is to look at the source code for
+#' \code{\link[marmap]{getNOAA.bathy}} in the \CRANpkg{marmap} package,
+#' which is also forced to track the moving target that is NOAA.
+#'
+#' \itemize{
+#' \item August 2016. 
 #' \samp{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
-#' but this was found to fail in December 2016, so the default was changed to
-#' \samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}, which
-#' is what is used by \code{\link[marmap]{getNOAA.bathy}} in the
-#' \CRANpkg{marmap} package.
+#'
+#' \item December 2016.
+#' \samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
+#'
+#' \item June-September 2017.
+#' \samp{https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
+#' }
 #'
 #' @seealso The work is done with \code{\link[utils]{download.file}}.
-#'
-#' @template downloadWarningTemplate
 #'
 #' @references
 #' 1. \samp{https://www.ngdc.noaa.gov/mgg/global/global.html}
@@ -268,7 +282,7 @@ setMethod(f="subset",
 #' 2. Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
 #' Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
 #' NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
-#' [access date: Aug 20, 2016].
+#' [access date: Aug 30, 2017].
 #'
 #' @family functions that download files
 #' @family things related to \code{topo} data
@@ -276,9 +290,11 @@ download.topo <- function(west, east, south, north, resolution,
                            destdir, destfile, format,
                            server, debug=getOption("oceDebug"))
 {
-    if (missing(server))
-        server <- "http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"
-        ##server <- "http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"
+    if (missing(server)) {
+        server <- "https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"
+        ## server <- "http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz" 
+        ## server <- "http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"
+    }
     if (missing(destdir))
         destdir <- "."
     if (missing(format))
@@ -290,10 +306,10 @@ download.topo <- function(west, east, south, north, resolution,
         west <- west - 360
     if (east > 180)
         east <- east - 360
-    wName <- paste(abs(west), if (west <= 0) "W" else "E", sep="")
-    eName <- paste(abs(east), if (east <= 0) "W" else "E", sep="")
-    sName <- paste(abs(south), if (south <= 0) "S" else "N", sep="")
-    nName <- paste(abs(north), if (north <= 0) "S" else "N", sep="")
+    wName <- paste(abs(round(west,2)), if (west <= 0) "W" else "E", sep="")
+    eName <- paste(abs(round(east,2)), if (east <= 0) "W" else "E", sep="")
+    sName <- paste(abs(round(south,2)), if (south <= 0) "S" else "N", sep="")
+    nName <- paste(abs(round(north,2)), if (north <= 0) "S" else "N", sep="")
     resolutionName <- paste(resolution, "min", sep="")
     if (missing(destfile))
         destfile <- paste("topo", wName, eName, sName, nName, resolutionName, sep="_")

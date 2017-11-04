@@ -36,6 +36,22 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
   \code{\link{rsk-class}}, \code{\link{rskPatm}},
   \code{\link{rskToc}}, \code{\link{rsk}},
   \code{\link{summary,rsk-method}}
+
+Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+  \code{\link{subset,adv-method}},
+  \code{\link{subset,amsr-method}},
+  \code{\link{subset,argo-method}},
+  \code{\link{subset,cm-method}},
+  \code{\link{subset,coastline-method}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{subset,echosounder-method}},
+  \code{\link{subset,lobo-method}},
+  \code{\link{subset,met-method}},
+  \code{\link{subset,oce-method}},
+  \code{\link{subset,odf-method}},
+  \code{\link{subset,sealevel-method}},
+  \code{\link{subset,section-method}},
+  \code{\link{subset,topo-method}}
 }
 \author{
 Dan Kelley

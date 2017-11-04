@@ -4,8 +4,8 @@
 \alias{swSigma1}
 \title{Seawater potential density anomaly referenced to 1000db pressure}
 \usage{
-swSigma1(salinity, temperature = NULL, pressure = NULL, longitude = 300,
-  latitude = 30, eos = getOption("oceEOS", default = "gsw"))
+swSigma1(salinity, temperature = NULL, pressure = NULL, longitude = NULL,
+  latitude = NULL, eos = getOption("oceEOS", default = "gsw"))
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}

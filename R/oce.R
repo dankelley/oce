@@ -79,33 +79,46 @@ NULL
 #' "defunct".
 #'
 #' \tabular{lll}{
-#' \strong{Deprecated}    \tab \strong{Replacement}              \tab \strong{Notes}\cr
-#' \code{byteToBinary}    \tab \code{\link{rawToBits}}           \tab Deprecated 2017-04-17\cr
-#' \code{mapZones}        \tab \code{\link{mapGrid}}             \tab Deprecated 2016-02-13\cr
-#' \code{mapMeridians}    \tab \code{\link{mapGrid}}             \tab Deprecated 2016-02-13\cr
-#' \code{addColumn}       \tab \code{\link{oceSetData}}          \tab Deprecated 2016-08-01\cr
-#' \code{oce.magic}       \tab \code{\link{oceMagic}}            \tab Deprecated 2016-09-01\cr
-#' \code{ctdAddColumn}    \tab \code{\link{oceSetData}}          \tab Deprecated 2016-11-11\cr
-#' \code{ctdUpdateHeader} \tab -                                 \tab Deprecated 2016-11-11\cr
-#' \code{oce.as.POSIXlt}  \tab \code{\link[lubridate]{parse_date_time}} \tab Deprecated 2016-12-17\cr
+#' \strong{Deprecated}       \tab \strong{Replacement}            \tab \strong{Notes}\cr
+#' \code{findInOrdered(x,f)} \tab \code{\link{findInterval}(f,x)} \tab Deprecated 2017-09-07\cr
+#' \code{mapZones}           \tab \code{\link{mapGrid}}           \tab Deprecated 2016-02-13\cr
+#' \code{mapMeridians}       \tab \code{\link{mapGrid}}           \tab Deprecated 2016-02-13\cr
+#' \code{addColumn}          \tab \code{\link{oceSetData}}        \tab Deprecated 2016-08-01\cr
+#' \code{oce.magic}          \tab \code{\link{oceMagic}}          \tab Deprecated 2016-09-01\cr
+#' \code{ctdAddColumn}       \tab \code{\link{oceSetData}}        \tab Deprecated 2016-11-11\cr
+#' \code{ctdUpdateHeader}    \tab -                               \tab Deprecated 2016-11-11\cr
+#' \code{oce.as.POSIXlt}     \tab \code{\link[lubridate]{parse_date_time}} \tab Deprecated 2016-12-17\cr
 #' }
-#'
 #'
 #' The following are marked "defunct", so calling them in the
 #' the present version produces an error message that hints at a replacement
 #' function. Once a function is marked "defunct" on one CRAN release, it will
 #' be slated for outright deletion in a subsequent release.
 #'
-#' \tabular{lll}{
-#' \strong{Defunct}   \tab \strong{Replacement}     \tab \strong{Notes}\cr
-#' \code{makeSection} \tab \code{\link{as.section}} \tab Improve utility and name sensibility\cr
-#' \code{columns}     \tab \code{\link{read.ctd}}   \tab Unnecessary; never worked\cr
+#'\tabular{lll}{
+#'\strong{Defunct}   \tab \strong{Replacement}     \tab \strong{Notes}\cr
+#'\code{makeSection} \tab \code{\link{as.section}} \tab Improve utility and name sensibility\cr
+#'\code{columns}     \tab \code{\link{read.ctd}}   \tab Unnecessary; never worked\cr
+#'}
+#'
+#' The following were removed in recent years.
+#'
+#'\tabular{lll}{
+#'\strong{Function}  \tab \strong{Replacement}     \tab \strong{Notes}\cr
+#' FILL IN           \tab FILL IN                  \tab FILL IN
 #'}
 #'
 #' Several \sQuote{oce} function arguments are considered "deprecated", which
 #' means they will be marked "defunct" in the next CRAN release. They are as follows.
 #'
 #' \itemize{
+#'
+#' \item The \code{lcca} projection of \code{\link{mapPlot}} was removed
+#' from the documentation 2018-08-30, and generated a warning starting
+#' then. It will be marked defunction after the next CRAN release.
+#"
+#' \item The \code{endian} argument of \code{\link{byteToBinary}} will be removed sometime
+#' in the year 2017, and should be set to \code{"big"} in the meantime.
 #'
 #' \item The \code{parameters} argument of \code{\link{plot,ctd-method}}
 #' was deprecated on 2016-12-30.  It was once used by
@@ -532,7 +545,7 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 }
 
 
-#' Interpolate 1D Data with Unesco or Reiniger-Ross Algorithm
+#' Interpolate 1D Data with UNESCO or Reiniger-Ross Algorithm
 #'
 #' Interpolate one-dimensional data using schemes that permit curvature but
 #' tends minimize extrema that are not well-indicated by the data.
@@ -610,15 +623,14 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 #' library(oce)
 #' if (require(ocedata)) {
 #'     data(RRprofile)
-#'     zz <- seq(0, 2000, 5)
+#'     zz <- seq(0, 2000, 2)
 #'     plot(RRprofile$temperature, RRprofile$depth, ylim=c(500, 0), xlim=c(2, 11))
 #'     ## Contrast two methods
 #'     a1 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "rr")
 #'     a2 <- oce.approx(RRprofile$depth, RRprofile$temperature, zz, "unesco")
 #'     lines(a1, zz)
 #'     lines(a2, zz, col='red')
-#'     legend("bottomright", lwd=1, col=1:2,
-#'     legend=c("Unesco", "Reiniger-Ross"), cex=3/4)
+#'     legend("bottomright",lwd=1,col=1:2, legend=c("rr","unesco"),cex=3/4)
 #' }
 oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
 {
@@ -659,7 +671,7 @@ oce.approx <- oceApprox
 #' \code{yscale}, which has the unit of \code{v} divided by the unit of
 #' \code{y}.
 #' The interpretation of diagrams produced by \code{plotSticks} can be
-#' difficult, owing to overlap in the arrows.  For this reason, it It is often
+#' difficult, owing to overlap in the arrows.  For this reason, it is often
 #' a good idea to smooth \code{u} and \code{v} before using this function.
 #'
 #' @param x x coordinates of stick origins.
@@ -668,7 +680,7 @@ oce.approx <- oceApprox
 #' are ignored.
 #' @param u x component of stick length.
 #' @param v y component of stick length.
-#' @param yscale scale from u and v to y (see \dQuote{Details}).
+#' @param yscale scale from u and v to y (see \dQuote{Description}).
 #' @param add boolean, set \code{TRUE} to add to an existing plot.
 #' @param length value to be provided to \code{\link{arrows}}; here, we set a
 #' default that is smaller than normally used, because these plots tend to be
@@ -677,6 +689,7 @@ oce.approx <- oceApprox
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar value to be used with \code{\link{par}("mar")}.
+#' @param xlab,ylab labels for the plot axes. The default is not to label them.
 #' @param \dots graphical parameters passed down to \code{\link{arrows}}.  It
 #' is common, for example, to use smaller arrow heads than \code{\link{arrows}}
 #' uses; see \dQuote{Examples}.
@@ -706,7 +719,7 @@ oce.approx <- oceApprox
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                        mgp=getOption("oceMgp"),
                        mar=c(mgp[1]+1, mgp[1]+1, 1, 1+par("cex")),
-                       ...)
+                       xlab="", ylab="", ...)
 {
     pin <- par("pin")
     page.ratio <- pin[2]/pin[1]
@@ -730,7 +743,7 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
         stop("lenghts of x and v must match, but they are ", n, " and ", length(v))
     par(mar=mar, mgp=mgp)
     if (!add)
-        plot(range(x), range(y), type='n', ...)
+        plot(range(x), range(y), type='n', xlab=xlab, ylab=ylab, ...)
     usr <- par("usr")
     yrxr <- (usr[4] - usr[3]) / (usr[2] - usr[1])
     warn <- options("warn")$warn # FIXME: fails to quieten arrows()
@@ -938,63 +951,76 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         par(mai=the.mai, cex=cex)
         drawPalette(mai=rep(0, 4))
     }
-    if (fill) {
-        xx <- c(x[1], x, x[length(x)])
-        yy <- c(0, y, 0)
-        plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
-             xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
-             xlab=xlab, ylab=ylab,
-             type=type, cex=cex, ...)
-        fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
-        do.call(polygon, list(x=xx, y=yy, col=fillcol))
-    } else {
-        plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
-             xlim=if (missing(xlim)) NULL else xlim,
-             ylim=if (missing(ylim)) NULL else ylim,
-             xlab=xlab, ylab=ylab,
-             type=type, cex=cex, ...)
-    }
-    xat <- NULL
-    yat <- NULL
-    if (axes) {
-        xaxt <- list(...)["xaxt"]
-        drawxaxis <- !is.null(xaxt) && xaxt != 'n'
-        yaxt <- list(...)["yaxt"]
-        drawyaxis <- !is.null(yaxt) && yaxt != 'n'
-        if (drawxaxis) {
-            xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
-                                      mgp=mgp,
-                                      xlim=if (missing(xlim)) range(x) else xlim,
-                                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                                      tformat=tformat,
-                                      debug=debug-1)
-            xat <- xlabs
-            oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse=","), ")", "\n", sep="")
-        }
-        if (grid) {
-            lwd <- par("lwd")
-            if (drawxaxis)
-                abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
-            yaxp <- par("yaxp")
-            abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
-                   col="lightgray", lty="dotted", lwd=lwd)
-        }
+    xrange <- range(x, na.rm=TRUE)
+    yrange <- range(y, na.rm=TRUE)
+    if (!is.finite(yrange[1])) {
+        plot(xrange, c(0, 1), axes=FALSE, xaxs=xaxs, yaxs=yaxs,
+             xlim=if (xlimGiven) xlim else xrange,
+             xlab=xlab, ylab=ylab, type='n')
+        oce.axis.POSIXct(1, drawTimeRange=FALSE)
         box()
-        ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
-        if (drawyaxis)
-            axis(2, cex.axis=cex.axis, cex=cex.axis)
-        yat <- axis(4, labels=FALSE)
+        mtext("bad data", side=3, line=-1, cex=cex)
+        warning("no valid data for '", ylab, "'", sep="")
+        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
+        return()
+     } else {
+        if (fill) {
+            xx <- c(x[1], x, x[length(x)])
+            yy <- c(0, y, 0)
+            plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
+                 xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
+                 xlab=xlab, ylab=ylab,
+                 type=type, cex=cex, ...)
+            fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
+            do.call(polygon, list(x=xx, y=yy, col=fillcol))
+        } else {
+            plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
+                 xlim=if (missing(xlim)) NULL else xlim,
+                 ylim=if (missing(ylim)) NULL else ylim,
+                 xlab=xlab, ylab=ylab,
+                 type=type, cex=cex, ...)
+        }
+        xat <- NULL
+        yat <- NULL
+        if (axes) {
+            xaxt <- list(...)["xaxt"]
+            drawxaxis <- !is.null(xaxt) && xaxt != 'n'
+            yaxt <- list(...)["yaxt"]
+            drawyaxis <- !is.null(yaxt) && yaxt != 'n'
+            if (drawxaxis) {
+                xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
+                                          mgp=mgp,
+                                          xlim=if (missing(xlim)) range(x) else xlim,
+                                          cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                          tformat=tformat,
+                                          debug=debug-1)
+                xat <- xlabs
+                oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse=","), ")", "\n", sep="")
+            }
+            if (grid) {
+                lwd <- par("lwd")
+                if (drawxaxis)
+                    abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
+                yaxp <- par("yaxp")
+                abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
+                       col="lightgray", lty="dotted", lwd=lwd)
+            }
+            box()
+            ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
+            if (drawyaxis)
+                axis(2, cex.axis=cex.axis, cex=cex.axis)
+            yat <- axis(4, labels=FALSE)
+        }
+        if (grid)
+            grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
+        if (!is.null(adorn)) {
+            t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
+            if (class(t) == "try-error")
+                warning("cannot evaluate adorn {", format(adorn), "}")
+        }
+        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
+        invisible(list(xat=xat, yat=yat))
     }
-    if (grid)
-        grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
-    if (!is.null(adorn)) {
-        t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
-        if (class(t) == "try-error")
-            warning("cannot evaluate adorn {", format(adorn), "}")
-    }
-    ##par(cex=ocex)
-    oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
-    invisible(list(xat=xat, yat=yat))
 }
 
 
@@ -2579,7 +2605,8 @@ numberAsHMS <- function(t, default=0)
 #' \item \code{"gps"} employs the GPS convention. For this, \code{t} is a
 #' two-column matrix, with the first column being the the GPS "week"
 #' (referenced to 1999-08-22) and the second being the GPS "second" (i.e. the
-#' second within the week).
+#' second within the week). Since the GPS satellites do not handle leap
+#' seconds, the R-defined \code{.leap.seconds} is used for corrections.
 #'
 #' \item \code{"argo"} employs Argo times, measured in days since the start of
 #' the year 1900.
@@ -2624,7 +2651,7 @@ numberAsHMS <- function(t, default=0)
 #'
 #' numberAsPOSIXct(0)                     # unix time 0
 #' numberAsPOSIXct(1, type="matlab")      # matlab time 1
-#' numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day
+#' numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
 #' numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
 #'
 #' @family things related to time
@@ -2657,18 +2684,29 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
 
         ## Account for leap seconds since the GPS start time in 1980 (for the present week wraparound grouping).
-        ## See http://en.wikipedia.org/wiki/Leap_second and other sources for a list.  Updates can happen
-        ## on June 30 and December 31 of any given year.  The information below was last updated
-        ## in January, 2017.
-        leaps <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-12-31",
-                                       "1989-12-31", "1990-12-31", "1992-07-01", "1993-07-01", "1994-07-01",
-                                       "1995-12-31", "1997-07-01", "1998-12-31", "2005-12-31", "2008-12-31",
-                                       "2012-07-01", "2015-07-01", "2016-12-31"),
-                                     format="%Y-%m-%d", tz="UTC"))
+        ##20171014 See http://en.wikipedia.org/wiki/Leap_second and other sources for a list.  Updates can happen
+        ##20171014 # on June 30 and December 31 of any given year.  The information below was last updated
+        ##20171014 # in January, 2017.
+        ##20171014 # leapsOLD <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-12-31",
+        ##20171014 #                                   "1989-12-31", "1990-12-31", "1992-07-01", "1993-07-01", "1994-07-01",
+        ##20171014 #                                   "1995-12-31", "1997-07-01", "1998-12-31", "2005-12-31", "2008-12-31",
+        ##20171014 #                                   "2012-07-01", "2015-07-01", "2016-12-31"),
+        ##20171014 #                                 format="%Y-%m-%d", tz="UTC"))
+        ##20171014 message("leapsOLD ", paste(leapsOLD, collapse=" "))
+        leaps <- as.POSIXlt(.leap.seconds, tz="UTC")
+        ##20171014 message("leaps A ", paste(leaps, collapse=" "))
+        leaps <- leaps[leaps > as.POSIXlt("1980-01-01 00:00:00", tz="UTC")]
+        ##20171014 message("leaps B ", paste(leaps, collapse=" "))
+        leaps <- leaps[leaps > as.POSIXlt("1980-01-01 00:00:00", tz="UTC")]
+        ##20171014 message("leaps C ", paste(leaps, collapse=" "))
         t <- as.POSIXct("1999-08-22 00:00:00", tz="UTC") + 86400*7*t[, 1] + t[, 2]
+        ##>message("initially, t=", paste(t, collapse=" "))
         for (l in 1:length(leaps)) {
             t <- t - ifelse(t >= leaps[l], 1, 0)
+            ##20171014 message("l=", l, ", leaps[l]=", leaps[l],
+            ##20171014         ", t=", paste(t, collapse=" "), ", t>=leaps[l] ", t>=leaps[l])
         }
+        ##20171014 print(leapsOLD - leaps) # mostly 0 but a few one-day shifts; I trust .leap.seconds more
     } else if (type == "spss") {
         t <- as.POSIXct(t, origin="1582-10-14", tz=tz)
     } else if (type == "sas") {
@@ -2928,28 +2966,45 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 #' the line.
 #' }
 #'
-#' @param x,y coordinates at which velocities are specified.
-#' @param u,v velocity components in the x and y directions.
-#' @param scalex,scaley scale to be used for the velocity arrows.  Exactly one
-#'        of these must be specified.  Arrows that have \code{u^2+v^2=1} will
-#'        have length \code{scalex} along the x axis, or \code{scaley} along the
-#'        y axis, according to which argument is given.
-#' @param length indication of \strong{width} of arrowheads. The somewhat
-#'        confusing name of this argument is a consequence of the fact
-#'        that it is passed to \code{\link{arrows}} for drawing arrows.
-#'        Note that the present default is smaller than the default used
-#'        by \code{\link{arrows}}.
-#' @param add if \code{TRUE}, the arrows are added to an existing plot;
-#'        otherwise, a new plot is started by calling \code{\link{plot}} with
-#'        \code{x}, \code{y} and \code{type="n"}.  In other words, the plot
-#'        will be very basic. In most cases, the user will probably want to
-#'        draw a diagram first, and \code{add} the direction field later.
-#' @param type indication of the style of arrow-like indication of the direction.
+#' @param x,y coordinates at which velocities are specified. The
+#'     length of \code{x} and \code{y} depends on the form of \code{u}
+#'     and \code{v} (vectors or matrices).
+#' @param u,v velocity components in the x and y directions. Can be
+#'     either vectors with the same length as \code{x, y}, or
+#'     matrices, of dimension \code{length(x)} by \code{length(y)}.
+#' @param scalex,scaley scale to be used for the velocity arrows.
+#'     Exactly one of these must be specified.  Arrows that have
+#'     \code{u^2+v^2=1} will have length \code{scalex} along the x
+#'     axis, or \code{scaley} along the y axis, according to which
+#'     argument is given.
+#' @param skip either an integer, or a two-element vector indicating
+#'     the number of points to skip when plotting arrows (for the
+#'     matrix \code{u, v} case). If a single value, the same
+#'     \code{skip} is applied to both the \code{x} and \code{y}
+#'     directions. If a two-element vector, specifies different values
+#'     for the \code{x} and \code{y} directions.
+#' @param length indication of \strong{width} of arrowheads. The
+#'     somewhat confusing name of this argument is a consequence of
+#'     the fact that it is passed to \code{\link{arrows}} for drawing
+#'     arrows.  Note that the present default is smaller than the
+#'     default used by \code{\link{arrows}}.
+#' @param add if \code{TRUE}, the arrows are added to an existing
+#'     plot; otherwise, a new plot is started by calling
+#'     \code{\link{plot}} with \code{x}, \code{y} and \code{type="n"}.
+#'     In other words, the plot will be very basic. In most cases, the
+#'     user will probably want to draw a diagram first, and \code{add}
+#'     the direction field later.
+#' @param type indication of the style of arrow-like indication of the
+#'     direction.
 #' @param col colour of line segments or arrows
-#' @param pch,cex plot character and expansion factor, used for \code{type=1}
+#' @param pch,cex plot character and expansion factor, used for
+#'     \code{type=1}
 #' @param lwd,lty line width and type, used for \code{type=2}
-#' @param debug debugging value; set to a positive integer to get debugging
-#'        information.
+#' @param xlab,ylab \code{x} and \code{y} axis labels
+#' @param debug debugging value; set to a positive integer to get
+#'     debugging information.
+#' @param ... other arguments to be passed to plotting functions
+#'     (e.g. axis labels, etc).
 #'
 #' @return None.
 #'
@@ -2960,25 +3015,68 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 #' plot(c(-1.5, 1.5), c(-1.5, 1.5), xlab="", ylab="", type='n')
 #' drawDirectionField(x=rep(0, 2), y=rep(0, 2), u=c(1, 1), v=c(1, -1), scalex=0.5, add=TRUE,
 #'                    type=2)
-#' @author Dan Kelley
-drawDirectionField <- function(x, y, u, v, scalex, scaley, length=0.05, add=FALSE,
+#'
+#' ## 2D example
+#' x <- seq(-2, 2, 0.1)
+#' y <- x
+#' xx <- expand.grid(x, y)[,1]
+#' yy <- expand.grid(x, y)[,2]
+#' z <- matrix(xx*exp(-xx^2 -yy^2), nrow=length(x))
+#' gz <- grad(z, x, y)
+#' drawDirectionField(x, y, gz$gx, gz$gy, scalex=0.5, type=2, len=0.02)
+#' oceContour(x, y, z, add=TRUE)
+#' @author Dan Kelley and Clark Richards
+drawDirectionField <- function(x, y, u, v, scalex, scaley, skip, length=0.05, add=FALSE,
                                type=1, col=par("fg"), pch=1, cex=par("cex"),
                                lwd=par("lwd"), lty=par("lty"),
-                               debug=getOption("oceDebug"))
+                               xlab='', ylab='',
+                               debug=getOption("oceDebug"),
+                               ...)
 {
     oceDebug(debug, "drawDirectionField(...) {\n", unindent=1)
     if (missing(x) || missing(y) || missing(u) || missing(v))
         stop("must supply x, y, u, and v")
     if ( (missing(scalex) && missing(scaley)) || (!missing(scalex) && !missing(scaley)) )
         stop("either 'scalex' or 'scaley' must be specified (but not both)")
-    if (length(x) != length(y))
-        stop("lengths of x and y must match")
-    if (length(x) != length(u))
-        stop("lengths of x and u must match")
-    if (length(x) != length(v))
-        stop("lengths of x and v must match")
+    if (is.matrix(u) && !is.matrix(v))
+        stop("if 'u' is a matrix, then 'v' must also be a matrix")
+    if (is.matrix(v) && !is.matrix(u))
+        stop("if 'v' is a matrix, then 'u' must also be a matrix")
+    if (is.matrix(u) && is.matrix(v)) {
+        oceDebug(debug, "u, v are matrices")
+        if ( (dim(u)[1] != dim(v)[1]) & (dim(u)[2] != dim(v)[2]) )
+            stop("dimensions of u and v must match")
+        dim <- dim(u)
+        if (length(x) != dim[1] | length(y) != dim[2])
+            stop("lengths of x, y must match dimensions of u, v")
+        if (missing(skip)) {
+            skip <- c(1, 1)
+        } else {
+            if (length(skip) == 1)
+                skip <- rep(skip, 2)
+        }
+        nx <- length(x)
+        ny <- length(y)
+        ix <- seq(1, nx, skip[1])
+        iy <- seq(1, ny, skip[2])
+        xx <- expand.grid(x[ix], y[iy])[,1]
+        yy <- expand.grid(x[ix], y[iy])[,2]
+        uu <- as.vector(u[ix, iy])
+        vv <- as.vector(v[ix, iy])
+    } else {
+        if (length(x) != length(y))
+            stop("lengths of x and y must match")
+        if (length(x) != length(u))
+            stop("lengths of x and u must match")
+        if (length(x) != length(v))
+            stop("lengths of x and v must match")
+        xx <- x
+        yy <- y
+        uu <- u
+        vv <- v
+    }
     if (!add) {
-        plot(x, y, type='n')
+        plot(xx, yy, type='n', xlab=xlab, ylab=ylab, ...)
     }
     usr <- par('usr')
     pin <- par('pin')
@@ -2999,15 +3097,15 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, length=0.05, add=FALS
     oceDebug(debug, 'vPerY=', vPerY, '\n')
     len <- sqrt( (u/uPerX)^2 + (v/vPerY)^2 )
     ok <- len > 0.0
-    x <- x[ok]
-    y <- y[ok]
-    u <- u[ok]
-    v <- v[ok]
+    xx <- xx[ok]
+    yy <- yy[ok]
+    uu <- uu[ok]
+    vv <- vv[ok]
     if (type == 1) {
-        points(x, y, col=col, pch=pch, cex=cex)
-        segments(x0=x, y0=y, x1=x+u/uPerX, y1=y+v/vPerY, col=col, lwd=lwd, lty=lty)
+        points(xx, yy, col=col, pch=pch, cex=cex)
+        segments(x0=xx, y0=yy, x1=xx+uu/uPerX, y1=yy+vv/vPerY, col=col, lwd=lwd, lty=lty)
     } else if (type == 2) {
-        arrows(x0=x, y0=y, x1=x+u/uPerX, y1=y+v/vPerY, length=length, col=col, lwd=lwd, lty=lty)
+        arrows(x0=xx, y0=yy, x1=xx+uu/uPerX, y1=yy+vv/vPerY, length=length, col=col, lwd=lwd, lty=lty)
     } else {
         stop("unknown value of type ", type)
     }

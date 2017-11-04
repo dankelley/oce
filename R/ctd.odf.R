@@ -30,6 +30,9 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, monitor
     }
     if (!is.null(station))
         res@metadata$station <- station
+    for (mname in names(odf@metadata))
+        res@metadata[[mname]] <- odf@metadata[[mname]]
+    res@metadata$pressureType <- "sea"
     oceDebug(debug, "} # read.ctd.odf()\n", unindent=1)
     res
 }

@@ -26,8 +26,9 @@ supplied, a default will be used. This default will be \code{c(1,2,3,5)} if the
 CTD is in profiling mode (i.e. if \code{deploymentType} in the \code{metadata}
 slot equals \code{"profile"},
 or is missing) or
-\code{"thermosalinograph"}, the default will be \code{c(30, 3, 31, 5)}.  If it
-is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as follows.
+\code{"moored"}/\code{"thermosalinograph"}, the default will be \code{c(30, 3, 31, 5)}.  If it
+is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as
+follows.
 
 \itemize{
     \item \code{which=1} or \code{which="salinity+temperature"} gives
@@ -63,6 +64,12 @@ is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as follows.
     \item \code{which=15} or \code{which="Rrho"} gives an Rrho profile
     \item \code{which=16} or \code{which="RrhoSF"} gives an RrhoSF profile
     \item \code{which=17} or \code{which="conductivity"} gives a conductivity profile
+    \item \code{which=20} or \code{which="CT"} gives a Conservative Temperature profile
+    \item \code{which=21} or \code{which="SA"} gives an Absolute Salinity profile
+    \item \code{which=30} gives a time series of Salinity
+    \item \code{which=31} gives a time series of Temperature
+    \item \code{which=32} gives a time series of pressure
+    \item \code{which=33} gives a time series of sigmaTheta
 }}
 
 \item{col}{Colour of lines or symbols.}
@@ -269,7 +276,7 @@ analysis with \code{\link{locator}} to flag bad data, etc.
 
 Until February, 2016, \code{plot,ctd-method} relied on a now-defunct argument
 \code{fill} to control colours; \code{colCoastline} is to be used now, instead.
-Also, now it is possible to set the edge of coasts and international
+Also, now it is possible to set the colour of coasts and international
 boundaries, with \code{borderCoastline}.
 }
 
@@ -328,6 +335,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},
   \code{\link{plotTS}}, \code{\link{read.ctd.itp}},
   \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
@@ -335,7 +344,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
 \author{
 Dan Kelley

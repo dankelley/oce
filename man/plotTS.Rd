@@ -10,10 +10,10 @@ plotTS(x, inSitu = FALSE, type = "p", referencePressure = 0,
   = "gsw"), cex = par("cex"), col = par("col"), pch = par("pch"), bg,
   pt.bg = "transparent", col.rho = "darkgray", cex.rho = 3/4 * par("cex"),
   rotate = TRUE, useSmoothScatter = FALSE, xlab, ylab, Slim, Tlim,
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1],
-  mgp[1]), lwd = par("lwd"), lty = par("lty"), lwd.rho = par("lwd"),
-  lty.rho = par("lty"), add = FALSE, inset = FALSE,
-  debug = getOption("oceDebug"), ...)
+  drawFreezing = TRUE, mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5,
+  mgp[1] + 1.5, mgp[1], mgp[1]), lwd = par("lwd"), lty = par("lty"),
+  lwd.rho = par("lwd"), lty.rho = par("lty"), add = FALSE,
+  inset = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -76,6 +76,12 @@ points.}
 
 \item{Tlim}{optional limits for temperature axis, otherwise inferred from
 data.}
+
+\item{drawFreezing}{logical indication of whether to draw a freezing-point
+line. This is based on zero pressure. If \code{eos="unesco"} then
+\code{\link{swTFreeze}} is used to compute the curve, whereas if
+\code{eos="gsw"} then \code{\link[gsw]{gsw_CT_freezing}} is used;
+in each case, zero pressure is used.}
 
 \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also
 for \code{par(mar)}, computed from this.  The default is tighter than the R
@@ -155,6 +161,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
   \code{\link{plotScan}}, \code{\link{read.ctd.itp}},
   \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
@@ -162,7 +170,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
-  \code{\link{woceNames2oceNames}}, \code{\link{write.ctd}}
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
 \author{
 Dan Kelley

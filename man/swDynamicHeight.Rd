@@ -11,7 +11,10 @@ swDynamicHeight(x, referencePressure = 2000, subdivisions = 500,
 \arguments{
 \item{x}{a \code{section} object, \strong{or} a \code{ctd} object.}
 
-\item{referencePressure}{reference pressure [dbar]}
+\item{referencePressure}{reference pressure [dbar]. If this exceeds the
+highest pressure supplied to \code{swDynamicHeight}, then that highest
+pressure is used, instead of the supplied value of
+\code{referencePressure}.}
 
 \item{subdivisions}{number of subdivisions for call to
 \code{\link{integrate}}.  (The default value is considerably larger than the
@@ -55,9 +58,13 @@ to \code{referencePressure}.  (For improved numerical results, the variables
 are scaled before the integration, making both independent and dependent
 variables be of order one.)
 
-NOTE: As of early 2015, the \code{eos="gsw"} case is handled exactly the
-same as the \code{"unesco"} case, because the GSW C code (version 3.0.3)
-lacks the requisite functions.
+If \code{eos="gsw"}, \code{\link[gsw]{gsw_geo_strf_dyn_height}} is used
+to calculate a result in m^2/s^2, and this is divided by
+9.7963\eqn{m/s^2}{m/s^2}.
+If pressures are out of order, the data are sorted. If any pressure
+is repeated, only the first level is used.
+If there are under 4 remaining distinct
+pressures, \code{NA} is returned, with a warning.
 }
 \examples{
 \dontrun{

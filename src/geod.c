@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <math.h>
 #include <Rdefines.h>
@@ -184,11 +184,11 @@ void geoddist_core(double *lat1, double *lon1, double *lat2, double *lon2, doubl
 }
 
 void geod_xy(int *n,
-    double *lon,		/* vector of longitudes */
-    double *lat,		/* vector of latitudes */
-    double *lonr,		/* single reference longitude */
-    double *latr,		/* single reference latitude */
-    double *a,		/* WGS84 major axis 6378137.00 */
+    double *lon,  /* vector of longitudes */
+    double *lat,  /* vector of latitudes */
+    double *lonr, /* single reference longitude */
+    double *latr, /* single reference latitude */
+    double *a,    /* WGS84 major axis 6378137.00 */
     double *f,    /* WGS84 flattening parameter 1/298.257223563 */
     double *x, double *y, /* output */
     int *debug)
@@ -201,7 +201,7 @@ void geod_xy(int *n,
       y[i] = NA_REAL;
     } else {
       if (*debug)
-	Rprintf("%3d %10.3f %10.3f %10.2f %10.2f [geod_xy]\n", i, lon[i], lat[i], *lonr, *latr);
+        Rprintf("%3d %10.3f %10.3f %10.2f %10.2f [geod_xy]\n", i, lon[i], lat[i], *lonr, *latr);
       double faz, baz, s; /* only s used here */
       geoddist_core(lat+i, lonr, latr, lonr, a, f, &faz, &baz, &s);
       double Y = s;
@@ -243,14 +243,14 @@ void nmmin(int n, double *xin, double *x, double *Fmin, optimfn fn,
            int *fncount, int maxit);
 
 void geod_xy_inverse(int *n,
-    double *x, /* input vector of x values */
-    double *y, /* input vector of y values */
-    double *lonr,		/* single reference longitude */
-    double *latr,		/* single reference latitude */
-    double *a,		/* WGS84 major axis 6378137.00 */
-    double *f,    /* WGS84 flattening parameter 1/298.257223563 */
+    double *x,     /* input vector of x values */
+    double *y,     /* input vector of y values */
+    double *lonr,  /* single reference longitude */
+    double *latr,  /* single reference latitude */
+    double *a,     /* WGS84 major axis 6378137.00 */
+    double *f,     /* WGS84 flattening parameter 1/298.257223563 */
     double *longitude, double *latitude, /* output */
-    int *debug)		/* =1 for debugging */
+    int *debug)    /* =1 for debugging */
 {
   if (*debug) {
     Rprintf("geod_xy_inverse tracing code (for debugging by the author)\n");
@@ -283,14 +283,14 @@ void geod_xy_inverse(int *n,
       int trace=0, fncount=0, maxit=900;
       int nn=2;
       nmmin(nn, xin, xout, &Fmin, 
-	  lonlat_misfit,
-	  &fail, abstol, intol, (void*)ex,
-	  alpha, beta, gamma, trace,
-	  &fncount, maxit);
+          lonlat_misfit,
+          &fail, abstol, intol, (void*)ex,
+          alpha, beta, gamma, trace,
+          &fncount, maxit);
       longitude[i] = xout[0];
       latitude[i] = xout[1];
       if (*debug)
-	Rprintf("%3d %12.1f %12.1f %12.4f %12.4f %20d %12.6f\n", i, ex[0], ex[1], xin[0], xin[1], fncount, Fmin);
+        Rprintf("%3d %12.1f %12.1f %12.4f %12.4f %20d %12.6f\n", i, ex[0], ex[1], xin[0], xin[1], fncount, Fmin);
     }
   }
 }

@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+// vim: set expandtab shiftwidth=2 softtabstop=2 tw=70:
 //
 // Try to average across bands; where both bands have any of the
 // following codes, return 0xff which will be coded as land in 
@@ -132,11 +132,11 @@ SEXP amsr_composite(SEXP a)
     for (int i3 = 0; i3 < n3; i3++) {
       A = ap[i + n12*i3];
       if (A < 0xfb) {
-	sum += A;
-	nsum++;
-	//if (i < 300) Rprintf("    i3=%3d A=%3d=0x%02x sum=%5.1f nsum=%d\n", i3, (int)A, A, sum, nsum);
+        sum += A;
+        nsum++;
+        //if (i < 300) Rprintf("    i3=%3d A=%3d=0x%02x sum=%5.1f nsum=%d\n", i3, (int)A, A, sum, nsum);
       } else {
-	//if (i < 300) Rprintf("    i3=%3d A=%3d=0x%02x SKIPPED\n", i3, (int)A, A);
+        //if (i < 300) Rprintf("    i3=%3d A=%3d=0x%02x SKIPPED\n", i3, (int)A, A);
       }
     }
     if (nsum)

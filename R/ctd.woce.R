@@ -1,5 +1,137 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+#' Translate Oce Data Names to WHP Data Names
+#'
+#' Translate oce-style names to WOCE names, using \code{\link{gsub}}
+#' to match patterns. For example, the pattern \code{"oxygen"}
+#' is taken to mean \code{"CTDOXY"}.
+#'
+#' @param names vector of strings holding oce-style names.
+#'
+#' @return vector of strings holding WHP-style names.
+#' @author Dan Kelley
+#'
+#' @references
+#' Several online sources list WHP names. An example is
+#' \url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
+#'
+#' @family things related to \code{ctd} data
+#' @family functions that interpret variable names and units from headers
+oceNames2whpNames <- function(names)
+{
+    ## see woceNames2oceNames, and update both at once when new items added
+    ## SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
+    names <- gsub("Flag", "_FLAG_W", names)
+    names <- gsub("totalAlkalinity", "ALKALI", names)
+    names <- gsub("CFC12", "CFC-12", names)
+    names <- gsub("depth", "DEPTH", names)
+    names <- gsub("flag", "FLAG", names)
+    names <- gsub("oxygen", "CTDOXY", names)
+    names <- gsub("pressure", "CTDPRS", names)
+    names <- gsub("salinity", "CTDSAL", names)
+    names <- gsub("scan", "SCAN", names)
+    names <- gsub("temperature", "CTDTMP", names)
+    names <- gsub("fluorescence", "FLUOR", names)
+    names <- gsub("ammonium", "NH4", names)
+    names <- gsub("phosphate", "PHSPHT", names)
+    names <- gsub("pHTotal", "PH_TOT", names)
+    names <- gsub("pHTemperature","PH_TMP", names) # what is this??
+    names <- gsub("nitrate", "NITRAT", names)
+    names <- gsub("nitrite", "NITRIT", names)
+    names <- gsub("number", "NUMBER", names)
+    names <- gsub("nitrite+nitrate", "NO2+NO3", names)
+    names <- gsub("oxygen", "OXYGEN", names)
+    names <- gsub("quality", "QUALT", names) # flags, really, but we are not capturing that info yet
+    names <- gsub("salinityBottle","SALNTY", names)
+    names <- gsub("SF6", "SF6", names)
+    names <- gsub("silicate", "SILCAT", names)
+    names <- gsub("totalCarbon", "TCARBN", names)
+    names <- gsub("transmission", "TRANS", names)
+    names
+}
+
+#' Translate oce unit to WHP unit
+#'
+#' Translate oce units to WHP-style strings, 
+#' to match patterns. For example, the pattern \code{"oxygen"}
+#' is taken to mean \code{"CTDOXY"}.
+#'
+#' @param units vector of expressions for units in oce notation.
+#'
+#' @param scales vector of strings for scales in oce notation.
+#'
+#' @return vector of strings holding WOCE-style names.
+#' @author Dan Kelley
+#'
+#' @references
+#' Several online sources list WOCE names. An example is
+#' \url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
+#'
+#' @family things related to \code{ctd} data
+#' @family functions that interpret variable names and units from headers
+oceUnits2whpUnits <- function(units, scales)
+{
+    if (length(units) != length(scales))
+        stop("lengths of units and scales must match")
+    rval <- NULL
+    for (i in seq_along(units)) {
+        ##message("i=", i, ", units=\"", units[i], "\", scales=\"", scales[i], "\"", sep="")
+        if (is.na(units[i])) {
+            ##message("NA ... scales[", i, "]=\"", scales[i], "\"", sep="")
+            if (scales[i] == "PSS-78")
+                rval[i] <- "PSS-78" # FIXME: check for other salinity units
+            else
+                rval[i] <- ""
+        } else if (units[i] == "") { # might be salinity
+            rval[i] <- if (scales[i] != "") toupper(scales[i]) else "PSAL"
+        } else if (units[i] == "dbar") {
+            rval[i] <- "DBAR"
+        } else if (units[i] == "degree * C") {
+            rval[i] <- if (scales[i] != "") toupper(scales[i]) else "DEG C"
+        } else if (units[i] == "fmol/kg") {
+            rval[i] <- "FMOL/KG"
+        } else if (units[i] == "m") {
+            rval[i] <- "M"
+        } else if (units[i] == "s") {
+            rval[i] <- "S"
+        } else {
+            rval[i] <- i
+        }
+    }
+    rval
+
+    #units <- gsub("^dbar$", "DBAR", units)
+    ### units <- gsub("^degree \\* C$", "DEG C", units)
+    #units <- gsub("^degree \\* C$", "ITS-90", units)
+    #units <- gsub("^m$", "M", units)
+    #units <- gsub("^s$", "S", units)
+    ###units <- gsub("^$", "PSS-78", units) # problem: lots of things have no units.
+    #print(units)
+    #return(units)
+
+    ### message("woceUnit2oceUnit(\"", woceUnit, "\")", sep="")
+    #if (unit == "FMOL/KG")
+    #    return(list(unit=expression(fmol/kg), scale=""))
+    #if (unit == "ITS-90" || unit == "ITS-90 DEGC")
+    #    return(list(unit=expression(degree*C), scale="ITS-90"))
+    #if (unit == "IPTS-68" || unit == "ITS-68" || unit == "ITS-68 DEGC")
+    #    return(list(unit=expression(degree*C), scale="IPTS-68"))
+    #if (unit == "ML/L")
+    #    return(list(unit=expression(ml/l), scale=""))
+    #if (unit == "PMOL/KG")
+    #    return(list(unit=expression(pmol/kg), scale=""))
+    #if (unit == "PSU" || unit == "PSS-78")
+    #    return(list(unit=expression(), scale="PSS-78"))
+    #if (unit == "UG/L")
+    #    return(list(unit=expression(mu*g/l), scale=""))
+    #if (unit == "UMOL/KG")
+    #    return(list(unit=expression(mu*mol/kg), scale=""))
+    #if (unit == "%")
+    #    return(list(unit=expression(percent), scale=""))
+    #return(list(unit=expression(), scale=""))
+}
+
+
 #' Translate WOCE Data Names to Oce Data Names
 #'
 #' Translate WOCE-style names to \code{oce} names, using \code{\link{gsub}}
@@ -10,10 +142,17 @@
 #'
 #' @return vector of strings holding \code{oce}-style names.
 #' @author Dan Kelley
+#'
+#' @references
+#' Several online sources list WOCE names. An example is
+#' \url{https://geo.h2o.ucsd.edu/documentation/manuals/pdf/90_1/chap4.pdf}
+#'
 #' @family things related to \code{ctd} data
 #' @family functions that interpret variable names and units from headers
 woceNames2oceNames <- function(names)
 {
+    ## see woceNames2oceNames, and update both at once when new items added
+    ##
     ## FIXME: this almost certainly needs a lot more translations. The next comment lists some that
     ## FIXME: I've seen. But how are we to know, definitively? It would be great to find an official
     ## FIXME: list, partly because the present function should be documented, and that documentation
@@ -21,36 +160,62 @@ woceNames2oceNames <- function(names)
     ## SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
     names <- gsub("_FLAG_W", "Flag", names)
     names <- gsub("_FLAG_I", "Flag", names)
+    names <- gsub("ALKALI", "totalAlkalinity", names)
+    names <- gsub("CFC-12", "CFC12", names)
     names <- gsub("CTDOXY", "oxygen", names)
     names <- gsub("CTDPRS", "pressure", names)
     names <- gsub("CTDSAL", "salinity", names)
     names <- gsub("CTDTMP", "temperature", names)
     names <- gsub("FLUOR", "fluorescence", names)
+    names <- gsub("NH4", "ammonium", names)
     names <- gsub("PHSPHT", "phosphate", names)
+    names <- gsub("PH_TOT", "pHTotal", names)
+    names <- gsub("PH_TMP", "pHTemperature", names) # what is this??
+    names <- gsub("NITRAT", "nitrate", names)
     names <- gsub("NITRIT", "nitrite", names)
     names <- gsub("NUMBER", "number", names)
     names <- gsub("NO2+NO3", "nitrite+nitrate", names)
     names <- gsub("OXYGEN", "oxygen", names)
     names <- gsub("QUALT", "quality", names) # flags, really, but we are not capturing that info yet
     names <- gsub("SALNTY", "salinityBottle", names)
+    names <- gsub("SF6", "SF6", names)
     names <- gsub("SILCAT", "silicate", names)
+    names <- gsub("TCARBN", "totalCarbon", names)
     names <- gsub("TRANS", "transmission", names)
     names
 }
 
+#' Translate WOCE units to oce units
+#'
+#' Translate WOCE-style units to \code{oce} units.
+#'
+#' @param woceUnit string holding a WOCE unit
+#'
+#' @return expression in oce unit form
+#'
+#' @author Dan Kelley
+#'
+#' @family things related to \code{ctd} data
+#' @family functions that interpret variable names and units from headers
 woceUnit2oceUnit <- function(woceUnit)
 {   
     ## message("woceUnit2oceUnit(\"", woceUnit, "\")", sep="")
     if (woceUnit == "DB" || woceUnit == "DBAR")
         return(list(unit=expression(dbar), scale=""))
+    if (woceUnit == "DEG C")
+        return(list(unit=expression(degree*C), scale="")) # unknown scale
+    if (woceUnit == "FMOL/KG")
+        return(list(unit=expression(fmol/kg), scale=""))
     if (woceUnit == "ITS-90" || woceUnit == "ITS-90 DEGC")
         return(list(unit=expression(degree*C), scale="ITS-90"))
     if (woceUnit == "IPTS-68" || woceUnit == "ITS-68" || woceUnit == "ITS-68 DEGC")
         return(list(unit=expression(degree*C), scale="IPTS-68"))
-    if (woceUnit == "PSU" || woceUnit == "PSS-78")
-        return(list(unit=expression(), scale="PSS-78"))
     if (woceUnit == "ML/L")
         return(list(unit=expression(ml/l), scale=""))
+    if (woceUnit == "PMOL/KG")
+        return(list(unit=expression(pmol/kg), scale=""))
+    if (woceUnit == "PSU" || woceUnit == "PSS-78")
+        return(list(unit=expression(), scale="PSS-78"))
     if (woceUnit == "UG/L")
         return(list(unit=expression(mu*g/l), scale=""))
     if (woceUnit == "UMOL/KG")
@@ -160,6 +325,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
             units[[names[i]]] <- woceUnit2oceUnit(unitsOriginal[i])
         }
         for (i in seq_along(header)) {
+            message("header[", i, "=\"", header[i], "\"")
             if (length(grep("CRUISE", header[i], ignore.case=TRUE))) {
                 cruise<- sub("CRUISE[ ]*NAME[ ]*=[ ]*", "", header[i], ignore.case=TRUE)
                 cruise <- sub("[ ]*$", "", cruise)
@@ -217,14 +383,15 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         tmp <- sub("(.*), ", "", line)
         date <- substr(tmp, 1, 8)
         ##cat("DATE '", date, "'\n", sep="")
-        diw <- substr(tmp, 9, nchar(tmp)) # really, divisionINSTITUTEwho
-        institute <- diw # BUG: really, it is division, institute, who, strung together
-        ## Kludge: recognize some institutes
-        if (0 < regexpr("SIO", diw))
-            institute <- "SIO"
+        ## 20170424 diw <- substr(tmp, 9, nchar(tmp)) # really, divisionINSTITUTEwho
+        ## 20170424 institute <- diw # BUG: really, it is division, institute, who, strung together
+        ## 20170424 ## Kludge: recognize some institutes
+        ## 20170424 if (0 < regexpr("SIO", diw))
+        ## 20170424     institute <- "SIO"
         gotHeader <- FALSE
         gotDate <- FALSE
         gotTime <- FALSE
+        startTime <- NULL
         while (TRUE) {
             line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, for perhaps 20 lines of header
             oceDebug(debug, paste("examining header line '", line, "'\n"))
@@ -254,7 +421,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
                 if (is.finite(nh)) {
                     for (i in 2:nh) {
                         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-                        ## message("line: ", line)
+                        ##message("line: ", line)
                         header <- c(header, line)
                         oceDebug(debug, line, "\n")
                         if (0 < (r<-regexpr("LATITUDE",  line)))
@@ -265,9 +432,11 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
                             ## FIXME: check to see whether woce-exchange always gives dates as 8 digits
                             date <- sub(" *$", "", sub("[ ]*DATE[ ]*=[ ]*", "", line))
                             gotDate <- TRUE
+                            ##message("got date=", date)
                         } else if (0 < (r<-regexpr(pattern="TIME", text=line, ignore.case=TRUE))) {
                             time <- sub("[a-zA-Z =]*", "", line)
                             gotTime <- TRUE
+                            ##message("got time=", time)
                         } else if (0 < (r<-regexpr(pattern="DEPTH", text=line, ignore.case=TRUE)))
                             waterDepth <- as.numeric(sub("[a-zA-Z =:]*", "", line))
                         else if (0 < (r<-regexpr(pattern="Profondeur", text=line, ignore.case=TRUE)))
@@ -287,9 +456,10 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
             }
         }
         if (gotDate && gotTime) {
+            ##message("gotDate && gotTime")
             if (nchar(time) == 3)
                 time <- paste("0", time, sep="")
-            res@metadata$time <- as.POSIXct(paste(date, time), format="%Y%m%d %H%M", tz="UTC")
+            startTime <- as.POSIXct(paste(date, time), format="%Y%m%d %H%M", tz="UTC")
         }
         if (!gotHeader) {
             while (TRUE) {

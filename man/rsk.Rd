@@ -9,16 +9,16 @@ A sample \code{rsk} object derived from a Concerto CTD manufactured by RBR Ltd.
 }
 \details{
 The data were obtained September 2015, off the west coast
-    of Greenland, by Matt Rutherford and Nicole Trenholm of the
-    Ocean Research Project, in collaboration with RBR and with the
-    NASA Oceans Melting Greenland project.
+of Greenland, by Matt Rutherford and Nicole Trenholm of the
+Ocean Research Project, in collaboration with RBR and with the
+NASA Oceans Melting Greenland project.
 }
 \examples{
 library(oce)
 data(rsk)
+## The object doesn't "know" it is CTD until told so
 plot(rsk)
 plot(as.ctd(rsk))
-plot(subset(as.ctd(rsk),pressure<10))
 
 }
 \references{

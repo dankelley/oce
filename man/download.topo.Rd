@@ -31,8 +31,8 @@ to the caching scheme.}
 not supplied, this defaults to \code{"gmt"}. See \dQuote{Details}.}
 
 \item{server}{Optional string indicating the server from which to get the data.
-If not supplied, the humorously-named default
-\samp{"http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"}
+If not supplied, the default
+\samp{"https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"}
 will be used.}
 
 \item{debug}{an integer specifying whether debugging information is
@@ -54,7 +54,8 @@ data. Subsequent calls to \code{download.topo}
 with identical parameters will simply return the name of the cached file,
 assuming the user has not deleted it in the meantime.
 For convenience, if \code{destfile} is not
-given, then \code{download.topo} will construct a filename from the other arguments.
+given, then \code{download.topo} will construct a filename from the other arguments,
+rounding longitude and latitude limits to 0.01 degrees.
 }
 \details{
 The data are downloaded with \code{\link[utils]{download.file}}, using a URL
@@ -78,26 +79,28 @@ recognized by \code{\link{read.topo}}.
 \code{\link{read.topo}} is extended to handle them, they will
 also be added here.)
 }
-\section{History}{
+\section{Webserver history}{
 
-When this function was created in August 2016, the default server was
+All versions of \code{download.topo} to date have used a NOAA server as
+the data source, but the URL has not been static. A list of the
+servers that have been used is provided below,
+in hopes that it can help users to make guesses
+for \code{server}, should \code{download.topo} fail because of 
+a fail to download the data. Another
+hint is to look at the source code for
+\code{\link[marmap]{getNOAA.bathy}} in the \CRANpkg{marmap} package,
+which is also forced to track the moving target that is NOAA.
+
+\itemize{
+\item August 2016. 
 \samp{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
-but this was found to fail in December 2016, so the default was changed to
-\samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}, which
-is what is used by \code{\link[marmap]{getNOAA.bathy}} in the
-\CRANpkg{marmap} package.
+
+\item December 2016.
+\samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
+
+\item June-September 2017.
+\samp{https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
 }
-
-\section{Warning}{
-
-All of the \code{download.*} functions are subject to change through the
-year 2017. The plan is to create individual functions
-as needs arise in everyday work, thereby discovering patterns of 
-arguments that might make sense more generally. Therefore, it is likely
-that argument order (and even name) may change up until approximately
-December 2016. Users are advised to refer to arguments by name,
-i.e. not to rely on their order, and they are asked for patience,
-because argument names and defaults may vary through the early development.
 }
 
 \examples{
@@ -118,7 +121,7 @@ lines(coastlineWorldFine[["longitude"]], coastlineWorldFine[["latitude"]])
 2. Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
 Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
 NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
-[access date: Aug 20, 2016].
+[access date: Aug 30, 2017].
 }
 \seealso{
 The work is done with \code{\link[utils]{download.file}}.

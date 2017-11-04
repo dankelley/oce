@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{findInOrdered}
 \alias{findInOrdered}
-\title{Find indices of times in an ordered vector}
+\title{Find indices of times in an ordered vector [deprecated]}
 \usage{
 findInOrdered(x, f)
 }
@@ -15,9 +15,17 @@ findInOrdered(x, f)
 A numerical vector indicating the indices of left-sided neighbors.
 }
 \description{
+\strong{WARNING:} This function will be removed soon;
+see \link{oce-deprecated}.  The replacement is trivial:
+just change a call like e.g. \code{findInOrdered(x,f)}
+to \code{\link{findInterval}(f,x)} (which is what the function
+started doing, on 2017-09-07, after a major bug was found).
+}
+\details{
 The indices point to the largest items in \code{x} that are less than or
-equal the values in \code{f}.  The method uses a bisection search, so the
-time taken is proportional to \code{length(f) * log2(length(x))}.
+equal the values in \code{f}.  This works by simply calling
+\code{\link{findInterval}(x=f, vec=x)}, and users are probably
+better off using \code{\link{findInterval}} directly.
 }
 \examples{
 
