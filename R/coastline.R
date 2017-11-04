@@ -121,7 +121,7 @@ setMethod(f="summary",
               cat("Coastline Summary\n-----------------\n\n")
               cat("* Number of points:", length(object@data$latitude), ", of which",
                   sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
-              callNextMethod()         # summary
+              invisible(callNextMethod())        # summary
           })
 
 #' @title Coerce Data into a Coastline Object

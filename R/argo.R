@@ -514,7 +514,7 @@ setMethod(f="summary",
               nA <- sum(object@metadata$dataMode == "A")
               nR <- sum(object@metadata$dataMode == "R")
               cat("* Profiles:            ", nD, " delayed; ", nA, " adjusted; ", nR, " realtime", "\n", sep="")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 ncdfFixMatrix <- function(x)

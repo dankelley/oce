@@ -94,7 +94,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("LISST Summary\n-------------\n\n")
               showMetadataItem(object, "filename", "File source:        ")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 

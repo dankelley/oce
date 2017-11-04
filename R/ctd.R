@@ -426,8 +426,9 @@ setMethod(f="summary",
               showMetadataItem(object, "waterDepth", "Water depth:         ")
               showMetadataItem(object, "levels", "Number of levels: ")
               names <- names(object@data)
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
+
 
 #' @title Extract Parts of a CTD Object
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.

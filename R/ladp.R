@@ -72,7 +72,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("LADP Summary\n------------\n\n")
               showMetadataItem(object, "station", "Station:             ")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 #' @title Extract Something From an ladp Object

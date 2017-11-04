@@ -45,7 +45,7 @@ setMethod(f="summary",
               n <- length(object@data$theta)
               dtheta <- abs(diff(object@data$theta[1:2]))
               cat("* Have n=", n, "angles, separated by dtheta=", dtheta, "\n\n")
-              callNextMethod() # summary
+              invisible(callNextMethod()) # summary
           })
 
 

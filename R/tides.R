@@ -155,7 +155,7 @@ setMethod(f="summary",
                   printCoefmat(f[, -4], digits=digits)
               }
               processingLogShow(object)
-              invisible(NULL)
+              invisible()
           })
 
 #' @title Extract Something From a Tidem Object

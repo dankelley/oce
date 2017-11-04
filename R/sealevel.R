@@ -138,7 +138,7 @@ setMethod(f="summary",
               ndata <- length(object@data$elevation)
               cat("* number of observations:  ", ndata, "\n")
               cat("*    \"      non-missing:   ", sum(!is.na(object@data$elevation)), "\n")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 

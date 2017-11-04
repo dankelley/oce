@@ -130,7 +130,7 @@ setMethod(f="summary",
                             if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
                             if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
               }
-              callNextMethod() # summary
+              invisible(callNextMethod()) # summary
           })
 
 #' @title Extract Parts of an ADV Object

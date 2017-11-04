@@ -211,7 +211,7 @@ setMethod(f="summary",
                   cat("* No stations\n")
               }
               processingLogShow(object)
-              invisible(NULL)
+              invisible(callNextMethod()) # summary
           })
 
 #' @title Extract Something From a Section Object

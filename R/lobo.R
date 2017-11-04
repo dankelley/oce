@@ -127,7 +127,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("Lobo Summary\n------------\n\n")
               cat("* source: \"", object@metadata$filename, "\"\n", sep="")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 

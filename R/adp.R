@@ -394,7 +394,7 @@ setMethod(f="summary",
                   if (object@metadata$numberOfBeams > 3)
                       cat("  ", format(object@metadata$transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
               }
-              callNextMethod() # summary
+              invisible(callNextMethod()) # summary
           })
 
 

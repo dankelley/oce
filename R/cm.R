@@ -121,7 +121,7 @@ setMethod(f="summary",
               showMetadataItem(object, "model",         "Instrument model:   ")
               showMetadataItem(object, "serialNumber",  "Serial Number:      ")
               showMetadataItem(object, "version",       "Version:            ")
-              callNextMethod() # summary
+              invisible(callNextMethod()) # summary
           })
 
 

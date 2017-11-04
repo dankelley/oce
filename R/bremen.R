@@ -115,7 +115,7 @@ setMethod(f="summary",
               showMetadataItem(object, "ship",    "Vessel:              ")
               showMetadataItem(object, "station", "Station:             ")
               showMetadataItem(object, "profile", "Profile:             ")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 

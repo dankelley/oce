@@ -95,7 +95,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("\nTopo dataset\n------------\n")
               cat("* Source:          ", object[["filename"]], "\n")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 #' @title Extract Something From a Topo Object

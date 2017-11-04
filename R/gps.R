@@ -39,7 +39,7 @@ setMethod(f="summary",
           signature="gps",
           definition=function(object, ...) {
               cat("GPS Summary\n-----------------\n\n")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 
