@@ -3075,7 +3075,8 @@ setMethod(f="plot",
                       next
                   }
                   if (which[w] == 1) {
-                      plotProfile(x, xtype="salinity+temperature", Slim=Slim, Tlim=Tlim, plim=plim,
+                      plotProfile(x, xtype="salinity+temperature",
+                                  plim=plim, Slim=Slim, Tlim=Tlim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid="lightgray", lty.grid="dotted",
@@ -3084,7 +3085,7 @@ setMethod(f="plot",
                                   ...)
                   } else if (which[w] == 2) {
                       plotProfile(x, xtype="density+N2",
-                                  plim=plim,
+                                  plim=plim, N2lim=N2lim, densitylim=densitylim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   df=df,
