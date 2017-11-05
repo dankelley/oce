@@ -3071,9 +3071,12 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 #' in \code{x}. If \code{leftover} is \code{FALSE} (the default) then any extra
 #' ensembles at the end of \code{x} are ignored. Otherwise, they are used
 #' to create a final ensemble in the returned value.
+#' @param na.rm a logical value indicating whether NA values should be stripped 
+#' before the computation proceeds
+#' @param ... extra arguments to be passed to the \code{mean()} function.
 #'
 #' @return A reduced object of \code{\link{adp-class}} with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.
-#' @author Clark Richards
+#' @author Clark Richards and Dan Kelley
 #' @examples
 #'
 #' library(oce)
@@ -3082,7 +3085,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 #' plot(adpAvg)
 #' 
 #' @family things related to \code{adp} data
-adpEnsembleAverage <- function(x, n=5, leftover=FALSE)
+adpEnsembleAverage <- function(x, n=5, leftover=FALSE, na.rm=TRUE, ...)
 {
     if (!inherits(x, 'adp')) stop('Must be an object of class adp')
     res <- new('adp', distance=x[['distance']])
@@ -3097,23 +3100,23 @@ adpEnsembleAverage <- function(x, n=5, leftover=FALSE)
     breaks <- if (leftover) seq(0, ntx+n, n) else seq(0, ntx, n)
     fac <- cut(pings, breaks=breaks, labels=FALSE) # used to split() data items
     ##res@data$time <- numberAsPOSIXct(binAverage(pings, t, xinc=n)$y)
-    res@data$time <- numberAsPOSIXct(as.numeric(lapply(split(as.numeric(t), fac), mean)))
+    res@data$time <- numberAsPOSIXct(as.numeric(lapply(split(as.numeric(t), fac), mean, na.rm=na.rm, ...)))
     for (field in names(d)) {
         if (field != 'time' & field != 'distance') {
             if (is.vector(d[[field]])) {
                 ##res@data[[field]] <- binAverage(pings, d[[field]], xinc=n)$y
-                res@data[[field]] <- as.numeric(lapply(split(as.numeric(d[[field]]), fac), mean))
+                res@data[[field]] <- as.numeric(lapply(split(as.numeric(d[[field]]), fac), mean, na.rm=na.rm, ...))
             } else if (is.array(d[[field]])) {
                 fdim <- dim(d[[field]])
                 res@data[[field]] <- array(NA, dim=c(length(res@data[['time']]), fdim[-1]))
                 for (j in 1:tail(fdim, 1)) {
                     if (length(fdim) == 2) { # for fields like bottom range
                         ##res@data[[field]][, j] <- binAverage(pings, d[[field]][, j], xinc=n)$y
-                        res@data[[field]][, j] <- unlist(lapply(as.numeric(split(d[[field]][, j]), fac), mean))
+                        res@data[[field]][, j] <- unlist(lapply(as.numeric(split(d[[field]][, j]), fac), mean, na.rm=na.rm, ...))
                     } else if (length(fdim) == 3) { # for array fields like v, a, q, etc
                         for (i in 1:fdim[2]) {
                             ##res@data[[field]][, i, j] <- binAverage(pings, d[[field]][, i, j], xinc=n)$y
-                            res@data[[field]][, i, j] <- unlist(lapply(split(as.numeric(d[[field]][, i, j]), fac), mean))
+                            res@data[[field]][, i, j] <- unlist(lapply(split(as.numeric(d[[field]][, i, j]), fac), mean, na.rm=na.rm, ...))
                         }
                     }
                 }
