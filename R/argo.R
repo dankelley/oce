@@ -438,17 +438,19 @@ setMethod(f="subset",
                   if (length(grep("pressure", subsetString))) {
                       fieldname <- names(x@data)
                       for (field in fieldname) {
-                          if (field != 'time') { # & field != 'longitude' & field != 'latitude') {
+                          if (field != 'time' & field != 'longitude' & field != 'latitude') { # DEBUG: see issue 1327
                               ifield <- which(field == fieldname)
-                              ##DEBUG20171005 message("ifield=", ifield, ", field=", field,
-                              ##DEBUG20171005         "\n\tlength(keep)=", length(keep),
-                              ##DEBUG20171005         "\n\tsum(keep)=", sum(keep),
-                              ##DEBUG20171005         "\n\tdim(x@data[[ifield]])=", paste(dim(x@data[[ifield]]), collapse=","),
-                              ##DEBUG20171005         "\n\tdim(res@data[[ifield]])=", paste(dim(res@data[[ifield]]), collapse=","))
+                              ##debug message("ifield=", ifield, ", field=", field,
+                              ##debug        "\n\tlength(keep)=", length(keep),
+                              ##debug        "\n\tsum(keep)=", sum(keep))
                               if (is.matrix(res@data[[ifield]])) {
+                                  ##debug message("\tdim(x@data[[ifield]])=", paste(dim(x@data[[ifield]]), collapse=","))
                                   res@data[[ifield]] <- res@data[[ifield]][keep,]
+                                  ##debugmessage("\tdim(res@data[[ifield]])=", paste(dim(res@data[[ifield]]), collapse=","))
                               } else {
+                                  ##debug message("\tlength(x@data[[ifield]])=", length(x@data[[ifield]]))
                                   res@data[[ifield]] <- res@data[[ifield]][keep]
+                                  ##debug message("\tlength(res@data[[ifield]])=", length(res@data[[ifield]]))
                               }
                           }
                       }
