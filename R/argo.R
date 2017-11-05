@@ -2,8 +2,7 @@
 
 #' Class to hold Argo data
 #'
-#' This class stores data from argo floats. It will be in fairly
-#' active development in the early months of 2016.
+#' This class stores data from argo floats.
 #'
 #' An \code{argo} object may be read with \code{\link{read.argo}} or
 #' created with \code{\link{as.argo}}.  Argo data can be gridded to constant
@@ -441,8 +440,16 @@ setMethod(f="subset",
                       for (field in fieldname) {
                           if (field != 'time') { # & field != 'longitude' & field != 'latitude') {
                               ifield <- which(field == fieldname)
-                              res@data[[ifield]] <- if (is.matrix(res@data[[ifield]]))
-                                  res@data[[ifield]][, keep] else res@data[[ifield]][keep]
+                              ##DEBUG20171005 message("ifield=", ifield, ", field=", field,
+                              ##DEBUG20171005         "\n\tlength(keep)=", length(keep),
+                              ##DEBUG20171005         "\n\tsum(keep)=", sum(keep),
+                              ##DEBUG20171005         "\n\tdim(x@data[[ifield]])=", paste(dim(x@data[[ifield]]), collapse=","),
+                              ##DEBUG20171005         "\n\tdim(res@data[[ifield]])=", paste(dim(res@data[[ifield]]), collapse=","))
+                              if (is.matrix(res@data[[ifield]])) {
+                                  res@data[[ifield]] <- res@data[[ifield]][keep,]
+                              } else {
+                                  res@data[[ifield]] <- res@data[[ifield]][keep]
+                              }
                           }
                       }
                       fieldname <- names(x@metadata$flags)
