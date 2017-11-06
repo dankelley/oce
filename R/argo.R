@@ -1145,8 +1145,13 @@ as.argo <- function(time, longitude, latitude,
 #' @examples
 #' library(oce)
 #' data(argo)
-#' plot(argo, which="trajectory")
-#'
+#' tc <- cut(argo[["time"]], "year")
+#' plot(argo, pch=as.integer(tc))
+#' year <- substr(levels(tc), 1, 4)
+#' data(topoWorld)
+#' contour(topoWorld[['longitude']], topoWorld[['latitude']],
+#'         topoWorld[['z']], add=TRUE)
+#' legend("bottomleft", pch=seq_along(year), legend=year, bg="white")
 #'
 #' @references \url{http://www.argo.ucsd.edu/}
 #'
