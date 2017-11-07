@@ -1151,7 +1151,7 @@ as.argo <- function(time, longitude, latitude,
 #' data(topoWorld)
 #' contour(topoWorld[['longitude']], topoWorld[['latitude']],
 #'         topoWorld[['z']], add=TRUE)
-#' legend("bottomleft", pch=seq_along(year), legend=year, bg="white")
+#' legend("bottomleft", pch=seq_along(year), legend=year, bg="white", cex=3/4)
 #'
 #' @references \url{http://www.argo.ucsd.edu/}
 #'
