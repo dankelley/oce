@@ -477,8 +477,6 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' @param coastline coastline to use for maps; ignored unless \code{which=3} or
 #' \code{which="map"}.
 #'
-#' @template adornTemplate
-#'
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
@@ -511,7 +509,6 @@ setMethod(f="plot",
                               drawBottom, ignore=5,
                               drawTimeRange=FALSE, drawPalette=TRUE,
                               radius, coastline,
-                              adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[1]+1, mgp[1]+1),
                               atTop, labelsTop,
@@ -523,17 +520,12 @@ setMethod(f="plot",
               res <- list(xat=NULL, yat=NULL)
               dotsNames <- names(dots)
               oceDebug(debug, "plot() { # for echosounder\n", unindent=1)
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,echosounder-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
               if (length(beam) < lw)
                   beam <- rep(beam, lw)
-              adorn.length <- length(adorn)
-              if (adorn.length == 1) {
-                  adorn <- rep(adorn, lw)
-                  adorn.length <- lw
-              }
               opar <- par(no.readonly = TRUE)
               par(mgp=mgp, mar=mar)
               if (lw > 1) {
@@ -713,11 +705,6 @@ setMethod(f="plot",
                           }
                       }
                       lines(lon, lat, col=if (!is.function(col)) col else "black", lwd=lwd)
-                  }
-                  if (w <= adorn.length && nchar(adorn[w]) > 0) {
-                      t <- try(eval(adorn[w]), silent=TRUE)
-                      if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]")
                   }
               }
               oceDebug(debug, "} # plot.echosounder()\n", unindent=1)

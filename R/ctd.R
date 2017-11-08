@@ -2816,8 +2816,6 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' @param type The type of plot to draw, using the same scheme as
 #' \code{\link{plot}}.
 #'
-#' @template adornTemplate
-#'
 #' @param mgp Three-element numerical vector specifying axis-label geometry,
 #' passed to \code{\link{par}}.
 #' The default establishes tighter margins than in the usual R setup.
@@ -2897,7 +2895,6 @@ setMethod(f="plot",
                               df,
                               keepNA=FALSE,
                               type='l',
-                              adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1.5, mgp[1]+1.5, mgp[1]+1.5, mgp[1]+1),
                               inset=FALSE,
@@ -2905,13 +2902,15 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
+              if (!inherits(x, "ctd"))
+                  stop("method is only for objects of class 'ctd'")
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,ctd-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               if (!is.null(parameters))
                   warning("'parameters' is a deprecated argument that is ignored; see ?'oce-deprecated'")
               if (!is.null(orientation))
                   warning("'orientation' is a deprecated argument that is ignored; see ?'oce-deprecated'")
               eos <- match.arg(eos, c("unesco", "gsw"))
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is deprecated, and will be removed soon", call.=FALSE)
               if (!missing(fill)) {
                   ## permit call as documented before 2016-02-03
                   ## Note: the code permitted fill=TRUE but this was never documented
@@ -2997,11 +2996,6 @@ setMethod(f="plot",
               ##        }
               ##    }
               ##}
-              adorn.length <- length(adorn)
-              if (adorn.length == 1) {
-                  adorn <- rep(adorn, lw)
-                  adorn.length <- lw
-              }
               if (!inset)
                   par(mar=mar)
               par(mgp=mgp)
@@ -3518,11 +3512,6 @@ setMethod(f="plot",
                       oce.plot.ts(x[["time"]], x[["sigmaTheta"]], ylab=resizableLabel("sigmaTheta", "y"))
                   } else {
                       stop("unknown value of which, ", which[w])
-                  }
-                  if (w <= adorn.length && nchar(adorn[w], "bytes") > 0) {
-                      t <- try(eval(adorn[w]), silent=TRUE)
-                      if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]")
                   }
               }
               oceDebug(debug, "} # plot,ctd-method()\n", unindent=1)

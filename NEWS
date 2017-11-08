@@ -1,4 +1,5 @@
 0.9-23
+- adorn argument removed from plot functions (after being defunct 1+ year)
 - deprecate findInOrdered()
 
 0.9-22

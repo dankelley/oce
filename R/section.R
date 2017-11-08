@@ -1086,8 +1086,6 @@ sectionAddCtd <- sectionAddStation
 #' @param legend.loc Location of legend, as supplied to \code{\link{legend}}, or
 #' set to the empty string to avoid plotting a legend.
 #'
-#' @template adornTemplate
-#'
 #' @param showStations Logical indicating whether to draw station numbers on maps.
 #'
 #' @param showStart Logical indicating whether to indicate the first station with
@@ -1209,7 +1207,6 @@ setMethod(f="plot",
                               xtype="distance", ytype="depth", ztype="contour",
                               zbreaks=NULL, zcol=NULL,
                               legend.loc="bottomright",
-                              adorn=NULL,
                               showStations=FALSE,
                               showStart=TRUE,
                               showBottom=TRUE,
@@ -1219,6 +1216,8 @@ setMethod(f="plot",
           {
               if (missing(debug))
                   debug <- getOption("oceDebug")
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,section-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               debug <- if (debug > 4) 4 else floor(0.5 + debug)
               if (missing(eos))
                   eos <- getOption("oceEOS", default="gsw")
@@ -1239,8 +1238,6 @@ setMethod(f="plot",
                   cex <- par("cex")
               if (missing(pch))
                   pch <- par("pch")
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
 
               ## Make 'which' be numeric, to simplify following code
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
@@ -1923,11 +1920,6 @@ setMethod(f="plot",
                   else
                       layout(matrix(1:2, nrow=2, byrow=TRUE))
               }
-              adorn.length <- length(adorn)
-              if (adorn.length == 1) {
-                  adorn <- rep(adorn, lw)
-                  adorn.length <- lw
-              }
               ## dataNames <- names(x[["station", 1]][["data"]])
               L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
               R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
@@ -1996,10 +1988,6 @@ setMethod(f="plot",
                                      clongitude=clongitude, clatitude=clatitude, span=span,
                                      projection=projection,
                                      debug=debug-1, ...)
-                  }
-                  if (w <= adorn.length) {
-                      t <- try(eval(adorn[w]), silent=TRUE)
-                      if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]")
                   }
               }
               oceDebug(debug, "} # plot.section()\n", unindent=1)

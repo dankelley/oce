@@ -721,7 +721,6 @@ setMethod(f="plot",
           definition=function(x,
                               which=c(1:2, 7:9),
                               type="l",
-                              ##adorn=NULL,
                               drawTimeRange=getOption("oceDrawTimeRange"),
                               drawZeroLine=FALSE,
                               mgp=getOption("oceMgp"),
@@ -733,6 +732,8 @@ setMethod(f="plot",
                               ...)
           {
               oceDebug(debug, "plot.cm() {\n", unindent=1)
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,cm-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
               if (3 != sum(c("time", "u", "v") %in% names(x@data))) {
@@ -759,11 +760,6 @@ setMethod(f="plot",
                                        pressure=7, salinity=8, temperature=9, TS=10, conductivity=11,
                                        direction=20))
               oceDebug(debug, "which:", which, "\n")
-              ##adorn.length <- length(adorn)
-              ##if (adorn.length == 1) {
-              ##    adorn <- rep(adorn, lw)
-              ##    adorn.length <- lw
-              ##}
 
               tt <- x@data$time
               class(tt) <- "POSIXct"              # otherwise image() gives warnings
@@ -884,11 +880,6 @@ setMethod(f="plot",
                   } else {
                       stop("unknown value of which (", which[w], ")")
                   }
-                  ## if (w <= adorn.length) {
-                  ##     t <- try(eval(adorn[w]), silent=TRUE)
-                  ##     if (class(t) == "try-error")
-                  ##         warning("cannot evaluate adorn[", w, "]")
-                  ## }
               }
               oceDebug(debug, "} # plot.cm()\n", unindent=1)
               invisible()

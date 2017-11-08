@@ -255,9 +255,6 @@ plot.lobo.TS <- function(lobo, ...)
 #' timeseries of the v component of velocity; \code{6} or \code{"nitrate"} for
 #' a timeseries of nitrate concentration; \code{7} or \code{"fluorescence"} for
 #' a timeseries of fluorescence value.
-#'
-#' @template adornTemplate
-#'
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
@@ -272,15 +269,14 @@ setMethod(f="plot",
           signature=signature("lobo"),
           definition=function(x,
                               which=c(1, 2, 3),
-                              adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25),
                               debug=getOption("oceDebug"),
                               ...)
           {
               oceDebug(debug, "plot.lobo(...)\n", sep="")
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,lobo-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
               oceDebug(debug, "which:", which, "\n")
@@ -289,11 +285,6 @@ setMethod(f="plot",
               oceDebug(debug, "which2:", which2, "\n")
               if (length(which) > 1) on.exit(par(opar))
               par(mgp=mgp, mar=mar)
-              adornLength <- length(adorn)
-              if (adornLength < nw) {
-                  adorn <- rep(adorn, nw)
-                  adornLength <- nw
-              }
               par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
               par(mfrow=c(nw, 1))
               for (w in which2) {
@@ -316,34 +307,18 @@ setMethod(f="plot",
                   } else if (w == 7) {
                       oce.plot.ts(x[["time"]], x[["fluorescence"]], ylab=resizableLabel("fluorescence", axis="y"), debug=debug-1, ...)
                   }
-                  if (adornLength > 0) {
-                      t <- try(eval(adorn[1]), silent=TRUE)
-                      if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]")
-                  }
               }
 
 #              if (any(!is.na(x@data$u) & !is.na(x@data$v))) {
 #                  par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
 #                  plot.lobo.timeseries.uv(x, ...)
-#                  if (adornLength > 0) {
-#                      t <- try(eval(adorn[2]), silent=TRUE)
-#                      if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]")
-#                  }
 #              }
 #
 #              par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
 #              plot.lobo.timeseries.biology(x, ...)
-#              if (adornLength > 0) {
-#                  t <- try(eval(adorn[3]), silent=TRUE)
-#                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 3, "]")
-#              }
 #
 #              par(mar=c(mgp[1]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
 #              plot.lobo.TS(x, ...)
-#              if (adornLength > 0) {
-#                  t <- try(eval(adorn[4]), silent=TRUE)
-#                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]")
-#              }
           })
 
 

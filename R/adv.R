@@ -489,8 +489,6 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @param type Type of plot, as for \code{\link{plot}}.
 #'
-#' @template adornTemplate
-#'
 #' @param drawTimeRange Boolean that applies to panels with time as the horizontal
 #' axis, indicating whether to draw the time range in the top-left margin of the
 #' plot.
@@ -566,7 +564,6 @@ setMethod(f="plot",
                               titles,
                               type="l",
                               lwd=par('lwd'),
-                              adorn=NULL,
                               drawTimeRange=getOption("oceDrawTimeRange"),
                               drawZeroLine=FALSE,
                               useSmoothScatter,
@@ -582,13 +579,13 @@ setMethod(f="plot",
                               ...)
           {
               debug <- min(4, max(0, round(debug)))
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,adv-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "plot.adv(x, which=c(", paste(which, collapse=","), "), type=\"", type, "\", ...) {\n", sep="", unindent=1)
               have.brushCorrelation <- !missing(brushCorrelation)
               oceDebug(debug, "brushCorrelation", if (have.brushCorrelation) brushCorrelation else "not given", "\n")
               oceDebug(debug, "cex=", cex, " cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
               oceDebug(debug, "mar=c(", paste(mar, collapse=","), ")\n")
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               dots <- names(list(...))
               ##if (!all(which %in% c(1:3,5:7,9:11,14:21,23)))
@@ -651,11 +648,6 @@ setMethod(f="plot",
                       xlim2 <- matrix(xlim[1:2], ncol=2, nrow=nw, byrow=TRUE)
                   }
                   xlim <- xlim2
-              }
-              adorn.length <- length(adorn)
-              if (adorn.length == 1) {
-                  adorn <- rep(adorn, nw)
-                  adorn.length <- nw
               }
               oceDebug(debug, "before layout, cex=", par('cex'), "\n")
               if (nw > 1) {
@@ -735,7 +727,6 @@ setMethod(f="plot",
                           good <- as.numeric(x@data$q[, which[w]]) >= brushCorrelation
                           oce.plot.ts(x@data$time[good], y[good], ylab=beamName(x, which[w]),
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(y, na.rm=TRUE),
                                       type=type,
@@ -751,7 +742,6 @@ setMethod(f="plot",
                       } else {
                           oce.plot.ts(x@data$time, y, ylab=beamName(x, which[w]),
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(y, na.rm=TRUE),
                                       type=type,
@@ -777,7 +767,6 @@ setMethod(f="plot",
                           oce.plot.ts(x@data$time[good], y[good],
                                       ylab=c(expression(a[1]), expression(a[2]), expression(a[3]), expression(a[4]))[which[w]-4],
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(y, na.rm=TRUE),
                                       type=type,
@@ -792,7 +781,6 @@ setMethod(f="plot",
                           oce.plot.ts(x@data$time, y,
                                       ylab=c(expression(a[1]), expression(a[2]), expression(a[3]), expression(a[4]))[which[w]-4],
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(y, na.rm=TRUE),
                                       type=type,
@@ -812,7 +800,6 @@ setMethod(f="plot",
                           oce.plot.ts(x@data$time[good], y[good],
                                       ylab=c(expression(q[1]), expression(q[2]), expression(q[3]), expression(q[4]))[which[w]-8],
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(y, na.rm=TRUE),
                                       type=type,
@@ -827,7 +814,6 @@ setMethod(f="plot",
                           oce.plot.ts(x@data$time, y,
                                       ylab=c(expression(q[1]), expression(q[2]), expression(q[3]), expression(q[4]))[which[w]-8],
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(y, na.rm=TRUE),
                                       type=type,
@@ -844,7 +830,6 @@ setMethod(f="plot",
                               salinity <- rep(x@metadata$salinity, length(x@data$temperatureSlow))
                               oce.plot.ts(x@data$timeSlow, salinity, ylab=resizableLabel("S", "y"),
                                           drawTimeRange=drawTimeRange,
-                                          adorn=adorn[w],
                                           xlim=if (gave.xlim) xlim[w, ] else tlim,
                                           ylim=if (gave.ylim) ylim[w, ] else x@metadata$salinity+c(0.5, -0.5),
                                           type=type,
@@ -858,7 +843,6 @@ setMethod(f="plot",
                               salinity <- rep(x@metadata$salinity, length(x@data$temperature))
                               oce.plot.ts(x@data$time, salinity, ylab=resizableLabel("S", "y"),
                                           drawTimeRange=drawTimeRange,
-                                          adorn=adorn[w],
                                           xlim=if (gave.xlim) xlim[w, ] else tlim,
                                           ylim=if (gave.ylim) ylim[w, ] else x@metadata$salinity+c(0.5, -0.5),
                                           type=type,
@@ -876,7 +860,6 @@ setMethod(f="plot",
                       if ("timeSlow" %in% names(x@data) && "temperatureSlow" %in% names(x@data)) {
                           oce.plot.ts(x@data$timeSlow, x@data$temperatureSlow, ylab=resizableLabel("T", "y"),
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(x@data$temperature, na.rm=TRUE),
                                       type=type,
@@ -889,7 +872,6 @@ setMethod(f="plot",
                       } else {
                           oce.plot.ts(x@data$time, x@data$temperature, ylab=resizableLabel("T", "y"),
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(x@data$temperature, na.rm=TRUE),
                                       type=type,
@@ -903,7 +885,6 @@ setMethod(f="plot",
                   } else if (which[w] == 15 || which[w] == "pressure") {
                       oce.plot.ts(x@data$time, x@data$pressure, ylab=resizableLabel("p", "y"),
                                   drawTimeRange=drawTimeRange,
-                                  adorn=adorn[w],
                                   xlim=if (gave.xlim) xlim[w, ] else tlim,
                                   ylim=if (gave.ylim) ylim[w, ] else range(x@data$pressure, na.rm=TRUE),
                                   type=type,
@@ -917,7 +898,6 @@ setMethod(f="plot",
                       if ("timeSlow" %in% names(x@data) && "headingSlow" %in% names(x@data)) {
                           oce.plot.ts(x@data$timeSlow, x@data$headingSlow, ylab="heading",
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(x@data$heading, na.rm=TRUE),
                                       type=type,
@@ -930,7 +910,6 @@ setMethod(f="plot",
                       } else {
                           oce.plot.ts(x@data$time, x@data$heading, ylab="heading",
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(x@data$heading, na.rm=TRUE),
                                       type=type,
@@ -946,7 +925,6 @@ setMethod(f="plot",
                       if ("timeSlow" %in% names(x@data) && "pitchSlow" %in% names(x@data)) {
                           oce.plot.ts(x@data$timeSlow, x@data$pitchSlow, ylab="pitch",
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(x@data$pitch, na.rm=TRUE),
                                       type=type,
@@ -959,7 +937,6 @@ setMethod(f="plot",
                       } else {
                           oce.plot.ts(x@data$time, x@data$pitch, ylab="pitch",
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(x@data$pitch, na.rm=TRUE),
                                       type=type,
@@ -974,7 +951,6 @@ setMethod(f="plot",
                       if ("timeSlow" %in% names(x@data) && "rollSlow" %in% names(x@data)) {
                           oce.plot.ts(x@data$timeSlow, x@data$rollSlow, ylab="roll",
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(x@data$roll, na.rm=TRUE),
                                       type=type,
@@ -987,7 +963,6 @@ setMethod(f="plot",
                       } else {
                           oce.plot.ts(x@data$time, x@data$roll, ylab="roll",
                                       drawTimeRange=drawTimeRange,
-                                      adorn=adorn[w],
                                       xlim=if (gave.xlim) xlim[w, ] else tlim,
                                       ylim=if (gave.ylim) ylim[w, ] else range(x@data$roll, na.rm=TRUE),
                                       type=type,

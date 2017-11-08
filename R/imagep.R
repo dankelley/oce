@@ -677,8 +677,6 @@ drawPalette <- function(zlim, zlab="",
 #'        Otherwise, if \code{asp} is not \code{NA}, then it is used directly.
 #' @param  cex Size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").
 #'
-#' @template adornTemplate
-#'
 #' @param  axes Logical, set \code{TRUE} to get axes on the main image.
 #' @param  main Title for plot.
 #' @param  axisPalette Optional replacement function for \code{axis()}, passed to
@@ -776,7 +774,6 @@ imagep <- function(x, y, z,
                    xaxs="i", yaxs="i",
                    asp=NA,
                    cex=par("cex"),
-                   adorn=NULL,
                    axes=TRUE,
                    main="",
                    axisPalette,
@@ -784,7 +781,11 @@ imagep <- function(x, y, z,
                    debug=getOption("oceDebug"),
                    ...)
 {
+
+    if ("adorn" %in% names(list(...)))
+        warning("the 'adorn' argument was removed in November 2017")
     zlabPosition <- match.arg(zlabPosition)
+
     oceDebug(debug, "imagep(x, y, z, ",
              argShow(cex),
              argShow(flipy),
@@ -847,8 +848,6 @@ imagep <- function(x, y, z,
         stop("'add' must be a logical value")
     }
 
-    if (!is.null(adorn))
-        warning("In imagep() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
     xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
     zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot,adp-method
@@ -1307,11 +1306,6 @@ imagep <- function(x, y, z,
     }
     if (zlabPosition == "top")
         mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/8)
-    if (!missing(adorn)) {
-        t <- try(eval.parent(adorn), silent=!TRUE)
-        if (class(t) == "try-error")
-            warning("cannot evaluate adorn='", adorn, "'")
-    }
     par(cex=ocex)
     oceDebug(debug, "par('mai')=c(",
              paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",

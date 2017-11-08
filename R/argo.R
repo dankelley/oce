@@ -1171,12 +1171,12 @@ setMethod(f="plot",
           {
               if (!inherits(x, "argo"))
                   stop("method is only for objects of class '", "argo", "'")
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,argo-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "plot.argo(x, which=c(", paste(which, collapse=","), "),",
                       " mgp=c(", paste(mgp, collapse=","), "),",
                       " mar=c(", paste(mar, collapse=","), "),",
                       " ...) {\n", sep="", unindent=1)
-              if ("adorn" %in% names(list(...)))
-                  warning("In plot,argo-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               coastline <- match.arg(coastline)
               lw <- length(which)
               nw  <- length(which)

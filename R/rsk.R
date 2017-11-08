@@ -356,8 +356,6 @@ as.rsk <- function(time, columns,
 #'     \dQuote{Details} for the meanings of various values of
 #'     \code{which}.
 #'
-#' @template adornTemplate
-#'
 #' @param tlim optional limits for time axis.  If not provided, the value will be
 #' inferred from the data.
 #'
@@ -423,7 +421,7 @@ as.rsk <- function(time, columns,
 #' @family things related to \code{rsk} data
 setMethod(f="plot",
           signature=signature("rsk"),
-          definition=function(x, which="timeseries", adorn=NULL,
+          definition=function(x, which="timeseries",
                               tlim, ylim,
                               xlab, ylab,
                               tformat,
@@ -436,9 +434,9 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,rsk-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "plot.rsk(..., which=", which, ", ...) {\n", unindent=1)
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is deprecated, and will be removed soon", call.=FALSE)
               dotsNames <- names(list(...))
               ## FIXME: In the below, we could be more clever for single-panel plots
               ## but it may be better to get users out of the habit of supplying xlim
@@ -476,11 +474,6 @@ setMethod(f="plot",
                   ##     par(mfrow=c(nw, 1))
                   ##     on.exit(par(opar))
                   ## }
-                  adorn.length <- length(adorn)
-                  if (adorn.length == 1) {
-                      adorn <- rep(adorn, nw)
-                      adorn.length <- nw
-                  }
                   if (missing(main))
                       main <- rep('', length.out=nw)
                   else
@@ -510,11 +503,6 @@ setMethod(f="plot",
                           axis(2)
                       } else {
                           stop("Unrecognized value for \"which\". Must be \"timeseries\" or the name of any field from the data slot.")
-                      }
-                      if (w <= adorn.length) {
-                          t <- try(eval(adorn[w]), silent=TRUE)
-                          if (class(t) == "try-error")
-                              warning("cannot evaluate adorn[", w, "]")
                       }
                   }
               }
