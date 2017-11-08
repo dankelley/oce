@@ -7,9 +7,9 @@
 \usage{
 \S4method{plot}{argo}(x, which = 1, level, coastline = c("best",
   "coastlineWorld", "coastlineWorldMedium", "coastlineWorldFine", "none"),
-  cex = 1, pch = 1, type = "p", col, fill = FALSE, adorn = NULL,
-  projection = NULL, mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5,
-  mgp[1] + 1.5, 1.5, 1.5), tformat, debug = getOption("oceDebug"), ...)
+  cex = 1, pch = 1, type = "p", col, fill = FALSE, projection = NULL,
+  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5, 1.5, 1.5),
+  tformat, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{object inheriting from \code{\link{argo-class}}.}
@@ -60,24 +60,6 @@ map, or \code{"best"} to pick the one with highest resolution, or
 \item{fill}{Either a logical, indicating whether to fill the land with
 light-gray, or a colour name.  Owing to problems with some projections, the
 default is not to fill.}
-
-\item{adorn}{(\strong{Defunct})
-An \code{\link{expression}} or vector of expressions that contain
-R code that is to be executed immediately after each panel of the plot.
-If the number of expressions matches the number of panels, then the 
-expressions are used for the corresponding panels; otherwise, the
-expression list is extended to match the number of panels (i.e.
-to obtain \code{length(which)} elements). Note that \code{adorn}
-is a dangerous argument, because if the expressions contained
-therein set up local storage, there is a chance of entirely
-disrupting the plotting. \strong{For this reason, \code{adorn} was
-marked as defunct in June 2016, and will be removed entirely 
-after the July CRAN release.} Users with existing code that uses
-\code{adorn} should simply plot the panels individually, and
-use conventional R functions, e.g. \code{\link{lines}} etc.,
-after each panel, to achieve the desired effect.  (See
-\code{\link{oce-defunct}} for notes on other deprecated or
-defunct \code{oce} features.)}
 
 \item{projection}{indication of the projection to be used
 in trajetory maps. If this is \code{NULL}, no projection is used, although

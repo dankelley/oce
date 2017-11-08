@@ -154,14 +154,15 @@ NULL
 #' The functionality is preserved, in the \code{col} argument.
 #'
 #' \item The \code{adorn} argument of \code{\link{plot,ctd-method}} and
-#' other functions was realized in June 2016 to be dangerous. (If the
+#' several other functions was realized in June 2016 to be dangerous. (If the
 #' adornment code contained assignments to temporary variables, there
 #' could be conflicts with the plotting code. The only way to be sure
 #' of not overriding an important variable would be to understand the
 #' full plotting code, which is far too demanding to justify.)
 #' The solution is for users to draw panels individually, adding
 #' graphical elements with conventional R functions such as \code{\link{lines}},
-#' etc.
+#' etc. During November 2017, \code{adorn} was removed from all oce
+#' plotting functions.
 #'
 #' }
 #'
@@ -840,8 +841,6 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' @param drawTimeRange an optional indication of whether/how to draw a time range,
 #' in the top-left margin of the plot; see \code{\link{oce.axis.POSIXct}} for details.
 #'
-#' @template adornTemplate
-#
 #' @param fill boolean, set \code{TRUE} to fill the curve to zero (which it
 #' does incorrectly if there are missing values in \code{y}).
 #' @param xlab name for x axis; defaults to \code{""}.
@@ -890,7 +889,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
 #' oce.plot.ts(t, y, type='l', xaxs='i')
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
-                        drawTimeRange, adorn=NULL, fill=FALSE,
+                        drawTimeRange, fill=FALSE,
                         xaxs=par("xaxs"), yaxs=par("yaxs"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
@@ -905,8 +904,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
 {
     if (is.function(x))
         stop("x cannot be a function")
-    if (!is.null(adorn))
-        warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
+    if ("adorn" %in% names(list(...)))
+        stop("The 'adorn' argument was removed in November, 2017, after being marked 'defunct' in June 2016")
     if (missing(xlab))
         xlab <- ""
     if (missing(ylab))
@@ -1013,11 +1012,6 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         }
         if (grid)
             grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
-        if (!is.null(adorn)) {
-            t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
-            if (class(t) == "try-error")
-                warning("cannot evaluate adorn {", format(adorn), "}")
-        }
         oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
         invisible(list(xat=xat, yat=yat))
     }

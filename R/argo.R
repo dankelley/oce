@@ -1113,8 +1113,6 @@ as.argo <- function(time, longitude, latitude,
 #' light-gray, or a colour name.  Owing to problems with some projections, the
 #' default is not to fill.
 #'
-#' @template adornTemplate
-#'
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
 #' \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
@@ -1165,7 +1163,6 @@ setMethod(f="plot",
                                coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
                                            "coastlineWorldFine", "none"),
                                cex=1, pch=1, type='p', col, fill=FALSE,
-                               adorn=NULL,
                                projection=NULL,
                                mgp=getOption("oceMgp"), mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
                                tformat,
@@ -1178,21 +1175,10 @@ setMethod(f="plot",
                       " mgp=c(", paste(mgp, collapse=","), "),",
                       " mar=c(", paste(mar, collapse=","), "),",
                       " ...) {\n", sep="", unindent=1)
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,argo-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               coastline <- match.arg(coastline)
-              #opar <- par(no.readonly = TRUE)
               lw <- length(which)
-              ##if (lw > 1) on.exit(par(opar))
-              ##if (length(type) < lw) type <- rep(type, lw) # FIXME: recycle more sensibly
-              ##if (length(pch) < lw) pch <- rep(pch, lw) # FIXME: recycle more sensibly
-              ##if (length(cex) < lw) cex <- rep(cex, lw) # FIXME: recycle more sensibly
-              adorn.length <- length(adorn)
-              if (adorn.length == 1) {
-                  adorn <- rep(adorn, lw)
-                  adorn.length <- lw
-              }
-              ## omar <- par('mar')
               nw  <- length(which)
               if (nw > 1) {
                   par(mfcol=c(1, nw), mgp=mgp, mar=mar)

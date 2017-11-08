@@ -94,14 +94,15 @@ to whether coastlines are to be filled.)
 The functionality is preserved, in the \code{col} argument.
 
 \item The \code{adorn} argument of \code{\link{plot,ctd-method}} and
-other functions was realized in June 2016 to be dangerous. (If the
+several other functions was realized in June 2016 to be dangerous. (If the
 adornment code contained assignments to temporary variables, there
 could be conflicts with the plotting code. The only way to be sure
 of not overriding an important variable would be to understand the
 full plotting code, which is far too demanding to justify.)
 The solution is for users to draw panels individually, adding
 graphical elements with conventional R functions such as \code{\link{lines}},
-etc.
+etc. During November 2017, \code{adorn} was removed from all oce
+plotting functions.
 
 }
 }
