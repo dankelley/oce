@@ -830,8 +830,12 @@ imagep <- function(x, y, z,
             }
             oceDebug(debug, "decimate: ", paste(decimate, collapse=" "), " (before calculation)\n")
             if (is.logical(decimate)) {
-                decimate <- as.integer(dim(z) / 400)
-                decimate <- ifelse(decimate < 1, 1, decimate)
+                if (decimate) {
+                    decimate <- as.integer(dim(z) / 400)
+                    decimate <- ifelse(decimate < 1, 1, decimate)
+                } else {
+                    decimate <- c(1, 1)
+                }
             } else {
                 decimate <- rep(as.numeric(decimate), length.out=2)
             }
