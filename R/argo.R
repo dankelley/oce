@@ -105,6 +105,26 @@ setMethod(f="[[",
                       res <- gsw_CT_from_t(SA, t, p)
                   }
                   dim(res) <- dim
+              } else if (i == "depth") {
+                  ## This accessor added for issue 1333. Note that the
+                  ## fix for that issue was sometimes calling with
+                  ## vector-form argo object. I don't know how that vector
+                  ## form is arising, but it is likely an index without
+                  ## a drop=FALSE condition ... if I find it, I'll fix it,
+                  ## but the following works fine, so I don't really care too
+                  ## much.
+                  if (is.matrix(x@data$pressure)) {
+                      n <- dim(x@data$pressure)[1]
+                      latitude <- matrix(rep(x@data$latitude, each=n),
+                                         nrow=n, byrow=TRUE)
+                      res <- swDepth(x@data$pressure, latitude)
+                      ##. print("matrix ... lat and then pres... and the depth...")
+                      ##. print(latitude[1:3, 1:3])
+                      ##. print(x@data$pressure[1:3, 1:3])
+                      ##. print(res[1:3, 1:3])
+                  } else {
+                      res <- swDepth(x@data$pressure, x@data$latitude)
+                  }
               } else {
                   res <- callNextMethod()         # [[
               }
