@@ -242,19 +242,21 @@ SEXP map_check_polygons(SEXP x, SEXP y, SEXP z, SEXP xokspan, SEXP usr) // retur
     if (j > (clen - 2)) {                                                         \
         /*Rprintf("INCREASE storage from %d to %d [a]\n", clen, (int)(100 + clen));*/ \
         clen += 100;                                                              \
-        xcb = (double*)Realloc(xcb, clen, double);                                \
-        ycb = (double*)Realloc(ycb, clen, double);                                \
+        xbp = (double*)Realloc(xbp, clen, double);                                \
+        ybp = (double*)Realloc(ybp, clen, double);                                \
     }                                                                             \
     j++;
 
 
-SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vectors
+// Eliminate any coastline segments that lie wholly outside par("usr")
+SEXP map_clip_xy_OLD_BROKEN(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vectors
 {
     PROTECT(x = AS_NUMERIC(x));
     PROTECT(y = AS_NUMERIC(y));
     PROTECT(usr = AS_NUMERIC(usr));
     int nusr = LENGTH(usr);
-    if (nusr != 4) error("'usr' must hold 4 values");
+    if (nusr != 4)
+        error("'usr' must hold 4 values, not ", nusr);
     double *usrp = REAL(usr); // left right bottom top
     double *xp = REAL(x);
     double *yp = REAL(y);
@@ -264,10 +266,10 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
         error("'x' and 'y' must be of same length");
     if (xlen < 2)
         error("must have at least two 'x' and 'y' pairs");
-    // xcb and ycb are growable buffers; we copy to xc and yc near the end.
-    int clen = xlen - 100; // FIXME make +100; the -100 is for testing
-    double *xcb = (double*)Calloc((size_t)clen, double);
-    double *ycb = (double*)Calloc((size_t)clen, double);
+    // xbp and xbp are growable buffers
+    int clen = xlen + 100; // the 100 may save reallocs
+    double *xbp = (double*)Calloc((size_t)clen, double);
+    double *ybp = (double*)Calloc((size_t)clen, double);
 #ifdef DEBUG
     double distMIN = 10e6; // FIXME: temporary to find problem in Greenland
 #endif
@@ -275,17 +277,20 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
     int i, j = 0;
 #ifdef DEBUG
     Rprintf("usrp=%.0f %.0f %.0f %.0f\n", usrp[0], usrp[1], usrp[2], usrp[3]);
+    double danSmall = 1e10;
 #endif
     for (i = 0; i < xlen; i++) { 
         if (ISNA(xp[i])) {
+            if (9428-5 <= i && i <= 9865+5)
+                Rprintf("NA at i=%d (pinned between 9428 and 9865)\n", i);
             // i points to the NA at the end of a sequence; only emit one NA
             // even if there might be multiples
 #ifdef DEBUG
             Rprintf("TOP NA i=%d j=%d; xlen=%d\n", i, j, xlen);
 #endif
-            if (j == 0 || !ISNA(xcb[j-1])) {
-                xcb[j] = NA_REAL;
-                ycb[j] = NA_REAL;
+            if (j == 0 || !ISNA(xbp[j-1])) {
+                xbp[j] = NA_REAL;
+                ybp[j] = NA_REAL;
                 INCREMENT_J;
             }
         } else {
@@ -297,14 +302,19 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
 #endif
                         if (ii > 0 && xp[ii-1] != xp[i] && yp[ii-1] != yp[i]) { // FIXME: close polygons
 #ifdef DEBUG
-                            Rprintf("COMPLETING broken polygon at i=%d ii=%d j=%d, repeating xp=%f yp=%f\n", i,ii,j,xp[i],yp[i]);
+                            double dan = sqrt((xp[i]-4081795)*(xp[i]-4081795) + (yp[i]-9461998)*(yp[i]-9461998))/1e3;
+                            Rprintf("COMPLETING broken polygon at i=%d ii=%d j=%d, repeating xp=%.0f yp=%.0f; dan=%.0f, danSmall=%.0f\n", i,ii,j,xp[i],yp[i],dan,danSmall);
+                            if (dan < danSmall) {
+                                Rprintf("  ^^^^^^^\n");
+                                danSmall = dan; // 10311
+                            }
 #endif
-                            xcb[j] = xp[i];
-                            ycb[j] = yp[i];
+                            xbp[j] = xp[i];
+                            ybp[j] = yp[i];
                             INCREMENT_J;
                         }
-                        xcb[j] = NA_REAL;
-                        ycb[j] = NA_REAL;
+                        xbp[j] = NA_REAL;
+                        ybp[j] = NA_REAL;
                         INCREMENT_J;
                         i = ii; // FIXME: or -1 or +1?
                         break;
@@ -319,8 +329,8 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
                             distMIN = dist;
                         }
 #endif
-                        xcb[j] = xp[ii];
-                        ycb[j] = yp[ii];
+                        xbp[j] = xp[ii];
+                        ybp[j] = yp[ii];
                         INCREMENT_J;
                     }
                 }
@@ -338,8 +348,8 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
     PROTECT(yc = NEW_NUMERIC(j));
     double *ycp = REAL(yc);
     for (int jj = 0; jj < j; jj++) {
-        xcp[jj] = xcb[jj];
-        ycp[jj] = ycb[jj];
+        xcp[jj] = xbp[jj];
+        ycp[jj] = ybp[jj];
     }
 
     SEXP res;
@@ -354,4 +364,96 @@ SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vect
     UNPROTECT(7);
     return(res);
 }
- 
+
+
+
+
+// Eliminate any coastline segments that lie wholly outside par("usr")
+SEXP map_clip_xy(SEXP x, SEXP y, SEXP usr) // returns list with new x and y vectors
+{
+    PROTECT(x = AS_NUMERIC(x));
+    PROTECT(y = AS_NUMERIC(y));
+    PROTECT(usr = AS_NUMERIC(usr));
+    int nusr = LENGTH(usr);
+    if (nusr != 4)
+        error("'usr' must hold 4 values, not ", nusr);
+    double *usrp = REAL(usr); // left right bottom top
+    double *xp = REAL(x);
+    double *yp = REAL(y);
+    int xlen = length(x);
+    int ylen = length(y);
+    if (xlen != ylen)
+        error("'x' and 'y' must be of same length");
+    if (xlen < 2)
+        error("must have at least two 'x' and 'y' pairs");
+    // xb and yb are growable buffers; we copy to xc and yc near the end.
+    int clen = xlen + 100; // the 100 may save reallocs
+    double *xbp = (double*)Calloc((size_t)clen, double);
+    double *ybp = (double*)Calloc((size_t)clen, double);
+#ifdef DEBUG
+    double distMIN = 10e6; // FIXME: temporary to find problem in Greenland
+#endif
+    // Find chunks, and copy any with 1 or more datum in the usr window.
+#ifdef DEBUG
+    Rprintf("usrp=%.0f %.0f %.0f %.0f\n", usrp[0], usrp[1], usrp[2], usrp[3]);
+    double danSmall = 1e10;
+#endif
+    // flush any NA at the start
+    int i = 0;
+    while (i < xlen && ISNA(xp[i]))
+        i++;
+    int istart = i, iend = -1;
+    int j = 0;
+    for (; i < xlen; i++) {
+        if (ISNA(xp[i])) {
+            iend = i - 1;
+            while (i < xlen && ISNA(xp[i]))
+                i++;
+            // Save the polygon, if it intersects par("usr")
+            for (int ii = istart; ii <= iend; ii++) {
+                if (usrp[0] <= xp[ii] && xp[ii] <= usrp[1] && usrp[2] <= yp[ii] && yp[ii] <= usrp[3]) {
+#ifdef DEBUG
+                   Rprintf("istart=%d iend=%d intersects par('usr')\n", istart, iend);
+#endif
+                   for (int k = istart; k <= iend; k++) {
+                       xbp[j] = xp[k];
+                       ybp[j] = yp[k];
+                       INCREMENT_J;
+                   }
+#ifdef DEBUG
+                   Rprintf("  copied to output buffer, so now j=%d\n", j);
+#endif
+                   break;
+                }
+            }
+            istart = i;
+            xbp[j] = NA_REAL;
+            ybp[j] = NA_REAL;
+            INCREMENT_J;
+        }
+    }
+    SEXP xc;
+    PROTECT(xc = NEW_NUMERIC(j));
+    double *xcp = REAL(xc);
+    SEXP yc;
+    PROTECT(yc = NEW_NUMERIC(j));
+    double *ycp = REAL(yc);
+    for (int jj = 0; jj < j; jj++) {
+        xcp[jj] = xbp[jj]; // FIXME: just copying for now
+        ycp[jj] = ybp[jj];
+    }
+
+    SEXP res;
+    SEXP res_names;
+    PROTECT(res = allocVector(VECSXP, 2));
+    PROTECT(res_names = allocVector(STRSXP, 2));
+    SET_VECTOR_ELT(res, 0, xc);
+    SET_STRING_ELT(res_names, 0, mkChar("x"));
+    SET_VECTOR_ELT(res, 1, yc);
+    SET_STRING_ELT(res_names, 1, mkChar("y"));
+    setAttrib(res, R_NamesSymbol, res_names);
+    UNPROTECT(7);
+    return(res);
+}
+
+

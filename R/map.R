@@ -1295,6 +1295,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     yorig <- xy$y
     oce_uhl <- options()$oce_uhl
     if (!is.null(oce_uhl) && oce_uhl == "method 1") {
+        message("using test code to remove ugly horiz. lines, since options$oce_uhl=='method 1'")
         ## Insert NA to break long horizontal jumps, which can be caused by coastline
         ## segments that "pass across" the edge of a plot.
         dx <- abs(diff(x))
