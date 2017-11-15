@@ -48,10 +48,16 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
            seq(usr[3], usr[4], length.out=n), 
            rep(usr[4], n),
            seq(usr[4], usr[3], length.out=n))
+    g <- expand.grid(x=seq(usr[1], usr[2], length.out=n),
+                     y=seq(usr[3], usr[4], length.out=n))
+    x <- g$x
+    y <- g$y
+
     ## if (debug > 2)
     ##     points(x, y, pch=20, cex=3, col=2)
     oceDebug(debug, "about to call map2lonlat\n")
     ll <- map2lonlat(x, y)
+    nok <- sum(is.finite(ll$longitude))
     ## Convert -Inf and +Inf to NA
     oceDebug(debug, "DONE with call map2lonlat\n")
     bad <- !is.finite(ll$longitude) | !is.finite(ll$latitude)
@@ -69,24 +75,28 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
     lonmin <- max(lonmin, -180, na.rm=TRUE)
     lonmax <- min(lonmax, 180, na.rm=TRUE)
     lonmax <- max(lonmax, -180, na.rm=TRUE)
-    if (lonmin > lonmax) {
-        tmp <- lonmin
-        lonmin <- lonmax
-        lonmax <- tmp
-    }
-    ## special case: if we are showing more than half the earth, assume
-    ## it's a global view, and extend accordingly
-    if ((lonmax - lonmin) > 180) {
-        lonmin <- -180
-        lonmax <- 180
-        latmin <- -90
-        latmax <- 90
+    if (!is.na(lonmin) && !is.na(lonmax)) {
+        if (lonmin > lonmax) {
+            tmp <- lonmin
+            lonmin <- lonmax
+            lonmax <- tmp
+        }
+        ## special case: if we are showing more than half the earth, assume
+        ## it's a global view, and extend accordingly
+        if ((lonmax - lonmin) > 180) {
+            lonmin <- -180
+            lonmax <- 180
+            latmin <- -90
+            latmax <- 90
+        }
     }
     oceDebug(debug, sprintf("lonmin=%.3f, lonmax=%.3f, latmin=%.3f, latmax=%.3f\n",
                             lonmin, lonmax, latmin, latmax))
     oceDebug(debug, "} # usrLonLat()\n", unindent=1)
-    list(lonmin=lonmin, lonmax=lonmax, latmin=latmin, latmax=latmax,
-         ok=is.finite(lonmin)&&is.finite(lonmax)&&is.finite(latmin)&&is.finite(latmax))
+    oceDebug(debug, "nok=", nok, ", n=", n, ", nok/n=", nok/n)
+    rval <- list(lonmin=lonmin, lonmax=lonmax, latmin=latmin, latmax=latmax,
+                 ok=nok/n>0.5&&is.finite(lonmin)&&is.finite(lonmax)&&is.finite(latmin)&&is.finite(latmax))
+    rval
 }
  
 #' Coordinate Reference System strings for some oceans
@@ -1534,7 +1544,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     grid <- rep(g, 2)
                     oceDebug(debug, "grid:", grid[1], "\n")
                 }
-                oceDebug(debug, "limits not given (or inferred) near map.R:1464 -- set grid=", paste(grid, collapse=" "), "\n")
+                oceDebug(debug, "limits not given (or inferred) near map.R:1546 -- set grid=", paste(grid, collapse=" "), "\n")
             }
         }
         if (drawGrid) {
@@ -1657,7 +1667,9 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
     }
     if (!inherits(pole, "try-error")) {
         pusr <- par("usr") # don't alter existing
-        poleInView <- pusr[1] <= pole$x && pole$x <= pusr[2] && pusr[3] <= pole$y && pole$y <= pusr[4]
+        if (4 == sum(is.finite(pusr)) && is.finite(pole$x) && is.finite(pole$y)) {
+            poleInView <- pusr[1] <= pole$x && pole$x <= pusr[2] && pusr[3] <= pole$y && pole$y <= pusr[4]
+        }
         rm(pusr)
     }
     if (poleInView) {
@@ -1710,28 +1722,38 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
             if (0 == length(x)) next
             y <- y[ok]
             if (0 == length(y)) next
-            ## Remove ugly horizontal lines that can occur for
-            ## projections that show the edge of the earth.
-            xJump <- abs(diff(x))
-            if (any(is.finite(xJump))) {
-                ## FIXME: the number in the next line might need adjustment.
-                xJumpMedian <- median(xJump, na.rm=TRUE)
-                if (!is.na(xJumpMedian)) {
-                    horizontalJump <- c(FALSE, xJump > 3 * xJumpMedian)
-                    horizontalJump <- horizontalJump[!is.na(horizontalJump)]
-                    if (any(horizontalJump)) {
-                        x[horizontalJump] <- NA
+            if (TRUE) {
+                ## 20171114: problems e.g. lat lines don't complete (see
+                ## 20171114: blog 65-.png) but also problem with a diagonal line
+                ## 20171114: (see blog 64.png).
+                ##
+                ## Remove ugly horizontal lines that can occur for
+                ## projections that show the edge of the earth.
+                xJump <- abs(diff(x))
+                yJump <- abs(diff(y))
+                if (any(is.finite(xJump))) {
+                    ## FIXME: the number in the next line might need adjustment.
+                    xJumpMedian <- median(xJump, na.rm=TRUE)
+                    yJumpMedian <- median(yJump, na.rm=TRUE)
+                    if (!is.na(xJumpMedian) && !is.na(yJumpMedian)) {
+                        bad <- c(FALSE, xJump > 3 * xJumpMedian)
+                        bad <- bad | is.na(bad)
+                        if (any(bad)) {
+                            ##message("lat=", l, ", bad indices:", paste(which(bad), collapse=" "))
+                            x[bad] <- NA
+                        }
                     }
                 }
-                lines(x, y, lty=lty, lwd=lwd, col=col)
             }
+            lines(x, y, lty=lty, lwd=lwd, col=col)
+            ##points(x, y, col=2, cex=1/2)
         }
     }
     if (length(latitude))
         if (debug > 0) cat("\n")
     if (polarCircle < 0 || polarCircle > 90)
         polarCircle <- 0
-    n <- 360                           # number of points on line
+    n <- 180                           # number of points on line
     ## If it seems that we are drawing longitude lines for more than 3/4
     ## of the globe, we just draw them all. This can solve odd problems to
     ## do with axis limits.
@@ -1765,6 +1787,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
             } else {
                 oceDebug(debug, "longitude graticule", l, "E has ", length(x), "segments\n")
                 lines(x, y, lty=lty, lwd=lwd, col=col)
+                ##points(x, y, col=3, cex=1/2)
             }
         }
     }
