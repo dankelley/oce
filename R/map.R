@@ -48,6 +48,11 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
            seq(usr[3], usr[4], length.out=n), 
            rep(usr[4], n),
            seq(usr[4], usr[3], length.out=n))
+    g <- expand.grid(x=seq(usr[1], usr[2], length.out=n),
+                     y=seq(usr[3], usr[4], length.out=n))
+    x <- g$x
+    y <- g$y
+
     ## if (debug > 2)
     ##     points(x, y, pch=20, cex=3, col=2)
     oceDebug(debug, "about to call map2lonlat\n")
@@ -88,6 +93,7 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
     oceDebug(debug, sprintf("lonmin=%.3f, lonmax=%.3f, latmin=%.3f, latmax=%.3f\n",
                             lonmin, lonmax, latmin, latmax))
     oceDebug(debug, "} # usrLonLat()\n", unindent=1)
+    oceDebug(debug, "nok=", nok, ", n=", n, ", nok/n=", nok/n)
     rval <- list(lonmin=lonmin, lonmax=lonmax, latmin=latmin, latmax=latmax,
                  ok=nok/n>0.5&&is.finite(lonmin)&&is.finite(lonmax)&&is.finite(latmin)&&is.finite(latmax))
     rval
@@ -1538,7 +1544,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     grid <- rep(g, 2)
                     oceDebug(debug, "grid:", grid[1], "\n")
                 }
-                oceDebug(debug, "limits not given (or inferred) near map.R:1464 -- set grid=", paste(grid, collapse=" "), "\n")
+                oceDebug(debug, "limits not given (or inferred) near map.R:1546 -- set grid=", paste(grid, collapse=" "), "\n")
             }
         }
         if (drawGrid) {
