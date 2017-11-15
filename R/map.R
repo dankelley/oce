@@ -1737,9 +1737,9 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
                     yJumpMedian <- median(yJump, na.rm=TRUE)
                     if (!is.na(xJumpMedian) && !is.na(yJumpMedian)) {
                         bad <- c(FALSE, xJump > 3 * xJumpMedian)
-                        bad <- bad[!is.na(bad)]
-                        ## message("sum(bad)=", sum(bad))
+                        bad <- bad | is.na(bad)
                         if (any(bad)) {
+                            ##message("lat=", l, ", bad indices:", paste(which(bad), collapse=" "))
                             x[bad] <- NA
                         }
                     }
