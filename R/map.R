@@ -3333,6 +3333,12 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
                 "urm5", "urmfps", "utm", "vandg", "vitk1", "wag1", "wag2",
                 "wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
 
+## 2017-11-17 lsat seems not to work in rgdal or standlone proj.4, so
+## it was removed from oce. See https://github.com/dankelley/oce/issues/1337
+## for details.
+knownProj4 <- knownProj4[knownProj4 != "lsat"]
+
+
 #' Convert Longitude and Latitude to X and Y
 #'
 #' If a projection is already being used (e.g. as set by \code{\link{mapPlot}})
