@@ -3378,10 +3378,6 @@ knownProj4 <- knownProj4[knownProj4 != "lsat"]
 lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceDebug"))
 {
     oceDebug(debug, "lonlat2map() {\n", unindent=1, sep="")
-    ##cat("map.R:1676 in lonlat2map(..., projection='", projection, "', ...)\n", sep="")
-    ## NOTE: the proj4 method can run into errors (e.g. "ortho" for points on opposite
-    ## side of the earth) an may have to be done (slowly) point by point; a warning is
-    ## issued if so.
     if (is.list(longitude)) {
         latitude <- longitude$latitude
         longitude <- longitude$longitude
@@ -3400,9 +3396,6 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
     #gsub(" .*$", "", gsub("^\\+proj=", "", projection))
     if (!(pr %in% knownProj4))
         stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
-                                        #if (length(grep("aitoff", pr))) stop("+proj=aitoff cannot be used")
-                                        #if (length(grep("robin", pr))) stop("+proj=robin cannot be used")
-                                        #if (length(grep("wintri", pr))) stop("+proj=wintri cannot be used")
     ll <- cbind(longitude, latitude)
     ## Next added 20150523 for rgdal transition; keep old code for a while
     if (0 == length(grep("ellps=", projection))) {
@@ -3421,45 +3414,11 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
     owarn <- options()$warn
     options(warn=-1)
     oceDebug(debug, "projection=", projection, "\n")
-    ## April 2016: rgdal::project will soon return named quantities
+    ## April 2016: rgdal::project will soon return named quantities, so we use unname() to prepare
     capture.output(XY <- unname(rgdal::project(ll, proj=as.character(projection), inv=FALSE)))
     options(warn=owarn)
     xy <- list(x=XY[, 1], y=XY[, 2])
-    ## 20150523 if (!getOption("externalProj4", FALSE)) {
-    ## 20150523     ## message("doing PROJ.4 calculations within Oce, for speed and accuracy")
-    ## 20150523     if (0 == length(grep("ellps=", projection)))
-    ## 20150523         projection<- paste(projection, "+ellps=sphere")
-    ## 20150523     n <- length(longitude)
-    ## 20150523     owarn <- options()$warn
-    ## 20150523     options(warn=-1)
-    ## 20150523     XY <- rgdal::project(ll, proj=as.character(projection), inv=FALSE)
-    ## 20150523     options(warn=owarn)
-    ## 20150523     xy <- list(x=XY[,1], y=XY[,2])
-    ## 20150523     ##pre-rgdal XY <- .C("proj4_interface", as.character(projection), as.integer(TRUE),
-    ## 20150523     ##pre-rgdal          as.integer(n), as.double(longitude), as.double(latitude),
-    ## 20150523     ##pre-rgdal          X=double(n), Y=double(n), NAOK=TRUE)
-    ## 20150523     ##pre-rgdal xy <- list(x=XY$X, y=XY$Y)
-    ## 20150523 } else {
-    ## 20150523     ## message("doing projection calculations with 'proj4' package")
-    ## 20150523     if (!requireNamespace("proj4", quietly=TRUE))
-    ## 20150523         stop("must install 'proj4' package to get options(externalProj4=TRUE) to work")
-    ## 20150523     m <- NULL                 # for the try()
-    ## 20150523     try({
-    ## 20150523         m <- proj4::project(ll, proj=projection)
-    ## 20150523     }, silent=TRUE)
-    ## 20150523     if (is.null(m)) {
-    ## 20150523         m <- matrix(unlist(lapply(1:n, function(i)
-    ## 20150523                                   {
-    ## 20150523                                       t <- try({proj4::project(ll[i,], proj=projection)}, silent=TRUE)
-    ## 20150523                                       if (inherits(t, "try-error")) c(NA, NA) else t[1,]
-    ## 20150523                                   })),
-    ## 20150523                     ncol=2, byrow=TRUE)
-    ## 20150523         warning("proj4 calculation is slow because it was done pointwise")
-    ## 20150523     }
-    ## 20150523     xy <- list(x=m[,1], y=m[,2])
-    ## 20150523 }
     .Projection(list(type="proj4", projection=projection))
-    ##mapproj::.Last.projection(list(projection="")) # turn off mapproj, in case it was on
     oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="")
     xy
 }
