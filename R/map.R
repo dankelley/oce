@@ -1710,7 +1710,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         if (is.finite(l)) {
             if (boxLonLat$ok && !(boxLonLat$latmin <= l & l <= boxLonLat$latmax)) {
                 oceDebug(debug, "SKIPPING latitude =", l, "line\n")
-                if (debug > 1) print(boxLonLat)
+                ##if (debug > 1) print(boxLonLat)
                 next
             }
             oceDebug(debug, "drawing longitude =", l, "line\n")
@@ -1771,8 +1771,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
         if (is.finite(l)) {
             if (boxLonLat$ok && !(boxLonLat$lonmin <= l & l <= boxLonLat$lonmax)) {
                 oceDebug(debug, "SKIPPING longitude =", l, "line\n")
-                if (debug > 1) print(boxLonLat)
-                ##browser()
+                ##if (debug > 1) print(boxLonLat)
                 next
             }
             oceDebug(debug, "drawing longitude =", l, "line\n")
@@ -2256,6 +2255,7 @@ mapLines <- function(longitude, latitude, greatCircle=FALSE, ...)
 #' @family functions related to maps
 mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 {
+    oceDebug(debug, "mapPoints() {\n", unindent=1, sep="")
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     if ("data" %in% slotNames(longitude) && # handle e.g. 'coastline' class
@@ -2275,9 +2275,12 @@ mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
     longitude <- longitude[ok]
     latitude <- latitude[ok]
     if (length(longitude) > 0) {
-        xy <- lonlat2map(longitude, latitude)
+        oceDebug(debug, "head(longitude)=", paste(head(longitude), collapse=" "), "\n")
+        oceDebug(debug, "head(latitude)=", paste(head(latitude), collapse=" "), "\n")
+        xy <- lonlat2map(longitude, latitude, debug=debug-1)
         points(xy$x, xy$y, ...)
     }
+    oceDebug(debug, "} # mapPoints()\n", unindent=1, sep="")
 }
 
 #' Add Arrows to a Map
@@ -3355,6 +3358,7 @@ knownProj4 <- knownProj4[knownProj4 != "lsat"]
 #' @param projection optional indication of projection.  This must be character
 #' string in the format used by the \code{rgdal} package;
 #' see \code{\link{mapPlot}}.)
+#' @template debugTemplate
 #' @return A list containing \code{x} and \code{y}.
 #' @author Dan Kelley
 #' @seealso \code{mapLongitudeLatitudeXY} is a safer alternative, if a map has
@@ -3371,8 +3375,9 @@ knownProj4 <- knownProj4[knownProj4 != "lsat"]
 #' map2lonlat(xy)
 #' }
 #' @family functions related to maps
-lonlat2map <- function(longitude, latitude, projection="")
+lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "lonlat2map() {\n", unindent=1, sep="")
     ##cat("map.R:1676 in lonlat2map(..., projection='", projection, "', ...)\n", sep="")
     ## NOTE: the proj4 method can run into errors (e.g. "ortho" for points on opposite
     ## side of the earth) an may have to be done (slowly) point by point; a warning is
@@ -3400,13 +3405,22 @@ lonlat2map <- function(longitude, latitude, projection="")
                                         #if (length(grep("wintri", pr))) stop("+proj=wintri cannot be used")
     ll <- cbind(longitude, latitude)
     ## Next added 20150523 for rgdal transition; keep old code for a while
-    if (0 == length(grep("ellps=", projection)))
-        projection<- paste(projection, "+ellps=sphere")
+    if (0 == length(grep("ellps=", projection))) {
+        ## we cannot append the +ellps=sphere token for +proj=geos
+        ## because doing so will show the opposite side of the world;
+        ## see https://github.com/dankelley/oce/issues/1338
+        if (1 == length(grep("=[ ]*geos", projection))) {
+            warning("projection contains +proj=geos, so +ellps=sphere is NOT appended")
+        } else {
+            projection <- paste(projection, "+ellps=sphere")
+        }
+    }
     n <- length(longitude)
     if (!requireNamespace("rgdal", quietly=TRUE))
         stop('must install.packages("rgdal") to plot maps with projections')
     owarn <- options()$warn
     options(warn=-1)
+    oceDebug(debug, "projection=", projection, "\n")
     ## April 2016: rgdal::project will soon return named quantities
     capture.output(XY <- unname(rgdal::project(ll, proj=as.character(projection), inv=FALSE)))
     options(warn=owarn)
@@ -3446,5 +3460,6 @@ lonlat2map <- function(longitude, latitude, projection="")
     ## 20150523 }
     .Projection(list(type="proj4", projection=projection))
     ##mapproj::.Last.projection(list(projection="")) # turn off mapproj, in case it was on
+    oceDebug(debug, "} # lonlat2map()\n", unindent=1, sep="")
     xy
 }
