@@ -1052,7 +1052,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' HEALPix                                   \tab \code{healpix}  \tab - \cr
 #' rHEALPix                                  \tab \code{rhealpix} \tab \code{north_square}, \code{south_square}\cr
 #' Interrupted Goode homolosine              \tab \code{igh}      \tab -\cr
-#' Int'l map of the world polyconic          \tab \code{imw_p}    \tab \code{lat_1}, \code{lat_2}, \code{lon_1}\cr
+## Int'l map of the world polyconic          \tab \code{imw_p}    \tab \code{lat_1}, \code{lat_2}, \code{lon_1}\cr
 #' Kavraisky V                               \tab \code{kav5}     \tab - \cr
 #' Kavraisky VII                             \tab \code{kav7}     \tab - \cr
 ## Krovak                                    \tab \code{krovak}   \tab - \cr
@@ -1061,7 +1061,6 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' Longitude and latitude                    \tab \code{longlat}   \tab - \cr
 #' Longitude and latitude                    \tab \code{latlon}   \tab - \cr
 #' Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
-#' Lambert conformal conic alt. [DEPRECATED] \tab \code{lcca}     \tab \code{lat_0}\cr
 #' Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
 ## Lee oblated stereographic                 \tab \code{lee_os}   \tab\cr
 #' Loximuthal                                \tab \code{loxim}    \tab\cr
@@ -1184,9 +1183,23 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @section Changes:
 #' \itemize{
-#' \item 2017-09-30: \code{lcca} deprecated, because its inverse was
+#'
+#' \item 2017-11-19: \code{imw_p} removed, because it has problems doing
+#' inverse calculations.
+#' This is a also problem in the standalone PROJ.4 application version
+#' 4.9.3, downloaded and built on OSX.
+#' See \url{https://github.com/dankelley/oce/issues/1319} for details.
+#'
+#' \item 2017-11-17: \code{lsat} removed, because it does not work in
+#' \code{rgdal} or in the latest standalone PROJ.4 application.
+#' This is a also problem in the standalone PROJ.4 application version
+#' 4.9.3, downloaded and built on OSX.
+#' See \url{https://github.com/dankelley/oce/issues/1337} for details.
+#'
+#' \item 2017-09-30: \code{lcca} removed, because its inverse was
 #' wildly inaccurate in a Pacific Antartic-Alaska application
 #' (see \url{https://github.com/dankelley/oce/issues/1303}).
+#'
 #' }
 #'
 #'
@@ -1250,9 +1263,6 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
              ", projection=\"", if (is.null(projection)) "NULL" else projection, "\"",
              ", grid=", grid,
              ", ...) {\n", sep="", unindent=1)
-    if (length(grep("=[ ]*lcca", projection)))
-        .Deprecated("mapPlot",
-                    msg="proj=lcca will be removed soon. See ?'oce-deprecated'.")
     if (missing(longitude)) {
         data("coastlineWorld", package="oce", envir=environment())
         longitude <- get("coastlineWorld")
@@ -1390,8 +1400,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     col <- "white"
                 if (clip) {
                     oceDebug(debug, "about to draw clipped polygon\n")
+                    message("before .Call")
                     cl <- .Call("map_clip_xy", x, y, par("usr"))
+                    message("after .Call; before polygon")
                     polygon(cl$x, cl$y, border=border, col=col)
+                    message("after polygon")
                 } else {
                     oceDebug(debug, "about to draw unclipped polygon\n")
                     polygon(x, y, border=border, col=col)
@@ -1426,8 +1439,11 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     ## solution to the Antarctica/stereographic problem of issue 545, because the
     ## line segment between two offscale points might intersect the box.  For
     ## this reason, it is done only when trim=TRUE.
+    message("before possible trim")
     if (trim) {
+        message("trimming; before badFillFix2()")
         xy <- badFillFix2(x=x, y=y, xorig=xorig, yorig=yorig)
+        message("trimming; after badFillFix2()")
         x <- xy$x
         y <- xy$y
     }
@@ -1446,12 +1462,16 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     ##if (grid[1]) mapZones(seq(-180, 180, grid[1]), polarCircle=polarCircle)
     if (drawBox)
         box()
+    message("before checking whether to drawGrid")
     drawGrid <- (is.logical(grid[1]) && grid[1]) || grid[1] > 0
     ## message("xrange:", paste(round(xrange, 2), collapse=" "))
     ## message("usr[1:2]:", paste(round(usr[1:2], 2), collapse=" "))
     ## message("yrange:", paste(round(yrange, 2), collapse=" "))
     ## message("usr[3:4]:", paste(round(usr[3:4], 2), collapse=" "))
     fractionOfGlobe <- usr[1] > xrange[1] || xrange[2] > usr[2] || usr[3] > yrange[1] || yrange[2] > usr[4]
+    message("usr=", paste(usr, collapse=" "))
+    message("xrange=", paste(xrange, collapse=" "))
+    message("yrange=", paste(yrange, collapse=" "))
     oceDebug(debug, "initially fractionOfGlobe:", fractionOfGlobe, "\n")
     ## Also turn off axes if it's nearly the whole globe
     xfrac <- diff(xrange) / (usr[2]-usr[1]) > 0.7
@@ -3311,19 +3331,23 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
 ##    on the coastlineWorld; fixing this is not a high priority
 ##    given that it is a niche projection that has caused problems
 ##    in PROJ.4 also.
-##knownProj4<-c("aea", "aeqd", "aitoff", "alsk", "bipc", "bonne", #"calcofi",
+## 6. lsat seems not to work in rgdal or standlone proj.4, so
+##    it was removed from oce on 2017-11-17.
+##    See https://github.com/dankelley/oce/issues/1337 for details.
+## 7. imw_p can hang on some inverse values, and I found that the
+##    problem is deep in the PROJ.4 code (since the error occurs also with PROJ.4
+##    compiled a few days before Nov 19th) and therefore imw_p was removed
+##    on 2017-11-19 .
+##    See https://github.com/dankelley/oce/issues/1319 for details.
 knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
                 "cass", "cc", "cea", "collg", "crast", "eck1", "eck2", "eck3",
                 "eck4", "eck5", "eck6", "eqc", "eqdc", "euler", "etmerc",
                 "fahey", "fouc", "fouc_s", "gall", "geos", "gn_sinu", "gnom",
-                ##"goode", "gs48", "gs50", "hatano", "healpix", "rhealpix",
                 "goode",                   "hatano", "healpix", "rhealpix",
-                ##"igh","imw_p", "isea", "kav5", "kav7", "krovak", "labrd",
-                "igh",  "imw_p",         "kav5", "kav7",
-                ##"laea", "lonlat", "latlon", "lcc", "lcca", "leac", "lee_os",
-                ## 20190930 deprecate lcca
-                "laea",   "lonlat", "longlat", "latlon", "lcc", "lcca", "leac",
-                "loxim", "lsat", "mbt_s", "mbt_fps", "mbtfpp", "mbtfpq",
+                "igh", "kav5", "kav7",
+                "laea",   "lonlat", "longlat", "latlon", "lcc", "leac",
+                ##"loxim", "lsat", "mbt_s", "mbt_fps", "mbtfpp", "mbtfpq",
+                "loxim", "mbt_s", "mbt_fps", "mbtfpp", "mbtfpq",
                 "mbtfps", "merc", "mil_os", "mill", "moll", "murd1", "murd2",
                 ##"murd3", "natearth", "nell", "nell_h", "nsper", "nzmg",
                 "murd3",   "natearth", "nell", "nell_h", "nsper",
@@ -3335,11 +3359,6 @@ knownProj4 <- c("aea", "aeqd", "aitoff",         "bipc", "bonne",
                 ,            "tcea", "tissot", "tmerc", "tpeqd", "tpers", "ups",
                 "urm5", "urmfps", "utm", "vandg", "vitk1", "wag1", "wag2",
                 "wag3", "wag4", "wag5", "wag6", "weren", "wink1", "wintri")
-
-## 2017-11-17 lsat seems not to work in rgdal or standlone proj.4, so
-## it was removed from oce. See https://github.com/dankelley/oce/issues/1337
-## for details.
-knownProj4 <- knownProj4[knownProj4 != "lsat"]
 
 
 #' Convert Longitude and Latitude to X and Y
