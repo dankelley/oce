@@ -1559,7 +1559,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
         }
         if (drawGrid) {
             mapGrid(longitude=NULL, dlatitude=grid[2], polarCircle=polarCircle,
-                    longitudelim=longitudelim, latitudelim=latitudelim, debug=debug)#-1)
+                    longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
             mapGrid(dlongitude=grid[1], latitude=NULL, polarCircle=polarCircle,
                     longitudelim=longitudelim, latitudelim=latitudelim, debug=debug-1)
         }
@@ -2902,9 +2902,22 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                     breaks[1] <- zrange[1] * (1 - small)
                 if (breaks[length(breaks)] > zrange[2])
                     breaks[length(breaks)] <- zrange[2] * (1 + small)
+                oceDebug(debug, "'breaks', 'zlim' and 'col' all missing; zlim=",
+                         paste(zrange, collapse=" "), "\n")
             } else {
                 breaks <- seq(zrange[1]-small, zrange[2]+small,
-                              length.out=if (is.function(col)) 128 else 1+length(col))
+                              length.out=if (is.function(col)) 128/4 else 1+length(col))
+                if (FALSE) {
+### >>>???<<<
+                    breaks <- pretty(zrange+small*c(-1, 1), n=10)
+                    ## FIXME: the extension of the breaks is to try to avoid missing endpoints
+                    if (breaks[1] < zrange[1])
+                        breaks[1] <- zrange[1] * (1 - small)
+                    if (breaks[length(breaks)] > zrange[2])
+                        breaks[length(breaks)] <- zrange[2] * (1 + small)
+                }
+                oceDebug(debug, "'breaks' and 'zlim' missing but 'col' given; zlim=",
+                         paste(zrange, collapse=" "), "\n")
             }
             breaksOrig <- breaks       # nolint (variable not used)
         } else {
@@ -2961,15 +2974,17 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         }
     } else {
         if (zlimGiven) {
-            oceDebug(debug, "using zlim colours for out-of-range values\n")
+            oceDebug(debug, "'zlim' given, so using those zlim colours for out-of-range values\n")
             zlimMin <- min(zlim, na.rm=TRUE)
             zlimMax <- max(zlim, na.rm=TRUE)
             z[z <= zlimMin] <- zlimMin * (1 + sign(zlimMin) * small)
             z[z >= zlimMax] <- zlimMax * (1 - sign(zlimMax) * small)
         } else if (breaksGiven) {
-            oceDebug(debug, "extenging breaks range since no zlim given\n")
+            oceDebug(debug, "'break' given, but not 'zlim', so possibly extending breaks\n")
             breaksMin <- min(breaks, na.rm=TRUE)
             breaksMax <- max(breaks, na.rm=TRUE)
+            oceDebug(debug, "pinning", sum(z<=breaksMin,na.rm=TRUE), "z at left\n")
+            oceDebug(debug, "pinning", sum(z>=breaksMax,na.rm=TRUE), "z at right\n")
             z[z <= breaksMin] <- breaksMin * (1 + sign(breaksMin) * small)
             z[z >= breaksMax] <- breaksMax * (1 - sign(breaksMax) * small)
         } else {
@@ -3102,6 +3117,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         method <- options()$mapPolygonMethod
         if (0 == length(method))
             method <- 3 # method tested in issue 1284
+        oceDebug(debug, "method=", method, " (set by options()$mapPolygonMethod or default of 3)\n")
         if (method==1) {
             colPolygon <- sapply(1:(ni*nj), colorLookup)
         } else if (method==2) {
@@ -3121,7 +3137,10 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             }
         } else if (method == 3) {
             colPolygon <- rep(missingColor, ni*nj)
-            breaks <- sort(breaks)
+            ## findInterval() requires the 2nd arg to be in order
+            o <- order(breaks)
+            breaks <- breaks[o]
+            col <- col[o]
             ii <- findInterval(Z, breaks, left.open=TRUE)
             ##colPolygon <- col[-1 + ii]
             colPolygon <- col[ii]
