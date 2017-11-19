@@ -223,7 +223,6 @@ Hatano asymmetrical equal area            \tab \code{hatano}   \tab - \cr
 HEALPix                                   \tab \code{healpix}  \tab - \cr
 rHEALPix                                  \tab \code{rhealpix} \tab \code{north_square}, \code{south_square}\cr
 Interrupted Goode homolosine              \tab \code{igh}      \tab -\cr
-Int'l map of the world polyconic          \tab \code{imw_p}    \tab \code{lat_1}, \code{lat_2}, \code{lon_1}\cr
 Kavraisky V                               \tab \code{kav5}     \tab - \cr
 Kavraisky VII                             \tab \code{kav7}     \tab - \cr
 Lambert azimuthal equal area              \tab \code{laea}     \tab - \cr
@@ -231,7 +230,6 @@ Longitude and latitude                    \tab \code{lonlat}   \tab - \cr
 Longitude and latitude                    \tab \code{longlat}   \tab - \cr
 Longitude and latitude                    \tab \code{latlon}   \tab - \cr
 Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
-Lambert conformal conic alt. [DEPRECATED] \tab \code{lcca}     \tab \code{lat_0}\cr
 Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
 Loximuthal                                \tab \code{loxim}    \tab\cr
 Space oblique for Landsat                 \tab \code{lsat}     \tab \code{lsat}, \code{path}\cr
@@ -362,9 +360,23 @@ those used in the examples.
 \section{Changes}{
 
 \itemize{
-\item 2017-09-30: \code{lcca} deprecated, because its inverse was
+
+\item 2017-11-19: \code{imw_p} removed, because it has problems doing
+inverse calculations.
+This is a also problem in the standalone PROJ.4 application version
+4.9.3, downloaded and built on OSX.
+See \url{https://github.com/dankelley/oce/issues/1319} for details.
+
+\item 2017-11-17: \code{lsat} removed, because it does not work in
+\code{rgdal} or in the latest standalone PROJ.4 application.
+This is a also problem in the standalone PROJ.4 application version
+4.9.3, downloaded and built on OSX.
+See \url{https://github.com/dankelley/oce/issues/1337} for details.
+
+\item 2017-09-30: \code{lcca} removed, because its inverse was
 wildly inaccurate in a Pacific Antartic-Alaska application
 (see \url{https://github.com/dankelley/oce/issues/1303}).
+
 }
 }
 
