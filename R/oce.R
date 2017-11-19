@@ -113,8 +113,13 @@ NULL
 #'
 #' \itemize{
 #'
+#' \item THe \code{lsat} projection of \code{\link{mapPlot}} was removed
+#' on 2017-11-17, after tests showed that it seemed not to work in either
+#' the \code{rgdal} package or in the standalone PROJ.4 application.
+#' See \url{https://github.com/dankelley/oce/issues/1337} for details.
+#'
 #' \item The \code{lcca} projection of \code{\link{mapPlot}} was removed
-#' from the documentation 2018-08-30, and generated a warning starting
+#' from the documentation 2016-08-30, and generated a warning starting
 #' then. It will be marked defunction after the next CRAN release.
 #"
 #' \item The \code{endian} argument of \code{\link{byteToBinary}} will be removed sometime

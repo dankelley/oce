@@ -4,7 +4,8 @@
 \alias{lonlat2map}
 \title{Convert Longitude and Latitude to X and Y}
 \usage{
-lonlat2map(longitude, latitude, projection = "")
+lonlat2map(longitude, latitude, projection = "",
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{longitude}{a vector containing decimal longitudes, or a list
@@ -17,6 +18,14 @@ the indicated values are used, and next argument is ignored.}
 \item{projection}{optional indication of projection.  This must be character
 string in the format used by the \code{rgdal} package;
 see \code{\link{mapPlot}}.)}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 A list containing \code{x} and \code{y}.
