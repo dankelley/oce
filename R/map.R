@@ -3397,17 +3397,17 @@ lonlat2map <- function(longitude, latitude, projection="", debug=getOption("oceD
     if (!(pr %in% knownProj4))
         stop("projection '", pr, "' is unknown; try one of: ", paste(knownProj4, collapse=','))
     ll <- cbind(longitude, latitude)
-    ## Next added 20150523 for rgdal transition; keep old code for a while
-    if (0 == length(grep("ellps=", projection))) {
-        ## we cannot append the +ellps=sphere token for +proj=geos
-        ## because doing so will show the opposite side of the world;
-        ## see https://github.com/dankelley/oce/issues/1338
-        if (1 == length(grep("=[ ]*geos", projection))) {
-            warning("projection contains +proj=geos, so +ellps=sphere is NOT appended")
-        } else {
-            projection <- paste(projection, "+ellps=sphere")
-        }
-    }
+    ## 1339 20171118 ## Next added 20150523 for rgdal transition; keep old code for a while
+    ## 1339 20171118 if (0 == length(grep("ellps=", projection))) {
+    ## 1339 20171118     ## we cannot append the +ellps=sphere token for +proj=geos
+    ## 1339 20171118     ## because doing so will show the opposite side of the world;
+    ## 1339 20171118     ## see https://github.com/dankelley/oce/issues/1338
+    ## 1339 20171118     if (1 == length(grep("=[ ]*geos", projection))) {
+    ## 1339 20171118         warning("projection contains +proj=geos, so +ellps=sphere is NOT appended")
+    ## 1339 20171118     } else {
+    ## 1339 20171118         ## projection <- paste(projection, "+ellps=sphere")
+    ## 1339 20171118     }
+    ## 1339 20171118 }
     n <- length(longitude)
     if (!requireNamespace("rgdal", quietly=TRUE))
         stop('must install.packages("rgdal") to plot maps with projections')
