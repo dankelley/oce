@@ -1400,11 +1400,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
                     col <- "white"
                 if (clip) {
                     oceDebug(debug, "about to draw clipped polygon\n")
-                    message("before .Call")
                     cl <- .Call("map_clip_xy", x, y, par("usr"))
-                    message("after .Call; before polygon")
                     polygon(cl$x, cl$y, border=border, col=col)
-                    message("after polygon")
                 } else {
                     oceDebug(debug, "about to draw unclipped polygon\n")
                     polygon(x, y, border=border, col=col)
@@ -1439,11 +1436,8 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     ## solution to the Antarctica/stereographic problem of issue 545, because the
     ## line segment between two offscale points might intersect the box.  For
     ## this reason, it is done only when trim=TRUE.
-    message("before possible trim")
     if (trim) {
-        message("trimming; before badFillFix2()")
         xy <- badFillFix2(x=x, y=y, xorig=xorig, yorig=yorig)
-        message("trimming; after badFillFix2()")
         x <- xy$x
         y <- xy$y
     }
@@ -1462,16 +1456,12 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
     ##if (grid[1]) mapZones(seq(-180, 180, grid[1]), polarCircle=polarCircle)
     if (drawBox)
         box()
-    message("before checking whether to drawGrid")
     drawGrid <- (is.logical(grid[1]) && grid[1]) || grid[1] > 0
     ## message("xrange:", paste(round(xrange, 2), collapse=" "))
     ## message("usr[1:2]:", paste(round(usr[1:2], 2), collapse=" "))
     ## message("yrange:", paste(round(yrange, 2), collapse=" "))
     ## message("usr[3:4]:", paste(round(usr[3:4], 2), collapse=" "))
     fractionOfGlobe <- usr[1] > xrange[1] || xrange[2] > usr[2] || usr[3] > yrange[1] || yrange[2] > usr[4]
-    message("usr=", paste(usr, collapse=" "))
-    message("xrange=", paste(xrange, collapse=" "))
-    message("yrange=", paste(yrange, collapse=" "))
     oceDebug(debug, "initially fractionOfGlobe:", fractionOfGlobe, "\n")
     ## Also turn off axes if it's nearly the whole globe
     xfrac <- diff(xrange) / (usr[2]-usr[1]) > 0.7
