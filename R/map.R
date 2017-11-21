@@ -4,8 +4,8 @@
 })
 
 .Projection <- local({
-    ## emulate mapproj
-    ## type can be 'none' or 'proj4' (once, permitted 'mapproj' also)
+    ## Tave state, in a way that emulates mapproj.
+    ## The 'type' can be 'none' or 'proj4' (previously, 'mapproj' was also allowed)
     val <- list(type="none", projection="")
     function(new) if (!missing(new)) val <<- new else val
 })
@@ -2907,7 +2907,8 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             } else {
                 breaks <- seq(zrange[1]-small, zrange[2]+small,
                               length.out=if (is.function(col)) 128/4 else 1+length(col))
-                if (FALSE) {
+                breaksSEQ <<- breaks
+                if (TRUE) {
 ### >>>???<<<
                     breaks <- pretty(zrange+small*c(-1, 1), n=10)
                     ## FIXME: the extension of the breaks is to try to avoid missing endpoints
@@ -2915,6 +2916,16 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                         breaks[1] <- zrange[1] * (1 - small)
                     if (breaks[length(breaks)] > zrange[2])
                         breaks[length(breaks)] <- zrange[2] * (1 + small)
+                    breaksPRETTY <<- breaks
+                    message("FOR DEBUGGING ISSUE 1340, set options(\"dan\"=1) or =2")
+                    dan <- if (!is.null(options("dan"))) options("dan") else 1
+                    if (dan==1) {
+                        message("using 'seq' breaks (NOTE: small=", small, "); see breaksSEQ global variable, now defined")
+                        breaks <- breaksSEQ
+                    } else {
+                        message("using 'pretty' breaks (NOTE: small=", small, "); see breaksPRETTY global variable, now defined")
+                        breaks <- breaksPRETTY
+                    }
                 }
                 oceDebug(debug, "'breaks' and 'zlim' missing but 'col' given; zlim=",
                          paste(zrange, collapse=" "), "\n")
