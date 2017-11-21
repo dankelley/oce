@@ -2905,8 +2905,11 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                 oceDebug(debug, "'breaks', 'zlim' and 'col' all missing; zlim=",
                          paste(zrange, collapse=" "), "\n")
             } else {
+                ## FIXME: cleaner if divide into two cases depending on whether
+                ## FIXME: col is a function
                 breaks <- seq(zrange[1]-small, zrange[2]+small,
-                              length.out=if (is.function(col)) 128/4 else 1+length(col))
+                              length.out=if (is.function(col)) 10 else 1+length(col))
+                              ##length.out=if (is.function(col)) 128/4 else 1+length(col))
                 breaksSEQ <<- breaks
                 if (TRUE) {
 ### >>>???<<<
@@ -2920,10 +2923,10 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                     message("FOR DEBUGGING ISSUE 1340, set options(\"dan\"=1) or =2")
                     dan <- if (!is.null(options("dan"))) options("dan") else 1
                     if (dan==1) {
-                        message("using 'seq' breaks (NOTE: small=", small, "); see breaksSEQ global variable, now defined")
+                        message("BAD using 'seq' breaks (NOTE: small=", small, "); see breaksSEQ global variable, now defined")
                         breaks <- breaksSEQ
                     } else {
-                        message("using 'pretty' breaks (NOTE: small=", small, "); see breaksPRETTY global variable, now defined")
+                        message("OK  using 'pretty' breaks (NOTE: small=", small, "); see breaksPRETTY global variable, now defined")
                         breaks <- breaksPRETTY
                     }
                 }
@@ -3008,11 +3011,6 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     ## map one per polygon.
     poly <- .Call("map_assemble_polygons", longitude, latitude, z,
                   NAOK=TRUE, PACKAGE="oce")
-    ## The docs on mapproject say it needs -ve longitude for degW, but it works ok without that
-    ##if (max(poly$longitude, na.rm=TRUE) > 180) {
-    ##    warning("shifting longitude")
-    ##    poly$longitude <- ifelse(poly$longitude > 180, poly$longitude - 360, poly$longitude)
-    ##}
 
     xy <- lonlat2map(poly$longitude, poly$latitude)
     ## issue #638 - kludge to get data into same longitue scheme as axes
@@ -3029,6 +3027,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     r <- .Call("map_check_polygons", xy$x, xy$y, poly$z,
                diff(par('usr'))[1:2]/5, par('usr'),
                NAOK=TRUE, PACKAGE="oce")
+    dan <<- list(r=r)
     breaksMin <- min(breaks, na.rm=TRUE)
     breaksMax <- max(breaks, na.rm=TRUE)
     if (filledContour) {
@@ -3087,7 +3086,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             warning("no valid z")
         }
     } else {
-        oceDebug(debug, "using polygons, as opposed to filled contours\n")
+        oceDebug(debug+1, "using polygons, as opposed to filled contours\n")
         colFirst <- col[1]
         colLast <- tail(col, 1)
         ## if (debug > 10) { ## FIXME (issue 522): retain this test code until 2014-oct
@@ -3149,6 +3148,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         } else if (method == 3) {
             colPolygon <- rep(missingColor, ni*nj)
             ## findInterval() requires the 2nd arg to be in order
+            ## FIXME: do we need to reorder after the findInterval()?
             o <- order(breaks)
             breaks <- breaks[o]
             col <- col[o]
@@ -3165,6 +3165,15 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
                 col=colPolygon[r$okPolygon & !r$clippedPolygon],
                 border=colPolygon[r$okPolygon & !r$clippedPolygon],
                 lwd=lwd, lty=lty, fillOddEven=FALSE)
+        ## FIXME: 1340 dan1, dan2 comparison:
+        ##> all.equal(dan1$xy, dan2$xy)
+        ##[1] TRUE
+        ##> all.equal(dan1$r, dan2$r)
+        ##[1] TRUE
+        ##> all.equal(dan1$colPolygon, dan2$colPolygon)
+        ##[1] "'is.NA' value mismatch: 1444 in current 11469 in target"
+        dan<<-list(xy=xy, r=r, colPolygon=colPolygon)
+        message("DEBUGGING: defined global var 'dan'")
     }
     oceDebug(debug, "} # mapImage()\n", unindent=1)
     invisible()
