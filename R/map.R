@@ -3163,11 +3163,12 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
             ##bad breaks <- breaks[o]
             ##bad col <- col[o]
             ii <- findInterval(Z, breaks, left.open=TRUE, all.inside=TRUE)
-            ##colPolygon <- col[-1 + ii]
             colPolygon <- col[ii]
             colPolygon[!is.finite(Z)] <- missingColor
-            colPolygon[Z < min(breaks)] <- if (zclip) missingColor else colFirst
-            colPolygon[Z > max(breaks)] <- if (zclip) missingColor else colLast
+            if (zclip) {
+                colPolygon[Z < min(breaks)] <- missingColor
+                colPolygon[Z > max(breaks)] <- missingColor
+            }
         } else {
             stop("unknown options(mapPolygonMethod)")
         }
