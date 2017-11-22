@@ -4,8 +4,8 @@
 })
 
 .Projection <- local({
-    ## emulate mapproj
-    ## type can be 'none' or 'proj4' (once, permitted 'mapproj' also)
+    ## Tave state, in a way that emulates mapproj.
+    ## The 'type' can be 'none' or 'proj4' (previously, 'mapproj' was also allowed)
     val <- list(type="none", projection="")
     function(new) if (!missing(new)) val <<- new else val
 })
@@ -2895,29 +2895,51 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         small <- .Machine$double.eps
         zrange <- range(z, na.rm=TRUE)
         if (missing(zlim)) {
+            ## calculate 'breaks'
             if (missing(col)) {
-                breaks <- pretty(zrange+small*c(-1, 1), n=10)
+                breaks <- pretty(zrange, n=10)
                 ## FIXME: the extension of the breaks is to try to avoid missing endpoints
-                if (breaks[1] < zrange[1])
-                    breaks[1] <- zrange[1] * (1 - small)
-                if (breaks[length(breaks)] > zrange[2])
-                    breaks[length(breaks)] <- zrange[2] * (1 + small)
-                oceDebug(debug, "'breaks', 'zlim' and 'col' all missing; zlim=",
-                         paste(zrange, collapse=" "), "\n")
+                ##.if (breaks[1] < zrange[1])
+                ##.    breaks[1] <- zrange[1] * (1 - small)
+                ##.if (breaks[length(breaks)] > zrange[2])
+                ##.    breaks[length(breaks)] <- zrange[2] * (1 + small)
+                ##. oceDebug(debug, "'breaks', 'zlim' and 'col' all missing; zlim=",
+                ##.          paste(zrange, collapse=" "), "\n")
             } else {
-                breaks <- seq(zrange[1]-small, zrange[2]+small,
-                              length.out=if (is.function(col)) 128/4 else 1+length(col))
-                if (FALSE) {
-### >>>???<<<
-                    breaks <- pretty(zrange+small*c(-1, 1), n=10)
-                    ## FIXME: the extension of the breaks is to try to avoid missing endpoints
-                    if (breaks[1] < zrange[1])
-                        breaks[1] <- zrange[1] * (1 - small)
-                    if (breaks[length(breaks)] > zrange[2])
-                        breaks[length(breaks)] <- zrange[2] * (1 + small)
+                if (is.vector(col)) {
+                    breaks <- pretty(zrange, n=1+length(col))
+                } else if (is.function(col)) {
+                    breaks <- pretty(zrange, n=10)
+                } else {
+                    stop("'col' must be a vector or a function")
                 }
-                oceDebug(debug, "'breaks' and 'zlim' missing but 'col' given; zlim=",
-                         paste(zrange, collapse=" "), "\n")
+                ##. ## FIXME: cleaner if divide into two cases depending on whether
+                ##. ## FIXME: col is a function
+                ##. breaks <- seq(zrange[1]-small, zrange[2]+small,
+                ##.               length.out=if (is.function(col)) 10 else 1+length(col))
+                ##.               ##length.out=if (is.function(col)) 128/4 else 1+length(col))
+                ##. breaksSEQ <<- breaks
+                ##. if (TRUE) {
+### >>>???<<<
+                ##.     breaks <- pretty(zrange+small*c(-1, 1), n=10)
+                ##.     ## FIXME: the extension of the breaks is to try to avoid missing endpoints
+                ##.     ##.if (breaks[1] < zrange[1])
+                ##.     ##.    breaks[1] <- zrange[1] * (1 - small)
+                ##.     ##.if (breaks[length(breaks)] > zrange[2])
+                ##.     ##.    breaks[length(breaks)] <- zrange[2] * (1 + small)
+                ##.     breaksPRETTY <<- breaks
+                ##.     message("FOR DEBUGGING ISSUE 1340, set options(\"dan\"=1) or =2")
+                ##.     danny <- if (!is.null(options("dan"))) options("dan") else 1
+                ##.     if (danny==1) {
+                ##.         message("BAD using 'seq' breaks (NOTE: small=", small, "); see breaksSEQ global variable, now defined")
+                ##.         breaks <- breaksSEQ
+                ##.     } else {
+                ##.         message("OK  using 'pretty' breaks (NOTE: small=", small, "); see breaksPRETTY global variable, now defined")
+                ##.         breaks <- breaksPRETTY
+                ##.     }
+                ##. }
+                ##. oceDebug(debug, "'breaks' and 'zlim' missing but 'col' given; zlim=",
+                ##.          paste(zrange, collapse=" "), "\n")
             }
             breaksOrig <- breaks       # nolint (variable not used)
         } else {
@@ -2947,9 +2969,9 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         col <- col(n=length(breaks)-1)
         oceDebug(debug, "col is a function\n")
     }
-    oceDebug(debug, "zclip: ", zclip, "\n")
-    oceDebug(debug, "breaks: ", paste(breaks, collapse=" "), "\n")
-    oceDebug(debug, "col: ", paste(col, collapse=" "), "\n")
+    oceDebug(debug, "zclip:", zclip, "\n")
+    oceDebug(debug, vectorShow(breaks))
+    oceDebug(debug, vectorShow(col))
     ## 20140816 END
     ni <- dim(z)[1]
     nj <- dim(z)[2]
@@ -2997,13 +3019,10 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     ## map one per polygon.
     poly <- .Call("map_assemble_polygons", longitude, latitude, z,
                   NAOK=TRUE, PACKAGE="oce")
-    ## The docs on mapproject say it needs -ve longitude for degW, but it works ok without that
-    ##if (max(poly$longitude, na.rm=TRUE) > 180) {
-    ##    warning("shifting longitude")
-    ##    poly$longitude <- ifelse(poly$longitude > 180, poly$longitude - 360, poly$longitude)
-    ##}
 
     xy <- lonlat2map(poly$longitude, poly$latitude)
+    xy$x[!is.finite(xy$x)] <- NA
+    xy$y[!is.finite(xy$y)] <- NA
     ## issue #638 - kludge to get data into same longitue scheme as axes
     usr12 <- par("usr")[1:2]
     xrange <- range(xy$x, na.rm=TRUE)
@@ -3087,7 +3106,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ## }
         colorLookup <- function (ij) {
             zval <- Z[ij]
-            if (is.na(zval))
+            if (!is.finite(zval))
                 return(missingColor)   # whether clipping or not
             if (zval < breaksMin)
                 return(if (zclip) missingColor else colFirst)
@@ -3138,22 +3157,50 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         } else if (method == 3) {
             colPolygon <- rep(missingColor, ni*nj)
             ## findInterval() requires the 2nd arg to be in order
-            o <- order(breaks)
-            breaks <- breaks[o]
-            col <- col[o]
-            ii <- findInterval(Z, breaks, left.open=TRUE)
-            ##colPolygon <- col[-1 + ii]
+            ## FIXME: do we need to reorder after the findInterval()?
+            ## next is bad because it lengthens col
+            ##bad o <- order(breaks)
+            ##bad breaks <- breaks[o]
+            ##bad col <- col[o]
+            ii <- findInterval(Z, breaks, left.open=TRUE, all.inside=TRUE)
             colPolygon <- col[ii]
             colPolygon[!is.finite(Z)] <- missingColor
-            colPolygon[Z < min(breaks)] <- if (zclip) missingColor else colFirst
-            colPolygon[Z > max(breaks)] <- if (zclip) missingColor else colLast
+            if (zclip) {
+                colPolygon[Z < min(breaks)] <- missingColor
+                colPolygon[Z > max(breaks)] <- missingColor
+            }
         } else {
             stop("unknown options(mapPolygonMethod)")
         }
+        ##. L <- 10000:20000
+        ##. polygon(xy$x[r$okPoint & !r$clippedPoint][L], xy$y[r$okPoint & !r$clippedPoint][L],
+        ##.         col=colPolygon[r$okPolygon & !r$clippedPolygon][L],
+        ##.         border=colPolygon[r$okPolygon & !r$clippedPolygon][L],
+        ##.         lwd=lwd, lty=lty, fillOddEven=FALSE)
+
         polygon(xy$x[r$okPoint & !r$clippedPoint], xy$y[r$okPoint & !r$clippedPoint],
                 col=colPolygon[r$okPolygon & !r$clippedPolygon],
                 border=colPolygon[r$okPolygon & !r$clippedPolygon],
                 lwd=lwd, lty=lty, fillOddEven=FALSE)
+
+
+        ## FIXME: 1340 dan1, dan2 comparison:
+        ##> all.equal(dan1$xy, dan2$xy)
+        ##[1] TRUE
+        ##> all.equal(dan1$r, dan2$r)
+        ##[1] TRUE
+        ##> all.equal(dan1$colPolygon, dan2$colPolygon)
+        ##[1] "'is.NA' value mismatch: 1444 in current 11469 in target"
+        ##. dan <<- list(xy=xy,
+        ##.              r=r,
+        ##.              colPolygon=colPolygon,
+        ##.              longitude=longitude,
+        ##.              latitude=latitude,
+        ##.              z=z,
+        ##.              breaks=breaks,
+        ##.              col=col, 
+        ##.              ii=ii)
+        ##. message("DEBUGGING: defined global var 'dan'")
     }
     oceDebug(debug, "} # mapImage()\n", unindent=1)
     invisible()
