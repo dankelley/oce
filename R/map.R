@@ -2699,7 +2699,8 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 
 #' Add an Image to a Map
 #'
-#' Plot an image on an existing map.
+#' Plot an image on an existing map that was created with \code{\link{mapPlot}}.
+#' (See example 4 for a way to start  with a blank map.)
 #'
 #' @param longitude vector of longitudes corresponding to \code{z} matrix.
 #'
@@ -2798,6 +2799,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' data(coastlineWorld)
 #' data(topoWorld)
 #'
+#' ## 1. topography
 #' par(mfrow=c(2, 1), mar=c(2, 2, 1, 1))
 #' lonlim <- c(-70, -50)
 #' latlim <- c(40, 50)
@@ -2818,7 +2820,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' box()
 #' mapLines(coastlineWorld)
 #'
-#' ## Northern polar region, with colour-coded bathymetry
+#' ## 2. Northern polar region, with colour-coded bathymetry
 #' par(mfrow=c(1,1))
 #' drawPalette(c(-5000, 0), zlim=c(-5000, 0), col=oce.colorsJet)
 #' mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
@@ -2826,7 +2828,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' mapImage(topoWorld, zlim=c(-5000, 0), col=oce.colorsJet)
 #' mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 #'
-#' # Levitus SST
+#' ## 3. Levitus SST
 #' par(mfrow=c(1,1))
 #' data(levitus, package='ocedata')
 #' lon <- levitus$longitude
@@ -2838,6 +2840,13 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
 #' mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
 #' mapPolygon(coastlineWorld, col='gray')
+#'
+#' ## 4. Topography without drawing a coastline first
+#' data(topoWorld)
+#' cm <- colormap(topoWorld[['z']], name='gmt_relief')
+#' drawPalette(colormap=cm)
+#' mapPlot(c(-180,180), c(-90,90), type="n") # defaults to moll projection
+#' mapImage(topoWorld, colormap=cm)
 #' }
 #'
 #' @author Dan Kelley
