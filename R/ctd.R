@@ -1119,6 +1119,12 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                     if (profile > ncol)
                         stop("profile cannot exceed ", ncol, " for a data matrix with ", ncol, " columns")
                     res@data[[field]] <- d[[field]][, profile]
+                } else if (is.array(dataInField)) { ## argo can sometimes come out this (odd) way
+                    if (1 == length(dim(d[[field]])))
+                        d[[field]] <- as.vector(d[[field]])
+                    res@data[[field]] <- d[[field]]
+                } else {
+                    warning("not storing '", field, "' because it is in an unknown format")
                 }
             }
         } else {
