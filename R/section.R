@@ -1315,6 +1315,9 @@ setMethod(f="plot",
                            "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
                            "\", span=", if (missing(span)) "(missing)" else span,
                            ", axes=", axes, ", ...) {\n", sep="", unindent=1)
+                  ## L and R are used much later, for constructing labels
+                  L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
+                  R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
                   ztype <- match.arg(ztype)
                   drawPoints <- "points" == ztype
                   omar <- par('mar')
@@ -1572,6 +1575,8 @@ setMethod(f="plot",
                                       v <- swConservativeTemperature(x@data$station[[stationIndices[i]]])
                                   else if (eos == "gsw" && variable == "salinity")
                                       v <- swAbsoluteSalinity(x@data$station[[stationIndices[i]]])
+                                  else if (eos == "gsw" && variable == "sigmaTheta")
+                                      v <- swSigma0(x@data$station[[stationIndices[i]]], eos=eos)
                                   else
                                       v <- x@data$station[[stationIndices[i]]][[variable]]
                                   points(rep(xx[i], length(p)), -p,
@@ -1582,6 +1587,13 @@ setMethod(f="plot",
                                       zz[i, ] <- rev(swConservativeTemperature(x@data$station[[stationIndices[i]]]))
                                   } else if (eos == "gsw" && variable == "salinity") {
                                       zz[i, ] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
+                                  } else if (eos == "gsw" && variable == "sigmaTheta") {
+                                      ## The contour will probably look very much like for the "unesco" case,
+                                      ## apart from the different legend. I say this because I used station 10
+                                      ## of data(section) as a test case, and found that the RMS difference
+                                      ## between results computed with the two formulations to be 0.005kg/m^3,
+                                      ## or just 0.02% of the mean value.
+                                      zz[i, ] <- rev(swSigma0(x@data$station[[stationIndices[i]]], eos=eos))
                                   } else {
                                       zz[i, ] <- rev(x@data$station[[stationIndices[i]]][[variable]])
                                   }
@@ -1665,8 +1677,11 @@ setMethod(f="plot",
                           ## Use try() to quiet warnings if all data are NA
                           if (zAllMissing) {
                               if (nchar(legend.loc)) {
-                                  if (is.character(vtitle) && vtitle == "sigmaTheta")
-                                      vtitle <- expression(sigma[theta])
+                                  if (is.character(vtitle) && vtitle == "sigmaTheta") {
+                                      vtitle <- if (eos == "gsw") expression(sigma[0]) else expression(sigma[theta])
+                                      unit <- expression(kg/m^3)
+                                      vtitle <- bquote(.(vtitle[[1]])*.(L)*.(unit[[1]])*.(R))
+                                  }
                                   legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5, cex=1)
                               }
                               return()
@@ -1804,10 +1819,10 @@ setMethod(f="plot",
                               }
                           }
                       }
-                      L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
-                      R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
-                      if (is.character(vtitle) && vtitle == "sigmaTheta")
-                          vtitle <- expression(sigma[theta])
+                      if (is.character(vtitle) && vtitle == "sigmaTheta") {
+                          vtitle <- if (eos == "gsw") expression(sigma[0]) else expression(sigma[theta])
+                          unit <- expression(kg/m^3)
+                      }
                       vtitleOrig <- vtitle
                       vtitle <- if (length(unit) == 0) vtitle else bquote(.(vtitle[[1]])*.(L)*.(unit[[1]])*.(R))
                       if (nchar(legend.loc)) {
