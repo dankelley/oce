@@ -310,6 +310,7 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
         if (missing(df))
             df <- round(sum(ok) / 10)
         df <- max(df, 2) # smooth.spline won't work if df<2
+        df <- min(df, sum(ok))
         if (sum(ok) > 4 && is.finite(df)) {
             SA <- predict(smooth.spline(p[ok], SA[ok], df=df), p[ok])$y
             CT <- predict(smooth.spline(p[ok], CT[ok], df=df), p[ok])$y
