@@ -168,7 +168,7 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
         warning(file$filename, " has no variable named '", name, "'\n", sep='')
         res <- NULL
     }
-    res
+    if (is.array(res) && 1 == length(dim(res))) res <- matrix(res) else res
 }
 
 #' Convert Argo Data Name to Oce Name
@@ -914,7 +914,6 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         n <- paste(item, maybeLC("_QC", lc), sep="")
         d <- getData(file, maybeLC(n, lc))
         if (!is.null(d)) res@metadata$flags[[argoNames2oceNames(n)]] <- argoDecodeFlags(d)
-
         n <- paste(item, maybeLC("_ADJUSTED", lc), sep="")
         if (n %in% varNames) {
             d <- getData(file, maybeLC(n, lc))
