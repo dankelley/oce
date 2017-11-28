@@ -1745,8 +1745,8 @@ read.netcdf <- function(file, ...)
         ##     || name == "history_qctest")
         ##     next
         item <- ncdf4::ncvar_get(f, name)
-        if (1 == length(dim(item))) # matrix column converted to vector
-            item <- as.vector(item)
+        if (is.array(item) && 1 == length(dim(item))) # 1D array converted to 1col matrix
+            item <- matrix(item)
         data[[name]] <- item
         if (name=="TIME") {
             u <- ncdf4::ncatt_get(f, name, "units")$value
