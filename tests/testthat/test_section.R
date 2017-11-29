@@ -142,3 +142,17 @@ test_that("sectionSort", {
           data(section)
           ss <- sectionSort(section)
 })
+
+test_that("stationReplaceIndividualStation", {
+          data(section)
+          section[["station"]][[1]] <- "not a CTD object"
+          expect_equal(section@data$station[[1]], "not a CTD object")
+})
+
+test_that("stationReplaceAllStations", {
+          data(section)
+          expect_false("N2" %in% names(section[["station",1]][["data"]]))
+          section[["station"]] <- lapply(section[["station"]], function(x) oceSetData(x, "N2", swN2(x)))
+          expect_true("N2" %in% names(section[["station",1]][["data"]]))
+})
+
