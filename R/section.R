@@ -444,7 +444,11 @@ setMethod(f="[[<-",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
               if (i == "station") {
-                  x@data$station[[j]] <- value
+                  if (missing(j)) {
+                      x@data$station <- value
+                  } else {
+                      x@data$station[[j]] <- value
+                  }
                   x
               } else {
                   callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
