@@ -412,23 +412,23 @@ setMethod(f="plot",
                   oceDebug(debug, "plot,coastline-method calling mapPlot (code location 1)\n")
                   mapPlot(x[["longitude"]], x[["latitude"]], projection=projection,
                           longitudelim=longitudelim, latitudelim=latitudelim,
-                          bg=col, col=col, fill=fill, border=border, debug=debug-1)
+                          bg=col, fill=fill, border=border, debug=debug-1)
                   return(invisible())
               }
               if (!missing(clongitude))
                   if (clongitude > 180) clongitude <- clongitude - 360
               if (!missing(longitudelim) || !missing(latitudelim)) {
                   if (missing(longitudelim) || missing(latitudelim))
-                      stop("if longitudelim or latitudelim are given, both must be given")
+                      stop("In plot,coastline-method() : if either longitudelim or latitudelim are given, both must be given", call.=FALSE)
                   if (!missing(clongitude) || !missing(clatitude) || !missing(span))
-                      stop("if longitudelim or latitudelim are given, must not supply clongitude, clatitude, or span")
+                      stop("In plot,coastline-method() : if longitudelim or latitudelim are given, then clongitude, clatitude, and span may not be given", call.=FALSE)
                   ##message("A")
                   clongitude <- mean(longitudelim)
                   clatitude <- mean(latitudelim)
                   span <- geodDist(min(longitudelim), min(latitudelim), max(longitudelim), max(latitudelim))
-                  warning("plot.coastline() converting longitudelim and latitudelim to clongitude=",
+                  warning("In plot,coastline-method() : converting longitudelim and latitudelim to clongitude=",
                           round(clongitude, 4),
-                          ", clatitude=", round(clatitude, 4), " and span=", round(span, 0), "\n")
+                          ", clatitude=", round(clatitude, 4), " and span=", round(span, 0), "\n", call.=FALSE)
               }
               if (!is.null(projection)) {
                   if (missing(span))
@@ -647,7 +647,7 @@ setMethod(f="plot",
                   oceDebug(debug, "par('yaxp')", par("yaxp"), "\n")
                   oceDebug(debug, "par('pin')", par("pin"), "\n")
                   if (yaxp[1] < -90 | yaxp[2] > 90) {
-                      warning("FIXME: should trim poles on this coastline plot\n")
+                      warning("In plot,coastline-method() : should trim poles\n", call.=FALSE)
                   }
                   if (type == "polygon") {
                       if (is.null(border))

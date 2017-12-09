@@ -1406,7 +1406,7 @@ setMethod(f="plot",
                           } else {
                               oceDebug(debug, "using", projection, "projection (specified)\n")
                           }
-                          mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, fill='gray')
+                          mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, col='gray')
                           mapPoints(x[['longitude', 'byStation']], x[['latitude', 'byStation']],
                                     col=col, pch=3, lwd=1/2)
                           if (xtype == "distance" && showStart) {
