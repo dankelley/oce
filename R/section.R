@@ -55,7 +55,7 @@
 #' Tlim <- range(section[["temperature"]])
 #' ylim <- rev(range(section[["pressure"]]))
 #' for (stn in section[["station", 1:9]])
-#'     plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
+#'     plotProfile(stn, xtype='potential temperature', ylim=ylim, Tlim=Tlim)
 #'
 #' @author Dan Kelley
 #'
@@ -978,6 +978,7 @@ sectionAddCtd <- sectionAddStation
 #' The type of plot is governed by \code{which}, as follows.
 #'
 #' \itemize{
+#'     \item \code{which=0} or \code{"potential temperature"} for temperature contours
 #'     \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
 #'     \item \code{which=2} or \code{"salinity"} for salinity contours
 #'     \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
@@ -1254,6 +1255,7 @@ setMethod(f="plot",
               ##                         u=9, uz=10, v=11, vz=12, # lowered adcp
               ##                         data=20, map=99))
               if (is.numeric(which)) {
+                  which[which==0] <- "potential temperature"
                   which[which==1] <- "temperature"
                   which[which==2] <- "salinity"
                   which[which==3] <- "sigmaTheta"
@@ -1581,6 +1583,8 @@ setMethod(f="plot",
                                       v <- swAbsoluteSalinity(x@data$station[[stationIndices[i]]])
                                   else if (eos == "gsw" && variable == "sigmaTheta")
                                       v <- swSigma0(x@data$station[[stationIndices[i]]], eos=eos)
+                                  else if (eos == "unesco" && variable == "potential temperature")
+                                      v <- x@data$station[["theta"]]
                                   else
                                       v <- x@data$station[[stationIndices[i]]][[variable]]
                                   points(rep(xx[i], length(p)), -p,
@@ -1598,6 +1602,8 @@ setMethod(f="plot",
                                       ## between results computed with the two formulations to be 0.005kg/m^3,
                                       ## or just 0.02% of the mean value.
                                       zz[i, ] <- rev(swSigma0(x@data$station[[stationIndices[i]]], eos=eos))
+                                  } else if (eos == "unesco" && variable == "potential temperature") {
+                                      zz[i, ] <- rev(x@data$station[[stationIndices[i]]][["theta"]])
                                   } else {
                                       zz[i, ] <- rev(x@data$station[[stationIndices[i]]][[variable]])
                                   }
@@ -1956,11 +1962,21 @@ setMethod(f="plot",
                       if (which[w] == "temperature") {
                           oceDebug(debug, "plotting temperature with contourLevels provided\n")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "temperature", if (eos=="unesco") "T" else expression(Theta), unit=unit,
+                                         "temperature",
+                                         if (eos=="unesco") "T" else expression(Theta),
+                                         unit=unit,
                                          eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
                                          axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == "salinity") {
+                      } else if (which[w] == "potential temperature") {
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "potential temperature",
+                                         if (eos=="unesco") expression(theta*" ["*degree*"]") else expression(S[A]),
+                                         unit=unit,
+                                         eos=eos, ylab="",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         axes=axes, col=col, debug=debug-1, ...)
+                       } else if (which[w] == "salinity") {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "salinity", if (eos=="unesco") "S" else expression(S[A]), unit=unit,
                                          eos=eos, ylab="",
@@ -1977,15 +1993,28 @@ setMethod(f="plot",
                       if (which[w] == "temperature") {
                           oceDebug(debug, "plotting temperature with contourLevels not provided\n")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "temperature", if (eos == "unesco") "T" else expression(Theta), unit=unit,
+                                         "temperature",
+                                         if (eos == "unesco") "T" else expression(Theta),
+                                         unit=unit,
                                          eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == "salinity") {
-                          ##message("*** salinity ***")
+                      } else if (which[w] == "potential temperature") {
+                          oceDebug(debug, "plotting potential temperature with contourLevels not provided\n")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "salinity", if (eos == "unesco") "S" else expression(S[A]), unit=unit,
+                                         "potential temperature",
+                                         if (eos=="unesco") expression(theta*" ["*degree*"C]") else expression(Theta),
+                                         unit=unit,
+                                         eos=eos,
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         axes=axes, col=col, debug=debug-1, ...)
+                       } else if (which[w] == "salinity") {
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "salinity",
+                                         if (eos == "unesco") "S" else expression(S[A]),
+                                         unit=unit,
                                          eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
