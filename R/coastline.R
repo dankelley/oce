@@ -37,9 +37,8 @@ setClass("coastline", contains="oce")
 #' startup file.
 #' @author Dan Kelley
 #' @source Downloaded from \url{http://www.naturalearthdata.com}, in
-#' \code{ne_110m_admin_0_countries.shp}. This procedure worked in July 2015 and
-#' also in October 2015, so it is likely to be reasonably stable, but be aware
-#' that webpages do tend to change.
+#' \code{ne_110m_admin_0_countries.shp} in July 2015, with an 
+#' update on December 16, 2017.
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{coastline} data
 NULL
