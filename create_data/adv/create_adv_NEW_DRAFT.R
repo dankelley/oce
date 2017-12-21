@@ -1,4 +1,7 @@
 library("oce")
+data(adv)
+advOLD <- adv # for comparison, in plot made at end of script
+
 m05VectorBeam <- read.adv("/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec",
                           from=as.POSIXct("2008-06-25 00:00:00", tz="UTC"), to=as.POSIXct("2008-07-06 00:00:00", tz = "UTC"),
                           latitude=47.87943, longitude=-69.72533)
@@ -13,4 +16,12 @@ m05VectorBeam <- oceEdit(m05VectorBeam, item="transformationMatrix",
 ## 'use aquadoppHR heading; despike own pitch and roll'
 m05VectorEnu <- toEnu(m05VectorBeam)
 adv <- window(m05VectorEnu, as.POSIXct("2008-07-01 00:00:00", tz="UTC"), as.POSIXct("2008-07-01 00:01:00",tz="UTC"))
+
+pdf("adv_comparison.pdf")
+plot(advOLD)
+mtext("data(adv), i.e. advOLD", side=4, col=2)
+plot(adv)
+mtext("new trial for adv -- why different?", side=4, col=2)
+dev.off()
+
 
