@@ -22,7 +22,7 @@ test_that("tidem summaries work and constituents match previous versions", {
           plot(m)
           expect_equal(length(m@data$name), 60)
           expect_equal(head(m@data$name), c("Z0", "SSA", "MSM", "MM", "MSF", "MF"))
-          expect_equal(tail(m@data$name), c("2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")) 
+          expect_equal(tail(m@data$name), c("2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8"))
           expect_equal(head(m@data$amplitude), c(0.98172602694827626, 0.02311206762504182, 0.00140006225693646,
                                                  0.00663853819693071, 0.00745395229070977, 0.01084231305586707))
           expect_equal(tail(m@data$amplitude), c(0.002737273208734281, 0.001037160095535379, 0.000957883534766690,
@@ -45,7 +45,56 @@ test_that("tailoring of constituents", {
           tide3 <- tidem(sealevel, constituents = c("M2", "K2"))
           expect_equal(tide3[["data"]]$name, c("Z0", "M2", "K2"))
           ## check that we can remove constituents
-          tide5 <- tidem(sealevel, constituents = c("standard", "-M2")) 
+          tide5 <- tidem(sealevel, constituents = c("standard", "-M2"))
           expect_equal(tide5[["data"]]$name, resolvable[resolvable != "M2"])
+})
+
+test_that("Tuktoyaktuk fit matches Foreman (1977) Appendix 7.3", {
+          app73txt <- "index name frequency AL GL
+          1 Z0     0.00000000  1.9806    0.00
+          2 MM     0.00151215  0.2121  288.50
+          3 MSF    0.00282193  0.1561  115.15
+          4 ALP1   0.03439657  0.0141  180.96
+          5 2Q1    0.03570635  0.0226  246.82
+          6 Q1     0.03721850  0.0144  252.75
+          7 O1     0.03873065  0.0694  284.43
+          8 NO1    0.04026859  0.0380  275.85
+          9 P1     0.04155259  0.0468  252.20
+          10 K1     0.04178075  0.1332  145.54
+          11 J1     0.04329290  0.0234  103.63
+          12 OO1    0.04483084  0.0463  358.47
+          13 UPS1   0.04634299  0.0233  239.12
+          14 EPS2   0.07617731  0.0216  109.98
+          15 MU2    0.07768947  0.0428   30.06
+          16 N2     0.07899925  0.0857  306.35
+          17 M2     0.08051140  0.5007    4.40
+          18 L2     0.08202355  0.0174  168.03
+          19 S2     0.08333334  0.2193   36.74
+          20 K2     0.08356149  0.0515  131.15
+          21 ETA2   0.08507364  0.0059  235.38
+          22 MO3    0.11924206  0.0138   11.86
+          23 M3     0.12076710  0.0126  331.91
+          24 MK3    0.12228215  0.0048  339.15
+          25 SK3    0.12511408  0.0022  228.64
+          26 MN4    0.15951066  0.0096   85.00
+          27 M4     0.15102280  0.0131  145.17
+          28 SN4    0.16233259  0.0085   82.78
+          29 MS4    0.16384473  0.0011  176.14
+          30 S4     0.16666667  0.0047  119.75
+          31 2MK5   0.20280355  0.0013  244.34
+          32 2SK5   0.20844743  0.0043    5.04
+          33 2MN6   0.24002205  0.0038   26.46
+          34 M6     0.24153420  0.0018  298.97
+          35 2MS6   0.24435614  0.0059   69.59
+          36 2SM6   0.24717808  0.0023   45.80
+          37 3MK7   0.28331494  0.0086   73.20
+          38 M8     0.32204559  0.0033  109.22
+          39 M10    0.40255699  0.0010  191.71"
+          app73 <- read.table(text=app73txt, header=TRUE, stringsAsFactors=FALSE)
+          data("sealevelTuktoyaktuk")
+          m <- tidem(sealevelTuktoyaktuk, constituent="standard")
+          ## expect_equal(app73$name, m@data$name)
+          print(app73$name[!app73$name %in% m@data$name])
+          ## [1] "P1"  "K2"  "M10"
 })
 

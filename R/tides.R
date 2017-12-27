@@ -520,7 +520,7 @@ tidemAstron <- function(t)
 #' constitutents. For example, the \code{data(sealevel)} dataset is of length
 #' 6718 hours, and this is too short to resolve the full list of constituents,
 #' with the conventional (and, really, necessary) limit of \code{rc=1}.
-#' From Table 1 of [1], this timeseries is too short to resolve the 
+#' From Table 1 of [1], this timeseries is too short to resolve the
 #' \code{SA} constituent, so that \code{SA} will not be in the resultant.
 #' Similarly, Table 2 of [1] dictates the removal of
 #' \code{PI1}, \code{S1} and \code{PSI1} from the list. And, finally,
@@ -572,12 +572,12 @@ tidemAstron <- function(t)
 #' @section Bugs:
 #'
 #' \enumerate{
-#' \item 1.This function is not fully developed yet, and both the
+#' \item This function is not fully developed yet, and both the
 #' form of the call and the results of the calculation may change.
 #'
-#' \item 2.Nodal correction is not done.
+#' \item Nodal correction is not done.
 #'
-#' \item 3.The reported \code{p} value may make no sense at all, and it might be
+#' \item The reported \code{p} value may make no sense at all, and it might be
 #' removed in a future version of this function. Perhaps a significance level
 #' should be presented, as in the software developed by both Foreman and
 #' Pawlowicz.
