@@ -2,6 +2,8 @@
 library(oce)
 data(sealevel)
 
+rms <- function(x) sqrt(mean(x^2, na.rm=TRUE))
+
 context("tidem")
 
 ## Set up coefficients that should be resolvable with data(sealevel).
@@ -16,10 +18,10 @@ resolvable <- standard[!(standard %in% unresolvable)]
 
 test_that("tidem summaries work and constituents match previous versions", {
           m <- tidem(sealevel)
-          summary(m)
-          summary(m, p=0.05)
-          summary(m, constituent=c("M2", "S2"))
-          plot(m)
+          ## summary(m)
+          ## summary(m, p=0.05)
+          ## summary(m, constituent=c("M2", "S2"))
+          ## expect_silent(plot(m))
           expect_equal(length(m@data$name), 60)
           expect_equal(head(m@data$name), c("Z0", "SSA", "MSM", "MM", "MSF", "MF"))
           expect_equal(tail(m@data$name), c("2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8"))
@@ -49,7 +51,7 @@ test_that("tailoring of constituents", {
           expect_equal(tide5[["data"]]$name, resolvable[resolvable != "M2"])
 })
 
-test_that("Tuktoyaktuk fit matches Foreman (1977) Appendix 7.3", {
+test_that("Foreman (1977 App 7.3) test", {
           app73txt <- "index name frequency AL GL
           1 Z0     0.00000000  1.9806    0.00
           2 MM     0.00151215  0.2121  288.50
@@ -74,10 +76,10 @@ test_that("Tuktoyaktuk fit matches Foreman (1977) Appendix 7.3", {
           21 ETA2   0.08507364  0.0059  235.38
           22 MO3    0.11924206  0.0138   11.86
           23 M3     0.12076710  0.0126  331.91
-          24 MK3    0.12228215  0.0048  339.15
+          24 MK3    0.12229215  0.0048  339.15
           25 SK3    0.12511408  0.0022  228.64
           26 MN4    0.15951066  0.0096   85.00
-          27 M4     0.15102280  0.0131  145.17
+          27 M4     0.16102280  0.0131  145.17
           28 SN4    0.16233259  0.0085   82.78
           29 MS4    0.16384473  0.0011  176.14
           30 S4     0.16666667  0.0047  119.75
@@ -92,9 +94,16 @@ test_that("Tuktoyaktuk fit matches Foreman (1977) Appendix 7.3", {
           39 M10    0.40255699  0.0010  191.71"
           app73 <- read.table(text=app73txt, header=TRUE, stringsAsFactors=FALSE)
           data("sealevelTuktoyaktuk")
-          m <- tidem(sealevelTuktoyaktuk, constituent="standard")
-          ## expect_equal(app73$name, m@data$name)
-          print(app73$name[!app73$name %in% m@data$name])
-          ## [1] "P1"  "K2"  "M10"
+          m <- tidem(sealevelTuktoyaktuk, constituents=c("standard", "P1", "K2", "M10"))
+          expect_equal(app73$name, m@data$name)
+          ## There seem to be some errors in Foreman's 1977 appendix 7.3,
+          ## e.g. the frequency listed for 2SK5 is 0.20844743 in
+          ## appendix 7.3 (p58), but in appendix 7.1 (p41) it is listed
+          ## as 0.2084474129. This does not seem to be a rounding error,
+          ## so the cause is a bit of a mystery. In any case, this
+          ## explains why the tolerance is relaxed in the next
+          ## comparison.
+          expect_equal(app73$frequency, m@data$freq, tol=1e-7)
+
 })
 

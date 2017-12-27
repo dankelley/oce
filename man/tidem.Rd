@@ -60,10 +60,10 @@ resultant coefficients on the sine and cosine terms.
 \details{
 The tidal constituents to be used in the analysis are specified as follows.
 
-\enumerate{
+\itemize{
 
-\item Case 1. If \code{constituents} is not provided, then the constituent
-list will be made up of the 69 constituents regarded by Foreman as standard.
+\item \strong{Case 1}. If \code{constituents} is not provided, then the constituent
+list will be made up of the 69 constituents designated by Foreman as "standard".
 These include astronomical frequencies and some shallow-water frequencies,
 and are as follows: \code{c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF",
 "ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1", "BET1", "NO1", "CHI1",
@@ -73,7 +73,7 @@ and are as follows: \code{c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF",
 "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4", "2MK5", "2SK5",
 "2MN6", "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")}.
 
-\item Case 2. If the first item in \code{constituents} is the string
+\item \strong{Case 2}. If the first item in \code{constituents} is the string
 \code{"standard"}, then a provisional list is set up as in Case 1, and then
 the (optional) rest of the elements of \code{constituents} are examined, in
 order.  Each of these constituents is based on the name of a tidal
@@ -85,11 +85,12 @@ from the list (if it is already there).  Thus, for example,
 \code{constituents=c("standard", "-M2", "ST32")} would remove the M2
 constituent and add the ST32 constituent.
 
-\item Case 3. If the first item is not \code{"standard"}, then the list of
+\item \strong{Case 3}. If the first item is not \code{"standard"}, then the list of
 constituents is processed as in Case 2, but without starting with the
 standard list. As an example, \code{constituents=c("K1", "M2")} would fit
 for just the K1 and M2 components. (It would be strange to use a minus sign
 to remove items from the list, but the function allows that.)
+}
 
 In each of the above cases, the list is reordered in frequency prior to the
 analysis, so that the results of \code{\link{summary,tidem-method}} will be in a
@@ -99,8 +100,20 @@ Once the constituent list is determined, \code{tidem} prunes the elements of
 the list by using the Rayleigh criterion, according to which two
 constituents of frequencies \eqn{f_1}{f1} and \eqn{f_2}{f2} cannot be
 resolved unless the time series spans a time interval of at least
-\eqn{rc/(f_1-f_2)}{rc/(f1-f2)}. The value \code{rc=1} yields nominal
-resolution.
+\eqn{rc/(f_1-f_2)}{rc/(f1-f2)}.
+
+Finally, \code{tidem} looks in the remaining constituent list to check
+that the application of the Rayleigh criterion has not removed any of the
+constituents specified directly in the \code{constituents} argument. If
+any are found to have been removed, then they are added back. This last
+step was added on 2017-12-27, to make \code{tidem} behave the same
+way as the Foreman (1977) code [1], as illustrated in his
+Appendices 7.2 and 7.3. (As an aside, his Appendix 7.3 has some errors,
+e.g. the frequency for the 2SK5 constituent is listed there (p58) as 
+0.20844743, but it is listed as 0.2084474129 in his Appendix 7.1 (p41).
+For this reason, the frequency comparison is relaxed to a \code{tol}
+value of \code{1e-7} in a portion of the oce test suite
+(see \code{tests/testthat/test_tidem.R} in the source).
 
 A specific example may be of help in understanding the removal of unresolvable
 constitutents. For example, the \code{data(sealevel)} dataset is of length
@@ -124,7 +137,6 @@ print(tidedata$const$name)
 
 \strong{The text should include discussion of the (not yet performed) nodal
 correction treatment.}
-}
 }
 \section{Bugs}{
 

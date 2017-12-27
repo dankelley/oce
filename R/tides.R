@@ -474,10 +474,10 @@ tidemAstron <- function(t)
 #' @details
 #' The tidal constituents to be used in the analysis are specified as follows.
 #'
-#' \enumerate{
+#' \itemize{
 #'
-#' \item Case 1. If \code{constituents} is not provided, then the constituent
-#' list will be made up of the 69 constituents regarded by Foreman as standard.
+#' \item \strong{Case 1}. If \code{constituents} is not provided, then the constituent
+#' list will be made up of the 69 constituents designated by Foreman as "standard".
 #' These include astronomical frequencies and some shallow-water frequencies,
 #' and are as follows: \code{c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF",
 #' "ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1", "BET1", "NO1", "CHI1",
@@ -487,7 +487,7 @@ tidemAstron <- function(t)
 #' "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4", "2MK5", "2SK5",
 #' "2MN6", "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")}.
 #'
-#' \item Case 2. If the first item in \code{constituents} is the string
+#' \item \strong{Case 2}. If the first item in \code{constituents} is the string
 #' \code{"standard"}, then a provisional list is set up as in Case 1, and then
 #' the (optional) rest of the elements of \code{constituents} are examined, in
 #' order.  Each of these constituents is based on the name of a tidal
@@ -499,11 +499,12 @@ tidemAstron <- function(t)
 #' \code{constituents=c("standard", "-M2", "ST32")} would remove the M2
 #' constituent and add the ST32 constituent.
 #'
-#' \item Case 3. If the first item is not \code{"standard"}, then the list of
+#' \item \strong{Case 3}. If the first item is not \code{"standard"}, then the list of
 #' constituents is processed as in Case 2, but without starting with the
 #' standard list. As an example, \code{constituents=c("K1", "M2")} would fit
 #' for just the K1 and M2 components. (It would be strange to use a minus sign
 #' to remove items from the list, but the function allows that.)
+#' }
 #'
 #' In each of the above cases, the list is reordered in frequency prior to the
 #' analysis, so that the results of \code{\link{summary,tidem-method}} will be in a
@@ -513,8 +514,20 @@ tidemAstron <- function(t)
 #' the list by using the Rayleigh criterion, according to which two
 #' constituents of frequencies \eqn{f_1}{f1} and \eqn{f_2}{f2} cannot be
 #' resolved unless the time series spans a time interval of at least
-#' \eqn{rc/(f_1-f_2)}{rc/(f1-f2)}. The value \code{rc=1} yields nominal
-#' resolution.
+#' \eqn{rc/(f_1-f_2)}{rc/(f1-f2)}.
+#'
+#' Finally, \code{tidem} looks in the remaining constituent list to check
+#' that the application of the Rayleigh criterion has not removed any of the
+#' constituents specified directly in the \code{constituents} argument. If
+#' any are found to have been removed, then they are added back. This last
+#' step was added on 2017-12-27, to make \code{tidem} behave the same
+#' way as the Foreman (1977) code [1], as illustrated in his
+#' Appendices 7.2 and 7.3. (As an aside, his Appendix 7.3 has some errors,
+#' e.g. the frequency for the 2SK5 constituent is listed there (p58) as 
+#' 0.20844743, but it is listed as 0.2084474129 in his Appendix 7.1 (p41).
+#' For this reason, the frequency comparison is relaxed to a \code{tol}
+#' value of \code{1e-7} in a portion of the oce test suite
+#' (see \code{tests/testthat/test_tidem.R} in the source).
 #'
 #' A specific example may be of help in understanding the removal of unresolvable
 #' constitutents. For example, the \code{data(sealevel)} dataset is of length
@@ -538,7 +551,6 @@ tidemAstron <- function(t)
 #'
 #' \strong{The text should include discussion of the (not yet performed) nodal
 #' correction treatment.}
-#' }
 #'
 #' @param t Either a \code{sealevel} object (e.g. produced by
 #' \code{\link{read.sealevel}} or \code{\link{as.sealevel}}) or a vector of
@@ -667,6 +679,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
         print(tc)
 
     standard <- tc$ikmpr > 0
+    addedConstituents <- NULL
     if (missing(constituents)) {
         ## Default 'name', 'freq', 'kmpr' and 'indices'. The -1 means to drop (intercept) Z0, which we handle separately
         name <- tc$name[standard][-1]
@@ -717,14 +730,15 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
                     ## Case 2: addition. Check that it is a known constituent, and ignore
                     ## repeated additions.
                     add <- which(tc$name == constituents[i])
+                    addedConstituents <- c(addedConstituents, add)
                     if (length(add) == 1) {
                         if (!(constituents[i] %in% name)) {
                             name <- c(name, tc$name[add])
                             ## freq <- c(freq, tc$freq[add])
                             ## kmpr <- c(kmpr, tc$kmpr[add])
                             ## indices <- c(indices, add)
-                        } else {
-                            warning("'", constituents[i], "' is already in the list of constituents being used\n")
+                            ##20171227 } else {
+                            ##20171227     warning("'", constituents[i], "' is already in the list of constituents being used\n")
                         }
                     } else {
                         warning("'", constituents[i], "' is not a known constituent; try one of: ",
@@ -748,39 +762,12 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
                 bad <- c(bad, n)
         stop("unknown constituent names: ", paste(bad, collapse=" "), " (please report this error to developer)")
     }
-    ## Infer indices from the names, sort them, and then look up freq and kmpr.
+    ## Infer indices from the names, sort them as in the tidal-constituent
+    ## table, tc, and then look up freq and kmpr from that table.
     indices <- sort(unlist(lapply(name,function(name) which(tc$name==name))))
     freq <- tc$freq[indices]
     kmpr <- tc$kmpr[indices]
 
-    ## order them. FIXME: why?
-    ## message("before sorting indices=", paste(indices, collapse=" "), " (length ", length(indices), ")")
-    ## indices <- indices[order(indices)]
-    ## message(" after sorting indices=", paste(indices, collapse=" "), " (length ", length(indices), ")")
-    ## tc2 is for the Rayleigh calculations, later on.
-    ##tc2 <- list(name=tc$name[indices], freq=tc$freq[indices], kmpr=tc$kmpr[indices])
-    ##tc2 <- list(name=name, freq=freq, kmpr=kmpr)
-
-    ##iZ0 <- which(tc2$name == "Z0")      # Remove Z0
-    ##name <- tc2$name
-    ## if (debug > 0) print(name)
-    ##if (length(iZ0)) name <- name[-iZ0]
-    ## nc <- length(name)
-    ## index <- vector("numeric", nc)
-    ## freq <- vector("numeric", nc)
-    ## kmpr <- vector("numeric", nc)
-
-    ## message("tidem.R:742 FIXME rewrite logic here to work ONLY on names; more DRY that way")
-
-    ## for (i in 1:nc) {
-    ##     ## Build up based on constituent names
-    ##     ic <- which(tc$name == name[i])
-    ##     if (!length(ic))
-    ##         stop("there is no tidal constituent named \"", name[i], "\"")
-    ##     index[i] <- ic
-    ##     freq[i] <- tc$freq[ic]
-    ##     kmpr[i] <- tc$kmpr[ic]
-    ## }
     nc <- length(name)
     ## Check Rayleigh criterion
     interval <- as.numeric(difftime(max(sl@data$time, na.rm=TRUE), min(sl@data$time, na.rm=TRUE), units="hours"))
@@ -801,6 +788,34 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
         freq <- freq[-dropTerm]
         kmpr <- kmpr[-dropTerm]
     }
+    ## Ensure that any added constitutents are in the list, i.e. prevent
+    ## the Rayleigh criterion from trimming them. (Before work on
+    ## issue 1350, they would simply be dropped if they failed the Rayleigh
+    ## criterion. Although that was a sensible choice, it was decided
+    ## on 2017-12-27, whilst working on issue 1350, to make tidem() do the
+    ## the same thing as the Foreman 1977 code as exemplified in his appendices
+    ## 7.2 and 7.3.)
+    if (length(addedConstituents)) {
+        ## message("addedConstituents=", paste(addedConstituents, collapse=" "), "\n")
+        for (a in addedConstituents) {
+            ## Avoid adding constituents that we already have
+            if (!(tc$name[a] %in% name)) {
+                ## message("ADDING:")
+                ## message("  tc$name[a=", a, "]='", tc$name[a], "'", sep="")
+                ## message("  tc$freq[a=", a, "]='", tc$freq[a], "'", sep="")
+                ## message("  tc$kmpr[a=", a, "]='", tc$kmpr[a], "'", sep="")
+                name <- c(name, tc$name[a])
+                freq <- c(freq, tc$freq[a])
+                kmpr <- c(kmpr, tc$kmpr[a])
+            }
+        }
+    }
+    ## sort constituents by frequency
+    indices <- order(freq)
+    name <- name[indices]
+    freq <- freq[indices]
+    kmpr <- kmpr[indices]
+
     nc <- length(name)
     elevation <- sl[["elevation"]]
     time <- sl[["time"]]
