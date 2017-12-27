@@ -4205,7 +4205,13 @@ grad <- function(h, x, y)
     if (missing(y)) stop("must give y")
     if (length(x) != nrow(h)) stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")
     if (length(y) != ncol(h)) stop("length of y (", length(y), ") must equal number of cols in h (", ncol(h), ")")
-    .Call("gradient", h, as.double(x), as.double(y))
+    ## ensure that all three args are double, so the C code won't misinterpret
+    dim <- dim(h)
+    h <- as.double(h)
+    dim(h) <- dim
+    x <- as.double(x)
+    y <- as.double(y)
+    .Call("gradient", h, x, y)
 }
 
 

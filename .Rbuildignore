@@ -1,3 +1,6 @@
+^CONTRIBUTING.md$
+^CODE_OF_CONDUCT.md$
+^LICENSE$
 ^vignettes/figure$
 ^.*.org$
 .github
