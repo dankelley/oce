@@ -43,7 +43,7 @@ test_that("Nortek aquadopp read and check", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               beam <- read.oce("local_data/adp_nortek_aquadopp",
                                from=1, to=10, latitude=47.87943, longitude=-69.72533)
-              summary(beam)
+              ##summary(beam)
               xyz <- beamToXyzAdp(beam)
               enu <- xyzToEnuAdp(xyz, declination=-18.1)
               expect_equal(c(10, 25, 3), dim(beam[["v"]]))
@@ -63,7 +63,7 @@ test_that("Sontek (PCADP)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               beam <- read.oce("local_data/adp_sontek",
                                from=1, to=10, latitude=48.87961, longitude=-69.72706)
-              summary(beam)
+              ##summary(beam)
               expect_equal(48.87961, beam[["latitude"]])
               expect_equal(-69.72706, beam[["longitude"]])
               expect_equal(dim(beam[["v"]]), c(10, 32, 3))

@@ -218,7 +218,8 @@ context("Reading ctd files")
 ##'** Latitude:  N44 41.056'
 ##'** Longitude: w63 38.633'
 test_that("Dalhousie-produced cnv file", {
-          d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
+          d1 <- expect_warning(read.oce(system.file("extdata", "ctd.cnv", package="oce")),
+                              "this CNV file has temperature in the IPTS\\-68 scale")
           expect_equal(d1[["temperatureUnit"]]$unit, expression(degree*C))
           ## NB. the file holds IPTS-68 but we ## store ITS-90 internally
           expect_equal(d1[["temperatureUnit"]]$scale, "IPTS-68")

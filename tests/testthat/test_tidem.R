@@ -16,12 +16,8 @@ unresolvable <- c("SA", "PI1", "S1", "PSI1", "GAM2", "H1", "H2", "T2", "R2")
 resolvable <- standard[!(standard %in% unresolvable)]
 
 
-test_that("tidem summaries work and constituents match previous versions", {
+test_that("tidem constituents match previous versions", {
           m <- tidem(sealevel)
-          ## summary(m)
-          ## summary(m, p=0.05)
-          ## summary(m, constituent=c("M2", "S2"))
-          ## expect_silent(plot(m))
           expect_equal(length(m@data$name), 60)
           expect_equal(head(m@data$name), c("Z0", "SSA", "MSM", "MM", "MSF", "MF"))
           expect_equal(tail(m@data$name), c("2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8"))

@@ -48,15 +48,15 @@ test_that("various ctd files", {
                          "18HU2010014_00003_00001_ct1.csv",
                          "18HU20130507_00235_00001_ct1.csv")
               for (file in files) {
-                  cat(file, "\n")
+                  ##> cat(file, "\n")
                   if (file == "18HU20130507_00235_00001_ct1.csv")
                       expect_warning(d <- read.oce(paste("local_data", file, sep="/")),
                                      "missingValue inferred as -999 from S and T minima")
                   else
                       d <- read.oce(paste("local_data", file, sep="/"))
-                  ## summarizing and plotting can depend on the data, so try both
-                  summary(d)
-                  plot(d)
+                  ##> ## summarizing and plotting can depend on the data, so try both
+                  ##> summary(d)
+                  ##> plot(d)
               }
           }
 })
@@ -85,8 +85,8 @@ test_that("autoconverts pressure in PSI to in dbar", {
               ## the constructed file ctd_with_psi.cnv (in which the pressure column
               ## was calculated and inserted into the file, and in which also the
               ## header line was changed to say that pressure is in English units.
-              d1 <- read.oce("local_data/ctd.cnv")
-              expect_warning(d2 <- read.oce("local_data/ctd_with_psi.cnv"), "created 'pressure' from 'pressurePSI'")
+              d1 <- expect_warning(read.oce("local_data/ctd.cnv"), "this CNV file has temperature in the IPTS-68 scale")
+              d2 <- expect_warning(read.oce("local_data/ctd_with_psi.cnv"), "created 'pressure' from 'pressurePSI'")
               ## use 1e-5 to reflect the number of digits I was using in creating
               ## and then cut/pasting the fake data
               expect_equal(d1[["pressure"]], d2[["pressure"]], tolerance=1e-5)
