@@ -58,7 +58,8 @@ tidal frequencies, with the amplitude and phase being calculated from the
 resultant coefficients on the sine and cosine terms.
 }
 \details{
-The tidal constituents to be used in the analysis are specified as follows.
+The tidal constituents to be used in the analysis are specified as follows;
+see \dQuote{Constituent naming convention}.
 
 \itemize{
 
@@ -153,6 +154,17 @@ should be presented, as in the software developed by both Foreman and
 Pawlowicz.
 
 }
+}
+
+\section{Constituent naming convention}{
+
+\code{tidem} uses constituent names that follow the convention
+set by Foreman (1977) [1]. This convention is slightly different
+from that used in the T-TIDE package of Pawlowicz et al.
+(2002) [4], with Foreman's \code{UPS1} and \code{M8} becoming
+\code{UPSI} and \code{MS} in T-TIDE. As a convenience,
+\code{tidem} converts from these T-TIDE names to the
+Foreman names, issuing warnings when doing so.
 }
 
 \examples{
