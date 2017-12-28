@@ -160,12 +160,28 @@ setMethod(f="summary",
 
 #' @title Extract Something From a Tidem Object
 #' @param x A tidem object, i.e. one inheriting from \code{\link{tidem-class}}.
+#' @section Details of the specialized \code{tidem} method:
+#'
+#' A vector of the frequencies of fitted constituents is recovered
+#' with e.g. \code{x[["frequency"]]}. Similarly, amplitude is
+#' recovered with e.g. \code{x[["amplitude"]]} and phase with
+#' e.g. \code{x[["phase"]]}. If any other string is specified, then
+#' the underlying accessor \code{\link{[[,oce-method}}) is used.
+#'
 #' @template sub_subTemplate
 #' @family things related to \code{tidem} data
 setMethod(f="[[",
           signature(x="tidem", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              callNextMethod()         # [[
+              if (i == "frequency") {
+                  x@data$freq
+              } else if (i == "amplitude") {
+                  x@data$amplitude
+              } else if (i == "phase") {
+                  x@data$phase
+              } else {
+                  callNextMethod()         # [[
+              }
           })
 
 #' @title Replace Parts of a Tidem Object

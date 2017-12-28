@@ -34,6 +34,16 @@ Second, if no match is found, a general function is used
 (see \sQuote{Details of the general method}). If neither
 method can locates the requested item, \code{NULL} is returned.
 }
+\section{Details of the specialized \code{tidem} method}{
+
+
+A vector of the frequencies of fitted constituents is recovered
+with e.g. \code{x[["frequency"]]}. Similarly, amplitude is
+recovered with e.g. \code{x[["amplitude"]]} and phase with
+e.g. \code{x[["phase"]]}. If any other string is specified, then
+the underlying accessor \code{\link{[[,oce-method}}) is used.
+}
+
 \section{Details of the general method}{
 
 

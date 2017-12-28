@@ -802,7 +802,6 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         ## The mess below hides warnings on non-numeric missing-value codes.
         options <- options('warn')
         options(warn=-1)
-        options(warn=0)
         nullValue <- NA
         t <- try({nullValue <- as.numeric(gsub("D\\+", "e+", findInHeader("NULL_VALUE", lines))[1])},
             silent=TRUE)
