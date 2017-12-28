@@ -29,5 +29,6 @@ test_that("as.lisst()", {
           data[,41] <- abs((p - min(p)) / diff(range(p)) + cumsum(rnorm(n, sd=0.05))) # transmission
           data[,42] <- 40 - 20*data[,41] # beam
           lisst <- as.lisst(data, filename="(constructed)", year=2012, "UTC")
+          expect_equal(lisst[["beam"]], 40-20*data[,41])
 })
 

@@ -8,13 +8,13 @@ context("CTD")
 test_that("plotTS() handles differently EOSs correctly", {
           data(ctd)
           options(oceEOS="unesco")
-          plotTS(ctd)
-          plotTS(ctd, eos="unesco")
-          plotTS(ctd, eos="gsw")
+          expect_silent(plotTS(ctd))
+          expect_silent(plotTS(ctd, eos="unesco"))
+          expect_silent(plotTS(ctd, eos="gsw"))
           options(oceEOS="gsw")
-          plotTS(ctd)
-          plotTS(ctd, eos="unesco")
-          plotTS(ctd, eos="gsw")
+          expect_silent(plotTS(ctd))
+          expect_silent(plotTS(ctd, eos="unesco"))
+          expect_silent(plotTS(ctd, eos="gsw"))
 })
 
 
@@ -163,7 +163,7 @@ test_that("alter ctd metadata", {
           ctd[["salinity"]] <- S + 1
           expect_equal(ctd[["salinity"]], S+1)
           top <- subset(ctd, pressure < 5)
-          stopifnot(max(top[['pressure']]) < 5)
+          expect_true(max(top[['pressure']]) < 5)
 })
 
 test_that("gsw calcuations on ctd data", {

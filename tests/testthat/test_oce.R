@@ -7,8 +7,8 @@ context("oce")
 
 test_that("as.oce", {
           d <- data.frame(x=seq(0,1,length.out=20), y=seq(10,100,length.out=20))
-          dh <- head(d) 
-          dt <- tail(d) 
+          dh <- head(d)
+          dt <- tail(d)
           ##plotPolar(d$x, d$y)
           ##plotSticks(d$x, d$y, d$x/10, d$y/10)
           da <- oceApprox(d$x, d$y, c(0.4, 0.5, 0.6))

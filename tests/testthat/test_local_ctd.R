@@ -63,8 +63,9 @@ test_that("various ctd files", {
 
 
 test_that("a broken ODF file that has theta but no S", {
-          if (1 == length(list.files(path=".", pattern="local_data"))) {
-              if (FALSE){
+          if (file.exists("local_data/CTD_98911_1P_1_DN.txt")) {
+              ## FIXME: why does this yield a warning, but *only* if run in a test suite?
+              ##expect_warning(d <- read.oce("local_data/CTD_98911_1P_1_DN.txt"), "NAs introduced by coercion")
               d <- read.oce("local_data/CTD_98911_1P_1_DN.txt")
 
               ## 1. test access
@@ -75,7 +76,6 @@ test_that("a broken ODF file that has theta but no S", {
               d[["theta"]] <- seq_along(d[["pressure"]])
               expect_equal(length(d[["theta"]]), 127)
               expect_equal(head(d[['theta']]), 1:6)
-          }
           }
 })
 

@@ -5,7 +5,7 @@
 
 library(oce)
 
-context("ODF files (a format used by BIO and some other DFO sites)")
+context("ODF files")
 
 test_that("Flemish Cap adcp file (with malformed CODE tokens that lack ' characters)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
