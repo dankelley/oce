@@ -472,7 +472,8 @@ tidemAstron <- function(t)
 #' resultant coefficients on the sine and cosine terms.
 #'
 #' @details
-#' The tidal constituents to be used in the analysis are specified as follows.
+#' The tidal constituents to be used in the analysis are specified as follows;
+#' see \dQuote{Constituent naming convention}.
 #'
 #' \enumerate{
 #'
@@ -583,6 +584,16 @@ tidemAstron <- function(t)
 #' Pawlowicz.
 #'
 #' }
+#'
+#' @section Constituent naming convention:
+#' \code{tidem} uses constituent names that follow the convention
+#' set by Foreman (1977) [1]. This convention is slightly different
+#' from that used in the T-TIDE package of Pawlowicz et al.
+#' (2002) [4], with Foreman's \code{UPS1} and \code{M8} becoming
+#' \code{UPSI} and \code{MS} in T-TIDE. As a convenience,
+#' \code{tidem} converts from these T-TIDE names to the
+#' Foreman names, issuing warnings when doing so.
+#'
 #' @author Dan Kelley
 #' @references
 #' 1. Foreman, M. G. G., 1977.  Manual for tidal heights analysis and
@@ -621,6 +632,26 @@ tidemAstron <- function(t)
 tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
                   debug=getOption("oceDebug"))
 {
+    constituentNameFix <- function(names) # from T-TIDE to Foreman name
+    {
+        if ("MS" %in% names) {
+            warning("added-constituent name switched from T-TIDE 'MS' to Foreman (1977) 'M8'")
+            names[names == "MS"] <- "M8"
+        }
+        if ("-MS" %in% names) {
+            warning("removed-constituent name switched from T-TIDE 'MS' to Foreman (1977) 'M8'")
+            names[names == "-MS"] <- "-M8"
+        }
+        if ("UPS1" %in% names) {
+            warning("added-constituent name switched from T-TIDE 'UPSI' to Foreman (1977) 'UPS1'")
+            names[names == "UPS1"] <- "UPSI"
+        }
+        if ("-UPS1" %in% names) {
+            warning("removed-constituent name switched from T-TIDE 'UPSI' to Foreman (1977) 'UPS1'")
+            names[names == "-UPS1"] <- "-UPSI"
+        }
+        names
+    }
     oceDebug(debug, "tidem(t, x, constituents,",
              "latitude=", if (is.null(latitude)) "NULL" else latitude, ", rc, debug) {\n", sep="", unindent=1)
     if (missing(t))
@@ -692,6 +723,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
                 ## indices <- c(indices, seq(1:ntc)[standard])
                 oceDebug(debug, "head(name): ", paste(head(name), collapse=" "), "\n")
             } else {
+                constituents <- constituentNameFix(constituents)
                 if (substr(constituents[i], 1, 1) == "-") {
                     ## Case 1: removal
                     ## if it's not in the list already, just ignore the request.
@@ -782,6 +814,7 @@ tidem <- function(t, x, constituents, latitude=NULL, rc=1, regress=lm,
     ##     kmpr[i] <- tc$kmpr[ic]
     ## }
     nc <- length(name)
+
     ## Check Rayleigh criterion
     interval <- as.numeric(difftime(max(sl@data$time, na.rm=TRUE), min(sl@data$time, na.rm=TRUE), units="hours"))
     dropTerm <- NULL
