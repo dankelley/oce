@@ -4,8 +4,8 @@
 \alias{tidem}
 \title{Fit a Tidem (Tidal Model) to a Timeseries}
 \usage{
-tidem(t, x, constituents, latitude = NULL, rc = 1, regress = lm,
-  debug = getOption("oceDebug"))
+tidem(t, x, constituents, infer = NULL, latitude = NULL, rc = 1,
+  regress = lm, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{t}{Either a \code{sealevel} object (e.g. produced by
@@ -18,8 +18,32 @@ time, so \code{t} must be given.}
 time.  This is ignored if \code{t} is a \code{\link{sealevel-class}} object,
 in which case it is inferred as \code{t[["elevation"]]}.}
 
-\item{constituents}{an optional list of tidal constituents to which the fit
-is done (see \dQuote{Details}.)}
+\item{constituents}{an optional vector of strings that name
+tidal constituents to which the fit is done (see \dQuote{Details}
+and \dQuote{Constituent Naming Convention}.)}
+
+\item{infer}{a list of constituents to be inferred from
+fitted constituents. If this is \code{NULL}, no such inferences
+are made. Otherwise, some constituents are computed based on
+other constituents, instead of being determined by regression
+at the proper frequency.  If provided, the \code{infer} list
+must have four elements:
+\code{name}, a vector of strings naming the constituents to be
+inferred; \code{from}, a vector of strings naming the fitted
+constituents used as the sources for the inferences;
+\code{amp}, a numerical vector of factors to be applied to the
+source amplitudes; and \code{phase}, a numerical vector of angles,
+in degrees, to be subtracted from the source phases. For example,
+\preformatted{
+infer=list(name=c("P1","K2"),
+           from=c("K1", "S2"),
+           amp=c(0.33093, 0.27215),
+           phase=c(-7.07, -22.4)
+}
+means that the amplitude of \code{P1} will be set as 0.33093 times the calculated amplitude
+of \code{K1}, and that the \code{P1} phase will be set to the \code{K1} phase,
+minus an offset of \code{-7.07} degrees.
+(This example is used by Foreman (1977) [1] and Pawlowicz et al. (2002) [4].)}
 
 \item{latitude}{if provided, the latitude of the observations.  If not
 provided, \code{tidem} will try to infer this from \code{sl}.}
@@ -59,7 +83,7 @@ resultant coefficients on the sine and cosine terms.
 }
 \details{
 The tidal constituents to be used in the analysis are specified as follows;
-see \dQuote{Constituent naming convention}.
+see \dQuote{Constituent Naming Convention}.
 
 \itemize{
 
@@ -156,7 +180,7 @@ Pawlowicz.
 }
 }
 
-\section{Constituent naming convention}{
+\section{Constituent Naming Convention}{
 
 \code{tidem} uses constituent names that follow the convention
 set by Foreman (1977) [1]. This convention is slightly different
