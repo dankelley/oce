@@ -688,7 +688,7 @@ tidem <- function(t, x, constituents, infer=NULL,
     constituentNameFix <- function(names) # from T-TIDE to Foreman name
     {
         if ("MS" %in% names) {
-            warning("added-constituent name switched from T-TIDE 'MS' to Foreman (1977) 'M8'")
+            warning("constituent name switched from T-TIDE 'MS' to Foreman (1977) 'M8'")
             names[names == "MS"] <- "M8"
         }
         if ("-MS" %in% names) {
@@ -696,7 +696,7 @@ tidem <- function(t, x, constituents, infer=NULL,
             names[names == "-MS"] <- "-M8"
         }
         if ("UPS1" %in% names) {
-            warning("added-constituent name switched from T-TIDE 'UPSI' to Foreman (1977) 'UPS1'")
+            warning("constituent name switched from T-TIDE 'UPSI' to Foreman (1977) 'UPS1'")
             names[names == "UPS1"] <- "UPSI"
         }
         if ("-UPS1" %in% names) {
@@ -707,14 +707,41 @@ tidem <- function(t, x, constituents, infer=NULL,
     }
     oceDebug(debug, "tidem(t, x, constituents,",
              "latitude=", if (is.null(latitude)) "NULL" else latitude, ", rc, debug) {\n", sep="", unindent=1)
+    cl <- match.call()
     if (missing(t))
         stop("must supply 't', either a vector of times or a sealevel object")
+    if (inherits(t, "sealevel")) {
+        sl <- t
+        t <- sl[["time"]]
+        x <- sl[["elevation"]]
+        if (is.null(latitude))
+            latitude <- sl[["latitude"]]
+    } else {
+        if (missing(x))
+            stop("must supply 'x', since the first argument is not a sealevel object")
+        if (inherits(x, "POSIXt")) {
+            warning("tidem() switching first 2 args to permit old-style usage")
+            tmp <- x
+            x <- t
+            t <- tmp
+        }
+        if (length(x) != length(t))
+            stop("lengths of 'x' and 't' must match, but they are ", length(x), " and ", length(t), " respectively")
+        if (inherits(t, "POSIXt")) {
+            t <- as.POSIXct(t)
+        } else {
+            stop("t must be a vector of POSIXt times")
+        }
+        sl <- as.sealevel(x, t)
+    }
+
     ## Check infer extensively, to prevent weird errors for e.g. an improperly-named
     ## constitutent.
     data("tidedata", package="oce", envir=environment())
     tidedata <- get("tidedata")#, pos=globalenv())
     tc <- tidedata$const
     ntc <- length(tc$name)
+    ## 'infer' sanity-check
     if (!is.null(infer)) {
         if (!is.list(infer))
             stop("infer must be a list")
@@ -742,43 +769,15 @@ tidem <- function(t, x, constituents, infer=NULL,
             if (!(n %in% tc$name))
                 stop("infer$from value '", n, "' is not a known tidal constituent; see const$name in ?tidedata")
         }
-    }
-    if (inherits(t, "sealevel")) {
-        sl <- t
-        t <- sl[["time"]]
-        x <- sl[["elevation"]]
-        if (is.null(latitude))
-            latitude <- sl[["latitude"]]
-    } else {
-        if (missing(x))
-            stop("must supply 'x', since the first argument is not a sealevel object")
-        if (inherits(x, "POSIXt")) {
-            warning("tidem() switching first 2 args to permit old-style usage")
-            tmp <- x
-            x <- t
-            t <- tmp
-        }
-        if (length(x) != length(t))
-            stop("lengths of 'x' and 't' must match, but they are ", length(x), " and ", length(t), " respectively")
-        if (inherits(t, "POSIXt")) {
-            t <- as.POSIXct(t)
-        } else {
-            stop("t must be a vector of POSIXt times")
-        }
-        sl <- as.sealevel(x, t)
-    }
+    }                                  # 'infer' sanity-check
 
-    cl <- match.call()
+    ## The arguments seem to be OK, so start the actual analysis now.
     startTime <- t[1]
     endTime <- tail(t, 1)
     centralTime <- numberAsPOSIXct((as.numeric(startTime)+as.numeric(endTime))/2, tz=attr(startTime, "tzone"))
     years <- as.numeric(difftime(endTime, startTime, units="secs")) / 86400 / 365.25
     if (years > 18.6)
         warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
-
-
-    if (debug > 2)
-        print(tc)
 
     standard <- tc$ikmpr > 0
     addedConstituents <- NULL
@@ -881,8 +880,9 @@ tidem <- function(t, x, constituents, infer=NULL,
         if (length(cc)) {
             cannotFit <- (interval * abs(freq[i]-tc$freq[cc])) < rc
             ##cat("compare name=", name[i], "with", kmpr[i],":", cannotFit,"\n")
-            if (cannotFit)
+            if (cannotFit) {
                 dropTerm <- c(dropTerm, i)
+            }
         }
     }
     if (length(dropTerm) > 0) {
@@ -911,6 +911,20 @@ tidem <- function(t, x, constituents, infer=NULL,
                 name <- c(name, tc$name[a])
                 freq <- c(freq, tc$freq[a])
                 kmpr <- c(kmpr, tc$kmpr[a])
+            }
+        }
+    }
+    ## Ensure that we fit for any infer$from constituents, *regardless* of whether
+    ## those consitituents are permitted by the Rayleigh criterion.
+    if (!is.null(infer)) {
+        for (n in c(infer$from)) {
+            if (!(n %in% name)) {
+                a <- which(tc$name == n)
+                indices <- c(indices, a)
+                name <- c(name, tc$name[a])
+                freq <- c(freq, tc$freq[a])
+                kmpr <- c(kmpr, tc$kmpr[a])
+                message("fitting for infer$name=", n, " even though the Rayleigh Criterion would exclude it")
             }
         }
     }
@@ -1015,20 +1029,22 @@ tidem <- function(t, x, constituents, infer=NULL,
             oceDebug(debug, "infer$name[", n, "]='", infer$name[n], "' yields iname=", iname, "\n", sep="")
             indicesInfer[n] <- iname
             oceDebug(debug, "iname=", iname, "\n")
+            ## NOTE: we know that infer$from has been fitted for, because we forced it to be,
+            ## irrespective of the Rayleight Criterion. Still, we test here, in case the code
+            ## gets changed later.
             if (infer$from[n] %in% name) {
                 ifrom <- which(name == infer$from[n])[1]
-                oceDebug(debug, "infer$from[", n, "]='", infer$from[n], "' yields ifrom=", ifrom, "\n", sep="")
                 if (infer$name[n] %in% name) {
                     iname <- which(name == infer$name[n])[1]
                     ## Update, skipping 'indices', 'name' and 'freq', since they are already OK.
                     amplitude[iname] <- infer$amp[n] * amplitude[ifrom]
                     phase[iname] <- phase[ifrom] - infer$phase[n]
                     p[iname] <- p[ifrom]
-                    oceDebug(debug, "replace name[", iname, "]='", name[iname], "' using ", tc$name[ifrom], "; now, length(name)=", length(name), ", length(freq)=", length(freq), "\n", sep="")
+                    oceDebug(1+debug, "replace existing ", name[iname], " using ", tc$name[ifrom], "\n", sep="")
                 } else {
                     ## Tacking new values on the end; they will shift to proper
                     ## positions when we reorder the whole solution, after handling
-                    ## these inference.
+                    ## these inferences.
                     iname <- which(tc$name == infer$name[n])[1]
                     indices <- c(indices, 1 + tail(indices, 1))
                     name <- c(name, infer$name[n])
@@ -1036,10 +1052,10 @@ tidem <- function(t, x, constituents, infer=NULL,
                     amplitude <- c(amplitude, infer$amp[n] * amplitude[ifrom])
                     phase <- c(phase, phase[ifrom] - infer$phase[n])
                     p <- c(p, p[ifrom])
-                    oceDebug(debug, "create name[...]='", tc$name[iname], "' using ", tc$name[ifrom], "; ifrom=", ifrom, "; length(name)=", length(name), "; length(freq)=", length(freq), "\n", sep="")
+                    oceDebug(1+debug, "create ", infer$name[n], " using ", name[ifrom], "\n", sep="")
                 }
             } else {
-                stop("n=", n, ": cannot infer ", infer$name[n], " from ", infer$from[n], " because the latter was not computed")
+                stop("Internal error (please report): cannot infer ", infer$name[n], " from ", infer$from[n], " because the latter was not computed")
             }
         }
         if (debug > 0) {
