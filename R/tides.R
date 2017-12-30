@@ -1,5 +1,7 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+TESTinfer1 <- !TRUE
+
 #' @title Class to Store Tidal Models
 #'
 #' @description
@@ -924,10 +926,27 @@ tidem <- function(t, x, constituents, infer=NULL,
                 name <- c(name, tc$name[a])
                 freq <- c(freq, tc$freq[a])
                 kmpr <- c(kmpr, tc$kmpr[a])
-                message("fitting for infer$name=", n, " even though the Rayleigh Criterion would exclude it")
+                message("fitting for infer$from=", n, ", even though the Rayleigh Criterion would exclude it")
             }
         }
     }
+    if (TESTinfer1) {
+        ## Ensure that we fit for any infer$name constituents, *regardless* of whether
+        ## those consitituents are permitted by the Rayleigh criterion.
+        if (!is.null(infer)) {
+            for (n in c(infer$name)) {
+                if (!(n %in% name)) {
+                    a <- which(tc$name == n)
+                    indices <- c(indices, a)
+                    name <- c(name, tc$name[a])
+                    freq <- c(freq, tc$freq[a])
+                    kmpr <- c(kmpr, tc$kmpr[a])
+                    message("fitting for infer$name=", n, ", even though the Rayleigh Criterion would exclude it")
+                }
+            }
+        }
+    }
+
     ## sort constituents by frequency
     indices <- order(freq)
     name <- name[indices]
@@ -1040,7 +1059,7 @@ tidem <- function(t, x, constituents, infer=NULL,
                     amplitude[iname] <- infer$amp[n] * amplitude[ifrom]
                     phase[iname] <- phase[ifrom] - infer$phase[n]
                     p[iname] <- p[ifrom]
-                    oceDebug(1+debug, "replace existing ", name[iname], " using ", tc$name[ifrom], "\n", sep="")
+                    oceDebug(1+debug, "replace existing ", name[iname], " using calculations based on the fit for ", name[ifrom], "\n", sep="")
                 } else {
                     ## Tacking new values on the end; they will shift to proper
                     ## positions when we reorder the whole solution, after handling
@@ -1052,7 +1071,7 @@ tidem <- function(t, x, constituents, infer=NULL,
                     amplitude <- c(amplitude, infer$amp[n] * amplitude[ifrom])
                     phase <- c(phase, phase[ifrom] - infer$phase[n])
                     p <- c(p, p[ifrom])
-                    oceDebug(1+debug, "create ", infer$name[n], " using ", name[ifrom], "\n", sep="")
+                    oceDebug(1+debug, "create ", infer$name[n], " using calculations based on the fit for ", name[ifrom], "\n", sep="")
                 }
             } else {
                 stop("Internal error (please report): cannot infer ", infer$name[n], " from ", infer$from[n], " because the latter was not computed")
