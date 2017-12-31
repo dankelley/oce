@@ -583,14 +583,19 @@ tidemAstron <- function(t)
 #' and \dQuote{Constituent Naming Convention}.)
 #'
 #' @param infer a list of constituents to be inferred from
-#' fitted constituents. If this is \code{NULL}, no such inferences
+#' fitted constituents (\strong{BUG: the results are not correct,
+#' as of Dec 31, 2017; see the discussion of issue
+#' 1351 on the Github development site}).
+#' If this is \code{NULL}, no such inferences
 #' are made. Otherwise, some constituents are computed based on
 #' other constituents, instead of being determined by regression
 #' at the proper frequency.  If provided, the \code{infer} list
 #' must have four elements:
 #' \code{name}, a vector of strings naming the constituents to be
 #' inferred; \code{from}, a vector of strings naming the fitted
-#' constituents used as the sources for the inferences;
+#' constituents used as the sources for the inferences (these
+#' source constituents are added to the regression list, if they
+#' are not already there);
 #' \code{amp}, a numerical vector of factors to be applied to the
 #' source amplitudes; and \code{phase}, a numerical vector of angles,
 #' in degrees, to be subtracted from the source phases. For example,
