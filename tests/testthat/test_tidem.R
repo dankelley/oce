@@ -47,51 +47,36 @@ test_that("tailoring of constituents", {
           expect_equal(tide5[["data"]]$name, resolvable[resolvable != "M2"])
 })
 
-test_that("Foreman (1977 App 7.3) test", {
-          app73txt <- "index name frequency AL GL
-          1 Z0     0.00000000  1.9806    0.00
-          2 MM     0.00151215  0.2121  288.50
-          3 MSF    0.00282193  0.1561  115.15
-          4 ALP1   0.03439657  0.0141  180.96
-          5 2Q1    0.03570635  0.0226  246.82
-          6 Q1     0.03721850  0.0144  252.75
-          7 O1     0.03873065  0.0694  284.43
-          8 NO1    0.04026859  0.0380  275.85
-          9 P1     0.04155259  0.0468  252.20
-          10 K1     0.04178075  0.1332  145.54
-          11 J1     0.04329290  0.0234  103.63
-          12 OO1    0.04483084  0.0463  358.47
-          13 UPS1   0.04634299  0.0233  239.12
-          14 EPS2   0.07617731  0.0216  109.98
-          15 MU2    0.07768947  0.0428   30.06
-          16 N2     0.07899925  0.0857  306.35
-          17 M2     0.08051140  0.5007    4.40
-          18 L2     0.08202355  0.0174  168.03
-          19 S2     0.08333334  0.2193   36.74
-          20 K2     0.08356149  0.0515  131.15
-          21 ETA2   0.08507364  0.0059  235.38
-          22 MO3    0.11924206  0.0138   11.86
-          23 M3     0.12076710  0.0126  331.91
-          24 MK3    0.12229215  0.0048  339.15
-          25 SK3    0.12511408  0.0022  228.64
-          26 MN4    0.15951066  0.0096   85.00
-          27 M4     0.16102280  0.0131  145.17
-          28 SN4    0.16233259  0.0085   82.78
-          29 MS4    0.16384473  0.0011  176.14
-          30 S4     0.16666667  0.0047  119.75
-          31 2MK5   0.20280355  0.0013  244.34
-          32 2SK5   0.20844743  0.0043    5.04
-          33 2MN6   0.24002205  0.0038   26.46
-          34 M6     0.24153420  0.0018  298.97
-          35 2MS6   0.24435614  0.0059   69.59
-          36 2SM6   0.24717808  0.0023   45.80
-          37 3MK7   0.28331494  0.0086   73.20
-          38 M8     0.32204559  0.0033  109.22
-          39 M10    0.40255699  0.0010  191.71"
-          app73 <- read.table(text=app73txt, header=TRUE, stringsAsFactors=FALSE)
+test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
+          foreman <- read.table("tide_foreman.dat.gz", header=TRUE, stringsAsFactors=FALSE)
+          ttide <- read.table("tide_ttide.dat.gz", skip=9, header=TRUE, stringsAsFactors=FALSE)
+          ## switch T_TIDE to Foreman names (which tidem() also uses)
+          ttide$name <- gsub("^MS$", "M8", gsub("^UPSI$", "UPS1", ttide$name))
+          expect_equal(ttide$name, foreman$name)
+          expect_equal(ttide$frequency, foreman$frequency, tol=5e-6) # T_TIDE reports to 1e-5
+          ## Fit a tidal model, with an added constituent and two inferred constituents;
+          ## this is set up to matche the test in Foreman's Appendix 7.1 (and 7.3),
+          ## and also in the TTIDE paper by Pawlowicz et al 2002 (Table 1).
           data("sealevelTuktoyaktuk")
-          m <- tidem(sealevelTuktoyaktuk, constituents=c("standard", "P1", "K2", "M10"))
-          expect_equal(app73$name, m@data$name)
+          m <- tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
+                     infer=list(name=c("P1", "K2"), # 0.0415525871 0.0835614924
+                                from=c("K1", "S2"), # 0.0417807462 0.0833333333
+                                amp=c(0.33093, 0.27215),
+                                phase=c(-7.07, -22.40)))
+          ## Do constituents match Foreman and TTIDE?
+          expect_equal(foreman$name, m@data$name)
+          expect_equal(foreman$frequency, m@data$freq, tol=1e-7)
+          expect_equal(ttide$name, m@data$name)
+          expect_equal(ttide$frequency, m@data$freq, tol=5e-6) # reported to 1e-5
+          ## Did the inference formulae work? (Does not address whether results are correct!)
+          expect_equal(0.33093,
+                       m[["amplitude"]][which(m[["name"]]=="P1")]/m[["amplitude"]][which(m[["name"]]=="K1")])
+          expect_equal(m[["phase"]][which(m[["name"]]=="P1")],
+                       m[["phase"]][which(m[["name"]]=="K1")]-(-7.07))
+          expect_equal(0.27215,
+                       m[["amplitude"]][which(m[["name"]]=="K2")]/m[["amplitude"]][which(m[["name"]]=="S2")])
+          expect_equal(m[["phase"]][which(m[["name"]]=="K2")],
+                       m[["phase"]][which(m[["name"]]=="S2")]-(-22.40))
           ## There seem to be some errors in Foreman's 1977 appendix 7.3,
           ## e.g. the frequency listed for 2SK5 is 0.20844743 in
           ## appendix 7.3 (p58), but in appendix 7.1 (p41) it is listed
@@ -99,7 +84,13 @@ test_that("Foreman (1977 App 7.3) test", {
           ## so the cause is a bit of a mystery. In any case, this
           ## explains why the tolerance is relaxed in the next
           ## comparison.
-          expect_equal(app73$frequency, m@data$freq, tol=1e-7)
-
+          ## BUG: the next should work but it does not (issue 1351)
+          ## > expect_equal(foreman$A, m[["amplitude"]], tol=1e-4)
+          ## Error: foreman$A not equal to m[["amplitude"]].
+          ## 4/39 mismatches (average diff: 0.00219)
+          ## [9]  0.0465 - 0.0446 ==  0.001910
+          ## [10] 0.1406 - 0.1347 ==  0.005858
+          ## [19] 0.2195 - 0.2202 == -0.000737
+          ## [20] 0.0597 - 0.0599 == -0.000237
 })
 

@@ -784,18 +784,18 @@ tidem <- function(t, x, constituents, infer=NULL,
     standard <- tc$ikmpr > 0
     addedConstituents <- NULL
     if (missing(constituents)) {
-        ## Default 'name', 'freq', 'kmpr' and 'indices'. The -1 means to drop (intercept) Z0, which we handle separately
+        ## Default 'name', 'freq', 'kmpr' and 'indices'; drop Z0 because we infer it directly.
+        ##> message("head(name)=", paste(head(name), collapse=" "), " BEFORE")
         name <- tc$name[standard][-1]
+        ##> message("head(name)=", paste(head(name), collapse=" "), " AFTER")
         freq <- tc$freq[standard][-1]
         kmpr <- tc$kmpr[standard][-1]
         indices <- seq(1:ntc)[standard] # NB. Z0 need not be dropped; we work with indices later anyway
         oceDebug(debug, "starting with default constituents: ", paste(name, collapse=" "), "\n")
     } else {
-        ## Build up 'name', 'freq', 'kmpr' and 'indices'
-        name <- freq <- kmpr <- indices <- NULL
+        ## Build up 'name'; later, infer 'indices' and thereby 'freq' and 'kmpr'.
+        name <- NULL
         nconst <- length(constituents)
-        oceDebug(debug, "tidem.R:655 indices=", paste(indices, collapse=" "), "\n")
-        oceDebug(debug, "tidem.R:656 nconst=", nconst, "\n")
         for (i in 1:nconst) {
             ## if (debug > 0) cat("[", constituents[i], "]\n", sep="")
             if (constituents[i] == "standard") {
@@ -803,60 +803,38 @@ tidem <- function(t, x, constituents, infer=NULL,
                 if (i != 1)
                     stop("\"standard\" must occur first in constituents list")
                 name <- tc$name[standard][-1]
-                ## freq <- tc$freq[standard][-1]
-                ## kmpr <- tc$kmpr[standard][-1]
-                ## indices <- c(indices, seq(1:ntc)[standard])
-                oceDebug(debug, "head(name): ", paste(head(name), collapse=" "), "\n")
             } else {
                 constituents <- constituentNameFix(constituents)
                 if (substr(constituents[i], 1, 1) == "-") {
-                    ## Case 1: removal
-                    ## if it's not in the list already, just ignore the request.
-                    remove <- substr(constituents[i], 2, nchar(constituents[i]))
-                    delete <- which(name == remove)
-                    if (0 == length(delete)) {
-                        warning("'", remove, "' is not a known constituent; try one: ",
-                                paste(tc$name, collapse=" "), "\n")
-                    } else if (length(delete) == 1) {
-                        ##message("deleting constituent '", name[delete], "'; delete=", delete)
-                        ##message("before name=", paste(name, collapse=" "), " (length ", length(name), ")")
-                        name <- name[-delete]
-                        ##message(" after name=", paste(name, collapse=" "), " (length ", length(name), ")")
-                        ## freq <- freq[-delete]
-                        ## kmpr <- kmpr[-delete]
-                        ## message("before indices=", paste(indices, collapse=" "), " (length ", length(indices), ")")
-                        ## indices <- indices[-delete]
-                        ## message(" after indices=", paste(indices, collapse=" "), " (length ", length(indices), ")")
-                    } else {
-                        stop("problem removing '", remove, "'; please report this to the develop")
-                    }
+                    ## Case 1: removal. Require a valid name, and warn if not in the list already.
+                    nameRemove <- substr(constituents[i], 2, nchar(constituents[i]))
+                    if (1 != sum(tc$name == nameRemove))
+                        stop("'", nameRemove, "' is not a known tidal constituent; try one of: ",
+                             paste(tc$name, collapse=" "))
+                    remove <- which(name == nameRemove)
+                    if (0 == length(remove))
+                        warning(nameRemove, "is not in the list of constituents currently under study")
+                    else
+                        name <- name[-remove]
                 } else {
-                    ## Case 2: addition. Check that it is a known constituent, and ignore
-                    ## repeated additions.
+                    ## Case 2: addition. Require a valid name, and ignore repeat requests.
                     add <- which(tc$name == constituents[i])
-                    addedConstituents <- c(addedConstituents, add)
-                    if (length(add) == 1) {
-                        if (!(constituents[i] %in% name)) {
-                            name <- c(name, tc$name[add])
-                            ## freq <- c(freq, tc$freq[add])
-                            ## kmpr <- c(kmpr, tc$kmpr[add])
-                            ## indices <- c(indices, add)
-                            ##20171227 } else {
-                            ##20171227     warning("'", constituents[i], "' is already in the list of constituents being used\n")
-                        }
-                    } else {
-                        warning("'", constituents[i], "' is not a known constituent; try one of: ",
+                    if (1 != length(add))
+                        stop("'", constituents[i], "' is not a known tidal constituent; try one of: ",
                                 paste(tc$name, collapse=" "), "\n")
+                    if (!(constituents[i] %in% name)) {
+                        name <- c(name, tc$name[add])
+                        addedConstituents <- c(addedConstituents, add)
                     }
-               }
+                }
+                oceDebug(debug, "using names= ", paste(name, collapse=" "), "\n")
             }
-            ##oceDebug(debug, "tc$name[", paste(indices, collapse=" "), "] = ", paste(tc$name[indices], collapse=" "), "\n")
         }
     }
     ## We let users add "Z0" as a constituent, but we remove it now since the
     ## regression will have an intercept and that becomes Z0.
     if ("Z0" %in% name)
-        name <- name[!which(name == "Z0")]
+        name <- name[name != "Z0"]
     ## All of the names should be valid from the above, but to protect against code changes,
     ## we check to be sure.
     if (any(!(name %in% tc$name))) {
@@ -869,8 +847,13 @@ tidem <- function(t, x, constituents, infer=NULL,
     ## Infer indices from the names, sort them as in the tidal-constituent
     ## table, tc, and then look up freq and kmpr from that table.
     indices <- sort(unlist(lapply(name,function(name) which(tc$name==name))))
+    name <- tc$name[indices]
     freq <- tc$freq[indices]
     kmpr <- tc$kmpr[indices]
+    if (debug > 2) {
+        cat("next is at line 875 (initial setup, before 'infer' handled)\n")
+        print(data.frame(name=name, indices=indices, freq=freq, kmpr=kmpr))
+    }
 
     nc <- length(name)
 
@@ -902,14 +885,15 @@ tidem <- function(t, x, constituents, infer=NULL,
     ## the same thing as the Foreman 1977 code as exemplified in his appendices
     ## 7.2 and 7.3.)
     if (length(addedConstituents)) {
-        ## message("addedConstituents=", paste(addedConstituents, collapse=" "), "\n")
+        oceDebug(debug, "addedConstituents=", paste(addedConstituents, collapse=" "), "\n")
         for (a in addedConstituents) {
             ## Avoid adding constituents that we already have
             if (!(tc$name[a] %in% name)) {
-                ## message("ADDING:")
-                ## message("  tc$name[a=", a, "]='", tc$name[a], "'", sep="")
-                ## message("  tc$freq[a=", a, "]='", tc$freq[a], "'", sep="")
-                ## message("  tc$kmpr[a=", a, "]='", tc$kmpr[a], "'", sep="")
+                message("ADDING:")
+                message("  tc$name[a=", a, "]='", tc$name[a], "'", sep="")
+                message("  tc$freq[a=", a, "]='", tc$freq[a], "'", sep="")
+                message("  tc$kmpr[a=", a, "]='", tc$kmpr[a], "'", sep="")
+                indices <- c(indices, which(tc$name==name[a]))
                 name <- c(name, tc$name[a])
                 freq <- c(freq, tc$freq[a])
                 kmpr <- c(kmpr, tc$kmpr[a])
@@ -947,11 +931,13 @@ tidem <- function(t, x, constituents, infer=NULL,
         }
     }
 
-    ## sort constituents by frequency
-    indices <- order(freq)
-    name <- name[indices]
-    freq <- freq[indices]
-    kmpr <- kmpr[indices]
+    ## sort constituents by index
+    oindices <- order(indices)
+    indices <- indices[oindices]
+    name <- name[oindices]
+    freq <- freq[oindices]
+    kmpr <- kmpr[oindices]
+    rm(oindices) # clean up namespace
 
     nc <- length(name)
     elevation <- sl[["elevation"]]
@@ -963,12 +949,11 @@ tidem <- function(t, x, constituents, infer=NULL,
     ## tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
     tRef <- centralTime
     hour2pi <- 2 * pi * (as.numeric(time, tz="UTC") - as.numeric(tRef)) / 3600
-    oceDebug(debug, "tRef=", tRef, "\n")
-    oceDebug(debug, "nc=", nc, "\n")
+    oceDebug(debug, "tRef=", tRef, ", nc=", nc, ", length(name)=", length(name), "\n")
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
     ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
     for (i in 1:nc) {
-        oceDebug(debug, "setting coefficients for", name[i], "at", freq[i], "cph", "\n")
+        oceDebug(debug, "setting coefficients for ", name[i], " (", freq[i], " cph)", "\n", sep="")
         ft <- freq[i] * hour2pi
         x[, 2*i-1] <- sin(ft)
         x[, 2*i  ] <- cos(ft)
@@ -977,9 +962,12 @@ tidem <- function(t, x, constituents, infer=NULL,
     dim(name2) <- c(2 * length(name), 1)
     colnames(x) <- name2
     #model <- lm(elevation ~ x, na.action=na.exclude)
+    oceDebug(debug, "about to do regression\n")
     model <- regress(elevation ~ x, na.action=na.exclude)
-    if (debug > 0)
+    if (debug > 0) {
+        oceDebug(debug, "regression worked OK; the results are as follows:\n")
         print(summary(model))
+    }
     coef  <- model$coefficients
     p.all <- if (4 == dim(summary(model)$coefficients)[2])
         summary(model)$coefficients[, 4]
@@ -1024,13 +1012,13 @@ tidem <- function(t, x, constituents, infer=NULL,
     ##     ~/src/foreman/tide12_r2.f:422
 
     ## The regression gives us an intercept, which we call Z0
-    indices <- c(0, indices)
+    indices <- c(1, indices) # the index for Z0 is 1
     name <- c("Z0", name)
     freq <- c(0, freq)
 
     if (debug > 0) {
         message("BEFORE inference:")
-        print(data.frame(name=name, freq=round(freq,5), amplitude=round(amplitude,4)))
+        print(data.frame(name=name, freq=round(freq,6), amplitude=round(amplitude,4)))
     }
 
     ## Handle (optional) inferred constituents. We know that
@@ -1059,19 +1047,19 @@ tidem <- function(t, x, constituents, infer=NULL,
                     amplitude[iname] <- infer$amp[n] * amplitude[ifrom]
                     phase[iname] <- phase[ifrom] - infer$phase[n]
                     p[iname] <- p[ifrom]
-                    oceDebug(1+debug, "replace existing ", name[iname], " using calculations based on the fit for ", name[ifrom], "\n", sep="")
+                    oceDebug(debug, "replace existing ", name[iname], " based on ", name[ifrom], " (", freq[ifrom], " cph)\n", sep="")
                 } else {
                     ## Tacking new values on the end; they will shift to proper
                     ## positions when we reorder the whole solution, after handling
                     ## these inferences.
                     iname <- which(tc$name == infer$name[n])[1]
-                    indices <- c(indices, 1 + tail(indices, 1))
+                    indices <- c(indices, iname)
                     name <- c(name, infer$name[n])
                     freq <- c(freq, tc$freq[iname])
                     amplitude <- c(amplitude, infer$amp[n] * amplitude[ifrom])
                     phase <- c(phase, phase[ifrom] - infer$phase[n])
                     p <- c(p, p[ifrom])
-                    oceDebug(1+debug, "create ", infer$name[n], " using calculations based on the fit for ", name[ifrom], "\n", sep="")
+                    oceDebug(debug, "create ", infer$name[n], " (index=", iname, ", ", tc$freq[iname], " cph) based on ", name[ifrom], " (", freq[ifrom], " cph)\n", sep="")
                 }
             } else {
                 stop("Internal error (please report): cannot infer ", infer$name[n], " from ", infer$from[n], " because the latter was not computed")
@@ -1079,14 +1067,17 @@ tidem <- function(t, x, constituents, infer=NULL,
         }
         if (debug > 0) {
             cat("AFTER inference:\n")
-            print(data.frame(name=name, freq=round(freq,5), amplitude=round(amplitude,4)))
+            print(data.frame(name=name, freq=round(freq,6), amplitude=round(amplitude,4)))
         }
-        o <- order(freq)
+        ## reorder by original position in tc
+        o <- order(indices)
+        indices <- indices[o]
         name <- name[o]
         freq <- freq[o]
         amplitude <- amplitude[o]
         phase <- phase[o]
         p <- p[o]
+        rm(o)
         if (debug > 0) {
             cat("AFTER reordering\n")
             print(data.frame(name=name, freq=round(freq,5), amplitude=round(amplitude,4)))
