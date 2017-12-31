@@ -93,10 +93,11 @@ variants.)
   \code{flCUVA~}     \tab \code{fluorescence}                 \tab ug/l; Chelsea UV Aquatracka\tab\cr
   \code{flEC-AFL~}   \tab \code{fluorescence}                 \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
   \code{flS}         \tab \code{fluorescence}                 \tab -; Seatech          \tab    \cr
+  \code{flScufa~}    \tab \code{fluorescence}                 \tab -; Turner SCUFA [RFU]\tab\cr
   \code{flSP}        \tab \code{fluorescence}                 \tab -; Seapoint         \tab    \cr
   \code{flSPR}       \tab \code{fluorescence}                 \tab -; Seapoint, Rhodamine\tab  \cr
   \code{flSPuv}      \tab \code{fluorescence}                 \tab -; Seapoint, UV      \tab   \cr
-  \code{flT}         \tab \code{fluorescence}                 \tab -; Turneri 10-005 flT\tab   \cr
+  \code{flT}         \tab \code{fluorescence}                 \tab -; Turner 10-005 flT\tab   \cr
   \code{gpa}         \tab \code{geopotentialAnomaly}          \tab -; J/kg              \tab   \cr
   \code{latitude}    \tab \code{latitude}                     \tab degN                 \tab   \cr
   \code{longitude}   \tab \code{longitude}                    \tab degE                 \tab   \cr
@@ -104,6 +105,7 @@ variants.)
   \code{n2satMg/L}   \tab \code{nitrogenSaturation}           \tab mg/l                 \tab   \cr
   \code{n2satumol/kg}\tab \code{nitrogenSaturation}           \tab umol/kg              \tab   \cr
   \code{nbin}        \tab \code{nbin}                         \tab                      \tab   \cr
+  \code{obsscufa~}   \tab \code{backscatter}                  \tab NTU; Turner SCUFA    \tab   \cr
   \code{opoxMg/L}    \tab \code{oxygen}                       \tab mg/l; Optode, Anderaa\tab   \cr
   \code{opoxML/L}    \tab \code{oxygen}                       \tab ml/l; Optode, Anderaa\tab   \cr
   \code{opoxMm/L}    \tab \code{oxygen}                       \tab umol/l; Optode, Anderaa\tab \cr
