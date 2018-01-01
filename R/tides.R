@@ -1,6 +1,7 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 TESTinfer1 <- !TRUE
+TESTforeman <- TRUE
 
 #' @title Class to Store Tidal Models
 #'
@@ -583,22 +584,25 @@ tidemAstron <- function(t)
 #' and \dQuote{Constituent Naming Convention}.)
 #'
 #' @param infer a list of constituents to be inferred from
-#' fitted constituents (\strong{BUG: the results are not correct,
-#' as of Dec 31, 2017; see the discussion of issue
-#' 1351 on the Github development site}).
-#' If this is \code{NULL}, no such inferences
-#' are made. Otherwise, some constituents are computed based on
-#' other constituents, instead of being determined by regression
-#' at the proper frequency.  If provided, the \code{infer} list
-#' must have four elements:
+#' fitted constituents according to the method outlined
+#' in Section 2.3.4 of Foreman (1977) [1].
+#' If \code{infer} is \code{NULL}, the default, then
+#' no such inferences are made. Otherwise, some constituents
+#' are computed based on other constituents, instead of being
+#' determined by regression at the proper frequency.
+#' If provided, \code{infer} must be a list containing
+#' four elements:
 #' \code{name}, a vector of strings naming the constituents to be
 #' inferred; \code{from}, a vector of strings naming the fitted
-#' constituents used as the sources for the inferences (these
+#' constituents used as the sources for those inferences (these
 #' source constituents are added to the regression list, if they
 #' are not already there);
 #' \code{amp}, a numerical vector of factors to be applied to the
 #' source amplitudes; and \code{phase}, a numerical vector of angles,
 #' in degrees, to be subtracted from the source phases. For example,
+#' Following Foreman (1997) [1], if any of the \code{name} items
+#' have already been computed, then the suggested inference is ignored,
+#' and the already-computed values are used.
 #'\preformatted{
 #' infer=list(name=c("P1","K2"),
 #'            from=c("K1", "S2"),
@@ -608,7 +612,14 @@ tidemAstron <- function(t)
 #' means that the amplitude of \code{P1} will be set as 0.33093 times the calculated amplitude
 #' of \code{K1}, and that the \code{P1} phase will be set to the \code{K1} phase,
 #' minus an offset of \code{-7.07} degrees.
-#' (This example is used by Foreman (1977) [1] and Pawlowicz et al. (2002) [4].)
+#' (This example is used in the Foreman (1977) [1] discussion of a
+#' Fortran analysis code and also in Pawlowicz et al. (2002) [4] discussion
+#' of the T_TIDE Matlab code.
+#' Rounded to the 0.1mm resolution of values reported in [1] and [2],
+#' the \code{tidem} results have root-mean-square amplitude difference
+#' to Foreman's Appendix 7.3 of 0.06mm; by comparision,
+#' the results in Table 1 of Pawlowicz et al. (2002) agree with Foreman's
+#' results to RMS difference 0.04mm.)
 #'
 #' @param latitude if provided, the latitude of the observations.  If not
 #' provided, \code{tidem} will try to infer this from \code{sl}.
@@ -1047,16 +1058,101 @@ tidem <- function(t, x, constituents, infer=NULL,
             if (infer$from[n] %in% name) {
                 ifrom <- which(name == infer$from[n])[1]
                 if (infer$name[n] %in% name) {
+                    message("name already in list")
                     iname <- which(name == infer$name[n])[1]
                     ## Update, skipping 'indices', 'name' and 'freq', since they are already OK.
                     amplitude[iname] <- infer$amp[n] * amplitude[ifrom]
                     phase[iname] <- phase[ifrom] - infer$phase[n]
                     p[iname] <- p[ifrom]
                     oceDebug(debug, "replace existing ", name[iname], " based on ", name[ifrom], " (", freq[ifrom], " cph)\n", sep="")
+                    warning("inferring '", infer$name[n], "' which is already included in the regression. Foreman says to skip it; unsure on what T_TIDE does\n")
                 } else {
-                    ## Tacking new values on the end; they will shift to proper
-                    ## positions when we reorder the whole solution, after handling
-                    ## these inferences.
+                    ## We append new values at the end, knowing that they will get
+                    ## shifted back to their proper positions when we reorder the
+                    ## whole solution, after handling these inferences.
+                    ##
+                    ## The first step is to adjust the amp and phase of infer$from; this
+                    ## is done based on formulae in Foreman (1977) sec 2.3.4. It looks
+                    ## as though t_tide.m on and after about line 472 is doing a
+                    ## similar thing, although the numbers do not agree exactly,
+                    ## as shown in issue 1351, code 1351c.R.
+                    ##TTIDE ## below is some broken code. It was not working,
+                    ##TTIDE ## so I gave up and just coded in Foreman's equations
+                    ##TTIDE ## directly.
+                    ##TTIDE ## snarg=nobsu*pi*(fi(ii)   -fu(jref(ii)) )*dt;
+                    ##TTIDE ##message("T_TIDE")
+                    ##TTIDE tRangeHours <- diff(range(as.numeric(t))) / 3600
+                    ##TTIDE freqName <- tc$freq[which(infer$name[n] == tc$name)]
+                    ##TTIDE freqFrom <- tc$freq[which(infer$from[n] == tc$name)]
+                    ##TTIDE snarg <- pi * tRangeHours * (freqName - freqFrom)
+                    ##TTIDE ## t_tide.m:473 scarg=sin(snarg)./snarg;
+                    ##TTIDE scarg <- sin(snarg) / snarg
+                    ##TTIDE ##message("  snarg=", snarg, ",  scarg=", scarg)
+                    ##TTIDE ## t_tide.m 310
+                    ##TTIDE ## mu=length(fu); % # base frequencies
+                    ##TTIDE ## t_tide.m 311
+                    ##TTIDE ## mi=length(fi); % # inferred
+                    ##TTIDE ## t_tide.m:449
+                    ##TTIDE ## [v,u,f]=t_vuf(ltype,centraltime,[ju;jinf],lat);
+                    ##TTIDE ## t_tide.m:451
+                    ##TTIDE ## vu=(v+u)*360; % total phase correction (degrees)
+                    ##TTIDE ## t_tide.m:476
+                    ##TTIDE ## pearg=2*pi*(vu(mu+ii)-vu(jref(ii))+inf.ph(ii))/360;
+                    ##TTIDE if (debug > 1) {
+                    ##TTIDE     cat("vuf for 'name' follows (arg j=", which(tc$name==infer$name[n])[1], ")\n")
+                    ##TTIDE     print(tidemVuf(tRef, which(tc$name==infer$name[n])[1], latitude=latitude))
+                    ##TTIDE     cat("vuf for 'from' follows (arg j=", which(tc$name==infer$from[n])[1], ")\n")
+                    ##TTIDE     print(tidemVuf(tRef, which(tc$name==infer$name[n])[1], latitude=latitude))
+                    ##TTIDE }
+                    ##TTIDE vufName <- tidemVuf(tRef, which(tc$name==infer$name[n])[1], latitude=latitude)
+                    ##TTIDE vuName <- (vufName$v + vufName$u) * 360
+                    ##TTIDE vufFrom <- tidemVuf(tRef, which(tc$name==infer$from[n])[1], latitude=latitude)
+                    ##TTIDE vuFrom <- (vufFrom$v + vufFrom$u) * 360
+                    ##TTIDE pearg <- 2 * pi * (vuName - vuFrom + infer$phase[n]) / 360
+                    ##TTIDE ## t_tide.m:477
+                    ##TTIDE ## pcfac=inf.amprat(ii).*f(mu+ii)./f(jref(ii)).*exp(i*pearg);
+                    ##TTIDE ## Relates loosely to Foreman (1977 sec2.3.4 p28) "S"
+                    ##TTIDE pcfac <- infer$amp[n] * vufName$f / vufFrom$f * cos(pearg)
+                    ##TTIDE ## t_tide.m:478
+                    ##TTIDE ## pcorr=1+pcfac.*scarg;
+                    ##TTIDE pcorr <- 1 + pcfac * scarg
+                    ##TTIDE ##message("  pearg=", pearg, ", pcfac=", pcfac)
+                    ##TTIDE ##message("  pcorr=", pcorr, " (should divide infer amp by this)")
+                    ##TTIDE ##message("  new amp for (", infer$from[n], ") might be=", pcorr*amplitude[ifrom])
+                    ##
+                    ## Foreman (1977) [1] sec 2.3.4.
+                    ## Notation: suffices "1" and "2" refer to "from" and "name" here.
+                    i1 <- which(tc$name==infer$from[n])[1]
+                    i2 <- which(tc$name==infer$name[n])[1]
+                    oceDebug(debug, "i1=", i1, ", i2=", i2, "\n")
+                    vuf1 <- tidemVuf(tRef, i1, latitude=latitude)
+                    vuf2 <- tidemVuf(tRef, i2, latitude=latitude)
+                    f1 <- vuf1$f
+                    f2 <- vuf2$f
+                    oceDebug(debug, "f1=", f1, ", f2=", f2, "\n")
+                    ## FIXME: what is unit of u and v? t_tide.m:482 suggests it is degrees
+                    ## Foreman's tide12_r2.f:399 suggests U and V are in cycles,
+                    ## and this is consistent with Pawlowicz's t_tide.m:451
+                    ## We convert vu1 and vu2 to be in degrees, as t_tide.m does
+                    vu1 <- (vuf1$v + vuf1$u) * 360
+                    vu2 <- (vuf2$v + vuf2$u) * 360
+                    oceDebug(debug, "vu1=", vu1, ", vu2=", vu2, "\n")
+                    sigma1 <- tc$freq[i1]
+                    sigma2 <- tc$freq[i2]
+                    oceDebug(debug, "sigma1=", sigma1, ", sigma2=", sigma2, "\n")
+                    ## tmp is pi*N*(sigma2-sigma1) in Foreman
+                    tmp <- pi * interval * (sigma2 - sigma1) # NB: interval is in hours, sigma in cph
+                    r12 <- infer$amp[n]
+                    ## FIXME: sign for Foreman?
+                    zeta <- infer$phase[n]
+                    rpd <- pi / 180
+                    S <- r12 * (f2/f1) * sin(tmp) * sin(rpd*(vu2-vu1+zeta)) / tmp
+                    C <- 1 + r12 * (f2/f1) * sin(tmp) * cos(rpd*(vu2-vu1+zeta)) / tmp
+                    oceDebug(debug, "tmp=", tmp, ", S=", S, ", C=", C, ", sqrt(S^2+C^2)=", sqrt(S^2+C^2), "\n")
+                    oceDebug(debug, infer$from[n], " amplitude, old=", amplitude[ifrom], ", new=", amplitude[ifrom]/sqrt(S^2+C^2), "\n")
+                    amplitude[ifrom] <- amplitude[ifrom] / sqrt(S^2+C^2)
+                    oceDebug(debug, infer$from[n], " phase, old=", phase[ifrom], ", new=", phase[ifrom]+atan2(S, C) / rpd, "\n")
+                    ## End of Foreman 1977 inference calculation. Now we can define 'name' i.t.o. 'from'
                     iname <- which(tc$name == infer$name[n])[1]
                     indices <- c(indices, iname)
                     name <- c(name, infer$name[n])

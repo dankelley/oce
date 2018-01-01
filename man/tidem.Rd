@@ -23,22 +23,25 @@ tidal constituents to which the fit is done (see \dQuote{Details}
 and \dQuote{Constituent Naming Convention}.)}
 
 \item{infer}{a list of constituents to be inferred from
-fitted constituents (\strong{BUG: the results are not correct,
-as of Dec 31, 2017; see the discussion of issue
-1351 on the Github development site}).
-If this is \code{NULL}, no such inferences
-are made. Otherwise, some constituents are computed based on
-other constituents, instead of being determined by regression
-at the proper frequency.  If provided, the \code{infer} list
-must have four elements:
+fitted constituents according to the method outlined
+in Section 2.3.4 of Foreman (1977) [1].
+If \code{infer} is \code{NULL}, the default, then
+no such inferences are made. Otherwise, some constituents
+are computed based on other constituents, instead of being
+determined by regression at the proper frequency.
+If provided, \code{infer} must be a list containing
+four elements:
 \code{name}, a vector of strings naming the constituents to be
 inferred; \code{from}, a vector of strings naming the fitted
-constituents used as the sources for the inferences (these
+constituents used as the sources for those inferences (these
 source constituents are added to the regression list, if they
 are not already there);
 \code{amp}, a numerical vector of factors to be applied to the
 source amplitudes; and \code{phase}, a numerical vector of angles,
 in degrees, to be subtracted from the source phases. For example,
+Following Foreman (1997) [1], if any of the \code{name} items
+have already been computed, then the suggested inference is ignored,
+and the already-computed values are used.
 \preformatted{
 infer=list(name=c("P1","K2"),
            from=c("K1", "S2"),
@@ -48,7 +51,14 @@ infer=list(name=c("P1","K2"),
 means that the amplitude of \code{P1} will be set as 0.33093 times the calculated amplitude
 of \code{K1}, and that the \code{P1} phase will be set to the \code{K1} phase,
 minus an offset of \code{-7.07} degrees.
-(This example is used by Foreman (1977) [1] and Pawlowicz et al. (2002) [4].)}
+(This example is used in the Foreman (1977) [1] discussion of a
+Fortran analysis code and also in Pawlowicz et al. (2002) [4] discussion
+of the T_TIDE Matlab code.
+Rounded to the 0.1mm resolution of values reported in [1] and [2],
+the \code{tidem} results have root-mean-square amplitude difference
+to Foreman's Appendix 7.3 of 0.06mm; by comparision,
+the results in Table 1 of Pawlowicz et al. (2002) agree with Foreman's
+results to RMS difference 0.04mm.)}
 
 \item{latitude}{if provided, the latitude of the observations.  If not
 provided, \code{tidem} will try to infer this from \code{sl}.}
