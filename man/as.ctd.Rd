@@ -6,9 +6,9 @@
 \usage{
 as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
   scan = NULL, time = NULL, other = NULL, units = NULL, flags = NULL,
-  missingValue = NULL, type = "", serialNumber = "", ship, cruise,
-  station, startTime = NULL, longitude, latitude,
-  deploymentType = "unknown", pressureAtmospheric = 0,
+  missingValue = NULL, type = "", serialNumber = "", ship = "",
+  cruise = "", station = "", startTime = NULL, longitude = NA,
+  latitude = NA, deploymentType = "unknown", pressureAtmospheric = 0,
   sampleInterval = NA, profile = NULL, debug = getOption("oceDebug"))
 }
 \arguments{

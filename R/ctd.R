@@ -953,11 +953,11 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    missingValue=NULL,
                    ##1108 quality=NULL, filename="",
                    type="", serialNumber="",
-                   ship, cruise, station,
+                   ship="", cruise="", station="",
                    ##1108 date=NULL,
                    startTime=NULL,
                    ##1108 recovery=NULL,
-                   longitude, latitude,
+                   longitude=NA, latitude=NA,
                    deploymentType="unknown",
                    pressureAtmospheric=0,
                    ##1108 waterDepth=NA,
@@ -980,16 +980,6 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
         return(res)
     }
-    if (missing(ship))
-        ship <- ""
-    if (missing(cruise))
-        cruise <- ""
-    if (missing(station))
-        station <- ""
-    if (missing(longitude))
-        longitude <- NA
-    if (missing(latitude))
-        latitude <- NA
     oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     res <- new('ctd')
     waterDepth <- NA
