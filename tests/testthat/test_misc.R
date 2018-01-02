@@ -155,6 +155,9 @@ test_that("binApply1D simple", {
           x <- runif(n)
           f <- x^2
           b <- binApply1D(x, f, xbreaks=seq(0,1,0.25), FUN=mean)
+          expect_equal(b$xbreaks, c(0, 0.25, 0.5, 0.75, 1))
+          expect_equal(b$xmids, c(0.125, 0.375, 0.625, 0.875))
+          expect_equal(b$result, c(NA, 0.1249814763, 0.6214249866))
 })
 
 test_that("binApply1D with missing bins", {
@@ -188,6 +191,10 @@ test_that("binApply2D", {
           y <- runif(n)
           z <- outer(x, y)
           b <- binApply2D(x, y, z, xbreaks=seq(0,1,0.25), ybreaks=seq(0,1,0.25), FUN=mean)
+          expect_equal(names(b), c("xbreaks", "xmids", "ybreaks", "ymids", "result"))
+          expect_equal(b$result[1,], c(0.27639419054, 0.28860414805, 0.21404595826, 0.02384287241))
+          expect_equal(b$result[2,], c(0.4796382017, 0.4125746934, 0.4621441855, 0.1947436835))
+          expect_equal(b$result[3,], c(0.27639419054, 0.28860414805, 0.21404595826, 0.02384287241))
 })
 
 test_that("get_bit (unused in oce)", {

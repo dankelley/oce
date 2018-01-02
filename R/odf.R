@@ -803,7 +803,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         options <- options('warn')
         options(warn=-1)
         nullValue <- NA
-        t <- try({nullValue <- as.numeric(findInHeader("NULL_VALUE", lines)[1])},
+        t <- try({nullValue <- as.numeric(gsub("D\\+", "e+", findInHeader("NULL_VALUE", lines))[1])},
             silent=TRUE)
         if (class(t) == "try-error") {
             nullValue <- findInHeader("NULL_VALUE", lines)[1]

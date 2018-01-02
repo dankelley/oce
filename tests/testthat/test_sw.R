@@ -101,8 +101,8 @@ test_that("SA and CT, sound speed (GSW)", {
           expect_equal(SA, swAbsoluteSalinity(ctd))
           expect_equal(CT, swConservativeTemperature(salinity=SP, temperature=t, pressure=p, longitude=lon, latitude=lat))
           expect_equal(CT, swConservativeTemperature(ctd))
-          stopifnot(all.equal(1731.995,swSoundSpeed(40,T90fromT68(40),1e4,eos="unesco"),scale=1,tolerance=0.001))
-          stopifnot(all.equal(1731.995,swSoundSpeed(as.ctd(40,T90fromT68(40),1e4),eos="unesco"),scale=1,tolerance=0.001))
+          expect_equal(1731.995, swSoundSpeed(40,T90fromT68(40),1e4,eos="unesco"),scale=1,tolerance=0.001)
+          expect_equal(1731.995, swSoundSpeed(as.ctd(40,T90fromT68(40),1e4),eos="unesco"),scale=1,tolerance=0.001)
           SA <- gsw::gsw_SA_from_SP(SP=40, p=1e4, longitude=300, latitude=30)
           CT <- gsw::gsw_CT_from_t(SA, 40, 1e4)
           speedGSW <- gsw::gsw_sound_speed(SA, CT, 1e4)
@@ -207,8 +207,8 @@ test_that("swSTrho", {
           p <- 0
           ## 9.1 UNESCO swSTrho
           Su <- swSTrho(T90fromT68(T), rho, p, eos="unesco")
-          stopifnot(all.equal(Su, 28.65114808083))
-          stopifnot(all.equal(rho, swRho(Su, T90fromT68(T), 0, eos="unesco")))
+          expect_equal(Su, 28.65114808083)
+          expect_equal(rho, swRho(Su, T90fromT68(T), 0, eos="unesco"))
           ## 9.2 GSW swSTrho
           CT <- gsw::gsw_CT_from_t(Su, T, p)
           Sg <- swSTrho(CT, rho, p, eos="gsw")
@@ -217,11 +217,10 @@ test_that("swSTrho", {
 
 test_that("misc sw calculations", {
           ## The following was hard-coded using values from GSW3.03, and it failed with GSW3.05.
-          ## stopifnot(all.equal(Sg, 28.7842812841013, scale=1, tolerance=1e-8))
-
+          ## expect_equal(Sg, 28.7842812841013, scale=1, tolerance=1e-8)
           T <- swTSrho(35, 23, 0, eos="unesco") # 26.11301
-          stopifnot(all.equal(T68fromT90(T), 26.1130113601685, scale=1, tolerance=1e-8))
-          stopifnot(all.equal(swRho(35, T, 0, eos="unesco"), 1023, scale=1, tolerance=1e-5))
+          expect_equal(T68fromT90(T), 26.1130113601685, scale=1, tolerance=1e-8)
+          expect_equal(swRho(35, T, 0, eos="unesco"), 1023, scale=1, tolerance=1e-5)
 
 })
 
@@ -236,7 +235,7 @@ test_that("sound absorption", {
 
 test_that("viscosity", {
           ## Merely a test against future changes; the original reference did not provide a test value.
-          stopifnot(all.equal(swViscosity(30, 10), 0.001383779, scale=1, tolerance=0.000000001))
+          expect_equal(swViscosity(30, 10), 0.001383779, scale=1, tolerance=0.000000001)
 })
 
 test_that("thermal conductivity", {
