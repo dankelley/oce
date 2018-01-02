@@ -1167,8 +1167,8 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
 #' @param deploymentType character string indicating the type of deployment (see
 #' \code{\link{as.ctd}}).
 #' @template debugTemplate
-rsk2ctd <- function(x, pressureAtmospheric=0, longitude, latitude,
-                    ship, cruise, station, deploymentType,
+rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
+                    ship=NULL, cruise=NULL, station=NULL, deploymentType=NULL,
                     debug=getOption("oceDebug"))
 {
     oceDebug(debug, "rsk2ctd(...) {\n", sep="", unindent=1)
@@ -1178,17 +1178,17 @@ rsk2ctd <- function(x, pressureAtmospheric=0, longitude, latitude,
     ## we have to take care of two cases in deciding on some things. The procedure is
     ## to use the argument to rsk2ctd if one is given, otherwise to use the value already
     ## in x@metadata, otherwise to set a default that matches as.ctd().
-    res@metadata$longitude <- if (!missing(longitude)) longitude else
+    res@metadata$longitude <- if (!is.null(longitude)) longitude else
         if (is.null(res@metadata$longitude)) NA else res@metadata$longitude
-    res@metadata$latitude <- if (!missing(latitude)) latitude else
+    res@metadata$latitude <- if (!is.null(latitude)) latitude else
         if (is.null(res@metadata$latitude)) NA else res@metadata$latitude
-    res@metadata$ship <- if (!missing(ship)) ship else
+    res@metadata$ship <- if (!is.null(ship)) ship else
         if (is.null(res@metadata$ship)) "" else res@metadata$ship
-    res@metadata$cruise <- if (!missing(cruise)) cruise else
+    res@metadata$cruise <- if (!is.null(cruise)) cruise else
         if (is.null(res@metadata$cruise)) "" else res@metadata$cruise
-    res@metadata$station <- if (!missing(station)) station else
+    res@metadata$station <- if (!is.null(station)) station else
         if (is.null(res@metadata$station)) "" else res@metadata$station
-    res@metadata$deploymentType <- if (!missing(deploymentType)) deploymentType else
+    res@metadata$deploymentType <- if (!is.null(deploymentType)) deploymentType else
         if (is.null(res@metadata$deploymentType)) "unknown" else res@metadata$deploymentType
 
     ## We start by copying the data, but we may need to do some fancy footwork for pressure, because

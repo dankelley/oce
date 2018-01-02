@@ -5,8 +5,9 @@
 \title{Read an ADV data file}
 \usage{
 read.adv.sontek.serial(file, from = 1, to, by = 1,
-  tz = getOption("oceTz"), longitude = NA, latitude = NA, start, deltat,
-  debug = getOption("oceDebug"), monitor = FALSE, processingLog)
+  tz = getOption("oceTz"), longitude = NA, latitude = NA, start = NULL,
+  deltat = NULL, debug = getOption("oceDebug"), monitor = FALSE,
+  processingLog = NULL)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file

@@ -1041,7 +1041,6 @@ tidem <- function(t, x, constituents, infer=NULL,
     ## this list is well-formed because of extensive tests near
     ## the start of this function.
     if (!is.null(infer)) {
-        ninfer <- length(infer$name)
         for (n in seq_along(infer$name)) {
             oceDebug(debug, "n=", n, "; handling inferred constituent ", infer$name[n], "\n")
             iname <- which(tc$name == infer$name[n])[1]

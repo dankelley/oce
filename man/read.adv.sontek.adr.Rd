@@ -6,7 +6,7 @@
 \usage{
 read.adv.sontek.adr(file, from = 1, to, by = 1, tz = getOption("oceTz"),
   header = TRUE, longitude = NA, latitude = NA,
-  debug = getOption("oceDebug"), monitor = FALSE, processingLog)
+  debug = getOption("oceDebug"), monitor = FALSE, processingLog = NULL)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
