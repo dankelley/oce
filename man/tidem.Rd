@@ -5,7 +5,7 @@
 \title{Fit a Tidem (Tidal Model) to a Timeseries}
 \usage{
 tidem(t, x, constituents, infer = NULL, latitude = NULL, rc = 1,
-  regress = lm, debug = getOption("oceDebug"))
+  regress = lm, greenwich = FALSE, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{t}{Either a \code{sealevel} object (e.g. produced by
@@ -68,6 +68,10 @@ provided, \code{tidem} will try to infer this from \code{sl}.}
 \item{regress}{function to be used for regression, by default
 \code{\link{lm}}, but could be for example \code{rlm} from the
 \code{MASS} package.}
+
+\item{greenwich}{a logical value indicating whether to calculate
+phase in Greenwich terms, or with respect to the zero of
+\code{time} (i.e. the beginning of 1970, UTC).}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
