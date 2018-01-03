@@ -627,6 +627,9 @@ tidemAstron <- function(t)
 #' @param regress function to be used for regression, by default
 #' \code{\link{lm}}, but could be for example \code{rlm} from the
 #' \code{MASS} package.
+#' @param greenwich a logical value indicating whether to calculate
+#' phase in Greenwich terms, or with respect to the zero of
+#' \code{time} (i.e. the beginning of 1970, UTC).
 #' @template debugTemplate
 #' @return An object of \code{\link{tidem-class}}, consisting of
 #' \item{const}{constituent number, e.g. 1 for \code{Z0}, 1 for \code{SA},
@@ -701,6 +704,7 @@ tidemAstron <- function(t)
 #' @family things related to \code{tidem} data
 tidem <- function(t, x, constituents, infer=NULL,
                   latitude=NULL, rc=1, regress=lm,
+                  greenwich=FALSE,
                   debug=getOption("oceDebug"))
 {
     constituentNameFix <- function(names) # from T-TIDE to Foreman name
@@ -723,8 +727,11 @@ tidem <- function(t, x, constituents, infer=NULL,
         }
         names
     }
-    oceDebug(debug, "tidem(t, x, constituents,",
-             "latitude=", if (is.null(latitude)) "NULL" else latitude, ", rc, debug) {\n", sep="", unindent=1)
+    oceDebug(debug, "tidem(t, x, constituents",
+             ", latitude=", if (is.null(latitude)) "NULL" else latitude,
+             ", rc=", rc,
+             ", greenwich=", greenwich,
+             ", debug=", debug, ") {\n", sep="", unindent=1)
     cl <- match.call()
     if (missing(t))
         stop("must supply 't', either a vector of times or a sealevel object")
@@ -1179,6 +1186,13 @@ tidem <- function(t, x, constituents, infer=NULL,
         }
     }
     res <- new('tidem')
+    if (greenwich) {
+        message("should convert to greenwich phase...")
+        C <- unlist(lapply(name, function(n) which(n == tidedata$const$name)))
+        vuf <- tidemVuf(tRef, j=C, latitude=latitude)
+        phase <- phase - (vuf$v+vuf$u)*360
+        phase <- ifelse(phase < 0, phase+360, phase)
+    }
     res@data <- list(model=model,
                       call=cl,
                       tRef=tRef,
