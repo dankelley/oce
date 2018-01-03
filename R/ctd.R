@@ -953,11 +953,11 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
                    missingValue=NULL,
                    ##1108 quality=NULL, filename="",
                    type="", serialNumber="",
-                   ship, cruise, station,
+                   ship=NULL, cruise=NULL, station=NULL,
                    ##1108 date=NULL,
                    startTime=NULL,
                    ##1108 recovery=NULL,
-                   longitude, latitude,
+                   longitude=NULL, latitude=NULL,
                    deploymentType="unknown",
                    pressureAtmospheric=0,
                    ##1108 waterDepth=NA,
@@ -969,9 +969,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
     if (!missing(salinity) && inherits(salinity, "rsk")) {
         oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
         res <- rsk2ctd(salinity,
-                       pressureAtmospheric=pressureAtmospheric, 
+                       pressureAtmospheric=pressureAtmospheric,
                        longitude=longitude,
-                       latitude=latitude, 
+                       latitude=latitude,
                        ship=ship,
                        station=station,
                        cruise=cruise,
@@ -980,16 +980,6 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         oceDebug(debug, "} # as.ctd()\n", sep="", unindent=1)
         return(res)
     }
-    if (missing(ship))
-        ship <- ""
-    if (missing(cruise))
-        cruise <- ""
-    if (missing(station))
-        station <- ""
-    if (missing(longitude))
-        longitude <- NA
-    if (missing(latitude))
-        latitude <- NA
     oceDebug(debug, "as.ctd(...) {\n", sep="", unindent=1)
     res <- new('ctd')
     waterDepth <- NA
@@ -1019,9 +1009,9 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         cruise <- m$cruise
         station <- m$station
         startTime <- if (is.character(m$startTime)) startTime <- as.POSIXct(m$startTime, tz="UTC") else m$startTime
-        if (is.na(latitude) && "latitude" %in% names(m))
+        if (is.null(latitude) && "latitude" %in% names(m))
             latitude <- m$latitude
-        if (is.na(longitude) && "longitude" %in% names(m))
+        if (is.null(longitude) && "longitude" %in% names(m))
             longitude <- m$longitude
         ##1108 if (missing(date) && "date" %in% names(m)) {
         ##1108     date <- m$date
@@ -1310,14 +1300,22 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ##1108 res@metadata$src <- src
         res@metadata$deploymentType <- deploymentType
         ## If lon and lat are vectors, place in data, with averages in metadata.
+        if (length(latitude) != length(latitude))
+            stop("lengths of longitude and latitude must match, but they are ",
+                 length(longitude), " and ", length(latitude), ", respectively")
         if (length(latitude) == 1) {
-            res@metadata$longitude <- longitude[1]
-            res@metadata$latitude <- latitude
-        } else {
+            res@metadata$latitude <- latitude[1]
+        } else if (length(latitude) > 1) {
             if (length(latitude) != length(temperature))
                 stop("lengths of latitude and temperature must match")
-            data$longitude <- longitude
             data$latitude <- latitude
+        }
+        if (length(longitude) == 1) {
+            res@metadata$longitude <- longitude[1]
+        } else if (length(longitude) > 1) {
+            if (length(longitude) != length(temperature))
+                stop("lengths of longitude and temperature must match")
+            data$longitude <- longitude
         }
         res@data <- data
     }

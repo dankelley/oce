@@ -7,7 +7,7 @@
 read.adv.sontek.text(file, from = 1, to, by = 1, tz = getOption("oceTz"),
   originalCoordinate = "xyz", transformationMatrix, longitude = NA,
   latitude = NA, debug = getOption("oceDebug"), monitor = FALSE,
-  processingLog)
+  processingLog = NULL)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file

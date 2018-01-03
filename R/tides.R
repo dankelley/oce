@@ -1041,16 +1041,10 @@ tidem <- function(t, x, constituents, infer=NULL,
     ## this list is well-formed because of extensive tests near
     ## the start of this function.
     if (!is.null(infer)) {
-        ninfer <- length(infer$name)
-        indicesInfer <- rep(NA, ninfer)
-        nameInfer <- infer$name
-        amplitudeInfer <- rep(NA, ninfer)
-        phaseInfer <- rep(NA, ninfer)
         for (n in seq_along(infer$name)) {
             oceDebug(debug, "n=", n, "; handling inferred constituent ", infer$name[n], "\n")
             iname <- which(tc$name == infer$name[n])[1]
             oceDebug(debug, "infer$name[", n, "]='", infer$name[n], "' yields iname=", iname, "\n", sep="")
-            indicesInfer[n] <- iname
             oceDebug(debug, "iname=", iname, "\n")
             ## NOTE: we know that infer$from has been fitted for, because we forced it to be,
             ## irrespective of the Rayleight Criterion. Still, we test here, in case the code

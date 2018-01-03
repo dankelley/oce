@@ -493,7 +493,7 @@ setMethod("composite",
 #' for \code{flags} and \code{actions}.
 #' @param object An object of \code{\link{oce}}.
 #' @template handleFlagsTemplate
-setGeneric("handleFlags", function(object, flags, actions, debug) {
+setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, debug=options("oceDebug")) {
            standardGeneric("handleFlags")
          })
 
