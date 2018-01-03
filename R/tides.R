@@ -1,7 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 TESTinfer1 <- !TRUE
-TESTforeman <- TRUE
 
 #' @title Class to Store Tidal Models
 #'
@@ -1192,6 +1191,7 @@ tidem <- function(t, x, constituents, infer=NULL,
         vuf <- tidemVuf(tRef, j=C, latitude=latitude)
         phase <- phase - (vuf$v+vuf$u)*360
         phase <- ifelse(phase < 0, phase+360, phase)
+        phase <- ifelse(phase > 360, phase-360, phase)
     }
     res@data <- list(model=model,
                       call=cl,
@@ -1203,6 +1203,7 @@ tidem <- function(t, x, constituents, infer=NULL,
                       phase=phase,
                       p=p)
     res@metadata$rc <- rc
+    res@metadata$greenwich <- greenwich
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
