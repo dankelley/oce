@@ -799,6 +799,7 @@ tidem <- function(t, x, constituents, infer=NULL,
     startTime <- t[1]
     endTime <- tail(t, 1)
     centralTime <- numberAsPOSIXct((as.numeric(startTime)+as.numeric(endTime))/2, tz=attr(startTime, "tzone"))
+    message("centralTime=", centralTime)
     years <- as.numeric(difftime(endTime, startTime, units="secs")) / 86400 / 365.25
     if (years > 18.6)
         warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
@@ -893,7 +894,7 @@ tidem <- function(t, x, constituents, infer=NULL,
         }
     }
     if (length(dropTerm) > 0) {
-        message("Note: the record is too short to fit for constituents: ", paste(name[dropTerm], collapse=" "))
+        warning("Note: the tidal record is too short to fit for constituents: ", paste(name[dropTerm], collapse=" "), "\n")
         indices <- indices[-dropTerm]
         name <- name[-dropTerm]
         freq <- freq[-dropTerm]
@@ -970,6 +971,7 @@ tidem <- function(t, x, constituents, infer=NULL,
     pi <- 4 * atan2(1, 1)
     ## tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
     tRef <- centralTime
+    message("  tRef=", tRef)
     hour2pi <- 2 * pi * (as.numeric(time, tz="UTC") - as.numeric(tRef)) / 3600
     oceDebug(debug, "tRef=", tRef, ", nc=", nc, ", length(name)=", length(name), "\n")
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
@@ -1018,6 +1020,7 @@ tidem <- function(t, x, constituents, infer=NULL,
         ## Adjust amplitude phase, as in ~/src/foreman/tide12_r2.f:405
         j <- which(tidedata$const$name==name[i-1])
         vuf <- tidemVuf(tRef, j=j, latitude=latitude)
+        browser()
         amplitude[i] <- amplitude[i] / vuf$f
         phaseOffset <- (vuf$u + vuf$v) * 360 * pi / 180 # the 360 is because tidemVuf returns in cycles
         phase[i] <- phase[i] + phaseOffset
@@ -1186,7 +1189,6 @@ tidem <- function(t, x, constituents, infer=NULL,
     }
     res <- new('tidem')
     if (greenwich) {
-        message("should convert to greenwich phase...")
         C <- unlist(lapply(name, function(n) which(n == tidedata$const$name)))
         vuf <- tidemVuf(tRef, j=C, latitude=latitude)
         phase <- phase - (vuf$v+vuf$u)*360
