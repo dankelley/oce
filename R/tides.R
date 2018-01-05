@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-TESTinfer1 <- !TRUE
+##. TESTinfer1 <- !TRUE
 
 #' @title Class to Store Tidal Models
 #'
@@ -938,22 +938,22 @@ tidem <- function(t, x, constituents, infer=NULL,
             }
         }
     }
-    if (TESTinfer1) {
-        ## Ensure that we fit for any infer$name constituents, *regardless* of whether
-        ## those consitituents are permitted by the Rayleigh criterion.
-        if (!is.null(infer)) {
-            for (n in c(infer$name)) {
-                if (!(n %in% name)) {
-                    a <- which(tc$name == n)
-                    indices <- c(indices, a)
-                    name <- c(name, tc$name[a])
-                    freq <- c(freq, tc$freq[a])
-                    kmpr <- c(kmpr, tc$kmpr[a])
-                    message("fitting for infer$name=", n, ", even though the Rayleigh Criterion would exclude it")
-                }
-            }
-        }
-    }
+    ##. if (TESTinfer1) {
+    ##.     ## Ensure that we fit for any infer$name constituents, *regardless* of whether
+    ##.     ## those consitituents are permitted by the Rayleigh criterion.
+    ##.     if (!is.null(infer)) {
+    ##.         for (n in c(infer$name)) {
+    ##.             if (!(n %in% name)) {
+    ##.                 a <- which(tc$name == n)
+    ##.                 indices <- c(indices, a)
+    ##.                 name <- c(name, tc$name[a])
+    ##.                 freq <- c(freq, tc$freq[a])
+    ##.                 kmpr <- c(kmpr, tc$kmpr[a])
+    ##.                 message("fitting for infer$name=", n, ", even though the Rayleigh Criterion would exclude it")
+    ##.             }
+    ##.         }
+    ##.     }
+    ##. }
 
     ## sort constituents by index
     oindices <- order(indices)
@@ -1047,6 +1047,16 @@ tidem <- function(t, x, constituents, infer=NULL,
     if (debug > 0) {
         message("BEFORE inference:")
         print(data.frame(name=name, freq=round(freq,6), amplitude=round(amplitude,4)))
+    }
+
+    ## Do Greenwich phase corerrection, if `infer` is TRUE
+    if (greenwich) {
+        message("using Greenwich phase")
+        C <- unlist(lapply(name, function(n) which(n == tidedata$const$name)))
+        vuf <- tidemVuf(tRef, j=C, latitude=latitude)
+        phase <- phase + (vuf$v+vuf$u)*360
+        phase <- ifelse(phase < 0, phase+360, phase)
+        phase <- ifelse(phase > 360, phase-360, phase)
     }
 
     ## Handle (optional) inferred constituents. We know that
@@ -1155,19 +1165,24 @@ tidem <- function(t, x, constituents, infer=NULL,
                     S <- r12 * (f2/f1) * sin(tmp) * sin(rpd*(vu2-vu1+zeta)) / tmp
                     C <- 1 + r12 * (f2/f1) * sin(tmp) * cos(rpd*(vu2-vu1+zeta)) / tmp
                     oceDebug(debug, "tmp=", tmp, ", S=", S, ", C=", C, ", sqrt(S^2+C^2)=", sqrt(S^2+C^2), "\n")
-                    oceDebug(1+debug, infer$from[n], " amplitude, old=", amplitude[ifrom], ", new=", amplitude[ifrom]/sqrt(S^2+C^2), "\n")
+                    oceDebug(1+debug, infer$from[n], "amplitude, old=", amplitude[ifrom], ", new=", amplitude[ifrom]/sqrt(S^2+C^2), "\n")
                     amplitude[ifrom] <- amplitude[ifrom] / sqrt(S^2+C^2)
-                    oceDebug(1+debug, infer$from[n], " phase, old=", phase[ifrom], ", new=", phase[ifrom]+atan2(S, C) / rpd, "\n")
+                    oceDebug(1+debug, infer$from[n], "phase, old=", phase[ifrom], ", new=", phase[ifrom]+atan2(S, C) / rpd, "\n")
                     phase[ifrom] <- phase[ifrom] + atan2(S, C) / rpd
                     ## End of Foreman 1977 inference calculation. Now we can define 'name' i.t.o. 'from'
                     iname <- which(tc$name == infer$name[n])[1]
+                    oceDebug(1+debug, "Below is inference for ", infer$name[n], " (index=", iname, ")\n")
                     indices <- c(indices, iname)
                     name <- c(name, infer$name[n])
                     freq <- c(freq, tc$freq[iname])
-                    amplitude <- c(amplitude, infer$amp[n] * amplitude[ifrom])
-                    phase <- c(phase, phase[ifrom] - infer$phase[n])
+                    amplitudeInferred <- infer$amp[n] * amplitude[ifrom]
+                    phaseInferred <- phase[ifrom] - infer$phase[n]
+                    oceDebug(1+debug, "  ", infer$name[n], "inferred amplitude=", amplitudeInferred, "\n")
+                    oceDebug(1+debug, "  ", infer$name[n], "inferred phase=", phaseInferred, "\n")
+                    amplitude <- c(amplitude, amplitudeInferred)
+                    phase <- c(phase, phaseInferred)
                     p <- c(p, p[ifrom])
-                    oceDebug(debug, "create ", infer$name[n], " (index=", iname, ", ", tc$freq[iname], " cph) based on ", name[ifrom], " (", freq[ifrom], " cph)\n", sep="")
+                    oceDebug(1+debug, "  create ", infer$name[n], " (index=", iname, ", ", tc$freq[iname], " cph) based on ", name[ifrom], " (index ", ifrom, ", ", freq[ifrom], " cph)\n", sep="")
                 }
             } else {
                 stop("Internal error (please report): cannot infer ", infer$name[n], " from ", infer$from[n], " because the latter was not computed")
@@ -1180,6 +1195,11 @@ tidem <- function(t, x, constituents, infer=NULL,
         ## reorder by original position in tc
         o <- order(indices)
         indices <- indices[o]
+        stopifnot(length(o)==length(name))
+        stopifnot(length(o)==length(freq))
+        stopifnot(length(o)==length(amplitude))
+        stopifnot(length(o)==length(phase))
+        stopifnot(length(o)==length(p))
         name <- name[o]
         freq <- freq[o]
         amplitude <- amplitude[o]
@@ -1192,14 +1212,6 @@ tidem <- function(t, x, constituents, infer=NULL,
         }
     }
     res <- new('tidem')
-    if (greenwich) {
-        message("using Greenwich phase")
-        C <- unlist(lapply(name, function(n) which(n == tidedata$const$name)))
-        vuf <- tidemVuf(tRef, j=C, latitude=latitude)
-        phase <- phase + (vuf$v+vuf$u)*360
-        phase <- ifelse(phase < 0, phase+360, phase)
-        phase <- ifelse(phase > 360, phase-360, phase)
-    }
     res@data <- list(model=model,
                       call=cl,
                       tRef=tRef,
