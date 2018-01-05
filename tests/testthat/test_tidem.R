@@ -16,7 +16,7 @@ unresolvable <- c("SA", "PI1", "S1", "PSI1", "GAM2", "H1", "H2", "T2", "R2")
 resolvable <- standard[!(standard %in% unresolvable)]
 
 test_that("tidemAstron() agrees with T_TIDE", {
-          ## a test value for tidem(data(sealevelTuktoyaktuk))
+          ## a test value from tidem with data(sealevelTuktoyaktuk)
           ctime <- numberAsPOSIXct(721574.000000, "matlab")
           a <- tidemAstron(ctime)
           expect_equal(a$astro, c(-0.02166309284298506554, 0.39911836945395862131,
@@ -28,7 +28,7 @@ test_that("tidemAstron() agrees with T_TIDE", {
 })
 
 test_that("tidemVuf() agrees with T_TIDE", {
-          ## a test value for tidem(data(sealevelTuktoyaktuk))
+          ## a test value from tidem with data(sealevelTuktoyaktuk)
           t <- numberAsPOSIXct(721574, "matlab")
           latitude <- 69.45
           j <- c(5, 6, 8, 9, 11, 13, 16, 21, 25, 28, 29, 35, 40, 42, 48, 54, 57, 61, 68,
@@ -79,7 +79,8 @@ test_that("tidemVuf() agrees with T_TIDE", {
 
 
 test_that("tidem constituents match previous versions", {
-          m <- tidem(sealevel)
+          m <- expect_output(tidem(sealevel),
+                             "the tidal record is too short to fit for constituents")
           expect_equal(length(m@data$name), 60)
           expect_equal(head(m@data$name), c("Z0", "SSA", "MSM", "MM", "MSF", "MF"))
           expect_equal(tail(m@data$name), c("2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8"))
@@ -94,9 +95,11 @@ test_that("tidem constituents match previous versions", {
 })
 
 test_that("Rayleigh criterion", {
-          tide1 <- tidem(sealevel)
+          tide1 <- expect_output(tidem(sealevel),
+                                 "the tidal record is too short to fit for constituents")
           expect_equal(tide1[["data"]]$name, resolvable)
-          tide2 <- tidem(sealevel, constituents="standard")
+          tide2 <- expect_output(tidem(sealevel, constituents="standard"),
+                                 "the tidal record is too short to fit for constituents")
           expect_equal(tide1[["data"]]$name, tide2[["data"]]$name)
 })
 
@@ -105,7 +108,8 @@ test_that("tailoring of constituents", {
           tide3 <- tidem(sealevel, constituents = c("M2", "K2"))
           expect_equal(tide3[["data"]]$name, c("Z0", "M2", "K2"))
           ## check that we can remove constituents
-          tide5 <- tidem(sealevel, constituents = c("standard", "-M2"))
+          tide5 <- expect_output(tidem(sealevel, constituents = c("standard", "-M2")),
+                                 "the tidal record is too short to fit for constituents")
           expect_equal(tide5[["data"]]$name, resolvable[resolvable != "M2"])
 })
 
@@ -120,11 +124,13 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
           ## this is set up to matche the test in Foreman's Appendix 7.1 (and 7.3),
           ## and also in the TTIDE paper by Pawlowicz et al 2002 (Table 1).
           data("sealevelTuktoyaktuk")
-          m <- tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
-                     infer=list(name=c("P1", "K2"), # 0.0415525871 0.0835614924
-                                from=c("K1", "S2"), # 0.0417807462 0.0833333333
-                                amp=c(0.33093, 0.27215),
-                                phase=c(-7.07, -22.40)))
+          m <- expect_output(tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
+                                   infer=list(name=c("P1", "K2"), # 0.0415525871 0.0835614924
+                                              from=c("K1", "S2"), # 0.0417807462 0.0833333333
+                                              amp=c(0.33093, 0.27215),
+                                              phase=c(-7.07, -22.40))),
+                                 "the tidal record is too short to fit for constituents")
+
           ## Do constituents match Foreman and TTIDE?
           expect_equal(foreman$name, m@data$name)
           expect_equal(foreman$frequency, m@data$freq, tol=1e-7)
