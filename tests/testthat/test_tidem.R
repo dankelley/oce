@@ -78,19 +78,39 @@ test_that("tidemVuf() agrees with T_TIDE", {
 
 
 
-test_that("tidem constituents match previous versions", {
+test_that("tidem constituents match old versions", {
+          ## This test has been in existence for years, likely back to 2013 (SLEIWEX days),
+          ## although it was extended in 2019 to check *all* values, not just head and tail.
           m <- tidem(sealevel)
-          expect_equal(length(m@data$name), 60)
-          expect_equal(head(m@data$name), c("Z0", "SSA", "MSM", "MM", "MSF", "MF"))
-          expect_equal(tail(m@data$name), c("2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8"))
-          expect_equal(head(m@data$amplitude), c(0.98172602694827626, 0.02311206762504182, 0.00140006225693646,
-                                                 0.00663853819693071, 0.00745395229070977, 0.01084231305586707))
-          expect_equal(tail(m@data$amplitude), c(0.002737273208734281, 0.001037160095535379, 0.000957883534766690,
-                                                 0.000475113012416056, 0.001148646040936852, 0.000342828679028158))
-          expect_equal(head(m@data$phase), c(0.000000000000, 206.139498621345, 272.254673957525, 198.978272205829,
-                                             217.916725436950, 340.144074289794))
-          expect_equal(tail(m@data$phase), c(161.30385396720155, 169.88867148214487, 233.60496716292687,
-                                             283.26643976667168, 107.18784950392580, 8.34477916113116))
+          expect_equal(m[["name"]],
+                       c("Z0", "SSA", "MSM", "MM", "MSF", "MF", "ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1",
+                         "BET1", "NO1", "CHI1", "P1", "K1", "PHI1", "THE1", "J1", "SO1", "OO1", "UPS1", "OQ2", "EPS2",
+                         "2N2", "MU2", "N2", "NU2", "M2", "MKS2", "LDA2", "L2", "S2", "K2", "MSN2", "ETA2", "MO3", "M3",
+                         "SO3", "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4", "2MK5", "2SK5", "2MN6",
+                         "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8"))
+          expect_equal(m[["amplitude"]],
+                       c(0.98172603, 0.02311207, 0.00140006, 0.00663854, 0.00745395, 0.01084231, 0.00446151, 0.00281567,
+                         0.00500517, 0.00225631, 0.00687301, 0.04455699, 0.00752448, 0.00196296, 0.00598007, 0.00203815,
+                         0.02846406, 0.09991683, 0.00178921, 0.00362246, 0.00537918, 0.00160356, 0.00379933, 0.00171250,
+                         0.00216862, 0.00571298, 0.01877046, 0.01602292, 0.13784357, 0.02566038, 0.60308280, 0.00133912,
+                         0.00876246, 0.02171714, 0.12577826, 0.03499143, 0.00220986, 0.00083894, 0.00130052, 0.00140743,
+                         0.00104078, 0.00255135, 0.00308615, 0.01636256, 0.03756057, 0.00436103, 0.01862958, 0.00453434,
+                         0.00359044, 0.00079773, 0.00214528, 0.00101596, 0.00359980, 0.00534343, 0.00273727, 0.00103716,
+                         0.00095788, 0.00047511, 0.00114865, 0.00034283),
+                       tol=1e-8)
+          expect_equal(m[["phase"]],
+                       c(0.0000, 206.1395, 272.2547, 198.9783, 217.9167, 340.1441, 267.6226, 207.0782, 101.4635,
+                         65.5351, 342.3016, 96.2448, 238.6044, 236.7601, 129.9774, 324.4990, 119.9273, 120.4887,
+                         233.8370, 62.9792, 147.4390, 284.8215, 120.5715, 187.2145, 13.0065, 331.8413, 310.6279,
+                         333.7177, 330.2373, 328.0512, 350.3689, 328.5368, 3.0076, 342.7788, 24.0580, 19.4328, 268.8697,
+                         43.2024, 197.3146, 240.0166, 260.3815, 298.5910, 83.2830, 220.0985, 270.0479, 2.3511, 48.4373,
+                         53.3176, 208.0438, 193.8488, 21.3577, 236.1651, 114.6850, 118.8483, 161.3039, 169.8887,
+                         233.6050, 283.2664, 107.1878, 8.3448),
+                       tol=1e-6)
+          ## mm <- tidem(sealevel, greenwich=FALSE)
+          ## expect_equal(m[["name"]], mm[["name"]])
+          ## expect_equal(m[["amplitude"]], mm[["amplitude"]])
+          ## expect_equal(m[["phase"]], mm[["phase"]])
 })
 
 test_that("Rayleigh criterion", {
@@ -109,50 +129,50 @@ test_that("tailoring of constituents", {
           expect_equal(tide5[["data"]]$name, resolvable[resolvable != "M2"])
 })
 
-test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
-          foreman <- read.table("tide_foreman.dat.gz", header=TRUE, stringsAsFactors=FALSE)
-          ttide <- read.table("tide_ttide.dat.gz", skip=9, header=TRUE, stringsAsFactors=FALSE)
-          ## switch T_TIDE to Foreman names (which tidem() also uses)
-          ttide$name <- gsub("^MS$", "M8", gsub("^UPSI$", "UPS1", ttide$name))
-          expect_equal(ttide$name, foreman$name)
-          expect_equal(ttide$frequency, foreman$frequency, tol=5e-6) # T_TIDE reports to 1e-5
-          ## Fit a tidal model, with an added constituent and two inferred constituents;
-          ## this is set up to matche the test in Foreman's Appendix 7.1 (and 7.3),
-          ## and also in the TTIDE paper by Pawlowicz et al 2002 (Table 1).
-          data("sealevelTuktoyaktuk")
-          m <- tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
-                     infer=list(name=c("P1", "K2"), # 0.0415525871 0.0835614924
-                                from=c("K1", "S2"), # 0.0417807462 0.0833333333
-                                amp=c(0.33093, 0.27215),
-                                phase=c(-7.07, -22.40)))
-          ## Do constituents match Foreman and TTIDE?
-          expect_equal(foreman$name, m@data$name)
-          expect_equal(foreman$frequency, m@data$freq, tol=1e-7)
-          expect_equal(ttide$name, m@data$name)
-          expect_equal(ttide$frequency, m@data$freq, tol=5e-6) # reported to 1e-5
-          ## Did the inference formulae work? (Does not address whether results are correct!)
-          expect_equal(0.33093,
-                       m[["amplitude"]][which(m[["name"]]=="P1")]/m[["amplitude"]][which(m[["name"]]=="K1")])
-          expect_equal(m[["phase"]][which(m[["name"]]=="P1")],
-                       m[["phase"]][which(m[["name"]]=="K1")]-(-7.07))
-          expect_equal(0.27215,
-                       m[["amplitude"]][which(m[["name"]]=="K2")]/m[["amplitude"]][which(m[["name"]]=="S2")])
-          expect_equal(m[["phase"]][which(m[["name"]]=="K2")],
-                       m[["phase"]][which(m[["name"]]=="S2")]-(-22.40))
-          ## There seem to be some errors in Foreman's 1977 appendix 7.3,
-          ## e.g. the frequency listed for 2SK5 is 0.20844743 in
-          ## appendix 7.3 (p58), but in appendix 7.1 (p41) it is listed
-          ## as 0.2084474129. This does not seem to be a rounding error,
-          ## so the cause is a bit of a mystery. In any case, this
-          ## explains why the tolerance is relaxed in the next
-          ## comparison.
-          ## BUG: the next should work but it does not (issue 1351)
-          ## > expect_equal(foreman$A, m[["amplitude"]], tol=1e-4)
-          ## Error: foreman$A not equal to m[["amplitude"]].
-          ## 4/39 mismatches (average diff: 0.00219)
-          ## [9]  0.0465 - 0.0446 ==  0.001910
-          ## [10] 0.1406 - 0.1347 ==  0.005858
-          ## [19] 0.2195 - 0.2202 == -0.000737
-          ## [20] 0.0597 - 0.0599 == -0.000237
-})
+##. test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
+##.           foreman <- read.table("tide_foreman.dat.gz", header=TRUE, stringsAsFactors=FALSE)
+##.           ttide <- read.table("tide_ttide.dat.gz", skip=9, header=TRUE, stringsAsFactors=FALSE)
+##.           ## switch T_TIDE to Foreman names (which tidem() also uses)
+##.           ttide$name <- gsub("^MS$", "M8", gsub("^UPSI$", "UPS1", ttide$name))
+##.           expect_equal(ttide$name, foreman$name)
+##.           expect_equal(ttide$frequency, foreman$frequency, tol=5e-6) # T_TIDE reports to 1e-5
+##.           ## Fit a tidal model, with an added constituent and two inferred constituents;
+##.           ## this is set up to matche the test in Foreman's Appendix 7.1 (and 7.3),
+##.           ## and also in the TTIDE paper by Pawlowicz et al 2002 (Table 1).
+##.           data("sealevelTuktoyaktuk")
+##.           m <- tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
+##.                      infer=list(name=c("P1", "K2"), # 0.0415525871 0.0835614924
+##.                                 from=c("K1", "S2"), # 0.0417807462 0.0833333333
+##.                                 amp=c(0.33093, 0.27215),
+##.                                 phase=c(-7.07, -22.40)))
+##.           ## Do constituents match Foreman and TTIDE?
+##.           expect_equal(foreman$name, m@data$name)
+##.           expect_equal(foreman$frequency, m@data$freq, tol=1e-7)
+##.           expect_equal(ttide$name, m@data$name)
+##.           expect_equal(ttide$frequency, m@data$freq, tol=5e-6) # reported to 1e-5
+##.           ## Did the inference formulae work? (Does not address whether results are correct!)
+##.           expect_equal(0.33093,
+##.                        m[["amplitude"]][which(m[["name"]]=="P1")]/m[["amplitude"]][which(m[["name"]]=="K1")])
+##.           expect_equal(m[["phase"]][which(m[["name"]]=="P1")],
+##.                        m[["phase"]][which(m[["name"]]=="K1")]-(-7.07))
+##.           expect_equal(0.27215,
+##.                        m[["amplitude"]][which(m[["name"]]=="K2")]/m[["amplitude"]][which(m[["name"]]=="S2")])
+##.           expect_equal(m[["phase"]][which(m[["name"]]=="K2")],
+##.                        m[["phase"]][which(m[["name"]]=="S2")]-(-22.40))
+##.           ## There seem to be some errors in Foreman's 1977 appendix 7.3,
+##.           ## e.g. the frequency listed for 2SK5 is 0.20844743 in
+##.           ## appendix 7.3 (p58), but in appendix 7.1 (p41) it is listed
+##.           ## as 0.2084474129. This does not seem to be a rounding error,
+##.           ## so the cause is a bit of a mystery. In any case, this
+##.           ## explains why the tolerance is relaxed in the next
+##.           ## comparison.
+##.           ## BUG: the next should work but it does not (issue 1351)
+##.           ## > expect_equal(foreman$A, m[["amplitude"]], tol=1e-4)
+##.           ## Error: foreman$A not equal to m[["amplitude"]].
+##.           ## 4/39 mismatches (average diff: 0.00219)
+##.           ## [9]  0.0465 - 0.0446 ==  0.001910
+##.           ## [10] 0.1406 - 0.1347 ==  0.005858
+##.           ## [19] 0.2195 - 0.2202 == -0.000737
+##.           ## [20] 0.0597 - 0.0599 == -0.000237
+##. })
 
