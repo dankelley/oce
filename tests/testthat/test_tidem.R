@@ -137,8 +137,6 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
           ## this is set up to matche the test in Foreman's Appendix 7.1 (and 7.3),
           ## and also in the TTIDE paper by Pawlowicz et al 2002 (Table 1).
           data("sealevelTuktoyaktuk")
-          ## Must shift time by 7 hours (TEMPORARY, for old definition of Tuktoyaktuk data)
-          sealevelTuktoyaktuk[["time"]] <- sealevelTuktoyaktuk[["time"]]
           m <- expect_output(tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
                                    infer=list(name=c("P1", "K2"), # 0.0415525871 0.0835614924
                                               from=c("K1", "S2"), # 0.0417807462 0.0833333333
@@ -160,49 +158,26 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
                        m[["amplitude"]][which(m[["name"]]=="K2")]/m[["amplitude"]][which(m[["name"]]=="S2")])
           expect_equal(m[["phase"]][which(m[["name"]]=="K2")],
                        m[["phase"]][which(m[["name"]]=="S2")]-(-22.40))
-          ##
-          ## Amplitude
-          ##
-          ## T_TIDE vs Foreman:
-          ## Both are reported to 0.0001, but the max
-          ## difference is 0.0002, so we test for that. I imagine
-          ## this is an issue with different rounding/truncation
-          ## conventions, and it's not worth worrying about.
+
+          ## Compare amplitude and phase with T_TIDE (exact match)
+          expect_equal(sum(abs(ttide$amplitude - round(m[["amplitude"]], 4))), 0)
+          expect_equal(sum(abs(ttide$phase - round(m[["phase"]], 2))), 0)
+
+          ## For separate interest, not really required for oce,
+          ## I compared T_TIDE with Foreman. Both amplitudes are reported
+          ## to 0.0001, but the max difference is 0.0002, and so I'll judge
+          ## that as perfect agreement (supposing e.g. differences in
+          ## rounding and truncation). However, the phases are a bit of
+          ## a mystery, differing by up to 0.12 degrees (i.e. 12X stated
+          ## resolution) for one of the inferred constituent pairs.
+          ## I would have expected tidem() to agree with Foreman, since
+          ## I wrote the inference code based on Foreman's equations
+          ## and not based on the T_TIDE code, so this is a bit
+          ## of a mystery. However, I don't see this as something to worry
+          ## much about ... Foreman's results were from a 1970s computer,
+          ## for one thing.
           expect_lt(max(abs(foreman$A - ttide$amplitude)), 0.000201)
-
-          ## Foreman vs tidem: somewhat bad agreement; see issue 1351 and related
-          ## > max(abs(m[["amplitude"]]-foreman$A))
-          ## [1] 0.05603206816
-          ## > rms(abs(m[["amplitude"]]-foreman$A))
-          ## [1] 0.01138642166
-          expect_lt(max(abs(m[["amplitude"]]-foreman$A)), 0.06) # FIXME: too lax
-          expect_lt(rms(m[["amplitude"]]-foreman$A), 0.015) # FIXME: too lax
-
-          ##
-          ## Phase (T_TIDE and Foreman give to 2 digits after decimal place)
-          ##
-          ## T_TIDE vs Foreman Phase
-          ##
-          ## These disagree by more than expected. FIXME: read T_TIDE docs to learn why
-          ## > max(abs(ttide$phase-foreman$G))
-          ## [1] 0.12
-          ## > rms(ttide$phase-foreman$G)
-          ## [1] 0.03158220856
-          expect_lt(max(abs(ttide$phase - foreman$G)), 0.125) # FIXME: MUCH too lax
-          expect_lt(rms(ttide$phase - foreman$G), 0.034) # FIXME: MUCH too lax
-          ## > max(abs((ttide$phase - m[["phase"]])))
-          ## [1] 0.004916031001
-          ## The match to T_TIDE Phase is exact, actually, since it T_TIDE gives to
-          ## only 2 digits past the decimal point.
-          ## > round(ttide$phase-m[["phase"]], 2)
-          ## [1] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-          expect_lt(max(abs((ttide$phase - m[["phase"]]))), 0.005)
-
-          ## There seem to be some errors in Foreman's 1977 appendix 7.3,
-          ## e.g. the frequency listed for 2SK5 is 0.20844743 in
-          ## appendix 7.3 (p58), but in appendix 7.1 (p41) it is listed
-          ## as 0.2084474129. This does not seem to be a rounding error,
-          ## so the cause is a bit of a mystery.
+          expect_lt(max(abs(foreman$G - ttide$phase)), 0.121)
 })
 
 test_that("tidem prediction match previous versions", {

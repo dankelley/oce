@@ -207,23 +207,21 @@ from that used in the T-TIDE package of Pawlowicz et al.
 Foreman names, issuing warnings when doing so.
 }
 
-\section{Comparison with Foreman's code and \code{T_TIDE}}{
+\section{Agreement with \code{T_TIDE} results}{
 
 
-Tests in the test suite check the results against the Foreman
-(1977) [1] output and the Pawlowicz (2002) [3] T_TIDE output. The
-comparison is somewhat confusing. For \strong{phase}, the \code{tidem}
-results agree with \code{T_TIDE} results to the resolution of
-0.001 degrees as printed in Pawlowicz et al. (2002 Table 1).
-Howeer, Foreman's phases differ from the \code{T_TIDE} phase
-by a RMS value of 0.032 degrees, which is 32X the resolution
-and therefore a bit hard to explain. Could it be an improvement
-in computer accuracy? For \strong{amplitude}, Foreman
-and \code{T_TIDE} agree to 0.0002, which is twice the
-printed resolution and is perhaps a rounding issue. However,
-and worrisomly, the \code{tidem} results differ from
-Foreman's by RMS of 0.015 and max(abs) of 0.06. This difference
-is a concern, and is being investigated in issues 1351 and related.
+The \code{tidem} amplitude and phase results, obtained with
+\preformatted{
+tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
+     infer=list(name=c("P1", "K2"),
+                from=c("K1", "S2"),
+                amp=c(0.33093, 0.27215),
+                phase=c(-7.07, -22.40))),
+}
+are identical the \code{T_TIDE} values listed in
+Table 1 of Pawlowicz et al. (2002),
+after rounding amplitude and phase to 4 and 2 digits past
+the decimal place, to match the format of the table.
 }
 
 \examples{
