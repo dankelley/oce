@@ -24,6 +24,14 @@ Although Foreman's Appendix 7.2 states that times are in Mountain standard
 time, the timezone is set to \code{UTC} in the present case, so that the
 results will be similar to those he provides in his Appendix 7.3.
 }
+\section{Historical note}{
+
+Until Jan 6, 2018, the time in this dataset had been increased
+by 7 hours. However, this alteration was removed on this date,
+to make for simpler comparison of amplitude and phase output with
+the results obtained by Foreman (1977) and Pawlowicz et al. (2002).
+}
+
 \examples{
 \dontrun{
 library(oce)

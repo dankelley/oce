@@ -631,9 +631,6 @@ tidemAstron <- function(t)
 #' @param regress function to be used for regression, by default
 #' \code{\link{lm}}, but could be for example \code{rlm} from the
 #' \code{MASS} package.
-#' @param greenwich a logical value indicating whether to calculate
-#' phase in Greenwich terms, or with respect to the zero of
-#' \code{time} (i.e. the beginning of 1970, UTC).
 #' @template debugTemplate
 #' @return An object of \code{\link{tidem-class}}, consisting of
 #' \item{const}{constituent number, e.g. 1 for \code{Z0}, 1 for \code{SA},
@@ -663,6 +660,7 @@ tidemAstron <- function(t)
 #' }
 #'
 #' @section Constituent Naming Convention:
+#'
 #' \code{tidem} uses constituent names that follow the convention
 #' set by Foreman (1977) [1]. This convention is slightly different
 #' from that used in the T-TIDE package of Pawlowicz et al.
@@ -670,6 +668,23 @@ tidemAstron <- function(t)
 #' \code{UPSI} and \code{MS} in T-TIDE. As a convenience,
 #' \code{tidem} converts from these T-TIDE names to the
 #' Foreman names, issuing warnings when doing so.
+#'
+#' @section Comparison with Foreman's code and \code{T_TIDE}:
+#'
+#' Tests in the test suite check the results against the Foreman
+#' (1977) [1] output and the Pawlowicz (2002) [3] T_TIDE output. The
+#' comparison is somewhat confusing. For \strong{phase}, the \code{tidem}
+#' results agree with \code{T_TIDE} results to the resolution of
+#' 0.001 degrees as printed in Pawlowicz et al. (2002 Table 1).
+#' Howeer, Foreman's phases differ from the \code{T_TIDE} phase
+#' by a RMS value of 0.032 degrees, which is 32X the resolution
+#' and therefore a bit hard to explain. Could it be an improvement
+#' in computer accuracy? For \strong{amplitude}, Foreman
+#' and \code{T_TIDE} agree to 0.0002, which is twice the
+#' printed resolution and is perhaps a rounding issue. However,
+#' and worrisomly, the \code{tidem} results differ from
+#' Foreman's by RMS of 0.015 and max(abs) of 0.06. This difference
+#' is a concern, and is being investigated in issues 1351 and related.
 #'
 #' @author Dan Kelley
 #' @references
@@ -708,7 +723,6 @@ tidemAstron <- function(t)
 #' @family things related to \code{tidem} data
 tidem <- function(t, x, constituents, infer=NULL,
                   latitude=NULL, rc=1, regress=lm,
-                  greenwich=FALSE,
                   debug=getOption("oceDebug"))
 {
     constituentNameFix <- function(names) # from T-TIDE to Foreman name
@@ -734,7 +748,6 @@ tidem <- function(t, x, constituents, infer=NULL,
     oceDebug(debug, "tidem(t, x, constituents",
              ", latitude=", if (is.null(latitude)) "NULL" else latitude,
              ", rc=", rc,
-             ", greenwich=", greenwich,
              ", debug=", debug, ") {\n", sep="", unindent=1)
     cl <- match.call()
     if (missing(t))
@@ -803,8 +816,6 @@ tidem <- function(t, x, constituents, infer=NULL,
     ## The arguments seem to be OK, so start the actual analysis now.
     startTime <- t[1]
     endTime <- tail(t, 1)
-    centralTime <- numberAsPOSIXct((as.numeric(startTime)+as.numeric(endTime))/2, tz=attr(startTime, "tzone"))
-    message("centralTime=", centralTime)
     years <- as.numeric(difftime(endTime, startTime, units="secs")) / 86400 / 365.25
     if (years > 18.6)
         warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
@@ -975,12 +986,11 @@ tidem <- function(t, x, constituents, infer=NULL,
     x[, 1] <- rep(1, nt)
     pi <- 4 * atan2(1, 1)
     rpd <- atan2(1, 1) / 45            # radians per degree
-    ## tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
-    tRef <- centralTime
+    ##tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") # was this ever used?
+    ##tRef <- centralTime # used previous to "dk" branch early 2018
     tRef <- numberAsPOSIXct(3600 * round(mean(as.numeric(time, tz="UTC")) / 3600), tz="UTC")
-    message("  tRef=", format(tRef, "%Y-%m-%d %H:%M:%s"), " (in tidem)")
+    message("  tRef=", format(tRef, "%Y-%m-%d %H:%M:%S"), " (in tidem)")
     hour2pi <- 2 * pi * (as.numeric(time) - as.numeric(tRef)) / 3600
-    DANhour2pi <<- hour2pi
     oceDebug(debug, "tRef=", tRef, ", nc=", nc, ", length(name)=", length(name), "\n")
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
     ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
@@ -1054,14 +1064,11 @@ tidem <- function(t, x, constituents, infer=NULL,
     }
 
     ## Do Greenwich phase corerrection, if `infer` is TRUE
-    if (greenwich) {
-        message("using Greenwich phase")
-        C <- unlist(lapply(name, function(n) which(n == tidedata$const$name)))
-        vuf <- tidemVuf(tRef, j=C, latitude=latitude)
-        phase <- phase + (vuf$v+vuf$u)*360
-        phase <- ifelse(phase < 0, phase+360, phase)
-        phase <- ifelse(phase > 360, phase-360, phase)
-    }
+    C <- unlist(lapply(name, function(n) which(n == tidedata$const$name)))
+    vuf <- tidemVuf(tRef, j=C, latitude=latitude)
+    phase <- phase + (vuf$v+vuf$u)*360
+    phase <- ifelse(phase < 0, phase+360, phase)
+    phase <- ifelse(phase > 360, phase-360, phase)
 
     ## Handle (optional) inferred constituents. We know that
     ## this list is well-formed because of extensive tests near
@@ -1215,6 +1222,7 @@ tidem <- function(t, x, constituents, infer=NULL,
             print(data.frame(name=name, freq=round(freq,5), amplitude=round(amplitude,4)))
         }
     }
+    phase <- phase %% 360
     res <- new('tidem')
     res@data <- list(model=model,
                       call=cl,
@@ -1226,7 +1234,7 @@ tidem <- function(t, x, constituents, infer=NULL,
                       phase=phase,
                       p=p)
     res@metadata$rc <- rc
-    res@metadata$greenwich <- greenwich
+    res@metadata$version <- "2"
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -1301,6 +1309,8 @@ predict.tidem <- function(object, newdata, ...)
             stop("newdata must be of class POSIXt")
         }
     } else {
+        if (!("version" %in% names(object@metadata)))
+            warning("prediction is being made based on an old object; it may be wrong\n")
         res <- predict(object@data$model, ...)
     }
     as.numeric(res)

@@ -5,7 +5,7 @@
 \title{Fit a Tidem (Tidal Model) to a Timeseries}
 \usage{
 tidem(t, x, constituents, infer = NULL, latitude = NULL, rc = 1,
-  regress = lm, greenwich = FALSE, debug = getOption("oceDebug"))
+  regress = lm, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{t}{Either a \code{sealevel} object (e.g. produced by
@@ -68,10 +68,6 @@ provided, \code{tidem} will try to infer this from \code{sl}.}
 \item{regress}{function to be used for regression, by default
 \code{\link{lm}}, but could be for example \code{rlm} from the
 \code{MASS} package.}
-
-\item{greenwich}{a logical value indicating whether to calculate
-phase in Greenwich terms, or with respect to the zero of
-\code{time} (i.e. the beginning of 1970, UTC).}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -201,6 +197,7 @@ Pawlowicz.
 
 \section{Constituent Naming Convention}{
 
+
 \code{tidem} uses constituent names that follow the convention
 set by Foreman (1977) [1]. This convention is slightly different
 from that used in the T-TIDE package of Pawlowicz et al.
@@ -208,6 +205,25 @@ from that used in the T-TIDE package of Pawlowicz et al.
 \code{UPSI} and \code{MS} in T-TIDE. As a convenience,
 \code{tidem} converts from these T-TIDE names to the
 Foreman names, issuing warnings when doing so.
+}
+
+\section{Comparison with Foreman's code and \code{T_TIDE}}{
+
+
+Tests in the test suite check the results against the Foreman
+(1977) [1] output and the Pawlowicz (2002) [3] T_TIDE output. The
+comparison is somewhat confusing. For \strong{phase}, the \code{tidem}
+results agree with \code{T_TIDE} results to the resolution of
+0.001 degrees as printed in Pawlowicz et al. (2002 Table 1).
+Howeer, Foreman's phases differ from the \code{T_TIDE} phase
+by a RMS value of 0.032 degrees, which is 32X the resolution
+and therefore a bit hard to explain. Could it be an improvement
+in computer accuracy? For \strong{amplitude}, Foreman
+and \code{T_TIDE} agree to 0.0002, which is twice the
+printed resolution and is perhaps a rounding issue. However,
+and worrisomly, the \code{tidem} results differ from
+Foreman's by RMS of 0.015 and max(abs) of 0.06. This difference
+is a concern, and is being investigated in issues 1351 and related.
 }
 
 \examples{
