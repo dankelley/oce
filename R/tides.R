@@ -435,8 +435,10 @@ tidemVuf <- function(t, j, latitude=NULL)
 #' Do some astronomical calculations for \code{\link{tidem}}.  This function is based directly
 #' on \code{t_astron} in the \code{T_TIDE} Matlab package [1].
 #'
-#' @param t The time in \code{POSIXct} format.  (It is \strong{very} important to
-#' use \code{tz="GMT"} in constructing \code{t}.)
+#' @param t Either a time in \code{POSIXct} format (with \code{"UTC"} timezoen),
+#' or an integer. In the second case, it is converted to a time with
+#' \code{\link{numberAsPOSIXct}(t,tz="UTC")}.
+#' If \code{t} (It is \strong{very} important to use \code{tz="GMT"} in constructing \code{t}.)
 #' @return A \code{\link[base]{list}} containing items named
 #' \code{astro} and \code{ader} (see \code{T_TIDE} documentation).
 #' @author Dan Kelley translated this from \code{t_astron} in the \code{T_TIDE}
@@ -451,6 +453,8 @@ tidemVuf <- function(t, j, latitude=NULL)
 tidemAstron <- function(t)
 {
     debug <- FALSE
+    if (is.numeric(t))
+        t <- numberAsPOSIXct(t, tz="UTC")
     d <- as.numeric(difftime(t, ISOdatetime(1899, 12, 31, 12, 0, 0, tz="UTC"), units="days"))
     D <- d / 10000
     a <- matrix(c(1, d, D^2, D^3), 4, 1)
@@ -1403,6 +1407,7 @@ webtide <- function(action=c("map", "predict"),
                     region="nwatl",
                     plot=TRUE, tformat, debug=getOption("oceDebug"), ...)
 {
+    rpd <- atan2(1, 1) / 45  # radians per degree
     action <- match.arg(action)
     nodeGiven <- !missing(node)
     longitudeGiven <- !missing(longitude)

@@ -208,7 +208,7 @@ test_that("ability to change conductivityUnit", {
           expect_equal(swSCTp(ctd3), ctd3[['salinity']], scale=1, tolerance=1e-8) # OK on 64-bit OSX
 })
 
-context("Reading ctd files")
+context("Read ctd files")
 
 ## A Dalhousie-produced cnv file.
 ##
