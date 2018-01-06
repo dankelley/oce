@@ -197,6 +197,7 @@ Pawlowicz.
 
 \section{Constituent Naming Convention}{
 
+
 \code{tidem} uses constituent names that follow the convention
 set by Foreman (1977) [1]. This convention is slightly different
 from that used in the T-TIDE package of Pawlowicz et al.
@@ -204,6 +205,23 @@ from that used in the T-TIDE package of Pawlowicz et al.
 \code{UPSI} and \code{MS} in T-TIDE. As a convenience,
 \code{tidem} converts from these T-TIDE names to the
 Foreman names, issuing warnings when doing so.
+}
+
+\section{Agreement with \code{T_TIDE} results}{
+
+
+The \code{tidem} amplitude and phase results, obtained with
+\preformatted{
+tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
+     infer=list(name=c("P1", "K2"),
+                from=c("K1", "S2"),
+                amp=c(0.33093, 0.27215),
+                phase=c(-7.07, -22.40))),
+}
+are identical the \code{T_TIDE} values listed in
+Table 1 of Pawlowicz et al. (2002),
+after rounding amplitude and phase to 4 and 2 digits past
+the decimal place, to match the format of the table.
 }
 
 \examples{

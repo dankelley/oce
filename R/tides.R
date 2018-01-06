@@ -1,7 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-TESTinfer1 <- !TRUE
-TESTforeman <- TRUE
+##. TESTinfer1 <- !TRUE
 
 #' @title Class to Store Tidal Models
 #'
@@ -260,6 +259,7 @@ setMethod(f="plot",
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+0.25, mgp[2]+1),
                               ...)
           {
+              rpd <- atan2(1, 1) / 45  # radians per degree
               data("tidedata", package="oce", envir=environment())
               tidedata <- get("tidedata")#, pos=globalenv())
               drawConstituent<-function(name="M2", side=3, col="blue", adj=NULL)
@@ -435,8 +435,10 @@ tidemVuf <- function(t, j, latitude=NULL)
 #' Do some astronomical calculations for \code{\link{tidem}}.  This function is based directly
 #' on \code{t_astron} in the \code{T_TIDE} Matlab package [1].
 #'
-#' @param t The time in \code{POSIXct} format.  (It is \strong{very} important to
-#' use \code{tz="GMT"} in constructing \code{t}.)
+#' @param t Either a time in \code{POSIXct} format (with \code{"UTC"} timezoen),
+#' or an integer. In the second case, it is converted to a time with
+#' \code{\link{numberAsPOSIXct}(t,tz="UTC")}.
+#' If \code{t} (It is \strong{very} important to use \code{tz="GMT"} in constructing \code{t}.)
 #' @return A \code{\link[base]{list}} containing items named
 #' \code{astro} and \code{ader} (see \code{T_TIDE} documentation).
 #' @author Dan Kelley translated this from \code{t_astron} in the \code{T_TIDE}
@@ -451,6 +453,8 @@ tidemVuf <- function(t, j, latitude=NULL)
 tidemAstron <- function(t)
 {
     debug <- FALSE
+    if (is.numeric(t))
+        t <- numberAsPOSIXct(t, tz="UTC")
     d <- as.numeric(difftime(t, ISOdatetime(1899, 12, 31, 12, 0, 0, tz="UTC"), units="days"))
     D <- d / 10000
     a <- matrix(c(1, d, D^2, D^3), 4, 1)
@@ -656,6 +660,7 @@ tidemAstron <- function(t)
 #' }
 #'
 #' @section Constituent Naming Convention:
+#'
 #' \code{tidem} uses constituent names that follow the convention
 #' set by Foreman (1977) [1]. This convention is slightly different
 #' from that used in the T-TIDE package of Pawlowicz et al.
@@ -663,6 +668,21 @@ tidemAstron <- function(t)
 #' \code{UPSI} and \code{MS} in T-TIDE. As a convenience,
 #' \code{tidem} converts from these T-TIDE names to the
 #' Foreman names, issuing warnings when doing so.
+#'
+#' @section Agreement with \code{T_TIDE} results:
+#'
+#' The \code{tidem} amplitude and phase results, obtained with
+#'\preformatted{
+#'tidem(sealevelTuktoyaktuk, constituents=c("standard", "M10"),
+#'      infer=list(name=c("P1", "K2"),
+#'                 from=c("K1", "S2"),
+#'                 amp=c(0.33093, 0.27215),
+#'                 phase=c(-7.07, -22.40))),
+#'}
+#' are identical the \code{T_TIDE} values listed in
+#' Table 1 of Pawlowicz et al. (2002),
+#' after rounding amplitude and phase to 4 and 2 digits past
+#' the decimal place, to match the format of the table.
 #'
 #' @author Dan Kelley
 #' @references
@@ -723,8 +743,10 @@ tidem <- function(t, x, constituents, infer=NULL,
         }
         names
     }
-    oceDebug(debug, "tidem(t, x, constituents,",
-             "latitude=", if (is.null(latitude)) "NULL" else latitude, ", rc, debug) {\n", sep="", unindent=1)
+    oceDebug(debug, "tidem(t, x, constituents",
+             ", latitude=", if (is.null(latitude)) "NULL" else latitude,
+             ", rc=", rc,
+             ", debug=", debug, ") {\n", sep="", unindent=1)
     cl <- match.call()
     if (missing(t))
         stop("must supply 't', either a vector of times or a sealevel object")
@@ -792,7 +814,6 @@ tidem <- function(t, x, constituents, infer=NULL,
     ## The arguments seem to be OK, so start the actual analysis now.
     startTime <- t[1]
     endTime <- tail(t, 1)
-    centralTime <- numberAsPOSIXct((as.numeric(startTime)+as.numeric(endTime))/2, tz=attr(startTime, "tzone"))
     years <- as.numeric(difftime(endTime, startTime, units="secs")) / 86400 / 365.25
     if (years > 18.6)
         warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
@@ -874,7 +895,7 @@ tidem <- function(t, x, constituents, infer=NULL,
     nc <- length(name)
 
     ## Check Rayleigh criterion
-    interval <- as.numeric(difftime(max(sl@data$time, na.rm=TRUE), min(sl@data$time, na.rm=TRUE), units="hours"))
+    interval <- (as.numeric(tail(sl@data$time, 1)) - as.numeric(sl@data$time[1])) / 3600
     dropTerm <- NULL
     for (i in 1:nc) {
         cc <- which(tc$name == kmpr[i])
@@ -887,7 +908,7 @@ tidem <- function(t, x, constituents, infer=NULL,
         }
     }
     if (length(dropTerm) > 0) {
-        message("Note: the record is too short to fit for constituents: ", paste(name[dropTerm], collapse=" "))
+        cat("Note: the tidal record is too short to fit for constituents: ", paste(name[dropTerm], collapse=" "), "\n")
         indices <- indices[-dropTerm]
         name <- name[-dropTerm]
         freq <- freq[-dropTerm]
@@ -930,22 +951,22 @@ tidem <- function(t, x, constituents, infer=NULL,
             }
         }
     }
-    if (TESTinfer1) {
-        ## Ensure that we fit for any infer$name constituents, *regardless* of whether
-        ## those consitituents are permitted by the Rayleigh criterion.
-        if (!is.null(infer)) {
-            for (n in c(infer$name)) {
-                if (!(n %in% name)) {
-                    a <- which(tc$name == n)
-                    indices <- c(indices, a)
-                    name <- c(name, tc$name[a])
-                    freq <- c(freq, tc$freq[a])
-                    kmpr <- c(kmpr, tc$kmpr[a])
-                    message("fitting for infer$name=", n, ", even though the Rayleigh Criterion would exclude it")
-                }
-            }
-        }
-    }
+    ##. if (TESTinfer1) {
+    ##.     ## Ensure that we fit for any infer$name constituents, *regardless* of whether
+    ##.     ## those consitituents are permitted by the Rayleigh criterion.
+    ##.     if (!is.null(infer)) {
+    ##.         for (n in c(infer$name)) {
+    ##.             if (!(n %in% name)) {
+    ##.                 a <- which(tc$name == n)
+    ##.                 indices <- c(indices, a)
+    ##.                 name <- c(name, tc$name[a])
+    ##.                 freq <- c(freq, tc$freq[a])
+    ##.                 kmpr <- c(kmpr, tc$kmpr[a])
+    ##.                 message("fitting for infer$name=", n, ", even though the Rayleigh Criterion would exclude it")
+    ##.             }
+    ##.         }
+    ##.     }
+    ##. }
 
     ## sort constituents by index
     oindices <- order(indices)
@@ -962,9 +983,12 @@ tidem <- function(t, x, constituents, infer=NULL,
     x <- array(dim=c(nt, 2 * nc))
     x[, 1] <- rep(1, nt)
     pi <- 4 * atan2(1, 1)
-    ## tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
-    tRef <- centralTime
-    hour2pi <- 2 * pi * (as.numeric(time, tz="UTC") - as.numeric(tRef)) / 3600
+    rpd <- atan2(1, 1) / 45            # radians per degree
+    ##tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") # was this ever used?
+    ##tRef <- centralTime # used previous to "dk" branch early 2018
+    tRef <- numberAsPOSIXct(3600 * round(mean(as.numeric(time, tz="UTC")) / 3600), tz="UTC")
+    ## message("  tRef=", format(tRef, "%Y-%m-%d %H:%M:%S"), " (in tidem)")
+    hour2pi <- 2 * pi * (as.numeric(time) - as.numeric(tRef)) / 3600
     oceDebug(debug, "tRef=", tRef, ", nc=", nc, ", length(name)=", length(name), "\n")
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
     ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
@@ -1013,8 +1037,8 @@ tidem <- function(t, x, constituents, infer=NULL,
         j <- which(tidedata$const$name==name[i-1])
         vuf <- tidemVuf(tRef, j=j, latitude=latitude)
         amplitude[i] <- amplitude[i] / vuf$f
-        phaseOffset <- (vuf$u + vuf$v) * 360 * pi / 180 # the 360 is because tidemVuf returns in cycles
-        phase[i] <- phase[i] + phaseOffset
+        phaseOffset <- (vuf$u + vuf$v) * 360 * rpd # the 360 is because tidemVuf returns in cycles
+        ##?phase[i] <- phase[i] - phaseOffset
         p[i] <- 0.5 * (p.all[is] + p.all[ic])
         if (debug > 0)
             cat(name[i-1], "F=", vuf$f, "angle adj=", (vuf$u+vuf$v)*360, "; amp=", amplitude[i], " phase=", phase[i], "\n")
@@ -1036,6 +1060,13 @@ tidem <- function(t, x, constituents, infer=NULL,
         message("BEFORE inference:")
         print(data.frame(name=name, freq=round(freq,6), amplitude=round(amplitude,4)))
     }
+
+    ## Do Greenwich phase corerrection, if `infer` is TRUE
+    C <- unlist(lapply(name, function(n) which(n == tidedata$const$name)))
+    vuf <- tidemVuf(tRef, j=C, latitude=latitude)
+    phase <- phase + (vuf$v+vuf$u)*360
+    phase <- ifelse(phase < 0, phase+360, phase)
+    phase <- ifelse(phase > 360, phase-360, phase)
 
     ## Handle (optional) inferred constituents. We know that
     ## this list is well-formed because of extensive tests near
@@ -1118,43 +1149,49 @@ tidem <- function(t, x, constituents, infer=NULL,
                     ## Notation: suffices "1" and "2" refer to "from" and "name" here.
                     i1 <- which(tc$name==infer$from[n])[1]
                     i2 <- which(tc$name==infer$name[n])[1]
-                    oceDebug(debug, "i1=", i1, ", i2=", i2, "\n")
-                    vuf1 <- tidemVuf(tRef, i1, latitude=latitude)
-                    vuf2 <- tidemVuf(tRef, i2, latitude=latitude)
-                    f1 <- vuf1$f
-                    f2 <- vuf2$f
-                    oceDebug(debug, "f1=", f1, ", f2=", f2, "\n")
+                    oceDebug(1+debug, "tRef=", format(tRef, "%Y-%m-%d %H:%M:%S"),
+                             ", i1=", i1, ", i2=", i2, ", lat=", latitude, "\n")
+                    vuf12 <- tidemVuf(tRef, c(i1, i2), latitude=latitude)
+                    #vuf2 <- tidemVuf(tRef, i2, latitude=latitude)
+                    f1 <- vuf12$f[1]
+                    f2 <- vuf12$f[2]
+                    oceDebug(1+debug, "f1=", f1, ", f2=", f2, "\n")
                     ## FIXME: what is unit of u and v? t_tide.m:482 suggests it is degrees
                     ## Foreman's tide12_r2.f:399 suggests U and V are in cycles,
                     ## and this is consistent with Pawlowicz's t_tide.m:451
                     ## We convert vu1 and vu2 to be in degrees, as t_tide.m does
-                    vu1 <- (vuf1$v + vuf1$u) * 360
-                    vu2 <- (vuf2$v + vuf2$u) * 360
+                    vu1 <- (vuf12$v[1] + vuf12$u[1]) * 360
+                    vu2 <- (vuf12$v[2] + vuf12$u[2]) * 360
                     oceDebug(debug, "vu1=", vu1, ", vu2=", vu2, "\n")
                     sigma1 <- tc$freq[i1]
                     sigma2 <- tc$freq[i2]
                     oceDebug(debug, "sigma1=", sigma1, ", sigma2=", sigma2, "\n")
                     ## tmp is pi*N*(sigma2-sigma1) in Foreman
-                    tmp <- pi * interval * (sigma2 - sigma1) # NB: interval is in hours, sigma in cph
+                    tmp <- pi * interval * (sigma2 - sigma1)
                     r12 <- infer$amp[n]
                     ## FIXME: sign for Foreman?
                     zeta <- infer$phase[n]
-                    rpd <- pi / 180
                     S <- r12 * (f2/f1) * sin(tmp) * sin(rpd*(vu2-vu1+zeta)) / tmp
                     C <- 1 + r12 * (f2/f1) * sin(tmp) * cos(rpd*(vu2-vu1+zeta)) / tmp
                     oceDebug(debug, "tmp=", tmp, ", S=", S, ", C=", C, ", sqrt(S^2+C^2)=", sqrt(S^2+C^2), "\n")
-                    oceDebug(debug, infer$from[n], " amplitude, old=", amplitude[ifrom], ", new=", amplitude[ifrom]/sqrt(S^2+C^2), "\n")
+                    oceDebug(1+debug, infer$from[n], "amplitude, old=", amplitude[ifrom], ", new=", amplitude[ifrom]/sqrt(S^2+C^2), "\n")
                     amplitude[ifrom] <- amplitude[ifrom] / sqrt(S^2+C^2)
-                    oceDebug(debug, infer$from[n], " phase, old=", phase[ifrom], ", new=", phase[ifrom]+atan2(S, C) / rpd, "\n")
+                    oceDebug(1+debug, infer$from[n], "phase, old=", phase[ifrom], ", new=", phase[ifrom]+atan2(S, C) / rpd, "\n")
+                    phase[ifrom] <- phase[ifrom] + atan2(S, C) / rpd
                     ## End of Foreman 1977 inference calculation. Now we can define 'name' i.t.o. 'from'
                     iname <- which(tc$name == infer$name[n])[1]
+                    oceDebug(1+debug, "Below is inference for ", infer$name[n], " (index=", iname, ")\n")
                     indices <- c(indices, iname)
                     name <- c(name, infer$name[n])
                     freq <- c(freq, tc$freq[iname])
-                    amplitude <- c(amplitude, infer$amp[n] * amplitude[ifrom])
-                    phase <- c(phase, phase[ifrom] - infer$phase[n])
+                    amplitudeInferred <- infer$amp[n] * amplitude[ifrom]
+                    phaseInferred <- phase[ifrom] - infer$phase[n]
+                    oceDebug(1+debug, "  ", infer$name[n], "inferred amplitude=", amplitudeInferred, "\n")
+                    oceDebug(1+debug, "  ", infer$name[n], "inferred phase=", phaseInferred, "\n")
+                    amplitude <- c(amplitude, amplitudeInferred)
+                    phase <- c(phase, phaseInferred)
                     p <- c(p, p[ifrom])
-                    oceDebug(debug, "create ", infer$name[n], " (index=", iname, ", ", tc$freq[iname], " cph) based on ", name[ifrom], " (", freq[ifrom], " cph)\n", sep="")
+                    oceDebug(1+debug, "  create ", infer$name[n], " (index=", iname, ", ", tc$freq[iname], " cph) based on ", name[ifrom], " (index ", ifrom, ", ", freq[ifrom], " cph)\n", sep="")
                 }
             } else {
                 stop("Internal error (please report): cannot infer ", infer$name[n], " from ", infer$from[n], " because the latter was not computed")
@@ -1167,6 +1204,11 @@ tidem <- function(t, x, constituents, infer=NULL,
         ## reorder by original position in tc
         o <- order(indices)
         indices <- indices[o]
+        stopifnot(length(o)==length(name))
+        stopifnot(length(o)==length(freq))
+        stopifnot(length(o)==length(amplitude))
+        stopifnot(length(o)==length(phase))
+        stopifnot(length(o)==length(p))
         name <- name[o]
         freq <- freq[o]
         amplitude <- amplitude[o]
@@ -1178,6 +1220,7 @@ tidem <- function(t, x, constituents, infer=NULL,
             print(data.frame(name=name, freq=round(freq,5), amplitude=round(amplitude,4)))
         }
     }
+    phase <- phase %% 360
     res <- new('tidem')
     res@data <- list(model=model,
                       call=cl,
@@ -1189,6 +1232,7 @@ tidem <- function(t, x, constituents, infer=NULL,
                       phase=phase,
                       p=p)
     res@metadata$rc <- rc
+    res@metadata$version <- "2"
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -1263,6 +1307,8 @@ predict.tidem <- function(object, newdata, ...)
             stop("newdata must be of class POSIXt")
         }
     } else {
+        if (!("version" %in% names(object@metadata)))
+            warning("prediction is being made based on an old object; it may be wrong\n")
         res <- predict(object@data$model, ...)
     }
     as.numeric(res)
@@ -1369,6 +1415,7 @@ webtide <- function(action=c("map", "predict"),
                     region="nwatl",
                     plot=TRUE, tformat, debug=getOption("oceDebug"), ...)
 {
+    rpd <- atan2(1, 1) / 45  # radians per degree
     action <- match.arg(action)
     nodeGiven <- !missing(node)
     longitudeGiven <- !missing(longitude)
@@ -1392,7 +1439,7 @@ webtide <- function(action=c("map", "predict"),
         stop("cannot find WebTide data file; rerun with debug=1 to see the searched list")
     if (action == "map") {
         if (plot) {
-            asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
+            asp <- 1 / cos(rpd*mean(range(triangles$latitude, na.rm=TRUE)))
             par(mfrow=c(1, 1), mar=c(3, 3, 2, 1), mgp=c(2, 0.7, 0))
             plot(triangles$longitude, triangles$latitude, pch=2, cex=1/4, lwd=1/8,
                  asp=asp, xlab="", ylab="", ...)
@@ -1481,16 +1528,18 @@ webtide <- function(action=c("map", "predict"),
         ## NOTE: tref is the *central time* for tidem()
         tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
         h <- (as.numeric(time) - as.numeric(tRef)) / 3600
+        tRef <- 3600 * round(mean(as.numeric(time)) / 3600)
+
         for (i in 1:nconstituents) {
             twoLetter <- substr(constituentse[i], 1, 2)
             C <- which(twoLetter == tidedata$const$name)
             vuf <- tidemVuf(tRef, j=C, latitude=latitude)
             phaseOffset <- (vuf$u + vuf$v) * 360
             ## NOTE: phase is *subtracted* here, but *added* in tidem()
-            elevation <- elevation + ampe[i] * cos( (360 * h / period[i] - phasee[i] + phaseOffset) * pi / 180 )
+            elevation <- elevation + ampe[i] * cos( (360 * h / period[i] - phasee[i] + phaseOffset) * rpd)
             ##> lines(time, elevation, col=i,lwd=3) ## Debug
-            u <- u + ampu[i] * cos( (360 * h / period[i] - phaseu[i] + phaseOffset) * pi / 180 )
-            v <- v + ampv[i] * cos( (360 * h / period[i] - phasev[i] + phaseOffset) * pi / 180 )
+            u <- u + ampu[i] * cos( (360 * h / period[i] - phaseu[i] + phaseOffset) * rpd)
+            v <- v + ampv[i] * cos( (360 * h / period[i] - phasev[i] + phaseOffset) * rpd)
             oceDebug(debug, sprintf("%s ", twoLetter),
                      sprintf("%4.2fh ", period[i]),
                      sprintf("%4.4fm ", ampe[i]), sprintf("%3.3fdeg", phasee[i]), "\n", sep="")
