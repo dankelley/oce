@@ -259,7 +259,6 @@ setMethod(f="plot",
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[2]+0.25, mgp[2]+1),
                               ...)
           {
-              rpd <- atan2(1, 1) / 45  # radians per degree
               data("tidedata", package="oce", envir=environment())
               tidedata <- get("tidedata")#, pos=globalenv())
               drawConstituent<-function(name="M2", side=3, col="blue", adj=NULL)
@@ -1037,8 +1036,6 @@ tidem <- function(t, x, constituents, infer=NULL,
         j <- which(tidedata$const$name==name[i-1])
         vuf <- tidemVuf(tRef, j=j, latitude=latitude)
         amplitude[i] <- amplitude[i] / vuf$f
-        phaseOffset <- (vuf$u + vuf$v) * 360 * rpd # the 360 is because tidemVuf returns in cycles
-        ##?phase[i] <- phase[i] - phaseOffset
         p[i] <- 0.5 * (p.all[is] + p.all[ic])
         if (debug > 0)
             cat(name[i-1], "F=", vuf$f, "angle adj=", (vuf$u+vuf$v)*360, "; amp=", amplitude[i], " phase=", phase[i], "\n")
