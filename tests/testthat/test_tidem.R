@@ -82,38 +82,13 @@ test_that("tidem constituents match previous versions", {
                          "2N2", "MU2", "N2", "NU2", "M2", "MKS2", "LDA2", "L2", "S2", "K2", "MSN2", "ETA2", "MO3", "M3",
                          "SO3", "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4", "2MK5", "2SK5", "2MN6",
                          "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8"))
-          ## expect_equal(m[["amplitude"]],
-          ##              c(0.98172603, 0.02311207, 0.00140006, 0.00663854, 0.00745395, 0.01084231, 0.00446151, 0.00281567,
-          ##                0.00500517, 0.00225631, 0.00687301, 0.04455699, 0.00752448, 0.00196296, 0.00598007, 0.00203815,
-          ##                0.02846406, 0.09991683, 0.00178921, 0.00362246, 0.00537918, 0.00160356, 0.00379933, 0.00171250,
-          ##                0.00216862, 0.00571298, 0.01877046, 0.01602292, 0.13784357, 0.02566038, 0.60308280, 0.00133912,
-          ##                0.00876246, 0.02171714, 0.12577826, 0.03499143, 0.00220986, 0.00083894, 0.00130052, 0.00140743,
-          ##                0.00104078, 0.00255135, 0.00308615, 0.01636256, 0.03756057, 0.00436103, 0.01862958, 0.00453434,
-          ##                0.00359044, 0.00079773, 0.00214528, 0.00101596, 0.00359980, 0.00534343, 0.00273727, 0.00103716,
-          ##                0.00095788, 0.00047511, 0.00114865, 0.00034283),
-          ##              tol=1e-5)
-          ## expect_equal(m[["phase"]],
-          ##              c(0.0000, 206.1395, 272.2547, 198.9783, 217.9167, 340.1441, 267.6226, 207.0782, 101.4635,
-          ##                65.5351, 342.3016, 96.2448, 238.6044, 236.7601, 129.9774, 324.4990, 119.9273, 120.4887,
-          ##                233.8370, 62.9792, 147.4390, 284.8215, 120.5715, 187.2145, 13.0065, 331.8413, 310.6279,
-          ##                333.7177, 330.2373, 328.0512, 350.3689, 328.5368, 3.0076, 342.7788, 24.0580, 19.4328, 268.8697,
-          ##                43.2024, 197.3146, 240.0166, 260.3815, 298.5910, 83.2830, 220.0985, 270.0479, 2.3511, 48.4373,
-          ##                53.3176, 208.0438, 193.8488, 21.3577, 236.1651, 114.6850, 118.8483, 161.3039, 169.8887,
-          ##                233.6050, 283.2664, 107.1878, 8.3448),
-          ##              tol=1e-5)
-          ## mm <- tidem(sealevel)
-          ## expect_equal(m[["name"]], mm[["name"]])
-          ## expect_equal(m[["amplitude"]], mm[["amplitude"]])
-          ## expect_equal(m[["phase"]], mm[["phase"]])
-})
-
-test_that("Rayleigh criterion", {
-          tide1 <- expect_output(tidem(sealevel),
-                                 "the tidal record is too short to fit for constituents")
-          expect_equal(tide1[["data"]]$name, resolvable)
-          tide2 <- expect_output(tidem(sealevel, constituents="standard"),
-                                 "the tidal record is too short to fit for constituents")
-          expect_equal(tide1[["data"]]$name, tide2[["data"]]$name)
+          pred <- predict(m)
+          expect_equal(head(pred),
+                       c(1.2585560919, 0.8802843930, 0.5232325011, 0.2580047070, 0.1294293992, 0.1792193507))
+          expect_equal(tail(pred),
+                       c(0.3759657495, 0.6840384853, 1.0624378422, 1.3928432064, 1.5948142147, 1.6367626002))
+          expect_equal(fivenum(pred),
+                       c(0.02920363602, 0.59938759547, 0.97986651174, 1.38237184987, 1.93382321126))
 })
 
 test_that("tailoring of constituents", {
@@ -179,27 +154,4 @@ test_that("Foreman (1977 App 7.3) and T-TIDE (Pawlowciz 2002 Table 1) test", {
           expect_lt(max(abs(foreman$A - ttide$amplitude)), 0.000201)
           expect_lt(max(abs(foreman$G - ttide$phase)), 0.121)
 })
-
-test_that("tidem prediction match previous versions", {
-          m <- expect_output(tidem(sealevel),
-                             "the tidal record is too short to fit for constituents")
-          pred <- predict(m)
-          expect_equal(head(pred),
-                       c(1.2585560919, 0.8802843930, 0.5232325011, 0.2580047070, 0.1294293992, 0.1792193507))
-          expect_equal(tail(pred),
-                       c(0.3759657495, 0.6840384853, 1.0624378422, 1.3928432064, 1.5948142147, 1.6367626002))
-})
-
-test_that("tidem prediction match previous versions", {
-          m <- expect_output(tidem(sealevel),
-                             "the tidal record is too short to fit for constituents")
-          pred <- predict(m)
-          expect_equal(head(pred),
-                       c(1.2585560919, 0.8802843930, 0.5232325011, 0.2580047070, 0.1294293992, 0.1792193507))
-          expect_equal(tail(pred),
-                       c(0.3759657495, 0.6840384853, 1.0624378422, 1.3928432064, 1.5948142147, 1.6367626002))
-          expect_equal(fivenum(pred),
-                       c(0.02920363602, 0.59938759547, 0.97986651174, 1.38237184987, 1.93382321126))
-})
-
 
