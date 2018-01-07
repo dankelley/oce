@@ -1,6 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
-context("Conversion from rsk to ctd")
+context("Convert rsk to ctd")
 data(rsk)
 test_that("as.ctd(rsk)", {
           ctd <- as.ctd(rsk)
