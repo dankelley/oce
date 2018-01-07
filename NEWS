@@ -1,4 +1,6 @@
 0.9-23
+- tidem() permits inferred constituents
+- tidem() follows T_TIDE phase convention
 - adorn argument removed from plot functions (after being defunct 1+ year)
 - deprecate findInOrdered()
 
