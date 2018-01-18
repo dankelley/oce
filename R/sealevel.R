@@ -88,6 +88,12 @@ NULL
 #' lines(time, detided, col="red")
 #' }
 #'
+#' @section Historical note:
+#' Until Jan 6, 2018, the time in this dataset had been increased
+#' by 7 hours. However, this alteration was removed on this date,
+#' to make for simpler comparison of amplitude and phase output with
+#' the results obtained by Foreman (1977) and Pawlowicz et al. (2002).
+#'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{sealevel} data
 NULL

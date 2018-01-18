@@ -41,7 +41,7 @@ par(mfrow=c(3,3))
 Tlim <- range(section[["temperature"]])
 ylim <- rev(range(section[["pressure"]]))
 for (stn in section[["station", 1:9]])
-    plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
+    plotProfile(stn, xtype='potential temperature', ylim=ylim, Tlim=Tlim)
 
 }
 \seealso{

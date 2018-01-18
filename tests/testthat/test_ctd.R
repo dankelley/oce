@@ -8,13 +8,13 @@ context("CTD")
 test_that("plotTS() handles differently EOSs correctly", {
           data(ctd)
           options(oceEOS="unesco")
-          plotTS(ctd)
-          plotTS(ctd, eos="unesco")
-          plotTS(ctd, eos="gsw")
+          expect_silent(plotTS(ctd))
+          expect_silent(plotTS(ctd, eos="unesco"))
+          expect_silent(plotTS(ctd, eos="gsw"))
           options(oceEOS="gsw")
-          plotTS(ctd)
-          plotTS(ctd, eos="unesco")
-          plotTS(ctd, eos="gsw")
+          expect_silent(plotTS(ctd))
+          expect_silent(plotTS(ctd, eos="unesco"))
+          expect_silent(plotTS(ctd, eos="gsw"))
 })
 
 
@@ -163,7 +163,7 @@ test_that("alter ctd metadata", {
           ctd[["salinity"]] <- S + 1
           expect_equal(ctd[["salinity"]], S+1)
           top <- subset(ctd, pressure < 5)
-          stopifnot(max(top[['pressure']]) < 5)
+          expect_true(max(top[['pressure']]) < 5)
 })
 
 test_that("gsw calcuations on ctd data", {
@@ -208,7 +208,7 @@ test_that("ability to change conductivityUnit", {
           expect_equal(swSCTp(ctd3), ctd3[['salinity']], scale=1, tolerance=1e-8) # OK on 64-bit OSX
 })
 
-context("Reading ctd files")
+context("Read ctd files")
 
 ## A Dalhousie-produced cnv file.
 ##
@@ -218,7 +218,8 @@ context("Reading ctd files")
 ##'** Latitude:  N44 41.056'
 ##'** Longitude: w63 38.633'
 test_that("Dalhousie-produced cnv file", {
-          d1 <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
+          d1 <- expect_warning(read.oce(system.file("extdata", "ctd.cnv", package="oce")),
+                              "this CNV file has temperature in the IPTS\\-68 scale")
           expect_equal(d1[["temperatureUnit"]]$unit, expression(degree*C))
           ## NB. the file holds IPTS-68 but we ## store ITS-90 internally
           expect_equal(d1[["temperatureUnit"]]$scale, "IPTS-68")

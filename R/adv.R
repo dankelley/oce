@@ -354,8 +354,8 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
                      longitude=NA, latitude=NA,
-                     start, deltat,
-                     debug=getOption("oceDebug"), monitor=FALSE, processingLog)
+                     start=NULL, deltat=NA,
+                     debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
 {
     type <- match.arg(type)
     ## FIXME: all these read.adv variants should have the same argument list

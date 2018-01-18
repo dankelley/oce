@@ -173,7 +173,7 @@ setMethod(f="plot",
                           par(mfrow=c(N, M))
                           oceDebug(debug, "N=", N, ", M=", M, ", prod=", N*M, ", n=", n, "\n", sep="")
                       } else {
-                          par(mfrow=c(n-1, 1))
+                          par(mfrow=c(n, 1))
                       }
                       for (i in seq_along(dataNames)) {
                           if (dataNames[i] != "time") {
@@ -803,7 +803,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         options <- options('warn')
         options(warn=-1)
         nullValue <- NA
-        t <- try({nullValue <- as.numeric(findInHeader("NULL_VALUE", lines)[1])},
+        t <- try({nullValue <- as.numeric(gsub("D\\+", "e+", findInHeader("NULL_VALUE", lines))[1])},
             silent=TRUE)
         if (class(t) == "try-error") {
             nullValue <- findInHeader("NULL_VALUE", lines)[1]
@@ -1113,8 +1113,10 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ## Return to water depth issue. In a BIO file, I found that the missing-value code was
     ## -99, but that a SOUNDING was given as -99.9, so this is an extra check.
     if (is.na(waterDepth) || waterDepth < 0) {
-        res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
-        warning("estimating waterDepth from maximum pressure")
+        if ('pressure' %in% names(res@data)) {
+            res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
+            warning("estimating waterDepth from maximum pressure")
+        }
     }
 
     ## Move flags into metadata (could have done it above).

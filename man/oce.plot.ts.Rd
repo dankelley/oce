@@ -52,7 +52,7 @@ for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{value to be used with \code{\link{par}("mar")} to set margins.
-THe default value uses significantly tighter margins than is the norm in R,
+The default value uses significantly tighter margins than is the norm in R,
 which gives more space for the data.  However, in doing this, the existing
 \code{par("mar")} value is ignored, which contradicts values that may have
 been set by a previous call to \code{\link{drawPalette}}.  To get plot with

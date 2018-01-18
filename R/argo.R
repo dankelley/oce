@@ -1197,7 +1197,6 @@ setMethod(f="plot",
                       " mar=c(", paste(mar, collapse=","), "),",
                       " ...) {\n", sep="", unindent=1)
               coastline <- match.arg(coastline)
-              lw <- length(which)
               nw  <- length(which)
               if (nw > 1) {
                   par(mfcol=c(1, nw), mgp=mgp, mar=mar)

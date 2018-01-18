@@ -159,6 +159,7 @@ Creates a summary plot for a CTD section, with one panel for each value of
 The type of plot is governed by \code{which}, as follows.
 
 \itemize{
+    \item \code{which=0} or \code{"potential temperature"} for temperature contours
     \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
     \item \code{which=2} or \code{"salinity"} for salinity contours
     \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours

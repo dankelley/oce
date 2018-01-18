@@ -92,8 +92,8 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
     }
     oceDebug(debug, sprintf("lonmin=%.3f, lonmax=%.3f, latmin=%.3f, latmax=%.3f\n",
                             lonmin, lonmax, latmin, latmax))
+    oceDebug(debug, "nok=", nok, ", n=", n, ", nok/n=", nok/n, "\n")
     oceDebug(debug, "} # usrLonLat()\n", unindent=1)
-    oceDebug(debug, "nok=", nok, ", n=", n, ", nok/n=", nok/n)
     rval <- list(lonmin=lonmin, lonmax=lonmax, latmin=latmin, latmax=latmax,
                  ok=nok/n>0.5&&is.finite(lonmin)&&is.finite(lonmax)&&is.finite(latmin)&&is.finite(latmax))
     rval
@@ -408,24 +408,36 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
         f <- function(lon) lonlat2map(lon, lat)$x-usr[1]
         ## FIXME: if this uniroot() method looks good for side=2, try for side=1 also.
         LONLIST <- seq(-360, 360, 20) # smaller increments are slower but catch more labels
+        oceDebug(debug, paste("LONLIST=", paste(LONLIST, collapse=" "), "\n"))
         for (lat in latitude) {
             if (debug > 3)
-                oceDebug(debug, "check ", lat, "N for axis on side=2\n", sep="")
+                oceDebug(debug, "check ", lat, "N for axis on side=2 (usr[1]=", usr[1], ")\n", sep="")
             ## Seek a point at this lon that matches the lon-lat relationship on side=1
+
+            ## FIXME: I wonder why I don't use the optimize() method that I use for side=1 here
+            ## as well. Maybe I ought to try both.  I sort of think this bracket-uniroot method
+            ## is best, but note that issue 1349 was because I had the `tol` in the `uniroot`
+            ## set to 1deg, which was nutty.
             for (iLON in 2:length(LONLIST)) {
                 #if (lat == 55) browser()
                 LONLOOK <- LONLIST[iLON+c(-1, 0)]
-                #cat("LONLOOK[1]", LONLOOK[1], "f(...)", f(LONLOOK[1]), "\n")
-                #cat("LONLOOK[2]", LONLOOK[2], "f(...)", f(LONLOOK[2]), "\n")
+                ##cat("f(LONLOOK[1]=", LONLOOK[1], "=", LONLOOK[1]+360, ")= ", f(LONLOOK[1]), " (iLON=", iLON, ")\n")
+                ##cat("f(LONLOOK[2]=", LONLOOK[2], "=", LONLOOK[2]+360, ")= ", f(LONLOOK[2]), " (iLON=", iLON, ")\n")
                 f1 <- f(LONLOOK[1])
                 if (!is.finite(f1))
                     next
                 f2 <- f(LONLOOK[2])
-                if (!is.finite(f2))
+                if (!is.finite(f2)) {
+                    ##cat("f2 not finite, so skipping\n")
                     next
-                if (f1 * f2 > 0)
+                }
+                if (f1 * f2 > 0) {
+                    ##cat("f1*f2 > 0, so skipping\n")
                     next
-                r <- uniroot(f, lower=LONLOOK[1], upper=LONLOOK[2], tol=1)
+                }
+                ##cat(" looking promising LONLOOK[1]=", LONLOOK[1], ", LONLOOK[2]=", LONLOOK[2], "; r follows\n")
+                r <- uniroot(f, lower=LONLOOK[1], upper=LONLOOK[2], tol=0.001) # 0.001deg < 100m.
+                ##print(r)
                 P <- lonlat2map(r$root, lat)
                 ##OLD| ## using optimize. This seems slower, and can hit boundaries.
                 ##OLD| o <- optimize(function(lon) abs(lonlat2map(lon, lat)$x-usr[1]), lower=LONLOOK[1], upper=LONLOOK[2], tol=1)
@@ -450,6 +462,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
                 }
             }
         }
+        #browser()
         if (!is.null(AT)) {
             axis(side=2, at=AT, labels=fixneg(LAB), mgp=mgp,
                  tick=tick, line=line, pos=pos, outer=outer, font=font,
