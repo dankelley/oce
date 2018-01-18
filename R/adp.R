@@ -3074,7 +3074,7 @@ adpEnsembleAverage <- function(x, n=5, leftover=FALSE, na.rm=TRUE, ...)
                 for (j in 1:tail(fdim, 1)) {
                     if (length(fdim) == 2) { # for fields like bottom range
                         ##res@data[[field]][, j] <- binAverage(pings, d[[field]][, j], xinc=n)$y
-                        res@data[[field]][, j] <- unlist(lapply(as.numeric(split(d[[field]][, j]), fac), mean, na.rm=na.rm, ...))
+                        res@data[[field]][, j] <- unlist(lapply(split(as.numeric(d[[field]][, j]), fac), mean, na.rm=na.rm, ...))
                     } else if (length(fdim) == 3) { # for array fields like v, a, q, etc
                         for (i in 1:fdim[2]) {
                             ##res@data[[field]][, i, j] <- binAverage(pings, d[[field]][, i, j], xinc=n)$y
