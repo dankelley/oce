@@ -4528,8 +4528,12 @@ plotProfile <- function (x,
         }
     } else if (xtype == "index") {
         index <- 1:length(x[["pressure"]])
-        plot(index, x[["pressure"]], ylim=ylim, col=col, lty=lty, xlab="index", ylab=yname,
-             type=type, xaxs=xaxs, yaxs=yaxs, cex=cex, pch=pch)
+        plot(index, x[["pressure"]], ylim=ylim, col=col, lty=lty, xlab="", ylab=yname,
+             type=type, xaxs=xaxs, yaxs=yaxs, cex=cex, pch=pch, axes=FALSE)
+        axis(3)
+        mtext("index", side=3, line=axisNameLoc, cex=par("cex")) # no unit is provided
+        axis(2)
+        box()
         if (grid) {
             at <- par("yaxp")
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
