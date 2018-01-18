@@ -3,7 +3,6 @@
 \docType{methods}
 \name{plot,ctd-method}
 \alias{plot,ctd-method}
-\alias{plot.ctd}
 \title{Plot CTD Data}
 \usage{
 \S4method{plot}{ctd}(x, which, col = par("fg"), fill, borderCoastline = NA,
