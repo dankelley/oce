@@ -4645,6 +4645,7 @@ plotProfile <- function (x,
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "S" || xtype == "SA" || xtype == "salinity") {
+        oceDebug(debug, "recognized S, SA, or salinity\n")
         salinity <- if (eos == "gsw" || xtype == "SA") swAbsoluteSalinity(x) else x[["salinity"]]
         if (!any(is.finite(salinity))) {
             warning("no valid salinity data")
@@ -4658,14 +4659,12 @@ plotProfile <- function (x,
             axis(2)
             axis(3)
             box()
-            if (is.null(xlab)) {
-                if (eos == "gsw" || xtype == "SA") {
-                    mtext(resizableLabel("absolute salinity", "x"), side=3, line=axisNameLoc, cex=par("cex"))
-                } else {
-                    mtext(resizableLabel("S", "x"), side=3, line=axisNameLoc, cex=par("cex"))
-                }
+            if (eos == "gsw" || xtype == "SA") {
+                mtext(resizableLabel("absolute salinity", "x", unit=NULL),
+                      side=3, line=axisNameLoc, cex=par("cex"))
             } else {
-                mtext(xlab, side=3, line=axisNameLoc, cex=par("cex"))
+                mtext(resizableLabel("S", "x", unit=NULL),
+                      side=3, line=axisNameLoc, cex=par("cex"))
             }
         } else {
             look <- if (keepNA) 1:length(y) else !is.na(salinity) & !is.na(y)
@@ -4673,15 +4672,14 @@ plotProfile <- function (x,
                 plot(salinity[look], y[look],
                      xlim=Slim, ylim=ylim, lty=lty, cex=cex, pch=pch,
                      type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-                if (is.null(xlab)) {
-                    if (eos == "gsw") {
-                        mtext(resizableLabel("absolute salinity", "x"), side=3, line=axisNameLoc, cex=par("cex"))
-                    } else {
-                        mtext(resizableLabel("S", "x"), side=3, line=axisNameLoc, cex=par("cex"))
-                    }
+                if (eos == "gsw") {
+                    mtext(resizableLabel("absolute salinity", "x", unit=NULL),
+                          side=3, line=axisNameLoc, cex=par("cex"))
                 } else {
-                    mtext(xlab, side=3, line=axisNameLoc, cex=par("cex"))
+                    mtext(resizableLabel("S", "x", unit=NULL),
+                          side=3, line=axisNameLoc, cex=par("cex"))
                 }
+                mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
                 axis(2)
                 axis(3)
                 box()
@@ -4693,8 +4691,8 @@ plotProfile <- function (x,
                 }
             }
             ## 2014-02-07: use col here, since no second axis to worry about
-            plotJustProfile(salinity, y, type=type, lwd=lwd, lty=lty,
-                            cex=cex, pch=pch, col=col, pt.bg=pt.bg,
+            plotJustProfile(salinity, y, type=type, col=col, lwd=lwd, lty=lty,
+                            cex=cex, pch=pch, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "C" || xtype == "conductivity") {
@@ -4860,6 +4858,7 @@ plotProfile <- function (x,
                         cex=cex, col=col, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "T" || xtype == "CT" || xtype == "temperature") {
+        oceDebug(debug, "recognized T, CT, or temperature\n")
         temperature <- if (eos == "gsw" || xtype == "CT") swConservativeTemperature(x) else x[["temperature"]]
         unit <- x@metadata$units[["temperature"]]
         if (!any(is.finite(temperature))) {
@@ -4874,10 +4873,13 @@ plotProfile <- function (x,
             axis(2)
             axis(3)
             box()
-            if (eos == "gsw" || xtype == "CT")
-                mtext(resizableLabel("conservative temperature", "x", unit=unit), side=3, line=axisNameLoc, cex=par("cex"))
-            else
-                mtext(resizableLabel("T", "x", unit=unit), side=3, line=axisNameLoc, cex=par("cex"))
+            if (eos == "gsw" || xtype == "CT") {
+                mtext(resizableLabel("conservative temperature", "x", unit=unit),
+                      side=3, line=axisNameLoc, cex=par("cex"))
+            } else {
+                mtext(resizableLabel("T", "x", unit=unit),
+                      side=3, line=axisNameLoc, cex=par("cex"))
+            }
         } else {
             look <- if (keepNA) 1:length(y) else !is.na(x[["temperature"]]) & !is.na(y)
             if (!add) {
