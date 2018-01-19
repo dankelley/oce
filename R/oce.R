@@ -707,7 +707,7 @@ oce.approx <- oceApprox
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                        mgp=getOption("oceMgp"),
                        mar=c(mgp[1]+1, mgp[1]+1, 1, 1+par("cex")),
-                       xlab="", ylab="", ...)
+                       xlab="", ylab="", col=1, ...)
 {
     pin <- par("pin")
     page.ratio <- pin[2]/pin[1]
@@ -741,7 +741,8 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
            y[ok],
            (as.numeric(x[ok]) + u[ok] / yscale / yrxr * page.ratio),
            (y[ok] + v[ok] / yscale),
-           length=length, ...)
+           length=length, col=col,
+           ...)
     options(warn=warn)
 }
 
