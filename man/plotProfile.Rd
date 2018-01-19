@@ -126,7 +126,8 @@ labelling the axis.}
 \code{ylim}.}
 
 \item{ylim}{Optional limit for y axis, which can apply to any plot type,
-although is overridden by \code{plim} if \code{ytype=="pressure"}.}
+although is overridden by \code{plim} if \code{ytype} is \code{"pressure"}
+or by \code{densitylim} if \code{ytype} is \code{"sigmaTheta"}.}
 
 \item{lwd}{lwd value for data line}
 

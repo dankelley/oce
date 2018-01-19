@@ -2733,7 +2733,8 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'
 #' @param plim Optional limits of pressure axes.
 #'
-#' @param densitylim Optional limits of density axis.
+#' @param densitylim Optional limits of density axis, whether that axis be horizontal
+#' or vertical.
 #'
 #' @param N2lim Optional limits of \eqn{N^2}{N^2} axis.
 #'
@@ -4285,7 +4286,8 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' \code{ytype=="pressure"}, in which case it takes precedence over
 #' \code{ylim}.
 #' @param ylim Optional limit for y axis, which can apply to any plot type,
-#' although is overridden by \code{plim} if \code{ytype=="pressure"}.
+#' although is overridden by \code{plim} if \code{ytype} is \code{"pressure"}
+#' or by \code{densitylim} if \code{ytype} is \code{"sigmaTheta"}.
 #' @param lwd lwd value for data line
 #' @param xaxs value of \code{\link{par}} \code{xaxs} to use
 #' @param yaxs value of \code{\link{par}} \code{yaxs} to use
@@ -4371,6 +4373,7 @@ plotProfile <- function (x,
             mar[1] <- 1 # the bottom margin is wrong for e.g. NO2+NO3
     }
     plimGiven <- !missing(plim)
+    densityGiven <- !missing(densitylim)
 
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
                                 lwd=par("lwd"),
@@ -4428,9 +4431,12 @@ plotProfile <- function (x,
                         depth=resizableLabel("depth", "y"),
                         sigmaTheta=resizableLabel("sigmaTheta", "y"))
     }
-    ## if plim given on a pressure plot, then it takes precedence over ylim
+    ## if plim given on a pressure plot, then it takes precedence over ylim;
+    ## same for densitylim
     if (ytype == "pressure" && plimGiven)
         ylim <- plim
+    if (ytype == "sigmaTheta" && densitylimGiven)
+        ylim <- densitylim
     if (missing(ylim))
         ylim <- switch(ytype,
                        pressure=rev(range(x[["pressure"]], na.rm=TRUE)),

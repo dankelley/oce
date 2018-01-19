@@ -116,7 +116,8 @@ supply the object as an argument, as opposed to the name of the object.}
 
 \item{plim}{Optional limits of pressure axes.}
 
-\item{densitylim}{Optional limits of density axis.}
+\item{densitylim}{Optional limits of density axis, whether that axis be horizontal
+or vertical.}
 
 \item{N2lim}{Optional limits of \eqn{N^2}{N^2} axis.}
 
