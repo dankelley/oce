@@ -741,7 +741,7 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
            y[ok],
            (as.numeric(x[ok]) + u[ok] / yscale / yrxr * page.ratio),
            (y[ok] + v[ok] / yscale),
-           length=length, col=col,
+           length=length, col=col[ok],
            ...)
     options(warn=warn)
 }
