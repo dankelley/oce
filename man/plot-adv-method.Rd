@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,adv-method}
 \alias{plot,adv-method}
+\alias{plot.adv}
 \title{Plot ADV data}
 \usage{
 \S4method{plot}{adv}(x, which = c(1:3, 14, 15), col, titles, type = "l",

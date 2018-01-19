@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,coastline-method}
 \alias{plot,coastline-method}
+\alias{plot.coastline}
 \title{Plot a Coastline}
 \usage{
 \S4method{plot}{coastline}(x, xlab = "", ylab = "", showHemi = TRUE, asp,

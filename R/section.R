@@ -1193,6 +1193,7 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{section} data
+#' @aliases plot.section
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,

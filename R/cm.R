@@ -716,6 +716,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{cm} data
+#' @aliases plot.cm
 setMethod(f="plot",
           signature=signature("cm"),
           definition=function(x,

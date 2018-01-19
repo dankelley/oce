@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,lobo-method}
 \alias{plot,lobo-method}
+\alias{plot.lobo}
 \title{Plot LOBO data}
 \usage{
 \S4method{plot}{lobo}(x, which = c(1, 2, 3), mgp = getOption("oceMgp"),

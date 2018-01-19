@@ -419,6 +419,7 @@ as.rsk <- function(time, columns,
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{rsk} data
+#' @aliases plot.rsk
 setMethod(f="plot",
           signature=signature("rsk"),
           definition=function(x, which="timeseries",

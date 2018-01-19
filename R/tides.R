@@ -247,6 +247,7 @@ setMethod(f="[[<-",
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{tidem} data
+#' @aliases plot.tidem
 setMethod(f="plot",
           signature=signature("tidem"),
           definition=function(x,

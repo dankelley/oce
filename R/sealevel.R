@@ -392,6 +392,7 @@ as.sealevel <- function(elevation,
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{sealevel} data
+#' @aliases plot.sealevel
 setMethod(f="plot",
           signature=signature("sealevel"),
           definition=function(x, which=1:3,

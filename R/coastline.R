@@ -341,6 +341,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{coastline} data
+#' @aliases plot.coastline
 setMethod(f="plot",
           signature=signature("coastline"),
           definition=function (x,

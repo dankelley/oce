@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,oce-method}
 \alias{plot,oce-method}
+\alias{plot.oce}
 \title{Plot an oce Object}
 \usage{
 \S4method{plot}{oce}(x, y, ...)

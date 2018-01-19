@@ -218,6 +218,7 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{windrose} data
+#' @aliases plot.windrose
 setMethod(f="plot",
           signature=signature("windrose"),
           definition=function(x,

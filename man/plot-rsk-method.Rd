@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,rsk-method}
 \alias{plot,rsk-method}
+\alias{plot.rsk}
 \title{Plot Rsk Data}
 \usage{
 \S4method{plot}{rsk}(x, which = "timeseries", tlim, ylim, xlab, ylab, tformat,

@@ -265,6 +265,7 @@ plot.lobo.TS <- function(lobo, ...)
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{lobo} data
+#' @aliases plot.lobo
 setMethod(f="plot",
           signature=signature("lobo"),
           definition=function(x,

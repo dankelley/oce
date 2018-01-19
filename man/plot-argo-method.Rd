@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,argo-method}
 \alias{plot,argo-method}
+\alias{plot.argo}
 \title{Plot Argo Data}
 \usage{
 \S4method{plot}{argo}(x, which = 1, level, coastline = c("best",

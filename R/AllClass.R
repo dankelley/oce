@@ -226,6 +226,7 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 #' o <- oceSetData(o, 'y', rnorm(10))
 #' o <- oceSetData(o, 'z', rnorm(10))
 #' plot(o)
+#' @aliases plot.oce
 setMethod(f="plot",
           signature="oce",
           definition=function(x, y, ...) {

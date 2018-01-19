@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,windrose-method}
 \alias{plot,windrose-method}
+\alias{plot.windrose}
 \title{Plot Windrose data}
 \usage{
 \S4method{plot}{windrose}(x, type = c("count", "mean", "median", "fivenum"),

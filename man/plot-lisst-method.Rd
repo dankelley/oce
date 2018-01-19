@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,lisst-method}
 \alias{plot,lisst-method}
+\alias{plot.lisst}
 \title{Plot LISST data}
 \usage{
 \S4method{plot}{lisst}(x, which = c(16, 37, 38), tformat,

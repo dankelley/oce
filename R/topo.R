@@ -483,6 +483,7 @@ topoInterpolate <- function(longitude, latitude, topo)
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{topo} data
+#' @aliases plot.topo
 setMethod(f="plot",
           signature=signature("topo"),
           definition=function(x,

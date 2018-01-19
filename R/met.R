@@ -812,6 +812,7 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{met} data
+#' @aliases plot.met
 setMethod(f="plot",
            signature=signature("met"),
            definition=function(x, which = 1:4, mgp, mar, tformat, debug=getOption("oceDebug"))

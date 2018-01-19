@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,landsat-method}
 \alias{plot,landsat-method}
+\alias{plot.landsat}
 \title{Plot a landsat Object}
 \usage{
 \S4method{plot}{landsat}(x, band, which = 1, decimate = TRUE, zlim,

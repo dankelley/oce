@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,gps-method}
 \alias{plot,gps-method}
+\alias{plot.gps}
 \title{Plot a GPS Object}
 \usage{
 \S4method{plot}{gps}(x, xlab = "", ylab = "", asp, clongitude, clatitude,

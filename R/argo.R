@@ -1176,6 +1176,7 @@ as.argo <- function(time, longitude, latitude,
 #'
 #' @family things related to \code{argo} data
 #' @family functions that plot \code{oce} data
+#' @aliases plot.argo
 setMethod(f="plot",
           signature=signature("argo"),
           definition=function (x, which = 1, level,

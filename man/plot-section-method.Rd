@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,section-method}
 \alias{plot,section-method}
+\alias{plot.section}
 \title{Plot a Section}
 \usage{
 \S4method{plot}{section}(x, which = c(1, 2, 3, 99), eos, at = NULL,

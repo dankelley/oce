@@ -327,6 +327,7 @@ setMethod(f="subset",
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{amsr} data
+#' @aliases plot.amsr
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??

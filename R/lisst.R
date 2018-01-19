@@ -157,6 +157,7 @@ setMethod(f="summary",
 #' 
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{lisst} data
+#' @aliases plot.lisst
 setMethod(f="plot",
           signature="lisst",
           definition=function(x, which = c(16, 37, 38), tformat, debug=getOption("oceDebug"), ...) {

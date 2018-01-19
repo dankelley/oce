@@ -1137,6 +1137,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{adp} data
+#' @aliases plot.adp
 setMethod(f="plot",
           signature=signature("adp"),
           definition=function(x, which=1:dim(x@data$v)[3], mode=c("normal", "diagnostic"),

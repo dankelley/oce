@@ -638,6 +638,7 @@ setMethod(f="[[",
 #'
 #' @family things related to \code{landsat} data
 #' @family functions that plot \oce{oce} data
+#' @aliases plot.landsat
 setMethod(f="plot",
           signature=signature("landsat"),
           definition=function(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,

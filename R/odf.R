@@ -132,6 +132,7 @@ setMethod(f="subset",
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{odf} data
+#' @aliases plot.odf
 setMethod(f="plot",
           signature=signature("odf"),
           definition=function(x, blanks=TRUE,

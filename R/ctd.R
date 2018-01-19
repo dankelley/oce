@@ -2878,6 +2878,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{ctd} data
+#' @aliases plot.ctd
 setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which,

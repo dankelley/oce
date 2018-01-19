@@ -497,6 +497,7 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' plot(echosounder, which=c(1,2), drawBottom=TRUE)
 #' }
 #' @family things related to \code{echosounder} data
+#' @aliases plot.echosounder
 setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map

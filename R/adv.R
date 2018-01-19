@@ -557,6 +557,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{adv} data
+#' @aliases plot.adv
 setMethod(f="plot",
           signature=signature("adv"),
           definition=function(x, which=c(1:3, 14, 15),
