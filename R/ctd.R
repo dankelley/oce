@@ -3503,7 +3503,6 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                       plotProfile(...)
                   } else if (which[w] ==30) {
                       ## S timeseries
                       oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S", "y"))
