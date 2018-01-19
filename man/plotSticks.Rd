@@ -35,6 +35,9 @@ default, in order to use more space for the data and less for the axes.}
 
 \item{xlab, ylab}{labels for the plot axes. The default is not to label them.}
 
+\item{col}{colour of sticks, either a single number or string, or a vector
+of numbers and strings that is of the same length as \code{x}.}
+
 \item{\dots}{graphical parameters passed down to \code{\link{arrows}}.  It
 is common, for example, to use smaller arrow heads than \code{\link{arrows}}
 uses; see \dQuote{Examples}.}
