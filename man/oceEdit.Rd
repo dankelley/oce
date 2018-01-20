@@ -10,12 +10,15 @@ oceEdit(x, item, value, action, reason = "", person = "",
 }
 \arguments{
 \item{x}{an \code{oce} object.  The exact action of \code{oceEdit} depends
-on the \code{\link{class}} of \code{x}; see \dQuote{Details}.}
+on the \code{\link{class}} of \code{x}.}
 
 \item{item}{if supplied, a character string naming an item in the object's
-metadata (see \dQuote{Details}).}
+\code{metadata} or \code{data} slot, the former being checked first.
+An exception is if \code{item} starts with \code{"data@"} or
+\code{"metadata@"}, in which case the named slot is updated with a changed
+value of the contents of \code{item} after the \code{@} character.}
 
-\item{value}{new value for item, if both supplied.}
+\item{value}{new value for \code{item}, if both supplied.}
 
 \item{action}{optional character string containing R code to carry out some
 action on the object.}
@@ -38,22 +41,37 @@ log of the returned object.
 \details{
 There are several ways to use this function.
 
-1. If both an \code{item} and \code{value} are supplied, then the object's
-metadata entry named \code{item} is updated to the supplied \code{value}.
+\itemize{
+\item Case 1. If both an \code{item} and \code{value} are supplied, then
+either the object's metadata or data slot may be altered. There are
+two ways in which this can be done.
 
-2. If \code{item} and \code{value} are not supplied, then \code{action} must
+\itemize{
+
+\item Case 1A. If the \code{item} string does not contain an
+\code{@} character, then the \code{metadata} slot is examined
+for an entry named \code{item}, and that is modified if so.
+Alternatively, if \code{item} is found in \code{metadata}, then
+that value is modified. However, if \code{item} is not found in
+either \code{metadata} or \code{data}, then an error is reported
+(see 1B for how to add something that does not yet exist).
+
+\item Case 1B. If the \code{item} string contains
+the \code{@} character, then the text to the left of that character
+must be either \code{"metadata"} or \code{"data"}, and it names the slot
+in which the change is done. In contrast with case 1A, this will
+\emph{create} a new item, if it is not already in existence.
+
+}
+
+\item Case 2. If \code{item} and \code{value} are not supplied, then \code{action} must
 be supplied.  This is a character string specifying some action to be
 performed on the object, e.g. a manipulation of a column.  The action must
 refer to the object as \code{x}; see Examples.
 
-3. Applied to an \code{adv} object (i.e. data from an acoustic velocimeter),
-\code{oceEdit} treats items named \code{heading}, \code{pitch}, \code{roll}
-appropriately, depending on the type of \code{adv} instrument used.  (This
-is necessary because different manufacturers produce different forms of
-these items, i.e. Nortek reports them on a time base that is different from
-the velocity reporting, while Sontek reports them on the same time base.)
+}
 
-In each case, a log entry is stored in the object, to document the change.
+In any case, a log entry is stored in the object, to document the change.
 Indeed, this is the main benefit to using this function, instead of altering
 the object directly.  The log entry will be most useful if it contains a
 brief note on the \code{reason} for the change, and the name of the

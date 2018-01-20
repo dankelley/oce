@@ -23,17 +23,17 @@ Replace Parts of an ADV Object
 
 The \code{[[} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose,
-as with the related replacement method, \code{\link{[[<-}}, 
+as with the related replacement method, \code{\link{[[<-}},
 is to insulate users from the internal details of \code{oce}
 objects, by looking for items within the various storage
-slots of the object. Items not actually stored can also be 
+slots of the object. Items not actually stored can also be
 extracted, including derived data, units of measurement,
 and data-quality flags.
 
 The method uses a two-step process to try to find the
-requested information. First, a class-specific function 
+requested information. First, a class-specific function
 is used to try to access the requested information (see
-\dQuote{Details of the specialized ... method}). 
+\dQuote{Details of the specialized ... method}).
 Second, if no match is found, a general function is used
 (see \sQuote{Details of the general method}). If neither
 method can locates the requested item, \code{NULL} is returned.
@@ -54,8 +54,8 @@ method is applied. As with the specialized method, the procedure hinges
 first on the value of \code{i}.
 
 First, a check is made as to whether \code{i} names one of the standard
-\code{oce} slots, and returns the slot contents if so. Thus, 
-\code{x[["metadata"]]} will retrieve the \code{metadata} slot, 
+\code{oce} slots, and returns the slot contents if so. Thus,
+\code{x[["metadata"]]} will retrieve the \code{metadata} slot,
 while \code{x[["data"]]} and \code{x[["processingLog"]]} return
 those slots.
 
@@ -66,11 +66,11 @@ containing the unit is returned. This list consists of an item
 named \code{unit}, which is an \code{\link{expression}}, and
 an item named \code{scale}, which is a string describing the
 measurement scale.  If the string ends in \code{" unit"}, e.g.
-\code{x[["temperature unit"]]}, then just the expression is returned, 
+\code{x[["temperature unit"]]}, then just the expression is returned,
 and if it ends in \code{" scale"}, then just the scale is returned.
 
 Next, if \code{i} is a string ending in \code{"Flag"}, then the corresponding
-data-quality flag is returned (or \code{NULL} if there is no such flag). 
+data-quality flag is returned (or \code{NULL} if there is no such flag).
 For example, \code{x[["salinityFlag"]]} returns a vector of salinity
 flags if \code{x} is a ctd object.
 
@@ -79,7 +79,7 @@ to see if the \code{metadata} slot contains an item with
 the provided name, and that is returned, if so. A direct match
 is required for this condition.
 
-Finally, the \code{data} slot is checked to see if it contains 
+Finally, the \code{data} slot is checked to see if it contains
 an item with the name indicated by \code{i}. In this case, a partial
 match will work; this is accomplished by using \code{\link{pmatch}}.
 
