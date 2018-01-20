@@ -150,7 +150,7 @@ If the original section was gridded, the return value is that section.
 Otherwise, the gridded section that was constructed for the plot is returned.
 In both cases, the value is returned silently. The
 purpose of returning the section is to enable subsequent processing
-of the grid, including adding elements to the plot.
+of the grid, including adding elements to the plot (see example 5).
 }
 \description{
 Creates a summary plot for a CTD section, with one panel for each value of
@@ -223,6 +223,15 @@ points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
 t <- read.topo(f)
 plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
+}
+
+\dontrun{
+## 5. Temperature with salinity added in red
+s <- plot(section, which="temperature")
+distance <- s[["distance", "byStation"]]
+depth <- s[["station", 1]][["depth"]]
+salinity <- matrix(s[["salinity"]], byrow=TRUE, nrow=length(s[["station"]]))
+contour(distance, depth, salinity, col=2, add=TRUE)
 }
 
 }
