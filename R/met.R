@@ -446,7 +446,7 @@ metNames2oceNames <- function(names, scheme)
             if (1 == length(i <- grep("^Spd\\.of\\.Max\\.Gust\\.Flag$", res))) res[i] <- "speedMaximumGustFlag"
             ## next block handles hourly data
             if (1 == length(i <- grep("^Data\\.Quality$", res))) res[i] <- "dataQuality"
-            if (1 == length(i <- grep("^Dew\\.Point\\.Temp\\.\\.\\.C\\.$", res))) res[i] <- "dewPoint"
+            if (1 == length(i <- grep("^Dew.Point.Temp.*C.$", res))) res[i] <- "dewPoint"
             if (1 == length(i <- grep("^Dew\\.Point\\.Temp\\.Flag$", res))) res[i] <- "dewPointFlag"
             if (1 == length(i <- grep("^Hmdx$", res))) res[i] <- "humidex"
             if (1 == length(i <- grep("^Hmdx\\.Flag$", res))) res[i] <- "humidexFlag"
@@ -475,9 +475,8 @@ metNames2oceNames <- function(names, scheme)
         if (1 == length(col))
             res[col] <- "temperature"
     }
-    ## message("names,res >>")
-    ## print(data.frame(names, res))
-    ## message("<<")
+    ## cat("in metNames2oceNames:\n")
+    ## print(data.frame(names=names,res=res))
     res
 }
 
