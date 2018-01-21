@@ -678,8 +678,9 @@ oce.approx <- oceApprox
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar value to be used with \code{\link{par}("mar")}.
 #' @param xlab,ylab labels for the plot axes. The default is not to label them.
-#' @param col colour of sticks, either a single number or string, or a vector
-#' of numbers and strings that is of the same length as \code{x}.
+#' @param col colour of sticks, in either numerical or character format. This is
+#' made to have length matching that of \code{x} by a call to \code{\link{rep}},
+#' which can be handy in e.g. colourizing a velocity field by day.
 #' @param \dots graphical parameters passed down to \code{\link{arrows}}.  It
 #' is common, for example, to use smaller arrow heads than \code{\link{arrows}}
 #' uses; see \dQuote{Examples}.
@@ -731,12 +732,7 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
         stop("lengths of x and u must match, but they are ", n, " and ", length(u))
     if (length(v) != n)
         stop("lenghts of x and v must match, but they are ", n, " and ", length(v))
-    if (length(col) > 1) {
-        if (length(col) != length(x))
-            stop("length of col must be 1 or equal to the length of x")
-    } else {
-        col <- rep(col, length(x))
-    }
+    col <- rep(col, length.out=n)
     par(mar=mar, mgp=mgp)
     if (!add)
         plot(range(x), range(y), type='n', xlab=xlab, ylab=ylab, ...)
