@@ -2122,11 +2122,14 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         res <- gsw::gsw_pt_from_t(SA=SA, t=l$temperature, p=l$pressure, p_ref=referencePressure)
     } else if (eos == "unesco") {
+        ## Note the conversion to the T68 scale, because that's the scale
+        ## used by the UNESCO formula.
         res <- .C("theta_UNESCO_1983",
                   as.integer(nS),
                   as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
                   as.double(referencePressure),
                   value=double(nS), NAOK=TRUE, PACKAGE = "oce")$value
+        res <- T90fromT68(res)
     }
     if (Smatrix)
         dim(res) <- dim
