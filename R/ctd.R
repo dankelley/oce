@@ -4285,6 +4285,10 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' @param plim Optional limit for pressure axis, ignored unless
 #' \code{ytype=="pressure"}, in which case it takes precedence over
 #' \code{ylim}.
+#' @param xlim Optional limit for x axis, which can apply to any plot type.
+#' This is ignored if the plotted x variable is something for which a limit
+#' may be specified with an argument, e.g. \code{xlim} is ignored for a 
+#' salinity profile, because \code{Slim} ought to be given in such a case.
 #' @param ylim Optional limit for y axis, which can apply to any plot type,
 #' although is overridden by \code{plim} if \code{ytype} is \code{"pressure"}
 #' or by \code{densitylim} if \code{ytype} is \code{"sigmaTheta"}.
@@ -4347,7 +4351,8 @@ plotProfile <- function (x,
                          grid=TRUE,
                          col.grid="lightgray",
                          lty.grid="dotted",
-                         Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim, ylim,
+                         Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim,
+                         xlim, ylim,
                          lwd=par("lwd"),
                          xaxs="r",
                          yaxs="r",
@@ -4360,9 +4365,10 @@ plotProfile <- function (x,
                          mar,
                          add=FALSE,
                          inset=FALSE,
-                         debug=getOption("oceDebug"),
+                         debug=getOption("oceDebug", 0),
                          ...)
 {
+    debug <- min(debug, 3)
     oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
              "\", debug=", debug, ", ...) {\n", sep="", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
@@ -4376,12 +4382,12 @@ plotProfile <- function (x,
     densityGiven <- !missing(densitylim)
 
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
+                                xlim=NULL, ylim=NULL,
                                 lwd=par("lwd"),
                                 cex=1, pch=1, pt.bg="transparent",
-                                df=df, keepNA=FALSE, debug=getOption("oceDebug"))
+                                df=df, keepNA=FALSE, debug=getOption("oceDebug", 0))
     {
-        oceDebug(debug, "plotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type,
-                 "\", col[1:3]=c(\"", paste(col[1:3], collapse='","'), "\"), ...) {\n", sep="", unindent=1)
+        oceDebug(debug, "plotJustProfile(..., debug=", debug, ") {\n", sep="", unindent=1)
         x <- as.vector(x) # because e.g. argo may be a 1-col matrix
         y <- as.vector(y)
         if (!keepNA) {
@@ -4410,10 +4416,11 @@ plotProfile <- function (x,
         } else {
             lines(x, y, col=col, lwd=lwd, lty=lty)
         }
-        oceDebug(debug, "} # plotJustProfile\n")
+        oceDebug(debug, "} # plotJustProfile\n", unindent=1)
     }                                  # plotJustProfile
     #if (!inherits(x, "ctd"))
     #    stop("method is only for objects of class '", "ctd", "'")
+    xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
     densitylimGiven <- !missing(densitylim)
     dots <- list(...)
@@ -4490,9 +4497,23 @@ plotProfile <- function (x,
             time <- time * x@metadata$sampleInterval
         }
     }
-    y <- if (ytype == "pressure") x[["pressure"]] else if (ytype == "z") x[["z"]]
-        else if (ytype == "depth") x[["depth"]] else if (ytype == "sigmaTheta") x[["sigmaTheta"]]
+    ## y <- if (ytype == "pressure") x[["pressure"]] else if (ytype == "z") x[["z"]]
+    ##     else if (ytype == "depth") x[["depth"]] else if (ytype == "sigmaTheta") x[["sigmaTheta"]]
+    if (ytype == "pressure") {
+        y <- x[["pressure"]] 
+        if (plimGiven && !ylimGiven) {
+            ylim <- plim
+            ylimGiven <- TRUE
+        }
+    } else if (ytype == "z") {
+        y <- x[["z"]]
+    } else if (ytype == "depth") {
+        y <- x[["depth"]] 
+    } else if (ytype == "sigmaTheta") {
+        y <- x[["sigmaTheta"]]
+    }
     y <- as.vector(y)
+
 
     if (!add)
         par(mar=mar, mgp=mgp)
@@ -4791,6 +4812,7 @@ plotProfile <- function (x,
         if (all(is.na(xvar)))
             stop("all ", xtype, " values in this station are NA")
         if (useSmoothScatter) {
+            oceDebug(debug, "scatter plot\n")
             smoothScatter(xvar, y, ylim=ylim, xlab="", ylab=resizableLabel("pressure", "y"), axes=FALSE, ...)
             axis(2)
             axis(3)
@@ -4799,9 +4821,14 @@ plotProfile <- function (x,
             unit <- x@metadata$units[[xtype]]
             mtext(resizableLabel(xtype, "x", unit=unit), side=3, line=axisNameLoc, cex=par("cex"))
         } else {
+            oceDebug(debug, "line plot\n")
+            ##message("ctd.R:4811")
+            #browser()
             look <- as.vector(if (keepNA) 1:length(y) else !is.na(xvar) & !is.na(y))
             if (!add) {
+                oceDebug(debug, "add is FALSE so new plot\n")
                 if (ylimGiven) {
+                    oceDebug(debug, "ylimGiven is TRUE\n")
                     ylimsorted <- sort(ylim)
                     ## message("length(ylimsorted) ", length(ylimsorted))
                     ## message("ylimsorted vector? ", is.vector(ylimsorted))
@@ -4812,11 +4839,17 @@ plotProfile <- function (x,
                     ## message("length(y) ", length(y))
                     ## message("y vector? ", is.vector(y))
                     look <- look & (ylimsorted[1] <= y) & (y <= ylimsorted[2])
-                    xlim <- range(xvar[look], na.rm=TRUE)
+                    if (!xlimGiven)
+                        xlim <- range(xvar[look], na.rm=TRUE)
                     plot(xvar[look], y[look], xlim=xlim, ylim=ylim,
                          lty=lty, type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 } else {
-                    plot(xvar[look], y[look], ylim=rev(range(y[look])),
+                    oceDebug(debug, "ylimGiven is FALSE\n")
+                    ##message("B")
+                    if (!xlimGiven)
+                        xlim <- range(xvar[look], na.rm=TRUE)
+                    plot(xvar[look], y[look],
+                         xlim=xlim, ylim=rev(range(y[look])),
                          lty=lty, type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 }
                 mtext(resizableLabel(xtype, "x", unit=unit), side=3, line=axisNameLoc, cex=par("cex"))
@@ -5194,6 +5227,7 @@ plotProfile <- function (x,
         }
         ## lines(salinity, y, col=col.salinity, lwd=if (length(lwd)>1)lwd[2] else lwd[1])
     } else {
+        oceDebug(debug, "plotting a general xtype, i.e. not a special case\n")
         ## Not a special case.
         w <- which(names(x@data) == xtype)
         if (length(w) < 1)
@@ -5203,8 +5237,9 @@ plotProfile <- function (x,
         ## message("names(dots)=", paste(names(dots), collapse=" "))
         if (!add) {
             par(mar=mar, mgp=mgp)
-            plot(x@data[[xtype]][look], y[look],
-                 xlim=if ("xlim" %in% names(dots)) dots$xlim,
+            xplot <- x@data[[xtype]][look]
+            plot(xplot, y[look],
+                 xlim=if (xlimGiven) xlim else range(xplot, na.rm=TRUE),
                  ylim=ylim, lty=lty, cex=cex, pch=pch,
                  type="n", xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs)
             axis(3)
