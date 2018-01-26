@@ -320,7 +320,10 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
             latitude <- 0
         l <- gsw::gsw_Nsquared(SA=SA, CT=CT, p=p, latitude=latitude[1])
         ## approx back to the given pressures
-        res <- approx(l$p_mid, l$N2, p, rule=2)$y
+        ok <- is.finite(l$p_mid) & is.finite(l$N2)
+        x <- l$p_mid[ok]
+        y <- l$N2[ok]
+        res <- approx(x, y, p, rule=2)$y
     }
     res
 }
