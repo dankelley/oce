@@ -1442,7 +1442,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     oceDebug(debug, paste("first two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
     ##read.index()  ## check for an ocean index file e.g.
-    ##read.index()  # http://www.esrl.noaa.gov/psd/data/correlation/ao.data
+    ##read.index()  # https://www.esrl.noaa.gov/psd/data/correlation/ao.data
     ##read.index()  tokens <- scan(text=line, what='integer', n=2, quiet=TRUE)
     ##read.index()  if (2 == length(tokens)) {
     ##read.index()      tokens2 <- scan(text=line2, what='integer', quiet=TRUE)
@@ -1895,7 +1895,7 @@ read.netcdf <- function(file, ...)
 #'
 #' [4] Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
 #' Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
-#' \samp{http://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}.
+#' \samp{https://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}.
 #'
 #' [5] Stephenson, David B., 2005. Comment on ``Color schemes for improved data
 #' graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).
@@ -2664,7 +2664,7 @@ numberAsHMS <- function(t, default=0)
 #' @references [1] Matlab times:
 #' \url{http://www.mathworks.com/help/matlab/ref/datenum.html}
 #'
-#' [2] NCEP times: \url{http://www.esrl.noaa.gov/psd/data/gridded/faq.html#3}
+#' [2] NCEP times: \url{https://www.esrl.noaa.gov/psd/data/gridded/faq.html#3}
 #'
 #' [3] problem with NCEP times:
 #' \url{https://github.com/dankelley/oce/issues/738}
