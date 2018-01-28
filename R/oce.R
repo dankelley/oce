@@ -2432,7 +2432,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         class(z) <- c("POSIXt", "POSIXct")
         tz <- attr(x, "tzone")
         attr(z, "tzone") <- tz
-        zz <- as.POSIXlt(z, tz=tz)
+        zz <- unclass(as.POSIXlt(z, tz=tz))
         zz$mday <- zz$wday <- zz$yday <- 1
         zz$isdst <- -1
         zz$mon <- zz$hour <- zz$min <- zz$sec <- 0
