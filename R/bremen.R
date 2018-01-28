@@ -69,6 +69,7 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{bremen} data
+#' @aliases plot.bremen
 setMethod(f="plot",
           signature=signature("bremen"),
           definition=function(x, type, ...) {
@@ -115,7 +116,7 @@ setMethod(f="summary",
               showMetadataItem(object, "ship",    "Vessel:              ")
               showMetadataItem(object, "station", "Station:             ")
               showMetadataItem(object, "profile", "Profile:             ")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 

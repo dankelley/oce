@@ -79,30 +79,39 @@ NULL
 #' "defunct".
 #'
 #' \tabular{lll}{
-#' \strong{Deprecated}    \tab \strong{Replacement}              \tab \strong{Notes}\cr
-#' \code{mapZones}        \tab \code{\link{mapGrid}}             \tab Deprecated 2016-02-13\cr
-#' \code{mapMeridians}    \tab \code{\link{mapGrid}}             \tab Deprecated 2016-02-13\cr
-#' \code{addColumn}       \tab \code{\link{oceSetData}}          \tab Deprecated 2016-08-01\cr
-#' \code{oce.magic}       \tab \code{\link{oceMagic}}            \tab Deprecated 2016-09-01\cr
-#' \code{ctdAddColumn}    \tab \code{\link{oceSetData}}          \tab Deprecated 2016-11-11\cr
-#' \code{ctdUpdateHeader} \tab -                                 \tab Deprecated 2016-11-11\cr
-#' \code{oce.as.POSIXlt}  \tab \code{\link[lubridate]{parse_date_time}} \tab Deprecated 2016-12-17\cr
+#' \strong{Deprecated}       \tab \strong{Replacement}            \tab \strong{Notes}\cr
+#' \code{findInOrdered(x,f)} \tab \code{\link{findInterval}(f,x)} \tab Deprecated 2017-09-07\cr
+#' \code{mapZones}           \tab \code{\link{mapGrid}}           \tab Deprecated 2016-02-13\cr
+#' \code{mapMeridians}       \tab \code{\link{mapGrid}}           \tab Deprecated 2016-02-13\cr
+#' \code{addColumn}          \tab \code{\link{oceSetData}}        \tab Deprecated 2016-08-01\cr
+#' \code{oce.magic}          \tab \code{\link{oceMagic}}          \tab Deprecated 2016-09-01\cr
+#' \code{ctdAddColumn}       \tab \code{\link{oceSetData}}        \tab Deprecated 2016-11-11\cr
+#' \code{ctdUpdateHeader}    \tab -                               \tab Deprecated 2016-11-11\cr
+#' \code{oce.as.POSIXlt}     \tab \code{\link[lubridate]{parse_date_time}} \tab Deprecated 2016-12-17\cr
 #' }
-#'
 #'
 #' The following are marked "defunct", so calling them in the
 #' the present version produces an error message that hints at a replacement
 #' function. Once a function is marked "defunct" on one CRAN release, it will
 #' be slated for outright deletion in a subsequent release.
 #'
-#' \tabular{lll}{
-#' \strong{Defunct}   \tab \strong{Replacement}     \tab \strong{Notes}\cr
-#' \code{makeSection} \tab \code{\link{as.section}} \tab Improve utility and name sensibility\cr
-#' \code{columns}     \tab \code{\link{read.ctd}}   \tab Unnecessary; never worked\cr
+#'\tabular{lll}{
+#'\strong{Defunct}   \tab \strong{Replacement}     \tab \strong{Notes}\cr
+#'\code{makeSection} \tab \code{\link{as.section}} \tab Improve utility and name sensibility\cr
+#'\code{columns}     \tab \code{\link{read.ctd}}   \tab Unnecessary; never worked\cr
+#'}
+#'
+#' The following were removed in recent years.
+#'
+#'\tabular{lll}{
+#'\strong{Function}  \tab \strong{Replacement}     \tab \strong{Notes}\cr
+#' FILL IN           \tab FILL IN                  \tab FILL IN
 #'}
 #'
 #' Several \sQuote{oce} function arguments are considered "deprecated", which
-#' means they will be marked "defunct" in the next CRAN release. They are as follows.
+#' means they will be marked "defunct" in the next CRAN release. These are normally
+#' listed in the help page for the function in question. A few that may be
+#' of general interest are also listed below.
 #'
 #' \itemize{
 #'
@@ -141,16 +150,6 @@ NULL
 #' \code{\link{mapPlot}} can use either of these functions, according
 #' to whether coastlines are to be filled.)
 #' The functionality is preserved, in the \code{col} argument.
-#'
-#' \item The \code{adorn} argument of \code{\link{plot,ctd-method}} and
-#' other functions was realized in June 2016 to be dangerous. (If the
-#' adornment code contained assignments to temporary variables, there
-#' could be conflicts with the plotting code. The only way to be sure
-#' of not overriding an important variable would be to understand the
-#' full plotting code, which is far too demanding to justify.)
-#' The solution is for users to draw panels individually, adding
-#' graphical elements with conventional R functions such as \code{\link{lines}},
-#' etc.
 #'
 #' }
 #'
@@ -679,6 +678,9 @@ oce.approx <- oceApprox
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar value to be used with \code{\link{par}("mar")}.
 #' @param xlab,ylab labels for the plot axes. The default is not to label them.
+#' @param col colour of sticks, in either numerical or character format. This is
+#' made to have length matching that of \code{x} by a call to \code{\link{rep}},
+#' which can be handy in e.g. colourizing a velocity field by day.
 #' @param \dots graphical parameters passed down to \code{\link{arrows}}.  It
 #' is common, for example, to use smaller arrow heads than \code{\link{arrows}}
 #' uses; see \dQuote{Examples}.
@@ -708,7 +710,7 @@ oce.approx <- oceApprox
 plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                        mgp=getOption("oceMgp"),
                        mar=c(mgp[1]+1, mgp[1]+1, 1, 1+par("cex")),
-                       xlab="", ylab="", ...)
+                       xlab="", ylab="", col=1, ...)
 {
     pin <- par("pin")
     page.ratio <- pin[2]/pin[1]
@@ -730,6 +732,7 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
         stop("lengths of x and u must match, but they are ", n, " and ", length(u))
     if (length(v) != n)
         stop("lenghts of x and v must match, but they are ", n, " and ", length(v))
+    col <- rep(col, length.out=n)
     par(mar=mar, mgp=mgp)
     if (!add)
         plot(range(x), range(y), type='n', xlab=xlab, ylab=ylab, ...)
@@ -742,7 +745,8 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
            y[ok],
            (as.numeric(x[ok]) + u[ok] / yscale / yrxr * page.ratio),
            (y[ok] + v[ok] / yscale),
-           length=length, ...)
+           length=length, col=col[ok],
+           ...)
     options(warn=warn)
 }
 
@@ -829,8 +833,6 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' @param drawTimeRange an optional indication of whether/how to draw a time range,
 #' in the top-left margin of the plot; see \code{\link{oce.axis.POSIXct}} for details.
 #'
-#' @template adornTemplate
-#
 #' @param fill boolean, set \code{TRUE} to fill the curve to zero (which it
 #' does incorrectly if there are missing values in \code{y}).
 #' @param xlab name for x axis; defaults to \code{""}.
@@ -844,7 +846,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar value to be used with \code{\link{par}("mar")} to set margins.
-#' THe default value uses significantly tighter margins than is the norm in R,
+#' The default value uses significantly tighter margins than is the norm in R,
 #' which gives more space for the data.  However, in doing this, the existing
 #' \code{par("mar")} value is ignored, which contradicts values that may have
 #' been set by a previous call to \code{\link{drawPalette}}.  To get plot with
@@ -879,7 +881,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' y <- sin(as.numeric(t - t0) * 2 * pi / (12 * 3600))
 #' oce.plot.ts(t, y, type='l', xaxs='i')
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
-                        drawTimeRange, adorn=NULL, fill=FALSE,
+                        drawTimeRange, fill=FALSE,
                         xaxs=par("xaxs"), yaxs=par("yaxs"),
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
@@ -894,8 +896,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
 {
     if (is.function(x))
         stop("x cannot be a function")
-    if (!is.null(adorn))
-        warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
+    if ("adorn" %in% names(list(...)))
+        warning("the 'adorn' argument was removed in November 2017")
     if (missing(xlab))
         xlab <- ""
     if (missing(ylab))
@@ -940,63 +942,71 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
         par(mai=the.mai, cex=cex)
         drawPalette(mai=rep(0, 4))
     }
-    if (fill) {
-        xx <- c(x[1], x, x[length(x)])
-        yy <- c(0, y, 0)
-        plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
-             xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
-             xlab=xlab, ylab=ylab,
-             type=type, cex=cex, ...)
-        fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
-        do.call(polygon, list(x=xx, y=yy, col=fillcol))
-    } else {
-        plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
-             xlim=if (missing(xlim)) NULL else xlim,
-             ylim=if (missing(ylim)) NULL else ylim,
-             xlab=xlab, ylab=ylab,
-             type=type, cex=cex, ...)
-    }
-    xat <- NULL
-    yat <- NULL
-    if (axes) {
-        xaxt <- list(...)["xaxt"]
-        drawxaxis <- !is.null(xaxt) && xaxt != 'n'
-        yaxt <- list(...)["yaxt"]
-        drawyaxis <- !is.null(yaxt) && yaxt != 'n'
-        if (drawxaxis) {
-            xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
-                                      mgp=mgp,
-                                      xlim=if (missing(xlim)) range(x) else xlim,
-                                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                                      tformat=tformat,
-                                      debug=debug-1)
-            xat <- xlabs
-            oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse=","), ")", "\n", sep="")
-        }
-        if (grid) {
-            lwd <- par("lwd")
-            if (drawxaxis)
-                abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
-            yaxp <- par("yaxp")
-            abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
-                   col="lightgray", lty="dotted", lwd=lwd)
-        }
+    xrange <- range(x, na.rm=TRUE)
+    yrange <- range(y, na.rm=TRUE)
+    if (!is.finite(yrange[1])) {
+        plot(xrange, c(0, 1), axes=FALSE, xaxs=xaxs, yaxs=yaxs,
+             xlim=if (xlimGiven) xlim else xrange,
+             xlab=xlab, ylab=ylab, type='n')
+        oce.axis.POSIXct(1, drawTimeRange=FALSE)
         box()
-        ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
-        if (drawyaxis)
-            axis(2, cex.axis=cex.axis, cex=cex.axis)
-        yat <- axis(4, labels=FALSE)
+        mtext("bad data", side=3, line=-1, cex=cex)
+        warning("no valid data for '", ylab, "'", sep="")
+        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
+        return()
+     } else {
+        if (fill) {
+            xx <- c(x[1], x, x[length(x)])
+            yy <- c(0, y, 0)
+            plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
+                 xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
+                 xlab=xlab, ylab=ylab,
+                 type=type, cex=cex, ...)
+            fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
+            do.call(polygon, list(x=xx, y=yy, col=fillcol))
+        } else {
+            plot(x, y, axes=FALSE, xaxs=xaxs, yaxs=yaxs,
+                 xlim=if (missing(xlim)) NULL else xlim,
+                 ylim=if (missing(ylim)) NULL else ylim,
+                 xlab=xlab, ylab=ylab,
+                 type=type, cex=cex, ...)
+        }
+        xat <- NULL
+        yat <- NULL
+        if (axes) {
+            xaxt <- list(...)["xaxt"]
+            drawxaxis <- !is.null(xaxt) && xaxt != 'n'
+            yaxt <- list(...)["yaxt"]
+            drawyaxis <- !is.null(yaxt) && yaxt != 'n'
+            if (drawxaxis) {
+                xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
+                                          mgp=mgp,
+                                          xlim=if (missing(xlim)) range(x) else xlim,
+                                          cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                          tformat=tformat,
+                                          debug=debug-1)
+                xat <- xlabs
+                oceDebug(debug, "drawing x axis; set xat=c(", paste(xat, collapse=","), ")", "\n", sep="")
+            }
+            if (grid) {
+                lwd <- par("lwd")
+                if (drawxaxis)
+                    abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
+                yaxp <- par("yaxp")
+                abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
+                       col="lightgray", lty="dotted", lwd=lwd)
+            }
+            box()
+            ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
+            if (drawyaxis)
+                axis(2, cex.axis=cex.axis, cex=cex.axis)
+            yat <- axis(4, labels=FALSE)
+        }
+        if (grid)
+            grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
+        oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
+        invisible(list(xat=xat, yat=yat))
     }
-    if (grid)
-        grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
-    if (!is.null(adorn)) {
-        t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
-        if (class(t) == "try-error")
-            warning("cannot evaluate adorn {", format(adorn), "}")
-    }
-    ##par(cex=ocex)
-    oceDebug(debug, "} # oce.plot.ts()\n", unindent=1)
-    invisible(list(xat=xat, yat=yat))
 }
 
 
@@ -1082,22 +1092,37 @@ oce.as.POSIXlt <- function (x, tz = "")
 #'
 #' There are several ways to use this function.
 #'
-#' 1. If both an \code{item} and \code{value} are supplied, then the object's
-#' metadata entry named \code{item} is updated to the supplied \code{value}.
+#'\itemize{
+#' \item Case 1. If both an \code{item} and \code{value} are supplied, then
+#' either the object's metadata or data slot may be altered. There are
+#' two ways in which this can be done.
 #'
-#' 2. If \code{item} and \code{value} are not supplied, then \code{action} must
+#' \itemize{
+#'
+#' \item Case 1A. If the \code{item} string does not contain an
+#' \code{@} character, then the \code{metadata} slot is examined
+#' for an entry named \code{item}, and that is modified if so.
+#' Alternatively, if \code{item} is found in \code{metadata}, then
+#' that value is modified. However, if \code{item} is not found in
+#' either \code{metadata} or \code{data}, then an error is reported
+#' (see 1B for how to add something that does not yet exist).
+#' 
+#' \item Case 1B. If the \code{item} string contains
+#' the \code{@} character, then the text to the left of that character
+#' must be either \code{"metadata"} or \code{"data"}, and it names the slot
+#' in which the change is done. In contrast with case 1A, this will
+#' \emph{create} a new item, if it is not already in existence. 
+#'
+#' }
+#'
+#' \item Case 2. If \code{item} and \code{value} are not supplied, then \code{action} must
 #' be supplied.  This is a character string specifying some action to be
 #' performed on the object, e.g. a manipulation of a column.  The action must
 #' refer to the object as \code{x}; see Examples.
 #'
-#' 3. Applied to an \code{adv} object (i.e. data from an acoustic velocimeter),
-#' \code{oceEdit} treats items named \code{heading}, \code{pitch}, \code{roll}
-#' appropriately, depending on the type of \code{adv} instrument used.  (This
-#' is necessary because different manufacturers produce different forms of
-#' these items, i.e. Nortek reports them on a time base that is different from
-#' the velocity reporting, while Sontek reports them on the same time base.)
+#'}
 #'
-#' In each case, a log entry is stored in the object, to document the change.
+#' In any case, a log entry is stored in the object, to document the change.
 #' Indeed, this is the main benefit to using this function, instead of altering
 #' the object directly.  The log entry will be most useful if it contains a
 #' brief note on the \code{reason} for the change, and the name of the
@@ -1105,10 +1130,13 @@ oce.as.POSIXlt <- function (x, tz = "")
 #'
 #' @aliases oce.edit
 #' @param x an \code{oce} object.  The exact action of \code{oceEdit} depends
-#' on the \code{\link{class}} of \code{x}; see \dQuote{Details}.
+#' on the \code{\link{class}} of \code{x}.
 #' @param item if supplied, a character string naming an item in the object's
-#' metadata (see \dQuote{Details}).
-#' @param value new value for item, if both supplied.
+#' \code{metadata} or \code{data} slot, the former being checked first.
+#' An exception is if \code{item} starts with \code{"data@"} or
+#' \code{"metadata@"}, in which case the named slot is updated with a changed
+#' value of the contents of \code{item} after the \code{@} character.
+#' @param value new value for \code{item}, if both supplied.
 #' @param action optional character string containing R code to carry out some
 #' action on the object.
 #' @param reason character string giving the reason for the change.
@@ -1128,59 +1156,68 @@ oce.as.POSIXlt <- function (x, tz = "")
 oceEdit <- function(x, item, value, action, reason="", person="",
                      debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "oce.edit() {\n", unindent=1)
+    oceDebug(debug, "oceEdit() {\n", unindent=1)
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (missing(item) && missing(value) && missing(action)) {
         x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-        oceDebug(debug, "} # oce.edit()\n", unindent=1)
+        oceDebug(debug, "} # oceEdit()\n", unindent=1)
         return(x)
     }
+    slot <- NULL
     if (!missing(item)) {
         if (missing(value))
+            stop("must supply a value")
+        ##oceDebug(debug, "ORIG item='", item, "'\n", sep="")
+        ## Split out the slotname, if any.
+        if (length(grep("@", item))) {
+            slot <- gsub("@.*$", "", item)
+            if (slot != "metadata" && slot != "data")
+                stop("slot must be 'metadata' or 'data'")
+            item <- gsub("^.*@", "", item)
+        }
+        ##oceDebug(debug, "LATER slot='", slot, "' and item='", item, "'\n", sep="")
+        if (missing(value))
             stop("must supply a 'value' for this 'item'")
-        ##if (!(item %in% names(x@metadata)))
-        ## stop("no item named '", item, "' in object's  metadata")
         if (inherits(x, "adv")) {
             oceDebug(debug, "object is an ADV\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item))
             if (hpr) {
+                ## FIXME: I think this violates the 1A rule on creating new data,
+                ## FIXME: but I am retaining this since it's years old.
+                ## FIXME: why are adp and adv handled differently, anyway? Is
+                ## FIXME: this a fast/slow variable issue?
                 x@data[[item]] <- value
             } else {
-                if (item %in% names(x@metadata)) {
-                    oceDebug(debug, "changing metadata[[", item, "]]\n")
+                if (!is.null(slot)) {
+                    slot(x, slot)[[item]] <- value
+                } else if (item %in% names(x@metadata)) {
                     x@metadata[[item]] <- value
-                } else
-                    stop("do not know how to handle this item")
+                } else if (item %in% names(x@data)) {
+                    x@data[[item]] <- value
+                } else {
+                    stop("nothing named '", item, "' in object's metadata or data")
+                }
             }
         } else if (inherits(x, "adp")) {
             oceDebug(debug, "object is an ADP\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item))
             if (hpr) {
-                oceDebug(debug, "changing data$ts[[", item, "]] of a non-nortek\n")
+                ## FIXME: I think this violates the 1A rule on creating new data,
+                ## FIXME: but I am retaining this since it's years old.
+                ## FIXME: why are adp and adv handled differently, anyway? Is
+                ## FIXME: this a fast/slow variable issue?
                 x@data[[item]] <- value
             } else {
-                if (item %in% names(x@metadata)) {
-                    oceDebug(debug, "changing metadata[[", item, "]]\n")
+                if (!is.null(slot)) {
+                    slot(x, slot)[[item]] <- value
+                } else if (item %in% names(x@metadata)) {
                     x@metadata[[item]] <- value
-                } else
-                    stop("do not know how to handle this item")
-            }
-        } else if (inherits(x, "ctd")) {
-            if (item %in% names(x@metadata)) {
-                x@metadata[[item]] <- value
-            } else if (item %in% names(x@data)) {
-                x@data[[item]] <- value
-            } else {
-                stop("cannot find that item")
-            }
-        } else if (inherits(x, "section")) {
-             if (item %in% names(x@metadata)) {
-                x@metadata[[item]] <- value
-            } else if (item %in% names(x@data)) {
-                x@data[[item]] <- value
-            } else {
-                stop("cannot find that item")
+                } else if (item %in% names(x@data)) {
+                    x@data[[item]] <- value
+                } else {
+                    stop("nothing named '", item, "' in object's metadata or data")
+                }
             }
         } else if ("instrumentType" %in% names(x@metadata) && x@metadata$instrumentType == "aquadopp-hr") {
             ## FIXME: what if S4?
@@ -1189,21 +1226,29 @@ oceEdit <- function(x, item, value, action, reason="", person="",
             x@data[[item]] <- value
             if (hpr) {
                 x@data[[item]] <- value
-                oceDebug(debug, " edited x$ts[", item, "]\n", sep="")
             } else {
-                if (item %in% names(x@metadata)) {
-                    oceDebug(debug, " edited x@metadata[", item, "]\n", sep="")
-                    x@metadata[item] <- value
+                if (!is.null(slot)) {
+                    slot(x, slot)[[item]] <- value
+                } else if (item %in% names(x@metadata)) {
+                    x@metadata[[item]] <- value
+                } else if (item %in% names(x@data)) {
+                    x@data[[item]] <- value
                 } else {
-                    stop("do not know how to handle this item, named \"", item, "\"\n", sep="")
+                    stop("nothing named '", item, "' in object's metadata or data")
                 }
             }
             oceDebug(debug, "...AQUADOPP edited\n")
         } else {
-            if (item %in% names(x@metadata))
-                x@metadata[item] <- value
-            else
-                stop("do not know how to handle this item")
+            oceDebug(debug, "general object; item='", item, "'; slot='", slot, "'\n", sep="")
+            if (!is.null(slot)) {
+                slot(x, slot)[[item]] <- value
+            } else if (item %in% names(x@metadata)) {
+                x@metadata[[item]] <- value
+            } else if (item %in% names(x@data)) {
+                x@data[[item]] <- value
+            } else {
+                stop("nothing named '", item, "' in object's metadata or data")
+            }
         }
     } else if (!missing(action)) {
         warning("the 'action' method may not work -- this needs testing!")
@@ -1212,7 +1257,7 @@ oceEdit <- function(x, item, value, action, reason="", person="",
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # oce.edit()\n", unindent=1)
+    oceDebug(debug, "} # oceEdit()\n", unindent=1)
     x
 }
 oce.edit <- oceEdit
@@ -1740,8 +1785,8 @@ read.netcdf <- function(file, ...)
         ##     || name == "history_qctest")
         ##     next
         item <- ncdf4::ncvar_get(f, name)
-        if (1 == length(dim(item))) # matrix column converted to vector
-            item <- as.vector(item)
+        if (is.array(item) && 1 == length(dim(item))) # 1D array converted to 1col matrix
+            item <- matrix(item)
         data[[name]] <- item
         if (name=="TIME") {
             u <- ncdf4::ncatt_get(f, name, "units")$value
@@ -2387,7 +2432,7 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
         class(z) <- c("POSIXt", "POSIXct")
         tz <- attr(x, "tzone")
         attr(z, "tzone") <- tz
-        zz <- as.POSIXlt(z, tz=tz)
+        zz <- unclass(as.POSIXlt(z, tz=tz))
         zz$mday <- zz$wday <- zz$yday <- 1
         zz$isdst <- -1
         zz$mon <- zz$hour <- zz$min <- zz$sec <- 0
@@ -2581,7 +2626,8 @@ numberAsHMS <- function(t, default=0)
 #' \item \code{"gps"} employs the GPS convention. For this, \code{t} is a
 #' two-column matrix, with the first column being the the GPS "week"
 #' (referenced to 1999-08-22) and the second being the GPS "second" (i.e. the
-#' second within the week).
+#' second within the week). Since the GPS satellites do not handle leap
+#' seconds, the R-defined \code{.leap.seconds} is used for corrections.
 #'
 #' \item \code{"argo"} employs Argo times, measured in days since the start of
 #' the year 1900.
@@ -2626,7 +2672,7 @@ numberAsHMS <- function(t, default=0)
 #'
 #' numberAsPOSIXct(0)                     # unix time 0
 #' numberAsPOSIXct(1, type="matlab")      # matlab time 1
-#' numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day
+#' numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
 #' numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
 #'
 #' @family things related to time
@@ -2659,18 +2705,29 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
 
         ## Account for leap seconds since the GPS start time in 1980 (for the present week wraparound grouping).
-        ## See http://en.wikipedia.org/wiki/Leap_second and other sources for a list.  Updates can happen
-        ## on June 30 and December 31 of any given year.  The information below was last updated
-        ## in January, 2017.
-        leaps <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-12-31",
-                                       "1989-12-31", "1990-12-31", "1992-07-01", "1993-07-01", "1994-07-01",
-                                       "1995-12-31", "1997-07-01", "1998-12-31", "2005-12-31", "2008-12-31",
-                                       "2012-07-01", "2015-07-01", "2016-12-31"),
-                                     format="%Y-%m-%d", tz="UTC"))
+        ##20171014 See http://en.wikipedia.org/wiki/Leap_second and other sources for a list.  Updates can happen
+        ##20171014 # on June 30 and December 31 of any given year.  The information below was last updated
+        ##20171014 # in January, 2017.
+        ##20171014 # leapsOLD <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-12-31",
+        ##20171014 #                                   "1989-12-31", "1990-12-31", "1992-07-01", "1993-07-01", "1994-07-01",
+        ##20171014 #                                   "1995-12-31", "1997-07-01", "1998-12-31", "2005-12-31", "2008-12-31",
+        ##20171014 #                                   "2012-07-01", "2015-07-01", "2016-12-31"),
+        ##20171014 #                                 format="%Y-%m-%d", tz="UTC"))
+        ##20171014 message("leapsOLD ", paste(leapsOLD, collapse=" "))
+        leaps <- as.POSIXlt(.leap.seconds, tz="UTC")
+        ##20171014 message("leaps A ", paste(leaps, collapse=" "))
+        leaps <- leaps[leaps > as.POSIXlt("1980-01-01 00:00:00", tz="UTC")]
+        ##20171014 message("leaps B ", paste(leaps, collapse=" "))
+        leaps <- leaps[leaps > as.POSIXlt("1980-01-01 00:00:00", tz="UTC")]
+        ##20171014 message("leaps C ", paste(leaps, collapse=" "))
         t <- as.POSIXct("1999-08-22 00:00:00", tz="UTC") + 86400*7*t[, 1] + t[, 2]
+        ##>message("initially, t=", paste(t, collapse=" "))
         for (l in 1:length(leaps)) {
             t <- t - ifelse(t >= leaps[l], 1, 0)
+            ##20171014 message("l=", l, ", leaps[l]=", leaps[l],
+            ##20171014         ", t=", paste(t, collapse=" "), ", t>=leaps[l] ", t>=leaps[l])
         }
+        ##20171014 print(leapsOLD - leaps) # mostly 0 but a few one-day shifts; I trust .leap.seconds more
     } else if (type == "spss") {
         t <- as.POSIXct(t, origin="1582-10-14", tz=tz)
     } else if (type == "sas") {

@@ -677,8 +677,6 @@ drawPalette <- function(zlim, zlab="",
 #'        Otherwise, if \code{asp} is not \code{NA}, then it is used directly.
 #' @param  cex Size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").
 #'
-#' @template adornTemplate
-#'
 #' @param  axes Logical, set \code{TRUE} to get axes on the main image.
 #' @param  main Title for plot.
 #' @param  axisPalette Optional replacement function for \code{axis()}, passed to
@@ -776,7 +774,6 @@ imagep <- function(x, y, z,
                    xaxs="i", yaxs="i",
                    asp=NA,
                    cex=par("cex"),
-                   adorn=NULL,
                    axes=TRUE,
                    main="",
                    axisPalette,
@@ -784,7 +781,11 @@ imagep <- function(x, y, z,
                    debug=getOption("oceDebug"),
                    ...)
 {
+
+    if ("adorn" %in% names(list(...)))
+        warning("the 'adorn' argument was removed in November 2017")
     zlabPosition <- match.arg(zlabPosition)
+
     oceDebug(debug, "imagep(x, y, z, ",
              argShow(cex),
              argShow(flipy),
@@ -814,11 +815,27 @@ imagep <- function(x, y, z,
             } else {
                 breaks <- colormap$breaks
                 col <- colormap$col
+                zlim <- colormap$zlim
+                ## FIXME: need to check zclip here too
+                zclip <- colormap$zclip
+            }
+            if (!zclip) {
+                oceDebug(debug, "using zlim[1:2]=c(", zlim[1], ",", zlim[2], ") for out-of-range values\n")
+                z[z < zlim[1]] <- zlim[1]
+                z[z > zlim[2]] <- zlim[2]
+            } else {
+              oceDebug(debug, "using missingColour for out-of-range values")
+                z[z < zlim[1]] <- NA
+                z[z > zlim[2]] <- NA
             }
             oceDebug(debug, "decimate: ", paste(decimate, collapse=" "), " (before calculation)\n")
             if (is.logical(decimate)) {
-                decimate <- as.integer(dim(z) / 400)
-                decimate <- ifelse(decimate < 1, 1, decimate)
+                if (decimate) {
+                    decimate <- as.integer(dim(z) / 400)
+                    decimate <- ifelse(decimate < 1, 1, decimate)
+                } else {
+                    decimate <- c(1, 1)
+                }
             } else {
                 decimate <- rep(as.numeric(decimate), length.out=2)
             }
@@ -827,19 +844,22 @@ imagep <- function(x, y, z,
             iy <- seq(1L, length(y), by=decimate[2])
             if (is.function(col))
                 col <- col(n=length(breaks)-1)
-            image(x[ix], y[iy], z[ix, iy], breaks=breaks, col=col, add=TRUE, useRaster=useRaster)
+            image(x[ix], y[iy], z[ix, iy], breaks=breaks, col=col, useRaster=useRaster, #why useRaster?
+                  add=TRUE)
             return(invisible(list(xat=NULL, yat=NULL, decimate=decimate)))
         }
     } else {
         stop("'add' must be a logical value")
     }
 
-    if (!is.null(adorn))
-        warning("In imagep() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
     xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
     zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot,adp-method
-    xlimGiven <- !missing(xlim)
+    ## Guard against poor setup
+    if (xlimGiven && length(xlim) != 2) stop("length of xlim must be 2")
+    if (ylimGiven && length(ylim) != 2) stop("length of ylim must be 2")
+    if (zlimGiven && length(zlim) != 2) stop("length of zlim must be 2")
+
     if (zlimGiven && is.character(zlim)) {
         if ("symmetric" == zlim) {
             zlim <- c(-1, 1) * max(abs(z), na.rm=TRUE)
@@ -1290,11 +1310,6 @@ imagep <- function(x, y, z,
     }
     if (zlabPosition == "top")
         mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/8)
-    if (!missing(adorn)) {
-        t <- try(eval.parent(adorn), silent=!TRUE)
-        if (class(t) == "try-error")
-            warning("cannot evaluate adorn='", adorn, "'")
-    }
     par(cex=ocex)
     oceDebug(debug, "par('mai')=c(",
              paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",

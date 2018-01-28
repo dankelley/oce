@@ -394,7 +394,7 @@ setMethod(f="summary",
                   if (object@metadata$numberOfBeams > 3)
                       cat("  ", format(object@metadata$transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
               }
-              callNextMethod() # summary
+              invisible(callNextMethod()) # summary
           })
 
 
@@ -1072,8 +1072,6 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' downward-looking instruments, so that in either case, the top of the graph
 #' will represent the sample nearest the sea surface.
 #'
-#' @template adornTemplate
-#
 #' @param drawTimeRange boolean that applies to panels with time as the
 #' horizontal axis, indicating whether to draw the time range in the top-left
 #' margin of the plot.
@@ -1139,6 +1137,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{adp} data
+#' @aliases plot.adp
 setMethod(f="plot",
           signature=signature("adp"),
           definition=function(x, which=1:dim(x@data$v)[3], mode=c("normal", "diagnostic"),
@@ -1147,7 +1146,6 @@ setMethod(f="plot",
                               lwd=par('lwd'),
                               type='l',
                               ytype=c("profile", "distance"),
-                              adorn=NULL,
                               drawTimeRange=getOption("oceDrawTimeRange"),
                               useSmoothScatter,
                               missingColor="gray",
@@ -1167,8 +1165,8 @@ setMethod(f="plot",
                               ...)
           {
               debug <- max(0, min(debug, 4))
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,adp-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               colGiven <- !missing(col)
               breaksGiven <- !missing(breaks)
               zlimGiven <- !missing(zlim)
@@ -1333,12 +1331,6 @@ setMethod(f="plot",
               timeseries <- c(13:22, 40:44, 50:54, 55, 100)
               spatial <- 23:27
               #speed <- 28
-
-              adorn.length <- length(adorn)
-              if (adorn.length == 1) {
-                  adorn <- rep(adorn, nw)
-                  adorn.length <- nw
-              }
 
               tt <- x@data$time
               ##ttDia <- x@data$timeDia  # may be null
@@ -1529,7 +1521,6 @@ setMethod(f="plot",
                                                 drawTimeRange=drawTimeRange,
                                                 drawContours=FALSE,
                                                 missingColor=missingColor,
-                                                adorn=adorn[w],
                                                 mgp=mgp,
                                                 mar=mar,
                                                 mai.palette=mai.palette,
@@ -1555,7 +1546,6 @@ setMethod(f="plot",
                                                     drawTimeRange=drawTimeRange,
                                                     drawContours=FALSE,
                                                     missingColor=missingColor,
-                                                    adorn=adorn[w],
                                                     mgp=mgp,
                                                     mar=mar,
                                                     mai.palette=mai.palette,
@@ -1583,7 +1573,6 @@ setMethod(f="plot",
                                                  mgp=mgp,
                                                  mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                               res$xat <- ats$xat
                               res$yat <- ats$yat
@@ -1613,7 +1602,6 @@ setMethod(f="plot",
                                              mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                              drawTimeRange=drawTimeRange,
                                              tformat=tformat,
-                                             adorn=adorn[w],
                                              debug=debug-1)
                       } else if (which[w] == 14) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
@@ -1632,7 +1620,6 @@ setMethod(f="plot",
                                                  mgp=mgp,
                                                  mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           } else {
                               ats <- oce.plot.ts(x@data$time, x@data$temperature,
@@ -1649,7 +1636,6 @@ setMethod(f="plot",
                                                  mgp=mgp,
                                                  mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           }
                       } else if (which[w] == 15) {
@@ -1670,7 +1656,6 @@ setMethod(f="plot",
                                                  mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           } else {
                               ats <- oce.plot.ts(x@data$time, x@data$pressure,
@@ -1688,7 +1673,6 @@ setMethod(f="plot",
                                                  mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           }
                       } else if (which[w] == 16) {
@@ -1709,7 +1693,6 @@ setMethod(f="plot",
                                                  mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           } else {
                               ats <- oce.plot.ts(x@data$time, x@data$heading,
@@ -1727,7 +1710,6 @@ setMethod(f="plot",
                                                  mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           }
                       } else if (which[w] == 17) {
@@ -1748,7 +1730,6 @@ setMethod(f="plot",
                                                  mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           } else {
                               ats <- oce.plot.ts(x@data$time, x@data$pitch,
@@ -1766,7 +1747,6 @@ setMethod(f="plot",
                                                  mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           }
                       } else if (which[w] == 18) {
@@ -1787,7 +1767,6 @@ setMethod(f="plot",
                                                  mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           } else {
                               ats <- oce.plot.ts(x@data$time, x@data$roll,
@@ -1805,7 +1784,6 @@ setMethod(f="plot",
                                                  mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           }
                       } else if (which[w] == 19) {
@@ -1827,7 +1805,6 @@ setMethod(f="plot",
                                                  mai.palette=mai.palette,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           } else {
                               warning("cannot plot beam/velo 1 because the device no beams")
@@ -1851,7 +1828,6 @@ setMethod(f="plot",
                                                  mai.palette=mai.palette,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           } else {
                               warning("cannot plot beam/velo 2 because the device has only ", x@metadata$numberOfBeams, " beams")
@@ -1875,7 +1851,6 @@ setMethod(f="plot",
                                                  mai.palette=mai.palette,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           } else {
                               warning("cannot plot beam/velo 3 because the device has only", x@metadata$numberOfBeams, "beams")
@@ -1899,7 +1874,6 @@ setMethod(f="plot",
                                                  mai.palette=mai.palette,
                                                  drawTimeRange=drawTimeRange,
                                                  tformat=tformat,
-                                                 adorn=adorn[w],
                                                  debug=debug-1)
                           } else {
                               warning("cannot plot beam/velo 4 because the device has only", x@metadata$numberOfBeams, "beams")
@@ -1924,7 +1898,6 @@ setMethod(f="plot",
                                              mai.palette=mai.palette,
                                              drawTimeRange=drawTimeRange,
                                              tformat=tformat,
-                                             adorn=adorn[w],
                                              debug=debug-1)
                           drawTimeRange <- FALSE
                       } else if (which[w] == 100) {
@@ -1944,7 +1917,6 @@ setMethod(f="plot",
                                              mgp=mgp,
                                              mar=if (haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                              tformat=tformat,
-                                             adorn=adorn[w],
                                              debug=debug-1)
                       } else if (which[w] %in% 40:44) {
                           ## bottomRange
@@ -2077,10 +2049,6 @@ setMethod(f="plot",
                               yat <- seq(yaxp[1], yaxp[2], length.out=1+yaxp[3])
                               ats <- list(xat=xat, yat=yat)
                           }
-                      }
-                      if (w <= adorn.length) {
-                          t <- try(eval(adorn[w]), silent=TRUE)
-                          if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]")
                       }
                   } else if (which[w] %in% 28:30) {
                       ## "uv", "uv+ellipse", or "uv+ellipse+arrow"
@@ -2239,11 +2207,6 @@ setMethod(f="plot",
                   }
                   if (grid)
                       grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
-                  if (w <= adorn.length) {
-                      t <- try(eval(adorn[w]), silent=TRUE)
-                      if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]")
-                  }
               }
               par(cex=opar$cex)
               oceDebug(debug, "} # plot,adp-method()\n", unindent=1)
@@ -3071,9 +3034,12 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 #' in \code{x}. If \code{leftover} is \code{FALSE} (the default) then any extra
 #' ensembles at the end of \code{x} are ignored. Otherwise, they are used
 #' to create a final ensemble in the returned value.
+#' @param na.rm a logical value indicating whether NA values should be stripped 
+#' before the computation proceeds
+#' @param ... extra arguments to be passed to the \code{mean()} function.
 #'
 #' @return A reduced object of \code{\link{adp-class}} with ensembles averaged as specified. E.g. for an \code{adp} object with 100 pings and \code{n=5} the number of rows of the data arrays will be reduced by a factor of 5.
-#' @author Clark Richards
+#' @author Clark Richards and Dan Kelley
 #' @examples
 #'
 #' library(oce)
@@ -3082,7 +3048,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 #' plot(adpAvg)
 #' 
 #' @family things related to \code{adp} data
-adpEnsembleAverage <- function(x, n=5, leftover=FALSE)
+adpEnsembleAverage <- function(x, n=5, leftover=FALSE, na.rm=TRUE, ...)
 {
     if (!inherits(x, 'adp')) stop('Must be an object of class adp')
     res <- new('adp', distance=x[['distance']])
@@ -3097,23 +3063,23 @@ adpEnsembleAverage <- function(x, n=5, leftover=FALSE)
     breaks <- if (leftover) seq(0, ntx+n, n) else seq(0, ntx, n)
     fac <- cut(pings, breaks=breaks, labels=FALSE) # used to split() data items
     ##res@data$time <- numberAsPOSIXct(binAverage(pings, t, xinc=n)$y)
-    res@data$time <- numberAsPOSIXct(as.numeric(lapply(split(as.numeric(t), fac), mean)))
+    res@data$time <- numberAsPOSIXct(as.numeric(lapply(split(as.numeric(t), fac), mean, na.rm=na.rm, ...)))
     for (field in names(d)) {
         if (field != 'time' & field != 'distance') {
             if (is.vector(d[[field]])) {
                 ##res@data[[field]] <- binAverage(pings, d[[field]], xinc=n)$y
-                res@data[[field]] <- as.numeric(lapply(split(as.numeric(d[[field]]), fac), mean))
+                res@data[[field]] <- as.numeric(lapply(split(as.numeric(d[[field]]), fac), mean, na.rm=na.rm, ...))
             } else if (is.array(d[[field]])) {
                 fdim <- dim(d[[field]])
                 res@data[[field]] <- array(NA, dim=c(length(res@data[['time']]), fdim[-1]))
                 for (j in 1:tail(fdim, 1)) {
                     if (length(fdim) == 2) { # for fields like bottom range
                         ##res@data[[field]][, j] <- binAverage(pings, d[[field]][, j], xinc=n)$y
-                        res@data[[field]][, j] <- unlist(lapply(as.numeric(split(d[[field]][, j]), fac), mean))
+                        res@data[[field]][, j] <- unlist(lapply(split(as.numeric(d[[field]][, j]), fac), mean, na.rm=na.rm, ...))
                     } else if (length(fdim) == 3) { # for array fields like v, a, q, etc
                         for (i in 1:fdim[2]) {
                             ##res@data[[field]][, i, j] <- binAverage(pings, d[[field]][, i, j], xinc=n)$y
-                            res@data[[field]][, i, j] <- unlist(lapply(split(as.numeric(d[[field]][, i, j]), fac), mean))
+                            res@data[[field]][, i, j] <- unlist(lapply(split(as.numeric(d[[field]][, i, j]), fac), mean, na.rm=na.rm, ...))
                         }
                     }
                 }

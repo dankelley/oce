@@ -31,8 +31,9 @@ the present function is based on inspection of a suite of CNV files
 available to the \code{oce} developers.
 }
 \details{
-A few sample header lines to be decoded are as follows.
+A few sample header lines that have been encountered are:
 \preformatted{
+# name 4 = t068: temperature, IPTS-68 [deg C]
 # name 3 = t090C: Temperature [ITS-90, deg C]
 # name 4 = t190C: Temperature, 2 [ITS-90, deg C]
 }
@@ -41,13 +42,13 @@ try to infer the name from the characters between the "\code{=}"
 and "\code{:}" characters, because the material after the colon
 seems to vary more between sample files.
 
-The table given below indicates the translation patterns used. These are 
+The table given below indicates the translation patterns used. These are
 taken from [1]. The \code{.cnv} convention for multiple sensors is to
 include optional extra digits in the name, and these are indicated
 with \code{~} in the table; their decoding is done with \code{\link{grep}}.
 
 It is important to note that this table is by no means complete, since there
-are a great many SBE names listed in their document [1], plus names 
+are a great many SBE names listed in their document [1], plus names
 not listed there but present in data files
 supplied by prominent archiving agencies. If an SBE name is not recogized,
 then the oce name is set to that SBE name. This can cause problems in
@@ -92,10 +93,11 @@ variants.)
   \code{flCUVA~}     \tab \code{fluorescence}                 \tab ug/l; Chelsea UV Aquatracka\tab\cr
   \code{flEC-AFL~}   \tab \code{fluorescence}                 \tab mg/m^3; WET Labs ECO-AFL/FLtab\cr
   \code{flS}         \tab \code{fluorescence}                 \tab -; Seatech          \tab    \cr
+  \code{flScufa~}    \tab \code{fluorescence}                 \tab -; Turner SCUFA [RFU]\tab\cr
   \code{flSP}        \tab \code{fluorescence}                 \tab -; Seapoint         \tab    \cr
   \code{flSPR}       \tab \code{fluorescence}                 \tab -; Seapoint, Rhodamine\tab  \cr
   \code{flSPuv}      \tab \code{fluorescence}                 \tab -; Seapoint, UV      \tab   \cr
-  \code{flT}         \tab \code{fluorescence}                 \tab -; Turneri 10-005 flT\tab   \cr
+  \code{flT}         \tab \code{fluorescence}                 \tab -; Turner 10-005 flT\tab   \cr
   \code{gpa}         \tab \code{geopotentialAnomaly}          \tab -; J/kg              \tab   \cr
   \code{latitude}    \tab \code{latitude}                     \tab degN                 \tab   \cr
   \code{longitude}   \tab \code{longitude}                    \tab degE                 \tab   \cr
@@ -103,6 +105,7 @@ variants.)
   \code{n2satMg/L}   \tab \code{nitrogenSaturation}           \tab mg/l                 \tab   \cr
   \code{n2satumol/kg}\tab \code{nitrogenSaturation}           \tab umol/kg              \tab   \cr
   \code{nbin}        \tab \code{nbin}                         \tab                      \tab   \cr
+  \code{obsscufa~}   \tab \code{backscatter}                  \tab NTU; Turner SCUFA    \tab   \cr
   \code{opoxMg/L}    \tab \code{oxygen}                       \tab mg/l; Optode, Anderaa\tab   \cr
   \code{opoxML/L}    \tab \code{oxygen}                       \tab ml/l; Optode, Anderaa\tab   \cr
   \code{opoxMm/L}    \tab \code{oxygen}                       \tab umol/l; Optode, Anderaa\tab \cr
@@ -146,10 +149,11 @@ variants.)
   \code{specc}       \tab \code{conductivity}                 \tab uS/cm                \tab   \cr
   \code{sva}         \tab \code{specificVolumeAnomaly}        \tab 1e-8 m^3/kg;         \tab   \cr
   \code{svCM~}       \tab \code{soundSpeed}                   \tab m/s; Chen-Millero    \tab   \cr
-  \code{T2~68C}      \tab \code{temperatureDifference}        \tab degC; IPTS-68        \tab   \cr 
-  \code{T2~90C}      \tab \code{temperatureDifference}        \tab degC; ITS-90         \tab   \cr 
-  \code{t~68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr 
-  \code{t~90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr 
+  \code{T2~68C}      \tab \code{temperatureDifference}        \tab degC; IPTS-68        \tab   \cr
+  \code{T2~90C}      \tab \code{temperatureDifference}        \tab degC; ITS-90         \tab   \cr
+  \code{t~68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
+  \code{t~90}        \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
+  \code{t~68}        \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t~68C}       \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{t~90C}       \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
   \code{t090Cm}      \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr

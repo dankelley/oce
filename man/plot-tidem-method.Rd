@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,tidem-method}
 \alias{plot,tidem-method}
+\alias{plot.tidem}
 \title{Plot a Tidem Prediction}
 \usage{
 \S4method{plot}{tidem}(x, which = 1, constituents = c("SA", "O1", "K1",

@@ -95,7 +95,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("\nTopo dataset\n------------\n")
               cat("* Source:          ", object[["filename"]], "\n")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 #' @title Extract Something From a Topo Object
@@ -191,7 +191,8 @@ setMethod(f="subset",
 #' with identical parameters will simply return the name of the cached file,
 #' assuming the user has not deleted it in the meantime.
 #' For convenience, if \code{destfile} is not
-#' given, then \code{download.topo} will construct a filename from the other arguments.
+#' given, then \code{download.topo} will construct a filename from the other arguments,
+#' rounding longitude and latitude limits to 0.01 degrees.
 #'
 #' @details
 #' The data are downloaded with \code{\link[utils]{download.file}}, using a URL
@@ -269,13 +270,11 @@ setMethod(f="subset",
 #' \item December 2016.
 #' \samp{http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
 #'
-#' \item June 2017.
+#' \item June-September 2017.
 #' \samp{https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz}
 #' }
 #'
 #' @seealso The work is done with \code{\link[utils]{download.file}}.
-#'
-#' @template downloadWarningTemplate
 #'
 #' @references
 #' 1. \samp{https://www.ngdc.noaa.gov/mgg/global/global.html}
@@ -283,7 +282,7 @@ setMethod(f="subset",
 #' 2. Amante, C. and B.W. Eakins, 2009. ETOPO1 1 Arc-Minute Global Relief
 #' Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
 #' NESDIS NGDC-24. National Geophysical Data Center, NOAA. doi:10.7289/V5C8276M
-#' [access date: Aug 20, 2016].
+#' [access date: Aug 30, 2017].
 #'
 #' @family functions that download files
 #' @family things related to \code{topo} data
@@ -307,10 +306,10 @@ download.topo <- function(west, east, south, north, resolution,
         west <- west - 360
     if (east > 180)
         east <- east - 360
-    wName <- paste(abs(west), if (west <= 0) "W" else "E", sep="")
-    eName <- paste(abs(east), if (east <= 0) "W" else "E", sep="")
-    sName <- paste(abs(south), if (south <= 0) "S" else "N", sep="")
-    nName <- paste(abs(north), if (north <= 0) "S" else "N", sep="")
+    wName <- paste(abs(round(west,2)), if (west <= 0) "W" else "E", sep="")
+    eName <- paste(abs(round(east,2)), if (east <= 0) "W" else "E", sep="")
+    sName <- paste(abs(round(south,2)), if (south <= 0) "S" else "N", sep="")
+    nName <- paste(abs(round(north,2)), if (north <= 0) "S" else "N", sep="")
     resolutionName <- paste(resolution, "min", sep="")
     if (missing(destfile))
         destfile <- paste("topo", wName, eName, sName, nName, resolutionName, sep="_")
@@ -484,6 +483,7 @@ topoInterpolate <- function(longitude, latitude, topo)
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{topo} data
+#' @aliases plot.topo
 setMethod(f="plot",
           signature=signature("topo"),
           definition=function(x,

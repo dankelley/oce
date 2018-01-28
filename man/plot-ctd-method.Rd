@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,ctd-method}
 \alias{plot,ctd-method}
+\alias{plot.ctd}
 \title{Plot CTD Data}
 \usage{
 \S4method{plot}{ctd}(x, which, col = par("fg"), fill, borderCoastline = NA,
@@ -14,9 +15,9 @@
   projection = NULL, parameters = NULL, orientation = NULL,
   latlon.pch = 20, latlon.cex = 1.5, latlon.col = "red", cex = 1,
   cex.axis = par("cex.axis"), pch = 1, useSmoothScatter = FALSE, df,
-  keepNA = FALSE, type = "l", adorn = NULL, mgp = getOption("oceMgp"),
-  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1),
-  inset = FALSE, add = FALSE, debug = getOption("oceDebug"), ...)
+  keepNA = FALSE, type = "l", mgp = getOption("oceMgp"), mar = c(mgp[1]
+  + 1.5, mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1), inset = FALSE,
+  add = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -26,7 +27,7 @@ supplied, a default will be used. This default will be \code{c(1,2,3,5)} if the
 CTD is in profiling mode (i.e. if \code{deploymentType} in the \code{metadata}
 slot equals \code{"profile"},
 or is missing) or
-\code{"thermosalinograph"}, the default will be \code{c(30, 3, 31, 5)}.  If it
+\code{"moored"}/\code{"thermosalinograph"}, the default will be \code{c(30, 3, 31, 5)}.  If it
 is \code{"towyo"}, \code{c(30, 31, 32, 3)} will be used. Details are as
 follows.
 
@@ -66,6 +67,10 @@ follows.
     \item \code{which=17} or \code{which="conductivity"} gives a conductivity profile
     \item \code{which=20} or \code{which="CT"} gives a Conservative Temperature profile
     \item \code{which=21} or \code{which="SA"} gives an Absolute Salinity profile
+    \item \code{which=30} gives a time series of Salinity
+    \item \code{which=31} gives a time series of Temperature
+    \item \code{which=32} gives a time series of pressure
+    \item \code{which=33} gives a time series of sigmaTheta
 }}
 
 \item{col}{Colour of lines or symbols.}
@@ -111,7 +116,8 @@ supply the object as an argument, as opposed to the name of the object.}
 
 \item{plim}{Optional limits of pressure axes.}
 
-\item{densitylim}{Optional limits of density axis.}
+\item{densitylim}{Optional limits of density axis, whether that axis be horizontal
+or vertical.}
 
 \item{N2lim}{Optional limits of \eqn{N^2}{N^2} axis.}
 
@@ -198,24 +204,6 @@ which will yield breaks in the lines.}
 
 \item{type}{The type of plot to draw, using the same scheme as
 \code{\link{plot}}.}
-
-\item{adorn}{(\strong{Defunct})
-An \code{\link{expression}} or vector of expressions that contain
-R code that is to be executed immediately after each panel of the plot.
-If the number of expressions matches the number of panels, then the 
-expressions are used for the corresponding panels; otherwise, the
-expression list is extended to match the number of panels (i.e.
-to obtain \code{length(which)} elements). Note that \code{adorn}
-is a dangerous argument, because if the expressions contained
-therein set up local storage, there is a chance of entirely
-disrupting the plotting. \strong{For this reason, \code{adorn} was
-marked as defunct in June 2016, and will be removed entirely 
-after the July CRAN release.} Users with existing code that uses
-\code{adorn} should simply plot the panels individually, and
-use conventional R functions, e.g. \code{\link{lines}} etc.,
-after each panel, to achieve the desired effect.  (See
-\code{\link{oce-defunct}} for notes on other deprecated or
-defunct \code{oce} features.)}
 
 \item{mgp}{Three-element numerical vector specifying axis-label geometry,
 passed to \code{\link{par}}.

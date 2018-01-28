@@ -106,7 +106,7 @@ setMethod(f="summary",
               if ("pressureType" %in% mnames)
                   cat(paste("* Pressure type:      ", m$pressureType, "\n", sep=""))
               cat(paste("* Source:             ``", m$filename, "``\n", sep=""))
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 #' @title Extract Something From a Rsk Object
@@ -356,8 +356,6 @@ as.rsk <- function(time, columns,
 #'     \dQuote{Details} for the meanings of various values of
 #'     \code{which}.
 #'
-#' @template adornTemplate
-#'
 #' @param tlim optional limits for time axis.  If not provided, the value will be
 #' inferred from the data.
 #'
@@ -421,9 +419,10 @@ as.rsk <- function(time, columns,
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{rsk} data
+#' @aliases plot.rsk
 setMethod(f="plot",
           signature=signature("rsk"),
-          definition=function(x, which="timeseries", adorn=NULL,
+          definition=function(x, which="timeseries",
                               tlim, ylim,
                               xlab, ylab,
                               tformat,
@@ -436,9 +435,9 @@ setMethod(f="plot",
                               debug=getOption("oceDebug"),
                               ...)
           {
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,rsk-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "plot.rsk(..., which=", which, ", ...) {\n", unindent=1)
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is deprecated, and will be removed soon", call.=FALSE)
               dotsNames <- names(list(...))
               ## FIXME: In the below, we could be more clever for single-panel plots
               ## but it may be better to get users out of the habit of supplying xlim
@@ -476,11 +475,6 @@ setMethod(f="plot",
                   ##     par(mfrow=c(nw, 1))
                   ##     on.exit(par(opar))
                   ## }
-                  adorn.length <- length(adorn)
-                  if (adorn.length == 1) {
-                      adorn <- rep(adorn, nw)
-                      adorn.length <- nw
-                  }
                   if (missing(main))
                       main <- rep('', length.out=nw)
                   else
@@ -510,11 +504,6 @@ setMethod(f="plot",
                           axis(2)
                       } else {
                           stop("Unrecognized value for \"which\". Must be \"timeseries\" or the name of any field from the data slot.")
-                      }
-                      if (w <= adorn.length) {
-                          t <- try(eval(adorn[w]), silent=TRUE)
-                          if (class(t) == "try-error")
-                              warning("cannot evaluate adorn[", w, "]")
                       }
                   }
               }
@@ -1171,12 +1160,40 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
 #' @param x An \code{rsk} object, i.e. one inheriting from \code{\link{rsk-class}}.
 #' @param pressureAtmospheric A numerical value (a constant or a vector),
 #' that is subtracted from the pressure in \code{object} before storing it in the return value.
+#' @param longitude numerical value of longitude, in degrees East.
+#' @param latitude numerical value of latitude, in degrees North.
+#' @param ship optional string containing the ship from which the observations were made.
+#' @param cruise optional string containing a cruise identifier.
+#' @param station optional string containing a station identifier.
+#' @param deploymentType character string indicating the type of deployment (see
+#' \code{\link{as.ctd}}).
 #' @template debugTemplate
-rsk2ctd <- function(x, pressureAtmospheric=0, debug=getOption("oceDebug"))
+rsk2ctd <- function(x, pressureAtmospheric=0, longitude=NULL, latitude=NULL,
+                    ship=NULL, cruise=NULL, station=NULL, deploymentType=NULL,
+                    debug=getOption("oceDebug"))
 {
     oceDebug(debug, "rsk2ctd(...) {\n", sep="", unindent=1)
     res <- new("ctd")
     res@metadata <- x@metadata
+    ## The user may have already inserted some metadata, even if read.rsk() didn't, so
+    ## we have to take care of two cases in deciding on some things. The procedure is
+    ## to use the argument to rsk2ctd if one is given, otherwise to use the value already
+    ## in x@metadata, otherwise to set a default that matches as.ctd().
+    res@metadata$longitude <- if (!is.null(longitude)) longitude else
+        if (is.null(res@metadata$longitude)) NA else res@metadata$longitude
+    res@metadata$latitude <- if (!is.null(latitude)) latitude else
+        if (is.null(res@metadata$latitude)) NA else res@metadata$latitude
+    res@metadata$ship <- if (!is.null(ship)) ship else
+        if (is.null(res@metadata$ship)) "" else res@metadata$ship
+    res@metadata$cruise <- if (!is.null(cruise)) cruise else
+        if (is.null(res@metadata$cruise)) "" else res@metadata$cruise
+    res@metadata$station <- if (!is.null(station)) station else
+        if (is.null(res@metadata$station)) "" else res@metadata$station
+    res@metadata$deploymentType <- if (!is.null(deploymentType)) deploymentType else
+        if (is.null(res@metadata$deploymentType)) "unknown" else res@metadata$deploymentType
+
+    ## We start by copying the data, but we may need to do some fancy footwork for pressure, because
+    ## RBR devices store absolute pressure, not the sea pressure that we have in CTD objects.
     res@data <- x@data
     if (!("pressure" %in% names(res@data)))
         stop("there is no pressure in this rsk object, so it cannot be converted to a ctd object")

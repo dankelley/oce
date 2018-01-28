@@ -110,37 +110,85 @@ setMethod(f="subset",
 #'
 #' @description
 #' Plot data contained within an ODF object,
-#' using \code{\link{oce.plot.ts}} to create panels of time-series plots for all
-#' the columns contained in the \code{odf} object. If the object's \code{data}
-#' slot does not contain \code{time}, then \code{\link{pairs}} is used to plot
-#' all the elements in the slot. These actions are both crude and there are
-#' no arguments to control the behaviour, but this function is really just a stop-gap
-#' measure, since in practical work \code{odf} objects are usually cast to other types,
-#' and those types tend to have more useful plots.
+#' using \code{\link{oce.plot.ts}} to create panels of time-series plots for
+#' all the columns contained in the \code{odf} object (or just those that
+#' contain at least one finite value, if \code{blanks} is \code{FALSE}).
+#' If the object's \code{data} slot does not contain \code{time}, then
+#' \code{\link{pairs}} is used to plot all the elements in the \code{data}
+#' slot that contain at least one finite value.
+#' These actions are both
+#' crude and there are no arguments to control the behaviour, but this
+#' function is really just a stop-gap measure, since in practical work
+#' \code{odf} objects are usually cast to other types, and those types
+#' tend to have more useful plots.
 #'
 #' @param x A \code{odf} object, e.g. one inheriting from \code{\link{odf-class}}.
+#'
+#' @param blanks A logical value that indicates whether to include dummy
+#' plots for data items that lack any finite values.
+#'
+#' @template debugTemplate
+#'
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{odf} data
+#' @aliases plot.odf
 setMethod(f="plot",
           signature=signature("odf"),
-          definition=function(x) {
+          definition=function(x, blanks=TRUE,
+                              debug=getOption("oceDebug")) {
+              oceDebug(debug, "plot,odf-method(..., blanks=", blanks, "...) {\n", sep="", unindent=1)
               data <- x@data
               dataNames <- names(data)
-              n <- length(dataNames)
-              time <- data$time
-              if (!is.null(time)) {
-                  par(mfrow=c(n-1, 1))
-                  for (i in 1:n) {
-                      if (dataNames[i] != "time") {
-                          oce.plot.ts(time, data[[dataNames[i]]],
-                                      ylab=dataNames[i], mar=c(2, 3, 0.5, 1), drawTimeRange=FALSE)
+              ## At the start, n is the number of non-time variables, but
+              ## later on we might switch it to equal nok, which is the 
+              ## number of non-time variables that contain finite data.
+              if (!("time" %in% dataNames)) {
+                  finite <- unlist(lapply(data, function(col) any(is.finite(col))))
+                  pairs(data.frame(data)[, finite], labels=dataNames[finite])
+              } else {
+                  ## Define n as the number of non-time data items and nok as the
+                  ## number of such columns that contain at least 1 finite value.
+                  n <- length(dataNames) - 1
+                  if (blanks) {
+                      nok <- n
+                  } else {
+                      nok <- 0
+                      for (i in 1:n) {
+                          if (dataNames[i] != "time" && any(is.finite(data[[i]])))
+                              nok <- nok + 1
                       }
                   }
-              } else {
-                  flags <- grepl("^.*[fF]lag$", dataNames)
-                  pairs(data.frame(data)[,!flags], labels=dataNames[!flags])
+                  time <- data$time
+                  if (!is.null(time)) {
+                      if (!blanks)
+                          n <- nok
+                      if (n > 5) {
+                          ## make a roughly square grid
+                          N <- as.integer(0.5 + sqrt(n - 1))
+                          M <- as.integer(n / N)
+                          ## may need to add 1, but use a loop in case my logic is mixed up
+                          ## if that would 
+                          while (N * M < n)
+                              M <- M + 1
+                          par(mfrow=c(N, M))
+                          oceDebug(debug, "N=", N, ", M=", M, ", prod=", N*M, ", n=", n, "\n", sep="")
+                      } else {
+                          par(mfrow=c(n, 1))
+                      }
+                      for (i in seq_along(dataNames)) {
+                          if (dataNames[i] != "time") {
+                              y <- data[[dataNames[i]]]
+                              yok <- any(is.finite(y))
+                              if (blanks || yok)
+                                  oce.plot.ts(time, y, ylab=dataNames[i], mar=c(2, 3, 0.5, 1), drawTimeRange=FALSE)
+                              if (!yok)
+                                  warning(paste("In plot,odf-method() : '", dataNames[i], "' has no finite data", sep=""), call.=FALSE)
+                          }
+                      }
+                  }
               }
+              oceDebug(debug, "} # plot,odf-method\n", sep="", unindent=1)
           })
 
 
@@ -176,7 +224,7 @@ setMethod(f="summary",
               showMetadataItem(object, "cruise",                   "Cruise:              ")
               showMetadataItem(object, "ship",                     "Vessel:              ")
               showMetadataItem(object, "station",                  "Station:             ")
-              callNextMethod()         # [[
+              invisible(callNextMethod()) # summary
           })
 
 
@@ -296,7 +344,9 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
 #' @references
 #' 1. The Department of Fisheries and Oceans Common Data Dictionary may be
 #' available at \code{http://www.isdm.gc.ca/isdm-gdsi/diction/code_search-eng.asp?code=DOXY})
-#' although that link seems to be unreliable.
+#' although that link seems to be unreliable. As of September 2017, the
+#' link \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
+#' seems to be a good place to start.
 #' @family things related to \code{odf} data
 ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
                               columns=NULL, PARAMETER_HEADER=NULL, debug=getOption("oceDebug"))
@@ -398,6 +448,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             ##message("names[", i, "] = '", names[i], "'")
             if (1 == length(grep("^QQQQ", names[i])))
                 names[i] <- paste(names[i-1], "Flag", sep="")
+            if (substr(names[i], 1, 1) == "Q")
+                names[i] <- gsub("Q(.*)", "\\1Flag", names[i])
         }
     }
     oceDebug(debug, "STAGE 3 names: ", paste(names, collapse=" "), "\n")
@@ -549,7 +601,6 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
 #' @family things related to \code{odf} data
 ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 {
-    message("DAN")
     ## Stage 1. insert metadata (with odfHeader holding entire ODF header info)
     ## FIXME: add other types, starting with ADCP perhaps
     isCTD <- FALSE
@@ -626,6 +677,8 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
             }
         }
     }
+    ## FIXME: accept the IML-style flags, e.g. QPSAL for salinity
+
     ## use old (FFFF) flag if there is no modern (QCFF) flag
     ##if ("overall2Flag" %in% names && !("flag" %in% names))
     ##    names <- gsub("flagArchaic", "flag", names)
@@ -699,9 +752,12 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' @seealso \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
 #' package is released by the Canadian Department of Fisheries and Oceans.
 #'
-#' @references Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+#' @references [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
 #' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 #' in June 2011.)
+#'
+#' [2] The St Lawrence Global Observatory website has information on ODF format at
+#' \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
 #'
 #' @family things related to \code{odf} data
 read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
@@ -748,7 +804,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         options <- options('warn')
         options(warn=-1)
         nullValue <- NA
-        t <- try({nullValue <- as.numeric(findInHeader("NULL_VALUE", lines)[1])},
+        t <- try({nullValue <- as.numeric(gsub("D\\+", "e+", findInHeader("NULL_VALUE", lines))[1])},
             silent=TRUE)
         if (class(t) == "try-error") {
             nullValue <- findInHeader("NULL_VALUE", lines)[1]
@@ -803,7 +859,6 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         ODFnames <- c(ODFnames, NAME)
         ODFunits <- c(ODFunits, UNITS)
         ODForiginalNames <- c(ODForiginalNames, CODE)
-
 
         ##> for (ll in seq.int(l+1, min(l+100, nlines))) {
         ##>     ## message("; ll=", ll)
@@ -960,7 +1015,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
                 warning("using first of ", ltmp, " unique NULL_VALUEs")
                 tmp <- tmp[is.finite(tmp)]
                 NAvalue <- tmp[[1]]
-            } 
+            }
         } else {
             NAvalue <- NAvalue[[1]]
         }
@@ -1059,8 +1114,10 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ## Return to water depth issue. In a BIO file, I found that the missing-value code was
     ## -99, but that a SOUNDING was given as -99.9, so this is an extra check.
     if (is.na(waterDepth) || waterDepth < 0) {
-        res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
-        warning("estimating waterDepth from maximum pressure")
+        if ('pressure' %in% names(res@data)) {
+            res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
+            warning("estimating waterDepth from maximum pressure")
+        }
     }
 
     ## Move flags into metadata (could have done it above).
@@ -1068,7 +1125,10 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     iflags <- grep("Flag", dnames)
     if (length(iflags)) {
         for (iflag in iflags) {
-            res@metadata$flags[[gsub("Flag", "", dnames[iflag])]] <- res@data[[iflag]]
+            fname <- gsub("Flag", "", dnames[iflag])
+            if (fname == "C")
+                fname <- "QC"
+            res@metadata$flags[[fname]] <- res@data[[iflag]]
             res@metadata$dataNamesOriginal[[iflag]] <- ""
         }
         ## remove flags from data, and then remove their orig names

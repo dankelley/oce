@@ -26,7 +26,7 @@
 #' @concept satellite
 #' @references
 #' 1. Information on the satellite, how to cite the data, etc. is
-#' provided at \url{http://www.remss.com/missions/amsr}.
+#' provided at \url{http://www.remss.com/missions/amsr/}.
 #'
 #' 2. A simple interface for viewing and downloading data is at
 #' \url{http://images.remss.com/amsr/amsr2_data_daily.html}.
@@ -78,7 +78,7 @@ setMethod(f="summary",
               for (name in names(object@data)) {
                   object@data[[name]] <- object[[name]] # translate to science units
               }
-              callNextMethod()         # summary
+              invisible(callNextMethod())        # summary
           })
 
 #' Extract Something From an amsr Object
@@ -327,6 +327,7 @@ setMethod(f="subset",
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{amsr} data
+#' @aliases plot.amsr
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
@@ -420,11 +421,15 @@ setMethod(f="plot",
 #' This site was found by a web search, but it seems to provide proper data.
 #' It is assumed that users will do some checking on the best source.
 #'
+#' On 23 January 2018, it was noticed that the server-url naming convention
+#' had changed, e.g.
+#' \code{http://data.remss.com/amsr2/bmaps_v07.2/y2017/m01/f34_20170114v7.2.gz}
+#' becoming
+#' \code{http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz}
+#'
 #' @return A character value indicating the filename of the result; if
 #' there is a problem of any kind, the result will be the empty
 #' string.
-#'
-#' @template downloadWarningTemplate
 #'
 #' @examples
 #'\dontrun{
@@ -440,7 +445,7 @@ setMethod(f="plot",
 #' \url{http://images.remss.com/amsr/amsr2_data_daily.html}
 #' provides daily images going back to 2012. Three-day,
 #' monthly, and monthly composites are also provided on that site.
-download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v07.2")
+download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v08")
 {
     ## ftp ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/y2016/m08/f34_20160804v7.2.gz
     if (missing(year) && missing(month)) {
@@ -455,7 +460,7 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
     year <- as.integer(year)
     month <- as.integer(month)
     day <- as.integer(day)
-    destfile <- sprintf("f34_%4d%02d%02dv7.2.gz", year, month, day)
+    destfile <- sprintf("f34_%4d%02d%02dv8.gz", year, month, day)
     destpath <- paste(destdir, destfile, sep="/")
     ## example
     ## http://data.remss.com/amsr2/bmaps_v07.2/y2015/m11/f34_20151101v7.2.gz

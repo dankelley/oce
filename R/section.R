@@ -55,7 +55,7 @@
 #' Tlim <- range(section[["temperature"]])
 #' ylim <- rev(range(section[["pressure"]]))
 #' for (stn in section[["station", 1:9]])
-#'     plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
+#'     plotProfile(stn, xtype='potential temperature', ylim=ylim, Tlim=Tlim)
 #'
 #' @author Dan Kelley
 #'
@@ -187,8 +187,6 @@ setMethod(f="summary",
           signature="section",
           definition=function(object, ...) {
               numStations <- length(object@data$station)
-              ##lat1 <- object@data$station[[1]]@metadata$latitude
-              ##lon1 <- object@data$station[[1]]@metadata$longitude
               cat("Section Summary\n---------------\n\n")
               cat("* Source: \"", object@metadata$filename, "\"\n", sep="")
               cat("* ID:     \"", object@metadata$sectionId, "\"\n", sep="")
@@ -204,14 +202,16 @@ setMethod(f="summary",
                       depth <- if (!is.finite(thisStn@metadata$waterDepth) || 0 == thisStn@metadata$waterDepth)
                           max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
                       cat(sprintf("%5d %5s %8.3f %8.3f %7.0f %5.0f\n",
-                                  i, id, thisStn@metadata$longitude[1], thisStn@metadata$latitude[1], length(thisStn@data$pressure), depth))
+                                  i, id,
+                                  thisStn@metadata$longitude, thisStn@metadata$latitude,
+                                  length(thisStn@data$pressure), depth))
                   }
                   cat("```\n")
               } else {
                   cat("* No stations\n")
               }
               processingLogShow(object)
-              invisible(NULL)
+              invisible()
           })
 
 #' @title Extract Something From a Section Object
@@ -444,7 +444,11 @@ setMethod(f="[[<-",
           signature(x="section", i="ANY", j="ANY"),
           definition=function(x, i, j, ..., value) {
               if (i == "station") {
-                  x@data$station[[j]] <- value
+                  if (missing(j)) {
+                      x@data$station <- value
+                  } else {
+                      x@data$station[[j]] <- value
+                  }
                   x
               } else {
                   callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
@@ -473,7 +477,9 @@ setMethod(f="show",
                       depth <- if (is.null(thisStn@metadata$waterDepth))
                           max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
                       cat(sprintf("%5d %5s %8.3f %8.3f %7.0f %5.0f\n",
-                                  i, id, thisStn@metadata$longitude[1], thisStn@metadata$latitude[1], length(thisStn@data$pressure), depth))
+                                  i, id,
+                                  thisStn@metadata$longitude, thisStn@metadata$latitude,
+                                  length(thisStn@data$pressure), depth))
                   }
               }
           })
@@ -972,6 +978,7 @@ sectionAddCtd <- sectionAddStation
 #' The type of plot is governed by \code{which}, as follows.
 #'
 #' \itemize{
+#'     \item \code{which=0} or \code{"potential temperature"} for temperature contours
 #'     \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
 #'     \item \code{which=2} or \code{"salinity"} for salinity contours
 #'     \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
@@ -1084,8 +1091,6 @@ sectionAddCtd <- sectionAddStation
 #' @param legend.loc Location of legend, as supplied to \code{\link{legend}}, or
 #' set to the empty string to avoid plotting a legend.
 #'
-#' @template adornTemplate
-#'
 #' @param showStations Logical indicating whether to draw station numbers on maps.
 #'
 #' @param showStart Logical indicating whether to indicate the first station with
@@ -1127,7 +1132,7 @@ sectionAddCtd <- sectionAddStation
 #' Otherwise, the gridded section that was constructed for the plot is returned.
 #' In both cases, the value is returned silently. The
 #' purpose of returning the section is to enable subsequent processing
-#' of the grid, including adding elements to the plot.
+#' of the grid, including adding elements to the plot (see example 5).
 #'
 #' @seealso The documentation for \code{\link{section-class}} explains the
 #' structure of section objects, and also outlines the other functions dealing
@@ -1184,10 +1189,20 @@ sectionAddCtd <- sectionAddStation
 #' plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
 #'}
 #'
+#' \dontrun{
+#' ## 5. Temperature with salinity added in red
+#' s <- plot(section, which="temperature")
+#' distance <- s[["distance", "byStation"]]
+#' depth <- s[["station", 1]][["depth"]]
+#' salinity <- matrix(s[["salinity"]], byrow=TRUE, nrow=length(s[["station"]]))
+#' contour(distance, depth, salinity, col=2, add=TRUE)
+#'}
+#'
 #' @author Dan Kelley
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{section} data
+#' @aliases plot.section
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
@@ -1207,7 +1222,6 @@ setMethod(f="plot",
                               xtype="distance", ytype="depth", ztype="contour",
                               zbreaks=NULL, zcol=NULL,
                               legend.loc="bottomright",
-                              adorn=NULL,
                               showStations=FALSE,
                               showStart=TRUE,
                               showBottom=TRUE,
@@ -1217,6 +1231,8 @@ setMethod(f="plot",
           {
               if (missing(debug))
                   debug <- getOption("oceDebug")
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,section-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               debug <- if (debug > 4) 4 else floor(0.5 + debug)
               if (missing(eos))
                   eos <- getOption("oceEOS", default="gsw")
@@ -1237,8 +1253,6 @@ setMethod(f="plot",
                   cex <- par("cex")
               if (missing(pch))
                   pch <- par("pch")
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
 
               ## Make 'which' be numeric, to simplify following code
               ##oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n")
@@ -1251,6 +1265,7 @@ setMethod(f="plot",
               ##                         u=9, uz=10, v=11, vz=12, # lowered adcp
               ##                         data=20, map=99))
               if (is.numeric(which)) {
+                  which[which==0] <- "potential temperature"
                   which[which==1] <- "temperature"
                   which[which==2] <- "salinity"
                   which[which==3] <- "sigmaTheta"
@@ -1275,7 +1290,6 @@ setMethod(f="plot",
               if (is.na(which[1]) || which != "data" || which != 'map') {
                   p1 <- x[["station", 1]][["pressure"]]
                   numStations <- length(x@data$station)
-                  gridded <- FALSE
                   for (ix in 2:numStations) {
                       thisStation <- x@data$station[[ix]]
                       thisPressure <- thisStation[["pressure"]]
@@ -1311,8 +1325,15 @@ setMethod(f="plot",
                                          col=par("col"),
                                          ...)
               {
-                  oceDebug(debug, "plotSubsection(variable=\"", variable, "\", eos=\"", eos, "\", ztype=\"", ztype, "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
+                  oceDebug(debug, "plotSubsection(variable=\"", variable,
+                           "\", eos=\"", eos,
+                           "\", ztype=\"", ztype,
+                           "\", zcol=", if (missing(zcol)) "(missing)" else "(provided)",
+                           "\", span=", if (missing(span)) "(missing)" else span,
                            ", axes=", axes, ", ...) {\n", sep="", unindent=1)
+                  ## L and R are used much later, for constructing labels
+                  L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
+                  R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
                   ztype <- match.arg(ztype)
                   drawPoints <- "points" == ztype
                   omar <- par('mar')
@@ -1325,8 +1346,8 @@ setMethod(f="plot",
                       lon <- array(NA_real_, numStations)
                       for (i in 1:numStations) {
                           thisStation <- x[["station", stationIndices[i]]]
-                          lon[i] <- thisStation[["longitude"]][1]
-                          lat[i] <- thisStation[["latitude"]][1]
+                          lon[i] <- mean(thisStation[["longitude"]], na.rm=TRUE)
+                          lat[i] <- mean(thisStation[["latitude"]], na.rm=TRUE)
                       }
                       ## lon[lon<0] <- lon[lon<0] + 360
                       asp <- 1 / cos(mean(range(lat, na.rm=TRUE))*pi/180)
@@ -1397,7 +1418,7 @@ setMethod(f="plot",
                           } else {
                               oceDebug(debug, "using", projection, "projection (specified)\n")
                           }
-                          mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, fill='gray')
+                          mapPlot(coastline, longitudelim=map.xlim, latitudelim=map.ylim, projection=projection, col='gray')
                           mapPoints(x[['longitude', 'byStation']], x[['latitude', 'byStation']],
                                     col=col, pch=3, lwd=1/2)
                           if (xtype == "distance" && showStart) {
@@ -1570,6 +1591,10 @@ setMethod(f="plot",
                                       v <- swConservativeTemperature(x@data$station[[stationIndices[i]]])
                                   else if (eos == "gsw" && variable == "salinity")
                                       v <- swAbsoluteSalinity(x@data$station[[stationIndices[i]]])
+                                  else if (eos == "gsw" && variable == "sigmaTheta")
+                                      v <- swSigma0(x@data$station[[stationIndices[i]]], eos=eos)
+                                  else if (eos == "unesco" && variable == "potential temperature")
+                                      v <- x@data$station[["theta"]]
                                   else
                                       v <- x@data$station[[stationIndices[i]]][[variable]]
                                   points(rep(xx[i], length(p)), -p,
@@ -1580,6 +1605,15 @@ setMethod(f="plot",
                                       zz[i, ] <- rev(swConservativeTemperature(x@data$station[[stationIndices[i]]]))
                                   } else if (eos == "gsw" && variable == "salinity") {
                                       zz[i, ] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
+                                  } else if (eos == "gsw" && variable == "sigmaTheta") {
+                                      ## The contour will probably look very much like for the "unesco" case,
+                                      ## apart from the different legend. I say this because I used station 10
+                                      ## of data(section) as a test case, and found that the RMS difference
+                                      ## between results computed with the two formulations to be 0.005kg/m^3,
+                                      ## or just 0.02% of the mean value.
+                                      zz[i, ] <- rev(swSigma0(x@data$station[[stationIndices[i]]], eos=eos))
+                                  } else if (eos == "unesco" && variable == "potential temperature") {
+                                      zz[i, ] <- rev(x@data$station[[stationIndices[i]]][["theta"]])
                                   } else {
                                       zz[i, ] <- rev(x@data$station[[stationIndices[i]]][[variable]])
                                   }
@@ -1652,7 +1686,7 @@ setMethod(f="plot",
                               thisStation <- x[["station", i]]
                               pressure <- thisStation[["pressure"]]
                               if (which.xtype == 4) {
-                                  longitude <- thisStation[["longitude"]][1]
+                                  longitude <- mean(thisStation[["longitude"]], na.rm=TRUE)
                                   points(rep(longitude, length(pressure)), -pressure, cex=cex, pch=pch, col=col)
                               } else {
                                   ## FIXME: shouldn't the next line work for all types??
@@ -1663,8 +1697,11 @@ setMethod(f="plot",
                           ## Use try() to quiet warnings if all data are NA
                           if (zAllMissing) {
                               if (nchar(legend.loc)) {
-                                  if (is.character(vtitle) && vtitle == "sigmaTheta")
-                                      vtitle <- expression(sigma[theta])
+                                  if (is.character(vtitle) && vtitle == "sigmaTheta") {
+                                      vtitle <- if (eos == "gsw") expression(sigma[0]) else expression(sigma[theta])
+                                      unit <- expression(kg/m^3)
+                                      vtitle <- bquote(.(vtitle[[1]])*.(L)*.(unit[[1]])*.(R))
+                                  }
                                   legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5, cex=1)
                               }
                               return()
@@ -1714,6 +1751,9 @@ setMethod(f="plot",
                               zrange <- range(zz[xx.unique, yy.unique], na.rm=TRUE)
                               if (is.null(dots$labcex)) {
                                   if (ztype == 'contour') {
+                                      zzrange <- range(zz[xx.unique, yy.unique], na.rm=TRUE)
+                                      if (any(!is.finite(zzrange)))
+                                          stop("cannot draw a contour diagram because all values are NA or Inf")
                                       contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                               labcex=0.8, add=TRUE, col=col, ...)
                                   } else if (ztype == "image") {
@@ -1799,10 +1839,10 @@ setMethod(f="plot",
                               }
                           }
                       }
-                      L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
-                      R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
-                      if (is.character(vtitle) && vtitle == "sigmaTheta")
-                          vtitle <- expression(sigma[theta])
+                      if (is.character(vtitle) && vtitle == "sigmaTheta") {
+                          vtitle <- if (eos == "gsw") expression(sigma[0]) else expression(sigma[theta])
+                          unit <- expression(kg/m^3)
+                      }
                       vtitleOrig <- vtitle
                       vtitle <- if (length(unit) == 0) vtitle else bquote(.(vtitle[[1]])*.(L)*.(unit[[1]])*.(R))
                       if (nchar(legend.loc)) {
@@ -1841,27 +1881,27 @@ setMethod(f="plot",
               xx <- array(NA_real_, numStations)
               yy <- array(NA_real_, num.depths)
               if (is.null(at)) {
-                  lon0 <- firstStation[["longitude"]][1]
-                  lat0 <- firstStation[["latitude"]][1]
+                  lon0 <- mean(firstStation[["longitude"]], na.rm=TRUE)
+                  lat0 <- mean(firstStation[["latitude"]], na.rm=TRUE)
                   for (ix in 1:numStations) {
                       j <- stationIndices[ix]
                       if (which.xtype == 1) { # distance from first station
                           xx[ix] <- geodDist(lon0, lat0,
-                                             x@data$station[[j]][["longitude"]][1],
-                                             x@data$station[[j]][["latitude"]][1])
+                                             mean(x@data$station[[j]][["longitude"]], na.rm=TRUE),
+                                             mean(x@data$station[[j]][["latitude"]], na.rm=TRUE))
                       } else if (which.xtype == 2) { # distance along the cruise track
                           if (ix == 1) {
                               xx[ix] <- 0
                           } else {
-                              xx[ix] <- xx[ix-1] + geodDist(x@data$station[[stationIndices[ix-1]]][["longitude"]][1],
-                                                            x@data$station[[stationIndices[ix-1]]][["latitude"]][1],
-                                                            x@data$station[[j]][["longitude"]][1],
-                                                            x@data$station[[j]][["latitude"]][1])
+                              xx[ix] <- xx[ix-1] + geodDist(mean(x@data$station[[stationIndices[ix-1]]][["longitude"]], na.rm=TRUE),
+                                                            mean(x@data$station[[stationIndices[ix-1]]][["latitude"]], na.rm=TRUE),
+                                                            mean(x@data$station[[j]][["longitude"]], na.rm=TRUE),
+                                                            mean(x@data$station[[j]][["latitude"]], na.rm=TRUE))
                           }
                       } else if (which.xtype == 3) {
-                          xx[ix] <- x@data$station[[j]][["longitude"]][1]
+                          xx[ix] <- mean(x@data$station[[j]][["longitude"]], na.rm=TRUE)
                       } else if (which.xtype == 4) {
-                          xx[ix] <- x@data$station[[j]][["latitude"]][1]
+                          xx[ix] <- mean(x@data$station[[j]][["latitude"]], na.rm=TRUE)
                       } else if (which.xtype == 5) {
                           ## use ix as a desparate last measure, if there are no times.
                           if (!is.null(x@data$station[[j]]@metadata$startTime)) {
@@ -1915,11 +1955,6 @@ setMethod(f="plot",
                   else
                       layout(matrix(1:2, nrow=2, byrow=TRUE))
               }
-              adorn.length <- length(adorn)
-              if (adorn.length == 1) {
-                  adorn <- rep(adorn, lw)
-                  adorn.length <- lw
-              }
               ## dataNames <- names(x[["station", 1]][["data"]])
               L <- if (getOption("oceUnitBracket") == "[") " [" else " ("
               R <- if (getOption("oceUnitBracket") == "[")  "]" else  ")"
@@ -1937,11 +1972,21 @@ setMethod(f="plot",
                       if (which[w] == "temperature") {
                           oceDebug(debug, "plotting temperature with contourLevels provided\n")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "temperature", if (eos=="unesco") "T" else expression(Theta), unit=unit,
+                                         "temperature",
+                                         if (eos=="unesco") "T" else expression(Theta),
+                                         unit=unit,
                                          eos=eos, ylab="",
                                          levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, ztype=ztype,
                                          axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == "salinity") {
+                      } else if (which[w] == "potential temperature") {
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "potential temperature",
+                                         if (eos=="unesco") expression(theta*" ["*degree*"]") else expression(S[A]),
+                                         unit=unit,
+                                         eos=eos, ylab="",
+                                         levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim,
+                                         axes=axes, col=col, debug=debug-1, ...)
+                       } else if (which[w] == "salinity") {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          "salinity", if (eos=="unesco") "S" else expression(S[A]), unit=unit,
                                          eos=eos, ylab="",
@@ -1958,20 +2003,33 @@ setMethod(f="plot",
                       if (which[w] == "temperature") {
                           oceDebug(debug, "plotting temperature with contourLevels not provided\n")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "temperature", if (eos == "unesco") "T" else expression(Theta), unit=unit,
+                                         "temperature",
+                                         if (eos == "unesco") "T" else expression(Theta),
+                                         unit=unit,
                                          eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
-                      } else if (which[w] == "salinity") {
-                          ##message("*** salinity ***")
+                      } else if (which[w] == "potential temperature") {
+                          oceDebug(debug, "plotting potential temperature with contourLevels not provided\n")
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
-                                         "salinity", if (eos == "unesco") "S" else expression(S[A]), unit=unit,
+                                         "potential temperature",
+                                         if (eos=="unesco") expression(theta*" ["*degree*"C]") else expression(Theta),
+                                         unit=unit,
                                          eos=eos,
                                          xlim=xlim, ylim=ylim, ztype=ztype,
                                          zbreaks=zbreaks, zcol=zcol,
                                          axes=axes, col=col, debug=debug-1, ...)
-                      } else {
+                       } else if (which[w] == "salinity") {
+                          plotSubsection(xx, yy, zz, which.xtype, which.ytype,
+                                         "salinity",
+                                         if (eos == "unesco") "S" else expression(S[A]),
+                                         unit=unit,
+                                         eos=eos,
+                                         xlim=xlim, ylim=ylim, ztype=ztype,
+                                         zbreaks=zbreaks, zcol=zcol,
+                                         axes=axes, col=col, debug=debug-1, ...)
+                      } else if (which[w] != "map" && which[w] != 99) {
                           plotSubsection(xx, yy, zz, which.xtype, which.ytype,
                                          which[w], which[w], eos=eos, # ylab="",
                                          xlim=xlim, ylim=ylim, ztype=ztype,
@@ -1982,16 +2040,12 @@ setMethod(f="plot",
                   if (!is.na(which[w]) && which[w] == 20)
                       plotSubsection(xx, yy, zz, which.xtype, which.ytype, "data", "", unit=unit,
                                      xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
-                  if (!is.na(which[w]) && which[w] == 99) {
+                  if (!is.na(which[w]) && (which[w] == 99 || which[w] == "map")) {
                       plotSubsection(xx, yy, zz, which.xtype, which.ytype, "map", unit=unit,
                                      indicate.stations=FALSE,
                                      clongitude=clongitude, clatitude=clatitude, span=span,
                                      projection=projection,
                                      debug=debug-1, ...)
-                  }
-                  if (w <= adorn.length) {
-                      t <- try(eval(adorn[w]), silent=TRUE)
-                      if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]")
                   }
               }
               oceDebug(debug, "} # plot.section()\n", unindent=1)
@@ -2668,9 +2722,9 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
             res@data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[, s]
         }
     } else if (method == "barnes") {
-        message("barnes method")
+        ##message("barnes method")
         vars <- names(section[["station", 1]]@data)
-        message("names(vars)= '", paste(vars, collapse=' '), "'")
+        ##message("names(vars)= '", paste(vars, collapse=' '), "'")
         res <- section
         x <- geodDist(section)
         stn1pressure <- section[["station", 1]][["pressure"]]
@@ -2760,14 +2814,15 @@ sectionSmooth <- function(section, method=c("spline", "barnes"),
 #' in the CTD object.
 #'
 #' Case 2. If the first argument is a list containing oce objects, then those
-#' objects are taken as profiles of something.  The only requirement for this
-#' to work are that every element of the list must contain both \code{longitude}
-#' and latitude in its \code{metadata} slot and that every element also contains
-#' \code{pressure} in its \code{data} slot.
+#' objects are taken as profiles of something.  A requirement for this
+#' to work is that every element of the list contains both \code{longitude}
+#' and \code{latitude} in either the \code{metadata} or \code{data} slot (in
+#' the latter case, the mean value is recorded in the section object)
+#' and that every element also contains \code{pressure} in its \code{data} slot.
 #'
-#' Case 3. If the first argument is a \code{\link{argo-class}} object, then the profiles it
-#' contains are turned into \code{\link{ctd-class}} objects, and these are assembled
-#' into a section to be returned.
+#' Case 3. If the first argument is a \code{\link{argo-class}} object, then
+#' the profiles it contains are turned into \code{\link{ctd-class}} objects,
+#' and these are assembled into a section to be returned.
 #'
 #' @param salinity This may be a numerical vector, in which case it is interpreted
 #' as the salinity, and the other arguments are used for the other components of
@@ -2834,7 +2889,8 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
             ## message("NUMERIC CASE. i: ", i, ", name:", stationLevels[i])
             look <- station==stationLevels[i]
             ctds[[i]] <- as.ctd(salinity[look], temperature[look], pressure[look],
-                                longitude=longitude[look][1], latitude=latitude[look][1],
+                                longitude=longitude[look][1],
+                                latitude=latitude[look][1],
                                 station=stationLevels[i])
         }
     } else if (inherits(salinity, "argo")) {
@@ -2885,7 +2941,8 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
                 ctds[[i]] <- thelist[[i]]
             }
             if (length(badDepths))
-                warning("estimated waterDepth as max(pressure) for CTDs numbered: ", paste(badDepths, collapse=" "))
+                warning("estimated waterDepth as max(pressure) for CTDs numbered ",
+                        paste(abbreviateVector(badDepths), collapse=" "))
         } else {
             stop("first argument must be a salinity vector, or a list of oce objects")
         }
@@ -2901,8 +2958,8 @@ as.section <- function(salinity, temperature, pressure, longitude, latitude, sta
     ## In each case, we now have a vector of CTD objects.
     res@metadata$sectionId <- ""
     res@metadata$stationId <- unlist(lapply(ctds, function(x) x[["station"]][1]))
-    res@metadata$longitude <- unlist(lapply(ctds, function(x) x[["longitude"]][1]))
-    res@metadata$latitude <- unlist(lapply(ctds, function(x) x[["latitude"]][1]))
+    res@metadata$longitude <- unlist(lapply(ctds, function(x) mean(x[["longitude"]], na.rm=TRUE)))
+    res@metadata$latitude <- unlist(lapply(ctds, function(x) mean(x[["latitude"]], na.rm=TRUE)))
     res@metadata$time <- numberAsPOSIXct(unlist(lapply(ctds, function(x) x[["time"]][1])))
     res@data <- list(station=ctds)
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))

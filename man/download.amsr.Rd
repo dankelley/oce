@@ -5,7 +5,7 @@
 \title{Download and Cache an amsr File}
 \usage{
 download.amsr(year, month, day, destdir = ".",
-  server = "http://data.remss.com/amsr2/bmaps_v07.2")
+  server = "http://data.remss.com/amsr2/bmaps_v08")
 }
 \arguments{
 \item{year, month, day}{Numerical values of the year, month, and day
@@ -49,18 +49,12 @@ accounts to register for downloads.  The default was changed to
 \code{"http://data.remss.com/amsr2/bmaps_v07.2"} on the named date.
 This site was found by a web search, but it seems to provide proper data.
 It is assumed that users will do some checking on the best source.
-}
 
-\section{Warning}{
-
-All of the \code{download.*} functions are subject to change through the
-year 2017. The plan is to create individual functions
-as needs arise in everyday work, thereby discovering patterns of 
-arguments that might make sense more generally. Therefore, it is likely
-that argument order (and even name) may change up until approximately
-December 2016. Users are advised to refer to arguments by name,
-i.e. not to rely on their order, and they are asked for patience,
-because argument names and defaults may vary through the early development.
+On 23 January 2018, it was noticed that the server-url naming convention
+had changed, e.g.
+\code{http://data.remss.com/amsr2/bmaps_v07.2/y2017/m01/f34_20170114v7.2.gz}
+becoming
+\code{http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz}
 }
 
 \examples{

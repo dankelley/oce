@@ -72,7 +72,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("LADP Summary\n------------\n\n")
               showMetadataItem(object, "station", "Station:             ")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 #' @title Extract Something From an ladp Object
@@ -125,6 +125,7 @@ setMethod(f="[[",
 #'
 #' @family things related to \code{ladp} data
 #' @family functions that plot \code{oce} data
+#' @aliases plot.ladp
 setMethod(f="plot",
           signature=signature("ladp"),
           definition=function(x, which=c("u", "v"), ...) {

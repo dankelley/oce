@@ -6,9 +6,8 @@
 \title{World Coastline}
 \source{
 Downloaded from \url{http://www.naturalearthdata.com}, in
-\code{ne_110m_admin_0_countries.shp}. This procedure worked in July 2015 and
-also in October 2015, so it is likely to be reasonably stable, but be aware
-that webpages do tend to change.
+\code{ne_110m_admin_0_countries.shp} in July 2015, with an 
+update on December 16, 2017.
 }
 \description{
 This is a coarse resolution coastline at scale 1:110M, with 10,696 points,

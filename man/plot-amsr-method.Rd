@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,amsr-method}
 \alias{plot,amsr-method}
+\alias{plot.amsr}
 \title{Plot an amsr Object}
 \usage{
 \S4method{plot}{amsr}(x, y, asp, missingColor = list(land = "papayaWhip", none

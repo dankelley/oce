@@ -52,7 +52,7 @@ test_that("sealevel", {
 
 test_that("sealevel", {
           data("section")
-          stopifnot(all.equal(section[["sectionId"]], "a03"))
+          expect_equal(section[["sectionId"]], "a03")
           expect_equal(length(section@data$station), 124)
           expect_equal(section@data$station[[1]]@metadata$station, "3")
           expect_equal(section@data$station[[1]][["station"]], "3")

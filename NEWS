@@ -1,3 +1,9 @@
+0.9-23
+- tidem() permits inferred constituents
+- tidem() follows T_TIDE phase convention
+- adorn argument removed from plot functions (after being defunct 1+ year)
+- deprecate findInOrdered()
+
 0.9-22
 - plot,section-method() can use external bathymetry
 - lowpass() added

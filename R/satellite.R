@@ -51,7 +51,7 @@ setMethod(f="summary",
               ##         format(object@metadata$time, "%Y-%m-%d %H:%M:%S %z"), "\n", sep="")
               ## }
               ## message("JUNK END")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 #' Plot a satellite object
@@ -69,6 +69,7 @@ setMethod(f="summary",
 #' @author Dan Kelley
 #' @family things related to satellite data
 #' @family functions that plot \code{oce} data
+#' @aliases plot.satellite
 setMethod(f="plot",
           signature=signature("satellite"),
           definition=function(x, y, asp, debug=getOption("oceDebug"), ...)

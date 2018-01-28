@@ -37,9 +37,8 @@ setClass("coastline", contains="oce")
 #' startup file.
 #' @author Dan Kelley
 #' @source Downloaded from \url{http://www.naturalearthdata.com}, in
-#' \code{ne_110m_admin_0_countries.shp}. This procedure worked in July 2015 and
-#' also in October 2015, so it is likely to be reasonably stable, but be aware
-#' that webpages do tend to change.
+#' \code{ne_110m_admin_0_countries.shp} in July 2015, with an 
+#' update on December 16, 2017.
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{coastline} data
 NULL
@@ -121,7 +120,7 @@ setMethod(f="summary",
               cat("Coastline Summary\n-----------------\n\n")
               cat("* Number of points:", length(object@data$latitude), ", of which",
                   sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
-              callNextMethod()         # summary
+              invisible(callNextMethod())        # summary
           })
 
 #' @title Coerce Data into a Coastline Object
@@ -295,7 +294,10 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' hemispheres.  If \code{geographical=1}, the signs are dropped, with axis
 #' values being in decreasing order within the southern and western
 #' hemispheres.  If \code{geographical=2}, the signs are dropped and the axes
-#' are labelled with degrees, minutes and seconds, as appropriate.
+#' are labelled with degrees, minutes and seconds, as appropriate, and
+#' hemispheres are indicated with letters. If \code{geographical=3}, things
+#' are the same as for \code{geographical=2}, but the hemisphere indication
+#' is omitted.
 #'
 #' @param longitudelim this and \code{latitudelim} provide a second way to
 #' suggest plot ranges. Note that these may not be supplied if
@@ -339,6 +341,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{coastline} data
+#' @aliases plot.coastline
 setMethod(f="plot",
           signature=signature("coastline"),
           definition=function (x,
@@ -409,23 +412,23 @@ setMethod(f="plot",
                   oceDebug(debug, "plot,coastline-method calling mapPlot (code location 1)\n")
                   mapPlot(x[["longitude"]], x[["latitude"]], projection=projection,
                           longitudelim=longitudelim, latitudelim=latitudelim,
-                          bg=col, col=col, fill=fill, border=border, debug=debug-1)
+                          bg=col, fill=fill, border=border, debug=debug-1)
                   return(invisible())
               }
               if (!missing(clongitude))
                   if (clongitude > 180) clongitude <- clongitude - 360
               if (!missing(longitudelim) || !missing(latitudelim)) {
                   if (missing(longitudelim) || missing(latitudelim))
-                      stop("if longitudelim or latitudelim are given, both must be given")
+                      stop("In plot,coastline-method() : if either longitudelim or latitudelim are given, both must be given", call.=FALSE)
                   if (!missing(clongitude) || !missing(clatitude) || !missing(span))
-                      stop("if longitudelim or latitudelim are given, must not supply clongitude, clatitude, or span")
+                      stop("In plot,coastline-method() : if longitudelim or latitudelim are given, then clongitude, clatitude, and span may not be given", call.=FALSE)
                   ##message("A")
                   clongitude <- mean(longitudelim)
                   clatitude <- mean(latitudelim)
                   span <- geodDist(min(longitudelim), min(latitudelim), max(longitudelim), max(latitudelim))
-                  warning("plot.coastline() converting longitudelim and latitudelim to clongitude=",
+                  warning("In plot,coastline-method() : converting longitudelim and latitudelim to clongitude=",
                           round(clongitude, 4),
-                          ", clatitude=", round(clatitude, 4), " and span=", round(span, 0), "\n")
+                          ", clatitude=", round(clatitude, 4), " and span=", round(span, 0), "\n", call.=FALSE)
               }
               if (!is.null(projection)) {
                   if (missing(span))
@@ -461,8 +464,8 @@ setMethod(f="plot",
                   return(invisible())
               }
               geographical <- round(geographical)
-              if (geographical < 0 || geographical > 2)
-                  stop("argument geographical must be 0, 1, or 2")
+              if (geographical < 0 || geographical > 3)
+                  stop("argument geographical must be 0, 1, 2, or 3")
               if (is.list(x) && "latitude" %in% names(x)) {
                   if (!("longitude" %in% names(x)))
                       stop("list must contain item named 'longitude'")
@@ -621,12 +624,15 @@ setMethod(f="plot",
                           xlabels <- sub("-", "", xlabels)
                           ylabels <- sub("-", "", ylabels)
                       }
-                      if (geographical == 2) {
+                      if (geographical == 2 || geographical == 3) {
                           xr.pretty <- prettyPosition(xr.pretty, debug=debug-1)
                           yr.pretty <- prettyPosition(yr.pretty, debug=debug-1)
-                          xlabels <- formatPosition(xr.pretty, type='expression')
-                          ylabels <- formatPosition(yr.pretty, type='expression')
+                          xlabels <- formatPosition(xr.pretty, isLat=FALSE, type='expression',
+                                                    showHemi=geographical==3)
+                          ylabels <- formatPosition(yr.pretty, isLat=TRUE, type='expression',
+                                                    showHemi=geographical==3)
                       }
+ 
                       axis(1, at=xr.pretty, labels=xlabels, pos=usrTrimmed[3], cex.axis=cex.axis)
                       oceDebug(debug, "putting bottom x axis at", usrTrimmed[3], "with labels:", xlabels, "\n")
                       axis(2, at=yr.pretty, labels=ylabels, pos=usrTrimmed[1], cex.axis=cex.axis, cex=cex.axis)
@@ -641,7 +647,7 @@ setMethod(f="plot",
                   oceDebug(debug, "par('yaxp')", par("yaxp"), "\n")
                   oceDebug(debug, "par('pin')", par("pin"), "\n")
                   if (yaxp[1] < -90 | yaxp[2] > 90) {
-                      warning("FIXME: should trim poles on this coastline plot\n")
+                      warning("In plot,coastline-method() : should trim poles\n", call.=FALSE)
                   }
                   if (type == "polygon") {
                       if (is.null(border))
@@ -699,8 +705,6 @@ setMethod(f="plot",
 #' string.
 #'
 #' @seealso The work is done with \code{\link[utils]{download.file}}.
-#'
-#' @template downloadWarningTemplate
 #'
 #' @examples
 #'\dontrun{

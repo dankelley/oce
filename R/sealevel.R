@@ -88,6 +88,12 @@ NULL
 #' lines(time, detided, col="red")
 #' }
 #'
+#' @section Historical note:
+#' Until Jan 6, 2018, the time in this dataset had been increased
+#' by 7 hours. However, this alteration was removed on this date,
+#' to make for simpler comparison of amplitude and phase output with
+#' the results obtained by Foreman (1977) and Pawlowicz et al. (2002).
+#'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{sealevel} data
 NULL
@@ -138,7 +144,7 @@ setMethod(f="summary",
               ndata <- length(object@data$elevation)
               cat("* number of observations:  ", ndata, "\n")
               cat("*    \"      non-missing:   ", sum(!is.na(object@data$elevation)), "\n")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 
@@ -350,8 +356,6 @@ as.sealevel <- function(elevation,
 #' cycles per hour, or 4 or \code{"cumulativespectrum"} for a cumulative
 #' integral of the power spectrum.
 #'
-#' @template adornTemplate
-#'
 #' @param drawTimeRange boolean that applies to panels with time as the
 #' horizontal axis, indicating whether to draw the time range in the top-left
 #' margin of the plot.
@@ -388,10 +392,10 @@ as.sealevel <- function(elevation,
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{sealevel} data
+#' @aliases plot.sealevel
 setMethod(f="plot",
           signature=signature("sealevel"),
           definition=function(x, which=1:3,
-                              adorn=NULL,
                               drawTimeRange=getOption("oceDrawTimeRange"),
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+0.5, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
@@ -400,8 +404,8 @@ setMethod(f="plot",
                               ...)
           {
               oceDebug(debug, "plot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n", sep="", unindent=1)
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is deprecated, and will be removed soon", call.=FALSE)
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,adv-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               dots <- list(...)
               titlePlot<-function(x)
               {
@@ -452,11 +456,6 @@ setMethod(f="plot",
 
               ## tidal constituents (in cpd):
               ## http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
-              adornLength <- length(adorn)
-              if (adornLength == 1) {
-                  adorn <- rep(adorn, 4)
-                  adornLength <- 4
-              }
               num.NA <- sum(is.na(x@data$elevation))
 
               par(mgp=mgp)
@@ -551,10 +550,6 @@ setMethod(f="plot",
                                xlab=resizableLabel("frequency cph"),
                                ylab=expression(paste(integral(Gamma, 0, f), " df [m]")),
                                type='l', xlim=c(0, 0.1))
-                          if (adornLength > 3) {
-                              t <- try(eval(adorn[4]), silent=TRUE)
-                              if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]")
-                          }
                           grid()
                           drawConstituents()
                       } else {
@@ -569,11 +564,6 @@ setMethod(f="plot",
                       par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
                       plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
                       par(mar=omar)
-                  }
-                  if (adornLength > 1) {
-                      t <- try(eval(adorn[w]), silent=TRUE)
-                      if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]")
                   }
               }
               oceDebug(debug, "} # plot.sealevel()\n", unindent=1)

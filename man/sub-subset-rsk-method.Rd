@@ -24,7 +24,7 @@ objects inheriting from \code{\link{oce-class}}.  The purpose,
 as with the related extraction method, \code{\link{[[}},
 is to insulate users from the internal details of \code{oce}
 objects, by looking for items within the various storage
-slots of the object. Items not actually stored can also be 
+slots of the object. Items not actually stored can also be
 replaced, including units and data-quality
 flags.
 }

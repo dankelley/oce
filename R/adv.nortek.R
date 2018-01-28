@@ -16,7 +16,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             longitude=NA, latitude=NA,
                             type=c("vector", "aquadopp"),
                             haveAnalog1=FALSE, haveAnalog2=FALSE,
-                            debug=getOption("oceDebug"), monitor=FALSE, processingLog)
+                            debug=getOption("oceDebug"), monitor=FALSE, processingLog=NULL)
 {
     ##   vvd=vector velocity data [p35 SIG], containing the data: pressure, vel, amp, corr (plus sensemble counter etc)
     ##   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
@@ -99,7 +99,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$oceCoordinate <- header$user$originalCoordinate
     res@metadata$oceBeamUnspreaded <- FALSE
     res@metadata$comments <- header$user$comments
-    if (missing(processingLog))
+    if (is.null(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).

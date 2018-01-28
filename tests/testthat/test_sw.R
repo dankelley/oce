@@ -77,14 +77,20 @@ test_that("potential_temperature (UNESCO)", {
           ## 2.1 UNESCO potential temperature
           ##
           ## The following is an official test value from [1 p44], first with all args,
-          ## second with a ctd object as an arg.
-          expect_equal(swTheta(40, T90fromT68(40), 10000, eos="unesco"), 36.89073, scale=1, tolerance=0.00002)
-          expect_equal(swTheta(as.ctd(40, T90fromT68(40), 10000), eos="unesco"), 36.89073, scale=1, tolerance=0.00002)
+          ## second with a ctd object as an arg. Note the need to convert to the 1968
+          ## temperature scale, which was used in the UNESCO formulation.
+          expect_equal(swTheta(40, T90fromT68(40), 10000, eos="unesco"),
+                       T90fromT68(36.89073), scale=1, tolerance=0.00002)
+          expect_equal(swTheta(as.ctd(40, T90fromT68(40), 10000), eos="unesco"),
+                       T90fromT68(36.89073), scale=1, tolerance=0.00002)
+          ## Test self-consistency at the surface (also a test of vector reframing)
+          T <- 10 + rnorm(50)
+          expect_equal(0, sum(abs(T - swTheta(rep(35, 50), T, 0, eos="unesco"))))
 })
 
 test_that("SA and CT, sound speed (GSW)", {
           ## 2.2 GSW potential temperature
-          ## 
+          ##
           ## Since gsw_ functions are tested in the gsw package, we just need a consistency check.
           SP <- 35
           t <- 13                                 # notation in gsw_...() functions
@@ -101,8 +107,8 @@ test_that("SA and CT, sound speed (GSW)", {
           expect_equal(SA, swAbsoluteSalinity(ctd))
           expect_equal(CT, swConservativeTemperature(salinity=SP, temperature=t, pressure=p, longitude=lon, latitude=lat))
           expect_equal(CT, swConservativeTemperature(ctd))
-          stopifnot(all.equal(1731.995,swSoundSpeed(40,T90fromT68(40),1e4,eos="unesco"),scale=1,tolerance=0.001))
-          stopifnot(all.equal(1731.995,swSoundSpeed(as.ctd(40,T90fromT68(40),1e4),eos="unesco"),scale=1,tolerance=0.001))
+          expect_equal(1731.995, swSoundSpeed(40,T90fromT68(40),1e4,eos="unesco"),scale=1,tolerance=0.001)
+          expect_equal(1731.995, swSoundSpeed(as.ctd(40,T90fromT68(40),1e4),eos="unesco"),scale=1,tolerance=0.001)
           SA <- gsw::gsw_SA_from_SP(SP=40, p=1e4, longitude=300, latitude=30)
           CT <- gsw::gsw_CT_from_t(SA, 40, 1e4)
           speedGSW <- gsw::gsw_sound_speed(SA, CT, 1e4)
@@ -118,9 +124,9 @@ test_that("freezing temperature", {
           ## 5.1 UNESCO freezing temperature [1 p29]
           Tf <- swTFreeze(40, 500, eos="unesco")
           expect_equal(Tf, T90fromT68(-2.588567), scale=1, tolerance=1e-6)
-          ## 5.2 GSW freezing temperature 
+          ## 5.2 GSW freezing temperature
           SA <- gsw::gsw_SA_from_SP(SP=40, p=500, longitude=300, latitude=30)
-          TfGSW <- gsw::gsw_t_freezing(SA=SA, p=500, saturation_fraction=1)
+          TfGSW <- gsw::gsw_t_freezing(SA=SA, p=0, saturation_fraction=1)
           Tf <- swTFreeze(40, 500, longitude=300, latitude=30, eos="gsw")
           expect_equal(TfGSW, Tf)
 })
@@ -191,10 +197,10 @@ test_that("alpha and beta", {
           S <- 34
           T <- 10
           p <- 100
-          expect_equal(swAlphaOverBeta(S, T, p, longitude=300, latitude=30, eos="gsw"), 
+          expect_equal(swAlphaOverBeta(S, T, p, longitude=300, latitude=30, eos="gsw"),
                        swAlpha(S, T, p, longitude=300, latitude=30, eos="gsw") /
                        swBeta(S, T, p, longitude=300, latitude=30, eos="gsw"))
-          expect_equal(swAlphaOverBeta(S, T, p, eos="unesco"), 
+          expect_equal(swAlphaOverBeta(S, T, p, eos="unesco"),
                        swAlpha(S, T, p, eos="unesco") /
                        swBeta(S, T, p, eos="unesco"))
 })
@@ -207,8 +213,8 @@ test_that("swSTrho", {
           p <- 0
           ## 9.1 UNESCO swSTrho
           Su <- swSTrho(T90fromT68(T), rho, p, eos="unesco")
-          stopifnot(all.equal(Su, 28.65114808083))
-          stopifnot(all.equal(rho, swRho(Su, T90fromT68(T), 0, eos="unesco")))
+          expect_equal(Su, 28.65114808083)
+          expect_equal(rho, swRho(Su, T90fromT68(T), 0, eos="unesco"))
           ## 9.2 GSW swSTrho
           CT <- gsw::gsw_CT_from_t(Su, T, p)
           Sg <- swSTrho(CT, rho, p, eos="gsw")
@@ -217,11 +223,10 @@ test_that("swSTrho", {
 
 test_that("misc sw calculations", {
           ## The following was hard-coded using values from GSW3.03, and it failed with GSW3.05.
-          ## stopifnot(all.equal(Sg, 28.7842812841013, scale=1, tolerance=1e-8))
-
+          ## expect_equal(Sg, 28.7842812841013, scale=1, tolerance=1e-8)
           T <- swTSrho(35, 23, 0, eos="unesco") # 26.11301
-          stopifnot(all.equal(T68fromT90(T), 26.1130113601685, scale=1, tolerance=1e-8))
-          stopifnot(all.equal(swRho(35, T, 0, eos="unesco"), 1023, scale=1, tolerance=1e-5))
+          expect_equal(T68fromT90(T), 26.1130113601685, scale=1, tolerance=1e-8)
+          expect_equal(swRho(35, T, 0, eos="unesco"), 1023, scale=1, tolerance=1e-5)
 
 })
 
@@ -236,7 +241,7 @@ test_that("sound absorption", {
 
 test_that("viscosity", {
           ## Merely a test against future changes; the original reference did not provide a test value.
-          stopifnot(all.equal(swViscosity(30, 10), 0.001383779, scale=1, tolerance=0.000000001))
+          expect_equal(swViscosity(30, 10), 0.001383779, scale=1, tolerance=0.000000001)
 })
 
 test_that("thermal conductivity", {
@@ -280,7 +285,7 @@ test_that("electrical conductivity: real-data checks", {
 
 test_that("depth and pressure", {
           ## 14. depth and pressure
-          ## The UNESCO test is basically for consistency with old versions, I think, 
+          ## The UNESCO test is basically for consistency with old versions, I think,
           ## but the GSW test is against gsw_z_from_p(), which is well-tested in
           ## the building of the gsw package.
           depth <- swDepth(10000, 30, eos="unesco")

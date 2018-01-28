@@ -4,17 +4,17 @@
 \alias{plotProfile}
 \title{Plot a CTD Profile}
 \usage{
-plotProfile(x, xtype = "salinity+temperature", ytype = c("pressure", "z",
-  "depth", "sigmaTheta"), eos = getOption("oceEOS", default = "gsw"),
-  lty = 1, xlab = NULL, ylab = NULL, col = "black",
-  col.salinity = "darkgreen", col.temperature = "red", col.rho = "blue",
-  col.N2 = "brown", col.dpdt = "darkgreen", col.time = "darkgreen",
-  pt.bg = "transparent", grid = TRUE, col.grid = "lightgray",
-  lty.grid = "dotted", Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim,
-  timelim, plim, ylim, lwd = par("lwd"), xaxs = "r", yaxs = "r",
-  cex = 1, pch = 1, useSmoothScatter = FALSE, df, keepNA = FALSE,
-  type = "l", mgp = getOption("oceMgp"), mar, add = FALSE,
-  inset = FALSE, debug = getOption("oceDebug"), ...)
+plotProfile(x, xtype = "salinity+temperature", ytype = "pressure",
+  eos = getOption("oceEOS", default = "gsw"), lty = 1, xlab = NULL,
+  ylab = NULL, col = "black", col.salinity = "darkgreen",
+  col.temperature = "red", col.rho = "blue", col.N2 = "brown",
+  col.dpdt = "darkgreen", col.time = "darkgreen", pt.bg = "transparent",
+  grid = TRUE, col.grid = "lightgray", lty.grid = "dotted", Slim, Clim,
+  Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim, xlim, ylim,
+  lwd = par("lwd"), xaxs = "r", yaxs = "r", cex = 1, pch = 1,
+  useSmoothScatter = FALSE, df, keepNA = FALSE, type = "l",
+  mgp = getOption("oceMgp"), mar, add = FALSE, inset = FALSE,
+  debug = getOption("oceDebug", 0), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -68,8 +68,9 @@ to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
 
 }}
 
-\item{ytype}{variable to use on y axis; note that \code{z} is the negative
-of \code{depth}.}
+\item{ytype}{variable to use on y axis. The valid choices are:
+\code{"pressure"} (the default), \code{"z"},
+\code{"depth"} and \code{"sigmaTheta"}.}
 
 \item{eos}{equation of state to be used, either \code{"unesco"} or
 \code{"gsw"}.}
@@ -124,8 +125,14 @@ labelling the axis.}
 \code{ytype=="pressure"}, in which case it takes precedence over
 \code{ylim}.}
 
+\item{xlim}{Optional limit for x axis, which can apply to any plot type.
+This is ignored if the plotted x variable is something for which a limit
+may be specified with an argument, e.g. \code{xlim} is ignored for a 
+salinity profile, because \code{Slim} ought to be given in such a case.}
+
 \item{ylim}{Optional limit for y axis, which can apply to any plot type,
-although is overridden by \code{plim} if \code{ytype=="pressure"}.}
+although is overridden by \code{plim} if \code{ytype} is \code{"pressure"}
+or by \code{densitylim} if \code{ytype} is \code{"sigmaTheta"}.}
 
 \item{lwd}{lwd value for data line}
 

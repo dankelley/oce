@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,section-method}
 \alias{plot,section-method}
+\alias{plot.section}
 \title{Plot a Section}
 \usage{
 \S4method{plot}{section}(x, which = c(1, 2, 3, 99), eos, at = NULL,
@@ -11,9 +12,8 @@
   ylim = NULL, zlim = NULL, map.xlim = NULL, map.ylim = NULL,
   clongitude, clatitude, span, projection = NULL, xtype = "distance",
   ytype = "depth", ztype = "contour", zbreaks = NULL, zcol = NULL,
-  legend.loc = "bottomright", adorn = NULL, showStations = FALSE,
-  showStart = TRUE, showBottom = TRUE, axes = TRUE, mgp, mar, col, cex,
-  pch, debug, ...)
+  legend.loc = "bottomright", showStations = FALSE, showStart = TRUE,
+  showBottom = TRUE, axes = TRUE, mgp, mar, col, cex, pch, debug, ...)
 }
 \arguments{
 \item{x}{a \code{section} object, e.g. as created by \code{\link{as.section}}
@@ -103,24 +103,6 @@ it will be invoked with an argument equal to
 \item{legend.loc}{Location of legend, as supplied to \code{\link{legend}}, or
 set to the empty string to avoid plotting a legend.}
 
-\item{adorn}{(\strong{Defunct})
-An \code{\link{expression}} or vector of expressions that contain
-R code that is to be executed immediately after each panel of the plot.
-If the number of expressions matches the number of panels, then the 
-expressions are used for the corresponding panels; otherwise, the
-expression list is extended to match the number of panels (i.e.
-to obtain \code{length(which)} elements). Note that \code{adorn}
-is a dangerous argument, because if the expressions contained
-therein set up local storage, there is a chance of entirely
-disrupting the plotting. \strong{For this reason, \code{adorn} was
-marked as defunct in June 2016, and will be removed entirely 
-after the July CRAN release.} Users with existing code that uses
-\code{adorn} should simply plot the panels individually, and
-use conventional R functions, e.g. \code{\link{lines}} etc.,
-after each panel, to achieve the desired effect.  (See
-\code{\link{oce-defunct}} for notes on other deprecated or
-defunct \code{oce} features.)}
-
 \item{showStations}{Logical indicating whether to draw station numbers on maps.}
 
 \item{showStart}{Logical indicating whether to indicate the first station with
@@ -168,7 +150,7 @@ If the original section was gridded, the return value is that section.
 Otherwise, the gridded section that was constructed for the plot is returned.
 In both cases, the value is returned silently. The
 purpose of returning the section is to enable subsequent processing
-of the grid, including adding elements to the plot.
+of the grid, including adding elements to the plot (see example 5).
 }
 \description{
 Creates a summary plot for a CTD section, with one panel for each value of
@@ -178,6 +160,7 @@ Creates a summary plot for a CTD section, with one panel for each value of
 The type of plot is governed by \code{which}, as follows.
 
 \itemize{
+    \item \code{which=0} or \code{"potential temperature"} for temperature contours
     \item \code{which=1} or \code{"temperature"} for temperature contours (the default)
     \item \code{which=2} or \code{"salinity"} for salinity contours
     \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
@@ -240,6 +223,15 @@ points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 f <- download.topo(west=-80, east=0, south=35, north=40, resolution=4)
 t <- read.topo(f)
 plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
+}
+
+\dontrun{
+## 5. Temperature with salinity added in red
+s <- plot(section, which="temperature")
+distance <- s[["distance", "byStation"]]
+depth <- s[["station", 1]][["depth"]]
+salinity <- matrix(s[["salinity"]], byrow=TRUE, nrow=length(s[["station"]]))
+contour(distance, depth, salinity, col=2, add=TRUE)
 }
 
 }

@@ -1,5 +1,15 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+abbreviateVector <- function(x)
+{
+    if (1 >= length(x)) {
+        return(x)
+    } else {
+        ud <- unique(diff(x))
+        if (1 == length(ud) && 1 == ud) return(paste(x[1], ":", tail(x, 1), sep="")) else return(x)
+    }
+}
+
 shortenTimeString <- function(t, debug=getOption("oceDebug"))
 {
     tc <- as.character(t)
@@ -1043,11 +1053,18 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 }
 
 
-#' Find indices of times in an ordered vector
+#' Find indices of times in an ordered vector [deprecated]
+#'
+#' \strong{WARNING:} This function will be removed soon;
+#' see \link{oce-deprecated}.  The replacement is trivial:
+#' just change a call like e.g. \code{findInOrdered(x,f)}
+#' to \code{\link{findInterval}(f,x)} (which is what the function
+#' started doing, on 2017-09-07, after a major bug was found).
 #'
 #' The indices point to the largest items in \code{x} that are less than or
-#' equal the values in \code{f}.  The method uses a bisection search, so the
-#' time taken is proportional to \code{length(f) * log2(length(x))}.
+#' equal the values in \code{f}.  This works by simply calling
+#' \code{\link{findInterval}(x=f, vec=x)}, and users are probably
+#' better off using \code{\link{findInterval}} directly.
 #'
 #' @param x a numeric vector, in increasing order by value.
 #' @param f a numeric vector of items whose indices are sought.
@@ -1058,11 +1075,9 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 #' findInOrdered(seq(0, 10, 1), c(1.2, 7.3))
 findInOrdered <- function(x, f)
 {
-    if (missing(x))
-        stop("'x' missing")
-    if (missing(f))
-        stop("'f' missing")
-    .Call("bisect", x, f)
+    .Deprecated("mapGrid",
+                msg="findInOrdered(f,x) will be removed soon; use findInterval(f,x) instead. See ?'oce-deprecated'.")
+    findInterval(f, x)
 }
 
 
@@ -4190,7 +4205,13 @@ grad <- function(h, x, y)
     if (missing(y)) stop("must give y")
     if (length(x) != nrow(h)) stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")
     if (length(y) != ncol(h)) stop("length of y (", length(y), ") must equal number of cols in h (", ncol(h), ")")
-    .Call("gradient", h, as.double(x), as.double(y))
+    ## ensure that all three args are double, so the C code won't misinterpret
+    dim <- dim(h)
+    h <- as.double(h)
+    dim(h) <- dim
+    x <- as.double(x)
+    y <- as.double(y)
+    .Call("gradient", h, x, y)
 }
 
 

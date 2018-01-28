@@ -5,7 +5,7 @@
 \title{Oce Variant of plot.ts}
 \usage{
 oce.plot.ts(x, y, type = "l", xlim, ylim, xlab, ylab, drawTimeRange,
-  adorn = NULL, fill = FALSE, xaxs = par("xaxs"), yaxs = par("yaxs"),
+  fill = FALSE, xaxs = par("xaxs"), yaxs = par("yaxs"),
   cex = par("cex"), cex.axis = par("cex.axis"),
   cex.main = par("cex.main"), mgp = getOption("oceMgp"), mar = c(mgp[1] +
   if (nchar(xlab) > 0) 1.5 else 1, mgp[1] + 1.5, mgp[2] + 1, mgp[2] + 3/4),
@@ -34,24 +34,6 @@ window.}
 \item{drawTimeRange}{an optional indication of whether/how to draw a time range,
 in the top-left margin of the plot; see \code{\link{oce.axis.POSIXct}} for details.}
 
-\item{adorn}{(\strong{Defunct})
-An \code{\link{expression}} or vector of expressions that contain
-R code that is to be executed immediately after each panel of the plot.
-If the number of expressions matches the number of panels, then the 
-expressions are used for the corresponding panels; otherwise, the
-expression list is extended to match the number of panels (i.e.
-to obtain \code{length(which)} elements). Note that \code{adorn}
-is a dangerous argument, because if the expressions contained
-therein set up local storage, there is a chance of entirely
-disrupting the plotting. \strong{For this reason, \code{adorn} was
-marked as defunct in June 2016, and will be removed entirely 
-after the July CRAN release.} Users with existing code that uses
-\code{adorn} should simply plot the panels individually, and
-use conventional R functions, e.g. \code{\link{lines}} etc.,
-after each panel, to achieve the desired effect.  (See
-\code{\link{oce-defunct}} for notes on other deprecated or
-defunct \code{oce} features.)}
-
 \item{fill}{boolean, set \code{TRUE} to fill the curve to zero (which it
 does incorrectly if there are missing values in \code{y}).}
 
@@ -70,7 +52,7 @@ for \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{value to be used with \code{\link{par}("mar")} to set margins.
-THe default value uses significantly tighter margins than is the norm in R,
+The default value uses significantly tighter margins than is the norm in R,
 which gives more space for the data.  However, in doing this, the existing
 \code{par("mar")} value is ignored, which contradicts values that may have
 been set by a previous call to \code{\link{drawPalette}}.  To get plot with

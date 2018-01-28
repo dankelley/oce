@@ -162,8 +162,8 @@ setClass("landsat", contains="satellite")
 #'
 #' @details
 #' The original data were downloaded from the USGS earthexplorer website, although
-#' other sites can also be used to uncover it by name.  The code below shows how
-#' the dataset was created.  The decimation by 100 reduces file size from about 1GB
+#' other sites can also be used to uncover it by name.  The original
+#' data were decimation by a factor of 100 to reduce the file size from about 1GB
 #' to under 100Kb.
 #'
 #' @name landsat
@@ -236,7 +236,7 @@ setMethod(f="summary",
               for (name in names(object@data)) {
                   object@data[[name]] <- object[[name]] # translate to science units
               }
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 
@@ -638,6 +638,7 @@ setMethod(f="[[",
 #'
 #' @family things related to \code{landsat} data
 #' @family functions that plot \oce{oce} data
+#' @aliases plot.landsat
 setMethod(f="plot",
           signature=signature("landsat"),
           definition=function(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,

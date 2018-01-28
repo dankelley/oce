@@ -5,8 +5,7 @@
 \alias{argo-class}
 \title{Class to hold Argo data}
 \description{
-This class stores data from argo floats. It will be in fairly
-active development in the early months of 2016.
+This class stores data from argo floats.
 }
 \details{
 An \code{argo} object may be read with \code{\link{read.argo}} or

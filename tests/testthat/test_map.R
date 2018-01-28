@@ -1,7 +1,7 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
 library(oce)
 
-context("Map and geod calculations")
+context("Map calculations")
 
 if (requireNamespace("rgdal", quietly=TRUE)) {
 

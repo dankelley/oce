@@ -196,7 +196,7 @@ setMethod(f="summary",
                   cat("\n")
               }
               processingLogShow(object)
-              invisible(threes)
+              invisible()
           })
 
 
@@ -226,6 +226,7 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 #' o <- oceSetData(o, 'y', rnorm(10))
 #' o <- oceSetData(o, 'z', rnorm(10))
 #' plot(o)
+#' @aliases plot.oce
 setMethod(f="plot",
           signature="oce",
           definition=function(x, y, ...) {
@@ -493,7 +494,7 @@ setMethod("composite",
 #' for \code{flags} and \code{actions}.
 #' @param object An object of \code{\link{oce}}.
 #' @template handleFlagsTemplate
-setGeneric("handleFlags", function(object, flags, actions, debug) {
+setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, debug=options("oceDebug")) {
            standardGeneric("handleFlags")
          })
 

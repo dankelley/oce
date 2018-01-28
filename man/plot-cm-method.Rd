@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,cm-method}
 \alias{plot,cm-method}
+\alias{plot.cm}
 \title{Plot CM data}
 \usage{
 \S4method{plot}{cm}(x, which = c(1:2, 7:9), type = "l",

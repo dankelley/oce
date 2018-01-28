@@ -2,8 +2,7 @@
 
 #' Class to hold Argo data
 #'
-#' This class stores data from argo floats. It will be in fairly
-#' active development in the early months of 2016.
+#' This class stores data from argo floats.
 #'
 #' An \code{argo} object may be read with \code{\link{read.argo}} or
 #' created with \code{\link{as.argo}}.  Argo data can be gridded to constant
@@ -106,6 +105,26 @@ setMethod(f="[[",
                       res <- gsw_CT_from_t(SA, t, p)
                   }
                   dim(res) <- dim
+              } else if (i == "depth") {
+                  ## This accessor added for issue 1333. Note that the
+                  ## fix for that issue was sometimes calling with
+                  ## vector-form argo object. I don't know how that vector
+                  ## form is arising, but it is likely an index without
+                  ## a drop=FALSE condition ... if I find it, I'll fix it,
+                  ## but the following works fine, so I don't really care too
+                  ## much.
+                  if (is.matrix(x@data$pressure)) {
+                      n <- dim(x@data$pressure)[1]
+                      latitude <- matrix(rep(x@data$latitude, each=n),
+                                         nrow=n, byrow=TRUE)
+                      res <- swDepth(x@data$pressure, latitude)
+                      ##. print("matrix ... lat and then pres... and the depth...")
+                      ##. print(latitude[1:3, 1:3])
+                      ##. print(x@data$pressure[1:3, 1:3])
+                      ##. print(res[1:3, 1:3])
+                  } else {
+                      res <- swDepth(x@data$pressure, x@data$latitude)
+                  }
               } else {
                   res <- callNextMethod()         # [[
               }
@@ -144,12 +163,12 @@ maybeLC <- function(s, lower)
 
 getData <- function(file, name) # a local function -- no need to pollute namesapce with it
 {
-    tmp <- capture.output(res <- try(ncdf4::ncvar_get(file, name), silent=TRUE))
+    capture.output(res <- try(ncdf4::ncvar_get(file, name), silent=TRUE))
     if (inherits(res, "try-error")) {
         warning(file$filename, " has no variable named '", name, "'\n", sep='')
         res <- NULL
     }
-    res
+    if (is.array(res) && 1 == length(dim(res))) res <- matrix(res) else res
 }
 
 #' Convert Argo Data Name to Oce Name
@@ -439,10 +458,20 @@ setMethod(f="subset",
                   if (length(grep("pressure", subsetString))) {
                       fieldname <- names(x@data)
                       for (field in fieldname) {
-                          if (field != 'time' & field != 'longitude' & field != 'latitude') {
+                          if (field != 'time' & field != 'longitude' & field != 'latitude') { # DEBUG: see issue 1327
                               ifield <- which(field == fieldname)
-                              res@data[[ifield]] <- if (is.matrix(res@data[[ifield]]))
-                                  res@data[[ifield]][, keep] else res@data[[ifield]][keep]
+                              ##debug message("ifield=", ifield, ", field=", field,
+                              ##debug        "\n\tlength(keep)=", length(keep),
+                              ##debug        "\n\tsum(keep)=", sum(keep))
+                              if (is.matrix(res@data[[ifield]])) {
+                                  ##debug message("\tdim(x@data[[ifield]])=", paste(dim(x@data[[ifield]]), collapse=","))
+                                  res@data[[ifield]] <- res@data[[ifield]][keep,]
+                                  ##debugmessage("\tdim(res@data[[ifield]])=", paste(dim(res@data[[ifield]]), collapse=","))
+                              } else {
+                                  ##debug message("\tlength(x@data[[ifield]])=", length(x@data[[ifield]]))
+                                  res@data[[ifield]] <- res@data[[ifield]][keep]
+                                  ##debug message("\tlength(res@data[[ifield]])=", length(res@data[[ifield]]))
+                              }
                           }
                       }
                       fieldname <- names(x@metadata$flags)
@@ -514,7 +543,7 @@ setMethod(f="summary",
               nA <- sum(object@metadata$dataMode == "A")
               nR <- sum(object@metadata$dataMode == "R")
               cat("* Profiles:            ", nD, " delayed; ", nA, " adjusted; ", nR, " realtime", "\n", sep="")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 ncdfFixMatrix <- function(x)
@@ -885,7 +914,6 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
         n <- paste(item, maybeLC("_QC", lc), sep="")
         d <- getData(file, maybeLC(n, lc))
         if (!is.null(d)) res@metadata$flags[[argoNames2oceNames(n)]] <- argoDecodeFlags(d)
-
         n <- paste(item, maybeLC("_ADJUSTED", lc), sep="")
         if (n %in% varNames) {
             d <- getData(file, maybeLC(n, lc))
@@ -1104,8 +1132,6 @@ as.argo <- function(time, longitude, latitude,
 #' light-gray, or a colour name.  Owing to problems with some projections, the
 #' default is not to fill.
 #'
-#' @template adornTemplate
-#'
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
 #' \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
@@ -1136,8 +1162,13 @@ as.argo <- function(time, longitude, latitude,
 #' @examples
 #' library(oce)
 #' data(argo)
-#' plot(argo, which="trajectory")
-#'
+#' tc <- cut(argo[["time"]], "year")
+#' plot(argo, pch=as.integer(tc))
+#' year <- substr(levels(tc), 1, 4)
+#' data(topoWorld)
+#' contour(topoWorld[['longitude']], topoWorld[['latitude']],
+#'         topoWorld[['z']], add=TRUE)
+#' legend("bottomleft", pch=seq_along(year), legend=year, bg="white", cex=3/4)
 #'
 #' @references \url{http://www.argo.ucsd.edu/}
 #'
@@ -1145,13 +1176,13 @@ as.argo <- function(time, longitude, latitude,
 #'
 #' @family things related to \code{argo} data
 #' @family functions that plot \code{oce} data
+#' @aliases plot.argo
 setMethod(f="plot",
           signature=signature("argo"),
           definition=function (x, which = 1, level,
                                coastline=c("best", "coastlineWorld", "coastlineWorldMedium",
                                            "coastlineWorldFine", "none"),
                                cex=1, pch=1, type='p', col, fill=FALSE,
-                               adorn=NULL,
                                projection=NULL,
                                mgp=getOption("oceMgp"), mar=c(mgp[1]+1.5, mgp[1]+1.5, 1.5, 1.5),
                                tformat,
@@ -1160,25 +1191,13 @@ setMethod(f="plot",
           {
               if (!inherits(x, "argo"))
                   stop("method is only for objects of class '", "argo", "'")
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,argo-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "plot.argo(x, which=c(", paste(which, collapse=","), "),",
                       " mgp=c(", paste(mgp, collapse=","), "),",
                       " mar=c(", paste(mar, collapse=","), "),",
                       " ...) {\n", sep="", unindent=1)
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
               coastline <- match.arg(coastline)
-              #opar <- par(no.readonly = TRUE)
-              lw <- length(which)
-              ##if (lw > 1) on.exit(par(opar))
-              ##if (length(type) < lw) type <- rep(type, lw) # FIXME: recycle more sensibly
-              ##if (length(pch) < lw) pch <- rep(pch, lw) # FIXME: recycle more sensibly
-              ##if (length(cex) < lw) cex <- rep(cex, lw) # FIXME: recycle more sensibly
-              adorn.length <- length(adorn)
-              if (adorn.length == 1) {
-                  adorn <- rep(adorn, lw)
-                  adorn.length <- lw
-              }
-              ## omar <- par('mar')
               nw  <- length(which)
               if (nw > 1) {
                   par(mfcol=c(1, nw), mgp=mgp, mar=mar)
@@ -1187,7 +1206,19 @@ setMethod(f="plot",
               }
               if (missing(level) || level == "all")
                   level <- seq(1L, dim(x@data$temperature)[1])
+              longitude <- x[["longitude"]]
+              latitude <- x[["latitude"]]
+              dim <- dim(x@data$salinity)
+              if (length(longitude) < prod(dim)) {
+                  ## Copy across depths. This is inside a conditional because
+                  ## possibly argo[["longitude"]] should mimic section[["longitude"]],
+                  ## in doing the lengthing by itself unless the second argument is
+                  ## "byStation" (issue 1273 ... under consideration 2017jul12)
+                  longitude <- rep(x[["longitude"]], each=dim[1])
+                  latitude <- rep(x[["latitude"]], each=dim[1])
+              }
               ctd <- as.ctd(x@data$salinity, x@data$temperature, x@data$pressure,
+                            longitude=longitude, latitude=latitude,
                             units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
                                        conductivity=list(list=expression(), scale=""))) # guess on units
               which <- oce.pmatch(which,

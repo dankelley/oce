@@ -51,7 +51,7 @@ the corresponding arguments to the present function are ignored.
 \examples{
 library(oce)
 ## test value from Fofonoff et al., 1983
-expect_equal(36.89073, swTheta(40, T90fromT68(40), 10000, 0, eos="unesco"), tolerance=0.00001)
+expect_equal(36.8818748026, swTheta(40, T90fromT68(40), 10000, 0, eos="unesco"))
 
 # Example from a cross-Atlantic section
 data(section)
