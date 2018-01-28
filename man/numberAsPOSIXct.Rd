@@ -75,7 +75,7 @@ numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
 [1] Matlab times:
 \url{http://www.mathworks.com/help/matlab/ref/datenum.html}
 
-[2] NCEP times: \url{http://www.esrl.noaa.gov/psd/data/gridded/faq.html#3}
+[2] NCEP times: \url{https://www.esrl.noaa.gov/psd/data/gridded/faq.html#3}
 
 [3] problem with NCEP times:
 \url{https://github.com/dankelley/oce/issues/738}
