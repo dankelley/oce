@@ -3,8 +3,6 @@
 \docType{methods}
 \name{summary,satellite-method}
 \alias{summary,satellite-method}
-\alias{summary.g1sst}
-\alias{summary.satellite}
 \title{Summarize a satellite object}
 \usage{
 \S4method{summary}{satellite}(object, ...)
@@ -17,23 +15,14 @@
 \description{
 Summarize a satellite object
 }
+\seealso{
+Other things related to satellite data: \code{\link{g1sst-class}},
+  \code{\link{plot,satellite-method}},
+  \code{\link{read.g1sst}}, \code{\link{satellite-class}}
+}
 \author{
 Dan Kelley
-}
-\seealso{
-Other functions dealing with satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{g1sst-class}},
-  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.g1sst}},
-  \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,amsr-method}},
-  \code{\link{summary,landsat-method}}
 }
 \concept{
 satellite
 }
-

@@ -3,7 +3,7 @@
 \docType{class}
 \name{g1sst-class}
 \alias{g1sst-class}
-\title{Class to hold G1SST satellite-model data}
+\title{Class to Hold G1SST Satellite-model Data}
 \description{
 G1SST is an acronym for global 1-km sea surface temperature, a product
 that combines satellite data with the model output. It is provided by
@@ -18,31 +18,22 @@ say, \code{\link{amsr-class}} data, because the two products
 differ greatly with respect to cloud cover. The satellite used by
 \code{\link{amsr-class}} has the ability to sense water temperature
 even if there is cloud cover, whereas \code{g1sst} fills in cloud
-gaps with model simulations.  It can be helpful to consult 
+gaps with model simulations.  It can be helpful to consult
 [1] for a given time, clicking and then unclicking the radio button
 that turns off the model-based filling of cloud gaps.
+}
+\references{
+1. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+(link worked in 2016 but was seen to fail 2017 Feb 2).
+}
+\seealso{
+Other things related to satellite data: \code{\link{plot,satellite-method}},
+  \code{\link{read.g1sst}}, \code{\link{satellite-class}},
+  \code{\link{summary,satellite-method}}
 }
 \author{
 Dan Kelley
 }
-\references{
-1. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
-}
-\seealso{
-Other functions dealing with satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{landsatAdd}},
-  \code{\link{landsatTrim}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.g1sst}},
-  \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,amsr-method}},
-  \code{\link{summary,landsat-method}},
-  \code{\link{summary,satellite-method}}
-}
 \concept{
 satellite
 }
-

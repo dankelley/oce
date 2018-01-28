@@ -1,7 +1,16 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
+
+/*
+ * References:
+ * SIG2 = system-integrator-manual_Dec2014_jan.pdf
+ */
+
+
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
+
+//#define DEBUG
 
 /* 
  * 1. compile from commandline:
@@ -138,18 +147,18 @@ pressure <- readBin(buf[sort(c(p, p+1))+18], "integer", signed=TRUE, size=2, end
       Rprintf("tentative match %d at i = %d ... ", matches, i);
 #endif
       for (int c = 0; c < 20; c++)
-	check_sum += (unsigned short int)pbuf[i + c];
+        check_sum += (unsigned short int)pbuf[i + c];
       desired_check_sum = ((unsigned short)pbuf[i+20]) | ((unsigned short)pbuf[i+21] << 8);
       if (check_sum == desired_check_sum) {
-	matches++;
+        matches++;
 #ifdef DEBUG
-	Rprintf("good match (check_sum=%d)\n", check_sum);
+        Rprintf("good match (check_sum=%d)\n", check_sum);
 #endif
-	if (max_lres != 0 && matches >= max_lres)
-	  break;
+        if (max_lres != 0 && matches >= max_lres)
+          break;
       } else {
 #ifdef DEBUG
-	Rprintf("bad checksum\n");
+        Rprintf("bad checksum\n");
 #endif
       }
     }
@@ -166,14 +175,14 @@ pressure <- readBin(buf[sort(c(p, p+1))+18], "integer", signed=TRUE, size=2, end
     for (int i = 0; i < lbuf - byte2; i++) { /* note that we don't look to the very end */
       check_sum = check_sum_start;
       if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
-	for (int c = 0; c < 20; c++)
-	  check_sum += (unsigned short int)pbuf[i + c];
-	desired_check_sum = ((unsigned short)pbuf[i+20]) | ((unsigned short)pbuf[i+21] << 8);
-	if (check_sum == desired_check_sum) {
-	  pres[ires++] = i + 1; /* the +1 is to get R pointers */
-	}
-	if (ires > lres)        /* FIXME: or +1? */
-	  break;
+        for (int c = 0; c < 20; c++)
+          check_sum += (unsigned short int)pbuf[i + c];
+        desired_check_sum = ((unsigned short)pbuf[i+20]) | ((unsigned short)pbuf[i+21] << 8);
+        if (check_sum == desired_check_sum) {
+          pres[ires++] = i + 1; /* the +1 is to get R pointers */
+        }
+        if (ires > lres)        /* FIXME: or +1? */
+          break;
       }
     }
     UNPROTECT(3);
@@ -274,20 +283,20 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
   for (i = 0; i < n - 1; i++) {
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p) {
       if (ds) {
-	seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
-	// if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
-	if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
-	  n_match++;
-	  ++i;			// skip
-	  seq_last = seq_this;
-	  // if (nnn > 0) Rprintf("KEEP\n");
-	} else {
-	  // if (nnn > 0) Rprintf("DISCARD\n");
-	}
-	//nnn--;
+        seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
+        // if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
+        if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
+          n_match++;
+          ++i;   // skip
+          seq_last = seq_this;
+          // if (nnn > 0) Rprintf("KEEP\n");
+        } else {
+          // if (nnn > 0) Rprintf("DISCARD\n");
+        }
+        //nnn--;
       } else {
-	n_match++;
-	++i;			// skip
+        n_match++;
+        ++i;   // skip
       }
     }
   }
@@ -305,27 +314,119 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
     //    Rprintf("[%d]:", i);
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p) {
       if (ds) {
-	seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
-	//if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
-	if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
-	  n_match++;
-	  resp[j++] = i + 1;	/* the 1 is to offset from C to R */
-	  ++i;			/* skip */
-	  seq_last = seq_this;
-	  //if (nnn > 0) Rprintf("KEEP\n");
-	} else {
-	  //if (nnn > 0) Rprintf("DISCARD\n");
-	}
-	nnn--;
+        seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
+        //if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
+        if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
+          n_match++;
+          resp[j++] = i + 1; /* the 1 is to offset from C to R */
+          ++i;   /* skip */
+          seq_last = seq_this;
+          //if (nnn > 0) Rprintf("KEEP\n");
+        } else {
+          //if (nnn > 0) Rprintf("DISCARD\n");
+        }
+        nnn--;
       } else {
-	resp[j++] = i + 1;	/* the 1 is to offset from C to R */
-	++i;			/* skip */
+        resp[j++] = i + 1; /* the 1 is to offset from C to R */
+        ++i;   /* skip */
       }
     }
   }
   UNPROTECT(5);
   return(res);
 }
+
+/* NEW */
+/*#define DEBUG 1*/
+SEXP locate_vector_imu_sequences(SEXP buf)
+{
+  /*
+   * imu = Inertial Motion Unit (system-integrator-manual_Dec2014_jan.pdf p30-32)
+   *
+   * *(buf)     0xa5
+   * *(buf+1)   0x71
+   * *(buf+2,3) int, # bytes in structure
+   * There are 3 possibilities, keyed by *(buf+6), "K", say
+   *
+   * Case |  K   | Contents
+   * =====|======|=====================================================================
+   *   A  | 0xc2 | ?
+   *   B  | 0xcc | Acceleration, Angular Rate, Magnetometer Vectors, Orientation Matrix
+   *   C  | 0xd2 | Gyro-stabilized Acceleration, Angular Rate, Magnetometer Vectors
+   *   D  | 0xd3 | DeltaAngle, DeltaVelocity, Magnetometer Vectors
+   *
+   * QUESTION: what is AHRSchecksum? do we check that? And what is
+   * this second 'Checksum'?
+   * Case A has checksum starting at offset 84 (sum of all words in structure)
+   */
+
+  /* 
+
+     library(oce)
+     system("R CMD SHLIB bitwise.c")
+     dyn.load("bitwise.so")
+     f <- "/Users/kelley/src/dolfyn/example_data/vector_data_imu01.VEC"
+     buf <- readBin(f, what="raw", n=1e5) 
+     a <- .Call("locate_vector_imu_sequences", buf)
+     for (aa in a[1:10]) {
+         message(paste(paste("0x", buf[aa+seq.int(0, 6L)], sep=""), collapse=" "))
+     }
+     ensembleCounter <- as.numeric(buf[a + 4])
+     plot(seq_along(a), ensembleCounter, type='l')
+
+
+     */
+  PROTECT(buf = AS_RAW(buf));
+  unsigned char *bufp;
+  bufp = RAW_POINTER(buf);
+  int bufn = LENGTH(buf);
+  SEXP res;
+  PROTECT(res = NEW_INTEGER(bufn)); // definitely more than enough space
+  int *resp = INTEGER_POINTER(res);
+  int resn = 0;
+  //int check=10; // check this many instance of 0xa5,0x71
+  // We check 5 bytes, on the assumption that false positives will be
+  // effectively zero then (1e-12, if independent random numbers
+  // in range 0 to 255).
+  // FIXME: test the checksum, but SIG2 does not state how.
+  for (int i = 0; i < bufn-1; i++) {
+    if (bufp[i] == 0xa5 && bufp[i+1] == 0x71) {
+      //if (check-- > 0) Rprintf("IMU test: buf[%d]=0x%02x, buf[%d+2]=0x%02x, buf[%d+5]=0x%02x\n", i, bufp[i], i, bufp[i+2], i, bufp[i+5]);
+      // Check at offset=5, which must be 1 of 3 choices.
+      if (bufp[i+5] == 0xc3) {
+        // FIXME: should verify this length check, which I got by inspecting dolfyn code
+        // and a file provided privately in March 2016.
+        if (bufp[i+2] == 0x24 && bufp[i+3] == 0x00) {
+          resp[resn++] = i + 1; // add 1 for R notation
+          i++; //FIXME: skip to end, when we really trust identification
+        }
+      } else if (bufp[i+5] == 0xcc) {
+        // length indication should be 0x2b=43=86/2 (SIG2, top of page 31)
+        if (bufp[i+2] == 0x2b && bufp[i+3] == 0x00) {
+          resp[resn++] = i + 1; // add 1 for R notation
+          i++; //FIXME: skip to end, when we really trust identification
+        }
+      } else if (bufp[i+5] == 0xd2) { // decimal 210
+        // length indication should be 0x19=25=50/2 (SIG2, middle of page 31)
+        if (bufp[i+2] == 0x19 && bufp[i+3] == 0x00) {
+          resp[resn++] = i + 1; // add 1 for R notation
+          i++; //FIXME: skip to end, when we really trust identification
+        }
+      } else if (bufp[i+5] ==0xd3) { // decimal 211
+        // length indication should be 0x19=25=50/2 (SIG2, page 32)
+        if (bufp[i+2] == 0x19 && bufp[i+3] == 0x00) {
+          resp[resn++] = i + 1; // add 1 for R notation
+          i++; //FIXME: skip to end, when we really trust identification
+        }
+      }
+    }
+  }
+  SET_LENGTH(res, resn);
+  UNPROTECT(2);
+  return(res);
+}
+
+
 
 /*#define DEBUG 1*/
 SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key, SEXP max)
@@ -388,28 +489,28 @@ SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key, SEXP max)
     int found = 0;
     for (int m = 0; m < lmatch; m++) {
       if (pbuf[i+m] == pmatch[m]) 
-	found++;
+        found++;
       else
-	break;
+        break;
     }
     if (found == lmatch) {
       /* FIXME: should bit-twiddle this to work on all endian types */
       short *check = (short*)(pbuf+i);
       /*Rprintf(" %d", check_value);*/
       for (int cc = 0; cc < lsequence2 - 1; cc++) { /* last 2-byte chunk is the test value */
-	check_value += *check++;
-	/*Rprintf(" %d", check_value);*/
+        check_value += *check++;
+        /*Rprintf(" %d", check_value);*/
       }
       short check_sum = (((short)pbuf[i+lsequence-1]) << 8) | (short)pbuf[i+lsequence-2];
 #ifdef DEBUG
       Rprintf("i=%d lbuf=%d ires=%d  lres=%d  check_value=%d vs check_sum %d match=%d\n", i, lbuf, ires, lres, check_value, check_sum, check_value==check_sum);
 #endif
       if (check_value == check_sum) {
-	pres[ires++] = i + 1;
-	i += lsequence - lmatch; /* no need to check within sequence */
+        pres[ires++] = i + 1;
+        i += lsequence - lmatch; /* no need to check within sequence */
       }
       if (ires >= lres)
-	break;
+        break;
     }
     i += lmatch - 1;           /* skip over matched bytes */
     if (i > (lbuf - lsequence)) 
@@ -439,8 +540,8 @@ SEXP match3bytes(SEXP buf, SEXP m1, SEXP m2, SEXP m3)
   for (i = 0; i < n - 2; i++) {
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p && bufp[i + 2] == *m3p) {
       n_match++;
-      ++i;			/* skip */
-      ++i;			/* skip */
+      ++i;   /* skip */
+      ++i;   /* skip */
     }
   }
   PROTECT(res = NEW_NUMERIC(n_match));
@@ -448,20 +549,11 @@ SEXP match3bytes(SEXP buf, SEXP m1, SEXP m2, SEXP m3)
   j = 0;
   for (i = 0; i < n - 2; i++) {
     if (j <= n_match && bufp[i] == *m1p && bufp[i + 1] == *m2p && bufp[i + 2] == *m3p) {
-      resp[j++] = i + 1;	/* the 1 is to offset from C to R */
+      resp[j++] = i + 1; /* the 1 is to offset from C to R */
     }
   }
   UNPROTECT(5);
   return(res);
-}
-void dan(int *n, long int *in, unsigned long int *out)
-{
-  if (*n < 1)
-    error("invalid n (%d); must be 1 or higher ", *n);
-  for (int i = 0; i < (*n); i++) {
-    *out++ = (unsigned int) *in++;
-    Rprintf("i=%d in=%d:%d out=%d\n", i, *in, *in, *out);
-  }
 }
 
 // create (*n) unsigned 16-bit little-endian int values from 2*(*n) bytes, e.g.
@@ -472,4 +564,225 @@ void uint16_le(unsigned char *b, int *n, int *out)
     out[i] = (unsigned int)b[2*i] + 256 * (unsigned int)b[1+2*i];
   }
 }
+
+#if 0
+// 2016-10-13 This code is NOT used; it is being kept just in case it might be
+// 2016-10-13 useful later. 
+
+//#define debug
+
+/*
+ * bisect_d (bisection search vector of doubles)
+ * x = vector of doubles (must be in increasing order)
+ * find = vector of doubles whose index to find
+ * side = vector of 0 or 1 (to look to the left, or right, of find)
+ * returns a vector of indices, or NA values
+ *
+ * TESTING:
+
+ system("R CMD SHLIB misc.c") ; dyn.load("misc.so")
+
+ x <- 0.1 + 1:1e7
+ find <- c(10, 5e4)
+ side <- c(0, 1)
+
+ system.time({
+ loc <- .Call("bisect_d", x, find, side);
+ xx <- x[loc[1]:loc[2]]
+ })
+
+ user  system elapsed 
+ 0.021   0.000   0.021 
+
+ system.time(xxx <- x[(find[1] < x) & (x < find[2])])
+
+ user  system elapsed 
+ 0.266   0.001   0.264 
+
+CONCLUSION: about 10 times faster than the straightforward method.
+The latter might be an issue for deep use in loops, for large objects.
+
+*/
+SEXP bisect_d(SEXP x, SEXP find, SEXP side)
+{
+    PROTECT(x = AS_NUMERIC(x));
+    double *px = NUMERIC_POINTER(x);
+    PROTECT(find = AS_NUMERIC(find));
+    double *pfind = NUMERIC_POINTER(find);
+    PROTECT(side = AS_INTEGER(side));
+    int *pside = INTEGER_POINTER(side);
+    int nx = length(x);
+    int nfind = length(find);
+    int nside = length(side);
+    if (nfind != nside)
+        error("need length(find) = length(side)");
+    int i;
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(nfind));
+    /* ensure that x is in order */
+    for (i = 1; i < nx; i++) {
+        if (px[i-1] >= px[i]) {
+            char buf[1024];
+            sprintf(buf, "x must be ordered from small to large; fails at x[%d]\n", i);
+            error(buf);
+        }
+    }
+    int *pres = INTEGER_POINTER(res);
+    int left, right, middle, ifind;
+    for (ifind = 0; ifind < nfind; ifind++) {
+        double this_find = pfind[ifind];
+#ifdef debug
+        Rprintf("find[%d]=%f (%f <= x <= %f)\n", ifind, this_find, *(px), *(px+nx-1));
+#endif
+        /* trim indices to those of x (R notation) */
+        if (this_find <= px[0]) {
+            pres[ifind] = 1;
+            continue;
+        }
+        if (this_find >= px[nx-1]) {
+            pres[ifind] = nx;
+            continue;
+        }
+        left = 0;
+        right = nx - 1;
+        int halves = (int)(10 + log(0.0+nx) / log(2.0)); /* prevent inf loop from poor coding */
+        pres[ifind] = NA_INTEGER;
+        for (int half = 0; half < halves; half++) {
+            middle = (int)floor(0.5 * (left + right));
+            /* exact match to middle? */
+            if (px[middle] == pfind[ifind]) {
+#ifdef debug
+                Rprintf("exact match at middle=%d\n", middle);
+#endif
+                pres[ifind] = middle;
+                break;
+            }
+            /* in left half */
+            if ((px[left] <= this_find) & (this_find < px[middle])) {
+#ifdef debug
+                Rprintf("L %d %d\n", left, middle);
+#endif
+                right = middle;
+                if (2 > (middle - left)) {
+#ifdef debug
+                    Rprintf("narrowed to left=%d and middle=%d\n", left, middle);
+#endif
+                    pres[ifind] = middle;
+                    if (pside[ifind] == 0)
+                        pres[ifind] = left + 1;
+                    else
+                        pres[ifind] = middle + 1;
+                    break;
+                }
+            }
+            /* in right half */
+            if ((px[middle] < this_find) & (this_find <= px[right])) {
+#ifdef debug
+                Rprintf("R %d %d %f %f\n", middle, right, px[middle], px[right]);
+#endif
+                left = middle;
+                if (2 > (right - middle)) {
+#ifdef debug
+                    Rprintf("narrowed to middle=%d and right=%d\n", middle, right);
+                    Rprintf("pside=%d\n", pside[ifind]);
+#endif
+                    if (pside[ifind] == 0)
+                        pres[ifind] = middle + 1;
+                    else
+                        pres[ifind] = right + 1;
+#ifdef debug
+                    Rprintf("pres[ifind]=%d\n",pres[ifind]);
+#endif
+                    break;
+                }
+            }
+        }
+    }
+    UNPROTECT(4);
+    return(res);
+}
+
+#endif
+
+// 2016-10-13 This code is NOT used; it is being kept just in case it might be
+// 2016-10-13 useful later. 
+#if 0
+
+// hex2int() takes a vector of character (hex) strings and returns a vector of
+// numbers corresponding to their pairs, eg. "0110" yields c(1, 16).
+// LIMITATION: all elements in the vector must have the same
+//             number of characters, and this number must be even.
+
+#include <R.h>
+#include <Rdefines.h>
+#include <Rinternals.h>
+
+/*
+   TEST CODE
+
+   system("R CMD shlib hex2int.c")
+   dyn.load("hex2int.so")
+   C <- c("0110", "00FF")
+   I <- .Call("hex2int", C)
+   I <- matrix(I, nrow=length(C), byrow=TRUE)
+
+ */
+int char2int(const char h)
+{
+    int I = 0;
+    switch(h) {
+        case '0': I = 0; break;
+        case '1': I = 1; break;
+        case '2': I = 2; break;
+        case '3': I = 3; break;
+        case '4': I = 4; break;
+        case '5': I = 5; break;
+        case '6': I = 6; break;
+        case '7': I = 7; break;
+        case '8': I = 8; break;
+        case '9': I = 9; break;
+        case 'A': I = 10; break;
+        case 'B': I = 11; break;
+        case 'C': I = 12; break;
+        case 'D': I = 13; break;
+        case 'E': I = 14; break;
+        case 'F': I = 15; break;
+        case 'a': I = 10; break;
+        case 'b': I = 11; break;
+        case 'c': I = 12; break;
+        case 'd': I = 13; break;
+        case 'e': I = 14; break;
+        case 'f': I = 15; break;
+    }
+    return(I);
+}
+
+SEXP hex2int(SEXP C)
+{
+  PROTECT(C = AS_CHARACTER(C));
+  int n = LENGTH(C);
+  const char *Cp;
+  SEXP res;
+
+  Cp = CHAR(STRING_ELT(C, 0));
+  int nchar = strlen(Cp);
+
+  PROTECT(res = NEW_INTEGER((int)(n * nchar / 2)));
+  int *resp = INTEGER_POINTER(res);
+  int resi = 0;
+  for (int i = 0; i < n; i++) {
+      //Rprintf("i: %d\n", i);
+      Cp = CHAR(STRING_ELT(C, i));
+      //Rprintf("(%s) len %d\n", Cp, nchar);
+      for (int c = 0; c < nchar; c+=2) {
+          int I = 16 * char2int(Cp[c]) + char2int(Cp[c+1]);
+          //if (i < 2) Rprintf("  [%c %c | %d]\n", Cp[c], Cp[c+1], I); //int)Cp[c]);
+          resp[resi++] = I;
+      }
+      //Rprintf("\n");
+  }
+  UNPROTECT(2);
+  return(res);
+}
+#endif
 

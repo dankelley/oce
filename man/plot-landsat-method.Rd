@@ -8,9 +8,9 @@
 \usage{
 \S4method{plot}{landsat}(x, band, which = 1, decimate = TRUE, zlim,
   utm = FALSE, col = oce.colorsPalette, drawPalette = TRUE,
-  showBandName = TRUE, alpha.f = 1, red.f = 2, green.f = 2,
-  blue.f = 4, offset = c(0, 0, 0, 0), transform = diag(c(red.f, green.f,
-  blue.f, alpha.f)), debug = getOption("oceDebug"), ...)
+  showBandName = TRUE, alpha.f = 1, red.f = 1.7, green.f = 1.5,
+  blue.f = 6, offset = c(0, -0.05, -0.2, 0), transform = diag(c(red.f,
+  green.f, blue.f, alpha.f)), debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.}
@@ -29,8 +29,11 @@ Landsat-7, this may be one of \code{"blue"}, \code{"green"},
 otherwise the first band will be used.  In addition to the above, using
 \code{band="temperature"} will plot an estimate of at-satellite
 brightness temperature, computed from the \code{tirs1} band, and
-\code{band="terralook"} will plot a sort of natural colour; see
-\dQuote{Details}.}
+\code{band="terralook"} will plot a sort of natural colour by combining
+the \code{red}, \code{green}, \code{blue} and \code{nir} bands
+according to the formula provided at
+\code{https://lta.cr.usgs.gov/terralook/what_is_terralook} (a
+website that worked once, but failed as of Feb 2, 2017).}
 
 \item{which}{Desired plot type; 1=image, 2=histogram.}
 
@@ -72,14 +75,14 @@ to be emphasized (e.g. dry land).}
 \code{\link{adjustcolor}}.  Higher values of \code{green.f} emphasize
 green hues (e.g. forests).}
 
-\item{blue.f}{Argument used if \code{col="natural"}, to adjust colours with
+\item{blue.f}{Argument used if \code{band="terralook"}, to adjust colours with
 \code{\link{adjustcolor}}.  Higher values of \code{blue.f} emphasize blue
 hues (e.g. ocean).}
 
-\item{offset}{Argument used if \code{col="natural"}, to adjust colours with
+\item{offset}{Argument used if \code{band="terralook"}, to adjust colours with
 \code{\link{adjustcolor}}.}
 
-\item{transform}{Argument used if \code{col="natural"}, to adjust colours
+\item{transform}{Argument used if \code{band="terralook"}, to adjust colours
 with \code{\link{adjustcolor}}.}
 
 \item{debug}{Set to a positive value to get debugging information during
@@ -88,25 +91,60 @@ processing.}
 \item{...}{optional arguments passed to plotting functions.}
 }
 \description{
-Plot a landsat Object
+Plot the data within a landsat image, or information computed from the
+data. The second category includes possibilities such as an estimate of
+surface temperature and the \code{"terralook"} estimate of a natural-colour
+view.
+}
+\details{
+For Landsat-8 data, the \code{band} may be
+one of: \code{"aerosol"}, \code{"blue"}, \code{"green"}, \code{"red"},
+\code{"nir"}, \code{"swir1"}, \code{"swir2"}, \code{"panchromatic"},
+\code{"cirrus"}, \code{"tirs1"}, or \code{"tirs2"}.
+
+For Landsat-7 data, \code{band} may be one of \code{"blue"}, \code{"green"}, \code{"red"},
+\code{"nir"}, \code{"swir1"}, \code{"tirs1"}, \code{"tirs2"},
+\code{"swir2"}, or \code{"panchromatic"}.
+
+For Landsat data prior to
+Landsat-7, \code{band} may be one of \code{"blue"}, \code{"green"},
+\code{"red"}, \code{"nir"}, \code{"swir1"}, \code{"tirs1"},
+\code{"tirs2"}, or \code{"swir2"}.
+
+If \code{band} is not given, the
+(\code{"tirs1"}) will be used if it exists in the object data, or
+otherwise the first band will be used.
+
+In addition to the above there are also some pseudo-bands that
+can be plotted, as follows.
+\itemize{
+\item Setting \code{band="temperature"} will plot an estimate
+of at-satellite brightness temperature, computed from the
+\code{tirs1} band.
+\item Setting \code{band="terralook"} will plot a sort of natural
+colour by combining the \code{red}, \code{green}, \code{blue} and
+\code{nir} bands according to the formula provided at
+\code{https://lta.cr.usgs.gov/terralook/what_is_terralook} (a
+website that worked once, but failed as of Feb 2, 2017), namely
+that the \code{red}-band data are provided as the \code{red}
+argument of the \code{\link{rgb}} function, while
+the \code{green} argument is computed as
+2/3 of the \code{green}-band data plus 1/3 of the \code{nir}-band data, and
+the \code{blue} argument is computed as 2/3 of the \code{green}-band
+data minus 1/3 of the \code{nir}-band data. (This is not a typo: the
+\code{blue} band is not used.)
+}
+}
+\seealso{
+Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+  \code{\link{landsat-class}}, \code{\link{landsatAdd}},
+  \code{\link{landsatTrim}}, \code{\link{landsat}},
+  \code{\link{read.landsat}},
+  \code{\link{summary,landsat-method}}
 }
 \author{
 Dan Kelley
 }
-\seealso{
-Other functions dealing with satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{g1sst-class}},
-  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.amsr}}, \code{\link{read.g1sst}},
-  \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,amsr-method}},
-  \code{\link{summary,landsat-method}},
-  \code{\link{summary,satellite-method}}
-}
 \concept{
 satellite
 }
-

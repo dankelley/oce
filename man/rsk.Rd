@@ -3,24 +3,42 @@
 \docType{data}
 \name{rsk}
 \alias{rsk}
-\title{Sample rsk Dataset}
+\title{Sample Rsk Dataset}
 \description{
 A sample \code{rsk} object derived from a Concerto CTD manufactured by RBR Ltd.
 }
 \details{
 The data were obtained September 2015, off the west coast
-    of Greenland, by Matt Rutherford and Nicole Trenholm of the
-    Ocean Research Project, in collaboration with RBR and with the
-    NASA Oceans Melting Greenland project.
+of Greenland, by Matt Rutherford and Nicole Trenholm of the
+Ocean Research Project, in collaboration with RBR and with the
+NASA Oceans Melting Greenland project.
 }
 \examples{
 library(oce)
 data(rsk)
+## The object doesn't "know" it is CTD until told so
 plot(rsk)
 plot(as.ctd(rsk))
-plot(subset(as.ctd(rsk),pressure<10))
+
 }
 \references{
 \url{https://rbr-global.com/}
 }
+\seealso{
+Other datasets provided with \code{oce}: \code{\link{adp}},
+  \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
+  \code{\link{coastlineWorld}}, \code{\link{colors}},
+  \code{\link{ctdRaw}}, \code{\link{ctd}},
+  \code{\link{echosounder}}, \code{\link{landsat}},
+  \code{\link{lisst}}, \code{\link{lobo}},
+  \code{\link{met}}, \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{sealevel}}, \code{\link{section}},
+  \code{\link{topoWorld}}, \code{\link{wind}}
 
+Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
+  \code{\link{[[<-,rsk-method}}, \code{\link{as.rsk}},
+  \code{\link{plot,rsk-method}}, \code{\link{read.rsk}},
+  \code{\link{rsk-class}}, \code{\link{rskPatm}},
+  \code{\link{rskToc}}, \code{\link{subset,rsk-method}},
+  \code{\link{summary,rsk-method}}
+}

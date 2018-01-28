@@ -1,14 +1,28 @@
-## References used in this file:
-## 1. Meeus, Jean, 1982.  Astronomical formulae for Calculators.
-##    Willmann-Bell. Richmond VA, USA. 201 pages.
-## 2. Meeus, Jean, 1991.  Astronomical algorithms.
-##    Willmann-Bell. Richmond VA, USA. 429 pages.
-## The code is based on [1]; see help(moonAngle,"oce") for comments on 
-## the differences in formulae found in [2].  Indeed, [2] is only cited
-## here in case readers want to check the ideas of the formulae; DK 
-## has found that [2] is available to him via his university library
-## inter-library loan system, whereas he owns a copy of [1].
-
+#' Convert ecliptical to equatorial coordinate
+#'
+#' Convert from ecliptical to equatorial coordinates, using
+#' equations 8.3 and 8.4 of [1], or, equivalently,
+#' equations 12.3 and 12.4 of [2].
+#'
+#' @param lambda longitude, in degrees, or a data frame containing
+#' \code{lambda}, \code{beta}, and \code{epsilon}, in which case the next to
+#' arguments are ignored.
+#' @param beta geocentric latitude, in degrees
+#' @param epsilon obliquity of the ecliptic, in degrees
+#' @return A data frame containing columns \code{rightAscension} and
+#' \code{declination} both in degrees.
+#' @author Dan Kelley, based on formulae in [1] and [2].
+#' @references 1. Meeus, Jean, 1982. Astronomical formuae for Calculators.
+#' Willmann-Bell. Richmond VA, USA. 201 pages.
+#'
+#' 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
+#' USA. 429 pages.
+#' The code is based on [1]; see help(moonAngle,"oce") for comments on
+#' the differences in formulae found in [2].  Indeed, [2] is only cited
+#' here in case readers want to check the ideas of the formulae; DK
+#' has found that [2] is available to him via his university library
+#' inter-library loan system, whereas he owns a copy of [1].
+#' @family things related to astronomy
 eclipticalToEquatorial <- function(lambda, beta, epsilon)
 {
     if (is.data.frame(lambda)) {
@@ -22,6 +36,32 @@ eclipticalToEquatorial <- function(lambda, beta, epsilon)
     data.frame(rightAscension=alpha/RPD, declination=delta/RPD)
 }
 
+
+#' Convert equatorial to local horizontal coordinate
+#'
+#' Convert from equatorial coordinates to local horizontal coordinates, i.e.
+#' azimuth and altitude.
+#' The method is taken from equations 8.5 and 8.6 of [1], or, equivalently,
+#' from equations 12.5 and 12.6 of [2].
+#'
+#' @param rightAscension right ascension, e.g. calculated with
+#' \code{\link{eclipticalToEquatorial}}.
+#' @param declination declination, e.g. calculated with
+#' \code{\link{eclipticalToEquatorial}}.
+#' @param t time of observation.
+#' @param longitude longitude of observation, positive in eastern hemisphere.
+#' @param latitude latitude of observation, positive in northern hemisphere.
+#' @return A data frame containing columns \code{altitude} (angle above
+#' horizon, in degrees) and \code{azimuth} (angle anticlockwise from south, in
+#' degrees).
+#' @author Dan Kelley, based on formulae in [1] and [2].
+#' @references
+#' 1. Meeus, Jean, 1982. Astronomical formulae for Calculators.
+#' Willmann-Bell. Richmond VA, USA. 201 pages.
+#'
+#' 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
+#' USA. 429 pages.
+#' @family things related to astronomy
 equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitude, latitude)
 {
     RPD <- atan2(1, 1) / 45            # radians per degree
@@ -35,8 +75,29 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
     data.frame(azimuth=A/RPD, altitude=h/RPD)
 }
 
+
+#' Convert a POSIXt time to a sidereal time
+#'
+#' Convert a POSIXt time to a sidereal time, using
+#' the method in Chapter 7 of Meeus (1982).  The small correction
+#' that he discusses after his equation 7.1 is not applied here.
+#'
+#' @param t a time, in POSIXt format, e.g. as created by
+#' \code{\link{as.POSIXct}}, \code{\link{as.POSIXlt}}, or
+#' \code{\link{numberAsPOSIXct}}.  If this is provided, the other arguments are
+#' ignored.
+#' @return A sidereal time, in hours in the range from 0 to 24.
+#' @author Dan Kelley
+#' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+#' Willmann-Bell. Richmond VA, USA. 201 pages
+#' @examples
+#'
+#' t <- ISOdatetime(1978, 11, 13, 0, 0, 0, tz="UTC")
+#' print(siderealTime(t))
+#'
+#' @family things related to astronomy
 siderealTime <- function(t)
-{                                   
+{
     tt <- as.POSIXlt(t)
     n <- length(tt$hour)
     tt$hour <- rep(0, n)
@@ -52,6 +113,46 @@ siderealTime <- function(t)
     res
 }
 
+
+
+#' Convert a POSIXt time to a Julian day
+#'
+#' Convert a POSIXt time to a Julian day, using the method provided in
+#' Chapter 3 of Meeus (1982).  It should be noted that
+#' Meeus and other astronomical treatments use fractional days, whereas the
+#' present code follows the R convention of specifying days in whole numbers,
+#' with hours, minutes, and seconds also provided as necessary.  Conversion is
+#' simple, as illustrated in the example for 1977 April 26.4, for which Meeus
+#' calculates julian day 2443259.9.  Note that the R documentation for
+#' \code{\link{julian}} suggests another formula, but the point of the present
+#' function is to match the other Meeus formulae, so that suggestion is ignored
+#' here.
+#'
+#' @param t a time, in POSIXt format, e.g. as created by
+#' \code{\link{as.POSIXct}}, \code{\link{as.POSIXlt}}, or
+#' \code{\link{numberAsPOSIXct}}.  If this is provided, the other arguments are
+#' ignored.
+#' @param year year, to be provided along with \code{month}, etc., if \code{t}
+#' is not provided.
+#' @param month month, numbered with January being 1.
+#' @param day day in month, starting at 1.
+#' @param hour hour of day.
+#' @param min minute of hour
+#' @param sec second of hour
+#' @param tz timezone
+#' @return A Julian-Day number, in astronomical convention as explained in
+#' Meeus.
+#' @author Dan Kelley
+#' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+#' Willmann-Bell. Richmond VA, USA. 201 pages
+#' @examples
+#'
+#' t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="ET")+0.4*86400
+#' jd <- julianDay(t)
+#' cat(format(t), "is Julian Day", format(jd, digits=14), "\n")
+#'
+#' @family things related to astronomy
+#' @family things related to time
 julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz="UTC")
 {
     if (!inherits(t, "POSIXt"))  {
@@ -63,7 +164,7 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
     tt <- as.POSIXlt(t, tz=tz)
     year <- tt$year + 1900
     month <- tt$mon + 1
-    day <- tt$mday + (tt$hour + tt$min / 60 + tt$sec / 3600) / 24 
+    day <- tt$mday + (tt$hour + tt$min / 60 + tt$sec / 3600) / 24
     m <- ifelse(month <= 2, month + 12, month)
     y <- ifelse(month <= 2, year - 1, year)
     A <- floor(y / 100)
@@ -74,18 +175,134 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
     jd
 }
 
+
+
+#' Julian-Day number to Julian century
+#'
+#' Convert a Julian-Day number to a time in julian centuries since noon on
+#' January 1, 1900.
+#' The method follows Meese (1982 equation 15.1).  The example reproduces the
+#' example provided by Meeuse (1982 example 15.a), with fractional error 3e-8.
+#'
+#' @param jd a julian day number, e.g. as given by \code{\link{julianDay}}.
+#' @return Julian century since noon on January 1, 1900.
+#' @author Dan Kelley
+#' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+#' Willmann-Bell. Richmond VA, USA. 201 pages
+#' @examples
+#'
+#' t <- ISOdatetime(1978, 11, 13, 4, 35, 0, tz="UTC")
+#' jca <- julianCenturyAnomaly(julianDay(t))
+#' cat(format(t), "is Julian Century anomaly", format(jca, digits=8), "\n")
+#'
+#' @family things related to astronomy
+#' @family things related to time
 julianCenturyAnomaly <- function(jd)
 {
     (jd - 2415020.0) / 36525         # [1] Meeus 1982 (eq 7.1 or 15.1)
 }
 
+
+#' Lunar Angle as Function of Space and Time
+#'
+#' The calculations are based on formulae provided by Meeus [1982], primarily
+#' in chapters 6, 18, and 30.  The first step is to compute sidereal time as
+#' formulated in Meeus [1982] chapter 7, which in turn uses Julian day computed
+#' according to as formulae in Meeus [1982] chapter 3.  Using these quantities,
+#' formulae in Meeus [1982] chapter 30 are then used to compute geocentric
+#' longitude (\eqn{lambda}{lambda}, in the Meeus notation), geocentric latitude
+#' (\eqn{beta}{beta}), and parallax.  Then the \code{obliquity} of the ecliptic
+#' is computed with Meeus [1982] equation 18.4.  Equatorial coordinates (right
+#' ascension and declination) are computed with equations 8.3 and 8.4 from
+#' Meeus [1982], using \code{\link{eclipticalToEquatorial}}.  The hour angle
+#' (\eqn{H}{H}) is computed using the unnumbered equation preceding Meeus's
+#' [1982] equation 8.1.  Finally, Meeus [1982] equations 8.5 and 8.6 are used
+#' to calculate the local azimuth and altitude of the moon, using
+#' \code{\link{equatorialToLocalHorizontal}}.
+#'
+#' @param t time, a POSIXt object (converted to timezone \code{"UTC"},
+#' if it is not already in that timezone), or a numeric value that
+#' corresponds to such a time.
+#' @param longitude observer longitude in degrees east
+#' @param latitude observer latitude in degrees north
+#' @param useRefraction boolean, set to \code{TRUE} to apply a correction for
+#' atmospheric refraction.  (Ignored at present.)
+#' @return A list containing the following.  \item{time}{time}
+#' \item{azimuth}{moon azimuth, in degrees eastward of north, from 0 to 360.
+#' Note: this is not the convention used by Meeus, who uses degrees westward of
+#' South.  (See diagram below.)} \item{altitude}{moon altitude, in degrees from
+#' -90 to 90.  (See diagram below.)} \item{rightAscension}{right ascension, in
+#' degrees} \item{declination}{declination, in degrees}
+#' \item{lambda}{geocentric longitude, in degrees} \item{beta}{geocentric
+#' latitude, in degrees} \item{diameter}{lunar diameter, in degrees.}
+#' \item{distance}{earth-moon distance, in kilometers)}
+#' \item{illuminatedFraction}{fraction of moon's visible disk that is
+#' illuminated} \item{phase}{phase of the moon, defined in equation 32.3 of
+#' Meeus [1982].  The fractional part of which is 0 for new moon, 1/4 for first
+#' quarter, 1/2 for full moon, and 3/4 for last quarter.}
+#' \if{html}{\figure{starCoords.png options:width=400px}{starCoords}}
+#'
+#' @section Alternate formulations:
+#' Formulae provide by Meeus [1982] are used
+#' for all calculations here.  Meeus [1991] provides formulae that are similar,
+#' but that differ in the 5th or 6th digits.  For example, the formula for
+#' ephemeris time in Meeus [1991] differs from that in Meeus [1992] at the 5th
+#' digit, and almost all of the approximately 200 coefficients in the relevant
+#' formulae also differ in the 5th and 6th digits.  Discussion of the changing
+#' formulations is best left to members of the astronomical community.  For the
+#' present purpose, it may be sufficient to note that \code{moonAngle}, based
+#' on Meeus [1982], reproduces the values provided in example 45.a of Meeus
+#' [1991] to 4 significant digits, e.g. with all angles matching to under 2
+#' minutes of arc.
+#' @author Dan Kelley, based on formulae in Meeus [1982].
+#' @seealso The equivalent function for the sun is \code{\link{sunAngle}}.
+#' @references Meeus, Jean, 1982.  Astronomical formulae for calculators.
+#' Willmann-Bell. Richmond VA, USA. 201 pages.
+#'
+#' Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
+#' USA. 429 pages.
+#' @examples
+#'
+#' library(oce)
+#' par(mfrow=c(3,2))
+#' y <- 2012
+#' m <- 4
+#' days <- 1:3
+#' ## Halifax sunrise/sunset (see e.g. http://www.timeanddate.com/worldclock)
+#' rises <- ISOdatetime(y, m, days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 3 * 3600 # ADT
+#' sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 15, 45),0,tz="UTC") + 3 * 3600
+#' azrises <- c(69, 75, 82)
+#' azsets <- c(293, 288, 281)
+#' latitude <- 44.65
+#' longitude <- -63.6
+#' for (i in 1:3) {
+#'     t <- ISOdatetime(y, m, days[i],0,0,0,tz="UTC") + seq(0, 24*3600, 3600/4)
+#'     ma <- moonAngle(t, longitude, latitude)
+#'     oce.plot.ts(t, ma$altitude, type='l', mar=c(2, 3, 1, 1), cex=1/2, ylab="Altitude")
+#'     abline(h=0)
+#'     points(rises[i], 0, col='red', pch=3, lwd=2, cex=1.5)
+#'     points(sets[i], 0, col='blue', pch=3, lwd=2, cex=1.5)
+#'     oce.plot.ts(t, ma$azimuth, type='l', mar=c(2, 3, 1, 1), cex=1/2, ylab="Azimuth")
+#'     points(rises[i], -180+azrises[i], col='red', pch=3, lwd=2, cex=1.5)
+#'     points(sets[i], -180+azsets[i], col='blue', pch=3, lwd=2, cex=1.5)
+#' }
+#'
+#' @family things related to astronomy
 moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
 {
     if (missing(t)) stop("must give 't'")
+    if (!inherits(t, "POSIXt")) {
+        if (is.numeric(t)) {
+            tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") # arbitrary
+            t <- t - as.numeric(tref) + tref
+        } else {
+            stop("t must be POSIXt or a number corresponding to POSIXt (in UTC)")
+        }
+    }
+    if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
+        attributes(t)$tzone <- "UTC"
     if (missing(longitude)) stop("must give 'longitude'")
     if (missing(latitude)) stop("must give 'latitude'")
-    if ("UTC" != attr(as.POSIXct(t[1]), "tzone"))
-        stop("t must be in UTC")
     RPD <- atan2(1, 1) / 45            # radians per degree
     ## In this cde, the symbol names follow [1] Meeus 1982 chapter 30, with e.g. "p"
     ## used to indicate primes, e.g. Lp stands for L' in Meeus' notation.
@@ -259,7 +476,7 @@ moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
     (e2*  0.000026 * cos(RPD * (2 * D - 2 * M     ))) +
     (    -0.000023 * cos(RPD * (2 * F - 2 * D + Mp))) +
     (e *  0.000019 * cos(RPD * (4 * D - M - Mp    )))
-    ## For coordinate conversions, need epsilon (obliquity of the ecliptic) 
+    ## For coordinate conversions, need epsilon (obliquity of the ecliptic)
     ## as defined in Meuus eq 18.4, page 81.
     epsilon <- 23.452294 - 0.0130125 * T - 0.00000164 * T2 + 0.000000503 * T3
     ec <- eclipticalToEquatorial(lambda, beta, epsilon)
@@ -292,4 +509,3 @@ moonAngle <- function(t, longitude=0, latitude=0, useRefraction=TRUE)
                  phase=phase)
     res
 }
-

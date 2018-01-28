@@ -1,7 +1,10 @@
+^vignettes/figure$
+^build$
 _site
 TAGS
 *.o
 *.so
+*.dll
 .Rhistory
 .Rapp.history
 *~
@@ -21,4 +24,8 @@ oce.Rproj
 autom4te.cache
 *.nc
 *.zip
+*.csv
+test*.R
+*.out
+oce_[a-zA-Z]*.Rproj
 

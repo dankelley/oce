@@ -1,3 +1,4 @@
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -20,18 +21,18 @@ SEXP oce_filter(SEXP x, SEXP a, SEXP b)
   yp = NUMERIC_POINTER(y);
   for (i = 0; i < nx; i++) {
     double xsum, ysum;
-    int ioffset;		/* prevent looking before start */
+    int ioffset; /* prevent looking before start */
     xsum = 0.0;
     for (ib = 0; ib < nb; ib++) {
       ioffset = i - ib;
       if (ioffset > -1)
-	xsum += bp[ib] * xp[ioffset];
+          xsum += bp[ib] * xp[ioffset];
     }
     ysum = 0.0;
     for (ia = 1; ia < na; ia++) {
       ioffset = i - ia;
       if (ioffset > -1)
-	ysum += ap[ia] * yp[ioffset];
+          ysum += ap[ia] * yp[ioffset];
     }
     yp[i] = xsum - ysum;
   }

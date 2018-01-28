@@ -1,3 +1,64 @@
+0.9-23
+- tidem() permits inferred constituents
+- tidem() follows T_TIDE phase convention
+- adorn argument removed from plot functions (after being defunct 1+ year)
+- deprecate findInOrdered()
+
+0.9-22
+- plot,section-method() can use external bathymetry
+- lowpass() added
+- ctdTrim() can isolate upcasts
+- deprecate byteToBinary()
+- address a CRAN NOTE about UTF-8 strings in data
+
+0.9-21
+- adpEnsembleAverage() added
+- mapCoordinateSystem() added
+- woce-exchange missing-value inference
+- woce-exchange autodetection, plus read all data types
+- download.amsr() updated for data-server change
+- download.met() added
+- as.ctd() can specify columns within argo data
+- read.adp.rdi() handles more file types and larger RDI files
+- read.odf() handles contradictory metadata better
+- oce.as.POSIXlt() deprecated
+- oceSetData() handles units better
+- address R_registerRoutines build-time warning
+- fix memory-usage error in coastlineCut()
+
+0.9-20
+- remove observatory object type (changed format, seldom-used type)
+- remove pangaea object type (undocumented format, seldom-used type)
+- improvements for BioArgo data
+- Spanish translation by Pablo Valdés
+- make read.gps() handle more files
+- deprecate ctdAddColumn() and ctdUpdateHeader()
+- download.topo() added and read.topo() updated to handle new formats
+- download.amsr() added
+- composite() added
+- addColumn() marked as deprecated
+- read.cm.s4() reads all data in file
+- as.cm() added
+- read.odf() handles Aanderaa current meter data
+- mapPlot() and mapAxis() get cex.axis parameter
+- subset(amsr) added; various other amsr improvements
+
+0.9-19
+- deprecate 'adorn' in plot functions
+- make read.ctd() obey missingValue (renamed)
+- improve map projections
+- add renameData()
+- improve support for SBE files
+- remove is.beam(), is.xyz(), is.enu() and coordinate(), since
+  x[["coordinate"]] now permits these simply
+- replace several function-style accessors with [[ style
+- fix test-suite error relating to an rgdal change
+- add handleFlags() as generic plus specifics for ctd and argo classes
+- use S4 documentation, e.g. ?'plot,ctd-method' instead of ?plot.ctd
+- add subset(argo, "adjusted")
+- make read.argo() read all documented data and metadata fields
+- add trimString()
+
 0.9-18
 - improve plot.coastline() and mapPlot()
 - add support for G1SST satellite

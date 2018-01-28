@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oce 0.9-14\n"
-"POT-Creation-Date: 2015-01-16 15:10\n"
+"POT-Creation-Date: 2017-08-25 23:12\n"
 "PO-Revision-Date: 2014-02-21 11:34-0400\n"
 "Last-Translator: Dan Kelley <dan.kelley@dal.ca>\n"
 "Language-Team: Language R-fr\n"
@@ -10,114 +10,67 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+msgid "no data to plot"
+msgstr ""
+
 msgid "must give 'subset'"
 msgstr ""
 
-msgid "there is no item named \""
-msgstr "il n'y a aucune élément nommé \""
-
-msgid "\" in this"
+msgid "In composite(list) : only AMSR objects are handled"
 msgstr ""
 
-msgid "object"
-msgstr "objet"
+msgid "handleFlags() can only be applied to objects inheriting from \"oce\""
+msgstr ""
 
-msgid "method is only for oce objects"
+msgid "no flags supplied (internal error; report to developer)"
+msgstr ""
+
+msgid "no actions supplied (internal error; report to developer)"
+msgstr ""
+
+msgid "names of flags must match those of actions"
+msgstr ""
+
+msgid "if first flag is unnamed, no other flags can be specified"
+msgstr ""
+
+msgid "if flags is a list of a single unnamed item, actions must be similar"
+msgstr ""
+
+msgid "actionsThis follows..."
+msgstr ""
+
+msgid "the only permitted character action is 'NA'"
+msgstr ""
+
+msgid "action must be a character string or a function"
+msgstr ""
+
+#, fuzzy
+msgid "oceGetData() only works for oce objects"
 msgstr "méthode est uniquement pour les objets de oce"
 
-msgid "must supply 'x'"
+msgid "'name' must be supplied"
 msgstr ""
 
-msgid "must supply 'names'"
+#, fuzzy
+msgid "oceDeleteData() only works for oce objects"
+msgstr "méthode est uniquement pour les objets de oce"
+
+#, fuzzy
+msgid "oceSetData() only works for oce objects"
+msgstr "méthode est uniquement pour les objets de oce"
+
+msgid "'unit' must contain 'unit' and 'scale'"
 msgstr ""
 
-msgid "'"
+msgid "'unit$unit' must be an expression"
 msgstr ""
 
-msgid "' not in object's metadata or data$station[[1]]@data"
+msgid "'unit$scale' must be a character string"
 msgstr ""
 
-msgid "' not in object"
-msgstr "pas dans l'objet"
-
-msgid "cannot determine time to which to interpolate"
-msgstr ""
-
-msgid "only works for 'adv' and 'adp' objects"
-msgstr ""
-
-msgid "object has no item named 'data$heading' or 'data$headingSlow'"
-msgstr ""
-
-msgid "object has no item named 'data$pitch' or 'data$pitchSlow'"
-msgstr ""
-
-msgid "no 'latitude' in names(x@data) or names(x@metadata)"
-msgstr ""
-
-msgid "no 'longitude' in names(x@data) or names(x@metadata)"
-msgstr ""
-
-msgid "no item 'data$latitude$ or 'metadata$latitude' in object"
-msgstr ""
-
-msgid "no item 'data$longitude$ or 'metadata$longitude' in object"
-msgstr ""
-
-msgid "no item 'data$pressure' in object"
-msgstr ""
-
-msgid "no item 'data$salinity' in object"
-msgstr ""
-
-msgid "no item 'data$temperature' in object"
-msgstr ""
-
-msgid "object has no item named 'data$roll' or 'data$rollSlow'"
-msgstr ""
-
-msgid ""
-"unknown 'which'; must be 1 for ADP velocity timescale, or 2 for ADP heading "
-"timescale"
-msgstr ""
-
-msgid "cannot determine times for this Oce object"
-msgstr ""
-
-msgid "the station data do not contain an item named \""
-msgstr ""
-
-msgid "\""
-msgstr ""
-
-msgid "cannot find item named '"
-msgstr "ne peut pas trouver un élément nommé '"
-
-msgid "' in object's data"
-msgstr ""
-
-msgid "'x' does not contain data named \""
-msgstr ""
-
-msgid "'time' is neither a POSIXt time, nor an oce object containing data$time"
-msgstr ""
-
-msgid "method is only for objects of class '"
-msgstr "méthode est uniquement pour les objets de la classe '"
-
-msgid "adp"
-msgstr ""
-
-msgid "no 'time' in names(x@data)"
-msgstr ""
-
-msgid "'x' must be an oce object"
-msgstr ""
-
-msgid "'x' does not contain 'data$v'"
-msgstr ""
-
-msgid "no 'v' in names(x@data)"
+msgid "'unit' must be a list, an expression, or a character string"
 msgstr ""
 
 msgid "cannot have control$bin less than 1, but got"
@@ -132,14 +85,6 @@ msgstr ""
 msgid "class of object must inherit from either 'adv' or 'adp'"
 msgstr ""
 
-msgid ""
-"can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek"
-"\", not class"
-msgstr ""
-
-msgid ","
-msgstr ""
-
 msgid "cannot subset by both time and distance; split into multiple calls"
 msgstr ""
 
@@ -150,13 +95,6 @@ msgid "must keep at least 2 bins"
 msgstr ""
 
 msgid "should express the subset in terms of distance or time"
-msgstr ""
-
-msgid "unknown object type; it must inherit from either \"adv\" or \"adp\""
-msgstr ""
-
-msgid ""
-"unknown file type; the object must inherit from either \"adv\" or \"adp\""
 msgstr ""
 
 msgid "beam"
@@ -174,6 +112,12 @@ msgstr "vers le haut"
 msgid "error"
 msgstr "erreur"
 
+msgid "In plot() : the 'adorn' argument is defunct, and will be removed soon"
+msgstr ""
+
+msgid "cannot supply both zlim and breaks"
+msgstr ""
+
 msgid ""
 "This instrument is not a Nortek Aquadopp, so mode=\"diagnostic\" is being "
 "ignored"
@@ -187,6 +131,15 @@ msgstr ""
 msgid ""
 "This instrument did not record Diagnostic data, so mode=\"diagnostic\" is "
 "being ignored"
+msgstr ""
+
+msgid "method is only for objects of class '"
+msgstr "méthode est uniquement pour les objets de la classe '"
+
+msgid "adp"
+msgstr ""
+
+msgid "'"
 msgstr ""
 
 msgid "there are no profiles in this dataset"
@@ -204,10 +157,22 @@ msgstr ""
 msgid "no data in the provided ylim=c("
 msgstr ""
 
+msgid ","
+msgstr ""
+
 msgid ")"
 msgstr ""
 
 msgid "ADP object lacks a 'g' data item"
+msgstr ""
+
+msgid "ADP object lacks a 'vv' data item"
+msgstr ""
+
+msgid "ADP object lacks a 'va' data item"
+msgstr ""
+
+msgid "ADP object lacks a 'vq' data item"
 msgstr ""
 
 msgid "cannot plot beam/velo 1 because the device no beams"
@@ -231,7 +196,7 @@ msgstr ""
 msgid "because this instrument lacked bottom tracking"
 msgstr ""
 
-msgid "cannot use which=27 because this device did not have 4 beams"
+msgid "cannot use which=27 for a 3-beam instrument"
 msgstr ""
 
 msgid "cannot evaluate adorn["
@@ -244,6 +209,12 @@ msgid "no latitude or longitude in object's metadata, so cannot draw map"
 msgstr ""
 
 msgid "there is no built-in coastline file of name \""
+msgstr ""
+
+msgid "\""
+msgstr ""
+
+msgid "nothing to map"
 msgstr ""
 
 msgid "unknown value of which ("
@@ -288,7 +259,7 @@ msgstr ""
 msgid "adp type must be either \"rdi\" or \"nortek\" or \"sontek\""
 msgstr ""
 
-msgid "input must be in xyz coordinates"
+msgid "input must be in xyz or sfm coordinates"
 msgstr ""
 
 msgid "need metadata$orientation='upward' or 'downward', not '"
@@ -313,6 +284,10 @@ msgstr ""
 
 msgid "binmap() only works for 4-beam instruments"
 msgstr ""
+
+#, fuzzy
+msgid "Must be an object of class adp"
+msgstr "méthode est uniquement pour les objets de la classe '"
 
 msgid "expecting syncCode 0x"
 msgstr ""
@@ -378,6 +353,9 @@ msgstr ""
 msgid "argument `file' must be a character string or connection"
 msgstr ""
 
+msgid "this is a PRELIMINARY FUNCTION, for use only by developers"
+msgstr ""
+
 msgid "if 'from' is POSIXt, then 'to' must be, also"
 msgstr ""
 
@@ -393,6 +371,12 @@ msgstr ""
 msgid ", which does not match the second dimension of the velocity matrix,"
 msgstr ""
 
+msgid "Found and removed"
+msgstr ""
+
+msgid "NAs in the time vector."
+msgstr ""
+
 msgid "first two bytes in file must be 0x7f 0x7f, but they are 0x"
 msgstr ""
 
@@ -405,36 +389,33 @@ msgstr ""
 msgid "data types, as header indicates"
 msgstr ""
 
-msgid "first byte of fixed leader header must be 0x00 but it was"
+msgid ""
+"dataOffset and numberOfDataTypes are inconsistent -- this dataset seems "
+"damaged"
 msgstr ""
 
-msgid "second byte of fixed leader header must be a0x00 but it was"
+msgid "first byte of fixed leader header must be 0x00 or 0x01 but it is"
+msgstr ""
+
+msgid "second byte of fixed leader header must be a0x00 but it is"
 msgstr ""
 
 msgid "unknown freq. bit code:"
 msgstr ""
 
+msgid "(expect 010 for 250kHz, 010 for 500kHz, etc)"
+msgstr ""
+
 msgid "(expect 000 for 75kHz, 001 for 150kHz, etc)"
 msgstr ""
 
-msgid "expecting a beamAngle of 20 deg [more-or-less standard for RDI] but got"
-msgstr ""
-
-msgid "deg; using the latter in the transformationMatrix"
+msgid "Assuming beam angle of 25deg, but SysCon bits aren't 111"
 msgstr ""
 
 msgid "cellSize of"
 msgstr ""
 
 msgid "m is not in the allowed range of 0m to 64m"
-msgstr ""
-
-msgid "unexpected length"
-msgstr ""
-
-msgid ""
-"of fixed-leader-data header; expecting 50 for 'surveyor' or 59 for "
-"'workhorse'."
 msgstr ""
 
 msgid "byte 1 of variable leader data should be 0x80, but it is"
@@ -448,37 +429,62 @@ msgstr ""
 
 msgid ""
 ", which is outside the permitted range of 1400 m/s to\n"
-"                1600 m/s.  Something went wrong in decoding the data."
+"                1600 m/s.  Something may be wrong in decoding the data."
+msgstr ""
+
+msgid "setting by="
+msgstr ""
+
+msgid "for a large RDI file"
+msgstr ""
+
+msgid "setting monitor=TRUE for a large RDI file"
+msgstr ""
+
+msgid ""
+"skipping the first ensemble (a temporary solution that eases reading of "
+"SentinelV files)"
+msgstr ""
+
+msgid "difficulty detecting ensemble (profile) start indices"
+msgstr ""
+
+msgid "Didn't find V series leader data ID, treating as a 4 beam ADCP"
+msgstr ""
+
+msgid "Didn't find V series Configuration data ID"
+msgstr ""
+
+msgid "Didn't find V series ping setup data ID"
 msgstr ""
 
 msgid "no profilesToRead"
 msgstr ""
 
-msgid "first byte of correlation segment should be 0x00 but is"
+msgid "cannot store bottom-track data for profile"
 msgstr ""
 
-msgid "at file position"
+msgid ""
+"because profile 1 lacked such data so no storage was set up (adp.rdi.R near "
+"line 964)"
 msgstr ""
 
-msgid "second byte of correlation segment should be 0x02 but is"
+msgid "Detected vertical beam data chunk, but this is not a SentinelV"
 msgstr ""
 
-msgid "first byte of intensity segment should be 0x00 but is"
+msgid "Detected vertical beam amplitude chunk, but this is not a SentinelV"
 msgstr ""
 
-msgid "second byte of intensity segment should be 0x03 but is"
+msgid "Detected vertical beam correlation chunk, but this is not a SentinelV"
 msgstr ""
 
-msgid "first byte of percent-good segment should be 0x00 but is"
+msgid "Detected vertical beam percent good chunk, but this is not a SentinelV"
 msgstr ""
 
-msgid "second byte of percent-good segment should be 0x04 but is"
+msgid "got to end of file; o="
 msgstr ""
 
-msgid "expecting 4 beams, for this RDI adcp"
-msgstr ""
-
-msgid "got to end of file"
+msgid ", fileSize="
 msgstr ""
 
 msgid "Interpolated across a bad profile at time"
@@ -496,10 +502,42 @@ msgstr ""
 msgid "bad profile(s) at times:"
 msgstr ""
 
+msgid "Sentinel file detected but no transformation matrix found."
+msgstr ""
+
+msgid "erroneous VMDAS flag in profile"
+msgstr ""
+
+msgid "erroneous VMDAS flag in profiles:"
+msgstr ""
+
+msgid "erroneous VMDAS flag in"
+msgstr ""
+
+msgid "profiles, including:"
+msgstr ""
+
+msgid "..."
+msgstr ""
+
 msgid "There are no profiles in this file."
 msgstr ""
 
 msgid "The header indicates that there are no profiles in this file."
+msgstr ""
+
+msgid "Removed a junk profile at time"
+msgstr ""
+
+msgid ""
+".  (\"Junk\" means that the decoded time was NA and all data fields were "
+"garbage)"
+msgstr ""
+
+msgid "Removed"
+msgstr ""
+
+msgid "junk profile(s) at times:"
 msgstr ""
 
 msgid "there should be 3 beams, but the file indicates"
@@ -516,9 +554,6 @@ msgstr ""
 
 msgid "velocity profiles"
 msgstr "Les profils de vitesse"
-
-msgid "*****FIXME: check up and down; also read it and check*****"
-msgstr ""
 
 msgid "can only handle 3-beam devices"
 msgstr ""
@@ -559,6 +594,25 @@ msgstr ""
 msgid "'by' must be numeric"
 msgstr ""
 
+#, fuzzy
+msgid "no variable named '"
+msgstr "ne peut pas trouver un élément nommé '"
+
+msgid "' in object's data slot"
+msgstr ""
+
+msgid "length mismatch; value has"
+msgstr ""
+
+msgid "but"
+msgstr ""
+
+msgid "has"
+msgstr ""
+
+msgid "elements"
+msgstr ""
+
 msgid "must specify a 'subset'"
 msgstr ""
 
@@ -566,9 +620,6 @@ msgid "only 'time' is permitted for subsetting"
 msgstr ""
 
 msgid "read.adv() cannot understand type = \""
-msgstr ""
-
-msgid "adv"
 msgstr ""
 
 msgid "unknown 'which':"
@@ -596,6 +647,9 @@ msgid "unknown value of \"which\":"
 msgstr ""
 
 msgid "adv.2enu cannot convert from coordinate system"
+msgstr ""
+
+msgid "adv"
 msgstr ""
 
 msgid "input must be in beam coordinates, but it is in"
@@ -633,12 +687,6 @@ msgid ""
 "\"sontek\" or \"nortek\""
 msgstr ""
 
-msgid "heading length ("
-msgstr ""
-
-msgid ") does not match number of velocity samples ("
-msgstr ""
-
 msgid "input must be in \"enu\" coordinates, but it is in"
 msgstr ""
 
@@ -659,7 +707,16 @@ msgstr ""
 msgid "header must be TRUE"
 msgstr ""
 
-msgid "must supply 'to'"
+msgid "unknown IMU type, with 5th byte 0x"
+msgstr ""
+
+msgid "; only 0xc3, 0xcc, 0xd2 and 0xd3 are recognized"
+msgstr ""
+
+msgid "unsupported IMU type '"
+msgstr ""
+
+msgid "'; only c3, cc, d2 and d3 are allowed"
 msgstr ""
 
 msgid ""
@@ -764,7 +821,7 @@ msgstr ""
 msgid "must have \"by\"=1, in this version of the package"
 msgstr ""
 
-msgid "need to supply a basefile, e.g. \"A\" to read \"A.hd1\" and \"A.ts1\""
+msgid "need to supply a file, e.g. \"A\" to read \"A.hd1\" and \"A.ts1\""
 msgstr ""
 
 msgid "no data in this time interval, starting at time"
@@ -794,10 +851,149 @@ msgstr ""
 msgid "\" was assumed."
 msgstr ""
 
+msgid "Must name a amsr item to retrieve, e.g. '[[\"panchromatic\"]]'"
+msgstr ""
+
+msgid "amsr item must be specified by name"
+msgstr ""
+
+msgid "band '"
+msgstr ""
+
+msgid "' is not available in this object; try one of:"
+msgstr ""
+
+msgid ""
+"the subset must not contain both longitude and latitude. Call this twice, to "
+"combine these"
+msgstr ""
+
+msgid "may only subset by longitude or latitude"
+msgstr ""
+
+msgid "must have 5 elements in the missingColor argument"
+msgstr ""
+
+msgid "missingColor names must be: 'land', 'none', 'bad', 'ice' and 'rain'"
+msgstr ""
+
+msgid "Not downloading"
+msgstr ""
+
+msgid "because it is already present in"
+msgstr ""
+
+msgid "error: the data length"
+msgstr ""
+
+msgid "is not an integral multiple of"
+msgstr ""
+
+msgid "*"
+msgstr ""
+
+msgid ""
+"Cannot (yet) read 6-chunk data. Please contact the developers if you need "
+"this file (and be sure to send the file to them)."
+msgstr ""
+
+msgid "Can only handle 14-chunk data; this file has"
+msgstr ""
+
+msgid ""
+"chunks. Please contact the developers if you need to read this file (and be "
+"sure to send the file to them)."
+msgstr ""
+
+msgid "need more than one argument"
+msgstr ""
+
+msgid "argument"
+msgstr ""
+
+msgid "does not inherit from 'amsr'"
+msgstr ""
+
+#, fuzzy
+msgid "has no variable named '"
+msgstr "ne peut pas trouver un élément nommé '"
+
+msgid "subset.argo(): argument 'subset' must be given"
+msgstr ""
+
+msgid "if subset is a string, it must be \"adjusted\""
+msgstr ""
+
+msgid "cannot subset ungridded argo by pressure -- use argoGrid() first"
+msgstr ""
+
+msgid ""
+"can only subset by time, longitude, latitude, pressure, dataMode, and not by "
+"combinations"
+msgstr ""
+
+msgid "'p' must exceed 1"
+msgstr ""
+
+msgid "value of 'p' must be numeric, or \"levitus\""
+msgstr ""
+
+msgid "must install.packages(\"ncdf4\") to read argo data"
+msgstr ""
+
+msgid "must give time"
+msgstr ""
+
+msgid "must give longitude"
+msgstr ""
+
+msgid "must give latitude"
+msgstr ""
+
+msgid "must give temperature"
+msgstr ""
+
+msgid "must give salinity"
+msgstr ""
+
+msgid "must give pressure"
+msgstr ""
+
+msgid "must give id"
+msgstr ""
+
+msgid "argo"
+msgstr ""
+
+msgid ""
+"In plot,argo-method() :\n"
+"  unrecognized value of which"
+msgstr ""
+
+msgid "no non-missing salinity data"
+msgstr ""
+
+msgid "no non-missing temperature data"
+msgstr ""
+
+msgid "Unknown value of which="
+msgstr ""
+
+msgid "names of flags and actions must match"
+msgstr ""
+
+msgid "first argument is an oce object, but it does not hold time"
+msgstr ""
+
+msgid ""
+"first argument must hold either 'u' plus 'v' or 'speed' plus 'directionTrue' "
+"or 'direction'"
+msgstr ""
+
 msgid "unknown type of current meter"
 msgstr ""
 
-msgid "sorry, 'by' must equal 1, in this (early) version of read.cm.s4()"
+msgid "sorry, 'by' must equal 1, in this version of read.cm.s4()"
 msgstr ""
 
 msgid "'from' must be either POSIXt or numeric"
@@ -806,7 +1002,12 @@ msgstr ""
 msgid "'to' must be either POSIXt or numeric"
 msgstr ""
 
-msgid "cm"
+msgid "B"
+msgstr ""
+
+msgid ""
+"In plot,cm-method() :\n"
+"  cannot plot a cm object unless its 'data' slot contains 'time', 'u' and 'v'"
 msgstr ""
 
 msgid "must provide longitude"
@@ -816,6 +1017,29 @@ msgid "must provide latitude"
 msgstr ""
 
 msgid "Lengths of longitude and latitude must be equal"
+msgstr ""
+
+msgid ""
+"In plot,coastline-method() : 'fill' being accepted for backwards "
+"compatibility; please use 'border' and 'col' instead"
+msgstr ""
+
+msgid "if longitudelim or latitudelim are given, both must be given"
+msgstr ""
+
+msgid ""
+"if longitudelim or latitudelim are given, must not supply clongitude, "
+"clatitude, or span"
+msgstr ""
+
+msgid "plot.coastline() converting longitudelim and latitudelim to clongitude="
+msgstr ""
+
+#, fuzzy
+msgid ", clatitude="
+msgstr "Latitude"
+
+msgid "and span="
 msgstr ""
 
 msgid "argument geographical must be 0, 1, or 2"
@@ -838,9 +1062,24 @@ msgstr ""
 msgid "do not specify 'ylim'; give 'clatitude' and 'span' instead"
 msgstr ""
 
+msgid "BUG: ignoring 'type' because add=TRUE (FIXME)"
+msgstr ""
+
 msgid ""
 "argument 'asp' being ignored, because argument 'clatitude' and 'clongitude' "
 "were given"
+msgstr ""
+
+msgid "FIXME: should trim poles on this coastline plot"
+msgstr ""
+
+msgid "'resolution' must be one of: '"
+msgstr ""
+
+msgid "' '"
+msgstr ""
+
+msgid "the only server that works is naturalearth"
 msgstr ""
 
 msgid "'file' must be a character string or connection"
@@ -921,7 +1160,7 @@ msgstr ""
 msgid "mismatched lengths of x0 and col1 ("
 msgstr ""
 
-msgid "must give either 'file' or 'text'"
+msgid "must give 'file'"
 msgstr ""
 
 msgid "cannot decode \"F\" from \""
@@ -940,6 +1179,27 @@ msgid "\"; try one of:"
 msgstr ""
 
 msgid "unknown colormap name; try one of:"
+msgstr ""
+
+msgid "length of 'zlim' must be 2"
+msgstr ""
+
+msgid "'zlim' values must be ordered"
+msgstr ""
+
+msgid "'zlim' values must be distinct"
+msgstr ""
+
+msgid "blend must be between 0 and 1"
+msgstr ""
+
+msgid "lengths of x0 and x1 must agree"
+msgstr ""
+
+msgid "lengths of col0 and col1 must agree"
+msgstr ""
+
+msgid "lengths of x0 and col0 must agree"
 msgstr ""
 
 msgid "cannot specify both zlim and breaks, unless length(breaks)==1"
@@ -974,32 +1234,75 @@ msgstr ""
 msgid "' is not a recognized value for 'palette'"
 msgstr ""
 
-msgid "TEOS-10 calculation assuming lat=0 lon=300, because location is unknown"
+msgid ""
+"conductivity has no unit, so guessing it is conductivity-ratio. Be cautious "
+"on calculated salinity."
 msgstr ""
 
-msgid "in ctd[[\""
+msgid "constructed salinity from temperature, conductivity-ratio and pressure"
 msgstr ""
 
-msgid "\"]]: no such item"
+msgid "constructed salinity from temperature, conductivity and pressure"
+msgstr ""
+
+msgid "unrecognized conductivity unit '"
+msgstr ""
+
+msgid "'; only uS/cm, mS/cm and S/m are handled"
 msgstr ""
 
 msgid ""
-"data frame must contain columns 'temperature', 'salinity', and 'pressure'"
+"the object's data slot lacks 'salinity', and it cannot be calculated since "
+"'conductivity' is also missing"
 msgstr ""
 
-msgid "must give temperature or CT"
+msgid "object lacks location information, so Sstar cannot be computed"
 msgstr ""
 
-msgid "must give pressure"
+msgid "object's data slot does not contain 'pressure' or 'depth'"
 msgstr ""
 
-msgid "SA and CT must both be supplied, if either is"
+msgid "object lacks location information, so SA cannot be computed"
 msgstr ""
 
-msgid "lengths of SA and CT must match"
+msgid "object lacks location information, so CT cannot be computed"
 msgstr ""
 
-msgid "longitude and latitude set to default values, since none given"
+msgid ""
+"if salinity is not provided, conductivity, temperature and pressure must all "
+"be provided"
+msgstr ""
+
+msgid "length(pressureAtmospheric) must be 1 or length(pressure)"
+msgstr ""
+
+msgid ""
+"using just column 1 of matrix data; use the 'profile' argument to select a "
+"specific profile or try as.section() to keep all columns"
+msgstr ""
+
+msgid "profile must be a positive integer"
+msgstr ""
+
+msgid "profile cannot exceed"
+msgstr ""
+
+msgid "for a data matrix with"
+msgstr ""
+
+msgid "columns"
+msgstr ""
+
+msgid "lengths of longitude and latitude must match"
+msgstr ""
+
+msgid "the first argument must contain salinity, temperature, and pressure"
+msgstr ""
+
+msgid "lengths of salinity and temperature must match, but they are"
+msgstr ""
+
+msgid "lengths of salinity and pressure must match, but they are"
 msgstr ""
 
 msgid "'other' item number"
@@ -1008,25 +1311,33 @@ msgstr ""
 msgid "has no name"
 msgstr ""
 
+msgid ""
+"the 'other' argument will be removed soon; use oceSetData() instead, as in "
+"the examples. See ?'oce-deprecated'."
+msgstr ""
+
+msgid "lengths of longitude and latitude must match, but they are"
+msgstr ""
+
+msgid ", respectively"
+msgstr ""
+
+msgid "lengths of salinity and longitude must match but they are"
+msgstr ""
+
+msgid "lengths of latitude and temperature must match"
+msgstr ""
+
 msgid "must supply column data"
-msgstr ""
-
-msgid "column has"
-msgstr ""
-
-msgid "data but it must have"
-msgstr ""
-
-msgid "data to match existing object"
 msgstr ""
 
 msgid "must supply \"name\""
 msgstr ""
 
-msgid "unknown method \""
+msgid "ignoring unit since it not of length 1 or 2"
 msgstr ""
 
-msgid "ctd"
+msgid "unknown method \""
 msgstr ""
 
 msgid "too few data to ctdDecimate()"
@@ -1035,10 +1346,21 @@ msgstr ""
 msgid "impossible to get here -- developer error"
 msgstr ""
 
+msgid "ctd"
+msgstr ""
+
+msgid ""
+"'distinct' not understood; it should be \"distance\" or something in "
+"names(x[[\"data\"]]"
+msgstr ""
+
 msgid "direction must be either \"ascending\" or \"descending\""
 msgstr ""
 
 msgid "too few data to ctdTrim()"
+msgstr ""
+
+msgid "if provided, 'method' must be of length 1 or 2"
 msgstr ""
 
 msgid ""
@@ -1046,16 +1368,21 @@ msgid ""
 "values"
 msgstr ""
 
-msgid "Cannot select indices < 1"
+msgid "length of parameters must be 2, or must match the ctd column length"
 msgstr ""
 
-msgid "Cannot select past end of array, i.e. past"
+msgid "no \"scan\" in this ctd dataset"
+msgstr ""
+
+msgid ""
+"for method=\"scan\", need length(parameters) to match number of pressure "
+"values"
 msgstr ""
 
 msgid "parameter not understood for this method"
 msgstr ""
 
-msgid "bilinear method could not converge on a solution"
+msgid "unknown submethod '"
 msgstr ""
 
 msgid "'parameters' must be a list containing 'item'"
@@ -1064,7 +1391,14 @@ msgstr ""
 msgid "x@data has no item named '"
 msgstr ""
 
-msgid "'method' not recognized; must be 'index', 'downcast', or 'range'"
+msgid ""
+"Trim parameters for \"sbe\" method not appropriate. Try different parameters "
+"or a different method"
+msgstr ""
+
+msgid ""
+"'method' not recognized; must be 'index', 'downcast', 'scan', 'range', or "
+"'sbe'"
 msgstr ""
 
 msgid "should add note about trimming depth inversions to processingLog"
@@ -1076,20 +1410,40 @@ msgstr ""
 msgid "there are no data in this CTD object"
 msgstr ""
 
-msgid "'file' must be specified"
-msgstr ""
-
 msgid "'file' must be a non-empty string"
 msgstr ""
 
-msgid ""
-"in plot.ctd() : 'xlim' argument not allowed; use Slim for a salinity "
-"profile, Tlim for a temperature profile, etc"
+msgid "unknown format '"
+msgstr ""
+
+msgid "'; valid choices are \"csv\" and \"whp\""
+msgstr ""
+
+msgid "unknown format \""
+msgstr ""
+
+msgid "\"; should be \"csv\" or \"whp\""
 msgstr ""
 
 msgid ""
-"in plot.ctd() : 'ylim' argument not allowed; use plim for a profile, Tlim "
-"for a TS plot, etc"
+"'parameters' is a deprecated argument that is ignored; see ?'oce-deprecated'"
+msgstr ""
+
+msgid ""
+"'orientation' is a deprecated argument that is ignored; see ?'oce-deprecated'"
+msgstr ""
+
+msgid ""
+"In plot() : the 'adorn' argument is deprecated, and will be removed soon"
+msgstr ""
+
+msgid "In plot,ctd-method() : 'fill' is outdated; use 'colCoastline' instead"
+msgstr ""
+
+msgid "in plot,ctd-method() : 'xlim' not allowed; use Slim, Tlim, etc"
+msgstr ""
+
+msgid "in plot,ctd-method() : 'ylim' not allowed; use plim, Tlim, etc"
 msgstr ""
 
 msgid "ignoring add=TRUE because length(which) > 1"
@@ -1108,7 +1462,10 @@ msgid ""
 "clatitude, and span"
 msgstr ""
 
-msgid "plot.ctd(): unknown plot type requested"
+msgid "plot,ctd-method(): unknown plot type \""
+msgstr ""
+
+msgid "\" requested"
 msgstr ""
 
 msgid ""
@@ -1116,22 +1473,19 @@ msgid ""
 "\")"
 msgstr ""
 
+msgid "'coastline' must be a coastline object, or a string naming one"
+msgstr ""
+
 msgid "unknown value of which,"
 msgstr ""
 
-msgid "length mismatch.  '"
+msgid "cannot specify both 'subset' and 'indices'"
 msgstr ""
 
-msgid "' has length"
+msgid "unknown 'which'; must be in 1:4"
 msgstr ""
 
-msgid "but pressure has length"
-msgstr ""
-
-msgid "length mismatch.  'salinity' has length"
-msgstr ""
-
-msgid "but 'temperature' has length"
+msgid "there is no 'time' in this ctd object"
 msgstr ""
 
 msgid "Cannot discover type in line '"
@@ -1140,43 +1494,116 @@ msgstr ""
 msgid "type must be SBE19, WOCE, ODF, ODV, or ITP, not"
 msgstr ""
 
-msgid "cannot decode the header in this CTD file"
+msgid "cannot decode longitude or latitude from '"
 msgstr ""
 
-msgid "cannot find pressure column in list c(\""
+msgid "need to know longitude and latitude if eos=\"gsw\""
 msgstr ""
 
-msgid "\",\""
+msgid "no valid salinity data"
 msgstr ""
 
-msgid "\"); need 'DB' or 'CTDPRS'"
+#, fuzzy
+msgid "no valid temperature data"
+msgstr "Température Conservateur"
+
+msgid "unknown eos; must be \"unesco\" or \"gsw\""
 msgstr ""
 
-msgid "cannot find salinity column in list c(\""
+msgid "unknown eos, \""
 msgstr ""
 
-msgid "\"); need 'CTDSAL' or 'SALNTY'"
+msgid "\"; please use \"unesco\" or \"gsw\""
 msgstr ""
 
-msgid "cannot find salinity-flag column in list c(\""
+msgid "no good data to plot"
 msgstr ""
 
-msgid "\"); need 'CTDSAL_FLAG_W' or 'SALNTY_FLAG_W'"
+msgid ""
+"unknown \"ytype\"; must be one of \"pressure\", \"z\", \"depth\" or "
+"\"sigmaTheta\""
 msgstr ""
 
-msgid "cannot find temperature column in list"
+msgid ""
+"nothing is being plotted, because z is always negative and ylim specified a "
+"positive interval"
 msgstr ""
 
-msgid "'columns' must contain 'temperature'"
+msgid "length(xtype) must match number of levels in the CTD object"
 msgstr ""
 
-msgid "'columns' must contain 'pressure'"
+msgid "argument 'add' is ignored for xtype=\"density+time\""
 msgstr ""
 
-msgid "'columns' must contain 'salinity'"
+msgid "argument 'add' is ignored for xtype=\"density+dpdt\""
 msgstr ""
 
-msgid "'columns' must contain three or more elements"
+#, fuzzy
+msgid "no valid conductivity data"
+msgstr "Température Conservateur"
+
+msgid "unknown conductivity unit"
+msgstr ""
+
+msgid "; should be 'ratio', 'mS/cm' or 'S/m'"
+msgstr ""
+
+msgid "no '"
+msgstr ""
+
+msgid "' in this ctd object"
+msgstr ""
+
+msgid "all"
+msgstr ""
+
+msgid "values in this station are NA"
+msgstr ""
+
+#, fuzzy
+msgid "no valid sigma-0 data"
+msgstr "Température Conservateur"
+
+msgid "no valid N2 data"
+msgstr ""
+
+msgid "argument 'add' is ignored for xtype=\"salinity+temperature\""
+msgstr ""
+
+msgid "unknown xtype value (\""
+msgstr ""
+
+msgid "\")"
+msgstr ""
+
+msgid "file is too short; must have more than 2 lines"
+msgstr ""
+
+msgid "can only handle 'profile' data type, not (presumably) SAMI type"
+msgstr ""
+
+msgid "'columns' is ignored by read.ctd.odf() at present"
+msgstr ""
+
+msgid "oceNameFromSBE() expects just 1 line of header"
+msgstr ""
+
+msgid "header line does not contain a variable name"
+msgstr ""
+
+msgid "unrecognized SBE name '"
+msgstr ""
+
+msgid "'; consider using 'columns' to define this name"
+msgstr ""
+
+msgid "cnvName2oceName(): '"
+msgstr ""
+
+msgid "' -> '"
+msgstr ""
+
+msgid "' ("
 msgstr ""
 
 msgid "ignoring unit on water depth '"
@@ -1206,156 +1633,72 @@ msgstr ""
 msgid "'** Recovery' not found in header"
 msgstr ""
 
-msgid "cannot find 'temperature' in this file"
+msgid ""
+"cannot find temperature in this file; try using columns argument if this is "
+"an error"
 msgstr ""
 
-msgid "no column named 'pressure', 'depth' or 'depSM'"
+msgid "can only handle non-binary .cnv files"
 msgstr ""
 
-msgid "data-header conflict; check that #names matches #columns"
+msgid ""
+"Number of columns in .cnv data file must match number of variables named in "
+"the header"
 msgstr ""
 
 msgid "no data in CTD file \""
 msgstr ""
 
-msgid "cannot find 'salinity' in this file; calculating from T, C, and p"
-msgstr ""
-
-msgid "cannot find 'salinity' in this file; calculating from T, C-ratio, and p"
+msgid "created 'salinity' from 'temperature', 'conductivity' and 'pressure'"
 msgstr ""
 
 msgid ""
-"cannot find salinity in this file, nor conductivity or conductivity ratio"
+"'; assuming mS/cm for salinity calculation -- results should be used with "
+"caution"
 msgstr ""
 
-msgid "created a pressure column from the depth column"
-msgstr ""
-
-msgid "cannot locate a line containing '-- DATA --'"
-msgstr ""
-
-msgid "cannot locate any lines containing 'PARAMETER_HEADER'"
-msgstr ""
-
-msgid "mismatch between length of data names ("
-msgstr ""
-
-msgid ") and number of columns in data matrix ("
-msgstr ""
-
-msgid "missing data$salinity"
-msgstr ""
-
-msgid "missing data$pressure"
-msgstr ""
-
-msgid "missing data$temperature"
-msgstr ""
-
-msgid "FIXME: make read.ctd.odv() work"
-msgstr ""
-
-msgid "cannot find salinity and temperature in 'x'"
-msgstr ""
-
-msgid "no valid salinity data"
-msgstr ""
-
-#, fuzzy
-msgid "no valid temperature data"
-msgstr "Température Conservateur"
-
-msgid "no good data to plot"
+msgid "missing conductivity unit; guessing a unit based on maximum value"
 msgstr ""
 
 msgid ""
-"nothing is being plotted, because z is always negative and ylim specified a "
-"positive interval"
-msgstr ""
-
-msgid "length(xtype) must match number of levels in the CTD object"
-msgstr ""
-
-msgid "argument 'add' is ignored for xtype=\"density+time\""
-msgstr ""
-
-msgid "argument 'add' is ignored for xtype=\"density+dpdt\""
-msgstr ""
-
-msgid "no"
-msgstr ""
-
-msgid "in this station"
-msgstr ""
-
-msgid "all"
-msgstr ""
-
-msgid "values in this station are NA"
-msgstr ""
-
-msgid "no valid sigma-theta data"
-msgstr ""
-
-msgid "no valid N2 data"
-msgstr ""
-
-msgid "argument 'add' is ignored for xtype=\"salinity+temperature\""
-msgstr ""
-
-msgid "unknown xtype value (\""
-msgstr ""
-
-msgid "\")"
-msgstr ""
-
-msgid "file is too short; must have more than 2 lines"
-msgstr ""
-
-msgid "can only handle 'profile' data type, not (presumably) SAMI type"
-msgstr ""
-
-msgid "type must be SBE19 or WOCE, not"
+"max(conductivity) > 10, so using using conductivity/42.914 as a conductivity "
+"ratio for computation of salinity"
 msgstr ""
 
 msgid ""
-"may only subset by time, longitude, or latitude, and not by combinations"
+"max(conductivity) between 1 and 10, so using using conductivity/4.2914 as a "
+"conductivity ratio for computation of salinity"
 msgstr ""
 
-msgid "'p' must exceed 1"
+msgid ""
+"cannot find salinity or conductivity in .cnv file; try using columns "
+"argument if the file actually contains these items"
 msgstr ""
 
-msgid "value of 'p' must be numeric, or \"levitus\""
+msgid "created 'pressure' from 'pressurePSI'"
 msgstr ""
 
-msgid "must install.packages(\"ncdf4\") to read drifter data"
+msgid "created 'pressure' from 'depth'"
 msgstr ""
 
-msgid "must give time"
+msgid "lengths of units and scales must match"
 msgstr ""
 
-msgid "must give longitude"
+msgid "cannot decode the header in this CTD file"
 msgstr ""
 
-msgid "must give latitude"
+msgid "header["
 msgstr ""
 
-msgid "must give temperature"
+msgid "=\""
 msgstr ""
 
-msgid "must give salinity"
+msgid ""
+"cannot decode data header, since no line therein contains the string \"CTDPRS"
+"\""
 msgstr ""
 
-msgid "drifter"
-msgstr "drifter"
-
-msgid "no non-missing salinity data"
-msgstr ""
-
-msgid "no non-missing temperature data"
-msgstr ""
-
-msgid "plot.difter() given unknown value of which="
+msgid "problem assigning units"
 msgstr ""
 
 msgid "can only subset an echosounder object by 'time' or 'depth'"
@@ -1382,6 +1725,36 @@ msgstr ""
 msgid "(mismatch in redundant header-length flags)"
 msgstr ""
 
+msgid "must install.packages(\"ncdf4\") to read g1sst data"
+msgstr ""
+
+msgid "must provide longitude and latitude"
+msgstr ""
+
+msgid "must provide longitudeRef"
+msgstr ""
+
+msgid "must provide latitudeRef"
+msgstr ""
+
+msgid "longitude and latitude vectors of unequal length"
+msgstr ""
+
+msgid "must provide x and y"
+msgstr ""
+
+msgid "x and y vectors of unequal length"
+msgstr ""
+
+msgid "latitude1 and longitude1 must be vectors of the same length"
+msgstr ""
+
+msgid "latitude2 and longitude2 must be vectors of the same length"
+msgstr ""
+
+msgid "lengths of longitude and latude must match"
+msgstr ""
+
 msgid ""
 "method is only for gps objects, or lists that contain 'latitude' and "
 "'longitude'"
@@ -1402,10 +1775,40 @@ msgstr ""
 msgid "pos must be in 1:4"
 msgstr ""
 
+msgid "'zlim' must be of length 2"
+msgstr ""
+
+msgid "'zlim' must be ordered"
+msgstr ""
+
+msgid "colormap zlim values must be ordered and distinct"
+msgstr ""
+
 msgid "pos must be 1, 2, 3 or 4"
 msgstr ""
 
 msgid "horizontal triangles not working yet"
+msgstr ""
+
+msgid "must give 'x'"
+msgstr ""
+
+msgid "must give 'y'"
+msgstr ""
+
+msgid "must give 'z'"
+msgstr ""
+
+msgid "must give 'breaks'"
+msgstr ""
+
+msgid "must give 'col'"
+msgstr ""
+
+msgid "'add' must be a logical value"
+msgstr ""
+
+msgid "In imagep() : the 'adorn' argument is defunct, and will be removed soon"
 msgstr ""
 
 msgid "may not give y, since x is a list"
@@ -1432,25 +1835,70 @@ msgstr ""
 msgid "must supply z"
 msgstr ""
 
-msgid "decimate must be a positive integer or a logical value"
+msgid "auto-decimating first index of large image by"
 msgstr ""
 
-msgid "image width ("
+msgid "; use decimate=FALSE to prevent this"
 msgstr ""
 
-msgid ") does not match length of x ("
+msgid "auto-decimating second index of large image by"
 msgstr ""
 
-msgid "image height ("
+msgid "nrow(image)="
 msgstr ""
 
-msgid ") does not match length of y ("
+msgid "does not match length(x)="
+msgstr ""
+
+msgid "ncol(image)="
+msgstr ""
+
+msgid "does not match length(y)="
 msgstr ""
 
 msgid "cannot evaluate adorn='"
 msgstr ""
 
+msgid "first line must contain either 2 or 13 tokens, but it contains"
+msgstr ""
+
+msgid "tokens"
+msgstr ""
+
+msgid "unknown format; must be 'noaa' or 'ucar'"
+msgstr ""
+
 msgid "cannot find missing-value token"
+msgstr ""
+
+msgid "'; must be 'noaa' or 'ucar'"
+msgstr ""
+
+msgid "parent object lacks pressure, depth, and z"
+msgstr ""
+
+msgid "parent object lacks u"
+msgstr ""
+
+msgid "parent object lacks v"
+msgstr ""
+
+msgid "parent object lacks pressure"
+msgstr ""
+
+msgid "must supply longitude"
+msgstr ""
+
+msgid "must supply latitude"
+msgstr ""
+
+msgid "must supply pressure"
+msgstr ""
+
+msgid "must supply u"
+msgstr ""
+
+msgid "must supply v"
 msgstr ""
 
 msgid "Must name a landsat item to retrieve, e.g. '[[\"panchromatic\"]]'"
@@ -1496,12 +1944,37 @@ msgstr ""
 msgid "this landsat object lacks a band named \""
 msgstr ""
 
+msgid "In plot,landsat-method(): object contains no band data"
+msgstr ""
+
+msgid ""
+"band=\"kelley\" requires landsat object to contain \"red\", \"green\" and "
+"\"blue\""
+msgstr ""
+
+msgid "'kelley' band -- TEMPORARY test; set debug=3 for more"
+msgstr ""
+
 msgid ""
 "band=\"terralook\" requires landsat object to contain \"red\", \"green\" and "
 "\"nir\""
 msgstr ""
 
 msgid "this landsat object has no band named \""
+msgstr ""
+
+msgid ""
+"cannot compute landsat temperature; see e.g. http://landsat.usgs.gov/"
+"mission_headlines2015.php"
+msgstr ""
+
+msgid "landsat object has only missing values in the \""
+msgstr ""
+
+msgid "\" band"
+msgstr ""
+
+msgid "landsat object has only zero values in the \""
 msgstr ""
 
 msgid "unknown value of 'which'"
@@ -1511,6 +1984,12 @@ msgid "spacecraft type"
 msgstr ""
 
 msgid "cannot be handled yet"
+msgstr ""
+
+msgid "invalid value of decimate ("
+msgstr ""
+
+msgid ") being ignored"
 msgstr ""
 
 msgid "must install.packages(\"tiff\") to read landsat data"
@@ -1538,13 +2017,19 @@ msgstr ""
 msgid "method is only for landsat objects"
 msgstr "méthode est uniquement pour les objets de oce"
 
+msgid "must provide both ll and ur, or neither"
+msgstr ""
+
+msgid "cannot provide both box and (ll, ur)"
+msgstr ""
+
 msgid "'ll' must have named items 'longitude' and 'latitude'"
 msgstr ""
 
 msgid "'ur' must have named items 'longitude' and 'latitude'"
 msgstr ""
 
-msgid "no intersection between landsat image and trimming box"
+msgid "no intersection between landsat image and trimming box."
 msgstr ""
 
 msgid "Size Class #"
@@ -1574,106 +2059,25 @@ msgstr ""
 msgid "data file has more than 42 columns; only first 42 are used"
 msgstr ""
 
-msgid "lobo"
-msgstr "lobo"
-
 msgid "no time column in data file.  The column names are:"
 msgstr ""
 
 msgid "must give u, v, salinity, temperature, and pressure"
 msgstr ""
 
-msgid "must give (at least) time, temperature, and pressure"
+msgid "region must be in \""
 msgstr ""
 
-msgid "'time' must be POSIXt"
+msgid "\" \""
 msgstr ""
 
-msgid "lengths of 'time' and 'temperature' must match"
+msgid "\" but it is \""
 msgstr ""
 
-msgid "lengths of 'time' and 'pressure' must match"
+msgid "unknown region"
 msgstr ""
 
-msgid "rsk"
-msgstr ""
-
-msgid "no good temperatures to plot"
-msgstr ""
-
-msgid "no good pressures to plot"
-msgstr ""
-
-msgid ""
-"in plot.rsk() : 'xlim' not allowed; use tlim (for type=1 or 3) or Tlim "
-"(for type=4)"
-msgstr ""
-
-msgid ""
-"in plot.rsk() : 'ylim' not allowed; use Tlim (for type=1 or 4) or plim "
-"(for type=3)"
-msgstr ""
-
-msgid "Serial Number"
-msgstr "Numéro de série"
-
-msgid "from cannot be an integer less than 1"
-msgstr ""
-
-msgid ""
-"cannot (yet) handle argument 'from' for a ruskin file; using from=1 instead"
-msgstr ""
-
-msgid "cannot (yet) handle argument 'by' for a ruskin file; using by=1 instead"
-msgstr ""
-
-msgid ""
-"cannot (yet) handle argument 'to' for a ruskin file; using the whole file"
-msgstr ""
-
-msgid ""
-"read.rsk(..., type=\"rbr/rsk\" cannot handle multi-dataset files; this "
-"file has"
-msgstr ""
-
-msgid "making some (untested) assumptions, since the ruskin Version ("
-msgstr ""
-
-msgid "."
-msgstr ""
-
-msgid ") is outside the range for which tests have been done"
-msgstr ""
-
-msgid ""
-"cannot locate temperature column in 'channels' table of database; assuming "
-"column 2"
-msgstr ""
-
-msgid ""
-"cannot locate pressure column in 'channels' table of database; assuming "
-"column 3"
-msgstr ""
-
-msgid "if 'from' is POSIXt or character, then 'to' must be, also"
-msgstr ""
-
-msgid "cannot have 'to' <= 'from'"
-msgstr ""
-
-msgid "cannot have 'from' < 1"
-msgstr ""
-
-msgid "cannot have 'to' < 'from'"
-msgstr ""
-
-msgid "wrong number of variables; need 2, 4, or 5, but got"
-msgstr ""
-
-msgid "too few data to trim rsk record"
-msgstr ""
-
-msgid "Unknown method"
+msgid "must create a map first, with mapPlot()"
 msgstr ""
 
 msgid ""
@@ -1686,31 +2090,25 @@ msgid ""
 "this"
 msgstr ""
 
-msgid "must create a map first, with mapPlot()"
-msgstr ""
-
 msgid "must give 'longitude' and possibly 'latitude'"
 msgstr ""
 
-msgid "lattudelim must contain two distinct values"
+msgid ""
+"In mapPlot() : 'fill' being accepted for backwards compatibility; please use "
+"'col' instead"
+msgstr ""
+
+msgid "use PROJ.4 format, e.g. projection=\"+proj=merc\" for Mercator"
+msgstr ""
+
+msgid "latitudelim must contain two distinct values"
 msgstr ""
 
 msgid "longitudelim must contain two distinct values"
 msgstr ""
 
-msgid "cannot handle map projection of type 'wintri'"
-msgstr ""
-
-msgid "cannot handle map projection of type 'aitoff'"
-msgstr ""
-
-msgid "mapPlot(): trimming"
-msgstr ""
-
-msgid "spurious edge-to-edge lines; filling may be inaccurate"
-msgstr ""
-
-msgid "FIXME: mapGrid() should check if longitude or latitude is NULL"
+msgid ""
+"All the data are 'on the other side of the world' for this map projection"
 msgstr ""
 
 msgid ""
@@ -1718,13 +2116,13 @@ msgid ""
 "mapMeridians(latitude)"
 msgstr ""
 
-msgid "mapScalebar() only works for plots created with projections"
-msgstr ""
-
 msgid "y must be NULL in this (early) version of mapScalebar()"
 msgstr ""
 
 msgid "x must be \"topleft\" or \"topright\", but it is \""
+msgstr ""
+
+msgid "grid must be of length 2, numeric, and finite"
 msgstr ""
 
 msgid ""
@@ -1743,76 +2141,33 @@ msgstr ""
 msgid "lengths of x and y must match but they are"
 msgstr ""
 
-msgid "must install 'proj4' package to get options(externalProj4=TRUE) to work"
+msgid "must install.packages(\"rgdal\") to plot maps with projections"
 msgstr ""
 
-msgid "zclip:"
+msgid "z must be a matrix"
 msgstr ""
 
-msgid "breaks:"
+msgid ""
+"must install.packages(\"akima\") for mapImage() with filledContour and "
+"gridder='akima'"
 msgstr ""
 
-msgid "col:"
+msgid "no valid z"
 msgstr ""
 
-msgid "must install.packages(\"akima\") to plot filled contours on maps"
+msgid "unknown options(mapPolygonMethod)"
 msgstr ""
 
-msgid "breaksMin:"
-msgstr ""
-
-msgid "breaksMax:"
-msgstr ""
-
-msgid "Z:"
-msgstr ""
-
-msgid "z is NA"
-msgstr ""
-
-msgid "z:"
-msgstr ""
-
-msgid "is < breaksMin"
-msgstr ""
-
-msgid "is > breaksMax"
-msgstr ""
-
-msgid ", w:"
-msgstr ""
-
-msgid ", using non-missing col:"
-msgstr ""
-
-msgid ", using missing col:"
-msgstr ""
-
-msgid "lengths of longitude and latude must match"
+msgid "latitude is missing"
 msgstr ""
 
 msgid "lengths of longitude and latitude must match but they are"
-msgstr ""
-
-msgid "mapPlot() suggestion: try using projection=\""
 msgstr ""
 
 msgid "projection '"
 msgstr ""
 
 msgid "' is unknown; try one of:"
-msgstr ""
-
-msgid "+proj=aitoff cannot be used"
-msgstr ""
-
-msgid "+proj=robin cannot be used"
-msgstr ""
-
-msgid "+proj=wintri cannot be used"
-msgstr ""
-
-msgid "proj4 calculation is slow because it was done pointwise"
 msgstr ""
 
 msgid "must provide time"
@@ -1830,10 +2185,34 @@ msgstr ""
 msgid "length of 'v' must match length of 'time'"
 msgstr ""
 
-msgid "must supply u"
+msgid "deltat=\""
 msgstr ""
 
-msgid "must supply v"
+msgid "\" is not supported; try \"hour\" or \"month\""
+msgstr ""
+
+msgid "deltat must be \"hour\" or \"month\""
+msgstr ""
+
+msgid "unknown scheme"
+msgstr ""
+
+msgid "need to supply old"
+msgstr ""
+
+msgid "need to supply new"
+msgstr ""
+
+msgid "lengths of old and new must match"
+msgstr ""
+
+msgid "' is not in the data slot of x"
+msgstr ""
+
+msgid "multiple matches are not permitted"
+msgstr ""
+
+msgid "cannot have two columns of same name"
 msgstr ""
 
 msgid "must supply x"
@@ -1863,6 +2242,9 @@ msgstr ""
 msgid "method must be 1 or 2"
 msgstr ""
 
+msgid "must supply 'x'"
+msgstr ""
+
 msgid "must supply 'f'"
 msgstr ""
 
@@ -1888,6 +2270,9 @@ msgid "must have more than 1 break"
 msgstr ""
 
 msgid "lengths of x and f must agree"
+msgstr ""
+
+msgid "cannot have a negative 'fillgap' value"
 msgstr ""
 
 msgid "must have xmax > xmin"
@@ -1968,7 +2353,13 @@ msgstr ""
 msgid "x and y must be of same length, but they are"
 msgstr ""
 
-msgid "cannot have x[1] == x[n]"
+msgid "the first and last x values must be distinct"
+msgstr ""
+
+msgid "Column"
+msgstr ""
+
+msgid "contains only NAs. Skipping"
 msgstr ""
 
 msgid "must give min and max"
@@ -1977,45 +2368,51 @@ msgstr ""
 msgid "unknown reference"
 msgstr ""
 
-msgid ""
-"need a 'dir', naming a directory containing a file with suffix .TBL, and "
-"also data files named in that file"
-msgstr ""
-
-msgid "could not locate a .TBL file in direcory"
-msgstr ""
-
-msgid "found no data in file"
-msgstr ""
-
-msgid "/"
-msgstr ""
-
 msgid "'x' must be numeric or character"
 msgstr ""
 
-msgid "must provide matrix 'm'"
+msgid "must provide 'item'"
 msgstr ""
 
-msgid "matrixSmooth given passes<=0, so returning matrix unmodified"
-msgstr ""
-
-msgid "must provide \"input\""
-msgstr ""
-
-msgid "must provide at least one byte to match"
-msgstr ""
-
-msgid "must provide 2 or 3 bytes"
+msgid "axis must be \"x\" or \"y\""
 msgstr ""
 
 msgid "Temperature"
 msgstr "Température"
 
+msgid "Conductivity"
+msgstr ""
+
+msgid "Conductivity Ratio"
+msgstr ""
+
+msgid "unitless"
+msgstr ""
+
 msgid "Conservative Temperature"
 msgstr "Température conservateur"
 
 msgid "Potential density anomaly"
+msgstr "Anomalie potentiel de densité"
+
+#, fuzzy
+msgid "Potential density anomaly wrt surface"
+msgstr "Anomalie potentiel de densité"
+
+#, fuzzy
+msgid "Potential density anomaly wrt 1000 dbar"
+msgstr "Anomalie potentiel de densité"
+
+#, fuzzy
+msgid "Potential density anomaly wrt 2000 dbar"
+msgstr "Anomalie potentiel de densité"
+
+#, fuzzy
+msgid "Potential density anomaly wrt 3000 dbar"
+msgstr "Anomalie potentiel de densité"
+
+#, fuzzy
+msgid "Potential density anomaly wrt 4000 dbar"
 msgstr "Anomalie potentiel de densité"
 
 msgid "Potential Temperature"
@@ -2024,40 +2421,26 @@ msgstr "Température potentielle"
 msgid "Tritium"
 msgstr ""
 
-msgid "Tu"
-msgstr ""
-
 msgid "Nitrate"
-msgstr ""
-
-msgid "NO3"
-msgstr ""
-
-msgid "umol/kg"
 msgstr ""
 
 msgid "Nitrite"
 msgstr ""
 
-msgid "NO2"
+#, fuzzy
+msgid "oxygen"
+msgstr "Oxygène"
+
+msgid "Oxygen saturation"
 msgstr ""
 
 msgid "Oxygen"
 msgstr "Oxygène"
 
-msgid "O2"
-msgstr ""
-
 msgid "Phosphate"
 msgstr ""
 
-msgid "PO4"
-msgstr ""
-
 msgid "Silicate"
-msgstr ""
-
-msgid "SiO4"
 msgstr ""
 
 msgid "Fluorescence"
@@ -2072,23 +2455,11 @@ msgstr "Salinité pratique"
 msgid "Absolute Salinity"
 msgstr "Salinité Absolue"
 
-msgid "g/kg"
-msgstr ""
-
 msgid "Pressure"
 msgstr "Pression"
 
-msgid "dbar"
-msgstr ""
-
 msgid "Distance"
 msgstr "Distance"
-
-msgid "m"
-msgstr ""
-
-msgid "km"
-msgstr ""
 
 msgid "Along-track Distance"
 msgstr "Distance le long-piste"
@@ -2101,15 +2472,6 @@ msgstr "Tanguer"
 
 msgid "Roll"
 msgstr "Rouler"
-
-msgid "u"
-msgstr ""
-
-msgid "v"
-msgstr ""
-
-msgid "w"
-msgstr ""
 
 msgid "Eastward"
 msgstr ""
@@ -2124,9 +2486,6 @@ msgid "Elevation"
 msgstr "Hauteur d l'eau"
 
 msgid "Speed"
-msgstr ""
-
-msgid "m/s"
 msgstr ""
 
 msgid "Latitude"
@@ -2144,6 +2503,10 @@ msgstr ""
 msgid "Spectral density"
 msgstr "Densité spectrale"
 
+#, fuzzy
+msgid "Spec. dens."
+msgstr "Densité spectrale"
+
 msgid "must supply 'm'"
 msgstr ""
 
@@ -2156,27 +2519,6 @@ msgstr ""
 msgid "must supply b"
 msgstr ""
 
-msgid "must provide lat"
-msgstr ""
-
-msgid "must provide lat.ref"
-msgstr ""
-
-msgid "must provide lon.ref"
-msgstr ""
-
-msgid "lat.ref must be finite"
-msgstr ""
-
-msgid "lat and lon must be vectors of the same length"
-msgstr ""
-
-msgid "lat1 and lon1 must be vectors of the same length"
-msgstr ""
-
-msgid "lat2 and lon2 must be vectors of the same length"
-msgstr ""
-
 msgid "x must be a vector"
 msgstr ""
 
@@ -2185,6 +2527,15 @@ msgstr ""
 
 msgid "lengths of x and z disagree; they are"
 msgstr ""
+
+msgid "pregrid must be logical or a numeric vector"
+msgstr ""
+
+msgid "length(pregrid) must be 1 or 2"
+msgstr ""
+
+msgid "method is only for oce objects"
+msgstr "méthode est uniquement pour les objets de oce"
 
 msgid "no column named '"
 msgstr ""
@@ -2280,10 +2631,46 @@ msgstr ""
 msgid "dimensions of latitude and time must agree"
 msgstr ""
 
+msgid "must provide \"input\""
+msgstr ""
+
+msgid "must provide at least one byte to match"
+msgstr ""
+
+msgid "must provide 2 or 3 bytes"
+msgstr ""
+
+msgid "must supply m"
+msgstr ""
+
+msgid "dim(m) and length(longitude) are incompatible"
+msgstr ""
+
+msgid "must provide matrix 'm'"
+msgstr ""
+
+msgid "matrixSmooth given passes<=0, so returning matrix unmodified"
+msgstr ""
+
 msgid "cannot interpret \"time\"="
 msgstr ""
 
 msgid "as a time interval because it has more than 2 colons"
+msgstr ""
+
+msgid "'x' and 'y' must be of same length"
+msgstr ""
+
+msgid "'xmin' and 'xmax' must both be supplied, if either is"
+msgstr ""
+
+msgid "'xmin' must be less than 'xmax'"
+msgstr ""
+
+msgid "xmin must be less than max(x)"
+msgstr ""
+
+msgid "xmax must be greater than min(x)"
 msgstr ""
 
 msgid "must give h"
@@ -2304,10 +2691,25 @@ msgstr ""
 msgid ") must equal number of cols in h ("
 msgstr ""
 
-msgid "must supply month, day, hour, min, sec, and tz"
+msgid "must supply n"
+msgstr ""
+
+msgid "n must be be an integer exceeding 1"
+msgstr ""
+
+msgid "n must be an odd integer"
+msgstr ""
+
+msgid "filter must be \"hanning\", \"hamming\", or \"boxcar\""
+msgstr ""
+
+msgid "must supply year, month, day, hour, min, sec, and tz"
 msgstr ""
 
 msgid "must give 't'"
+msgstr ""
+
+msgid "t must be POSIXt or a number corresponding to POSIXt (in UTC)"
 msgstr ""
 
 msgid "must give 'longitude'"
@@ -2316,13 +2718,10 @@ msgstr ""
 msgid "must give 'latitude'"
 msgstr ""
 
-msgid "t must be in UTC"
+msgid "x must be a list, a data frame, or an oce object"
 msgstr ""
 
-msgid "unknown type of observatory data"
-msgstr ""
-
-msgid "'from' does not have any heading data (in b@data$heading)"
+msgid "'b' does not have any heading data (in b@data$heading)"
 msgstr ""
 
 msgid "'b' does not have any time data (in b@data$time)"
@@ -2334,7 +2733,7 @@ msgstr ""
 msgid "'g' does not have any time data (in g@data$time)"
 msgstr ""
 
-msgid "need first element of from@data$time to be non-NA"
+msgid "need first element of g@data$time to be non-NA"
 msgstr ""
 
 msgid "cannot handle extend=TRUE yet"
@@ -2368,6 +2767,12 @@ msgid ""
 msgstr ""
 
 msgid "unknown value of which \""
+msgstr ""
+
+msgid "not sure how to 'head' this"
+msgstr ""
+
+msgid "cannot 'tail' this"
 msgstr ""
 
 msgid "must supply 'r'"
@@ -2465,7 +2870,38 @@ msgstr ""
 msgid "but cannot figure out what the type is"
 msgstr ""
 
+msgid ""
+"Possibly this is an RDI CTD file. Oce cannot read such files yet, because"
+msgstr ""
+
+msgid ""
+"the author has not located file-format documents.  If you get such documents"
+msgstr ""
+
+msgid ""
+"from RDI, please send them to dan.kelley@dal.ca so the format can be added."
+msgstr ""
+
+msgid ""
+"found zero or multiple '-- DATA --' (end of header) lines in a mtg/odf file"
+msgstr ""
+
+msgid ""
+"Missing-value code for mtg/odf is hard-wired to -99, which will likely be "
+"wrong in other files"
+msgstr ""
+
+msgid ""
+"The format of mtg/odf objects is likely to change throughout April, 2015"
+msgstr ""
+
 msgid "unknown file type \""
+msgstr ""
+
+msgid "must install.packages(\"ncdf4\") to read netcdf data"
+msgstr ""
+
+msgid "time unit is not understood, so it remains simply numeric"
 msgstr ""
 
 msgid "unknown which"
@@ -2503,6 +2939,18 @@ msgstr ""
 msgid "either 'scalex' or 'scaley' must be specified (but not both)"
 msgstr ""
 
+msgid "if 'u' is a matrix, then 'v' must also be a matrix"
+msgstr ""
+
+msgid "if 'v' is a matrix, then 'u' must also be a matrix"
+msgstr ""
+
+msgid "dimensions of u and v must match"
+msgstr ""
+
+msgid "lengths of x, y must match dimensions of u, v"
+msgstr ""
+
 msgid "lengths of x and y must match"
 msgstr ""
 
@@ -2518,16 +2966,206 @@ msgstr ""
 msgid "no 'z' matrix specified"
 msgstr ""
 
+msgid "ODFnames:"
+msgstr ""
+
+msgid "ODFunits:"
+msgstr ""
+
+msgid "length of ODFnames and ODFunits should agree but they are"
+msgstr ""
+
+msgid ". Padding with empty units"
+msgstr ""
+
+msgid "FIXME(Kelley): code 'columns' support into ODFNames2oceNames"
+msgstr ""
+
+msgid "Changed unit mho/m to S/m for conductivity"
+msgstr ""
+
+msgid "Changed unit mmho/cm to mS/cm for conductivity"
+msgstr ""
+
+msgid "Changed unit mmHo to S/m for conductivity"
+msgstr ""
+
+msgid "unable to interpret ODFunits["
+msgstr ""
+
+msgid "]='"
+msgstr ""
+
+#, fuzzy
+msgid "', for item named '"
+msgstr "ne peut pas trouver un élément nommé '"
+
+msgid "no unit found for '"
+msgstr ""
+
+msgid "'; this will not affect calculations, though"
+msgstr ""
+
+msgid "odd unit, '"
+msgstr ""
+
+msgid "', for '"
+msgstr ""
+
+msgid "DAN"
+msgstr ""
+
+msgid "'file' cannot be an empty string"
+msgstr ""
+
+msgid "cannot locate a line containing '-- DATA --'"
+msgstr ""
+
+msgid "cannot locate any lines containing 'PARAMETER_HEADER'"
+msgstr ""
+
+msgid "cannot find the end of a PARAMETER_HEADER block starting at line"
+msgstr ""
+
+msgid "cannot locate a CODE line in a PARAMETER_HEADER block starting at line"
+msgstr ""
+
+msgid ""
+"cannot handle two CODE lines in a PARAMETER_HEADER block starting at line"
+msgstr ""
+
+msgid ""
+"cannot link flag to variable name in a PARAMETER_HEADER block starting at "
+"line"
+msgstr ""
+
+msgid ""
+"source file does not indicate a unit for pressure (and perhaps for other "
+"items)"
+msgstr ""
+
+msgid "ignoring non-numeric NULL_VALUE ("
+msgstr ""
+
+msgid "using first of"
+msgstr ""
+
+msgid "unique NULL_VALUEs"
+msgstr ""
+
+msgid "\" should be unitless, i.e. \"\", but the file has \""
+msgstr ""
+
+msgid ""
+"\" so that is retained in the object metadata; see ?read.odf for an example "
+"of rectifying this unit error."
+msgstr ""
+
+msgid "mismatch between length of data names ("
+msgstr ""
+
+msgid ") and number of columns in data matrix ("
+msgstr ""
+
+msgid "estimating waterDepth from maximum pressure"
+msgstr ""
+
 msgid "'x' is not an oce object"
 msgstr ""
 
-msgid ", respectively"
+msgid "' is not in the list of known .rsk units"
+msgstr ""
+
+msgid ""
+"cannot coerce from general oce object to rsk; submit an issue if you need "
+"this"
+msgstr ""
+
+msgid "'time' must be POSIXt"
+msgstr ""
+
+msgid "in plot.rsk() : 'xlim' not allowed; use tlim"
+msgstr ""
+
+msgid "plot.rsk() cannot plot timeseries, since no \"time\" data"
+msgstr ""
+
+msgid ""
+"Unrecognized value for \"which\". Must be \"timeseries\" or the name of any "
+"field from the data slot."
+msgstr ""
+
+msgid "from cannot be an integer less than 1"
+msgstr ""
+
+msgid "to cannot be an integer less than 1"
+msgstr ""
+
+msgid "must install.packages(\"RSQLite\") to read rsk data"
+msgstr ""
+
+msgid "must install.packages(\"DBI\") to read rsk data"
+msgstr ""
+
+msgid "non-standard pressureAtmospheric value:"
+msgstr ""
+
+msgid ""
+"old Ruskin file detected; if problems arise, update file with Ruskin software"
+msgstr ""
+
+msgid "if patm is numeric, its length must equal 1, or the length(pressure)."
+msgstr ""
+
+msgid "patm must be logical or numeric"
+msgstr ""
+
+msgid "if 'from' is POSIXt or character, then 'to' must be, also"
+msgstr ""
+
+msgid "cannot have 'to' <= 'from'"
+msgstr ""
+
+msgid "cannot have 'from' < 1"
+msgstr ""
+
+msgid "cannot have 'to' < 'from'"
+msgstr ""
+
+msgid "wrong number of variables; need 2, 4, or 5, but got"
+msgstr ""
+
+msgid ""
+"there is no pressure in this rsk object, so it cannot be converted to a ctd "
+"object"
+msgstr ""
+
+msgid ""
+"rsk object lacks metadata$pressureType; assuming absolute and subtracting "
+"standard atm pressure to get sea pressure"
+msgstr ""
+
+msgid "objects must have salinity or conductivity to be converted to CTD form"
+msgstr ""
+
+msgid ""
+"need a 'dir', naming a directory containing a file with suffix .TBL, and "
+"also data files named in that file"
+msgstr ""
+
+msgid "could not locate a .TBL file in direcory"
+msgstr ""
+
+msgid "found no data in file"
+msgstr ""
+
+msgid "/"
 msgstr ""
 
 msgid "deriv must be 0 or 1"
 msgstr ""
 
-msgid "\" in this sealevel object"
+msgid "must indicate what to plot"
 msgstr ""
 
 msgid "must supply sealevel height, elevation, in metres"
@@ -2544,6 +3182,9 @@ msgid ""
 msgstr ""
 
 msgid "unrecognized value of which:"
+msgstr ""
+
+msgid "'file' must be a character string"
 msgstr ""
 
 msgid "require units to be 'mm' or 'MM', not '"
@@ -2567,10 +3208,28 @@ msgstr ""
 msgid "missing points in this timeseries, at indices"
 msgstr ""
 
-msgid "cannot give both 'subset' and 'indices'"
+msgid "the stations within this section do not contain a '"
 msgstr ""
 
-msgid "2. cannot give both 'subset' and 'indices'"
+msgid "' flag"
+msgstr ""
+
+msgid "returning NULL because this section is not gridded"
+msgstr ""
+
+msgid "returning NULL because this section contains only 1 station"
+msgstr ""
+
+msgid "returning NULL because only grid:distance-pressure is permitted"
+msgstr ""
+
+msgid "cannot have negative indices"
+msgstr ""
+
+msgid "cannot indices exceeding # stations"
+msgstr ""
+
+msgid "must give 'subset' or (in ...) 'indices'"
 msgstr ""
 
 msgid "unknown by value \""
@@ -2579,27 +3238,23 @@ msgstr ""
 msgid "\"; should be one of:"
 msgstr ""
 
-msgid "need more than 1 station to make a section"
+msgid "must provide a section to which the ctd is to be added"
 msgstr ""
 
-msgid ""
-"first argument must be of a \"ctd\" object, a \"list\" of ctd objects, or a "
-"vector of character strings naming ctd objects"
-msgstr ""
+#, fuzzy
+msgid "'section' is not a 'section' object"
+msgstr "pas dans l'objet"
 
-msgid "'section' is not a section"
-msgstr ""
-
-msgid "'station' is not a station"
+msgid "'station' is not a 'ctd' object"
 msgstr ""
 
 msgid "coastline must be a character string"
 msgstr ""
 
-msgid "this section does not contain a variable named '"
+msgid "Time"
 msgstr ""
 
-msgid "unkown ztype: \""
+msgid "unknown ztype: \""
 msgstr ""
 
 msgid "\" [1]"
@@ -2614,25 +3269,48 @@ msgstr ""
 msgid "\" [4]"
 msgstr ""
 
-msgid "section"
+msgid ""
+"xtype must be one of: \"distance\", \"track\", \"longitude\", \"latitude\" "
+"or \"time\""
 msgstr ""
 
 msgid ""
-"xtype must be one of: \"distance\", \"track\", \"longitude\", or \"latitude\""
-msgstr ""
-
-msgid "cannot plot a section containing fewer than 2 stations"
+"In plot() :\n"
+"  cannot plot a section containing fewer than 2 stations"
 msgstr ""
 
 msgid ""
-"unkown xtype; it must be one of: \"distance\", \"track\", \"longitude\", or "
-"\"latitude\""
+"In plot,section-method() :\n"
+"  section stations do not contain startTime; using integers for time axis"
+msgstr ""
+
+msgid ""
+"unknown xtype; it must be one of: \"distance\", \"track\", \"longitude\", "
+"\"latitude\", or \"time\""
 msgstr ""
 
 msgid "unknown ytype"
 msgstr ""
 
+msgid "in plot(section) : no '"
+msgstr ""
+
+msgid "' in data; try one of c(\""
+msgstr ""
+
+msgid "data"
+msgstr ""
+
+msgid "\",\""
+msgstr ""
+
+msgid "\") or something that can be calculated from these"
+msgstr ""
+
 msgid "cannot specify both 'file' and 'directory'"
+msgstr ""
+
+msgid "'flags' is ignored, and will be disallowed in an upcoming CRAN release"
 msgstr ""
 
 msgid "only type \"BOTTLE\" understood, but got header line"
@@ -2641,46 +3319,62 @@ msgstr ""
 msgid "length mismatch in variable lists"
 msgstr ""
 
-msgid "no column named \"CTDPRS\""
-msgstr ""
-
-msgid "no column named \"CTDTMP\""
-msgstr ""
-
-msgid "no column named \"CTDSAL\" or \"SALNTY\"; have:"
-msgstr ""
-
-msgid "no column named \"CTDSAL_FLAG_W\" or \"SALNTY_FLAG W\"; have:"
-msgstr ""
-
 msgid "no column named \"DATE\""
 msgstr ""
 
 msgid "no column named \"TIME\""
 msgstr ""
 
-msgid "cannot determine nitrate and nitrite"
-msgstr ""
-
-msgid "station"
-msgstr ""
-
-msgid "has no data"
-msgstr ""
-
 msgid "p must be numeric"
+msgstr ""
+
+msgid "section"
 msgstr ""
 
 msgid "pressure mismatch between station 1 and station"
 msgstr ""
 
+msgid "barnes method"
+msgstr ""
+
+msgid "names(vars)= '"
+msgstr ""
+
 msgid "pressure mismatch between station 1 and station."
 msgstr ""
 
-msgid "n must round to a positive integer"
+msgid "argument 'salinity' is missing"
 msgstr ""
 
-msgid "n must be a positive integer"
+msgid "must provide temperature"
+msgstr ""
+
+msgid "must provide pressure"
+msgstr ""
+
+msgid "must provide station"
+msgstr ""
+
+msgid "no data in this list"
+msgstr ""
+
+msgid "cannot create a section from this list because element number"
+msgstr ""
+
+#, fuzzy
+msgid "lacks pressure"
+msgstr "Pression"
+
+msgid "estimated waterDepth as max(pressure) for CTDs numbered:"
+msgstr ""
+
+msgid "first argument must be a salinity vector, or a list of oce objects"
+msgstr ""
+
+msgid "first argument is not understood"
+msgstr ""
+
+msgid "n must round to a positive integer"
 msgstr ""
 
 msgid "fs does not match frequency(x); using the former"
@@ -2711,15 +3405,12 @@ msgstr ""
 msgid "must provide t"
 msgstr ""
 
-msgid "t must be POSIXt or a number corresponding to POSIXt (in UTC)"
-msgstr ""
-
-msgid "lengths of longitude and latitude must match"
-msgstr ""
-
 msgid ""
 "lengths of t, latitude and longitude must match, unless last two are of "
 "length 1"
+msgstr ""
+
+msgid "t must be in UTC"
 msgstr ""
 
 msgid "year="
@@ -2755,19 +3446,31 @@ msgstr ""
 msgid "derivs must be 'smoothing', 'simple', or a function"
 msgstr ""
 
-msgid "must supply conductivity, temperature and pressure"
+msgid "first argument must be a CTD object if eos=\"gsw\""
 msgstr ""
 
-msgid "lengths of C and temperature must agree, but they are"
+msgid "must supply depth"
 msgstr ""
 
-msgid "lengths of C and p must agree, but they are"
+msgid "eos must be 'unesco' or 'gsw'"
 msgstr ""
 
-msgid "lengths of temperature and density must agree, but they are"
+msgid "must supply salinity (which may be S or a CTD object)"
 msgstr ""
 
-msgid "lengths of temperature and p arrays must agree, but they are"
+msgid "must supply conductivity (which may be S or a CTD object)"
+msgstr ""
+
+msgid "conductivity unit must be \"\", \"mS/cm\", or \"S/m\""
+msgstr ""
+
+msgid "this CTD object has no conductivity"
+msgstr ""
+
+msgid "lengths of conductivity and temperature must agree, but they are"
+msgstr ""
+
+msgid "lengths of conductivity and pressure must agree, but they are"
 msgstr ""
 
 msgid "must provide salinity"
@@ -2779,60 +3482,22 @@ msgstr ""
 msgid "lengths of salinity and pressure must agree, but they are"
 msgstr ""
 
-msgid "must provide temperature"
+msgid "lengths of salinity and temperature must agree, but they are"
 msgstr ""
 
-msgid "lengths of salinity and temperature must agree, but they are"
+msgid "In swDynamicHeight() : returning NA since < 4 levels"
 msgstr ""
 
 msgid "or '"
 msgstr ""
 
-msgid "unrecognized method=\""
-msgstr ""
-
-msgid "lengths of salinity and temperature must match"
-msgstr ""
-
-msgid "lengths of salinity and pressure must match"
-msgstr ""
-
-msgid "must provide longitude to compute absolute salinity"
-msgstr ""
-
-msgid "must provide latitude to compute absolute salinity"
-msgstr ""
-
-msgid "lengths of salinity and longitude must match"
-msgstr ""
-
-msgid "lengths of salinity and latitude must match"
-msgstr ""
-
-msgid ""
-"a function name must be given, and it must be in lower case letters, e.g. "
-"\"gsw_sa_from_sp\""
-msgstr ""
-
-msgid "must provide a1"
-msgstr ""
-
-msgid "must provide a2"
-msgstr ""
-
-msgid "length(a2) must match length(a1)"
-msgstr ""
-
-msgid "length(a3) must match length(a1)"
-msgstr ""
-
-msgid "length(a4) must match length(a1)"
-msgstr ""
-
 msgid "there is no such constituent '"
 msgstr ""
 
-msgid "tidem"
+msgid "constituent '"
+msgstr ""
+
+msgid "' is unknown"
 msgstr ""
 
 msgid "unknown value of which"
@@ -2844,13 +3509,19 @@ msgstr ""
 msgid "trimming u and f to get same length as v -- this is a bug"
 msgstr ""
 
-msgid "must supply 't', since 'x' is not a sealevel object"
+msgid "must supply 't', either a vector of times or a sealevel object"
+msgstr ""
+
+msgid "must supply 'x', since the first argument is not a sealevel object"
+msgstr ""
+
+msgid "tidem() switching first 2 args to permit old-style usage"
 msgstr ""
 
 msgid "lengths of 'x' and 't' must match, but they are"
 msgstr ""
 
-msgid "'t' must be of length 1, unless it is a vector of POSIXt times"
+msgid "t must be a vector of POSIXt times"
 msgstr ""
 
 msgid ""
@@ -2860,40 +3531,50 @@ msgstr ""
 msgid "\"standard\" must occur first in constituents list"
 msgstr ""
 
-msgid "cannot delete constituent '"
+msgid "' is not a known constituent; try one:"
 msgstr ""
 
-msgid "' from the list because it is not there"
+msgid "problem removing '"
 msgstr ""
 
-msgid "cannot add constituent '"
+msgid "'; please report this to the develop"
 msgstr ""
 
-msgid "' because it is not known; see ?tideconst"
+msgid "' is already in the list of constituents being used"
 msgstr ""
 
-msgid "there is no tidal constituent named \""
+msgid "' is not a known constituent; try one of:"
+msgstr ""
+
+msgid "unknown constituent names:"
+msgstr ""
+
+msgid "(please report this error to developer)"
+msgstr ""
+
+msgid "Note: the record is too short to fit for constituents:"
 msgstr ""
 
 msgid "newdata must be of class POSIXt"
 msgstr ""
 
-msgid "tidem: using default coastline for testing"
+msgid ""
+"cannot find WebTide data file; rerun with debug=1 to see the searched list"
 msgstr ""
 
 msgid "'longitude' and 'latitude' must be given unless 'node' is given"
 msgstr ""
 
-msgid "cannot access \""
-msgstr ""
-
 msgid "the subset must be based on longitude or latitude"
 msgstr ""
 
-msgid "must supply longitude"
+msgid "'format' must be one of the following: '"
 msgstr ""
 
-msgid "must supply latitude"
+msgid "', but it is '"
+msgstr ""
+
+msgid "unrecognized file format"
 msgstr ""
 
 msgid "must supply topo"
@@ -2929,6 +3610,12 @@ msgstr ""
 msgid "must install.packages(\"ncdf4\") to read topo data from a netCDF file"
 msgstr ""
 
+msgid "offsetting longitude of a netcdf topo file by half a step"
+msgstr ""
+
+msgid "offsetting latitude of a netcdf topo file by half a step"
+msgstr ""
+
 msgid "longitude vector has length"
 msgstr ""
 
@@ -2955,3 +3642,22 @@ msgstr ""
 
 msgid "'col' should be a list of 4 colours"
 msgstr ""
+
+#~ msgid "there is no item named \""
+#~ msgstr "il n'y a aucune élément nommé \""
+
+#~ msgid "object"
+#~ msgstr "objet"
+
+#, fuzzy
+#~ msgid "cannot find header"
+#~ msgstr "ne peut pas trouver un élément nommé '"
+
+#~ msgid "drifter"
+#~ msgstr "drifter"
+
+#~ msgid "lobo"
+#~ msgstr "lobo"
+
+#~ msgid "Serial Number"
+#~ msgstr "Numéro de série"

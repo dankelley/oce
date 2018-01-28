@@ -2,12 +2,49 @@
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 
 ## ----eval=FALSE----------------------------------------------------------
+#  ?`[[,oce-method`
+
+## ----eval=FALSE----------------------------------------------------------
+#  ?`[[,ctd-method`
+
+## ----eval=FALSE----------------------------------------------------------
+#  S <- d[['salinity']]
+
+## ----eval=FALSE----------------------------------------------------------
+#  data <- d[['data']]
+
+## ----eval=FALSE----------------------------------------------------------
+#  data$temperature
+
+## ----eval=FALSE----------------------------------------------------------
+#  data(ctd)
+#  ctd[["temperatureAboveFreezing"]] <- ctd[["temperature"]] - swTFreeze(ctd)
+
+## ----eval=FALSE----------------------------------------------------------
+#  ?"[[<-,oce-method"
+
+## ----extractExample, eval=FALSE------------------------------------------
+#  ctd[["metadata"]]$scientist <- "Dalhousie Oceanography 4120/5120 Class of 2003"
+
+## ----eval=FALSE----------------------------------------------------------
+#  ctd <- oceSetMetadata(ctd, name="scientist",
+#                        value="Dalhousie Oceanography 4120/5120 Class of 2003",
+#                        note="give credit where it's due")
+
+## ----eval=FALSE----------------------------------------------------------
+#  ctd <- oceSetData(ctd, name="temperatureAboveFreezing",
+#                        value=ctd[["temperature"]] - swTFreeze(ctd),
+#                        unit=list(unit=expression(degree*C), scale="ITS-90"),
+#                        originalName="-",
+#                        note="add temperatureAboveFreezing, for ice-related calculations")
+
+## ----eval=FALSE----------------------------------------------------------
 #  library(oce)
 #  d <- read.oce("station1.cnv")
 #  summary(d)
 #  plot(d)
 
-## ----fig.cap="**Figure 2.** An overview of a ctd dataset.", fig.width=6, fig.height=6, dpi=72, dev.args=list(pointsize=15), message=FALSE----
+## ----fig.cap="**Figure 2.** An overview of a ctd dataset.", fig.width=6, fig.height=6, dpi=72, dev.args=list(pointsize=14), message=FALSE----
 library(oce)
 data(ctd)
 summary(ctd)
@@ -48,18 +85,18 @@ plotScan(ctdRaw)
 #  data(section)
 #  plot(section, which=c(1, 2, 3, 99))
 
-## ----fig.cap="**Figure 4.** Portion of the CTD section designated A03, showing the Gulf Sream region.  The square on the cruise track corresponds to zero distance on the section.", fig.width=5, fig.height=5, dpi=72, dev.args=list(pointsize=12)----
+## ----fig.cap="**Figure 4.** Portion of the CTD section designated A03, showing the Gulf Sream region.  The square on the cruise track corresponds to zero distance on the section.", fig.width=4, fig.height=4, dpi=72, dev.args=list(pointsize=12)----
 library(oce)
 data(section)
 GS <- subset(section, 102 <= stationId & stationId <= 124)
 GSg <- sectionGrid(GS, p=seq(0, 1600, 25))
 plot(GSg, which=c(1,99), map.xlim=c(-85,-(64+13/60)))
 
-## ----fig.cap="**Figure 5.** World in Winkel Tripel projection, with the `section` profile sites indicated.", fig.width=4, fig.height=2.6, dpi=72----
+## ----fig.cap="**Figure 5.** World in Robinson projection, with the `section` profile sites indicated.", fig.width=4, fig.height=2.6, dpi=72----
 library(oce)
 data(coastlineWorld)
 par(mar=rep(0, 4))
-mapPlot(coastlineWorld, projection="+proj=wintri", col="lightgray")
+mapPlot(coastlineWorld, projection="+proj=robin", col="lightgray")
 data(section)
 lon <- section[["longitude", "byStation"]]
 lat <- section[["latitude", "byStation"]]
@@ -68,11 +105,6 @@ mapLines(lon, lat, col='red', cex=0.5)
 ## ----echo=FALSE----------------------------------------------------------
 data(coastlineWorld)
 par(mar=rep(1, 4))
-
-## ----fig.keep="none"-----------------------------------------------------
-mapPlot(coastlineWorld, projection="+proj=moll") # Molleweide
-mapPlot(coastlineWorld, projection="+proj=eck4") # Eckert IV
-mapPlot(coastlineWorld, projection="+proj=robin") # Robinson
 
 ## ----fig.cap="**Figure 6.** World bathymetry in Molleweide projection.", fig.width=5, fig.height=2.7, dpi=72, dev.args=list(pointsize=10)----
 par(mar=c(1.5, 1, 1.5, 1))
@@ -83,7 +115,7 @@ lat <- topo[["latitude"]]
 z <- topo[["z"]]
 cm <- colormap(name="gmt_globe")
 drawPalette(colormap=cm)
-mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
+mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE, col="lightgray")
 mapImage(lon, lat, z, colormap=cm)
 
 ## ----fig.cap="**Figure 7.** North Atlantic in Lambert Conformal Conic projection.", fig.width=5, fig.height=3, dpi=72----
@@ -91,29 +123,57 @@ par(mar=c(2, 2, 1, 1))
 lonlim <- c(-80, 0)
 latlim <- c(20, 60)
 mapPlot(coastlineWorld, projection="+proj=lcc +lat_1=30 +lat_2=50 +lon_0=-40",
-        longitudelim=lonlim, latitudelim=latlim)
+        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
 
 ## ---- fig.keep="none"----------------------------------------------------
 mapPlot(coastlineWorld, projection="+proj=merc",
-        longitudelim=lonlim, latitudelim=latlim)
+        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
 mapPlot(coastlineWorld, projection="+proj=aea +lat_1=30 +lat_2=70 +lon_0=-40",
-        longitudelim=lonlim, latitudelim=latlim)
+        col="lightgray", longitudelim=lonlim, latitudelim=latlim)
 
-## ----fig.cap="**Figure 8.** Arctic coastlines in stereopolar projection.", fig.width=5, fig.height=5, dpi=72----
+## ----fig.cap="**Figure 8.** Arctic coastlines in stereopolar projection.", fig.width=3, fig.height=3, dpi=72----
 par(mar=c(2, 2, 1, 1))
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
-        longitudelim=c(-80,0), latitudelim=c(70, 110))
+        col="lightgray", longitudelim=c(-80,0), latitudelim=c(70, 110))
 
-## ----fig.cap="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour.", fig.width=7, fig.height=5, dpi=72, dev.args=list(pointsize=16)----
+## ----fig.cap="**Figure 9.** Sea-level timeseries measured in 2003 in Halifax Harbour.", fig.width=5, fig.height=4, dpi=72, dev.args=list(pointsize=16)----
 library(oce)
 data(sealevel)
 plot(sealevel)
 
-## ----fig.cap="**Figure 10.** Measurements made with a bottom-mounted ADP in the St Lawrence Estuary. The line near the surface indicates pressure measured by the ADP.", fig.width=5, fig.height=2, dpi=72----
+## ----fig.cap="**Figure 10.** Measurements made with a bottom-mounted ADP in the St Lawrence Estuary. The line near the surface indicates pressure measured by the ADP.", fig.width=4, fig.height=2, dpi=72----
 library(oce)
 data(adp)
 plot(adp, which=1)
 lines(adp[['time']], adp[['pressure']], lwd=2)
+
+## ------------------------------------------------------------------------
+data(section)
+stn <- section[["station", 100]]
+head(stn[["salinityFlag"]])
+
+## ------------------------------------------------------------------------
+# fake second datum
+stn[["salinity"]][2] <- -999
+
+## ------------------------------------------------------------------------
+stn[["salinityFlag"]] <- ifelse(stn[["salinity"]] < 0, 3, stn[["salinityFlag"]])
+
+## ------------------------------------------------------------------------
+head(stn[["salinityFlag"]])
+
+## ------------------------------------------------------------------------
+stn2 <- stn
+stn2[["salinity"]] <- ifelse(stn2[["salinityFlag"]]!=2, NA, stn2[["salinity"]])
+head(stn2[["salinityFlag"]])
+
+## ------------------------------------------------------------------------
+stn3 <- stn
+stn3[["salinity"]][2] <- -999
+stn3 <- handleFlags(stn3, list(salinity=c(1,3:9)))
+
+## ------------------------------------------------------------------------
+head(data.frame(stnS=stn[["salinity"]], stn2S=stn2[["salinity"]], stn3S=stn3[["salinity"]]))
 
 ## ----fig.keep="none"-----------------------------------------------------
 library(oce)
@@ -124,13 +184,115 @@ plot(ctd)
 ## ----echo=FALSE----------------------------------------------------------
 Sys.setenv(LANGUAGE="en")
 
+## ------------------------------------------------------------------------
+lon <- -60
+lat <- -30
+t <- seq(as.POSIXct("2017-08-30"), as.POSIXct("2017-09-01"), by="15 min")
+tsec <- as.numeric(t)
+u <- sin(tsec * 2 * pi / (3600 * 12.4206))
+v <- 0.5 * cos(tsec * 2 * pi / (3600 * 12.4206))
+
+## ----echo=FALSE, eval=FALSE----------------------------------------------
+#  plot(t, u, type="l")
+#  lines(t, v, col=2)
+
+## ------------------------------------------------------------------------
+o <- new("oce")
+
+## ------------------------------------------------------------------------
+str(o)
+
+## ------------------------------------------------------------------------
+o <- oceSetData(o, "t", t, list(unit=expression(s), scale=""))
+o <- oceSetData(o, "u", u, list(unit=expression(m/s), scale=""))
+o <- oceSetData(o, "v", v, list(unit=expression(m/s), scale=""))
+
+## ------------------------------------------------------------------------
+o <- oceSetMetadata(o, "longitude", lon)
+o <- oceSetMetadata(o, "latitude", lat)
+
+## ------------------------------------------------------------------------
+summary(o)
+
+## ------------------------------------------------------------------------
+o[["latitude"]]                        # from metadata
+head(o[["t"]])                         # from data
+head(o[["u"]])
+head(o[["v"]])
+
+## ----fig.cap="**Figure 11.** Crude plot of constructed `oce` object.", fig.width=4, fig.height=4, dpi=72----
+plot(o)
+
+## ------------------------------------------------------------------------
+setClass("uv", contains="oce")
+
+## ------------------------------------------------------------------------
+setMethod(f="initialize",
+          signature="uv",
+          definition=function(.Object, time, u, v, longitude, latitude) {
+              if (missing(time)) stop("must provide 'time'")
+              ## repeat the above also for u, v, longitude, and latitude
+              .Object@metadata$units$u <- list(unit=expression(m/s), scale="")
+              .Object@metadata$units$v <- list(unit=expression(m/s), scale="")
+              .Object@metadata$longitude <- longitude
+              .Object@metadata$latitude <- latitude
+              .Object@data$time <- time
+              .Object@data$u <- u
+              .Object@data$v <- v
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'uv' object"
+              return(.Object)
+          })
+
+## ------------------------------------------------------------------------
+oo <- new("uv", t, u, v, lon, lat)
+
+## ------------------------------------------------------------------------
+setMethod(f="summary",
+          signature="uv",
+          definition=function(object, ...) {
+              cat("uv Summary\n-----------\n\n", ...)
+              cat(paste("* Location:           ",
+                        sprintf("%.5f N", object@metadata$latitude), ", ",
+                        sprintf("%.5f E", object@metadata$longitude), "\n", sep=''))
+              callNextMethod()
+          })
+
+## ------------------------------------------------------------------------
+summary(oo)
+
+## ------------------------------------------------------------------------
+setMethod(f="plot",
+          signature=signature("uv"),
+          definition=function(x, which=1, ...)
+          {
+              if (which == 1) {
+                  oce.plot.ts(x[["time"]], x[["u"]], ylab="u [m/s]", ...)
+              } else if (which == 2) {
+                  oce.plot.ts(x[["time"]], x[["v"]], ylab="v [m/s]", ...)
+              } else if (which == 3) {
+                  plot(x[["u"]], x[["v"]], xlab="u [m/s]", ylab="v [m/s]", ...)
+              }
+          })
+
+## ----echo=FALSE----------------------------------------------------------
+par(mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0)) # thin margins
+
+## ----fig.cap="**Figure 12.** Time-series u(t) plot of newly-constructed `uv` object.", fig.width=4, fig.height=4, dpi=72----
+par(mfrow=c(2,1))
+plot(oo, which=1)
+plot(oo, which=2)
+
+## ----fig.cap="**Figure 13.** Hodograph plot of newly-constructed `uv` object.", fig.width=4, fig.height=4, dpi=72----
+plot(oo, which=3, asp=1)
+
 ## ----fig.width=5, fig.height=5, fig.keep="none"--------------------------
 library(oce)
-swRho(34, 10, 100)
-swTheta(34, 10, 100)
-swRho(34, swTheta(34, 10, 100), 0)
-swRho(34, swTheta(34, 10, 100, 200), 200)
-plotTS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
+swRho(34, 10, 100, eos="unesco")
+swTheta(34, 10, 100, eos="unesco")
+swRho(34, swTheta(34, 10, 100, eos="unesco"), 0, eos="unesco")
+swRho(34, swTheta(34, 10, 100, 200, eos="unesco"), 200, eos="unesco")
+plotTS(as.ctd(c(30,40),c(-2,20),rep(0,2)), eos="unesco", grid=TRUE, col="white")
 
 ## ----fig.width=5, fig.height=5, fig.keep="none"--------------------------
 library(oce)
@@ -172,9 +334,11 @@ plotProfile(pycnocline, which="density+N2")
 ## ----fig.width=5, fig.height=5, fig.keep="none"--------------------------
 library(oce)
 data(section)
-ctd <- as.ctd(section[["salinity"]], section[["temperature"]], section[["pressure"]])
-col <- ifelse(section[["longitude"]] > -30, "black", "gray")
-plotTS(ctd, col=col)
+s <- handleFlags(section)
+ctd <- as.ctd(s[["salinity"]], s[["temperature"]], s[["pressure"]],
+              longitude=s[["longitude"]], latitude=s[["latitude"]])
+col <- ifelse(s[["longitude"]] > -30, "black", "gray")
+plotTS(ctd, col=col, eos="gsw")
 
 ## ----fig.width=5, fig.height=3, fig.keep="none"--------------------------
 library(oce)

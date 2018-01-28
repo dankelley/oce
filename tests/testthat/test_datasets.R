@@ -13,20 +13,13 @@ test_that("cm", {
           data("cm")
           S <- cm[["salinity"]]
           S1 <- swSCTp(cm)
-          expect_less_than(mean(abs(S-S1)), 0.001)
-          expect_less_than(median(abs(S-S1)), 0.0011)
+          expect_equal(S, S1, tolerance=0.001)
           S2a <- swSCTp(cm[['conductivity']],cm[['temperature']], cm[['pressure']], conductivityUnit=cm[['conductivity unit']])
           expect_equal(S1, S2a)
           S2b <- swSCTp(cm[['conductivity']],cm[['temperature']], cm[['pressure']], conductivityUnit=cm[['conductivityUnit']])
           expect_equal(S1, S2b)
           S2c <- swSCTp(cm[['conductivity']],cm[['temperature']], cm[['pressure']], conductivityUnit=as.character(cm[['conductivityUnit']]$unit))
           expect_equal(S1, S2c)
-          ## I am not sure why these differ by 0.003PSU. The data file lists S
-          ## to 0.001, T to 0.001, and depth to 0.001. I'm not terribly worried
-          ## about the 0.003 disagreement, however, because the actual values
-          ## appear to be wrong by a lot more than that ... I don't believe the
-          ## deep salinities in the St Lawrence Estuary are in excess of 40.
-          expect_less_than(max(abs(S-S1)), 0.003)
 })
 
 ##data("coastlineWorld")
@@ -35,7 +28,7 @@ test_that("ctd", {
           data("ctd")
           expect_equal(ctd[["latitude"]],   44.6842666666667)
           expect_equal(ctd[["longitude"]], -63.6438833333333)
-          expect_equal(ctd[["startTime"]], as.POSIXct("2003-10-15 11:38:38", tz="UTC"))
+          expect_equal(ctd[["time"]], as.POSIXct("2003-10-15 11:38:38", tz="UTC"))
           ## units are checked in test_accessors.R
           expect_equal(ctd[["pressureType"]], "sea")
 })
@@ -59,7 +52,7 @@ test_that("sealevel", {
 
 test_that("sealevel", {
           data("section")
-          stopifnot(all.equal(section[["sectionId"]], "a03"))
+          expect_equal(section[["sectionId"]], "a03")
           expect_equal(length(section@data$station), 124)
           expect_equal(section@data$station[[1]]@metadata$station, "3")
           expect_equal(section@data$station[[1]][["station"]], "3")

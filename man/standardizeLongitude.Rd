@@ -19,4 +19,3 @@ Put longitude in the range from -180 to 180
 \code{\link{matrixShiftLongitude}} and \code{\link{shiftLongitude}} are more
 powerful relatives to \code{standardizeLongitude}.
 }
-

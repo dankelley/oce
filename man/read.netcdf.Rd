@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{read.netcdf}
 \alias{read.netcdf}
-\title{Read a netcdf file}
+\title{Read a NetCDF File}
 \usage{
 read.netcdf(file, ...)
 }
@@ -15,7 +15,7 @@ read.netcdf(file, ...)
 An object of \code{\link{oce-class}}.
 }
 \description{
-Read a netcdf file
+Read a NetCDF File
 }
 \details{
 Read a netcdf file, trying to interpret its contents sensibly.
@@ -31,9 +31,8 @@ file on the assumption that this will offer the least surprise to
 the user.
 
 2. An attempt is made to find some common metadata from global
-attributes in the netcdf file. These attributes include 
+attributes in the netcdf file. These attributes include
 \code{Longitude}, \code{Latitude}, \code{Ship} and \code{Cruise}.
 Before they are stored in the metadata, they are converted to
 lower case, since that is the oce convention.
 }
-

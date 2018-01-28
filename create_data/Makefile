@@ -3,6 +3,10 @@ all:
 	for d in $(dirs); do cd $$d && make && cd .. ; done
 	R --no-save < check_summaries.R > check_summaries.out
 	R --no-save < check_plots.R > check_plots.out
+	R --no-save < check_data_names.R > check_data_names.out
+	R --no-save < check_data_names.R > check_data_names.out
+	R --no-save < check_dataNamesOriginal_is_list.R > check_dataNamesOriginal_is_list.out
+	R --no-save < check_data_is_list.R > check_data_is_list.out
 install:
 	for d in $(dirs); do cd $$d && make install && cd .. ; done
 clean:

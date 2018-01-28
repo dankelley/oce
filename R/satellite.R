@@ -6,7 +6,7 @@
 #' \code{\link{amsr-class}} and \code{\link{g1sst-class}}.
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family things related to satellite data
 setClass("satellite", contains="oce")
 
 setMethod(f="initialize",
@@ -25,28 +25,33 @@ setMethod(f="initialize",
 #' @param object The object to be summarized.
 #' @param ... Ignored.
 #' @author Dan Kelley
-#' @aliases summary.satellite summary.g1sst
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @family things related to satellite data
 setMethod(f="summary",
           signature="satellite",
           definition=function(object, ...) {
-              cat("Satellite Summary\n-----------------\n\n")
-              showMetadataItem(object, "filename",   "Data file:           ")
-              showMetadataItem(object, "satellite",  "Satellite:           ")
-              lon <- object@metadata$longitude
-              lat <- object@metadata$latitude
-              if (length(lon) > 2) cat("* Longitude:           ", lon[1], ", ", lon[2],  ", ..., ", tail(lon, 1), "\n", sep="")
-              else cat("* Longitude:           ", paste(lon, collapse=", "), "\n", sep="")
-              if (length(lat) > 2) cat("* Latitude:            ", lat[1], ", ", lat[2],  ", ..., ", tail(lat, 1), "\n", sep="")
-              else cat("* Latitude:            ", paste(lat, collapse=", "), "\n", sep="")
-              cat("* Time:                ",
-                  format(object@metadata$time, "%Y-%m-%d %H:%M:%S %z"), "\n", sep="")
-              if (FALSE) { # FIXME: this is just for amsr, when we drop it's specific fcn
-                  for (name in names(object@data))
-                      object@data[[name]] <- object[[name]] # translate to science units
-              }
-              callNextMethod()
+              ## message("JUNK BEGIN")
+              ## spacecraft <- if ("spacecraft" %in% names(object@metadata))
+              ##     object@metadata$spacecraft
+              ## else if ("satellite" %in% names(object@metadata))
+              ##     object@metadata$satellite
+              ## else
+              ##     ""
+              ## cat("Satellite Summary\n-----------------\n\n")
+              ## showMetadataItem(object, "filename",   "Data file:           ")
+              ## showMetadataItem(object, "satellite",  "Satellite:           ")
+              ## lon <- object@metadata$longitude
+              ## lat <- object@metadata$latitude
+              ## if (length(lon) > 2) cat("* Longitude:           ", lon[1], ", ", lon[2],  ", ..., ", tail(lon, 1), "\n", sep="")
+              ## else cat("* Longitude:           ", paste(lon, collapse=", "), "\n", sep="")
+              ## if (length(lat) > 2) cat("* Latitude:            ", lat[1], ", ", lat[2],  ", ..., ", tail(lat, 1), "\n", sep="")
+              ## else cat("* Latitude:            ", paste(lat, collapse=", "), "\n", sep="")
+              ## if ("LANDSAT_8" == spacecraft) {
+              ##     cat("* Time:                ",
+              ##         format(object@metadata$time, "%Y-%m-%d %H:%M:%S %z"), "\n", sep="")
+              ## }
+              ## message("JUNK END")
+              invisible(callNextMethod()) # summary
           })
 
 #' Plot a satellite object
@@ -60,10 +65,11 @@ setMethod(f="summary",
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
 #' \code{col} to control colours.
 #'
-#' @author Dan Kelley
-#' @aliases plot.satellite
 #' @concept satellite
-#' @family functions dealing with satellite data
+#' @author Dan Kelley
+#' @family things related to satellite data
+#' @family functions that plot \code{oce} data
+#' @aliases plot.satellite
 setMethod(f="plot",
           signature=signature("satellite"),
           definition=function(x, y, asp, debug=getOption("oceDebug"), ...)
@@ -82,5 +88,3 @@ setMethod(f="plot",
               }
               oceDebug(debug, "} # plot.satellite()\n", unindent=1)
           })
-
-

@@ -3,29 +3,24 @@
 \docType{methods}
 \name{subset,oce-method}
 \alias{subset,oce-method}
-\alias{subset.oce}
 \title{Subset an oce Object}
 \usage{
 \S4method{subset}{oce}(x, subset, ...)
 }
 \arguments{
-\item{x}{An oce object.}
+\item{x}{an oce object.}
 
-\item{subset}{A logical expression indicating how to take the subset (depends on the sub-class).}
+\item{subset}{a logical expression indicating how to take the subset; the form depends on the sub-class.}
 
-\item{...}{Ignored.}
+\item{...}{optional arguments, used in some specialized methods (e.g. \code{\link{subset,section-method}}).}
 }
 \value{
 An oce object.
 }
 \description{
 This is a basic class for general oce objects.  It has specialised
-versions for most sub-classes, e.g. \code{\link{subset.ctd}} will
-be used if \code{subset} is called for an object that inherits from
-\code{ctd}; type \code{showMethods('subset')} to see a list of objects
-that have specialized methods, and then e.g. type \code{?subset.ctd}
-to get help on the method for objects inheriting from the
-\code{\link{ctd-class}}.
+versions for most sub-classes, e.g. \code{\link{subset,ctd-method}}
+for \code{ctd} objects.
 }
 \examples{
 library(oce)
@@ -36,4 +31,20 @@ par(mfrow=c(1, 2))
 plotProfile(ctd)
 plotProfile(top10)
 }
-
+\seealso{
+Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+  \code{\link{subset,adv-method}},
+  \code{\link{subset,amsr-method}},
+  \code{\link{subset,argo-method}},
+  \code{\link{subset,cm-method}},
+  \code{\link{subset,coastline-method}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{subset,echosounder-method}},
+  \code{\link{subset,lobo-method}},
+  \code{\link{subset,met-method}},
+  \code{\link{subset,odf-method}},
+  \code{\link{subset,rsk-method}},
+  \code{\link{subset,sealevel-method}},
+  \code{\link{subset,section-method}},
+  \code{\link{subset,topo-method}}
+}

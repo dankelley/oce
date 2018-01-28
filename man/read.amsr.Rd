@@ -7,41 +7,46 @@
 read.amsr(file, debug = getOption("oceDebug"))
 }
 \arguments{
-\item{file}{Sting indicating the name of a compressed file.}
+\item{file}{String indicating the name of a compressed file. See
+\dQuote{File sources}.}
 
 \item{debug}{A debugging flag, integer.}
 }
 \description{
 Read a compressed amsr file, generating an object that inherits from
 \code{\link{amsr-class}}.  Note that only compressed files are read in
-this version
+this version.
 }
-\examples{
-\dontrun{
-d <- read.amsr("f34_20160102v7.2.gz")
-summary(d)
-plot(d, "SST", col=oceColorsJet, xlim=c(-80,0), ylim=c(20,60), asp=asp)
+\section{File sources}{
+
+AMSR files are provided at the FTP site
+\code{ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/} and login as "guest",
+enter a year-based directory (e.g. \code{y2016} for the year 2016),
+then enter a month-based directory (e.g. \code{m08} for August, the 8th
+month), and then download a file for the present date, e.g.
+\code{f34_20160803v7.2.gz} for August 3rd, 2016. Do not uncompress
+this file, since \code{read.amsr} can only read uncompressed files.
+If \code{read.amsr} reports an error on the number of chunks, try
+downloading a similarly-named file (e.g. in the present example,
+\code{read.amsr("f34_20160803v7.2_d3d.gz")} will report an error
+about inability to read a 6-chunk file, but
+\code{read.amsr("f34_20160803v7.2.gz")} will work properly.
 }
+
+\seealso{
+\code{\link{plot,amsr-method}} for an example.
+
+Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
+  \code{\link{amsr-class}},
+  \code{\link{composite,amsr-method}},
+  \code{\link{download.amsr}},
+  \code{\link{plot,amsr-method}},
+  \code{\link{subset,amsr-method}},
+  \code{\link{summary,amsr-method}}
 }
 \author{
 Dan Kelley and Chantelle Layton
 }
-\seealso{
-\code{\link{plot.amsr}} for an example.
-
-Other functions dealing with satellite data: \code{\link{[[,landsat-method}},
-  \code{\link{amsr-class}}, \code{\link{g1sst-class}},
-  \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
-  \code{\link{plot,amsr-method}},
-  \code{\link{plot,landsat-method}},
-  \code{\link{plot,satellite-method}},
-  \code{\link{read.g1sst}}, \code{\link{read.landsat}},
-  \code{\link{satellite-class}},
-  \code{\link{summary,amsr-method}},
-  \code{\link{summary,landsat-method}},
-  \code{\link{summary,satellite-method}}
-}
 \concept{
 satellite
 }
-

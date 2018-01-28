@@ -1,7 +1,6 @@
 rm(list=ls())
 ## This script requires a certain data file.
 library(oce)
-source("~/src/oce/R/cm.R")
 file <- "/data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab"
 filename <- file
 sep <- "\t"
@@ -60,14 +59,22 @@ time <- seq(t0, by=dt, length.out=dim(d)[1])
 ## data). I am just going to grab what seems to be a minimal set of known
 ## quantities. I'm retaining the code above in case a user can decode other
 ## columns.
-rval <- new("cm", filename=filename,
+rval <- new("cm",
             time=time,
-            u=d$Veast/100, v=d$Vnorth/100,
-            salinity=d$Sal, temperature=d[["T-Temp"]],
-            pressure=swPressure(d$Depth, eos="gsw"))
-rval@metadata$type <- type
-rval@metadata$serialNumber <- serialNumber
-rval@metadata$version <- version
+            u=d$Veast/100, v=d$Vnorth/100)
+rval <- oceSetData(rval, name="salinity", value=d$Sal,
+                   unit=list(unit=expression(), scale="PSS-78"),
+                   originalName="Sal")
+rval <- oceSetData(rval, name="temperature", value=d[["T-Temp"]],
+                   unit=list(unit=expression(degree*C), scale="IPTS-68"),
+                   originalName="T-Temp")
+rval <- oceSetData(rval, name="pressure", value=swPressure(d$Depth, eos="unesco"),
+                   unit=list(unit=expression(dbar), scale=""),
+                   originalName="-")
+rval <- oceSetMetadata(rval, "filename", filename)
+rval <- oceSetMetadata(rval, "type", type)
+rval <- oceSetMetadata(rval, "serialNumber", serialNumber)
+rval <- oceSetMetadata(rval, "version", version)
 summary(rval)
 plot(rval)
 

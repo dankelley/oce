@@ -2,7 +2,7 @@
 % Please edit documentation in R/adp.R
 \name{as.adp}
 \alias{as.adp}
-\title{Create an adp Object}
+\title{Create an ADP Object}
 \usage{
 as.adp(time, distance, v, a = NULL, q = NULL, orientation = "upward",
   coordinate = "enu")
@@ -26,7 +26,7 @@ as.adp(time, distance, v, a = NULL, q = NULL, orientation = "upward",
 An object of \code{\link{adp-class}}.
 }
 \description{
-Create an adp Object
+Create an ADP Object
 }
 \details{
 Construct an object of \code{\link{adp-class}}.  Only a basic
@@ -36,8 +36,6 @@ is to set up a nearly-blank \code{\link{adp-class}} object, the \code{data}
 slot of which is then inserted.  However, in some testing situations it
 can be useful to set up artificial \code{adp} objects, so the other
 arguments may be useful.
-
-A few defaults are set for some
 }
 \examples{
 data(adp)
@@ -48,5 +46,29 @@ a <- as.adp(time=t, distance=d, v=v)
 \dontrun{
 plot(a)
 }
-}
 
+}
+\seealso{
+Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
+  \code{\link{beamName}}, \code{\link{beamToXyzAdp}},
+  \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
+  \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
+  \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
+  \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
+  \code{\link{read.adp.nortek}},
+  \code{\link{read.adp.rdi}},
+  \code{\link{read.adp.sontek.serial}},
+  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
+  \code{\link{read.aquadoppHR}},
+  \code{\link{read.aquadoppProfiler}},
+  \code{\link{read.aquadopp}},
+  \code{\link{subset,adp-method}},
+  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+}
+\author{
+Dan Kelley
+}

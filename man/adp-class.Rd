@@ -3,7 +3,7 @@
 \docType{class}
 \name{adp-class}
 \alias{adp-class}
-\title{Class to Hold adp (adcp) Data}
+\title{Class to Hold ADP (ADCP) Data}
 \description{
 This class stores data from acoustic Doppler profilers. Some manufacturers
 call these ADCPs, while others call them ADPs; here the shorter form is
@@ -28,7 +28,7 @@ conventions for three- and four-beam ADP devices, viewed as though the
 reader were looking towards the beams being emitted from the transducers.
 
 \if{html}{\figure{adp_beams.png}{options: width=400px alt="Figure: adp_beams.png"}}
-    
+
 The bin geometry of a four-beam profiler is illustrated below, for
 \code{adp[["beamAngle"]]} equal to 20 degrees, \code{adp[["bin1Distance"]]}
 equal to 2m, and \code{adp[["cellSize"]]} equal to 1m.   In the diagram, the
@@ -37,24 +37,38 @@ visible beams are separated by 40 degrees.  Circles indicate the centres of
 the range-gated bins within the beams.  The lines enclosing those circles
 indicate the coverage of beams that spread plus and minus 2.5 degrees from
 their centreline.
-    
+
 \if{html}{\figure{adpgeometry2.png}{options: width=400px alt="Figure: adpgeometry2.png"}}
 
 Note that \code{adp[["oceCoordinate"]]} stores the present coordinate system
-of the object, and it has possible values \code{"beam"}, \code{"xyz"} or
+of the object, and it has possible values \code{"beam"}, \code{"xyz"}, \code{"sfm"} or
 \code{"enu"}.  (This should not be confused with
 \code{adp[["originalCoordinate"]]}, which stores the coordinate system used
 in the original data file.)
 
 The \code{data} slot holds some standardized items, and
 many that vary from instrument to instrument.  One standard item is
-\code{adp[["v"]]}, a three-dimensional numeric matrix of velocities in
+\code{adp[["v"]]}, a three-dimensional numeric array of velocities in
 m/s.  In this matrix, the first index indicates time, the second bin
-number, and the third beam number.  The meanings of the beams depends on
+number, and the third beam number. The meaning of beams number depends on
 whether the object is in beam coordinates, frame coordinates, or earth
-coordinates.  
-    
-Corresponding to the velocity matrix are two matrices of type raw, and
+coordinates.  For example, if in earth coordinates, then beam 1 is
+the eastward component of velocity.
+Thus, for example,
+\preformatted{
+library(oce)
+data(adp)
+t <- adp[['time']]
+d <- adp[['distance']]
+eastward <- adp[['v']][,,1]
+imagep(t, d, eastward, missingColor="gray")
+}
+plots an image of the eastward component of velocity as a function of time (the x axis)
+and distance from sensor (y axis), since the \code{adp} dataset is
+in earth coordinates. Note the semidurnal tidal signal, and the pattern of missing
+data at the ocean surface (gray blotches at the top).
+
+Corresponding to the velocity array are two arrays of type raw, and
 identical dimension, accessed by \code{adp[["a"]]} and \code{adp[["q"]]},
 holding measures of signal strength and data quality quality,
 respectively.  (The exact meanings of these depend on the particular type
@@ -62,7 +76,7 @@ of instrument, and it is assumed that users will be familiar enough with
 instruments to know both the meanings and their practical consequences in
 terms of data-quality assessment, etc.)
 
-In addition to the matrices, there are time-based vectors.  The vector
+In addition to the arrays, there are time-based vectors.  The vector
 \code{adp[["time"]]} (of length equal to the first index of
 \code{adp[["v"]]}, etc.) holds times of observation.  Depending on type of
 instrument and its configuration, there may also be corresponding vectors
@@ -74,11 +88,10 @@ heading (\code{adp[["heading"]]}) pitch (\code{adp[["pitch"]]}), and roll
 The precise meanings of the data items depend on the instrument type.  All
 instruments have \code{v} (for velocity), \code{q} (for a measure of data
 quality) and \code{a} (for a measure of backscatter amplitude, also called
-echo intensity).  
-      
+echo intensity).
 Teledyne-RDI profilers have an additional item \code{g} (for
-percent-good). 
-      
+percent-good).
+
 VmDas-equiped Teledyne-RDI profilers additional navigation data, with
 details listed in the table below; note that the RDI documentation [2] and
 the RDI gui use inconsistent names for most items.
@@ -116,7 +129,7 @@ the RDI gui use inconsistent names for most items.
 For Teledyne-RDI profilers, there are four three-dimensional arrays
 holding beamwise data.  In these, the first index indicates time, the
 second bin number, and the third beam number (or coordinate number, for
-data in \code{xyz}, \code{enu} or \code{other} coordinate systems).  In
+data in \code{xyz}, \code{sfm}, \code{enu} or \code{other} coordinate systems).  In
 the list below, the quoted phrases are quantities as defined in Figure 9
 of reference 1.
 
@@ -145,7 +158,16 @@ line bisecting beam pairs.  The length of this vector equals
 
 The \code{processingLog} slot is in standard form and needs little comment.
 }
-\section{methods}{
+\section{Teledyne-RDI Sentinel V ADCPs}{
+ As of 2016-09-27 there is
+    provisional support for the TRDI "SentinelV" ADCPs, which are 5
+    beam ADCPs with a vertical centre beam. Relevant vertical beam
+    fields are called \code{adp[["vv"]]}, \code{adp[["va"]]},
+    \code{adp[["vq"]]}, and \code{adp[["vg"]]} in analogy with the
+    standard 4-beam fields.
+}
+
+\section{Accessing and altering information within \code{adp-class} objects}{
 
 \emph{Extracting values} Matrix data may be accessed as illustrated
 above, e.g.  or an adp object named \code{adv}, the data are provided by
@@ -180,10 +202,11 @@ time wasted.
 \section{References}{
 
 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
-format.} P/N 957-6156-00 (November 2007).  
+format.} P/N 957-6156-00 (November 2007).
 
 2. Teledyne-RDI, 2012. \emph{VmDas User's Guide, Ver. 1.46.5}.
 }
+
 \seealso{
 A file containing ADP data is usually recognized by Oce, and so
 \code{\link{read.oce}} will usually read the data.  If not, one may use the
@@ -191,7 +214,7 @@ general ADP function \code{\link{read.adp}} or specialized variants
 \code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}} or
 \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
 
-ADP data may be plotted with \code{\link{plot.adp}} function, which is a
+ADP data may be plotted with \code{\link{plot,adp-method}}, which is a
 generic function so it may be called simply as \code{plot}.
 
 Statistical summaries of ADP data are provided by the generic function
@@ -202,5 +225,35 @@ Conversion from beam to xyz coordinates may be done with
 with \code{\link{xyzToEnuAdp}}.  \code{\link{toEnuAdp}} may be used to
 transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 (e.g. aligned with a coastline) with \code{\link{enuToOtherAdp}}.
-}
 
+Other classes provided by \code{oce}: \code{\link{adv-class}},
+  \code{\link{argo-class}}, \code{\link{bremen-class}},
+  \code{\link{cm-class}}, \code{\link{coastline-class}},
+  \code{\link{ctd-class}}, \code{\link{echosounder-class}},
+  \code{\link{lisst-class}}, \code{\link{lobo-class}},
+  \code{\link{met-class}}, \code{\link{oce-class}},
+  \code{\link{odf-class}}, \code{\link{rsk-class}},
+  \code{\link{sealevel-class}},
+  \code{\link{section-class}}, \code{\link{topo-class}},
+  \code{\link{windrose-class}}
+
+Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
+  \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
+  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
+  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
+  \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
+  \code{\link{read.ad2cp}}, \code{\link{read.adp.nortek}},
+  \code{\link{read.adp.rdi}},
+  \code{\link{read.adp.sontek.serial}},
+  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
+  \code{\link{read.aquadoppHR}},
+  \code{\link{read.aquadoppProfiler}},
+  \code{\link{read.aquadopp}},
+  \code{\link{subset,adp-method}},
+  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
+}

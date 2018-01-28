@@ -2,8 +2,9 @@
 
 setClass("satellite", contains="oce")
 
-#' Class to hold G1SST satellite-model data
+#' @title Class to Hold G1SST Satellite-model Data
 #'
+#' @description
 #' G1SST is an acronym for global 1-km sea surface temperature, a product
 #' that combines satellite data with the model output. It is provided by
 #' the JPO ROMS (Regional Ocean Modelling System) modelling group.
@@ -11,28 +12,56 @@ setClass("satellite", contains="oce")
 #' the \code{\link{read.g1sst}} documentation for an example
 #' of downloading and plotting.
 #'
+#' @details
 #' It is important not to regard G1SST data in the same category as,
 #' say, \code{\link{amsr-class}} data, because the two products
 #' differ greatly with respect to cloud cover. The satellite used by
 #' \code{\link{amsr-class}} has the ability to sense water temperature
 #' even if there is cloud cover, whereas \code{g1sst} fills in cloud
-#' gaps with model simulations.  It can be helpful to consult 
+#' gaps with model simulations.  It can be helpful to consult
 #' [1] for a given time, clicking and then unclicking the radio button
 #' that turns off the model-based filling of cloud gaps.
 #'
-#' @author Dan Kelley
 #' @concept satellite
-#' @family functions dealing with satellite data
 #' @references
-#' 1. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
+#' 1. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+#' (link worked in 2016 but was seen to fail 2017 Feb 2).
+#' @author Dan Kelley
+#' @family things related to satellite data
 setClass("g1sst", contains="satellite")
- 
-#' Read G1SST satellite data
+
+
+#' @title Extract Something From a G1SST Object
+#' @param x A \code{g1sst} object, i.e. one inheriting from \code{\link{g1sst-class}}.
+#' @template sub_subTemplate
+#' @family things related to \code{g1sst} data
+setMethod(f="[[",
+          signature(x="g1sst", i="ANY", j="ANY"),
+          definition=function(x, i, j, ...) {
+              callNextMethod()         # [[
+          })
+
+#' @title Replace Parts of a G1SST Object
+#' @param x An \code{g1sst} object, i.e. one inheriting from \code{\link{g1sst-class}}
+#' @template sub_subsetTemplate
+#' @family things related to \code{g1sst} data
+setMethod(f="[[<-",
+          signature(x="g1sst", i="ANY", j="ANY"),
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
+          })
+
+
+
+
+#' @title Read a G1SST file
 #'
-#' This works with netcdf files as provided by the ERDAPP server [1].
+#' @description
+#' Read a G1SST file in the netcdf format provided by the ERDAPP server [1].
 #'
+#' @details
 #' As noted in the documentation for \code{\link{g1sst-class}}, one
-#' must be aware of the incorporation of model simulations in the 
+#' must be aware of the incorporation of model simulations in the
 #' \code{g1sst} product. For example, the code presented below
 #' might lead one to believe that the mapped field represents
 #' observatins, whereas in fact it can be verified by
@@ -64,15 +93,16 @@ setClass("g1sst", contains="satellite")
 #' lines(coastlineWorldFine[['longitude']],coastlineWorldFine[['latitude']])
 #' }
 #'
+#' @author Dan Kelley
 #' @references
 #' 1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
-#' 2. JPO OurOcean Portal \url{http://ourocean.jpl.nasa.gov/SST/}
-#' @family functions dealing with satellite data
-#' @author Dan Kelley
+#' 2. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+#' (link worked in 2016 but was seen to fail 2017 Feb 2).
+#' @family things related to satellite data
 read.g1sst <- function(filename)
 {
     if (!requireNamespace("ncdf4", quietly=TRUE))
-        stop('must install.packages("ncdf4") to read argo data')
+        stop('must install.packages("ncdf4") to read g1sst data')
     f <- ncdf4::nc_open(filename)
     res <- new("g1sst", filename=filename)
     res@metadata$longitude <- ncdf4::ncvar_get(f, "longitude")
@@ -83,4 +113,3 @@ read.g1sst <- function(filename)
     res@data$SST <- ncdf4::ncvar_get(f, "SST")
     res
 }
-

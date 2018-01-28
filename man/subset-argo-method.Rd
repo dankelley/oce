@@ -3,8 +3,7 @@
 \docType{methods}
 \name{subset,argo-method}
 \alias{subset,argo-method}
-\alias{subset.argo}
-\title{Subset an argo object}
+\title{Subset an Argo Object}
 \usage{
 \S4method{subset}{argo}(x, subset, ...)
 }
@@ -19,11 +18,24 @@
 An argo object.
 }
 \description{
-This function is somewhat analogous to
-\code{\link{subset.data.frame}}, but only one independent variable may be
-used in \code{subset} in any call to the function, which means that
+Subset an argo object, either by selecting just the "adjusted" data
+or by subsetting by pressure or other variables.
+}
+\details{
+If \code{subset} is the string \code{"adjusted"}, then \code{subset}
+replaces the station variables with their adjusted counterparts. In
+the argo notation, e.g. \code{PSAL} is replaced with \code{PSAL_ADJUSTED};
+in the present notation, this means that \code{salinity} in the \code{data}
+slot is replaced with \code{salinityAdjusted}, and the latter is deleted.
+Similar replacements are also done with the flags stored in the \code{metadata}
+slot.
+
+If \code{subset} is an expression, then the action is somewhat similar
+to other \code{subset} functions, but with the restriction that
+only one independent variable may be
+used in in any call to the function, so that
 repeated calls will be necessary to subset based on more than one
-independent variable.  Subsetting may be by by anything
+independent variable.  Subsetting may be done by anything
 stored in the data, e.g. \code{time},
 \code{latitude}, \code{longitude}, \code{profile}, \code{dataMode},
 or \code{pressure} or by \code{profile} (a made-up variable)
@@ -32,17 +44,49 @@ or \code{id} (from the \code{metadata} slot).
 \examples{
 library(oce)
 data(argo)
+
+# Example 1: buset by time, longitude, and pressure
 par(mfrow=c(2,2))
 plot(argo)
 plot(subset(argo, time > mean(time)))
 plot(subset(argo, longitude > mean(longitude)))
 plot(subset(argoGrid(argo), pressure > 500 & pressure < 1000), which=5)
 
-# Plot only delayed-mode profiles.
-par(mfrow=c(1,1))
+# Example 2: restrict attention to delayed-mode profiles.
+par(mfrow=c(1, 1))
 plot(subset(argo, dataMode == "D"))
+
+# Example 3: contrast corrected and uncorrected data
+par(mfrow=c(1,2))
+plotTS(argo)
+plotTS(subset(argo, "adjusted"))
+
 }
 \seealso{
-\code{\link{argoGrid}} for gridding argo objects.
-}
+Other things related to \code{argo} data: \code{\link{[[,argo-method}},
+  \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
+  \code{\link{argoGrid}}, \code{\link{argoNames2oceNames}},
+  \code{\link{argo}}, \code{\link{as.argo}},
+  \code{\link{handleFlags,argo-method}},
+  \code{\link{plot,argo-method}}, \code{\link{read.argo}},
+  \code{\link{summary,argo-method}}
 
+Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
+  \code{\link{subset,adv-method}},
+  \code{\link{subset,amsr-method}},
+  \code{\link{subset,cm-method}},
+  \code{\link{subset,coastline-method}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{subset,echosounder-method}},
+  \code{\link{subset,lobo-method}},
+  \code{\link{subset,met-method}},
+  \code{\link{subset,oce-method}},
+  \code{\link{subset,odf-method}},
+  \code{\link{subset,rsk-method}},
+  \code{\link{subset,sealevel-method}},
+  \code{\link{subset,section-method}},
+  \code{\link{subset,topo-method}}
+}
+\author{
+Dan Kelley
+}

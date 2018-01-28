@@ -1,8 +1,31 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+#' @title Class for data stored in a format used at Bremen
+#'
+#' @description
+#' Class for data stored in a format used at Bremen. This is somewhat unusual
+#' amongst \code{oce} classes, in that it does not map to a particular
+#' instrument. Although some functions are provided for dealing with these
+#' data (see \dQuote{Details}), the most common action is to read the
+#' data with \code{\link{read.bremen}}, and then to coerce the object to
+#' another storage class (e.g. using \code{\link{as.ctd}} for CTD-style
+#' data) so that specialized functions can be used thereafter.
+#'
+#' @description
+#' The main function is \code{\link{read.bremen}}.  A simple
+#' plotting method is provided with \code{\link{plot,bremen-method}}, and
+#' \code{\link{summary,bremen-method}} provides summaries. Data may be
+#' retrieved with \code{\link{[[,bremen-method}} or replaced with
+#' \code{\link{[[<-,bremen-method}}.
+#'
+#' @author Dan Kelley
+#' @family classes provided by \code{oce}
+#' @family things related to \code{bremen} data
+setClass("bremen", contains="oce") # 20150528 may be called "geomar" or something later
+
 setMethod(f="initialize",
           signature="bremen",
-          definition=function(.Object,filename="") {
+          definition=function(.Object, filename="") {
               ## Assign to some columns so they exist if needed later (even if they are NULL)
               .Object@metadata$filename <- filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
@@ -10,6 +33,43 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+#' @title Extract Something From a Bremen Object
+#' @param x A bremen object, i.e. one inheriting from \code{\link{bremen-class}}.
+#' @template sub_subTemplate
+#' @family things related to \code{bremen} data
+setMethod(f="[[",
+          signature(x="bremen", i="ANY", j="ANY"),
+          definition=function(x, i, j, ...) {
+              callNextMethod()         # [[
+          })
+
+#' @title Replace Parts of a Bremen Object
+#' @param x An \code{bremen} object, i.e. inheriting from \code{\link{bremen-class}}
+#' @template sub_subsetTemplate
+#' @family things related to \code{bremen} data
+setMethod(f="[[<-",
+          signature(x="bremen", i="ANY", j="ANY"),
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ...=..., value=value) # [[<-
+          })
+
+#' @title Plot a Bremen Object
+#'
+#' @description
+#' Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
+#' If \code{x} seems to be a CTD dataset, uses \code{\link{plot,ctd-method}};
+#' otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
+#' plot is created with \code{\link{plot,ladp-method}} to show velocity varation with
+#' pressure.
+#'
+#' @param x A \code{bremen} object, e.g. as read by \code{\link{read.bremen}}.
+#' @param type Optional string indicating the type to which \code{x} should be
+#' coerced before ploting. The choices are \code{ctd} and \code{ladp}.
+#' @param ... Other arguments, passed to plotting functions.
+#' @author Dan Kelley
+#' @family functions that plot \code{oce} data
+#' @family things related to \code{bremen} data
+#' @aliases plot.bremen
 setMethod(f="plot",
           signature=signature("bremen"),
           definition=function(x, type, ...) {
@@ -24,6 +84,18 @@ setMethod(f="plot",
               }
           })
 
+
+#' @title Summarize a Bremen Object
+#'
+#' @description
+#' Pertinent summary information is presented, including the station name,
+#' sampling location, data ranges, etc.
+#'
+#' @param object A \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
+#' call to \code{\link{read.bremen}}.
+#' @param ... Further arguments passed to or from other methods.
+#' @author Dan Kelley
+#' @family things related to \code{bremen} data
 setMethod(f="summary",
           signature="bremen",
           definition=function(object, ...) {
@@ -44,7 +116,7 @@ setMethod(f="summary",
               showMetadataItem(object, "ship",    "Vessel:              ")
               showMetadataItem(object, "station", "Station:             ")
               showMetadataItem(object, "profile", "Profile:             ")
-              callNextMethod()
+              invisible(callNextMethod()) # summary
           })
 
 
@@ -55,6 +127,39 @@ findInHeaderBremen <- function(key, lines)
 }
 
 
+#' @title Read a Bremen File
+#'
+#' @description
+#' Read a file in Bremen format, producing an object inheriting from
+#' \code{\link{bremen-class}}.
+#'
+#' @details
+#' Velocities are assumed to be in
+#' cm/s, and are converted to m/s to follow the oce convention. Shears
+#' (which is what the variables named \code{uz} and \code{vz} are assumed
+#' to represent) are assumed to be in (cm/s)/m, although they could be in 1/s
+#' or something else; the lack of documentation is a problem here. Also,
+#' note that the assumed shears are not just first-difference estimates
+#' of velocity, given the results of a sample dataset:
+#' \preformatted{
+#' > head(data.frame(b[["data"]]))
+#'   pressure      u      v       uz       vz
+#' 1        0  0.092 -0.191  0.00000  0.00000
+#' 2       10  0.092 -0.191  0.02183 -0.35412
+#' 3       20  0.092 -0.191  0.03046 -0.09458
+#' 4       30  0.026 -0.246 -0.03948  0.02169
+#' 5       40 -0.003 -0.212 -0.02614  0.03111
+#' 6       50 -0.023 -0.169 -0.03791  0.01706
+#' }
+#'
+#' @param file a connection or a character string giving the name of the file
+#' to load.
+#' @return An object of \code{\link{bremen-class}}.
+#' @section Issues: This function may be renamed (or removed) without notice.
+#' It was created to read some data being used in a particular research
+#' project, and will be rendered uselss if Bremen changes this data format.
+#' @author Dan Kelley
+#' @family things related to \code{bremen} data
 read.bremen <- function(file)
 {
     if (is.character(file)) {
@@ -117,11 +222,9 @@ read.bremen <- function(file)
         } else if (name == "salinity" || name == "temperature") {
             #res@data[name] <- ifelse(data[[name]] == -9, NA, data[[name]])
             res@data[name] <- as.data.frame(ifelse(data[[name]] == -9, NA, data[[name]]))
-           
         } else {
             res@data[name] <- data[name]
         }
     }
-    res 
+    res
 }
-

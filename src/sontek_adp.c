@@ -1,4 +1,4 @@
-/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
 /*
  cd("/Users/kelley/internal-beach/work/data/R")
  source("m07_pcadp.R")
@@ -86,12 +86,12 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
       ncell = ((unsigned short)pbuf[i+30]) | ((unsigned short)pbuf[i+31] << 8);
 #ifdef DEBUG
       Rprintf("tentative first-profile at buf[%d], yielding nbeam=%d and ncell=%d\n",
-	  i, nbeam, ncell);
+          i, nbeam, ncell);
 #endif
       if (nbeam < 2 || nbeam > 3)
-	error("number of beams must be 2 or 3, but it is %d", nbeam);
+        error("number of beams must be 2 or 3, but it is %d", nbeam);
       if (ncell < 1)
-	error("number of cells cannot be less than 1, but it is %d", ncell);
+        error("number of cells cannot be less than 1, but it is %d", ncell);
       break;
     }
   }
@@ -113,20 +113,20 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
     check_sum = check_sum_start;
     if (pbuf[i] == byte1 && pbuf[i+1] == byte2 && pbuf[i+2] == byte3) {
       for (int c = 0; c < chunk_length; c++)
-	check_sum += (unsigned short int)pbuf[i + c];
+        check_sum += (unsigned short int)pbuf[i + c];
       desired_check_sum = ((unsigned short)pbuf[i+chunk_length]) | ((unsigned short)pbuf[i+chunk_length+1] << 8);
       if (check_sum == desired_check_sum) {
-	matches++;
+        matches++;
 #ifdef DEBUG
-	Rprintf("good match i=%d check_sum=%d\n", i, check_sum);
+        Rprintf("good match i=%d check_sum=%d\n", i, check_sum);
 #endif
-	if (max != 0 && matches >= max)
-	  break;
+        if (max != 0 && matches >= max)
+          break;
       } else {
 #ifdef DEBUG
-	if (bad++ > maxbad)
-	  error("max bad\n");
-	Rprintf("bad checksum i=%d\n", i);
+        if (bad++ > maxbad)
+          error("max bad\n");
+        Rprintf("bad checksum i=%d\n", i);
 #endif
       }
     }
@@ -143,13 +143,13 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
     for (int i = 0; i < lbuf - 3 - chunk_length; i++) { // FIXME is 3 right, or needed?
       check_sum = check_sum_start;
       if (pbuf[i] == byte1 && pbuf[i+1] == byte2 && pbuf[i+2] == byte3) {
-	for (int c = 0; c < chunk_length; c++)
-	  check_sum += (unsigned short int)pbuf[i + c];
-	desired_check_sum = ((unsigned short)pbuf[i+chunk_length]) | ((unsigned short)pbuf[i+chunk_length+1] << 8);
-	if (check_sum == desired_check_sum)
-	  pres[ires++] = i + 1; /* the +1 is to get R pointers */
-	if (ires > lres)        /* FIXME: or +1? */
-	  break;
+        for (int c = 0; c < chunk_length; c++)
+          check_sum += (unsigned short int)pbuf[i + c];
+        desired_check_sum = ((unsigned short)pbuf[i+chunk_length]) | ((unsigned short)pbuf[i+chunk_length+1] << 8);
+        if (check_sum == desired_check_sum)
+          pres[ires++] = i + 1; /* the +1 is to get R pointers */
+        if (ires > lres)        /* FIXME: or +1? */
+          break;
       }
     }
   } else {

@@ -129,7 +129,7 @@ extern "C" {
     void bin_mean_2d(int *nx, double *x, double *y, double *f,
             int *nxbreaks, double *xbreaks,
             int *nybreaks, double *ybreaks,
-            int *fill, int *number, double *mean)
+            int *fill, int *fillgap, int *number, double *mean)
     {
 #ifdef DEBUG
         Rprintf("nxbreaks: %d, nybreaks: %d\n", *nxbreaks, *nybreaks);
@@ -164,7 +164,7 @@ extern "C" {
                 mean[bij] = NA_REAL;
             }
         }
-        if (*fill) {
+        if (*fill && *fillgap !=0) { // a logical in R calling functions
             int bad = 0;
             int im, ip, jm, jp;
             // Reminder: ij = j + i * nj, for column-order matrices, so i corresponds to x
@@ -180,26 +180,18 @@ extern "C" {
                         int N=0;
                         double SUM=0.0;
                         if (0 <= im && ip < *(nxbreaks)-1) {
-                            double interpolant = mean[ij(im,j)]+(mean[ij(ip,j)]-mean[ij(im,j)])*(i-im)/(ip-im);
-                            SUM += interpolant;
-                            N++;
-#ifdef DEBUG
-                            if (bad < 30 && bad < 40) {
-                                Rprintf("i:%d, j:%d, i neighbors: [%d,%d]=%.1f  [%d,%d]=%.1f -> %.1f\n",
-                                        i,j,im,j,mean[ij(im,j)],ip,j,mean[ij(ip,j)],interpolant);
+                            if ((*fillgap) < 0 || (*fillgap) >= (ip-im)) {
+                                double interpolant = mean[ij(im,j)]+(mean[ij(ip,j)]-mean[ij(im,j)])*(i-im)/(ip-im);
+                                SUM += interpolant;
+                                N++;
                             }
-#endif
                         }
                         if (0 <= jm && jp < *(nybreaks)-1) {
-                            double interpolant = mean[ij(i,jm)]+(mean[ij(i,jp)]-mean[ij(i,jm)])*(j-jm)/(jp-jm);
-                            SUM += interpolant;
-                            N++;
-#ifdef DEBUG
-                            if (bad < 30 && bad < 40) {
-                                Rprintf("i:%d, j:%d, j neighbors: [%d,%d]=%.1f  [%d,%d]=%.1f -> %.1f\n",
-                                        i,j,i,jm,mean[ij(i,jm)],i,jp,mean[ij(i,jp)],interpolant);
+                            if ((*fillgap) < 0 || (*fillgap) >= (jp-jm)) {
+                                double interpolant = mean[ij(i,jm)]+(mean[ij(i,jp)]-mean[ij(i,jm)])*(j-jm)/(jp-jm);
+                                SUM += interpolant;
+                                N++;
                             }
-#endif
                         }
                         if (N > 0) {
                             mean[ij(i, j)] = SUM / N;

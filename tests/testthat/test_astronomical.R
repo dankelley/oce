@@ -30,17 +30,44 @@ test_that("Times", {
 test_that("Moon", {
           ## [2] example 45.a (pages 312-313)
           ## Do not check too many digits, because the code does not have all terms
-          ## in formulae.  (Note: this also tests eclipticalToEquatorial)
+          ## in formulae.
+          ## NB. this block also tests eclipticalToEquatorial(), julianDay(),
+          ## and julianCenturyAnomaly().
           t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
           m <- moonAngle(t, 0, 0) # lat and lon arbitrary
-          expect_less_than(abs(m$lambda - 133.162659), 0.02)
-          expect_less_than(abs(m$beta - -3.229127), 0.001)
+          expect_equal(m$lambda, 133.162659, tolerance=0.0002)
+          expect_equal(m$beta, -3.229127, tolerance=0.0002)
           ##expect_equal(abs(m$obliquity - 23.440636) < 0.001)
-          expect_less_than(abs(m$rightAscension - 134.688473), 0.02)
-          expect_less_than(abs(m$declination - 13.768366), 0.01)
-          expect_less_than(abs(m$diameter - 0.991990), 0.0001)
-          expect_less_than(abs(m$distance - 368405.6), 20)
+          expect_equal(m$rightAscension, 134.688473, tolerance=0.02)
+          expect_equal(m$declination, 13.768366, tolerance=0.001)
+          expect_equal(m$diameter, 0.991990, tolerance=0.0001)
+          expect_equal(m$distance, 368405.6, tolerance=0.1)
           ## moon illuminated fraction [1] ex 31.b page 156
           illfrac <- (1 + cos(RPD * 105.8493)) / 2
           expect_equal(moonAngle(ISOdatetime(1979,12,25,0,0,0,tz="UTC"),0,0)$illuminatedFraction,illfrac,tolerance=0.001)
+          ## Local time
+          tlocal <- t
+          attributes(tlocal)$tzone <- ""
+          mlocal <- moonAngle(tlocal, 0, 0)
+          expect_identical(m, mlocal)
+          ## Numerical time
+          expect_identical(m, moonAngle(as.numeric(t), 0, 0))
+})
+
+test_that("Sun", {
+          ## Testing against values that worked on 2016-12-06;
+          ## FIXME: replace by numbers from [2] if they can be found.
+          t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
+          s <- sunAngle(t, 0, 0) # lat and lon arbitrary
+          expect_equal(s$azimuth, 358.624168865654)
+          expect_equal(s$altitude, -81.3030909018573)
+          expect_equal(s$diameter, 0.531871759139675)
+          expect_equal(s$distance, 1.00249729533012)
+          ## Local time
+          tlocal <- t
+          attributes(tlocal)$tzone <- ""
+          slocal <- sunAngle(tlocal, 0, 0)
+          expect_identical(s, slocal)
+          ## Numerical time
+          expect_identical(s, sunAngle(as.numeric(t), 0, 0))
 })

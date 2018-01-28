@@ -2,13 +2,13 @@
 % Please edit documentation in R/ctd.R
 \name{ctdAddColumn}
 \alias{ctdAddColumn}
-\title{Add a column to the data slot of a ctd object}
+\title{Add a Column to the Data Slot of a CTD Object [deprecated]}
 \usage{
-ctdAddColumn(x, column, name, label, unit = NULL,
-  debug = getOption("oceDebug"))
+ctdAddColumn(x, column, name, label, unit = NULL, log = TRUE,
+  originalName = "", debug = getOption("oceDebug"))
 }
 \arguments{
-\item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
+\item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
 \item{column}{A column of data to be inserted, in the form of a
 numeric vector, whose length matches that of columns in the
@@ -26,26 +26,50 @@ items \code{unit}, which is an expression, and \code{scale}, which is a
 character string. For example, modern measurements of temperature have
 unit \code{list(name=expression(degree*C), scale="ITS-90")}.}
 
-\item{debug}{A debugging flag; set this to a positive value to get debugging
-information during processing.}
+\item{log}{A logical value indicating whether to store an entry in the processing
+log that indicates this insertion.}
+
+\item{originalName}{string indicating the name of the data element as it was originally. This
+makes sense only for data being read from a file, where e.g. WOCE or SBE
+names might be used.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 }
 \value{
 A ctd object.
 }
 \description{
+\strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+Use \code{\link{oceSetData}} instead of the present function.
+}
+\details{
 Add a column to the \code{data} slot of an object of
 \code{\link{ctd-class}}, also updating the \code{metadata}
 slot as appropriate.
 }
 \examples{
 library(oce)
-data(ctd) 
-F <- 32 + (9/5)*ctd[["temperature"]] 
-ctdNew <- ctdAddColumn(ctd, F, "temperatureF", 
+data(ctd)
+F <- 32 + (9/5)*ctd[["temperature"]]
+ctdNew <- ctdAddColumn(ctd, F, "temperatureF",
     unit=list(unit=expression(degree*F), scale="ITS-90"))
+
 }
 \seealso{
 The documentation for \code{\link{ctd-class}} explains the structure
    of CTD objects, and also outlines the other functions dealing with them.
-}
 
+Other functions that will be removed soon: \code{\link{addColumn}},
+  \code{\link{ctdUpdateHeader}},
+  \code{\link{mapMeridians}}, \code{\link{mapZones}},
+  \code{\link{oce.as.POSIXlt}}
+}
+\author{
+Dan Kelley
+}
