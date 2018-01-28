@@ -602,7 +602,7 @@ drawPalette <- function(zlim, zlab="",
 #'         in the horizontal or vertical direction (or both) if the length of the
 #'         corresponding edge of the \code{z} matrix exceeds 800. (This also creates
 #'         a warning message.) The decimation
-#'         factor is computed as the integet just below the ratio of \code{z} dimension
+#'         factor is computed as the integer just below the ratio of \code{z} dimension
 #'         to 400. Thus, no decimation is done if the dimension is less than 800,
 #'         but if the dimension s between 800 and 1199, only every second grid
 #'         point is mapped to a pixel in the image.  \strong{Case 3.}
@@ -656,7 +656,7 @@ drawPalette <- function(zlim, zlab="",
 #' @param useRaster A logical value passed to \code{\link{image}}, in cases
 #'        where \code{filledContour} is \code{FALSE}. Setting \code{useRaster=TRUE}
 #'        can alleviate some anti-aliasing effects on some plot devices;
-#'        see the documentaiton for \code{\link{image}}.
+#'        see the documentation for \code{\link{image}}.
 #' @param  mgp A 3-element numerical vector to use for \code{par(mgp)}, and
 #'         also for \code{par(mar)}, computed from this.  The default is
 #'         tighter than the R default, in order to use more space for the

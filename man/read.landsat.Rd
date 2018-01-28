@@ -25,11 +25,11 @@ accessor functions for \code{\link{landsat-class}}. The default value is
 from Konda et al.  (1994). These authors suggest an uncertainty of 0.04,
 but a wider range of values can be found in the literature.  The value of
 \code{metadata$emissivity} is easy to alter, either as a single value or
-as a matrix, yielding flexibility of calcuation.}
+as a matrix, yielding flexibility of calculation.}
 
 \item{decimate}{optional positive integer indicating the degree to which
 the data should be subsampled after reading and before storage. Setting
-this to 10 can speed up reding by a factor of 3 or more, but higher values
+this to 10 can speed up reading by a factor of 3 or more, but higher values
 have diminishing effect.  In exploratory work, it is useful to set
 \code{decimate=10}, to plot the image to determine a subregion
 of interest, and then to use \code{\link{landsatTrim}} to trim the image.}

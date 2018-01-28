@@ -7,7 +7,7 @@
 mapCoordinateSystem(longitude, latitude, L = 100, phi = 0, ...)
 }
 \arguments{
-\item{longitude}{numeric value of longiutde in degrees.}
+\item{longitude}{numeric value of longitude in degrees.}
 
 \item{latitude}{numeric value of latitude in degrees.}
 
@@ -24,7 +24,7 @@ to indicate a coordinate system set up so that one axis is parallel
 to a coastline.
 }
 \details{
-This is a preliminary version of this function. It only 
+This is a preliminary version of this function. It only
 works if the lines of constant latitude are horizontal on the plot.
 }
 \examples{
@@ -33,7 +33,7 @@ library(oce)
 data(coastlineWorldFine, package='ocedata')
 HfxLon <- -63.5752
 HfxLat <- 44.6488
-mapPlot(coastlineWorldFine, proj='+proj=merc', 
+mapPlot(coastlineWorldFine, proj='+proj=merc',
         longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
         col='lightgrey')
 mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)

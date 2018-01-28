@@ -39,7 +39,7 @@ of velocity, given the results of a sample dataset:
 \section{Issues}{
  This function may be renamed (or removed) without notice.
 It was created to read some data being used in a particular research
-project, and will be rendered uselss if Bremen changes this data format.
+project, and will be rendered useless if Bremen changes this data format.
 }
 
 \seealso{

@@ -109,7 +109,7 @@ geodXy <- function(longitude, latitude, longitudeRef, latitudeRef, debug=getOpti
 #' The minimum is calculated in C for speed, using the \code{nmmin} function
 #' that is the underpinning for the Nelder-Meade version of the R function
 #' \code{\link{optim}}. If you find odd results, try setting \code{debug=1}
-#' and rerunning, to see whether this optimizer is having difficulting
+#' and rerunning, to see whether this optimizer is having difficulty
 #' finding a minimum of the mismatch function.
 #'
 #' @param x value of x in metres, as given by \code{\link{geodXy}}
@@ -166,7 +166,7 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #'
 #' Case 2: \code{longitude1} is a vector.  If \code{longitude2} and
 #' \code{latitude2} are not given, then the return value is a vector containing
-#' the distances of each point from the first one, \emph{or} the distancce
+#' the distances of each point from the first one, \emph{or} the distance
 #' along the path connecting the points, according to the value of
 #' \code{alongPath}.  On the other hand, if both \code{longitude2} and
 #' \code{latitude2} are specified, then the return result depends on the length

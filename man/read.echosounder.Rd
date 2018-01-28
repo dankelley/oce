@@ -40,7 +40,7 @@ V3, and may not work properly with other file formats.
 }
 \section{Bugs}{
  Only the amplitude information (in counts) is determined.  A
-future version of this funciton may provide conversion to dB, etc.  The
+future version of this function may provide conversion to dB, etc.  The
 handling of dual-beam and split-beam files is limited.  In the dual-beam
 cse, only the wide beam signal is processed (I think ... it could be the
 narrow beam, actually, given the confusing endian tricks being played).  In
@@ -49,7 +49,7 @@ angle data being ignored.
 }
 
 \references{
-Various echousounder instruments provided by BioSonics are
+Various echosounder instruments provided by BioSonics are
 described at the company website, \url{http://www.biosonicsinc.com/}.  The
 document listed as [1] below was provided to the author of this function in
 November 2011, which suggests that the data format was not changed since

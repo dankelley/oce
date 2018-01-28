@@ -62,7 +62,7 @@ amount of debugging information, or to 2 to get more.}
 An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 }
 \description{
-Read a Sontek acoustic-Dopplerprofiler file [1].
+Read a Sontek acoustic-Doppler profiler file [1].
 }
 \references{
 1. Information about Sontek profilers is available at

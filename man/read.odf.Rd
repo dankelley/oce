@@ -14,7 +14,7 @@ data names to resultant variable names.  For example,
 \code{columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))}
 states that a short-name of \code{"salt"} represents salinity, and that the unit is
 as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFNames2oceNames}},
-as appropriate, and takes precendence over the lookup table in that function.}
+as appropriate, and takes precedence over the lookup table in that function.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that

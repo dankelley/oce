@@ -61,7 +61,7 @@ or black coastlines, for \code{type="p"}, \code{type="l"}, or
 
 \item{clip}{logical value indicating whether to trim any coastline elements that lie wholly
 outside the plot region. This can prevent e.g. a problem of filling the whole plot area of
-an Arctic stereopolar view, because the projected trace for Antarctica lies outside all 
+an Arctic stereopolar view, because the projected trace for Antarctica lies outside all
 other regions so the whole of the world ends up being "land".  Setting \code{clip=FALSE}
 disables this action, which may be of benefit in rare instances in the line connecting
 two points on a coastline may cross the plot domain, even if those points are outside
@@ -374,7 +374,7 @@ This is a also problem in the standalone PROJ.4 application version
 See \url{https://github.com/dankelley/oce/issues/1337} for details.
 
 \item 2017-09-30: \code{lcca} removed, because its inverse was
-wildly inaccurate in a Pacific Antartic-Alaska application
+wildly inaccurate in a Pacific Antarctic-Alaska application
 (see \url{https://github.com/dankelley/oce/issues/1303}).
 
 }
@@ -469,7 +469,7 @@ prior to Nov 16, 2016, but was found to fail on that date.)
 the place to start to learn about the code.
 
 6. \code{PROJ.4} projection details were once at
-\code{http://www.remotesensing.org/geotiff/proj_list/} but it was 
+\code{http://www.remotesensing.org/geotiff/proj_list/} but it was
 discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
 seems to have been significant reorganization of websites related to this.
 The base website seems to be \url{https://trac.osgeo.org/geotiff/} and that

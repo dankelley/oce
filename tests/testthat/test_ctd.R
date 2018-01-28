@@ -166,7 +166,7 @@ test_that("alter ctd metadata", {
           expect_true(max(top[['pressure']]) < 5)
 })
 
-test_that("gsw calcuations on ctd data", {
+test_that("gsw calculations on ctd data", {
           SP <- 35
           t <- 10
           p <- 1000

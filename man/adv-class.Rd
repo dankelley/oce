@@ -5,7 +5,7 @@
 \alias{adv-class}
 \title{Class to Hold adv Data}
 \description{
-This class holds data from acoustic-Dopper velocimeters.
+This class holds data from acoustic-Doppler velocimeters.
 }
 \details{
 The \code{metadata} slot

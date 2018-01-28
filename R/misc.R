@@ -2773,7 +2773,7 @@ oce.filter <- oceFilter
 #' @author Dan Kelley
 #' @seealso See \code{\link{wind}}.
 #' @references S. E.  Koch and M.  DesJardins and P. J. Kocin, 1983.  ``An
-#' interactive Barnes objective map anlaysis scheme for use with satellite and
+#' interactive Barnes objective map analysis scheme for use with satellite and
 #' conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22, p. 1487-1503.
 #' @examples
 #'
@@ -3114,7 +3114,7 @@ addColumn <- function (x, data, name)
 #' @param x an \code{oce} object containing a \code{data} element.
 #' @param by an indication of the subsampling.  If this is a single number,
 #' then it indicates the spacing between elements of \code{x} that are
-#' selected.  If it is two numbers (a condition only applicabile if \code{x} is
+#' selected.  If it is two numbers (a condition only applicable if \code{x} is
 #' an \code{echosounder} object, at present), then the first number indicates
 #' the time spacing and the second indicates the depth spacing.
 #' @param to Indices at which to subsample.  If given, this over-rides
@@ -3502,7 +3502,7 @@ byteToBinary <- function(x, endian)
 #' also recommending that the \eqn{\pm}{+/-} notation be avoided altogether.
 #'
 #' The \code{parentheses} notation is often called the compact notation.  In
-#' it, the digits in parenthese indicate the uncertainty in the corresponding
+#' it, the digits in parentheses indicate the uncertainty in the corresponding
 #' digits to their left, e.g. 12.34(3) means that the last digit (4) has an
 #' uncertainty of 3.  However, as with the \eqn{\pm}{+/-} notation, different
 #' authorities offer different advice on defining this uncertainty; Mills et
@@ -4094,14 +4094,14 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 #' \code{x*seq_along(y)}.
 #' @param type Flag indicating the desired return value (see \dQuote{Value}).
 #' @param xmin,xmax Optional numbers indicating the range of the integration.
-#' These values may be used to restrict the range of integration, or to 
+#' These values may be used to restrict the range of integration, or to
 #' extend it; in either case, \code{\link{approx}} with \code{rule=2}
 #' is used to create new x and y vectors.
 #'
 #' @return If \code{type="A"} (the default), a single value is returned,
 #' containing the estimate of the integral of \code{y=y(x)}.  If
 #' \code{type="dA"}, a numeric vector of the same length as \code{x}, of which
-#' the first element is zer0, the second element is the integral between
+#' the first element is zero, the second element is the integral between
 #' \code{x[1]} and \code{x[2]}, etc.  If \code{type="cA"}, the result is the
 #' cumulative sum (as in \code{\link{cumsum}}) of the values that would be
 #' returned for \code{type="dA"}.  See \dQuote{Examples}.

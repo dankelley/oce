@@ -2,7 +2,7 @@
 
 #' Read a Sontek ADP File
 #'
-#' Read a Sontek acoustic-Dopplerprofiler file [1].
+#' Read a Sontek acoustic-Doppler profiler file [1].
 #"
 #' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
 #' anomalous spikes in heading, etc.
@@ -410,12 +410,12 @@ sontek.time <- function(t, tz=getOption("oceTz"))
 
 #' Read a serial Sontek ADP file
 #'
-#' Read a Sontek acoustic-Dopplerprofiler file, in a serial form that
+#' Read a Sontek acoustic-Doppler profiler file, in a serial form that
 #' is possibly unique to Dalhousie University.
 #'
 #' @param beamAngle angle between instrument axis and beams, in degrees.
-#' @param type A character string indicating the type of instrument.
-#' @param orientation Ooptional character string specifying the orientation of the
+#' @param type a character string indicating the type of instrument.
+#' @param orientation optional character string specifying the orientation of the
 #' sensor, provided for those cases in which it cannot be inferred from the
 #' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
 #' \code{"sideward"}.

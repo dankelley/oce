@@ -481,7 +481,7 @@ setMethod(f="summary",
 #' will detect the setup, and subtract nitrite from the sum to yield
 #' nitrate.
 #'
-#' Below is a list of computed quantities, or at least quantites that are
+#' Below is a list of computed quantities, or at least quantities that are
 #' typically not stored in data files.  (This is a vague statement because
 #' Seabird software permits calculation of many of these and hence storage
 #' within \code{.cnv} files.)
@@ -510,7 +510,7 @@ setMethod(f="summary",
 #' \item \code{SA} or \code{Absolute Salinity}: Absolute Salinity,
 #' computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.
 #' The calculation involves location as well as measured water properties.
-#' If the object \code{x} does not containin information on the location,
+#' If the object \code{x} does not containing information on the location,
 #' then 30N and 60W is used for the calculation, and a warning is generated.
 #'
 #' \item \code{sigmaTheta}: A form of potential density anomaly, computed with
@@ -747,7 +747,7 @@ setMethod(f="[[<-",
 #' unless the \code{profile} argument is specified and then that specific
 #' profile is extracted. (3) It can be an object of \code{\link{rsk-class}},
 #' (see \dQuote{Converting rsk objects} for details). (4)
-#' It can be unspecified, in whch case \code{conductivity} becomes a mandatory
+#' It can be unspecified, in which case \code{conductivity} becomes a mandatory
 #' argument, because it will be needed for computing actual salinity,
 #' using \code{\link{swSCTp}}.
 #'
@@ -892,7 +892,7 @@ setMethod(f="[[<-",
 #' contain their information. If required, any data or metadata
 #' element can be added to the value returned by \code{as.ctd}
 #' using \code{\link{oceSetData}} or \code{\link{oceSetMetadata}},
-#' erspectively.
+#' respectively.
 #'
 #' The returned \code{\link{rsk-class}} object contains pressure in a form that
 #' may need to be adjusted, because \code{rsk} objects may contain
@@ -908,7 +908,7 @@ setMethod(f="[[<-",
 #' sum of sea pressure and atmospheric pressure), depending on how the object was
 #' created with \code{\link{as.rsk}} or \code{\link{read.rsk}}.  However,
 #' \code{\link{ctd-class}} objects store sea pressure, which is needed for
-#' plotting, calculating density, etc. This poses no difficulities, however,
+#' plotting, calculating density, etc. This poses no difficulties, however,
 #' because \code{as.ctd} automatically converts absolute pressure to sea pressure,
 #' if the metadata in the \code{\link{rsk-class}} object indicates that this is
 #' appropriate. Further alteration of the pressure can be accomplished with the
@@ -1357,7 +1357,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @param column A column of data to be inserted, in the form of a
 #'     numeric vector, whose length matches that of columns in the
-#'     objecct.
+#'     object.
 #' @param name Character string indicating the name this column is to
 #'     have in the \code{data} slot of \code{x}.
 #' @param label Optional character string or expression indicating the
@@ -1474,7 +1474,7 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
 #' interpolation between neighboring points, using \code{\link{approx}}
 #' with the \code{rule} argument specified here), \code{"lm"} (based on local
 #' regression, with \code{e} setting the size of the local region), \code{"rr"}
-#' (for the Reineger and Ross method, carried out with \code{\link{oce.approx}})
+#' (for the Reiniger and Ross method, carried out with \code{\link{oce.approx}})
 #' and \code{"unesco"} (for the UNESCO method, carried out with.
 #' \code{\link{oce.approx}}.  If \code{method} is a function, then it must take
 #' three arguments, the first being pressure, the second being an arbitrary
@@ -4199,7 +4199,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' pressure, using the oceanographic convention of putting lower pressures
 #' nearer the top of the plot. This works for any \code{oce} object that has a
 #' pressure column in its \code{data} slot.
-#' The colours (\code{col.salinity}, etc.) are ony used if two profiles appear
+#' The colours (\code{col.salinity}, etc.) are only used if two profiles appear
 #' on a plot.
 #'
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.

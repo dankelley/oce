@@ -18,7 +18,7 @@ as.lobo(time, u, v, salinity, temperature, pressure, nitrate, fluorescence,
 
 \item{temperature}{vector of temperature observations}
 
-\item{pressure}{vector of pressure observationss}
+\item{pressure}{vector of pressure observations}
 
 \item{nitrate}{vector of nitrate observationss}
 

@@ -11,7 +11,7 @@ decimate(x, by = 10, to, filter, debug = getOption("oceDebug"))
 
 \item{by}{an indication of the subsampling.  If this is a single number,
 then it indicates the spacing between elements of \code{x} that are
-selected.  If it is two numbers (a condition only applicabile if \code{x} is
+selected.  If it is two numbers (a condition only applicable if \code{x} is
 an \code{echosounder} object, at present), then the first number indicates
 the time spacing and the second indicates the depth spacing.}
 

@@ -118,7 +118,7 @@ latter with name \code{`NO2+NO3`}. In this case, e.g. \code{x[["nitrate"]]}
 will detect the setup, and subtract nitrite from the sum to yield
 nitrate.
 
-Below is a list of computed quantities, or at least quantites that are
+Below is a list of computed quantities, or at least quantities that are
 typically not stored in data files.  (This is a vague statement because
 Seabird software permits calculation of many of these and hence storage
 within \code{.cnv} files.)
@@ -147,7 +147,7 @@ This is a synonym for \code{theta}.
 \item \code{SA} or \code{Absolute Salinity}: Absolute Salinity,
 computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.
 The calculation involves location as well as measured water properties.
-If the object \code{x} does not containin information on the location,
+If the object \code{x} does not containing information on the location,
 then 30N and 60W is used for the calculation, and a warning is generated.
 
 \item \code{sigmaTheta}: A form of potential density anomaly, computed with

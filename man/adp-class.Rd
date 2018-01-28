@@ -92,7 +92,7 @@ echo intensity).
 Teledyne-RDI profilers have an additional item \code{g} (for
 percent-good).
 
-VmDas-equiped Teledyne-RDI profilers additional navigation data, with
+VmDas-equipped Teledyne-RDI profilers additional navigation data, with
 details listed in the table below; note that the RDI documentation [2] and
 the RDI gui use inconsistent names for most items.
 

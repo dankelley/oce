@@ -109,7 +109,7 @@ values that can be used by \code{\link{oce.grid}} to add a grid to the plot.
 }
 \description{
 Plot echosounder data.
-Simple linear approximation is used when a \code{newx} value is specifie
+Simple linear approximation is used when a \code{newx} value is specified
 with the \code{which=2} method, but arguably a gridding method should be
 used, and this may be added in the future.
 }

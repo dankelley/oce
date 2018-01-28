@@ -12,7 +12,7 @@ use \code{tz="GMT"} in constructing \code{t}.)}
 
 \item{j}{Indices of tidal constituents to use.}
 
-\item{latitude}{Optional numerical value continaing the latitude in degrees North.}
+\item{latitude}{Optional numerical value containing the latitude in degrees North.}
 }
 \value{
 A \code{\link[base]{list}} containing

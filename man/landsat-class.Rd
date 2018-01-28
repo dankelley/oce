@@ -75,7 +75,7 @@ an abbreviation for \code{band=c("red", "green", "nir")}.
 
 Band 8 is panchromatic, and has the highest resolution.  For convenience of
 programming, \code{\link{read.landsat}} subsamples the \code{tirs1} and
-\code{tirs2} bands to the 30m resultion of the other bands.  See Reference
+\code{tirs2} bands to the 30m resolution of the other bands.  See Reference
 [3] for information about the evolution of Landsat 8 calibration
 coefficients, which as of summer 2014 are still subject to change.
 }

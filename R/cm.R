@@ -200,7 +200,7 @@ setMethod(f="subset",
 #' @param conductivity Optional vector of conductivity.
 #' Ignored if the first argument contains an \code{oce} object holding pressure.
 #' @param salinity Optional vector of salinity, assumed to be Practical Salinity.
-#' Ignored if the first argument contains an \code{oce} object holding saliity
+#' Ignored if the first argument contains an \code{oce} object holding salinity
 #' @param temperature Optional vector of temperature.
 #' Ignored if the first argument contains an \code{oce} object holding temperature
 #' @param longitude Optional longitude in degrees East.

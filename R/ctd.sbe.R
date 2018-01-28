@@ -25,7 +25,7 @@
 #' It is important to note that this table is by no means complete, since there
 #' are a great many SBE names listed in their document [1], plus names
 #' not listed there but present in data files
-#' supplied by prominent archiving agencies. If an SBE name is not recogized,
+#' supplied by prominent archiving agencies. If an SBE name is not recognized,
 #' then the oce name is set to that SBE name. This can cause problems in
 #' some other processing steps (e.g. if \code{\link{swRho}} or a similar
 #' function is called with an \code{oce} object as first argument), and so
@@ -659,7 +659,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' @references
 #' 1. The Sea-Bird SBE 19plus profiler is described at
 #' \code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
-#' information is given in the Sea-Bird data-processing manaual
+#' information is given in the Sea-Bird data-processing manual
 #' \url{http://www.seabird.com/document/sbe-data-processing-manual}.
 #'
 #' 2. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.

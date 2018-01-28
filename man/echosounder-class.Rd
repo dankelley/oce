@@ -48,7 +48,7 @@ y-angle data.
 
 \emph{Accessing values.} Data may be accessed as e.g.
 \code{echosounder[["time"]]}, \code{echosounder[["depth"]]},
-\code{echosounder[["a"]]}, etc.  Items in \code{metadata} must be specifield
+\code{echosounder[["a"]]}, etc.  Items in \code{metadata} must be specified
 by full name, but those in \code{data} may be abbreviated, so long as the
 abbreviation is unique. In addition to the actual data, some derived fields
 are also available: \code{echosounder[["distance"]]} calls

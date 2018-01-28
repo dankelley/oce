@@ -308,7 +308,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
         ## also teledyne2014ostm page 144 says could be Surveyor or Observer
     } else {
         instrumentSubtype <- "unknown"
-        ## FIXME: I think this is a poor way to determine the intrument type. Why do we even try?
+        ## FIXME: I think this is a poor way to determine the instrument type. Why do we even try?
         ##> warning("unexpected length ", FLDLength, " of fixed-leader-data header; expecting 50 for
         ##>         'surveyor/observor' or 59 for 'workhorse'.")
     }
@@ -454,7 +454,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' not a format that R supports. These velocities become 8-byte (numeric) values
 #' in R. Thus, the R object created by \code{read.adp.rdi} will require more memory
 #' than that of the data file. A scale factor can be estimated by ignoring
-#' vector quanties (e.g. time, which has just one value per profile) and concentrating on matrix properties
+#' vector quantities (e.g. time, which has just one value per profile) and concentrating on matrix properties
 #' such as velocity, backscatter, and correlation. These three elements have equal dimensions.
 #' Thus, each 4-byte slide in the data file (2 bytes + 1 byte + 1 byte)
 #' corresponds to 10 bytes in the object (8 bytes + 1 byte + 1 byte).
