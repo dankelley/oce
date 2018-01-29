@@ -880,7 +880,7 @@ swAlpha <- function(salinity, temperature=NULL, pressure=0,
 #' @return Value in psu/\eqn{^\circ}{deg}C.
 #' @author Dan Kelley
 #' @references The \code{eos="unesco"} formulae are based on the UNESCO
-#' equation of state, but are formulaed empirically by Trevor J. McDougall,
+#' equation of state, but are formulated empirically by Trevor J. McDougall,
 #' 1987, Neutral Surfaces, Journal of Physical Oceanography, volume 17, pages
 #' 1950-1964. The \code{eos="gsw"} formulae come from GSW; see references in
 #' the \code{\link{swRho}} documentation.
@@ -1979,7 +1979,7 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' diagrams (if the diagrams are scaled to make the isopycnals run at 45
 #' degres). The definition used here is that of Pierre Flament. (Other
 #' formulations exist.)  Note that pressure is ignored in the definition.
-#' Spiceness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
+#' Spiciness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
 #'
 #' @param salinity either salinity [PSU] (in which case \code{temperature} and
 #' \code{pressure} must be provided) \strong{or} a \code{ctd} object (in which

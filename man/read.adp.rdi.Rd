@@ -100,7 +100,7 @@ A key issue is that RDI files store velocities in 2-byte values, which is
 not a format that R supports. These velocities become 8-byte (numeric) values
 in R. Thus, the R object created by \code{read.adp.rdi} will require more memory
 than that of the data file. A scale factor can be estimated by ignoring
-vector quanties (e.g. time, which has just one value per profile) and concentrating on matrix properties
+vector quantities (e.g. time, which has just one value per profile) and concentrating on matrix properties
 such as velocity, backscatter, and correlation. These three elements have equal dimensions.
 Thus, each 4-byte slide in the data file (2 bytes + 1 byte + 1 byte)
 corresponds to 10 bytes in the object (8 bytes + 1 byte + 1 byte).

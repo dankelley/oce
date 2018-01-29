@@ -305,7 +305,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
 #'     \code{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{PSAR_*.*} \tab \code{par}                \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{QCFF_*.*} \tab \code{flag}               \tab Overall flag                                               \cr
-#'     \code{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objecs                           \cr
+#'     \code{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objects                           \cr
 #'     \code{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{SNCN_*.*} \tab \code{scanCounter}        \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                                       \cr
@@ -737,7 +737,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' \code{columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))}
 #' states that a short-name of \code{"salt"} represents salinity, and that the unit is
 #' as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFNames2oceNames}},
-#' as appropriate, and takes precendence over the lookup table in that function.
+#' as appropriate, and takes precedence over the lookup table in that function.
 #' @template debugTemplate
 #'
 #' @return An object of class \code{oce}. It is up to a calling function to determine what to do with this object.

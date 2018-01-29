@@ -34,7 +34,7 @@ is a variable measuring distance orthogonal to isopycnal lines on TS
 diagrams (if the diagrams are scaled to make the isopycnals run at 45
 degres). The definition used here is that of Pierre Flament. (Other
 formulations exist.)  Note that pressure is ignored in the definition.
-Spiceness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
+Spiciness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
 }
 \references{
 P. Flament, 2002. A state variable for characterizing water

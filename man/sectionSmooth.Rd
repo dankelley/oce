@@ -29,7 +29,7 @@ x grid will equal the input x grid.}
 \item{gamma}{scale-reduction parameter, passed to \code{\link{interpBarnes}},
 if \code{method="barnes"}; ignored otherwise.}
 
-\item{iterations}{number of interations of Barnes algorithm, passed to
+\item{iterations}{number of iterations of Barnes algorithm, passed to
 \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.}
 
 \item{trim}{passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise}

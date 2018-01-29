@@ -187,7 +187,7 @@ Plot a profile, showing variation of some quantity (or quantities) with
 pressure, using the oceanographic convention of putting lower pressures
 nearer the top of the plot. This works for any \code{oce} object that has a
 pressure column in its \code{data} slot.
-The colours (\code{col.salinity}, etc.) are ony used if two profiles appear
+The colours (\code{col.salinity}, etc.) are only used if two profiles appear
 on a plot.
 }
 \examples{

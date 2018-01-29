@@ -45,7 +45,7 @@ velocimeters.
 Generally, the transformation must be done on a time-by-time basis, which is
 a slow operation.  However, this function checks whether the vectors for
 heading, pitch and roll, are all of unit length, and in that case, the
-calculation is altered, resulting in shorter executation times.  Note that
+calculation is altered, resulting in shorter execution times.  Note that
 the angles are held in (\code{data$timeSlow}, \code{data$headingSlow}, ...)
 for Nortek instruments and (\code{data$time}, \code{data$heading}, ...) for
 Sontek instruments.

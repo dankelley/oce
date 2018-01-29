@@ -59,12 +59,12 @@ setMethod(f="[[<-",
 #' Plot a \code{bremen} object, i.e. one inheriting from \code{\link{bremen-class}}.
 #' If \code{x} seems to be a CTD dataset, uses \code{\link{plot,ctd-method}};
 #' otherwise, \code{x} is assumed to be a lowered-adp object, and a two-panel
-#' plot is created with \code{\link{plot,ladp-method}} to show velocity varation with
+#' plot is created with \code{\link{plot,ladp-method}} to show velocity variation with
 #' pressure.
 #'
 #' @param x A \code{bremen} object, e.g. as read by \code{\link{read.bremen}}.
 #' @param type Optional string indicating the type to which \code{x} should be
-#' coerced before ploting. The choices are \code{ctd} and \code{ladp}.
+#' coerced before plotting. The choices are \code{ctd} and \code{ladp}.
 #' @param ... Other arguments, passed to plotting functions.
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
@@ -157,7 +157,7 @@ findInHeaderBremen <- function(key, lines)
 #' @return An object of \code{\link{bremen-class}}.
 #' @section Issues: This function may be renamed (or removed) without notice.
 #' It was created to read some data being used in a particular research
-#' project, and will be rendered uselss if Bremen changes this data format.
+#' project, and will be rendered useless if Bremen changes this data format.
 #' @author Dan Kelley
 #' @family things related to \code{bremen} data
 read.bremen <- function(file)

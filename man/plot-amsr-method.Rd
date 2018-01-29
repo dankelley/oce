@@ -11,7 +11,7 @@
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
-\item{x}{An object inherting from \code{\link{amsr-class}}.}
+\item{x}{An object inheriting from \code{\link{amsr-class}}.}
 
 \item{y}{String indicating the name of the band to plot; if not provided,
 \code{SST} is used; see \code{\link{amsr-class}} for a list of bands.}

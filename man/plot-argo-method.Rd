@@ -63,7 +63,7 @@ light-gray, or a colour name.  Owing to problems with some projections, the
 default is not to fill.}
 
 \item{projection}{indication of the projection to be used
-in trajetory maps. If this is \code{NULL}, no projection is used, although
+in trajectory maps. If this is \code{NULL}, no projection is used, although
 the plot aspect ratio will be set to yield zero shape distortion at the
 mean float latitude.  If \code{projection="automatic"}, then one
 of two projections is used: stereopolar (i.e. \code{"+proj=stere +lon_0=X"}

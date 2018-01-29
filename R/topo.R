@@ -784,7 +784,7 @@ setMethod(f="plot",
 #' by NOAA as "?"; (2) a NetCDF format described by NOAA as "GMT NetCDF"
 #' (recognized by the presence of a variable named \code{}), and
 #' (3) another NetCDF format described by NOAA as "NetCDF" (recognized
-#' by the presence of a variable called \code{}). Files in each of these formatss
+#' by the presence of a variable called \code{}). Files in each of these formats
 #' can be downloaded with \code{\link{download.topo}}.
 #'
 #' @param file Name of a file containing an ETOPO-format dataset. Three

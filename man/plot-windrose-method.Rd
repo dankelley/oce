@@ -20,7 +20,7 @@ a \code{\link{fivenum}} representation of the values.}
 
 \item{convention}{String indicating whether to use meteorological convention or
 oceanographic convention for the arrows that emanate from the centre of the
-rose.  In meteorological convenction, an arrow emanates towards the right on
+rose.  In meteorological convection, an arrow emanates towards the right on
 the diagram if the wind is from the east; in oceanographic convention, such an
 arrow indicates flow \emph{to} the east.}
 

@@ -50,7 +50,7 @@ with \code{~} in the table; their decoding is done with \code{\link{grep}}.
 It is important to note that this table is by no means complete, since there
 are a great many SBE names listed in their document [1], plus names
 not listed there but present in data files
-supplied by prominent archiving agencies. If an SBE name is not recogized,
+supplied by prominent archiving agencies. If an SBE name is not recognized,
 then the oce name is set to that SBE name. This can cause problems in
 some other processing steps (e.g. if \code{\link{swRho}} or a similar
 function is called with an \code{oce} object as first argument), and so

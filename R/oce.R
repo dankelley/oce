@@ -584,7 +584,7 @@ plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
 #' @param xout the values of the independent variable at which interpolation is
 #' to be done.
 #' @param method method to use.  See \dQuote{Details}.
-#' @return A vector of interplated values, corresponding to the \code{xout}
+#' @return A vector of interpolated values, corresponding to the \code{xout}
 #' values and equal in number.
 #' @author Dan Kelley
 #' @references
@@ -764,7 +764,7 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 #' return value from the following functions: \code{\link{imagep}} and
 #' \code{\link{oce.plot.ts}}, \code{\link{plot,adp-method}},
 #' \code{\link{plot,echosounder-method}}, and \code{\link{plotTS}}.
-#' It makes no sense to try to use \code{oce.grid} for multiplanel oce plots,
+#' It makes no sense to try to use \code{oce.grid} for multipanel oce plots,
 #' e.g. the default plot from \code{\link{plot,adp-method}}.
 #'
 #' @examples
@@ -857,7 +857,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' \code{\link{despike}}.
 #' @param axes boolean, set to \code{TRUE} to get axes plotted
 #' @param tformat optional format for labels on the time axis
-#' @param marginsAsImage boolean indicatingn whether to set the right-hand
+#' @param marginsAsImage boolean indicating whether to set the right-hand
 #' margin to the width normally taken by an image drawn with
 #' \code{\link{imagep}}.
 #' @param grid if \code{TRUE}, a grid will be drawn for each panel.  (This

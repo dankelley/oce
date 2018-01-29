@@ -18,7 +18,7 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-An object with the first 3 velocitiy indices having been altered to
+An object with the first 3 velocity indices having been altered to
 represent velocity components in xyz (or instrument) coordinates.  (For
 \code{rdi} data, the values at the 4th velocity index are changed to
 represent the "error" velocity.)

@@ -40,11 +40,11 @@ East.}
 \item{latitude}{optional signed number indicating the latitude in degrees
 North.}
 
-\item{type}{A character string indicating the type of instrument.}
+\item{type}{a character string indicating the type of instrument.}
 
 \item{beamAngle}{angle between instrument axis and beams, in degrees.}
 
-\item{orientation}{Ooptional character string specifying the orientation of the
+\item{orientation}{optional character string specifying the orientation of the
 sensor, provided for those cases in which it cannot be inferred from the
 data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
 \code{"sideward"}.}
@@ -66,7 +66,7 @@ amount of debugging information, or to 2 to get more.}
 An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 }
 \description{
-Read a Sontek acoustic-Dopplerprofiler file, in a serial form that
+Read a Sontek acoustic-Doppler profiler file, in a serial form that
 is possibly unique to Dalhousie University.
 }
 \seealso{

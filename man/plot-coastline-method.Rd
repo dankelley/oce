@@ -69,7 +69,7 @@ coastline produces spurious horizontal lines owing to islands crossing the
 plot edges (a problem that plagues map projections).  If \code{projection}
 is not set, a Mercator projection is used for latitudes below about 70
 degrees, as if \code{projection="+proj=merc"} had been supplied, or a
-Stereopoloar one is used as if \code{projection="+proj=stere"}.  Otherwise,
+Stereopolar one is used as if \code{projection="+proj=stere"}.  Otherwise,
 \code{projection} must be a character string identifying a projection
 accepted by \code{\link{mapPlot}}.}
 

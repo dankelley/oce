@@ -422,7 +422,7 @@ read.lobo <- function(file, cols=7, processingLog)
 #' @param v vector of y velocity component observations
 #' @param salinity vector of salinity observations
 #' @param temperature vector of temperature observations
-#' @param pressure vector of pressure observationss
+#' @param pressure vector of pressure observations
 #' @param nitrate vector of nitrate observationss
 #' @param fluorescence vector of fluoresence observations
 #' @param filename source filename

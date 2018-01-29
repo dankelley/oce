@@ -68,7 +68,7 @@ a palette, first call \code{\link{drawPalette}}, then call
 
 \item{tformat}{optional format for labels on the time axis}
 
-\item{marginsAsImage}{boolean indicatingn whether to set the right-hand
+\item{marginsAsImage}{boolean indicating whether to set the right-hand
 margin to the width normally taken by an image drawn with
 \code{\link{imagep}}.}
 

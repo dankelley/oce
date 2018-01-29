@@ -1102,7 +1102,7 @@ sectionAddCtd <- sectionAddStation
 #' then there are three possibilities: is the string is \code{"polygon"} then
 #' a polygon is drawn, if it is \code{"lines"} then a line is drawn, and if it
 #' is \code{"points"} then points are drawn. If \code{showBottom} is an object
-#' inherinting from \code{\link{topo-class}} then the station locations are
+#' inheriting from \code{\link{topo-class}} then the station locations are
 #' interpolated to that topography and the results are shown with a polygon.
 #' In this last case, the interpolation is set at a grid that is roughly
 #' in accordance with the resolution of the latitudes in the \code{topo} object.
@@ -2615,7 +2615,7 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' @param gamma scale-reduction parameter, passed to \code{\link{interpBarnes}},
 #' if \code{method="barnes"}; ignored otherwise.
 #'
-#' @param iterations number of interations of Barnes algorithm, passed to
+#' @param iterations number of iterations of Barnes algorithm, passed to
 #' \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.
 #'
 #' @param trim passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise

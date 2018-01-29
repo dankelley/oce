@@ -323,7 +323,7 @@ setMethod(f="plot",
 #' @param t The time in \code{POSIXct} format.  (It is \strong{very} important to
 #' use \code{tz="GMT"} in constructing \code{t}.)
 #' @param j Indices of tidal constituents to use.
-#' @param latitude Optional numerical value continaing the latitude in degrees North.
+#' @param latitude Optional numerical value containing the latitude in degrees North.
 #' @return A \code{\link[base]{list}} containing
 #' items named \code{v}, \code{u} and \code{f} (see the \code{T_TIDE}
 #' documentation).
@@ -435,7 +435,7 @@ tidemVuf <- function(t, j, latitude=NULL)
 #' Do some astronomical calculations for \code{\link{tidem}}.  This function is based directly
 #' on \code{t_astron} in the \code{T_TIDE} Matlab package [1].
 #'
-#' @param t Either a time in \code{POSIXct} format (with \code{"UTC"} timezoen),
+#' @param t Either a time in \code{POSIXct} format (with \code{"UTC"} timezone),
 #' or an integer. In the second case, it is converted to a time with
 #' \code{\link{numberAsPOSIXct}(t,tz="UTC")}.
 #' If \code{t} (It is \strong{very} important to use \code{tz="GMT"} in constructing \code{t}.)
@@ -517,7 +517,7 @@ tidemAstron <- function(t)
 #' constituent in the Foreman (1977) notation.  (To get the list, execute
 #' \code{data(tidedata)} and then execute \code{cat(tideData$name)}.)  Each
 #' named constituent is added to the existing list, if it is not already there.
-#' But, if the constituent is preceeded by a minus sign, then it is removed
+#' But, if the constituent is preceded by a minus sign, then it is removed
 #' from the list (if it is already there).  Thus, for example,
 #' \code{constituents=c("standard", "-M2", "ST32")} would remove the M2
 #' constituent and add the ST32 constituent.
@@ -562,7 +562,7 @@ tidemAstron <- function(t)
 #' \code{PI1}, \code{S1} and \code{PSI1} from the list. And, finally,
 #' Table 3 of [1] dictates the removal of
 #' \code{H1}, \code{H2}, \code{T2} and \code{R2}.  Also, since Table 3
-#' of [1] indiates that \code{GAM2} gets subsumed into \code{H1},
+#' of [1] indicates that \code{GAM2} gets subsumed into \code{H1},
 #' and if \code{H1} is already being deleted in this test case, then
 #' \code{GAM2} will also be deleted.
 #'
@@ -621,7 +621,7 @@ tidemAstron <- function(t)
 #' of the T_TIDE Matlab code.
 #' Rounded to the 0.1mm resolution of values reported in [1] and [2],
 #' the \code{tidem} results have root-mean-square amplitude difference
-#' to Foreman's Appendix 7.3 of 0.06mm; by comparision,
+#' to Foreman's Appendix 7.3 of 0.06mm; by comparison,
 #' the results in Table 1 of Pawlowicz et al. (2002) agree with Foreman's
 #' results to RMS difference 0.04mm.)
 #'

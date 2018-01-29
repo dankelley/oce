@@ -88,7 +88,7 @@
 #' Teledyne-RDI profilers have an additional item \code{g} (for
 #' percent-good).
 #'
-#' VmDas-equiped Teledyne-RDI profilers additional navigation data, with
+#' VmDas-equipped Teledyne-RDI profilers additional navigation data, with
 #' details listed in the table below; note that the RDI documentation [2] and
 #' the RDI gui use inconsistent names for most items.
 #'
@@ -2260,7 +2260,7 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 #' multiplying by \code{count2db}.  Then, the signal decrease owing to
 #' spherical spreading is compensated for by adding the term
 #' \eqn{20\log10(r)}{20*log10(r)}, where \eqn{r}{r} is the distance from the
-#' sensor head to the water from which scattering is occuring.  \eqn{r}{r} is
+#' sensor head to the water from which scattering is occurring.  \eqn{r}{r} is
 #' given by \code{x[["distance"]]}.
 #'
 #' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
@@ -2366,7 +2366,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #'
 #' @param x an object of class \code{"adp"}.
 #' @template debugTemplate
-#' @return An object with the first 3 velocitiy indices having been altered to
+#' @return An object with the first 3 velocity indices having been altered to
 #' represent velocity components in xyz (or instrument) coordinates.  (For
 #' \code{rdi} data, the values at the 4th velocity index are changed to
 #' represent the "error" velocity.)

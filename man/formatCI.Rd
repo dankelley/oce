@@ -50,7 +50,7 @@ suggest that \eqn{b}{b} should be set to the standard uncertainty, while
 also recommending that the \eqn{\pm}{+/-} notation be avoided altogether.
 
 The \code{parentheses} notation is often called the compact notation.  In
-it, the digits in parenthese indicate the uncertainty in the corresponding
+it, the digits in parentheses indicate the uncertainty in the corresponding
 digits to their left, e.g. 12.34(3) means that the last digit (4) has an
 uncertainty of 3.  However, as with the \eqn{\pm}{+/-} notation, different
 authorities offer different advice on defining this uncertainty; Mills et

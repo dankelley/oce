@@ -12,7 +12,7 @@ ctdAddColumn(x, column, name, label, unit = NULL, log = TRUE,
 
 \item{column}{A column of data to be inserted, in the form of a
 numeric vector, whose length matches that of columns in the
-objecct.}
+object.}
 
 \item{name}{Character string indicating the name this column is to
 have in the \code{data} slot of \code{x}.}
