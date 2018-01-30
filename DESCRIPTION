@@ -2,10 +2,11 @@ Package: oce
 Type: Package
 Title: Analysis of Oceanographic Data
 Version: 0.9-24
-Authors@R: c(person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre")),
- person(given="Clark", family="Richards", email="clark.richards@gmail.com", role=c("aut")),
- person(given="Chantelle", family="Layton", email="chantelle.layton@dal.ca", role=c("ctb"), comment="curl() coauthor"),
- person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field subroutine"))
+Authors@R: c(
+    person(given="Dan", family="Kelley", email="Dan.Kelley@Dal.Ca", role=c("aut", "cre"), comment=c(ORCID="https://orcid.org/0000-0001-7808-5911")),
+    person(given="Clark", family="Richards", email="clark.richards@gmail.com", role=c("aut")),
+    person(given="Chantelle", family="Layton", email="chantelle.layton@dal.ca", role=c("ctb"), comment="curl() coauthor"),
+    person(given="British Geological Survey", role=c("ctb","cph"), comment="magnetic-field subroutine"))
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
 Depends: R (>= 2.15), utils, methods, gsw, testthat
 Suggests: ocedata, foreign, ncdf4, tiff, akima, RSQLite, DBI, rgdal (>=
