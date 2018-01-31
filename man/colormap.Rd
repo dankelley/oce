@@ -224,7 +224,7 @@ plot(seq_along(cm$x0), cm$x0, pch=21, bg=cm$col0)
 grid()
 points(seq_along(cm$x1), cm$x1, pch=21, bg=cm$col1)
 
-## Example 6. colFunction
+## Example 6. colfunction
 cm <- colormap(c(0, 1))
 x <- 1:10
 y <- (x - 5.5)^2
