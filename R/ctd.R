@@ -4379,7 +4379,6 @@ plotProfile <- function (x,
             mar[1] <- 1 # the bottom margin is wrong for e.g. NO2+NO3
     }
     plimGiven <- !missing(plim)
-    densityGiven <- !missing(densitylim)
 
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
                                 xlim=NULL, ylim=NULL,
