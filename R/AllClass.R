@@ -164,7 +164,7 @@ setMethod(f="summary",
                           threes <- cbind(threes, OriginalName)
                       }
                       if ("time" %in% names)
-                          threes <- threes[-which("time"==names),]
+                          threes <- threes[-which("time" == names), , drop=FALSE]
                       owidth <- options('width')
                       options(width=150) # make wide to avoid line breaks
                       print(threes, quote=FALSE)

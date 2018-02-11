@@ -4,41 +4,35 @@
 #' Class for data stored in a format used at Canadian Department of Fisheries
 #' and Oceans laboratories. This is somewhat unusual amongst \code{oce}
 #' classes, in that it does not map to a particular instrument, but rather to a
-#' storage type; in that sense, it is similar to the \code{bremen-class}.
+#' storage type; in that sense, it is similar to the \code{\link{bremen-class}}.
 #'
-#' @section Methods:
+#' @template oceslots
 #'
-#' Consider an ODF object named \code{odf}.
+#' @references
 #'
-#' \emph{Accessing metadata.}
+#' [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+#' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
+#' in June 2011.)
 #'
-#' Metadata (contained in the S4 slot named \code{metadata}) may be retrieved
-#' or set by name, \code{odf[["longitude"]] <- odf[["longitude"]] + 1} corrects
-#' a one-degree error.
+#' [2] The St Lawrence Global Observatory website has information on ODF format at
+#' \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
 #'
-#' \emph{Accessing measured data.}
+#' [3] List of variable codes:
+#' \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
+#' (checked 2018-02-11); only a subset are handled.
 #'
-#' Column data may be accessed by name, e.g. \code{odf[["salinity"]]},
-#' \code{odf[["temperature"]]}, \code{odf[["pressure"]]}, etc.  It is up to the
-#' user to realize what is in the object.
 #'
-#' \emph{Assigning values.}
-#'
-#' Items stored in the object may be altered with e.g.  \code{odf[["salinity"]]
-#' <- rep(35,10)}.
-#'
-#' \emph{Overview of contents.}
-#'
-#' The \code{show} method (e.g.  \code{show(odf)}) displays information about
-#' the object.
 #' @author Dan Kelley
 #' @family things related to \code{odf} data
 #' @family classes provided by \code{oce}
-setClass("odf", contains="oce")
+#' @aliases .odf
+.odf <- setClass("odf", contains="oce")
 
 ## [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
 ##
-## [2] An older document is: http://slgo.ca/app-sgdo/en/pdf/docs_reference/Format_ODF.pdf
+## [2] An older document is: \url{https://slgo.ca/app-sgdo/en/pdf/docs_reference/Format_ODF.pdf} (checked 2018-02-11)
+## [3] List of variable codes: \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}} (checked 2018-02-11); only
+## a subset are handled.
 
 setMethod(f="initialize",
           signature="odf",
@@ -282,6 +276,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
 #'     \code{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                                         \cr
 #'     \code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)               \cr
 #'     \code{CNDC_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)               \cr
+#'     \code{DCHG_*.*} \tab \code{discharge}          \tab                                                            \cr
 #'     \code{DEPH_*.*} \tab \code{pressure}           \tab Sensor depth below sea level                               \cr
 #'     \code{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
@@ -405,6 +400,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("CRAT", "conductivity", names)
     names <- gsub("COND", "conductivity", names)
     names <- gsub("CNDC", "conductivity", names)
+    names <- gsub("DCHG", "discharge", names)
     names <- gsub("DEPH", "depth", names)
     names <- gsub("DOXY", "oxygen", names)
     names <- gsub("ERRV", "error", names)
@@ -716,6 +712,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' of \code{\link{ODFNames2oceNames}} should be consulted for more
 #' details.
 #'
+#'
 #' @examples
 #' library(oce)
 #' # Read a CTD cast made on the Scotian Shelf. Note that the file's metadata
@@ -754,12 +751,21 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' @seealso \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
 #' package is released by the Canadian Department of Fisheries and Oceans.
 #'
-#' @references [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+#' @references
+#' \itemize{
+#'
+#' \item [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
 #' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 #' in June 2011.)
 #'
-#' [2] The St Lawrence Global Observatory website has information on ODF format at
+#' \item [2] The St Lawrence Global Observatory website has information on ODF format at
 #' \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
+#'
+#' \item [3] List of variable codes:
+#' \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
+#' (checked 2018-02-11); only a subset are handled.
+#'
+#'}
 #'
 #' @family things related to \code{odf} data
 read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))

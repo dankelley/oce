@@ -27,7 +27,7 @@ exportMethods(plot)
 exportMethods(subset)
 exportMethods(summary)
 export(abbreviateTimeLabels,
-       .ctd,
+       .ctd, .odf,
        approx3d,
        argShow,
        beamName,

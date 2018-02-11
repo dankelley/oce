@@ -1666,7 +1666,7 @@ read.oce <- function(file, ...)
     if (type == "ctd/odf" || type == "mctd/odf" || type == "mvctd/odf")
         return(read.ctd.odf(file, processingLog=processingLog, ...))
     if (length(grep("/odf$", type)))
-        return(read.odf(file))
+        return(read.odf(file, debug=debug))
     if (type == "mtg/odf") {
         ## FIXME: document this data type
         ## Moored tide gauge: returns a data frame.

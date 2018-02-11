@@ -80,12 +80,20 @@ points(odf[['salinity']][bad],odf[['temperature']][bad],col='red',pch=20)
 
 }
 \references{
-[1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+\itemize{
+
+\item [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
 Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 in June 2011.)
 
-[2] The St Lawrence Global Observatory website has information on ODF format at
+\item [2] The St Lawrence Global Observatory website has information on ODF format at
 \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
+
+\item [3] List of variable codes:
+\url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
+(checked 2018-02-11); only a subset are handled.
+
+}
 }
 \seealso{
 \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
