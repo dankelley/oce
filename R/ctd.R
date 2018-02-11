@@ -44,8 +44,9 @@
 #' will recover \code{scan} (if it exists), etc.
 #'
 #' @section Accessing data:
-#' Data may be extracted with \code{\link{[[,ctd-method}} and inserted
-#' with \code{\link{[[<-,ctd-method}}. As noted above, \code{\link{[[,ctd-method}}
+#' Data may be extracted with \code{\link{[[,ctd-method}}.
+#'
+#' Note that \code{\link{[[,ctd-method}}
 #' returns temperature in the ITS-90 scale and pressure in dbar, regardless of the
 #' scale and unit of the data within the object. Type \code{?"[[,ctd-method"}
 #' or \code{?"[[<-,ctd-method"} to learn more.
@@ -72,12 +73,17 @@
 #' \code{\link{swN2}}, density ratio with \code{ctd[["Rrho"]]} and spiciness with
 #' \code{ctd[["spice"]]}.
 #'
-#' @section Extracting values:
-#' Items stored in the object may be altered with e.g.  \code{ctd[["salinity"]]
-#'   <- rep(35,10)}.  For obvious reasons, this does not work with derived
-#' quantities such as conservative temperature, etc.
+#' @section Modifying data:
+#' Although data may be inserted with \code{\link{[[<-,ctd-method}},
+#' it is recommended that \code{\link{oceSetData}} be used instead, because
+#' it stores a record of the change in the \code{processingLog}.
 #'
-#' @section Reading/creating data:
+#' If an attempt is made to modify a \strong{derived quantity} (e.g.
+#' the buoyancy frequency \code{ctd[["N2"]]}) because the named item
+#' is not stored in the \code{data} slot. In this sort of case,
+#' \code{\link{oceSetData}} simply creates a new item in the data slot.
+#'
+#' @section Reading/creating CTD objects:
 #' A file containing CTD profile data may be read with
 #' \code{\link{read.ctd}}, and a CTD object can also be created with
 #' \code{\link{as.ctd}}.  See \code{\link{read.ctd}} for references on data
@@ -102,22 +108,21 @@
 #' many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
 #' discussed above, and skilled users may also manipulate the contents directly.
 #'
+#' @template oceslots
+#'
 #' @examples
 #'
-#' ## 1. empty
-#' .ctd()
-#'
-#' ## 2. fake data with no location information, so can only
-#' ##    plot with the UNESCO equation of state.
-#' ##    NOTE: always name arguments, in case the default order gets changed
-#' a <- .ctd(salinity=35+1:3/10, temperature=10-1:3/10, pressure=1:3)
+#' # 1. Create a ctd object with fake data.
+#' a <- as.ctd(salinity=35+1:3/10, temperature=10-1:3/10, pressure=1:3)
 #' summary(a)
-#' plot(a, eos="unesco")
 #'
-#' ## 3. as 2, but insert location and plot with GSW equation of state.
-#' a <- oceSetMetadata(a, "latitude", 44)
-#' a <- oceSetMetadata(a, "longitude", -63)
-#' plot(a, eos="gsw")
+#' # 2. Fix a typo in a station latitude (fake! it's actually okay)
+#' data(ctd)
+#' ctd <- oceSetMetadata(ctd, "latitude", ctd[["latitude"]]-0.001,
+#'                      "fix latitude typo in log book")
+#'
+#' # 3. Low-level method for creating and inspecting an empty object.
+#' str(.ctd())
 #'
 #' @author Dan Kelley
 #'
@@ -347,7 +352,7 @@ setMethod("handleFlags",
 #' ctd <- oceSetMetadata(ctd, "longitude", -63)
 #' plot(ctd, eos="gsw")
 #'
-#' @alias initialize,ctd-method
+#' @aliases initialize,ctd-method
 setMethod(f="initialize",
           signature="ctd",
           definition=function(.Object, pressure, salinity, temperature, conductivity,
