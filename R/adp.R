@@ -88,7 +88,7 @@
 #' Teledyne-RDI profilers have an additional item \code{g} (for
 #' percent-good).
 #'
-#' VmDas-equiped Teledyne-RDI profilers additional navigation data, with
+#' VmDas-equipped Teledyne-RDI profilers additional navigation data, with
 #' details listed in the table below; note that the RDI documentation [2] and
 #' the RDI gui use inconsistent names for most items.
 #'
@@ -1137,6 +1137,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{adp} data
+#' @aliases plot.adp
 setMethod(f="plot",
           signature=signature("adp"),
           definition=function(x, which=1:dim(x@data$v)[3], mode=c("normal", "diagnostic"),
@@ -2259,7 +2260,7 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 #' multiplying by \code{count2db}.  Then, the signal decrease owing to
 #' spherical spreading is compensated for by adding the term
 #' \eqn{20\log10(r)}{20*log10(r)}, where \eqn{r}{r} is the distance from the
-#' sensor head to the water from which scattering is occuring.  \eqn{r}{r} is
+#' sensor head to the water from which scattering is occurring.  \eqn{r}{r} is
 #' given by \code{x[["distance"]]}.
 #'
 #' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
@@ -2365,7 +2366,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #'
 #' @param x an object of class \code{"adp"}.
 #' @template debugTemplate
-#' @return An object with the first 3 velocitiy indices having been altered to
+#' @return An object with the first 3 velocity indices having been altered to
 #' represent velocity components in xyz (or instrument) coordinates.  (For
 #' \code{rdi} data, the values at the 4th velocity index are changed to
 #' represent the "error" velocity.)
@@ -3074,7 +3075,7 @@ adpEnsembleAverage <- function(x, n=5, leftover=FALSE, na.rm=TRUE, ...)
                 for (j in 1:tail(fdim, 1)) {
                     if (length(fdim) == 2) { # for fields like bottom range
                         ##res@data[[field]][, j] <- binAverage(pings, d[[field]][, j], xinc=n)$y
-                        res@data[[field]][, j] <- unlist(lapply(as.numeric(split(d[[field]][, j]), fac), mean, na.rm=na.rm, ...))
+                        res@data[[field]][, j] <- unlist(lapply(split(as.numeric(d[[field]][, j]), fac), mean, na.rm=na.rm, ...))
                     } else if (length(fdim) == 3) { # for array fields like v, a, q, etc
                         for (i in 1:fdim[2]) {
                             ##res@data[[field]][, i, j] <- binAverage(pings, d[[field]][, i, j], xinc=n)$y

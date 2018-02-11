@@ -71,7 +71,7 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{PSAL_*.*} \tab \code{salinity}           \tab Used mainly in \code{ctd} objects                          \cr
     \code{PSAR_*.*} \tab \code{par}                \tab Used mainly in \code{ctd} objects                          \cr
     \code{QCFF_*.*} \tab \code{flag}               \tab Overall flag                                               \cr
-    \code{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objecs                           \cr
+    \code{SIGP_*.*} \tab \code{sigmaTheta}         \tab Used mainly in \code{ctd} objects                           \cr
     \code{SIGT_*.*} \tab \code{sigmat}             \tab Used mainly in \code{ctd} objects                          \cr
     \code{SNCN_*.*} \tab \code{scanCounter}        \tab Used mainly in \code{ctd} objects                          \cr
     \code{SYTM_*.*} \tab \code{time}               \tab Used in many objects                                       \cr

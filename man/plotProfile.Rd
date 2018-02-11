@@ -10,11 +10,11 @@ plotProfile(x, xtype = "salinity+temperature", ytype = "pressure",
   col.temperature = "red", col.rho = "blue", col.N2 = "brown",
   col.dpdt = "darkgreen", col.time = "darkgreen", pt.bg = "transparent",
   grid = TRUE, col.grid = "lightgray", lty.grid = "dotted", Slim, Clim,
-  Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim, ylim,
+  Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim, xlim, ylim,
   lwd = par("lwd"), xaxs = "r", yaxs = "r", cex = 1, pch = 1,
   useSmoothScatter = FALSE, df, keepNA = FALSE, type = "l",
   mgp = getOption("oceMgp"), mar, add = FALSE, inset = FALSE,
-  debug = getOption("oceDebug"), ...)
+  debug = getOption("oceDebug", 0), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -125,8 +125,14 @@ labelling the axis.}
 \code{ytype=="pressure"}, in which case it takes precedence over
 \code{ylim}.}
 
+\item{xlim}{Optional limit for x axis, which can apply to any plot type.
+This is ignored if the plotted x variable is something for which a limit
+may be specified with an argument, e.g. \code{xlim} is ignored for a 
+salinity profile, because \code{Slim} ought to be given in such a case.}
+
 \item{ylim}{Optional limit for y axis, which can apply to any plot type,
-although is overridden by \code{plim} if \code{ytype=="pressure"}.}
+although is overridden by \code{plim} if \code{ytype} is \code{"pressure"}
+or by \code{densitylim} if \code{ytype} is \code{"sigmaTheta"}.}
 
 \item{lwd}{lwd value for data line}
 
@@ -181,7 +187,7 @@ Plot a profile, showing variation of some quantity (or quantities) with
 pressure, using the oceanographic convention of putting lower pressures
 nearer the top of the plot. This works for any \code{oce} object that has a
 pressure column in its \code{data} slot.
-The colours (\code{col.salinity}, etc.) are ony used if two profiles appear
+The colours (\code{col.salinity}, etc.) are only used if two profiles appear
 on a plot.
 }
 \examples{
@@ -226,6 +232,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotScan}},

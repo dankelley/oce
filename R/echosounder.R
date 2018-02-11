@@ -53,7 +53,7 @@
 #'
 #' \emph{Accessing values.} Data may be accessed as e.g.
 #' \code{echosounder[["time"]]}, \code{echosounder[["depth"]]},
-#' \code{echosounder[["a"]]}, etc.  Items in \code{metadata} must be specifield
+#' \code{echosounder[["a"]]}, etc.  Items in \code{metadata} must be specified
 #' by full name, but those in \code{data} may be abbreviated, so long as the
 #' abbreviation is unique. In addition to the actual data, some derived fields
 #' are also available: \code{echosounder[["distance"]]} calls
@@ -88,7 +88,7 @@ setClass("echosounder", contains="oce")
 #'
 #' @description
 #' This is degraded subsample of measurements that were made with a Biosonics
-#' scientific echousounder, as part of the St Lawrence Internal Wave Experiment
+#' scientific echosounder, as part of the St Lawrence Internal Wave Experiment
 #' (SLEIWEX).
 #'
 #' @name echosounder
@@ -331,7 +331,7 @@ setMethod(f="subset",
 #' 0.1dB(counts/uPa)
 #' @param transmitPower transmit power reduction factor, in dB, denoted
 #' \code{tpow} in [1 p10], where it is in units 0.1 dB.
-#' @param pulseDuration duration of transmited pulse in us
+#' @param pulseDuration duration of transmitted pulse in us
 #' @param beamwidthX x-axis -3dB one-way beamwidth in deg, denoted \code{bwx}
 #' in [1 p16], where the unit is 0.2 deg
 #' @param beamwidthY y-axis -3dB one-way beamwidth in deg, denoted \code{bwx}
@@ -417,7 +417,7 @@ findBottom <- function(x, ignore=5, clean=despike)
 #'
 #' @description
 #' Plot echosounder data.
-#' Simple linear approximation is used when a \code{newx} value is specifie
+#' Simple linear approximation is used when a \code{newx} value is specified
 #' with the \code{which=2} method, but arguably a gridding method should be
 #' used, and this may be added in the future.
 #'
@@ -497,6 +497,7 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' plot(echosounder, which=c(1,2), drawBottom=TRUE)
 #' }
 #' @family things related to \code{echosounder} data
+#' @aliases plot.echosounder
 setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
@@ -737,7 +738,7 @@ setMethod(f="plot",
 #' are described in the documentation for the object
 #' \code{\link{echosounder-class}}.
 #' @section Bugs: Only the amplitude information (in counts) is determined.  A
-#' future version of this funciton may provide conversion to dB, etc.  The
+#' future version of this function may provide conversion to dB, etc.  The
 #' handling of dual-beam and split-beam files is limited.  In the dual-beam
 #' cse, only the wide beam signal is processed (I think ... it could be the
 #' narrow beam, actually, given the confusing endian tricks being played).  In
@@ -747,7 +748,7 @@ setMethod(f="plot",
 #' @seealso The documentation for \code{\link{echosounder-class}} explains the
 #' structure of \code{ctd} objects, and also outlines the other functions
 #' dealing with them.
-#' @references Various echousounder instruments provided by BioSonics are
+#' @references Various echosounder instruments provided by BioSonics are
 #' described at the company website, \url{http://www.biosonicsinc.com/}.  The
 #' document listed as [1] below was provided to the author of this function in
 #' November 2011, which suggests that the data format was not changed since

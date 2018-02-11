@@ -5,7 +5,7 @@
 \alias{lisst}
 \title{LISST Dataset}
 \source{
-This was constructed artifically using \code{\link{as.lisst}},
+This was constructed artificially using \code{\link{as.lisst}},
 }
 \usage{
 data(lisst)

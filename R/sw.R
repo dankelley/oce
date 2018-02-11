@@ -320,7 +320,10 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
             latitude <- 0
         l <- gsw::gsw_Nsquared(SA=SA, CT=CT, p=p, latitude=latitude[1])
         ## approx back to the given pressures
-        res <- approx(l$p_mid, l$N2, p, rule=2)$y
+        ok <- is.finite(l$p_mid) & is.finite(l$N2)
+        x <- l$p_mid[ok]
+        y <- l$N2[ok]
+        res <- approx(x, y, p, rule=2)$y
     }
     res
 }
@@ -877,7 +880,7 @@ swAlpha <- function(salinity, temperature=NULL, pressure=0,
 #' @return Value in psu/\eqn{^\circ}{deg}C.
 #' @author Dan Kelley
 #' @references The \code{eos="unesco"} formulae are based on the UNESCO
-#' equation of state, but are formulaed empirically by Trevor J. McDougall,
+#' equation of state, but are formulated empirically by Trevor J. McDougall,
 #' 1987, Neutral Surfaces, Journal of Physical Oceanography, volume 17, pages
 #' 1950-1964. The \code{eos="gsw"} formulae come from GSW; see references in
 #' the \code{\link{swRho}} documentation.
@@ -1579,7 +1582,7 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 #' @author Dan Kelley
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @examples
-#' expect_equal(26.42066, swSigmaTheta(35, 13, 1000, eos="unesco"), tolerance=0.00001)
+#' expect_equal(26.4212790994, swSigmaTheta(35, 13, 1000, eos="unesco"))
 #'
 #' @family functions that calculate seawater properties
 swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
@@ -1976,7 +1979,7 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' diagrams (if the diagrams are scaled to make the isopycnals run at 45
 #' degres). The definition used here is that of Pierre Flament. (Other
 #' formulations exist.)  Note that pressure is ignored in the definition.
-#' Spiceness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
+#' Spiciness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
 #'
 #' @param salinity either salinity [PSU] (in which case \code{temperature} and
 #' \code{pressure} must be provided) \strong{or} a \code{ctd} object (in which
@@ -2070,7 +2073,7 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
 #' @examples
 #' library(oce)
 #' ## test value from Fofonoff et al., 1983
-#' expect_equal(36.89073, swTheta(40, T90fromT68(40), 10000, 0, eos="unesco"), tolerance=0.00001)
+#' expect_equal(36.8818748026, swTheta(40, T90fromT68(40), 10000, 0, eos="unesco"))
 #'
 #' # Example from a cross-Atlantic section
 #' data(section)
@@ -2122,11 +2125,14 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         res <- gsw::gsw_pt_from_t(SA=SA, t=l$temperature, p=l$pressure, p_ref=referencePressure)
     } else if (eos == "unesco") {
+        ## Note the conversion to the T68 scale, because that's the scale
+        ## used by the UNESCO formula.
         res <- .C("theta_UNESCO_1983",
                   as.integer(nS),
                   as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
                   as.double(referencePressure),
                   value=double(nS), NAOK=TRUE, PACKAGE = "oce")$value
+        res <- T90fromT68(res)
     }
     if (Smatrix)
         dim(res) <- dim

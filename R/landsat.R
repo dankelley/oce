@@ -70,7 +70,7 @@
 #'
 #' Band 8 is panchromatic, and has the highest resolution.  For convenience of
 #' programming, \code{\link{read.landsat}} subsamples the \code{tirs1} and
-#' \code{tirs2} bands to the 30m resultion of the other bands.  See Reference
+#' \code{tirs2} bands to the 30m resolution of the other bands.  See Reference
 #' [3] for information about the evolution of Landsat 8 calibration
 #' coefficients, which as of summer 2014 are still subject to change.
 #'
@@ -162,8 +162,8 @@ setClass("landsat", contains="satellite")
 #'
 #' @details
 #' The original data were downloaded from the USGS earthexplorer website, although
-#' other sites can also be used to uncover it by name.  The code below shows how
-#' the dataset was created.  The decimation by 100 reduces file size from about 1GB
+#' other sites can also be used to uncover it by name.  The original
+#' data were decimation by a factor of 100 to reduce the file size from about 1GB
 #' to under 100Kb.
 #'
 #' @name landsat
@@ -638,6 +638,7 @@ setMethod(f="[[",
 #'
 #' @family things related to \code{landsat} data
 #' @family functions that plot \oce{oce} data
+#' @aliases plot.landsat
 setMethod(f="plot",
           signature=signature("landsat"),
           definition=function(x, band, which=1, decimate=TRUE, zlim, utm=FALSE,
@@ -984,11 +985,11 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' from Konda et al.  (1994). These authors suggest an uncertainty of 0.04,
 #' but a wider range of values can be found in the literature.  The value of
 #' \code{metadata$emissivity} is easy to alter, either as a single value or
-#' as a matrix, yielding flexibility of calcuation.
+#' as a matrix, yielding flexibility of calculation.
 #'
 #' @param decimate optional positive integer indicating the degree to which
 #' the data should be subsampled after reading and before storage. Setting
-#' this to 10 can speed up reding by a factor of 3 or more, but higher values
+#' this to 10 can speed up reading by a factor of 3 or more, but higher values
 #' have diminishing effect.  In exploratory work, it is useful to set
 #' \code{decimate=10}, to plot the image to determine a subregion
 #' of interest, and then to use \code{\link{landsatTrim}} to trim the image.

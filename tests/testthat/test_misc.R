@@ -31,12 +31,37 @@ test_that("binCount2D", {
 })
 
 
+test_that("oceEdit", {
+          data(ctd)
+          ## metadata
+          a <- oceEdit(ctd, "waterDepth", 100)
+          expect_equal(a@metadata$waterDepth, 100)
+          b <- oceEdit(a, "waterDepth", 200)
+          expect_equal(b@metadata$waterDepth, 200)
+          c <- oceEdit(b, "metadata@waterDepth", 300)
+          expect_equal(c@metadata$waterDepth, 300)
+          ## data
+          scan <- ctd[["scan"]]
+          ctd2 <- oceEdit(ctd, "scan", scan+1)
+          expect_true("scan" %in% names(ctd2[["data"]]))
+          expect_false("scan" %in% names(ctd2[["metadata"]]))
+          expect_equal(ctd[["scan"]]+1, ctd2[["scan"]])
+          ## check "case 1A" of docs (cannot add non-extant item)
+          expect_error(oceEdit(ctd, "noSuchThing", 1), "nothing named 'noSuchThing'")
+          ## check "case 2" of docs (can add non-extant item, if slot provided)
+          ctd2 <- oceEdit(ctd, "metadata@newMetadata", 1)
+          expect_true("newMetadata" %in% names(ctd2[["metadata"]]))
+          ctd2 <- oceEdit(ctd, "data@newData", 1)
+          expect_true("newData" %in% names(ctd2[["data"]]))
+})
+
+
 test_that("times", {
           expect_equal(numberAsPOSIXct(719529, "matlab"), ISOdatetime(1970,1,1,0,0,0,tz="UTC"))
           ## The GPS test value was calculated as follows:
           ## https://www.labsat.co.uk/index.php/en/gps-time-calculator
           ## gives week=604 and sec=134336 (for the indicated date), IGNORING
-          ## leap seconds. However, 
+          ## leap seconds. However,
           ## https://confluence.qps.nl/display/KBE/UTC+to+GPS+Time+Correction#UTCtoGPSTimeCorrection-UTC(CoordinatedUniversalTime)
           ## indicates that a 15-second correction was needed for GPS to UTC, so
           ## we do that in the test value.

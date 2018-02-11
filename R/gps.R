@@ -143,6 +143,7 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{gps} data
+#' @aliases plot.gps
 setMethod(f="plot",
           signature=signature("gps"),
           definition=function (x,

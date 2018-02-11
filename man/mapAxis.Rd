@@ -16,7 +16,7 @@ sides 1 and 2 will be used (i.e. bottom and left-hand sides).}
 
 \item{longitude}{vector of longitudes to indicate.  If not provided, and if
 a grid has already been drawn, then the labels will be at the
-interesections of the grid lines with the plotting box.}
+intersections of the grid lines with the plotting box.}
 
 \item{latitude}{vector of latitudes to indicate.  If not provided, and if a
 grid has already been drawn, then the labels will be at the

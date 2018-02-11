@@ -64,7 +64,7 @@ setMethod(f="[[<-",
 #' must be aware of the incorporation of model simulations in the
 #' \code{g1sst} product. For example, the code presented below
 #' might lead one to believe that the mapped field represents
-#' observatins, whereas in fact it can be verified by
+#' observations, whereas in fact it can be verified by
 #' consulting [2] (clicking and unclicking the radio button to
 #' show just the data) that the field mostly derives from simulation.
 #'

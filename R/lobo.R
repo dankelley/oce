@@ -265,6 +265,7 @@ plot.lobo.TS <- function(lobo, ...)
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{lobo} data
+#' @aliases plot.lobo
 setMethod(f="plot",
           signature=signature("lobo"),
           definition=function(x,
@@ -421,7 +422,7 @@ read.lobo <- function(file, cols=7, processingLog)
 #' @param v vector of y velocity component observations
 #' @param salinity vector of salinity observations
 #' @param temperature vector of temperature observations
-#' @param pressure vector of pressure observationss
+#' @param pressure vector of pressure observations
 #' @param nitrate vector of nitrate observationss
 #' @param fluorescence vector of fluoresence observations
 #' @param filename source filename

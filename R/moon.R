@@ -12,7 +12,7 @@
 #' @return A data frame containing columns \code{rightAscension} and
 #' \code{declination} both in degrees.
 #' @author Dan Kelley, based on formulae in [1] and [2].
-#' @references 1. Meeus, Jean, 1982. Astronomical formuae for Calculators.
+#' @references 1. Meeus, Jean, 1982. Astronomical formulae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages.
 #'
 #' 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,

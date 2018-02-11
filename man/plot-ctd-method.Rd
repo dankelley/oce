@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,ctd-method}
 \alias{plot,ctd-method}
+\alias{plot.ctd}
 \title{Plot CTD Data}
 \usage{
 \S4method{plot}{ctd}(x, which, col = par("fg"), fill, borderCoastline = NA,
@@ -115,7 +116,8 @@ supply the object as an argument, as opposed to the name of the object.}
 
 \item{plim}{Optional limits of pressure axes.}
 
-\item{densitylim}{Optional limits of density axis.}
+\item{densitylim}{Optional limits of density axis, whether that axis be horizontal
+or vertical.}
 
 \item{N2lim}{Optional limits of \eqn{N^2}{N^2} axis.}
 
@@ -317,6 +319,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plotProfile}}, \code{\link{plotScan}},

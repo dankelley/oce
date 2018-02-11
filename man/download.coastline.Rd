@@ -31,7 +31,7 @@ parameters of the function call, so subsequent calls with the same
 parameters will yield the same result, thus providing the key
 to the caching scheme.}
 
-\item{server}{A character value specifying the server that is to suppply
+\item{server}{A character value specifying the server that is to supply
 the data. At the moment, the only permitted value is \code{"naturalearth"},
 which is the default if \code{server} is not supplied.}
 

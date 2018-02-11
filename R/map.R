@@ -15,7 +15,7 @@
 #' Trace along the plot box, converting from xy coordinates to lonlat
 #' coordinates. The results are used by \code{\link{mapGrid}}
 #' and \code{\link{mapAxis}} to ignore out-of-frame grid
-#' lines and axis labels. 
+#' lines and axis labels.
 #'
 #' Note: this procedure does not work for projections that have trouble
 #' inverting points that are "off the globe". For this reason, this function
@@ -29,7 +29,7 @@
 #' @return a list containing \code{lonmin}, \code{lonmax},
 #' \code{latmin}, \code{latmax}, and \code{ok}; the last
 #' of which indicates whether at least one point on the plot box
-#' is invertable. Note that longitude are expressed in the
+#' is invertible. Note that longitude are expressed in the
 #' range from -180 to 180 degrees.
 #' @author Dan Kelley
 #' @family functions related to maps
@@ -41,11 +41,11 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
     if (length(grep("wintri", .Projection()$projection)))
         return(list(lonmin=NA, lonmax=NA, latmin=NA, latmax=NA, ok=FALSE))
     x <- c(seq(usr[1], usr[2], length.out=n),
-           rep(usr[2], n), 
+           rep(usr[2], n),
            seq(usr[2], usr[1], length.out=n),
-           rep(usr[1], n)) 
+           rep(usr[1], n))
     y <- c(rep(usr[3], n),
-           seq(usr[3], usr[4], length.out=n), 
+           seq(usr[3], usr[4], length.out=n),
            rep(usr[4], n),
            seq(usr[4], usr[3], length.out=n))
     g <- expand.grid(x=seq(usr[1], usr[2], length.out=n),
@@ -98,7 +98,7 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
                  ok=nok/n>0.5&&is.finite(lonmin)&&is.finite(lonmax)&&is.finite(latmin)&&is.finite(latmax))
     rval
 }
- 
+
 #' Coordinate Reference System strings for some oceans
 #'
 #' Create a coordinate reference string (CRS), suitable for use as a
@@ -163,7 +163,7 @@ oceCRS <- function(region)
 #' simply by subtracting 180 from each longitude, if any longitude
 #' in the vector exceeds 180.
 #'
-#' @param longitudes a numericl vector of longitudes
+#' @param longitudes a numerical vector of longitudes
 #' @return vector of longitudes, shifted to the desired range.
 #' @seealso \code{\link{matrixShiftLongitude}} and \code{\link{standardizeLongitude}}.
 #' @family functions related to maps
@@ -254,7 +254,7 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'
 #' @param longitude vector of longitudes to indicate.  If not provided, and if
 #' a grid has already been drawn, then the labels will be at the
-#' interesections of the grid lines with the plotting box.
+#' intersections of the grid lines with the plotting box.
 #'
 #' @param latitude vector of latitudes to indicate.  If not provided, and if a
 #' grid has already been drawn, then the labels will be at the
@@ -593,11 +593,11 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 #' to indicate a coordinate system set up so that one axis is parallel
 #' to a coastline.
 #'
-#' @details This is a preliminary version of this function. It only 
+#' @details This is a preliminary version of this function. It only
 #' works if the lines of constant latitude are horizontal on the plot.
 #'
 #' @param latitude numeric value of latitude in degrees.
-#' @param longitude numeric value of longiutde in degrees.
+#' @param longitude numeric value of longitude in degrees.
 #' @param L axis length in km.
 #' @param phi angle, in degrees counterclockwise, that the "x" axis makes to a line of latitude.
 #' @param ... plotting arguments, passed to \code{\link{mapArrows}};
@@ -609,7 +609,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 #' data(coastlineWorldFine, package='ocedata')
 #' HfxLon <- -63.5752
 #' HfxLat <- 44.6488
-#' mapPlot(coastlineWorldFine, proj='+proj=merc', 
+#' mapPlot(coastlineWorldFine, proj='+proj=merc',
 #'         longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
 #'         col='lightgrey')
 #' mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
@@ -617,9 +617,9 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 #' @author Chantelle Layton
 mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 {
-    if (missing(longitude)) 
+    if (missing(longitude))
         stop('must supply longitude')
-    if (missing(latitude)) 
+    if (missing(latitude))
         stop('must supply latitude')
     R <- 6371
     pi <- 4 * atan2(1, 1)
@@ -829,7 +829,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @param clip logical value indicating whether to trim any coastline elements that lie wholly
 #' outside the plot region. This can prevent e.g. a problem of filling the whole plot area of
-#' an Arctic stereopolar view, because the projected trace for Antarctica lies outside all 
+#' an Arctic stereopolar view, because the projected trace for Antarctica lies outside all
 #' other regions so the whole of the world ends up being "land".  Setting \code{clip=FALSE}
 #' disables this action, which may be of benefit in rare instances in the line connecting
 #' two points on a coastline may cross the plot domain, even if those points are outside
@@ -1210,7 +1210,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' See \url{https://github.com/dankelley/oce/issues/1337} for details.
 #'
 #' \item 2017-09-30: \code{lcca} removed, because its inverse was
-#' wildly inaccurate in a Pacific Antartic-Alaska application
+#' wildly inaccurate in a Pacific Antarctic-Alaska application
 #' (see \url{https://github.com/dankelley/oce/issues/1303}).
 #'
 #' }
@@ -1237,7 +1237,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' the place to start to learn about the code.
 #'
 #' 6. \code{PROJ.4} projection details were once at
-#' \code{http://www.remotesensing.org/geotiff/proj_list/} but it was 
+#' \code{http://www.remotesensing.org/geotiff/proj_list/} but it was
 #' discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
 #' seems to have been significant reorganization of websites related to this.
 #' The base website seems to be \url{https://trac.osgeo.org/geotiff/} and that
@@ -3151,7 +3151,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ## Profile times in seconds, as below. (is 0.1 to 0.2s meaningful?)
         ## Caution: profile times depend on Rstudio window size etc, so
         ## be careful in testing! The values below were from a particular
-        ## window and panel size but results were 1s different when I 
+        ## window and panel size but results were 1s different when I
         ## resized.
         ##   with sapply: 3.480 3.640 3.520
         ##   with loop:   3.260 3.440 3.430
@@ -3220,7 +3220,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ##.              latitude=latitude,
         ##.              z=z,
         ##.              breaks=breaks,
-        ##.              col=col, 
+        ##.              col=col,
         ##.              ii=ii)
         ##. message("DEBUGGING: defined global var 'dan'")
     }

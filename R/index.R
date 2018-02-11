@@ -37,7 +37,7 @@
 #' is a guess that may need to be changed if so indicated by documentation (yet
 #' to be located).
 #' @author Dan Kelley
-#' @references See \url{http://www.esrl.noaa.gov/psd/data/climateindices/list/}
+#' @references See \url{https://www.esrl.noaa.gov/psd/data/climateindices/list/}
 #' for a list of indices.
 #' @examples
 #' 
@@ -45,11 +45,11 @@
 #' library(oce)
 #' par(mfrow=c(2, 1))
 #' # 1. AO, Arctic oscillation
-#' ao <- read.index("http://www.esrl.noaa.gov/psd/data/correlation/ao.data")
+#' ao <- read.index("https://www.esrl.noaa.gov/psd/data/correlation/ao.data")
 #' aorecent <- subset(ao, t > as.POSIXct("2000-01-01"))
 #' oce.plot.ts(aorecent$t, aorecent$index)
 #' # 2. SOI, probably more up-to-date then data(soi, package="ocedata")
-#' soi <- read.index("http://www.cgd.ucar.edu/cas/catalog/climind/SOI.signal.ascii")
+#' soi <- read.index("https://www.cgd.ucar.edu/cas/catalog/climind/SOI.signal.ascii")
 #' soirecent <- subset(soi, t > as.POSIXct("2000-01-01"))
 #' oce.plot.ts(soirecent$t, soirecent$index)
 #' }

@@ -3,6 +3,7 @@
 \docType{class}
 \name{ctd-class}
 \alias{ctd-class}
+\alias{.ctd}
 \title{Class to Store CTD (or general hydrographic) Data}
 \description{
 Class to store hydrographic data such as measured with a CTD (conductivity,
@@ -47,10 +48,37 @@ After the names listed above have been checked, the remaining names in the
 \code{ctd[["sal"]]} will recover practical \code{salinity}, \code{ctd[["sc"]]}
 will recover \code{scan} (if it exists), etc.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{In this and all \code{oce} objects, the \code{data} slot is a
+\code{\link{list}} containing the main data for the object.  The full contents
+of the \code{data} slot for any \code{oce} object named \code{o} may be
+recovered with \code{o[["data"]]}; see other sections of the documentation for
+details for this particular class.  Use \code{\link{oceSetData}} to modify the
+\code{metadata}.}
+
+\item{\code{metadata}}{In this and all \code{oce} objects, the \code{metadata} slot is
+a \code{\link{list}} containing information about the \code{data} or about the
+object itself.  An example of the former might be the location at which a
+measurement was made, and of the latter might be the name of the experiment in
+which the data were collected.  The contents of the \code{metadata} slot of an
+\code{oce} object named \code{o} may be recovered with code{a[["metadata"]]};
+see other sections of the documentation for details for this particular class.
+Use \code{\link{oceSetMetadata}} to modify the \code{metadata}.}
+
+\item{\code{processingLog}}{In this and all \code{oce} objects, the \code{processLog}
+slot is a \code{\link{list}} with entries describing the creation and evolution
+of the object. This slot is updated by various \code{oce} functions.  The
+contents are listed in object summaries and with
+\code{\link{processingLogShow}}.}
+}}
+
 \section{Accessing data}{
 
-Data may be extracted with \code{\link{[[,ctd-method}} and inserted
-with \code{\link{[[<-,ctd-method}}. As noted above, \code{\link{[[,ctd-method}}
+Data may be extracted with \code{\link{[[,ctd-method}}.
+
+Note that \code{\link{[[,ctd-method}}
 returns temperature in the ITS-90 scale and pressure in dbar, regardless of the
 scale and unit of the data within the object. Type \code{?"[[,ctd-method"}
 or \code{?"[[<-,ctd-method"} to learn more.
@@ -78,14 +106,19 @@ The square of buoyancy frequency is retrieved with \code{ctd[["N2"]]} or
 \code{ctd[["spice"]]}.
 }
 
-\section{Extracting values}{
+\section{Modifying data}{
 
-Items stored in the object may be altered with e.g.  \code{ctd[["salinity"]]
-  <- rep(35,10)}.  For obvious reasons, this does not work with derived
-quantities such as conservative temperature, etc.
+Although data may be inserted with \code{\link{[[<-,ctd-method}},
+it is recommended that \code{\link{oceSetData}} be used instead, because
+it stores a record of the change in the \code{processingLog}.
+
+If an attempt is made to modify a \strong{derived quantity} (e.g.
+the buoyancy frequency \code{ctd[["N2"]]}) because the named item
+is not stored in the \code{data} slot. In this sort of case,
+\code{\link{oceSetData}} simply creates a new item in the data slot.
 }
 
-\section{Reading/creating data}{
+\section{Reading/creating CTD objects}{
 
 A file containing CTD profile data may be read with
 \code{\link{read.ctd}}, and a CTD object can also be created with
@@ -112,6 +145,21 @@ many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-m
 discussed above, and skilled users may also manipulate the contents directly.
 }
 
+\examples{
+
+# 1. Create a ctd object with fake data.
+a <- as.ctd(salinity=35+1:3/10, temperature=10-1:3/10, pressure=1:3)
+summary(a)
+
+# 2. Fix a typo in a station latitude (fake! it's actually okay)
+data(ctd)
+ctd <- oceSetMetadata(ctd, "latitude", ctd[["latitude"]]-0.001,
+                     "fix latitude typo in log book")
+
+# 3. Low-level method for creating and inspecting an empty object.
+str(.ctd())
+
+}
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
@@ -119,6 +167,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},

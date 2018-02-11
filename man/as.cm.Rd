@@ -29,7 +29,7 @@ Ignored if the first argument contains an \code{oce} object holding pressure.}
 Ignored if the first argument contains an \code{oce} object holding temperature}
 
 \item{salinity}{Optional vector of salinity, assumed to be Practical Salinity.
-Ignored if the first argument contains an \code{oce} object holding saliity}
+Ignored if the first argument contains an \code{oce} object holding salinity}
 
 \item{longitude}{Optional longitude in degrees East.
 Ignored if the first argument contains an \code{oce} object holding longitude.}

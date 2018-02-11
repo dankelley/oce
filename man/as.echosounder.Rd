@@ -27,7 +27,7 @@ dB(counts/uPa), denoted \code{rs} in [1 p15], where it is in units of
 \item{transmitPower}{transmit power reduction factor, in dB, denoted
 \code{tpow} in [1 p10], where it is in units 0.1 dB.}
 
-\item{pulseDuration}{duration of transmited pulse in us}
+\item{pulseDuration}{duration of transmitted pulse in us}
 
 \item{beamwidthX}{x-axis -3dB one-way beamwidth in deg, denoted \code{bwx}
 in [1 p16], where the unit is 0.2 deg}

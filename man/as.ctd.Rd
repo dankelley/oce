@@ -26,7 +26,7 @@ then only the first column is used, and a warning to that effect is given,
 unless the \code{profile} argument is specified and then that specific
 profile is extracted. (3) It can be an object of \code{\link{rsk-class}},
 (see \dQuote{Converting rsk objects} for details). (4)
-It can be unspecified, in whch case \code{conductivity} becomes a mandatory
+It can be unspecified, in which case \code{conductivity} becomes a mandatory
 argument, because it will be needed for computing actual salinity,
 using \code{\link{swSCTp}}.}
 
@@ -142,7 +142,7 @@ are ignored in this instance, because \code{rsk} objects already
 contain their information. If required, any data or metadata
 element can be added to the value returned by \code{as.ctd}
 using \code{\link{oceSetData}} or \code{\link{oceSetMetadata}},
-erspectively.
+respectively.
 
 The returned \code{\link{rsk-class}} object contains pressure in a form that
 may need to be adjusted, because \code{rsk} objects may contain
@@ -158,7 +158,7 @@ than the atmospheric pressure.
 sum of sea pressure and atmospheric pressure), depending on how the object was
 created with \code{\link{as.rsk}} or \code{\link{read.rsk}}.  However,
 \code{\link{ctd-class}} objects store sea pressure, which is needed for
-plotting, calculating density, etc. This poses no difficulities, however,
+plotting, calculating density, etc. This poses no difficulties, however,
 because \code{as.ctd} automatically converts absolute pressure to sea pressure,
 if the metadata in the \code{\link{rsk-class}} object indicates that this is
 appropriate. Further alteration of the pressure can be accomplished with the
@@ -199,6 +199,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},

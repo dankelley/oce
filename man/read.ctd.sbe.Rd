@@ -112,7 +112,7 @@ d <- read.ctd(f, columns=list(
 \references{
 1. The Sea-Bird SBE 19plus profiler is described at
 \code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
-information is given in the Sea-Bird data-processing manaual
+information is given in the Sea-Bird data-processing manual
 \url{http://www.seabird.com/document/sbe-data-processing-manual}.
 
 2. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.
@@ -124,6 +124,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},

@@ -25,7 +25,7 @@ equations 8.3 and 8.4 of [1], or, equivalently,
 equations 12.3 and 12.4 of [2].
 }
 \references{
-1. Meeus, Jean, 1982. Astronomical formuae for Calculators.
+1. Meeus, Jean, 1982. Astronomical formulae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages.
 
 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,

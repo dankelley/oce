@@ -121,8 +121,8 @@ test_that("derived quantities handled properly (ctd)", {
           ## next values are just what I got from these data, i.e. they only
           ## form a consistency check, if the data or if swTheta() ever change.
           expect_equal(head(swTheta(ctd, eos="unesco")),
-                       c(14.2242948612084, 14.2296683217362, 14.2282155138992,
-                         14.2252890748517, 14.2297361749213, 14.2362294084130)) 
+                       c(14.2208818496, 14.2262540208, 14.2248015615,
+                         14.2218758247, 14.2263218577, 14.2328135332))
           ## Try both EOSs; need loction for GSW
           expect_equal(swTheta(ctd, eos="unesco"), swTheta(ctd[["salinity"]],
                                              ctd[["temperature"]],

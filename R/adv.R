@@ -1,6 +1,6 @@
 #' Class to Hold adv Data
 #'
-#' This class holds data from acoustic-Dopper velocimeters.
+#' This class holds data from acoustic-Doppler velocimeters.
 #'
 #' The \code{metadata} slot
 #'     contains various items relating to the dataset, including source file name,
@@ -146,7 +146,7 @@ setMethod(f="summary",
 #' In addition to the usual extraction of elements by name, some shortcuts
 #' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
 #' for the other velocity components. The \code{a} and \code{q}
-#' data can be retrived in \code{\link{raw}} form
+#' data can be retrieved in \code{\link{raw}} form
 #' or numeric form; see \dQuote{Examples}.
 #'
 #' It is also worth noting that heading, pitch, etc. may be stored in
@@ -529,7 +529,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' which case the rows are used, in order, for the panels of the graph.
 #'
 #' @param brushCorrelation Optional number between 0 and 100, indicating a
-#' per-beam correlation threshhold below which data are to be considered suspect.
+#' per-beam correlation threshold below which data are to be considered suspect.
 #' If the plot type is \code{p}, the suspect points (velocity, backscatter
 #' amplitude, or correlation) will be coloured red; otherwise, this argument is
 #' ignored.
@@ -557,6 +557,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{adv} data
+#' @aliases plot.adv
 setMethod(f="plot",
           signature=signature("adv"),
           definition=function(x, which=c(1:3, 14, 15),
@@ -1245,7 +1246,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' Generally, the transformation must be done on a time-by-time basis, which is
 #' a slow operation.  However, this function checks whether the vectors for
 #' heading, pitch and roll, are all of unit length, and in that case, the
-#' calculation is altered, resulting in shorter executation times.  Note that
+#' calculation is altered, resulting in shorter execution times.  Note that
 #' the angles are held in (\code{data$timeSlow}, \code{data$headingSlow}, ...)
 #' for Nortek instruments and (\code{data$time}, \code{data$heading}, ...) for
 #' Sontek instruments.

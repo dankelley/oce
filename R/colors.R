@@ -518,6 +518,9 @@ colormapFromName <- function(name)
 #' Otherwise, its value is either \code{"gray"} or, in the case of \code{name}
 #' being given, the value in the GMT colour map specification.
 #'
+#' \item \code{colfunction}, a univariate function that returns a vector
+#' of colours, given a vector of \code{z} values; see Example 6.
+#'
 #' }
 #' @author Dan Kelley
 #' @references Information on GMT software is given at
@@ -585,6 +588,14 @@ colormapFromName <- function(name)
 #' plot(seq_along(cm$x0), cm$x0, pch=21, bg=cm$col0)
 #' grid()
 #' points(seq_along(cm$x1), cm$x1, pch=21, bg=cm$col1)
+#'
+#' ## Example 6. colfunction
+#' cm <- colormap(c(0, 1))
+#' x <- 1:10
+#' y <- (x - 5.5)^2
+#' z <- seq(0, 1, length.out=length(x))
+#' drawPalette(colormap=cm)
+#' plot(x, y, pch=21, bg=cm$colfunction(z), cex=3)
 #' }
 #' @family things related to colors
 colormap <- function(z=NULL,
@@ -812,6 +823,9 @@ colormap <- function(z=NULL,
     if (!nameKnown)
         res$missingColor <- if (missingColorKnown) missingColor else "gray"
     res$zclip <- zclip
+    res$colfunction <- function(z) {
+        res$col0[findInterval(z, res$x0)]
+    }
     class(res) <- c("list", "colormap")
     oceDebug(debug, "} # colormap()\n", unindent=1)
     res

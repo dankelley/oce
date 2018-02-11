@@ -24,7 +24,7 @@ objects inheriting from \code{\link{oce-class}}.  The purpose,
 as with the related extraction method, \code{\link{[[}},
 is to insulate users from the internal details of \code{oce}
 objects, by looking for items within the various storage
-slots of the object. Items not actually stored can also be 
+slots of the object. Items not actually stored can also be
 replaced, including units and data-quality
 flags.
 }
@@ -89,6 +89,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},

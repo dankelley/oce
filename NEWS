@@ -1,3 +1,6 @@
+0.9-24
+- colormap() value has new item 'colfunction'
+
 0.9-23
 - tidem() permits inferred constituents
 - tidem() follows T_TIDE phase convention

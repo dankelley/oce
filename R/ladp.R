@@ -125,6 +125,7 @@ setMethod(f="[[",
 #'
 #' @family things related to \code{ladp} data
 #' @family functions that plot \code{oce} data
+#' @aliases plot.ladp
 setMethod(f="plot",
           signature=signature("ladp"),
           definition=function(x, which=c("u", "v"), ...) {

@@ -1137,7 +1137,7 @@ as.argo <- function(time, longitude, latitude,
 #' default, in order to use more space for the data and less for the axes.
 #'
 #' @param projection indication of the projection to be used
-#' in trajetory maps. If this is \code{NULL}, no projection is used, although
+#' in trajectory maps. If this is \code{NULL}, no projection is used, although
 #' the plot aspect ratio will be set to yield zero shape distortion at the
 #' mean float latitude.  If \code{projection="automatic"}, then one
 #' of two projections is used: stereopolar (i.e. \code{"+proj=stere +lon_0=X"}
@@ -1176,6 +1176,7 @@ as.argo <- function(time, longitude, latitude,
 #'
 #' @family things related to \code{argo} data
 #' @family functions that plot \code{oce} data
+#' @aliases plot.argo
 setMethod(f="plot",
           signature=signature("argo"),
           definition=function (x, which = 1, level,

@@ -12,8 +12,8 @@ requirements of this package, yielding a spatial resolution of about 2km.
 }
 \details{
 The original data were downloaded from the USGS earthexplorer website, although
-other sites can also be used to uncover it by name.  The code below shows how
-the dataset was created.  The decimation by 100 reduces file size from about 1GB
+other sites can also be used to uncover it by name.  The original
+data were decimation by a factor of 100 to reduce the file size from about 1GB
 to under 100Kb.
 }
 \seealso{

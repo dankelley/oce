@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,adv-method}
 \alias{plot,adv-method}
+\alias{plot.adv}
 \title{Plot ADV data}
 \usage{
 \S4method{plot}{adv}(x, which = c(1:3, 14, 15), col, titles, type = "l",
@@ -75,7 +76,7 @@ which case the rows are used, in order, for the panels of the graph.}
 which case the rows are used, in order, for the panels of the graph.}
 
 \item{brushCorrelation}{Optional number between 0 and 100, indicating a
-per-beam correlation threshhold below which data are to be considered suspect.
+per-beam correlation threshold below which data are to be considered suspect.
 If the plot type is \code{p}, the suspect points (velocity, backscatter
 amplitude, or correlation) will be coloured red; otherwise, this argument is
 ignored.}

@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,met-method}
 \alias{plot,met-method}
+\alias{plot.met}
 \title{Plot met Data}
 \usage{
 \S4method{plot}{met}(x, which = 1:4, mgp, mar, tformat,

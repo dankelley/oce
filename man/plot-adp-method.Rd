@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,adp-method}
 \alias{plot,adp-method}
+\alias{plot.adp}
 \title{Plot ADP Data}
 \usage{
 \S4method{plot}{adp}(x, which = 1:dim(x@data$v)[3], mode = c("normal",

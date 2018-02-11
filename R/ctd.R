@@ -44,8 +44,9 @@
 #' will recover \code{scan} (if it exists), etc.
 #'
 #' @section Accessing data:
-#' Data may be extracted with \code{\link{[[,ctd-method}} and inserted
-#' with \code{\link{[[<-,ctd-method}}. As noted above, \code{\link{[[,ctd-method}}
+#' Data may be extracted with \code{\link{[[,ctd-method}}.
+#'
+#' Note that \code{\link{[[,ctd-method}}
 #' returns temperature in the ITS-90 scale and pressure in dbar, regardless of the
 #' scale and unit of the data within the object. Type \code{?"[[,ctd-method"}
 #' or \code{?"[[<-,ctd-method"} to learn more.
@@ -72,12 +73,17 @@
 #' \code{\link{swN2}}, density ratio with \code{ctd[["Rrho"]]} and spiciness with
 #' \code{ctd[["spice"]]}.
 #'
-#' @section Extracting values:
-#' Items stored in the object may be altered with e.g.  \code{ctd[["salinity"]]
-#'   <- rep(35,10)}.  For obvious reasons, this does not work with derived
-#' quantities such as conservative temperature, etc.
+#' @section Modifying data:
+#' Although data may be inserted with \code{\link{[[<-,ctd-method}},
+#' it is recommended that \code{\link{oceSetData}} be used instead, because
+#' it stores a record of the change in the \code{processingLog}.
 #'
-#' @section Reading/creating data:
+#' If an attempt is made to modify a \strong{derived quantity} (e.g.
+#' the buoyancy frequency \code{ctd[["N2"]]}) because the named item
+#' is not stored in the \code{data} slot. In this sort of case,
+#' \code{\link{oceSetData}} simply creates a new item in the data slot.
+#'
+#' @section Reading/creating CTD objects:
 #' A file containing CTD profile data may be read with
 #' \code{\link{read.ctd}}, and a CTD object can also be created with
 #' \code{\link{as.ctd}}.  See \code{\link{read.ctd}} for references on data
@@ -102,11 +108,28 @@
 #' many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
 #' discussed above, and skilled users may also manipulate the contents directly.
 #'
+#' @template oceslots
+#'
+#' @examples
+#'
+#' # 1. Create a ctd object with fake data.
+#' a <- as.ctd(salinity=35+1:3/10, temperature=10-1:3/10, pressure=1:3)
+#' summary(a)
+#'
+#' # 2. Fix a typo in a station latitude (fake! it's actually okay)
+#' data(ctd)
+#' ctd <- oceSetMetadata(ctd, "latitude", ctd[["latitude"]]-0.001,
+#'                      "fix latitude typo in log book")
+#'
+#' # 3. Low-level method for creating and inspecting an empty object.
+#' str(.ctd())
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to \code{ctd} data
 #' @family classes provided by \code{oce}
-setClass("ctd", contains="oce")
+#' @aliases .ctd
+.ctd <- setClass("ctd", contains="oce")
 
 
 #' A CTD profile in Halifax Harbour
@@ -262,62 +285,74 @@ setMethod("handleFlags",
               res
           })
 
-## FIXME: find a way to document this as new,ctd-method ... I've tried
-## FIXME: a lot of different things, but none passes build-check tests.
-##
-## Initialize storage for a ctd object
-##
-## This function creates \code{oce} objects of \code{\link{ctd-class}}. It is mainly
-## used by \code{oce} functions such as \code{\link{read.ctd}} and \code{\link{as.ctd}},
-## and it is not intended for novice users, so it may change at any time, without
-## following the usual rules for transitioning to deprecated and defunct status
-## (see \link{oce-deprecated}).
-##
-## @details
-## To save storage, this function has arguments only for quantities that are often present in data
-## files all cases. For example, not
-## all data files will have oxygen, so that's not present here.
-## Extra data may be added after the object is created, using
-## \code{\link{oceSetData}}.
-## Similarly, \code{\link{oceSetMetadata}} may be used to add metadata (station ID, etc),
-## while bearing in mind that other functions look for such information
-## in very particular places (e.g. the station ID is a string named \code{station}
-## within the \code{metadata} slot). See \code{\link{ctd-class}} for more information
-## on elements stored in \code{ctd} objects.
-##
-## @param .Object the string \code{"ctd"}
-## @param pressure optional numerical vector of pressures.
-## @param salinity optional numerical vector of salinities.
-## @param temperature optional numerical vector of temperatures.
-## @param conductivity optional numerical vector of conductivities.
-## @param units optional list indicating units for the quantities specified
-## in the previous arguments. If this
-## is not supplied, a default is set up, based on which of the
-## \code{pressure} to \code{conductivity} arguments were specified.
-## If all of those 4 arguments were specified, then \code{units} is set
-## up as if the call included the following:
-## \code{units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
-##      salinity=list(unit=expression(), scale="PSS-78"),
-##      conductivity=list(unit=expression(), scale=""),
-##      pressure=list(unit=expression(dbar), scale=""),
-##      depth=list(unit=expression(m), scale=""))}. This list is trimmed
-## of any of the 4 items that were not specified in the previous
-## arguments. Note that if \code{units} is specified, then it is just
-## copied into the \code{metadata} slot of the returned object, so the user
-## must be careful to set up values that will make sense to other \code{oce}
-## functions.
-## @param pressureType optional character string indicating the type of pressure;
-## if not supplied, this defaults to \code{"sea"}, which indicates the excess of
-## pressure over the atmospheric value, in dbar.
-## @param deploymentType optional character string indicating the type of deployment, which may
-## be \code{"unknown"}, \code{"profile"}, \code{"towyo"}, or \code{"thermosalinograph"}.
-## If this is not set, the value defaults to \code{"unknown"}.
-##
-## @name new,ctd-method
-## @aliases new,ctd-method
-## @usage new,ctd-method(class, pressure, salinity, temperature, conductivity, units,
-##    pressureType, deploymentType)
-## @family things related to \code{ctd} data
+#' Initialize storage for a ctd object
+#'
+#' This function creates \code{oce} objects of \code{\link{ctd-class}}. It is mainly
+#' used by \code{oce} functions such as \code{\link{read.ctd}} and \code{\link{as.ctd}},
+#' and it is not intended for novice users, so it may change at any time, without
+#' following the usual rules for transitioning to deprecated and defunct status
+#' (see \link{oce-deprecated}).
+#'
+#' @details
+#' To save storage, this function has arguments only for quantities that are often present in data
+#' files all cases. For example, not
+#' all data files will have oxygen, so that's not present here.
+#' Extra data may be added after the object is created, using
+#' \code{\link{oceSetData}}.
+#' Similarly, \code{\link{oceSetMetadata}} may be used to add metadata (station ID, etc),
+#' while bearing in mind that other functions look for such information
+#' in very particular places (e.g. the station ID is a string named \code{station}
+#' within the \code{metadata} slot). See \code{\link{ctd-class}} for more information
+#' on elements stored in \code{ctd} objects.
+#'
+#' @param .Object the string \code{"ctd"}
+#' @param pressure optional numerical vector of pressures.
+#' @param salinity optional numerical vector of salinities.
+#' @param temperature optional numerical vector of temperatures.
+#' @param conductivity optional numerical vector of conductivities.
+#' @param units optional list indicating units for the quantities specified
+#' in the previous arguments. If this
+#' is not supplied, a default is set up, based on which of the
+#' \code{pressure} to \code{conductivity} arguments were specified.
+#' If all of those 4 arguments were specified, then \code{units} is set
+#' up as if the call included the following:
+#' \code{units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
+#'      salinity=list(unit=expression(), scale="PSS-78"),
+#'      conductivity=list(unit=expression(), scale=""),
+#'      pressure=list(unit=expression(dbar), scale=""),
+#'      depth=list(unit=expression(m), scale=""))}. This list is trimmed
+#' of any of the 4 items that were not specified in the previous
+#' arguments. Note that if \code{units} is specified, then it is just
+#' copied into the \code{metadata} slot of the returned object, so the user
+#' must be careful to set up values that will make sense to other \code{oce}
+#' functions.
+#' @param pressureType optional character string indicating the type of pressure;
+#' if not supplied, this defaults to \code{"sea"}, which indicates the excess of
+#' pressure over the atmospheric value, in dbar.
+#' @param deploymentType optional character string indicating the type of deployment, which may
+#' be \code{"unknown"}, \code{"profile"}, \code{"towyo"}, or \code{"thermosalinograph"}.
+#' If this is not set, the value defaults to \code{"unknown"}.
+#'
+#' @family things related to \code{ctd} data
+#'
+#' @examples
+#'
+#' ## 1. empty
+#' new("ctd")
+#'
+#' ## 2. fake data with no location information, so can only
+#' ##    plot with the UNESCO equation of state.
+#' ##    NOTE: always name arguments, in case the default order gets changed
+#' ctd <- new("ctd", salinity=35+1:3/10, temperature=10-1:3/10, pressure=1:3)
+#' summary(ctd)
+#' plot(ctd, eos="unesco")
+#'
+#' ## 3. as 2, but insert location and plot with GSW equation of state.
+#' ctd <- oceSetMetadata(ctd, "latitude", 44)
+#' ctd <- oceSetMetadata(ctd, "longitude", -63)
+#' plot(ctd, eos="gsw")
+#'
+#' @aliases initialize,ctd-method
 setMethod(f="initialize",
           signature="ctd",
           definition=function(.Object, pressure, salinity, temperature, conductivity,
@@ -481,7 +516,7 @@ setMethod(f="summary",
 #' will detect the setup, and subtract nitrite from the sum to yield
 #' nitrate.
 #'
-#' Below is a list of computed quantities, or at least quantites that are
+#' Below is a list of computed quantities, or at least quantities that are
 #' typically not stored in data files.  (This is a vague statement because
 #' Seabird software permits calculation of many of these and hence storage
 #' within \code{.cnv} files.)
@@ -510,7 +545,7 @@ setMethod(f="summary",
 #' \item \code{SA} or \code{Absolute Salinity}: Absolute Salinity,
 #' computed with \code{\link[gsw]{gsw_SA_from_SP}} in the \code{gsw} package.
 #' The calculation involves location as well as measured water properties.
-#' If the object \code{x} does not containin information on the location,
+#' If the object \code{x} does not containing information on the location,
 #' then 30N and 60W is used for the calculation, and a warning is generated.
 #'
 #' \item \code{sigmaTheta}: A form of potential density anomaly, computed with
@@ -747,7 +782,7 @@ setMethod(f="[[<-",
 #' unless the \code{profile} argument is specified and then that specific
 #' profile is extracted. (3) It can be an object of \code{\link{rsk-class}},
 #' (see \dQuote{Converting rsk objects} for details). (4)
-#' It can be unspecified, in whch case \code{conductivity} becomes a mandatory
+#' It can be unspecified, in which case \code{conductivity} becomes a mandatory
 #' argument, because it will be needed for computing actual salinity,
 #' using \code{\link{swSCTp}}.
 #'
@@ -892,7 +927,7 @@ setMethod(f="[[<-",
 #' contain their information. If required, any data or metadata
 #' element can be added to the value returned by \code{as.ctd}
 #' using \code{\link{oceSetData}} or \code{\link{oceSetMetadata}},
-#' erspectively.
+#' respectively.
 #'
 #' The returned \code{\link{rsk-class}} object contains pressure in a form that
 #' may need to be adjusted, because \code{rsk} objects may contain
@@ -908,7 +943,7 @@ setMethod(f="[[<-",
 #' sum of sea pressure and atmospheric pressure), depending on how the object was
 #' created with \code{\link{as.rsk}} or \code{\link{read.rsk}}.  However,
 #' \code{\link{ctd-class}} objects store sea pressure, which is needed for
-#' plotting, calculating density, etc. This poses no difficulities, however,
+#' plotting, calculating density, etc. This poses no difficulties, however,
 #' because \code{as.ctd} automatically converts absolute pressure to sea pressure,
 #' if the metadata in the \code{\link{rsk-class}} object indicates that this is
 #' appropriate. Further alteration of the pressure can be accomplished with the
@@ -1357,7 +1392,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @param column A column of data to be inserted, in the form of a
 #'     numeric vector, whose length matches that of columns in the
-#'     objecct.
+#'     object.
 #' @param name Character string indicating the name this column is to
 #'     have in the \code{data} slot of \code{x}.
 #' @param label Optional character string or expression indicating the
@@ -1474,7 +1509,7 @@ ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalN
 #' interpolation between neighboring points, using \code{\link{approx}}
 #' with the \code{rule} argument specified here), \code{"lm"} (based on local
 #' regression, with \code{e} setting the size of the local region), \code{"rr"}
-#' (for the Reineger and Ross method, carried out with \code{\link{oce.approx}})
+#' (for the Reiniger and Ross method, carried out with \code{\link{oce.approx}})
 #' and \code{"unesco"} (for the UNESCO method, carried out with.
 #' \code{\link{oce.approx}}.  If \code{method} is a function, then it must take
 #' three arguments, the first being pressure, the second being an arbitrary
@@ -2733,7 +2768,8 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'
 #' @param plim Optional limits of pressure axes.
 #'
-#' @param densitylim Optional limits of density axis.
+#' @param densitylim Optional limits of density axis, whether that axis be horizontal
+#' or vertical.
 #'
 #' @param N2lim Optional limits of \eqn{N^2}{N^2} axis.
 #'
@@ -2878,6 +2914,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{ctd} data
+#' @aliases plot.ctd
 setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which,
@@ -3502,7 +3539,6 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset, add=add,
                                   debug=debug-1,
                                   ...)
-                       plotProfile(...)
                   } else if (which[w] ==30) {
                       ## S timeseries
                       oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S", "y"))
@@ -4198,7 +4234,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' pressure, using the oceanographic convention of putting lower pressures
 #' nearer the top of the plot. This works for any \code{oce} object that has a
 #' pressure column in its \code{data} slot.
-#' The colours (\code{col.salinity}, etc.) are ony used if two profiles appear
+#' The colours (\code{col.salinity}, etc.) are only used if two profiles appear
 #' on a plot.
 #'
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
@@ -4284,8 +4320,13 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' @param plim Optional limit for pressure axis, ignored unless
 #' \code{ytype=="pressure"}, in which case it takes precedence over
 #' \code{ylim}.
+#' @param xlim Optional limit for x axis, which can apply to any plot type.
+#' This is ignored if the plotted x variable is something for which a limit
+#' may be specified with an argument, e.g. \code{xlim} is ignored for a 
+#' salinity profile, because \code{Slim} ought to be given in such a case.
 #' @param ylim Optional limit for y axis, which can apply to any plot type,
-#' although is overridden by \code{plim} if \code{ytype=="pressure"}.
+#' although is overridden by \code{plim} if \code{ytype} is \code{"pressure"}
+#' or by \code{densitylim} if \code{ytype} is \code{"sigmaTheta"}.
 #' @param lwd lwd value for data line
 #' @param xaxs value of \code{\link{par}} \code{xaxs} to use
 #' @param yaxs value of \code{\link{par}} \code{yaxs} to use
@@ -4345,7 +4386,8 @@ plotProfile <- function (x,
                          grid=TRUE,
                          col.grid="lightgray",
                          lty.grid="dotted",
-                         Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim, ylim,
+                         Slim, Clim, Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim,
+                         xlim, ylim,
                          lwd=par("lwd"),
                          xaxs="r",
                          yaxs="r",
@@ -4358,9 +4400,10 @@ plotProfile <- function (x,
                          mar,
                          add=FALSE,
                          inset=FALSE,
-                         debug=getOption("oceDebug"),
+                         debug=getOption("oceDebug", 0),
                          ...)
 {
+    debug <- min(debug, 3)
     oceDebug(debug, "plotProfile(x, xtype[1]=\"", xtype[1],
              "\", debug=", debug, ", ...) {\n", sep="", unindent=1)
     eos <- match.arg(eos, c("unesco", "gsw"))
@@ -4373,12 +4416,12 @@ plotProfile <- function (x,
     plimGiven <- !missing(plim)
 
     plotJustProfile <- function(x, y, col="black", type="l", lty=lty,
+                                xlim=NULL, ylim=NULL,
                                 lwd=par("lwd"),
                                 cex=1, pch=1, pt.bg="transparent",
-                                df=df, keepNA=FALSE, debug=getOption("oceDebug"))
+                                df=df, keepNA=FALSE, debug=getOption("oceDebug", 0))
     {
-        oceDebug(debug, "plotJustProfile(type=\"", if (is.vector(type)) "(a vector)" else type,
-                 "\", col[1:3]=c(\"", paste(col[1:3], collapse='","'), "\"), ...) {\n", sep="", unindent=1)
+        oceDebug(debug, "plotJustProfile(..., debug=", debug, ") {\n", sep="", unindent=1)
         x <- as.vector(x) # because e.g. argo may be a 1-col matrix
         y <- as.vector(y)
         if (!keepNA) {
@@ -4407,10 +4450,11 @@ plotProfile <- function (x,
         } else {
             lines(x, y, col=col, lwd=lwd, lty=lty)
         }
-        oceDebug(debug, "} # plotJustProfile\n")
+        oceDebug(debug, "} # plotJustProfile\n", unindent=1)
     }                                  # plotJustProfile
     #if (!inherits(x, "ctd"))
     #    stop("method is only for objects of class '", "ctd", "'")
+    xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
     densitylimGiven <- !missing(densitylim)
     dots <- list(...)
@@ -4428,9 +4472,12 @@ plotProfile <- function (x,
                         depth=resizableLabel("depth", "y"),
                         sigmaTheta=resizableLabel("sigmaTheta", "y"))
     }
-    ## if plim given on a pressure plot, then it takes precedence over ylim
+    ## if plim given on a pressure plot, then it takes precedence over ylim;
+    ## same for densitylim
     if (ytype == "pressure" && plimGiven)
         ylim <- plim
+    if (ytype == "sigmaTheta" && densitylimGiven)
+        ylim <- densitylim
     if (missing(ylim))
         ylim <- switch(ytype,
                        pressure=rev(range(x[["pressure"]], na.rm=TRUE)),
@@ -4484,9 +4531,23 @@ plotProfile <- function (x,
             time <- time * x@metadata$sampleInterval
         }
     }
-    y <- if (ytype == "pressure") x[["pressure"]] else if (ytype == "z") x[["z"]]
-        else if (ytype == "depth") x[["depth"]] else if (ytype == "sigmaTheta") x[["sigmaTheta"]]
+    ## y <- if (ytype == "pressure") x[["pressure"]] else if (ytype == "z") x[["z"]]
+    ##     else if (ytype == "depth") x[["depth"]] else if (ytype == "sigmaTheta") x[["sigmaTheta"]]
+    if (ytype == "pressure") {
+        y <- x[["pressure"]] 
+        if (plimGiven && !ylimGiven) {
+            ylim <- plim
+            ylimGiven <- TRUE
+        }
+    } else if (ytype == "z") {
+        y <- x[["z"]]
+    } else if (ytype == "depth") {
+        y <- x[["depth"]] 
+    } else if (ytype == "sigmaTheta") {
+        y <- x[["sigmaTheta"]]
+    }
     y <- as.vector(y)
+
 
     if (!add)
         par(mar=mar, mgp=mgp)
@@ -4528,8 +4589,12 @@ plotProfile <- function (x,
         }
     } else if (xtype == "index") {
         index <- 1:length(x[["pressure"]])
-        plot(index, x[["pressure"]], ylim=ylim, col=col, lty=lty, xlab="index", ylab=yname,
-             type=type, xaxs=xaxs, yaxs=yaxs, cex=cex, pch=pch)
+        plot(index, x[["pressure"]], ylim=ylim, col=col, lty=lty, xlab="", ylab=yname,
+             type=type, xaxs=xaxs, yaxs=yaxs, cex=cex, pch=pch, axes=FALSE)
+        axis(3)
+        mtext("index", side=3, line=axisNameLoc, cex=par("cex")) # no unit is provided
+        axis(2)
+        box()
         if (grid) {
             at <- par("yaxp")
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
@@ -4641,6 +4706,7 @@ plotProfile <- function (x,
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "S" || xtype == "SA" || xtype == "salinity") {
+        oceDebug(debug, "recognized S, SA, or salinity\n")
         salinity <- if (eos == "gsw" || xtype == "SA") swAbsoluteSalinity(x) else x[["salinity"]]
         if (!any(is.finite(salinity))) {
             warning("no valid salinity data")
@@ -4654,14 +4720,12 @@ plotProfile <- function (x,
             axis(2)
             axis(3)
             box()
-            if (is.null(xlab)) {
-                if (eos == "gsw" || xtype == "SA") {
-                    mtext(resizableLabel("absolute salinity", "x"), side=3, line=axisNameLoc, cex=par("cex"))
-                } else {
-                    mtext(resizableLabel("S", "x"), side=3, line=axisNameLoc, cex=par("cex"))
-                }
+            if (eos == "gsw" || xtype == "SA") {
+                mtext(resizableLabel("absolute salinity", "x", unit=NULL),
+                      side=3, line=axisNameLoc, cex=par("cex"))
             } else {
-                mtext(xlab, side=3, line=axisNameLoc, cex=par("cex"))
+                mtext(resizableLabel("S", "x", unit=NULL),
+                      side=3, line=axisNameLoc, cex=par("cex"))
             }
         } else {
             look <- if (keepNA) 1:length(y) else !is.na(salinity) & !is.na(y)
@@ -4669,15 +4733,14 @@ plotProfile <- function (x,
                 plot(salinity[look], y[look],
                      xlim=Slim, ylim=ylim, lty=lty, cex=cex, pch=pch,
                      type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-                if (is.null(xlab)) {
-                    if (eos == "gsw") {
-                        mtext(resizableLabel("absolute salinity", "x"), side=3, line=axisNameLoc, cex=par("cex"))
-                    } else {
-                        mtext(resizableLabel("S", "x"), side=3, line=axisNameLoc, cex=par("cex"))
-                    }
+                if (eos == "gsw") {
+                    mtext(resizableLabel("absolute salinity", "x", unit=NULL),
+                          side=3, line=axisNameLoc, cex=par("cex"))
                 } else {
-                    mtext(xlab, side=3, line=axisNameLoc, cex=par("cex"))
+                    mtext(resizableLabel("S", "x", unit=NULL),
+                          side=3, line=axisNameLoc, cex=par("cex"))
                 }
+                mtext(yname, side=2, line=axisNameLoc, cex=par("cex"))
                 axis(2)
                 axis(3)
                 box()
@@ -4689,8 +4752,8 @@ plotProfile <- function (x,
                 }
             }
             ## 2014-02-07: use col here, since no second axis to worry about
-            plotJustProfile(salinity, y, type=type, lwd=lwd, lty=lty,
-                            cex=cex, pch=pch, col=col, pt.bg=pt.bg,
+            plotJustProfile(salinity, y, type=type, col=col, lwd=lwd, lty=lty,
+                            cex=cex, pch=pch, pt.bg=pt.bg,
                             keepNA=keepNA, debug=debug-1)
         }
     } else if (xtype == "C" || xtype == "conductivity") {
@@ -4783,6 +4846,7 @@ plotProfile <- function (x,
         if (all(is.na(xvar)))
             stop("all ", xtype, " values in this station are NA")
         if (useSmoothScatter) {
+            oceDebug(debug, "scatter plot\n")
             smoothScatter(xvar, y, ylim=ylim, xlab="", ylab=resizableLabel("pressure", "y"), axes=FALSE, ...)
             axis(2)
             axis(3)
@@ -4791,9 +4855,14 @@ plotProfile <- function (x,
             unit <- x@metadata$units[[xtype]]
             mtext(resizableLabel(xtype, "x", unit=unit), side=3, line=axisNameLoc, cex=par("cex"))
         } else {
+            oceDebug(debug, "line plot\n")
+            ##message("ctd.R:4811")
+            #browser()
             look <- as.vector(if (keepNA) 1:length(y) else !is.na(xvar) & !is.na(y))
             if (!add) {
+                oceDebug(debug, "add is FALSE so new plot\n")
                 if (ylimGiven) {
+                    oceDebug(debug, "ylimGiven is TRUE\n")
                     ylimsorted <- sort(ylim)
                     ## message("length(ylimsorted) ", length(ylimsorted))
                     ## message("ylimsorted vector? ", is.vector(ylimsorted))
@@ -4804,11 +4873,17 @@ plotProfile <- function (x,
                     ## message("length(y) ", length(y))
                     ## message("y vector? ", is.vector(y))
                     look <- look & (ylimsorted[1] <= y) & (y <= ylimsorted[2])
-                    xlim <- range(xvar[look], na.rm=TRUE)
+                    if (!xlimGiven)
+                        xlim <- range(xvar[look], na.rm=TRUE)
                     plot(xvar[look], y[look], xlim=xlim, ylim=ylim,
                          lty=lty, type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 } else {
-                    plot(xvar[look], y[look], ylim=rev(range(y[look])),
+                    oceDebug(debug, "ylimGiven is FALSE\n")
+                    ##message("B")
+                    if (!xlimGiven)
+                        xlim <- range(xvar[look], na.rm=TRUE)
+                    plot(xvar[look], y[look],
+                         xlim=xlim, ylim=rev(range(y[look])),
                          lty=lty, type="n", xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
                 }
                 mtext(resizableLabel(xtype, "x", unit=unit), side=3, line=axisNameLoc, cex=par("cex"))
@@ -4856,6 +4931,7 @@ plotProfile <- function (x,
                         cex=cex, col=col, pch=pch, pt.bg=pt.bg,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "T" || xtype == "CT" || xtype == "temperature") {
+        oceDebug(debug, "recognized T, CT, or temperature\n")
         temperature <- if (eos == "gsw" || xtype == "CT") swConservativeTemperature(x) else x[["temperature"]]
         unit <- x@metadata$units[["temperature"]]
         if (!any(is.finite(temperature))) {
@@ -4870,10 +4946,13 @@ plotProfile <- function (x,
             axis(2)
             axis(3)
             box()
-            if (eos == "gsw" || xtype == "CT")
-                mtext(resizableLabel("conservative temperature", "x", unit=unit), side=3, line=axisNameLoc, cex=par("cex"))
-            else
-                mtext(resizableLabel("T", "x", unit=unit), side=3, line=axisNameLoc, cex=par("cex"))
+            if (eos == "gsw" || xtype == "CT") {
+                mtext(resizableLabel("conservative temperature", "x", unit=unit),
+                      side=3, line=axisNameLoc, cex=par("cex"))
+            } else {
+                mtext(resizableLabel("T", "x", unit=unit),
+                      side=3, line=axisNameLoc, cex=par("cex"))
+            }
         } else {
             look <- if (keepNA) 1:length(y) else !is.na(x[["temperature"]]) & !is.na(y)
             if (!add) {
@@ -5182,6 +5261,7 @@ plotProfile <- function (x,
         }
         ## lines(salinity, y, col=col.salinity, lwd=if (length(lwd)>1)lwd[2] else lwd[1])
     } else {
+        oceDebug(debug, "plotting a general xtype, i.e. not a special case\n")
         ## Not a special case.
         w <- which(names(x@data) == xtype)
         if (length(w) < 1)
@@ -5191,8 +5271,9 @@ plotProfile <- function (x,
         ## message("names(dots)=", paste(names(dots), collapse=" "))
         if (!add) {
             par(mar=mar, mgp=mgp)
-            plot(x@data[[xtype]][look], y[look],
-                 xlim=if ("xlim" %in% names(dots)) dots$xlim,
+            xplot <- x@data[[xtype]][look]
+            plot(xplot, y[look],
+                 xlim=if (xlimGiven) xlim else range(xplot, na.rm=TRUE),
                  ylim=ylim, lty=lty, cex=cex, pch=pch,
                  type="n", xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs)
             axis(3)

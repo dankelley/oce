@@ -50,7 +50,7 @@ setMethod(f="[[<-",
 #' 
 #' @usage data(lisst)
 #' @author Dan Kelley
-#' @source This was constructed artifically using \code{\link{as.lisst}},
+#' @source This was constructed artificially using \code{\link{as.lisst}},
 #" to approximately match values that might be measured in the field.
 #' @family datasets provided with \code{oce}
 NULL
@@ -157,6 +157,7 @@ setMethod(f="summary",
 #' 
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{lisst} data
+#' @aliases plot.lisst
 setMethod(f="plot",
           signature="lisst",
           definition=function(x, which = c(16, 37, 38), tformat, debug=getOption("oceDebug"), ...) {

@@ -1102,7 +1102,7 @@ sectionAddCtd <- sectionAddStation
 #' then there are three possibilities: is the string is \code{"polygon"} then
 #' a polygon is drawn, if it is \code{"lines"} then a line is drawn, and if it
 #' is \code{"points"} then points are drawn. If \code{showBottom} is an object
-#' inherinting from \code{\link{topo-class}} then the station locations are
+#' inheriting from \code{\link{topo-class}} then the station locations are
 #' interpolated to that topography and the results are shown with a polygon.
 #' In this last case, the interpolation is set at a grid that is roughly
 #' in accordance with the resolution of the latitudes in the \code{topo} object.
@@ -1132,7 +1132,7 @@ sectionAddCtd <- sectionAddStation
 #' Otherwise, the gridded section that was constructed for the plot is returned.
 #' In both cases, the value is returned silently. The
 #' purpose of returning the section is to enable subsequent processing
-#' of the grid, including adding elements to the plot.
+#' of the grid, including adding elements to the plot (see example 5).
 #'
 #' @seealso The documentation for \code{\link{section-class}} explains the
 #' structure of section objects, and also outlines the other functions dealing
@@ -1189,10 +1189,20 @@ sectionAddCtd <- sectionAddStation
 #' plot(section, which="SA", xtype="longitude", ztype="image", showBottom=t)
 #'}
 #'
+#' \dontrun{
+#' ## 5. Temperature with salinity added in red
+#' s <- plot(section, which="temperature")
+#' distance <- s[["distance", "byStation"]]
+#' depth <- s[["station", 1]][["depth"]]
+#' salinity <- matrix(s[["salinity"]], byrow=TRUE, nrow=length(s[["station"]]))
+#' contour(distance, depth, salinity, col=2, add=TRUE)
+#'}
+#'
 #' @author Dan Kelley
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{section} data
+#' @aliases plot.section
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
@@ -2605,7 +2615,7 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
 #' @param gamma scale-reduction parameter, passed to \code{\link{interpBarnes}},
 #' if \code{method="barnes"}; ignored otherwise.
 #'
-#' @param iterations number of interations of Barnes algorithm, passed to
+#' @param iterations number of iterations of Barnes algorithm, passed to
 #' \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise.
 #'
 #' @param trim passed to \code{\link{interpBarnes}}, if \code{method="barnes"}; ignored otherwise
