@@ -3,6 +3,7 @@
 \docType{class}
 \name{ctd-class}
 \alias{ctd-class}
+\alias{.ctd}
 \title{Class to Store CTD (or general hydrographic) Data}
 \description{
 Class to store hydrographic data such as measured with a CTD (conductivity,
@@ -113,9 +114,21 @@ discussed above, and skilled users may also manipulate the contents directly.
 }
 
 \examples{
-ctd <- new("ctd", pressure=1:3, salinity=35+1:3/10, temperature=10-1:3/10)
-summary(ctd)
-plot(ctd)
+
+## 1. empty
+.ctd()
+
+## 2. fake data with no location information, so can only
+##    plot with the UNESCO equation of state.
+##    NOTE: always name arguments, in case the default order gets changed
+a <- .ctd(salinity=35+1:3/10, temperature=10-1:3/10, pressure=1:3)
+summary(a)
+plot(a, eos="unesco")
+
+## 3. as 2, but insert location and plot with GSW equation of state.
+a <- oceSetMetadata(a, "latitude", 44)
+a <- oceSetMetadata(a, "longitude", -63)
+plot(a, eos="gsw")
 
 }
 \seealso{

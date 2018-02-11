@@ -103,15 +103,28 @@
 #' discussed above, and skilled users may also manipulate the contents directly.
 #'
 #' @examples
-#' ctd <- new("ctd", pressure=1:3, salinity=35+1:3/10, temperature=10-1:3/10)
-#' summary(ctd)
-#' plot(ctd)
+#'
+#' ## 1. empty
+#' .ctd()
+#'
+#' ## 2. fake data with no location information, so can only
+#' ##    plot with the UNESCO equation of state.
+#' ##    NOTE: always name arguments, in case the default order gets changed
+#' a <- .ctd(salinity=35+1:3/10, temperature=10-1:3/10, pressure=1:3)
+#' summary(a)
+#' plot(a, eos="unesco")
+#'
+#' ## 3. as 2, but insert location and plot with GSW equation of state.
+#' a <- oceSetMetadata(a, "latitude", 44)
+#' a <- oceSetMetadata(a, "longitude", -63)
+#' plot(a, eos="gsw")
 #'
 #' @author Dan Kelley
 #'
 #' @family things related to \code{ctd} data
 #' @family classes provided by \code{oce}
-setClass("ctd", contains="oce")
+#' @aliases .ctd
+.ctd <- setClass("ctd", contains="oce")
 
 
 #' A CTD profile in Halifax Harbour
