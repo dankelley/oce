@@ -112,6 +112,12 @@ many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-m
 discussed above, and skilled users may also manipulate the contents directly.
 }
 
+\examples{
+ctd <- new("ctd", pressure=1:3, salinity=35+1:3/10, temperature=10-1:3/10)
+summary(ctd)
+plot(ctd)
+
+}
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
@@ -119,6 +125,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
