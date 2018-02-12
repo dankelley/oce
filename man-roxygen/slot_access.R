@@ -1,48 +1,35 @@
-#' @section Retrieving slot contents:
+#' @section Retrieving slot contents (general):
 #'
 #' The full contents of the \code{data} and \code{metadata} slots of a \code{oce}
 #' object named \code{obj} may be retrieved in the standard R way, with
-#' \code{slot(obj, "data")} and \code{slot(obj, "metadata")}.
+#' \code{slot(obj, "data")} and \code{slot(obj, "metadata")}, or with
+#' \code{obj[["data"]]} and \code{obj[["metadata"]]}, where the latter uses an
+#' overloading of the \code{[[} operator for \code{oce} objects.
 #'
-#' \strong{FIXME: check whether the above permits changes on sub-items, and
-#' document if so, but state why it's a bad idea}
+#' The \code{[[} mechanism can also be used to look for named items within
+#' the slots. It first checks the \code{metadata} slot, returning the value
+#' if it is there, and then tries in the \code{data} slot if not. If this
+#' order of precedence is unsuitable, \code{\link{oceGetData}} and
+#' \code{\link{oceGetMetadata}} can be used.
 #'
-#' Individual items within \code{oce} objects can be retrieved in two ways.  The
-#' first is to use \code{\link{oceGetData}} and \code{\link{oceGetMetadata}},
-#' respectively.  The second is to use the \code{[[} operator, which
-#' works as follows.
+#' In addition to looking up stored quantities, the \code{[[} operator
+#' has other useful capabilities. If an object holds data-quality flags, then
+#' \code{obj[["flags"]]} will retrieve them, as a list with names matching
+#' the variable names.  Similarly, \code{obj[["units"]]} return a list of units.
+#' Individual items may be found in the usual R way within these lists, but there
+#' is a simpler way: use e.g. \code{obj[["temperatureFlag"]]} or
+#' \code{obj[["temperatureUnit"]]}. In such cases, \code{[[} is returning
+#' information that is stored somewhere in the object, but it can also return
+#' wholly \strong{derived} quantities, depending on the object type. For
+#' example, \code{obj[["N2"]]} will return the square of the buoyancy
+#' frequency, if \code{obj} is an object from which that can be calculated
+#' (such as a \code{ctd} object). Information about accessing such derived
+#' quantities may be found in the \dQuote{Special access methods}
+#' section of the documentation for those classes that support it.
 #'
-#' If \code{"obj"} is an \code{oce} object, then \code{obj[["data"]]} retrieves
-#' the \code{data} slot, and \code{obj[["metadata"]]} retrieves the \code{metadata}
-#' slot.  Each of these is a list, so the items within them may be retrieved in
-#' the usual way, e.g. either \code{ctd[["data"]]$salinity} or
-#' \code{ctd[["data"]]["salinity"]} may be used to recover the salinities in a
-#' \code{ctd} object. Similar actions apply to the \code{metadata} slot.
-#'
-#' \strong{FIXME: do I really want to talk about the above paragraph? I've never done it,
-#' and I don't want people doing it. Experts will already know the ins
-#' and outs, anyway. And I don't want to damage the data-hiding system.}
-#'
-#' In some circumstances, the items within the slots may be retrieved by
-#' name alone, according to a somewhat
-#' involved scheme. If \code{obj} is an \code{oce} object, then e.g.
-#' \code{obj[["x"]]} will retrieve \code{x} from the \code{metadata} slot if it
-#' exists there, or from the \code{data} slot, if it exists there. This order of
-#' precedence seldom causes problems, because it is rare to have an
-#' identically-named item in these two slots.
-#'
-#' \strong{FIXME: talk about flags and units here}
-#'
-#' For some object types, the \code{[[} mechanism also provides a way to
-#' obtain some derived quantities that are not actually stored in the data.
-#' For example, the buoyancy frequency may be available for hydrographic
-#' objects.  Any object that has this capability will have a section
-#' called \dQuote{Retrieving derived quantities} in its documentation, which
-#' should be consulted for details.
-#'
-#' @section Modifying slot contents:
+#' @section Modifying slot contents (general):
 #'
 #' Although there is a \code{[[<-} notation for modifying the contents
 #' of \code{oce} objects, it is wiser to use \code{\link{oceSetData}}
-#' \code{\link{oceSetMetadata}}, respectively.
-
+#' \code{\link{oceSetMetadata}}, respectively, to be sure where the change will be
+#' made, and to record the change in the \code{processingLog}.

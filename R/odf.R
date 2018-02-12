@@ -26,8 +26,7 @@
 #' @author Dan Kelley
 #' @family things related to \code{odf} data
 #' @family classes provided by \code{oce}
-#' @aliases .odf
-.odf <- setClass("odf", contains="oce")
+setClass("odf", contains="oce")
 
 ## [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
 ##

@@ -3,7 +3,6 @@
 \docType{class}
 \name{ctd-class}
 \alias{ctd-class}
-\alias{.ctd}
 \title{Class to Store CTD (or general hydrographic) Data}
 \description{
 Class to store hydrographic data such as measured with a CTD (conductivity,
@@ -38,6 +37,68 @@ pressure may be stored in either dbars or PSI, but e.g. \code{ctd[["pressure"]]}
 returns a value in dbars, after multiplying by 0.689476 if the value is
 stored in PSI. Luckily, there is (as of early 2016) only one salinity scale in
 common use in data files, namely PSS-78.
+}
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot is a
+\code{\link{list}} containing the main data for the object.}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot is
+a \code{\link{list}} containing information about the \code{data} or about the
+object itself.  An example of the former might be the location at which a
+measurement was made, and of the latter might be the name of the experiment in
+which the data were collected.}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog}
+slot is a \code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Retrieving slot contents (general)}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{oce}
+object named \code{obj} may be retrieved in the standard R way, with
+\code{slot(obj, "data")} and \code{slot(obj, "metadata")}, or with
+\code{obj[["data"]]} and \code{obj[["metadata"]]}, where the latter uses an
+overloading of the \code{[[} operator for \code{oce} objects.
+
+The \code{[[} mechanism can also be used to look for named items within
+the slots. It first checks the \code{metadata} slot, returning the value
+if it is there, and then tries in the \code{data} slot if not. If this
+order of precedence is unsuitable, \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}} can be used.
+
+In addition to looking up stored quantities, the \code{[[} operator
+has other useful capabilities. If an object holds data-quality flags, then
+\code{obj[["flags"]]} will retrieve them, as a list with names matching
+the variable names.  Similarly, \code{obj[["units"]]} return a list of units.
+Individual items may be found in the usual R way within these lists, but there
+is a simpler way: use e.g. \code{obj[["temperatureFlag"]]} or
+\code{obj[["temperatureUnit"]]}. In such cases, \code{[[} is returning
+information that is stored somewhere in the object, but it can also return
+wholly \strong{derived} quantities, depending on the object type. For
+example, \code{obj[["N2"]]} will return the square of the buoyancy
+frequency, if \code{obj} is an object from which that can be calculated
+(such as a \code{ctd} object). Information about accessing such derived
+quantities may be found in the \dQuote{Special access methods}
+section of the documentation for those classes that support it.
+}
+
+\section{Modifying slot contents (general)}{
+
+
+Although there is a \code{[[<-} notation for modifying the contents
+of \code{oce} objects, it is wiser to use \code{\link{oceSetData}}
+\code{\link{oceSetMetadata}}, respectively, to be sure where the change will be
+made, and to record the change in the \code{processingLog}.
+}
+
+\section{Special access methods for ctd objects}{
+
 
 The TEOS-10 notation for these quantities also works, with \code{ctd[["SP"]]},
 \code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those
@@ -47,27 +108,6 @@ After the names listed above have been checked, the remaining names in the
 \code{data} slot are checked using \code{\link{pmatch}}, so that e.g.
 \code{ctd[["sal"]]} will recover practical \code{salinity}, \code{ctd[["sc"]]}
 will recover \code{scan} (if it exists), etc.
-}
-\section{Slots}{
-
-\describe{
-\item{\code{data}}{In this and all \code{oce} objects, the \code{data} slot is a
-\code{\link{list}} containing the main data for the object.}
-
-\item{\code{metadata}}{In this and all \code{oce} objects, the \code{metadata} slot is
-a \code{\link{list}} containing information about the \code{data} or about the
-object itself.  An example of the former might be the location at which a
-measurement was made, and of the latter might be the name of the experiment in
-which the data were collected.}
-
-\item{\code{processingLog}}{In this and all \code{oce} objects, the \code{processingLog}
-slot is a \code{\link{list}} with entries describing the creation and evolution
-of the object. This slot is updated by various \code{oce} functions.  The
-contents are listed in object summaries and with
-\code{\link{processingLogShow}}.}
-}}
-
-\section{Accessing data}{
 
 Data may be extracted with \code{\link{[[,ctd-method}}.
 
@@ -99,18 +139,6 @@ The square of buoyancy frequency is retrieved with \code{ctd[["N2"]]} or
 \code{ctd[["spice"]]}.
 }
 
-\section{Modifying data}{
-
-Although data may be inserted with \code{\link{[[<-,ctd-method}},
-it is recommended that \code{\link{oceSetData}} be used instead, because
-it stores a record of the change in the \code{processingLog}.
-
-If an attempt is made to modify a \strong{derived quantity} (e.g.
-the buoyancy frequency \code{ctd[["N2"]]}) because the named item
-is not stored in the \code{data} slot. In this sort of case,
-\code{\link{oceSetData}} simply creates a new item in the data slot.
-}
-
 \section{Reading/creating CTD objects}{
 
 A file containing CTD profile data may be read with
@@ -138,41 +166,6 @@ many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-m
 discussed above, and skilled users may also manipulate the contents directly.
 }
 
-\section{Retrieving slot contents}{
-
-
-The contents of the \code{data} and \code{metadata} slots of a \code{oce}
-object named \code{obj} may be retrieved with the standard R system, using
-\code{slot(obj, "data")} and \code{slot(obj, "metadata")}.  In addition, the
-\code{[[} operator is overloaded for \code{oce} objects, as a convenience.
-
-If \code{"obj"} is an \code{oce} object, then \code{obj[["data"]]} retrieves
-the \code{data} slot, and \code{obj[["metadata"]]} retrieves the \code{metadata}
-slot.  Each of these is a list, so the items within them may be retrieved in
-the usual way, e.g. either \code{ctd[["data"]]$salinity} or
-\code{ctd[["data"]]["salinity"]} may be used to recover the salinities in a
-\code{ctd} object. Similar actions apply to the \code{metadata} slot.
-
-Individual items within \code{oce} objects can be retrieved in two ways.  The
-first is to use \code{\link{oceGetData}} and \code{\link{oceGetMetadata}},
-respectively.  The second is to use the \code{[[} operator.
-
-Items within the slots may be retrieved by name alone, according to a somewhat
-involved scheme. If \code{obj} is an \code{oce} object, then e.g.
-\code{obj[["x"]]} will retrieve \code{x} from the \code{metadata} slot if it
-exists there, or from the \code{data} slot, if it exists there. This order of
-precedence seldom causes problems, because it is rare to have an
-identically-named item in these two slots.
-}
-
-\section{Modifying slot contents}{
-
-
-Although there is a \code{[[<-} notation for modifying the contents
-of \code{oce} objects, it is wiser to use \code{\link{oceSetData}}
-\code{\link{oceSetMetadata}}, respectively.
-}
-
 \examples{
 
 # 1. Create a ctd object with fake data.
@@ -183,9 +176,6 @@ summary(a)
 data(ctd)
 ctd <- oceSetMetadata(ctd, "latitude", ctd[["latitude"]]-0.001,
                      "fix latitude typo in log book")
-
-# 3. Low-level method for creating and inspecting an empty object.
-str(.ctd())
 
 }
 \seealso{

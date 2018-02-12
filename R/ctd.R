@@ -34,6 +34,12 @@
 #' stored in PSI. Luckily, there is (as of early 2016) only one salinity scale in
 #' common use in data files, namely PSS-78.
 #'
+#' @template slot_summary
+#'
+#' @template slot_access
+#'
+#' @section Special access methods for ctd objects:
+#'
 #' The TEOS-10 notation for these quantities also works, with \code{ctd[["SP"]]},
 #' \code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those
 #' returned for the longer names.
@@ -43,7 +49,6 @@
 #' \code{ctd[["sal"]]} will recover practical \code{salinity}, \code{ctd[["sc"]]}
 #' will recover \code{scan} (if it exists), etc.
 #'
-#' @section Accessing data:
 #' Data may be extracted with \code{\link{[[,ctd-method}}.
 #'
 #' Note that \code{\link{[[,ctd-method}}
@@ -73,15 +78,15 @@
 #' \code{\link{swN2}}, density ratio with \code{ctd[["Rrho"]]} and spiciness with
 #' \code{ctd[["spice"]]}.
 #'
-#' @section Modifying data:
-#' Although data may be inserted with \code{\link{[[<-,ctd-method}},
-#' it is recommended that \code{\link{oceSetData}} be used instead, because
-#' it stores a record of the change in the \code{processingLog}.
-#'
-#' If an attempt is made to modify a \strong{derived quantity} (e.g.
-#' the buoyancy frequency \code{ctd[["N2"]]}) because the named item
-#' is not stored in the \code{data} slot. In this sort of case,
-#' \code{\link{oceSetData}} simply creates a new item in the data slot.
+## @section Modifying data:
+## Although data may be inserted with \code{\link{[[<-,ctd-method}},
+## it is recommended that \code{\link{oceSetData}} be used instead, because
+## it stores a record of the change in the \code{processingLog}.
+##
+## If an attempt is made to modify a \strong{derived quantity} (e.g.
+## the buoyancy frequency \code{ctd[["N2"]]}) because the named item
+## is not stored in the \code{data} slot. In this sort of case,
+## \code{\link{oceSetData}} simply creates a new item in the data slot.
 #'
 #' @section Reading/creating CTD objects:
 #' A file containing CTD profile data may be read with
@@ -108,8 +113,6 @@
 #' many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-method}} scheme
 #' discussed above, and skilled users may also manipulate the contents directly.
 #'
-#' @template oceslots
-#'
 #' @examples
 #'
 #' # 1. Create a ctd object with fake data.
@@ -121,15 +124,11 @@
 #' ctd <- oceSetMetadata(ctd, "latitude", ctd[["latitude"]]-0.001,
 #'                      "fix latitude typo in log book")
 #'
-#' # 3. Low-level method for creating and inspecting an empty object.
-#' str(.ctd())
-#'
 #' @author Dan Kelley
 #'
 #' @family things related to \code{ctd} data
 #' @family classes provided by \code{oce}
-#' @aliases .ctd
-.ctd <- setClass("ctd", contains="oce")
+setClass("ctd", contains="oce")
 
 
 #' A CTD profile in Halifax Harbour
