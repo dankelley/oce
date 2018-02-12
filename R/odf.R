@@ -282,6 +282,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
 #'     \code{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                                         \cr
 #'     \code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)               \cr
 #'     \code{CNDC_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)               \cr
+#'     \code{DCHG_*.*} \tab \code{discharge}          \tab                                                            \cr
 #'     \code{DEPH_*.*} \tab \code{pressure}           \tab Sensor depth below sea level                               \cr
 #'     \code{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
 #'     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
@@ -405,6 +406,7 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
     names <- gsub("CRAT", "conductivity", names)
     names <- gsub("COND", "conductivity", names)
     names <- gsub("CNDC", "conductivity", names)
+    names <- gsub("DCHG", "discharge", names)
     names <- gsub("DEPH", "depth", names)
     names <- gsub("DOXY", "oxygen", names)
     names <- gsub("ERRV", "error", names)
