@@ -18,27 +18,25 @@
 }
 \description{
 The \code{[[} method works for all \code{oce} objects, i.e.
-objects inheriting from \code{\link{oce-class}}.  The purpose,
-as with the related replacement method, \code{\link{[[<-}},
+objects inheriting from \code{\link{oce-class}}.  The purpose
 is to insulate users from the internal details of \code{oce}
 objects, by looking for items within the various storage
 slots of the object. Items not actually stored can also be
 extracted, including derived data, units of measurement,
 and data-quality flags.
-
-The method uses a two-step process to try to find the
+A two-step process is used to try to find the
 requested information. First, a class-specific function
-is used to try to access the requested information (see
-\dQuote{Details of the specialized ... method}).
-Second, if no match is found, a general function is used
-(see \sQuote{Details of the general method}). If neither
-method can locates the requested item, \code{NULL} is returned.
+tries to find it (see
+\dQuote{Details of the specialized ... method}), but
+if that fails, then a general function is used
+(see \sQuote{Details of the general method}). If both
+fail, \code{NULL} is returned.
 }
-\section{Details of the specialized section method}{
+\section{Details of the specialized \code{section} method}{
+
 
 There are several possibilities, depending on the nature of \code{i}.
 \itemize{
-
 \item If \code{i} is the string \code{"station"}, then the method
 will return a \code{\link{list}} of
 \code{\link{ctd-class}} objects holding the station data.
@@ -74,10 +72,6 @@ within the stations in the section. If this flag is available in
 the first station of the section, then the flag values are looked
 up for every station.
 }
-
-
-If none of the conditions listed above holds, the general
-method is used (see \sQuote{Details of the general method}).
 }
 
 \section{Details of the general method}{
@@ -125,23 +119,8 @@ data(section)
 length(section[["latitude"]])
 length(section[["latitude", "byStation"]])
 
-data(section)
-length(section[["latitude"]])
-length(section[["latitude", "byStation"]])
-
 }
 \seealso{
-Other things related to \code{section} data: \code{\link{[[<-,section-method}},
-  \code{\link{as.section}},
-  \code{\link{handleFlags,section-method}},
-  \code{\link{plot,section-method}},
-  \code{\link{read.section}}, \code{\link{section-class}},
-  \code{\link{sectionAddStation}},
-  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
-  \code{\link{sectionSort}}, \code{\link{section}},
-  \code{\link{subset,section-method}},
-  \code{\link{summary,section-method}}
-
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
   \code{\link{[[,adv-method}},
   \code{\link{[[,amsr-method}},
@@ -163,6 +142,17 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,topo-method}},
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
+
+Other things related to \code{section} data: \code{\link{[[<-,section-method}},
+  \code{\link{as.section}},
+  \code{\link{handleFlags,section-method}},
+  \code{\link{plot,section-method}},
+  \code{\link{read.section}}, \code{\link{section-class}},
+  \code{\link{sectionAddStation}},
+  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
+  \code{\link{sectionSort}}, \code{\link{section}},
+  \code{\link{subset,section-method}},
+  \code{\link{summary,section-method}}
 }
 \author{
 Dan Kelley

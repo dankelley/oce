@@ -5,46 +5,9 @@
 \alias{section-class}
 \title{Class to Store Hydrographic Section Data}
 \description{
-Class to store hydrographic section data, with standard slots \code{metadata},
-\code{data} and \code{processingLog}.
-
-A \code{\link{list}} of stations is retrieved by \code{s[["station"]]}.
-Individual stations are retrieved by providing a station number as a second
-argument in the index, e.g.  the first station is \code{s[["station", 1]]}
-(which is a \code{\link{ctd-class}} object).
-
-Aggregated values of the quantities measured at each level of the CTD
-profiles contained within the section may be accessed as e.g.
-\code{section[["salinity"]]}.  This works for any quantity whose name is
-present in the constituent profiles.
-
-Since it is often useful to pair such quantities with locations,
-\code{section[["longitude"]]} and \code{section[["latitude"]]} return vectors
-with values repeated for each level in each CTD (see the \code{pairs()} call in
-                                                 the example section).  If just
-one latitude or longitude is desired per station, e.g.
-\code{section[["latitude", "byStation"]]} may be used.  Station-by-station
-values of dynamic height are provided by e.g.
-\code{section[["dynamic height"]]}.
-
-The depths of all data are obtained from e.g.  \code{section[["depth"]]}, and
-the distances along the transect, measured from the first station, are obtained
-from e.g.  \code{section[["distance"]]}.
+This class stores data from oceanographic section surveys.
 }
-\examples{
-library(oce)
-data(section)
-plot(section[['station', 1]])
-pairs(cbind(z=-section[["pressure"]],T=section[["temperature"]],S=section[["salinity"]]))
-## T profiles for first few stations in section, at common scale
-par(mfrow=c(3,3))
-Tlim <- range(section[["temperature"]])
-ylim <- rev(range(section[["pressure"]]))
-for (stn in section[["station", 1:9]])
-    plotProfile(stn, xtype='potential temperature', ylim=ylim, Tlim=Tlim)
-
-}
-\seealso{
+\details{
 Sections can be read with \code{\link{read.section}} or created with
 \code{\link{read.section}} or created from CTD objects by using
 \code{\link{as.section}} or by adding a ctd station to an existing section with
@@ -59,7 +22,70 @@ Statistical summaries are provided by \code{\link{summary,section-method}}, whil
 overviews are provided by \code{show}.
 
 The sample dataset \code{\link{section}} contains data along WOCE line A03.
+}
+\section{Slots}{
 
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{section} objects is a
+\code{\link{list}} containing the main data for the object.}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{section} objects is a
+a \code{\link{list}} containing information about the \code{data} or about the
+object itself.  An example of the former might be the location at which a
+measurement was made, and of the latter might be the name of the experiment in
+which the data were collected.}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{section} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
+
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{section} objects (see \code{\link{[[<-,section-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{section}
+object named \code{section} may be retrieved in the standard R way, with
+\code{slot(section, "data")} and \code{slot(section, "metadata")}, or with
+\code{section[["data"]]} and \code{section[["metadata"]]}, where the latter uses an
+overloading of the \code{[[} operator for \code{section} objects.
+
+The \code{[[} operator can also be used to look for named items within
+the slots (see \code{\link{[[,section-method}}).
+It first checks the \code{metadata} slot, returning the value
+if it is there, and then tries in the \code{data} slot if not. If this
+order of precedence is unsuitable, \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}} can be used.
+}
+
+\examples{
+library(oce)
+data(section)
+plot(section[['station', 1]])
+pairs(cbind(z=-section[["pressure"]],T=section[["temperature"]],S=section[["salinity"]]))
+## T profiles for first few stations in section, at common scale
+par(mfrow=c(3,3))
+Tlim <- range(section[["temperature"]])
+ylim <- rev(range(section[["pressure"]]))
+for (stn in section[["station", 1:9]])
+    plotProfile(stn, xtype='potential temperature', ylim=ylim, Tlim=Tlim)
+
+}
+\seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},

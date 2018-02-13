@@ -1,13 +1,20 @@
-#' @title Class to Store Coastline Data
+#' Class to Store Coastline Data
 #'
-#' @description
-#' Class to store coastline data, which may be read with
+#' This class stores coastline data, which may be read with
 #' \code{\link{read.coastline}} or constructed with \code{\link{as.coastline}},
 #' plotted with \code{\link{plot,coastline-method}} or summarized with
 #' \code{\link{summary,coastline-method}}. Data within \code{coastline}
 #' objects may be retrieved with \code{\link{[[,coastline-method}}
 #' or replaced with \code{\link{[[<-,coastline-method}}.
 #'
+#' @templateVar class coastline
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
+##'
 #' @author Dan Kelley
 #'
 #' @family classes provided by \code{oce}
@@ -57,6 +64,14 @@ setMethod(f="initialize",
 
 #' @title Extract Something From a Coastline Object
 #' @param x A coastline object, i.e. one inheriting from \code{\link{coastline-class}}.
+#'
+#' @templateVar class coastline
+#'
+#' @section Details of the specialized \code{coastline} method:
+#' There are no specialized methods, and invocations such as
+#' \code{coastline[["longitude"]]} and \code{coastline[["latitude"]]}
+#' probably account for the vast majority of use cases.
+#'
 #' @template sub_subTemplate
 #' @family things related to \code{coastline} data
 setMethod(f="[[",

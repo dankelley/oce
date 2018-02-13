@@ -1,20 +1,18 @@
 #' @description
 #' The \code{[[} method works for all \code{oce} objects, i.e.
-#' objects inheriting from \code{\link{oce-class}}.  The purpose,
-#' as with the related replacement method, \code{\link{[[<-}},
+#' objects inheriting from \code{\link{oce-class}}.  The purpose
 #' is to insulate users from the internal details of \code{oce}
 #' objects, by looking for items within the various storage
 #' slots of the object. Items not actually stored can also be
 #' extracted, including derived data, units of measurement,
 #' and data-quality flags.
-#'
-#' The method uses a two-step process to try to find the
+#' A two-step process is used to try to find the
 #' requested information. First, a class-specific function
-#' is used to try to access the requested information (see
-#' \dQuote{Details of the specialized ... method}).
-#' Second, if no match is found, a general function is used
-#' (see \sQuote{Details of the general method}). If neither
-#' method can locates the requested item, \code{NULL} is returned.
+#' tries to find it (see
+#' \dQuote{Details of the specialized ... method}), but
+#' if that fails, then a general function is used
+#' (see \sQuote{Details of the general method}). If both
+#' fail, \code{NULL} is returned.
 #'
 #' @section Details of the general method:
 #'

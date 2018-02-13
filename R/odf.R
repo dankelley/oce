@@ -6,8 +6,13 @@
 #' classes, in that it does not map to a particular instrument, but rather to a
 #' storage type; in that sense, it is similar to the \code{\link{bremen-class}}.
 #'
+#' @templateVar class odf
+#'
 #' @template slot_summary
-#' @template slot_access
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @references
 #'

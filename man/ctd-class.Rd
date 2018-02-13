@@ -41,105 +41,53 @@ common use in data files, namely PSS-78.
 \section{Slots}{
 
 \describe{
-\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot is a
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{ctd} objects is a
 \code{\link{list}} containing the main data for the object.}
 
-\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot is
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{ctd} objects is a
 a \code{\link{list}} containing information about the \code{data} or about the
 object itself.  An example of the former might be the location at which a
 measurement was made, and of the latter might be the name of the experiment in
 which the data were collected.}
 
-\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog}
-slot is a \code{\link{list}} with entries describing the creation and evolution
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{ctd} objects is a
+\code{\link{list}} with entries describing the creation and evolution
 of the object. The contents are updated by various \code{oce} functions to
 keep a record of processing steps.  Object summaries and
 \code{\link{processingLogShow}} both display the log.}
 }}
 
-\section{Retrieving slot contents (general)}{
+\section{Modifying slot contents}{
 
 
-The full contents of the \code{data} and \code{metadata} slots of a \code{oce}
-object named \code{obj} may be retrieved in the standard R way, with
-\code{slot(obj, "data")} and \code{slot(obj, "metadata")}, or with
-\code{obj[["data"]]} and \code{obj[["metadata"]]}, where the latter uses an
-overloading of the \code{[[} operator for \code{oce} objects.
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{ctd} objects (see \code{\link{[[<-,ctd-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
 
-The \code{[[} mechanism can also be used to look for named items within
-the slots. It first checks the \code{metadata} slot, returning the value
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{ctd}
+object named \code{ctd} may be retrieved in the standard R way, with
+\code{slot(ctd, "data")} and \code{slot(ctd, "metadata")}, or with
+\code{ctd[["data"]]} and \code{ctd[["metadata"]]}, where the latter uses an
+overloading of the \code{[[} operator for \code{ctd} objects.
+
+The \code{[[} operator can also be used to look for named items within
+the slots (see \code{\link{[[,ctd-method}}).
+It first checks the \code{metadata} slot, returning the value
 if it is there, and then tries in the \code{data} slot if not. If this
 order of precedence is unsuitable, \code{\link{oceGetData}} and
 \code{\link{oceGetMetadata}} can be used.
-
-In addition to looking up stored quantities, the \code{[[} operator
-has other useful capabilities. If an object holds data-quality flags, then
-\code{obj[["flags"]]} will retrieve them, as a list with names matching
-the variable names.  Similarly, \code{obj[["units"]]} return a list of units.
-Individual items may be found in the usual R way within these lists, but there
-is a simpler way: use e.g. \code{obj[["temperatureFlag"]]} or
-\code{obj[["temperatureUnit"]]}. In such cases, \code{[[} is returning
-information that is stored somewhere in the object, but it can also return
-wholly \strong{derived} quantities, depending on the object type. For
-example, \code{obj[["N2"]]} will return the square of the buoyancy
-frequency, if \code{obj} is an object from which that can be calculated
-(such as a \code{ctd} object). Information about accessing such derived
-quantities may be found in the \dQuote{Special access methods}
-section of the documentation for those classes that support it.
 }
 
-\section{Modifying slot contents (general)}{
-
-
-Although there is a \code{[[<-} notation for modifying the contents
-of \code{oce} objects, it is wiser to use \code{\link{oceSetData}}
-\code{\link{oceSetMetadata}}, respectively, to be sure where the change will be
-made, and to record the change in the \code{processingLog}.
-}
-
-\section{Special access methods for ctd objects}{
-
-
-The TEOS-10 notation for these quantities also works, with \code{ctd[["SP"]]},
-\code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those
-returned for the longer names.
-
-After the names listed above have been checked, the remaining names in the
-\code{data} slot are checked using \code{\link{pmatch}}, so that e.g.
-\code{ctd[["sal"]]} will recover practical \code{salinity}, \code{ctd[["sc"]]}
-will recover \code{scan} (if it exists), etc.
-
-Data may be extracted with \code{\link{[[,ctd-method}}.
-
-Note that \code{\link{[[,ctd-method}}
-returns temperature in the ITS-90 scale and pressure in dbar, regardless of the
-scale and unit of the data within the object. Type \code{?"[[,ctd-method"}
-or \code{?"[[<-,ctd-method"} to learn more.
-
-Depth is accessed with e.g. \code{ctd[["depth"]]}, while its negative, the
-vertical coordinate, is accessed with e.g.  \code{ctd[["z"]]}; note that these
-are calculated using \code{\link{swDepth}} and \code{\link{swZ}}, and that any
-values that may have been read in a data file are ignored.
-
-Potential temperature defined according to UNESCO-1980 is calculated with
-\code{ctd[["theta"]]} or \code{ctd[["potential temperature"]]}.  Salinity is
-retrieved with \code{ctd[["S"]]} or \code{ctd[["salinity"]]}.
-
-Conservative Temperature defined according to TEOS-2010 is calculated with
-\code{ctd[["CT"]]} or \code{ctd[["conservative temperature"]]}.  Absolute
-salinity is calculated with \code{ctd[["SA"]]} or \code{ctd[["absolute
-salinity"]]}. Note that the \code{CT}, \code{SA} and \code{Sstar} calculations
-require latitude and longitude, and so errors result if these items
-are sought for a \code{ctd} object that lacks latitude or longitude.
-(Until 2017 May 14, defaults of 300E and 30N were used if position
-was not stored in the object.)
-
-The square of buoyancy frequency is retrieved with \code{ctd[["N2"]]} or
-\code{\link{swN2}}, density ratio with \code{ctd[["Rrho"]]} and spiciness with
-\code{ctd[["spice"]]}.
-}
-
-\section{Reading/creating CTD objects}{
+\section{Reading/creating \code{ctd} objects}{
 
 A file containing CTD profile data may be read with
 \code{\link{read.ctd}}, and a CTD object can also be created with

@@ -5,21 +5,67 @@
 \alias{argo-class}
 \title{Class to hold Argo data}
 \description{
-This class stores data from argo floats.
+This class stores data from Argo floats.
 }
 \details{
 An \code{argo} object may be read with \code{\link{read.argo}} or
 created with \code{\link{as.argo}}.  Argo data can be gridded to constant
 pressures with \code{\link{argoGrid}}.  Plots can be made with
 \code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}} produces statistical
-summaries and \code{show} produces overviews. The usual oce generic
-functions are available, e.g. \code{\link{[[,argo-method}} may
-be used to extract data, and \code{\link{[[<-,argo-method}} may
-be used to insert data.
+summaries and \code{show} produces overviews.
 
 See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
 argo-related datasets that may be useful in a wider context.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{argo} objects is a
+\code{\link{list}} containing the main data for the object.}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{argo} objects is a
+a \code{\link{list}} containing information about the \code{data} or about the
+object itself.  An example of the former might be the location at which a
+measurement was made, and of the latter might be the name of the experiment in
+which the data were collected.}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{argo} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
+
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{argo} objects (see \code{\link{[[<-,argo-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{argo}
+object named \code{argo} may be retrieved in the standard R way, with
+\code{slot(argo, "data")} and \code{slot(argo, "metadata")}, or with
+\code{argo[["data"]]} and \code{argo[["metadata"]]}, where the latter uses an
+overloading of the \code{[[} operator for \code{argo} objects.
+
+The \code{[[} operator can also be used to look for named items within
+the slots (see \code{\link{[[,argo-method}}).
+It first checks the \code{metadata} slot, returning the value
+if it is there, and then tries in the \code{data} slot if not. If this
+order of precedence is unsuitable, \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}} can be used.
+}
+
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{bremen-class}},

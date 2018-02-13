@@ -2,19 +2,24 @@
 
 #' Class to hold Argo data
 #'
-#' This class stores data from argo floats.
+#' This class stores data from Argo floats.
 #'
 #' An \code{argo} object may be read with \code{\link{read.argo}} or
 #' created with \code{\link{as.argo}}.  Argo data can be gridded to constant
 #' pressures with \code{\link{argoGrid}}.  Plots can be made with
 #' \code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}} produces statistical
-#' summaries and \code{show} produces overviews. The usual oce generic
-#' functions are available, e.g. \code{\link{[[,argo-method}} may
-#' be used to extract data, and \code{\link{[[<-,argo-method}} may
-#' be used to insert data.
+#' summaries and \code{show} produces overviews.
 #'
 #' See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
 #' argo-related datasets that may be useful in a wider context.
+#'
+#' @templateVar class argo
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -60,28 +65,39 @@ setClass("argo", contains="oce")
 NULL
 
 
-
-
 #' @title Extract Something From an Argo Object
 #' @param x An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.
-#' @examples
-#' data(argo)
-#' dim(argo[['temperature']])
 #'
-#' @section Details of the specialized argo method:
+#' @templateVar class argo
+#'
+#' @section Details of the specialized \code{argo} method:
+#'
+#' There are several possibilities, depending on the nature of \code{i}.
 #'\itemize{
-#' \item If \code{i} is the string \code{"SA"}, then the method
-#' computes Absolute Salinity using \code{\link[gsw]{gsw_SA_from_SP}},
-#' using \code{salinityAdjusted} (etc) if available in the \code{data}
-#' slot of \code{x}, otherwise using \code{salinity}.
-#' \item Similarly, for \code{"CT"}, Conservative Temperature is returned.
-#' \item Otherwise, if \code{i} is in the \code{data} slot of \code{x},
+#' \item If \code{i} is the string \code{"SA"}, then 
+#' Absolute Salinity is computed using \code{\link[gsw]{gsw_SA_from_SP}},
+#' with \code{salinityAdjusted} (etc) if available in the \code{data}
+#' slot of \code{x}, otherwise using \code{salinity} (etc).
+#' \item For \code{"CT"}, Conservative Temperature is returned.
+#' \item For \code{"depth"},  matrix of depths is returned.
+#' \item If \code{i} is in the \code{data} slot of \code{x},
 #' then it is returned, otherwise if it is in the \code{metadata} slot,
 #' then that is returned, otherwise \code{NULL} is returned.
 #'}
 #'
 #' @template sub_subTemplate
+#'
+#' @examples
+#' data(argo)
+#' # 1. show that dataset has 223 profiles, each with 56 levels
+#' dim(argo[['temperature']])
+#'
+#' # 2. show importance of focussing on data flagged 'good'
+#' fivenum(argo[["salinity"]],na.rm=TRUE)
+#' fivenum(argo[["salinity"]][argo[["salinityFlag"]]==1],na.rm=TRUE)
+#'
 #' @family things related to \code{argo} data
+#' @author Dan Kelley
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
