@@ -1,10 +1,9 @@
-#' @title Class to Store ODF data
+#' Class to Store ODF data
 #'
-#' @description
-#' Class for data stored in a format used at Canadian Department of Fisheries
-#' and Oceans laboratories. This is somewhat unusual amongst \code{oce}
-#' classes, in that it does not map to a particular instrument, but rather to a
-#' storage type; in that sense, it is similar to the \code{\link{bremen-class}}.
+#' This class is for data stored in a format used at Canadian
+#' Department of Fisheries and Oceans laboratories. It is somewhat
+#' similar to the \code{\link{bremen-class}}, in the sense
+#' that it does not apply just to a particular instrument.
 #'
 #' @templateVar class odf
 #'

@@ -2,7 +2,7 @@
 
 #' Class to Store CTD (or general hydrographic) Data
 #'
-#' Class to store hydrographic data such as measured with a CTD (conductivity,
+#' This class stores hydrographic data such as measured with a CTD (conductivity,
 #' temperature, depth) instrument, or with other systems that produce
 #' similar data.  Data repositories may store conductivity, temperature
 #' and depth, as in the instrument name, but it is also common to store

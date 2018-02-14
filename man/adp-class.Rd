@@ -17,9 +17,9 @@ for \code{adp} objects is a
 \code{\link{list}} containing the main data for the object.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{adp} objects is a
-a \code{\link{list}} containing information about the \code{data} or about the
-object itself.  Examples that are of common interest include \code{oceCoordinate}, \code{orientation}, \code{frequency}, and \code{beamAngle}.}
+for \code{adp} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+Examples that are of common interest include \code{oceCoordinate}, \code{orientation}, \code{frequency}, and \code{beamAngle}.}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{adp} objects is a

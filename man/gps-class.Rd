@@ -16,9 +16,9 @@ for \code{gps} objects is a
 \code{\link{list}} containing the main data for the object.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{gps} objects is a
-a \code{\link{list}} containing information about the \code{data} or about the
-object itself.  NA}
+for \code{gps} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+NA}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{gps} objects is a

@@ -14,6 +14,53 @@ with \code{\link{[[,windrose-method}} or replaced with
 \code{\link{[[<-,windrose-method}}. Data summaries are provided with
 \code{\link{summary,windrose-method}}.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{windrose} objects is a
+\code{\link{list}} containing the main data for the object.}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{windrose} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+NA}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{windrose} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
+
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{windrose} objects (see \code{\link{[[<-,windrose-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{windrose}
+object named \code{windrose} may be retrieved in the standard R way. For example,
+\code{slot(windrose, "data")} and \code{slot(windrose, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,windrose-method}} operator can also be used to access slots,
+with \code{windrose[["data"]]} and \code{windrose[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,windrose-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+}
+
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},

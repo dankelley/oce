@@ -31,9 +31,9 @@ for \code{section} objects is a
 \code{\link{list}} containing the main data for the object.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{section} objects is a
-a \code{\link{list}} containing information about the \code{data} or about the
-object itself.  Examples that are of common interest include \code{stationId}, \code{longitude}, \code{latitude} and \code{time}.}
+for \code{section} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+Examples that are of common interest include \code{stationId}, \code{longitude}, \code{latitude} and \code{time}.}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{section} objects is a

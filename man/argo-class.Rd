@@ -26,9 +26,9 @@ for \code{argo} objects is a
 \code{\link{list}} containing the main data for the object.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{argo} objects is a
-a \code{\link{list}} containing information about the \code{data} or about the
-object itself.  Examples that are of common interest include \code{id}, a vector of ID codes for the profiles, and \code{dataMode}, a vector of strings indicating whether the profile is in archived mode (\code{"A"}), realtime mode (\code{"R"}), or delayed mode (\code{"D"}).}
+for \code{argo} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+Examples that are of common interest include \code{id}, a vector of ID codes for the profiles, and \code{dataMode}, a vector of strings indicating whether the profile is in archived mode (\code{"A"}), realtime mode (\code{"R"}), or delayed mode (\code{"D"}).}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{argo} objects is a

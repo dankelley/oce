@@ -5,10 +5,10 @@
 \alias{odf-class}
 \title{Class to Store ODF data}
 \description{
-Class for data stored in a format used at Canadian Department of Fisheries
-and Oceans laboratories. This is somewhat unusual amongst \code{oce}
-classes, in that it does not map to a particular instrument, but rather to a
-storage type; in that sense, it is similar to the \code{\link{bremen-class}}.
+This class is for data stored in a format used at Canadian
+Department of Fisheries and Oceans laboratories. It is somewhat
+similar to the \code{\link{bremen-class}}, in the sense
+that it does not apply just to a particular instrument.
 }
 \section{Slots}{
 
@@ -18,9 +18,9 @@ for \code{odf} objects is a
 \code{\link{list}} containing the main data for the object.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{odf} objects is a
-a \code{\link{list}} containing information about the \code{data} or about the
-object itself.  NA}
+for \code{odf} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+NA}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{odf} objects is a

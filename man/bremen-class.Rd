@@ -5,20 +5,62 @@
 \alias{bremen-class}
 \title{Class for data stored in a format used at Bremen}
 \description{
-Class for data stored in a format used at Bremen. This is somewhat unusual
-amongst \code{oce} classes, in that it does not map to a particular
-instrument. Although some functions are provided for dealing with these
+This class is for data stored in a format used at Bremen.
+It is somewhat similar to the \code{\link{odf-class}}, in the sense
+that it does not apply just to a particular instrument.
+Although some functions are provided for dealing with these
 data (see \dQuote{Details}), the most common action is to read the
 data with \code{\link{read.bremen}}, and then to coerce the object to
 another storage class (e.g. using \code{\link{as.ctd}} for CTD-style
 data) so that specialized functions can be used thereafter.
-
-The main function is \code{\link{read.bremen}}.  A simple
-plotting method is provided with \code{\link{plot,bremen-method}}, and
-\code{\link{summary,bremen-method}} provides summaries. Data may be
-retrieved with \code{\link{[[,bremen-method}} or replaced with
-\code{\link{[[<-,bremen-method}}.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{bremen} objects is a
+\code{\link{list}} containing the main data for the object.}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{bremen} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+NA}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{bremen} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
+
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{bremen} objects (see \code{\link{[[<-,bremen-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{bremen}
+object named \code{bremen} may be retrieved in the standard R way. For example,
+\code{slot(bremen, "data")} and \code{slot(bremen, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,bremen-method}} operator can also be used to access slots,
+with \code{bremen[["data"]]} and \code{bremen[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,bremen-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+}
+
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},

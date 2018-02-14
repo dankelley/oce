@@ -5,7 +5,7 @@
 \alias{ctd-class}
 \title{Class to Store CTD (or general hydrographic) Data}
 \description{
-Class to store hydrographic data such as measured with a CTD (conductivity,
+This class stores hydrographic data such as measured with a CTD (conductivity,
 temperature, depth) instrument, or with other systems that produce
 similar data.  Data repositories may store conductivity, temperature
 and depth, as in the instrument name, but it is also common to store
@@ -46,9 +46,9 @@ for \code{ctd} objects is a
 \code{\link{list}} containing the main data for the object.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
-for \code{ctd} objects is a
-a \code{\link{list}} containing information about the \code{data} or about the
-object itself.  An example of the former might be the location at which a \code{ctd} measurement was made, stored in \code{longitude} and \code{latitude}, and of the latter might be \code{filename}, the name of the data source.}
+for \code{ctd} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+An example of the former might be the location at which a \code{ctd} measurement was made, stored in \code{longitude} and \code{latitude}, and of the latter might be \code{filename}, the name of the data source.}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{ctd} objects is a

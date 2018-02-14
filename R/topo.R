@@ -11,6 +11,16 @@
 #' \code{\link{[[<-,topo-method}}.  The key data, stored within the data slot,
 #' are: \code{longititude}, \code{latitude}, and \code{z}.
 #'
+#' @templateVar class topo
+#'
+#' @templateVar metadataExample
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
+#'
 #' @author Dan Kelley
 #'
 #' @family classes provided by \code{oce}
