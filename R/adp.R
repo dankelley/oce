@@ -6,6 +6,16 @@
 #' call these ADCPs, while others call them ADPs; here the shorter form is
 #' used by analogy to ADVs.
 #'
+#' @templateVar class adp
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
+#'
+#' @section Reading/creating \code{adp} objects:
+#'
 #' The \code{metadata} slot contains various
 #' items relating to the dataset, including source file name, sampling rate,
 #' velocity resolution, velocity maximum value, and so on.  Some of these are
@@ -151,8 +161,6 @@
 #' distances from the sensor, measured in metres along an imaginary centre
 #' line bisecting beam pairs.  The length of this vector equals
 #' \code{dim(adp[["v"]])[2]}.
-#'
-#' The \code{processingLog} slot is in standard form and needs little comment.
 #'
 #' @section Teledyne-RDI Sentinel V ADCPs: As of 2016-09-27 there is
 #'     provisional support for the TRDI "SentinelV" ADCPs, which are 5
