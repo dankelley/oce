@@ -21,6 +21,8 @@
 #'
 #' @templateVar class section
 #'
+#' @templateVar metadataExample Examples that are of common interest include \code{stationId}, \code{longitude}, \code{latitude} and \code{time}.
+#'
 #' @template slot_summary
 #'
 #' @template slot_put
@@ -200,7 +202,7 @@ setMethod(f="summary",
 #' @title Extract Something From a Section Object
 #' @param x A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.
 #'
-#' @templateVar class argo
+#' @templateVar class section
 #'
 #' @section Details of the specialized \code{section} method:
 #'

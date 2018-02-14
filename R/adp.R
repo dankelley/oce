@@ -8,6 +8,8 @@
 #'
 #' @templateVar class adp
 #'
+#' @templateVar metadataExample Examples that are of common interest include \code{oceCoordinate}, \code{orientation}, \code{frequency}, and \code{beamAngle}.
+#'
 #' @template slot_summary
 #'
 #' @template slot_put

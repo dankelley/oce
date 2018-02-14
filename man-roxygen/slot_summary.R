@@ -5,9 +5,7 @@
 #' @slot metadata As with all \code{oce} objects, the \code{metadata} slot
 #' for \code{<%= class %>} objects is a
 #' a \code{\link{list}} containing information about the \code{data} or about the
-#' object itself.  An example of the former might be the location at which a
-#' measurement was made, and of the latter might be the name of the experiment in
-#' which the data were collected.
+#' object itself.  <%= metadataExample %>
 #'
 #' @slot processingLog As with all \code{oce} objects, the \code{processingLog} slot
 #' for \code{<%= class %>} objects is a

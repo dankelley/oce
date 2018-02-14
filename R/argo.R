@@ -6,14 +6,17 @@
 #'
 #' An \code{argo} object may be read with \code{\link{read.argo}} or
 #' created with \code{\link{as.argo}}.  Argo data can be gridded to constant
-#' pressures with \code{\link{argoGrid}}.  Plots can be made with
-#' \code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}} produces statistical
-#' summaries and \code{show} produces overviews.
+#' pressures with \code{\link{argoGrid}} or subsetted with
+#' \code{\link{subset,argo-method}}.  Plots can be made with
+#' \code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}}
+#' produces statistical summaries and \code{show} produces overviews.
 #'
 #' See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
 #' argo-related datasets that may be useful in a wider context.
 #'
 #' @templateVar class argo
+#'
+#' @templateVar metadataExample Examples that are of common interest include \code{id}, a vector of ID codes for the profiles, and \code{dataMode}, a vector of strings indicating whether the profile is in archived mode (\code{"A"}), realtime mode (\code{"R"}), or delayed mode (\code{"D"}).
 #'
 #' @template slot_summary
 #'

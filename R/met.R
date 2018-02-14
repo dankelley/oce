@@ -12,13 +12,13 @@
 #'
 #' @templateVar class met
 #'
+#' @templateVar metadataExample
+#'
 #' @template slot_summary
 #'
 #' @template slot_put
 #'
 #' @template slot_get
-#'
-#' @section Methods:
 #'
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}

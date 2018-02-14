@@ -22,9 +22,7 @@ for \code{coastline} objects is a
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
 for \code{coastline} objects is a
 a \code{\link{list}} containing information about the \code{data} or about the
-object itself.  An example of the former might be the location at which a
-measurement was made, and of the latter might be the name of the experiment in
-which the data were collected.}
+object itself.  NA}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{coastline} objects is a
@@ -48,17 +46,17 @@ in the \code{processingLog} to describe the change.
 
 
 The full contents of the \code{data} and \code{metadata} slots of a \code{coastline}
-object named \code{coastline} may be retrieved in the standard R way, with
-\code{slot(coastline, "data")} and \code{slot(coastline, "metadata")}, or with
-\code{coastline[["data"]]} and \code{coastline[["metadata"]]}, where the latter uses an
-overloading of the \code{[[} operator for \code{coastline} objects.
-
-The \code{[[} operator can also be used to look for named items within
-the slots (see \code{\link{[[,coastline-method}}).
-It first checks the \code{metadata} slot, returning the value
-if it is there, and then tries in the \code{data} slot if not. If this
-order of precedence is unsuitable, \code{\link{oceGetData}} and
-\code{\link{oceGetMetadata}} can be used.
+object named \code{coastline} may be retrieved in the standard R way. For example,
+\code{slot(coastline, "data")} and \code{slot(coastline, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,coastline-method}} operator can also be used to access slots,
+with \code{coastline[["data"]]} and \code{coastline[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,coastline-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
 }
 
 \seealso{

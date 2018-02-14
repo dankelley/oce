@@ -9,6 +9,8 @@
 #'
 #' @templateVar class coastline
 #'
+#' @templateVar metadataExample 
+#'
 #' @template slot_summary
 #'
 #' @template slot_put

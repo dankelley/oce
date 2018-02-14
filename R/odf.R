@@ -8,6 +8,8 @@
 #'
 #' @templateVar class odf
 #'
+#' @templateVar metadataExample 
+#'
 #' @template slot_summary
 #'
 #' @template slot_put

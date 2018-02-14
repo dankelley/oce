@@ -2,46 +2,35 @@
 #'
 #' This class holds data from acoustic-Doppler velocimeters.
 #'
-#' The \code{metadata} slot
-#'     contains various items relating to the dataset, including source file name,
-#'     sampling rate, velocity resolution and scale, etc.  The
-#'     \code{processingLog} is in standard form and needs little comment.  The
-#'     \code{data} slot holds a numeric matrix \code{v} of velocities in m/s, with
-#'     the first index indicating time and the second indicating beam number.  The
-#'     meanings of the beams depends on whether the object is in beam
-#'     coordinates, frame coordinates, or earth coordinates.  The \code{data} slot
-#'     also contains identically-dimensioned raw matrices \code{a} and \code{q},
-#'     holding measures of signal strength and data quality quality, respectively.
-#'     It also contains a series of vectors, e.g. \code{time}, \code{temperature}
-#'     and \code{pressure}, etc., depending on what sensors are included in the
-#'     package.  For all of these quantities, the details can be different for
-#'     different instrument types, and it is assumed that the user will be
-#'     familiar with the details.
-#'
-#' Data may be extracted with \code{\link{[[,adv-method}} and inserted
-#' with \code{\link{[[<-,adv-method}}. Type \code{?"[[,adv-method"}
-#' or \code{?"[[<-,adv-method"} to learn more.
-#'
-#' @seealso
 #' A file containing ADV data is usually recognized by Oce, and so
-#'     \code{\link{read.oce}} will usually read the data.  If not, one may use the
-#'     general ADV function \code{\link{read.adv}} or specialized variants
-#'     \code{\link{read.adv.nortek}}, \code{\link{read.adv.sontek.adr}} or
-#'     \code{\link{read.adv.sontek.text}}.
+#' \code{\link{read.oce}} will usually read the data.  If not, one may use the
+#' general ADV function \code{\link{read.adv}} or specialized variants
+#' \code{\link{read.adv.nortek}}, \code{\link{read.adv.sontek.adr}} or
+#' \code{\link{read.adv.sontek.text}}.
 #'
-#'     ADV data may be plotted with \code{\link{plot,adv-method}} function, which is a
-#'     generic function so it may be called simply as \code{plot(x)}, where
-#'     \code{x} is an object inheriting from \code{\link{adv-class}}.
+#' ADV data may be plotted with \code{\link{plot,adv-method}} function, which is a
+#' generic function so it may be called simply as \code{plot(x)}, where
+#' \code{x} is an object inheriting from \code{\link{adv-class}}.
 #'
-#'     Statistical summaries of ADV data are provided by the generic function
-#'     \code{\link{summary,adv-method}}.
+#' Statistical summaries of ADV data are provided by the generic function
+#' \code{\link{summary,adv-method}}.
 #'
-#'     Conversion from beam to xyz coordinates may be done with
-#'     \code{\link{beamToXyzAdv}}, and from xyz to enu (east north up) may be done
-#'     with \code{\link{xyzToEnuAdv}}.  \code{\link{toEnuAdv}} may be used to
-#'     transfer either beam or xyz to enu.  Enu may be converted to other
-#'     coordinates (e.g. aligned with a coastline) with
-#'     \code{\link{enuToOtherAdv}}.
+#' Conversion from beam to xyz coordinates may be done with
+#' \code{\link{beamToXyzAdv}}, and from xyz to enu (east north up) may be done
+#' with \code{\link{xyzToEnuAdv}}.  \code{\link{toEnuAdv}} may be used to
+#' transfer either beam or xyz to enu.  Enu may be converted to other
+#' coordinates (e.g. aligned with a coastline) with
+#' \code{\link{enuToOtherAdv}}.
+#'
+#' @templateVar class adv
+#'
+#' @templateVar metadataExample Examples that are of common interest include \code{frequency}, \code{oceCordinate}, and \code{frequency}.
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @examples
 #' data(adv)
