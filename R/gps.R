@@ -1,11 +1,17 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-
-#' @title Class to Store GPS Data
+#' Class to Store GPS Data
 #'
-#' @description
 #' Class to store gps data. These objects may be read with
 #' \code{\link{read.gps}} or assembled with \code{\link{as.gps}}.
+#'
+#' @templateVar class gps
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @name gps-class
 #' @docType class

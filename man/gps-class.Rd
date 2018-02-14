@@ -8,6 +8,55 @@
 Class to store gps data. These objects may be read with
 \code{\link{read.gps}} or assembled with \code{\link{as.gps}}.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{gps} objects is a
+\code{\link{list}} containing the main data for the object.}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{gps} objects is a
+a \code{\link{list}} containing information about the \code{data} or about the
+object itself.  An example of the former might be the location at which a
+measurement was made, and of the latter might be the name of the experiment in
+which the data were collected.}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{gps} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
+
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{gps} objects (see \code{\link{[[<-,gps-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{gps}
+object named \code{gps} may be retrieved in the standard R way, with
+\code{slot(gps, "data")} and \code{slot(gps, "metadata")}, or with
+\code{gps[["data"]]} and \code{gps[["metadata"]]}, where the latter uses an
+overloading of the \code{[[} operator for \code{gps} objects.
+
+The \code{[[} operator can also be used to look for named items within
+the slots (see \code{\link{[[,gps-method}}).
+It first checks the \code{metadata} slot, returning the value
+if it is there, and then tries in the \code{data} slot if not. If this
+order of precedence is unsuitable, \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}} can be used.
+}
+
 \seealso{
 Other things related to \code{gps} data: \code{\link{[[,gps-method}},
   \code{\link{[[<-,gps-method}}, \code{\link{as.gps}},
