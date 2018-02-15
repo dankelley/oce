@@ -75,7 +75,6 @@ If none of the above-listed conditions holds, then \code{NULL} is returned.
 \examples{
 data(ctd)
 head(ctd[["temperature"]])
-
 }
 \seealso{
 Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-method}},
@@ -89,6 +88,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,echosounder-method}},
   \code{\link{[[,g1sst-method}},
   \code{\link{[[,gps-method}},
+  \code{\link{[[,landsat-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
   \code{\link{[[,met-method}}, \code{\link{[[,odf-method}},
@@ -100,8 +100,9 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,windrose-method}},
   \code{\link{[[<-,adv-method}}
 
-Other things related to \code{ladp} data: \code{\link{as.ladp}},
-  \code{\link{ladp-class}}, \code{\link{plot,ladp-method}},
+Other things related to \code{ladp} data: \code{\link{[[<-,ladp-method}},
+  \code{\link{as.ladp}}, \code{\link{ladp-class}},
+  \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
 }
 \author{

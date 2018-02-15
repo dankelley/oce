@@ -8,6 +8,8 @@
 #'
 #' @templateVar class adp
 #'
+#' @templateVar dataExample The key items stored in this slot include \code{time}, \code{distance}, and \code{v}, along with angles \code{heading}, \code{pitch} and \code{roll}.
+#'
 #' @templateVar metadataExample Examples that are of common interest include \code{oceCoordinate}, \code{orientation}, \code{frequency}, and \code{beamAngle}.
 #'
 #' @template slot_summary

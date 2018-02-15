@@ -71,6 +71,8 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,echosounder-method}},
   \code{\link{[[<-,g1sst-method}},
   \code{\link{[[<-,gps-method}},
+  \code{\link{[[<-,ladp-method}},
+  \code{\link{[[<-,landsat-method}},
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
   \code{\link{[[<-,met-method}},

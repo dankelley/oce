@@ -1,19 +1,27 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' @title Class to Store Rsk Data
+#' Class to Store Rsk Data
 #'
-#' @description
-#' Class for data stored in the ``Ruskin'' format used by RBR [1], including both
-#' \code{rsk} SQLite files and the ASCII \code{txt} exported files.
+#' This class stores ``Ruskin'' data, from RBR [1].
 #'
 #' A \code{rsk} object may be read with \code{\link{read.rsk}} or created with
 #' \code{\link{as.rsk}}.  Plots can be made with \code{\link{plot,rsk-method}}, while
 #' \code{\link{summary,rsk-method}} produces statistical summaries and \code{show}
 #' produces overviews.   If atmospheric pressure has not been removed from the
 #' data, the functions \code{\link{rskPatm}} may provide guidance as to its value;
-#' however, this last function is no equal to decent record-keeping at sea.  Data
-#' may be retrieved with \code{\link{[[,rsk-method}} or replaced with
-#' \code{\link{[[<-,rsk-method}}.
+#' however, this last function is no equal to decent record-keeping at sea.
+#'
+#' @templateVar class rsk
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @references
 #' 1. \href{https://www.rbr-global.com/products}{RBR website: www.rbr-global.com/products}
@@ -112,6 +120,7 @@ setMethod(f="summary",
 #' @title Extract Something From a Rsk Object
 #' @param x A rsk object, i.e. one inheriting from \code{\link{rsk-class}}.
 #' @template sub_subTemplate
+#' @author Dan Kelley
 #' @family things related to \code{rsk} data
 setMethod(f="[[",
           signature(x="rsk", i="ANY", j="ANY"),

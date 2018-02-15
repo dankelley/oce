@@ -35,6 +35,9 @@
 #' common use in data files, namely PSS-78.
 #'
 #' @templateVar class ctd
+#'
+#' @templateVar dataExample The key items stored in this slot are: \code{salinity}, \code{temperature}, and \code{pressure}, although in many instances there are quite a few additional items.
+#'
 #' @templateVar metadataExample An example of the former might be the location at which a \code{ctd} measurement was made, stored in \code{longitude} and \code{latitude}, and of the latter might be \code{filename}, the name of the data source.
 #'
 #' @template slot_summary

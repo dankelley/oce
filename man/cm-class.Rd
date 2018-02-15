@@ -3,9 +3,9 @@
 \docType{class}
 \name{cm-class}
 \alias{cm-class}
-\title{Class to Store Current Meter (CM) Data}
+\title{Class to Store Current Meter Data}
 \description{
-Class to store current meter data, e.g. from an Interocean/S4 device
+This class stores current meter data, e.g. from an Interocean/S4 device
 or an Aanderaa/RCM device.  A file
 containing Interocean/S4 data may be read with \code{\link{read.cm}}.
 Alternatively, \code{\link{as.cm}} can be used to create \code{cm} objects.
@@ -18,12 +18,13 @@ plotted with \code{\link{plot,cm-method}} or summarized with
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{cm} objects is a
-\code{\link{list}} containing the main data for the object.}
+\code{\link{list}} containing the main data for the object.
+The key items stored in this slot are \code{time}, \code{u} and \code{v}.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
 for \code{cm} objects is a \code{\link{list}} containing
 information about the \code{data} or about the object itself.
-NA}
+{}}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{cm} objects is a
@@ -71,7 +72,6 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{oce-class}},
   \code{\link{odf-class}}, \code{\link{rsk-class}},

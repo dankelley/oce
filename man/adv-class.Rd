@@ -33,7 +33,8 @@ coordinates (e.g. aligned with a coastline) with
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{adv} objects is a
-\code{\link{list}} containing the main data for the object.}
+\code{\link{list}} containing the main data for the object.
+The key items stored in this slot include \code{time} and \code{v}.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
 for \code{adv} objects is a \code{\link{list}} containing
@@ -84,11 +85,10 @@ adv[["v"]] <- 0.001 + adv[["v"]] # add 1mm/s to all velocity components
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{argo-class}}, \code{\link{bremen-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
-  \code{\link{ctd-class}}, \code{\link{echosounder-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}},
+  \code{\link{ctd-class}}, \code{\link{lisst-class}},
+  \code{\link{lobo-class}}, \code{\link{met-class}},
+  \code{\link{oce-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 

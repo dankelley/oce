@@ -32,7 +32,8 @@ form or in physical units; \code{\link{plot,amsr-method}}, and
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{amsr} objects is a
-\code{\link{list}} containing the main data for the object.}
+\code{\link{list}} containing the main data for the object.
+{}}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
 for \code{amsr} objects is a \code{\link{list}} containing

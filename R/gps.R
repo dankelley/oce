@@ -7,7 +7,9 @@
 #'
 #' @templateVar class gps
 #'
-#' @templateVar metadataExample 
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
 #'
 #' @template slot_summary
 #'

@@ -14,7 +14,8 @@ used by analogy to ADVs.
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{adp} objects is a
-\code{\link{list}} containing the main data for the object.}
+\code{\link{list}} containing the main data for the object.
+The key items stored in this slot include \code{time}, \code{distance}, and \code{v}, along with angles \code{heading}, \code{pitch} and \code{roll}.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
 for \code{adp} objects is a \code{\link{list}} containing
@@ -277,11 +278,10 @@ transfer either beam or xyz to enu.  Enu may be converted to other coordinates
 Other classes provided by \code{oce}: \code{\link{adv-class}},
   \code{\link{argo-class}}, \code{\link{bremen-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
-  \code{\link{ctd-class}}, \code{\link{echosounder-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}},
+  \code{\link{ctd-class}}, \code{\link{lisst-class}},
+  \code{\link{lobo-class}}, \code{\link{met-class}},
+  \code{\link{oce-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 

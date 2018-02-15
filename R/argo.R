@@ -16,6 +16,8 @@
 #'
 #' @templateVar class argo
 #'
+#' @templateVar dataExample The key items stored in this slot include  equal-length vectors \code{time}, \code{longitude}, \code{latitude} and equal-dimension matrices \code{pressure}, \code{salinity}, and \code{temperature}.
+#'
 #' @templateVar metadataExample Examples that are of common interest include \code{id}, a vector of ID codes for the profiles, and \code{dataMode}, a vector of strings indicating whether the profile is in archived mode (\code{"A"}), realtime mode (\code{"R"}), or delayed mode (\code{"D"}).
 #'
 #' @template slot_summary

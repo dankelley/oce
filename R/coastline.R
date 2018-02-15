@@ -9,7 +9,9 @@
 #'
 #' @templateVar class coastline
 #'
-#' @templateVar metadataExample 
+#' @templateVar dataExample The key items stored in this slot are \code{longitude} and \code{latitude}.
+#'
+#' @templateVar metadataExample {}
 #'
 #' @template slot_summary
 #'

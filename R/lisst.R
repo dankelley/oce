@@ -1,15 +1,25 @@
-#' @title Class to Store LISST Data
+#' Class to Store LISST Data
 #' 
-#' @description
-#' Class to store LISST (Laser in-situ scattering and transmissometry) data.
+#' This class stores LISST (Laser in-situ scattering and transmissometry) data.
 #' 
-#' @details
 #' One may read \code{lisst} objects with \code{\link{read.lisst}},
 #' generate them with \code{\link{as.lisst}}, plot them
 #' with \code{\link{plot,lisst-method}}, and summarize them with
 #' \code{\link{summary,lisst-method}}. Elements may be extracted
 #' with \code{\link{[[,lisst-method}} or replaced with
 #' \code{\link{[[<-,lisst-method}}.
+#'
+#' @templateVar class lisst
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #' @references A users's manual for the LISST-100 instrument is available at

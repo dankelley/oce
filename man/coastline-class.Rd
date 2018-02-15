@@ -17,12 +17,13 @@ or replaced with \code{\link{[[<-,coastline-method}}.
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{coastline} objects is a
-\code{\link{list}} containing the main data for the object.}
+\code{\link{list}} containing the main data for the object.
+The key items stored in this slot are \code{longitude} and \code{latitude}.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
 for \code{coastline} objects is a \code{\link{list}} containing
 information about the \code{data} or about the object itself.
-NA}
+{}}
 
 \item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
 for \code{coastline} objects is a
@@ -63,11 +64,10 @@ to find items more directly, using \code{\link{oceGetData}} and
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{ctd-class}}, \code{\link{echosounder-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}},
+  \code{\link{ctd-class}}, \code{\link{lisst-class}},
+  \code{\link{lobo-class}}, \code{\link{met-class}},
+  \code{\link{oce-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 

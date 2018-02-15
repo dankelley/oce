@@ -25,6 +25,8 @@
 #'
 #' @templateVar class amsr
 #'
+#' @templateVar dataExample {}
+#'
 #' @templateVar metadataExample Examples that are of common interest include  \code{longitude} and \code{latitude}, which define the grid.
 #'
 #' @template slot_summary

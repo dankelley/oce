@@ -3,10 +3,22 @@
 
 #' Class to Hold landsat Data
 #'
-#' This class has the standard slots of an \code{\link{oce-class}}
-#' object.  Landsat data are available at several websites (e.g. [1]).
+#' This class holds landsat data. Such are available at several
+#' websites (e.g. [1]).
 #' Although the various functions may work for other satellites, the
 #' discussion here focusses on Landsat 8 and Landsat 7.
+#'
+#' @templateVar class landsat
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @section Data storage:
 #'
@@ -240,12 +252,19 @@ setMethod(f="summary",
           })
 
 
-#' Extract Something From a landsat Object
+#' @title Extract Something From a landsat Object
+#'
+#' @param x An landsat object, i.e. one inheriting from \code{\link{landsat-class}}.
+#'
+#' @templateVar class landsat
+#'
+#' @template sub_subTemplate
+#'
+#' @section Details of the specialized \code{landsat} method:
 #'
 #' Users are isolated from the details of the two-byte storage system
 #' by using the \code{[[} operator.
 #'
-#' @details
 #' \emph{Accessing band data.}  The data may be accessed with e.g.
 #' \code{landsat[["panchromatic"]]}, for the panchromatic band.  If a new
 #' ``band'' is added with \code{\link{landsatAdd}}, it may be referred by
@@ -295,10 +314,6 @@ setMethod(f="summary",
 #' decimation.  An exception is the lat-lon box, which is altered by
 #' \code{\link{landsatTrim}}.
 #'
-#' @param x An landsat object, i.e. one inheriting from \code{\link{landsat-class}}.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item (ignored).
-#' @param ... Optional additional information (ignored).
 #' @concept satellite
 #'
 #' @author Dan Kelley
@@ -507,6 +522,19 @@ setMethod(f="[[",
                   return(d)
               }
           })
+
+
+#' @title Replace Parts of a landsat Object
+#' @param x A \code{landsat} object, i.e. one inheriting from \code{\link{landsat-class}}.
+#' @template sub_subsetTemplate
+#'
+#' @family things related to \code{landsat} data
+setMethod(f="[[<-",
+          signature(x="landsat", i="ANY", j="ANY"),
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
+          })
+
 
 #' Plot a landsat Object
 #'

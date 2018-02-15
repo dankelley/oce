@@ -24,6 +24,8 @@
 #'
 #' @templateVar class adv
 #'
+#' @templateVar dataExample The key items stored in this slot include \code{time} and \code{v}.
+#'
 #' @templateVar metadataExample Examples that are of common interest include \code{frequency}, \code{oceCordinate}, and \code{frequency}.
 #'
 #' @template slot_summary
@@ -132,6 +134,7 @@ setMethod(f="summary",
 #' head(adv[["q", "numeric"]]) # in numeric form
 #'
 #' @section Details of the specialized \code{adv} method:
+#'
 #' In addition to the usual extraction of elements by name, some shortcuts
 #' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
 #' for the other velocity components. The \code{a} and \code{q}

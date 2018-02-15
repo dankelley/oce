@@ -13,7 +13,9 @@
 #'
 #' @templateVar class bremen
 #'
-#' @templateVar metadataExample
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
 #'
 #' @template slot_summary
 #'

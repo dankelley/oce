@@ -1,19 +1,18 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 
-#' @title Class to Store Topographic Data
+#' Class to Store Topographic Data
 #'
-#' @description
-#' Topographic data may be read with \code{\link{read.topo}} or assembled with
-#' \code{\link{as.topo}}.  Plotting are handled with \code{\link{plot,topo-method}}
-#' and summaries with \code{\link{summary,topo-method}}. Data retrieval may be
-#' done with \code{\link{[[,topo-method}} and replacement with
-#' \code{\link{[[<-,topo-method}}.  The key data, stored within the data slot,
-#' are: \code{longititude}, \code{latitude}, and \code{z}.
+#' This class stores topographic data, as read with
+#' \code{\link{read.topo}} or assembled with \code{\link{as.topo}}.
+#' Plotting is handled with \code{\link{plot,topo-method}}
+#' and summaries with \code{\link{summary,topo-method}}.
 #'
 #' @templateVar class topo
 #'
-#' @templateVar metadataExample
+#' @templateVar dataExample The key items stored in this slot are: \code{longititude}, \code{latitude}, and \code{z}.
+#'
+#' @templateVar metadataExample {}
 #'
 #' @template slot_summary
 #'

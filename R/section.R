@@ -21,6 +21,8 @@
 #'
 #' @templateVar class section
 #'
+#' @templateVar dataExample {}
+#'
 #' @templateVar metadataExample Examples that are of common interest include \code{stationId}, \code{longitude}, \code{latitude} and \code{time}.
 #'
 #' @template slot_summary

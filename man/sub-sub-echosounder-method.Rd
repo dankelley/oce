@@ -17,6 +17,8 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
+Extract Parts of an Echosounder Object
+
 The \code{[[} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose
 is to insulate users from the internal details of \code{oce}
@@ -33,6 +35,7 @@ if that fails, then a general function is used
 fail, \code{NULL} is returned.
 }
 \section{Details of the specialized \code{echosounder} method}{
+
 
 If \code{i} is the string \code{"Sv"}, the return value is calculated according to
 \preformatted{
@@ -108,6 +111,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,g1sst-method}},
   \code{\link{[[,gps-method}},
   \code{\link{[[,ladp-method}},
+  \code{\link{[[,landsat-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
   \code{\link{[[,met-method}}, \code{\link{[[,odf-method}},

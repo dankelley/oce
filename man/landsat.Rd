@@ -28,6 +28,7 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
 Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+  \code{\link{[[<-,landsat-method}},
   \code{\link{landsat-class}}, \code{\link{landsatAdd}},
   \code{\link{landsatTrim}},
   \code{\link{plot,landsat-method}},

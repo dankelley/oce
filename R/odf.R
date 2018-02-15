@@ -7,7 +7,9 @@
 #'
 #' @templateVar class odf
 #'
-#' @templateVar metadataExample 
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
 #'
 #' @template slot_summary
 #'

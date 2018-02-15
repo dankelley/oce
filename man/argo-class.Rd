@@ -23,7 +23,8 @@ argo-related datasets that may be useful in a wider context.
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{argo} objects is a
-\code{\link{list}} containing the main data for the object.}
+\code{\link{list}} containing the main data for the object.
+The key items stored in this slot include  equal-length vectors \code{time}, \code{longitude}, \code{latitude} and equal-dimension matrices \code{pressure}, \code{salinity}, and \code{temperature}.}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
 for \code{argo} objects is a \code{\link{list}} containing
@@ -69,11 +70,10 @@ to find items more directly, using \code{\link{oceGetData}} and
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{bremen-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
-  \code{\link{ctd-class}}, \code{\link{echosounder-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}},
+  \code{\link{ctd-class}}, \code{\link{lisst-class}},
+  \code{\link{lobo-class}}, \code{\link{met-class}},
+  \code{\link{oce-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 

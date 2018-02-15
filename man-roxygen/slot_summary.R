@@ -1,6 +1,7 @@
 #' @slot data As with all \code{oce} objects, the \code{data} slot
 #' for \code{<%= class %>} objects is a
 #' \code{\link{list}} containing the main data for the object.
+#' <%= dataExample %>
 #'
 #' @slot metadata As with all \code{oce} objects, the \code{metadata} slot
 #' for \code{<%= class %>} objects is a \code{\link{list}} containing

@@ -28,7 +28,8 @@ The sample dataset \code{\link{section}} contains data along WOCE line A03.
 \describe{
 \item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
 for \code{section} objects is a
-\code{\link{list}} containing the main data for the object.}
+\code{\link{list}} containing the main data for the object.
+{}}
 
 \item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
 for \code{section} objects is a \code{\link{list}} containing
@@ -88,7 +89,6 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{oce-class}},
   \code{\link{odf-class}}, \code{\link{rsk-class}},
