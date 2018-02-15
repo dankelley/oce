@@ -414,9 +414,12 @@ window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, ext
     } else {
         stop("unknown value of which \"", which, "\"") # cannot get here
     }
-    if (inherits(x, "adp") || inherits(x, "adv")) {
+    ## sync up some metadata that might have been altered
+    if (inherits(x, "adp")) {
         res@metadata$numberOfSamples <- dim(res@data$v)[1]
         res@metadata$numberOfCells <- dim(res@data$v)[2]
+    } else if (inherits(x, "adv")) {
+        res@metadata$numberOfSamples <- dim(res@data$v)[1]
     }
     oceDebug(debug, "} # window.oce()\n", unindent=1)
     res

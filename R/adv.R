@@ -322,7 +322,6 @@ setMethod(f="subset",
                   stop("only 'time' is permitted for subsetting")
               }
               res@metadata$numberOfSamples <- dim(res@data$v)[1]
-              res@metadata$numberOfCells <- dim(res@data$v)[2]
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               res
           })
