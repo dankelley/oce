@@ -3,9 +3,9 @@
 \docType{class}
 \name{ladp-class}
 \alias{ladp-class}
-\title{Class to store lowered-adp data}
+\title{Class to Store Lowered-adp Data}
 \description{
-Class to store data measured with a lowered ADP (also
+This class stores data measured with a lowered ADP (also
 known as ADCP) device.
 }
 \section{Slots}{

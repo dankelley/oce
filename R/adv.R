@@ -1,4 +1,4 @@
-#' Class to Hold adv Data
+#' Class to Store adv Data
 #'
 #' This class holds data from acoustic-Doppler velocimeters.
 #'

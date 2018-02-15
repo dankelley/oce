@@ -3,7 +3,7 @@
 \docType{class}
 \name{bremen-class}
 \alias{bremen-class}
-\title{Class for data stored in a format used at Bremen}
+\title{Class to Store Bremen-formatted Data}
 \description{
 This class is for data stored in a format used at Bremen.
 It is somewhat similar to the \code{\link{odf-class}}, in the sense

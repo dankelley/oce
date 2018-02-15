@@ -3,7 +3,7 @@
 \docType{class}
 \name{amsr-class}
 \alias{amsr-class}
-\title{Class to Hold amsr Data}
+\title{Class to Store AMSR-2 Satellite Data}
 \description{
 This class stores data from the AMSR-2 satellite.
 }

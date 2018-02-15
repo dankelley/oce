@@ -1,6 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to Hold amsr Data
+#' Class to Store AMSR-2 Satellite Data
 #'
 #' This class stores data from the AMSR-2 satellite.
 #'

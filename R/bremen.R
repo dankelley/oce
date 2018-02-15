@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class for data stored in a format used at Bremen
+#' Class to Store Bremen-formatted Data
 #'
 #' This class is for data stored in a format used at Bremen.
 #' It is somewhat similar to the \code{\link{odf-class}}, in the sense

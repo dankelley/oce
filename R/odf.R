@@ -1,4 +1,6 @@
-#' Class to Store ODF data
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+
+#' Class to Store ODF Data
 #'
 #' This class is for data stored in a format used at Canadian
 #' Department of Fisheries and Oceans laboratories. It is somewhat

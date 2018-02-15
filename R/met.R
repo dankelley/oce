@@ -1,8 +1,8 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' title Class to Store Meteorological Data
+#' Class to Store Meteorological Data
 #'
-#' Class to store meteorological data. For objects created with
+#' This class stores meteorological data. For objects created with
 #' \code{\link{read.met}}, the \code{data} slot will contain all the columns
 #' within the original file (with some guesses as to units) in addition to
 #' several calculated quantities such as \code{u} and \code{v}, which are

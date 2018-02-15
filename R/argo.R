@@ -1,6 +1,6 @@
 # vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to hold Argo data
+#' Class to Store Argo Data
 #'
 #' This class stores data from Argo floats.
 #'

@@ -3,7 +3,7 @@
 \docType{class}
 \name{satellite-class}
 \alias{satellite-class}
-\title{Class to hold satellite data}
+\title{Class to Store Satellite Data}
 \description{
 This class holds satellite data of various types, including
 \code{\link{amsr-class}} and \code{\link{g1sst-class}}.

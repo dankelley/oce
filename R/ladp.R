@@ -1,9 +1,9 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 
-#' Class to store lowered-adp data
+#' Class to Store Lowered-adp Data
 #'
-#' Class to store data measured with a lowered ADP (also
+#' This class stores data measured with a lowered ADP (also
 #' known as ADCP) device.
 #'
 #' @templateVar class ladp

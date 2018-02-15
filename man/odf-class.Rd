@@ -3,7 +3,7 @@
 \docType{class}
 \name{odf-class}
 \alias{odf-class}
-\title{Class to Store ODF data}
+\title{Class to Store ODF Data}
 \description{
 This class is for data stored in a format used at Canadian
 Department of Fisheries and Oceans laboratories. It is somewhat

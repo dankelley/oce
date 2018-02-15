@@ -2,7 +2,7 @@
 
 setClass("satellite", contains="oce")
 
-#' Class to Hold G1SST Satellite-model Data
+#' Class to Store G1SST Satellite-model Data
 #'
 #' This class stores G1SST model-satellite products.
 #'

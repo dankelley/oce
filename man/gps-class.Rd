@@ -5,7 +5,7 @@
 \alias{gps-class}
 \title{Class to Store GPS Data}
 \description{
-Class to store gps data. These objects may be read with
+This class stores GPS data. These objects may be read with
 \code{\link{read.gps}} or assembled with \code{\link{as.gps}}.
 }
 \section{Slots}{

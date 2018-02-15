@@ -1,6 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to hold satellite data
+#' Class to Store Satellite Data
 #'
 #' This class holds satellite data of various types, including
 #' \code{\link{amsr-class}} and \code{\link{g1sst-class}}.

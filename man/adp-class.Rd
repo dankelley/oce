@@ -3,7 +3,7 @@
 \docType{class}
 \name{adp-class}
 \alias{adp-class}
-\title{Class to Hold ADP (ADCP) Data}
+\title{Class to Store adp (ADCP) Data}
 \description{
 This class stores data from acoustic Doppler profilers. Some manufacturers
 call these ADCPs, while others call them ADPs; here the shorter form is
