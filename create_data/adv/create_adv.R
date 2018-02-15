@@ -14,6 +14,7 @@ adv@metadata$units$headingSlow=list(unit=expression(degree), scale="")
 adv@metadata$units$pitchSlow=list(unit=expression(degree), scale="")
 adv@metadata$units$rollSlow=list(unit=expression(degree), scale="")
 adv@metadata$units$temperatureSlow=list(unit=expression(degree*C), scale="")
+adv@metadata$numberOfCells <- NULL # issue 1381
 save(adv, file='adv.rda')
 library(tools)
 tools::resaveRdaFiles("adv.rda", compress="auto")
