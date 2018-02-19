@@ -23,3 +23,17 @@ test_that("as.oce", {
           expect_equal(cl[['latitude']], c(0,1,0))
 })
 
+test_that("head and tail", {
+          data(adp)
+          h <- head(adp)
+          h10 <- head(adp, 10)
+          expect_equal(h[["time"]], head(adp[["time"]]))
+          expect_equal(dim(h[["v"]]), c(6, 84,  4))
+          expect_equal(dim(h10[["v"]]), c(10, 84,  4))
+          t <- tail(adp)
+          t10 <- tail(adp, 10)
+          expect_equal(t[["time"]], tail(adp[["time"]]))
+          expect_equal(dim(t[["v"]]), c(6, 84,  4))
+          expect_equal(dim(t10[["v"]]), c(10, 84,  4))
+})
+
