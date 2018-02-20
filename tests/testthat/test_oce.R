@@ -23,17 +23,35 @@ test_that("as.oce", {
           expect_equal(cl[['latitude']], c(0,1,0))
 })
 
-test_that("head and tail", {
+test_that("head", {
           data(adp)
           h <- head(adp)
           h10 <- head(adp, 10)
           expect_equal(h[["time"]], head(adp[["time"]]))
           expect_equal(dim(h[["v"]]), c(6, 84,  4))
           expect_equal(dim(h10[["v"]]), c(10, 84,  4))
+          data(ctd)
+          h <- head(ctd)
+          h10 <- head(ctd, 10)
+          expect_equal(length(h[["salinity"]]), 6L)
+          expect_equal(length(h10[["salinity"]]), 10L)
+          expect_equal(h[["salinity"]], head(ctd[["salinity"]], 6L))
+          expect_equal(h10[["salinity"]], head(ctd[["salinity"]], 10L))
+})
+
+test_that("tail", {
+          data(adp)
           t <- tail(adp)
           t10 <- tail(adp, 10)
           expect_equal(t[["time"]], tail(adp[["time"]]))
           expect_equal(dim(t[["v"]]), c(6, 84,  4))
           expect_equal(dim(t10[["v"]]), c(10, 84,  4))
+          data(ctd)
+          t <- tail(ctd)
+          t10 <- tail(ctd, 10)
+          expect_equal(length(t[["salinity"]]), 6L)
+          expect_equal(length(t10[["salinity"]]), 10L)
+          expect_equal(t[["salinity"]], tail(ctd[["salinity"]], 6L))
+          expect_equal(t10[["salinity"]], tail(ctd[["salinity"]], 10L))
 })
 

@@ -428,11 +428,16 @@ window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, ext
 
 #' Extract The Start of an Oce Object
 #'
-#' @param x An \code{oce} object of a suitable class (presently only \code{adp} is
-#' permitted).
+#' NOTE: this is a preliminary function, subject to change. So far
+#' it has been coded and tested only adp and ctd types; whetheter
+#' it will do anything with other types is a question. Please contact
+#' the author if you need this to work on a specific type.
+#'
+#' @param x An \code{oce} object.
 #' @param n Number of elements to extract.
 #' @param ... ignored
 #' @seealso \code{\link{tail.oce}}, which yields the end of an \code{oce} object.
+#' @author Dan Kelley
 head.oce <- function(x, n=6L, ...)
 {
     res <- NULL
@@ -456,17 +461,37 @@ head.oce <- function(x, n=6L, ...)
         }
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         res
+    } else if (inherits(x, "ctd")) {
+        res <- x
+        for (name in names(x@data)) {
+            res@data[[name]] <- head(x@data[[name]], n)
+        }
+    } else if (inherits(x, "adv")) {
+        stop("cannot handle 'adv' class")
+    } else if (inherits(x, "section")) {
+        stop("cannot handle 'section' class")
     } else {
-        message("not sure how to 'head' this")
+        res <- x
+        if (is.vector(x@data[[name]])) {
+            res@data[[name]] <- tail(x@data[[name]], n)
+        } else {
+            warning("ignoring '", name, "' because it is not a vector\n")
+        }
     }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
 
 #' Extract the End of an Oce Object
 #'
+#' NOTE: this is a preliminary function, subject to change. So far
+#' it has been coded and tested only adp and ctd types; whetheter
+#' it will do anything with other types is a question. Please contact
+#'
 #' @inheritParams head.oce
 #' @seealso \code{\link{head.oce}}, which yields the start of an \code{oce} object.
+#' @author Dan Kelley
 tail.oce <- function(x, n=6L, ...)
 {
     res <- NULL
@@ -486,9 +511,27 @@ tail.oce <- function(x, n=6L, ...)
                 res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
             }
         }
+     } else if (inherits(x, "ctd")) {
+        res <- x
+        for (name in names(x@data)) {
+            res@data[[name]] <- tail(x@data[[name]], n)
+        }
+    } else if (inherits(x, "adv")) {
+        stop("cannot handle 'adv' class")
+    } else if (inherits(x, "section")) {
+        stop("cannot handle 'section' class")
     } else {
-        message("cannot 'tail' this")
+        ## FIXME: probably this will fail on many classes.
+        res <- x
+        for (name in names(x@data)) {
+            if (is.vector(x@data[[name]])) {
+                res@data[[name]] <- tail(x@data[[name]], n)
+            } else {
+                warning("ignoring '", name, "' because it is not a vector\n")
+            }
+        }
     }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 

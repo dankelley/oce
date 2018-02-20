@@ -7,16 +7,20 @@
 \method{tail}{oce}(x, n = 6L, ...)
 }
 \arguments{
-\item{x}{An \code{oce} object of a suitable class (presently only \code{adp} is
-permitted).}
+\item{x}{An \code{oce} object.}
 
 \item{n}{Number of elements to extract.}
 
 \item{...}{ignored}
 }
 \description{
-Extract the End of an Oce Object
+NOTE: this is a preliminary function, subject to change. So far
+it has been coded and tested only adp and ctd types; whetheter
+it will do anything with other types is a question. Please contact
 }
 \seealso{
 \code{\link{head.oce}}, which yields the start of an \code{oce} object.
+}
+\author{
+Dan Kelley
 }
