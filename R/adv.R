@@ -124,7 +124,7 @@ setMethod(f="summary",
               invisible(callNextMethod()) # summary
           })
 
-#' @title Extract Parts of an ADV Object
+#' @title Extract Something from an adv Object
 #'
 #' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #'

@@ -410,7 +410,7 @@ setMethod(f="summary",
           })
 
 
-#' @title Extract Parts of an ADP Object
+#' @title Extract Something from of an adp Object
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
 #' are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly

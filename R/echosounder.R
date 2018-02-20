@@ -135,7 +135,7 @@ setMethod(f="summary",
           })
 
 
-#' Extract Parts of an Echosounder Object
+#' Extract Something from an Echosounder Object
 #' @param x A \code{echosounder} object, i.e. one inheriting from \code{\link{echosounder-class}}.
 #'
 #' @templateVar class echosounder

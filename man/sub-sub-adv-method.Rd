@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,adv-method}
 \alias{[[,adv-method}
-\title{Extract Parts of an ADV Object}
+\title{Extract Something from an adv Object}
 \usage{
 \S4method{[[}{adv}(x, i, j, ...)
 }

@@ -3,7 +3,7 @@
 \docType{methods}
 \name{[[,echosounder-method}
 \alias{[[,echosounder-method}
-\title{Extract Parts of an Echosounder Object}
+\title{Extract Something from an Echosounder Object}
 \usage{
 \S4method{[[}{echosounder}(x, i, j, ...)
 }
@@ -17,7 +17,7 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-Extract Parts of an Echosounder Object
+Extract Something from an Echosounder Object
 
 The \code{[[} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose
