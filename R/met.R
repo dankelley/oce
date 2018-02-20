@@ -1,10 +1,8 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' @title Class to Store Meteorological Data
+#' Class to Store Meteorological Data
 #'
-#' @description
-#' Class to store meteorological data, with standard slots \code{metadata},
-#' \code{data} and \code{processingLog}.  For objects created with
+#' This class stores meteorological data. For objects created with
 #' \code{\link{read.met}}, the \code{data} slot will contain all the columns
 #' within the original file (with some guesses as to units) in addition to
 #' several calculated quantities such as \code{u} and \code{v}, which are
@@ -12,25 +10,17 @@
 #' obey the oceanographic convention that \code{u>0} is a wind towards the
 #' east.
 #'
-#' @section Methods:
+#' @templateVar class met
 #'
-#' \emph{Accessing values.} For an object named \code{m}, temperature (in degC)
-#' may be accessed as \code{m[["temperature"]]}, dew point (in degC) as
-#' \code{m[["dewPoint"]]}, pressure (in kPa) as \code{m[["pressure"]]},
-#' eastward wind component (in m/s) as \code{m[["u"]]}, northward wind
-#' component (in m/s) as \code{m[["v"]]}, and wind direction (in degrees
-#' clockwise of North) as \code{"direction"}.
-#' The filename from which the data came
-#' (if any) may be found with \code{m[["filename"]]}.  Items in \code{metadata}
-#' must be specifield by full name, but those in \code{data} may be
-#' abbreviated, so long as the abbreviation is unique.
+#' @templateVar dataExample {}
 #'
-#' \emph{Assigning values.} Everything that may be accessed may also be
-#' assigned, e.g.
-#' \preformatted{
-#' m[["temperature"]] <- 1 + m[["temperature"]]
-#' }
-#' increases temperature by 1C.
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}

@@ -2,9 +2,10 @@
 
 setClass("satellite", contains="oce")
 
-#' @title Class to Hold G1SST Satellite-model Data
+#' Class to Store G1SST Satellite-model Data
 #'
-#' @description
+#' This class stores G1SST model-satellite products.
+#'
 #' G1SST is an acronym for global 1-km sea surface temperature, a product
 #' that combines satellite data with the model output. It is provided by
 #' the JPO ROMS (Regional Ocean Modelling System) modelling group.
@@ -12,7 +13,6 @@ setClass("satellite", contains="oce")
 #' the \code{\link{read.g1sst}} documentation for an example
 #' of downloading and plotting.
 #'
-#' @details
 #' It is important not to regard G1SST data in the same category as,
 #' say, \code{\link{amsr-class}} data, because the two products
 #' differ greatly with respect to cloud cover. The satellite used by
@@ -21,6 +21,18 @@ setClass("satellite", contains="oce")
 #' gaps with model simulations.  It can be helpful to consult
 #' [1] for a given time, clicking and then unclicking the radio button
 #' that turns off the model-based filling of cloud gaps.
+#'
+#' @templateVar class g1sst
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @concept satellite
 #' @references

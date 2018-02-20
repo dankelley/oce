@@ -1,21 +1,18 @@
-#' @title Class to Store Sealevel Data
+#' Class to Store Sealevel Data
 #'
-#' @description
-#' Class to store sealevel data, e.g. from a tide gauge, with standard slots
-#' \code{metadata}, \code{data} and \code{processingLog}.
+#' This class stores sealevel data, e.g. from a tide gauge.
 #'
-#' @section Methods: Data may be accessed as e.g.  \code{sealevel[["time"]]},
-#' where the string could also be e.g.  \code{"elevation"} for the
-#' corresponding sea-level elevation, or e.g.  \code{"longitude"} or
-#' \code{"latitude"} for scalars.  Items in \code{metadata} must be specifield
-#' by full name, but those in \code{data} may be abbreviated, so long as the
-#' abbreviation is unique.
+#' @templateVar class sealevel
 #'
-#' Everything that may be accessed may also be assigned, e.g.
-#' \code{sealevel[["elevation"]] <- value}.
+#' @templateVar dataExample The key items stored in this slot are \code{time} and \code{elevation}.
 #'
-#' The \code{show} method displays information about the object, while
-#' \code{\link{summary,sealevel-method}} provides a statistical summary.
+#' @templateVar metadataExample An example of the former might be the location at which a \code{sealevel} measurement was made, stored in \code{longitude} and \code{latitude}, and of the latter might be \code{filename}, the name of the data source.
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}
 #' @family things related to \code{sealevel} data

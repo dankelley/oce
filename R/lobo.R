@@ -1,12 +1,24 @@
-#' @title Class to Store LOBO Data
+#' Class to Store LOBO Data
 #'
-#' @description
-#' Class to store LOBO data.
+#' This class stores LOBO data.
+#'
 #' A \code{lobo} object may be read with \code{\link{read.lobo}} or
 #' constructed with \code{\link{as.lobo}}.  Plots can be made with
 #' \code{\link{plot,lobo-method}}, while \code{\link{summary,lobo-method}} produces
 #' statistical summaries. Data within a \code{lobo} object may be retrieved with
 #' \code{\link{[[,lobo-method}} and altered with \code{\link{[[,lobo-method}}.
+#'
+#' @templateVar class lobo
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}

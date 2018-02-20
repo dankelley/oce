@@ -1,17 +1,27 @@
 ## vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
 
 
-#' @title Class to Store Current Meter (CM) Data
+#' Class to Store Current Meter Data
 #'
-#' @description
-#' Class to store current meter data, e.g. from an Interocean/S4 device
+#' This class stores current meter data, e.g. from an Interocean/S4 device
 #' or an Aanderaa/RCM device.  A file
 #' containing Interocean/S4 data may be read with \code{\link{read.cm}}.
 #' Alternatively, \code{\link{as.cm}} can be used to create \code{cm} objects.
 #' Objects of this class can be
 #' plotted with \code{\link{plot,cm-method}} or summarized with
-#' \code{\link{summary,cm-method}}.  Data may be retrieved with
-#' \code{\link{[[,cm-method}} or replaced with \ \code{\link{[[<-,cm-method}}.
+#' \code{\link{summary,cm-method}}.
+#'
+#' @templateVar class cm
+#'
+#' @templateVar dataExample The key items stored in this slot are \code{time}, \code{u} and \code{v}.
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #'

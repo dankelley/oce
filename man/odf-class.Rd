@@ -3,41 +3,73 @@
 \docType{class}
 \name{odf-class}
 \alias{odf-class}
-\title{Class to Store ODF data}
+\title{Class to Store ODF Data}
 \description{
-Class for data stored in a format used at Canadian Department of Fisheries
-and Oceans laboratories. This is somewhat unusual amongst \code{oce}
-classes, in that it does not map to a particular instrument, but rather to a
-storage type; in that sense, it is similar to the \code{bremen-class}.
+This class is for data stored in a format used at Canadian
+Department of Fisheries and Oceans laboratories. It is somewhat
+similar to the \code{\link{bremen-class}}, in the sense
+that it does not apply just to a particular instrument.
 }
-\section{Methods}{
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{odf} objects is a
+\code{\link{list}} containing the main data for the object.
+{}}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{odf} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+{}}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{odf} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
 
 
-Consider an ODF object named \code{odf}.
-
-\emph{Accessing metadata.}
-
-Metadata (contained in the S4 slot named \code{metadata}) may be retrieved
-or set by name, \code{odf[["longitude"]] <- odf[["longitude"]] + 1} corrects
-a one-degree error.
-
-\emph{Accessing measured data.}
-
-Column data may be accessed by name, e.g. \code{odf[["salinity"]]},
-\code{odf[["temperature"]]}, \code{odf[["pressure"]]}, etc.  It is up to the
-user to realize what is in the object.
-
-\emph{Assigning values.}
-
-Items stored in the object may be altered with e.g.  \code{odf[["salinity"]]
-<- rep(35,10)}.
-
-\emph{Overview of contents.}
-
-The \code{show} method (e.g.  \code{show(odf)}) displays information about
-the object.
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{odf} objects (see \code{\link{[[<-,odf-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
 }
 
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{odf}
+object named \code{odf} may be retrieved in the standard R way. For example,
+\code{slot(odf, "data")} and \code{slot(odf, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,odf-method}} operator can also be used to access slots,
+with \code{odf[["data"]]} and \code{odf[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,odf-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+}
+
+\references{
+[1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
+in June 2011.)
+
+[2] The St Lawrence Global Observatory website has information on ODF format at
+\url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
+
+[3] List of variable codes:
+\url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
+(checked 2018-02-11); only a subset are handled.
+}
 \seealso{
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{ODFNames2oceNames}},
@@ -52,7 +84,6 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{oce-class}},
   \code{\link{rsk-class}}, \code{\link{sealevel-class}},

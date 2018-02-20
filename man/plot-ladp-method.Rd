@@ -21,7 +21,8 @@ and northerly velocity components.
 }
 \seealso{
 Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
-  \code{\link{as.ladp}}, \code{\link{ladp-class}},
+  \code{\link{[[<-,ladp-method}}, \code{\link{as.ladp}},
+  \code{\link{ladp-class}},
   \code{\link{summary,ladp-method}}
 
 Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},

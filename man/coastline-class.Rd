@@ -5,22 +5,69 @@
 \alias{coastline-class}
 \title{Class to Store Coastline Data}
 \description{
-Class to store coastline data, which may be read with
+This class stores coastline data, which may be read with
 \code{\link{read.coastline}} or constructed with \code{\link{as.coastline}},
 plotted with \code{\link{plot,coastline-method}} or summarized with
 \code{\link{summary,coastline-method}}. Data within \code{coastline}
 objects may be retrieved with \code{\link{[[,coastline-method}}
 or replaced with \code{\link{[[<-,coastline-method}}.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{coastline} objects is a
+\code{\link{list}} containing the main data for the object.
+The key items stored in this slot are \code{longitude} and \code{latitude}.}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{coastline} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+{}}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{coastline} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
+
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{coastline} objects (see \code{\link{[[<-,coastline-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{coastline}
+object named \code{coastline} may be retrieved in the standard R way. For example,
+\code{slot(coastline, "data")} and \code{slot(coastline, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,coastline-method}} operator can also be used to access slots,
+with \code{coastline[["data"]]} and \code{coastline[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,coastline-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+}
+
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{ctd-class}}, \code{\link{echosounder-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}},
+  \code{\link{ctd-class}}, \code{\link{lisst-class}},
+  \code{\link{lobo-class}}, \code{\link{met-class}},
+  \code{\link{oce-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 

@@ -1,35 +1,9 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' @title Class to Store Hydrographic Section Data
+#' Class to Store Hydrographic Section Data
 #'
-#' @description
-#' Class to store hydrographic section data, with standard slots \code{metadata},
-#' \code{data} and \code{processingLog}.
+#' This class stores data from oceanographic section surveys.
 #'
-#' A \code{\link{list}} of stations is retrieved by \code{s[["station"]]}.
-#' Individual stations are retrieved by providing a station number as a second
-#' argument in the index, e.g.  the first station is \code{s[["station", 1]]}
-#' (which is a \code{\link{ctd-class}} object).
-#'
-#' Aggregated values of the quantities measured at each level of the CTD
-#' profiles contained within the section may be accessed as e.g.
-#' \code{section[["salinity"]]}.  This works for any quantity whose name is
-#' present in the constituent profiles.
-#'
-#' Since it is often useful to pair such quantities with locations,
-#' \code{section[["longitude"]]} and \code{section[["latitude"]]} return vectors
-#' with values repeated for each level in each CTD (see the \code{pairs()} call in
-#'                                                  the example section).  If just
-#' one latitude or longitude is desired per station, e.g.
-#' \code{section[["latitude", "byStation"]]} may be used.  Station-by-station
-#' values of dynamic height are provided by e.g.
-#' \code{section[["dynamic height"]]}.
-#'
-#' The depths of all data are obtained from e.g.  \code{section[["depth"]]}, and
-#' the distances along the transect, measured from the first station, are obtained
-#' from e.g.  \code{section[["distance"]]}.
-#'
-#' @seealso
 #' Sections can be read with \code{\link{read.section}} or created with
 #' \code{\link{read.section}} or created from CTD objects by using
 #' \code{\link{as.section}} or by adding a ctd station to an existing section with
@@ -44,6 +18,18 @@
 #' overviews are provided by \code{show}.
 #'
 #' The sample dataset \code{\link{section}} contains data along WOCE line A03.
+#'
+#' @templateVar class section
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample Examples that are of common interest include \code{stationId}, \code{longitude}, \code{latitude} and \code{time}.
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @examples
 #' library(oce)
@@ -214,18 +200,16 @@ setMethod(f="summary",
               invisible()
           })
 
+
 #' @title Extract Something From a Section Object
 #' @param x A \code{section} object, i.e. one inheriting from \code{\link{section-class}}.
-#' @family things related to \code{section} data
-#' @examples
-#' data(section)
-#' length(section[["latitude"]])
-#' length(section[["latitude", "byStation"]])
 #'
-#' @section Details of the specialized section method:
+#' @templateVar class section
+#'
+#' @section Details of the specialized \code{section} method:
+#'
 #' There are several possibilities, depending on the nature of \code{i}.
 #'\itemize{
-#'
 #' \item If \code{i} is the string \code{"station"}, then the method
 #' will return a \code{\link{list}} of
 #' \code{\link{ctd-class}} objects holding the station data.
@@ -268,15 +252,14 @@ setMethod(f="summary",
 ## #' \code{field} (in whatever unit is used for \code{i}). See Example
 ## #' for in the documentation for \code{\link{plot,section-method}}.
 #'
-#' If none of the conditions listed above holds, the general
-#' method is used (see \sQuote{Details of the general method}).
+#' @template sub_subTemplate
 #'
 #' @examples
 #' data(section)
 #' length(section[["latitude"]])
 #' length(section[["latitude", "byStation"]])
 #'
-#' @template sub_subTemplate
+#' @family things related to \code{section} data
 #' @author Dan Kelley
 setMethod(f="[[",
           signature(x="section", i="ANY", j="ANY"),

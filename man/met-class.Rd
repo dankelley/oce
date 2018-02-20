@@ -5,8 +5,7 @@
 \alias{met-class}
 \title{Class to Store Meteorological Data}
 \description{
-Class to store meteorological data, with standard slots \code{metadata},
-\code{data} and \code{processingLog}.  For objects created with
+This class stores meteorological data. For objects created with
 \code{\link{read.met}}, the \code{data} slot will contain all the columns
 within the original file (with some guesses as to units) in addition to
 several calculated quantities such as \code{u} and \code{v}, which are
@@ -14,26 +13,52 @@ velocities in m/s (not the km/h stored in typical data files), and which
 obey the oceanographic convention that \code{u>0} is a wind towards the
 east.
 }
-\section{Methods}{
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{met} objects is a
+\code{\link{list}} containing the main data for the object.
+{}}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{met} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+{}}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{met} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
 
 
-\emph{Accessing values.} For an object named \code{m}, temperature (in degC)
-may be accessed as \code{m[["temperature"]]}, dew point (in degC) as
-\code{m[["dewPoint"]]}, pressure (in kPa) as \code{m[["pressure"]]},
-eastward wind component (in m/s) as \code{m[["u"]]}, northward wind
-component (in m/s) as \code{m[["v"]]}, and wind direction (in degrees
-clockwise of North) as \code{"direction"}.
-The filename from which the data came
-(if any) may be found with \code{m[["filename"]]}.  Items in \code{metadata}
-must be specifield by full name, but those in \code{data} may be
-abbreviated, so long as the abbreviation is unique.
-
-\emph{Assigning values.} Everything that may be accessed may also be
-assigned, e.g.
-\preformatted{
-m[["temperature"]] <- 1 + m[["temperature"]]
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{met} objects (see \code{\link{[[<-,met-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
 }
-increases temperature by 1C.
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{met}
+object named \code{met} may be retrieved in the standard R way. For example,
+\code{slot(met, "data")} and \code{slot(met, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,met-method}} operator can also be used to access slots,
+with \code{met[["data"]]} and \code{met[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,met-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
 }
 
 \seealso{
@@ -41,7 +66,6 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{oce-class}}, \code{\link{odf-class}},
   \code{\link{rsk-class}}, \code{\link{sealevel-class}},

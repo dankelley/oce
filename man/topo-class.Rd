@@ -5,19 +5,64 @@
 \alias{topo-class}
 \title{Class to Store Topographic Data}
 \description{
-Topographic data may be read with \code{\link{read.topo}} or assembled with
-\code{\link{as.topo}}.  Plotting are handled with \code{\link{plot,topo-method}}
-and summaries with \code{\link{summary,topo-method}}. Data retrieval may be
-done with \code{\link{[[,topo-method}} and replacement with
-\code{\link{[[<-,topo-method}}.  The key data, stored within the data slot,
-are: \code{longititude}, \code{latitude}, and \code{z}.
+This class stores topographic data, as read with
+\code{\link{read.topo}} or assembled with \code{\link{as.topo}}.
+Plotting is handled with \code{\link{plot,topo-method}}
+and summaries with \code{\link{summary,topo-method}}.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{topo} objects is a
+\code{\link{list}} containing the main data for the object.
+The key items stored in this slot are: \code{longititude}, \code{latitude}, and \code{z}.}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{topo} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+{}}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{topo} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
+
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{topo} objects (see \code{\link{[[<-,topo-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{topo}
+object named \code{topo} may be retrieved in the standard R way. For example,
+\code{slot(topo, "data")} and \code{slot(topo, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,topo-method}} operator can also be used to access slots,
+with \code{topo[["data"]]} and \code{topo[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,topo-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+}
+
 \seealso{
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{oce-class}},
   \code{\link{odf-class}}, \code{\link{rsk-class}},

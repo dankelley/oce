@@ -1,8 +1,7 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' @title Class to Store Windrose Data
+#' Class to Store Windrose Data
 #'
-#' @description
 #' Windrose objects store statistical information about winds, mainly for
 #' plotting as "wind rose" plots (see \code{\link{plot,windrose-method}}.
 #' There is no reading method, because there is no standard way to store
@@ -12,6 +11,18 @@
 #' \code{\link{[[<-,windrose-method}}. Data summaries are provided with
 #' \code{\link{summary,windrose-method}}.
 #'
+#' @templateVar class windrose
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
+##'
 #' @family classes provided by \code{oce}
 #' @family things related to \code{windrose} data
 setClass("windrose", contains="oce")

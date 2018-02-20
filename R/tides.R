@@ -2,10 +2,21 @@
 
 ##. TESTinfer1 <- !TRUE
 
-#' @title Class to Store Tidal Models
+#' Class to Store Tidal Models
 #'
-#' @description
-#' Class to store tidal-constituent models.
+#' This class stores tidal-constituent models.
+#'
+#' @templateVar class tidem
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data

@@ -1,6 +1,8 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to Hold amsr Data
+#' Class to Store AMSR-2 Satellite Data
+#'
+#' This class stores data from the AMSR-2 satellite.
 #'
 #' The Advanced Microwave Scanning Radiometer (AMSR-2) is in current operation on
 #' the Japan Aerospace Exploration Agency (JAXA) GCOM-W1 space craft, launched in
@@ -16,11 +18,23 @@
 #' See [1] for additional information on the instrument, how
 #' to cite the data source in a paper, etc.
 #'
-#' @details
 #' The bands are stored in \code{\link{raw}} form, to save storage. The accessor
 #' function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
 #' form or in physical units; \code{\link{plot,amsr-method}}, and
 #' \code{\link{summary,amsr-method}} work with physical units.
+#'
+#' @templateVar class amsr
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample Examples that are of common interest include  \code{longitude} and \code{latitude}, which define the grid.
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
+#
 #'
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite

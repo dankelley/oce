@@ -4,13 +4,29 @@
 ##   [1] "DT4 Data File Format Specification" [July, 2010] DT4_format_2010.pdf
 
 
-#' @title Class to Store Echosounder Data
+#' Class to Store Echosounder Data
 #'
-#' @description
-#' Class to store echosounder data.
+#' This class stores echosounder data. Echosounder objects may be
+#' read with \code{\link{read.echosounder}},
+#' summarized with \code{\link{summary,echosounder-method}},
+#' and plotted with \code{\link{plot,echosounder-method}}.
+#' The \code{\link{findBottom}}
+#' function infers the ocean bottom from tracing the strongest reflector from
+#' ping to ping.
+#'
+#' @templateVar class echosounder
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @details
-#' The \code{data} slot is a list containing
 #'
 #' \itemize{
 #'
@@ -45,41 +61,10 @@
 #'
 #' }
 #'
-#'
 #' @name echosounder-class
 #' @docType class
 #'
-#' @section Methods:
-#'
-#' \emph{Accessing values.} Data may be accessed as e.g.
-#' \code{echosounder[["time"]]}, \code{echosounder[["depth"]]},
-#' \code{echosounder[["a"]]}, etc.  Items in \code{metadata} must be specified
-#' by full name, but those in \code{data} may be abbreviated, so long as the
-#' abbreviation is unique. In addition to the actual data, some derived fields
-#' are also available: \code{echosounder[["distance"]]} calls
-#' \code{\link{geodDist}} to compute calculate distance along the ship track,
-#' \code{echosounder[["Sv"]]} returns a matrix of backscatter strength in DB,
-#' and \code{echosounder[["TS"]]} returns a matrix of target strength in dB.
-#'
-#' \emph{Assigning values.} Everything that may be accessed may also be
-#' assigned, e.g.  \code{echosounder[["time"]] <- 3600 + echosounder[["time"]]}
-#' adds an hour to time.
-#'
 #' @author Dan Kelley
-#'
-#' Statistical summaries are provided by \code{\link{summary,echosounder-method}},
-#' while \code{\link{show}} displays an overview.  The \code{\link{findBottom}}
-#' function infers the ocean bottom from tracing the strongest reflector from
-#' ping to ping.
-#'
-#' Echosounder objects may be plotted with \code{\link{plot,echosounder-method}}.
-#'
-#' The contents of \code{echosounder} objects may be altered with
-#' \code{\link{subset,echosounder-method}}, or with the \code{[[]]} scheme
-#' discussed in the previous section; skilled users may also manipulate the
-#' contents directly, but this is not recommended because it is brittle to
-#' changes in the data structure.
-#' @family classes provided by \code{oce}
 #' @family things related to \code{echosounder} data
 setClass("echosounder", contains="oce")
 
@@ -149,10 +134,14 @@ setMethod(f="summary",
               invisible(callNextMethod()) # summary
           })
 
-#' @title Extract Parts of an Echosounder Object
+
+#' Extract Something from an Echosounder Object
 #' @param x A \code{echosounder} object, i.e. one inheriting from \code{\link{echosounder-class}}.
 #'
+#' @templateVar class echosounder
+#'
 #' @section Details of the specialized \code{echosounder} method:
+#'
 #' If \code{i} is the string \code{"Sv"}, the return value is calculated according to
 #' \preformatted{
 #' Sv <- 20*log10(a) -

@@ -1,10 +1,24 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
-#' Class to Hold ADP (ADCP) Data
+#' Class to Store adp (ADCP) Data
 #'
 #' This class stores data from acoustic Doppler profilers. Some manufacturers
 #' call these ADCPs, while others call them ADPs; here the shorter form is
 #' used by analogy to ADVs.
+#'
+#' @templateVar class adp
+#'
+#' @templateVar dataExample The key items stored in this slot include \code{time}, \code{distance}, and \code{v}, along with angles \code{heading}, \code{pitch} and \code{roll}.
+#'
+#' @templateVar metadataExample Examples that are of common interest include \code{oceCoordinate}, \code{orientation}, \code{frequency}, and \code{beamAngle}.
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
+#'
+#' @section Reading/creating \code{adp} objects:
 #'
 #' The \code{metadata} slot contains various
 #' items relating to the dataset, including source file name, sampling rate,
@@ -151,8 +165,6 @@
 #' distances from the sensor, measured in metres along an imaginary centre
 #' line bisecting beam pairs.  The length of this vector equals
 #' \code{dim(adp[["v"]])[2]}.
-#'
-#' The \code{processingLog} slot is in standard form and needs little comment.
 #'
 #' @section Teledyne-RDI Sentinel V ADCPs: As of 2016-09-27 there is
 #'     provisional support for the TRDI "SentinelV" ADCPs, which are 5
@@ -398,7 +410,7 @@ setMethod(f="summary",
           })
 
 
-#' @title Extract Parts of an ADP Object
+#' @title Extract Something from of an adp Object
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
 #' are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly

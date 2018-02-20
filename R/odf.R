@@ -1,36 +1,38 @@
-#' @title Class to Store ODF data
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+
+#' Class to Store ODF Data
 #'
-#' @description
-#' Class for data stored in a format used at Canadian Department of Fisheries
-#' and Oceans laboratories. This is somewhat unusual amongst \code{oce}
-#' classes, in that it does not map to a particular instrument, but rather to a
-#' storage type; in that sense, it is similar to the \code{bremen-class}.
+#' This class is for data stored in a format used at Canadian
+#' Department of Fisheries and Oceans laboratories. It is somewhat
+#' similar to the \code{\link{bremen-class}}, in the sense
+#' that it does not apply just to a particular instrument.
 #'
-#' @section Methods:
+#' @templateVar class odf
 #'
-#' Consider an ODF object named \code{odf}.
+#' @templateVar dataExample {}
 #'
-#' \emph{Accessing metadata.}
+#' @templateVar metadataExample {}
 #'
-#' Metadata (contained in the S4 slot named \code{metadata}) may be retrieved
-#' or set by name, \code{odf[["longitude"]] <- odf[["longitude"]] + 1} corrects
-#' a one-degree error.
+#' @template slot_summary
 #'
-#' \emph{Accessing measured data.}
+#' @template slot_put
 #'
-#' Column data may be accessed by name, e.g. \code{odf[["salinity"]]},
-#' \code{odf[["temperature"]]}, \code{odf[["pressure"]]}, etc.  It is up to the
-#' user to realize what is in the object.
+#' @template slot_get
 #'
-#' \emph{Assigning values.}
+#' @references
 #'
-#' Items stored in the object may be altered with e.g.  \code{odf[["salinity"]]
-#' <- rep(35,10)}.
+#' [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+#' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
+#' in June 2011.)
 #'
-#' \emph{Overview of contents.}
+#' [2] The St Lawrence Global Observatory website has information on ODF format at
+#' \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
 #'
-#' The \code{show} method (e.g.  \code{show(odf)}) displays information about
-#' the object.
+#' [3] List of variable codes:
+#' \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
+#' (checked 2018-02-11); only a subset are handled.
+#'
+#'
 #' @author Dan Kelley
 #' @family things related to \code{odf} data
 #' @family classes provided by \code{oce}
@@ -38,7 +40,9 @@ setClass("odf", contains="oce")
 
 ## [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification Version 2.0. (A .doc file downloaded from a now-forgotten URL by Dan Kelley, in June 2011.)
 ##
-## [2] An older document is: http://slgo.ca/app-sgdo/en/pdf/docs_reference/Format_ODF.pdf
+## [2] An older document is: \url{https://slgo.ca/app-sgdo/en/pdf/docs_reference/Format_ODF.pdf} (checked 2018-02-11)
+## [3] List of variable codes: \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}} (checked 2018-02-11); only
+## a subset are handled.
 
 setMethod(f="initialize",
           signature="odf",
@@ -718,6 +722,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' of \code{\link{ODFNames2oceNames}} should be consulted for more
 #' details.
 #'
+#'
 #' @examples
 #' library(oce)
 #' # Read a CTD cast made on the Scotian Shelf. Note that the file's metadata
@@ -756,12 +761,21 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' @seealso \code{\link{ODF2oce}} will be an alternative to this, once (or perhaps if) a \code{ODF}
 #' package is released by the Canadian Department of Fisheries and Oceans.
 #'
-#' @references [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
+#' @references
+#' \itemize{
+#'
+#' \item [1] Anthony W. Isenor and David Kellow, 2011. ODF Format Specification
 #' Version 2.0. (This is a .doc file downloaded from a now-forgotten URL by Dan Kelley,
 #' in June 2011.)
 #'
-#' [2] The St Lawrence Global Observatory website has information on ODF format at
+#' \item [2] The St Lawrence Global Observatory website has information on ODF format at
 #' \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
+#'
+#' \item [3] List of variable codes:
+#' \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
+#' (checked 2018-02-11); only a subset are handled.
+#'
+#'}
 #'
 #' @family things related to \code{odf} data
 read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))

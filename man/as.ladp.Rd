@@ -43,7 +43,8 @@ shears, salinity, temperature, etc.
 }
 \seealso{
 Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
-  \code{\link{ladp-class}}, \code{\link{plot,ladp-method}},
+  \code{\link{[[<-,ladp-method}}, \code{\link{ladp-class}},
+  \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
 }
 \author{

@@ -3,8 +3,11 @@
 \docType{class}
 \name{amsr-class}
 \alias{amsr-class}
-\title{Class to Hold amsr Data}
+\title{Class to Store AMSR-2 Satellite Data}
 \description{
+This class stores data from the AMSR-2 satellite.
+}
+\details{
 The Advanced Microwave Scanning Radiometer (AMSR-2) is in current operation on
 the Japan Aerospace Exploration Agency (JAXA) GCOM-W1 space craft, launched in
 May 2012. Data are processed by Remote Sensing Systems. The satellite
@@ -18,13 +21,60 @@ the 10.7GHz band), \code{MFwindDay} (wind at 10m sensed at 18.7GHz),
 similarly-named items that end in \code{Night}.
 See [1] for additional information on the instrument, how
 to cite the data source in a paper, etc.
-}
-\details{
+
 The bands are stored in \code{\link{raw}} form, to save storage. The accessor
 function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
 form or in physical units; \code{\link{plot,amsr-method}}, and
 \code{\link{summary,amsr-method}} work with physical units.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{amsr} objects is a
+\code{\link{list}} containing the main data for the object.
+{}}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{amsr} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+Examples that are of common interest include  \code{longitude} and \code{latitude}, which define the grid.}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{amsr} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
+
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{amsr} objects (see \code{\link{[[<-,amsr-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{amsr}
+object named \code{amsr} may be retrieved in the standard R way. For example,
+\code{slot(amsr, "data")} and \code{slot(amsr, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,amsr-method}} operator can also be used to access slots,
+with \code{amsr[["data"]]} and \code{amsr[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,amsr-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+}
+
 \references{
 1. Information on the satellite, how to cite the data, etc. is
 provided at \url{http://www.remss.com/missions/amsr/}.

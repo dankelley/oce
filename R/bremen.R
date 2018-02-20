@@ -1,22 +1,27 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' @title Class for data stored in a format used at Bremen
+#' Class to Store Bremen-formatted Data
 #'
-#' @description
-#' Class for data stored in a format used at Bremen. This is somewhat unusual
-#' amongst \code{oce} classes, in that it does not map to a particular
-#' instrument. Although some functions are provided for dealing with these
+#' This class is for data stored in a format used at Bremen.
+#' It is somewhat similar to the \code{\link{odf-class}}, in the sense
+#' that it does not apply just to a particular instrument.
+#' Although some functions are provided for dealing with these
 #' data (see \dQuote{Details}), the most common action is to read the
 #' data with \code{\link{read.bremen}}, and then to coerce the object to
 #' another storage class (e.g. using \code{\link{as.ctd}} for CTD-style
 #' data) so that specialized functions can be used thereafter.
 #'
-#' @description
-#' The main function is \code{\link{read.bremen}}.  A simple
-#' plotting method is provided with \code{\link{plot,bremen-method}}, and
-#' \code{\link{summary,bremen-method}} provides summaries. Data may be
-#' retrieved with \code{\link{[[,bremen-method}} or replaced with
-#' \code{\link{[[<-,bremen-method}}.
+#' @templateVar class bremen
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}
