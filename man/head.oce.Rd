@@ -14,16 +14,24 @@
 \item{...}{ignored}
 }
 \description{
-NOTE: this is a preliminary function, subject to change. In particular,
-it is written as an S3 generic, but problably should be converted
-to a S4 generic. So far, this function only handles objects of
+Extract The Start of an Oce Object
+
+This function handles the following object classes directly:
 \code{\link{adp-class}},
 \code{\link{adv-class}},
+\code{\link{ctd-class}},
+\code{\link{section-class}}.
 and
-\code{\link{ctd-class}}.
+\code{\link{topo-class}}. It does not handle
+\code{\link{amst-class}} or
+\code{\link{landsat-class}}
+at all, and simply returns \code{x} in those cases.
 For all other classes, it simply calls \code{\link{head}}
 with \code{n} as provided, for each item in the \code{data}
-slot.
+slot, issuing a warning if that item is not a vector.
+}
+\details{
+Please contact the author if there is a class you need handled.
 }
 \seealso{
 \code{\link{tail.oce}}, which yields the end of an \code{oce} object.

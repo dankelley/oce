@@ -428,16 +428,8 @@ window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, ext
 
 #' Extract The Start of an Oce Object
 #'
-#' NOTE: this is a preliminary function, subject to change. In particular,
-#' it is written as an S3 generic, but problably should be converted
-#' to a S4 generic. So far, this function only handles objects of
-#' \code{\link{adp-class}},
-#' \code{\link{adv-class}},
-#' and
-#' \code{\link{ctd-class}}.
-#' For all other classes, it simply calls \code{\link{head}}
-#' with \code{n} as provided, for each item in the \code{data}
-#' slot.
+#' @templateVar headOrTail head
+#' @template head_or_tail
 #'
 #' @param x An \code{oce} object.
 #' @param n Number of elements to extract.
@@ -446,12 +438,11 @@ window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, ext
 #' @author Dan Kelley
 head.oce <- function(x, n=6L, ...)
 {
-    res <- NULL
+    res <- x
     if (inherits(x, "adp") || inherits(x, "adv")) {
         numberOfProfiles <- dim(x@data$v)[1]
         look <- if (n < 0) seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
             else seq.int(1, min(n, numberOfProfiles))
-        res <- x
         for (name in names(x@data)) {
             if ("distance" == name)
                 next
@@ -468,23 +459,35 @@ head.oce <- function(x, n=6L, ...)
         res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
         res
     } else if (inherits(x, "ctd")) {
-        res <- x
         for (name in names(x@data)) {
             res@data[[name]] <- head(x@data[[name]], n)
         }
     } else if (inherits(x, "section")) {
-        res <- x
         res@metadata$stationId <- head(x@metadata$stationId, n)
         res@metadata$longitude <- head(x@metadata$longitude, n)
         res@metadata$latitude <- head(x@metadata$latitude, n)
         res@metadata$time <- head(x@metadata$time, n)
         res@data$station <- head(x@data$station, n)
+    } else if (inherits(x, "topo")) {
+        ## using head() to determine the indices, because then the 
+        ## z matrix indexing will work for both +ve and -ve n.
+        ilon <- head(seq_along(x@data$longitude), n)
+        ilat <- head(seq_along(x@data$latitude), n)
+        res@data$longitude <- x@data$longitude[ilon]
+        res@data$latitude <- x@data$latitude[ilat]
+        res@data$z <- x@data$z[ilon, ilat]
+    } else if (inherits(x, "landsat")) {
+        warning("head.oce() cannot handle landsat, so returning it unaltered\n")
+    } else if (inherits(x, "amsr")) {
+        warning("head.oce() cannot handle amsr, so returning it unaltered\n")
     } else {
-        res <- x
-        if (is.vector(x@data[[name]])) {
-            res@data[[name]] <- tail(x@data[[name]], n)
-        } else {
-            warning("ignoring '", name, "' because it is not a vector\n")
+        ## FIXME: probably this will fail on many classes.
+        for (name in names(x@data)) {
+            if (is.vector(x@data[[name]]) && !is.list(x@data[[name]])) {
+                res@data[[name]] <- tail(x@data[[name]], n)
+            } else {
+                warning("ignoring '", name, "' because it is not a vector\n")
+            }
         }
     }
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
@@ -494,28 +497,19 @@ head.oce <- function(x, n=6L, ...)
 
 #' Extract the End of an Oce Object
 #'
-#' NOTE: this is a preliminary function, subject to change. In particular,
-#' it is written as an S3 generic, but problably should be converted
-#' to a S4 generic. So far, this function only handles objects of
-#' \code{\link{adp-class}},
-#' \code{\link{adv-class}},
-#' and
-#' \code{\link{ctd-class}}.
-#' For all other classes, it simply calls \code{\link{tail}}
-#' with \code{n} as provided, for each item in the \code{data}
-#' slot.
+#' @templateVar headOrTail tail
+#' @template head_or_tail
 #'
 #' @inheritParams head.oce
 #' @seealso \code{\link{head.oce}}, which yields the start of an \code{oce} object.
 #' @author Dan Kelley
 tail.oce <- function(x, n=6L, ...)
 {
-    res <- NULL
+    res <- x
     if (inherits(x, "adp")) {
         numberOfProfiles <- dim(x@data$v)[1]
         look <- if (n < 0) seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
             else seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
-        res <- x
         for (name in names(x@data)) {
             if (is.vector(x@data[[name]])) {
                 res@data[[name]] <- x@data[[name]][look]
@@ -528,22 +522,31 @@ tail.oce <- function(x, n=6L, ...)
             }
         }
      } else if (inherits(x, "ctd")) {
-        res <- x
         for (name in names(x@data)) {
             res@data[[name]] <- tail(x@data[[name]], n)
         }
     } else if (inherits(x, "section")) {
-        res <- x
         res@metadata$stationId <- tail(x@metadata$stationId, n)
         res@metadata$longitude <- tail(x@metadata$longitude, n)
         res@metadata$latitude <- tail(x@metadata$latitude, n)
         res@metadata$time <- tail(x@metadata$time, n)
         res@data$station <- tail(x@data$station, n)
+    } else if (inherits(x, "topo")) {
+        ## using head() to determine the indices, because then the 
+        ## z matrix indexing will work for both +ve and -ve n.
+        ilon <- tail(seq_along(x@data$longitude), n)
+        ilat <- tail(seq_along(x@data$latitude), n)
+        res@data$longitude <- x@data$longitude[ilon]
+        res@data$latitude <- x@data$latitude[ilat]
+        res@data$z <- x@data$z[ilon, ilat]
+    } else if (inherits(x, "landsat")) {
+        warning("tail.oce() cannot handle landsat, so returning it unaltered\n")
+    } else if (inherits(x, "amsr")) {
+        warning("tail.oce() cannot handle amsr, so returning it unaltered\n")
     } else {
         ## FIXME: probably this will fail on many classes.
-        res <- x
         for (name in names(x@data)) {
-            if (is.vector(x@data[[name]])) {
+            if (is.vector(x@data[[name]]) && !is.list(x@data[[name]])) {
                 res@data[[name]] <- tail(x@data[[name]], n)
             } else {
                 warning("ignoring '", name, "' because it is not a vector\n")
