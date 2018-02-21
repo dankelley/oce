@@ -14,10 +14,16 @@
 \item{...}{ignored}
 }
 \description{
-NOTE: this is a preliminary function, subject to change. So far
-it has been coded and tested only adp and ctd types; whetheter
-it will do anything with other types is a question. Please contact
-the author if you need this to work on a specific type.
+NOTE: this is a preliminary function, subject to change. In particular,
+it is written as an S3 generic, but problably should be converted
+to a S4 generic. So far, this function only handles objects of
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+and
+\code{\link{ctd-class}}.
+For all other classes, it simply calls \code{\link{head}}
+with \code{n} as provided, for each item in the \code{data}
+slot.
 }
 \seealso{
 \code{\link{tail.oce}}, which yields the end of an \code{oce} object.

@@ -428,10 +428,16 @@ window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, ext
 
 #' Extract The Start of an Oce Object
 #'
-#' NOTE: this is a preliminary function, subject to change. So far
-#' it has been coded and tested only adp and ctd types; whetheter
-#' it will do anything with other types is a question. Please contact
-#' the author if you need this to work on a specific type.
+#' NOTE: this is a preliminary function, subject to change. In particular,
+#' it is written as an S3 generic, but problably should be converted
+#' to a S4 generic. So far, this function only handles objects of
+#' \code{\link{adp-class}},
+#' \code{\link{adv-class}},
+#' and
+#' \code{\link{ctd-class}}.
+#' For all other classes, it simply calls \code{\link{head}}
+#' with \code{n} as provided, for each item in the \code{data}
+#' slot.
 #'
 #' @param x An \code{oce} object.
 #' @param n Number of elements to extract.
@@ -466,10 +472,13 @@ head.oce <- function(x, n=6L, ...)
         for (name in names(x@data)) {
             res@data[[name]] <- head(x@data[[name]], n)
         }
-    } else if (inherits(x, "adv")) {
-        stop("cannot handle 'adv' class")
     } else if (inherits(x, "section")) {
-        stop("cannot handle 'section' class")
+        res <- x
+        res@metadata$stationId <- head(x@metadata$stationId, n)
+        res@metadata$longitude <- head(x@metadata$longitude, n)
+        res@metadata$latitude <- head(x@metadata$latitude, n)
+        res@metadata$time <- head(x@metadata$time, n)
+        res@data$station <- head(x@data$station, n)
     } else {
         res <- x
         if (is.vector(x@data[[name]])) {
@@ -485,9 +494,16 @@ head.oce <- function(x, n=6L, ...)
 
 #' Extract the End of an Oce Object
 #'
-#' NOTE: this is a preliminary function, subject to change. So far
-#' it has been coded and tested only adp and ctd types; whetheter
-#' it will do anything with other types is a question. Please contact
+#' NOTE: this is a preliminary function, subject to change. In particular,
+#' it is written as an S3 generic, but problably should be converted
+#' to a S4 generic. So far, this function only handles objects of
+#' \code{\link{adp-class}},
+#' \code{\link{adv-class}},
+#' and
+#' \code{\link{ctd-class}}.
+#' For all other classes, it simply calls \code{\link{tail}}
+#' with \code{n} as provided, for each item in the \code{data}
+#' slot.
 #'
 #' @inheritParams head.oce
 #' @seealso \code{\link{head.oce}}, which yields the start of an \code{oce} object.
@@ -516,10 +532,13 @@ tail.oce <- function(x, n=6L, ...)
         for (name in names(x@data)) {
             res@data[[name]] <- tail(x@data[[name]], n)
         }
-    } else if (inherits(x, "adv")) {
-        stop("cannot handle 'adv' class")
     } else if (inherits(x, "section")) {
-        stop("cannot handle 'section' class")
+        res <- x
+        res@metadata$stationId <- tail(x@metadata$stationId, n)
+        res@metadata$longitude <- tail(x@metadata$longitude, n)
+        res@metadata$latitude <- tail(x@metadata$latitude, n)
+        res@metadata$time <- tail(x@metadata$time, n)
+        res@data$station <- tail(x@data$station, n)
     } else {
         ## FIXME: probably this will fail on many classes.
         res <- x
