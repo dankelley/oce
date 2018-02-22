@@ -77,7 +77,7 @@ test_that("tail_ctd", {
           expect_equal(t3[["salinity"]], tail(ctd[["salinity"]], 3))
 })
 
-test_that("tail_sectoin", {
+test_that("tail_section", {
           data(section)
           s <- tail(section)
           s3 <- tail(section, 3)

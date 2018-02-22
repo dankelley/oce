@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{An \code{oce} object.}
 
-\item{n}{Number of elements to extract.}
+\item{n}{Number of elements to extract, as for \code{\link{head}}.}
 
 \item{...}{ignored}
 }
