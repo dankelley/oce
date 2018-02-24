@@ -1156,7 +1156,10 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     }
     if (exists("DATA_TYPE") && DATA_TYPE == "CTD")
         res@metadata$pressureType <- "sea"
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste("read.odf(\"", filename, "\", ",
+                                                   "columns=c(\"", paste(columns, collapse="\", \""), "\"), ",
+                                                   "debug=", debug, ")", sep=""))
     oceDebug(debug, "} # read.odf()\n")
     res
 }
