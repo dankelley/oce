@@ -9,7 +9,7 @@
 #' \code{\link{section-class}}.
 #' and
 #' \code{\link{topo-class}}. It does not handle
-#' \code{\link{amst-class}} or
+#' \code{\link{amsr-class}} or
 #' \code{\link{landsat-class}}
 #' at all, and simply returns \code{x} in those cases.
 #' For all other classes, it simply calls \code{\link{<%=headOrTail%>}}
