@@ -428,67 +428,130 @@ window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, ext
 
 #' Extract The Start of an Oce Object
 #'
-#' @param x An \code{oce} object of a suitable class (presently only \code{adp} is
-#' permitted).
-#' @param n Number of elements to extract.
+#' @templateVar headOrTail head
+#' @template head_or_tail
+#'
+#' @param x An \code{oce} object.
+#' @param n Number of elements to extract, as for \code{\link{head}}.
 #' @param ... ignored
 #' @seealso \code{\link{tail.oce}}, which yields the end of an \code{oce} object.
+#' @author Dan Kelley
 head.oce <- function(x, n=6L, ...)
 {
-    res <- NULL
+    ## Note how head() is used on results from seq_along(); this makes
+    ## things work for both positive and negative n.
+    res <- x
     if (inherits(x, "adp") || inherits(x, "adv")) {
-        numberOfProfiles <- dim(x@data$v)[1]
-        look <- if (n < 0) seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
-            else seq.int(1, min(n, numberOfProfiles))
-        res <- x
+        iprofile <- head(seq_len(dim(x@data$v)[1]), n)
         for (name in names(x@data)) {
             if ("distance" == name)
                 next
             if (is.vector(x@data[[name]])) {
-                res@data[[name]] <- x@data[[name]][look]
+                res@data[[name]] <- x@data[[name]][iprofile]
             } else if (is.matrix(x@data[[name]])) {
-                res@data[[name]] <- x@data[[name]][look, ]
+                res@data[[name]] <- x@data[[name]][iprofile, ]
             } else if (is.array(x@data[[name]])) {
-                res@data[[name]] <- x@data[[name]][look, , ]
+                res@data[[name]] <- x@data[[name]][iprofile, , ]
             } else {
-                res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+                res@data[[name]] <- x@data[[name]][iprofile] # for reasons unknown, 'time' is not a vector
             }
         }
-        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-        res
+    } else if (inherits(x, "ctd")) {
+        for (name in names(x@data)) {
+            res@data[[name]] <- head(x@data[[name]], n)
+        }
+    } else if (inherits(x, "section")) {
+        res@metadata$stationId <- head(x@metadata$stationId, n)
+        res@metadata$longitude <- head(x@metadata$longitude, n)
+        res@metadata$latitude <- head(x@metadata$latitude, n)
+        res@metadata$time <- head(x@metadata$time, n)
+        res@data$station <- head(x@data$station, n)
+    } else if (inherits(x, "topo")) {
+        ilon <- head(seq_along(x@data$longitude), n)
+        ilat <- head(seq_along(x@data$latitude), n)
+        res@data$longitude <- x@data$longitude[ilon]
+        res@data$latitude <- x@data$latitude[ilat]
+        res@data$z <- x@data$z[ilon, ilat]
+    } else if (inherits(x, "landsat")) {
+        ## Actually, handling this would not be too hard, but there are some
+        ## interlocked metadata elements that require some thought.
+        warning("head.oce() cannot handle landsat, so returning it unaltered\n")
+    } else if (inherits(x, "amsr")) {
+        warning("head.oce() cannot handle amsr, so returning it unaltered\n")
     } else {
-        message("not sure how to 'head' this")
+        ## FIXME: probably this will fail on many classes.
+        for (name in names(x@data)) {
+            if (is.vector(x@data[[name]]) && !is.list(x@data[[name]])) {
+                res@data[[name]] <- tail(x@data[[name]], n)
+            } else {
+                warning("ignoring '", name, "' because it is not a vector\n")
+            }
+        }
     }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
 
 #' Extract the End of an Oce Object
 #'
-#' @inheritParams head.oce
+#' @templateVar headOrTail tail
+#' @template head_or_tail
+#'
+#' @param x An \code{oce} object.
+#' @param n Number of elements to extract, as for \code{\link{tail}}.
+#' @param ... ignored
 #' @seealso \code{\link{head.oce}}, which yields the start of an \code{oce} object.
+#' @author Dan Kelley
 tail.oce <- function(x, n=6L, ...)
 {
-    res <- NULL
+    res <- x
     if (inherits(x, "adp")) {
-        numberOfProfiles <- dim(x@data$v)[1]
-        look <- if (n < 0) seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
-            else seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
-        res <- x
+        iprofile <- tail(seq_len(dim(x@data$v)[1]), n)
         for (name in names(x@data)) {
             if (is.vector(x@data[[name]])) {
-                res@data[[name]] <- x@data[[name]][look]
+                res@data[[name]] <- x@data[[name]][iprofile]
             } else if (is.matrix(x@data[[name]])) {
-                res@data[[name]] <- x@data[[name]][look, ]
+                res@data[[name]] <- x@data[[name]][iprofile, ]
             } else if (is.array(x@data[[name]])) {
-                res@data[[name]] <- x@data[[name]][look, , ]
+                res@data[[name]] <- x@data[[name]][iprofile, , ]
             } else {
-                res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
+                res@data[[name]] <- x@data[[name]][iprofile] # for reasons unknown, 'time' is not a vector
             }
         }
+     } else if (inherits(x, "ctd")) {
+        for (name in names(x@data)) {
+            res@data[[name]] <- tail(x@data[[name]], n)
+        }
+    } else if (inherits(x, "section")) {
+        res@metadata$stationId <- tail(x@metadata$stationId, n)
+        res@metadata$longitude <- tail(x@metadata$longitude, n)
+        res@metadata$latitude <- tail(x@metadata$latitude, n)
+        res@metadata$time <- tail(x@metadata$time, n)
+        res@data$station <- tail(x@data$station, n)
+    } else if (inherits(x, "topo")) {
+        ilon <- tail(seq_along(x@data$longitude), n)
+        ilat <- tail(seq_along(x@data$latitude), n)
+        res@data$longitude <- x@data$longitude[ilon]
+        res@data$latitude <- x@data$latitude[ilat]
+        res@data$z <- x@data$z[ilon, ilat]
+    } else if (inherits(x, "landsat")) {
+        ## Actually, handling this would not be too hard, but there are some
+        ## interlocked metadata elements that require some thought.
+        warning("tail.oce() cannot handle landsat, so returning it unaltered\n")
+    } else if (inherits(x, "amsr")) {
+        warning("tail.oce() cannot handle amsr, so returning it unaltered\n")
     } else {
-        message("cannot 'tail' this")
+        ## FIXME: probably this will fail on many classes.
+        for (name in names(x@data)) {
+            if (is.vector(x@data[[name]]) && !is.list(x@data[[name]])) {
+                res@data[[name]] <- tail(x@data[[name]], n)
+            } else {
+                warning("ignoring '", name, "' because it is not a vector\n")
+            }
+        }
     }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 

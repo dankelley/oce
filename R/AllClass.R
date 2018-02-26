@@ -581,3 +581,18 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
     oceDebug(debug, "} # handleFlagsInternal()\n", sep="", unindent=1)
     object
 }
+
+
+#setMethod(f="head",
+#          signature("coastline"),#, "ANY"),
+#          definition=function(x, n=6L, ...) {
+#              message("in head")
+#              message("class of x:", class(x))
+#          })
+#
+#setMethod(f="head",
+#          signature(x="ctd", n="ANY"),
+#          definition=function(x, n=6L, ...) {
+#              message("ctd")
+#          })
+

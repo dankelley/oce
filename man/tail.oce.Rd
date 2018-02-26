@@ -7,16 +7,35 @@
 \method{tail}{oce}(x, n = 6L, ...)
 }
 \arguments{
-\item{x}{An \code{oce} object of a suitable class (presently only \code{adp} is
-permitted).}
+\item{x}{An \code{oce} object.}
 
-\item{n}{Number of elements to extract.}
+\item{n}{Number of elements to extract, as for \code{\link{tail}}.}
 
 \item{...}{ignored}
 }
 \description{
 Extract the End of an Oce Object
+
+This function handles the following object classes directly:
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{ctd-class}},
+\code{\link{section-class}}.
+and
+\code{\link{topo-class}}. It does not handle
+\code{\link{amsr-class}} or
+\code{\link{landsat-class}}
+at all, and simply returns \code{x} in those cases.
+For all other classes, it simply calls \code{\link{tail}}
+with \code{n} as provided, for each item in the \code{data}
+slot, issuing a warning if that item is not a vector.
+}
+\details{
+Please contact the author if there is a class you need handled.
 }
 \seealso{
 \code{\link{head.oce}}, which yields the start of an \code{oce} object.
+}
+\author{
+Dan Kelley
 }
