@@ -2,10 +2,10 @@
 
 [![Build Status](https://travis-ci.org/dankelley/oce.svg?branch=develop)](https://travis-ci.org/dankelley/oce)
 [![codecov](https://codecov.io/gh/dankelley/oce/branch/develop/graph/badge.svg)](https://codecov.io/gh/dankelley/oce)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/oce)](https://cran.r-project.org/package=oce)
-![RStudio CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/last-month/oce)
-![RStudio CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/last-week/oce)
-![RStudio CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/last-day/oce)
+[![CRAN_Status_Badge](http:://www.r-pkg.org/badges/version/oce)](https://cran.r-project.org/package=oce)
+![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-month/oce)
+![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
+![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
 
 
 ``Oce`` is an R package for processing oceanographic data.  Its
@@ -18,7 +18,7 @@ a year (pursuant to CRAN policy), so many users install the
 ``develop`` branch instead. This branch may be updated several times per day,
 as the authors fix bugs or add features that are motivated by day-to-day
 usage.  This is the branch favoured by users who need new features or would
-like to contribute to Oce development.  
+like to contribute to Oce development.
 
 The easy way to install the ``develop`` branch is to execute the
 following commands in R.
