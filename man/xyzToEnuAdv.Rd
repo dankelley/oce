@@ -97,7 +97,7 @@ yes \tab yes \tab down \tab H-90 \tab R \tab P \tab X \tab -Y \tab -Z\cr 5
 Z\cr }
 }
 \references{
-1. \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+1. \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 
 2. Clark Richards, 2012, PhD Dalhousie University Department of
 Oceanography.

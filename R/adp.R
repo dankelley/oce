@@ -2242,7 +2242,7 @@ setMethod(f="plot",
 #' \code{"adp"} objects.  Also, see \code{\link{beamToXyzAdp}} and
 #' \code{\link{xyzToEnuAdp}}.
 #' @references
-#' \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+#' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 #' @family things related to \code{adp} data
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
