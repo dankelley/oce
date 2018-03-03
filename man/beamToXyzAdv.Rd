@@ -31,7 +31,7 @@ x[["transformation.matrix"]] <- rbind(c(11100, -5771, -5321),
 }
 }
 \references{
-\url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+\url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 }
 \seealso{
 See \code{\link{read.adv}} for notes on functions relating to

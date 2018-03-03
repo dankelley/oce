@@ -1141,7 +1141,7 @@ setMethod(f="plot",
 #' \code{"adv"} objects.  Also, see \code{\link{beamToXyzAdv}} and
 #' \code{\link{xyzToEnuAdv}}.
 #' @references
-#' \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+#' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 #' @family things related to \code{adv} data
 toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 {
@@ -1186,7 +1186,7 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 #' @seealso See \code{\link{read.adv}} for notes on functions relating to
 #' \code{"adv"} objects.
 #' @references
-#' \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+#' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 #' @family things related to \code{adp} data
 beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
@@ -1309,7 +1309,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' @seealso See \code{\link{read.adv}} for notes on functions relating to
 #' \code{adv} objects.
 #' @references
-#' 1. \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+#' 1. \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 #'
 #' 2. Clark Richards, 2012, PhD Dalhousie University Department of
 #' Oceanography.

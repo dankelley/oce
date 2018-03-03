@@ -324,7 +324,7 @@ export(abbreviateTimeLabels,
        toEnuAdp,
        toEnuAdv,
        topoInterpolate,
-       trap, # created by Rcpp
+       ##trap, # created by Rcpp
        trimString,
        unabbreviateYear,
        undriftTime,

@@ -1,15 +1,15 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-//' trapezoidal integration
-//'
-//' This is a utility function called by \code{\link{integrateTrapezoid}},
-//' not intended for direct use.
-//'
-//' @param x vector of x values
-//' @param y vector of y values
-//' @param type number indicating type, 0, 1 or 2
-//' @export
+// trapezoidal integration
+//
+// This is a utility function called by \code{\link{integrateTrapezoid}},
+// not intended for direct use.
+//
+// @param x vector of x values
+// @param y vector of y values
+// @param type number indicating type, 0, 1 or 2
+// dotexport
 // [[Rcpp::export]]
 NumericVector trap(NumericVector x, NumericVector y, NumericVector type)
 {
