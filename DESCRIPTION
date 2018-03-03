@@ -27,8 +27,3 @@ RoxygenNote: 6.0.1
 BuildVignettes: true
 VignetteBuilder: knitr
 NeedsCompilation: yes
-Packaged: 2017-08-25 23:19:39 UTC; kelley
-Author: Dan Kelley [aut, cre],
-  Clark Richards [aut],
-  Chantelle Layton [ctb] (curl() coauthor),
-  British Geological Survey [ctb, cph] (magnetic-field subroutine)
