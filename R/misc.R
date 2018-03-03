@@ -4120,6 +4120,7 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 #' print(integrateTrapezoid(y))
 integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 {
+    type <- match.arg(type)
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) {
         y <- x
@@ -4161,7 +4162,21 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
     ## message("\nabout to .Call(\"trap\", xout, yout, ...) with:\n")
     ## message("xout as follows:\n", paste(head(xout, 10), collapse="\n"))
     ## message("yout as follows:\n", paste(head(yout, 10), collapse="\n"))
-    res <- .Call("trap", xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
+    ##:::res <- .Call("trap", xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
+    ##:::res <- trap(x=xout, y=yout, type=as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
+    ##
+    ## I think we should be able to use trap(), which gets defined into
+    ## R/RcppExports.R but that doesn't seem to be put into the loadspace.
+    ## My guess is that the problem is because we are not doing exports in
+    ## the recommended (automatic) way, but I don't want to do exports that
+    ## way since things are ok now, and have been for years.
+    ## I don't see much point trying to figure this out, because we already
+    ## have things set up for a .Call() from before the switch from C to Cpp.
+    ##
+    ## NOTE: must run Rcpp::compileAttributes() after creating trap in
+    ## src/trap.cpp
+    res <- .Call(`_oce_trap`, xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
+    ##> res <- trap( xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
     res
 }
 

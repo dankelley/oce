@@ -92,6 +92,16 @@ test_that("integrateTrapezoid", {
           y <- 2*x + 3*x^2
           expect_equal(2, integrateTrapezoid(x, y), tolerance=0.01)
           expect_equal(integrateTrapezoid(x,y), integrateTrapezoid(y) * (x[2]-x[1]))
+          expect_equal(c(0.0000000000000, 0.0144032921811, 0.0473251028807,
+                         0.0884773662551, 0.1378600823045, 0.1954732510288,
+                         0.2613168724280, 0.3353909465021, 0.4176954732510,
+                         0.5082304526749),
+                       integrateTrapezoid(x, y, "dA"))
+          expect_equal(c(0.0000000000000, 0.0144032921811, 0.0617283950617,
+                         0.1502057613169, 0.2880658436214, 0.4835390946502,
+                         0.7448559670782, 1.0802469135802, 1.4979423868313,
+                         2.0061728395062),
+                       integrateTrapezoid(x, y, "cA"))
 })
 
 test_that("matchBytes", {
