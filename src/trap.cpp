@@ -1,8 +1,12 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-// This is a utility function called by \code{\link{integrateTrapezoid}},
-// not intended for direct use.
+// This is a utility function called by integrateTrapeziod(),
+// so it does not get a wrapper inserted into the R namespace;
+// that's why there is no roxygen @export here, and no roxygen
+// documentation, either. However, we need to tell Rcpp to export
+// it, so integreateTrapezoid() can .Call() it.
+//
 // [[Rcpp::export]]
 NumericVector trap(NumericVector x, NumericVector y, NumericVector type)
 {

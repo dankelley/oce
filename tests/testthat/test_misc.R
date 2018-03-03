@@ -239,3 +239,21 @@ test_that("get_bit (unused in oce)", {
           expect_equal(c(0, 0, 1, 1, 1, 0, 1, 0), bits)
 })
 
+test_that("matrixSmooth", {
+          data(volcano)
+          v <- matrixSmooth(volcano)
+          ## These values are from the C version of src/matrix_smooth.c as it
+          ## existed on 2018-03-03, and the point of the present check is to
+          ## test the code rewriting in C++ as src/matrix_smooth.cpp, added
+          ## on that date. The first check is to be sure the edge treatmet
+          ## still works, and the others are somewhat arbitrary, built on the
+          ## assumption that if the C++ translation is faulty, the results
+          ## will be crazy-wrong (e.g. transposed matrix).
+          ve <- matrix(c(100, 101, 102, 100, 101.1666667, 102.1666667, 101,
+                         101.8333333, 102.8333333), byrow=FALSE, nrow=3)
+          expect_equal(ve, v[1:3, 1:3])
+          expect_equal(mean(v), 130.1787262)
+          expect_equal(mean(v[,10]), 121.3429119)
+          expect_equal(mean(v[10,]), 127.9808743)
+})
+

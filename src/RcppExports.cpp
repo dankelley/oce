@@ -5,6 +5,17 @@
 
 using namespace Rcpp;
 
+// matrix_smooth
+NumericMatrix matrix_smooth(NumericMatrix mat);
+RcppExport SEXP _oce_matrix_smooth(SEXP matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
+    rcpp_result_gen = Rcpp::wrap(matrix_smooth(mat));
+    return rcpp_result_gen;
+END_RCPP
+}
 // trap
 NumericVector trap(NumericVector x, NumericVector y, NumericVector type);
 RcppExport SEXP _oce_trap(SEXP xSEXP, SEXP ySEXP, SEXP typeSEXP) {

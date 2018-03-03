@@ -3906,7 +3906,8 @@ matrixSmooth <- function(m, passes=1)
     storage.mode(m) <- "double"
     if (passes > 0) {
         for (pass in seq.int(1, passes, 1)) {
-            m <- .Call("matrix_smooth", m)
+            message("pass=", pass)
+            m <- .Call(`_oce_matrix_smooth`, m)
         }
     } else {
         warning("matrixSmooth given passes<=0, so returning matrix unmodified")
