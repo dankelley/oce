@@ -81,7 +81,7 @@ runlm <- function(x, y, xout, window=c("hanning", "boxcar"), L, deriv)
             L <- L * 1.5
         ##cat("L:", L, ", spacing:", spacing, "\n")
     }
-    res <- .Call("run_lm", x, y, xout, switch(window, boxcar=0, hanning=1), L)
+    res <- do_runlm(x, y, xout, switch(window, boxcar=0, hanning=1), L)
     if (!missing(deriv) && deriv == 0)
         res <- res$y
     else if (!missing(deriv) && deriv == 1)

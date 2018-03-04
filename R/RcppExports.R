@@ -13,6 +13,10 @@ do_oce_filter <- function(x, a, b) {
     .Call(`_oce_do_oce_filter`, x, a, b)
 }
 
+do_runlm <- function(x, y, xout, window, L) {
+    .Call(`_oce_do_runlm`, x, y, xout, window, L)
+}
+
 do_trap <- function(x, y, type) {
     .Call(`_oce_do_trap`, x, y, type)
 }

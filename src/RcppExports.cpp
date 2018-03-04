@@ -46,6 +46,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_runlm
+List do_runlm(NumericVector x, NumericVector y, NumericVector xout, NumericVector window, NumericVector L);
+RcppExport SEXP _oce_do_runlm(SEXP xSEXP, SEXP ySEXP, SEXP xoutSEXP, SEXP windowSEXP, SEXP LSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type xout(xoutSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type window(windowSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type L(LSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_runlm(x, y, xout, window, L));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_trap
 NumericVector do_trap(NumericVector x, NumericVector y, NumericVector type);
 RcppExport SEXP _oce_do_trap(SEXP xSEXP, SEXP ySEXP, SEXP typeSEXP) {
