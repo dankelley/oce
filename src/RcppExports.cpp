@@ -5,27 +5,57 @@
 
 using namespace Rcpp;
 
-// matrix_smooth
-NumericMatrix matrix_smooth(NumericMatrix mat);
-RcppExport SEXP _oce_matrix_smooth(SEXP matSEXP) {
+// do_approx3d
+NumericVector do_approx3d(NumericVector x, NumericVector y, NumericVector z, NumericVector f, NumericVector xout, NumericVector yout, NumericVector zout);
+RcppExport SEXP _oce_do_approx3d(SEXP xSEXP, SEXP ySEXP, SEXP zSEXP, SEXP fSEXP, SEXP xoutSEXP, SEXP youtSEXP, SEXP zoutSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type f(fSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type xout(xoutSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type yout(youtSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type zout(zoutSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_approx3d(x, y, z, f, xout, yout, zout));
+    return rcpp_result_gen;
+END_RCPP
+}
+// do_matrix_smooth
+NumericMatrix do_matrix_smooth(NumericMatrix mat);
+RcppExport SEXP _oce_do_matrix_smooth(SEXP matSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
-    rcpp_result_gen = Rcpp::wrap(matrix_smooth(mat));
+    rcpp_result_gen = Rcpp::wrap(do_matrix_smooth(mat));
     return rcpp_result_gen;
 END_RCPP
 }
-// trap
-NumericVector trap(NumericVector x, NumericVector y, NumericVector type);
-RcppExport SEXP _oce_trap(SEXP xSEXP, SEXP ySEXP, SEXP typeSEXP) {
+// do_oce_filter
+NumericVector do_oce_filter(NumericVector x, NumericVector a, NumericVector b);
+RcppExport SEXP _oce_do_oce_filter(SEXP xSEXP, SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type a(aSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_oce_filter(x, a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// do_trap
+NumericVector do_trap(NumericVector x, NumericVector y, NumericVector type);
+RcppExport SEXP _oce_do_trap(SEXP xSEXP, SEXP ySEXP, SEXP typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
     Rcpp::traits::input_parameter< NumericVector >::type type(typeSEXP);
-    rcpp_result_gen = Rcpp::wrap(trap(x, y, type));
+    rcpp_result_gen = Rcpp::wrap(do_trap(x, y, type));
     return rcpp_result_gen;
 END_RCPP
 }

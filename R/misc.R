@@ -968,13 +968,25 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
     if (missing(y)) stop("must provide y")
     if (missing(z)) stop("must provide z")
     if (missing(f)) stop("must provide f")
+    dim <- dim(f)
+    if (dim[1] != length(x))
+        stop("dim[1] must equal length(x), but they are ", dim[1], " and ", length(x))
+    if (dim[2] != length(y))
+        stop("dim[1] must equal length(y), but they are ", dim[2], " and ", length(y))
+    if (dim[3] != length(z))
+        stop("dim[1] must equal length(z), but they are ", dim[3], " and ", length(z))
     if (missing(xout)) stop("must provide xout")
     if (missing(yout)) stop("must provide yout")
     if (missing(zout)) stop("must provide zout")
+    if (length(xout) != length(yout))
+        stop("lengths of xout and yout must be same but they are ", length(xout), " and ", length(yout))
+    if (length(xout) != length(zout))
+        stop("lengths of xout and zout must be same but they are ", length(xout), " and ", length(zout))
     if (!equispaced(x)) stop("x values must be equi-spaced")
     if (!equispaced(y)) stop("y values must be equi-spaced")
     if (!equispaced(z)) stop("z values must be equi-spaced")
-    .Call("approx3d", x, y, z, f, xout, yout, zout)
+    ##.Call(`_oce_do_approx3d`, x, y, z, f, xout, yout, zout)
+    do_approx3d(x, y, z, f, xout, yout, zout)
 }
 
 
@@ -2662,7 +2674,7 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
 #'
 #' By contrast with the \code{\link{filter}} function of R, \code{oce.filter}
 #' lacks the option to do a circular filter.  As a consequence,
-#' \code{oce.filter} introduces a phase lag.  One way to remove this lag is to
+#' \code{oceFilter} introduces a phase lag.  One way to remove this lag is to
 #' run the filter forwards and then backwards, as in the \dQuote{Examples}.
 #' However, the result is still problematic, in the sense that applying it in
 #' the reverse order would yield a different result.  (Matlab's \code{filtfilt}
@@ -2690,12 +2702,12 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
 #' a <- 1
 #' x <- seq(0, 10)
 #' y <- ifelse(x == 5, 1, 0)
-#' f1 <- oce.filter(y, a, b)
+#' f1 <- oceFilter(y, a, b)
 #' plot(x, y, ylim=c(-0, 1.5), pch="o", type='b')
 #' points(x, f1, pch="x", col="red")
 #'
 #' # remove the phase lag
-#' f2 <- oce.filter(y, a, b, TRUE)
+#' f2 <- oceFilter(y, a, b, TRUE)
 #' points(x, f2, pch="+", col="blue")
 #'
 #' legend("topleft", col=c("black","red","blue"), pch=c("o","x","+"),
@@ -2710,11 +2722,11 @@ oceFilter <- function(x, a=1, b, zero.phase=FALSE)
     if (missing(b))
         stop("must supply b")
     if (!zero.phase) {
-        return(.Call("oce_filter", x, a, b))
+        return(do_oce_filter(x, a, b))
     } else {
-        res <- .Call("oce_filter", x, a, b)
+        res <- do_oce_filter(x, a, b)
         res <- rev(res)
-        res <- .Call("oce_filter", res, a, b)
+        res <- do_oce_filter(res, a, b)
         return(rev(res))
     }
 }
@@ -3907,7 +3919,7 @@ matrixSmooth <- function(m, passes=1)
     if (passes > 0) {
         for (pass in seq.int(1, passes, 1)) {
             message("pass=", pass)
-            m <- .Call(`_oce_matrix_smooth`, m)
+            m <- do_matrix_smooth(m)
         }
     } else {
         warning("matrixSmooth given passes<=0, so returning matrix unmodified")
@@ -4176,7 +4188,7 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
     ##
     ## NOTE: must run Rcpp::compileAttributes() after creating trap in
     ## src/trap.cpp
-    res <- .Call(`_oce_trap`, xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
+    res <- do_trap(xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
     ##> res <- trap( xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
     res
 }

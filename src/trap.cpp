@@ -1,14 +1,16 @@
+/* vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: */
+
 #include <Rcpp.h>
 using namespace Rcpp;
 
-// This is a utility function called by integrateTrapeziod(),
-// so it does not get a wrapper inserted into the R namespace;
-// that's why there is no roxygen @export here, and no roxygen
-// documentation, either. However, we need to tell Rcpp to export
-// it, so integreateTrapezoid() can .Call() it.
+// This is a utility function, so its auto-generated wrapper is not put into
+// the R namespace; that's why there is no roxygen @export here, and no roxygen
+// documentation, either.
+//
+// NOTE: update src/registerDynamicSymbol.c for this!
 //
 // [[Rcpp::export]]
-NumericVector trap(NumericVector x, NumericVector y, NumericVector type)
+NumericVector do_trap(NumericVector x, NumericVector y, NumericVector type)
 {
   int type_value = int(floor(0.5 + type[0]));
   int n = x.size();

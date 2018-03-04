@@ -2,12 +2,16 @@
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
-extern SEXP _oce_trap(SEXP, SEXP, SEXP);
-extern SEXP _oce_matrix_smooth(SEXP);
+extern SEXP _oce_do_approx3d(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_do_oce_filter(SEXP, SEXP, SEXP);
+extern SEXP _oce_do_matrix_smooth(SEXP);
+extern SEXP _oce_do_trap(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_oce_matrix_smooth", (DL_FUNC) &_oce_matrix_smooth, 1},
-    {"_oce_trap", (DL_FUNC) &_oce_trap, 3},
+    {"_oce_do_approx3d", (DL_FUNC) &_oce_do_approx3d, 7},
+    {"_oce_do_oce_filter", (DL_FUNC) &_oce_do_oce_filter, 3},
+    {"_oce_do_matrix_smooth", (DL_FUNC) &_oce_do_matrix_smooth, 1},
+    {"_oce_do_trap", (DL_FUNC) &_oce_do_trap, 3},
     {NULL, NULL, 0}
 };
 

@@ -110,13 +110,23 @@ test_that("matchBytes", {
 })
 
 test_that("time-series filtering", {
+          ## Check against some matlab results.
           b <- rep(1,5)/5
           a <- 1
           x <- seq(1, 4, by=0.2)
           matlab.res <- c(0.2000,0.4400,0.7200,1.0400,1.4000,1.6000,1.8000,2.0000,2.2000,
                           2.4000,2.6000,2.8000,3.0000,3.2000,3.4000,3.6000)
           expect_equal(matlab.res, oce.filter(x, a, b))
+          ## Check against old values.
+          b <- rep(1, 5)/5
+          a <- 1
+          x <- seq(0, 10)
+          y <- ifelse(x == 5, 1, 0)
+          f <- oce.filter(y, a, b, zero.phase=TRUE)
+          expect_equal(f, c(0.00, 0.04, 0.08, 0.12, 0.16, 0.20, 0.16, 0.12,
+                            0.08, 0.04, 0.00))
 })
+
 
 test_that("Magnetic field at Halifax", {
           ## test values from http://www.geomag.bgs.ac.uk/data_service/models_compass/wmm_calc.html
@@ -257,3 +267,21 @@ test_that("matrixSmooth", {
           expect_equal(mean(v[10,]), 127.9808743)
 })
 
+test_that("approx3d", {
+          ## Test values from the .c code, before converting to .cpp
+          n <- 5
+          x <- seq(0, 1, length.out=n)
+          y <- seq(0, 1, length.out=n)
+          z <- seq(0, 1, length.out=n)
+          f <- array(1:n^3, dim=c(length(x), length(y), length(z)))
+          ## interpolate along a diagonal line
+          m <- 10
+          xout <- seq(0, 1, length.out=m)
+          yout <- seq(0, 1, length.out=m)
+          zout <- seq(0, 1, length.out=m)
+          approx <- approx3d(x, y, z, f, xout, yout, zout)
+          expect_equal(approx,
+                       c(1,  14.77777778, 28.55555556, 42.33333333, 56.11111111,
+                         69.88888889, 83.66666667, 97.44444444, 111.22222222, NA))
+
+})

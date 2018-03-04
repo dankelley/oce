@@ -7,9 +7,11 @@ using namespace Rcpp;
 // documentation, either. However, we need to tell Rcpp to export
 // it, so matrixSmooth() can .Call() it.
 //
+// NOTE: update src/registerDynamicSymbol.c for this!
+//
 // [[Rcpp::export]]
 
-NumericMatrix matrix_smooth(NumericMatrix mat)
+NumericMatrix do_matrix_smooth(NumericMatrix mat)
 {
     int ni = mat.nrow(), nj=mat.ncol();
     NumericMatrix res(ni, nj);
