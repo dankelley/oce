@@ -33,6 +33,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_oce_convolve
+NumericVector do_oce_convolve(NumericVector x, NumericVector f, NumericVector end);
+RcppExport SEXP _oce_do_oce_convolve(SEXP xSEXP, SEXP fSEXP, SEXP endSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type f(fSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type end(endSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_oce_convolve(x, f, end));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_oce_filter
 NumericVector do_oce_filter(NumericVector x, NumericVector a, NumericVector b);
 RcppExport SEXP _oce_do_oce_filter(SEXP xSEXP, SEXP aSEXP, SEXP bSEXP) {
