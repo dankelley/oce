@@ -22,6 +22,68 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_geoddist_alongpath
+NumericVector do_geoddist_alongpath(NumericVector lon, NumericVector lat, NumericVector a, NumericVector f);
+RcppExport SEXP _oce_do_geoddist_alongpath(SEXP lonSEXP, SEXP latSEXP, SEXP aSEXP, SEXP fSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type a(aSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type f(fSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_geoddist_alongpath(lon, lat, a, f));
+    return rcpp_result_gen;
+END_RCPP
+}
+// do_geoddist
+NumericVector do_geoddist(NumericVector lon1, NumericVector lat1, NumericVector lon2, NumericVector lat2, NumericVector a, NumericVector f);
+RcppExport SEXP _oce_do_geoddist(SEXP lon1SEXP, SEXP lat1SEXP, SEXP lon2SEXP, SEXP lat2SEXP, SEXP aSEXP, SEXP fSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type lon1(lon1SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lat1(lat1SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lon2(lon2SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lat2(lat2SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type a(aSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type f(fSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_geoddist(lon1, lat1, lon2, lat2, a, f));
+    return rcpp_result_gen;
+END_RCPP
+}
+// do_geod_xy
+List do_geod_xy(NumericVector lon, NumericVector lat, NumericVector lonr, NumericVector latr, NumericVector a, NumericVector f);
+RcppExport SEXP _oce_do_geod_xy(SEXP lonSEXP, SEXP latSEXP, SEXP lonrSEXP, SEXP latrSEXP, SEXP aSEXP, SEXP fSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lonr(lonrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type latr(latrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type a(aSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type f(fSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_geod_xy(lon, lat, lonr, latr, a, f));
+    return rcpp_result_gen;
+END_RCPP
+}
+// do_geod_xy_inverse
+List do_geod_xy_inverse(NumericVector x, NumericVector y, NumericVector lonr, NumericVector latr, NumericVector a, NumericVector f);
+RcppExport SEXP _oce_do_geod_xy_inverse(SEXP xSEXP, SEXP ySEXP, SEXP lonrSEXP, SEXP latrSEXP, SEXP aSEXP, SEXP fSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lonr(lonrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type latr(latrSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type a(aSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type f(fSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_geod_xy_inverse(x, y, lonr, latr, a, f));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_matrix_smooth
 NumericMatrix do_matrix_smooth(NumericMatrix mat);
 RcppExport SEXP _oce_do_matrix_smooth(SEXP matSEXP) {

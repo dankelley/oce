@@ -5,6 +5,22 @@ do_approx3d <- function(x, y, z, f, xout, yout, zout) {
     .Call(`_oce_do_approx3d`, x, y, z, f, xout, yout, zout)
 }
 
+do_geoddist_alongpath <- function(lon, lat, a, f) {
+    .Call(`_oce_do_geoddist_alongpath`, lon, lat, a, f)
+}
+
+do_geoddist <- function(lon1, lat1, lon2, lat2, a, f) {
+    .Call(`_oce_do_geoddist`, lon1, lat1, lon2, lat2, a, f)
+}
+
+do_geod_xy <- function(lon, lat, lonr, latr, a, f) {
+    .Call(`_oce_do_geod_xy`, lon, lat, lonr, latr, a, f)
+}
+
+do_geod_xy_inverse <- function(x, y, lonr, latr, a, f) {
+    .Call(`_oce_do_geod_xy_inverse`, x, y, lonr, latr, a, f)
+}
+
 do_matrix_smooth <- function(mat) {
     .Call(`_oce_do_matrix_smooth`, mat)
 }
