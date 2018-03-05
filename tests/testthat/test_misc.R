@@ -131,6 +131,13 @@ test_that("despike", { # issue 1067
           expect_equal(x4, x5)
 })
 
+test_that("oceConvolve", {
+          expect_equal(oceConvolve(c(rep(-1, 10), rep(1, 10)), c(1/4,1/2,1/4)),
+                       c(-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0,
+                         -1.0, -0.5, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+                         1.0))
+})
+
 test_that("oceEdit", {
           data(ctd)
           ## metadata
