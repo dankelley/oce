@@ -237,7 +237,7 @@ test_that("runlm", {
                  1.891470985, 1.992039086, 2.055449730, 2.079573603)
           ## default L
           r <- runlm(x, y)
-          expect_equal(sort(names(r)), c("dydx", "L", "x", "y"))
+          expect_equal(4, sum(c("dydx", "L", "x", "y") %in% names(r)))
           expect_equal(r$y, c(1.210171739, 1.402871561, 1.581586126,
                               1.740768514, 1.872013473, 1.970487349,
                               2.040003801, 2.083375549))
