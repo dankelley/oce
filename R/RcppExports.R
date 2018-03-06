@@ -5,6 +5,10 @@ do_approx3d <- function(x, y, z, f, xout, yout, zout) {
     .Call(`_oce_do_approx3d`, x, y, z, f, xout, yout, zout)
 }
 
+do_fill_gap_1d <- function(x, rule) {
+    .Call(`_oce_do_fill_gap_1d`, x, rule)
+}
+
 do_geoddist_alongpath <- function(lon, lat, a, f) {
     .Call(`_oce_do_geoddist_alongpath`, lon, lat, a, f)
 }

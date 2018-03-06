@@ -162,6 +162,10 @@ test_that("oceEdit", {
           expect_true("newData" %in% names(ctd2[["data"]]))
 })
 
+test_that("fillGap", {
+          expect_equal(1:6, fillGap(c(1:2, NA, NA, 5:6)))
+})
+
 test_that("get_bit (unused in oce)", {
           buf <- 0x3a
           bits <- unlist(lapply(7:0, function(i) .Call("get_bit", buf, i)))

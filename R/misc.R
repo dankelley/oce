@@ -3062,13 +3062,14 @@ fillGap <- function(x, method=c("linear"), rule=1)
     method <- match.arg(method)
     class <- class(x)
     if (is.vector(x)) {
-        res <- .Call("fillgap1d", as.numeric(x), rule)
+        ##res <- .Call("fillgap1d", as.numeric(x), rule)
+        res <- do_fill_gap_1d(x, rule)
     } else if (is.matrix(x))  {
         res <- x
         for (col in 1:ncol(x))
-            res[, col] <- .Call("fillgap1d", as.numeric(x[, col]), rule)
+            res[, col] <- do_fill_gap_1d(x[, col], rule)
         for (row in 1:nrow(x))
-            res[row, ] <- .Call("fillgap1d", as.numeric(x[row, ]), rule)
+            res[row, ] <- do_fill_gap_1d(x[row, ], rule)
     } else {
         stop("only works if 'x' is a vector or a matrix")
     }

@@ -22,6 +22,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_fill_gap_1d
+NumericVector do_fill_gap_1d(NumericVector x, NumericVector rule);
+RcppExport SEXP _oce_do_fill_gap_1d(SEXP xSEXP, SEXP ruleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type rule(ruleSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_fill_gap_1d(x, rule));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_geoddist_alongpath
 NumericVector do_geoddist_alongpath(NumericVector lon, NumericVector lat, NumericVector a, NumericVector f);
 RcppExport SEXP _oce_do_geoddist_alongpath(SEXP lonSEXP, SEXP latSEXP, SEXP aSEXP, SEXP fSEXP) {

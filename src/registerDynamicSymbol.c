@@ -4,6 +4,7 @@
 
 
 extern SEXP _oce_do_approx3d(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_do_fill_gap_1d(SEXP, SEXP);
 extern SEXP _oce_do_geoddist(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP f);
 extern SEXP _oce_do_geoddist_alongpath(SEXP, SEXP, SEXP, SEXP f);
 extern SEXP _oce_do_geod_xy(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
@@ -16,6 +17,7 @@ extern SEXP _oce_do_trap(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_approx3d", (DL_FUNC) &_oce_do_approx3d, 7},
+    {"_oce_do_fill_gap_1d", (DL_FUNC) &_oce_do_fill_gap_1d, 2},
     {"_oce_do_geoddist", (DL_FUNC) &_oce_do_geoddist, 6},
     {"_oce_do_geod_xy", (DL_FUNC) &_oce_do_geod_xy, 6},
     {"_oce_do_geod_xy_inverse", (DL_FUNC) &_oce_do_geod_xy_inverse, 6},
