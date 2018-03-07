@@ -4,8 +4,7 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-/* 
- 
+/*
 png('t.png', width=10, height=3, unit='in', res=200, pointsize=9)
 dx <- 10e3
 dy <- 20e3

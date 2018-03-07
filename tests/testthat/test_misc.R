@@ -173,6 +173,21 @@ test_that("get_bit (unused in oce)", {
           expect_equal(c(0, 0, 1, 1, 1, 0, 1, 0), bits)
 })
 
+test_that("grad", {
+          g <- grad(volcano)
+          expect_equal(mean(g$g), 196.982876)
+          expect_equal(mean(g$gx), -6.903335218)
+          expect_equal(mean(g$gy), -7.009609949)
+          expect_equal(g$g[1:3, 1:3],
+                       matrix(c(86, 86, 86, 91.08238029, 91.08238029,
+                                91.08238029, 91.08238029, 91.08238029,
+                                91.08238029), nrow=3))
+          expect_equal(g$gx[1:3, 1:3],
+                       matrix(rep(86, 9), nrow=3))
+          expect_equal(g$gy[1:3, 1:3],
+                       matrix(c(0, 0, 0, 30, 30, 30, 30, 30, 30), nrow=3))
+})
+
 test_that("gravity", {
           g <- gravity(45)
           expect_equal(g, 9.8, tolerance=1e-2)

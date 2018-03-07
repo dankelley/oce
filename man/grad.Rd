@@ -2,20 +2,23 @@
 % Please edit documentation in R/misc.R
 \name{grad}
 \alias{grad}
-\title{Calculate the grad of a matrix by first differences}
+\title{Calculate Matrix Gradient}
 \usage{
-grad(h, x, y)
+grad(h, x = seq(0, 1, length.out = nrow(h)), y = seq(0, 1, length.out =
+  ncol(h)))
 }
 \arguments{
-\item{h}{a matrix}
+\item{h}{a matrix of values}
 
-\item{x}{x values}
+\item{x}{vector of coordinates along matrix columns (defaults to integers)}
 
-\item{y}{y values}
+\item{y}{vector of coordinates along matrix rows (defaults to integers)}
 }
 \value{
-A list containing \code{gx} and \code{gy}, matrices of the same
-dimension as \code{h}.
+A list containing \eqn{|\nabla h|}{abs(grad(h))} as \code{g},
+\eqn{\partial h/\partial x}{dh/dx} as \code{gx},
+and \eqn{\partial h/\partial y}{dh/dy} as \code{gy},
+each of which is a matrix of the same dimension as \code{h}.
 }
 \description{
 In the interior of the matrix, centred second-order differences are used to
@@ -23,7 +26,16 @@ infer the components of the grad.  Along the edges, first-order differences
 are used.
 }
 \examples{
-## Geostrophic flow around an eddy
+## 1. Built-in volcano dataset
+g <- grad(volcano)
+par(mfrow=c(2, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+imagep(volcano, zlab="h")
+imagep(g$g, zlab="|grad(h)|")
+zlim <- c(-1, 1) * max(g$g)
+imagep(g$gx, zlab="dh/dx", zlim=zlim)
+imagep(g$gy, zlab="dh/dy", zlim=zlim)
+
+## 2. Geostrophic flow around an eddy
 library(oce)
 dx <- 5e3
 dy <- 10e3

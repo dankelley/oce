@@ -4195,20 +4195,31 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 }
 
 
-#' Calculate the grad of a matrix by first differences
+#' Calculate Matrix Gradient
 #'
 #' In the interior of the matrix, centred second-order differences are used to
 #' infer the components of the grad.  Along the edges, first-order differences
 #' are used.
 #'
-#' @param h a matrix
-#' @param x x values
-#' @param y y values
-#' @return A list containing \code{gx} and \code{gy}, matrices of the same
-#' dimension as \code{h}.
+#' @param h a matrix of values
+#' @param x vector of coordinates along matrix columns (defaults to integers)
+#' @param y vector of coordinates along matrix rows (defaults to integers)
+#' @return A list containing \eqn{|\nabla h|}{abs(grad(h))} as \code{g},
+#' \eqn{\partial h/\partial x}{dh/dx} as \code{gx},
+#' and \eqn{\partial h/\partial y}{dh/dy} as \code{gy},
+#' each of which is a matrix of the same dimension as \code{h}.
 #' @author Dan Kelley, based on advice of Clark Richards, and mimicking a matlab function.
 #' @examples
-#' ## Geostrophic flow around an eddy
+#' ## 1. Built-in volcano dataset
+#' g <- grad(volcano)
+#' par(mfrow=c(2, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+#' imagep(volcano, zlab="h")
+#' imagep(g$g, zlab="|grad(h)|")
+#' zlim <- c(-1, 1) * max(g$g)
+#' imagep(g$gx, zlab="dh/dx", zlim=zlim)
+#' imagep(g$gy, zlab="dh/dy", zlim=zlim)
+#'
+#' ## 2. Geostrophic flow around an eddy
 #' library(oce)
 #' dx <- 5e3
 #' dy <- 10e3
@@ -4227,20 +4238,23 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 #' contour(x, y, v, asp=1, main=expression(v))
 #' contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
 #' @family functions relating to vector calculus
-grad <- function(h, x, y)
+grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol(h)))
 {
-    if (missing(h)) stop("must give h")
-    if (missing(x)) stop("must give x")
-    if (missing(y)) stop("must give y")
-    if (length(x) != nrow(h)) stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")
-    if (length(y) != ncol(h)) stop("length of y (", length(y), ") must equal number of cols in h (", ncol(h), ")")
+    if (missing(h))
+        stop("must give h")
+    if (length(x) != nrow(h))
+        stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")
+    if (length(y) != ncol(h))
+        stop("length of y (", length(y), ") must equal number of cols in h (", ncol(h), ")")
     ## ensure that all three args are double, so the C code won't misinterpret
     dim <- dim(h)
     h <- as.double(h)
     dim(h) <- dim
     x <- as.double(x)
     y <- as.double(y)
-    .Call("gradient", h, x, y)
+    rval <- .Call("gradient", h, x, y)
+    rval$g <- sqrt(rval$gx^2 + rval$gy^2)
+    rval
 }
 
 
