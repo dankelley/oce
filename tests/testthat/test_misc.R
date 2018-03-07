@@ -176,6 +176,7 @@ test_that("get_bit (unused in oce)", {
 test_that("grad", {
           g <- grad(volcano)
           expect_equal(mean(g$g), 196.982876)
+
           expect_equal(mean(g$gx), -6.903335218)
           expect_equal(mean(g$gy), -7.009609949)
           expect_equal(g$g[1:3, 1:3],

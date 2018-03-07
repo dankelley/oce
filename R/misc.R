@@ -4252,7 +4252,7 @@ grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol
     dim(h) <- dim
     x <- as.double(x)
     y <- as.double(y)
-    rval <- .Call("gradient", h, x, y)
+    rval <- do_gradient(h, x, y)
     rval$g <- sqrt(rval$gx^2 + rval$gy^2)
     rval
 }

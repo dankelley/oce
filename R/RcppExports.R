@@ -25,6 +25,10 @@ do_geod_xy_inverse <- function(x, y, lonr, latr, a, f) {
     .Call(`_oce_do_geod_xy_inverse`, x, y, lonr, latr, a, f)
 }
 
+do_gradient <- function(m, x, y) {
+    .Call(`_oce_do_gradient`, m, x, y)
+}
+
 do_matrix_smooth <- function(mat) {
     .Call(`_oce_do_matrix_smooth`, mat)
 }

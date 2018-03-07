@@ -96,6 +96,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_gradient
+List do_gradient(NumericMatrix m, NumericVector x, NumericVector y);
+RcppExport SEXP _oce_do_gradient(SEXP mSEXP, SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(do_gradient(m, x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_matrix_smooth
 NumericMatrix do_matrix_smooth(NumericMatrix mat);
 RcppExport SEXP _oce_do_matrix_smooth(SEXP matSEXP) {
