@@ -184,7 +184,8 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
     if (!equispaced(x)) stop("x values must be equi-spaced")
     if (!equispaced(y)) stop("y values must be equi-spaced")
     if (!equispaced(z)) stop("z values must be equi-spaced")
-    .Call("approx3d", x, y, z, f, xout, yout, zout)
+    ##.Call("approx3d", x, y, z, f, xout, yout, zout)
+    do_approx3d(x, y, z, f, xout, yout, zout)
 }
 
 
