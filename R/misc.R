@@ -1,5 +1,7 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+## alphabetized functions START
+
 abbreviateVector <- function(x)
 {
     if (1 >= length(x)) {
@@ -9,6 +11,282 @@ abbreviateVector <- function(x)
         if (1 == length(ud) && 1 == ud) return(paste(x[1], ":", tail(x, 1), sep="")) else return(x)
     }
 }
+
+
+#' Add a Column to the Data Slot of an Oce object [deprecated]
+#'
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+#' Use \code{\link{oceSetData}} instead of the present function.
+#'
+#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param data the data.  The length of this item must match that of the
+#' existing data entries in the \code{data} slot).
+#' @param name the name of the column.
+#' @return An object of \code{\link[base]{class}} \code{oce}, with a new
+#' column.
+#' @author Dan Kelley
+#' @seealso Please use \code{\link{oceSetData}} instead of the present function.
+#' @family functions that will be removed soon
+addColumn <- function (x, data, name)
+{
+    .Deprecated("oceSetData",
+                msg="addColumn() will be removed soon; use oceSetData() instead. See ?'oce-deprecated'.")
+    if (!inherits(x, "oce"))
+        stop("method is only for oce objects")
+    if (missing(data))
+        stop("must supply data")
+    if (missing(name))
+        stop("must supply name")
+    n <- length(data)
+    nd <- length(x@data)
+    if (n != length(data))
+        stop("data length is ", n, " but it must be ", nd, " to match existing data")
+    if (inherits(x, "ctd")) {
+        ## res <- ctdAddColumn(x, data, name) # FIXME: supply units
+        res <- oceSetData(x, name=name, value=data) # FIXME: supply units
+    } else {
+        res <- x
+        res@data[[name]] <- data
+    }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
+}
+
+
+#' Convert angles from 0:360 to -180:180
+#'
+#' This is mostly used for instrument heading angles, in cases where the
+#' instrument is aligned nearly northward, so that small variations in heading
+#' (e.g. due to mooring motion) can yield values that swing from small angles
+#' to large angles, because of the modulo-360 cut point.
+#' The method is to use the cosine and sine of the angle in order to find "x"
+#' and "y" values on a unit circle, and then to use \code{\link{atan2}} to
+#' infer the angles.
+#'
+#' @param theta an angle (in degrees) that is in the range from 0 to 360
+#' degrees
+#' @return A vector of angles, in the range -180 to 180.
+#' @author Dan Kelley
+#' @examples
+#'
+#' library(oce)
+#' ## fake some heading data that lie near due-north (0 degrees)
+#' n <- 20
+#' heading <- 360 + rnorm(n, sd=10)
+#' heading <- ifelse(heading > 360, heading - 360, heading)
+#' x <- 1:n
+#' plot(x, heading, ylim=c(-10, 360), type='l', col='lightgray', lwd=10)
+#' lines(x, angleRemap(heading))
+angleRemap <- function(theta)
+{
+    toRad <- atan2(1, 1) / 45
+    atan2(sin(toRad * theta), cos(toRad * theta)) / toRad
+}
+
+
+#' Earth magnetic declination
+#'
+#' Instruments that use magnetic compasses to determine current direction need
+#' to have corrections applied for magnetic declination, to get currents with
+#' the y component oriented to geographic, not magnetic, north.  Sometimes, and
+#' for some instruments, the declination is specified when the instrument is
+#' set up, so that the velocities as recorded are already.  Other times, the
+#' data need to be adjusted.  This function is for the latter case.
+#'
+#' @param x an oce object.
+#' @param declination magnetic declination (to be added to the heading)
+#' @param debug a debugging flag, set to a positive value to get debugging.
+#' @return Object, with velocity components adjusted to be aligned with
+#' geographic north and east.
+#' @author Dan Kelley
+#' @seealso Use \code{\link{magneticField}} to determine the declination,
+#' inclination and intensity at a given spot on the world, at a given time.
+#' @references \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
+#'
+#' @family things related to magnetism
+applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "applyMagneticDeclination(x,declination=", declination, ") {\n", sep="", unindent=1)
+    if (inherits(x, "cm")) {
+        oceDebug(debug, "object is of type 'cm'\n")
+        res <- x
+        S <- sin(-declination * pi / 180)
+        C <- cos(-declination * pi / 180)
+        r <- matrix(c(C, S, -S, C), nrow=2)
+        uvr <- r %*% rbind(x@data$u, x@data$v)
+        res@data$u <- uvr[1, ]
+        res@data$v <- uvr[2, ]
+        oceDebug(debug, "originally, first u:", x@data$u[1:3], "\n")
+        oceDebug(debug, "originally, first v:", x@data$v[1:3], "\n")
+        oceDebug(debug, "after application, first u:", res@data$u[1:3], "\n")
+        oceDebug(debug, "after application, first v:", res@data$v[1:3], "\n")
+    } else {
+        stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
+    }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # applyMagneticDeclination\n", unindent=1)
+    res
+}
+
+
+#' Trilinear interpolation in a 3D array
+#'
+#' Interpolate within a 3D array, using the trilinear approximation.
+#'
+#' Trilinear interpolation is used to interpolate within the \code{f} array,
+#' for those (\code{xout}, \code{yout} and \code{zout}) triplets that are
+#' inside the region specified by \code{x}, \code{y} and \code{z}.  Triplets
+#' that lie outside the range of \code{x}, \code{y} or \code{z} result in
+#' \code{NA} values.
+#'
+#' @param x vector of x values for grid (must be equi-spaced)
+#' @param y vector of y values for grid (must be equi-spaced)
+#' @param z vector of z values for grid (must be equi-spaced)
+#' @param f matrix of rank 3, with the gridd values mapping to the \code{x}
+#' values (first index of \code{f}), etc.
+#' @param xout vector of x values for output.
+#' @param yout vector of y values for output (length must match that of
+#' \code{xout}).
+#' @param zout vector of z values for output (length must match that of
+#' \code{xout}).
+#' @return A vector of interpolated values (or \code{NA} values), with length
+#' matching that of \code{xout}.
+#' @author Dan Kelley and Clark Richards
+#'
+#' @examples
+#' ## set up a grid
+#' library(oce)
+#' n <- 5
+#' x <- seq(0, 1, length.out=n)
+#' y <- seq(0, 1, length.out=n)
+#' z <- seq(0, 1, length.out=n)
+#' f <- array(1:n^3, dim=c(length(x), length(y), length(z)))
+#' ## interpolate along a diagonal line
+#' m <- 100
+#' xout <- seq(0, 1, length.out=m)
+#' yout <- seq(0, 1, length.out=m)
+#' zout <- seq(0, 1, length.out=m)
+#' approx <- approx3d(x, y, z, f, xout, yout, zout)
+#' ## graph the results
+#' plot(xout, approx, type='l')
+#' points(xout[1], f[1, 1, 1])
+#' points(xout[m], f[n,n,n])
+approx3d <- function(x, y, z, f, xout, yout, zout)
+{
+    equispaced <- function(x) sd(diff(x)) / mean(diff(x)) < 1e-5
+    if (missing(x)) stop("must provide x")
+    if (missing(y)) stop("must provide y")
+    if (missing(z)) stop("must provide z")
+    if (missing(f)) stop("must provide f")
+    if (missing(xout)) stop("must provide xout")
+    if (missing(yout)) stop("must provide yout")
+    if (missing(zout)) stop("must provide zout")
+    if (!equispaced(x)) stop("x values must be equi-spaced")
+    if (!equispaced(y)) stop("y values must be equi-spaced")
+    if (!equispaced(z)) stop("z values must be equi-spaced")
+    .Call("approx3d", x, y, z, f, xout, yout, zout)
+}
+
+
+#' Show an argument to a function, e.g. for debugging
+#'
+#' @param x the argument
+#' @param nshow number of values to show at first (if length(x)> 1)
+#' @param last indicates whether this is the final argument to the function
+#' @param sep the separator between name and value
+argShow <- function(x, nshow=2, last=FALSE, sep="=")
+{
+    if (missing(x))
+        return("")
+    name <- paste(substitute(x))
+    res <- ""
+    if (missing(x)) {
+        res <- "(missing)"
+    } else {
+        if (is.null(x)) {
+            res <- NULL
+        } else {
+            nx <- length(x)
+            if (nx > 1)
+                name <- paste(name, "[", nx, "]", sep="")
+            if (is.function(x)) {
+                res <- "(provided)"
+            } else if (is.character(x) && nx==1) {
+                res <- paste('"', x[1], '"', sep="")
+            } else {
+                look <- 1:min(nshow, nx)
+                res <- paste(format(x[look], digits=4), collapse=" ")
+                if (nx > nshow)
+                    res <- paste(res, "...", x[nx])
+            }
+        }
+    }
+    if (!last)
+        res <- paste(res, ", ", sep="")
+    paste(name, res, sep="=")
+}
+
+#' Read a World Ocean Atlas NetCDF File
+#'
+#' @param file character string naming the file
+#' @param name of variable to extract. If not provided, an
+#' error message is issued that lists the names of data in the file.
+#' @param positive logical value indicating whether \code{longitude} should
+#' be converted to be in the range from 0 to 360, with \code{name}
+#' being shuffled accordingly. This is set to \code{FALSE} by default,
+#' because the usual oce convention is for longitude to range between -180
+#' to +180.
+#'
+#' @return A list containing vectors \code{longitude}, \code{latitude},
+#' \code{depth}, and an array with the specified name. If \code{positive}
+#' is true, then \code{longitude} will be converted to range from 0
+#' to 360, and the array will be shuffled accordingly.
+#'
+#' @examples
+#'\dontrun{
+#' ## Mean SST at 5-degree spatial resolution
+#' tmn <- read.woa("/data/woa13/woa13_decav_t00_5dv2.nc", "t_mn")
+#' imagep(tmn$longitude, tmn$latitude, tmn$t_mn[,,1], zlab="SST")
+#'}
+read.woa <- function(file, name, positive=FALSE)
+{
+    if (!is.character(file))
+        stop("'file' must be a character string")
+    con <- ncdf4::nc_open(file)
+    if (missing(name)) {
+        varnames <- names(con$var)
+        stop("must supply a name from the list: ", paste(varnames, collapse=", "))
+        return(NULL)
+    }
+    longitude <- as.vector(ncdf4::ncvar_get(con, "lon"))
+    latitude <- as.vector(ncdf4::ncvar_get(con, "lat"))
+    depth <- as.vector(ncdf4::ncvar_get(con, "depth"))
+    field <- ncdf4::ncvar_get(con, name)
+    if (positive) {
+        lon2 <- ifelse(longitude < 0, longitude + 360, longitude)
+        i  <- order(lon2)
+        longitude <- longitude[i]
+        ## Crude method to reorder field on first index, whether it is 2D, 3D or 4D,
+        ## although I'm not sure that any 4D items occur in the World Ocean Atlas.
+        if (is.array(field)) {
+            ndim <- length(dim(field))
+            if (ndim == 2)
+                field <- field[i,]
+            else if (ndim == 3)
+                field <- field[i,,]
+            else if (ndim == 4)
+                field <- field[i,,,]
+        }
+    }
+    rval <- list(longitude=longitude, latitude=latitude, depth=depth, field=field)
+    names(rval) <- c(head(names(rval), -1), name)
+    rval
+}
+
+## alphabetized functions END
+
+
+## unalphabetized functions START
 
 shortenTimeString <- function(t, debug=getOption("oceDebug"))
 {
@@ -218,44 +496,6 @@ bound125 <- function(x)
 #' \code{\link{matrixShiftLongitude}} and \code{\link{shiftLongitude}} are more
 #' powerful relatives to \code{standardizeLongitude}.
 standardizeLongitude <- function(longitude) ifelse(longitude > 180, longitude-360, longitude)
-
-#' Show an argument to a function, e.g. for debugging
-#'
-#' @param x the argument
-#' @param nshow number of values to show at first (if length(x)> 1)
-#' @param last indicates whether this is the final argument to the function
-#' @param sep the separator between name and value
-argShow <- function(x, nshow=2, last=FALSE, sep="=")
-{
-    if (missing(x))
-        return("")
-    name <- paste(substitute(x))
-    res <- ""
-    if (missing(x)) {
-        res <- "(missing)"
-    } else {
-        if (is.null(x)) {
-            res <- NULL
-        } else {
-            nx <- length(x)
-            if (nx > 1)
-                name <- paste(name, "[", nx, "]", sep="")
-            if (is.function(x)) {
-                res <- "(provided)"
-            } else if (is.character(x) && nx==1) {
-                res <- paste('"', x[1], '"', sep="")
-            } else {
-                look <- 1:min(nshow, nx)
-                res <- paste(format(x[look], digits=4), collapse=" ")
-                if (nx > nshow)
-                    res <- paste(res, "...", x[nx])
-            }
-        }
-    }
-    if (!last)
-        res <- paste(res, ", ", sep="")
-    paste(name, res, sep="=")
-}
 
 #' Try to associate data names with units, for use by summary()
 #'
@@ -915,78 +1155,6 @@ ungrid <- function(x, y, grid)
     y <- rep(y, each=nrow)
     ok <- !is.na(grid)
     list(x=x[ok], y=y[ok], grid=grid[ok])
-}
-
-
-
-#' Trilinear interpolation in a 3D array
-#'
-#' Interpolate within a 3D array, using the trilinear approximation.
-#'
-#' Trilinear interpolation is used to interpolate within the \code{f} array,
-#' for those (\code{xout}, \code{yout} and \code{zout}) triplets that are
-#' inside the region specified by \code{x}, \code{y} and \code{z}.  Triplets
-#' that lie outside the range of \code{x}, \code{y} or \code{z} result in
-#' \code{NA} values.
-#'
-#' @param x vector of x values for grid (must be equi-spaced)
-#' @param y vector of y values for grid (must be equi-spaced)
-#' @param z vector of z values for grid (must be equi-spaced)
-#' @param f matrix of rank 3, with the gridd values mapping to the \code{x}
-#' values (first index of \code{f}), etc.
-#' @param xout vector of x values for output.
-#' @param yout vector of y values for output (length must match that of
-#' \code{xout}).
-#' @param zout vector of z values for output (length must match that of
-#' \code{xout}).
-#' @return A vector of interpolated values (or \code{NA} values), with length
-#' matching that of \code{xout}.
-#' @author Dan Kelley and Clark Richards
-#'
-#' @examples
-#' ## set up a grid
-#' library(oce)
-#' n <- 5
-#' x <- seq(0, 1, length.out=n)
-#' y <- seq(0, 1, length.out=n)
-#' z <- seq(0, 1, length.out=n)
-#' f <- array(1:n^3, dim=c(length(x), length(y), length(z)))
-#' ## interpolate along a diagonal line
-#' m <- 100
-#' xout <- seq(0, 1, length.out=m)
-#' yout <- seq(0, 1, length.out=m)
-#' zout <- seq(0, 1, length.out=m)
-#' approx <- approx3d(x, y, z, f, xout, yout, zout)
-#' ## graph the results
-#' plot(xout, approx, type='l')
-#' points(xout[1], f[1, 1, 1])
-#' points(xout[m], f[n,n,n])
-approx3d <- function(x, y, z, f, xout, yout, zout)
-{
-    equispaced <- function(x) sd(diff(x)) / mean(diff(x)) < 1e-5
-    if (missing(x)) stop("must provide x")
-    if (missing(y)) stop("must provide y")
-    if (missing(z)) stop("must provide z")
-    if (missing(f)) stop("must provide f")
-    dim <- dim(f)
-    if (dim[1] != length(x))
-        stop("dim[1] must equal length(x), but they are ", dim[1], " and ", length(x))
-    if (dim[2] != length(y))
-        stop("dim[1] must equal length(y), but they are ", dim[2], " and ", length(y))
-    if (dim[3] != length(z))
-        stop("dim[1] must equal length(z), but they are ", dim[3], " and ", length(z))
-    if (missing(xout)) stop("must provide xout")
-    if (missing(yout)) stop("must provide yout")
-    if (missing(zout)) stop("must provide zout")
-    if (length(xout) != length(yout))
-        stop("lengths of xout and yout must be same but they are ", length(xout), " and ", length(yout))
-    if (length(xout) != length(zout))
-        stop("lengths of xout and zout must be same but they are ", length(xout), " and ", length(zout))
-    if (!equispaced(x)) stop("x values must be equi-spaced")
-    if (!equispaced(y)) stop("y values must be equi-spaced")
-    if (!equispaced(z)) stop("z values must be equi-spaced")
-    ##.Call(`_oce_do_approx3d`, x, y, z, f, xout, yout, zout)
-    do_approx3d(x, y, z, f, xout, yout, zout)
 }
 
 
@@ -1743,36 +1911,6 @@ unabbreviateYear <- function(year)
     ifelse(year > 1800, year, ifelse(year > 50, year + 1900, year + 2000))
 }
 
-
-#' Convert angles from 0:360 to -180:180
-#'
-#' This is mostly used for instrument heading angles, in cases where the
-#' instrument is aligned nearly northward, so that small variations in heading
-#' (e.g. due to mooring motion) can yield values that swing from small angles
-#' to large angles, because of the modulo-360 cut point.
-#' The method is to use the cosine and sine of the angle in order to find "x"
-#' and "y" values on a unit circle, and then to use \code{\link{atan2}} to
-#' infer the angles.
-#'
-#' @param theta an angle (in degrees) that is in the range from 0 to 360
-#' degrees
-#' @return A vector of angles, in the range -180 to 180.
-#' @author Dan Kelley
-#' @examples
-#'
-#' library(oce)
-#' ## fake some heading data that lie near due-north (0 degrees)
-#' n <- 20
-#' heading <- 360 + rnorm(n, sd=10)
-#' heading <- ifelse(heading > 360, heading - 360, heading)
-#' x <- 1:n
-#' plot(x, heading, ylim=c(-10, 360), type='l', col='lightgray', lwd=10)
-#' lines(x, angleRemap(heading))
-angleRemap <- function(theta)
-{
-    toRad <- atan2(1, 1) / 45
-    atan2(sin(toRad * theta), cos(toRad * theta)) / toRad
-}
 
 
 #' Unwrap an angle that suffers modulo-360 problems
@@ -3078,46 +3216,6 @@ fillGap <- function(x, method=c("linear"), rule=1)
 }
 
 
-#' Add a Column to the Data Slot of an Oce object [deprecated]
-#'
-#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
-#' Use \code{\link{oceSetData}} instead of the present function.
-#'
-#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
-#' @param data the data.  The length of this item must match that of the
-#' existing data entries in the \code{data} slot).
-#' @param name the name of the column.
-#' @return An object of \code{\link[base]{class}} \code{oce}, with a new
-#' column.
-#' @author Dan Kelley
-#' @seealso Please use \code{\link{oceSetData}} instead of the present function.
-#' @family functions that will be removed soon
-addColumn <- function (x, data, name)
-{
-    .Deprecated("oceSetData",
-                msg="addColumn() will be removed soon; use oceSetData() instead. See ?'oce-deprecated'.")
-    if (!inherits(x, "oce"))
-        stop("method is only for oce objects")
-    if (missing(data))
-        stop("must supply data")
-    if (missing(name))
-        stop("must supply name")
-    n <- length(data)
-    nd <- length(x@data)
-    if (n != length(data))
-        stop("data length is ", n, " but it must be ", nd, " to match existing data")
-    if (inherits(x, "ctd")) {
-        ## res <- ctdAddColumn(x, data, name) # FIXME: supply units
-        res <- oceSetData(x, name=name, value=data) # FIXME: supply units
-    } else {
-        res <- x
-        res@data[[name]] <- data
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    res
-}
-
-
 #' Smooth and Decimate, or Subsample, an Oce Object
 #'
 #' Later on, other methods will be added, and \code{\link{ctdDecimate}} will be
@@ -3670,51 +3768,6 @@ integerToAscii <- function(i)
       "\xee", "\xef", "\xf0", "\xf1", "\xf2", "\xf3", "\xf4", "\xf5",
       "\xf6", "\xf7", "\xf8", "\xf9", "\xfa", "\xfb", "\xfc", "\xfd",
       "\xfe", "\xff")[i+1]
-}
-
-
-#' Earth magnetic declination
-#'
-#' Instruments that use magnetic compasses to determine current direction need
-#' to have corrections applied for magnetic declination, to get currents with
-#' the y component oriented to geographic, not magnetic, north.  Sometimes, and
-#' for some instruments, the declination is specified when the instrument is
-#' set up, so that the velocities as recorded are already.  Other times, the
-#' data need to be adjusted.  This function is for the latter case.
-#'
-#' @param x an oce object.
-#' @param declination magnetic declination (to be added to the heading)
-#' @param debug a debugging flag, set to a positive value to get debugging.
-#' @return Object, with velocity components adjusted to be aligned with
-#' geographic north and east.
-#' @author Dan Kelley
-#' @seealso Use \code{\link{magneticField}} to determine the declination,
-#' inclination and intensity at a given spot on the world, at a given time.
-#' @references \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
-#'
-#' @family things related to magnetism
-applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
-{
-    oceDebug(debug, "applyMagneticDeclination(x,declination=", declination, ") {\n", sep="", unindent=1)
-    if (inherits(x, "cm")) {
-        oceDebug(debug, "object is of type 'cm'\n")
-        res <- x
-        S <- sin(-declination * pi / 180)
-        C <- cos(-declination * pi / 180)
-        r <- matrix(c(C, S, -S, C), nrow=2)
-        uvr <- r %*% rbind(x@data$u, x@data$v)
-        res@data$u <- uvr[1, ]
-        res@data$v <- uvr[2, ]
-        oceDebug(debug, "originally, first u:", x@data$u[1:3], "\n")
-        oceDebug(debug, "originally, first v:", x@data$v[1:3], "\n")
-        oceDebug(debug, "after application, first u:", res@data$u[1:3], "\n")
-        oceDebug(debug, "after application, first v:", res@data$v[1:3], "\n")
-    } else {
-        stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # applyMagneticDeclination\n", unindent=1)
-    res
 }
 
 
@@ -4412,3 +4465,4 @@ lowpass <- function(x, filter="hamming", n, replace=TRUE, coefficients=FALSE)
     rval
 }
 
+## unalphabetized functions END
