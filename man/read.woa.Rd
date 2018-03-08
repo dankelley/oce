@@ -4,7 +4,7 @@
 \alias{read.woa}
 \title{Read a World Ocean Atlas NetCDF File}
 \usage{
-read.woa(file, name, positive = TRUE)
+read.woa(file, name, positive = FALSE)
 }
 \arguments{
 \item{file}{character string naming the file}
@@ -14,7 +14,9 @@ error message is issued that lists the names of data in the file.}
 
 \item{positive}{logical value indicating whether \code{longitude} should
 be converted to be in the range from 0 to 360, with \code{name}
-being shuffled accordingly.}
+being shuffled accordingly. This is set to \code{FALSE} by default,
+because the usual oce convention is for longitude to range between -180
+to +180.}
 }
 \value{
 A list containing vectors \code{longitude}, \code{latitude},

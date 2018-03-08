@@ -233,7 +233,9 @@ argShow <- function(x, nshow=2, last=FALSE, sep="=")
 #' error message is issued that lists the names of data in the file.
 #' @param positive logical value indicating whether \code{longitude} should
 #' be converted to be in the range from 0 to 360, with \code{name}
-#' being shuffled accordingly.
+#' being shuffled accordingly. This is set to \code{FALSE} by default,
+#' because the usual oce convention is for longitude to range between -180
+#' to +180.
 #'
 #' @return A list containing vectors \code{longitude}, \code{latitude},
 #' \code{depth}, and an array with the specified name. If \code{positive}
@@ -246,7 +248,7 @@ argShow <- function(x, nshow=2, last=FALSE, sep="=")
 #' tmn <- read.woa("/data/woa13/woa13_decav_t00_5dv2.nc", "t_mn")
 #' imagep(tmn$longitude, tmn$latitude, tmn$t_mn[,,1], zlab="SST")
 #'}
-read.woa <- function(file, name, positive=TRUE)
+read.woa <- function(file, name, positive=FALSE)
 {
     if (!is.character(file))
         stop("'file' must be a character string")
@@ -261,9 +263,9 @@ read.woa <- function(file, name, positive=TRUE)
     depth <- as.vector(ncdf4::ncvar_get(con, "depth"))
     field <- ncdf4::ncvar_get(con, name)
     if (positive) {
-        lon2 <- ifelse(longitude > 180, longitude - 360, longitude)
+        lon2 <- ifelse(longitude < 0, longitude + 360, longitude)
         i  <- order(lon2)
-        longitude <- lon2[i]
+        longitude <- longitude[i]
         ## Crude method to reorder field on first index, whether it is 2D, 3D or 4D,
         ## although I'm not sure that any 4D items occur in the World Ocean Atlas.
         if (is.array(field)) {
