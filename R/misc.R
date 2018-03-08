@@ -231,14 +231,22 @@ argShow <- function(x, nshow=2, last=FALSE, sep="=")
 #' @param file character string naming the file
 #' @param name of variable to extract. If not provided, an
 #' error message is issued that lists the names of data in the file.
-#"
+#' @param positive logical value indicating whether \code{longitude} should
+#' be converted to be in the range from 0 to 360, with \code{name}
+#' being shuffled accordingly.
+#'
+#' @return A list containing vectors \code{longitude}, \code{latitude},
+#' \code{depth}, and an array with the specified name. If \code{positive}
+#' is true, then \code{longitude} will be converted to range from 0
+#' to 360, and the array will be shuffled accordingly.
+#'
 #' @examples
 #'\dontrun{
 #' ## Mean SST at 5-degree spatial resolution
 #' tmn <- read.woa("/data/woa13/woa13_decav_t00_5dv2.nc", "t_mn")
 #' imagep(tmn$longitude, tmn$latitude, tmn$t_mn[,,1], zlab="SST")
 #'}
-read.woa <- function(file, name, debug=getOption("oceDebug"))
+read.woa <- function(file, name, positive=TRUE)
 {
     if (!is.character(file))
         stop("'file' must be a character string")
@@ -252,19 +260,22 @@ read.woa <- function(file, name, debug=getOption("oceDebug"))
     latitude <- as.vector(ncdf4::ncvar_get(con, "lat"))
     depth <- as.vector(ncdf4::ncvar_get(con, "depth"))
     field <- ncdf4::ncvar_get(con, name)
-    ## rval[rval > 100] <- NA
-    lon2 <- ifelse(longitude > 180, longitude - 360, longitude)
-    i  <- order(lon2)
-    longitude <- lon2[i]
-    ## Crude method to reorder field on first index, whether it is 2D, 3D or 4D,
-    ## although I'm not sure that any 4D items occur in the World Ocean Atlas.
-    ndim <- length(dim(field))
-    if (ndim == 2)
-        field <- field[i,]
-    else if (ndim == 3)
-        field <- field[i,,]
-    else if (ndim == 4)
-        field <- field[i,,,]
+    if (positive) {
+        lon2 <- ifelse(longitude > 180, longitude - 360, longitude)
+        i  <- order(lon2)
+        longitude <- lon2[i]
+        ## Crude method to reorder field on first index, whether it is 2D, 3D or 4D,
+        ## although I'm not sure that any 4D items occur in the World Ocean Atlas.
+        if (is.array(field)) {
+            ndim <- length(dim(field))
+            if (ndim == 2)
+                field <- field[i,]
+            else if (ndim == 3)
+                field <- field[i,,]
+            else if (ndim == 4)
+                field <- field[i,,,]
+        }
+    }
     rval <- list(longitude=longitude, latitude=latitude, depth=depth, field=field)
     names(rval) <- c(head(names(rval), -1), name)
     rval

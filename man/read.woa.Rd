@@ -4,13 +4,23 @@
 \alias{read.woa}
 \title{Read a World Ocean Atlas NetCDF File}
 \usage{
-read.woa(file, name, debug = getOption("oceDebug"))
+read.woa(file, name, positive = TRUE)
 }
 \arguments{
 \item{file}{character string naming the file}
 
 \item{name}{of variable to extract. If not provided, an
 error message is issued that lists the names of data in the file.}
+
+\item{positive}{logical value indicating whether \code{longitude} should
+be converted to be in the range from 0 to 360, with \code{name}
+being shuffled accordingly.}
+}
+\value{
+A list containing vectors \code{longitude}, \code{latitude},
+\code{depth}, and an array with the specified name. If \code{positive}
+is true, then \code{longitude} will be converted to range from 0
+to 360, and the array will be shuffled accordingly.
 }
 \description{
 Read a World Ocean Atlas NetCDF File
@@ -19,6 +29,6 @@ Read a World Ocean Atlas NetCDF File
 \dontrun{
 ## Mean SST at 5-degree spatial resolution
 tmn <- read.woa("/data/woa13/woa13_decav_t00_5dv2.nc", "t_mn")
-imagep(tmn$longitude, tmn$latitude, tmn$t_mn[,,1], zlab="T")
+imagep(tmn$longitude, tmn$latitude, tmn$t_mn[,,1], zlab="SST")
 }
 }
