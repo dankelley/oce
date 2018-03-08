@@ -3,7 +3,7 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-/* 
+/*
  * sfm_enu: convert starboard-forward-mast velocity components into east-nort-up components
  *
  * NOTE: n is the length of the input vectors (heading, pitch, roll,
@@ -17,7 +17,7 @@
  *
  */
 
-void sfm_enu(int *n, double *heading, double *pitch, double *roll, 
+void sfm_enu(int *n, double *heading, double *pitch, double *roll,
         double *starboard, double *forward, double *mast,
         double *east, double *north, double *up)
 {
@@ -26,7 +26,7 @@ void sfm_enu(int *n, double *heading, double *pitch, double *roll,
         error("must have n >= 1");
     /* no need to allocate storage */
     for (int i = 0; i < (*n); i++) {
-        if (0 == (i % 10))
+        if (0 == (i % 1000))
             R_CheckUserInterrupt();
         double h = PI_OVER_180 * heading[i];
         double p = PI_OVER_180 * pitch[i];
