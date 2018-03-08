@@ -33,6 +33,10 @@ do_matrix_smooth <- function(mat) {
     .Call(`_oce_do_matrix_smooth`, mat)
 }
 
+do_oceApprox <- function(x, y, xout, method) {
+    .Call(`_oce_do_oceApprox`, x, y, xout, method)
+}
+
 do_oce_convolve <- function(x, f, end) {
     .Call(`_oce_do_oce_convolve`, x, f, end)
 }

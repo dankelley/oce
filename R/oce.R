@@ -711,8 +711,7 @@ oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
     else
         if (any(is.na(xout)))
             stop("must not have any NA values in xout")
-    .Call("oce_approx", x=x, y=y, xout=xout,
-          method=pmatch(method, c("unesco", "rr")))
+    do_oceApprox(x=x, y=y, xout=xout, method=pmatch(method, c("unesco", "rr")))
 }
 oce.approx <- oceApprox
 

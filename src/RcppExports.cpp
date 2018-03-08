@@ -120,6 +120,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_oceApprox
+NumericVector do_oceApprox(NumericVector x, NumericVector y, NumericVector xout, NumericVector method);
+RcppExport SEXP _oce_do_oceApprox(SEXP xSEXP, SEXP ySEXP, SEXP xoutSEXP, SEXP methodSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type xout(xoutSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type method(methodSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_oceApprox(x, y, xout, method));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_oce_convolve
 NumericVector do_oce_convolve(NumericVector x, NumericVector f, NumericVector end);
 RcppExport SEXP _oce_do_oce_convolve(SEXP xSEXP, SEXP fSEXP, SEXP endSEXP) {
