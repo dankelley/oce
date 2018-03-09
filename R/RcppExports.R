@@ -5,6 +5,10 @@ do_approx3d <- function(x, y, z, f, xout, yout, zout) {
     .Call(`_oce_do_approx3d`, x, y, z, f, xout, yout, zout)
 }
 
+do_bilinear_interp <- function(x, y, gx, gy, g) {
+    .Call(`_oce_do_bilinear_interp`, x, y, gx, gy, g)
+}
+
 do_fill_gap_1d <- function(x, rule) {
     .Call(`_oce_do_fill_gap_1d`, x, rule)
 }
@@ -55,10 +59,6 @@ do_runlm <- function(x, y, xout, window, L) {
 
 do_sfm_enu <- function(heading, pitch, roll, starboard, forward, mast) {
     .Call(`_oce_do_sfm_enu`, heading, pitch, roll, starboard, forward, mast)
-}
-
-do_topo_interpolate <- function(lon, lat, zlon, zlat, z) {
-    .Call(`_oce_do_topo_interpolate`, lon, lat, zlon, zlat, z)
 }
 
 do_trap <- function(x, y, type) {

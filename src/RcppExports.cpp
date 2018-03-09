@@ -22,6 +22,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_bilinear_interp
+NumericVector do_bilinear_interp(NumericVector x, NumericVector y, NumericVector gx, NumericVector gy, NumericMatrix g);
+RcppExport SEXP _oce_do_bilinear_interp(SEXP xSEXP, SEXP ySEXP, SEXP gxSEXP, SEXP gySEXP, SEXP gSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type gx(gxSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type gy(gySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type g(gSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_bilinear_interp(x, y, gx, gy, g));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_fill_gap_1d
 NumericVector do_fill_gap_1d(NumericVector x, NumericVector rule);
 RcppExport SEXP _oce_do_fill_gap_1d(SEXP xSEXP, SEXP ruleSEXP) {
@@ -200,21 +215,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type forward(forwardSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type mast(mastSEXP);
     rcpp_result_gen = Rcpp::wrap(do_sfm_enu(heading, pitch, roll, starboard, forward, mast));
-    return rcpp_result_gen;
-END_RCPP
-}
-// do_topo_interpolate
-NumericVector do_topo_interpolate(NumericVector lon, NumericVector lat, NumericVector zlon, NumericVector zlat, NumericMatrix z);
-RcppExport SEXP _oce_do_topo_interpolate(SEXP lonSEXP, SEXP latSEXP, SEXP zlonSEXP, SEXP zlatSEXP, SEXP zSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type zlon(zlonSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type zlat(zlatSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type z(zSEXP);
-    rcpp_result_gen = Rcpp::wrap(do_topo_interpolate(lon, lat, zlon, zlat, z));
     return rcpp_result_gen;
 END_RCPP
 }
