@@ -8,6 +8,7 @@ extern SEXP _oce_do_geoddist(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP f);
 extern SEXP _oce_do_geoddist_alongpath(SEXP, SEXP, SEXP, SEXP f);
 extern SEXP _oce_do_geod_xy(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_geod_xy_inverse(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_do_get_bit(SEXP, int);
 extern SEXP _oce_do_oceApprox(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_gradient(SEXP, SEXP, SEXP);
 extern SEXP _oce_do_oce_convolve(SEXP, SEXP, SEXP);
@@ -24,6 +25,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_geod_xy", (DL_FUNC) &_oce_do_geod_xy, 6},
     {"_oce_do_geod_xy_inverse", (DL_FUNC) &_oce_do_geod_xy_inverse, 6},
     {"_oce_do_geoddist_alongpath", (DL_FUNC) &_oce_do_geoddist_alongpath, 4},
+    {"_oce_do_get_bit", (DL_FUNC) &_oce_do_get_bit, 2},
     {"_oce_do_gradient", (DL_FUNC) &_oce_do_gradient, 3},
     {"_oce_do_oceApprox", (DL_FUNC) &_oce_do_oceApprox, 4},
     {"_oce_do_oce_filter", (DL_FUNC) &_oce_do_oce_filter, 3},

@@ -168,7 +168,7 @@ test_that("fillGap", {
 
 test_that("get_bit (unused in oce)", {
           buf <- 0x3a
-          bits <- unlist(lapply(7:0, function(i) .Call("get_bit", buf, i)))
+          bits <- unlist(lapply(7:0, function(i) oce:::do_get_bit(buf, i)))
           ## NB. 'i' starts at rightmost bit
           expect_equal(c(0, 0, 1, 1, 1, 0, 1, 0), bits)
 })

@@ -96,6 +96,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_get_bit
+NumericVector do_get_bit(RawVector buf, int bit);
+RcppExport SEXP _oce_do_get_bit(SEXP bufSEXP, SEXP bitSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RawVector >::type buf(bufSEXP);
+    Rcpp::traits::input_parameter< int >::type bit(bitSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_get_bit(buf, bit));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_gradient
 List do_gradient(NumericMatrix m, NumericVector x, NumericVector y);
 RcppExport SEXP _oce_do_gradient(SEXP mSEXP, SEXP xSEXP, SEXP ySEXP) {
