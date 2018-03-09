@@ -2724,37 +2724,13 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         roll <- rep(roll, length.out=np)
     ## ADP and ADV calculations are both handled by sfm_enu
     for (c in 1:nc) {
-        enu <- .C("sfm_enu",
-                  as.integer(np),
-                  as.double(heading + declination),
-                  as.double(pitch),
-                  as.double(roll),
-                  as.double(starboard[, c]),
-                  as.double(forward[, c]),
-                  as.double(mast[, c]),
-                  east = double(np),
-                  north = double(np),
-                  up = double(np),
-                  NAOK=TRUE,
-                  PACKAGE="oce")
+        enu <- do_sfm_enu(heading + declination, pitch, roll, starboard[, c], forward[, c], mast[, c])
         res@data$v[, c, 1] <- enu$east
         res@data$v[, c, 2] <- enu$north
         res@data$v[, c, 3] <- enu$up
     }
     if (haveBv) {
-        enu <- .C("sfm_enu",
-                  as.integer(np),
-                  as.double(heading + declination),
-                  as.double(pitch),
-                  as.double(roll),
-                  as.double(starboardBv),
-                  as.double(forwardBv),
-                  as.double(mastBv),
-                  east = double(np),
-                  north = double(np),
-                  up = double(np),
-                  NAOK=TRUE,
-                  PACKAGE="oce")
+        enu <- do_sfm_enu(heading + declination, pitch, roll, starboardBv, forwardBv, mastBv)
         res@data$bv[, 1] <- enu$east
         res@data$bv[, 2] <- enu$north
         res@data$bv[, 3] <- enu$up

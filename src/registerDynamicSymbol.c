@@ -2,7 +2,6 @@
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
-
 extern SEXP _oce_do_approx3d(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_fill_gap_1d(SEXP, SEXP);
 extern SEXP _oce_do_geoddist(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP f);
@@ -15,6 +14,7 @@ extern SEXP _oce_do_oce_convolve(SEXP, SEXP, SEXP);
 extern SEXP _oce_do_oce_filter(SEXP, SEXP, SEXP);
 extern SEXP _oce_do_matrix_smooth(SEXP);
 extern SEXP _oce_do_runlm(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_do_sfm_enu(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_trap(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
@@ -30,6 +30,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_oce_convolve", (DL_FUNC) &_oce_do_oce_convolve, 3},
     {"_oce_do_matrix_smooth", (DL_FUNC) &_oce_do_matrix_smooth, 1},
     {"_oce_do_runlm", (DL_FUNC) &_oce_do_runlm, 5},
+    {"_oce_do_sfm_enu", (DL_FUNC) &_oce_do_sfm_enu, 6},
     {"_oce_do_trap", (DL_FUNC) &_oce_do_trap, 3},
     {NULL, NULL, 0}
 };

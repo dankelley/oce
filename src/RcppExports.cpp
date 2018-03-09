@@ -175,6 +175,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_sfm_enu
+List do_sfm_enu(NumericVector heading, NumericVector pitch, NumericVector roll, NumericVector starboard, NumericVector forward, NumericVector mast);
+RcppExport SEXP _oce_do_sfm_enu(SEXP headingSEXP, SEXP pitchSEXP, SEXP rollSEXP, SEXP starboardSEXP, SEXP forwardSEXP, SEXP mastSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type heading(headingSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type pitch(pitchSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type roll(rollSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type starboard(starboardSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type forward(forwardSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mast(mastSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_sfm_enu(heading, pitch, roll, starboard, forward, mast));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_trap
 NumericVector do_trap(NumericVector x, NumericVector y, NumericVector type);
 RcppExport SEXP _oce_do_trap(SEXP xSEXP, SEXP ySEXP, SEXP typeSEXP) {

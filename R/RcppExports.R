@@ -49,6 +49,10 @@ do_runlm <- function(x, y, xout, window, L) {
     .Call(`_oce_do_runlm`, x, y, xout, window, L)
 }
 
+do_sfm_enu <- function(heading, pitch, roll, starboard, forward, mast) {
+    .Call(`_oce_do_sfm_enu`, heading, pitch, roll, starboard, forward, mast)
+}
+
 do_trap <- function(x, y, type) {
     .Call(`_oce_do_trap`, x, y, type)
 }
