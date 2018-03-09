@@ -57,6 +57,10 @@ do_sfm_enu <- function(heading, pitch, roll, starboard, forward, mast) {
     .Call(`_oce_do_sfm_enu`, heading, pitch, roll, starboard, forward, mast)
 }
 
+do_topo_interpolate <- function(lon, lat, zlon, zlat, z) {
+    .Call(`_oce_do_topo_interpolate`, lon, lat, zlon, zlat, z)
+}
+
 do_trap <- function(x, y, type) {
     .Call(`_oce_do_trap`, x, y, type)
 }

@@ -203,6 +203,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_topo_interpolate
+NumericVector do_topo_interpolate(NumericVector lon, NumericVector lat, NumericVector zlon, NumericVector zlat, NumericMatrix z);
+RcppExport SEXP _oce_do_topo_interpolate(SEXP lonSEXP, SEXP latSEXP, SEXP zlonSEXP, SEXP zlatSEXP, SEXP zSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type lon(lonSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lat(latSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type zlon(zlonSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type zlat(zlatSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type z(zSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_topo_interpolate(lon, lat, zlon, zlat, z));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_trap
 NumericVector do_trap(NumericVector x, NumericVector y, NumericVector type);
 RcppExport SEXP _oce_do_trap(SEXP xSEXP, SEXP ySEXP, SEXP typeSEXP) {

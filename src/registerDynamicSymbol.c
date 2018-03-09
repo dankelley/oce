@@ -16,6 +16,7 @@ extern SEXP _oce_do_oce_filter(SEXP, SEXP, SEXP);
 extern SEXP _oce_do_matrix_smooth(SEXP);
 extern SEXP _oce_do_runlm(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_sfm_enu(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_do_topo_interpolate(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_trap(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
@@ -33,6 +34,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_matrix_smooth", (DL_FUNC) &_oce_do_matrix_smooth, 1},
     {"_oce_do_runlm", (DL_FUNC) &_oce_do_runlm, 5},
     {"_oce_do_sfm_enu", (DL_FUNC) &_oce_do_sfm_enu, 6},
+    {"_oce_do_topo_interpolate", (DL_FUNC) &_oce_do_topo_interpolate, 5},
     {"_oce_do_trap", (DL_FUNC) &_oce_do_trap, 3},
     {NULL, NULL, 0}
 };
