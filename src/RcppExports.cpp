@@ -22,9 +22,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// do_bilinear_interp
-NumericVector do_bilinear_interp(NumericVector x, NumericVector y, NumericVector gx, NumericVector gy, NumericMatrix g);
-RcppExport SEXP _oce_do_bilinear_interp(SEXP xSEXP, SEXP ySEXP, SEXP gxSEXP, SEXP gySEXP, SEXP gSEXP) {
+// bilinearInterp
+NumericVector bilinearInterp(NumericVector x, NumericVector y, NumericVector gx, NumericVector gy, NumericMatrix g);
+RcppExport SEXP _oce_bilinearInterp(SEXP xSEXP, SEXP ySEXP, SEXP gxSEXP, SEXP gySEXP, SEXP gSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -33,7 +33,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type gx(gxSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type gy(gySEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type g(gSEXP);
-    rcpp_result_gen = Rcpp::wrap(do_bilinear_interp(x, y, gx, gy, g));
+    rcpp_result_gen = Rcpp::wrap(bilinearInterp(x, y, gx, gy, g));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -2,8 +2,8 @@
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
+extern SEXP _oce_bilinearInterp(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_approx3d(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _oce_do_bilinear_interp(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_fill_gap_1d(SEXP, SEXP);
 extern SEXP _oce_do_geoddist(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP f);
 extern SEXP _oce_do_geoddist_alongpath(SEXP, SEXP, SEXP, SEXP f);
@@ -20,8 +20,8 @@ extern SEXP _oce_do_sfm_enu(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_trap(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_oce_bilinearInterp", (DL_FUNC) &_oce_bilinearInterp, 5},
     {"_oce_do_approx3d", (DL_FUNC) &_oce_do_approx3d, 7},
-    {"_oce_do_bilinear_interp", (DL_FUNC) &_oce_do_bilinear_interp, 5},
     {"_oce_do_fill_gap_1d", (DL_FUNC) &_oce_do_fill_gap_1d, 2},
     {"_oce_do_geoddist", (DL_FUNC) &_oce_do_geoddist, 6},
     {"_oce_do_geod_xy", (DL_FUNC) &_oce_do_geod_xy, 6},

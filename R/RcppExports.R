@@ -5,8 +5,19 @@ do_approx3d <- function(x, y, z, f, xout, yout, zout) {
     .Call(`_oce_do_approx3d`, x, y, z, f, xout, yout, zout)
 }
 
-do_bilinear_interp <- function(x, y, gx, gy, g) {
-    .Call(`_oce_do_bilinear_interp`, x, y, gx, gy, g)
+#' Bilinear Interpolation Within a Grid
+#'
+#' This is used by \code{\link{topoInterpolate}}.
+#'
+#' @param x vector of x values at which to interpolate
+#' @param y vector of y values at which to interpolate
+#' @param gx vector of x values for the grid
+#' @param gy vector of y values for the grid
+#' @param g matrix of the grid values
+#'
+#' @return vector of interpolated values
+bilinearInterp <- function(x, y, gx, gy, g) {
+    .Call(`_oce_bilinearInterp`, x, y, gx, gy, g)
 }
 
 do_fill_gap_1d <- function(x, rule) {
