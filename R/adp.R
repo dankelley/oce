@@ -2795,40 +2795,16 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
         roll <- rep(roll, length.out=np)
     nc <- dim(x@data$v)[2]           # numberOfCells
     for (c in 1:nc) {
-        other <- .C("sfm_enu",
-                    as.integer(np),
-                    as.double(heading),
-                    as.double(pitch),
-                    as.double(roll),
-                    as.double(x@data$v[, c, 1]),
-                    as.double(x@data$v[, c, 2]),
-                    as.double(x@data$v[, c, 3]),
-                    v1new = double(np),
-                    v2new = double(np),
-                    v3new = double(np),
-                    NAOK=TRUE,
-                    PACKAGE="oce")
-        res@data$v[, c, 1] <- other$v1new
-        res@data$v[, c, 2] <- other$v2new
-        res@data$v[, c, 3] <- other$v3new
+        other <- do_sfm_enu(heading, pitch, roll, x@data$v[, c, 1], x@data$v[, c, 2], x@data$v[, c, 3])
+        res@data$v[, c, 1] <- other$east
+        res@data$v[, c, 2] <- other$north
+        res@data$v[, c, 3] <- other$up
     }
     if ("bv" %in% names(x@data)) {
-        other <- .C("sfm_enu",
-                    as.integer(np),
-                    as.double(heading),
-                    as.double(pitch),
-                    as.double(roll),
-                    as.double(x@data$bv[, 1]),
-                    as.double(x@data$bv[, 2]),
-                    as.double(x@data$bv[, 3]),
-                    v1new = double(np),
-                    v2new = double(np),
-                    v3new = double(np),
-                    NAOK=TRUE,
-                    PACKAGE="oce")
-        res@data$bv[, 1] <- other$v1new
-        res@data$bv[, 2] <- other$v2new
-        res@data$bv[, 3] <- other$v3new
+        other <- do_sfm_enu(heading, pitch, roll, x@data$bv[, 1], x@data$bv[, 2], x@data$bv[, 3])
+        res@data$bv[, 1] <- other$east
+        res@data$bv[, 2] <- other$north
+        res@data$bv[, 3] <- other$up
     }
     res@metadata$oceCoordinate <- "other"
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
