@@ -10,16 +10,19 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 IntegerVector do_ldc_sontek_adp(RawVector buf, IntegerVector have_ctd, IntegerVector have_gps, IntegerVector have_bottom_track, IntegerVector pcadp, IntegerVector max)
 {
-#define DEBUG
+  /*
+   #define DEBUG
+   */
+
   // ldc = locate data chunk; _sontek_adp = for a SonTek ADV.
-  // Arguments: 
+  // Arguments:
   //   buf = buffer with data
   //   Shave_ctd = 1 if have CTD data (must be 0, for this version)
   //   Shave_gps = 1 if have GPS data (must be 0, for this version)
   //   Shave_bottom_track = 1 if have bottom-track data (must be 0, for this version)
   //   Spcadp = 1 if device is a PCADP (which has longer headers)
   //   Smax = number of profiles to get (set to <0 to get all)
-  // 
+  //
   // Method:
   //   The code checks for bytes as follows, and does a checksum on
   //   results.  It has to determine ncell and nbeam first.
@@ -79,16 +82,17 @@ IntegerVector do_ldc_sontek_adp(RawVector buf, IntegerVector have_ctd, IntegerVe
   if (nbeam < 0 || ncell < 0)
     ::Rf_error("cannot determine #beams or #cells, based on first 1000 bytes in buffer");
   // The next line envisions more data streams, e.g. ctd.
-  int chunk_length = 80 + (have_ctd?16:0) + (have_gps?40:0) + (have_bottom_track?18:0) + 4 * ncell * nbeam;
+  int chunk_length = 80 + (have_ctd[0]?16:0) + (have_gps[0]?40:0) + (have_bottom_track[0]?18:0) + 4 * ncell * nbeam;
   // Next 2 lines acount for extra header in each PCADP profile; see ref 2.
   int max_beams = 4;
   int pcadp_extra_header_length = 2*(8+max_beams) + 2*max_beams + max_beams;
-  if (pcadp)
+  if (pcadp[0])
     chunk_length += pcadp_extra_header_length;
+  int bad = 0, maxbad = 100;
 #ifdef DEBUG
+  Rprintf("pcadp=%d pcadp_extra_header_length=%d max_beams=%d\n", pcadp[0], pcadp_extra_header_length, max_beams);
   Rprintf("bytes: 0x%x 0x%x 0x%x\n", byte1, byte2, byte3);
   Rprintf("chunk_length: %d\n", chunk_length);
-  int bad = 0, maxbad = 5;
 #endif
   for (int i = 0; i < nbuf - 3 - chunk_length; i++) { // FIXME is 3 right, or needed?
     if (buf[i] == byte1 && buf[i+1] == byte2 && buf[i+2] == byte3) {

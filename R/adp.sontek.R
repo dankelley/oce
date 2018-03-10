@@ -131,10 +131,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 compass.installed <- recorder.installed <- temp.installed <- press.installed <- "?"
     }
     ##profileStart <- .Call("match2bytes", buf, parameters$profile.byte1, parameters$profile.byte2, FALSE)
-    message("about to call ldc_sontek_adp")
     ##profileStart <- .Call("ldc_sontek_adp", buf, 0, 0, 0, 1, -1) # no ctd, no gps, no bottom-track; pcadp; all data
     profileStart <- do_ldc_sontek_adp(buf, 0, 0, 0, 1, -1) # no ctd, no gps, no bottom-track; pcadp; all data
-    message("head(profileStart)=c(", paste(head(profileStart), collapse=", "), ")")
 
     profileStart2 <- sort(c(profileStart, profileStart+1)) # use this to subset for 2-byte reads
     oceDebug(debug, "first 10 profileStart:", profileStart[1:10], "\n")
