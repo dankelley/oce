@@ -990,7 +990,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
             stop("'xlim' must be of length 2")
         if (xlim[2] <= xlim[1])
             stop("the elements of xlim must be in order")
-        ends <- .Call("trim_ts", as.numeric(x), as.numeric(xlim), as.numeric(0.04))
+        ends <- trim_ts(x, xlim, 0.04)
         x <- x[seq.int(ends$from, ends$to)]
         y <- y[seq.int(ends$from, ends$to)]
     }

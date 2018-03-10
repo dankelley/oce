@@ -108,3 +108,10 @@ test_that("tail_section", {
           expect_equal(s3@data$station, tail(section@data$station, 3))
 })
 
+test_that("trim_ts", {
+   x <- seq(0, 10, 0.1)
+   xlim <- c(2.0, 2.9)
+   trim_ts(x, xlim, 0)
+   expect_equal(trim_ts(x, xlim, 0), list(from=20, to=31))
+})
+

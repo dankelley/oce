@@ -18,6 +18,7 @@ extern SEXP _oce_do_matrix_smooth(SEXP);
 extern SEXP _oce_do_runlm(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_sfm_enu(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_trap(SEXP, SEXP, SEXP);
+extern SEXP _oce_trim_ts(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_oce_bilinearInterp", (DL_FUNC) &_oce_bilinearInterp, 5},
@@ -36,6 +37,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_runlm", (DL_FUNC) &_oce_do_runlm, 5},
     {"_oce_do_sfm_enu", (DL_FUNC) &_oce_do_sfm_enu, 6},
     {"_oce_do_trap", (DL_FUNC) &_oce_do_trap, 3},
+    {"_oce_trim_ts", (DL_FUNC) &_oce_trim_ts, 3},
     {NULL, NULL, 0}
 };
 

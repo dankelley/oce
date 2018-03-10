@@ -231,3 +231,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// trim_ts
+List trim_ts(NumericVector x, NumericVector xlim, NumericVector extra);
+RcppExport SEXP _oce_trim_ts(SEXP xSEXP, SEXP xlimSEXP, SEXP extraSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type xlim(xlimSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type extra(extraSEXP);
+    rcpp_result_gen = Rcpp::wrap(trim_ts(x, xlim, extra));
+    return rcpp_result_gen;
+END_RCPP
+}

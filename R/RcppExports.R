@@ -76,3 +76,7 @@ do_trap <- function(x, y, type) {
     .Call(`_oce_do_trap`, x, y, type)
 }
 
+trim_ts <- function(x, xlim, extra) {
+    .Call(`_oce_trim_ts`, x, xlim, extra)
+}
+
