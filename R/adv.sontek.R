@@ -586,7 +586,11 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     v <- v[iii, ]
     a <- a[iii, ]
     q <- q[iii, ]
-    time <- time[iii]
+    ## No need to subset time if 'from' and 'to' are integers; I am not really
+    ## sure we want to in the POSIX case, either, but I am not changing that for now.
+    ## DEK (issue 1386)
+    if (fromToPOSIX)
+        time <- time[iii]
     pressure <- pressure[iii]
     temperature <- temperature[iii]
     pitch <- pitch[iii]
