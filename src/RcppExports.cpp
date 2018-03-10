@@ -136,6 +136,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_ldc_rdi_in_file
+List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector mode);
+RcppExport SEXP _oce_do_ldc_rdi_in_file(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP, SEXP modeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< StringVector >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type to(toSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type by(bySEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type mode(modeSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_ldc_rdi_in_file(filename, from, to, by, mode));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_matrix_smooth
 NumericMatrix do_matrix_smooth(NumericMatrix mat);
 RcppExport SEXP _oce_do_matrix_smooth(SEXP matSEXP) {

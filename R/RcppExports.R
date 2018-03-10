@@ -48,6 +48,10 @@ do_gradient <- function(m, x, y) {
     .Call(`_oce_do_gradient`, m, x, y)
 }
 
+do_ldc_rdi_in_file <- function(filename, from, to, by, mode) {
+    .Call(`_oce_do_ldc_rdi_in_file`, filename, from, to, by, mode)
+}
+
 do_matrix_smooth <- function(mat) {
     .Call(`_oce_do_matrix_smooth`, mat)
 }
