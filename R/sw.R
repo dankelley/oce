@@ -780,11 +780,9 @@ swTFreeze <- function(salinity, pressure=0,
             stop("must supply longitude")
         if (is.null(latitude))
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, pressure=pressure,
-                             longitude=longitude, latitude=latitude,
-                             saturation_fraction=saturation_fraction, eos=eos))
+        l <- lookWithin(list(salinity=salinity, pressure=pressure, longitude=longitude, latitude=latitude))
     } else {
-        l <- lookWithin(list(salinity=salinity, pressure=pressure, eos=eos))
+        l <- lookWithin(list(salinity=salinity, pressure=pressure))
     }
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
@@ -793,7 +791,7 @@ swTFreeze <- function(salinity, pressure=0,
         res <- T90fromT68(res)
     } else if (eos == "gsw") {
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        res <- gsw::gsw_t_freezing(SA=SA, p=0, saturation_fraction=l$saturation_fraction)
+        res <- gsw::gsw_t_freezing(SA=SA, p=0, saturation_fraction=saturation_fraction)
     }
     if (Smatrix) dim(res) <- dim
     res
