@@ -15,6 +15,7 @@ extern SEXP _oce_do_geod_xy(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_geod_xy_inverse(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_get_bit(SEXP, int);
 extern SEXP _oce_do_gradient(SEXP, SEXP, SEXP);
+extern SEXP _oce_do_interp_barnes(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_ldc_rdi_in_file(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_ldc_sontek_adp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_oceApprox(SEXP, SEXP, SEXP, SEXP);
@@ -33,6 +34,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_curl2", (DL_FUNC) &_oce_do_curl2, 5},
     {"_oce_do_fill_gap_1d", (DL_FUNC) &_oce_do_fill_gap_1d, 2},
     {"_oce_do_geoddist", (DL_FUNC) &_oce_do_geoddist, 6},
+    {"_oce_do_interp_barnes", (DL_FUNC) &_oce_do_interp_barnes, 10},
     {"_oce_do_geod_xy", (DL_FUNC) &_oce_do_geod_xy, 6},
     {"_oce_do_geod_xy_inverse", (DL_FUNC) &_oce_do_geod_xy_inverse, 6},
     {"_oce_do_geoddist_alongpath", (DL_FUNC) &_oce_do_geoddist_alongpath, 4},

@@ -56,6 +56,10 @@ do_gradient <- function(m, x, y) {
     .Call(`_oce_do_gradient`, m, x, y)
 }
 
+do_interp_barnes <- function(x, y, z, w, xg, yg, xr, yr, gamma, iterations) {
+    .Call(`_oce_do_interp_barnes`, x, y, z, w, xg, yg, xr, yr, gamma, iterations)
+}
+
 do_ldc_rdi_in_file <- function(filename, from, to, by, mode) {
     .Call(`_oce_do_ldc_rdi_in_file`, filename, from, to, by, mode)
 }

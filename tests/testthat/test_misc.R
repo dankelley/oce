@@ -223,13 +223,28 @@ test_that("integrateTrapezoid", {
                        integrateTrapezoid(x, y, "cA"))
 })
 
-test_that("interpBarnes", {
-          data(wind)
-          u <- interpBarnes(wind$x, wind$y, wind$z)
+test_that("interpBarnes 1D", {
+          ## These tests are not in comparison to theory, or
+          ## known values; they simply ensure that results have not
+          ## changed since 2018-03-11, when the tests were devised.
+          data(ctd)
+          p <- ctd[["pressure"]]
+          y <- rep(1, length(p)) # fake y data, with arbitrary value
+          S <- ctd[["salinity"]]
+          pg <- pretty(p, n=100)
+          g <- interpBarnes(p, y, S, xg=pg, xr=1)
+          expect_equal(g$zd[c(1,10,100)], c(29.91878482, 29.94385118, 31.44549220))
+})
+
+test_that("interpBarnes 2D", {
           ## These tests are not in comparison to theory, or
           ## known values; they simply ensure that results have not
           ## changed since 2016-11-06, when the tests were devised.
+          data(wind)
+          u <- interpBarnes(wind$x, wind$y, wind$z)
           expect_equal(u$zg[1,1], 30.962611975027)
+          expect_equal(u$zg[5,1], 20.93550551)
+          expect_equal(u$zg[1,5], 34.2550759)
           expect_equal(u$zg[10,10], 27.042654784966)
 })
 
