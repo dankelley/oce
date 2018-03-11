@@ -5,6 +5,7 @@
 
 
 extern SEXP _oce_bilinearInterp(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_do_adv_vector_time(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_approx3d(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_curl1(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_curl2(SEXP, SEXP, SEXP, SEXP, SEXP);
@@ -29,6 +30,7 @@ extern SEXP _oce_trim_ts(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_oce_bilinearInterp", (DL_FUNC) &_oce_bilinearInterp, 5},
+    {"_oce_do_adv_vector_time", (DL_FUNC) &_oce_do_adv_vector_time, 7},
     {"_oce_do_approx3d", (DL_FUNC) &_oce_do_approx3d, 7},
     {"_oce_do_curl1", (DL_FUNC) &_oce_do_curl1, 5},
     {"_oce_do_curl2", (DL_FUNC) &_oce_do_curl2, 5},

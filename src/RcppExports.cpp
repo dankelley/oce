@@ -5,6 +5,23 @@
 
 using namespace Rcpp;
 
+// do_adv_vector_time
+NumericVector do_adv_vector_time(NumericVector vvdStart, NumericVector vsdStart, NumericVector vsdTime, NumericVector vvdhStart, NumericVector vvdhTime, NumericVector n, NumericVector f);
+RcppExport SEXP _oce_do_adv_vector_time(SEXP vvdStartSEXP, SEXP vsdStartSEXP, SEXP vsdTimeSEXP, SEXP vvdhStartSEXP, SEXP vvdhTimeSEXP, SEXP nSEXP, SEXP fSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type vvdStart(vvdStartSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vsdStart(vsdStartSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vsdTime(vsdTimeSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vvdhStart(vvdhStartSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vvdhTime(vvdhTimeSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type n(nSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type f(fSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_adv_vector_time(vvdStart, vsdStart, vsdTime, vvdhStart, vvdhTime, n, f));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_approx3d
 NumericVector do_approx3d(NumericVector x, NumericVector y, NumericVector z, NumericVector f, NumericVector xout, NumericVector yout, NumericVector zout);
 RcppExport SEXP _oce_do_approx3d(SEXP xSEXP, SEXP ySEXP, SEXP zSEXP, SEXP fSEXP, SEXP xoutSEXP, SEXP youtSEXP, SEXP zoutSEXP) {

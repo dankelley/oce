@@ -47,3 +47,23 @@ test_that("read private Sontek file, with numeric 'to' and 'from'", {
           }
 
 })
+
+test_that("read private Nortek file, with numeric 'to' and 'from'", {
+          f <- "/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec"
+          if (file.exists(f)) {
+            d <- read.oce(f, from=1, to=100)
+            expect_equal(d[["v"]][1:3,1:3], matrix(c(0.094,  0.603, 0.483,
+                                                     -0.706, -0.264, 0.037,
+                                                     -0.402, 0.194, 0.173),
+                                                 byrow=TRUE, ncol=3))
+            expect_equal(as.numeric(d[["time"]][1:3])-1214388002,
+                         c(0.000, 0.125, 0.250))
+            expect_equal(d[["pressure"]][1:3],
+                         c(0.215, 0.205, 0.217))
+            expect_equal(d[["transformationMatrix"]],
+                         matrix(c(2.69360351562, -2.0759277344, -1.2788085938,
+                                  0.08471679688, -7.9997558594, 2.2797851562,
+                                  -0.34619140625, -0.3603515625,-0.3254394531),
+                                byrow=TRUE, ncol=3))
+          }
+})
