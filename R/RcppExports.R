@@ -20,6 +20,14 @@ bilinearInterp <- function(x, y, gx, gy, g) {
     .Call(`_oce_bilinearInterp`, x, y, gx, gy, g)
 }
 
+do_curl1 <- function(u, v, x, y, geographical) {
+    .Call(`_oce_do_curl1`, u, v, x, y, geographical)
+}
+
+do_curl2 <- function(u, v, x, y, geographical) {
+    .Call(`_oce_do_curl2`, u, v, x, y, geographical)
+}
+
 do_fill_gap_1d <- function(x, rule) {
     .Call(`_oce_do_fill_gap_1d`, x, rule)
 }

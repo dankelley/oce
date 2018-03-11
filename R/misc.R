@@ -659,9 +659,9 @@ curl <- function(u, v, x, y, geographical=FALSE, method=1)
     if (!is.logical(geographical)) stop("geographical must be a logical quantity")
     method <- as.integer(round(method))
     if (1 == method)
-        res <- .Call("curl1", u, v, x, y, geographical)
+        res <- do_curl1(u, v, x, y, geographical)
     else if (2 == method)
-        res <- .Call("curl2", u, v, x, y, geographical)
+        res <- do_curl2(u, v, x, y, geographical)
     else
         stop("method must be 1 or 2")
     res

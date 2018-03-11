@@ -37,6 +37,36 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_curl1
+List do_curl1(NumericMatrix u, NumericMatrix v, NumericVector x, NumericVector y, NumericVector geographical);
+RcppExport SEXP _oce_do_curl1(SEXP uSEXP, SEXP vSEXP, SEXP xSEXP, SEXP ySEXP, SEXP geographicalSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type u(uSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type v(vSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type geographical(geographicalSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_curl1(u, v, x, y, geographical));
+    return rcpp_result_gen;
+END_RCPP
+}
+// do_curl2
+List do_curl2(NumericMatrix u, NumericMatrix v, NumericVector x, NumericVector y, NumericVector geographical);
+RcppExport SEXP _oce_do_curl2(SEXP uSEXP, SEXP vSEXP, SEXP xSEXP, SEXP ySEXP, SEXP geographicalSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type u(uSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type v(vSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type geographical(geographicalSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_curl2(u, v, x, y, geographical));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_fill_gap_1d
 NumericVector do_fill_gap_1d(NumericVector x, NumericVector rule);
 RcppExport SEXP _oce_do_fill_gap_1d(SEXP xSEXP, SEXP ruleSEXP) {
