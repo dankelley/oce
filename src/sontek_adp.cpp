@@ -48,7 +48,6 @@ IntegerVector do_ldc_sontek_adp(RawVector buf, IntegerVector have_ctd, IntegerVe
   if (have_gps[0] != 0)
     ::Rf_error("cannot read SonTek ADP files with GPS data");
   int nbuf = buf.size();
-  SEXP res;
 #ifdef DEBUG
   Rprintf("nbuf=%d\n", nbuf);
 #endif
@@ -120,13 +119,13 @@ IntegerVector do_ldc_sontek_adp(RawVector buf, IntegerVector have_ctd, IntegerVe
   }
   /* allocate space, then run through whole buffer again, noting the matches */
   int nres = matches;
+  IntegerVector res(nres>0?nres:1, 1);
   if (nres > 0) {
-    NumericVector res(nres);
 #ifdef DEBUG
     Rprintf("getting space for %d matches\n", nres);
 #endif
     unsigned int ires = 0;
-    for (int i = 0; i < nbuf - 3 - chunk_length; i++) { // FIXME is 3 right, or needed?
+    for (int i=0; i<(nbuf-3-chunk_length); i++) { // FIXME is 3 right, or needed?
       if (buf[i] == byte1 && buf[i+1] == byte2 && buf[i+2] == byte3) {
         unsigned short int check_sum = check_sum_start; // RHS is fixed
         unsigned short int desired_check_sum = ((unsigned short)buf[i+chunk_length]) | ((unsigned short)buf[i+chunk_length+1] << 8);
@@ -138,9 +137,9 @@ IntegerVector do_ldc_sontek_adp(RawVector buf, IntegerVector have_ctd, IntegerVe
           break;
       }
     }
+    return(res);
   } else {
-    NumericVector res(1);
-    res[0] = 0;
+    res[0] = NA_INTEGER;
   }
   return(res);
 }
