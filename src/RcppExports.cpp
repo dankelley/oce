@@ -22,6 +22,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_amsr_average
+RawVector do_amsr_average(RawVector a, RawVector b);
+RcppExport SEXP _oce_do_amsr_average(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RawVector >::type a(aSEXP);
+    Rcpp::traits::input_parameter< RawVector >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_amsr_average(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// do_amsr_composite
+RawVector do_amsr_composite(RawVector a, IntegerVector dim);
+RcppExport SEXP _oce_do_amsr_composite(SEXP aSEXP, SEXP dimSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RawVector >::type a(aSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type dim(dimSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_amsr_composite(a, dim));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_approx3d
 NumericVector do_approx3d(NumericVector x, NumericVector y, NumericVector z, NumericVector f, NumericVector xout, NumericVector yout, NumericVector zout);
 RcppExport SEXP _oce_do_approx3d(SEXP xSEXP, SEXP ySEXP, SEXP zSEXP, SEXP fSEXP, SEXP xoutSEXP, SEXP youtSEXP, SEXP zoutSEXP) {
