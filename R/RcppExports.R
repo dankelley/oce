@@ -72,6 +72,10 @@ do_interp_barnes <- function(x, y, z, w, xg, yg, xr, yr, gamma, iterations) {
     .Call(`_oce_do_interp_barnes`, x, y, z, w, xg, yg, xr, yr, gamma, iterations)
 }
 
+do_ldc_ad2cp_in_file <- function(filename, from, to, by) {
+    .Call(`_oce_do_ldc_ad2cp_in_file`, filename, from, to, by)
+}
+
 do_ldc_rdi_in_file <- function(filename, from, to, by, mode) {
     .Call(`_oce_do_ldc_rdi_in_file`, filename, from, to, by, mode)
 }

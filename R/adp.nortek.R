@@ -427,8 +427,8 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ##              "\n", sep="")
     ##     tst <- readBin(buf[o+headerSize+1:dataSize], "character", 1)
     ## }
-    message("DEBUG: about to call ldc_ad2cp_in_file")
-    nav <- .Call("ldc_ad2cp_in_file", filename, from, to, by)
+    message("IMPORTANT: this code returns a list, not an adp object; see docs")
+    nav <- do_ldc_ad2cp_in_file(filename, from, to, by)
     list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
 }
 

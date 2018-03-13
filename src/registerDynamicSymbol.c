@@ -4,6 +4,7 @@
 
 
 
+
 extern SEXP _oce_bilinearInterp(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_adv_vector_time(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_amsr_composite(SEXP, SEXP);
@@ -19,6 +20,7 @@ extern SEXP _oce_do_geod_xy_inverse(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_get_bit(SEXP, int);
 extern SEXP _oce_do_gradient(SEXP, SEXP, SEXP);
 extern SEXP _oce_do_interp_barnes(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _oce_do_ldc_ad2cp_in_file(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_ldc_rdi_in_file(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_ldc_sontek_adp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _oce_do_oceApprox(SEXP, SEXP, SEXP, SEXP);
@@ -46,6 +48,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_oce_do_geoddist_alongpath", (DL_FUNC) &_oce_do_geoddist_alongpath, 4},
     {"_oce_do_get_bit", (DL_FUNC) &_oce_do_get_bit, 2},
     {"_oce_do_gradient", (DL_FUNC) &_oce_do_gradient, 3},
+    {"_oce_do_ldc_ad2cp_in_file", (DL_FUNC) &_oce_do_ldc_ad2cp_in_file, 4},
     {"_oce_do_ldc_rdi_in_file", (DL_FUNC) &_oce_do_ldc_rdi_in_file, 5},
     {"_oce_do_ldc_sontek_adp", (DL_FUNC) &_oce_do_ldc_sontek_adp, 6},
     {"_oce_do_oceApprox", (DL_FUNC) &_oce_do_oceApprox, 4},

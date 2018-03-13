@@ -227,6 +227,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_ldc_ad2cp_in_file
+List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by);
+RcppExport SEXP _oce_do_ldc_ad2cp_in_file(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< CharacterVector >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type to(toSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type by(bySEXP);
+    rcpp_result_gen = Rcpp::wrap(do_ldc_ad2cp_in_file(filename, from, to, by));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_ldc_rdi_in_file
 List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector to, IntegerVector by, IntegerVector mode);
 RcppExport SEXP _oce_do_ldc_rdi_in_file(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP, SEXP modeSEXP) {
