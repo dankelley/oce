@@ -1145,14 +1145,14 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
         ##> print("assembling bytes")
         ##> print(system.time({
         if ("LANDSAT_8" == header$spacecraft) {
-            d <- .Call("landsat_numeric_to_bytes", d, 16) # reuse 'd' to try to save storage
-            res@data[[header$bandnames[band[b]]]] <- list(msb=.Call("landsat_transpose_flip", d$msb),
-                                                          lsb=.Call("landsat_transpose_flip", d$lsb))
+            dd <- do_landsat_numeric_to_bytes(d, 16L)
+            res@data[[header$bandnames[band[b]]]] <- list(msb=do_landsat_transpose_flip(dd$msb),
+                                                          lsb=do_landsat_transpose_flip(dd$lsb))
         } else {
             ## FIXME: assume all others are 1-byte, like LANDSAT_7
-            d <- .Call("landsat_numeric_to_bytes", d, 8) # reuse 'd' to try to save storage
+            dd <- do_landsat_numeric_to_bytes(d, 8L)
             res@data[[header$bandnames[band[b]]]] <- list(msb=0,
-                                                          lsb=.Call("landsat_transpose_flip", d$lsb))
+                                                          lsb=do_landsat_transpose_flip(dd$lsb))
         }
         ##> }))
         ##> print("--DONE assembling bytes")

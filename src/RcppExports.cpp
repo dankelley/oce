@@ -227,6 +227,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_landsat_transpose_flip
+RawMatrix do_landsat_transpose_flip(RawMatrix m);
+RcppExport SEXP _oce_do_landsat_transpose_flip(SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RawMatrix >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_landsat_transpose_flip(m));
+    return rcpp_result_gen;
+END_RCPP
+}
+// do_landsat_numeric_to_bytes
+List do_landsat_numeric_to_bytes(NumericMatrix m, IntegerVector bits);
+RcppExport SEXP _oce_do_landsat_numeric_to_bytes(SEXP mSEXP, SEXP bitsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type bits(bitsSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_landsat_numeric_to_bytes(m, bits));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_ldc_ad2cp_in_file
 List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerVector to, IntegerVector by);
 RcppExport SEXP _oce_do_ldc_ad2cp_in_file(SEXP filenameSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP bySEXP) {

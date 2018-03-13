@@ -2,9 +2,9 @@
 library(oce)
 data(adp)
 
-context("Nortek AD2CP provisional function read.ad2cp()")
+context("Nortek AD2CP")
 
-test_that("ad2cp on private file", {
+test_that("read.ad2cp() on private file", {
           f <- "~/Dropbox/oce_ad2cp/labtestsig3.ad2cp"
           if (file.exists(f)) {
               d <- read.ad2cp(f, 1, 10, 1)

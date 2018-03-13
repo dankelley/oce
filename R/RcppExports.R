@@ -72,6 +72,14 @@ do_interp_barnes <- function(x, y, z, w, xg, yg, xr, yr, gamma, iterations) {
     .Call(`_oce_do_interp_barnes`, x, y, z, w, xg, yg, xr, yr, gamma, iterations)
 }
 
+do_landsat_transpose_flip <- function(m) {
+    .Call(`_oce_do_landsat_transpose_flip`, m)
+}
+
+do_landsat_numeric_to_bytes <- function(m, bits) {
+    .Call(`_oce_do_landsat_numeric_to_bytes`, m, bits)
+}
+
 do_ldc_ad2cp_in_file <- function(filename, from, to, by) {
     .Call(`_oce_do_ldc_ad2cp_in_file`, filename, from, to, by)
 }
