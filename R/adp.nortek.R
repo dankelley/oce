@@ -429,7 +429,6 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## }
     message("DEBUG: about to call ldc_ad2cp_in_file")
     nav <- .Call("ldc_ad2cp_in_file", filename, from, to, by)
-    warning("this is a PRELIMINARY FUNCTION, for use only by developers")
     list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
 }
 
