@@ -1,4 +1,4 @@
-// vim: set expandtab shiftwidth=2 softtabstop=2 tw=70: 
+// vim: set expandtab shiftwidth=2 softtabstop=2 tw=70:
 
 #include <R.h>
 #include <Rdefines.h>
@@ -117,7 +117,6 @@ unsigned short cs(unsigned char *data, unsigned short size)
 
 SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
 {
-
   const char *filenamestring = CHAR(STRING_ELT(filename, 0));
   FILE *fp = fopen(filenamestring, "rb");
   if (!fp)
@@ -146,11 +145,11 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
   unsigned long int cindex = 0;
 
   // Ensure that the first byte we point to equals SYNC.
-  // In a conentional file, starting with a SYNC char, this
+  // In a conventional file, starting with a SYNC char, this
   // just gets a byte and puts it back, leaving cindex=0.
-  // But if the file does not start with a SYNC char, this works
-  // along the file until it finds one, and adjusts cindex
-  // appropriately.
+  // But if the file does not start with a SYNC char, e.g.
+  // if this is a fragment, we step through the file
+  // until we find a SYNC, setting cindex appropriately.
   int c;
   while (1) {
     c = getc(fp);
@@ -177,7 +176,7 @@ SEXP ldc_ad2cp_in_file(SEXP filename, SEXP from, SEXP to, SEXP by)
   while (chunk < to_value) {// FIXME: use whole file here
     if (chunk > nchunk - 1) {
       Rprintf(" > must increase buffers from nchunk=%d\n", nchunk);
-      nchunk = (unsigned int) chunk * 2; // expand buffer by sqrt(2)
+      nchunk = (unsigned int) chunk * 2; // double buffer size
       index_buf = (unsigned int*)Realloc(index_buf, nchunk, unsigned int);
       length_buf = (unsigned int*)Realloc(length_buf, nchunk, unsigned int);
       id_buf = (unsigned int*)Realloc(id_buf, nchunk, unsigned int);
