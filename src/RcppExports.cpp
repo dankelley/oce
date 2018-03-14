@@ -108,6 +108,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_biosonics_ping
+List do_biosonics_ping(RawVector bytes, NumericVector Rspp, NumericVector Rns, NumericVector Rtype);
+RcppExport SEXP _oce_do_biosonics_ping(SEXP bytesSEXP, SEXP RsppSEXP, SEXP RnsSEXP, SEXP RtypeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RawVector >::type bytes(bytesSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type Rspp(RsppSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type Rns(RnsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type Rtype(RtypeSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_biosonics_ping(bytes, Rspp, Rns, Rtype));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_fill_gap_1d
 NumericVector do_fill_gap_1d(NumericVector x, NumericVector rule);
 RcppExport SEXP _oce_do_fill_gap_1d(SEXP xSEXP, SEXP ruleSEXP) {

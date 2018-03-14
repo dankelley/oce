@@ -40,6 +40,10 @@ do_curl2 <- function(u, v, x, y, geographical) {
     .Call(`_oce_do_curl2`, u, v, x, y, geographical)
 }
 
+do_biosonics_ping <- function(bytes, Rspp, Rns, Rtype) {
+    .Call(`_oce_do_biosonics_ping`, bytes, Rspp, Rns, Rtype)
+}
+
 do_fill_gap_1d <- function(x, rule) {
     .Call(`_oce_do_fill_gap_1d`, x, rule)
 }

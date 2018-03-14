@@ -862,14 +862,14 @@ read.echosounder <- function(file, channel=1, soundSpeed,
                 ## Note the time reversal in the assignment to the data matrix 'a'
                 ## FIXME: is it faster to flip the data matrix later?
                 if (code1 == 0x15) {
-                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, ns, 0)
+                    tmp <- do_biosonics_ping(buf[offset+16+1:(2*ns)], samplesPerPing, ns, 0)
                     beamType <- "single-beam"
                 } else if (code1 == 0x1c) {
-                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 1)
+                    tmp <- do_biosonics_ping(buf[offset+16+1:(4*ns)], samplesPerPing, ns, 1)
                     beamType <- "dual-beam"
                 } else if (code1 == 0x1d) {
                     ## e.g. 01-Fish.dt4 sample file from Biosonics
-                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 2)
+                    tmp <- do_biosonics_ping(buf[offset+16+1:(4*ns)], samplesPerPing, ns, 2)
                     beamType <- "split-beam"
                 } else {
                     stop("unknown 'tuple' 0x", code1, sep="")
