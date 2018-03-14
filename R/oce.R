@@ -1171,12 +1171,12 @@ oce.as.POSIXlt <- function (x, tz = "")
 #' that value is modified. However, if \code{item} is not found in
 #' either \code{metadata} or \code{data}, then an error is reported
 #' (see 1B for how to add something that does not yet exist).
-#' 
+#'
 #' \item Case 1B. If the \code{item} string contains
 #' the \code{@} character, then the text to the left of that character
 #' must be either \code{"metadata"} or \code{"data"}, and it names the slot
 #' in which the change is done. In contrast with case 1A, this will
-#' \emph{create} a new item, if it is not already in existence. 
+#' \emph{create} a new item, if it is not already in existence.
 #'
 #' }
 #'
@@ -1694,7 +1694,11 @@ read.oce <- function(file, ...)
     oceDebug(debug,
              "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",
              sep="", unindent=1)
-    processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    ##> OLD: deparse is unhelpful if "file" is a variable in the calling code
+    ##> OLD: processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    dots <- list(...)
+    processingLog <- paste('read.oce("', file, '"', ifelse(length(dots), ", ...)", ")"), sep="")
+
     ## read.index if (type == "index")
     ## read.index     return(read.index(file))
     if (type == "shapefile")
