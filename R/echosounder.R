@@ -296,7 +296,7 @@ setMethod(f="subset",
               } else {
                   stop("can only subset an echosounder object by 'time' or 'depth'")
               }
-              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.echosounder(x, subset=", subsetString, ")", sep=""))
               res
           })
 
@@ -1116,7 +1116,12 @@ read.echosounder <- function(file, channel=1, soundSpeed,
     if ("latitudeSlow" %in% names) res@metadata$units$latitudeSlow <- list(unit=expression(degree*N), scale="")
     if ("longitudeSlow" %in% names) res@metadata$units$longitudeSlow <- list(unit=expression(degree*E), scale="")
     if ("depth" %in% names) res@metadata$units$depth <- list(unit=expression(m), scale="")
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+
+    if (!missing(processingLog))
+        res@processingLog <- processingLogItem(processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste("read.echosounder(\"", filename, "\", channel=", channel, ", soundSpeed=",
+                                                   if (missing(soundSpeed)) "(missing)" else soundSpeed, ", tz=\"", tz, "\", debug=", debug, ", processingLog)", sep=""))
     .C("biosonics_free_storage", package="oce") # clear temporary storage space
     res
 }
