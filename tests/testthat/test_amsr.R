@@ -17,6 +17,8 @@ test_that("amsr[['SSST']]", {
               expect_equal(mean(SST[1,],na.rm=TRUE), 15.3152381)
               expect_equal(mean(SST[10,],na.rm=TRUE), 16.3884507)
               expect_equal(SST[200,200:205], c(10.80, 10.95, 11.10, 11.40, 11.55, 11.40))
+          } else {
+              expect_equal(1, 1) ## prevent a NOTE on an empty test
           }
 })
 
@@ -34,5 +36,7 @@ test_that("composite amsr", {
               expect_equal(mean(SST[1,],na.rm=TRUE), 15.3152381)
               expect_equal(mean(SST[10,],na.rm=TRUE), 16.3884507)
               expect_equal(SST[200,200:205], c(10.80, 10.95, 11.10, 11.40, 11.55, 11.40))
+          } else {
+              expect_equal(1, 1) ## prevent a NOTE on an empty test
           }
 })
