@@ -762,7 +762,8 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     res@metadata$referenceCode <- referenceCode
     res@metadata$units <- list(elevation=list(unit=expression(m), scale=""))
     res@metadata$n <- length(time)
-    res@metadata$deltat <- as.numeric(difftime(time[2], time[1], units <- "hours"))
+    ## deltat is in hours
+    res@metadata$deltat <- if (res@metadata$n > 1) (as.numeric(time[2]) - as.numeric(time[1])) / 3600 else 0
     if (missing(processingLog))
         processingLog <- paste('read.sealevel(file="', file, '", tz="', tz, sep="", collapse="")
     res@data$elevation <- elevation
