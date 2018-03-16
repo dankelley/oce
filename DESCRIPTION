@@ -27,3 +27,6 @@ RoxygenNote: 6.0.1
 BuildVignettes: true
 VignetteBuilder: knitr
 NeedsCompilation: yes
+LinkingTo: Rcpp
+Imports: Rcpp
+

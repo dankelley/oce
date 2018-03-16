@@ -677,8 +677,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                     }
                 }
             }
-            ldc <- .Call("ldc_rdi_in_file", filename,
-                         as.integer(from), as.integer(to), as.integer(by), 0L)
+            ##ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to), as.integer(by), 0L)
+            ldc <- do_ldc_rdi_in_file(filename, from, to, by, 0L)
+            oceDebug(debug, "done with do_ldc_rdi_in_file() near adp.rdi.R line 682")
         } else {
             if (is.character(from))
                 from <- as.POSIXct(from, tz="UTC")
@@ -686,15 +687,14 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 to <- as.POSIXct(to, tz="UTC")
             if (is.character(by))
                 by <- ctimeToSeconds(by)
-            ## message("from=", format(from), " to=", format(to), " by=" , format(by))
-            ldc <- .Call("ldc_rdi_in_file", filename,
-                         as.integer(from), as.integer(to), as.integer(by), 1L)
+            ##ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to), as.integer(by), 1L)
+            ldc <- do_ldc_rdi_in_file(filename, from, to, by, 1L)
         }
-        oceDebug(debug, "successfully called ldc_rdi_in_file\n")
-        if (debug > 99) {
-            ldc <<- ldc
-            cat("NOTE: debug>99, so read.adp.rdi() exports 'ldc', for use by the developer\n")
-        }
+        oceDebug(debug, "done with do_ldc_rdi_in_file() near adp.rdi.R line 693")
+        ##old if (debug > 99) {
+        ##old     ldc <<- ldc
+        ##old     cat("NOTE: debug>99, so read.adp.rdi() exports 'ldc', for use by the developer\n")
+        ##old }
         ensembleStart <- ldc$ensembleStart
         buf <- ldc$outbuf
         bufSize <- length(buf)

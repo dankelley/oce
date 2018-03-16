@@ -131,9 +131,9 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             ## issue1220 head$tiltSensorOrientation <- if (substr(head$config[1], 4, 4) == "1") "downward" else "upward"
             ## issue1220 oceDebug(debug, "head$tiltSensorOrientation=", head$tiltSensorOrientation, "\n")
             tmpBits <- rawToBits(buf[o+5])
-            head$configPressureSensor <- tmpBits[1] == as.raw(0x1) 
-            head$configMagnetometerSensor <- tmpBits[2] == as.raw(0x1) 
-            head$configTiltSensor <- tmpBits[3] == as.raw(0x1) 
+            head$configPressureSensor <- tmpBits[1] == as.raw(0x1)
+            head$configMagnetometerSensor <- tmpBits[2] == as.raw(0x1)
+            head$configTiltSensor <- tmpBits[3] == as.raw(0x1)
             head$configTiltSensorOrientation <- ifelse(tmpBits[4] == as.raw(0x1), "downward", "upward")
             oceDebug(debug, "head$configPressureSensor=", head$configPressureSensor, "\n")
             oceDebug(debug, "head$configMagnetometerSensor=", head$configMagnetometerSensor, "\n")
@@ -427,11 +427,11 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ##              "\n", sep="")
     ##     tst <- readBin(buf[o+headerSize+1:dataSize], "character", 1)
     ## }
-    nav <- .Call("ldc_ad2cp_in_file", filename, from, to, by)
-    warning("this is a PRELIMINARY FUNCTION, for use only by developers")
+    message("IMPORTANT: this code returns a list, not an adp object; see docs")
+    nav <- do_ldc_ad2cp_in_file(filename, from, to, by)
     list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
 }
- 
+
 #' Read a Nortek Aquadopp File
 #'
 #' The R code is based on information in
@@ -907,7 +907,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         }
         warning(paste('Found and removed', length(tNA), 'NAs in the time vector.'))
     }
-    
+
     if (type == "aquadopp" && diaToRead > 0) {
         ## FIXME: there may be other things here, e.g. does it try to measure salinity?
         res@data$timeDia <- timeDia

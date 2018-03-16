@@ -131,7 +131,9 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 compass.installed <- recorder.installed <- temp.installed <- press.installed <- "?"
     }
     ##profileStart <- .Call("match2bytes", buf, parameters$profile.byte1, parameters$profile.byte2, FALSE)
-    profileStart <- .Call("ldc_sontek_adp", buf, 0, 0, 0, 1, -1) # no ctd, no gps, no bottom-track; pcadp; all data
+    ##profileStart <- .Call("ldc_sontek_adp", buf, 0, 0, 0, 1, -1) # no ctd, no gps, no bottom-track; pcadp; all data
+    profileStart <- do_ldc_sontek_adp(buf, 0, 0, 0, 1, -1) # no ctd, no gps, no bottom-track; pcadp; all data
+
     profileStart2 <- sort(c(profileStart, profileStart+1)) # use this to subset for 2-byte reads
     oceDebug(debug, "first 10 profileStart:", profileStart[1:10], "\n")
     oceDebug(debug, "first 100 bytes of first profile:", paste(buf[profileStart[1]:(99+profileStart[1])], collapse=" "), "\n")
@@ -388,10 +390,13 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     } else
         stop("can only handle 3-beam devices")
     res@metadata$units <- list(v="m/s", distance="m")
-    if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- processingLogItem(processingLog)
-    res@processingLog <- hitem
+    if (missing(processingLog)) {
+        pl <- processingLogItem(paste("read.adp.sontek(\"", filename, "\", from=", from, ", to=", to, ")", sep=""))
+    } else {
+        pl <- processingLogAppend(processingLogItem(processingLog),
+                                  paste("read.adp.sontek(\"", filename, "\", from=", from, ", to=", to, ")", sep=""))
+    }
+    res@processingLog <- pl
     res
 }
 
@@ -524,7 +529,8 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
         oceDebug(debug, "filesize=", fileSize, "\n")
         buf <- readBin(file, what="raw", n=fileSize, endian="little")
     }
-    p <- .Call("ldc_sontek_adp", buf, 0, 0, 0, 0, -1) # no ctd, no gps, no bottom-track; all data
+    ##p <- .Call("ldc_sontek_adp", buf, 0, 0, 0, 0, -1) # no ctd, no gps, no bottom-track; all data
+    p <- do_ldc_sontek_adp(buf, 0, 0, 0, 0, -1) # no ctd, no gps, no bottom-track; all data
     ## read some unchanging things from the first profile only
     serialNumber <- paste(readBin(buf[p[1]+4:13], "character", n=10, size=1), collapse="")
     numberOfBeams <- readBin(buf[p[1]+26], "integer", n=1, size=1, signed=FALSE)

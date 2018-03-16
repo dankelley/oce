@@ -399,7 +399,7 @@ topoInterpolate <- function(longitude, latitude, topo)
     if (missing(latitude)) stop("must supply latitude")
     if (missing(topo)) stop("must supply topo")
     if (length(latitude) != length(longitude)) stop("lengths of latitude and longitude must match")
-    .Call("topo_interpolate", latitude, longitude, topo[["latitude"]], topo[["longitude"]], topo[["z"]])
+    bilinearInterp(longitude, latitude, topo[["longitude"]], topo[["latitude"]], topo[["z"]])
 }
 
 

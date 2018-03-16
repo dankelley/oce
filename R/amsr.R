@@ -197,48 +197,48 @@ setMethod(f="[[",
                   ## what that means, and am extracting what seems to be seconds in the day.
                   if      (i == "timeDay") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
                   else if (i == "timeNight") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
-                  else if (i == "time") res <- 60*6*getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]))
+                  else if (i == "time") res <- 60*6*getBand(do_amsr_average(x@data[["timeDay"]], x@data[["timeNight"]]))
                   else if (i == "SSTDay") res <- -3 + 0.15 * getBand(x@data[[i]])
                   else if (i == "SSTNight") res <- -3 + 0.15 * getBand(x@data[[i]])
-                  else if (i == "SST") res <- -3 + 0.15 * getBand(.Call("amsr_average", x@data[["SSTDay"]], x@data[["SSTNight"]]))
+                  else if (i == "SST") res <- -3 + 0.15 * getBand(do_amsr_average(x@data[["SSTDay"]], x@data[["SSTNight"]]))
                   else if (i == "LFwindDay") res <- 0.2 * getBand(x@data[[i]])
                   else if (i == "LFwindNight") res <- 0.2 * getBand(x@data[[i]])
-                  else if (i == "LFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["LFwindDay"]], x@data[["LFwindNight"]]))
+                  else if (i == "LFwind") res <- 0.2 * getBand(do_amsr_average(x@data[["LFwindDay"]], x@data[["LFwindNight"]]))
                   else if (i == "MFwindDay") res <- 0.2 * getBand(x@data[[i]])
                   else if (i == "MFwindNight") res <- 0.2 * getBand(x@data[[i]])
-                  else if (i == "MFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["MFwindDay"]], x@data[["MFwindNight"]]))
+                  else if (i == "MFwind") res <- 0.2 * getBand(do_amsr_average(x@data[["MFwindDay"]], x@data[["MFwindNight"]]))
                   else if (i == "vaporDay") res <- 0.3 * getBand(x@data[[i]])
                   else if (i == "vaporNight") res <- 0.3 * getBand(x@data[[i]])
-                  else if (i == "vapor") res <- 0.3 * getBand(.Call("amsr_average", x@data[["vaporDay"]], x@data[["vaporNight"]]))
+                  else if (i == "vapor") res <- 0.3 * getBand(do_amsr_average(x@data[["vaporDay"]], x@data[["vaporNight"]]))
                   else if (i == "cloudDay") res <- -0.05 + 0.01 * getBand(x@data[[i]])
                   else if (i == "cloudNight") res <- -0.05 + 0.01 * getBand(x@data[[i]])
-                  else if (i == "cloud") res <- -0.05 + 0.01 * getBand(.Call("amsr_average", x@data[["cloudDay"]], x@data[["cloudNight"]]))
+                  else if (i == "cloud") res <- -0.05 + 0.01 * getBand(do_amsr_average(x@data[["cloudDay"]], x@data[["cloudNight"]]))
                   else if (i == "rainDay") res <- 0.01 * getBand(x@data[[i]])
                   else if (i == "rainNight") res <- 0.01 * getBand(x@data[[i]])
-                  else if (i == "rain") res <- 0.01 * getBand(.Call("amsr_average", x@data[["rainDay"]], x@data[["rainNight"]]))
+                  else if (i == "rain") res <- 0.01 * getBand(do_amsr_average(x@data[["rainDay"]], x@data[["rainNight"]]))
                   else if (i == "data") return(x@data)
               } else {
                   if      (i == "timeDay") res <- x@data[[i]]
                   else if (i == "timeNight") res <- x@data[[i]]
-                  else if (i == "time") res <- getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]))
+                  else if (i == "time") res <- getBand(do_amsr_average(x@data[["timeDay"]], x@data[["timeNight"]]))
                   else if (i == "SSTDay") res <- x@data[[i]]
                   else if (i == "SSTNight") res <- x@data[[i]]
-                  else if (i == "SST") res <- .Call("amsr_average", x@data[["SSTDay"]], x@data[["SSTNight"]])
+                  else if (i == "SST") res <- do_amsr_average(x@data[["SSTDay"]], x@data[["SSTNight"]])
                   else if (i == "LFwindDay") res <- x@data[[i]]
                   else if (i == "LFwindNight") res <- x@data[[i]]
-                  else if (i == "LFwind") res <- .Call("amsr_average", x@data[["LFwindDay"]], x@data[["LFwindNight"]])
+                  else if (i == "LFwind") res <- do_amsr_average(x@data[["LFwindDay"]], x@data[["LFwindNight"]])
                   else if (i == "MFwindDay") res <- x@data[[i]]
                   else if (i == "MFwindNight") res <- x@data[[i]]
-                  else if (i == "MFwind") res <- .Call("amsr_average", x@data[["MFwindDay"]], x@data[["MFwindNight"]])
+                  else if (i == "MFwind") res <- do_amsr_average(x@data[["MFwindDay"]], x@data[["MFwindNight"]])
                   else if (i == "vaporDay") res <- x@data[[i]]
                   else if (i == "vaporNight") res <- x@data[[i]]
-                  else if (i == "vapor") res <- .Call("amsr_average", x@data[["vaporDay"]], x@data[["vaporNight"]])
+                  else if (i == "vapor") res <- do_amsr_average(x@data[["vaporDay"]], x@data[["vaporNight"]])
                   else if (i == "cloudDay") res <- x@data[[i]]
                   else if (i == "cloudNight") res <- x@data[[i]]
-                  else if (i == "cloud") res <- .Call("amsr_average", x@data[["cloudDay"]], x@data[["cloudNight"]])
+                  else if (i == "cloud") res <- do_amsr_average(x@data[["cloudDay"]], x@data[["cloudNight"]])
                   else if (i == "rainDay") res <- x@data[[i]]
                   else if (i == "rainNight") res <- x@data[[i]]
-                  else if (i == "rain") res <- .Call("amsr_average", x@data[["rainDay"]], x@data[["rainNight"]])
+                  else if (i == "rain") res <- do_amsr_average(x@data[["rainDay"]], x@data[["rainNight"]])
                   else if (i == "data") return(x@data)
               }
               dim(res) <- dim
@@ -659,7 +659,7 @@ setMethod("composite",
                       ##message("D idot=", idot)
                   }
                   ##message("E")
-                  A <- .Call("amsr_composite", a)
+                  A <- do_amsr_composite(a, dim(a))
                   ##message("F")
                   res@data[[name]] <- A
               }

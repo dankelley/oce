@@ -597,7 +597,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         time <- time + delayForWarmup
     } else {
         res@metadata$samplingMode <- "continuous"
-        time <- numberAsPOSIXct(.Call("adv_vector_time", vvdStart, vsdStart, vsdTime, vvdhStart, vvdhTime, 0, res@metadata$samplingRate))
+        time <- numberAsPOSIXct(do_adv_vector_time(vvdStart, vsdStart, vsdTime, vvdhStart, vvdhTime, 0, res@metadata$samplingRate))
     }
     res@metadata$numberOfSamples <- dim(v)[1]
     res@metadata$numberOfBeams <- dim(v)[2]

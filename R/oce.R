@@ -711,8 +711,7 @@ oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
     else
         if (any(is.na(xout)))
             stop("must not have any NA values in xout")
-    .Call("oce_approx", x=x, y=y, xout=xout,
-          method=pmatch(method, c("unesco", "rr")))
+    do_oceApprox(x=x, y=y, xout=xout, method=pmatch(method, c("unesco", "rr")))
 }
 oce.approx <- oceApprox
 
@@ -991,7 +990,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
             stop("'xlim' must be of length 2")
         if (xlim[2] <= xlim[1])
             stop("the elements of xlim must be in order")
-        ends <- .Call("trim_ts", as.numeric(x), as.numeric(xlim), as.numeric(0.04))
+        ends <- trim_ts(x, xlim, 0.04)
         x <- x[seq.int(ends$from, ends$to)]
         y <- y[seq.int(ends$from, ends$to)]
     }

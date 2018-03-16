@@ -184,7 +184,8 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
     if (!equispaced(x)) stop("x values must be equi-spaced")
     if (!equispaced(y)) stop("y values must be equi-spaced")
     if (!equispaced(z)) stop("z values must be equi-spaced")
-    .Call("approx3d", x, y, z, f, xout, yout, zout)
+    ##.Call("approx3d", x, y, z, f, xout, yout, zout)
+    do_approx3d(x, y, z, f, xout, yout, zout)
 }
 
 
@@ -658,9 +659,9 @@ curl <- function(u, v, x, y, geographical=FALSE, method=1)
     if (!is.logical(geographical)) stop("geographical must be a logical quantity")
     method <- as.integer(round(method))
     if (1 == method)
-        res <- .Call("curl1", u, v, x, y, geographical)
+        res <- do_curl1(u, v, x, y, geographical)
     else if (2 == method)
-        res <- .Call("curl2", u, v, x, y, geographical)
+        res <- do_curl2(u, v, x, y, geographical)
     else
         stop("method must be 1 or 2")
     res
@@ -1156,7 +1157,6 @@ ungrid <- function(x, y, grid)
     ok <- !is.na(grid)
     list(x=x[ok], y=y[ok], grid=grid[ok])
 }
-
 
 
 #' Draw error bars on an existing xy diagram
@@ -2813,7 +2813,7 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
 #'
 #' By contrast with the \code{\link{filter}} function of R, \code{oce.filter}
 #' lacks the option to do a circular filter.  As a consequence,
-#' \code{oce.filter} introduces a phase lag.  One way to remove this lag is to
+#' \code{oceFilter} introduces a phase lag.  One way to remove this lag is to
 #' run the filter forwards and then backwards, as in the \dQuote{Examples}.
 #' However, the result is still problematic, in the sense that applying it in
 #' the reverse order would yield a different result.  (Matlab's \code{filtfilt}
@@ -2841,12 +2841,12 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
 #' a <- 1
 #' x <- seq(0, 10)
 #' y <- ifelse(x == 5, 1, 0)
-#' f1 <- oce.filter(y, a, b)
+#' f1 <- oceFilter(y, a, b)
 #' plot(x, y, ylim=c(-0, 1.5), pch="o", type='b')
 #' points(x, f1, pch="x", col="red")
 #'
 #' # remove the phase lag
-#' f2 <- oce.filter(y, a, b, TRUE)
+#' f2 <- oceFilter(y, a, b, TRUE)
 #' points(x, f2, pch="+", col="blue")
 #'
 #' legend("topleft", col=c("black","red","blue"), pch=c("o","x","+"),
@@ -2861,11 +2861,11 @@ oceFilter <- function(x, a=1, b, zero.phase=FALSE)
     if (missing(b))
         stop("must supply b")
     if (!zero.phase) {
-        return(.Call("oce_filter", x, a, b))
+        return(do_oce_filter(x, a, b))
     } else {
-        res <- .Call("oce_filter", x, a, b)
+        res <- do_oce_filter(x, a, b)
         res <- rev(res)
-        res <- .Call("oce_filter", res, a, b)
+        res <- do_oce_filter(res, a, b)
         return(rev(res))
     }
 }
@@ -3048,12 +3048,7 @@ interpBarnes <- function(x, y, z, w,
     oceDebug(debug, "gamma:", gamma, "iterations:", iterations, "\n")
 
     ok <- !is.na(x) & !is.na(y) & !is.na(z) & !is.na(w)
-    g <- .Call("interp_barnes",
-               as.double(x[ok]), as.double(y[ok]), as.double(z[ok]), as.double(w[ok]),
-               as.double(xg), as.double(yg),
-               as.double(xr), as.double(yr),
-               as.double(gamma),
-               as.integer(iterations))
+    g <- do_interp_barnes(x[ok], y[ok], z[ok], w[ok], xg, yg, xr, yr, gamma, iterations)
     oceDebug(debug, "} # interpBarnes(...)\n", unindent=1)
     if (trim >= 0 && trim <= 1) {
         bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)
@@ -3201,13 +3196,14 @@ fillGap <- function(x, method=c("linear"), rule=1)
     method <- match.arg(method)
     class <- class(x)
     if (is.vector(x)) {
-        res <- .Call("fillgap1d", as.numeric(x), rule)
+        ##res <- .Call("fillgap1d", as.numeric(x), rule)
+        res <- do_fill_gap_1d(x, rule)
     } else if (is.matrix(x))  {
         res <- x
         for (col in 1:ncol(x))
-            res[, col] <- .Call("fillgap1d", as.numeric(x[, col]), rule)
+            res[, col] <- do_fill_gap_1d(x[, col], rule)
         for (row in 1:nrow(x))
-            res[row, ] <- .Call("fillgap1d", as.numeric(x[row, ]), rule)
+            res[row, ] <- do_fill_gap_1d(x[row, ], rule)
     } else {
         stop("only works if 'x' is a vector or a matrix")
     }
@@ -3972,7 +3968,8 @@ matrixSmooth <- function(m, passes=1)
     storage.mode(m) <- "double"
     if (passes > 0) {
         for (pass in seq.int(1, passes, 1)) {
-            m <- .Call("matrix_smooth", m)
+            message("pass=", pass)
+            m <- do_matrix_smooth(m)
         }
     } else {
         warning("matrixSmooth given passes<=0, so returning matrix unmodified")
@@ -4186,6 +4183,7 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 #' print(integrateTrapezoid(y))
 integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 {
+    type <- match.arg(type)
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) {
         y <- x
@@ -4227,25 +4225,50 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
     ## message("\nabout to .Call(\"trap\", xout, yout, ...) with:\n")
     ## message("xout as follows:\n", paste(head(xout, 10), collapse="\n"))
     ## message("yout as follows:\n", paste(head(yout, 10), collapse="\n"))
-    res <- .Call("trap", xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
+    ##:::res <- .Call("trap", xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
+    ##:::res <- trap(x=xout, y=yout, type=as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
+    ##
+    ## I think we should be able to use trap(), which gets defined into
+    ## R/RcppExports.R but that doesn't seem to be put into the loadspace.
+    ## My guess is that the problem is because we are not doing exports in
+    ## the recommended (automatic) way, but I don't want to do exports that
+    ## way since things are ok now, and have been for years.
+    ## I don't see much point trying to figure this out, because we already
+    ## have things set up for a .Call() from before the switch from C to Cpp.
+    ##
+    ## NOTE: must run Rcpp::compileAttributes() after creating trap in
+    ## src/trap.cpp
+    res <- do_trap(xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
+    ##> res <- trap( xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
     res
 }
 
 
-#' Calculate the grad of a matrix by first differences
+#' Calculate Matrix Gradient
 #'
 #' In the interior of the matrix, centred second-order differences are used to
 #' infer the components of the grad.  Along the edges, first-order differences
 #' are used.
 #'
-#' @param h a matrix
-#' @param x x values
-#' @param y y values
-#' @return A list containing \code{gx} and \code{gy}, matrices of the same
-#' dimension as \code{h}.
+#' @param h a matrix of values
+#' @param x vector of coordinates along matrix columns (defaults to integers)
+#' @param y vector of coordinates along matrix rows (defaults to integers)
+#' @return A list containing \eqn{|\nabla h|}{abs(grad(h))} as \code{g},
+#' \eqn{\partial h/\partial x}{dh/dx} as \code{gx},
+#' and \eqn{\partial h/\partial y}{dh/dy} as \code{gy},
+#' each of which is a matrix of the same dimension as \code{h}.
 #' @author Dan Kelley, based on advice of Clark Richards, and mimicking a matlab function.
 #' @examples
-#' ## Geostrophic flow around an eddy
+#' ## 1. Built-in volcano dataset
+#' g <- grad(volcano)
+#' par(mfrow=c(2, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+#' imagep(volcano, zlab="h")
+#' imagep(g$g, zlab="|grad(h)|")
+#' zlim <- c(-1, 1) * max(g$g)
+#' imagep(g$gx, zlab="dh/dx", zlim=zlim)
+#' imagep(g$gy, zlab="dh/dy", zlim=zlim)
+#'
+#' ## 2. Geostrophic flow around an eddy
 #' library(oce)
 #' dx <- 5e3
 #' dy <- 10e3
@@ -4264,20 +4287,23 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 #' contour(x, y, v, asp=1, main=expression(v))
 #' contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
 #' @family functions relating to vector calculus
-grad <- function(h, x, y)
+grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol(h)))
 {
-    if (missing(h)) stop("must give h")
-    if (missing(x)) stop("must give x")
-    if (missing(y)) stop("must give y")
-    if (length(x) != nrow(h)) stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")
-    if (length(y) != ncol(h)) stop("length of y (", length(y), ") must equal number of cols in h (", ncol(h), ")")
+    if (missing(h))
+        stop("must give h")
+    if (length(x) != nrow(h))
+        stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")
+    if (length(y) != ncol(h))
+        stop("length of y (", length(y), ") must equal number of cols in h (", ncol(h), ")")
     ## ensure that all three args are double, so the C code won't misinterpret
     dim <- dim(h)
     h <- as.double(h)
     dim(h) <- dim
     x <- as.double(x)
     y <- as.double(y)
-    .Call("gradient", h, x, y)
+    rval <- do_gradient(h, x, y)
+    rval$g <- sqrt(rval$gx^2 + rval$gy^2)
+    rval
 }
 
 
@@ -4339,7 +4365,7 @@ oce.as.raw <- function(x)
 #'
 oceConvolve <- function(x, f, end=2)
 {
-    .Call("oce_convolve", x, f, end)
+    do_oce_convolve(x, f, end)
 }
 oce.convolve <- oceConvolve
 

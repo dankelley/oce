@@ -1448,19 +1448,7 @@ xyzToEnuAdv <- function(x, declination=0,
         pitch <- rep(pitch, length.out=np)
     if (length(roll) < np)
         roll <- rep(roll, length.out=np)
-    enu <- .C("sfm_enu",
-              as.integer(np), 
-              as.double(heading + declination),
-              as.double(pitch),
-              as.double(roll),
-              as.double(starboard),
-              as.double(forward),
-              as.double(mast),
-              east = double(np),
-              north = double(np),
-              up = double(np),
-              NAOK=TRUE,
-              PACKAGE="oce")
+    enu <- do_sfm_enu(heading + declination, pitch, roll, starboard, forward, mast)
     x@data$v[, 1] <- enu$east
     x@data$v[, 2] <- enu$north
     x@data$v[, 3] <- enu$up
@@ -1517,22 +1505,10 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDeb
         pitch <- rep(pitch, length.out=np)
     if (length(roll) < np)
         roll <- rep(roll, length.out=np)
-    other <- .C("sfm_enu",
-              as.integer(np),
-              as.double(heading),
-              as.double(pitch),
-              as.double(roll),
-              as.double(x@data$v[, 1]),
-              as.double(x@data$v[, 2]),
-              as.double(x@data$v[, 3]),
-              v1new = double(np),
-              v2new = double(np),
-              v3new = double(np),
-              NAOK=TRUE,
-              PACKAGE="oce")
-    x@data$v[, 1] <- other$v1new
-    x@data$v[, 2] <- other$v2new
-    x@data$v[, 3] <- other$v3new
+    other <- do_sfm_enu(heading, pitch, roll, x@data$v[, 1], x@data$v[, 2], x@data$v[, 3])
+    x@data$v[, 1] <- other$east
+    x@data$v[, 2] <- other$north
+    x@data$v[, 3] <- other$up
     x@metadata$oceCoordinate <- "other"
     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # enuToOtherAdv()\n", unindent=1)
