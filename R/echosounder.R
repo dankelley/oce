@@ -834,6 +834,13 @@ read.echosounder <- function(file, channel=1, soundSpeed,
     a <- matrix(NA_real_, nrow=1, ncol=1)
     b <- matrix(NA_real_, nrow=1, ncol=1)
     c <- matrix(NA_real_, nrow=1, ncol=1)
+    ## FIXME: find out whether samplesPerPing is always defined prior to use in the code1==0x15 blocks.
+    ## The Rstudio code-diagnostic complains that this variable is used before being defined,
+    ## but when I run test code there is no problem, because the variable has been defined. What I 
+    ## do *not* know is whether files will always have these byte groupsing in this order, but at
+    ## least setting to a zero value is likely to cause an error, if that ever occurs. (I may just
+    ## need to reorder some code, if problems arise.)
+    samplesPerPing <- 0 ## overriddent later; here just to prevent code-diagnostic warning
     while (offset < fileSize) {
         ##print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
@@ -848,6 +855,7 @@ read.echosounder <- function(file, channel=1, soundSpeed,
             thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4L, n=1L, endian="little")
             pingElapsedTime <- 0.001 * readBin(buf[offset+10+1:4], "integer", size=4L, n=1L, endian="little")
+            ##message("samplersPerPing=", samplesPerPing)
             ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # number of samples
             if (thisChannel == channelNumber[channel]) {
                 if (debug > 3) {
