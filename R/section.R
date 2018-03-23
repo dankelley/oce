@@ -1431,6 +1431,10 @@ setMethod(f="plot",
                           if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
                               polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
                               polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
+                              ## redraw box, if we have axes. This is necessary because polygon will colour
+                              ## over the axis box, if land goes past the edge of the view
+                              if (axes)
+                                  box()
                           } else {
                               lines(coastline[["longitude"]], coastline[["latitude"]], col="darkgray")
                               lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
