@@ -13,7 +13,8 @@ importFrom("graphics", ".filled.contour", "abline", "arrows", "axis", "Axis",
            "yinch")
 importFrom("grDevices", "adjustcolor", "col2rgb", "colorRamp",
            "colorRampPalette", "contourLines", "gray", "hsv", "rgb")
-importFrom("utils", "capture.output", "download.file", "read.delim", "unzip")
+importFrom("utils", "capture.output", "download.file", "read.delim", "unzip",
+           "packageVersion")
 importFrom("stats", "approx", "approxfun", "coef", "confint", "cor", "cov",
            "fivenum", "frequency", "integrate", "is.ts", "kernel", "lm",
            "median", "na.exclude", "nls", "optim", "optimize", "predict",
