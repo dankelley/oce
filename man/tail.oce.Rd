@@ -19,10 +19,12 @@ Extract the End of an Oce Object
 This function handles the following object classes directly:
 \code{\link{adp-class}},
 \code{\link{adv-class}},
+\code{\link{argo-class}} (selection by profile),
 \code{\link{ctd-class}},
-\code{\link{section-class}}.
+\code{\link{section-class}} (selection by station)
 and
-\code{\link{topo-class}}. It does not handle
+\code{\link{topo-class}} (selection by longitude and latitude).
+It does not handle
 \code{\link{amsr-class}} or
 \code{\link{landsat-class}}
 at all, and simply returns \code{x} in those cases.

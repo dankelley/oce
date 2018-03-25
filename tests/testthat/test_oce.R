@@ -26,10 +26,63 @@ test_that("head_adp", {
           expect_equal(h[["time"]], head(adp[["time"]]))
           expect_equal(dim(h[["v"]]), c(6, 84,  4))
           expect_equal(dim(h3[["v"]]), c(3, 84,  4))
-          data(ctd)
+})
+
+test_that("head_adv", {
+          data(adv)
+          h <- head(adv)
+          h3 <- head(adv, 3)
+          expect_equal(h[["time"]], head(adv[["time"]]))
+          expect_equal(dim(h[["v"]]), c(6, 3))
+          expect_equal(dim(h3[["v"]]), c(3, 3))
+})
+
+test_that("head_argo", {
+          data(argo)
+          ## This test is hard to read, because it is exhaustive, and the data
+          ## format for argo objects is tricky, with vectors, matrices, time
+          ## vectors that R does not regard as vectors (why?) and character
+          ## strings.
+          for (n in c(3, -3)) {
+            h <- head(argo, n)
+            for (name in names(argo@metadata)) {
+              if (name %in% c("direction", "juldQc", "positionQc")) {
+                ## select characters in a string
+                j <- head(seq_len(nchar(argo@metadata[[name]])), n)
+                expect_equal(h@metadata[[name]], 
+                             substr(argo@metadata[[name]], j[1], tail(j, 1)))
+              } else if (name == "flags") {
+                j <- head(seq_len(dim(argo@metadata$flags[[1]])[2]), n)
+                for (fname in names(argo@metadata$flags)) {
+                  expect_equal(h@metadata$flags[[fname]], argo@metadata$flags[[fname]][, j])
+                }
+              } else if (is.vector(argo@metadata[[name]])) {
+                expect_equal(h@metadata[[name]], head(argo@metadata[[name]], n))
+              } else if (is.matrix(argo@metadata[[name]])) {
+                j <- head(seq_len(dim(argo@metadata[[name]])[2]), n)
+                expect_equal(h@metadata[[name]], argo@metadata[[name]][, j])
+              } else {
+                warning("ignoring metadata item: '", name, "'")
+              }
+            }
+            for (name in names(argo@data)) {
+              if (is.vector(argo@data[[name]])) {
+                expect_equal(h@data[[name]], head(argo@data[[name]], n))
+              } else if (is.matrix(argo@data[[name]])) {
+                j <- head(seq_len(dim(argo@data[[name]])[2]), n)
+                expect_equal(h@data[[name]], argo@data[[name]][, j])
+              } else if (name == "time") {
+                ## for reasons unknown, time is not a vector
+                expect_equal(h@data[[name]], head(argo@data[[name]], n))
+              } else {
+                warning("ignoring data item: '", name, "'")
+              }
+            }
+          }
 })
 
 test_that("head_ctd", {
+          data(ctd)
           h <- head(ctd)
           h3 <- head(ctd, 3)
           expect_equal(length(h[["salinity"]]), 6L)
@@ -74,12 +127,75 @@ test_that("oceApprox", {
 })
 
 test_that("tail_adp", {
-          data(adp)
-          t <- tail(adp)
-          t3 <- tail(adp, 3)
-          expect_equal(t[["time"]], tail(adp[["time"]]))
-          expect_equal(dim(t[["v"]]), c(6, 84,  4))
-          expect_equal(dim(t3[["v"]]), c(3, 84,  4))
+          ## This test is hard to read, because it is exhaustive, and the data
+          ## format for argo objects is tricky, with vectors, matrices, time
+          ## vectors that R does not regard as vectors (why?) and character
+          ## strings.
+          for (n in c(3, -3)) {
+            h <- tail(argo, n)
+            for (name in names(argo@metadata)) {
+              if (name %in% c("direction", "juldQc", "positionQc")) {
+                ## select characters in a string
+                j <- tail(seq_len(nchar(argo@metadata[[name]])), n)
+                expect_equal(h@metadata[[name]], 
+                             substr(argo@metadata[[name]], j[1], tail(j, 1)))
+              } else if (name == "flags") {
+                j <- tail(seq_len(dim(argo@metadata$flags[[1]])[2]), n)
+                for (fname in names(argo@metadata$flags)) {
+                  expect_equal(h@metadata$flags[[fname]], argo@metadata$flags[[fname]][, j])
+                }
+              } else if (is.vector(argo@metadata[[name]])) {
+                expect_equal(h@metadata[[name]], tail(argo@metadata[[name]], n))
+              } else if (is.matrix(argo@metadata[[name]])) {
+                j <- tail(seq_len(dim(argo@metadata[[name]])[2]), n)
+                expect_equal(h@metadata[[name]], argo@metadata[[name]][, j])
+              } else {
+                warning("ignoring metadata item: '", name, "'")
+              }
+            }
+            for (name in names(argo@data)) {
+              if (is.vector(argo@data[[name]])) {
+                expect_equal(h@data[[name]], tail(argo@data[[name]], n))
+              } else if (is.matrix(argo@data[[name]])) {
+                j <- tail(seq_len(dim(argo@data[[name]])[2]), n)
+                expect_equal(h@data[[name]], argo@data[[name]][, j])
+              } else if (name == "time") {
+                ## for reasons unknown, time is not a vector
+                expect_equal(h@data[[name]], tail(argo@data[[name]], n))
+              } else {
+                warning("ignoring data item: '", name, "'")
+              }
+            }
+          }
+})
+
+test_that("tail_adv", {
+          data(adv)
+          h <- tail(adv)
+          h3 <- tail(adv, 3)
+          expect_equal(h[["time"]], tail(adv[["time"]]))
+          expect_equal(dim(h[["v"]]), c(6, 3))
+          expect_equal(dim(h3[["v"]]), c(3, 3))
+})
+
+test_that("tail_argo", {
+          data(argo)
+          t <- tail(argo)
+          ## FIXME: there are a LOT of things that ought to be tested
+          ## in addition to the below. And some of the are really quite
+          ## tricky, because items may be (a) in a vector, (b) in a matrix,
+          ## (c) in a time vector, which R doesn't call a vector or (d)
+          ## in the characters within a string. Checking for all of these
+          ## is daunting, and basically means reprroducing the code
+          ## that does tail.oce(). I prefer to just check the main things
+          ## for now, doing the rest by eye on the sample dataset.
+          expect_equal(t[["time"]], tail(argo[["time"]]))
+          expect_equal(t[["longitude"]], tail(argo[["longitude"]]))
+          expect_equal(t[["latitude"]], tail(argo[["latitude"]]))
+          t3 <- tail(argo, 3)
+          expect_equal(t3[["time"]], tail(argo[["time"]], 3))
+          expect_equal(t3[["longitude"]], tail(argo[["longitude"]], 3))
+          expect_equal(t3[["latitude"]], tail(argo[["latitude"]], 3))
 })
 
 test_that("tail_ctd", {
@@ -100,18 +216,18 @@ test_that("tail_section", {
           expect_equal(s@metadata$longitude, tail(section@metadata$longitude, 6))
           expect_equal(s@metadata$latitude, tail(section@metadata$latitude, 6))
           expect_equal(s@metadata$time, tail(section@metadata$time, 6))
+          expect_equal(s@data$station, tail(section@data$station, 6))
           expect_equal(s3@metadata$sectionId, tail(section@metadata$sectionId, 3))
           expect_equal(s3@metadata$longitude, tail(section@metadata$longitude, 3))
           expect_equal(s3@metadata$latitude, tail(section@metadata$latitude, 3))
           expect_equal(s3@metadata$time, tail(section@metadata$time, 3))
-          expect_equal(s@data$station, tail(section@data$station, 6))
           expect_equal(s3@data$station, tail(section@data$station, 3))
 })
 
 test_that("trim_ts", {
    x <- seq(0, 10, 0.1)
    xlim <- c(2.0, 2.9)
-   trim_ts(x, xlim, 0)
-   expect_equal(trim_ts(x, xlim, 0), list(from=20, to=31))
+   oce:::trim_ts(x, xlim, 0)
+   expect_equal(oce:::trim_ts(x, xlim, 0), list(from=20, to=31))
 })
 

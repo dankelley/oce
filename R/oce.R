@@ -456,6 +456,40 @@ head.oce <- function(x, n=6L, ...)
                 res@data[[name]] <- x@data[[name]][iprofile] # for reasons unknown, 'time' is not a vector
             }
         }
+    } else if (inherits(x, "argo")) {
+        res <- x
+        for (name in names(x@metadata)) {
+            if (name %in% c("direction", "juldQc", "positionQc")) {
+                ## select characters in a string
+                j <- head(seq_len(nchar(x@metadata[[name]])), n)
+                res@metadata[[name]] <- substr(x@metadata[[name]], j[1], tail(j, 1))
+            } else if (name == "flags") {
+                j <- head(seq_len(dim(x@metadata$flags[[1]])[2]), n)
+                for (fname in names(x@metadata$flags)) {
+                    res@metadata$flags[[fname]] <- x@metadata$flags[[fname]][, j]
+                }
+            } else if (is.vector(x@metadata[[name]])) {
+                res@metadata[[name]] <- head(x@metadata[[name]], n)
+            } else if (is.matrix(x@metadata[[name]])) {
+                j <- head(seq_len(dim(x@metadata[[name]])[2]), n)
+                res@metadata[[name]] <- x@metadata[[name]][, j]
+            } else {
+                warning("ignoring metadata item: '", name, "'")
+            }
+        }
+        for (name in names(x@data)) {
+            if (is.vector(x@data[[name]])) {
+                res@data[[name]] <- head(x@data[[name]], n)
+            } else if (is.matrix(x@data[[name]])) {
+                j <- head(seq_len(dim(x@data[[name]])[2]), n)
+                res@data[[name]] <- x@data[[name]][, j]
+            } else if (name == "time") {
+                ## for reasons unknown, time is not a vector
+                res@data[[name]] <- head(x@data[[name]], n)
+            } else {
+                warning("ignoring data item: '", name, "'")
+            }
+        }
     } else if (inherits(x, "ctd")) {
         for (name in names(x@data)) {
             res@data[[name]] <- head(x@data[[name]], n)
@@ -506,7 +540,7 @@ head.oce <- function(x, n=6L, ...)
 tail.oce <- function(x, n=6L, ...)
 {
     res <- x
-    if (inherits(x, "adp")) {
+    if (inherits(x, "adp") || inherits(x, "adv")) {
         iprofile <- tail(seq_len(dim(x@data$v)[1]), n)
         for (name in names(x@data)) {
             if (is.vector(x@data[[name]])) {
@@ -519,7 +553,41 @@ tail.oce <- function(x, n=6L, ...)
                 res@data[[name]] <- x@data[[name]][iprofile] # for reasons unknown, 'time' is not a vector
             }
         }
-     } else if (inherits(x, "ctd")) {
+    } else if (inherits(x, "argo")) {
+        res <- x
+        for (name in names(x@metadata)) {
+            if (name %in% c("direction", "juldQc", "positionQc")) {
+                ## select characters in a string
+                j <- tail(seq_len(nchar(x@metadata[[name]])), n)
+                res@metadata[[name]] <- substr(x@metadata[[name]], j[1], tail(j, 1))
+            } else if (name == "flags") {
+                j <- tail(seq_len(dim(x@metadata$flags[[1]])[2]), n)
+                for (fname in names(x@metadata$flags)) {
+                    res@metadata$flags[[fname]] <- x@metadata$flags[[fname]][, j]
+                }
+            } else if (is.vector(x@metadata[[name]])) {
+                res@metadata[[name]] <- tail(x@metadata[[name]], n)
+            } else if (is.matrix(x@metadata[[name]])) {
+                j <- tail(seq_len(dim(x@metadata[[name]])[2]), n)
+                res@metadata[[name]] <- x@metadata[[name]][, j]
+            } else {
+                warning("ignoring metadata item: '", name, "'")
+            }
+        }
+        for (name in names(x@data)) {
+            if (is.vector(x@data[[name]])) {
+                res@data[[name]] <- tail(x@data[[name]], n)
+            } else if (is.matrix(x@data[[name]])) {
+                j <- tail(seq_len(dim(x@data[[name]])[2]), n)
+                res@data[[name]] <- x@data[[name]][, j]
+            } else if (name == "time") {
+                ## for reasons unknown, time is not a vector
+                res@data[[name]] <- tail(x@data[[name]], n)
+            } else {
+                warning("ignoring data item: '", name, "'")
+            }
+        }
+    } else if (inherits(x, "ctd")) {
         for (name in names(x@data)) {
             res@data[[name]] <- tail(x@data[[name]], n)
         }
