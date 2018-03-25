@@ -21,20 +21,22 @@ test_that("as.oce", {
 
 test_that("head_adp", {
           data(adp)
-          h <- head(adp)
-          h3 <- head(adp, 3)
-          expect_equal(h[["time"]], head(adp[["time"]]))
-          expect_equal(dim(h[["v"]]), c(6, 84,  4))
-          expect_equal(dim(h3[["v"]]), c(3, 84,  4))
+          for (n in c(3, -3)) {
+            h <- head(adp, n)
+            look <- head(seq_len(dim(adp[["v"]])[1]), n)
+            expect_equal(h[["time"]], adp[["time"]][look])
+            expect_equal(h[["v"]], adp[["v"]][look,,])
+          }
 })
 
 test_that("head_adv", {
           data(adv)
-          h <- head(adv)
-          h3 <- head(adv, 3)
-          expect_equal(h[["time"]], head(adv[["time"]]))
-          expect_equal(dim(h[["v"]]), c(6, 3))
-          expect_equal(dim(h3[["v"]]), c(3, 3))
+          for (n in c(3, -3)) {
+            h <- head(adv, n)
+            look <- head(seq_len(dim(adv[["v"]])[1]), n)
+            expect_equal(h[["time"]], adv[["time"]][look])
+            expect_equal(h[["v"]], adv[["v"]][look,])
+          }
 })
 
 test_that("head_argo", {
@@ -83,12 +85,12 @@ test_that("head_argo", {
 
 test_that("head_ctd", {
           data(ctd)
-          h <- head(ctd)
-          h3 <- head(ctd, 3)
-          expect_equal(length(h[["salinity"]]), 6L)
-          expect_equal(length(h3[["salinity"]]), 3L)
-          expect_equal(h[["salinity"]], head(ctd[["salinity"]], 6L))
-          expect_equal(h3[["salinity"]], head(ctd[["salinity"]], 3L))
+          for (n in c(-10, 10)) {
+            h <- head(ctd, n)
+            for (name in names(ctd@data)) {
+              expect_equal(h@data[[name]], head(ctd@data[[name]], n))
+            }
+          }
 })
 
 test_that("head_coastline", {
@@ -115,18 +117,14 @@ test_that("head_echosounder", {
 
 test_that("head_section", {
           data(section)
-          s <- head(section)
-          s3 <- head(section, 3)
-          expect_equal(s@metadata$sectionId, head(section@metadata$sectionId, 6))
-          expect_equal(s@metadata$longitude, head(section@metadata$longitude, 6))
-          expect_equal(s@metadata$latitude, head(section@metadata$latitude, 6))
-          expect_equal(s@metadata$time, head(section@metadata$time, 6))
-          expect_equal(s3@metadata$sectionId, head(section@metadata$sectionId, 3))
-          expect_equal(s3@metadata$longitude, head(section@metadata$longitude, 3))
-          expect_equal(s3@metadata$latitude, head(section@metadata$latitude, 3))
-          expect_equal(s3@metadata$time, head(section@metadata$time, 3))
-          expect_equal(s@data$station, head(section@data$station, 6))
-          expect_equal(s3@data$station, head(section@data$station, 3))
+          for (n in c(-10, 10)) {
+            h <- head(section, n)
+            expect_equal(h@metadata$stationId, head(section@metadata$stationId, n))
+            expect_equal(h@metadata$longitude, head(section@metadata$longitude, n))
+            expect_equal(h@metadata$latitude, head(section@metadata$latitude, n))
+            expect_equal(h@metadata$time, head(section@metadata$time, n))
+            expect_equal(h@data$station, head(section@data$station, n))
+          }
 })
 
 test_that("oceApprox", {
@@ -150,6 +148,26 @@ test_that("oceApprox", {
 
 test_that("tail_adp", {
           data(adp)
+          for (n in c(3, -3)) {
+            t <- head(adp, n)
+            look <- head(seq_len(dim(adp[["v"]])[1]), n)
+            expect_equal(t[["time"]], adp[["time"]][look])
+            expect_equal(t[["v"]], adp[["v"]][look,,])
+          }
+})
+
+test_that("tail_adv", {
+          data(adv)
+          for (n in c(3, -3)) {
+            h <- head(adv, n)
+            look <- head(seq_len(dim(adv[["v"]])[1]), n)
+            expect_equal(h[["time"]], adv[["time"]][look])
+            expect_equal(h[["v"]], adv[["v"]][look,])
+          }
+})
+
+test_that("tail_argo", {
+          data(argo)
           ## This test is hard to read, because it is exhaustive, and the data
           ## format for argo objects is tricky, with vectors, matrices, time
           ## vectors that R does not regard as vectors (why?) and character
@@ -158,29 +176,21 @@ test_that("tail_adp", {
             t <- tail(argo, n)
             for (name in names(argo@metadata)) {
               if (name %in% c("direction", "juldQc", "positionQc")) {
-                message("A>")
                 ## select characters in a string
                 j <- tail(seq_len(nchar(argo@metadata[[name]])), n)
                 expect_equal(t@metadata[[name]],
                              substr(argo@metadata[[name]], j[1], tail(j, 1)))
-                message(" <A")
               } else if (name == "flags") {
-                message("B>")
                 j <- tail(seq_len(dim(argo@metadata$flags[[1]])[2]), n)
                 for (fname in names(argo@metadata$flags)) {
                   message("  ", fname)
                   expect_equal(t@metadata$flags[[fname]], argo@metadata$flags[[fname]][, j])
                 }
-                message(" <B")
               } else if (is.vector(argo@metadata[[name]])) {
-                message("C>")
                 expect_equal(t@metadata[[name]], tail(argo@metadata[[name]], n))
-                message(" <C")
               } else if (is.matrix(argo@metadata[[name]])) {
-                message("D>")
                 j <- tail(seq_len(dim(argo@metadata[[name]])[2]), n)
                 expect_equal(t@metadata[[name]], argo@metadata[[name]][, j])
-                message(" <D")
               } else {
                 warning("ignoring metadata item: '", name, "'")
               }
@@ -201,43 +211,14 @@ test_that("tail_adp", {
           }
 })
 
-test_that("tail_adv", {
-          data(adv)
-          h <- tail(adv)
-          h3 <- tail(adv, 3)
-          expect_equal(h[["time"]], tail(adv[["time"]]))
-          expect_equal(dim(h[["v"]]), c(6, 3))
-          expect_equal(dim(h3[["v"]]), c(3, 3))
-})
-
-test_that("tail_argo", {
-          data(argo)
-          t <- tail(argo)
-          ## FIXME: there are a LOT of things that ought to be tested
-          ## in addition to the below. And some of the are really quite
-          ## tricky, because items may be (a) in a vector, (b) in a matrix,
-          ## (c) in a time vector, which R doesn't call a vector or (d)
-          ## in the characters within a string. Checking for all of these
-          ## is daunting, and basically means reprroducing the code
-          ## that does tail.oce(). I prefer to just check the main things
-          ## for now, doing the rest by eye on the sample dataset.
-          expect_equal(t[["time"]], tail(argo[["time"]]))
-          expect_equal(t[["longitude"]], tail(argo[["longitude"]]))
-          expect_equal(t[["latitude"]], tail(argo[["latitude"]]))
-          t3 <- tail(argo, 3)
-          expect_equal(t3[["time"]], tail(argo[["time"]], 3))
-          expect_equal(t3[["longitude"]], tail(argo[["longitude"]], 3))
-          expect_equal(t3[["latitude"]], tail(argo[["latitude"]], 3))
-})
-
 test_that("tail_ctd", {
           data(ctd)
-          t <- tail(ctd)
-          t3 <- tail(ctd, 3)
-          expect_equal(length(t[["salinity"]]), 6)
-          expect_equal(length(t3[["salinity"]]), 3)
-          expect_equal(t[["salinity"]], tail(ctd[["salinity"]], 6))
-          expect_equal(t3[["salinity"]], tail(ctd[["salinity"]], 3))
+          for (n in c(-10, 10)) {
+            t <- head(ctd, n)
+            for (name in names(ctd@data)) {
+              expect_equal(t@data[[name]], head(ctd@data[[name]], n))
+            }
+          }
 })
 
 test_that("tail_coastline", {
@@ -261,20 +242,17 @@ test_that("tail_echosounder", {
             expect_equal(t[["a"]], echosounder[["a"]][look, ])
           }
 })
+
 test_that("tail_section", {
           data(section)
-          s <- tail(section)
-          s3 <- tail(section, 3)
-          expect_equal(s@metadata$sectionId, tail(section@metadata$sectionId, 6))
-          expect_equal(s@metadata$longitude, tail(section@metadata$longitude, 6))
-          expect_equal(s@metadata$latitude, tail(section@metadata$latitude, 6))
-          expect_equal(s@metadata$time, tail(section@metadata$time, 6))
-          expect_equal(s@data$station, tail(section@data$station, 6))
-          expect_equal(s3@metadata$sectionId, tail(section@metadata$sectionId, 3))
-          expect_equal(s3@metadata$longitude, tail(section@metadata$longitude, 3))
-          expect_equal(s3@metadata$latitude, tail(section@metadata$latitude, 3))
-          expect_equal(s3@metadata$time, tail(section@metadata$time, 3))
-          expect_equal(s3@data$station, tail(section@data$station, 3))
+          for (n in c(-10, 10)) {
+            t <- tail(section, n)
+            expect_equal(t@metadata$stationId, tail(section@metadata$stationId, n))
+            expect_equal(t@metadata$longitude, tail(section@metadata$longitude, n))
+            expect_equal(t@metadata$latitude, tail(section@metadata$latitude, n))
+            expect_equal(t@metadata$time, tail(section@metadata$time, n))
+            expect_equal(t@data$station, tail(section@data$station, n))
+          }
 })
 
 test_that("trim_ts", {
