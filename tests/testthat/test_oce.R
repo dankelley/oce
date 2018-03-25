@@ -49,7 +49,7 @@ test_that("head_argo", {
               if (name %in% c("direction", "juldQc", "positionQc")) {
                 ## select characters in a string
                 j <- head(seq_len(nchar(argo@metadata[[name]])), n)
-                expect_equal(h@metadata[[name]], 
+                expect_equal(h@metadata[[name]],
                              substr(argo@metadata[[name]], j[1], tail(j, 1)))
               } else if (name == "flags") {
                 j <- head(seq_len(dim(argo@metadata$flags[[1]])[2]), n)
@@ -89,6 +89,15 @@ test_that("head_ctd", {
           expect_equal(length(h3[["salinity"]]), 3L)
           expect_equal(h[["salinity"]], head(ctd[["salinity"]], 6L))
           expect_equal(h3[["salinity"]], head(ctd[["salinity"]], 3L))
+})
+
+test_that("head_coastline", {
+          data(coastlineWorld)
+          for (n in c(-3, 3)) {
+            h <- head(coastlineWorld, n)
+            expect_equal(h[["longitude"]], head(coastlineWorld[["longitude"]], n))
+            expect_equal(h[["latitude"]], head(coastlineWorld[["latitude"]], n))
+          }
 })
 
 test_that("head_section", {
@@ -137,7 +146,7 @@ test_that("tail_adp", {
               if (name %in% c("direction", "juldQc", "positionQc")) {
                 ## select characters in a string
                 j <- tail(seq_len(nchar(argo@metadata[[name]])), n)
-                expect_equal(h@metadata[[name]], 
+                expect_equal(h@metadata[[name]],
                              substr(argo@metadata[[name]], j[1], tail(j, 1)))
               } else if (name == "flags") {
                 j <- tail(seq_len(dim(argo@metadata$flags[[1]])[2]), n)
@@ -206,6 +215,15 @@ test_that("tail_ctd", {
           expect_equal(length(t3[["salinity"]]), 3)
           expect_equal(t[["salinity"]], tail(ctd[["salinity"]], 6))
           expect_equal(t3[["salinity"]], tail(ctd[["salinity"]], 3))
+})
+
+test_that("tail_coastline", {
+          data(coastlineWorld)
+          for (n in c(-3, 3)) {
+            t <- tail(coastlineWorld, n)
+            expect_equal(t[["longitude"]], tail(coastlineWorld[["longitude"]], n))
+            expect_equal(t[["latitude"]], tail(coastlineWorld[["latitude"]], n))
+          }
 })
 
 test_that("tail_section", {

@@ -494,6 +494,10 @@ head.oce <- function(x, n=6L, ...)
         for (name in names(x@data)) {
             res@data[[name]] <- head(x@data[[name]], n)
         }
+    } else if (inherits(x, "coastline")) {
+        res <- x
+        res@data$longitude <- head(x@data$longitude, n)
+        res@data$latitude <- head(x@data$latitude, n)
     } else if (inherits(x, "section")) {
         res@metadata$stationId <- head(x@metadata$stationId, n)
         res@metadata$longitude <- head(x@metadata$longitude, n)
@@ -591,6 +595,10 @@ tail.oce <- function(x, n=6L, ...)
         for (name in names(x@data)) {
             res@data[[name]] <- tail(x@data[[name]], n)
         }
+    } else if (inherits(x, "coastline")) {
+        res <- x
+        res@data$longitude <- tail(x@data$longitude, n)
+        res@data$latitude <- tail(x@data$latitude, n)
     } else if (inherits(x, "section")) {
         res@metadata$stationId <- tail(x@metadata$stationId, n)
         res@metadata$longitude <- tail(x@metadata$longitude, n)
