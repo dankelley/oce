@@ -193,8 +193,8 @@ library(oce)
 data(section)
 sg <- sectionGrid(section)
 
-## 1. AO3 section, default fields.
-plot(section)
+## 1. start of section, default fields.
+plot(head(section))
 
 ## 2. Gulf Stream
 GS <- subset(section, 109<=stationId&stationId<=129)

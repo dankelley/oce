@@ -100,6 +100,19 @@ test_that("head_coastline", {
           }
 })
 
+test_that("head_echosounder", {
+          data(echosounder)
+          for (n in c(-10, 10)) {
+            h <- head(echosounder, n=n)
+            look <- head(seq_len(dim(echosounder[["a"]])[1]), n)
+            expect_equal(h[["depth"]], echosounder[["depth"]])
+            expect_equal(h[["latitude"]], echosounder[["latitude"]][look])
+            expect_equal(h[["longitude"]], echosounder[["longitude"]][look])
+            expect_equal(h[["time"]], echosounder[["time"]][look])
+            expect_equal(h[["a"]], echosounder[["a"]][look, ])
+          }
+})
+
 test_that("head_section", {
           data(section)
           s <- head(section)
@@ -136,41 +149,51 @@ test_that("oceApprox", {
 })
 
 test_that("tail_adp", {
+          data(adp)
           ## This test is hard to read, because it is exhaustive, and the data
           ## format for argo objects is tricky, with vectors, matrices, time
           ## vectors that R does not regard as vectors (why?) and character
           ## strings.
           for (n in c(3, -3)) {
-            h <- tail(argo, n)
+            t <- tail(argo, n)
             for (name in names(argo@metadata)) {
               if (name %in% c("direction", "juldQc", "positionQc")) {
+                message("A>")
                 ## select characters in a string
                 j <- tail(seq_len(nchar(argo@metadata[[name]])), n)
-                expect_equal(h@metadata[[name]],
+                expect_equal(t@metadata[[name]],
                              substr(argo@metadata[[name]], j[1], tail(j, 1)))
+                message(" <A")
               } else if (name == "flags") {
+                message("B>")
                 j <- tail(seq_len(dim(argo@metadata$flags[[1]])[2]), n)
                 for (fname in names(argo@metadata$flags)) {
-                  expect_equal(h@metadata$flags[[fname]], argo@metadata$flags[[fname]][, j])
+                  message("  ", fname)
+                  expect_equal(t@metadata$flags[[fname]], argo@metadata$flags[[fname]][, j])
                 }
+                message(" <B")
               } else if (is.vector(argo@metadata[[name]])) {
-                expect_equal(h@metadata[[name]], tail(argo@metadata[[name]], n))
+                message("C>")
+                expect_equal(t@metadata[[name]], tail(argo@metadata[[name]], n))
+                message(" <C")
               } else if (is.matrix(argo@metadata[[name]])) {
+                message("D>")
                 j <- tail(seq_len(dim(argo@metadata[[name]])[2]), n)
-                expect_equal(h@metadata[[name]], argo@metadata[[name]][, j])
+                expect_equal(t@metadata[[name]], argo@metadata[[name]][, j])
+                message(" <D")
               } else {
                 warning("ignoring metadata item: '", name, "'")
               }
             }
             for (name in names(argo@data)) {
               if (is.vector(argo@data[[name]])) {
-                expect_equal(h@data[[name]], tail(argo@data[[name]], n))
+                expect_equal(t@data[[name]], tail(argo@data[[name]], n))
               } else if (is.matrix(argo@data[[name]])) {
                 j <- tail(seq_len(dim(argo@data[[name]])[2]), n)
-                expect_equal(h@data[[name]], argo@data[[name]][, j])
+                expect_equal(t@data[[name]], argo@data[[name]][, j])
               } else if (name == "time") {
                 ## for reasons unknown, time is not a vector
-                expect_equal(h@data[[name]], tail(argo@data[[name]], n))
+                expect_equal(t@data[[name]], tail(argo@data[[name]], n))
               } else {
                 warning("ignoring data item: '", name, "'")
               }
@@ -226,6 +249,18 @@ test_that("tail_coastline", {
           }
 })
 
+test_that("tail_echosounder", {
+          data(echosounder)
+          for (n in c(-10, 10)) {
+            t <- tail(echosounder, n=n)
+            look <- tail(seq_len(dim(echosounder[["a"]])[1]), n)
+            expect_equal(t[["depth"]], echosounder[["depth"]])
+            expect_equal(t[["latitude"]], echosounder[["latitude"]][look])
+            expect_equal(t[["longitude"]], echosounder[["longitude"]][look])
+            expect_equal(t[["time"]], echosounder[["time"]][look])
+            expect_equal(t[["a"]], echosounder[["a"]][look, ])
+          }
+})
 test_that("tail_section", {
           data(section)
           s <- tail(section)
