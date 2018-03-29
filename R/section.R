@@ -246,6 +246,8 @@ setMethod(f="summary",
 #' up for every station.
 #'}
 #'
+#' If \code{j} is \code{"byStation"}, then a list is returned, with
+#' one (unnamed) item per station.
 ## #' If \code{j} is \code{"grid:distance-pressure"}, then a gridded
 ## #' representation of \code{i} is returned, as a list with elements
 ## #' \code{distance} (in km), \code{pressure} (in dbar) and
@@ -258,6 +260,12 @@ setMethod(f="summary",
 #' data(section)
 #' length(section[["latitude"]])
 #' length(section[["latitude", "byStation"]])
+#' # Vector of all salinities, for all stations
+#' Sv <- section[["salinity"]]
+#' # List of salinities, grouped by station
+#' Sl <- section[["salinity", "byStation"]]
+#' # First station salinities
+#' Sl[[1]]
 #'
 #' @family things related to \code{section} data
 #' @author Dan Kelley
@@ -275,21 +283,12 @@ setMethod(f="[[",
                       stop("the stations within this section do not contain a '", baseName, "' flag")
                   }
               }
+              nstation <- length(x@data$station)
               ## some derived things (not all ... be sure to document when adding things!)
               ##20160809 if (i %in% c("theta", "potential temperature", "sigmaTheta")) {
               ##20160809     res <- unlist(lapply(x@data$station, function(ctd) ctd[[i]]))
               ##20160809     return(res)
               ##20160809 }
-              if (i == "spice") {
-                  spice <- swSpice(x)
-                  return(spice)
-              } else if (i == "sigmaTheta") {
-                  sigmaTheta <- swSigmaTheta(x)
-                  return(sigmaTheta)
-              } else if (i == "theta" || i == "potential temperature") {
-                  theta <- swTheta(x)
-                  return(theta)
-              }
               if (i %in% names(x@metadata)) {
                   if (i %in% c("longitude", "latitude")) {
                       if (!missing(j) && j == "byStation") {
@@ -303,7 +302,12 @@ setMethod(f="[[",
                   } else {
                       return(x@metadata[[i]])
                   }
-              } else if (i %in% c("nitrite", "nitrate", names(x@data$station[[1]]@data))) {
+              } else if (i %in% c("absolute salinity", "CT", "conservative temperature",
+                                  "density", "depth", "nitrite", "nitrate",
+                                  "potential temperature", "SA", "sigmaTheta",
+                                  "spice", "theta", "z",
+                                  names(x@data$station[[1]]@data))) {
+                  ##message('section.R:311 section[["', i, '"]]')
                   if (!missing(j) && substr(j, 1, 4) == "grid") {
                       if (j == "grid:distance-pressure") {
                           numStations <- length(x@data$station)
@@ -332,9 +336,18 @@ setMethod(f="[[",
                       }
                   } else {
                       ## Note that nitrite and nitrate might be computed, not stored
-                      res <- NULL
-                      for (stn in seq_along(x@data$station)) {
-                          res <- c(res, x@data$station[[stn]][[i]])
+                      if (!missing(j) && j == "byStation") {
+                          ##message("section[['", i, "', 'byStation']] START")
+                          res <- vector("list", nstation)
+                          for (istation in seq_len(nstation))
+                              res[[istation]] <- x@data$station[[istation]][[i]]
+                          ##message("section[['", i, "', 'byStation']] END")
+                      } else {
+                          ##message("section[['", i, "']] START")
+                          res <- NULL
+                          for (station in x[["station"]])
+                              res <- c(res, station[[i]])
+                          ##message("section[['", i, "']] END")
                       }
                       return(res)
                   }
@@ -370,14 +383,6 @@ setMethod(f="[[",
                   res <- NULL
                   for (stn in x[['station']])
                       res <- c(res, stn[['station']])
-              } else if ("CT" == i) {
-                  res <- NULL
-                  for (station in x[["station"]])
-                      res <- c(res, station[["CT"]])
-              } else if ("SA" == i) {
-                  res <- NULL
-                  for (station in x[["station"]])
-                      res <- c(res, station[["SA"]])
               } else if ("dynamic height" == i) {
                   res <- swDynamicHeight(x)
               } else if ("distance" == i) {
@@ -393,12 +398,6 @@ setMethod(f="[[",
                           res <- c(res, rep(distance, length(x@data$station[[stn]]@data$temperature)))
 
                   }
-              } else if ("depth" == i) {
-                  res <- unlist(lapply(x[["station"]], function(x) x[["depth"]]))
-              } else if ("pressure" == i) {
-                  res <- unlist(lapply(x[["station"]], function(x) x[["pressure"]]))
-              } else if ("z" == i) {
-                  res <- unlist(lapply(x[["station"]], function(x) x[["z"]]))
               } else if ("time" == i) {
                   ## time is not in the overall metadata ... look in the individual objects
                   res <- unlist(lapply(x@data$station, function(stn) stn[["time"]]))
