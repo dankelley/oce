@@ -72,6 +72,9 @@ within the stations in the section. If this flag is available in
 the first station of the section, then the flag values are looked
 up for every station.
 }
+
+If \code{j} is \code{"byStation"}, then a list is returned, with
+one (unnamed) item per station.
 }
 
 \section{Details of the general method}{
@@ -118,6 +121,12 @@ If none of the above-listed conditions holds, then \code{NULL} is returned.
 data(section)
 length(section[["latitude"]])
 length(section[["latitude", "byStation"]])
+# Vector of all salinities, for all stations
+Sv <- section[["salinity"]]
+# List of salinities, grouped by station
+Sl <- section[["salinity", "byStation"]]
+# First station salinities
+Sl[[1]]
 
 }
 \seealso{
