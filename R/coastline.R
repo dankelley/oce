@@ -674,6 +674,8 @@ setMethod(f="plot",
                       if (is.null(col))
                           col <- "lightgray"
                       polygon(longitude, latitude, border=border, col=col, ...)
+                      if (axes)
+                          box()
                   } else {
                       if (is.null(col))
                           col <- "black"
