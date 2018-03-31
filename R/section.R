@@ -1105,10 +1105,12 @@ sectionAddCtd <- sectionAddStation
 #'
 #' @param pch Indication of symbol type; defaults to \code{\link{par}("pch")}.
 #'
+#' @param labcex Size of characters in contour labels (passed to
+#' \code{\link{contour}}).
+#'
 #' @template debugShortTemplate
 #'
-#' @param ... Optional arguments passed to the contouring function, e.g. using
-#' \code{labcex=1} will increase the size of contour labels.
+#' @param ... Optional arguments passed to the contouring function.
 #'
 #' @return If the original section was gridded, the return value is that section.
 #' Otherwise, the gridded section that was constructed for the plot is returned.
@@ -1211,6 +1213,7 @@ setMethod(f="plot",
                               showBottom=TRUE,
                               axes=TRUE, mgp, mar,
                               col, cex, pch,
+                              labcex=1,
                               debug, ...)
           {
               if (missing(debug))
@@ -1646,8 +1649,6 @@ setMethod(f="plot",
                       ##cat("bottom.x: (length", length(bottom.x),")");print(bottom.x)
                       ##cat("bottom.y: (length", length(bottom.y),")");print(bottom.y)
 
-                      dots <- list(...) # adjust plot parameter labcex, unless user did
-
                       ##par(xaxs="i", yaxs="i")
 
                       ## Put x in order, if it's not already
@@ -1697,84 +1698,44 @@ setMethod(f="plot",
                           zrange <- try(range(zz[xx.unique, yy.unique], na.rm=TRUE), silent=TRUE)
                           if (!is.null(contourLevels) && !is.null(contourLabels)) {
                               oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
-                              if (!("labcex" %in% dots$labcex)) {
-                                  if (ztype == 'contour') {
-                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
-                                              axes=FALSE, add=TRUE, labcex=0.8,
-                                              levels=contourLevels, labels=contourLabels,
-                                              col=col,
-                                              xaxs="i", yaxs="i",
-                                              ...)
-                                  } else if (ztype == "image") {
-                                      zz[zz < min(zbreaks)] <- min(zbreaks)
-                                      zz[zz > max(zbreaks)] <- max(zbreaks)
-                                      if (is.function(zcol))
-                                          zcol <- zcol(1+length(zbreaks))
-                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
-                                                      levels=zbreaks, col=zcol)
-                                  } else {
-                                      stop("unknown ztype: \"", ztype, "\" [1]")
-                                  }
-                              } else {
-                                  if (ztype == 'contour') {
+                              if (ztype == 'contour') {
                                   contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
                                           axes=FALSE, add=TRUE,
                                           levels=contourLevels, labels=contourLabels,
                                           col=col,
                                           xaxs="i", yaxs="i",
-                                          ...)
-                                  } else if (ztype == "image") {
-                                      zz[zz < min(zbreaks)] <- min(zbreaks)
-                                      zz[zz > max(zbreaks)] <- max(zbreaks)
-                                      if (is.function(zcol))
-                                          zcol <- zcol(1+length(zbreaks))
-                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
-                                                      levels=zbreaks, col=zcol)
-                                  } else {
-                                      stop("unknown ztype: \"", ztype, "\" [2]")
-                                  }
+                                          labcex=labcex, ...)
+                              } else if (ztype == "image") {
+                                  zz[zz < min(zbreaks)] <- min(zbreaks)
+                                  zz[zz > max(zbreaks)] <- max(zbreaks)
+                                  if (is.function(zcol))
+                                      zcol <- zcol(1+length(zbreaks))
+                                  .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
+                                                  levels=zbreaks, col=zcol)
+                              } else {
+                                  stop("unknown ztype: \"", ztype, "\" [2]")
                               }
                           } else {
                               oceDebug(debug, "automatically-calculated contourLevels\n")
                               zrange <- range(zz[xx.unique, yy.unique], na.rm=TRUE)
-                              if (is.null(dots$labcex)) {
-                                  if (ztype == 'contour') {
-                                      zzrange <- range(zz[xx.unique, yy.unique], na.rm=TRUE)
-                                      if (any(!is.finite(zzrange)))
-                                          stop("cannot draw a contour diagram because all values are NA or Inf")
-                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
-                                              labcex=0.8, add=TRUE, col=col, ...)
-                                  } else if (ztype == "image") {
-                                      zz[zz < min(zbreaks)] <- min(zbreaks)
-                                      zz[zz > max(zbreaks)] <- max(zbreaks)
-                                      ## FIXME: testing here
-                                      if (is.function(zcol))
-                                          zcol <- zcol(1+length(zbreaks))
-                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
-                                                      levels=zbreaks, col=zcol)
-                                  } else if (ztype == "points") {
-                                      ## nothing to do now
-                                  } else {
-                                      stop("unknown ztype: \"", ztype, "\" [3]")
-                                  }
+                              if (ztype == 'contour') {
+                                  zzrange <- range(zz[xx.unique, yy.unique], na.rm=TRUE)
+                                  if (any(!is.finite(zzrange)))
+                                      stop("cannot draw a contour diagram because all values are NA or Inf")
+                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
+                                          add=TRUE, col=col, labcex=labcex, ...)
+                              } else if (ztype == "image") {
+                                  zz[zz < min(zbreaks)] <- min(zbreaks)
+                                  zz[zz > max(zbreaks)] <- max(zbreaks)
+                                  ## FIXME: testing here
+                                  if (is.function(zcol))
+                                      zcol <- zcol(1+length(zbreaks))
+                                  .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
+                                                  levels=zbreaks, col=zcol)
+                              } else if (ztype == "points") {
+                                  ## nothing to do now
                               } else {
-                                  if (ztype == 'contour') {
-                                      contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
-                                              axes=FALSE,
-                                              add=TRUE,
-                                              col=col,
-                                              xaxs="i", yaxs="i",
-                                              ...)
-                                  } else if (ztype == "image") {
-                                      zz[zz < min(zbreaks)] <- min(zbreaks)
-                                      zz[zz > max(zbreaks)] <- max(zbreaks)
-                                      if (is.function(zcol))
-                                          zcol <- zcol(1+length(zbreaks))
-                                      .filled.contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique, yy.unique],
-                                                      levels=zbreaks, col=zcol)
-                                  } else {
-                                      stop("unknown ztype: \"", ztype, "\" [4]")
-                                  }
+                                  stop("unknown ztype: \"", ztype, "\" [3]")
                               }
                           }
                       }

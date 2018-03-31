@@ -13,7 +13,8 @@
   clongitude, clatitude, span, projection = NULL, xtype = "distance",
   ytype = "depth", ztype = "contour", zbreaks = NULL, zcol = NULL,
   legend.loc = "bottomright", showStations = FALSE, showStart = TRUE,
-  showBottom = TRUE, axes = TRUE, mgp, mar, col, cex, pch, debug, ...)
+  showBottom = TRUE, axes = TRUE, mgp, mar, col, cex, pch, labcex = 1,
+  debug, ...)
 }
 \arguments{
 \item{x}{a \code{section} object, e.g. as created by \code{\link{as.section}}
@@ -135,6 +136,9 @@ a default is set up.}
 
 \item{pch}{Indication of symbol type; defaults to \code{\link{par}("pch")}.}
 
+\item{labcex}{Size of characters in contour labels (passed to
+\code{\link{contour}}).}
+
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
@@ -142,8 +146,7 @@ turns off the printing, while higher values suggest that more information
 be printed. If \code{debug} is not supplied, it defaults to
 \code{\link{getOption}("oceDebug")}.}
 
-\item{...}{Optional arguments passed to the contouring function, e.g. using
-\code{labcex=1} will increase the size of contour labels.}
+\item{...}{Optional arguments passed to the contouring function.}
 }
 \value{
 If the original section was gridded, the return value is that section.
