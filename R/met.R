@@ -606,7 +606,7 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
         rawData[["v"]][zero] <- 0
     }
     rawData$time <- time
-    res@data <- rawData
+    res@data <- as.list(rawData)
     pl <- paste("read.met(\"", filename, "\", type=", if (is.null(type)) "NULL" else type, ", tz=\"", tz, "\")", sep="")
     res@processingLog <- processingLogAppend(res@processingLog, pl)
     names <- names(res@data)

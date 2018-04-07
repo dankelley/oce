@@ -502,11 +502,18 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
             res@data[[name]] <- headTail(x@data[[name]], n)
     } else if (inherits(x, "echosounder")) {
         look <- headTail(seq_along(x@data$latitude), n=n)
-        message("look=", paste(look, collapse=" "))
         for (name in c("longitude", "latitude", "time"))
             res@data[[name]] <- x@data[[name]][look]
-        res@data$a <- x@data$a[look, ] 
+        res@data$a <- x@data$a[look, ]
         ## FIXME: decide whether the 'Slow' variables should be altered
+    } else if (inherits(x, "lisst")) {
+        look <- headTail(seq_along(x@data[[1]]), n=n)
+        for (name in names(x@data))
+            res@data[[name]] <- x@data[[name]][look]
+    } else if (inherits(x, "met")) {
+        look <- headTail(seq_along(x@data$temperature), n=n)
+        for (name in names(x@data))
+            res@data[[name]] <- x@data[[name]][look]
     } else if (inherits(x, "section")) {
         look <- headTail(seq_along(x@metadata$latitude), n=n)
         for (name in c("stationId", "longitude", "latitude", "time"))
