@@ -71,7 +71,7 @@ Another approach would be to use Gavin Simpson's
 a copy of the Environment Canada listing of stations, and its
 \code{find_station} function provides an easy way to determine Station IDs.
 After that, its \code{hcd_hourly} function (and related functions) make
-it easy to read data. These data can then be converted to the 
+it easy to read data. These data can then be converted to the
 \code{met} class with \code{\link{as.met}}, although doing so leaves
 many important metadata blank.
 }
