@@ -239,6 +239,140 @@ as.oce <- function(x, ...)
     res
 }
 
+#' Concatenate oce objects
+#'
+#' The elements in the \code{data} slot are combined sequentially, as
+#' appropriate (e.g. it makes no sense to combine the \code{distance}
+#' item within an \code{\link{adp-class}} object). Some elements of
+#' the \code{metadata} slot may also be combined as appropriate (e.g.
+#' the \code{flags} are concatenated, if extant). Some alignment
+#' is also required for some object classes (e.g. \code{\link{adp-class}}
+#' objects have \code{numberOfSamples} in the \code{metadata} slot,
+#' and \code{\link{plot,adp-method}} requires that this values
+#' matches up with the first dimension of \code{v} and similar
+#' elements in the \code{data} slot). See \dQuote{Examples} for
+#' illustrations with the object types that have been tested
+#' to date, and \dQuote{History} for notes on development.
+#'
+#' @param ... one or more oce objects or a list containing such
+#' objects, potentially followed by other items that are ignored.
+#'
+#' @return An oce object that is formed by concatenating the input objects.
+#'
+#' @author Dan Kelley
+#'
+#' @section History:
+#' As of Apr 9, 2018, this function handles only objects of
+#' \code{\link{met-class}} and \code{\link{adp-class}}.
+#' Other classes may be handled at least partially, but a fair
+#' bit of special-case coding may be required, because the internal
+#' workings of the various classes differ. Users are asked
+#' to report problems via github issues.
+#'
+#' @examples
+#'
+#' ## 1. Combine two adp objects (created by splitting one)
+#' data(adp)
+#' midtime <- median(adp[["time"]])
+#' a <- subset(adp, time <= midtime)
+#' b <- subset(adp, time > midtime)
+#' ab <- concatenate(a, b)
+#' plot(ab)
+#'
+#'\dontrun{
+#' ## 2. Combine two monthly "met" datasets from Environment Canada.
+#' d8 <- read.met(download.met(id=6358, year=2003, month=8, destdir="."))
+#' d9 <- read.met(download.met(id=6358, year=2003, month=9, destdir="."))
+#' dd <- concatenate(d8, d9)
+#' plot(dd)
+#'}
+concatenate <- function(...)
+{
+    dots <- list(...)
+    ndots <- length(dots)
+    if (0 == ndots)
+        return(NULL)
+    ## Handle the case of first argument being a list (all other arguments
+    ## then being ignored).
+    if (is.list(dots[[1]])) {
+        dots <- dots[[1]]
+        ndots <- length(dots)
+    }
+    if (1 == ndots)
+        return(dots[[1]])
+    ## Insist everything be an oce object.
+    for (i in seq_len(ndots))
+        if (!inherits(dots[[i]], "oce"))
+            stop("concatenate() argument ", i, " does not inherit from \"oce\"")
+
+    ## Concatenate the data (and flags, if there are such).
+    res <- dots[[1]]
+    n1 <- sort(names(dots[[1]]@data))
+    f1 <- if ("flags" %in% names(dots[[1]]@metadata$flags))
+        sort(names(dots[[1]]@metadata$flags)) else NULL
+    for (i in 2:ndots) {
+        ## Data.
+        ni <- sort(names(dots[[i]]@data))
+        if (!identical(n1, ni))
+            stop("data name mismatch between object 1 (",
+                 paste(n1, collapse=" "), ") and object ", i,
+                 "(", paste(ni, collapse=" "), ")")
+        data <- dots[[i]]@data
+        for (n in ni) {
+            if (is.vector(dots[[1]]@data[[n]]) || n == "time" || is.factor(n)) {
+                res@data[[n]] <- c(res@data[[n]], data[[n]])
+            } else if (is.matrix(dots[[1]]@data[[n]])) {
+                res@data[[n]] <- rbind(res@data[[n]], data[[n]])
+            } else if (is.array(dots[[1]]@data[[n]])) {
+                dim <- dim(dots[[1]]@data[[n]])
+                if (3 != length(dim))
+                    stop("items in data must be vector, matrix, or 3d array (got ", length(dim), " dimensions)")
+                tmp <- array(res@data[[n]][1,1,1],
+                             dim=c(dim[1]+dim(dots[[i]]@data[[n]])[1], dim[2], dim[3]))
+                for (k in seq_len(dim[3])) {
+                    tmp[,,k] <- rbind(res@data[[n]][,,k], dots[[i]]@data[[n]][,,k])
+                }
+                res@data[[n]] <- tmp
+            }
+        }
+        ## Fix up dimensionality
+        for (n in ni) {
+            if (is.array(dots[[1]]@data[[n]])) {
+                len <- length(res@data[[n]])
+                dim <- dim(dots[[1]]@data[[n]])
+                dim[1] <- length(res@data[[n]]) / dim[2] / dim[3]
+                dim(res@data[[n]]) <- dim
+            }
+        }
+        ## Flags.
+        if (!is.null(f1)) {
+            metadata <- dots[[i]]@metadata
+            fi <- sort(names(dots[[i]]@metadata$flags))
+            if (!identical(f1, fi))
+                stop("flag mismatch between object 1 (",
+                     paste(f1, collapse=" "), ") and object ", i,
+                     "(", paste(fi, collapse=" "), ")")
+            for (f in fi) {
+                res@metadata$flags[[f]] <- c(res@metadata$flags[[f]], metadata$flags[[f]])
+            }
+        }
+    }
+    ## Class-specific details
+    if (inherits(res, "adp")) {
+        ## for reasons unknown to me, the tzone gets localized
+        attr(res@data$time, "tzone") <- attr(dots[[1]]@data$time, "tzone")
+        ## really, we ought not to have this in the metadata, since it
+        ## requires just this silly sort of synching (also with subset(),
+        ## I assume)
+        res@metadata$numberOfSamples <- dim(res@data$v)[1]
+        ## undo copying ... we could also skip it earlier but
+        ## it seems a bit cleaner this way
+        res@data$distance <- dots[[1]]@data$distance
+    }
+    res
+}
+
+
 
 #' Replace the Heading for One Instrument With That of Another
 #'

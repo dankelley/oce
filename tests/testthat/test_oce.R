@@ -256,9 +256,21 @@ test_that("tail_section", {
 })
 
 test_that("trim_ts", {
-   x <- seq(0, 10, 0.1)
-   xlim <- c(2.0, 2.9)
-   oce:::trim_ts(x, xlim, 0)
-   expect_equal(oce:::trim_ts(x, xlim, 0), list(from=20, to=31))
+          x <- seq(0, 10, 0.1)
+          xlim <- c(2.0, 2.9)
+          oce:::trim_ts(x, xlim, 0)
+          expect_equal(oce:::trim_ts(x, xlim, 0), list(from=20, to=31))
+})
+
+test_that("concatenate adp", {
+          data(adp)
+          midtime <- median(adp[["time"]])
+          a <- subset(adp, time <= midtime)
+          b <- subset(adp, time > midtime)
+          ab <- concatenate(a, b)
+          expect_equal(ab[["time"]], adp[["time"]])
+          expect_equal(ab[["v"]], adp[["v"]])
+          expect_equal(ab[["a"]], adp[["a"]])
+          expect_equal(ab[["distance"]], adp[["distance"]])
 })
 
