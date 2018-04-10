@@ -409,6 +409,19 @@ setMethod(f="summary",
               invisible(callNextMethod()) # summary
           })
 
+setMethod(f="Concatenate",
+          signature="adp",
+          definition=function(object, ...) {
+              message("adp version about to callNextMethod")
+              rval <- callNextMethod()
+              ## Make the metadata profile count match the data array dimensions.
+              rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
+              ## Undo the copying done by the parent method (which had no way to know that 'distance' was a special
+              ## variable in this particular case).
+              rval@data$distance <- object@data$distance
+              message("adp done")
+              rval
+          })
 
 #' @title Extract Something from of an adp Object
 #'
