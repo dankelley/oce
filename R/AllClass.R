@@ -645,7 +645,10 @@ setMethod("concatenate",
                       if (is.array(dots[[1]]@data[[n]])) {
                           len <- length(res@data[[n]])
                           dim <- dim(dots[[1]]@data[[n]])
-                          dim[1] <- length(res@data[[n]]) / dim[2] / dim[3]
+                          ndim <- length(dim)
+                          denom <- if (ndim == 2) dim[2] else if (ndim == 3) dim[2] * dim[3]
+                          dim[1] <- length(res@data[[n]]) / denom
+                          ##message("dim=", paste(dim, collapse=" "))
                           dim(res@data[[n]]) <- dim
                       }
                   }

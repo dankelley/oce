@@ -16,7 +16,20 @@ objects (in which case the remaining arguments are ignored).}
 \description{
 Concatenate oce objects
 
-This function concatenates oce objects.
+This function concatenates oce objects. It is intended
+for objects holding data sampled through time, and it works by pasting
+together data linearly if they are vectors, by row if they are matrices,
+and by second index if they are arrays. It has been tested for the following
+classes:
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{ctd-class}},
+and
+\code{\link{met-class}}. It may do useful things for other classes, and
+so users are encouraged to try, and to report problems to the developers.
+It is unlikely that the function will do anything even remotely useful
+for image and topographic data, to name just two cases that do not fit
+the sampled-over-time category.
 }
 \examples{
 ## 1. Split, then recombine, a ctd object.
