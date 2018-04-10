@@ -597,15 +597,16 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
 #              message("ctd")
 #          })
 
-setGeneric("Concatenate",
+setGeneric("concatenate",
            function(object, ...) {
-               standardGeneric("Concatenate")
+               standardGeneric("concatenate")
            })
 
 #' Create composite objects
 #'
 #' Create an oce object by stringing together some other objects.
-#' @param object An object of class \code{\link{oce}}.
+#' @param object An object of class \code{\link{oce}}, or a list containing such
+#' objects (in which case the remaining arguments are ignored).
 #' @param ... Optional additional object of class \code{\link{oce}}.
 #' @examples
 #' ## 1. Combine two adp objects (created by splitting one)
@@ -621,7 +622,6 @@ setGeneric("Concatenate",
 #' d8 <- read.met(download.met(id=6358, year=2003, month=8, destdir="."))
 #' d9 <- read.met(download.met(id=6358, year=2003, month=9, destdir="."))
 #' dd <- concatenate(d8, d9)
-#' plot(dd)
 #'}
 #'
 #' @section Historical note:
@@ -631,7 +631,7 @@ setGeneric("Concatenate",
 #' imply that the results will be meaningful because some classes require special
 #' customization.  It is hoped that users will let the developers
 #' know (via github issues) of other classes that need support.
-setMethod("Concatenate",
+setMethod("concatenate",
           signature="oce",
           definition=function(object, ...) {
               dots <- list(...)
@@ -652,17 +652,16 @@ setMethod("Concatenate",
               ## Concatenate the data (and flags, if there are such).
               res <- object
               n1 <- sort(names(res@data))
-              f1 <- if ("flags" %in% names(dots[[1]]@metadata$flags))
-                  sort(names(res@metadata$flags)) else NULL
+              f1 <- if ("flags" %in% names(object@metadata) && length(object@metadata$flags))
+                  sort(names(object@metadata$flags)) else NULL
               for (i in 1:ndots) {
                   ## Data.
                   ni <- sort(names(dots[[i]]@data))
                   if (!identical(n1, ni))
-                      stop("data name mismatch between object 1 (",
-                           paste(n1, collapse=" "), ") and object ", i,
+                      stop("data name mismatch between argument 1 (",
+                           paste(n1, collapse=" "), ") and argument ", i,
                            "(", paste(ni, collapse=" "), ")")
                   data <- dots[[i]]@data
-                  message("defined data OK")
                   for (n in ni) {
                       if (is.vector(dots[[1]]@data[[n]]) || n == "time" || is.factor(n)) {
                           res@data[[n]] <- c(res@data[[n]], data[[n]])
@@ -693,8 +692,8 @@ setMethod("Concatenate",
                       metadata <- dots[[i]]@metadata
                       fi <- sort(names(dots[[i]]@metadata$flags))
                       if (!identical(f1, fi))
-                          stop("flag mismatch between object 1 (",
-                               paste(f1, collapse=" "), ") and object ", i,
+                          stop("flag mismatch between argument 1 (",
+                               paste(f1, collapse=" "), ") and argument ", i,
                                "(", paste(fi, collapse=" "), ")")
                       for (f in fi) {
                           res@metadata$flags[[f]] <- c(res@metadata$flags[[f]], metadata$flags[[f]])
@@ -702,8 +701,13 @@ setMethod("Concatenate",
                   }
               }
               ## for reasons unknown to me, the tzone gets localized
-              attr(res@data$time, "tzone") <- attr(dots[[1]]@data$time, "tzone")
+              attr(res@data$time, "tzone") <- attr(object@data$time, "tzone")
               res
           })
 
+setMethod("concatenate",
+          c(object="list"),
+          function(object) {
+              do.call("concatenate", list(object[[1]], object[[2:length(object)]]))
+          })
 
