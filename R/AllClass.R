@@ -670,6 +670,10 @@ setMethod("concatenate",
               res
           })
 
+#' Concatenate a list of oce objects
+#' @param object A list holding objects of \code{\link{oce-class}}.
+#' @return An object of class corresponding to that in \code{object}.
+#' @family functions that concatenate \code{oce} objects.
 setMethod("concatenate",
           c(object="list"),
           function(object) {

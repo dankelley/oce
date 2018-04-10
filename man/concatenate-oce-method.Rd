@@ -13,6 +13,9 @@ objects (in which case the remaining arguments are ignored).}
 
 \item{...}{Optional additional objects of \code{\link{oce-class}}.}
 }
+\value{
+An object of \code{\link{oce-class}}.
+}
 \description{
 Concatenate oce objects
 
@@ -54,7 +57,8 @@ MET <- concatenate(met1, met2)
 
 }
 \seealso{
-Other functions that concatenate \code{oce} objects.: \code{\link{concatenate,adp-method}}
+Other functions that concatenate \code{oce} objects.: \code{\link{concatenate,adp-method}},
+  \code{\link{concatenate,list-method}}
 }
 \author{
 Dan Kelley

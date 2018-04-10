@@ -18,6 +18,7 @@
 #"
 #' @param ... Optional additional objects of \code{\link{<%=class%>-class}}.
 #'
+#' @return An object of \code{\link{<%=class%>-class}}. 
 #'
 #' @examples
 #' ## 1. Split, then recombine, a ctd object.
