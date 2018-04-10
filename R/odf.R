@@ -545,6 +545,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(mu*einstein/s/m^2), scale="")
         } else if (1 == length(grep("^ug/l$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(mu*g/l), scale="")
+        } else if (1 == length(grep("^umol[ ]*photons/m2/s$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(mu*mol/m^2/s), scale="")
         } else if (1 == length(grep("^UTC$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(), scale="")
         } else if (ODFunits[i] == "V") {
