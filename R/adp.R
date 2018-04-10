@@ -409,7 +409,11 @@ setMethod(f="summary",
               invisible(callNextMethod()) # summary
           })
 
-#' Specialize "concatenate" for adp objects. 
+#' Concatenate adp objects
+#'
+#' @templateVar class adp
+#'
+#' @template concatenateTemplate
 setMethod(f="concatenate",
           signature="adp",
           definition=function(object, ...) {

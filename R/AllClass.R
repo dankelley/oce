@@ -583,54 +583,16 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
     object
 }
 
-
-#setMethod(f="head",
-#          signature("coastline"),#, "ANY"),
-#          definition=function(x, n=6L, ...) {
-#              message("in head")
-#              message("class of x:", class(x))
-#          })
-#
-#setMethod(f="head",
-#          signature(x="ctd", n="ANY"),
-#          definition=function(x, n=6L, ...) {
-#              message("ctd")
-#          })
-
 setGeneric("concatenate",
            function(object, ...) {
                standardGeneric("concatenate")
            })
 
-#' Create composite objects
+#' Concatenate oce objects
 #'
-#' Create an oce object by stringing together some other objects.
-#' @param object An object of class \code{\link{oce}}, or a list containing such
-#' objects (in which case the remaining arguments are ignored).
-#' @param ... Optional additional object of class \code{\link{oce}}.
-#' @examples
-#' ## 1. Combine two adp objects (created by splitting one)
-#' data(adp)
-#' midtime <- median(adp[["time"]])
-#' a <- subset(adp, time <= midtime)
-#' b <- subset(adp, time > midtime)
-#' ab <- concatenate(a, b)
-#' plot(ab)
-#' 
-#'\dontrun{
-#' ## 2. Combine two monthly "met" datasets from Environment Canada.
-#' d8 <- read.met(download.met(id=6358, year=2003, month=8, destdir="."))
-#' d9 <- read.met(download.met(id=6358, year=2003, month=9, destdir="."))
-#' dd <- concatenate(d8, d9)
-#'}
+#' @templateVar class oce
 #'
-#' @section Historical note:
-#' This was added on April 10, 2018, and has only been tested on \code{\link{met-class}}
-#' and \code{\link{adp-class}} to date. It is written in a general way, and therefore
-#' may do something (without generating errors) on other classes, but that does not
-#' imply that the results will be meaningful because some classes require special
-#' customization.  It is hoped that users will let the developers
-#' know (via github issues) of other classes that need support.
+#' @template concatenateTemplate
 setMethod("concatenate",
           signature="oce",
           definition=function(object, ...) {
