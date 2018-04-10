@@ -409,6 +409,18 @@ setMethod(f="summary",
               invisible(callNextMethod()) # summary
           })
 
+#' Specialize "concatenate" for adp objects. 
+setMethod(f="concatenate",
+          signature="adp",
+          definition=function(object, ...) {
+              rval <- callNextMethod() # do general work
+              ## Make the metadata profile count match the data array dimensions.
+              rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
+              ## The general method didn't know that 'distance' was special, and should
+              ## not be concatenated, so undo that.
+              rval@data$distance <- object@data$distance
+              rval
+          })
 
 #' @title Extract Something from of an adp Object
 #'
