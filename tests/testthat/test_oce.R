@@ -268,10 +268,8 @@ test_that("concatenate adp", {
           a <- subset(adp, time <= t0)
           b <- subset(adp, time > t0)
           ab <- concatenate(a, b)
-          expect_equal(ab[["time"]], adp[["time"]])
-          expect_equal(ab[["v"]], adp[["v"]])
-          expect_equal(ab[["a"]], adp[["a"]])
-          expect_equal(ab[["distance"]], adp[["distance"]])
+          for (n in c("time", "v", "a", "distance"))
+            expect_equal(ab[[n]], adp[[n]])
 })
 
 test_that("concatenate adv", {
@@ -280,9 +278,8 @@ test_that("concatenate adv", {
           a <- subset(adv, time <= t0)
           b <- subset(adv, time > t0)
           ab <- concatenate(a, b)
-          expect_equal(ab[["time"]], adv[["time"]])
-          expect_equal(ab[["v"]], adv[["v"]])
-          expect_equal(ab[["a"]], adv[["a"]])
+          for (n in c("time", "v", "a", "distance"))
+            expect_equal(ab[[n]], adv[[n]])
 })
 
 test_that("concatenate ctd", {
@@ -291,8 +288,7 @@ test_that("concatenate ctd", {
           a <- subset(ctd, scan <= scan0)
           b <- subset(ctd, scan > scan0)
           ab <- concatenate(a, b)
-          for (n in c("scan", "pressure", "salinity", "temperature")) {
+          for (n in c("scan", "pressure", "salinity", "temperature"))
             expect_equal(ab[[n]], ctd[[n]])
-          }
 })
 
