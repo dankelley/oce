@@ -21,22 +21,22 @@ This function concatenates adp objects.
 \examples{
 ## 1. Split, then recombine, a ctd object.
 data(ctd)
-a <- subset(ctd, scan <= median(ctd[["scan"]]))
-b <- subset(ctd, scan > median(ctd[["scan"]]))
-ab <- concatenate(a,b)
+ctd1 <- subset(ctd, scan <= median(ctd[["scan"]]))
+ctd2 <- subset(ctd, scan > median(ctd[["scan"]]))
+CTD <- concatenate(ctd1, ctd2)
 
-## 2. Split, then recombine an adp object.
+## 2. Split, then recombine, an adp object.
 data(adp)
 midtime <- median(adp[["time"]])
-a <- subset(adp, time <= midtime)
-b <- subset(adp, time > midtime)
-ab <- concatenate(a, b)
+adp1 <- subset(adp, time <= midtime)
+adp2 <- subset(adp, time > midtime)
+ADP <- concatenate(adp1, adp2)
 
 \dontrun{
-## 3. Download and combine EnvCan monthly met datasets.
-d8 <- read.met(download.met(id=6358, year=2003, month=8, destdir="."))
-d9 <- read.met(download.met(id=6358, year=2003, month=9, destdir="."))
-dd <- concatenate(d8, d9)
+## 3. Download two met files and combine them.
+met1 <- read.met(download.met(id=6358, year=2003, month=8))
+met2 <- read.met(download.met(id=6358, year=2003, month=9))
+MET <- concatenate(met1, met2)
 }
 
 }
