@@ -127,7 +127,7 @@ labelling the axis.}
 
 \item{xlim}{Optional limit for x axis, which can apply to any plot type.
 This is ignored if the plotted x variable is something for which a limit
-may be specified with an argument, e.g. \code{xlim} is ignored for a 
+may be specified with an argument, e.g. \code{xlim} is ignored for a
 salinity profile, because \code{Slim} ought to be given in such a case.}
 
 \item{ylim}{Optional limit for y axis, which can apply to any plot type,
