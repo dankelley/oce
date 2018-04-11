@@ -1,6 +1,6 @@
 library(oce)
-## devtools::install <- github("gavinsimpson/canadaHCD")
-library(canadaHCD)
+if (!require(canadaHCD))
+    devtools::install_github("gavinsimpson/canadaHCD")
 
 testthat::context("met")
 
