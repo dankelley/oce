@@ -58,7 +58,8 @@ MET <- concatenate(met1, met2)
 }
 \seealso{
 Other functions that concatenate \code{oce} objects.: \code{\link{concatenate,list-method}},
-  \code{\link{concatenate,oce-method}}
+  \code{\link{concatenate,oce-method}},
+  \code{\link{concatenate}}
 }
 \author{
 Dan Kelley

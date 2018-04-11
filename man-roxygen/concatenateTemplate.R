@@ -12,13 +12,13 @@
 #' It is unlikely that the function will do anything even remotely useful
 #' for image and topographic data, to name just two cases that do not fit
 #' the sampled-over-time category.
-#"
+#'
 #' @param object An object of \code{\link{<%=class%>-class}}, or a list containing such
 #' objects (in which case the remaining arguments are ignored).
-#"
+#'
 #' @param ... Optional additional objects of \code{\link{<%=class%>-class}}.
 #'
-#' @return An object of \code{\link{<%=class%>-class}}. 
+#' @return An object of \code{\link{<%=class%>-class}}.
 #'
 #' @examples
 #' ## 1. Split, then recombine, a ctd object.

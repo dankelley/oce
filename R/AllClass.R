@@ -218,7 +218,7 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 #' @param y Ignored; only present here because S4 object for generic \code{plot}
 #' need to have a second parameter before the \code{...} parameter.
 #' @param ... Passed to \code{\link{hist}}, \code{\link{plot}}, or to
-#" \code{\link{pairs}}, according to whichever does the plotting.
+#' \code{\link{pairs}}, according to whichever does the plotting.
 #' @examples
 #' library(oce)
 #' o <- new("oce")
@@ -583,6 +583,11 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
     object
 }
 
+#' Concatenate oce objects
+#' @param object An object of \code{\link{oce-class}}.
+#' @param ... Optional additional objects of \code{\link{oce-class}}.
+#' @return An object of class corresponding to that of \code{object}.
+#' @family functions that concatenate \code{oce} objects.
 setGeneric("concatenate",
            function(object, ...) {
                standardGeneric("concatenate")

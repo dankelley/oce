@@ -18,5 +18,6 @@ Concatenate a list of oce objects
 }
 \seealso{
 Other functions that concatenate \code{oce} objects.: \code{\link{concatenate,adp-method}},
-  \code{\link{concatenate,oce-method}}
+  \code{\link{concatenate,oce-method}},
+  \code{\link{concatenate}}
 }

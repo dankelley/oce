@@ -61,7 +61,7 @@ setMethod(f="[[<-",
 #' @usage data(lisst)
 #' @author Dan Kelley
 #' @source This was constructed artificially using \code{\link{as.lisst}},
-#" to approximately match values that might be measured in the field.
+#' to approximately match values that might be measured in the field.
 #' @family datasets provided with \code{oce}
 NULL
 
