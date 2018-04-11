@@ -293,10 +293,10 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^flSP[0-9]?$", name, useBytes=TRUE))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint")
-    } else if (1 == length(grep("^flsPR$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flSPR$", name, useBytes=TRUE))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint, Rhodamine")
-    } else if (1 == length(grep("^flsPuv[0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flSPuv[0-9]?$", name, useBytes=TRUE))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint, UV")
     } else if (1 == length(grep("^flS$", name, useBytes=TRUE))) {

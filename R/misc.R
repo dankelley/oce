@@ -2163,6 +2163,8 @@ fullFilename <- function(filename)
 #' used as the separator; if not, no separator is used.
 #' @param unit optional unit to use, if the default is not satisfactory. This
 #' might be the case if for example temperature was not measured in Celcius.
+#' @param debug optional debugging flag. Setting to 0 turns off debugging,
+#' while setting to 1 causes some debugging information to be printed.
 #' @return A character string or expression, in either a long or a shorter
 #' format, for use in the indicated axis at the present plot size.  Whether the
 #' unit is enclosed in parentheses or square brackets is determined by the
@@ -2170,12 +2172,14 @@ fullFilename <- function(filename)
 #' \code{"("}.  Whether spaces are used between the unit and these deliminators
 #' is set by \code{psep} or \code{\link{getOption}("oceUnitSep")}.
 #' @author Dan Kelley
-resizableLabel <- function(item, axis, sep, unit=NULL)
+resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "resizableLabel(item=\"", item,
+             "\", axis=\"", axis,
+             "\", sep=\"", if (missing(sep)) "(missing)" else sep, "\", ...) {\n",
+            sep="", unindent=1)
     if (missing(item))
         stop("must provide 'item'")
-    if (missing(axis))
-        axis <- "x"
     if (axis != "x" && axis != "y")
         stop("axis must be \"x\" or \"y\"")
     itemAllowed <- c("S", "C", "conductivity mS/cm", "conductivity S/m", "T",
@@ -2192,7 +2196,8 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
         if (is.list(unit)) {
             unit <- unit[[1]] # second item is a scale
         }
-        unit <- unit[[1]] # focus on just the unit (which is an expression)
+        if (0 == length(unit) || 0 == nchar(unit))
+            unit <- NULL
     }
     ## Previous to 2016-06-11, an error was reported if there was no match.
     itemAllowedMatch <- pmatch(item, itemAllowed)
@@ -2424,13 +2429,14 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
         var <- gettext("Spec. dens.", domain="R-oce")
         abbreviated <- bquote(.(var)*.(L)*m^2/cph*.(R))
     } else {
-        ##message("unknown quantity")
+        oceDebug(debug, "unknown item=\"", item, "\"\n", sep="")
         if (is.null(unit)) {
+            oceDebug(debug, "no unit given\n")
             ##message("no unit given")
             full <- item
             abbreviated <- full
         } else {
-            ##message("unit given")
+            oceDebug(debug, "unit \"", unit, "\" given\n")
             full <- bquote(.(item)*.(L)*.(unit)*.(R))
             abbreviated <- full
         }
@@ -2446,6 +2452,7 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
     ##cat("fraction=", fraction, "\n")
     #print(full)
     #print(abbreviated)
+    oceDebug(debug, "} # resizableLabel\n", unindent=1)
     if (fraction < 1) full else abbreviated
 }
 
