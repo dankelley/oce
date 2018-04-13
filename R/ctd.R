@@ -2371,8 +2371,8 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 minSoak <- 1
                 maxSoak <- 20
             }
-            oceDebug(debug-1, "Using minSoak of ", minSoak, "\n")
-            oceDebug(debug-1, "Using maxSoak of ", maxSoak, "\n")
+            oceDebug(debug, "Using minSoak of ", minSoak, "\n")
+            oceDebug(debug, "Using maxSoak of ", maxSoak, "\n")
             max.location <- which.max(smooth(pressure, kind="3R"))
             max.pressure <- smooth(pressure, kind="3R")[max.location]
             keep[max.location:n] <- FALSE
@@ -2390,7 +2390,8 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
                 ## The [1] below is to handle cases where digitization of the
                 ## pressure channel gives more than one match.
                 istart <- which(pp == min(pp[imin:imax]))[1]
-                keep <- keep & (x[["scan"]] > istart)
+                keep <- keep & (seq_along(x[["scan"]]) > istart)
+                oceDebug(debug, "istart =", istart, "\n")
             }
         } else {
             stop("'method' not recognized; must be 'index', 'downcast', 'scan', 'range', or 'sbe'")
