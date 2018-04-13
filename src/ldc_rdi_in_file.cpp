@@ -175,15 +175,15 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   FILE *fp = fopen(fn.c_str(), "rb");
   if (!fp)
     ::Rf_error("cannot open file '%s'\n", fn.c_str());
-  int from_value = from[0];
-  if (from_value < 0)
+  if (from[0] < 0)
     ::Rf_error("'from' must be positive");
-  int to_value = to[0];
-  if (to_value < 0)
+  unsigned long int from_value = from[0];
+  if (to[0] < 0)
     ::Rf_error("'to' must be positive");
-  int by_value = by[0];
-  if (by_value < 0)
+  unsigned long int to_value = to[0];
+  if (by[0] < 0)
     ::Rf_error("'by' must be positive");
+  unsigned long int by_value = by[0];
   int mode_value = mode[0];
   if (mode_value != 0 && mode_value != 1)
     ::Rf_error("'mode' must be 0 or 1");
@@ -283,7 +283,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
         break;
       }
       cindex += bytes_to_read;
-      for (int ib = 0; ib < bytes_to_read; ib++) {
+      for (unsigned int ib = 0; ib < bytes_to_read; ib++) {
         check_sum += (unsigned short int)ebuf[ib];
       }
       int cs1, cs2;

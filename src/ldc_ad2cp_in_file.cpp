@@ -141,8 +141,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   unsigned long int fileSize = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
   if (debug > 3) Rprintf("fileSize=%d\n", fileSize);
-  unsigned long int chunk = 0;
-  unsigned long int cindex = 0;
+  int chunk = 0;
+  int cindex = 0;
 
   // Ensure that the first byte we point to equals SYNC.
   // In a conventional file, starting with a SYNC char, this
@@ -182,7 +182,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       id_buf = (unsigned int*)Realloc(id_buf, nchunk, unsigned int);
       Rprintf(" > increased buffers to have nchunk=%d\n", nchunk);
     }
-    int id, dataSize;
+    int id;
+    unsigned int dataSize;
     unsigned short dataChecksum, headerChecksum;
     size_t bytes_read;
     bytes_read = fread(hbuf, 1, HEADER_SIZE, fp);
