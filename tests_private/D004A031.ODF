@@ -1,0 +1,1090 @@
+ ODF_HEADER,
+   FILE_SPECIFICATION ='C:\CTD_PROCESSING\2018004HUD\CTDDATA\D004A031.ODF'
+ CRUISE_HEADER,
+   COUNTRY_INSTITUTE_CODE=1810,
+   CRUISE_NUMBER='HUD2018004',
+   ORGANIZATION='BIO',
+   CHIEF_SCIENTIST='Andrew Cogswell',
+   START_DATE='06-Apr-2018 08:00:00.00',
+   END_DATE='24-Apr-2018 08:00:00.00',
+   PLATFORM='CCGS_Hudson',
+   CRUISE_NAME='AZMP Spring Scotian Shelf Svy',
+   CRUISE_DESCRIPTION='                     '
+ EVENT_HEADER,
+   DATA_TYPE='CTD',
+   EVENT_NUMBER='031',
+   EVENT_QUALIFIER1='1',
+   EVENT_QUALIFIER2='DN',
+   CREATION_DATE='09-APR-2018 13:35:54.00',
+   ORIG_CREATION_DATE='09-APR-2018 13:35:54.00',
+   START_DATE_TIME='09-APR-2018 13:00:46.00',
+   END_DATE_TIME='17-NOV-1858 00:00:00.00',
+   INITIAL_LATITUDE= 42.1293,
+   INITIAL_LONGITUDE= -65.4970,
+   END_LATITUDE=-99.9000,
+   END_LONGITUDE=-999.9000,
+   MIN_DEPTH=   3.0,
+   MAX_DEPTH= 215.0,
+   SAMPLING_INTERVAL=    0.00000000,
+   SOUNDING= 192.0,
+   DEPTH_OFF_BOTTOM= -23.0,
+   EVENT_COMMENTS=''
+ INSTRUMENT_HEADER,
+   INST_TYPE='Sea-Bird',
+   MODEL='SBE 9 ',
+   SERIAL_NUMBER='50601-0370',
+   DESCRIPTION='C:\CTD_PROCESSING\2018004HUD\CTDDATA\004a031.hex C:\CTD_PROCESSING\2018004HUD\CTDDATA\004A031.XMLCON'
+ HISTORY_HEADER,
+   CREATION_DATE='09-APR-2018 13:35:54.00',
+   PROCESS='* Sea-Bird SBE 9 Data File:',
+   PROCESS='* FileName = C:\CTD_ACQUISITION\2018004HUD\ctddata\004A031.hdr',
+   PROCESS='* Software Version Seasave V 7.26.6.26',
+   PROCESS='* Temperature SN = 5083',
+   PROCESS='* Conductivity SN = 3562',
+   PROCESS='* Number of Bytes Per Scan = 40',
+   PROCESS='* Number of Voltage Words = 5',
+   PROCESS='* Number of Scans Averaged by the Deck Unit = 1',
+   PROCESS='* System UpLoad Time = Apr 09 2018 13:00:47',
+   PROCESS='* NMEA Latitude = 42 07.76 N',
+   PROCESS='* NMEA Longitude = 065 29.82 W',
+   PROCESS='* NMEA UTC (Time) = Apr 09 2018 13:00:46',
+   PROCESS='* Store Lat/Lon Data = Append to Every Scan',
+   PROCESS='* SBE 11plus V 5.2',
+   PROCESS='* number of scans to average = 1',
+   PROCESS='* pressure baud rate = 9600',
+   PROCESS='* NMEA baud rate = 9600',
+   PROCESS='* surface PAR voltage added to scan',
+   PROCESS='* A/D offset = 2',
+   PROCESS='* Latitude/Longitude added to scan',
+   PROCESS='* GPIB address = 1',
+   PROCESS='* advance primary conductivity  0.073 seconds',
+   PROCESS='* advance secondary conductivity  0.073 seconds',
+   PROCESS='* autorun on power up is disabled',
+   PROCESS='* S>',
+   PROCESS='** Ship: Hudson',
+   PROCESS='** Cruise: HUD2018004',
+   PROCESS='** Chief_Scientist: Andrew Cogswell',
+   PROCESS='** Organization: BIO',
+   PROCESS='** Area_of_Operation: AZMP Scotian Shelf',
+   PROCESS='** Station_Name: BBL_05',
+   PROCESS='** Event_Number:  031',
+   PROCESS='** Sounding:  192',
+   PROCESS='** Event_Comments: 445741',
+   PROCESS='* System UTC = Apr 09 2018 13:00:47',
+   PROCESS='* Surface_Pressure_Offset =  0.28, Temperature = 7.34, Scan = 1618.0',
+   PROCESS='* Near_Surface_Scan = 1642.0, P = 0.977, T = 7.4225, S = 32.3274',
+   PROCESS='# nquan = 28',
+   PROCESS='# nvalues = 213',
+   PROCESS='# units = specified',
+   PROCESS='# name 0 = scan: Scan Count',
+   PROCESS='# name 1 = timeS: Time, Elapsed [seconds]',
+   PROCESS='# name 2 = prDM: Pressure, Digiquartz [db]',
+   PROCESS='# name 3 = t068C: Temperature [IPTS-68, deg C]',
+   PROCESS='# name 4 = c0S/m: Conductivity [S/m]',
+   PROCESS='# name 5 = t168C: Temperature, 2 [IPTS-68, deg C]',
+   PROCESS='# name 6 = c1S/m: Conductivity, 2 [S/m]',
+   PROCESS='# name 7 = altM: Altimeter [m]',
+   PROCESS='# name 8 = par/log: PAR/Logarithmic, Satlantic [umol photons/m2/s]',
+   PROCESS='# name 9 = sbeox0V: Oxygen raw, SBE 43 [V]',
+   PROCESS='# name 10 = sbeox1V: Oxygen raw, SBE 43, 2 [V]',
+   PROCESS='# name 11 = flSPuv0: Fluorescence, Seapoint Ultraviolet',
+   PROCESS='# name 12 = flSP: Fluorescence, Seapoint',
+   PROCESS='# name 13 = ph: pH',
+   PROCESS='# name 14 = turbWETbb0: Turbidity, WET Labs ECO BB [m^-1/sr]',
+   PROCESS='# name 15 = spar: SPAR/Surface Irradiance',
+   PROCESS='# name 16 = latitude: Latitude [deg]',
+   PROCESS='# name 17 = longitude: Longitude [deg]',
+   PROCESS='# name 18 = sal00: Salinity, Practical [PSU]',
+   PROCESS='# name 19 = sal11: Salinity, Practical, 2 [PSU]',
+   PROCESS='# name 20 = potemp068C: Potential Temperature [IPTS-68, deg C]',
+   PROCESS='# name 21 = potemp168C: Potential Temperature, 2 [IPTS-68, deg C]',
+   PROCESS='# name 22 = sigma-é00: Density [sigma-theta, kg/m^3]',
+   PROCESS='# name 23 = sigma-é11: Density, 2 [sigma-theta, kg/m^3]',
+   PROCESS='# name 24 = sbeox0ML/L: Oxygen, SBE 43 [ml/l], WS = 2',
+   PROCESS='# name 25 = sbeox1ML/L: Oxygen, SBE 43, 2 [ml/l], WS = 2',
+   PROCESS='# name 26 = nbin: number of scans per bin',
+   PROCESS='# name 27 = flag: flag',
+   PROCESS='# span 0 =       5185,      17100',
+   PROCESS='# span 1 =    215.981,    712.466',
+   PROCESS='# span 2 =      3.000,    215.000',
+   PROCESS='# span 3 =     7.4153,    13.2647',
+   PROCESS='# span 4 =   3.403738,   4.192743',
+   PROCESS='# span 5 =     7.4155,    13.2646',
+   PROCESS='# span 6 =   3.404064,   4.193234',
+   PROCESS='# span 7 =       3.21,      99.36',
+   PROCESS='# span 8 = 1.0143e-01, 1.3360e+02',
+   PROCESS='# span 9 =     2.4241,     3.1874',
+   PROCESS='# span 10 =     2.1726,     2.9592',
+   PROCESS='# span 11 =    18.5196,    30.7540',
+   PROCESS='# span 12 = 9.5575e-02, 4.4889e+00',
+   PROCESS='# span 13 =      8.126,      8.203',
+   PROCESS='# span 14 = 1.7417e-04, 8.9725e-04',
+   PROCESS='# span 15 = 2.9868e+00, 3.4980e+00',
+   PROCESS='# span 16 =   42.12769,   42.12856',
+   PROCESS='# span 17 =  -65.49706,  -65.49676',
+   PROCESS='# span 18 =    33.2218,    35.6969',
+   PROCESS='# span 19 =    33.2252,    35.7005',
+   PROCESS='# span 20 =     7.4142,    13.2526',
+   PROCESS='# span 21 =     7.4144,    13.2524',
+   PROCESS='# span 22 =    25.9615,    27.0006',
+   PROCESS='# span 23 =    25.9641,    27.0037',
+   PROCESS='# span 24 =     4.3552,     6.9572',
+   PROCESS='# span 25 =     4.3950,     7.2711',
+   PROCESS='# span 26 =         14,         96',
+   PROCESS='# span 27 = 0.0000e+00, 0.0000e+00',
+   PROCESS='# interval = decibars: 1',
+   PROCESS='# start_time = Apr 09 2018 13:00:46 [NMEA time, header]',
+   PROCESS='# bad_flag = -9.990e-29',
+   PROCESS='# <Sensors count="15" >',
+   PROCESS='#   <sensor Channel="1" >',
+   PROCESS='#     <!-- Frequency 0, Temperature -->',
+   PROCESS='#     <TemperatureSensor SensorID="55" >',
+   PROCESS='#       <SerialNumber>5083</SerialNumber>',
+   PROCESS='#       <CalibrationDate>02-Dec-17</CalibrationDate>',
+   PROCESS='#       <!-- t0pcor = -2.0600e-007 specified on DatCnv command line -->',
+   PROCESS='#       <UseG_J>0</UseG_J>',
+   PROCESS='#       <A>3.68121240e-003</A>',
+   PROCESS='#       <B>5.97265115e-004</B>',
+   PROCESS='#       <C>1.50057603e-005</C>',
+   PROCESS='#       <D>1.97182834e-006</D>',
+   PROCESS='#       <F0_Old>2984.722</F0_Old>',
+   PROCESS='#       <G>4.35464994e-003</G>',
+   PROCESS='#       <H>6.36947556e-004</H>',
+   PROCESS='#       <I>2.14428079e-005</I>',
+   PROCESS='#       <J>1.97040770e-006</J>',
+   PROCESS='#       <F0>1000.000</F0>',
+   PROCESS='#       <Slope>1.00000000</Slope>',
+   PROCESS='#       <Offset>0.0000</Offset>',
+   PROCESS='#     </TemperatureSensor>',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="2" >',
+   PROCESS='#     <!-- Frequency 1, Conductivity -->',
+   PROCESS='#     <ConductivitySensor SensorID="3" >',
+   PROCESS='#       <SerialNumber>3562</SerialNumber>',
+   PROCESS='#       <CalibrationDate>07-Dec-17</CalibrationDate>',
+   PROCESS='#       <UseG_J>1</UseG_J>',
+   PROCESS='#       <!-- Cell const and series R are applicable only for wide range sensors. -->',
+   PROCESS='#       <SeriesR>0.0000</SeriesR>',
+   PROCESS='#       <CellConst>2000.0000</CellConst>',
+   PROCESS='#       <ConductivityType>0</ConductivityType>',
+   PROCESS='#       <Coefficients equation="0" >',
+   PROCESS='#         <A>0.00000000e+000</A>',
+   PROCESS='#         <B>0.00000000e+000</B>',
+   PROCESS='#         <C>0.00000000e+000</C>',
+   PROCESS='#         <D>0.00000000e+000</D>',
+   PROCESS='#         <M>0.0</M>',
+   PROCESS='#         <CPcor>-9.57000000e-008</CPcor>',
+   PROCESS='#       </Coefficients>',
+   PROCESS='#       <Coefficients equation="1" >',
+   PROCESS='#         <G>-9.84211899e+000</G>',
+   PROCESS='#         <H>1.20149777e+000</H>',
+   PROCESS='#         <I>-1.12798269e-003</I>',
+   PROCESS='#         <J>1.33106553e-004</J>',
+   PROCESS='#         <CPcor>-9.57000000e-008</CPcor>',
+   PROCESS='#         <CTcor>3.2500e-006</CTcor>',
+   PROCESS='#         <!-- WBOTC not applicable unless ConductivityType = 1. -->',
+   PROCESS='#         <WBOTC>0.00000000e+000</WBOTC>',
+   PROCESS='#       </Coefficients>',
+   PROCESS='#       <Slope>1.00000000</Slope>',
+   PROCESS='#       <Offset>0.00000</Offset>',
+   PROCESS='#     </ConductivitySensor>',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="3" >',
+   PROCESS='#     <!-- Frequency 2, Pressure, Digiquartz with TC -->',
+   PROCESS='#     <PressureSensor SensorID="45" >',
+   PROCESS='#       <SerialNumber>1214</SerialNumber>',
+   PROCESS='#       <CalibrationDate>30-Nov-16</CalibrationDate>',
+   PROCESS='#       <C1>-4.470905e+004</C1>',
+   PROCESS='#       <C2>3.840789e-001</C2>',
+   PROCESS='#       <C3>1.367850e-002</C3>',
+   PROCESS='#       <D1>3.661600e-002</D1>',
+   PROCESS='#       <D2>0.000000e+000</D2>',
+   PROCESS='#       <T1>3.015271e+001</T1>',
+   PROCESS='#       <T2>-1.367200e-004</T2>',
+   PROCESS='#       <T3>3.926620e-006</T3>',
+   PROCESS='#       <T4>3.761680e-009</T4>',
+   PROCESS='#       <Slope>0.99999865</Slope>',
+   PROCESS='#       <Offset>-1.26180</Offset>',
+   PROCESS='#       <T5>0.000000e+000</T5>',
+   PROCESS='#       <AD590M>1.280000e-002</AD590M>',
+   PROCESS='#       <AD590B>-9.348400e+000</AD590B>',
+   PROCESS='#     </PressureSensor>',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="4" >',
+   PROCESS='#     <!-- Frequency 3, Temperature, 2 -->',
+   PROCESS='#     <TemperatureSensor SensorID="55" >',
+   PROCESS='#       <SerialNumber>1376</SerialNumber>',
+   PROCESS='#       <CalibrationDate>08-Dec-17</CalibrationDate>',
+   PROCESS='#       <!-- t1pcor = -2.0600e-007 specified on DatCnv command line -->',
+   PROCESS='#       <UseG_J>0</UseG_J>',
+   PROCESS='#       <A>3.68121183e-003</A>',
+   PROCESS='#       <B>6.00661106e-004</B>',
+   PROCESS='#       <C>1.51504431e-005</C>',
+   PROCESS='#       <D>2.12620555e-006</D>',
+   PROCESS='#       <F0_Old>6469.435</F0_Old>',
+   PROCESS='#       <G>4.86897178e-003</G>',
+   PROCESS='#       <H>6.79208954e-004</H>',
+   PROCESS='#       <I>2.70244949e-005</I>',
+   PROCESS='#       <J>2.12474491e-006</J>',
+   PROCESS='#       <F0>1000.000</F0>',
+   PROCESS='#       <Slope>1.00000000</Slope>',
+   PROCESS='#       <Offset>0.0000</Offset>',
+   PROCESS='#     </TemperatureSensor>',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="5" >',
+   PROCESS='#     <!-- Frequency 4, Conductivity, 2 -->',
+   PROCESS='#     <ConductivitySensor SensorID="3" >',
+   PROCESS='#       <SerialNumber>1076</SerialNumber>',
+   PROCESS='#       <CalibrationDate>06-Dec-17</CalibrationDate>',
+   PROCESS='#       <UseG_J>1</UseG_J>',
+   PROCESS='#       <!-- Cell const and series R are applicable only for wide range sensors. -->',
+   PROCESS='#       <SeriesR>0.0000</SeriesR>',
+   PROCESS='#       <CellConst>2000.0000</CellConst>',
+   PROCESS='#       <ConductivityType>0</ConductivityType>',
+   PROCESS='#       <Coefficients equation="0" >',
+   PROCESS='#         <A>0.00000000e+000</A>',
+   PROCESS='#         <B>0.00000000e+000</B>',
+   PROCESS='#         <C>0.00000000e+000</C>',
+   PROCESS='#         <D>0.00000000e+000</D>',
+   PROCESS='#         <M>0.0</M>',
+   PROCESS='#         <CPcor>-9.57000000e-008</CPcor>',
+   PROCESS='#       </Coefficients>',
+   PROCESS='#       <Coefficients equation="1" >',
+   PROCESS='#         <G>-4.18969113e+000</G>',
+   PROCESS='#         <H>5.65236010e-001</H>',
+   PROCESS='#         <I>3.29574520e-004</I>',
+   PROCESS='#         <J>1.37368013e-005</J>',
+   PROCESS='#         <CPcor>-9.57000000e-008</CPcor>',
+   PROCESS='#         <CTcor>3.2500e-006</CTcor>',
+   PROCESS='#         <!-- WBOTC not applicable unless ConductivityType = 1. -->',
+   PROCESS='#         <WBOTC>0.00000000e+000</WBOTC>',
+   PROCESS='#       </Coefficients>',
+   PROCESS='#       <Slope>1.00000000</Slope>',
+   PROCESS='#       <Offset>0.00000</Offset>',
+   PROCESS='#     </ConductivitySensor>',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="6" >',
+   PROCESS='#     <!-- A/D voltage 0, Altimeter -->',
+   PROCESS='#     <AltimeterSensor SensorID="0" >',
+   PROCESS='#       <SerialNumber>49559</SerialNumber>',
+   PROCESS='#       <CalibrationDate>18-Feb-2010</CalibrationDate>',
+   PROCESS='#       <ScaleFactor>15.000</ScaleFactor>',
+   PROCESS='#       <Offset>0.000</Offset>',
+   PROCESS='#     </AltimeterSensor>',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="7" >',
+   PROCESS='#     <!-- A/D voltage 1, PAR/Logarithmic, Satlantic -->',
+   PROCESS='#     <PARLog_SatlanticSensor SensorID="76" >',
+   PROCESS='#       <SerialNumber>1043</SerialNumber>',
+   PROCESS='#       <CalibrationDate>01-Dec-2015</CalibrationDate>',
+   PROCESS='#       <a0>1.03324700</a0>',
+   PROCESS='#       <a1>0.80736900</a1>',
+   PROCESS='#       <Im>1.35890000</Im>',
+   PROCESS='#       <Multiplier>1.00000000</Multiplier>',
+   PROCESS='#     </PARLog_SatlanticSensor>',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="8" >',
+   PROCESS='#     <!-- A/D voltage 2, Oxygen, SBE 43 -->',
+   PROCESS='#     <OxygenSensor SensorID="38" >',
+   PROCESS='#       <SerialNumber>0133</SerialNumber>',
+   PROCESS='#       <CalibrationDate>01-Dec-2017</CalibrationDate>',
+   PROCESS='#       <Use2007Equation>1</Use2007Equation>',
+   PROCESS='#       <CalibrationCoefficients equation="0" >',
+   PROCESS='#         <!-- Coefficients for Owens-Millard equation. -->',
+   PROCESS='#         <Boc>0.0000</Boc>',
+   PROCESS='#         <Soc>0.0000e+000</Soc>',
+   PROCESS='#         <offset>0.0000</offset>',
+   PROCESS='#         <Pcor>0.00e+000</Pcor>',
+   PROCESS='#         <Tcor>0.0000</Tcor>',
+   PROCESS='#         <Tau>0.0</Tau>',
+   PROCESS='#       </CalibrationCoefficients>',
+   PROCESS='#       <CalibrationCoefficients equation="1" >',
+   PROCESS='#         <!-- Coefficients for Sea-Bird equation - SBE calibration in 2007 and later. -->',
+   PROCESS='#         <Soc>4.0488e-001</Soc>',
+   PROCESS='#         <offset>-0.6328</offset>',
+   PROCESS='#         <A>-3.5442e-003</A>',
+   PROCESS='#         <B> 1.5346e-004</B>',
+   PROCESS='#         <C>-2.5424e-006</C>',
+   PROCESS='#         <D0> 2.5826e+000</D0>',
+   PROCESS='#         <D1> 1.92634e-004</D1>',
+   PROCESS='#         <D2>-4.64803e-002</D2>',
+   PROCESS='#         <E> 3.6000e-002</E>',
+   PROCESS='#         <Tau20> 1.0100</Tau20>',
+   PROCESS='#         <H1>-3.3000e-002</H1>',
+   PROCESS='#         <H2> 5.0000e+003</H2>',
+   PROCESS='#         <H3> 1.4500e+003</H3>',
+   PROCESS='#       </CalibrationCoefficients>',
+   PROCESS='#     </OxygenSensor>',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="9" >',
+   PROCESS='#     <!-- A/D voltage 3, Oxygen, SBE 43, 2 -->',
+   PROCESS='#     <OxygenSensor SensorID="38" >',
+   PROCESS='#       <SerialNumber>0042</SerialNumber>',
+   PROCESS='#       <CalibrationDate>19-Dec-2017</CalibrationDate>',
+   PROCESS='#       <Use2007Equation>1</Use2007Equation>',
+   PROCESS='#       <CalibrationCoefficients equation="0" >',
+   PROCESS='#         <!-- Coefficients for Owens-Millard equation. -->',
+   PROCESS='#         <Boc>0.0000</Boc>',
+   PROCESS='#         <Soc>0.0000e+000</Soc>',
+   PROCESS='#         <offset>0.0000</offset>',
+   PROCESS='#         <Pcor>0.00e+000</Pcor>',
+   PROCESS='#         <Tcor>0.0000</Tcor>',
+   PROCESS='#         <Tau>0.0</Tau>',
+   PROCESS='#       </CalibrationCoefficients>',
+   PROCESS='#       <CalibrationCoefficients equation="1" >',
+   PROCESS='#         <!-- Coefficients for Sea-Bird equation - SBE calibration in 2007 and later. -->',
+   PROCESS='#         <Soc>4.3430e-001</Soc>',
+   PROCESS='#         <offset>-0.4933</offset>',
+   PROCESS='#         <A>-3.3014e-003</A>',
+   PROCESS='#         <B> 1.4982e-004</B>',
+   PROCESS='#         <C>-1.9161e-006</C>',
+   PROCESS='#         <D0> 2.5826e+000</D0>',
+   PROCESS='#         <D1> 1.92634e-004</D1>',
+   PROCESS='#         <D2>-4.64803e-002</D2>',
+   PROCESS='#         <E> 3.6000e-002</E>',
+   PROCESS='#         <Tau20> 1.4700</Tau20>',
+   PROCESS='#         <H1>-3.3000e-002</H1>',
+   PROCESS='#         <H2> 5.0000e+003</H2>',
+   PROCESS='#         <H3> 1.4500e+003</H3>',
+   PROCESS='#       </CalibrationCoefficients>',
+   PROCESS='#     </OxygenSensor>',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="10" >',
+   PROCESS='#     <!-- A/D voltage 4, Fluorometer, Seapoint Ultraviolet -->',
+   PROCESS='#     <Fluorometer SensorID="69" >',
+   PROCESS='#       <SerialNumber>3668</SerialNumber>',
+   PROCESS='#       <CalibrationDate>1-Jan-2015</CalibrationDate>',
+   PROCESS='#       <Range>50.0</Range>',
+   PROCESS='#       <Offset>0.0000</Offset>',
+   PROCESS='#     </Fluorometer>',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="11" >',
+   PROCESS='#     <!-- A/D voltage 5, Fluorometer, Seapoint -->',
+   PROCESS='#     <FluoroSeapointSensor SensorID="11" >',
+   PROCESS='#       <SerialNumber>6210</SerialNumber>',
+   PROCESS='#       <CalibrationDate>1-Jan-2015</CalibrationDate>',
+   PROCESS='#       <!-- The following is an array index, not the actual gain setting. -->',
+   PROCESS='#       <GainSetting>2</GainSetting>',
+   PROCESS='#       <Offset>0.000</Offset>',
+   PROCESS='#     </FluoroSeapointSensor>',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="12" >',
+   PROCESS='#     <!-- A/D voltage 6, pH -->',
+   PROCESS='#     <pH_Sensor SensorID="43" >',
+   PROCESS='#       <SerialNumber>1129</SerialNumber>',
+   PROCESS='#       <CalibrationDate>12-Feb-2018</CalibrationDate>',
+   PROCESS='#       <Slope>4.6510</Slope>',
+   PROCESS='#       <Offset>2.5163</Offset>',
+   PROCESS='#     </pH_Sensor>',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="13" >',
+   PROCESS='#     <!-- A/D voltage 7, OBS, WET Labs, ECO-BB -->',
+   PROCESS='#     <TurbidityMeter SensorID="70" >',
+   PROCESS='#       <SerialNumber>1490</SerialNumber>',
+   PROCESS='#       <CalibrationDate>9-Aug-2016</CalibrationDate>',
+   PROCESS='#       <ScaleFactor>2.983e-003</ScaleFactor>',
+   PROCESS='#       <!-- Dark output -->',
+   PROCESS='#       <DarkVoltage>4.800e-002</DarkVoltage>',
+   PROCESS='#     </TurbidityMeter>',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="14" >',
+   PROCESS='#     <!-- SPAR voltage, Unavailable -->',
+   PROCESS='#   </sensor>',
+   PROCESS='#   <sensor Channel="15" >',
+   PROCESS='#     <!-- SPAR voltage, SPAR/Surface Irradiance -->',
+   PROCESS='#     <SPAR_Sensor SensorID="51" >',
+   PROCESS='#       <SerialNumber>1069</SerialNumber>',
+   PROCESS='#       <CalibrationDate>24-Jun-2016</CalibrationDate>',
+   PROCESS='#       <ConversionFactor>1.00000000</ConversionFactor>',
+   PROCESS='#       <RatioMultiplier>1.00000000</RatioMultiplier>',
+   PROCESS='#     </SPAR_Sensor>',
+   PROCESS='#   </sensor>',
+   PROCESS='# </Sensors>',
+   PROCESS='# datcnv_date = Apr 09 2018 13:35:44, 7.26.6.28 [datcnv_vars = 18]',
+   PROCESS='# datcnv_in = C:\CTD_PROCESSING\2018004HUD\CTDDATA\004a031.hex C:\CTD_PROCESSING\2018004HUD\CTDDATA\004A031.XMLCON',
+   PROCESS='# datcnv_skipover = 3065',
+   PROCESS='# datcnv_ox_hysteresis_correction = yes',
+   PROCESS='# wildedit_date = Apr 09 2018 13:35:46, 7.26.6.28',
+   PROCESS='# wildedit_in = C:\CTD_PROCESSING\2018004HUD\ctddata\004a031.cnv',
+   PROCESS='# wildedit_pass1_nstd = 2.0',
+   PROCESS='# wildedit_pass2_nstd = 4.0',
+   PROCESS='# wildedit_pass2_mindelta = 0.000e+000',
+   PROCESS='# wildedit_npoint = 19',
+   PROCESS='# wildedit_vars = prDM t068C c0S/m t168C c1S/m',
+   PROCESS='# wildedit_excl_bad_scans = yes',
+   PROCESS='# filter_date = Apr 09 2018 13:35:46, 7.26.6.28',
+   PROCESS='# filter_in = C:\CTD_PROCESSING\2018004HUD\ctddata\004a031.cnv',
+   PROCESS='# filter_low_pass_tc_A = 0.150',
+   PROCESS='# filter_low_pass_tc_B = 0.150',
+   PROCESS='# filter_low_pass_A_vars = prDM',
+   PROCESS='# filter_low_pass_B_vars = t068C c0S/m t168C c1S/m',
+   PROCESS='# alignctd_date = Apr 09 2018 13:35:47, 7.26.6.28',
+   PROCESS='# alignctd_in = C:\CTD_PROCESSING\2018004HUD\ctddata\004a031.cnv',
+   PROCESS='# alignctd_adv = c0S/m -0.010, c1S/m -0.010, sbeox0V 8.000, sbeox1V 8.000',
+   PROCESS='# celltm_date = Apr 09 2018 13:35:47, 7.26.6.28',
+   PROCESS='# celltm_in = C:\CTD_PROCESSING\2018004HUD\ctddata\004a031.cnv',
+   PROCESS='# celltm_alpha = 0.0300, 0.0300',
+   PROCESS='# celltm_tau = 7.0000, 7.0000',
+   PROCESS='# celltm_temp_sensor_use_for_cond = primary, secondary',
+   PROCESS='# loopedit_date = Apr 09 2018 13:35:47, 7.26.6.28',
+   PROCESS='# loopedit_in = C:\CTD_PROCESSING\2018004HUD\ctddata\004a031.cnv',
+   PROCESS='# loopedit_minVelocity = 0.050',
+   PROCESS='# loopedit_surfaceSoak: minDepth = 5.0, maxDepth = 20, useDeckPress = 1',
+   PROCESS='# loopedit_excl_bad_scans = yes',
+   PROCESS='# Derive_date = Apr 09 2018 13:35:48, 7.26.6.28 [derive_vars = 8]',
+   PROCESS='# Derive_in = C:\CTD_PROCESSING\2018004HUD\ctddata\004a031.cnv C:\CTD_PROCESSING\2018004HUD\CTDDATA\004A031.XMLCON',
+   PROCESS='# derive_time_window_docdt = seconds: 2',
+   PROCESS='# derive_ox_tau_correction = yes',
+   PROCESS='# binavg_date = Apr 09 2018 13:35:48, 7.26.6.28',
+   PROCESS='# binavg_in = C:\CTD_PROCESSING\2018004HUD\ctddata\004a031.cnv',
+   PROCESS='# binavg_bintype = decibars',
+   PROCESS='# binavg_binsize = 1',
+   PROCESS='# binavg_excl_bad_scans = yes',
+   PROCESS='# binavg_skipover = 0',
+   PROCESS='# binavg_surface_bin = no, min = 0.000, max = 0.000, value = 0.000',
+   PROCESS='# split_date = Apr 09 2018 13:35:48, 7.26.6.28',
+   PROCESS='# split_in = C:\CTD_PROCESSING\2018004HUD\ctddata\004a031.cnv',
+   PROCESS='# split_excl_bad_scans = yes',
+   PROCESS='# file_type = ascii',
+   PROCESS='*END*'
+ HISTORY_HEADER,
+   CREATION_DATE='09-APR-2018 13:35:54.00',
+   PROCESS='During the creation of the ODF file, 0 records flagged bad have been removed.' seaodf v2.11.1
+ PARAMETER_HEADER,
+   TYPE='INTE',
+   NAME='CNTR_01',
+   CODE='CNTR_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     0,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 5.18500000000000E+03,
+   MAXIMUM_VALUE= 1.71000000000000E+04,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='',
+ PARAMETER_HEADER,
+   TYPE='SYTM',
+   NAME='SYTM_01',
+   CODE='SYTM_01',
+   NULL_VALUE='17-NOV-1858 00:00:00.00',
+   PRINT_FIELD_WIDTH=    27,
+   PRINT_DECIMAL_PLACES=     0,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE='09-APR-2018 13:04:21.00',
+   MAXIMUM_VALUE='09-APR-2018 13:12:38.00',
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='UTC',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='PRES_01',
+   CODE='PRES_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     3,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 3.00000000000000E+00,
+   MAXIMUM_VALUE= 2.15000000000000E+02,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='db',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='TEMP_01',
+   CODE='TEMP_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 7.41530000000000E+00,
+   MAXIMUM_VALUE= 1.32647000000000E+01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='IPTS-68, deg C',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='CRAT_01',
+   CODE='CRAT_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     6,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 7.93153283310808E-01,
+   MAXIMUM_VALUE= 9.77010532693294E-01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='none',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='TEMP_02',
+   CODE='TEMP_02',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 7.41550000000000E+00,
+   MAXIMUM_VALUE= 1.32646000000000E+01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='IPTS-68, deg C',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='CRAT_02',
+   CODE='CRAT_02',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     6,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 7.93229249196067E-01,
+   MAXIMUM_VALUE= 9.77124947569558E-01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='none',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='ALT_01',
+   CODE='ALTB_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     2,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 3.21000000000000E+00,
+   MAXIMUM_VALUE= 9.93600000000000E+01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='m',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='par/log',
+   CODE='UNKN_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    14,
+   PRINT_DECIMAL_PLACES=     8,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 1.01430000000000E-01,
+   MAXIMUM_VALUE= 1.33600000000000E+02,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='umol photons/m2/s',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='OXYV_01',
+   CODE='OXYV_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 2.42410000000000E+00,
+   MAXIMUM_VALUE= 3.18740000000000E+00,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='V',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='OXYV_02',
+   CODE='OXYV_02',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 2.17260000000000E+00,
+   MAXIMUM_VALUE= 2.95920000000000E+00,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='V',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='FSPUV_01',
+   CODE='FLOR_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 1.85196000000000E+01,
+   MAXIMUM_VALUE= 3.07540000000000E+01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='FSP_01',
+   CODE='FLOR_02',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    14,
+   PRINT_DECIMAL_PLACES=     8,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 9.55750000000000E-02,
+   MAXIMUM_VALUE= 4.48890000000000E+00,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='PHPH_01',
+   CODE='PHPH_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 8.12600000000000E+00,
+   MAXIMUM_VALUE= 8.20300000000000E+00,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='turbWETbb0',
+   CODE='UNKN_02',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    14,
+   PRINT_DECIMAL_PLACES=     8,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 1.74170000000000E-04,
+   MAXIMUM_VALUE= 8.97250000000000E-04,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='m^-1/sr',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='spar',
+   CODE='UNKN_03',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    14,
+   PRINT_DECIMAL_PLACES=     8,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 2.98680000000000E+00,
+   MAXIMUM_VALUE= 3.49800000000000E+00,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='LATD_01',
+   CODE='LATD_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    13,
+   PRINT_DECIMAL_PLACES=     5,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 4.21276900000000E+01,
+   MAXIMUM_VALUE= 4.21285600000000E+01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='deg',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='LOND_01',
+   CODE='LOND_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    14,
+   PRINT_DECIMAL_PLACES=     5,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE=-6.54970600000000E+01,
+   MAXIMUM_VALUE=-6.54967600000000E+01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='deg',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='PSAL_01',
+   CODE='PSAL_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 3.32218000000000E+01,
+   MAXIMUM_VALUE= 3.56969000000000E+01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='PSU',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='PSAL_02',
+   CODE='PSAL_02',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 3.32252000000000E+01,
+   MAXIMUM_VALUE= 3.57005000000000E+01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='PSU',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='POTM_01',
+   CODE='POTM_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 7.41420000000000E+00,
+   MAXIMUM_VALUE= 1.32526000000000E+01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='IPTS-68, deg C',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='POTM_02',
+   CODE='POTM_02',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 7.41440000000000E+00,
+   MAXIMUM_VALUE= 1.32524000000000E+01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='IPTS-68, deg C',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='SIGP_01',
+   CODE='SIGP_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 2.59615000000000E+01,
+   MAXIMUM_VALUE= 2.70006000000000E+01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='sigma-theta, kg/m^3',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='SIGP_02',
+   CODE='SIGP_02',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 2.59641000000000E+01,
+   MAXIMUM_VALUE= 2.70037000000000E+01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='sigma-theta, kg/m^3',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='DOXY_01',
+   CODE='DOXY_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 4.35520000000000E+00,
+   MAXIMUM_VALUE= 6.95720000000000E+00,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='ml/l',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='DOXY_02',
+   CODE='DOXY_02',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     4,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 4.39500000000000E+00,
+   MAXIMUM_VALUE= 7.27110000000000E+00,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='ml/l',
+ PARAMETER_HEADER,
+   TYPE='INTE',
+   NAME='SNCNTR_01',
+   CODE='CNTR_02',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=    11,
+   PRINT_DECIMAL_PLACES=     0,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 1.40000000000000E+01,
+   MAXIMUM_VALUE= 9.60000000000000E+01,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='',
+ PARAMETER_HEADER,
+   TYPE='DOUB',
+   NAME='FFFF_01',
+   CODE='FFFF_01',
+   NULL_VALUE=  -99.00000000,
+   PRINT_FIELD_WIDTH=     6,
+   PRINT_DECIMAL_PLACES=     1,
+   ANGLE_OF_SECTION= 0.00000000000000E+00,
+   MAGNETIC_VARIATION= 0.00000000000000E+00,
+   DEPTH= 0.00000000000000E+00,
+   MINIMUM_VALUE= 0.00000000000000E+00,
+   MAXIMUM_VALUE= 0.00000000000000E+00,
+   NUMBER_VALID=         213,
+   NUMBER_NULL=           0
+   UNITS='',
+ RECORD_HEADER,
+   NUM_HISTORY=     1,
+   NUM_CYCLE=   213,
+   NUM_PARAM=    28
+-- DATA --
+       5185   '09-APR-2018 13:04:21.00'      3.000     7.4536   0.794192     7.4522   0.794233       3.21  133.60000000     3.1401     2.8427    23.7037    1.60870000     8.2030    0.00055894    3.49800000     42.12856     -65.49696    33.2377    33.2410     7.4533     7.4519    25.9685    25.9713     6.7310     6.7909         36   0.0
+       5713   '09-APR-2018 13:04:43.00'      4.000     7.4645   0.794525     7.4620   0.794531      32.11   92.09100000     3.1386     2.8604    23.9405    1.67180000     8.2030    0.00072017    3.24880000     42.12845     -65.49698    33.2423    33.2450     7.4641     7.4616    25.9706    25.9730     6.7298     6.8510         52   0.0
+       6201   '09-APR-2018 13:05:04.00'      5.000     7.4690   0.794678     7.4670   0.794696      98.86   64.51100000     3.1379     2.8929    20.8566    1.74160000     8.2030    0.00056022    3.16570000     42.12836     -65.49700    33.2446    33.2473     7.4685     7.4666    25.9718    25.9742     6.7188     6.9604         21   0.0
+       6225   '09-APR-2018 13:05:05.00'      6.000     7.4525   0.794170     7.4532   0.794280      98.61   51.64200000     3.1369     2.8966    28.5881    1.72640000     8.2030    0.00078685    3.16720000     42.12836     -65.49700    33.2363    33.2410     7.4519     7.4526    25.9676    25.9713     6.7269     6.9674         34   0.0
+       6310   '09-APR-2018 13:05:08.00'      7.000     7.4522   0.794183     7.4488   0.794165      81.21   44.60000000     3.1346     2.9090    25.8520    2.22210000     8.2030    0.00065777    3.16570000     42.12834     -65.49700    33.2371    33.2391     7.4515     7.4481    25.9682    25.9703     6.7290     7.0064         48   0.0
+       6353   '09-APR-2018 13:05:10.00'      8.000     7.4495   0.794110     7.4571   0.794422      80.67   36.19700000     3.1436     2.9158    18.9186    3.50730000     8.2030    0.00077138    3.16490000     42.12834     -65.49700    33.2355    33.2427     7.4488     7.4564    25.9674    25.9720     6.8897     7.1128         25   0.0
+       6380   '09-APR-2018 13:05:11.00'      9.000     7.4414   0.793898     7.4422   0.793983      98.08   29.98900000     3.1874     2.9463    25.4419    2.88660000     8.2030    0.00080039    3.16430000     42.12834     -65.49700    33.2329    33.2360     7.4406     7.4414    25.9665    25.9688     6.9572     7.2540         30   0.0
+       6411   '09-APR-2018 13:05:13.00'     10.000     7.4520   0.794210     7.4521   0.794308      98.61   25.63700000     3.1688     2.9555    23.1748    4.48890000     8.2030    0.00076322    3.16180000     42.12834     -65.49700    33.2367    33.2411     7.4511     7.4512    25.9680    25.9714     6.6024     6.9854         30   0.0
+       6440   '09-APR-2018 13:05:14.00'     11.000     7.4485   0.794099     7.4491   0.794196      98.61   21.47100000     3.1140     2.9182    22.9448    3.32040000     8.2030    0.00081912    3.15860000     42.12834     -65.49702    33.2344    33.2384     7.4476     7.4481    25.9667    25.9697     6.6483     6.9153         31   0.0
+       6476   '09-APR-2018 13:05:15.00'     12.000     7.4153   0.793153     7.4155   0.793229      98.61   17.49700000     3.1652     2.9432    22.1312    2.80500000     8.2030    0.00081191    3.15780000     42.12834     -65.49703    33.2218    33.2252     7.4142     7.4144    25.9615    25.9641     6.9361     7.2711         39   0.0
+       6514   '09-APR-2018 13:05:17.00'     13.000     7.8085   0.805247     7.6124   0.799322      98.61   14.78100000     3.1568     2.9592    23.2412    2.86270000     8.2010    0.00072040    3.16070000     42.12834     -65.49704    33.4008    33.3148     7.8072     7.6112    26.0447    26.0063     6.6238     7.0263         37   0.0
+       6565   '09-APR-2018 13:05:19.00'     14.000     8.3792   0.822334     8.3093   0.820702      98.61   12.86500000     3.1184     2.9252    25.7096    4.08270000     8.1960    0.00065788    3.15900000     42.12834     -65.49703    33.6352    33.6335     8.3778     8.3079    26.1439    26.1536     6.4681     6.7976         70   0.0
+       6626   '09-APR-2018 13:05:22.00'     15.000     8.8698   0.838253     8.7267   0.833497      98.61   10.60200000     3.1093     2.9165    22.4027    3.48890000     8.1990    0.00069623    3.15490000     42.12834     -65.49702    33.8855    33.8096     8.8682     8.7251    26.2643    26.2282     6.4689     6.8309         41   0.0
+       6658   '09-APR-2018 13:05:23.00'     16.000     9.4218   0.854465     9.4947   0.856999      98.61    8.91790000     3.1276     2.9287    20.5290    3.86480000     8.1930    0.00074598    3.15600000     42.12834     -65.49704    34.0875    34.1305     9.4201     9.4929    26.3362    26.3580     6.3486     6.6464         29   0.0
+       6688   '09-APR-2018 13:05:24.00'     17.000     9.3926   0.853646     9.4346   0.855165      98.61    7.12850000     3.1077     2.9134    24.6634    3.26900000     8.1970    0.00089725    3.15820000     42.12834     -65.49704    34.0783    34.1057     9.3908     9.4327    26.3338    26.3483     6.2485     6.5483         32   0.0
+       6745   '09-APR-2018 13:05:26.00'     18.000     9.3633   0.852869     9.4273   0.855625      98.61    5.67860000     3.0777     2.8893    27.8951    3.56520000     8.1990    0.00059698    3.16010000     42.12834     -65.49704    34.0713    34.1287     9.3614     9.4253    26.3331    26.3676     6.2277     6.5435         77   0.0
+       6796   '09-APR-2018 13:05:29.00'     19.000    10.0412   0.875123    10.1531   0.877986      98.61    5.56880000     3.0788     2.8878    23.3736    3.70600000     8.1950    0.00075161    3.16240000     42.12834     -65.49704    34.4181    34.4264    10.0391    10.1509    26.4909    26.4786     6.1596     6.4774         23   0.0
+       6815   '09-APR-2018 13:05:29.00'     20.000    10.2738   0.881040    10.2730   0.881287      98.61    4.67540000     3.0782     2.8904    26.8547    4.39900000     8.1930    0.00088033    3.16450000     42.12834     -65.49704    34.4439    34.4555    10.2714    10.2707    26.4716    26.4807     6.0927     6.4411         20   0.0
+       6845   '09-APR-2018 13:05:31.00'     21.000    10.2610   0.880737    10.2645   0.881016      98.61    3.71760000     3.0694     2.8858    24.8981    3.70660000     8.1960    0.00075931    3.16650000     42.12834     -65.49704    34.4424    34.4513    10.2586    10.2620    26.4726    26.4790     6.0643     6.4082         38   0.0
+       6941   '09-APR-2018 13:05:35.00'     22.000    10.2177   0.879641    10.2038   0.879619      98.61    2.91800000     3.0696     2.8856    22.1507    3.57260000     8.2000    0.00061194    3.16690000     42.12834     -65.49706    34.4353    34.4380    10.2151    10.2013    26.4745    26.4790     6.1445     6.5052         23   0.0
+       6958   '09-APR-2018 13:05:35.00'     23.000    10.3741   0.884118    10.3741   0.884327      98.61    2.55570000     3.0771     2.8926    30.7540    3.91360000     8.1990    0.00074011    3.17180000     42.12834     -65.49706    34.4813    34.4904    10.3714    10.3714    26.4834    26.4905     6.1122     6.4641         19   0.0
+       6981   '09-APR-2018 13:05:36.00'     24.000    10.4244   0.885722    10.4276   0.885975      98.61    2.25010000     3.0768     2.8934    21.9833    3.88180000     8.1990    0.00070095    3.18040000     42.12834     -65.49706    34.5028    34.5107    10.4216    10.4248    26.4914    26.4971     6.0678     6.4078         30   0.0
+       7068   '09-APR-2018 13:05:40.00'     25.000    10.4569   0.886858    10.4440   0.886564      98.61    1.91320000     3.0463     2.8644    20.0901    2.74550000     8.2000    0.00063155    3.17560000     42.12834     -65.49706    34.5207    34.5202    10.4539    10.4410    26.4997    26.5016     6.0285     6.3564         35   0.0
+       7104   '09-APR-2018 13:05:41.00'     26.000    10.7081   0.894376    10.6999   0.894320      98.61    1.68170000     3.0560     2.8703    20.0065    3.39740000     8.1990    0.00068959    3.17270000     42.12834     -65.49706    34.6074    34.6127    10.7050    10.6968    26.5230    26.5287     6.0230     6.3795         19   0.0
+       7123   '09-APR-2018 13:05:42.00'     27.000    10.8468   0.898570    10.8441   0.898687      98.61    1.46140000     3.0541     2.8731    23.3844    3.23820000     8.1980    0.00080120    3.17370000     42.12833     -65.49706    34.6601    34.6676    10.8393    10.8409    26.5402    26.5464     5.9415     6.2956         21   0.0
+       7171   '09-APR-2018 13:05:44.00'     28.000    11.0080   0.903542    11.0151   0.903911      98.61    1.28440000     3.0323     2.8541    25.5034    2.32550000     8.1960    0.00079544    3.17250000     42.12833     -65.49706    34.7165    34.7257    11.0045    11.0118    26.5544    26.5603     5.8551     6.1850         40   0.0
+       7257   '09-APR-2018 13:05:48.00'     29.000    11.1887   0.909275    11.2131   0.910065      98.61    1.12650000     3.0053     2.8294    23.1019    2.73970000     8.1970    0.00047547    3.16800000     42.12834     -65.49706    34.7902    34.8009    11.1851    11.2095    26.5789    26.5827     5.7851     6.1302         23   0.0
+       7280   '09-APR-2018 13:05:49.00'     30.000    11.4455   0.917034    11.4442   0.917217      98.61    0.97564000     3.0003     2.8251    25.2665    3.13600000     8.1920    0.00065185    3.17170000     42.12834     -65.49706    34.8775    34.8864    11.4417    11.4405    26.5997    26.6068     5.7338     6.0646         24   0.0
+       7315   '09-APR-2018 13:05:50.00'     31.000    11.5048   0.918926    11.5044   0.919088      98.61    0.89812000     2.9932     2.8165    25.1237    2.94220000     8.1920    0.00054000    3.17320000     42.12834     -65.49706    34.9013    34.9086    11.5009    11.5005    26.6071    26.6129     5.7090     6.0356         51   0.0
+       7379   '09-APR-2018 13:05:53.00'     32.000    11.4880   0.918466    11.4835   0.918451      98.61    0.96735000     2.9781     2.8041    27.4592    2.19130000     8.1930    0.00046153    3.16760000     42.12834     -65.49706    34.8972    34.9008    11.4840    11.4795    26.6071    26.6108     5.6745     6.0253         55   0.0
+       7413   '09-APR-2018 13:05:54.00'     33.000    11.5805   0.921341    11.5786   0.921426      98.61    0.84276000     2.9728     2.8029    29.5443    2.08600000     8.1920    0.00048959    3.16650000     42.12834     -65.49706    34.9313    34.9366    11.5763    11.5745    26.6164    26.6209     5.6601     6.0120         31   0.0
+       7449   '09-APR-2018 13:05:56.00'     34.000    11.6051   0.922131    11.6047   0.922258      98.61    0.72032000     2.9702     2.7986    24.2522    1.80130000     8.1910    0.00045053    3.16800000     42.12834     -65.49706    34.9410    34.9468    11.6008    11.6003    26.6194    26.6240     5.6574     5.9922         42   0.0
+       7506   '09-APR-2018 13:05:58.00'     35.000    11.6245   0.922773    11.6207   0.922792      98.61    0.70403000     2.9681     2.7941    24.3599    1.26420000     8.1900    0.00040320    3.16670000     42.12834     -65.49706    34.9495    34.9539    11.6200    11.6162    26.6224    26.6265     5.6491     5.9891         67   0.0
+       7558   '09-APR-2018 13:06:00.00'     36.000    11.6435   0.923443    11.6426   0.923544      98.61    0.69066000     2.9660     2.7932    23.6847    1.70230000     8.1900    0.00051612    3.16760000     42.12834     -65.49705    34.9594    34.9645    11.6389    11.6380    26.6266    26.6307     5.6359     5.9856         36   0.0
+       7591   '09-APR-2018 13:06:02.00'     37.000    11.6560   0.923923    11.6551   0.924024      98.61    0.59920000     2.9604     2.7912    23.7620    1.56730000     8.1900    0.00055635    3.16690000     42.12834     -65.49704    34.9674    34.9725    11.6513    11.6504    26.6304    26.6346     5.6220     5.9748         34   0.0
+       7649   '09-APR-2018 13:06:04.00'     38.000    11.6552   0.923934    11.6559   0.924075      98.61    0.55718000     2.9561     2.7880    23.8184    3.35840000     8.1900    0.00042773    3.16510000     42.12835     -65.49706    34.9682    34.9734    11.6503    11.6511    26.6313    26.6352     5.6187     5.9711         77   0.0
+       7701   '09-APR-2018 13:06:06.00'     39.000    11.6534   0.923953    11.6535   0.924081      98.61    0.58661000     2.9562     2.7872    23.1826    1.71930000     8.1900    0.00042915    3.16770000     42.12836     -65.49705    34.9702    34.9756    11.6485    11.6486    26.6332    26.6373     5.6231     5.9771         22   0.0
+       7718   '09-APR-2018 13:06:07.00'     40.000    11.6538   0.924005    11.6515   0.924066      98.61    0.55972000     2.9566     2.7873    24.2681    1.38910000     8.1900    0.00053563    3.17000000     42.12836     -65.49704    34.9716    34.9763    11.6488    11.6465    26.6342    26.6383     5.6251     5.9784         16   0.0
+       7736   '09-APR-2018 13:06:08.00'     41.000    11.6645   0.924403    11.6625   0.924485      98.61    0.50568000     2.9565     2.7880    23.3038    1.68200000     8.1910    0.00058398    3.17090000     42.12836     -65.49704    34.9780    34.9830    11.6593    11.6573    26.6371    26.6414     5.6217     5.9843         21   0.0
+       7815   '09-APR-2018 13:06:11.00'     42.000    11.6814   0.924923    11.6809   0.925023      98.61    0.42206000     2.9504     2.7884    23.4823    1.08490000     8.1920    0.00046518    3.16780000     42.12835     -65.49704    34.9835    34.9882    11.6761    11.6755    26.6383    26.6421     5.6036     5.9787         33   0.0
+       7887   '09-APR-2018 13:06:14.00'     43.000    11.6751   0.924768    11.6736   0.924868      98.61    0.36709000     2.9443     2.7868    24.7979    1.70160000     8.1940    0.00041365    3.16690000     42.12836     -65.49704    34.9825    34.9880    11.6696    11.6681    26.6387    26.6433     5.5907     5.9652         18   0.0
+       7906   '09-APR-2018 13:06:15.00'     44.000    11.6745   0.924879    11.6751   0.925011      98.61    0.34111000     2.9439     2.7849    23.6248    2.01290000     8.1940    0.00041005    3.16800000     42.12836     -65.49704    34.9873    34.9930    11.6689    11.6696    26.6426    26.6471     5.5957     5.9571         20   0.0
+       7941   '09-APR-2018 13:06:16.00'     45.000    11.6961   0.925566    11.7005   0.925829      98.61    0.34285000     2.9456     2.7826    23.8858    1.37060000     8.1940    0.00045109    3.17080000     42.12836     -65.49703    34.9955    35.0025    11.6903    11.6948    26.6449    26.6496     5.5985     5.9536         59   0.0
+       8018   '09-APR-2018 13:06:20.00'     46.000    11.6889   0.925365    11.6904   0.925538      98.58    0.34698000     2.9496     2.7830    23.9830    1.70240000     8.1940    0.00035119    3.17330000     42.12837     -65.49702    34.9932    34.9992    11.6831    11.6845    26.6446    26.6489     5.6044     5.9766         41   0.0
+       8050   '09-APR-2018 13:06:21.00'     47.000    11.7058   0.925894    11.7068   0.926054      98.51    0.29148000     2.9476     2.7861    23.9744    1.34950000     8.1940    0.00045893    3.16860000     42.12836     -65.49700    34.9992    35.0050    11.6998    11.7008    26.6461    26.6504     5.5998     5.9779         50   0.0
+       8141   '09-APR-2018 13:06:25.00'     48.000    11.7111   0.926091    11.7128   0.926274      98.37    0.26477000     2.9472     2.7909    23.4812    2.21110000     8.1940    0.00030919    3.17190000     42.12838     -65.49700    35.0021    35.0080    11.7050    11.7067    26.6473    26.6516     5.6023     5.9913         45   0.0
+       8162   '09-APR-2018 13:06:26.00'     49.000    11.7247   0.926498    11.7439   0.927217      98.33    0.25344000     2.9520     2.7931    23.8183    1.34500000     8.1940    0.00052950    3.17500000     42.12838     -65.49700    35.0060    35.0182    11.7185    11.7376    26.6478    26.6537     5.6370     6.0163         23   0.0
+       8186   '09-APR-2018 13:06:27.00'     50.000    11.7386   0.926945    11.7548   0.927539      98.26    0.23709000     2.9617     2.8022    24.1338    1.65370000     8.1940    0.00045883    3.17650000     42.12838     -65.49700    35.0122    35.0211    11.7322    11.7484    26.6500    26.6539     5.6609     6.0518         26   0.0
+       8215   '09-APR-2018 13:06:28.00'     51.000    11.7570   0.927519    11.7564   0.927640      98.14    0.19495000     2.9648     2.8076    23.5101    1.88490000     8.1940    0.00056423    3.17530000     42.12838     -65.49700    35.0178    35.0234    11.7504    11.7498    26.6509    26.6554     5.6272     6.0214         35   0.0
+       8276   '09-APR-2018 13:06:30.00'     52.000    11.7902   0.928608    11.7806   0.928426      98.12    0.16247000     2.9475     2.7940    23.2485    1.27640000     8.1940    0.00052170    3.17210000     42.12839     -65.49700    35.0315    35.0331    11.7838    11.7739    26.6553    26.6584     5.5832     5.9668         73   0.0
+       8322   '09-APR-2018 13:06:32.00'     53.000    11.9274   0.932784    11.9040   0.932190      98.09    0.14406000     2.9540     2.7972    24.1306    1.63910000     8.1970    0.00068818    3.17280000     42.12838     -65.49698    35.0792    35.0747    11.9189    11.8972    26.6667    26.6673     5.5867     5.9692         27   0.0
+       8350   '09-APR-2018 13:06:33.00'     54.000    12.2017   0.941665    12.1917   0.941501      98.03    0.12027000     2.9480     2.7913    23.8783    1.96080000     8.1970    0.00064551    3.17590000     42.12838     -65.49698    35.1873    35.1931    12.1945    12.1846    26.6977    26.7041     5.5219     5.8896         33   0.0
+       8435   '09-APR-2018 13:06:37.00'     55.000    12.3646   0.946892    12.4197   0.948625      98.41    0.10517000     2.9406     2.7820    23.2851    0.91199000     8.1960    0.00036084    3.17880000     42.12841     -65.49698    35.2554    35.2750    12.3573    12.4124    26.7189    26.7235     5.4938     5.8613         48   0.0
+       8479   '09-APR-2018 13:06:39.00'     56.000    12.4881   0.950623    12.4857   0.950721      96.96    0.10354000     2.9387     2.7806    23.8828    1.01850000     8.1960    0.00029228    3.18150000     42.12840     -65.49696    35.2932    35.3006    12.4806    12.4782    26.7242    26.7303     5.4743     5.8536         22   0.0
+       8501   '09-APR-2018 13:06:40.00'     57.000    12.4830   0.950448    12.4753   0.950390      96.60    0.10335000     2.9381     2.7815    23.6740    2.32830000     8.1970    0.00037575    3.18500000     42.12840     -65.49696    35.2903    35.2951    12.4754    12.4677    26.7229    26.7282     5.4804     5.8640         24   0.0
+       8543   '09-APR-2018 13:06:41.00'     58.000    12.4634   0.949898    12.4654   0.950109      97.19    0.10205000     2.9389     2.7825    23.5559    2.34130000     8.1980    0.00036772    3.18420000     42.12840     -65.49695    35.2855    35.2924    12.4557    12.4576    26.7230    26.7280     5.4854     5.8643         73   0.0
+       8614   '09-APR-2018 13:06:44.00'     59.000    12.5007   0.951120    12.5010   0.951269      97.97    0.10178000     2.9378     2.7848    23.6931    1.28570000     8.1990    0.00033363    3.17970000     42.12840     -65.49694    35.3007    35.3066    12.4928    12.4931    26.7276    26.7321     5.4749     5.8729         45   0.0
+       8647   '09-APR-2018 13:06:46.00'     60.000    12.5276   0.951930    12.5175   0.951757      96.22    0.10178000     2.9365     2.7860    23.7772    0.87645000     8.2000    0.00044067    3.18340000     42.12840     -65.49694    35.3086    35.3109    12.5195    12.5095    26.7284    26.7322     5.4694     5.8656         32   0.0
+       8681   '09-APR-2018 13:06:47.00'     61.000    12.5414   0.952395    12.5399   0.952488      98.58    0.10178000     2.9355     2.7873    23.8133    1.58540000     8.2000    0.00042128    3.18450000     42.12840     -65.49692    35.3144    35.3197    12.5332    12.5317    26.7302    26.7346     5.4704     5.8743         35   0.0
+       8717   '09-APR-2018 13:06:49.00'     62.000    12.5367   0.952234    12.5401   0.952492      95.36    0.10178000     2.9372     2.7877    23.7269    1.18010000     8.2000    0.00037484    3.18170000     42.12840     -65.49692    35.3117    35.3192    12.5284    12.5319    26.7291    26.7343     5.4695     5.8587         37   0.0
+       8761   '09-APR-2018 13:06:50.00'     63.000    12.5615   0.953033    12.5647   0.953296      96.30    0.10178000     2.9287     2.7805    23.8501    1.22590000     8.2000    0.00037995    3.17860000     42.12840     -65.49692    35.3211    35.3290    12.5531    12.5562    26.7315    26.7370     5.4325     5.8250         59   0.0
+       8824   '09-APR-2018 13:06:53.00'     64.000    12.6066   0.954447    12.6075   0.954650      98.97    0.10178000     2.9136     2.7726    23.6486    0.58850000     8.2000    0.00032380    3.17870000     42.12840     -65.49692    35.3368    35.3444    12.5980    12.5989    26.7349    26.7405     5.4019     5.8192         42   0.0
+       8848   '09-APR-2018 13:06:54.00'     65.000    12.6999   0.957705    12.7226   0.958465      91.89    0.10175000     2.9146     2.7730    23.8269    1.04390000     8.2000    0.00030695    3.17950000     42.12840     -65.49691    35.3797    35.3935    12.6950    12.7138    26.7489    26.7558     5.4132     5.8131         22   0.0
+       8869   '09-APR-2018 13:06:55.00'     66.000    12.7938   0.960771    12.7786   0.960462      98.54    0.10178000     2.9212     2.7757    24.0606    1.08500000     8.1990    0.00036462    3.17950000     42.12840     -65.49690    35.4213    35.4228    12.7848    12.7696    26.7632    26.7674     5.4259     5.8263         22   0.0
+       8909   '09-APR-2018 13:06:57.00'     67.000    12.8316   0.961869    12.8500   0.962637      97.75    0.10177000     2.9208     2.7758    23.9735    0.57556000     8.1990    0.00033578    3.17910000     42.12840     -65.49690    35.4306    35.4450    12.8224    12.8408    26.7629    26.7704     5.3978     5.7918         43   0.0
+       9019   '09-APR-2018 13:07:01.00'     68.000    12.7444   0.959266    12.7912   0.960812      98.63    0.10178000     2.9060     2.7609    23.7474    1.18290000     8.1990    0.00022868    3.17590000     42.12840     -65.49688    35.4048    35.4246    12.7351    12.7819    26.7603    26.7664     5.3944     5.7696         20   0.0
+       9035   '09-APR-2018 13:07:02.00'     69.000    12.9373   0.965568    12.9372   0.965742      98.61    0.10178000     2.9092     2.7617    23.5678    1.10740000     8.1980    0.00029290    3.17750000     42.12840     -65.49688    35.4827    35.4900    12.9278    12.9277    26.7822    26.7879     5.3643     5.7647         18   0.0
+       9055   '09-APR-2018 13:07:03.00'     70.000    12.9935   0.967269    12.9954   0.967525      94.42    0.10177000     2.9083     2.7649    23.6481    0.95048000     8.1980    0.00035823    3.17940000     42.12840     -65.49688    35.4994    35.5081    12.9839    12.9858    26.7838    26.7902     5.3442     5.7618         23   0.0
+       9110   '09-APR-2018 13:07:05.00'     71.000    12.9924   0.967261    12.9847   0.967159      95.65    0.10176000     2.9011     2.7627    23.6975    0.69447000     8.1980    0.00029301    3.18100000     42.12840     -65.49686    35.4997    35.5027    12.9826    12.9749    26.7843    26.7882     5.3300     5.7435         96   0.0
+       9190   '09-APR-2018 13:07:08.00'     72.000    13.0036   0.967722    12.9865   0.967281      98.02    0.10178000     2.8990     2.7586    23.9695    0.87258000     8.1980    0.00025547    3.17510000     42.12840     -65.49685    35.5076    35.5053    12.9937    12.9766    26.7882    26.7898     5.3269     5.7428         42   0.0
+       9219   '09-APR-2018 13:07:10.00'     73.000    13.0717   0.969850    13.0651   0.969823      92.24    0.10170000     2.8983     2.7609    23.8749    0.95960000     8.1980    0.00043259    3.17700000     42.12840     -65.49684    35.5306    35.5356    13.0616    13.0550    26.7923    26.7975     5.3216     5.7456         27   0.0
+       9246   '09-APR-2018 13:07:11.00'     74.000    13.0761   0.970009    13.0746   0.970104      98.38    0.10178000     2.8981     2.7624    23.8774    1.23170000     8.1990    0.00034328    3.17990000     42.12840     -65.49684    35.5325    35.5379    13.0659    13.0643    26.7929    26.7974     5.3155     5.7377         30   0.0
+       9287   '09-APR-2018 13:07:12.00'     75.000    13.0777   0.970069    13.0768   0.970182      94.72    0.10174000     2.8945     2.7576    23.6799    0.91079000     8.1990    0.00039619    3.18160000     42.12840     -65.49684    35.5331    35.5385    13.0673    13.0664    26.7931    26.7975     5.3043     5.7115         53   0.0
+       9348   '09-APR-2018 13:07:15.00'     76.000    13.0805   0.970172    13.0794   0.970275      94.43    0.10172000     2.8887     2.7527    23.4807    0.77147000     8.1990    0.00030647    3.17700000     42.12840     -65.49684    35.5342    35.5395    13.0700    13.0688    26.7934    26.7978     5.2936     5.7137         55   0.0
+       9386   '09-APR-2018 13:07:17.00'     77.000    13.1014   0.971023    13.1018   0.971138      98.72    0.10178000     2.8880     2.7538    23.8241    0.49411000     8.2000    0.00041608    3.17560000     42.12840     -65.49684    35.5471    35.5528    13.0908    13.0913    26.7992    26.8036     5.2955     5.7231         28   0.0
+       9411   '09-APR-2018 13:07:18.00'     78.000    13.1565   0.972867    13.1570   0.973019      95.33    0.10176000     2.8879     2.7551    23.7399    0.48763000     8.1990    0.00025425    3.17720000     42.12840     -65.49683    35.5723    35.5782    13.1457    13.1461    26.8076    26.8120     5.2864     5.7193         26   0.0
+       9445   '09-APR-2018 13:07:19.00'     79.000    13.1672   0.973283    13.1671   0.973415      95.24    0.10175000     2.8863     2.7549    23.9069    1.03840000     8.2000    0.00038478    3.17790000     42.12840     -65.49682    35.5789    35.5845    13.1562    13.1561    26.8105    26.8149     5.2785     5.7029         46   0.0
+       9569   '09-APR-2018 13:07:24.00'     80.000    13.1280   0.972009    13.1473   0.972755      88.13    0.10158000     2.8708     2.7399    24.0649    0.57507000     8.2000    0.00024253    3.17500000     42.12840     -65.49682    35.5631    35.5756    13.1169    13.1362    26.8063    26.8120     5.2544     5.6757         25   0.0
+       9587   '09-APR-2018 13:07:25.00'     81.000    13.1873   0.974197    13.1890   0.974425      98.06    0.10178000     2.8728     2.7420    23.7924    0.60538000     8.2010    0.00027533    3.17610000     42.12840     -65.49682    35.5966    35.6039    13.1760    13.1779    26.8202    26.8255     5.2588     5.6903         19   0.0
+       9606   '09-APR-2018 13:07:26.00'     82.000    13.2126   0.975039    13.2116   0.975159      98.60    0.10178000     2.8752     2.7443    24.1352    0.42520000     8.1990    0.00031550    3.17760000     42.12840     -65.49680    35.6069    35.6127    13.2012    13.2002    26.8230    26.8277     5.2638     5.6959         19   0.0
+       9625   '09-APR-2018 13:07:27.00'     83.000    13.2317   0.975698    13.2303   0.975806      98.26    0.10178000     2.8777     2.7469    23.7827    0.46244000     8.1990    0.00033672    3.17900000     42.12840     -65.49680    35.6155    35.6212    13.2201    13.2187    26.8258    26.8305     5.2687     5.7014         20   0.0
+       9648   '09-APR-2018 13:07:27.00'     84.000    13.2475   0.976273    13.2462   0.976377      88.56    0.10160000     2.8808     2.7493    23.9947    0.44502000     8.1990    0.00027828    3.18050000     42.12840     -65.49680    35.6237    35.6291    13.2357    13.2345    26.8290    26.8335     5.2685     5.6944         26   0.0
+       9727   '09-APR-2018 13:07:31.00'     85.000    13.2281   0.975675    13.2356   0.976044      95.40    0.10175000     2.8716     2.7413    23.7668    0.47942000     8.1990    0.00034411    3.17850000     42.12840     -65.49680    35.6152    35.6250    13.2162    13.2238    26.8264    26.8325     5.2316     5.6564         38   0.0
+       9811   '09-APR-2018 13:07:34.00'     86.000    13.2241   0.975592    13.2340   0.976029      98.62    0.10178000     2.8628     2.7299    24.1192    0.36584000     8.2010    0.00032553    3.17860000     42.12840     -65.49678    35.6167    35.6252    13.2124    13.2222    26.8283    26.8329     5.2249     5.6386         20   0.0
+       9832   '09-APR-2018 13:07:35.00'     87.000    13.2647   0.976984    13.2646   0.977125      98.61    0.10178000     2.8616     2.7305    24.0900    0.61552000     8.2010    0.00026600    3.17950000     42.12840     -65.49678    35.6352    35.6411    13.2526    13.2524    26.8344    26.8391     5.2139     5.6495         25   0.0
+       9869   '09-APR-2018 13:07:37.00'     88.000    13.2631   0.977011    13.2564   0.976956      92.28    0.10168000     2.8603     2.7335    24.0908    0.90521000     8.1990    0.00028526    3.17900000     42.12840     -65.49678    35.6374    35.6415    13.2508    13.2441    26.8365    26.8411     5.2143     5.6591         49   0.0
+       9910   '09-APR-2018 13:07:38.00'     89.000    13.2400   0.976429    13.2378   0.976490      98.50    0.10179000     2.8593     2.7358    23.9368    0.41268000     8.1980    0.00039263    3.17920000     42.12840     -65.49678    35.6350    35.6395    13.2275    13.2254    26.8394    26.8433     5.2185     5.6630         29   0.0
+       9936   '09-APR-2018 13:07:39.00'     90.000    13.2199   0.975854    13.2183   0.975940      86.74    0.10159000     2.8610     2.7352    24.0177    0.46004000     8.1980    0.00027336    3.18000000     42.12840     -65.49678    35.6305    35.6349    13.2073    13.2057    26.8401    26.8438     5.2278     5.6558         26   0.0
+       9999   '09-APR-2018 13:07:42.00'     91.000    13.2020   0.975396    13.2022   0.975548      99.11    0.10179000     2.8595     2.7328    23.9032    0.39694000     8.1980    0.00029879    3.18140000     42.12840     -65.49678    35.6273    35.6335    13.1895    13.1895    26.8412    26.8461     5.2210     5.6526         50   0.0
+      10065   '09-APR-2018 13:07:45.00'     92.000    13.1920   0.975144    13.1951   0.975338      88.90    0.10164000     2.8564     2.7311    23.9916    0.39274000     8.1980    0.00023707    3.18390000     42.12840     -65.49678    35.6262    35.6312    13.1792    13.1822    26.8425    26.8458     5.2133     5.6562         30   0.0
+      10107   '09-APR-2018 13:07:47.00'     93.000    13.1903   0.975125    13.1896   0.975235      96.41    0.10176000     2.8545     2.7312    24.0658    0.40051000     8.1970    0.00025004    3.18550000     42.12840     -65.49677    35.6266    35.6317    13.1773    13.1767    26.8431    26.8472     5.2115     5.6539         61   0.0
+      10165   '09-APR-2018 13:07:49.00'     94.000    13.1917   0.975201    13.1898   0.975268      89.90    0.10165000     2.8521     2.7284    23.7368    0.39440000     8.1970    0.00021446    3.18580000     42.12840     -65.49676    35.6279    35.6324    13.1786    13.1767    26.8439    26.8478     5.2049     5.6437         41   0.0
+      10196   '09-APR-2018 13:07:50.00'     95.000    13.1954   0.975339    13.1950   0.975464      98.62    0.10178000     2.8513     2.7279    23.8650    0.39155000     8.1980    0.00030042    3.18570000     42.12840     -65.49676    35.6297    35.6352    13.1822    13.1820    26.8446    26.8489     5.2109     5.6549         29   0.0
+      10226   '09-APR-2018 13:07:52.00'     96.000    13.1996   0.975489    13.1980   0.975571      86.42    0.10161000     2.8540     2.7303    24.1074    0.57911000     8.1980    0.00035794    3.18680000     42.12840     -65.49677    35.6314    35.6361    13.1863    13.1848    26.8450    26.8491     5.2197     5.6663         31   0.0
+      10258   '09-APR-2018 13:07:53.00'     97.000    13.2004   0.975532    13.1990   0.975614      98.43    0.10178000     2.8535     2.7321    24.2318    0.37001000     8.1980    0.00034594    3.18810000     42.12838     -65.49677    35.6320    35.6366    13.1869    13.1855    26.8454    26.8493     5.2023     5.6612         33   0.0
+      10314   '09-APR-2018 13:07:55.00'     98.000    13.2003   0.975525    13.1993   0.975635      87.34    0.10163000     2.8492     2.7305    24.1571    0.37099000     8.1980    0.00024539    3.18800000     42.12838     -65.49676    35.6314    35.6368    13.1866    13.1856    26.8450    26.8494     5.2028     5.6549         66   0.0
+      10394   '09-APR-2018 13:07:59.00'     99.000    13.1996   0.975512    13.1982   0.975599      99.36    0.10179000     2.8492     2.7306    23.8970    0.37940000     8.1970    0.00021174    3.18860000     42.12838     -65.49676    35.6310    35.6359    13.1859    13.1844    26.8449    26.8489     5.1921     5.6600         30   0.0
+      10416   '09-APR-2018 13:07:59.00'    100.000    13.2003   0.975550    13.1990   0.975634      97.01    0.10177000     2.8442     2.7314    23.6812    0.49989000     8.1980    0.00024981    3.19070000     42.12838     -65.49676    35.6315    35.6361    13.1864    13.1851    26.8451    26.8490     5.1909     5.6642         24   0.0
+      10442   '09-APR-2018 13:08:01.00'    101.000    13.2020   0.975631    13.2012   0.975730      85.31    0.10161000     2.8470     2.7309    24.5297    0.33582000     8.1980    0.00027273    3.19160000     42.12838     -65.49676    35.6328    35.6376    13.1879    13.1871    26.8458    26.8497     5.2079     5.6540         28   0.0
+      10479   '09-APR-2018 13:08:02.00'    102.000    13.2036   0.975700    13.2020   0.975777      94.41    0.10173000     2.8487     2.7294    23.6526    0.29878000     8.1980    0.00027657    3.19050000     42.12838     -65.49676    35.6336    35.6383    13.1894    13.1878    26.8462    26.8501     5.2068     5.6568         49   0.0
+      10532   '09-APR-2018 13:08:04.00'    103.000    13.2037   0.975724    13.2022   0.975808      93.87    0.10172000     2.8478     2.7309    23.5848    0.40527000     8.1980    0.00025054    3.18910000     42.12838     -65.49677    35.6341    35.6389    13.1893    13.1879    26.8466    26.8506     5.1976     5.6611         53   0.0
+      10596   '09-APR-2018 13:08:07.00'    104.000    13.2037   0.975744    13.2023   0.975828      93.03    0.10171000     2.8491     2.7286    23.8584    0.74574000     8.1980    0.00026553    3.18850000     42.12838     -65.49676    35.6345    35.6393    13.1892    13.1878    26.8468    26.8509     5.2134     5.6567         80   0.0
+      10660   '09-APR-2018 13:08:10.00'    105.000    13.2039   0.975759    13.2027   0.975841      84.48    0.10161000     2.8517     2.7310    24.1447    0.33468000     8.1980    0.00021747    3.18970000     42.12836     -65.49676    35.6345    35.6390    13.1893    13.1882    26.8469    26.8506     5.2084     5.6692         34   0.0
+      10683   '09-APR-2018 13:08:11.00'    106.000    13.2044   0.975767    13.2033   0.975851      98.75    0.10179000     2.8496     2.7315    24.1176    0.41707000     8.1970    0.00024181    3.18910000     42.12836     -65.49678    35.6340    35.6385    13.1896    13.1885    26.8464    26.8501     5.2076     5.6618         21   0.0
+      10704   '09-APR-2018 13:08:11.00'    107.000    13.2051   0.975777    13.2040   0.975867      97.90    0.10177000     2.8503     2.7304    24.4648    0.53711000     8.1980    0.00026637    3.18930000     42.12836     -65.49678    35.6333    35.6379    13.1901    13.1891    26.8458    26.8496     5.2129     5.6588         22   0.0
+      10732   '09-APR-2018 13:08:13.00'    108.000    13.2044   0.975757    13.2031   0.975837      88.06    0.10166000     2.8506     2.7293    24.1572    0.52381000     8.1980    0.00027890    3.18840000     42.12836     -65.49678    35.6326    35.6372    13.1894    13.1880    26.8454    26.8492     5.2132     5.6562         39   0.0
+      10826   '09-APR-2018 13:08:17.00'    109.000    13.2044   0.975772    13.2030   0.975854      95.48    0.10175000     2.8467     2.7283    24.0898    0.38212000     8.1970    0.00022329    3.18670000     42.12836     -65.49678    35.6328    35.6375    13.1892    13.1878    26.8456    26.8495     5.2015     5.6575         63   0.0
+      10866   '09-APR-2018 13:08:18.00'    110.000    13.2050   0.975796    13.2037   0.975879      85.11    0.10163000     2.8479     2.7266    23.4948    0.39901000     8.1980    0.00026011    3.18640000     42.12835     -65.49678    35.6329    35.6375    13.1897    13.1884    26.8455    26.8493     5.2075     5.6479         37   0.0
+      10905   '09-APR-2018 13:08:20.00'    111.000    13.2051   0.975806    13.2040   0.975898      98.60    0.10178000     2.8446     2.7244    23.8616    0.49817000     8.1970    0.00029573    3.18570000     42.12834     -65.49678    35.6328    35.6375    13.1896    13.1885    26.8454    26.8493     5.1935     5.6458         40   0.0
+      10943   '09-APR-2018 13:08:21.00'    112.000    13.2057   0.975837    13.2046   0.975927      84.08    0.10162000     2.8427     2.7227    24.1417    0.39596000     8.1980    0.00025359    3.18740000     42.12834     -65.49678    35.6330    35.6377    13.1901    13.1890    26.8455    26.8494     5.1931     5.6402         36   0.0
+      10979   '09-APR-2018 13:08:23.00'    113.000    13.2076   0.975914    13.2062   0.975990      98.28    0.10178000     2.8390     2.7219    24.3487    0.53675000     8.1980    0.00028043    3.18790000     42.12834     -65.49678    35.6339    35.6384    13.1919    13.1904    26.8458    26.8496     5.1821     5.6427         38   0.0
+      11025   '09-APR-2018 13:08:25.00'    114.000    13.2087   0.975968    13.2074   0.976056      89.42    0.10168000     2.8410     2.7207    23.6504    0.40563000     8.1970    0.00027223    3.18710000     42.12834     -65.49678    35.6347    35.6395    13.1928    13.1915    26.8463    26.8503     5.2017     5.6432         56   0.0
+      11083   '09-APR-2018 13:08:27.00'    115.000    13.2114   0.976074    13.2103   0.976161      88.55    0.10168000     2.8449     2.7215    24.1237    0.31626000     8.1970    0.00033962    3.18450000     42.12834     -65.49678    35.6360    35.6406    13.1954    13.1943    26.8468    26.8506     5.2066     5.6452         54   0.0
+      11130   '09-APR-2018 13:08:29.00'    116.000    13.2105   0.976057    13.2094   0.976144      96.57    0.10176000     2.8470     2.7198    23.8627    0.42449000     8.1970    0.00023586    3.18500000     42.12832     -65.49678    35.6357    35.6403    13.1944    13.1933    26.8468    26.8505     5.2083     5.6330         41   0.0
+      11167   '09-APR-2018 13:08:31.00'    117.000    13.2100   0.976047    13.2070   0.976072      85.22    0.10165000     2.8434     2.7172    24.2055    0.31935000     8.1980    0.00032170    3.18200000     42.12832     -65.49680    35.6354    35.6392    13.1937    13.1906    26.8466    26.8503     5.1958     5.6266         35   0.0
+      11206   '09-APR-2018 13:08:32.00'    118.000    13.2048   0.975897    13.2031   0.975964      97.17    0.10177000     2.8445     2.7147    23.9988    0.37919000     8.1970    0.00028632    3.18230000     42.12832     -65.49680    35.6337    35.6380    13.1884    13.1867    26.8464    26.8501     5.2079     5.6277         48   0.0
+      11264   '09-APR-2018 13:08:35.00'    119.000    13.2075   0.975992    13.2056   0.976049      86.17    0.10166000     2.8445     2.7124    24.1084    0.44929000     8.1970    0.00024695    3.18220000     42.12832     -65.49680    35.6346    35.6387    13.1909    13.1890    26.8466    26.8502     5.2050     5.6137         55   0.0
+      11304   '09-APR-2018 13:08:36.00'    120.000    13.2072   0.975987    13.2055   0.976052      95.56    0.10178000     2.8441     2.7076    23.8489    0.57053000     8.1980    0.00025898    3.17840000     42.12831     -65.49680    35.6343    35.6386    13.1904    13.1889    26.8465    26.8501     5.2005     5.6010         34   0.0
+      11351   '09-APR-2018 13:08:38.00'    121.000    13.2063   0.975970    13.2051   0.976054      86.95    0.10170000     2.8402     2.7059    24.0233    0.46338000     8.1970    0.00026697    3.17660000     42.12830     -65.49680    35.6340    35.6385    13.1894    13.1883    26.8464    26.8502     5.1925     5.6085         65   0.0
+      11405   '09-APR-2018 13:08:41.00'    122.000    13.2059   0.975975    13.2048   0.976058      94.45    0.10178000     2.8397     2.7038    24.0102    0.30745000     8.1970    0.00023983    3.17300000     42.12830     -65.49682    35.6341    35.6386    13.1889    13.1880    26.8466    26.8503     5.1956     5.5896         30   0.0
+      11427   '09-APR-2018 13:08:42.00'    123.000    13.2060   0.975994    13.2044   0.976064      93.29    0.10178000     2.8377     2.6994    24.7046    0.47459000     8.1970    0.00030165    3.17690000     42.12830     -65.49682    35.6344    35.6387    13.1889    13.1873    26.8468    26.8506     5.1894     5.5775         23   0.0
+      11486   '09-APR-2018 13:08:44.00'    124.000    13.2060   0.976003    13.2049   0.976091      92.27    0.10178000     2.8398     2.6932    24.1072    0.33259000     8.1970    0.00032369    3.17610000     42.12828     -65.49682    35.6343    35.6390    13.1887    13.1876    26.8468    26.8507     5.2031     5.5705         33   0.0
+      11561   '09-APR-2018 13:08:47.00'    125.000    13.2078   0.976067    13.2058   0.976129      91.60    0.10178000     2.8426     2.6851    24.3319    0.44646000     8.1970    0.00025282    3.16760000     42.12828     -65.49682    35.6349    35.6392    13.1904    13.1884    26.8469    26.8507     5.2058     5.5515         15   0.0
+      11575   '09-APR-2018 13:08:48.00'    126.000    13.2078   0.976058    13.2069   0.976149      91.07    0.10178000     2.8426     2.6840    24.0188    0.55737000     8.1970    0.00022679    3.17020000     42.12828     -65.49682    35.6340    35.6386    13.1902    13.1893    26.8463    26.8500     5.2061     5.5519         14   0.0
+      11590   '09-APR-2018 13:08:48.00'    127.000    13.2064   0.976019    13.2057   0.976118      90.35    0.10178000     2.8427     2.6837    24.6592    0.44537000     8.1970    0.00025656    3.17250000     42.12827     -65.49682    35.6333    35.6380    13.1887    13.1880    26.8460    26.8499     5.2066     5.5500         16   0.0
+      11626   '09-APR-2018 13:08:50.00'    128.000    13.2064   0.976023    13.2052   0.976104      88.91    0.10173000     2.8416     2.6786    24.3132    0.49483000     8.1970    0.00027260    3.17190000     42.12826     -65.49682    35.6331    35.6375    13.1885    13.1876    26.8459    26.8495     5.1943     5.5268         31   0.0
+      11742   '09-APR-2018 13:08:55.00'    129.000    13.2062   0.976029    13.2052   0.976117      87.63    0.10172000     2.8408     2.6580    24.4161    0.46019000     8.1970    0.00025543    3.16260000     42.12824     -65.49682    35.6331    35.6376    13.1882    13.1872    26.8460    26.8497     5.1963     5.4812         16   0.0
+      11758   '09-APR-2018 13:08:55.00'    130.000    13.2047   0.975989    13.2041   0.976083      86.95    0.10167000     2.8389     2.6572    23.9730    0.42241000     8.1970    0.00027276    3.16200000     42.12824     -65.49683    35.6324    35.6368    13.1866    13.1860    26.8458    26.8493     5.1932     5.4891         16   0.0
+      11775   '09-APR-2018 13:08:56.00'    131.000    13.1952   0.975741    13.1989   0.975951      86.09    0.10165000     2.8379     2.6570    24.3763    0.30917000     8.1970    0.00024962    3.16080000     42.12824     -65.49684    35.6308    35.6358    13.1769    13.1806    26.8465    26.8497     5.1980     5.4916         18   0.0
+      11797   '09-APR-2018 13:08:57.00'    132.000    13.1973   0.975821    13.1993   0.975972      84.85    0.10160000     2.8385     2.6561    24.4124    0.46963000     8.1970    0.00026019    3.15820000     42.12824     -65.49684    35.6316    35.6359    13.1789    13.1809    26.8467    26.8496     5.2025     5.4851         28   0.0
+      11882   '09-APR-2018 13:09:01.00'    133.000    13.1950   0.975761    13.1936   0.975835      83.12    0.10155000     2.8362     2.6452    24.0011    0.62089000     8.1970    0.00024110    3.15160000     42.12823     -65.49684    35.6309    35.6352    13.1764    13.1751    26.8467    26.8503     5.1963     5.4540         55   0.0
+      11970   '09-APR-2018 13:09:04.00'    134.000    13.1865   0.975563    13.1854   0.975643      82.36    0.10152000     2.8325     2.6331    24.0372    0.37474000     8.1970    0.00023935    3.14650000     42.12820     -65.49684    35.6304    35.6346    13.1678    13.1667    26.8480    26.8516     5.1859     5.4267         22   0.0
+      11988   '09-APR-2018 13:09:05.00'    135.000    13.1899   0.975667    13.1875   0.975711      81.70    0.10145000     2.8310     2.6315    24.0096    0.48524000     8.1970    0.00025171    3.15060000     42.12820     -65.49684    35.6310    35.6351    13.1711    13.1686    26.8478    26.8515     5.1793     5.4177         18   0.0
+      12008   '09-APR-2018 13:09:06.00'    136.000    13.1756   0.975302    13.1761   0.975411      80.77    0.10146000     2.8292     2.6281    24.0356    0.42306000     8.1980    0.00027466    3.15470000     42.12820     -65.49684    35.6287    35.6331    13.1570    13.1571    26.8489    26.8523     5.1760     5.4024         25   0.0
+      12092   '09-APR-2018 13:09:09.00'    137.000    13.1781   0.975388    13.1771   0.975471      79.30    0.10146000     2.8228     2.6148    23.9152    0.30551000     8.1960    0.00028369    3.14470000     42.12819     -65.49684    35.6298    35.6341    13.1590    13.1580    26.8494    26.8529     5.1634     5.3840         38   0.0
+      12143   '09-APR-2018 13:09:11.00'    138.000    13.1753   0.975340    13.1744   0.975418      78.63    0.10143000     2.8198     2.6115    23.8838    0.39041000     8.1960    0.00024126    3.13930000     42.12818     -65.49684    35.6301    35.6341    13.1560    13.1552    26.8502    26.8535     5.1514     5.3789         20   0.0
+      12163   '09-APR-2018 13:09:12.00'    139.000    13.1729   0.975339    13.1720   0.975396      77.87    0.10144000     2.8156     2.6086    24.1127    0.31116000     8.1960    0.00024085    3.14370000     42.12818     -65.49684    35.6318    35.6350    13.1536    13.1526    26.8520    26.8547     5.1427     5.3528         23   0.0
+      12216   '09-APR-2018 13:09:14.00'    140.000    13.1746   0.975439    13.1740   0.975526      76.56    0.10144000     2.8125     2.5963    23.9242    0.33977000     8.1940    0.00023409    3.14050000     42.12817     -65.49684    35.6339    35.6378    13.1551    13.1545    26.8533    26.8565     5.1425     5.3227         51   0.0
+      12290   '09-APR-2018 13:09:18.00'    141.000    13.1699   0.975355    13.1698   0.975436      75.50    0.10143000     2.8092     2.5849    23.6026    0.36736000     8.1930    0.00020305    3.12980000     42.12816     -65.49684    35.6344    35.6378    13.1503    13.1501    26.8547    26.8574     5.1341     5.3176         25   0.0
+      12311   '09-APR-2018 13:09:18.00'    142.000    13.1653   0.975331    13.1640   0.975399      74.88    0.10145000     2.8071     2.5853    23.4967    0.34443000     8.1930    0.00024353    3.13240000     42.12816     -65.49684    35.6373    35.6413    13.1455    13.1442    26.8580    26.8613     5.1295     5.3206         21   0.0
+      12334   '09-APR-2018 13:09:19.00'    143.000    13.1648   0.975355    13.1633   0.975428      73.97    0.10143000     2.8058     2.5840    24.0301    0.40661000     8.1930    0.00028901    3.13380000     42.12815     -65.49685    35.6384    35.6427    13.1449    13.1434    26.8589    26.8625     5.1365     5.3173         27   0.0
+      12375   '09-APR-2018 13:09:21.00'    144.000    13.1646   0.975362    13.1638   0.975436      72.72    0.10143000     2.8096     2.5847    23.7361    0.26486000     8.1930    0.00026570    3.12780000     42.12813     -65.49686    35.6384    35.6422    13.1446    13.1437    26.8590    26.8621     5.1497     5.3233         59   0.0
+      12439   '09-APR-2018 13:09:24.00'    145.000    13.1668   0.975432    13.1655   0.975492      71.45    0.10143000     2.8090     2.5794    23.9819    0.56972000     8.1930    0.00027296    3.12330000     42.12812     -65.49686    35.6387    35.6424    13.1466    13.1455    26.8588    26.8620     5.1292     5.2861         61   0.0
+      12498   '09-APR-2018 13:09:26.00'    146.000    13.1719   0.975529    13.1702   0.975585      70.50    0.10143000     2.7943     2.5671    24.1697    0.49115000     8.1930    0.00029267    3.12360000     42.12811     -65.49686    35.6375    35.6414    13.1516    13.1498    26.8569    26.8603     5.0964     5.2599         54   0.0
+      12543   '09-APR-2018 13:09:28.00'    147.000    13.1729   0.975565    13.1719   0.975637      69.70    0.10143000     2.7934     2.5624    23.4261    0.47471000     8.1930    0.00028540    3.11960000     42.12810     -65.49686    35.6376    35.6415    13.1524    13.1518    26.8568    26.8600     5.1058     5.2519         39   0.0
+      12578   '09-APR-2018 13:09:30.00'    148.000    13.1707   0.975566    13.1629   0.975608      68.86    0.10143000     2.7897     2.5579    24.0668    0.33895000     8.1930    0.00025851    3.11960000     42.12810     -65.49688    35.6394    35.6483    13.1501    13.1423    26.8586    26.8671     5.0870     5.2433         32   0.0
+      12611   '09-APR-2018 13:09:31.00'    149.000    13.1601   0.975539    13.1591   0.975614      67.94    0.10143000     2.7872     2.5549    24.2334    0.31535000     8.1900    0.00023288    3.11970000     42.12810     -65.49688    35.6477    35.6517    13.1393    13.1383    26.8673    26.8706     5.0916     5.2398         38   0.0
+      12676   '09-APR-2018 13:09:34.00'    150.000    13.1601   0.975529    13.1593   0.975602      66.62    0.10143000     2.7802     2.5477    23.9308    0.46857000     8.1890    0.00021819    3.11610000     42.12809     -65.49688    35.6469    35.6506    13.1392    13.1384    26.8666    26.8697     5.0692     5.2162         89   0.0
+      12742   '09-APR-2018 13:09:36.00'    151.000    13.1549   0.975544    13.1530   0.975615      65.83    0.10143000     2.7753     2.5368    18.5196    0.37549000     8.1900    0.00023413    3.11240000     42.12807     -65.49688    35.6520    35.6566    13.1339    13.1322    26.8717    26.8757     5.0688     5.1861         37   0.0
+      12773   '09-APR-2018 13:09:38.00'    152.000    13.1555   0.975551    13.1534   0.975627      65.07    0.10143000     2.7758     2.5344    23.2571    0.28558000     8.1880    0.00022630    3.11260000     42.12806     -65.49688    35.6512    35.6563    13.1343    13.1322    26.8710    26.8754     5.0691     5.2002         31   0.0
+      12805   '09-APR-2018 13:09:39.00'    153.000    13.1512   0.975599    13.1500   0.975672      64.13    0.10143000     2.7753     2.5352    20.4494    0.24956000     8.1880    0.00024043    3.11460000     42.12806     -65.49690    35.6568    35.6609    13.1299    13.1287    26.8762    26.8797     5.0695     5.2075         33   0.0
+      12841   '09-APR-2018 13:09:40.00'    154.000    13.1485   0.975573    13.1476   0.975648      63.14    0.10143000     2.7759     2.5364    24.7074    0.24469000     8.1880    0.00024708    3.11410000     42.12805     -65.49690    35.6578    35.6617    13.1270    13.1262    26.8776    26.8808     5.0722     5.2100         41   0.0
+      12903   '09-APR-2018 13:09:43.00'    155.000    13.1475   0.975556    13.1459   0.975622      61.86    0.10143000     2.7742     2.5338    24.9232    0.40376000     8.1880    0.00022380    3.10960000     42.12804     -65.49690    35.6577    35.6618    13.1259    13.1244    26.8777    26.8813     5.0667     5.1954         73   0.0
+      12953   '09-APR-2018 13:09:45.00'    156.000    13.1491   0.975614    13.1476   0.975681      61.08    0.10143000     2.7742     2.5326    30.0613    0.29788000     8.1880    0.00021049    3.11540000     42.12802     -65.49691    35.6580    35.6623    13.1274    13.1258    26.8777    26.8813     5.0713     5.1936         36   0.0
+      12991   '09-APR-2018 13:09:47.00'    157.000    13.1478   0.975515    13.1455   0.975546      60.20    0.10143000     2.7759     2.5291    21.3931    0.31670000     8.1880    0.00026047    3.12110000     42.12802     -65.49692    35.6548    35.6583    13.1259    13.1236    26.8755    26.8787     5.0752     5.1837         38   0.0
+      13025   '09-APR-2018 13:09:48.00'    158.000    13.1470   0.975480    13.1456   0.975558      59.32    0.10143000     2.7726     2.5294    23.3459    0.44039000     8.1880    0.00022566    3.12210000     42.12802     -65.49692    35.6537    35.6582    13.1250    13.1236    26.8748    26.8786     5.0554     5.1974         29   0.0
+      13051   '09-APR-2018 13:09:49.00'    159.000    13.1477   0.975510    13.1457   0.975579      58.52    0.10143000     2.7708     2.5292    23.4194    0.35047000     8.1880    0.00023647    3.12210000     42.12802     -65.49692    35.6539    35.6586    13.1255    13.1235    26.8749    26.8789     5.0569     5.1839         26   0.0
+      13092   '09-APR-2018 13:09:51.00'    160.000    13.1489   0.975573    13.1469   0.975623      57.33    0.10143000     2.7676     2.5249    23.6467    0.52586000     8.1880    0.00022390    3.12320000     42.12801     -65.49692    35.6549    35.6588    13.1266    13.1246    26.8754    26.8789     5.0536     5.1712         62   0.0
+      13163   '09-APR-2018 13:09:54.00'    161.000    13.1503   0.975671    13.1480   0.975686      56.17    0.10143000     2.7684     2.5210    24.8774    0.32585000     8.1880    0.00017485    3.11610000     42.12800     -65.49692    35.6571    35.6599    13.1279    13.1256    26.8769    26.8796     5.0549     5.1747         33   0.0
+      13182   '09-APR-2018 13:09:55.00'    162.000    13.1540   0.975877    13.1518   0.975906      55.70    0.10143000     2.7674     2.5213    24.1551    0.22639000     8.1880    0.00020871    3.11470000     42.12800     -65.49692    35.6616    35.6649    13.1315    13.1292    26.8797    26.8826     5.0581     5.1703         21   0.0
+      13207   '09-APR-2018 13:09:56.00'    163.000    13.1544   0.975899    13.1524   0.975944      54.77    0.10143000     2.7681     2.5192    24.3773    0.49818000     8.1880    0.00022692    3.11650000     42.12799     -65.49693    35.6618    35.6655    13.1317    13.1297    26.8797    26.8830     5.0550     5.1539         35   0.0
+      13277   '09-APR-2018 13:09:59.00'    164.000    13.1530   0.975841    13.1519   0.975923      53.18    0.10143000     2.7515     2.5060    24.2133    0.31442000     8.1860    0.00022131    3.11500000     42.12798     -65.49693    35.6602    35.6647    13.1302    13.1290    26.8788    26.8825     4.9852     5.0998         75   0.0
+      13317   '09-APR-2018 13:10:00.00'    165.000    13.1531   0.975845    13.1512   0.975892      52.66    0.10143000     2.7342     2.4921    24.5304    0.32900000     8.1860    0.00023128    3.10620000     42.12797     -65.49694    35.6599    35.6636    13.1301    13.1283    26.8786    26.8818     4.9544     5.0622         29   0.0
+      13349   '09-APR-2018 13:10:02.00'    166.000    13.1498   0.975799    13.1482   0.975871      51.76    0.10144000     2.7266     2.4840    24.1781    0.35127000     8.1860    0.00022561    3.10190000     42.12797     -65.49694    35.6607    35.6651    13.1267    13.1251    26.8799    26.8837     4.9462     5.0512         36   0.0
+      13392   '09-APR-2018 13:10:03.00'    167.000    13.1516   0.976249    13.1495   0.976207      50.65    0.10143000     2.7182     2.4728    24.2308    0.26069000     8.1840    0.00022308    3.10240000     42.12796     -65.49694    35.6770    35.6773    13.1283    13.1262    26.8922    26.8929     4.9268     5.0176         52   0.0
+      13450   '09-APR-2018 13:10:06.00'    168.000    13.1462   0.976391    13.1444   0.976458      49.56    0.10143000     2.7063     2.4573    24.4825    0.39973000     8.1830    0.00021533    3.10050000     42.12796     -65.49694    35.6874    35.6918    13.1228    13.1212    26.9014    26.9052     4.8942     4.9855         55   0.0
+      13500   '09-APR-2018 13:10:08.00'    169.000    13.1386   0.976290    13.1373   0.976357      48.69    0.10143000     2.6958     2.4497    24.0974    0.33727000     8.1800    0.00021019    3.09130000     42.12795     -65.49696    35.6900    35.6941    13.1151    13.1139    26.9050    26.9084     4.8899     4.9880         50   0.0
+      13542   '09-APR-2018 13:10:10.00'    170.000    13.1266   0.976119    13.1254   0.976185      47.91    0.10144000     2.6995     2.4491    24.1925    0.35312000     8.1790    0.00021909    3.08850000     42.12794     -65.49696    35.6939    35.6977    13.1029    13.1017    26.9105    26.9137     4.9098     4.9979         32   0.0
+      13569   '09-APR-2018 13:10:11.00'    171.000    13.1224   0.976065    13.1203   0.976115      47.11    0.10144000     2.6997     2.4487    24.4893    0.22172000     8.1790    0.00023671    3.09230000     42.12794     -65.49696    35.6952    35.6992    13.0986    13.0965    26.9123    26.9159     4.8930     4.9845         25   0.0
+      13615   '09-APR-2018 13:10:13.00'    172.000    13.1185   0.975980    13.1170   0.976048      46.00    0.10145000     2.6921     2.4417    24.4205    0.26168000     8.1780    0.00020942    3.09250000     42.12794     -65.49696    35.6949    35.6992    13.0946    13.0930    26.9130    26.9166     4.8748     4.9618         42   0.0
+      13711   '09-APR-2018 13:10:17.00'    173.000    13.1154   0.975926    13.1166   0.976040      45.14    0.10143000     2.6843     2.4297    24.4787    0.15083000     8.1760    0.00020190    3.08170000     42.12794     -65.49696    35.6952    35.6987    13.0914    13.0926    26.9138    26.9163     4.8651     4.9458         21   0.0
+      13730   '09-APR-2018 13:10:18.00'    174.000    13.1058   0.975734    13.1054   0.975816      44.42    0.10143000     2.6831     2.4290    24.4272    0.15119000     8.1760    0.00022250    3.08250000     42.12792     -65.49696    35.6959    35.6997    13.0816    13.0812    26.9164    26.9194     4.8637     4.9451         21   0.0
+      13758   '09-APR-2018 13:10:19.00'    175.000    13.1000   0.975622    13.0983   0.975677      43.36    0.10147000     2.6818     2.4283    24.2775    0.19847000     8.1750    0.00024614    3.08260000     42.12792     -65.49698    35.6964    35.7002    13.0756    13.0740    26.9180    26.9212     4.8578     4.9463         36   0.0
+      13806   '09-APR-2018 13:10:21.00'    176.000    13.0966   0.975566    13.0948   0.975614      42.06    0.10148000     2.6756     2.4242    24.2874    0.17823000     8.1750    0.00024433    3.07880000     42.12792     -65.49698    35.6969    35.7005    13.0721    13.0703    26.9190    26.9222     4.8436     4.9243         66   0.0
+      13890   '09-APR-2018 13:10:24.00'    177.000    13.0952   0.975532    13.0941   0.975607      40.86    0.10149000     2.6668     2.4144    24.1540    0.18817000     8.1750    0.00019111    3.06970000     42.12792     -65.49698    35.6964    35.7005    13.0706    13.0695    26.9190    26.9223     4.8253     4.9071         65   0.0
+      13925   '09-APR-2018 13:10:26.00'    178.000    13.0762   0.975028    13.0753   0.975102      40.29    0.10148000     2.6656     2.4140    24.4735    0.20414000     8.1750    0.00019458    3.06810000     42.12792     -65.49698    35.6932    35.6971    13.0515    13.0506    26.9204    26.9236     4.8292     4.9129         33   0.0
+      13958   '09-APR-2018 13:10:27.00'    179.000    13.0486   0.974333    13.0468   0.974380      39.35    0.10151000     2.6655     2.4116    24.1329    0.15158000     8.1740    0.00020968    3.06490000     42.12790     -65.49698    35.6903    35.6939    13.0237    13.0219    26.9238    26.9269     4.8351     4.9026         34   0.0
+      13994   '09-APR-2018 13:10:29.00'    180.000    13.0488   0.974371    13.0472   0.974427      38.37    0.10149000     2.6645     2.4096    24.3918    0.15196000     8.1720    0.00021180    3.05990000     42.12790     -65.49698    35.6912    35.6950    13.0238    13.0222    26.9245    26.9277     4.8311     4.9093         38   0.0
+      14038   '09-APR-2018 13:10:30.00'    181.000    13.0512   0.974454    13.0495   0.974506      37.31    0.10154000     2.6625     2.4103    23.9427    0.15068000     8.1710    0.00021375    3.05980000     42.12790     -65.49698    35.6919    35.6956    13.0261    13.0244    26.9245    26.9278     4.8230     4.9130         50   0.0
+      14087   '09-APR-2018 13:10:32.00'    182.000    13.0567   0.974640    13.0550   0.974695      36.33    0.10153000     2.6601     2.4090    24.3444    0.14834000     8.1700    0.00022158    3.06140000     42.12790     -65.49698    35.6940    35.6978    13.0314    13.0297    26.9251    26.9284     4.8216     4.8974         47   0.0
+      14151   '09-APR-2018 13:10:35.00'    183.000    13.0539   0.974584    13.0532   0.974662      35.21    0.10156000     2.6586     2.4024    24.5349    0.17834000     8.1700    0.00019245    3.05410000     42.12790     -65.49698    35.6938    35.6977    13.0285    13.0278    26.9255    26.9287     4.8210     4.8847         80   0.0
+      14209   '09-APR-2018 13:10:37.00'    184.000    13.0423   0.974259    13.0385   0.974253      34.43    0.10158000     2.6601     2.4020    23.7288    0.14605000     8.1700    0.00029029    3.05280000     42.12790     -65.49698    35.6908    35.6944    13.0168    13.0130    26.9256    26.9291     4.8204     4.9005         30   0.0
+      14232   '09-APR-2018 13:10:38.00'    185.000    13.0335   0.974031    13.0319   0.974084      33.79    0.10158000     2.6561     2.4022    24.1350    0.22295000     8.1700    0.00036552    3.05450000     42.12790     -65.49698    35.6895    35.6932    13.0078    13.0063    26.9264    26.9295     4.7945     4.8805         23   0.0
+      14258   '09-APR-2018 13:10:40.00'    186.000    13.0269   0.973873    13.0260   0.973942      32.56    0.10158000     2.6451     2.3947    23.9992    0.29087000     8.1700    0.00025823    3.05530000     42.12790     -65.49698    35.6888    35.6925    13.0011    13.0002    26.9272    26.9302     4.7587     4.8286         34   0.0
+      14359   '09-APR-2018 13:10:44.00'    187.000    13.0330   0.974030    13.0308   0.974079      30.52    0.10159000     2.6378     2.3750    24.1553    0.12892000     8.1700    0.00021814    3.05150000     42.12790     -65.49698    35.6891    35.6932    13.0070    13.0048    26.9262    26.9298     4.7812     4.8348         22   0.0
+      14384   '09-APR-2018 13:10:45.00'    188.000    12.9903   0.972877    12.9952   0.973069      30.21    0.10159000     2.6409     2.3768    24.1636    0.13109000     8.1710    0.00020650    3.05310000     42.12790     -65.49698    35.6816    35.6849    12.9643    12.9691    26.9290    26.9306     4.7835     4.8435         15   0.0
+      14401   '09-APR-2018 13:10:45.00'    189.000    12.9216   0.971133    12.9259   0.971303      29.49    0.10161000     2.6371     2.3764    24.5786    0.23368000     8.1700    0.00023193    3.05490000     42.12790     -65.49698    35.6743    35.6772    12.8955    12.8998    26.9372    26.9386     4.7631     4.8289         20   0.0
+      14461   '09-APR-2018 13:10:48.00'    190.000    12.8965   0.970518    12.8987   0.970640      28.12    0.10158000     2.6172     2.3612    24.0701    0.16263000     8.1660    0.00021015    3.06200000     42.12789     -65.49698    35.6722    35.6751    12.8703    12.8725    26.9407    26.9425     4.7179     4.7762         39   0.0
+      14549   '09-APR-2018 13:10:52.00'    191.000    12.9355   0.971552    12.9299   0.971426      27.21    0.10172000     2.5987     2.3435    24.5107    0.19284000     8.1660    0.00021950    3.08340000     42.12790     -65.49700    35.6775    35.6776    12.9092    12.9036    26.9370    26.9382     4.6988     4.7625         23   0.0
+      14571   '09-APR-2018 13:10:53.00'    192.000    12.8453   0.969170    12.8228   0.968692      26.53    0.10168000     2.5986     2.3438    24.4327    0.18205000     8.1650    0.00028878    3.10290000     42.12788     -65.49700    35.6642    35.6658    12.8190    12.7964    26.9447    26.9505     4.6983     4.7618         21   0.0
+      14599   '09-APR-2018 13:10:54.00'    193.000    12.8006   0.968078    12.7973   0.968069      25.59    0.10164000     2.5929     2.3383    24.2330    0.14930000     8.1630    0.00029078    3.11920000     42.12788     -65.49699    35.6610    35.6636    12.7742    12.7709    26.9512    26.9540     4.6761     4.7325         43   0.0
+      14706   '09-APR-2018 13:10:58.00'    194.000    12.8528   0.969364    12.8280   0.968908      24.29    0.10160000     2.5795     2.3209    24.4954    0.14185000     8.1590    0.00017417    3.08130000     42.12788     -65.49698    35.6642    35.6688    12.8262    12.8014    26.9433    26.9519     4.6585     4.7071         36   0.0
+      14727   '09-APR-2018 13:10:59.00'    195.000    12.7964   0.967993    12.7960   0.968075      23.74    0.10165000     2.5764     2.3190    24.4150    0.14789000     8.1600    0.00019754    3.07550000     42.12788     -65.49698    35.6605    35.6644    12.7697    12.7692    26.9518    26.9549     4.6356     4.6857         25   0.0
+      14764   '09-APR-2018 13:11:01.00'    196.000    12.7843   0.967708    12.7834   0.967779      22.76    0.10163000     2.5587     2.3045    23.8177    0.14230000     8.1580    0.00021388    3.07360000     42.12788     -65.49699    35.6598    35.6636    12.7575    12.7567    26.9536    26.9568     4.5779     4.6202         59   0.0
+      14844   '09-APR-2018 13:11:04.00'    197.000    12.7797   0.967601    12.7704   0.967450      21.55    0.10161000     2.5395     2.2815    24.4484    0.13196000     8.1570    0.00019572    3.06440000     42.12788     -65.49698    35.6594    35.6616    12.7527    12.7436    26.9543    26.9579     4.6009     4.6377         58   0.0
+      14870   '09-APR-2018 13:11:05.00'    198.000    12.7395   0.966522    12.7278   0.966302      21.08    0.10161000     2.5548     2.2908    24.3934    0.11418000     8.1580    0.00021066    3.05910000     42.12788     -65.49698    35.6524    35.6543    12.7124    12.7008    26.9569    26.9608     4.6269     4.6633         22   0.0
+      14890   '09-APR-2018 13:11:06.00'    199.000    12.6979   0.965470    12.6931   0.965430      20.32    0.10158000     2.5530     2.2916    23.8450    0.13493000     8.1560    0.00022245    3.05860000     42.12788     -65.49698    35.6478    35.6507    12.6708    12.6660    26.9617    26.9648     4.5847     4.6390         21   0.0
+      14926   '09-APR-2018 13:11:07.00'    200.000    12.6445   0.964055    12.6401   0.963971      19.23    0.10153000     2.5279     2.2764    24.2025    0.12518000     8.1540    0.00020773    3.05660000     42.12788     -65.49698    35.6394    35.6407    12.6173    12.6129    26.9657    26.9677     4.4915     4.5534         39   0.0
+      15043   '09-APR-2018 13:11:12.00'    201.000    12.6896   0.965207    12.6830   0.965021      18.26    0.10162000     2.4620     2.2169    24.2178    0.11759000     8.1530    0.00018906    3.04420000     42.12788     -65.49698    35.6439    35.6425    12.6622    12.6556    26.9604    26.9606     4.3827     4.4383         22   0.0
+      15062   '09-APR-2018 13:11:13.00'    202.000    12.4466   0.958720    12.4451   0.958594      17.53    0.10152000     2.4582     2.2134    23.8415    0.10595000     8.1520    0.00020140    3.04850000     42.12788     -65.49698    35.6048    35.6072    12.4194    12.4185    26.9780    26.9815     4.3936     4.4474         20   0.0
+      15086   '09-APR-2018 13:11:14.00'    203.000    12.3920   0.957447    12.3999   0.957690      16.51    0.10159000     2.4539     2.2084    24.3271    0.11035000     8.1470    0.00021214    3.04960000     42.12787     -65.49698    35.6032    35.6063    12.3648    12.3727    26.9875    26.9884     4.4048     4.4518         30   0.0
+      15135   '09-APR-2018 13:11:16.00'    204.000    12.3608   0.956578    12.3383   0.956028      15.12    0.10159000     2.4591     2.2092    24.1236    0.12381000     8.1420    0.00021563    3.03870000     42.12786     -65.49698    35.5962    35.5946    12.3335    12.3110    26.9882    26.9914     4.4358     4.4911         62   0.0
+      15182   '09-APR-2018 13:11:18.00'    205.000    12.3710   0.956904    12.3837   0.957311      14.26    0.10158000     2.4600     2.2112    23.9838    0.12312000     8.1400    0.00021247    3.03090000     42.12786     -65.49698    35.5996    35.6046    12.3436    12.3562    26.9889    26.9903     4.4155     4.4671         36   0.0
+      15283   '09-APR-2018 13:11:22.00'    206.000    12.3353   0.955901    12.3387   0.956100      13.17    0.10161000     2.4465     2.1952    24.1346    0.11502000     8.1380    0.00023040    3.02980000     42.12785     -65.49698    35.5914    35.5964    12.3077    12.3112    26.9895    26.9927     4.3922     4.4321         56   0.0
+      15376   '09-APR-2018 13:11:26.00'    207.000    12.2729   0.954333    12.2640   0.954176      12.18    0.10160000     2.4394     2.1895    24.0406    0.14450000     8.1360    0.00021646    3.03020000     42.12784     -65.49698    35.5848    35.5867    12.2453    12.2364    26.9966    26.9998     4.3776     4.4280         80   0.0
+      15537   '09-APR-2018 13:11:33.00'    208.000    12.2515   0.953807    12.2495   0.953819      11.28    0.10157000     2.4274     2.1808    24.3170    0.09781000     8.1320    0.00019806    3.03340000     42.12784     -65.49696    35.5816    35.5852    12.2238    12.2218    26.9983    27.0014     4.3552     4.4120         40   0.0
+      15599   '09-APR-2018 13:11:35.00'    209.000    12.2452   0.953643    12.2459   0.953741      10.38    0.10156000     2.4258     2.1779    23.7791    0.10748000     8.1320    0.00021864    3.04250000     42.12783     -65.49697    35.5816    35.5849    12.2174    12.2181    26.9995    27.0019     4.3584     4.4038         45   0.0
+      15673   '09-APR-2018 13:11:38.00'    210.000    12.2383   0.953470    12.2371   0.953527       9.69    0.10156000     2.4275     2.1779    24.2477    0.10230000     8.1320    0.00022544    3.04090000     42.12782     -65.49696    35.5804    35.5839    12.2104    12.2092    26.9999    27.0029     4.3675     4.4157         21   0.0
+      15721   '09-APR-2018 13:11:41.00'    211.000    12.2418   0.953576    12.2415   0.953653       8.76    0.10164000     2.4285     2.1784    24.1147    0.10542000     8.1320    0.00026442    3.02610000     42.12783     -65.49696    35.5811    35.5845    12.2137    12.2134    26.9998    27.0026     4.3723     4.4141         33   0.0
+      15841   '09-APR-2018 13:11:45.00'    212.000    12.2521   0.953862    12.2509   0.953920       7.74    0.10166000     2.4275     2.1778    23.9641    0.10274000     8.1320    0.00025955    3.02320000     42.12781     -65.49696    35.5828    35.5863    12.2239    12.2227    26.9992    27.0022     4.3650     4.4045         38   0.0
+      15955   '09-APR-2018 13:11:50.00'    213.000    12.2496   0.953794    12.2495   0.953877       6.71    0.10164000     2.4271     2.1752    23.8418    0.09557500     8.1320    0.00020367    3.01700000     42.12780     -65.49694    35.5818    35.5854    12.2213    12.2212    26.9989    27.0017     4.3638     4.3970         27   0.0
+      16131   '09-APR-2018 13:11:58.00'    214.000    12.2411   0.953583    12.2430   0.953710       5.78    0.10167000     2.4269     2.1750    23.7427    0.11520000     8.1310    0.00022860    3.01550000     42.12778     -65.49694    35.5807    35.5842    12.2126    12.2145    26.9997    27.0021     4.3684     4.4019         49   0.0
+      17100   '09-APR-2018 13:12:38.00'    215.000    12.2280   0.953242    12.2267   0.953302       4.92    0.10160000     2.4241     2.1726    24.4083    0.09889400     8.1260    0.00022519    2.98680000     42.12769     -65.49693    35.5785    35.5822    12.1994    12.1981    27.0006    27.0037     4.3559     4.3950         35   0.0
