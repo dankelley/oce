@@ -265,7 +265,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
         Free(ebuf);
         ::Rf_error("cannot decode the length of ensemble number %d", in_ensemble);
       }
-      unsigned int bytes_to_read = bytes_to_check - 4; // byte1&byte2&check_sum used 4 bytes already
+      int bytes_to_read = bytes_to_check - 4; // byte1&byte2&check_sum used 4 bytes already
 
       // Expand the ensemble buffer, ebuf, if need be.
       if (bytes_to_read > nebuf) {
@@ -422,7 +422,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   IntegerVector time(out_ensemble);
   RawVector outbuf(iobuf);
 
-  for (long int i = 0; i < out_ensemble; i++) {
+  for (unsigned long int i = 0; i < out_ensemble; i++) {
     ensemble[i] = ensembles[i];
     time[i] = times[i];
     sec100[i] = sec100s[i];
@@ -432,7 +432,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   Free(times);
   Free(sec100s);
   Free(ebuf);
-  for (long int i = 0; i < iobuf; i++) {
+  for (unsigned long int i = 0; i < iobuf; i++) {
     outbuf[i] = obuf[i];
   }
   Free(obuf);

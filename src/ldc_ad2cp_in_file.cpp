@@ -141,8 +141,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   unsigned long int fileSize = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
   if (debug > 3) Rprintf("fileSize=%d\n", fileSize);
-  int chunk = 0;
-  int cindex = 0;
+  unsigned int chunk = 0;
+  unsigned int cindex = 0;
 
   // Ensure that the first byte we point to equals SYNC.
   // In a conventional file, starting with a SYNC char, this
