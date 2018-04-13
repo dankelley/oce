@@ -37,3 +37,6 @@ tests/testthat/local_data
 tests/testthat/valgrind_tests.*
 .lintr
 ^cran-comments\.md$
+src/RcppExports.cpp
+R/RcppExports.R
+

@@ -1,1 +1,2 @@
 *.o-[a-z0-9]*
+RcppExports.cpp
