@@ -280,7 +280,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
       // Read the bytes in one operation, because fgetc() is too slow.
       unsigned int bytesRead;
       bytesRead = fread(ebuf, bytes_to_read, sizeof(unsigned char), fp);
-      if (feof(fp)) {
+      if (feof(fp) || bytesRead == 0) {
         Rprintf("Got to end of data while trying to read an RDI file (cindex=%d)\n", cindex);
         break;
       }
