@@ -117,8 +117,9 @@ read.g1sst <- function(filename)
         stop('must install.packages("ncdf4") to read g1sst data')
     f <- ncdf4::nc_open(filename)
     res <- new("g1sst", filename=filename)
-    res@metadata$longitude <- ncdf4::ncvar_get(f, "longitude")
-    res@metadata$latitude <- ncdf4::ncvar_get(f, "latitude")
+    ## Change the 1-col ncdf4 output to a vector
+    res@metadata$longitude <- as.vector(ncdf4::ncvar_get(f, "longitude"))
+    res@metadata$latitude <- as.vector(ncdf4::ncvar_get(f, "latitude"))
     res@metadata$time <- numberAsPOSIXct(ncdf4::ncvar_get(f, "time"))
     res@metadata$units$SST <- list(unit=expression(degree*C), scale="ITS-90")
     res@metadata$satellite <- "g1sst"

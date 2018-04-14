@@ -649,6 +649,16 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
             res@data[[name]] <- x@data[[name]][look]
         res@data$a <- x@data$a[look, ]
         ## FIXME: decide whether the 'Slow' variables should be altered
+    } else if (inherits(x, "g1sst")) {
+        ## not in the test suite, because the files are too big, but
+        ## looks fine manually on the following test file
+        ## f <- dc.g1sst(2015, 10, 14, -66, -60, 41, 46)
+        ## d <- read.g1sst(f)
+        looklon <- headTail(seq_along(x@metadata$longitude), n)
+        looklat <- headTail(seq_along(x@metadata$latitude), n)
+        res@metadata$longitude <- x@metadata$longitude[looklon]
+        res@metadata$latitude <- x@metadata$latitude[looklat]
+        res@data$SST <- x@data$SST[looklon, looklat]
     } else if (inherits(x, "lisst")) {
         look <- headTail(seq_along(x@data[[1]]), n=n)
         for (name in names(x@data))
@@ -672,14 +682,20 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
         ## Actually, handling this would not be too hard, but there are some
         ## interlocked metadata elements that require some thought.
         warning("head.oce() and tail.oce() cannot handle landsat, so returning it unaltered\n")
-    } else if (inherits(x, "amsr")) {
-        warning("head.oce() and tail.oce() cannot handle amsr, so returning it unaltered\n")
     } else {
-        ## The following works on:
+        ## The following general code works on the following objects (and is tested
+        ## for them, in tests/testthat/test_oce.R)
+        ##
+        ##   cm
+        ##   ladp
+        ##   lobo
+        ##   rsk
         ##   sealevel
         for (name in names(x@data)) {
+            ## For reasons I don't understand, the 'time' items are not vectors.
             if ((is.vector(x@data[[name]]) && !is.list(x@data[[name]])) || name=="time") {
                 res@data[[name]] <- headTail(x@data[[name]], n)
+            } else if (is.null(x@data[[name]])) {
             } else {
                 warning("ignoring '", name, "' because it is not a vector\n")
             }
