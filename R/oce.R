@@ -675,9 +675,10 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
     } else if (inherits(x, "amsr")) {
         warning("head.oce() and tail.oce() cannot handle amsr, so returning it unaltered\n")
     } else {
-        ## FIXME: probably this will fail on many classes.
+        ## The following works on:
+        ##   sealevel
         for (name in names(x@data)) {
-            if (is.vector(x@data[[name]]) && !is.list(x@data[[name]])) {
+            if ((is.vector(x@data[[name]]) && !is.list(x@data[[name]])) || name=="time") {
                 res@data[[name]] <- headTail(x@data[[name]], n)
             } else {
                 warning("ignoring '", name, "' because it is not a vector\n")

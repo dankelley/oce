@@ -115,6 +115,17 @@ test_that("head_echosounder", {
           }
 })
 
+test_that("head_sealevel", {
+          data(sealevel)
+          for (n in c(3, -3)) {
+            h <- head(sealevel, n)
+            look <- head(seq_along(sealevel[["time"]]), n)
+            expect_equal(h[["time"]], sealevel[["time"]][look])
+            expect_equal(h[["elevation"]], sealevel[["elevation"]][look])
+          }
+})
+
+
 test_that("head_section", {
           data(section)
           for (n in c(-10, 10)) {
@@ -240,6 +251,16 @@ test_that("tail_echosounder", {
             expect_equal(t[["longitude"]], echosounder[["longitude"]][look])
             expect_equal(t[["time"]], echosounder[["time"]][look])
             expect_equal(t[["a"]], echosounder[["a"]][look, ])
+          }
+})
+
+test_that("tail_sealevel", {
+          data(sealevel)
+          for (n in c(3, -3)) {
+            t <- tail(sealevel, n)
+            look <- tail(seq_along(sealevel[["time"]]), n)
+            expect_equal(t[["time"]], sealevel[["time"]][look])
+            expect_equal(t[["elevation"]], sealevel[["elevation"]][look])
           }
 })
 
