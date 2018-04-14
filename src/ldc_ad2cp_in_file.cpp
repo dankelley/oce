@@ -125,15 +125,15 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   if (!fp)
     ::Rf_error("cannot open file '%s'\n", fn.c_str());
 
-  int from_value = from[0];
-  if (from_value < 0)
-    ::Rf_error("'from' must be positive but it is %d", from_value);
-  int to_value = to[0];
-  if (to_value < 0)
-    ::Rf_error("'to' must be positive but it is %d", to_value);
-  int by_value = by[0];
-  if (by_value < 0)
-    ::Rf_error("'by' must be positive but it is %d", by_value);
+  if (from[0] < 0)
+    ::Rf_error("'from' must be positive but it is %d", from[0]);
+  unsigned int from_value = from[0];
+  if (to[0] < 0)
+    ::Rf_error("'to' must be positive but it is %d", to[0]);
+  unsigned int to_value = to[0];
+  if (by[0] < 0)
+    ::Rf_error("'by' must be positive but it is %d", by[0]);
+  unsigned int by_value = by[0];
   if (debug > 1) Rprintf("from=%d, to=%d, by=%d\n", from_value, to_value, by_value);
 
   // FIXME: should we just get this from R? and do we even need it??
@@ -244,7 +244,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     chunk++;
   }
   IntegerVector index(chunk), length(chunk), id(chunk);
-  for (int i = 0; i < chunk; i++) {
+  for (unsigned int i = 0; i < chunk; i++) {
     index[i] = index_buf[i];
     length[i] = length_buf[i];
     id[i] = id_buf[i];

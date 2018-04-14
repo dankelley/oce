@@ -265,7 +265,9 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
         Free(ebuf);
         ::Rf_error("cannot decode the length of ensemble number %d", in_ensemble);
       }
-      int bytes_to_read = bytes_to_check - 4; // byte1&byte2&check_sum used 4 bytes already
+      if (bytes_to_check < 4)
+        ::Rf_error("bytes_to_check should be >=4 but it is %d\n", bytes_to_check);
+      unsigned int bytes_to_read = bytes_to_check - 4; // byte1&byte2&check_sum used 4 bytes already
 
       // Expand the ensemble buffer, ebuf, if need be.
       if (bytes_to_read > nebuf) {
@@ -342,13 +344,13 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
 #endif
         // Have we got to the starting location yet?
         if ((mode_value == 0 && in_ensemble >= (from_value-1)) ||
-            (mode_value == 1 && ensemble_time >= from_value)) {
+            (mode_value == 1 && ensemble_time >= (time_t)from_value)) {
 #ifdef DEBUG
           if (out_ensemble<50) Rprintf("  STAGE 2 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n", in_ensemble, from_value, counter,  counter_last); // DEBUG
 #endif
           // Handle the 'by' value.
           if ((mode_value == 0 && (counter==from_value-1 || (counter - counter_last) >= by_value)) ||
-              (mode_value == 1 && (ensemble_time - ensemble_time_last) >= by_value)) {
+              (mode_value == 1 && (ensemble_time - ensemble_time_last) >= (time_t)by_value)) {
 #ifdef DEBUG
             if (out_ensemble<50) Rprintf("    STAGE 3 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n", in_ensemble, from_value, counter,  counter_last); // DEBUG
 #endif
@@ -380,7 +382,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
             obuf[iobuf++] = byte2; // 0x7f
             obuf[iobuf++] = b1; // length of ensemble, byte 1
             obuf[iobuf++] = b2; // length of ensemble, byte 1
-            for (int i = 0; i < bytes_to_read; i++)
+            for (unsigned int i = 0; i < bytes_to_read; i++)
               obuf[iobuf++] = ebuf[i]; // data, not including the checksum
             obuf[iobuf++] = cs1; // checksum  byte 1
             obuf[iobuf++] = cs2; // checksum  byte 2
@@ -397,7 +399,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
         // ensemble pointers.
         //> Rprintf("L417 in_ensemble=%d from_value=%d to_value=%d\n", in_ensemble, from_value, to_value);
         if ((mode_value == 0 && (to_value > 0 && in_ensemble > to_value)) ||
-            (mode_value == 1 && (ensemble_time >= to_value))) {
+            (mode_value == 1 && (ensemble_time >= (time_t)to_value))) {
           break;
         }
       } else {
