@@ -595,6 +595,15 @@ headOrTail <- function(x, n=6L, headTail=head, ...)
                 res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
             }
         }
+    } else if (inherits(x, "amsr")) {
+        looklon <- headTail(seq_along(x@metadata$longitude), n)
+        looklat <- headTail(seq_along(x@metadata$latitude), n)
+        res@metadata$longitude <- x@metadata$longitude[looklon]
+        res@metadata$latitude <- x@metadata$latitude[looklat]
+        for (n in names(res@data)) {
+            if (is.matrix(res@data[[n]]))
+                res@data[[n]] <- x@data[[n]][looklon, looklat]
+        }
     } else if (inherits(x, "argo")) {
         for (name in names(x@metadata)) {
             if (name %in% c("direction", "juldQc", "positionQc")) {
