@@ -61,7 +61,7 @@ setMethod(f="[[<-",
 #' @usage data(lisst)
 #' @author Dan Kelley
 #' @source This was constructed artificially using \code{\link{as.lisst}},
-#" to approximately match values that might be measured in the field.
+#' to approximately match values that might be measured in the field.
 #' @family datasets provided with \code{oce}
 NULL
 
@@ -266,6 +266,7 @@ as.lisst <- function(data, filename="", year=0, tz="UTC", longitude=NA, latitude
     names[41] <- "transmission"
     names[42] <- "beam"
     names(data) <- names
+    data <- as.list(data)
     day <- floor(data$dayhour/100)
     hour <- data$dayhour - 100 * day
     minute <- floor(data$minutesecond/100)

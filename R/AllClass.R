@@ -218,7 +218,7 @@ setClass("satellite", contains="oce") # both amsr and landsat stem from this
 #' @param y Ignored; only present here because S4 object for generic \code{plot}
 #' need to have a second parameter before the \code{...} parameter.
 #' @param ... Passed to \code{\link{hist}}, \code{\link{plot}}, or to
-#" \code{\link{pairs}}, according to whichever does the plotting.
+#' \code{\link{pairs}}, according to whichever does the plotting.
 #' @examples
 #' library(oce)
 #' o <- new("oce")
@@ -459,9 +459,10 @@ setMethod(f="show",
 #' @param ... Ignored, if \code{object} is a list. Otherwise, one or more
 #' \code{oce-class} objects of the same sub-class as the first argument.
 #' @template compositeTemplate
-setGeneric("composite", function(object, ...) {
-           standardGeneric("composite")
-         })
+setGeneric("composite",
+           function(object, ...) {
+               standardGeneric("composite")
+          })
 
 
 #' Composite by Averaging Across Data
@@ -582,17 +583,105 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
     object
 }
 
+#' Concatenate oce objects
+#' @param object An object of \code{\link{oce-class}}.
+#' @param ... Optional additional objects of \code{\link{oce-class}}.
+#' @return An object of class corresponding to that of \code{object}.
+#' @family functions that concatenate \code{oce} objects.
+setGeneric("concatenate",
+           function(object, ...) {
+               standardGeneric("concatenate")
+           })
 
-#setMethod(f="head",
-#          signature("coastline"),#, "ANY"),
-#          definition=function(x, n=6L, ...) {
-#              message("in head")
-#              message("class of x:", class(x))
-#          })
-#
-#setMethod(f="head",
-#          signature(x="ctd", n="ANY"),
-#          definition=function(x, n=6L, ...) {
-#              message("ctd")
-#          })
+#' Concatenate oce objects
+#'
+#' @templateVar class oce
+#'
+#' @template concatenateTemplate
+setMethod("concatenate",
+          signature="oce",
+          definition=function(object, ...) {
+              dots <- list(...)
+              ndots <- length(dots)
+              if (0 == ndots)
+                  return(object)
+              ##? ## Handle the case of first argument being a list (all other arguments
+              ##? ## then being ignored).
+              ##? if (is.list(dots[[1]])) {
+              ##?     dots <- dots[[1]]
+              ##?     ndots <- length(dots)
+              ##? }
+              ## Insist everything be an oce object.
+              for (i in seq_len(ndots))
+                  if (!inherits(dots[[i]], "oce"))
+                      stop("concatenate() argument ", i+1, " does not inherit from \"oce\"")
+
+              ## Concatenate the data (and flags, if there are such).
+              res <- object
+              n1 <- sort(names(res@data))
+              f1 <- if ("flags" %in% names(object@metadata) && length(object@metadata$flags))
+                  sort(names(object@metadata$flags)) else NULL
+              for (i in 1:ndots) {
+                  ## Data.
+                  ni <- sort(names(dots[[i]]@data))
+                  if (!identical(n1, ni))
+                      stop("data name mismatch between argument 1 (",
+                           paste(n1, collapse=" "), ") and argument ", i,
+                           "(", paste(ni, collapse=" "), ")")
+                  data <- dots[[i]]@data
+                  for (n in ni) {
+                      if (is.vector(dots[[1]]@data[[n]]) || n == "time" || is.factor(n)) {
+                          res@data[[n]] <- c(res@data[[n]], data[[n]])
+                      } else if (is.matrix(data[[n]])) {
+                          res@data[[n]] <- rbind(res@data[[n]], data[[n]])
+                      } else if (is.array(data[[n]])) {
+                          ## construct a larger temporary array, fill in by 3rd index, then put in res
+                          dim <- dim(res@data[[n]])
+                          tmp <- array(object@data[[n]][1,1,1],
+                                       dim=c(dim[1]+dim(data[[n]])[1], dim[2], dim[3]))
+                          for (k in seq_len(dim[3])) {
+                              tmp[,,k] <- rbind(res@data[[n]][,,k], data[[n]][,,k])
+                          }
+                          res@data[[n]] <- tmp
+                      }
+                  }
+                  ## Fix up dimensionality
+                  for (n in ni) {
+                      if (is.array(dots[[1]]@data[[n]])) {
+                          len <- length(res@data[[n]])
+                          dim <- dim(dots[[1]]@data[[n]])
+                          ndim <- length(dim)
+                          denom <- if (ndim == 2) dim[2] else if (ndim == 3) dim[2] * dim[3]
+                          dim[1] <- length(res@data[[n]]) / denom
+                          ##message("dim=", paste(dim, collapse=" "))
+                          dim(res@data[[n]]) <- dim
+                      }
+                  }
+                  ## Flags.
+                  if (!is.null(f1)) {
+                      metadata <- dots[[i]]@metadata
+                      fi <- sort(names(dots[[i]]@metadata$flags))
+                      if (!identical(f1, fi))
+                          stop("flag mismatch between argument 1 (",
+                               paste(f1, collapse=" "), ") and argument ", i,
+                               "(", paste(fi, collapse=" "), ")")
+                      for (f in fi) {
+                          res@metadata$flags[[f]] <- c(res@metadata$flags[[f]], metadata$flags[[f]])
+                      }
+                  }
+              }
+              ## for reasons unknown to me, the tzone gets localized
+              attr(res@data$time, "tzone") <- attr(object@data$time, "tzone")
+              res
+          })
+
+#' Concatenate a list of oce objects
+#' @param object A list holding objects of \code{\link{oce-class}}.
+#' @return An object of class corresponding to that in \code{object}.
+#' @family functions that concatenate \code{oce} objects.
+setMethod("concatenate",
+          c(object="list"),
+          function(object) {
+              do.call("concatenate", list(object[[1]], object[[2:length(object)]]))
+          })
 

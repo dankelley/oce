@@ -256,9 +256,39 @@ test_that("tail_section", {
 })
 
 test_that("trim_ts", {
-   x <- seq(0, 10, 0.1)
-   xlim <- c(2.0, 2.9)
-   oce:::trim_ts(x, xlim, 0)
-   expect_equal(oce:::trim_ts(x, xlim, 0), list(from=20, to=31))
+          x <- seq(0, 10, 0.1)
+          xlim <- c(2.0, 2.9)
+          oce:::trim_ts(x, xlim, 0)
+          expect_equal(oce:::trim_ts(x, xlim, 0), list(from=20, to=31))
+})
+
+test_that("concatenate adp", {
+          data(adp)
+          t0 <- median(adp[["time"]])
+          a <- subset(adp, time <= t0)
+          b <- subset(adp, time > t0)
+          ab <- concatenate(a, b)
+          for (n in c("time", "v", "a", "distance"))
+            expect_equal(ab[[n]], adp[[n]])
+})
+
+test_that("concatenate adv", {
+          data(adv)
+          t0 <- median(adv[["time"]])
+          a <- subset(adv, time <= t0)
+          b <- subset(adv, time > t0)
+          ab <- concatenate(a, b)
+          for (n in c("time", "v", "a", "distance"))
+            expect_equal(ab[[n]], adv[[n]])
+})
+
+test_that("concatenate ctd", {
+          data(ctd)
+          scan0 <- median(ctd[["scan"]])
+          a <- subset(ctd, scan <= scan0)
+          b <- subset(ctd, scan > scan0)
+          ab <- concatenate(a, b)
+          for (n in c("scan", "pressure", "salinity", "temperature"))
+            expect_equal(ab[[n]], ctd[[n]])
 })
 

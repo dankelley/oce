@@ -3,7 +3,7 @@
 #' Read a Sontek ADP File
 #'
 #' Read a Sontek acoustic-Doppler profiler file [1].
-#"
+#'
 #' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
 #' anomalous spikes in heading, etc.
 #' @param type A character string indicating the type of instrument.

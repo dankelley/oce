@@ -32,7 +32,7 @@ An object of \code{\link[base]{class}} \code{"met"}, of which the
 m/s and are the components of the vector of wind direction.  In other words,
 the oceanographic convention on velocity is employed, not the meteorological
 one; the weather forecaster's "North wind" has positive \code{v} and zero
-\code{u}.  In addition to these things, \code{data} also contains 
+\code{u}.  In addition to these things, \code{data} also contains
 \code{wind} (in km/h), taken straight from the data file.
 }
 \description{
