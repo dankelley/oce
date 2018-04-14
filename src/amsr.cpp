@@ -111,11 +111,11 @@ RawVector do_amsr_composite(RawVector a, IntegerVector dim)
   //Rprintf("amsr_composite n1=%d n2=%d n3=%d n12=%d\n", n1, n2, n3, n12);
   RawVector res(n12);
   unsigned char A = 'a'; // assignment prevents compiler warning at line 145
-  for (int i = 0; i < n12; i++) {
+  for (unsigned int i = 0; i < n12; i++) {
     double sum = 0.0;
     int nsum = 0;
     //if (i < 300) Rprintf("i=%d:\n", i);
-    for (int i3 = 0; i3 < n3; i3++) {
+    for (unsigned int i3 = 0; i3 < n3; i3++) {
       A = a[i + n12*i3];
       if (A < 0xfb) {
         sum += A;

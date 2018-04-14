@@ -34,9 +34,9 @@ static double interpolate_barnes(double xx, double yy, double zz, /* interpolate
     double xr, double yr, int debug) /* influence radii */
 {
   double sum = 0.0, sum_w = 0.0;
-  for (int k = 0; k < nx; k++) {
+  for (unsigned int k = 0; k < nx; k++) {
     // R trims NA (x,y values so no need to check here
-    if (k != skip) {
+    if ((int)k != skip) {
       double dx, dy, d, weight;
       dx = (xx - x[k]) / xr;
       dy = (yy - y[k]) / yr;
@@ -61,8 +61,8 @@ static double weight_barnes(double xx, double yy,
 {
   double sum_w, dx, dy, d, weight;
   sum_w = 0.0;
-  for (int k = 0; k < n; k++) {
-    if (k != skip) {
+  for (unsigned int k = 0; k < n; k++) {
+    if ((int)k != skip) {
       dx = (xx - x[k]) / xr;
       dy = (yy - y[k]) / yr;
       d = dx*dx + dy*dy;

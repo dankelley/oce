@@ -105,7 +105,7 @@ IntegerVector do_ldc_sontek_adp(RawVector buf, IntegerVector have_ctd, IntegerVe
         Rprintf("OK  at buf[%d]: check_sum=%d (should be %d); check_sum_start=%d\n",
             i, check_sum, desired_check_sum, check_sum_start);
 #endif
-        if (max[0] != 0 && matches >= max[0])
+        if (max[0] != 0 && matches >= (unsigned int)max[0])
           break;
       } else {
 #ifdef DEBUG
@@ -118,7 +118,7 @@ IntegerVector do_ldc_sontek_adp(RawVector buf, IntegerVector have_ctd, IntegerVe
     }
   }
   /* allocate space, then run through whole buffer again, noting the matches */
-  int nres = matches;
+  unsigned int nres = matches;
   IntegerVector res(nres>0?nres:1, 1);
   if (nres > 0) {
 #ifdef DEBUG

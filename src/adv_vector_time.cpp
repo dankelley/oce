@@ -22,11 +22,11 @@ NumericVector do_adv_vector_time(NumericVector vvdStart, NumericVector vsdStart,
   // matching that of vvdStart.  The method works by left-bracketing
   // velocity data with vsd headers, and stepping forward thereafter
   // in times dt=1/f.
-  int nvvd = vvdStart.size();
-  int nvsd = vsdStart.size();
-  int nvvdh = vvdhStart.size();
+  long int nvvd = vvdStart.size();
+  long int nvsd = vsdStart.size();
+  long int nvvdh = vvdhStart.size();
   NumericVector res(nvvd);
-  unsigned long int ivvd, ivvdh = 0;
+  long int ivvd, ivvdh = 0;
   double t = vvdhTime[0];
   int nn = (int)floor(0.5 + n[0]);
   if (nn < 0)

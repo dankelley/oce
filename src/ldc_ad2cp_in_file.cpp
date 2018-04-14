@@ -125,15 +125,15 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   if (!fp)
     ::Rf_error("cannot open file '%s'\n", fn.c_str());
 
-  int from_value = from[0];
-  if (from_value < 0)
-    ::Rf_error("'from' must be positive but it is %d", from_value);
-  int to_value = to[0];
-  if (to_value < 0)
-    ::Rf_error("'to' must be positive but it is %d", to_value);
-  int by_value = by[0];
-  if (by_value < 0)
-    ::Rf_error("'by' must be positive but it is %d", by_value);
+  if (from[0] < 0)
+    ::Rf_error("'from' must be positive but it is %d", from[0]);
+  unsigned int from_value = from[0];
+  if (to[0] < 0)
+    ::Rf_error("'to' must be positive but it is %d", to[0]);
+  unsigned int to_value = to[0];
+  if (by[0] < 0)
+    ::Rf_error("'by' must be positive but it is %d", by[0]);
+  unsigned int by_value = by[0];
   if (debug > 1) Rprintf("from=%d, to=%d, by=%d\n", from_value, to_value, by_value);
 
   // FIXME: should we just get this from R? and do we even need it??
@@ -141,8 +141,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   unsigned long int fileSize = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
   if (debug > 3) Rprintf("fileSize=%d\n", fileSize);
-  unsigned long int chunk = 0;
-  unsigned long int cindex = 0;
+  unsigned int chunk = 0;
+  unsigned int cindex = 0;
 
   // Ensure that the first byte we point to equals SYNC.
   // In a conventional file, starting with a SYNC char, this
@@ -182,7 +182,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
       id_buf = (unsigned int*)Realloc(id_buf, nchunk, unsigned int);
       Rprintf(" > increased buffers to have nchunk=%d\n", nchunk);
     }
-    int id, dataSize;
+    int id;
+    unsigned int dataSize;
     unsigned short dataChecksum, headerChecksum;
     size_t bytes_read;
     bytes_read = fread(hbuf, 1, HEADER_SIZE, fp);
@@ -243,7 +244,7 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     chunk++;
   }
   IntegerVector index(chunk), length(chunk), id(chunk);
-  for (int i = 0; i < chunk; i++) {
+  for (unsigned int i = 0; i < chunk; i++) {
     index[i] = index_buf[i];
     length[i] = length_buf[i];
     id[i] = id_buf[i];
