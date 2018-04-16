@@ -29,6 +29,7 @@ for \code{\link{oceColorsJet}(n)}.
 \seealso{
 Other things related to colors: \code{\link{colormap}},
   \code{\link{colors}}, \code{\link{oce.colorsGebco}},
+  \code{\link{oceColors9A}}, \code{\link{oceColors9B}},
   \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
   \code{\link{oceColorsDensity}},

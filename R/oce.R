@@ -2354,12 +2354,20 @@ oceColorsJet <- function(n)
 }
 oce.colorsJet <- oceColorsJet
 
+#' Create colours in a red-white-blue colour scheme
+#' @aliases oceColors9A oce.colors9A
+#' @param n number of colours
+#' @family things related to colors
 oceColors9A <- function(n)
 {
     oce.colorsJet(n)
 }
 oce.colors9A <- oceColors9A
 
+#' Create colours in a red-yellow-blue colour scheme
+#' @aliases oceColors9B oce.colors9B
+#' @param n number of colours
+#' @family things related to colors
 oceColors9B <- function(n)
 {
     if (missing(n) || n <= 0)

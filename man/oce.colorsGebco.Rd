@@ -22,7 +22,8 @@ Gebco Colors
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},
-  \code{\link{colors}}, \code{\link{oceColorsCDOM}},
+  \code{\link{colors}}, \code{\link{oceColors9A}},
+  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},

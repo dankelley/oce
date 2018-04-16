@@ -244,8 +244,8 @@ colour maps are at \url{http://www.beamreach.org/maps/gmt/share/cpt},
 }
 \seealso{
 Other things related to colors: \code{\link{colors}},
-  \code{\link{oce.colorsGebco}},
-  \code{\link{oceColorsCDOM}},
+  \code{\link{oce.colorsGebco}}, \code{\link{oceColors9A}},
+  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},
