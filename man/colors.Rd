@@ -32,7 +32,22 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
 
 Other things related to colors: \code{\link{colormap}},
   \code{\link{oce.colorsGebco}},
-  \code{\link{oce.colorsTwo}}
+  \code{\link{oceColorsCDOM}},
+  \code{\link{oceColorsChlorophyll}},
+  \code{\link{oceColorsDensity}},
+  \code{\link{oceColorsFreesurface}},
+  \code{\link{oceColorsJet}},
+  \code{\link{oceColorsOxygen}},
+  \code{\link{oceColorsPAR}},
+  \code{\link{oceColorsPalette}},
+  \code{\link{oceColorsPhase}},
+  \code{\link{oceColorsSalinity}},
+  \code{\link{oceColorsTemperature}},
+  \code{\link{oceColorsTurbidity}},
+  \code{\link{oceColorsTwo}},
+  \code{\link{oceColorsVelocity}},
+  \code{\link{oceColorsViridis}},
+  \code{\link{oceColorsVorticity}}
 }
 \author{
 Authored by matplotlib contributes, packaged in oce by Dan Kelley

@@ -160,6 +160,8 @@ colormap_colorize <- function(z=NULL,
     res
 }
 
+## Q: Why does this name contain "GMT"?
+## NB: I've not documented this, because it is not in the NAMESPACE.
 colormapGMT <- function(x0, x1, col0, col1, bpl=1)
 {
     n <- length(x0)
@@ -184,6 +186,8 @@ colormapGMT <- function(x0, x1, col0, col1, bpl=1)
     res
 }
 
+## Q: Why does this name contain "Gmt"?
+## NB: I've not documented this, because it is not in the NAMESPACE.
 colormapFromGmt <- function(file)
 {
     if (missing(file))

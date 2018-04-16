@@ -245,7 +245,22 @@ colour maps are at \url{http://www.beamreach.org/maps/gmt/share/cpt},
 \seealso{
 Other things related to colors: \code{\link{colors}},
   \code{\link{oce.colorsGebco}},
-  \code{\link{oce.colorsTwo}}
+  \code{\link{oceColorsCDOM}},
+  \code{\link{oceColorsChlorophyll}},
+  \code{\link{oceColorsDensity}},
+  \code{\link{oceColorsFreesurface}},
+  \code{\link{oceColorsJet}},
+  \code{\link{oceColorsOxygen}},
+  \code{\link{oceColorsPAR}},
+  \code{\link{oceColorsPalette}},
+  \code{\link{oceColorsPhase}},
+  \code{\link{oceColorsSalinity}},
+  \code{\link{oceColorsTemperature}},
+  \code{\link{oceColorsTurbidity}},
+  \code{\link{oceColorsTwo}},
+  \code{\link{oceColorsVelocity}},
+  \code{\link{oceColorsViridis}},
+  \code{\link{oceColorsVorticity}}
 }
 \author{
 Dan Kelley
