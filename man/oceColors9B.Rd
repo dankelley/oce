@@ -11,16 +11,24 @@ oceColors9B(n)
 \item{n}{number of colours}
 }
 \description{
-Create colours in a red-yellow-blue colour scheme
+The results are similar to those of \code{\link{oceColorsJet}}, but
+with white hues in the centre, rather than green ones. The scheme
+may be useful in displaying signed quantities, and thus is somewhat
+analogous to \code{\link{oceColorsTwo}}, except that they (average)
+eye may be more able to distinguish colours with \code{oceColors9B}.
+}
+\examples{
+library(oce)
+imagep(volcano, col=oceColors9B(128),
+       zlab="volcano dataset, autoscaled with oceColors9B(128)")
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},
-  \code{\link{colors}}, \code{\link{oce.colorsGebco}},
-  \code{\link{oceColors9A}}, \code{\link{oceColorsCDOM}},
+  \code{\link{colors}}, \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},
-  \code{\link{oceColorsJet}},
+  \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
   \code{\link{oceColorsOxygen}},
   \code{\link{oceColorsPAR}},
   \code{\link{oceColorsPalette}},

@@ -12,5 +12,10 @@
 #'
 #' @author Krysten M. Thyng (Python version), Dan Kelley (R transliteration)
 #'
+#' @examples
+#' library(oce)
+#' imagep(volcano, col=oceColors<%=colorItemUC%>(128),
+#'        zlab="volcano dataset, autoscaled with oceColors<%=colorItemUC%>(128)")
+#'
 #' @family things related to colors
 

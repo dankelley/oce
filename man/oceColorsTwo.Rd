@@ -17,17 +17,22 @@ for the low and high ends of the colour scale.}
 of the colours.}
 }
 \description{
-Create colours ranging between two specified limits.
+Create colours ranging between two specified limits, with white
+in the middle.
+}
+\examples{
+library(oce)
+imagep(volcano, col=oceColorsTwo(128),
+       zlab="volcano dataset, autoscaled with oceColorsTwo(128)")
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},
-  \code{\link{colors}}, \code{\link{oce.colorsGebco}},
-  \code{\link{oceColors9A}}, \code{\link{oceColors9B}},
+  \code{\link{colors}}, \code{\link{oceColors9B}},
   \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},
-  \code{\link{oceColorsJet}},
+  \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
   \code{\link{oceColorsOxygen}},
   \code{\link{oceColorsPAR}},
   \code{\link{oceColorsPalette}},

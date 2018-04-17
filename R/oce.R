@@ -2058,131 +2058,10 @@ read.netcdf <- function(file, ...)
     res
 }
 
-
-## Create a Palette of Colours
-##
-## Create a palette of colours.
-##
-## \code{oce.colorsPalette} provides a variety of pre-defined palettes.
-## \code{which}=1 yields the ColorBrewer diverging red/blue scheme while
-## \code{which}=2 yields the ColorBrewer diverging RYB scheme [1].
-##
-## A family of nine-colour schemes is as follows: \code{which="jet"} (or
-## \code{which="9A"} or \code{which=9.01} for the Jet scheme; \code{which="9B"}
-## or \code{which=9.02} for a scheme similar to Jet but omitting the green, and
-## somewhat desaturating the yellow and cyan.
-##
-## \code{\link{oce.colorsGebco}} provides palettes that mimic the GEBCO atlas colours,
-## with shades of blue for water and of brown for land.  The blue values go
-## from dark to light, and the brown ones from light to dark; in this way,
-## topographic images have light values near sea-level, and get darker in
-## either deeper water or higher terrain.
-##
-## \code{oce.colorsJet} provides a palette similar to the Matlab \dQuote{jet}
-## palette.
-##
-## \code{oce.colorsTwo} provides a two-tone palette that fades to white at
-## central values.
-##
-## \code{oce.colorsViridis} provides a matplotlib (python) colour scheme that
-## became the standard in 2015; see [2]. This is a blue-yellow transition that
-## is designed to reproduce well in black-and-white, and also to be
-## interpretable by those with certain forms of colour blindness [3, 4, 5].
-##
-## \code{oce.colorsCDOM}, \code{oce.colorsChlorophyll},
-## \code{oce.colorsDensity}, \code{oce.colorsFreesurface},
-## \code{oce.colorsOxygen}, \code{oce.colorspAR}, \code{oce.colorsPhase},
-## \code{oce.colorsSalinity}, \code{oce.colorsTemperature},
-## are based on RGB values set up by Kristen M.
-## Thyng for her Python package named \code{cmcolor} [7].
-##
-## @aliases oce.colors oceColors
-## oce.colors9A oceColors9A oce.colors9B oceColors9B oce.colorsViridis
-## oceColorsViridis oce.colorsCDOM oce.colorsChlorophyll oce.colorsDensity
-## oce.colorsFreesurface oce.colorsOxygen oce.colorsPAR oce.colorsPhase
-## oce.colorsSalinity oce.colorsTemperature oce.colorsTurbidity
-## oce.colorsVelocity  oceColorsCDOM oceColorsChlorophyll
-## oceColorsDensity oceColorsFreesurface oceColorsOxygen oceColorsPAR
-## oceColorsPhase oceColorsSalinity oceColorsTemperature oceColorsTurbidity
-## oceColorsVelocity oceColorsVorticity
-## @param n the number of colours (\eqn{\ge 1}{>=1}) to be in the palette.
-## @param low the hue, in [0, 1], for the low end of a \code{oce.colorsTwo}
-## scale.
-## @param high the hue, in [0, 1], for the high end of a \code{oce.colorsTwo}
-## scale.
-## @param smax the maximum saturation, in [0, 1], for the colours of
-## \code{oce.colorsTwo}.
-## @param alpha the alpha value, in [0, 1], for the colours of
-## \code{oce.colorsTwo}.
-## @author Dan Kelley
-## @references [1] Color Brewer. \url{http://colorbrewer2.org/}
-##
-## [2] A blog item on the Viridis (and related) matplotlib colour scales is at
-## \url{http://bids.github.io/colormap/}.
-##
-## [3] Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
-## Schemes for Improved Data Graphics. \emph{Eos Trans. AGU}, 85(40),
-## doi:10.1029/2004EO400002.
-##
-## [4] Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
-## Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
-## \samp{https://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}.
-##
-## [5] Stephenson, David B., 2005. Comment on ``Color schemes for improved data
-## graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).
-##
-## [6] The Geography department at the University of Oregon has good resources
-## on colour schemes; see e.g.
-## \code{http://geography.uoregon.edu/datagraphics/color_scales.htm} (This URL
-## worked prior to December 8, 2015, but was found to fail on that date; it is
-## included here in case users want to search for themselves.)
-##
-## [7] The \code{cmocean} Python package, written by Kristen M Thyng, is
-## available at \url{https://github.com/kthyng/cmocean}.
-## @examples
-##
-## library(oce)
-## opar <- par(no.readonly = TRUE)
-## # 1. Show a few palettes
-## x <- array(1:1000, dim=c(1, 1000))
-## par(mfrow=c(1, 5), mar=c(1, 3, 3, 1))
-## image(x, col=oce.colorsTwo(200), main="oce.colorsTwo")
-## image(x, col=oce.colorsJet(200), main="oce.colorsJet")
-## image(x, col=oce.colorsGebco(200), main="oce.colorsGebco")
-## image(x, col=oce.colorsPalette(200), main="oce.colorsPalette")
-## image(x, col=oce.colorsViridis(200), main="oce.colorsViridis")
-##
-## # 4. Kristen M Thyng's 'cmocean' colours, specialised for oceanography.
-## par(mfrow=c(3, 4), mar=c(1, 3, 3, 1))
-## image(x, col=oce.colorsCDOM(200), main="oce.colorsCDOM")
-## image(x, col=oce.colorsChlorophyll(200), main="oce.colorsChlorophyll")
-## image(x, col=oce.colorsDensity(200), main="oce.colorsDensity")
-## image(x, col=oce.colorsFreesurface(200), main="oce.colorsFreesurface")
-## image(x, col=oce.colorsOxygen(200), main="oce.colorsOxygen")
-## image(x, col=oce.colorsPAR(200), main="oce.colorsPAR")
-## image(x, col=oce.colorsPhase(200), main="oce.colorsPhase")
-## image(x, col=oce.colorsSalinity(200), main="oce.colorsSalinity")
-## image(x, col=oce.colorsTemperature(200), main="oce.colorsTemperature")
-## image(x, col=oce.colorsTurbidity(200), main="oce.colorsTurbidity")
-## image(x, col=oce.colorsVelocity(200), main="oce.colorsVelocity")
-## image(x, col=oce.colorsVorticity(200), main="oce.colorsVorticity")
-##
-## # 3. Acoustic-Doppler profiler data; note that plot,adp-method() puts makes
-## # zlim be symmetric about zero velocity.
-## par(mfrow=c(1, 1))
-## data(adp)
-## plot(adp, which='u1')
-##
-## # 4. Contrast Jet with Viridis, using standard Volcano dataset;
-## # try printing the results in black and white.
-## par(mfrow=c(2, 1))
-## imagep(volcano, col=oce.colorsJet)
-## imagep(volcano, col=oce.colorsViridis)
-## @family things related to colors
-
 #' Create two-colour palette
 #'
-#' Create colours ranging between two specified limits.
+#' Create colours ranging between two specified limits, with white
+#' in the middle.
 #'
 #' @aliases oceColorsTwo oce.colorsTwo
 #'
@@ -2191,7 +2070,10 @@ read.netcdf <- function(file, ...)
 #' @param smax numerical value (in range 0 to 1) for the colour saturation.
 #' @param alpha numerical value (in ragne 0 to 1) for the alpha (transparency)
 #' of the colours.
-#'
+#' @examples
+#' library(oce)
+#' imagep(volcano, col=oceColorsTwo(128),
+#'        zlab="volcano dataset, autoscaled with oceColorsTwo(128)")
 #' @family things related to colors
 oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 {
@@ -2212,14 +2094,14 @@ oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 }
 oce.colorsTwo <- oceColorsTwo
 
-#' Gebco Colors
+#' Create colours in a Gebco-like scheme
 #' @aliases oceColorsGebco oce.colors.gebco
 #' @param n Number of colors to return
 #' @param region String indicating application region, one of \code{"water"}, \code{"land"},
 #' or \code{"both"}.
 #' @param type String indicating the purpose, one of \code{"fill"} or \code{"line"}.
 #' @family things related to colors
-oce.colorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill", "line"))
+oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill", "line"))
 {
     region <- match.arg(region)
     type <- match.arg(type)
@@ -2258,7 +2140,7 @@ oce.colorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill
     }
     rgb(r, g, b)
 }
-oceColorsGebco <- oce.colorsGebco
+oce.colorsGebco <- oceColorsGebco
 
 
 oce.colorsCLOSURE <- function(colorname) {
@@ -2269,11 +2151,35 @@ oce.colorsCLOSURE <- function(colorname) {
     }
 }
 
-## Viridis is python matplotlib default colormap, as of mid/late 2015.
-#' @title Create colours similar to the matlab Viridis scheme
+#' Create colours similar to the matlab Viridis scheme
+#'
+#' This is patterned on a matlab/python scheme [1] that blends
+#' from yellow to blue in a way that is designed to reproduce well
+#' in black-and-white, and to be interpretable by those with
+#' certain forms of colour blindness [3-4].
+#'
 #' @aliases oce.colorsViridis oceColorsViridis
 #' @param n number of colours to create.
+#' @references
+#' [1] A blog item on the Viridis (and related) matplotlib colour
+#' scales is at \url{http://bids.github.io/colormap/}.
+#'
+#' [2] Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
+#' Schemes for Improved Data Graphics. \emph{Eos Trans. AGU}, 85(40),
+#' doi:10.1029/2004EO400002.
+#'
+#' [3] Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
+#' Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
+#' \samp{https://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}.
+#'
+#' [4] Stephenson, David B., 2005. Comment on ``Color schemes for improved data
+#' graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).
+#'
 #' @author Dan Kelley
+#' @examples
+#' library(oce)
+#' imagep(volcano, col=oceColorsViridis(128),
+#'        zlab="volcano dataset, autoscaled with oceColorsViridis(128)")
 #' @family things related to colors
 oceColorsViridis <- oce.colorsViridis <- oce.colorsCLOSURE("viridis")
 
@@ -2339,8 +2245,12 @@ oceColorsVorticity <- oce.colorsVorticity <- oce.colorsCLOSURE("vorticity")
 
 
 #' Create colours similar to the Matlab Jet scheme
-#' @aliases oceColorsJet oce.colorsJet
+#' @aliases oceColorsJet oce.colorsJet oceColors9A oce.colors9A
 #' @param n number of colours
+#' @examples
+#' library(oce)
+#' imagep(volcano, col=oceColorsJet(128),
+#'        zlab="volcano dataset, autoscaled with oceColorsJet(128)")
 #' @family things related to colors
 oceColorsJet <- function(n)
 {
@@ -2352,21 +2262,22 @@ oceColorsJet <- function(n)
                            "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(n)
     }
 }
-oce.colorsJet <- oceColorsJet
-
-#' Create colours in a red-white-blue colour scheme
-#' @aliases oceColors9A oce.colors9A
-#' @param n number of colours
-#' @family things related to colors
-oceColors9A <- function(n)
-{
-    oce.colorsJet(n)
-}
-oce.colors9A <- oceColors9A
+oce.colors9A <- oceColors9A <- oce.colorsJet <- oceColorsJet
 
 #' Create colours in a red-yellow-blue colour scheme
+#'
+#' The results are similar to those of \code{\link{oceColorsJet}}, but
+#' with white hues in the centre, rather than green ones. The scheme
+#' may be useful in displaying signed quantities, and thus is somewhat
+#' analogous to \code{\link{oceColorsTwo}}, except that they (average)
+#' eye may be more able to distinguish colours with \code{oceColors9B}.
+#'
 #' @aliases oceColors9B oce.colors9B
 #' @param n number of colours
+#' @examples
+#' library(oce)
+#' imagep(volcano, col=oceColors9B(128),
+#'        zlab="volcano dataset, autoscaled with oceColors9B(128)")
 #' @family things related to colors
 oceColors9B <- function(n)
 {

@@ -10,15 +10,40 @@ oceColorsViridis(n)
 \arguments{
 \item{n}{number of colours to create.}
 }
+\description{
+This is patterned on a matlab/python scheme [1] that blends
+from yellow to blue in a way that is designed to reproduce well
+in black-and-white, and to be interpretable by those with
+certain forms of colour blindness [3-4].
+}
+\examples{
+library(oce)
+imagep(volcano, col=oceColorsViridis(128),
+       zlab="volcano dataset, autoscaled with oceColorsViridis(128)")
+}
+\references{
+[1] A blog item on the Viridis (and related) matplotlib colour
+scales is at \url{http://bids.github.io/colormap/}.
+
+[2] Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
+Schemes for Improved Data Graphics. \emph{Eos Trans. AGU}, 85(40),
+doi:10.1029/2004EO400002.
+
+[3] Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
+Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
+\samp{https://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}.
+
+[4] Stephenson, David B., 2005. Comment on ``Color schemes for improved data
+graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).
+}
 \seealso{
 Other things related to colors: \code{\link{colormap}},
-  \code{\link{colors}}, \code{\link{oce.colorsGebco}},
-  \code{\link{oceColors9A}}, \code{\link{oceColors9B}},
+  \code{\link{colors}}, \code{\link{oceColors9B}},
   \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},
-  \code{\link{oceColorsJet}},
+  \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
   \code{\link{oceColorsOxygen}},
   \code{\link{oceColorsPAR}},
   \code{\link{oceColorsPalette}},

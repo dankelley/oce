@@ -3,6 +3,8 @@
 \name{oceColorsJet}
 \alias{oceColorsJet}
 \alias{oce.colorsJet}
+\alias{oceColors9A}
+\alias{oce.colors9A}
 \title{Create colours similar to the Matlab Jet scheme}
 \usage{
 oceColorsJet(n)
@@ -13,14 +15,19 @@ oceColorsJet(n)
 \description{
 Create colours similar to the Matlab Jet scheme
 }
+\examples{
+library(oce)
+imagep(volcano, col=oceColorsJet(128),
+       zlab="volcano dataset, autoscaled with oceColorsJet(128)")
+}
 \seealso{
 Other things related to colors: \code{\link{colormap}},
-  \code{\link{colors}}, \code{\link{oce.colorsGebco}},
-  \code{\link{oceColors9A}}, \code{\link{oceColors9B}},
+  \code{\link{colors}}, \code{\link{oceColors9B}},
   \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},
+  \code{\link{oceColorsGebco}},
   \code{\link{oceColorsOxygen}},
   \code{\link{oceColorsPAR}},
   \code{\link{oceColorsPalette}},

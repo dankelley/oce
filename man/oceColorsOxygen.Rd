@@ -20,15 +20,21 @@ based on the scheme devised by Kristen M. Thyng
 in her \code{cmcolor} Python package, which is available at
 \url{https://github.com/kthyng/cmocean}.
 }
+\examples{
+library(oce)
+imagep(volcano, col=oceColorsOxygen(128),
+       zlab="volcano dataset, autoscaled with oceColorsOxygen(128)")
+
+}
 \seealso{
 Other things related to colors: \code{\link{colormap}},
-  \code{\link{colors}}, \code{\link{oce.colorsGebco}},
-  \code{\link{oceColors9A}}, \code{\link{oceColors9B}},
+  \code{\link{colors}}, \code{\link{oceColors9B}},
   \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},
-  \code{\link{oceColorsJet}}, \code{\link{oceColorsPAR}},
+  \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
+  \code{\link{oceColorsPAR}},
   \code{\link{oceColorsPalette}},
   \code{\link{oceColorsPhase}},
   \code{\link{oceColorsSalinity}},
