@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{oceColorsGebco}
 \alias{oceColorsGebco}
-\alias{oce.colors.gebco}
+\alias{oce.colorsGebco}
 \title{Create colours in a Gebco-like scheme}
 \usage{
 oceColorsGebco(n = 9, region = c("water", "land", "both"),

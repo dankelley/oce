@@ -2065,6 +2065,7 @@ read.netcdf <- function(file, ...)
 #'
 #' @aliases oceColorsTwo oce.colorsTwo
 #'
+#' @param n number of colours to generate.
 #' @param low,high numerical values (in range 0 to 1) specifying the hue
 #' for the low and high ends of the colour scale.
 #' @param smax numerical value (in range 0 to 1) for the colour saturation.
@@ -2095,7 +2096,7 @@ oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 oce.colorsTwo <- oceColorsTwo
 
 #' Create colours in a Gebco-like scheme
-#' @aliases oceColorsGebco oce.colors.gebco
+#' @aliases oceColorsGebco oce.colorsGebco
 #' @param n Number of colors to return
 #' @param region String indicating application region, one of \code{"water"}, \code{"land"},
 #' or \code{"both"}.

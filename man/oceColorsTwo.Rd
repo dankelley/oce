@@ -8,6 +8,8 @@
 oceColorsTwo(n, low = 2/3, high = 0, smax = 1, alpha = 1)
 }
 \arguments{
+\item{n}{number of colours to generate.}
+
 \item{low, high}{numerical values (in range 0 to 1) specifying the hue
 for the low and high ends of the colour scale.}
 

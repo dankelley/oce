@@ -1,5 +1,5 @@
 #' @title Create colours suitable for <%=colorItem%> fields
-#' @aliases oce.colors<%=colorItemUC%> aliases oceColors<%=colorItemUC%>
+#' @aliases oce.colors<%=colorItemUC%> oceColors<%=colorItemUC%>
 #' @description
 #' Create a set of colours for displaying <%=colorItem%> values,
 #' based on the scheme devised by Kristen M. Thyng

@@ -3,7 +3,6 @@
 \name{oceColorsVorticity}
 \alias{oceColorsVorticity}
 \alias{oce.colorsVorticity}
-\alias{aliases}
 \title{Create colours suitable for vorticity fields}
 \usage{
 oceColorsVorticity(n)

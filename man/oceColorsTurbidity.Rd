@@ -3,7 +3,6 @@
 \name{oceColorsTurbidity}
 \alias{oceColorsTurbidity}
 \alias{oce.colorsTurbidity}
-\alias{aliases}
 \title{Create colours suitable for turbidity fields}
 \usage{
 oceColorsTurbidity(n)

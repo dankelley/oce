@@ -3,7 +3,6 @@
 \name{oceColorsFreesurface}
 \alias{oceColorsFreesurface}
 \alias{oce.colorsFreesurface}
-\alias{aliases}
 \title{Create colours suitable for freesurface fields}
 \usage{
 oceColorsFreesurface(n)
