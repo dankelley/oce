@@ -3,18 +3,18 @@
 \name{oceColorsViridis}
 \alias{oceColorsViridis}
 \alias{oce.colorsViridis}
-\title{Create colours similar to the matlab Viridis scheme}
+\title{Create colors similar to the matlab Viridis scheme}
 \usage{
 oceColorsViridis(n)
 }
 \arguments{
-\item{n}{number of colours to create.}
+\item{n}{number of colors to create.}
 }
 \description{
 This is patterned on a matlab/python scheme [1] that blends
 from yellow to blue in a way that is designed to reproduce well
 in black-and-white, and to be interpretable by those with
-certain forms of colour blindness [3-4].
+certain forms of color blindness [3-4].
 }
 \examples{
 library(oce)
@@ -22,7 +22,7 @@ imagep(volcano, col=oceColorsViridis(128),
        zlab="volcano dataset, autoscaled with oceColorsViridis(128)")
 }
 \references{
-[1] A blog item on the Viridis (and related) matplotlib colour
+[1] A blog item on the Viridis (and related) matplotlib color
 scales is at \url{http://bids.github.io/colormap/}.
 
 [2] Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
@@ -38,9 +38,9 @@ graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},
-  \code{\link{colors}}, \code{\link{oceColors9B}},
-  \code{\link{oceColorsCDOM}},
+  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
+  \code{\link{oceColorsClosure}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},
   \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
@@ -53,7 +53,7 @@ Other things related to colors: \code{\link{colormap}},
   \code{\link{oceColorsTurbidity}},
   \code{\link{oceColorsTwo}},
   \code{\link{oceColorsVelocity}},
-  \code{\link{oceColorsVorticity}}
+  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
 }
 \author{
 Dan Kelley

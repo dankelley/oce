@@ -3,7 +3,7 @@
 \name{oceColorsGebco}
 \alias{oceColorsGebco}
 \alias{oce.colorsGebco}
-\title{Create colours in a Gebco-like scheme}
+\title{Create colors in a Gebco-like scheme}
 \usage{
 oceColorsGebco(n = 9, region = c("water", "land", "both"),
   type = c("fill", "line"))
@@ -17,13 +17,13 @@ or \code{"both"}.}
 \item{type}{String indicating the purpose, one of \code{"fill"} or \code{"line"}.}
 }
 \description{
-Create colours in a Gebco-like scheme
+Create colors in a Gebco-like scheme
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},
-  \code{\link{colors}}, \code{\link{oceColors9B}},
-  \code{\link{oceColorsCDOM}},
+  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
+  \code{\link{oceColorsClosure}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},
   \code{\link{oceColorsJet}},
@@ -37,5 +37,5 @@ Other things related to colors: \code{\link{colormap}},
   \code{\link{oceColorsTwo}},
   \code{\link{oceColorsVelocity}},
   \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}
+  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
 }

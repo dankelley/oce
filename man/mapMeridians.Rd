@@ -15,7 +15,7 @@ a meridian grid, or a vector of latitudes at which to draw meridians.}
 
 \item{lwd}{line width.}
 
-\item{col}{line colour.}
+\item{col}{line color.}
 
 \item{...}{optional arguments passed to \code{\link{lines}}.}
 }

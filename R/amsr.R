@@ -314,17 +314,17 @@ setMethod(f="subset",
 #' \code{SST} is used; see \code{\link{amsr-class}} for a list of bands.
 #' @param asp Optional aspect ratio for plot.
 #'
-#' @param missingColor List of colours for problem cases. The names of the
-#' elements in this list must be as in the default, but the colours may
+#' @param missingColor List of colors for problem cases. The names of the
+#' elements in this list must be as in the default, but the colors may
 #' be changed to any desired values. These default values work reasonably
 #' well for SST images, which are the default image, and which employ a
-#' blue-white-red blend of colours, no mixture of which matches the
+#' blue-white-red blend of colors, no mixture of which matches the
 #' default values in \code{missingColor}.
 #'
 #' @param debug A debugging flag, integer.
 #'
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
-#' \code{col} to control colours.
+#' \code{col} to control colors.
 #'
 #' @concept satellite
 #'
@@ -392,7 +392,7 @@ setMethod(f="plot",
                   bad <- x[[y, "raw"]][lonDecIndices, latDecIndices] == as.raw(codes[[codeName]])
                   image(lon, lat, bad,
                         col=c("transparent", missingColor[[codeName]]), add=TRUE)
-                  ##message("did code ", codes[[codeName]], " (colour ", missingColor[[codeName]], ")")
+                  ##message("did code ", codes[[codeName]], " (color ", missingColor[[codeName]], ")")
               }
               box()
               oceDebug(debug, "} # plot.amsr()\n", unindent=1)

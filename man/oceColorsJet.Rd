@@ -5,15 +5,15 @@
 \alias{oce.colorsJet}
 \alias{oceColors9A}
 \alias{oce.colors9A}
-\title{Create colours similar to the Matlab Jet scheme}
+\title{Create colors similar to the Matlab Jet scheme}
 \usage{
 oceColorsJet(n)
 }
 \arguments{
-\item{n}{number of colours}
+\item{n}{number of colors}
 }
 \description{
-Create colours similar to the Matlab Jet scheme
+Create colors similar to the Matlab Jet scheme
 }
 \examples{
 library(oce)
@@ -22,9 +22,9 @@ imagep(volcano, col=oceColorsJet(128),
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},
-  \code{\link{colors}}, \code{\link{oceColors9B}},
-  \code{\link{oceColorsCDOM}},
+  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
+  \code{\link{oceColorsClosure}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},
   \code{\link{oceColorsGebco}},
@@ -38,5 +38,5 @@ Other things related to colors: \code{\link{colormap}},
   \code{\link{oceColorsTwo}},
   \code{\link{oceColorsVelocity}},
   \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}
+  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
 }

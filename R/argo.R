@@ -1147,10 +1147,10 @@ as.argo <- function(time, longitude, latitude,
 #'
 #' @param type plot type, either \code{"l"} or \code{"p"}.
 #'
-#' @param col optional list of colours for plotting.
+#' @param col optional list of colors for plotting.
 #'
 #' @param fill Either a logical, indicating whether to fill the land with
-#' light-gray, or a colour name.  Owing to problems with some projections, the
+#' light-gray, or a color name.  Owing to problems with some projections, the
 #' default is not to fill.
 #'
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for

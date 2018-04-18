@@ -63,7 +63,7 @@ setMethod(f="summary",
 #' @param asp Optional aspect ratio for plot.
 #' @param debug A debugging flag, integer.
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
-#' \code{col} to control colours.
+#' \code{col} to control colors.
 #'
 #' @concept satellite
 #' @author Dan Kelley

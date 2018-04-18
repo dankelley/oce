@@ -19,7 +19,7 @@ mapArrows(longitude0, latitude0, longitude1 = longitude0,
 
 \item{code}{numerical code indicating the type of arrows, passed to \code{\link{arrows}}.}
 
-\item{col}{arrow colour, passed to \code{\link{arrows}}.}
+\item{col}{arrow color, passed to \code{\link{arrows}}.}
 
 \item{lty}{arrow line type, passed to \code{\link{arrows}}.}
 

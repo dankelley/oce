@@ -445,8 +445,8 @@ topoInterpolate <- function(longitude, latitude, topo)
 #' @param water.z Depths at which to plot water contours.  If not provided, these
 #' are inferred from the data.
 #'
-#' @param col.water Colours corresponding to \code{water.z} values.  If not
-#' provided, these will be \code{"fill"} colours from
+#' @param col.water Colors corresponding to \code{water.z} values.  If not
+#' provided, these will be \code{"fill"} colors from
 #' \code{\link{oce.colorsGebco}}.
 #'
 #' @param lty.water Line type(s) for water contours.
@@ -457,8 +457,8 @@ topoInterpolate <- function(longitude, latitude, topo)
 #' are inferred from the data.  If set to \code{NULL}, no land contours will be
 #' plotted.
 #'
-#' @param col.land Colours corresponding to \code{land.z} values.  If not
-#' provided, these will be \code{"fill"} colours from
+#' @param col.land Colors corresponding to \code{land.z} values.  If not
+#' provided, these will be \code{"fill"} colors from
 #' \code{\link{oce.colorsGebco}}.
 #'
 #' @param lty.land Line type(s) for land contours.

@@ -3,21 +3,26 @@
 \name{oceColorsCDOM}
 \alias{oceColorsCDOM}
 \alias{oce.colorsCDOM}
-\title{Create colours suitable for CDOM fields}
+\title{Create colors suitable for CDOM fields}
 \usage{
 oceColorsCDOM(n)
 }
 \arguments{
-\item{n}{number of colours to create.}
+\item{n}{number of colors to create.}
 }
 \value{
-A vector of colour specificications.
+A vector of color specificications.
 }
 \description{
-Create a set of colours for displaying CDOM values,
+Create a set of colors for displaying CDOM values,
 based on the scheme devised by Kristen M. Thyng
 in her \code{cmcolor} Python package, which is available at
-\url{https://github.com/kthyng/cmocean}.
+\url{https://github.com/kthyng/cmocean}. The
+color specifications were downloaded for use here
+on 2015-09-29. To avoid changes in \code{oce} scripts,
+more recent changes to \code{cmcolor} have not been
+tracked; \code{\link{oceColorsClosure}}
+has an example of how to incorporate such changes.
 }
 \examples{
 library(oce)
@@ -27,8 +32,9 @@ imagep(volcano, col=oceColorsCDOM(128),
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},
-  \code{\link{colors}}, \code{\link{oceColors9B}},
+  \code{\link{oceColors9B}},
   \code{\link{oceColorsChlorophyll}},
+  \code{\link{oceColorsClosure}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},
   \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
@@ -42,7 +48,7 @@ Other things related to colors: \code{\link{colormap}},
   \code{\link{oceColorsTwo}},
   \code{\link{oceColorsVelocity}},
   \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}
+  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
 }
 \author{
 Krysten M. Thyng (Python version), Dan Kelley (R transliteration)

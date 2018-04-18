@@ -29,7 +29,7 @@ Landsat-7, this may be one of \code{"blue"}, \code{"green"},
 otherwise the first band will be used.  In addition to the above, using
 \code{band="temperature"} will plot an estimate of at-satellite
 brightness temperature, computed from the \code{tirs1} band, and
-\code{band="terralook"} will plot a sort of natural colour by combining
+\code{band="terralook"} will plot a sort of natural color by combining
 the \code{red}, \code{green}, \code{blue} and \code{nir} bands
 according to the formula provided at
 \code{https://lta.cr.usgs.gov/terralook/what_is_terralook} (a
@@ -43,7 +43,7 @@ The default yields faster plotting.  Some decimation is sensible for
 full-size images, since no graphical displays can show 16 thousand pixels
 on a side.}
 
-\item{zlim}{Either a pair of numbers giving the limits for the colourscale,
+\item{zlim}{Either a pair of numbers giving the limits for the colorscale,
 or \code{"histogram"} to have a flattened histogram (i.e. to maximally
 increase contrast throughout the domain.)  If not given, the 1 and 99
 percent quantiles are calculated and used as limits.}
@@ -51,12 +51,12 @@ percent quantiles are calculated and used as limits.}
 \item{utm}{A logical value indicating whether to use UTS (easting and northing) instead
 of longitude and latitude on plot.}
 
-\item{col}{Either a function yielding colours, taking a single integer
-argument with the desired number of colours, or the string
+\item{col}{Either a function yielding colors, taking a single integer
+argument with the desired number of colors, or the string
 \code{"natural"}, which combines the information in the \code{red},
 \code{green} and \code{blue} bands and produces a natural-hue image.  In
 the latter case, the band designation is ignored, and the object must
-contain the three colour bands.}
+contain the three color bands.}
 
 \item{drawPalette}{Indication of the type of palette to draw, if
 any. See \code{\link{imagep}} for details.}
@@ -64,25 +64,25 @@ any. See \code{\link{imagep}} for details.}
 \item{showBandName}{A logical indicating whether the band name is to
 plotted in the top margin, near the right-hand side.}
 
-\item{alpha.f}{Argument used if \code{col="natural"}, to adjust colours
+\item{alpha.f}{Argument used if \code{col="natural"}, to adjust colors
 with \code{\link{adjustcolor}}.}
 
-\item{red.f}{Argument used if \code{col="natural"}, to adjust colours with
+\item{red.f}{Argument used if \code{col="natural"}, to adjust colors with
 \code{\link{adjustcolor}}.  Higher values of \code{red.f} cause red hues
 to be emphasized (e.g. dry land).}
 
-\item{green.f}{Argument used if \code{col="natural"}, to adjust colours with
+\item{green.f}{Argument used if \code{col="natural"}, to adjust colors with
 \code{\link{adjustcolor}}.  Higher values of \code{green.f} emphasize
 green hues (e.g. forests).}
 
-\item{blue.f}{Argument used if \code{band="terralook"}, to adjust colours with
+\item{blue.f}{Argument used if \code{band="terralook"}, to adjust colors with
 \code{\link{adjustcolor}}.  Higher values of \code{blue.f} emphasize blue
 hues (e.g. ocean).}
 
-\item{offset}{Argument used if \code{band="terralook"}, to adjust colours with
+\item{offset}{Argument used if \code{band="terralook"}, to adjust colors with
 \code{\link{adjustcolor}}.}
 
-\item{transform}{Argument used if \code{band="terralook"}, to adjust colours
+\item{transform}{Argument used if \code{band="terralook"}, to adjust colors
 with \code{\link{adjustcolor}}.}
 
 \item{debug}{Set to a positive value to get debugging information during
@@ -93,7 +93,7 @@ processing.}
 \description{
 Plot the data within a landsat image, or information computed from the
 data. The second category includes possibilities such as an estimate of
-surface temperature and the \code{"terralook"} estimate of a natural-colour
+surface temperature and the \code{"terralook"} estimate of a natural-color
 view.
 }
 \details{
@@ -122,7 +122,7 @@ can be plotted, as follows.
 of at-satellite brightness temperature, computed from the
 \code{tirs1} band.
 \item Setting \code{band="terralook"} will plot a sort of natural
-colour by combining the \code{red}, \code{green}, \code{blue} and
+color by combining the \code{red}, \code{green}, \code{blue} and
 \code{nir} bands according to the formula provided at
 \code{https://lta.cr.usgs.gov/terralook/what_is_terralook} (a
 website that worked once, but failed as of Feb 2, 2017), namely

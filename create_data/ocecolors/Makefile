@@ -1,4 +1,4 @@
-what=colors
+what=ocecolors
 all: create_$(what).out
 %.out: %.R
 	R --no-save < $< > $@

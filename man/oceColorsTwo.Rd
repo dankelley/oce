@@ -3,23 +3,23 @@
 \name{oceColorsTwo}
 \alias{oceColorsTwo}
 \alias{oce.colorsTwo}
-\title{Create two-colour palette}
+\title{Create two-color palette}
 \usage{
 oceColorsTwo(n, low = 2/3, high = 0, smax = 1, alpha = 1)
 }
 \arguments{
-\item{n}{number of colours to generate.}
+\item{n}{number of colors to generate.}
 
 \item{low, high}{numerical values (in range 0 to 1) specifying the hue
-for the low and high ends of the colour scale.}
+for the low and high ends of the color scale.}
 
-\item{smax}{numerical value (in range 0 to 1) for the colour saturation.}
+\item{smax}{numerical value (in range 0 to 1) for the color saturation.}
 
 \item{alpha}{numerical value (in ragne 0 to 1) for the alpha (transparency)
-of the colours.}
+of the colors.}
 }
 \description{
-Create colours ranging between two specified limits, with white
+Create colors ranging between two specified limits, with white
 in the middle.
 }
 \examples{
@@ -29,9 +29,9 @@ imagep(volcano, col=oceColorsTwo(128),
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},
-  \code{\link{colors}}, \code{\link{oceColors9B}},
-  \code{\link{oceColorsCDOM}},
+  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
+  \code{\link{oceColorsClosure}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},
   \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
@@ -44,5 +44,5 @@ Other things related to colors: \code{\link{colormap}},
   \code{\link{oceColorsTurbidity}},
   \code{\link{oceColorsVelocity}},
   \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}
+  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
 }

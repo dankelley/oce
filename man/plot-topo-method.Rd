@@ -46,8 +46,8 @@ ignored if either \code{xlim} or \code{ylim} is given.}
 \item{water.z}{Depths at which to plot water contours.  If not provided, these
 are inferred from the data.}
 
-\item{col.water}{Colours corresponding to \code{water.z} values.  If not
-provided, these will be \code{"fill"} colours from
+\item{col.water}{Colors corresponding to \code{water.z} values.  If not
+provided, these will be \code{"fill"} colors from
 \code{\link{oce.colorsGebco}}.}
 
 \item{lty.water}{Line type(s) for water contours.}
@@ -58,8 +58,8 @@ provided, these will be \code{"fill"} colours from
 are inferred from the data.  If set to \code{NULL}, no land contours will be
 plotted.}
 
-\item{col.land}{Colours corresponding to \code{land.z} values.  If not
-provided, these will be \code{"fill"} colours from
+\item{col.land}{Colors corresponding to \code{land.z} values.  If not
+provided, these will be \code{"fill"} colors from
 \code{\link{oce.colorsGebco}}.}
 
 \item{lty.land}{Line type(s) for land contours.}

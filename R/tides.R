@@ -231,7 +231,7 @@ setMethod(f="[[<-",
 #' are drawn at the top. Any value of \code{sides} that is not either 1 or 3
 #' is converted to 3.
 #'
-#' @param col a character vector naming colours to be used for \code{constituents}.
+#' @param col a character vector naming colors to be used for \code{constituents}.
 #' Ignored if \code{sides=3}. Repeated to be of the same length as
 #' \code{constituents}, otherwise.
 #'

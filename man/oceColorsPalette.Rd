@@ -3,18 +3,18 @@
 \name{oceColorsPalette}
 \alias{oceColorsPalette}
 \alias{oce.colorsPalette}
-\title{Create a vector of colours}
+\title{Create a vector of colors}
 \usage{
 oceColorsPalette(n, which = 1)
 }
 \arguments{
-\item{n}{number of colours to create}
+\item{n}{number of colors to create}
 
 \item{which}{integer or character string indicating the palette
 to use; see \dQuote{Details}.}
 }
 \description{
-Create a vector of colours
+Create a vector of colors
 }
 \details{
 The available schemes are:
@@ -28,9 +28,9 @@ for \code{\link{oceColorsJet}(n)}.
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},
-  \code{\link{colors}}, \code{\link{oceColors9B}},
-  \code{\link{oceColorsCDOM}},
+  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
+  \code{\link{oceColorsClosure}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},
   \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
@@ -42,5 +42,5 @@ Other things related to colors: \code{\link{colormap}},
   \code{\link{oceColorsTwo}},
   \code{\link{oceColorsVelocity}},
   \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}
+  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
 }

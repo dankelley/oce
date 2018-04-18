@@ -465,7 +465,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' down from the top of the page.  See \dQuote{Details} for the meanings of
 #' various values of \code{which}.
 #'
-#' @param col Optional indication of colour(s) to use.  If not provided, the
+#' @param col Optional indication of color(s) to use.  If not provided, the
 #' default for images is \code{oce.colorsPalette(128,1)}, and for lines and points
 #' is black.
 #'
@@ -522,10 +522,10 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @param brushCorrelation Optional number between 0 and 100, indicating a
 #' per-beam correlation threshold below which data are to be considered suspect.
 #' If the plot type is \code{p}, the suspect points (velocity, backscatter
-#' amplitude, or correlation) will be coloured red; otherwise, this argument is
+#' amplitude, or correlation) will be colored red; otherwise, this argument is
 #' ignored.
 #'
-#' @param colBrush Colour to use for brushed (bad) data, if
+#' @param colBrush Color to use for brushed (bad) data, if
 #' \code{brushCorrelation} is active.
 #'
 #' @param main Main title for plot, used just on the top panel, if there are

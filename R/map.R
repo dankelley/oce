@@ -276,9 +276,9 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'
 #' @param lwd.ticks tick line width, passed to \code{\link{axis}}.
 #'
-#' @param col axis colour, passed to \code{\link{axis}}.
+#' @param col axis color, passed to \code{\link{axis}}.
 #'
-#' @param col.ticks axis tick colour, passed to \code{\link{axis}}.
+#' @param col.ticks axis tick color, passed to \code{\link{axis}}.
 #'
 #' @param hadj an argument that is transmitted to \code{\link{axis}}.
 #'
@@ -499,7 +499,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #'
 #' @param levels vector of contour levels.
 #'
-#' @param col line colour.
+#' @param col line color.
 #'
 #' @param lty line type.
 #'
@@ -651,8 +651,8 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #'
 #' @param code code of arrows, passed to \code{\link{arrows}}.
 #'
-#' @param col colour of arrows.  This may be a single colour, or a matrix
-#'     of colours of the same dimension as \code{u}.
+#' @param col color of arrows.  This may be a single color, or a matrix
+#'     of colors of the same dimension as \code{u}.
 #'
 #' @param \dots optional arguments passed to \code{\link{arrows}}, e.g.
 #'     \code{angle} and \code{lwd} can be useful in differentiating different
@@ -812,16 +812,16 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' most projections this works quite well.  If not, one may set
 #' \code{grid=FALSE} and add a grid later with \code{\link{mapGrid}}.
 #'
-#' @param bg colour of the background (ignored).
+#' @param bg color of the background (ignored).
 #'
 #' @param fill \strong{(deprecated)} is a deprecated argument; see
 #' \link{oce-deprecated}.
 #'
-#' @param border colour of coastlines and international borders (ignored unless
+#' @param border color of coastlines and international borders (ignored unless
 #' \code{type="polygon"}.
 #'
-#' @param col either the colour for filling polygons (if \code{type="polygon"})
-#' or the colour of the points and line segments (if \code{type="p"},
+#' @param col either the color for filling polygons (if \code{type="polygon"})
+#' or the color of the points and line segments (if \code{type="p"},
 #' \code{type="l"}, or \code{type="o"}). If \code{col=NULL} then a default
 #' will be set: no coastline filling for the \code{type="polygon"} case,
 #' or black coastlines, for \code{type="p"}, \code{type="l"}, or
@@ -1605,7 +1605,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' @param latitude vector of latitudes, or \code{NULL} to prevent drawing
 #' latitude lines.
 #'
-#' @param col colour of lines
+#' @param col color of lines
 #'
 #' @param lty line type
 #'
@@ -1833,7 +1833,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 #'
 #' @param lwd line width.
 #'
-#' @param col line colour.
+#' @param col line color.
 #'
 #' @param ... optional arguments passed to \code{\link{lines}}.
 #'
@@ -1909,7 +1909,7 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 #'
 #' @param lwd line width of the scalebar.
 #'
-#' @param col colour of the scalebar.
+#' @param col color of the scalebar.
 #'
 #' @param cex character expansion factor for the scalebar text.
 #'
@@ -2126,7 +2126,7 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 #'
 #' @param lwd line width.
 #'
-#' @param col line colour.
+#' @param col line color.
 #'
 #' @param ... optional arguments passed to \code{\link{lines}}.
 #'
@@ -2320,7 +2320,7 @@ mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 #' @param length length of the arrow heads, passed to \code{\link{arrows}}.
 #' @param angle angle of the arrow heads, passed to \code{\link{arrows}}.
 #' @param code numerical code indicating the type of arrows, passed to \code{\link{arrows}}.
-#' @param col arrow colour, passed to \code{\link{arrows}}.
+#' @param col arrow color, passed to \code{\link{arrows}}.
 #' @param lty arrow line type, passed to \code{\link{arrows}}.
 #' @param lwd arrow line width, passed to \code{\link{arrows}}.
 #' @param ... optional arguments passed to \code{\link{arrows}}.
@@ -2721,23 +2721,23 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #'
 #' @param z matrix to be represented as an image.
 #'
-#' @param zlim limit for z (colour).
+#' @param zlim limit for z (color).
 #'
 #' @param zclip A logical value, \code{TRUE} indicating that out-of-range
 #' \code{z} values should be painted with \code{missingColor} and \code{FALSE}
 #' indicating that these values should be painted with the nearest
-#' in-range colour.  If \code{zlim} is given then its min and max set the
+#' in-range color.  If \code{zlim} is given then its min and max set the
 #' range.  If \code{zlim} is not given but \code{breaks} is given, then
 #' the min and max of \code{breaks} sets the range used for z.  If neither
 #' \code{zlim} nor \code{breaks} is given, clipping is not done, i.e. the
 #' action is as if \code{zclip} were \code{FALSE}.
 #'
-#' @param breaks The z values for breaks in the colour scheme.  If this is of
+#' @param breaks The z values for breaks in the color scheme.  If this is of
 #' length 1, the value indicates the desired number of breaks, which is
 #' supplied to \code{\link{pretty}}, in determining clean break points.
 #'
-#' @param col Either a vector of colours corresponding to the breaks, of length
-#' 1 plus the number of breaks, or a function specifying colours,
+#' @param col Either a vector of colors corresponding to the breaks, of length
+#' 1 plus the number of breaks, or a function specifying colors,
 #' e.g. \code{\link{oce.colorsJet}} for a rainbow.
 #'
 #' @param colormap optional colormap, as created by \code{\link{colormap}}.
@@ -2745,14 +2745,14 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' over \code{breaks}, \code{col}, \code{missingColor}, and \code{zclip}
 #' specified to \code{mapImage}.
 #'
-#' @param border Colour used for borders of patches (passed to
+#' @param border Color used for borders of patches (passed to
 #' \code{\link{polygon}}); the default \code{NA} means no border.
 #'
 #' @param lwd line width, used if borders are drawn.
 #'
 #' @param lty line type, used if borders are drawn.
 #'
-#' @param missingColor a colour to be used to indicate missing data, or
+#' @param missingColor a color to be used to indicate missing data, or
 #' \code{NA} to skip the drawing of such regions (which will retain
 #' whatever material has already been drawn at the regions).
 #'
@@ -2833,7 +2833,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' box()
 #' mapLines(coastlineWorld)
 #'
-#' ## 2. Northern polar region, with colour-coded bathymetry
+#' ## 2. Northern polar region, with color-coded bathymetry
 #' par(mfrow=c(1,1))
 #' drawPalette(c(-5000, 0), zlim=c(-5000, 0), col=oce.colorsJet)
 #' mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
@@ -3018,7 +3018,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         }
     } else {
         if (zlimGiven) {
-            oceDebug(debug, "'zlim' given, so using those zlim colours for out-of-range values\n")
+            oceDebug(debug, "'zlim' given, so using those zlim colors for out-of-range values\n")
             zlimMin <- min(zlim, na.rm=TRUE)
             zlimMax <- max(zlim, na.rm=TRUE)
             z[z <= zlimMin] <- zlimMin * (1 + sign(zlimMin) * small)
@@ -3037,7 +3037,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     }
     ## Construct polygons centred on the specified longitudes and latitudes.  Each
     ## polygon has 5 points, four to trace the boundary and a fifth that is (NA,NA),
-    ## to signal the end of the polygon.  The z values (and hence the colours)
+    ## to signal the end of the polygon.  The z values (and hence the colors)
     ## map one per polygon.
     poly <- .Call("map_assemble_polygons", longitude, latitude, z,
                   NAOK=TRUE, PACKAGE="oce")

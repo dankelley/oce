@@ -21,7 +21,7 @@ longitude lines.}
 \item{latitude}{vector of latitudes, or \code{NULL} to prevent drawing
 latitude lines.}
 
-\item{col}{colour of lines}
+\item{col}{color of lines}
 
 \item{lty}{line type}
 

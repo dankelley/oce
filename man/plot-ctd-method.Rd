@@ -73,15 +73,15 @@ follows.
     \item \code{which=33} gives a time series of sigmaTheta
 }}
 
-\item{col}{Colour of lines or symbols.}
+\item{col}{Color of lines or symbols.}
 
 \item{fill}{A legacy parameter that will be permitted only temporarily; see
 \dQuote{History}.}
 
-\item{borderCoastline}{Colour of coastlines and international borders, passed
+\item{borderCoastline}{Color of coastlines and international borders, passed
 to \code{\link{plot,coastline-method}} if a map is included in \code{which}.}
 
-\item{colCoastline}{Fill colour of coastlines and international borders, passed
+\item{colCoastline}{Fill color of coastlines and international borders, passed
 to \code{\link{plot,coastline-method}} if a map is included in \code{which}. Set to
 \code{NULL} to avoid filling.}
 
@@ -145,7 +145,7 @@ If \code{drawIsobaths} is a numerical vector,
 then the indicated depths are drawn. For plots drawn with \code{projection}
 set to \code{NULL}, the contours are added with \code{\link{contour}}
 and otherwise \code{\link{mapContour}} is used. To customize
-the resultant contours, e.g. setting particular line types or colours,
+the resultant contours, e.g. setting particular line types or colors,
 users should call these functions directly (see e.g. Example 2).}
 
 \item{clongitude}{Center longitude.}
@@ -183,7 +183,7 @@ since February 2016; see \link{oce-deprecated}.}
 \item{latlon.cex}{Symbol expansion factor for sample location (ignored if no
 map plotted).}
 
-\item{latlon.col}{Colour of symbol for sample location (ignored if no map
+\item{latlon.col}{Color of symbol for sample location (ignored if no map
 plotted).}
 
 \item{cex}{Size to be used for plot symbols (see \code{\link{par}}).}
@@ -259,8 +259,8 @@ analysis with \code{\link{locator}} to flag bad data, etc.
 \section{History}{
 
 Until February, 2016, \code{plot,ctd-method} relied on a now-defunct argument
-\code{fill} to control colours; \code{colCoastline} is to be used now, instead.
-Also, now it is possible to set the colour of coasts and international
+\code{fill} to control colors; \code{colCoastline} is to be used now, instead.
+Also, now it is possible to set the color of coasts and international
 boundaries, with \code{borderCoastline}.
 }
 

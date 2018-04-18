@@ -66,7 +66,7 @@ default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
 
-\item{bg}{optional colour to be used for the background of the map.  This
+\item{bg}{optional color to be used for the background of the map.  This
 comes in handy for drawing insets (see \dQuote{details}).}
 
 \item{axes}{boolean, set to \code{TRUE} to plot axes.}

@@ -907,9 +907,9 @@ oce.approx <- oceApprox
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar value to be used with \code{\link{par}("mar")}.
 #' @param xlab,ylab labels for the plot axes. The default is not to label them.
-#' @param col colour of sticks, in either numerical or character format. This is
+#' @param col color of sticks, in either numerical or character format. This is
 #' made to have length matching that of \code{x} by a call to \code{\link{rep}},
-#' which can be handy in e.g. colourizing a velocity field by day.
+#' which can be handy in e.g. colorizing a velocity field by day.
 #' @param \dots graphical parameters passed down to \code{\link{arrows}}.  It
 #' is common, for example, to use smaller arrow heads than \code{\link{arrows}}
 #' uses; see \dQuote{Examples}.
@@ -1019,7 +1019,7 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 #'
 #' @param xat either a list of x values at which to draw the grid, or the return value from an oce plotting function
 #' @param yat a list of y values at which to plot the grid (ignored if \code{gx} was a return value from an oce plotting function)
-#' @param col colour of grid lines (see \code{\link{par}})
+#' @param col color of grid lines (see \code{\link{par}})
 #' @param lty type for grid lines (see \code{\link{par}})
 #' @param lwd width for grid lines (see \code{\link{par}})
 oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
@@ -1093,7 +1093,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' argument is needed, because calling \code{\link{grid}} after doing a
 #' sequence of plots will not result in useful results for the individual
 #' panels.
-#' @param grid.col colour of grid
+#' @param grid.col color of grid
 #' @param grid.lty line type of grid
 #' @param grid.lwd line width of grid
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
@@ -2058,19 +2058,19 @@ read.netcdf <- function(file, ...)
     res
 }
 
-#' Create two-colour palette
+#' Create two-color palette
 #'
-#' Create colours ranging between two specified limits, with white
+#' Create colors ranging between two specified limits, with white
 #' in the middle.
 #'
 #' @aliases oceColorsTwo oce.colorsTwo
 #'
-#' @param n number of colours to generate.
+#' @param n number of colors to generate.
 #' @param low,high numerical values (in range 0 to 1) specifying the hue
-#' for the low and high ends of the colour scale.
-#' @param smax numerical value (in range 0 to 1) for the colour saturation.
+#' for the low and high ends of the color scale.
+#' @param smax numerical value (in range 0 to 1) for the color saturation.
 #' @param alpha numerical value (in ragne 0 to 1) for the alpha (transparency)
-#' of the colours.
+#' of the colors.
 #' @examples
 #' library(oce)
 #' imagep(volcano, col=oceColorsTwo(128),
@@ -2095,7 +2095,7 @@ oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 }
 oce.colorsTwo <- oceColorsTwo
 
-#' Create colours in a Gebco-like scheme
+#' Create colors in a Gebco-like scheme
 #' @aliases oceColorsGebco oce.colorsGebco
 #' @param n Number of colors to return
 #' @param region String indicating application region, one of \code{"water"}, \code{"land"},
@@ -2143,26 +2143,58 @@ oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill"
 }
 oce.colorsGebco <- oceColorsGebco
 
-
-oce.colorsCLOSURE <- function(colorname) {
+#' Create color functions
+#'
+#' This function generates other functions that are used to specify colors.
+#' It is used within oce to create \code{\link{oceColorsTemperature}}
+#' and its many cousins. Users may also find it helpful, for creating
+#' custom color schemes (see \dQuote{Examples}).
+#'
+#' @param spec Specification of the color scheme. This may be a
+#' character string, in which case it must be the name of an item stored
+#' in \code{data(\link{ocecolors})}, or either a 3-column data frame or
+#' matrix, in which case the columns specify red, green and blue values
+#' (in range from 0 to 1).
+#'
+#' @examples
+#'\dontrun{
+#' ## Update oxygen color scheme to latest matplotlib value.
+#' library(oce)
+#' oxy <- "https://raw.githubusercontent.com/matplotlib/cmocean/master/cmocean/rgb/oxy-rgb.txt"
+#' oxyrgb <- read.table(oxy, header=FALSE)
+#' oceColorsOxygenUpdated <- oceColorsClosure(oxyrgb)
+#' par(mfrow=c(1, 2))
+#' m <- matrix(1:256)
+#' imagep(m, col=oceColorsOxygen, zlab="oxygen")
+#' imagep(m, col=oceColorsOxygenUpdated, zlab="oxygenUpdated")
+#'}
+#'
+#' @family things related to colors
+oceColorsClosure <- function(spec) {
     function(n) {
-        data("colors", package="oce", envir=environment())
-        col <- get("colors")[[colorname]]
+        if (is.character(spec)) {
+            data("ocecolors", package="oce", envir=environment())
+            col <- get("ocecolors")[[spec]]
+        } else if (is.data.frame(spec) || is.matrix(spec)) {
+            col <- rgb(spec[,1], spec[,2], spec[,3])
+        } else {
+            stop("oceColorsClosure(): first arg must be character, data frame, or 3-column matrix", call.=FALSE)
+        }
         if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
     }
 }
 
-#' Create colours similar to the matlab Viridis scheme
+#' Create colors similar to the matlab Viridis scheme
 #'
 #' This is patterned on a matlab/python scheme [1] that blends
 #' from yellow to blue in a way that is designed to reproduce well
 #' in black-and-white, and to be interpretable by those with
-#' certain forms of colour blindness [3-4].
+#' certain forms of color blindness [3-4].
 #'
 #' @aliases oce.colorsViridis oceColorsViridis
-#' @param n number of colours to create.
+#' @param n number of colors to create.
 #' @references
-#' [1] A blog item on the Viridis (and related) matplotlib colour
+#' [1] A blog item on the Viridis (and related) matplotlib color
 #' scales is at \url{http://bids.github.io/colormap/}.
 #'
 #' [2] Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
@@ -2182,72 +2214,72 @@ oce.colorsCLOSURE <- function(colorname) {
 #' imagep(volcano, col=oceColorsViridis(128),
 #'        zlab="volcano dataset, autoscaled with oceColorsViridis(128)")
 #' @family things related to colors
-oceColorsViridis <- oce.colorsViridis <- oce.colorsCLOSURE("viridis")
+oceColorsViridis <- oce.colorsViridis <- oceColorsClosure("viridis")
 
 #' @templateVar colorItem CDOM
 #' @templateVar colorItemUC CDOM
 #' @template cmcolorTemplate
-oceColorsCDOM <- oce.colorsCDOM <- oce.colorsCLOSURE("cdom")
+oceColorsCDOM <- oce.colorsCDOM <- oceColorsClosure("cdom")
 
 #' @templateVar colorItem chlorophyll
 #' @templateVar colorItemUC Chlorophyll
 #' @template cmcolorTemplate
-oceColorsChlorophyll <- oce.colorsChlorophyll <- oce.colorsCLOSURE("chlorophyll")
+oceColorsChlorophyll <- oce.colorsChlorophyll <- oceColorsClosure("chlorophyll")
 
 #' @templateVar colorItem density
 #' @templateVar colorItemUC Density
 #' @template cmcolorTemplate
-oceColorsDensity <- oce.colorsDensity <- oce.colorsCLOSURE("density")
+oceColorsDensity <- oce.colorsDensity <- oceColorsClosure("density")
 
 #' @templateVar colorItem freesurface
 #' @templateVar colorItemUC Freesurface
 #' @template cmcolorTemplate
-oceColorsFreesurface <- oce.colorsFreesurface <- oce.colorsCLOSURE("freesurface")
+oceColorsFreesurface <- oce.colorsFreesurface <- oceColorsClosure("freesurface")
 
 #' @templateVar colorItem oxygen
 #' @templateVar colorItemUC Oxygen
 #' @template cmcolorTemplate
-oceColorsOxygen <- oce.colorsOxygen <- oce.colorsCLOSURE("oxygen")
+oceColorsOxygen <- oce.colorsOxygen <- oceColorsClosure("oxygen")
 
 #' @templateVar colorItem PAR
 #' @templateVar colorItemUC PAR
 #' @template cmcolorTemplate
-oceColorsPAR <- oce.colorsPAR <- oce.colorsCLOSURE("par")
+oceColorsPAR <- oce.colorsPAR <- oceColorsClosure("par")
 
 #' @templateVar colorItem phase
 #' @templateVar colorItemUC Phase
 #' @template cmcolorTemplate
-oceColorsPhase <- oce.colorsPhase <- oce.colorsCLOSURE("phase")
+oceColorsPhase <- oce.colorsPhase <- oceColorsClosure("phase")
 
 #' @templateVar colorItem salinity
 #' @templateVar colorItemUC Salinity
 #' @template cmcolorTemplate
-oceColorsSalinity <- oce.colorsSalinity <- oce.colorsCLOSURE("salinity")
+oceColorsSalinity <- oce.colorsSalinity <- oceColorsClosure("salinity")
 
 #' @templateVar colorItem temperature
 #' @templateVar colorItemUC Temperature
 #' @template cmcolorTemplate
-oceColorsTemperature <- oce.colorsTemperature <- oce.colorsCLOSURE("temperature")
+oceColorsTemperature <- oce.colorsTemperature <- oceColorsClosure("temperature")
 
 #' @templateVar colorItem turbidity
 #' @templateVar colorItemUC Turbidity
 #' @template cmcolorTemplate
-oceColorsTurbidity <- oce.colorsTurbidity <- oce.colorsCLOSURE("turbidity")
+oceColorsTurbidity <- oce.colorsTurbidity <- oceColorsClosure("turbidity")
 
 #' @templateVar colorItem velocity
 #' @templateVar colorItemUC Velocity
 #' @template cmcolorTemplate
-oceColorsVelocity <- oce.colorsVelocity <- oce.colorsCLOSURE("velocity")
+oceColorsVelocity <- oce.colorsVelocity <- oceColorsClosure("velocity")
 
 #' @templateVar colorItem vorticity
 #' @templateVar colorItemUC Vorticity
 #' @template cmcolorTemplate
-oceColorsVorticity <- oce.colorsVorticity <- oce.colorsCLOSURE("vorticity")
+oceColorsVorticity <- oce.colorsVorticity <- oceColorsClosure("vorticity")
 
 
-#' Create colours similar to the Matlab Jet scheme
+#' Create colors similar to the Matlab Jet scheme
 #' @aliases oceColorsJet oce.colorsJet oceColors9A oce.colors9A
-#' @param n number of colours
+#' @param n number of colors
 #' @examples
 #' library(oce)
 #' imagep(volcano, col=oceColorsJet(128),
@@ -2265,16 +2297,16 @@ oceColorsJet <- function(n)
 }
 oce.colors9A <- oceColors9A <- oce.colorsJet <- oceColorsJet
 
-#' Create colours in a red-yellow-blue colour scheme
+#' Create colors in a red-yellow-blue color scheme
 #'
 #' The results are similar to those of \code{\link{oceColorsJet}}, but
 #' with white hues in the centre, rather than green ones. The scheme
 #' may be useful in displaying signed quantities, and thus is somewhat
 #' analogous to \code{\link{oceColorsTwo}}, except that they (average)
-#' eye may be more able to distinguish colours with \code{oceColors9B}.
+#' eye may be more able to distinguish colors with \code{oceColors9B}.
 #'
 #' @aliases oceColors9B oce.colors9B
-#' @param n number of colours
+#' @param n number of colors
 #' @examples
 #' library(oce)
 #' imagep(volcano, col=oceColors9B(128),
@@ -2292,7 +2324,7 @@ oceColors9B <- function(n)
 }
 oce.colors9B <- oceColors9B
 
-#' Create a vector of colours
+#' Create a vector of colors
 #'
 #' @aliases oce.colorsPalette oceColorsPalette
 #' @details The available schemes are:
@@ -2303,7 +2335,7 @@ oce.colors9B <- oceColors9B
 #' for \code{\link{oceColorsJet}(n)}.
 #' \item \code{which=9.02} or \code{which="9B"} for \code{\link{oceColors9B}(n)}.
 #'}
-#' @param n number of colours to create
+#' @param n number of colors to create
 #' @param which integer or character string indicating the palette
 #' to use; see \dQuote{Details}.
 #' @family things related to colors
@@ -3213,7 +3245,7 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 #' \code{type}:\itemize{
 #' \item For \code{type=1}, each indicator is drawn with a symbol, according to the
 #' value of \code{pch} (either supplied globally, or as an element of the
-#' \code{...} list) and of size \code{cex}, and colour \code{col}.   Then, a
+#' \code{...} list) and of size \code{cex}, and color \code{col}.   Then, a
 #' line segment is drawn for each, and for this \code{lwd} and \code{col} may
 #' be set globally or in the \code{...} list.
 #' \item For \code{type=2}, the points are not drawn, but arrows are drawn instead
@@ -3251,7 +3283,7 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 #'     the direction field later.
 #' @param type indication of the style of arrow-like indication of the
 #'     direction.
-#' @param col colour of line segments or arrows
+#' @param col color of line segments or arrows
 #' @param pch,cex plot character and expansion factor, used for
 #'     \code{type=1}
 #' @param lwd,lty line width and type, used for \code{type=2}

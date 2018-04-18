@@ -18,7 +18,7 @@
 \item{debug}{A debugging flag, integer.}
 
 \item{...}{extra arguments passed to \code{\link{imagep}}, e.g. set
-\code{col} to control colours.}
+\code{col} to control colors.}
 }
 \description{
 For an example using \code{g1sst} data, see \code{\link{read.g1sst}}.

@@ -16,23 +16,23 @@ mapImage(longitude, latitude, z, zlim, zclip = FALSE, breaks, col, colormap,
 
 \item{z}{matrix to be represented as an image.}
 
-\item{zlim}{limit for z (colour).}
+\item{zlim}{limit for z (color).}
 
 \item{zclip}{A logical value, \code{TRUE} indicating that out-of-range
 \code{z} values should be painted with \code{missingColor} and \code{FALSE}
 indicating that these values should be painted with the nearest
-in-range colour.  If \code{zlim} is given then its min and max set the
+in-range color.  If \code{zlim} is given then its min and max set the
 range.  If \code{zlim} is not given but \code{breaks} is given, then
 the min and max of \code{breaks} sets the range used for z.  If neither
 \code{zlim} nor \code{breaks} is given, clipping is not done, i.e. the
 action is as if \code{zclip} were \code{FALSE}.}
 
-\item{breaks}{The z values for breaks in the colour scheme.  If this is of
+\item{breaks}{The z values for breaks in the color scheme.  If this is of
 length 1, the value indicates the desired number of breaks, which is
 supplied to \code{\link{pretty}}, in determining clean break points.}
 
-\item{col}{Either a vector of colours corresponding to the breaks, of length
-1 plus the number of breaks, or a function specifying colours,
+\item{col}{Either a vector of colors corresponding to the breaks, of length
+1 plus the number of breaks, or a function specifying colors,
 e.g. \code{\link{oce.colorsJet}} for a rainbow.}
 
 \item{colormap}{optional colormap, as created by \code{\link{colormap}}.
@@ -40,14 +40,14 @@ If a \code{colormap} is provided, then its properties takes precedence
 over \code{breaks}, \code{col}, \code{missingColor}, and \code{zclip}
 specified to \code{mapImage}.}
 
-\item{border}{Colour used for borders of patches (passed to
+\item{border}{Color used for borders of patches (passed to
 \code{\link{polygon}}); the default \code{NA} means no border.}
 
 \item{lwd}{line width, used if borders are drawn.}
 
 \item{lty}{line type, used if borders are drawn.}
 
-\item{missingColor}{a colour to be used to indicate missing data, or
+\item{missingColor}{a color to be used to indicate missing data, or
 \code{NA} to skip the drawing of such regions (which will retain
 whatever material has already been drawn at the regions).}
 
@@ -129,7 +129,7 @@ mapImage(topo, filledContour=TRUE, col=oce.colorsGebco, breaks=breaks)
 box()
 mapLines(coastlineWorld)
 
-## 2. Northern polar region, with colour-coded bathymetry
+## 2. Northern polar region, with color-coded bathymetry
 par(mfrow=c(1,1))
 drawPalette(c(-5000, 0), zlim=c(-5000, 0), col=oce.colorsJet)
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",

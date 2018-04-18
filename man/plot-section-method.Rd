@@ -94,7 +94,7 @@ contours, \code{"image"} for an image (drawn with \code{\link{imagep}} with
 In the first two cases, the data must be gridded, with identical pressures at
 each station.}
 
-\item{zbreaks, zcol}{Indication of breaks and colours to be used if \code{ztype="points"} or
+\item{zbreaks, zcol}{Indication of breaks and colors to be used if \code{ztype="points"} or
 \code{"image"}. If not provided, reasonable default are used. If \code{zlim}
 is given but \code{breaks} is not given, then \code{breaks} is computed to
 run from \code{zlim[1]} to \code{zlim[2]}. If \code{zcol} is a function,
@@ -130,7 +130,7 @@ See \dQuote{Examples}.}
 \item{mar}{Value to be used with \code{\link{par}("mar")}. If not provided,
 a default is set up.}
 
-\item{col}{Colour, which defaults to \code{\link{par}("col")}.}
+\item{col}{Color, which defaults to \code{\link{par}("col")}.}
 
 \item{cex}{Numerical character-expansion factor, which defaults to \code{\link{par}("cex")}.}
 
@@ -210,7 +210,7 @@ plot(GSg, which=1, ztype='image', zbreaks=seq(0,30,2))
 
 par(mfrow=c(1, 1))
 
-## 3. Image, with coloured dots to indicate grid-data mismatch.
+## 3. Image, with colored dots to indicate grid-data mismatch.
 \dontrun{
 plot(GSg, which=1, ztype='image')
 T <- GS[['temperature']]

@@ -3,19 +3,19 @@
 \name{oceColors9B}
 \alias{oceColors9B}
 \alias{oce.colors9B}
-\title{Create colours in a red-yellow-blue colour scheme}
+\title{Create colors in a red-yellow-blue color scheme}
 \usage{
 oceColors9B(n)
 }
 \arguments{
-\item{n}{number of colours}
+\item{n}{number of colors}
 }
 \description{
 The results are similar to those of \code{\link{oceColorsJet}}, but
 with white hues in the centre, rather than green ones. The scheme
 may be useful in displaying signed quantities, and thus is somewhat
 analogous to \code{\link{oceColorsTwo}}, except that they (average)
-eye may be more able to distinguish colours with \code{oceColors9B}.
+eye may be more able to distinguish colors with \code{oceColors9B}.
 }
 \examples{
 library(oce)
@@ -24,8 +24,9 @@ imagep(volcano, col=oceColors9B(128),
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},
-  \code{\link{colors}}, \code{\link{oceColorsCDOM}},
+  \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},
+  \code{\link{oceColorsClosure}},
   \code{\link{oceColorsDensity}},
   \code{\link{oceColorsFreesurface}},
   \code{\link{oceColorsGebco}}, \code{\link{oceColorsJet}},
@@ -39,5 +40,5 @@ Other things related to colors: \code{\link{colormap}},
   \code{\link{oceColorsTwo}},
   \code{\link{oceColorsVelocity}},
   \code{\link{oceColorsViridis}},
-  \code{\link{oceColorsVorticity}}
+  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
 }

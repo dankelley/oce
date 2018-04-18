@@ -1063,7 +1063,7 @@ sectionAddCtd <- sectionAddStation
 #' In the first two cases, the data must be gridded, with identical pressures at
 #' each station.
 #'
-#' @param zbreaks,zcol Indication of breaks and colours to be used if \code{ztype="points"} or
+#' @param zbreaks,zcol Indication of breaks and colors to be used if \code{ztype="points"} or
 #' \code{"image"}. If not provided, reasonable default are used. If \code{zlim}
 #' is given but \code{breaks} is not given, then \code{breaks} is computed to
 #' run from \code{zlim[1]} to \code{zlim[2]}. If \code{zcol} is a function,
@@ -1099,7 +1099,7 @@ sectionAddCtd <- sectionAddStation
 #' @param mar Value to be used with \code{\link{par}("mar")}. If not provided,
 #' a default is set up.
 #'
-#' @param col Colour, which defaults to \code{\link{par}("col")}.
+#' @param col Color, which defaults to \code{\link{par}("col")}.
 #'
 #' @param cex Numerical character-expansion factor, which defaults to \code{\link{par}("cex")}.
 #'
@@ -1142,7 +1142,7 @@ sectionAddCtd <- sectionAddStation
 #'
 #' par(mfrow=c(1, 1))
 #'
-#' ## 3. Image, with coloured dots to indicate grid-data mismatch.
+#' ## 3. Image, with colored dots to indicate grid-data mismatch.
 #'\dontrun{
 #' plot(GSg, which=1, ztype='image')
 #' T <- GS[['temperature']]
@@ -1433,7 +1433,7 @@ setMethod(f="plot",
                           if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
                               polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
                               polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
-                              ## redraw box, if we have axes. This is necessary because polygon will colour
+                              ## redraw box, if we have axes. This is necessary because polygon will color
                               ## over the axis box, if land goes past the edge of the view
                               if (axes)
                                   box()

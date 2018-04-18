@@ -11,7 +11,7 @@ oce.grid(xat, yat, col = "lightgray", lty = "dotted", lwd = par("lwd"))
 
 \item{yat}{a list of y values at which to plot the grid (ignored if \code{gx} was a return value from an oce plotting function)}
 
-\item{col}{colour of grid lines (see \code{\link{par}})}
+\item{col}{color of grid lines (see \code{\link{par}})}
 
 \item{lty}{type for grid lines (see \code{\link{par}})}
 

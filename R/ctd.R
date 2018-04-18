@@ -2686,15 +2686,15 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'     \item \code{which=33} gives a time series of sigmaTheta
 #' }
 #'
-#' @param col Colour of lines or symbols.
+#' @param col Color of lines or symbols.
 #'
 #' @param fill A legacy parameter that will be permitted only temporarily; see
 #' \dQuote{History}.
 #'
-#' @param borderCoastline Colour of coastlines and international borders, passed
+#' @param borderCoastline Color of coastlines and international borders, passed
 #' to \code{\link{plot,coastline-method}} if a map is included in \code{which}.
 #'
-#' @param colCoastline Fill colour of coastlines and international borders, passed
+#' @param colCoastline Fill color of coastlines and international borders, passed
 #' to \code{\link{plot,coastline-method}} if a map is included in \code{which}. Set to
 #' \code{NULL} to avoid filling.
 #'
@@ -2758,7 +2758,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' then the indicated depths are drawn. For plots drawn with \code{projection}
 #' set to \code{NULL}, the contours are added with \code{\link{contour}}
 #' and otherwise \code{\link{mapContour}} is used. To customize
-#' the resultant contours, e.g. setting particular line types or colours,
+#' the resultant contours, e.g. setting particular line types or colors,
 #' users should call these functions directly (see e.g. Example 2).
 #'
 #' @param clongitude Center longitude.
@@ -2796,7 +2796,7 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #' @param latlon.cex Symbol expansion factor for sample location (ignored if no
 #' map plotted).
 #'
-#' @param latlon.col Colour of symbol for sample location (ignored if no map
+#' @param latlon.col Color of symbol for sample location (ignored if no map
 #' plotted).
 #'
 #' @param cex Size to be used for plot symbols (see \code{\link{par}}).
@@ -2846,8 +2846,8 @@ write.ctd <- function(object, file, metadata=TRUE, flags=TRUE, format="csv")
 #'
 #' @section History:
 #' Until February, 2016, \code{plot,ctd-method} relied on a now-defunct argument
-#' \code{fill} to control colours; \code{colCoastline} is to be used now, instead.
-#' Also, now it is possible to set the colour of coasts and international
+#' \code{fill} to control colors; \code{colCoastline} is to be used now, instead.
+#' Also, now it is possible to set the color of coasts and international
 #' boundaries, with \code{borderCoastline}.
 #'
 #' @examples
@@ -3854,7 +3854,7 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' \code{levels} is supplied).
 #' @param levels Optional vector of desired isopycnal levels.
 #' @param grid a flag that can be set to \code{TRUE} to get a grid.
-#' @param col.grid colour for grid.
+#' @param col.grid color for grid.
 #' @param lty.grid line type for grid.
 #' @param rho1000 if TRUE, label isopycnals as e.g. 1024; if FALSE, label as
 #' e.g. 24
@@ -3863,11 +3863,11 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 #' @param cex character-expansion factor for symbols, as in
 #' \code{\link{par}("cex")}.
 #' @param pch symbol type, as in \code{\link{par}("pch")}.
-#' @param bg optional colour to be painted under plotting area, before
+#' @param bg optional color to be painted under plotting area, before
 #' plotting.  (This is useful for cases in which \code{inset=TRUE}.)
-#' @param pt.bg inside colour for symbols with \code{pch} in 21:25
-#' @param col colour for symbols.
-#' @param col.rho colour for isopycnal lines.
+#' @param pt.bg inside color for symbols with \code{pch} in 21:25
+#' @param col color for symbols.
+#' @param col.rho color for isopycnal lines.
 #' @param cex.rho size of isopycnal labels.
 #' @param rotate if TRUE, labels in right-hand margin are written vertically
 #' @param useSmoothScatter if TRUE, use \code{\link{smoothScatter}} to plot the
@@ -4123,7 +4123,7 @@ plotTS <- function (x,
 #' @param eos equation of state to be used, either \code{"unesco"} or
 #' \code{"gsw"}.
 #' @param cex size for labels.
-#' @param col colour for lines and labels.
+#' @param col color for lines and labels.
 #' @param lwd line width for isopcynal curves
 #' @param lty line type for isopcynal curves
 #' @return None.
@@ -4196,7 +4196,7 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' pressure, using the oceanographic convention of putting lower pressures
 #' nearer the top of the plot. This works for any \code{oce} object that has a
 #' pressure column in its \code{data} slot.
-#' The colours (\code{col.salinity}, etc.) are only used if two profiles appear
+#' The colors (\code{col.salinity}, etc.) are only used if two profiles appear
 #' on a plot.
 #'
 #' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
@@ -4259,17 +4259,17 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
 #' @param ylab optional label for y axis.  Set to \code{""} to prevent
 #' labelling the axis.
 #' @param lty line type for the profile.
-#' @param col colour for a general profile.
-#' @param col.salinity colour for salinity profile (see \dQuote{Details}).
-#' @param col.temperature colour for temperature (see \dQuote{Details}).
-#' @param col.rho colour for density (see \dQuote{Details}).
-#' @param col.N2 colour for square of buoyancy frequency (see
+#' @param col color for a general profile.
+#' @param col.salinity color for salinity profile (see \dQuote{Details}).
+#' @param col.temperature color for temperature (see \dQuote{Details}).
+#' @param col.rho color for density (see \dQuote{Details}).
+#' @param col.N2 color for square of buoyancy frequency (see
 #' \dQuote{Details}).
-#' @param col.dpdt colour for dP/dt.
-#' @param col.time colour for delta-time.
-#' @param pt.bg inside colour for symbols with \code{pch} in 21:25
+#' @param col.dpdt color for dP/dt.
+#' @param col.time color for delta-time.
+#' @param pt.bg inside color for symbols with \code{pch} in 21:25
 #' @param grid logical, set to \code{TRUE} to get a grid.
-#' @param col.grid colour for grid.
+#' @param col.grid color for grid.
 #' @param lty.grid line type for grid.
 #' @param Slim Optional limit for S axis
 #' @param Clim Optional limit for conductivity axis
