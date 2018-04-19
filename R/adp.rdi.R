@@ -1188,7 +1188,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         ## FIXME: 0x03 0x21
                         ## FIXME: ... and over 1000 more. These cannot be real codes, surely.
                         ## FIXME: So, for now, let's just ignore unknown codes.
-                        ##> warning("unknown buf[o]=0x", buf[o], " and buf[1+o]=0x", buf[1+o])
+                        ## warning("unknown buf[", o, ",]=0x", buf[o], " and buf[", 1+o, "]=0x", buf[1+o])
                     }
                     if (monitor)
                         setTxtProgressBar(progressBar, i)
