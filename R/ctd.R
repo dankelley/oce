@@ -3223,7 +3223,7 @@ setMethod(f="plot",
                              grid=grid, col.grid="lightgray", lty.grid="dotted",
                              eos=eos,
                              lwd.rho=lwd.rho, lty.rho=lty.rho,
-                             useSmoothScatter=useSmoothScatter, pch=pch, cex=cex,
+                             useSmoothScatter=useSmoothScatter, pch=pch, cex=cex, type=type[1],
                              inset=inset,
                              add=add,
                              debug=debug-1, ...) # FIXME use inset here
