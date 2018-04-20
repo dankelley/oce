@@ -858,13 +858,8 @@ imagep <- function(x, y, z,
     ## Guard against poor setup
     if (xlimGiven && length(xlim) != 2) stop("length of xlim must be 2")
     if (ylimGiven && length(ylim) != 2) stop("length of ylim must be 2")
-    if (zlimGiven && length(zlim) != 2) stop("length of zlim must be 2")
+    if (zlimGiven && !(length(zlim) %in% 1:2)) stop("length of zlim must be 1 or 2")
 
-    if (zlimGiven && is.character(zlim)) {
-        if ("symmetric" == zlim) {
-            zlim <- c(-1, 1) * max(abs(z), na.rm=TRUE)
-        }
-    }
     breaksGiven <- !missing(breaks)
     if (zlimGiven && breaksGiven && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
@@ -1034,6 +1029,12 @@ imagep <- function(x, y, z,
 
     par(mgp=mgp, mar=mar, cex=cex)
 
+    if (zlimGiven && is.character(zlim)) {
+        if ("symmetric" == zlim) {
+            zlim <- c(-1, 1) * max(abs(z), na.rm=TRUE)
+        }
+    }
+ 
     zlimHistogram <- zlimGiven && zlim == "histogram"
     breaksGiven <- !missing(breaks)
     colormapGiven <- !missing(colormap)

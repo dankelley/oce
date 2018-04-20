@@ -2073,8 +2073,8 @@ read.netcdf <- function(file, ...)
 #' of the colors.
 #' @examples
 #' library(oce)
-#' imagep(volcano, col=oceColorsTwo(128),
-#'        zlab="volcano dataset, autoscaled with oceColorsTwo(128)")
+#' imagep(volcano-mean(range(volcano)), col=oceColorsTwo(128),
+#'        zlim="symmetric", zlab="oceColorsTwo")
 #' @family things related to colors
 oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 {
@@ -2101,6 +2101,11 @@ oce.colorsTwo <- oceColorsTwo
 #' @param region String indicating application region, one of \code{"water"}, \code{"land"},
 #' or \code{"both"}.
 #' @param type String indicating the purpose, one of \code{"fill"} or \code{"line"}.
+#' @family things related to colors
+#' @examples
+#' library(oce)
+#' imagep(min(volcano) - volcano, col=oceColorsGebco(128),
+#'        zlab="oceColorsGebco")
 #' @family things related to colors
 oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill", "line"))
 {
@@ -2212,7 +2217,7 @@ oceColorsClosure <- function(spec) {
 #' @examples
 #' library(oce)
 #' imagep(volcano, col=oceColorsViridis(128),
-#'        zlab="volcano dataset, autoscaled with oceColorsViridis(128)")
+#'        zlab="oceColorsViridis")
 #' @family things related to colors
 oceColorsViridis <- oce.colorsViridis <- oceColorsClosure("viridis")
 
@@ -2283,7 +2288,7 @@ oceColorsVorticity <- oce.colorsVorticity <- oceColorsClosure("vorticity")
 #' @examples
 #' library(oce)
 #' imagep(volcano, col=oceColorsJet(128),
-#'        zlab="volcano dataset, autoscaled with oceColorsJet(128)")
+#'        zlab="oceColorsJet")
 #' @family things related to colors
 oceColorsJet <- function(n)
 {
@@ -2310,7 +2315,7 @@ oce.colors9A <- oceColors9A <- oce.colorsJet <- oceColorsJet
 #' @examples
 #' library(oce)
 #' imagep(volcano, col=oceColors9B(128),
-#'        zlab="volcano dataset, autoscaled with oceColors9B(128)")
+#'        zlab="oceColors9B")
 #' @family things related to colors
 oceColors9B <- function(n)
 {

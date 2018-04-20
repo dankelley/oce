@@ -20,7 +20,7 @@ eye may be more able to distinguish colors with \code{oceColors9B}.
 \examples{
 library(oce)
 imagep(volcano, col=oceColors9B(128),
-       zlab="volcano dataset, autoscaled with oceColors9B(128)")
+       zlab="oceColors9B")
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},

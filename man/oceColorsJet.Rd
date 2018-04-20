@@ -18,7 +18,7 @@ Create colors similar to the Matlab Jet scheme
 \examples{
 library(oce)
 imagep(volcano, col=oceColorsJet(128),
-       zlab="volcano dataset, autoscaled with oceColorsJet(128)")
+       zlab="oceColorsJet")
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},

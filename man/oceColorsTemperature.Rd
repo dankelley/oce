@@ -27,7 +27,7 @@ has an example of how to incorporate such changes.
 \examples{
 library(oce)
 imagep(volcano, col=oceColorsTemperature(128),
-       zlab="volcano dataset, autoscaled with oceColorsTemperature(128)")
+       zlab="oceColorsTemperature")
 
 }
 \seealso{

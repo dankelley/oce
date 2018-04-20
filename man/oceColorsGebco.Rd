@@ -19,7 +19,31 @@ or \code{"both"}.}
 \description{
 Create colors in a Gebco-like scheme
 }
+\examples{
+library(oce)
+imagep(min(volcano) - volcano, col=oceColorsGebco(128),
+       zlab="oceColorsGebco")
+}
 \seealso{
+Other things related to colors: \code{\link{colormap}},
+  \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
+  \code{\link{oceColorsChlorophyll}},
+  \code{\link{oceColorsClosure}},
+  \code{\link{oceColorsDensity}},
+  \code{\link{oceColorsFreesurface}},
+  \code{\link{oceColorsJet}},
+  \code{\link{oceColorsOxygen}},
+  \code{\link{oceColorsPAR}},
+  \code{\link{oceColorsPalette}},
+  \code{\link{oceColorsPhase}},
+  \code{\link{oceColorsSalinity}},
+  \code{\link{oceColorsTemperature}},
+  \code{\link{oceColorsTurbidity}},
+  \code{\link{oceColorsTwo}},
+  \code{\link{oceColorsVelocity}},
+  \code{\link{oceColorsViridis}},
+  \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
+
 Other things related to colors: \code{\link{colormap}},
   \code{\link{oceColors9B}}, \code{\link{oceColorsCDOM}},
   \code{\link{oceColorsChlorophyll}},

@@ -20,7 +20,7 @@
 #' @examples
 #' library(oce)
 #' imagep(volcano, col=oceColors<%=colorItemUC%>(128),
-#'        zlab="volcano dataset, autoscaled with oceColors<%=colorItemUC%>(128)")
+#'        zlab="oceColors<%=colorItemUC%>")
 #'
 #' @family things related to colors
 

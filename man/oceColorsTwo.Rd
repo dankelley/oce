@@ -24,8 +24,8 @@ in the middle.
 }
 \examples{
 library(oce)
-imagep(volcano, col=oceColorsTwo(128),
-       zlab="volcano dataset, autoscaled with oceColorsTwo(128)")
+imagep(volcano-mean(range(volcano)), col=oceColorsTwo(128),
+       zlim="symmetric", zlab="oceColorsTwo")
 }
 \seealso{
 Other things related to colors: \code{\link{colormap}},

@@ -19,7 +19,7 @@ certain forms of color blindness [3-4].
 \examples{
 library(oce)
 imagep(volcano, col=oceColorsViridis(128),
-       zlab="volcano dataset, autoscaled with oceColorsViridis(128)")
+       zlab="oceColorsViridis")
 }
 \references{
 [1] A blog item on the Viridis (and related) matplotlib color
