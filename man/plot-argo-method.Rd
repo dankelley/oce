@@ -56,10 +56,10 @@ map, or \code{"best"} to pick the one with highest resolution, or
 
 \item{type}{plot type, either \code{"l"} or \code{"p"}.}
 
-\item{col}{optional list of colours for plotting.}
+\item{col}{optional list of colors for plotting.}
 
 \item{fill}{Either a logical, indicating whether to fill the land with
-light-gray, or a colour name.  Owing to problems with some projections, the
+light-gray, or a color name.  Owing to problems with some projections, the
 default is not to fill.}
 
 \item{projection}{indication of the projection to be used

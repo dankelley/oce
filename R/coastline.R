@@ -276,7 +276,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #'
 #' @param mar value to be used with \code{\link{par}("mar")}.
 #'
-#' @param bg optional colour to be used for the background of the map.  This
+#' @param bg optional color to be used for the background of the map.  This
 #' comes in handy for drawing insets (see \dQuote{details}).
 #'
 #' @param fill a legacy parameter that will be permitted only temporarily; see
@@ -286,11 +286,11 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
 #' overlain with line segments.
 #'
-#' @param border colour of coastlines and international borders (ignored unless
+#' @param border color of coastlines and international borders (ignored unless
 #' \code{type="polygon"}.
 #'
-#' @param col either the colour for filling polygons (if \code{type="polygon"})
-#' or the colour of the points and line segments (if \code{type="p"},
+#' @param col either the color for filling polygons (if \code{type="polygon"})
+#' or the color of the points and line segments (if \code{type="p"},
 #' \code{type="l"}, or \code{type="o"}).
 #'
 #' @param axes boolean, set to \code{TRUE} to plot axes.
@@ -333,7 +333,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' @return None.
 #'
 #' @section History: Until February, 2016, \code{plot,coastline-method} relied on a
-#' now-defunct argument \code{fill} to control colours; \code{col} is to be
+#' now-defunct argument \code{fill} to control colors; \code{col} is to be
 #' used now, instead. Also, in February, 2016, the arguments named
 #' \code{parameters} and \code{orientation} were both removed, as they had
 #' become nonfunctional about a year previously, in the transition to using

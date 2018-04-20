@@ -204,11 +204,11 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 #'
 #' @param mar Four-element numerical vector to be used with \code{\link{par}("mar")}.
 #'
-#' @param col Optional list of colours to use.  If not set, the colours will be
+#' @param col Optional list of colors to use.  If not set, the colors will be
 #' \code{c("red", "pink", "blue", "lightgray")}.  For the first three types of
-#' plot, the first colour in this list is used to fill in the rose, the third is
+#' plot, the first color in this list is used to fill in the rose, the third is
 #' used for the petals of the rose, and the fourth is used for grid lines. For the
-#' \code{"fivenum"} type, the first colour is used for the inter-quartile range,
+#' \code{"fivenum"} type, the first color is used for the inter-quartile range,
 #' the second is used outside this range, the third is used for the median, and
 #' the fourth is, again, used for the grid lines.
 #'
@@ -265,7 +265,7 @@ setMethod(f="plot",
                   col <- c("red", "pink", "blue", "darkgray")
               else {
                   if (length(col) != 4)
-                      stop("'col' should be a list of 4 colours")
+                      stop("'col' should be a list of 4 colors")
               }
                                         # Draw circle and radii
               tt <- seq(0, 2*pi, length.out=100)

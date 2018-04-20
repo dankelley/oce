@@ -38,9 +38,9 @@ interesections of the grid lines with the plotting box.}
 
 \item{lwd.ticks}{tick line width, passed to \code{\link{axis}}.}
 
-\item{col}{axis colour, passed to \code{\link{axis}}.}
+\item{col}{axis color, passed to \code{\link{axis}}.}
 
-\item{col.ticks}{axis tick colour, passed to \code{\link{axis}}.}
+\item{col.ticks}{axis tick color, passed to \code{\link{axis}}.}
 
 \item{hadj}{an argument that is transmitted to \code{\link{axis}}.}
 

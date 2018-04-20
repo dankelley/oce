@@ -30,11 +30,11 @@ default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{Four-element numerical vector to be used with \code{\link{par}("mar")}.}
 
-\item{col}{Optional list of colours to use.  If not set, the colours will be
+\item{col}{Optional list of colors to use.  If not set, the colors will be
 \code{c("red", "pink", "blue", "lightgray")}.  For the first three types of
-plot, the first colour in this list is used to fill in the rose, the third is
+plot, the first color in this list is used to fill in the rose, the third is
 used for the petals of the rose, and the fourth is used for grid lines. For the
-\code{"fivenum"} type, the first colour is used for the inter-quartile range,
+\code{"fivenum"} type, the first color is used for the inter-quartile range,
 the second is used outside this range, the third is used for the median, and
 the fourth is, again, used for the grid lines.}
 

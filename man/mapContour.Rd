@@ -21,7 +21,7 @@ class \code{topo} (see \code{\link{topo-class}}), in which case
 
 \item{levels}{vector of contour levels.}
 
-\item{col}{line colour.}
+\item{col}{line color.}
 
 \item{lty}{line type.}
 

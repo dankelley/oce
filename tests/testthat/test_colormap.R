@@ -91,7 +91,7 @@ test_that("colormap with z plus (x0,col0,x1,col1) alone [z wins] or with zlim [z
           expect_true(!any(is.na(cm$zcol)))
 })
 
-test_that("colormap test some actual colours, based on issue 449b.R", {
+test_that("colormap test some actual colors, based on issue 449b.R", {
           t <- seq(0, 1, length.out=100)
           plim <- c(38, 41)
           p <- mean(plim) + diff(plim) / 2 * cos(2 * pi * t)

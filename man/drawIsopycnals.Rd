@@ -28,7 +28,7 @@ horizontally.}
 
 \item{cex}{size for labels.}
 
-\item{col}{colour for lines and labels.}
+\item{col}{color for lines and labels.}
 
 \item{lwd}{line width for isopcynal curves}
 

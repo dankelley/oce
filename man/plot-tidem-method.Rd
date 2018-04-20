@@ -30,7 +30,7 @@ all R graphics, the value \code{1} indicates the bottom of the plot, and
 are drawn at the top. Any value of \code{sides} that is not either 1 or 3
 is converted to 3.}
 
-\item{col}{a character vector naming colours to be used for \code{constituents}.
+\item{col}{a character vector naming colors to be used for \code{constituents}.
 Ignored if \code{sides=3}. Repeated to be of the same length as
 \code{constituents}, otherwise.}
 

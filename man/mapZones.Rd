@@ -18,7 +18,7 @@ extending from the poles, within which zones are not drawn.}
 
 \item{lwd}{line width.}
 
-\item{col}{line colour.}
+\item{col}{line color.}
 
 \item{...}{optional arguments passed to \code{\link{lines}}.}
 }

@@ -37,7 +37,7 @@ potential temperature, if \code{inSitu} is \code{FALSE}.}
 
 \item{grid}{a flag that can be set to \code{TRUE} to get a grid.}
 
-\item{col.grid}{colour for grid.}
+\item{col.grid}{color for grid.}
 
 \item{lty.grid}{line type for grid.}
 
@@ -50,16 +50,16 @@ e.g. 24}
 \item{cex}{character-expansion factor for symbols, as in
 \code{\link{par}("cex")}.}
 
-\item{col}{colour for symbols.}
+\item{col}{color for symbols.}
 
 \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
 
-\item{bg}{optional colour to be painted under plotting area, before
+\item{bg}{optional color to be painted under plotting area, before
 plotting.  (This is useful for cases in which \code{inset=TRUE}.)}
 
-\item{pt.bg}{inside colour for symbols with \code{pch} in 21:25}
+\item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
 
-\item{col.rho}{colour for isopycnal lines.}
+\item{col.rho}{color for isopycnal lines.}
 
 \item{cex.rho}{size of isopycnal labels.}
 

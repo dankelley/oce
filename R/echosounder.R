@@ -432,10 +432,10 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' not provided, the labels depend on the value of \code{which}.
 #' @param xlim optional range for x axis.
 #' @param ylim optional range for y axis.
-#' @param zlim optional range for colour scale.
+#' @param zlim optional range for color scale.
 #' @param type type of graph, \code{"l"} for line, \code{"p"} for points, or
 #' \code{"b"} for both.
-#' @param col colour scale for image, a function
+#' @param col color scale for image, a function
 #' @param lwd line width (ignored if \code{type="p"})
 #' @param atTop optional vector of time values, for labels at the top of the
 #' plot produced with \code{which=2}.  If \code{labelsTop} is provided, then it
@@ -452,7 +452,7 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' @param drawBottom optional flag used for section images.  If \code{TRUE},
 #' then the bottom is inferred as a smoothed version of the ridge of highest
 #' image value, and data below that are grayed out after the image is drawn.
-#' If \code{drawBottom} is a colour, then that colour is used, instead of
+#' If \code{drawBottom} is a color, then that color is used, instead of
 #' white.  The bottom is detected with \code{\link{findBottom}}, using the
 #' \code{ignore} value described next.
 #' @param ignore optional flag specifying the thickness in metres of a surface

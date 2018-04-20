@@ -84,7 +84,7 @@ default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
 
-\item{bg}{optional colour to be used for the background of the map.  This
+\item{bg}{optional color to be used for the background of the map.  This
 comes in handy for drawing insets (see \dQuote{details}).}
 
 \item{fill}{a legacy parameter that will be permitted only temporarily; see
@@ -94,11 +94,11 @@ comes in handy for drawing insets (see \dQuote{details}).}
 \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
 overlain with line segments.}
 
-\item{border}{colour of coastlines and international borders (ignored unless
+\item{border}{color of coastlines and international borders (ignored unless
 \code{type="polygon"}.}
 
-\item{col}{either the colour for filling polygons (if \code{type="polygon"})
-or the colour of the points and line segments (if \code{type="p"},
+\item{col}{either the color for filling polygons (if \code{type="polygon"})
+or the color of the points and line segments (if \code{type="p"},
 \code{type="l"}, or \code{type="o"}).}
 
 \item{axes}{boolean, set to \code{TRUE} to plot axes.}
@@ -171,7 +171,7 @@ plot, and with \code{bg="white"}.
 }
 \section{History}{
  Until February, 2016, \code{plot,coastline-method} relied on a
-now-defunct argument \code{fill} to control colours; \code{col} is to be
+now-defunct argument \code{fill} to control colors; \code{col} is to be
 used now, instead. Also, in February, 2016, the arguments named
 \code{parameters} and \code{orientation} were both removed, as they had
 become nonfunctional about a year previously, in the transition to using

@@ -21,7 +21,7 @@
 down from the top of the page.  See \dQuote{Details} for the meanings of
 various values of \code{which}.}
 
-\item{col}{Optional indication of colour(s) to use.  If not provided, the
+\item{col}{Optional indication of color(s) to use.  If not provided, the
 default for images is \code{oce.colorsPalette(128,1)}, and for lines and points
 is black.}
 
@@ -78,10 +78,10 @@ which case the rows are used, in order, for the panels of the graph.}
 \item{brushCorrelation}{Optional number between 0 and 100, indicating a
 per-beam correlation threshold below which data are to be considered suspect.
 If the plot type is \code{p}, the suspect points (velocity, backscatter
-amplitude, or correlation) will be coloured red; otherwise, this argument is
+amplitude, or correlation) will be colored red; otherwise, this argument is
 ignored.}
 
-\item{colBrush}{Colour to use for brushed (bad) data, if
+\item{colBrush}{Color to use for brushed (bad) data, if
 \code{brushCorrelation} is active.}
 
 \item{main}{Main title for plot, used just on the top panel, if there are

@@ -32,11 +32,11 @@ the case of Aquadopp instruments.  Perhaps a third option will become
 available in the future, for the \code{burst} mode that some instruments
 provide.}
 
-\item{col}{optional indication of colour(s) to use.  If not provided, the
+\item{col}{optional indication of color(s) to use.  If not provided, the
 default for images is \code{oce.colorsPalette(128,1)}, and for lines and
 points is black.}
 
-\item{breaks}{optional breaks for colour scheme}
+\item{breaks}{optional breaks for color scheme}
 
 \item{zlim}{a range to be used as the \code{zlim} parameter to the
 \code{\link{imagep}} call that is used to create the image.  If omitted,
@@ -78,7 +78,7 @@ margin of the plot.}
 not provided a default is used, with \code{\link{smoothScatter}} being used
 if there are more than 2000 points to plot.}
 
-\item{missingColor}{colour used to indicate \code{NA} values in images (see
+\item{missingColor}{color used to indicate \code{NA} values in images (see
 \code{\link{imagep}}); set to \code{NULL} to avoid this indication.}
 
 \item{mgp}{A 3-element numerical vector used with \code{\link{par}("mgp")}
@@ -135,7 +135,7 @@ argument is needed, because calling \code{\link{grid}} after doing a
 sequence of plots will not result in useful results for the individual
 panels.}
 
-\item{grid.col}{colour of grid}
+\item{grid.col}{color of grid}
 
 \item{grid.lty}{line type of grid}
 
@@ -151,7 +151,7 @@ by specifying higher \code{debug} values.}
 
 \item{\dots}{optional arguments passed to plotting functions.  For example,
 supplying \code{despike=TRUE} will cause time-series panels to be de-spiked
-with \code{\link{despike}}.  Another common action is to set the colour for
+with \code{\link{despike}}.  Another common action is to set the color for
 missing values on image plots, with the argument \code{missingColor} (see
 \code{\link{imagep}}).  Note that it is an error to give \code{breaks} in
 \dots{}, if the formal argument \code{zlim} was also given, because they
@@ -300,7 +300,7 @@ equivalent to \code{which=14:15} (temperature and pressure) \item
 \code{which="angles"} equivalent to \code{which=16:18} (heading, pitch and
 roll) }
 
-The colour scheme for image plots (\code{which} in 1:12) is provided by the
+The color scheme for image plots (\code{which} in 1:12) is provided by the
 \code{col} argument, which is passed to \code{\link{image}} to do the actual
 plotting.  See \dQuote{Examples} for some comparisons.
 

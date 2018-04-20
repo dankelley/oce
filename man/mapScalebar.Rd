@@ -19,7 +19,7 @@ reasonable choice is made, based on the underlying map.}
 
 \item{cex}{character expansion factor for the scalebar text.}
 
-\item{col}{colour of the scalebar.}
+\item{col}{color of the scalebar.}
 }
 \description{
 Draw a scalebar on an existing map.

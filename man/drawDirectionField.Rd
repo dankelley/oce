@@ -47,7 +47,7 @@ the direction field later.}
 \item{type}{indication of the style of arrow-like indication of the
 direction.}
 
-\item{col}{colour of line segments or arrows}
+\item{col}{color of line segments or arrows}
 
 \item{pch, cex}{plot character and expansion factor, used for
 \code{type=1}}
@@ -70,7 +70,7 @@ The direction field is indicated variously, depending on the value of
 \code{type}:\itemize{
 \item For \code{type=1}, each indicator is drawn with a symbol, according to the
 value of \code{pch} (either supplied globally, or as an element of the
-\code{...} list) and of size \code{cex}, and colour \code{col}.   Then, a
+\code{...} list) and of size \code{cex}, and color \code{col}.   Then, a
 line segment is drawn for each, and for this \code{lwd} and \code{col} may
 be set globally or in the \code{...} list.
 \item For \code{type=2}, the points are not drawn, but arrows are drawn instead

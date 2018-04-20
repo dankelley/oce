@@ -1308,7 +1308,7 @@ filterSomething <- function(x, filter)
 #' @param scale optional scale, interpreted as the maximum value of standard
 #' deviation.
 #' @param pch list of characters to plot, one for each column of \code{y}.
-#' @param col list of colours for points on the plot, one for each column of
+#' @param col list of colors for points on the plot, one for each column of
 #' \code{y}.
 #' @param labels optional vector of strings to use for labelling the points.
 #' @param pos optional vector of positions for labelling strings.  If not
@@ -1458,9 +1458,9 @@ smoothSomething <- function(x, ...)
 
 #' Rescale values to lie in a given range
 #'
-#' This is helpful in e.g. developing a colour scale for an image plot.  It is
+#' This is helpful in e.g. developing a color scale for an image plot.  It is
 #' not necessary that \code{rlow} be less than \code{rhigh}, and in fact
-#' reversing them is a good way to get a reversed colour scale for a plot.
+#' reversing them is a good way to get a reversed color scale for a plot.
 #'
 #' @param x a numeric vector.
 #' @param xlow \code{x} value to correspond to \code{rlow}.  If not given, it

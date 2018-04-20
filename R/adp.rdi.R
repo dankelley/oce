@@ -1152,7 +1152,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                             vv[i, ] <- velocityScale * vtmp
                             ##slow if (debug && i <= profilesToShow) cat(vectorShow(vv[i, ], paste("vv[", i, ",]", sep="")))
                         } else {
-                            warning("Detected vertical beam data chunk, but this is not a SentinelV\n")
+                            warning("Detected vertical beam data chunk, i.e. code 0x00 0x0a at o=", o, " (profile ", i, "), but this is not a SentinelV\n")
                         }
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0c) {
                         ## vertical beam amplitude
@@ -1160,7 +1160,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                             va[i, ] <- buf[o + 1 + seq(1, vItems)]
                             ##slow if (debug && i <= profilesToShow) cat(vectorShow(va[i, ], paste("va[", i, ",]", sep="")))
                         } else {
-                            warning("Detected vertical beam amplitude chunk, but this is not a SentinelV\n")
+                            warning("Detected vertical beam amplitude chunk, i.e. code 0x00 0x0c at o=", o, " (profile ", i, "), but this is not a SentinelV\n")
                         }
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0b) {
                         ## vertical beam correlation
@@ -1168,7 +1168,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                             vq[i, ] <- buf[o + 1 + seq(1, vItems)]
                             ##slow if (debug && i <= profilesToShow) cat(vectorShow(vq[i, ], paste("vq[", i, ",]", sep="")))
                         } else {
-                            warning("Detected vertical beam correlation chunk, but this is not a SentinelV\n")
+                            warning("Detected vertical beam correlation chunk, i.e. code 0x00 0x0b at o=", o, " (profile ", i, "), but this is not a SentinelV\n")
                         }
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0d) {
                         ## vertical beam percent good
@@ -1176,7 +1176,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                             vg[i, ] <- buf[o + 1 + seq(1, vItems)]
                             ##slow if (debug && i <= profilesToShow) cat(vectorShow(vg[i, ], paste("vg[", i, ",]", sep="")))
                         } else {
-                            warning("Detected vertical beam percent good chunk, but this is not a SentinelV\n")
+                            warning("Detected vertical beam percent-good chunk, i.e. code 0x00 0x0d at o=", o, " (profile ", i, "), but this is not a SentinelV\n")
                         }
                     } else {
                         ## FIXME: maybe should handle all possible combinations here. But
@@ -1188,7 +1188,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         ## FIXME: 0x03 0x21
                         ## FIXME: ... and over 1000 more. These cannot be real codes, surely.
                         ## FIXME: So, for now, let's just ignore unknown codes.
-                        ##> warning("unknown buf[o]=0x", buf[o], " and buf[1+o]=0x", buf[1+o])
+                        ## warning("unknown buf[", o, ",]=0x", buf[o], " and buf[", 1+o, "]=0x", buf[1+o])
                     }
                     if (monitor)
                         setTxtProgressBar(progressBar, i)

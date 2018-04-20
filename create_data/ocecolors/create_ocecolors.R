@@ -1,4 +1,4 @@
-## Create compact colour palettes.  This is better than storing these in R code because
+## Create compact color palettes.  This is better than storing these in R code because
 ## 1. Each palette takes under 1K, compared with 7K in R.
 ## 2. The data are available for any programmatic use, which is not true if they
 ##    are locked within R code.
@@ -14,9 +14,9 @@
 
 ## Viridis
 rgb <- read.table("viridis.dat")
-colors <- list(viridis=rgb(r=rgb$V1, g=rgb$V2, b=rgb$V3))
+ocecolors <- list(viridis=rgb(r=rgb$V1, g=rgb$V2, b=rgb$V3))
 
-## cmocean colours
+## cmocean colors
 
 cmoceanFiles <- c("CDOM-rgb.txt", "Chlorophyll-rgb.txt", "Density-rgb.txt",
                   "Freesurface-rgb.txt", "Oxygen-rgb.txt", "PAR-rgb.txt",
@@ -25,11 +25,11 @@ cmoceanFiles <- c("CDOM-rgb.txt", "Chlorophyll-rgb.txt", "Density-rgb.txt",
 for (cmoceanFile in cmoceanFiles) {
     oceName <- tolower(gsub("-rgb.txt", "", cmoceanFile))
     rgb <- read.table(paste("cmocean", cmoceanFile, sep="/"), header=FALSE)
-    colors[[oceName]] <- rgb(r=rgb$V1, g=rgb$V2, b=rgb$V3)
+    ocecolors[[oceName]] <- rgb(r=rgb$V1, g=rgb$V2, b=rgb$V3)
 }
 
 ## Put other colormaps above, and add to the list below.
 
-save(colors, file="colors.rda")
-tools::resaveRdaFiles("colors.rda")
+save(ocecolors, file="ocecolors.rda")
+tools::resaveRdaFiles("ocecolors.rda")
 
