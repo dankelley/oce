@@ -679,7 +679,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             }
             ##ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to), as.integer(by), 0L)
             ldc <- do_ldc_rdi_in_file(filename, from, to, by, 0L)
-            oceDebug(debug, "done with do_ldc_rdi_in_file() near adp.rdi.R line 682")
+            oceDebug(debug, "done with do_ldc_rdi_in_file() with numeric from and to, near adp.rdi.R line 683")
         } else {
             if (is.character(from))
                 from <- as.POSIXct(from, tz="UTC")
@@ -689,8 +689,12 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 by <- ctimeToSeconds(by)
             ##ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to), as.integer(by), 1L)
             ldc <- do_ldc_rdi_in_file(filename, from, to, by, 1L)
+            oceDebug(debug, "done with do_ldc_rdi_in_file() with non-numeric from and to, near adp.rdi.R line 693")
         }
-        oceDebug(debug, "done with do_ldc_rdi_in_file() near adp.rdi.R line 693")
+        if (debug > 9) {
+            ldc0 <<- ldc
+            oceDebug(debug, "exported ldc as ldc0, for debugging purposes")
+        }
         ##old if (debug > 99) {
         ##old     ldc <<- ldc
         ##old     cat("NOTE: debug>99, so read.adp.rdi() exports 'ldc', for use by the developer\n")
