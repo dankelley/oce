@@ -1455,10 +1455,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             if (debug > 0) {
                 oceDebug(debug, "Recognized but unhandled ID codes:\n")
                 print(unhandled)
-                oceDebug(debug, " where DBT=depth below transducer (NMEA)\n")
-                oceDebug(debug, " where GGA=global positioning system (NMEA)\n")
-                oceDebug(debug, " where VTA=track made good and ground speed (NMEA)\n")
-                oceDebug(debug, " where GSA=GPS DOP and active satellites (NMEA)\n")
             }
 
             ## time <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart+4])), # year
