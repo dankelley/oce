@@ -69,7 +69,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ##
     ## header, of length 6 + 2 * numberOfDataTypes bytes
     ##
-    oceDebug(debug, "decodeHeaderRDI() {\n", unindent=1)
+    oceDebug(debug, "decodeHeaderRDI(buf, debug=", debug, ") {\n", unindent=1)
     if (buf[1] != 0x7f || buf[2] != 0x7f)
         stop("first two bytes in file must be 0x7f 0x7f, but they are 0x", buf[1], " 0x", buf[2])
     ## FIXME: for sentinel files bytesPerEnsemble isn't the same for all ensembles
@@ -691,9 +691,9 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ldc <- do_ldc_rdi_in_file(filename, from, to, by, 1L)
             oceDebug(debug, "done with do_ldc_rdi_in_file() with non-numeric from and to, near adp.rdi.R line 693")
         }
-        if (debug > 9) {
+        if (debug > 99) {
             ldc0 <<- ldc
-            oceDebug(debug, "exported ldc as ldc0, for debugging purposes")
+            oceDebug(debug, "exported ldc as ldc0 (done since debug>99)")
         }
         ##old if (debug > 99) {
         ##old     ldc <<- ldc
@@ -761,6 +761,24 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             codes <- header$codes
             oceDebug(debug, "codes[,1]=", paste("0x", paste(codes[,1], sep=""), sep=""), "\n")
             oceDebug(debug, "codes[,2]=", paste("0x", paste(codes[,2], sep=""), sep=""), "\n")
+            oceDebug(debug, "NOTE: only the following codes are recognized (FIXME: quote page in RDI docs):\n")
+            ## the comments indicate the variable names used below
+            oceDebug(debug, "  0x00 0x01 velocity\n") # vFound
+            oceDebug(debug, "  0x00 0x02 correlation\n") # qfound
+            oceDebug(debug, "  0x00 0x03 echo intensity\n") # aFoiund
+            oceDebug(debug, "  0x00 0x04 percent good\n") # gFound
+            oceDebug(debug, "  0x00 0x06 bottom track\n") # bFound; br, bv, bc, ba, bg
+            oceDebug(debug, "  0x00 0x0a Sentinel vertical beam velocity\n") # vv
+            oceDebug(debug, "  0x00 0x0b Sentinel vertical beam correlation\n") # vv
+            oceDebug(debug, "  0x00 0x0c Sentinel vertical beam amplitude\n") # vv
+            oceDebug(debug, "  0x00 0x0d Sentinel vertical beam percent good\n") # vv
+            oceDebug(debug, "  0x00 0x20 VMDASS\n") # VMDASSStorageInitialized; many other variables
+            oceDebug(debug, "  0x00 0x32 Sentinel transformation matrix\n") # tmFound
+            oceDebug(debug, "  0x00 0x0a Sentinel data\n") # vvFound
+            oceDebug(debug, "  0x00 0x0b Sentinel correlation\n") # vqFound
+            oceDebug(debug, "  0x00 0x0c Sentinel amplitude\n") # vaFound
+            oceDebug(debug, "  0x00 0x0d Sentinel percent good\n") # vgFoiund
+            oceDebug(debug, "  0x01 0x0f ? something to do with V series and 4-beam\n")
             oceDebug(debug, "buf[1:10] near line 745: ", paste("0x", paste(buf[1:10], sep=" "), sep=""), "\n")
             vFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x01) # velo
             qFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x02) # corr
@@ -818,8 +836,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 ## 0x00 0x32: Transformation Matrix
                 tmFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x32) # transformation matrix
                 vvFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x0a) # v beam data
-                vaFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x0c) # v beam amplitude
                 vqFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x0b) # v beam correlation
+                vaFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x0c) # v beam amplitude
                 vgFound <- sum(codes[, 1]==0x00 & codes[, 2]==0x0d) # v beam percent good
                 ## Read the relevant V series metadata
                 ## remove the first row from codes (7f7f) because it is the header (always has to be there)
@@ -1014,7 +1032,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             if (monitor)
                 progressBar = txtProgressBar(max=profilesToRead, style=3, title="Reading profiles")
 
-            oceDebug(debug, "profilesToRead=", profilesToRead, " (issue 1228: expect 8324 or 8323)\n")
+            oceDebug(debug, "profilesToRead=", profilesToRead, "\n")
             for (i in 1:profilesToRead) {
                 ## recall: these start at 0x80 0x00
                 for (chunk in 1:header$numberOfDataTypes) {
@@ -1145,7 +1163,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         ##slow if (i <= profilesToShow) oceDebug(debug, "Navigaiton, profile", i, "\n")
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x30) {
                         ##slow if (i <= profilesToShow) oceDebug(debug, "Fixed attitude, profile", i, "\n")
-                    } else if (buf[1+o] == 0x30) {
+                    } else if (buf[1+o] == 0x30) { # FIXME: is this right? Why only checking one byte?
                         ## fixme need to check first byte
                         ##slow if (i <= profilesToShow) oceDebug(debug, "Variable attitude, profile", i, "\n")
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0a) {
@@ -1158,14 +1176,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         } else {
                             warning("Detected vertical beam data chunk, i.e. code 0x00 0x0a at o=", o, " (profile ", i, "), but this is not a SentinelV\n")
                         }
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0c) {
-                        ## vertical beam amplitude
-                        if (isSentinel) {
-                            va[i, ] <- buf[o + 1 + seq(1, vItems)]
-                            ##slow if (debug && i <= profilesToShow) cat(vectorShow(va[i, ], paste("va[", i, ",]", sep="")))
-                        } else {
-                            warning("Detected vertical beam amplitude chunk, i.e. code 0x00 0x0c at o=", o, " (profile ", i, "), but this is not a SentinelV\n")
-                        }
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0b) {
                         ## vertical beam correlation
                         if (isSentinel) {
@@ -1174,7 +1184,15 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         } else {
                             warning("Detected vertical beam correlation chunk, i.e. code 0x00 0x0b at o=", o, " (profile ", i, "), but this is not a SentinelV\n")
                         }
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0d) {
+                    } else if (buf[o] == 0x00 & buf[1+o] == 0x0c) {
+                        ## vertical beam amplitude
+                        if (isSentinel) {
+                            va[i, ] <- buf[o + 1 + seq(1, vItems)]
+                            ##slow if (debug && i <= profilesToShow) cat(vectorShow(va[i, ], paste("va[", i, ",]", sep="")))
+                        } else {
+                            warning("Detected vertical beam amplitude chunk, i.e. code 0x00 0x0c at o=", o, " (profile ", i, "), but this is not a SentinelV\n")
+                        }
+                   } else if (buf[o] == 0x00 & buf[1+o] == 0x0d) {
                         ## vertical beam percent good
                         if (isSentinel) {
                             vg[i, ] <- buf[o + 1 + seq(1, vItems)]
@@ -1192,7 +1210,10 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         ## FIXME: 0x03 0x21
                         ## FIXME: ... and over 1000 more. These cannot be real codes, surely.
                         ## FIXME: So, for now, let's just ignore unknown codes.
-                        ## warning("unknown buf[", o, ",]=0x", buf[o], " and buf[", 1+o, "]=0x", buf[1+o])
+                        if (debug > 99) {
+                            oceDebug(debug, "unknown buf[", o, ",]=0x", buf[o],
+                                     " and buf[", 1+o, "]=0x", buf[1+o], " (printed since debug>99)\n", sep="")
+                        }
                     }
                     if (monitor)
                         setTxtProgressBar(progressBar, i)
