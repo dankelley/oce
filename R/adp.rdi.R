@@ -691,10 +691,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             ldc <- do_ldc_rdi_in_file(filename, from, to, by, 1L)
             oceDebug(debug, "done with do_ldc_rdi_in_file() with non-numeric from and to, near adp.rdi.R line 693")
         }
-        if (debug > 99) {
-            ldc0 <<- ldc
-            oceDebug(debug, "exported ldc as ldc0 (done since debug>99)")
-        }
         ##old if (debug > 99) {
         ##old     ldc <<- ldc
         ##old     cat("NOTE: debug>99, so read.adp.rdi() exports 'ldc', for use by the developer\n")
