@@ -1075,9 +1075,21 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 progressBar = txtProgressBar(max=profilesToRead, style=3, title="Reading profiles")
 
             oceDebug(debug, "profilesToRead=", profilesToRead, "\n")
-            unhandled <- list(x0030=0, x7f7f=0, xxGGA=0, xxVTA=0, xxGSA=0)
+            unhandled <- list(xxGGA=0, xxVTA=0, xxGSA=0)
+            unknownWarningCount <- 0
             for (i in 1:profilesToRead) {
-                ## recall: these start at 0x80 0x00
+                ## update the data descriptions, after realizing, while working on
+                ## [issue 1401](https://github.com/dankelley/oce/issues/1401), that files
+                ## can have interlaced data types.
+                header$numberOfDataTypes <- readBin(buf[ensembleStart[i] + 5], "integer", n=1, size=1)
+                header$dataOffset <- readBin(buf[ensembleStart[i]+6+seq(0,2*header$numberOfDataTypes)],
+                                             "integer", n=header$numberOfDataTypes, size=2)
+                ##. if (i < 30) {
+                ##.     cat("i=", i, ", header$numberOfDataTypes=", header$numberOfDataTypes,
+                ##.         ", header$dataOffset=", paste(header$dataOffset, collapse=" "), "\n")
+                ##. }
+
+
                 for (chunk in 1:header$numberOfDataTypes) {
                     o <- ensembleStart[i] + header$dataOffset[chunk]
                     if (buf[o] == 0x00 & buf[1+o] == 0x00) {
@@ -1204,9 +1216,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         primaryFlags <- c(primaryFlags,
                                           readBin(buf[o+90:91], 'integer', n=1, size=2, endian='little'))
                         ##slow if (i <= profilesToShow) oceDebug(debug, "Navigaiton, profile", i, "\n")
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x30) {
-                        ##slow if (i <= profilesToShow) oceDebug(debug, "Fixed attitude, profile", i, "\n")
-                        unhandled$x0030 <- unhandled$x0030 + 1
                     ##??? } else if (buf[1+o] == 0x30) { # FIXME: is this right? Why only checking one byte?
                     ##???     ## fixme need to check first byte
                     ##???     ##slow if (i <= profilesToShow) oceDebug(debug, "Variable attitude, profile", i, "\n")
@@ -1252,8 +1261,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         unhandled$xxVTA <- unhandled$xxVTA + 1
                     } else if (buf[o] == 0x03 & buf[1+o] == 0x21) {
                         unhandled$xxGSA <- unhandled$xxGSA + 1
-                    } else if (buf[o] == 0x7f & buf[1+o] == 0x7f) {
-                        unhandled$x7f7f <- unhandled$x7f7f + 1
                     } else {
                         ## FIXME: maybe should handle all possible combinations here. But
                         ## FIXME: how could we know the possibilities? I've seen the following
@@ -1265,12 +1272,15 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         ## FIXME: ... and over 1000 more. These cannot be real codes, surely.
                         ## FIXME: So, for now, let's just ignore unknown codes.
                         if (debug > 99) {
-                            oceDebug(debug, "unknown 0x", buf[o], " 0x", buf[1+o],
-                                     " o=", o,
-                                     " i=", i,
-                                     " chunk=", chunk,
-                                     " dataOffset=", header$dataOffset[chunk],
-                                     " (printed since debug>99)\n", sep="")
+                            unknownWarningCount <- unknownWarningCount + 1
+                            if (unknownWarningCount < 100) {
+                                warning("unknown 0x", buf[o], " 0x", buf[1+o],
+                                        " o=", o,
+                                        " i=", i,
+                                        " chunk=", chunk,
+                                        " dataOffset=", header$dataOffset[chunk],
+                                        " (at most 100 of these warnings will be issued)\n", sep="")
+                            }
                         }
                     }
                     if (monitor)
