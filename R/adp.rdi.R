@@ -1075,7 +1075,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 progressBar = txtProgressBar(max=profilesToRead, style=3, title="Reading profiles")
 
             oceDebug(debug, "profilesToRead=", profilesToRead, "\n")
-            unhandled <- list(x0030=0, xxGGA=0, xxVTA=0, xxGSA=0)
+            unhandled <- list(x0030=0, x7f7f=0, xxGGA=0, xxVTA=0, xxGSA=0)
             for (i in 1:profilesToRead) {
                 ## recall: these start at 0x80 0x00
                 for (chunk in 1:header$numberOfDataTypes) {
@@ -1252,6 +1252,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                         unhandled$xxVTA <- unhandled$xxVTA + 1
                     } else if (buf[o] == 0x03 & buf[1+o] == 0x21) {
                         unhandled$xxGSA <- unhandled$xxGSA + 1
+                    } else if (buf[o] == 0x7f & buf[1+o] == 0x7f) {
+                        unhandled$x7f7f <- unhandled$x7f7f + 1
                     } else {
                         ## FIXME: maybe should handle all possible combinations here. But
                         ## FIXME: how could we know the possibilities? I've seen the following
