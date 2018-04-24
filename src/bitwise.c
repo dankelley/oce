@@ -565,3 +565,16 @@ void uint16_le(unsigned char *b, int *n, int *out)
   }
 }
 
+void nmea_len(unsigned char *b, int *nb, int *n)
+{
+  //Rprintf("nmea_len() with nb=%d\n", *nb);
+  for (int i = 0; i < (*nb)-1; i++) {
+    //Rprintf("i=%d '%c'\n", i, b[i]);
+    *n = i;
+    if (b[i] == '\r' && b[i+1] == '\n') {
+      //Rprintf(" break at *n=%d\n", *n);
+      break;
+    }
+  }
+}
+
