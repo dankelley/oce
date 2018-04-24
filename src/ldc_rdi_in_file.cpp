@@ -136,7 +136,7 @@ means to get every second profile.
 are the numerical values of unix times.
 
 @value a list containing "ensembleStart", "time", "sec100", and
-"outbuf", which are used in the calling R function, read.adp.rdi().
+"buf", which are used in the calling R function, read.adp.rdi().
 
 @examples
 
@@ -200,7 +200,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   if (clast == EOF)
     ::Rf_error("empty file '%s'", fn.c_str());
   // 'obuf' is a growable C buffer to hold the output, which eventually
-  // gets saved in the R item "outbuf".
+  // gets saved in the R item "buf".
   unsigned long int nobuf = 100000; // BUFFER SIZE
   unsigned char *obuf = (unsigned char *)Calloc((size_t)nobuf, unsigned char);
   unsigned long int iobuf = 0;
@@ -422,7 +422,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   IntegerVector ensemble(out_ensemble);
   IntegerVector sec100(out_ensemble);
   IntegerVector time(out_ensemble);
-  RawVector outbuf(iobuf);
+  RawVector buf(iobuf);
 
   for (unsigned long int i = 0; i < out_ensemble; i++) {
     ensemble[i] = ensembles[i];
@@ -435,10 +435,10 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   Free(sec100s);
   Free(ebuf);
   for (unsigned long int i = 0; i < iobuf; i++) {
-    outbuf[i] = obuf[i];
+    buf[i] = obuf[i];
   }
   Free(obuf);
   return(List::create(Named("ensembleStart")=ensemble, Named("time")=time,
-        Named("sec100")=sec100, Named("outbuf")=outbuf));
+        Named("sec100")=sec100, Named("buf")=buf));
 }
 

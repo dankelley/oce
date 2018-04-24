@@ -742,7 +742,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
         ##old     cat("NOTE: debug>99, so read.adp.rdi() exports 'ldc', for use by the developer\n")
         ##old }
         ensembleStart <- ldc$ensembleStart
-        buf <- ldc$outbuf
+        buf <- ldc$buf
         bufSize <- length(buf)
         ## Now, 'buf' contains *only* the profiles we want, so we may
         ## redefine 'from', 'to' and 'by' to specify each and every profile.
@@ -1077,6 +1077,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             oceDebug(debug, "profilesToRead=", profilesToRead, "\n")
             unhandled <- list(xxGGA=0, xxVTA=0, xxGSA=0)
             unknownWarningCount <- 0
+            nmea <- NULL
+            nmeaLen <- 0
             for (i in 1:profilesToRead) {
                 ## update the data descriptions, after realizing, while working on
                 ## [issue 1401](https://github.com/dankelley/oce/issues/1401), that files
@@ -1254,33 +1256,46 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                             warning("Detected vertical beam percent-good chunk, i.e. code 0x00 0x0d at o=", o, " (profile ", i, "), but this is not a SentinelV\n")
                         }
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x21) {
-                        unhandled$xxDBT <- unhandled$xxDBT + 1
+                        ## 38 bytes (table 5 [WinRiver User Guide International Verion.pdf.pdf])
+                        end <- .C("nmea_len", buf[o+2+0:35], 36L, integer(1))[[3]]
+                        nmeaTmp <- rawToChar(buf[o+2+0:(end-1)])
+                        if (nchar(nmeaTmp)) {
+                            nmeaLen <- nmeaLen + 1
+                            nmea[nmeaLen] <- nmeaTmp
+                        }
                     } else if (buf[o] == 0x01 & buf[1+o] == 0x21) {
-                        unhandled$xxGGA <- unhandled$xxGGA + 1
+                        ## 94 bytes (table 5 [WinRiver User Guide International Verion.pdf.pdf])
+                        end <- .C("nmea_len", buf[o+2+0:91], 92L, integer(1))[[3]]
+                        nmeaTmp <- rawToChar(buf[o+2+0:(end-1)])
+                        if (nchar(nmeaTmp)) {
+                            nmeaLen <- nmeaLen + 1
+                            nmea[nmeaLen] <- nmeaTmp
+                        }
                     } else if (buf[o] == 0x02 & buf[1+o] == 0x21) {
-                        unhandled$xxVTA <- unhandled$xxVTA + 1
+                        ## 45 bytes (table 5 [WinRiver User Guide International Verion.pdf.pdf])
+                        end <- .C("nmea_len", buf[o+2+0:42], 43L, integer(1))[[3]]
+                        nmeaTmp <- rawToChar(buf[o+2+0:(end-1)])
+                        if (nchar(nmeaTmp)) {
+                            nmeaLen <- nmeaLen + 1
+                            nmea[nmeaLen] <- nmeaTmp
+                        }
                     } else if (buf[o] == 0x03 & buf[1+o] == 0x21) {
-                        unhandled$xxGSA <- unhandled$xxGSA + 1
+                        ## 38 bytes (table 5 [WinRiver User Guide International Verion.pdf.pdf])
+                        end <- .C("nmea_len", buf[o+2+0:35], 36L, integer(1))[[3]]
+                        nmeaTmp <- rawToChar(buf[o+2+0:(end-1)])
+                        if (nchar(nmeaTmp)) {
+                            nmeaLen <- nmeaLen + 1
+                            nmea[nmeaLen] <- nmeaTmp
+                        }
                     } else {
-                        ## FIXME: maybe should handle all possible combinations here. But
-                        ## FIXME: how could we know the possibilities? I've seen the following
-                        ## FIXME: in a winriver file file from CR:
-                        ## FIXME: 0x00 0x37
-                        ## FIXME: 0x01 0x21
-                        ## FIXME: 0x02 0x21
-                        ## FIXME: 0x03 0x21
-                        ## FIXME: ... and over 1000 more. These cannot be real codes, surely.
-                        ## FIXME: So, for now, let's just ignore unknown codes.
-                        if (debug > 99) {
-                            unknownWarningCount <- unknownWarningCount + 1
-                            if (unknownWarningCount < 100) {
-                                warning("unknown 0x", buf[o], " 0x", buf[1+o],
-                                        " o=", o,
-                                        " i=", i,
-                                        " chunk=", chunk,
-                                        " dataOffset=", header$dataOffset[chunk],
-                                        " (at most 100 of these warnings will be issued)\n", sep="")
-                            }
+                        unknownWarningCount <- unknownWarningCount + 1
+                        if (unknownWarningCount < 100) {
+                            warning("unknown 0x", buf[o], " 0x", buf[1+o],
+                                    " o=", o,
+                                    " i=", i,
+                                    " chunk=", chunk,
+                                    " dataOffset=", header$dataOffset[chunk],
+                                    " (at most 100 of these warnings will be issued)\n", sep="")
                         }
                     }
                     if (monitor)
@@ -1664,7 +1679,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                 pressureMinus=pressureMinus,
                                 attitudeTemp=attitudeTemp,
                                 attitude=attitude,
-                                contaminationSensor=contaminationSensor)
+                                contaminationSensor=contaminationSensor,
+                                nmea=nmea)
            } else if (bFound && isVMDAS) {
                oceDebug(debug, "creating data slot for a file with bFound&&isVMDAS\n")
                br[br == 0.0] <- NA    # clean up (not sure if needed)
