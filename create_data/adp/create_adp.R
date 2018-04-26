@@ -15,8 +15,6 @@ adp@metadata$serialNumber <- "(redacted)"
 adp@metadata$headSerialNumber <- "(redacted)"
 adp@metadata$deploymentName <- "(redacted)"
 adp@metadata$comments <- "sample ADP file"
-adp@processingLog$time <- adp@processingLog$time[1]
-adp@processingLog$value <- "(redacted)"
 save(adp, file='adp.rda')
 
 expect_equal(adpOld[["data"]], adp[["data"]])
