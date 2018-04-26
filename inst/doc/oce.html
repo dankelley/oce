@@ -634,7 +634,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="acoustic-doppler-profiler-data" class="section level1">
 <h1><span class="header-section-number">11</span> Acoustic Doppler Profiler data</h1>
-<p>The following commands produce Figure 10, showing one velocity component of currents measured in the St Lawrence Estuary Internal Wave Experiment. This plot type is just one of many provided by the <code>adp</code> variant of the generic <code>plot</code> function (use <code>help(&quot;plot,adp-method&quot;)</code> to learn more).</p>
+<p>The following commands produce Figure 10, showing one velocity component of currents measured in the St Lawrence Estuary Internal Wave Experiment. This plot type is just one of many provided by the <code>adp</code> variant of the generic <code>plot</code> function (see <code>?&quot;plot,adp-method&quot;</code>). See <a href="adp.html">the adp vignette</a> for much more on acoustic Doppler profiler data.</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">library</span>(oce)</a>
 <a class="sourceLine" id="cb26-2" data-line-number="2"><span class="kw">data</span>(adp)</a>
 <a class="sourceLine" id="cb26-3" data-line-number="3"><span class="kw">plot</span>(adp, <span class="dt">which=</span><span class="dv">1</span>)</a>
@@ -728,7 +728,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb38-5" data-line-number="5"><span class="co">#&gt;   .. ..$ flags: list()</span></a>
 <a class="sourceLine" id="cb38-6" data-line-number="6"><span class="co">#&gt;   ..@ data         : list()</span></a>
 <a class="sourceLine" id="cb38-7" data-line-number="7"><span class="co">#&gt;   ..@ processingLog:List of 2</span></a>
-<a class="sourceLine" id="cb38-8" data-line-number="8"><span class="co">#&gt;   .. ..$ time : POSIXct[1:1], format: &quot;2018-04-26 07:07:42.881&quot;</span></a>
+<a class="sourceLine" id="cb38-8" data-line-number="8"><span class="co">#&gt;   .. ..$ time : POSIXct[1:1], format: &quot;2018-04-26 07:15:53.890&quot;</span></a>
 <a class="sourceLine" id="cb38-9" data-line-number="9"><span class="co">#&gt;   .. ..$ value: chr &quot;Create oce object.&quot;</span></a></code></pre></div>
 <p>As noted previously, it’s possible to insert <code>t</code>, <code>u</code>, and <code>v</code> directly into the <code>data</code> slot, but it’s better to use <code>oceSetData</code> to do that, because it can set up units, and it leaves a trail in the processing log.</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1">o &lt;-<span class="st"> </span><span class="kw">oceSetData</span>(o, <span class="st">&quot;t&quot;</span>, t, <span class="kw">list</span>(<span class="dt">unit=</span><span class="kw">expression</span>(s), <span class="dt">scale=</span><span class="st">&quot;&quot;</span>))</a>
@@ -747,12 +747,12 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb41-7" data-line-number="7"><span class="co">#&gt;     v [m/s] -0.49996   -0.0048211 0.49998    193  -           </span></a>
 <a class="sourceLine" id="cb41-8" data-line-number="8"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb41-9" data-line-number="9"><span class="co">#&gt; * Processing Log</span></a>
-<a class="sourceLine" id="cb41-10" data-line-number="10"><span class="co">#&gt;     - 2018-04-26 07:07:42.881 UTC: `Create oce object.`</span></a>
-<a class="sourceLine" id="cb41-11" data-line-number="11"><span class="co">#&gt;     - 2018-04-26 07:09:11.595 UTC: `oceSetData(object = o, name = &quot;t&quot;, value = t, unit = list(unit = expression(s),     scale = &quot;&quot;))`</span></a>
-<a class="sourceLine" id="cb41-12" data-line-number="12"><span class="co">#&gt;     - 2018-04-26 07:09:11.597 UTC: `oceSetData(object = o, name = &quot;u&quot;, value = u, unit = list(unit = expression(m/s),     scale = &quot;&quot;))`</span></a>
-<a class="sourceLine" id="cb41-13" data-line-number="13"><span class="co">#&gt;     - 2018-04-26 07:09:11.598 UTC: `oceSetData(object = o, name = &quot;v&quot;, value = v, unit = list(unit = expression(m/s),     scale = &quot;&quot;))`</span></a>
-<a class="sourceLine" id="cb41-14" data-line-number="14"><span class="co">#&gt;     - 2018-04-26 07:09:11.606 UTC: `oceSetMetadata(object = o, name = &quot;longitude&quot;, value = lon)`</span></a>
-<a class="sourceLine" id="cb41-15" data-line-number="15"><span class="co">#&gt;     - 2018-04-26 07:09:11.607 UTC: `oceSetMetadata(object = o, name = &quot;latitude&quot;, value = lat)`</span></a></code></pre></div>
+<a class="sourceLine" id="cb41-10" data-line-number="10"><span class="co">#&gt;     - 2018-04-26 07:15:53.890 UTC: `Create oce object.`</span></a>
+<a class="sourceLine" id="cb41-11" data-line-number="11"><span class="co">#&gt;     - 2018-04-26 07:20:14.017 UTC: `oceSetData(object = o, name = &quot;t&quot;, value = t, unit = list(unit = expression(s),     scale = &quot;&quot;))`</span></a>
+<a class="sourceLine" id="cb41-12" data-line-number="12"><span class="co">#&gt;     - 2018-04-26 07:20:14.018 UTC: `oceSetData(object = o, name = &quot;u&quot;, value = u, unit = list(unit = expression(m/s),     scale = &quot;&quot;))`</span></a>
+<a class="sourceLine" id="cb41-13" data-line-number="13"><span class="co">#&gt;     - 2018-04-26 07:20:14.019 UTC: `oceSetData(object = o, name = &quot;v&quot;, value = v, unit = list(unit = expression(m/s),     scale = &quot;&quot;))`</span></a>
+<a class="sourceLine" id="cb41-14" data-line-number="14"><span class="co">#&gt;     - 2018-04-26 07:20:14.027 UTC: `oceSetMetadata(object = o, name = &quot;longitude&quot;, value = lon)`</span></a>
+<a class="sourceLine" id="cb41-15" data-line-number="15"><span class="co">#&gt;     - 2018-04-26 07:20:14.028 UTC: `oceSetMetadata(object = o, name = &quot;latitude&quot;, value = lat)`</span></a></code></pre></div>
 <p>and individual data components may be extracted with the <code>[[</code> notation</p>
 <div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" data-line-number="1">o[[<span class="st">&quot;latitude&quot;</span>]]                        <span class="co"># from metadata</span></a>
 <a class="sourceLine" id="cb42-2" data-line-number="2"><span class="co">#&gt; [1] -30</span></a>
@@ -820,7 +820,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb48-11" data-line-number="11"><span class="co">#&gt;     v [m/s] -0.49996 -0.0048211 0.49998 193  -           </span></a>
 <a class="sourceLine" id="cb48-12" data-line-number="12"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb48-13" data-line-number="13"><span class="co">#&gt; * Processing Log</span></a>
-<a class="sourceLine" id="cb48-14" data-line-number="14"><span class="co">#&gt;     - 2018-04-26 07:09:11.853 UTC: `create 'uv' object`</span></a>
+<a class="sourceLine" id="cb48-14" data-line-number="14"><span class="co">#&gt;     - 2018-04-26 07:20:14.230 UTC: `create 'uv' object`</span></a>
 <a class="sourceLine" id="cb48-15" data-line-number="15"><span class="co">#&gt; NULL</span></a></code></pre></div>
 <p>Finally, let’s make a custom method for <code>plot</code>. This is usually the most complicated part of handling any new object class, because there are usually many ways to look at data. (Some <code>oce</code> objects have over a dozen specialized plot styles.) Let’s suppose there are only two desired plot styles: one showing timeseries of <code>u</code> and <code>v</code> in a two panel plot, and the other showing how <code>u</code> and <code>v</code> covary.</p>
 <div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" data-line-number="1"><span class="kw">setMethod</span>(<span class="dt">f=</span><span class="st">&quot;plot&quot;</span>,</a>

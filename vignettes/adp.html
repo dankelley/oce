@@ -494,8 +494,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb24-16" data-line-number="16"><span class="co">#&gt; ---</span></a>
 <a class="sourceLine" id="cb24-17" data-line-number="17"><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></a>
 <a class="sourceLine" id="cb24-18" data-line-number="18"><span class="co">#&gt; * Processing Log</span></a>
-<a class="sourceLine" id="cb24-19" data-line-number="19"><span class="co">#&gt;     - 2018-04-26 07:10:02 UTC: `create 'tidem' object`</span></a>
-<a class="sourceLine" id="cb24-20" data-line-number="20"><span class="co">#&gt;     - 2018-04-26 07:10:02 UTC: `tidem(t = as.sealevel(pressure, time))`</span></a></code></pre></div>
+<a class="sourceLine" id="cb24-19" data-line-number="19"><span class="co">#&gt;     - 2018-04-26 07:20:38 UTC: `create 'tidem' object`</span></a>
+<a class="sourceLine" id="cb24-20" data-line-number="20"><span class="co">#&gt;     - 2018-04-26 07:20:38 UTC: `tidem(t = as.sealevel(pressure, time))`</span></a></code></pre></div>
 <p>(Note that it fitted for M2, but not S2, because the Rayleigh criterion prevents inferring both, and the conventional tidal analysis favours M2 over S2 if the time series is too short to fit for more than one semi-diurnal constituent.)</p>
 <p>A useful step might be to draw a tidal fit along with the data. It makes sense to construct a finer time grid, to get a smooth curve, as in the following (see <code>?predict.tidem</code>).</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">oce.plot.ts</span>(time, pressure, <span class="dt">type=</span><span class="st">&quot;p&quot;</span>, <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)</a>
