@@ -543,7 +543,8 @@ The following commands produce Figure 10, showing one velocity component of
 currents measured in the St Lawrence Estuary Internal Wave Experiment. This
 plot type is just one of many provided by the `adp` variant of the
 generic `plot` function
-(use `help("plot,adp-method")` to learn more).
+(see `?"plot,adp-method"`). See [the adp vignette](adp.html) for much more on
+acoustic Doppler profiler data.
 ```{r fig.cap="**Figure 10.** Measurements made with a bottom-mounted ADP in the St Lawrence Estuary. The line near the surface indicates pressure measured by the ADP.", fig.width=4, fig.height=2, dpi=72}
 library(oce)
 data(adp)

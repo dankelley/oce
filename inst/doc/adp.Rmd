@@ -58,7 +58,7 @@ cannot be read with a text editor. It is necessary to use software to work with
 such files. Although oce can handle many file formats, and although its
 authors do their best to keep up with changes to file formats (at least for
 popular instruments), users will sometimes be forced to use manufacturer
-software to read the data.
+software to read the data, or at least convert to a format that can be manually read into R, and then converted to an `adp` object using the `as.adp()` function.
 
 Suppose `f` is a character string naming a data file. In many cases,
 ```{r eval=FALSE}
@@ -73,7 +73,7 @@ which, again, will try to determine which subtype of adp file has been
 provided.  If that fails, it might help to try a specialized function, such as
 `read.adp.rdi()` for an RDI file, `read.adp.nortek()` for a Nortek file, or
 `read.adp.sontek()` for a Sontek file. (Actually, each of these can handle a
-variety of sub-formats.
+variety of sub-formats).
 
 If any of these `read.` functions is called with just a single argument naming
 the file, then the entire dataset will be read in. This can be slow for large
@@ -216,6 +216,13 @@ v <- adp[["v"]]
 Altering values uses the `[[` to the left of the assignment operator, but this
 is not commonly required in simple work, so it is best for readers to focus
 first on accessing data. The exercises may help with this.
+
+Some of the fields contained in `adp` objects, particularly the amplitude, correlation, and percent good fields (`a`, `q`, and `g`) are stored as `raw`-type. This is done primarly to save memory space, as expanded all of those fields into `numeric` types can be slow and they get large quickly. However, to actually work with the numbers, users can extract a "numeric" version by supplying the second argument to the `[[` function, e.g.
+```{r}
+a <- adp[["a", "numeric"]]
+```
+
+This has the advantage of returning an object with the same matrix dimensions as the original (note that functions like `as.numeric()` typically discard dimension information, thereby converting an array to a vector).
 
 **Exercise 4.** Plot a time series of mid-depth and depth-averaged eastward velocities.
 
