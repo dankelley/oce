@@ -226,9 +226,8 @@ setMethod("handleFlags",
               }
               if (missing(debug))
                   debug <- getOption("oceDebug")
-              if (any(names(actions)!=names(flags))) {
+              if (any(names(actions)!=names(flags)))
                   stop("names of flags and actions must match")
-              }
               res <- handleFlagsInternal(object, flags, actions, debug)
               if ("salinity" %in% names(res@data) && "salinityBottle" %in% names(res@data)) {
                   nbadOrig <- sum(is.na(res@data$salinity))
