@@ -285,6 +285,43 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
+## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
+## DEVELOPERS: marked '# DEVELOPER 1:', etc.
+#' @title Handle Flags in adp Objects
+#' @details
+#' If \code{flags} and \code{actions} are not provided, the
+#' default is to consider a flag value of 1 to indicate bad data,
+#' and 0 to indicate good data. Note that it only makes sense to use
+#' velocity (\code{v}) flags, because other flags are, at least
+#' for some instruments, stored as \code{raw} quantities, and such
+#' quantities may not be set to \code{NA}.
+#' @param object A \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' @template handleFlagsTemplate
+#' @examples
+#' # Flag low "goodness" or high "error beam" values.
+#' library(oce)
+#' data(adp)
+#' # Extract the data, to compute the flag. Note that the
+#' # whole flag array is computed and then inserted into
+#' # the object as whole.
+#' v <- adp[["v"]]
+#' g <- adp[["g", "numeric"]]
+#' vFlag <- array(0, dim=dim(v))
+#' gThreshold <- 25
+#' v4Threshold <- 0.45
+#' for (i in 1:3)
+#'     vFlag[,,i] <- ifelse((g[,,i]+g[,,4])<gThreshold | v[,,4]>v4Threshold, 1, 0)
+#' adp[["vFlag"]] <- vFlag
+#' # Now that the object has a velocity flag set, we may
+#' # use \code{handleFlags} to set corresponding data to NA.
+#' adpClean <- handleFlags(adp)
+#' # Demonstrate the (subtle) change graphically.
+#' par(mfcol=c(2, 1))
+#' plot(adp, which=1)      # top: data
+#' plot(adpClean, which=1) # bottom: after handling flags
+#'
+#' @family things related to \code{adp} data
 setMethod("handleFlags",
           c(object="adp", flags="ANY", actions="ANY", debug="ANY"),
           function(object, flags=list(), actions=list(), debug=integer()) {

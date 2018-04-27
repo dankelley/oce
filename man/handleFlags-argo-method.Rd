@@ -100,7 +100,8 @@ argoNew <- handleFlags(argo, flags=list(salinity=4))
 1. \url{http://www.argo.ucsd.edu/Argo_date_guide.html#dmodedata}
 }
 \seealso{
-Other functions that handle data-quality flags: \code{\link{handleFlags,ctd-method}},
+Other functions that handle data-quality flags: \code{\link{handleFlags,adp-method}},
+  \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}}
 
