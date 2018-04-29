@@ -490,12 +490,13 @@ setMethod("composite",
 
 
 #' @title Handle flags in oce objects
+#'
 #' @details
 #' Each specialized variant of this function has its own defaults
 #' for \code{flags} and \code{actions}.
 #' @param object An object of \code{\link{oce}}.
 #' @template handleFlagsTemplate
-setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, debug=options("oceDebug")) {
+setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
            standardGeneric("handleFlags")
          })
 
@@ -582,6 +583,58 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
     oceDebug(debug, "} # handleFlagsInternal()\n", sep="", unindent=1)
     object
 }
+
+
+#' @title Set flags in oce objects
+#'
+#' @details
+#' Each specialized variant of this function has its own defaults.
+#' @param object An object of \code{\link{oce}}.
+#' @template setFlagsTemplate
+setGeneric("setFlags", function(object, name=NULL, value=NULL, default=NULL, i=NULL, j=NULL, debug=0) {
+           standardGeneric("setFlags")
+         })
+
+setFlagsInternal <- function(object, name=NULL, value=NULL, default=NULL, i=NULL, j=NULL, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "setFlags(object, name='", name, "', value=", value,
+             ", default=", default, ", i=", i, ", j=", j, ", debug=", debug, ") {\n", sep="",
+             unindent=1)
+    if (is.null(name)) stop("must supply a name")
+    if (is.null(value)) stop("must supply a value")
+    if (is.null(default)) stop("must supply a default")
+    ## Check for 'i', but 'j' is optional
+    if (is.null(i))
+        stop("must supply 'i'")
+    if (length(name) > 1)
+        stop("name must be of length one")
+    if (length(default) > 1)
+        stop("default must be of length one")
+    if (!(name %in% names(object@data)))
+        stop("this object has no item named '", name, "' in its data slot")
+    flagName <- paste(name, "Flag", sep="")
+    res <- object
+    if (is.vector(object@data[[name]])) {
+        oceDebug(debug, name, " is a vector\n")
+        if (!is.null(j))
+            stop("cannot give 'j' for a flag for ", name, ", because that quantity is a vector")
+        if (!(flagName %in% names(object@metadata$flags))) {
+            oceDebug(debug, "initializing flag to default ", default, " prior to setting the flag\n")
+            res@metadata$flags[[name]] <- rep(default, length(object@data[[name]]))
+        } else {
+            oceDebug(debug, "no need to initialize flag\n")
+        }
+        oceDebug(debug, "i=", paste(i, collapse=" "), "\n")
+        oceDebug(debug, "value=", paste(value, collapse=" "), "\n")
+        res@metadata$flags[[name]][i] <- value
+    } else {
+        stop("only works for vector quantities")
+    }
+    oceDebug(debug, "} # setFlags \n", unindent=1)
+    res
+}
+
+
 
 #' Concatenate oce objects
 #' @param object An object of \code{\link{oce-class}}.

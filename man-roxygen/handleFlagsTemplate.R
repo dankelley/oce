@@ -53,5 +53,5 @@
 ## looking at the documentation and telling the developers
 ## whether the planned functioning seems reasonable.
 #'
-#' @family functions that handle data-quality flags
+#' @family functions relating to data-quality flags
 

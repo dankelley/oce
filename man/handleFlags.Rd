@@ -5,7 +5,7 @@
 \title{Handle flags in oce objects}
 \usage{
 handleFlags(object, flags = NULL, actions = NULL,
-  debug = options("oceDebug"))
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An object of \code{\link{oce}}.}
@@ -65,8 +65,9 @@ Each specialized variant of this function has its own defaults
 for \code{flags} and \code{actions}.
 }
 \seealso{
-Other functions that handle data-quality flags: \code{\link{handleFlags,adp-method}},
+Other functions relating to data-quality flags: \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{handleFlags,section-method}}
+  \code{\link{handleFlags,section-method}},
+  \code{\link{setFlags,ctd-method}}, \code{\link{setFlags}}
 }

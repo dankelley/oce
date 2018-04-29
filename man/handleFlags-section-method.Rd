@@ -84,10 +84,11 @@ plotTS(section2)
 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 }
 \seealso{
-Other functions that handle data-quality flags: \code{\link{handleFlags,adp-method}},
+Other functions relating to data-quality flags: \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{handleFlags}}
+  \code{\link{handleFlags}},
+  \code{\link{setFlags,ctd-method}}, \code{\link{setFlags}}
 
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},

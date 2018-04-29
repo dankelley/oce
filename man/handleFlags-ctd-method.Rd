@@ -117,10 +117,11 @@ plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 }
 \seealso{
-Other functions that handle data-quality flags: \code{\link{handleFlags,adp-method}},
+Other functions relating to data-quality flags: \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,section-method}},
-  \code{\link{handleFlags}}
+  \code{\link{handleFlags}},
+  \code{\link{setFlags,ctd-method}}, \code{\link{setFlags}}
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},

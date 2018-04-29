@@ -94,10 +94,11 @@ plot(adpClean, which=1) # bottom: after handling flags
 
 }
 \seealso{
-Other functions that handle data-quality flags: \code{\link{handleFlags,argo-method}},
+Other functions relating to data-quality flags: \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags,section-method}},
-  \code{\link{handleFlags}}
+  \code{\link{handleFlags}},
+  \code{\link{setFlags,ctd-method}}, \code{\link{setFlags}}
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},

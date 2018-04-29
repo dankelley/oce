@@ -241,6 +241,45 @@ setMethod("handleFlags",
               res
           })
 
+#' Set flags in a ctd object
+#'
+#' Set data-quality flags within a ctd object.
+#'
+#' @template setFlagsTemplate
+#'
+#' @examples
+#'\dontrun{
+#' ## Interactive salinity quality-check based on TS plot
+#' library(oce)
+#' options(eos="gsw")
+#' data(ctd)
+#' ctdQC <- ctd
+#' Sspan <- diff(range(ctdQC[["SA"]]))
+#' Tspan <- diff(range(ctdQC[["CT"]]))
+#' n <- length(ctdQC[["SA"]])
+#' plotTS(ctdQC, type="o")
+#' message("Click on bad points; quit by clicking to right of plot")
+#' for (i in seq_len(n)) {
+#'     xy <- locator(1)
+#'     if (xy$x > par("usr")[2])
+#'         break
+#'     i <- which.min(abs(ctdQC[["SA"]] - xy$x)/Sspan + abs(ctdQC[["CT"]] - xy$y)/Tspan)
+#'     # WHP-CTD convention: 2=acceptable, 4=bad
+#'     ctdQC <- setFlags(ctdQC, "salinity", value=3, default=2, i=i)
+#'     ctdQC <- handleFlags(ctdQC)
+#'     plotTS(ctdQC, type="o")
+#' }
+#'}
+setMethod("setFlags",
+          c(object="ctd", name="ANY", value="ANY", default="ANY", i="ANY", j="ANY", debug="ANY"),
+          function(object, name=NULL, value=NULL, default=NULL, i=NULL, j=NULL, debug=getOption("oceDebug")) {
+              if (!is.null(j))
+                  stop("cannot specify a non-NULL value for 'j', because CTD data are stored as vectors.")
+              oceDebug(debug, "setFlags,ctd-method name=", name, ", value=", value, ", default=", default, ", i=", i, "\n")
+              res <- setFlagsInternal(object=object, name=name, value=value, default=default, i=i, j=j, debug=debug)
+              res
+          })
+
 #' Initialize storage for a ctd object
 #'
 #' This function creates \code{oce} objects of \code{\link{ctd-class}}. It is mainly
