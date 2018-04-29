@@ -2,10 +2,10 @@
 % Please edit documentation in R/AllClass.R
 \name{setFlags}
 \alias{setFlags}
-\title{Set flags in oce objects}
+\title{Set data-quality flags within a oce object}
 \usage{
 setFlags(object, name = NULL, value = NULL, default = NULL, i = NULL,
-  j = NULL, debug = 0)
+  debug = 0)
 }
 \arguments{
 \item{object}{An oce object.}
@@ -16,13 +16,14 @@ this variable is not contained in the object's \code{data} slot, an error is rep
 \item{value}{The value to be inserted in the flag.}
 
 \item{default}{The default (good) value of the flag. This is used only if
-the object does not yet have yet any entries for the \code{name} flag. In that case,
-storage is set up for the flag, it is filled with the \code{default} value, and after
-that the}
+the object does not yet have yet have a entry for \code{name} flags. In that case,
+storage is set up for the flag and it is filled with the \code{default} value, after
+which \code{setFlags} returns to the task of setting flag values at indicated locations.}
 
-\item{i}{Integer index (required).}
-
-\item{j}{Optional second integer index.}
+\item{i}{Integer index (required). If the item for which a flag is to be created
+is stored as a vector, then \code{i} must be a vector. If it is a matrix or
+array, then \code{i} must be a matrix with as many columns as there are dimensions
+of the item.}
 
 \item{debug}{Integer set to 0 for quiet action or to 1 for some debugging.}
 }
@@ -30,19 +31,13 @@ that the}
 An object with flags set as indicated.
 }
 \description{
-Set data-quality flags within an oce object.
-
-This function changes specified entries in the object's data-quality
-flags, leaving other entries unaltered. (If the object does not yet
-have a flag set up to correspond with data of the indicated
-\code{name}, then such a flag is set up, with values set to \code{default}.
-
-The choice of flag values is up to the user, but it may make sense to
-stick to oceanographic conventions; see the \code{handleFlags} function
-for the object class.
+This function changes specified entries in the data-quality
+flags of a oce object, leaving other entries unaltered. (If the object
+does not yet have an entry in its \code{metadata} for a \code{name} flag,
+then one is set up and filled with \code{default}.)
 }
 \details{
-Each specialized variant of this function has its own defaults.
+This generic function is overridden by specialized functions for some object classes.
 }
 \section{Development note}{
 
@@ -56,6 +51,6 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,adp-meth
   \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{setFlags,oce-method}}
+  \code{\link{setFlags,adp-method}},
+  \code{\link{setFlags,ctd-method}}
 }

@@ -241,10 +241,8 @@ setMethod("handleFlags",
               res
           })
 
-#' Set flags in a ctd object
-#'
-#' Set data-quality flags within a ctd object.
-#'
+#' @templateVar class ctd
+#' @templateVar note Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector.
 #' @template setFlagsTemplate
 #'
 #' @examples
@@ -271,12 +269,12 @@ setMethod("handleFlags",
 #' }
 #'}
 setMethod("setFlags",
-          c(object="ctd", name="ANY", value="ANY", default="ANY", i="ANY", j="ANY", debug="ANY"),
-          function(object, name=NULL, value=NULL, default=NULL, i=NULL, j=NULL, debug=getOption("oceDebug")) {
-              if (!is.null(j))
-                  stop("cannot specify a non-NULL value for 'j', because CTD data are stored as vectors.")
+          c(object="ctd", name="ANY", value="ANY", default="ANY", i="ANY", debug="ANY"),
+          function(object, name=NULL, value=NULL, default=NULL, i=NULL, debug=getOption("oceDebug")) {
               oceDebug(debug, "setFlags,ctd-method name=", name, ", value=", value, ", default=", default, ", i=", i, "\n")
-              res <- setFlagsInternal(object=object, name=name, value=value, default=default, i=i, j=j, debug=debug)
+              if (is.null(i) || !is.vector(i))
+                  stop("must supply 'i', a vector")
+              res <- setFlagsInternal(object=object, name=name, value=value, default=default, i=i, debug=debug)
               res
           })
 

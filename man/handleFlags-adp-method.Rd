@@ -98,8 +98,8 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,argo-met
   \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}},
-  \code{\link{setFlags,ctd-method}},
-  \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
+  \code{\link{setFlags,adp-method}},
+  \code{\link{setFlags,ctd-method}}, \code{\link{setFlags}}
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},

@@ -584,31 +584,23 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
     object
 }
 
-
-#' @title Set flags in oce objects
-#'
-#' @details
-#' Each specialized variant of this function has its own defaults.
+#' @templateVar class oce
+#' @templateVar note This generic function is overridden by specialized functions for some object classes.
 #' @template setFlagsTemplate
-setGeneric("setFlags", function(object, name=NULL, value=NULL, default=NULL, i=NULL, j=NULL, debug=0) {
+setGeneric("setFlags", function(object, name=NULL, value=NULL, default=NULL, i=NULL, debug=0) {
            standardGeneric("setFlags")
          })
 
-#' Set flags in a general oce object
-#'
-#' Set data-quality flags within an oce object.
-#'
-#' @template setFlagsTemplate
 setMethod("setFlags",
-          c(object="oce", name="ANY", value="ANY", default="ANY", i="ANY", j="ANY", debug="ANY"),
-          function(object, name=NULL, value=NULL, default=NULL, i=NULL, j=NULL, debug=getOption("oceDebug")) {
-              setFlagsInternal(object=object, name=name, value=value, default=default, i=i, j=j, debug=debug)
+          c(object="oce", name="ANY", value="ANY", default="ANY", i="ANY", debug="ANY"),
+          function(object, name=NULL, value=NULL, default=NULL, i=NULL, debug=getOption("oceDebug")) {
+              setFlagsInternal(object=object, name=name, value=value, default=default, i=i, debug=debug)
           })
  
-setFlagsInternal <- function(object, name=NULL, value=NULL, default=NULL, i=NULL, j=NULL, debug=getOption("oceDebug"))
+setFlagsInternal <- function(object, name=NULL, value=NULL, default=NULL, i=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "setFlags(object, name='", name, "', value=", value,
-             ", default=", default, ", i=", i, ", j=", j, ", debug=", debug, ") {\n", sep="",
+             ", default=", default, ", i=", i, ", debug=", debug, ") {\n", sep="",
              unindent=1)
     if (is.null(name))
         stop("must supply a name")
@@ -628,8 +620,8 @@ setFlagsInternal <- function(object, name=NULL, value=NULL, default=NULL, i=NULL
     res <- object
     if (is.vector(object@data[[name]])) {
         oceDebug(debug, name, " is a vector\n")
-        if (!is.null(j))
-            stop("cannot give 'j' for a flag for ", name, ", because that quantity is a vector")
+        if (!is.vector(i))
+            stop("'i' must be a vector, because ", name, " is a vector")
         if (!(flagName %in% names(object@metadata$flags))) {
             oceDebug(debug, "initializing flag to default ", default, " prior to setting the flag\n")
             if (is.null(default))

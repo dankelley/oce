@@ -342,21 +342,18 @@ setMethod("handleFlags",
               res
           })
 
-#' Set flags in an adp object
-#'
-#' Set data-quality flags within an adp object. The only flag
-#' that may be set is \code{v}, for velocity.
-#'
+#' @templateVar class adp
+#' @templateVar note The only flag that may be set is \code{v}, for velocity.
 #' @template setFlagsTemplate
 setMethod("setFlags",
-          c(object="adp", name="ANY", value="ANY", default="ANY", i="ANY", j="ANY", debug="ANY"),
-          function(object, name=NULL, value=NULL, default=NULL, i=NULL, j=NULL, debug=getOption("oceDebug")) {
+          c(object="adp", name="ANY", value="ANY", default="ANY", i="ANY", debug="ANY"),
+          function(object, name=NULL, value=NULL, default=NULL, i=NULL, debug=getOption("oceDebug")) {
               if (name != "v")
-                  stop("can only set a flag for name=\"v\"")
-              if (!is.null(j))
-                  stop("cannot specify a non-NULL value for 'j', because CTD data are stored as vectors.")
-              oceDebug(debug, "setFlags,adp-method name=", name, ", value=", value, ", default=", default, ", i=", i, "\n")
-              res <- setFlagsInternal(object=object, name=name, value=value, default=default, i=i, j=j, debug=debug)
+                  stop("in adp objects, the only flag that can be set is for \"v\"")
+              ndim <- length(dim(object@data$v))
+              if (!is.matrix(i) || ncol(i) != ndim)
+                  stop("'i' must be a matrix with ", ndim, " columns, to match dim(v)")
+              res <- setFlagsInternal(object=object, name=name, value=value, default=default, i=i, debug=debug)
               res
           })
 
