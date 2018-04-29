@@ -121,7 +121,8 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,adp-meth
   \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}},
-  \code{\link{setFlags,ctd-method}}, \code{\link{setFlags}}
+  \code{\link{setFlags,ctd-method}},
+  \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
 
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},

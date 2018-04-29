@@ -589,29 +589,41 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
 #'
 #' @details
 #' Each specialized variant of this function has its own defaults.
-#' @param object An object of \code{\link{oce}}.
 #' @template setFlagsTemplate
 setGeneric("setFlags", function(object, name=NULL, value=NULL, default=NULL, i=NULL, j=NULL, debug=0) {
            standardGeneric("setFlags")
          })
 
+#' Set flags in a general oce object
+#'
+#' Set data-quality flags within an oce object.
+#'
+#' @template setFlagsTemplate
+setMethod("setFlags",
+          c(object="oce", name="ANY", value="ANY", default="ANY", i="ANY", j="ANY", debug="ANY"),
+          function(object, name=NULL, value=NULL, default=NULL, i=NULL, j=NULL, debug=getOption("oceDebug")) {
+              setFlagsInternal(object=object, name=name, value=value, default=default, i=i, j=j, debug=debug)
+          })
+ 
 setFlagsInternal <- function(object, name=NULL, value=NULL, default=NULL, i=NULL, j=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "setFlags(object, name='", name, "', value=", value,
              ", default=", default, ", i=", i, ", j=", j, ", debug=", debug, ") {\n", sep="",
              unindent=1)
-    if (is.null(name)) stop("must supply a name")
-    if (is.null(value)) stop("must supply a value")
-    if (is.null(default)) stop("must supply a default")
+    if (is.null(name))
+        stop("must supply a name")
+    if (length(name) > 1)
+        stop("must specify one 'name' at a time")
+    if (!(name %in% names(object@data)))
+        stop("object data slot does not contain '", name, "'; try one of: ",
+             paste(names(object@data), collapse=" "))
+    if (is.null(value))
+        stop("must supply a value")
     ## Check for 'i', but 'j' is optional
     if (is.null(i))
         stop("must supply 'i'")
-    if (length(name) > 1)
-        stop("name must be of length one")
-    if (length(default) > 1)
+    if (!is.null(default) && length(default) > 1)
         stop("default must be of length one")
-    if (!(name %in% names(object@data)))
-        stop("this object has no item named '", name, "' in its data slot")
     flagName <- paste(name, "Flag", sep="")
     res <- object
     if (is.vector(object@data[[name]])) {
@@ -620,15 +632,13 @@ setFlagsInternal <- function(object, name=NULL, value=NULL, default=NULL, i=NULL
             stop("cannot give 'j' for a flag for ", name, ", because that quantity is a vector")
         if (!(flagName %in% names(object@metadata$flags))) {
             oceDebug(debug, "initializing flag to default ", default, " prior to setting the flag\n")
+            if (is.null(default))
+                stop("cannot have a NULL default value")
             res@metadata$flags[[name]] <- rep(default, length(object@data[[name]]))
-        } else {
-            oceDebug(debug, "no need to initialize flag\n")
         }
-        oceDebug(debug, "i=", paste(i, collapse=" "), "\n")
-        oceDebug(debug, "value=", paste(value, collapse=" "), "\n")
         res@metadata$flags[[name]][i] <- value
     } else {
-        stop("only works for vector quantities")
+        stop("only works for vector quantities (please contact developer)")
     }
     oceDebug(debug, "} # setFlags \n", unindent=1)
     res

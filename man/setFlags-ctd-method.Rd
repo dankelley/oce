@@ -79,5 +79,6 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,adp-meth
   \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags,section-method}},
-  \code{\link{handleFlags}}, \code{\link{setFlags}}
+  \code{\link{handleFlags}},
+  \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
 }
