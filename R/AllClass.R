@@ -590,7 +590,9 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
 setGeneric("setFlags", function(object, name=NULL, value=NULL, default=NULL, i=NULL, debug=0) {
            standardGeneric("setFlags")
          })
-
+#' @templateVar class oce
+#' @templateVar note This generic function is overridden by specialized functions for some object classes.
+#' @template setFlagsTemplate
 setMethod("setFlags",
           c(object="oce", name="ANY", value="ANY", default="ANY", i="ANY", debug="ANY"),
           function(object, name=NULL, value=NULL, default=NULL, i=NULL, debug=getOption("oceDebug")) {
