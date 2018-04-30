@@ -37,18 +37,61 @@ then only the specified entries are altered. If not, the flag
 entry is first created and its entries set to \code{default},
 after which the specified entries are changed to \code{value}. The
 specification is made with \code{i}, the form of which
-varies between classes; see \dQuote{Details} for the
-particular case of \code{\link{adp-class}} objects.
+varies between classes; see \dQuote{Indexing rules} for general
+notes on matching \code{i} to the data, and see \dQuote{Details} for
+the particular case of \code{\link{adp-class}} objects.
 }
 \details{
-The only flag that may be set is \code{v}, for velocity.
+The only flag that may be set is \code{v}, for the array holding velocity. See \dQuote{Indexing rules}, noting that adp data are stored in 3D arrays; Example 1 shows using a data frame for \code{i}, while Example 2 shows using an array.
 }
+\section{Indexing rules}{
+
+If the data item called \code{name} is a vector, then \code{i} must
+also be either a vector of indices that specify spots to change,
+or a logical vector (of length equal to the data element) that
+species those spots.
+
+Alternatively, if the data item is an array, then \code{i} must either be a data
+frame of integers whose rows specify spots to change (where the number
+of columns matches the number of dimensions of the data),
+or a logical array that has dimension equal to that of the data.
+}
+
 \section{Development note}{
 
 This function was added in late April, 2018, and is likely to undergo
-changes until the end of June of that year.  Use with caution.
+changes until the mid-summer of that year.  Use with caution.
 }
 
+\examples{
+library(oce)
+data(adp)
+
+## Example 1: flag first 10 samples in a mid-depth bin of beam 1
+i1 <- data.frame(1:20, 40, 1)
+adpQC <- setFlags(adp, "v", i1, 3, 2)
+adpClean1 <- handleFlags(adpQC, flags=list(3), actions=list("NA"))
+par(mfrow=c(2, 1))
+## Top: original, bottom: altered
+plot(adp, which="u1")
+plot(adpClean1, which="u1")
+
+## Example 2: percent-good and error-beam scheme
+v <- adp[["v"]]
+i2 <- array(FALSE, dim=dim(v))
+g <- adp[["g", "numeric"]]
+# Thresholds on percent "goodness" and error "velocity"
+G <- 25
+V4 <- 0.45
+for (k in 1:3)
+    i2[,,k] <- ((g[,,k]+g[,,4]) < G) | (v[,,4] > V4)
+adpQC2 <- setFlags(adp, "v", i2, 3, 2)
+adpClean2 <- handleFlags(adpQC2, flags=list(3), actions=list("NA"))
+## Top: original, bottom: altered
+plot(adp, which="u1")
+plot(adpClean2, which="u1") # differs at 8h and 20h
+
+}
 \seealso{
 Other functions relating to data-quality flags: \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,argo-method}},
@@ -57,4 +100,26 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,adp-meth
   \code{\link{handleFlags}},
   \code{\link{setFlags,ctd-method}},
   \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
+
+Other things related to \code{adp} data: \code{\link{[[,adp-method}},
+  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
+  \code{\link{as.adp}}, \code{\link{beamName}},
+  \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
+  \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
+  \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
+  \code{\link{enuToOther}},
+  \code{\link{handleFlags,adp-method}},
+  \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
+  \code{\link{read.adp.nortek}},
+  \code{\link{read.adp.rdi}},
+  \code{\link{read.adp.sontek.serial}},
+  \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
+  \code{\link{read.aquadoppHR}},
+  \code{\link{read.aquadoppProfiler}},
+  \code{\link{read.aquadopp}},
+  \code{\link{subset,adp-method}},
+  \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
+  \code{\link{toEnu}}, \code{\link{velocityStatistics}},
+  \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}
 }

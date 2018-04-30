@@ -294,6 +294,8 @@ setMethod("handleFlags",
 #'     plotTS(ctdQC, type="o")
 #' }
 #'}
+#'
+#' @family things related to \code{ctd} data
 setMethod("setFlags",
           c(object="ctd", name="ANY", i="ANY", value="ANY", default="ANY", debug="ANY"),
           function(object, name=NULL, i=NULL, value=NULL, default=NULL, debug=getOption("oceDebug")) {

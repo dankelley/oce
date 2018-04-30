@@ -633,8 +633,32 @@ setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, default=NULL
             res@metadata$flags[[name]] <- rep(default, length(object@data[[name]]))
         }
         res@metadata$flags[[name]][i] <- value
-    } else {
-        stop("only works for vector quantities (please contact developer)")
+    } else if (is.array(object@data[[name]])) {
+        dimData <- dim(object@data[[name]])
+        if (is.array(i)) {
+            if (!is.logical(i))
+                stop("array 'i' must be logical")
+            if (!identical(dim(i), dimData))
+                stop("dim(i) is ", paste(dim(i), collapse="x"), " but need ",
+                     paste(dimData, collapse="x"), " to match '", name, "'")
+            res@metadata$flags[[name]][i] <- value
+        } else if (is.data.frame(i)) {
+            if (ncol(i) != length(dimData))
+                stop("data frame 'i' must have ", length(dimData), " columns to match shape of '", name, "'")
+            if (!(name %in% names(object@metadata$flags))) {
+                oceDebug(debug, "initializing flag to default ", default, " prior to setting the flag\n")
+                if (is.null(default))
+                    stop("cannot have a NULL default value")
+                res@metadata$flags[[name]] <- array(default, dim=dimData)
+            }
+            for (j in seq_len(nrow(i))) {
+                res@metadata$flags[[name]][i[j,1], i[j,2], i[j,3]] <- value
+            }
+        } else {
+            stop("'i' must be a matrix or a data frame")
+        }
+    } else{
+        stop("only works for vectors and arrays (please report this as an error)")
     }
     oceDebug(debug, "} # setFlagsInternal \n", unindent=1)
     res

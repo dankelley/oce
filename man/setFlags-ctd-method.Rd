@@ -37,16 +37,30 @@ then only the specified entries are altered. If not, the flag
 entry is first created and its entries set to \code{default},
 after which the specified entries are changed to \code{value}. The
 specification is made with \code{i}, the form of which
-varies between classes; see \dQuote{Details} for the
-particular case of \code{\link{ctd-class}} objects.
+varies between classes; see \dQuote{Indexing rules} for general
+notes on matching \code{i} to the data, and see \dQuote{Details} for
+the particular case of \code{\link{ctd-class}} objects.
 }
 \details{
 Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector, either a logical vector (Example 1) or a set of integers (Example 2).
 }
+\section{Indexing rules}{
+
+If the data item called \code{name} is a vector, then \code{i} must
+also be either a vector of indices that specify spots to change,
+or a logical vector (of length equal to the data element) that
+species those spots.
+
+Alternatively, if the data item is an array, then \code{i} must either be a data
+frame of integers whose rows specify spots to change (where the number
+of columns matches the number of dimensions of the data),
+or a logical array that has dimension equal to that of the data.
+}
+
 \section{Development note}{
 
 This function was added in late April, 2018, and is likely to undergo
-changes until the end of June of that year.  Use with caution.
+changes until the mid-summer of that year.  Use with caution.
 }
 
 \examples{
@@ -96,6 +110,7 @@ for (i in seq_len(n)) {
     plotTS(ctdQC, type="o")
 }
 }
+
 }
 \seealso{
 Other functions relating to data-quality flags: \code{\link{handleFlags,adp-method}},
@@ -105,4 +120,24 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,adp-meth
   \code{\link{handleFlags}},
   \code{\link{setFlags,adp-method}},
   \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
+
+Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
+  \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
+  \code{\link{cnvName2oceName}}, \code{\link{ctd-class}},
+  \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
+  \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
+  \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
+  \code{\link{oceNames2whpNames}},
+  \code{\link{oceUnits2whpUnits}},
+  \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
+  \code{\link{plotScan}}, \code{\link{plotTS}},
+  \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
+  \code{\link{read.ctd.sbe}},
+  \code{\link{read.ctd.woce.other}},
+  \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{subset,ctd-method}},
+  \code{\link{summary,ctd-method}},
+  \code{\link{woceNames2oceNames}},
+  \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }

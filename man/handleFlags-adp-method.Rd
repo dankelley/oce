@@ -73,24 +73,22 @@ quantities may not be set to \code{NA}.
 # Flag low "goodness" or high "error beam" values.
 library(oce)
 data(adp)
-# Extract the data, to compute the flag. Note that the
-# whole flag array is computed and then inserted into
-# the object as whole.
+# Same as Example 2 of ?'setFlags,adp-method'
 v <- adp[["v"]]
+i2 <- array(FALSE, dim=dim(v))
 g <- adp[["g", "numeric"]]
-vFlag <- array(0, dim=dim(v))
-gThreshold <- 25
-v4Threshold <- 0.45
-for (i in 1:3)
-    vFlag[,,i] <- ifelse((g[,,i]+g[,,4])<gThreshold | v[,,4]>v4Threshold, 1, 0)
-adp[["vFlag"]] <- vFlag
-# Now that the object has a velocity flag set, we may
-# use \\code{handleFlags} to set corresponding data to NA.
+# Thresholds on percent "goodness" and error "velocity"
+G <- 25
+V4 <- 0.45
+for (k in 1:3)
+    i2[,,k] <- ((g[,,k]+g[,,4]) < G) | (v[,,4] > V4)
+adpQC <- setFlags(adp, "v", i2, 3, 2)
+adpClean <- handleFlags(adpQC, flags=list(3), actions=list("NA"))
 adpClean <- handleFlags(adp)
-# Demonstrate the (subtle) change graphically.
+# Demonstrate (subtle) change graphically.
 par(mfcol=c(2, 1))
-plot(adp, which=1)      # top: data
-plot(adpClean, which=1) # bottom: after handling flags
+plot(adp, which="u1")
+plot(adpClean, which="u1")
 
 }
 \seealso{
@@ -117,6 +115,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppHR}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}},
+  \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
