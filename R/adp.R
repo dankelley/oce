@@ -523,17 +523,9 @@ setMethod(f="concatenate",
               rval
           })
 
-#' @title Extract Something from of an adp Object
-#'
-#' In addition to the usual extraction of elements by name, some shortcuts
-#' are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
-#' for the other velocity components. The \code{a} and \code{q}
-#' data can be retrieved in \code{\link{raw}} form or numeric
-#' form (see examples). The coordinate system may be
-#' retrieved with e.g. \code{x[["coordinate"]]}.
+#' @title Extract Something from an adp Object
 #'
 #' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
-#' @template sub_subTemplate
 #'
 #' @examples
 #' data(adp)
@@ -542,6 +534,17 @@ setMethod(f="concatenate",
 #' adp[["a"]][1:5,1,1]
 #' adp[["a", "numeric"]][1:5,1,1]
 #' as.numeric(adp[["a"]][1:5,1,1]) # same as above
+#'
+#' @template sub_subTemplate
+#'
+#' @section Details of the specialized \code{adp} method:
+#'
+#' In addition to the usual extraction of elements by name, some shortcuts
+#' are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
+#' for the other velocity components. The \code{a} and \code{q}
+#' data can be retrieved in \code{\link{raw}} form or numeric
+#' form (see examples). The coordinate system may be
+#' retrieved with e.g. \code{x[["coordinate"]]}.
 #'
 #' @author Dan Kelley
 #'

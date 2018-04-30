@@ -3,14 +3,7 @@
 \docType{methods}
 \name{[[,adp-method}
 \alias{[[,adp-method}
-\title{Extract Something from of an adp Object
-
-In addition to the usual extraction of elements by name, some shortcuts
-are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
-for the other velocity components. The \code{a} and \code{q}
-data can be retrieved in \code{\link{raw}} form or numeric
-form (see examples). The coordinate system may be
-retrieved with e.g. \code{x[["coordinate"]]}.}
+\title{Extract Something from an adp Object}
 \usage{
 \S4method{[[}{adp}(x, i, j, ...)
 }
@@ -77,6 +70,17 @@ an item with the name indicated by \code{i}. In this case, a partial
 match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
+}
+
+\section{Details of the specialized \code{adp} method}{
+
+
+In addition to the usual extraction of elements by name, some shortcuts
+are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
+for the other velocity components. The \code{a} and \code{q}
+data can be retrieved in \code{\link{raw}} form or numeric
+form (see examples). The coordinate system may be
+retrieved with e.g. \code{x[["coordinate"]]}.
 }
 
 \examples{

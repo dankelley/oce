@@ -32,23 +32,6 @@ if that fails, then a general function is used
 (see \sQuote{Details of the general method}). If both
 fail, \code{NULL} is returned.
 }
-\section{Details of the specialized \code{adv} method}{
-
-
-In addition to the usual extraction of elements by name, some shortcuts
-are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
-for the other velocity components. The \code{a} and \code{q}
-data can be retrieved in \code{\link{raw}} form
-or numeric form; see \dQuote{Examples}.
-
-It is also worth noting that heading, pitch, etc. may be stored in
-"slow" form in the object (e.g. in \code{headingSlow} within
-the \code{data} slot). In that case, accessing by full name, e.g.
-\code{x[["headingSlow"]]} retrieves the item as expected, but
-\code{x[["heading"]]} interpolates to the faster timescale, using
-\code{\link{approx}(timeSlow, headingSlow, time)}.
-}
-
 \section{Details of the general method}{
 
 
@@ -87,6 +70,23 @@ an item with the name indicated by \code{i}. In this case, a partial
 match will work; this is accomplished by using \code{\link{pmatch}}.
 
 If none of the above-listed conditions holds, then \code{NULL} is returned.
+}
+
+\section{Details of the specialized \code{adv} method}{
+
+
+In addition to the usual extraction of elements by name, some shortcuts
+are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
+for the other velocity components. The \code{a} and \code{q}
+data can be retrieved in \code{\link{raw}} form
+or numeric form; see \dQuote{Examples}.
+
+It is also worth noting that heading, pitch, etc. may be stored in
+"slow" form in the object (e.g. in \code{headingSlow} within
+the \code{data} slot). In that case, accessing by full name, e.g.
+\code{x[["headingSlow"]]} retrieves the item as expected, but
+\code{x[["heading"]]} interpolates to the faster timescale, using
+\code{\link{approx}(timeSlow, headingSlow, time)}.
 }
 
 \examples{
@@ -132,4 +132,7 @@ Other things related to \code{adv} data: \code{\link{[[<-,adv-method}},
   \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
+}
+\author{
+Dan Kelley
 }

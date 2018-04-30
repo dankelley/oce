@@ -133,6 +133,8 @@ setMethod(f="summary",
 #' head(adv[["q"]])            # in raw form
 #' head(adv[["q", "numeric"]]) # in numeric form
 #'
+#' @template sub_subTemplate
+#'
 #' @section Details of the specialized \code{adv} method:
 #'
 #' In addition to the usual extraction of elements by name, some shortcuts
@@ -148,7 +150,8 @@ setMethod(f="summary",
 #' \code{x[["heading"]]} interpolates to the faster timescale, using
 #' \code{\link{approx}(timeSlow, headingSlow, time)}.
 #'
-#' @template sub_subTemplate
+#' @author Dan Kelley
+#'
 #' @family things related to \code{adv} data
 setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
