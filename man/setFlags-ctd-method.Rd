@@ -5,14 +5,16 @@
 \alias{setFlags,ctd-method}
 \title{Set data-quality flags within a ctd object}
 \usage{
-\S4method{setFlags}{ctd}(object, name = NULL, value = NULL,
-  default = NULL, i = NULL, debug = getOption("oceDebug"))
+\S4method{setFlags}{ctd}(object, name = NULL, i = NULL, value = NULL,
+  default = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An oce object.}
 
 \item{name}{Character string indicating the name of the variable to be flagged. If
 this variable is not contained in the object's \code{data} slot, an error is reported.}
+
+\item{i}{Indication of where to insert the flags; see \dQuote{Details}.}
 
 \item{value}{The value to be inserted in the flag.}
 
@@ -21,11 +23,6 @@ the object does not yet have yet have a entry for \code{name} flags. In that cas
 storage is set up for the flag and it is filled with the \code{default} value, after
 which \code{setFlags} returns to the task of setting flag values at indicated locations.}
 
-\item{i}{Integer index (required). If the item for which a flag is to be created
-is stored as a vector, then \code{i} must be a vector. If it is a matrix or
-array, then \code{i} must be a matrix with as many columns as there are dimensions
-of the item.}
-
 \item{debug}{Integer set to 0 for quiet action or to 1 for some debugging.}
 }
 \value{
@@ -33,12 +30,18 @@ An object with flags set as indicated.
 }
 \description{
 This function changes specified entries in the data-quality
-flags of a ctd object, leaving other entries unaltered. (If the object
-does not yet have an entry in its \code{metadata} for a \code{name} flag,
-then one is set up and filled with \code{default}.)
+flags of a ctd object, which are stored within
+a list named \code{flags} that resides in the \code{metadta}
+slot. If the object already has a flag set up for \code{name},
+then only the specified entries are altered. If not, the flag
+entry is first created and its entries set to \code{default},
+after which the specified entries are changed to \code{value}. The
+specification is made with \code{i}, the form of which
+varies between classes; see \dQuote{Details} for the
+particular case of \code{\link{ctd-class}} objects.
 }
 \details{
-Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector.
+Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector, either a logical vector (Example 1) or a set of integers (Example 2).
 }
 \section{Development note}{
 
@@ -47,15 +50,39 @@ changes until the end of June of that year.  Use with caution.
 }
 
 \examples{
-\dontrun{
-## Interactive salinity quality-check based on TS plot
 library(oce)
+# Example 1: Range-check salinity
+data(ctdRaw)
+## Salinity range check
+S <- ctdRaw[["salinity"]]
+oddS <- S < 25 | 40 < S
+qc1 <- setFlags(ctdRaw, name="salinity", i=oddS, value=4, default=2)
+pressure <- ctdRaw[["pressure"]]
+# Pressure must not jump wildly
+pressureSpike <- abs(pressure - smooth(pressure)) > 1
+# Pressure must exceed 1dbar
+lowPressure <- pressure < 1
+# Pressure must be basically rising (downcast)
+notDowncast <- c(FALSE, diff(smooth(pressure)) < 0.1)
+badPressure <- pressureSpike | lowPressure | notDowncast
+# Note that we are adding a flag, so use qc1 below.
+qc2 <- setFlags(qc1, name="pressure", i=badPressure, value=4, default=2)
+# Compare results in TS and pressure-scan space
+par(mfrow=c(2, 2))
+plotTS(ctdRaw)
+plotScan(ctdRaw)
+plotTS(handleFlags(qc2))
+plotScan(handleFlags(qc2))
+
+# Example 2: Interactive flag assignment based on TS plot
+\dontrun{
 options(eos="gsw")
 data(ctd)
 ctdQC <- ctd
 Sspan <- diff(range(ctdQC[["SA"]]))
 Tspan <- diff(range(ctdQC[["CT"]]))
 n <- length(ctdQC[["SA"]])
+par(mfrow=c(1, 1))
 plotTS(ctdQC, type="o")
 message("Click on bad points; quit by clicking to right of plot")
 for (i in seq_len(n)) {
@@ -64,7 +91,7 @@ for (i in seq_len(n)) {
         break
     i <- which.min(abs(ctdQC[["SA"]] - xy$x)/Sspan + abs(ctdQC[["CT"]] - xy$y)/Tspan)
     # WHP-CTD convention: 2=acceptable, 4=bad
-    ctdQC <- setFlags(ctdQC, "salinity", value=3, default=2, i=i)
+    ctdQC <- setFlags(ctdQC, "salinity", value=3, i=i, default=2)
     ctdQC <- handleFlags(ctdQC)
     plotTS(ctdQC, type="o")
 }

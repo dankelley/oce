@@ -2,9 +2,15 @@
 #'
 #' @description
 #' This function changes specified entries in the data-quality
-#' flags of a <%=class%> object, leaving other entries unaltered. (If the object
-#' does not yet have an entry in its \code{metadata} for a \code{name} flag,
-#' then one is set up and filled with \code{default}.)
+#' flags of a <%=class%> object, which are stored within
+#' a list named \code{flags} that resides in the \code{metadta}
+#' slot. If the object already has a flag set up for \code{name},
+#' then only the specified entries are altered. If not, the flag
+#' entry is first created and its entries set to \code{default},
+#' after which the specified entries are changed to \code{value}. The
+#' specification is made with \code{i}, the form of which
+#' varies between classes; see \dQuote{Details} for the
+#' particular case of \code{\link{<%=class%>-class}} objects.
 #'
 #' @details
 #' <%=note%>
@@ -20,15 +26,12 @@
 #'
 #' @param value The value to be inserted in the flag.
 #'
+#' @param i Indication of where to insert the flags; see \dQuote{Details}.
+#'
 #' @param default The default (good) value of the flag. This is used only if
 #' the object does not yet have yet have a entry for \code{name} flags. In that case,
 #' storage is set up for the flag and it is filled with the \code{default} value, after
 #' which \code{setFlags} returns to the task of setting flag values at indicated locations.
-#'
-#' @param i Integer index (required). If the item for which a flag is to be created
-#' is stored as a vector, then \code{i} must be a vector. If it is a matrix or
-#' array, then \code{i} must be a matrix with as many columns as there are dimensions
-#' of the item.
 #'
 #' @param debug Integer set to 0 for quiet action or to 1 for some debugging.
 #'

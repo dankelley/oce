@@ -346,14 +346,14 @@ setMethod("handleFlags",
 #' @templateVar note The only flag that may be set is \code{v}, for velocity.
 #' @template setFlagsTemplate
 setMethod("setFlags",
-          c(object="adp", name="ANY", value="ANY", default="ANY", i="ANY", debug="ANY"),
-          function(object, name=NULL, value=NULL, default=NULL, i=NULL, debug=getOption("oceDebug")) {
+          c(object="adp", name="ANY", i="ANY", value="ANY", default="ANY", debug="ANY"),
+          function(object, name=NULL, i=NULL, value=NULL, default=NULL, debug=getOption("oceDebug")) {
               if (name != "v")
                   stop("in adp objects, the only flag that can be set is for \"v\"")
               ndim <- length(dim(object@data$v))
               if (!is.matrix(i) || ncol(i) != ndim)
                   stop("'i' must be a matrix with ", ndim, " columns, to match dim(v)")
-              res <- setFlagsInternal(object=object, name=name, value=value, default=default, i=i, debug=debug)
+              res <- setFlagsInternal(object=object, name=name, i=i, value=value, default=default, debug=debug-1)
               res
           })
 

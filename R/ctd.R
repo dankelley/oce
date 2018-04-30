@@ -242,19 +242,45 @@ setMethod("handleFlags",
           })
 
 #' @templateVar class ctd
-#' @templateVar note Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector.
+#'
+#' @templateVar note Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector, either a logical vector (Example 1) or a set of integers (Example 2).
+#'
 #' @template setFlagsTemplate
 #'
 #' @examples
-#'\dontrun{
-#' ## Interactive salinity quality-check based on TS plot
 #' library(oce)
+#' # Example 1: Range-check salinity
+#' data(ctdRaw)
+#' ## Salinity range check
+#' S <- ctdRaw[["salinity"]]
+#' oddS <- S < 25 | 40 < S
+#' qc1 <- setFlags(ctdRaw, name="salinity", i=oddS, value=4, default=2)
+#' pressure <- ctdRaw[["pressure"]]
+#' # Pressure must not jump wildly
+#' pressureSpike <- abs(pressure - smooth(pressure)) > 1
+#' # Pressure must exceed 1dbar
+#' lowPressure <- pressure < 1
+#' # Pressure must be basically rising (downcast)
+#' notDowncast <- c(FALSE, diff(smooth(pressure)) < 0.1)
+#' badPressure <- pressureSpike | lowPressure | notDowncast
+#' # Note that we are adding a flag, so use qc1 below.
+#' qc2 <- setFlags(qc1, name="pressure", i=badPressure, value=4, default=2)
+#' # Compare results in TS and pressure-scan space
+#' par(mfrow=c(2, 2))
+#' plotTS(ctdRaw)
+#' plotScan(ctdRaw)
+#' plotTS(handleFlags(qc2))
+#' plotScan(handleFlags(qc2))
+#'
+#' # Example 2: Interactive flag assignment based on TS plot
+#'\dontrun{
 #' options(eos="gsw")
 #' data(ctd)
 #' ctdQC <- ctd
 #' Sspan <- diff(range(ctdQC[["SA"]]))
 #' Tspan <- diff(range(ctdQC[["CT"]]))
 #' n <- length(ctdQC[["SA"]])
+#' par(mfrow=c(1, 1))
 #' plotTS(ctdQC, type="o")
 #' message("Click on bad points; quit by clicking to right of plot")
 #' for (i in seq_len(n)) {
@@ -263,18 +289,18 @@ setMethod("handleFlags",
 #'         break
 #'     i <- which.min(abs(ctdQC[["SA"]] - xy$x)/Sspan + abs(ctdQC[["CT"]] - xy$y)/Tspan)
 #'     # WHP-CTD convention: 2=acceptable, 4=bad
-#'     ctdQC <- setFlags(ctdQC, "salinity", value=3, default=2, i=i)
+#'     ctdQC <- setFlags(ctdQC, "salinity", value=3, i=i, default=2)
 #'     ctdQC <- handleFlags(ctdQC)
 #'     plotTS(ctdQC, type="o")
 #' }
 #'}
 setMethod("setFlags",
-          c(object="ctd", name="ANY", value="ANY", default="ANY", i="ANY", debug="ANY"),
-          function(object, name=NULL, value=NULL, default=NULL, i=NULL, debug=getOption("oceDebug")) {
+          c(object="ctd", name="ANY", i="ANY", value="ANY", default="ANY", debug="ANY"),
+          function(object, name=NULL, i=NULL, value=NULL, default=NULL, debug=getOption("oceDebug")) {
               oceDebug(debug, "setFlags,ctd-method name=", name, ", value=", value, ", default=", default, ", i=", i, "\n")
               if (is.null(i) || !is.vector(i))
                   stop("must supply 'i', a vector")
-              res <- setFlagsInternal(object=object, name=name, value=value, default=default, i=i, debug=debug)
+              res <- setFlagsInternal(object=object, name=name, i=i, value=value, default=default, debug=debug-1)
               res
           })
 

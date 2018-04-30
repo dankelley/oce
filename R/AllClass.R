@@ -587,22 +587,24 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
 #' @templateVar class oce
 #' @templateVar note This generic function is overridden by specialized functions for some object classes.
 #' @template setFlagsTemplate
-setGeneric("setFlags", function(object, name=NULL, value=NULL, default=NULL, i=NULL, debug=0) {
+setGeneric("setFlags", function(object, name=NULL, i=NULL, value=NULL, default=NULL, debug=0) {
            standardGeneric("setFlags")
          })
+
 #' @templateVar class oce
 #' @templateVar note This generic function is overridden by specialized functions for some object classes.
 #' @template setFlagsTemplate
 setMethod("setFlags",
-          c(object="oce", name="ANY", value="ANY", default="ANY", i="ANY", debug="ANY"),
-          function(object, name=NULL, value=NULL, default=NULL, i=NULL, debug=getOption("oceDebug")) {
-              setFlagsInternal(object=object, name=name, value=value, default=default, i=i, debug=debug)
+          c(object="oce", name="ANY", i="ANY", value="ANY", default="ANY", debug="ANY"),
+          function(object, name=NULL, i=NULL, value=NULL, default=NULL, debug=getOption("oceDebug")) {
+              setFlagsInternal(object=object, name=name, i=i, value=value, default=default, debug=debug)
           })
- 
-setFlagsInternal <- function(object, name=NULL, value=NULL, default=NULL, i=NULL, debug=getOption("oceDebug"))
+
+setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, default=NULL, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "setFlags(object, name='", name, "', value=", value,
-             ", default=", default, ", i=", i, ", debug=", debug, ") {\n", sep="",
+    oceDebug(debug, "setFlagsInternal(object, name='", name, "', value=", value,
+             ", default=", default, ", i=", paste(i, collapse=" "),
+             ", debug=", debug, ") {\n", sep="",
              unindent=1)
     if (is.null(name))
         stop("must supply a name")
@@ -624,7 +626,7 @@ setFlagsInternal <- function(object, name=NULL, value=NULL, default=NULL, i=NULL
         oceDebug(debug, name, " is a vector\n")
         if (!is.vector(i))
             stop("'i' must be a vector, because ", name, " is a vector")
-        if (!(flagName %in% names(object@metadata$flags))) {
+        if (!(name %in% names(object@metadata$flags))) {
             oceDebug(debug, "initializing flag to default ", default, " prior to setting the flag\n")
             if (is.null(default))
                 stop("cannot have a NULL default value")
@@ -634,7 +636,7 @@ setFlagsInternal <- function(object, name=NULL, value=NULL, default=NULL, i=NULL
     } else {
         stop("only works for vector quantities (please contact developer)")
     }
-    oceDebug(debug, "} # setFlags \n", unindent=1)
+    oceDebug(debug, "} # setFlagsInternal \n", unindent=1)
     res
 }
 
