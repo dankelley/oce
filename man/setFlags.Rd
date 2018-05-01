@@ -4,8 +4,8 @@
 \alias{setFlags}
 \title{Set data-quality flags within a oce object}
 \usage{
-setFlags(object, name = NULL, i = NULL, value = NULL, default = NULL,
-  debug = 0)
+setFlags(object, name = NULL, i = NULL, value = NULL, initial = NULL,
+  scheme = NULL, debug = 0)
 }
 \arguments{
 \item{object}{An oce object.}
@@ -19,10 +19,12 @@ objects.}
 
 \item{value}{The value to be inserted in the flag.}
 
-\item{default}{The default (good) value of the flag. This is used only if
-the object does not yet have yet have a entry for \code{name} flags. In that case,
-storage is set up for the flag and it is filled with the \code{default} value, after
-which \code{setFlags} returns to the task of setting flag values at indicated locations.}
+\item{initial}{A flag value to be used to initialize the flag structure, which
+will be done if \code{object} lacks an entry for flags of the indicated
+\code{name}.}
+
+\item{scheme}{A list describing the flag scheme, or a character string naming a standardized
+scheme (see \dQuote{Details}). This scheme is written in the processing log.}
 
 \item{debug}{Integer set to 0 for quiet action or to 1 for some debugging.}
 }

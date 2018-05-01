@@ -43,16 +43,18 @@
 #' @param name Character string indicating the name of the variable to be flagged. If
 #' this variable is not contained in the object's \code{data} slot, an error is reported.
 #'
-#' @param value The value to be inserted in the flag.
-#'
 #' @param i Indication of where to insert the flags; see \dQuote{Description} for
 #' general rules and \dQuote{Details} for rules for \code{\link{<%=class%>-class}}
 #' objects.
 #'
-#' @param default The default (good) value of the flag. This is used only if
-#' the object does not yet have yet have a entry for \code{name} flags. In that case,
-#' storage is set up for the flag and it is filled with the \code{default} value, after
-#' which \code{setFlags} returns to the task of setting flag values at indicated locations.
+#' @param value The value to be inserted in the flag.
+#'
+#' @param initial A flag value to be used to initialize the flag structure, which
+#' will be done if \code{object} lacks an entry for flags of the indicated
+#' \code{name}.
+#'
+#' @param scheme A list describing the flag scheme, or a character string naming a standardized
+#' scheme (see \dQuote{Details}). This scheme is written in the processing log.
 #'
 #' @param debug Integer set to 0 for quiet action or to 1 for some debugging.
 #'

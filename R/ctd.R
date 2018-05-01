@@ -243,7 +243,7 @@ setMethod("handleFlags",
 
 #' @templateVar class ctd
 #'
-#' @templateVar note Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}). Note that \code{value} defaults to 4, the WHP-exchange code for a bad CTD measurement, and \code{default} defaults to 2, the code for an acceptable CTD measurement.
+#' @templateVar note Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}). Note that \code{value} defaults to 4, the WHP-exchange code for a bad CTD measurement, and \code{initial} defaults to 2, the code for an acceptable CTD measurement.  Setting \code{scheme="WHP CTD exchange"} (the default) is the same as setting \code{scheme=list(uncalibrated=1, acceptable=2, questionable=3, bad=4, unreported=5, interpolated=6, despiked=7, unsampled=9)}.
 #'
 #' @template setFlagsTemplate
 #'
@@ -254,7 +254,7 @@ setMethod("handleFlags",
 #' ## Salinity range check
 #' S <- ctdRaw[["salinity"]]
 #' oddS <- S < 25 | 40 < S
-#' qc1 <- setFlags(ctdRaw, name="salinity", i=oddS, value=4, default=2)
+#' qc1 <- setFlags(ctdRaw, name="salinity", i=oddS, value=4, initial=2)
 #' pressure <- ctdRaw[["pressure"]]
 #' # Pressure must not jump wildly
 #' pressureSpike <- abs(pressure - smooth(pressure)) > 1
@@ -264,7 +264,8 @@ setMethod("handleFlags",
 #' notDowncast <- c(FALSE, diff(smooth(pressure)) < 0.1)
 #' badPressure <- pressureSpike | lowPressure | notDowncast
 #' # Note that we are adding a flag, so use qc1 below.
-#' qc2 <- setFlags(qc1, name="pressure", i=badPressure, value=4, default=2)
+#' qc2 <- setFlags(qc1, name="pressure", i=badPressure,
+#'                 value=4, initial=2, scheme="WHP CTD exchange")
 #' # Compare results in TS and pressure-scan space
 #' par(mfrow=c(2, 2))
 #' plotTS(ctdRaw)
@@ -289,7 +290,7 @@ setMethod("handleFlags",
 #'         break
 #'     i <- which.min(abs(ctdQC[["SA"]] - xy$x)/Sspan + abs(ctdQC[["CT"]] - xy$y)/Tspan)
 #'     # WHP-CTD convention: 2=acceptable, 4=bad
-#'     ctdQC <- setFlags(ctdQC, "salinity", value=3, i=i, default=2)
+#'     ctdQC <- setFlags(ctdQC, "salinity", value=3, i=i, initial=2)
 #'     ctdQC <- handleFlags(ctdQC)
 #'     plotTS(ctdQC, type="o")
 #' }
@@ -297,12 +298,17 @@ setMethod("handleFlags",
 #'
 #' @family things related to \code{ctd} data
 setMethod("setFlags",
-          c(object="ctd", name="ANY", i="ANY", value="ANY", default="ANY", debug="ANY"),
-          function(object, name=NULL, i=NULL, value=4, default=2, debug=getOption("oceDebug")) {
-              oceDebug(debug, "setFlags,ctd-method name=", name, ", value=", value, ", default=", default, ", i=", i, "\n")
+          c(object="ctd", name="ANY", i="ANY", value="ANY", initial="ANY", scheme="ANY", debug="ANY"),
+          function(object, name=NULL, i=NULL, value=4, initial=2, scheme=NULL, debug=getOption("oceDebug")) {
+              oceDebug(debug, "setFlags,ctd-method name=", name, ", i, value=", value, ", initial=", initial, "\n")
+              if (!is.null(scheme) && scheme == "WHP CTD exchange")
+                   scheme <- list(uncalibrated=1, acceptable=2, questionable=3, bad=4,
+                                  unreported=5, interpolated=6, despiked=7, unsampled=9)
+
               if (is.null(i) || (!is.vector(i) && !is.function(i)))
                   stop("must supply 'i', a vector or a function returning a vector")
-              res <- setFlagsInternal(object=object, name=name, i=i, value=value, default=default, debug=debug-1)
+              res <- setFlagsInternal(object=object, name=name, i=i,
+                                      value=value, initial=initial, scheme=scheme, debug=debug-1)
               res
           })
 

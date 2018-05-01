@@ -587,50 +587,88 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
 #' @templateVar class oce
 #' @templateVar note This generic function is overridden by specialized functions for some object classes.
 #' @template setFlagsTemplate
-setGeneric("setFlags", function(object, name=NULL, i=NULL, value=NULL, default=NULL, debug=0) {
+setGeneric("setFlags", function(object, name=NULL, i=NULL, value=NULL, initial=NULL, scheme=NULL, debug=0) {
            standardGeneric("setFlags")
          })
+
 
 #' @templateVar class oce
 #' @templateVar note This generic function is overridden by specialized functions for some object classes.
 #' @template setFlagsTemplate
 setMethod("setFlags",
-          c(object="oce", name="ANY", i="ANY", value="ANY", default="ANY", debug="ANY"),
-          function(object, name=NULL, i=NULL, value=NULL, default=NULL, debug=getOption("oceDebug")) {
-              setFlagsInternal(object=object, name=name, i=i, value=value, default=default, debug=debug)
+          c(object="oce", name="ANY", i="ANY", value="ANY", initial="ANY", scheme="ANY", debug="ANY"),
+          function(object, name=NULL, i=NULL, value=NULL, initial=NULL, scheme=scheme, debug=getOption("oceDebug")) {
+              setFlagsInternal(object=object, name=name, i=i, value=value, initial=initial, scheme=scheme, debug=debug)
           })
 
-setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, default=NULL, debug=getOption("oceDebug"))
+setFlagsInternal <- function(object, name=NULL, i=NULL,
+                             value=NULL, initial=NULL, scheme=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "setFlagsInternal(object, name='", name, "', value=", value,
              ", default=", default, ", i=", paste(i, collapse=" "),
              ", debug=", debug, ") {\n", sep="",
              unindent=1)
+    res <- object
+    ## Ensure proper argument setup.
     if (is.null(name))
         stop("must supply a name")
     if (length(name) > 1)
-        stop("must specify one 'name' at a time")
+        stop("must specify one 'name' at a time") # maybe this should be a warning
     if (!(name %in% names(object@data)))
         stop("object data slot does not contain '", name, "'; try one of: ",
              paste(names(object@data), collapse=" "))
-    if (is.null(value))
-        stop("must supply a value")
-    ## Check for 'i', but 'j' is optional
     if (is.null(i))
         stop("must supply 'i'")
-    if (!is.null(default) && length(default) > 1)
-        stop("default must be of length one")
+    if (is.null(value))
+        stop("must supply 'value'")
+    if (!is.null(scheme)) {
+        if (is.null(res@metadata$flagsScheme))
+            res@metadata$flagsScheme <- scheme
+        else
+            warning("ignoring 'scheme' because already set to: ",
+                    as.character(deparse(scheme)))
+    }
+    ##> ## Warn if supplying 'initial' when it won't be used.
+    ##> if (!is.null(object@metadata$flags[[name]]) && !is.null(initial))
+    ##>     warning("ignoring 'initial' because the object already has a flag for '", name, "'")
+    ## Demand that 'initial' be supplied when it is needed.
+    if (is.null(object@metadata$flags[[name]]) && is.null(initial))
+        stop("must give 'initial' to initialize flags for '", name, "'")
+    ## Done with basic tests.
     flagName <- paste(name, "Flag", sep="")
-    res <- object
+
+    ## Permit 'value' and 'initial' to be character strings, if a scheme already
+    ## exists and if these are contained within it.
+    if (is.character(value)) {
+        if (is.null(res@metadata$flagScheme)) {
+            stop("cannot have character 'value' without a 'scheme' supplied (or existing in object)")
+        } else {
+            if (value %in% names(res@metadata$flagScheme))
+                value <- res@metadata$flagScheme[[value]]
+            else
+                stop("value=\"", value, "\" is not defined the 'scheme' supplied (or existing in object)")
+        }
+    }
+    if (is.character(initial)) {
+        if (is.null(res@metadata$flagScheme)) {
+            stop("cannot have character 'initial' without a 'scheme' supplied (or existing in object)")
+        } else {
+            if (value %in% names(res@metadata$flagScheme))
+                initial <- res@metadata$flagScheme[[initial]]
+            else
+                stop("initial=\"", initial, "\" is not defined the 'scheme' supplied (or existing in object)")
+        }
+    }
+    ## Finally, apply the value (after initializing the flag to 'initial', if necessary)
     if (is.vector(object@data[[name]])) {
         oceDebug(debug, name, " is a vector\n")
         if (!is.vector(i))
             stop("'i' must be a vector, because ", name, " is a vector")
         if (!(name %in% names(object@metadata$flags))) {
-            oceDebug(debug, "initializing flag to default ", default, " prior to setting the flag\n")
-            if (is.null(default))
-                stop("cannot have a NULL default value")
-            res@metadata$flags[[name]] <- rep(default, length(object@data[[name]]))
+            oceDebug(debug, "initializing flag to ", initial, " prior to setting the flag\n")
+            if (is.null(initial))
+                stop("cannot have a NULL initial value")
+            res@metadata$flags[[name]] <- rep(initial, length(object@data[[name]]))
         }
         res@metadata$flags[[name]][i] <- value
     } else if (is.array(object@data[[name]])) {
@@ -646,10 +684,10 @@ setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, default=NULL
             if (ncol(i) != length(dimData))
                 stop("data frame 'i' must have ", length(dimData), " columns to match shape of '", name, "'")
             if (!(name %in% names(object@metadata$flags))) {
-                oceDebug(debug, "initializing flag to default ", default, " prior to setting the flag\n")
-                if (is.null(default))
-                    stop("cannot have a NULL default value")
-                res@metadata$flags[[name]] <- array(default, dim=dimData)
+                oceDebug(debug, "initializing flag to ", initial, " prior to setting the flag\n")
+                if (is.null(initial))
+                    stop("cannot have a NULL initial value")
+                res@metadata$flags[[name]] <- array(initial, dim=dimData)
             }
             for (j in seq_len(nrow(i))) {
                 res@metadata$flags[[name]][i[j,1], i[j,2], i[j,3]] <- value
@@ -660,6 +698,9 @@ setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, default=NULL
     } else{
         stop("only works for vectors and arrays (please report this as an error)")
     }
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste("setFlags(object, \"", name, "\", i, value=", value,
+                                             ", initial=", initial, ", scheme=", deparse(scheme), ")", collapse=""))
     oceDebug(debug, "} # setFlagsInternal \n", unindent=1)
     res
 }
