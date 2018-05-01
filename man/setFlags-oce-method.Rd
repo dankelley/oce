@@ -14,7 +14,9 @@
 \item{name}{Character string indicating the name of the variable to be flagged. If
 this variable is not contained in the object's \code{data} slot, an error is reported.}
 
-\item{i}{Indication of where to insert the flags; see \dQuote{Details}.}
+\item{i}{Indication of where to insert the flags; see \dQuote{Description} for
+general rules and \dQuote{Details} for rules for \code{\link{oce-class}}
+objects.}
 
 \item{value}{The value to be inserted in the flag.}
 
@@ -31,33 +33,38 @@ An object with flags set as indicated.
 \description{
 This function changes specified entries in the data-quality
 flags of a oce object, which are stored within
-a list named \code{flags} that resides in the \code{metadta}
+a list named \code{flags} that resides in the \code{metadata}
 slot. If the object already has a flag set up for \code{name},
 then only the specified entries are altered. If not, the flag
 entry is first created and its entries set to \code{default},
-after which the specified entries are changed to \code{value}. The
-specification is made with \code{i}, the form of which
-varies between classes; see \dQuote{Indexing rules} for general
-notes on matching \code{i} to the data, and see \dQuote{Details} for
-the particular case of \code{\link{oce-class}} objects.
+after which the entries specified by \code{i}
+are changed to \code{value}.
+
+The specification is made with \code{i}, the form of which
+is determined by the data item in question. Generally,
+the rules are as follows:
+\enumerate{
+\item If the data item is a vector, then \code{i} must be (a)
+an integer vector specifying indices to be set to \code{value},
+(b) a logical vector of length matching the data item, with
+\code{TRUE} meaning to set the flag to \code{value}, or (c)
+a function that takes an \code{oce} object as its single
+argument, and returns a vector in either of the forms
+just described.
+\item If the data item is an array, then \code{i} must be
+(a) a data frame of integers whose rows specify spots to change
+(where the number of columns matches the number of dimensions
+of the data item), (b) a logical array that has dimension equal to
+that of the data item, or (c) a function that takes an \code{oce}
+object as its single input and returns such a data frame or array.
+}
+See \dQuote{Details} for the particular case of
+\code{\link{oce-class}} objects.
 }
 \details{
 This generic function is overridden by specialized functions for some object classes.
 }
-\section{Indexing rules}{
-
-If the data item called \code{name} is a vector, then \code{i} must
-also be either a vector of indices that specify spots to change,
-or a logical vector (of length equal to the data element) that
-species those spots.
-
-Alternatively, if the data item is an array, then \code{i} must either be a data
-frame of integers whose rows specify spots to change (where the number
-of columns matches the number of dimensions of the data),
-or a logical array that has dimension equal to that of the data.
-}
-
-\section{Development note}{
+\section{Caution}{
 
 This function was added in late April, 2018, and is likely to undergo
 changes until the mid-summer of that year.  Use with caution.

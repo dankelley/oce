@@ -243,7 +243,7 @@ setMethod("handleFlags",
 
 #' @templateVar class ctd
 #'
-#' @templateVar note Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector, either a logical vector (Example 1) or a set of integers (Example 2).
+#' @templateVar note Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}). Note that \code{value} defaults to 4, the WHP-exchange code for a bad CTD measurement, and \code{default} defaults to 2, the code for an acceptable CTD measurement.
 #'
 #' @template setFlagsTemplate
 #'
@@ -298,10 +298,10 @@ setMethod("handleFlags",
 #' @family things related to \code{ctd} data
 setMethod("setFlags",
           c(object="ctd", name="ANY", i="ANY", value="ANY", default="ANY", debug="ANY"),
-          function(object, name=NULL, i=NULL, value=NULL, default=NULL, debug=getOption("oceDebug")) {
+          function(object, name=NULL, i=NULL, value=4, default=2, debug=getOption("oceDebug")) {
               oceDebug(debug, "setFlags,ctd-method name=", name, ", value=", value, ", default=", default, ", i=", i, "\n")
-              if (is.null(i) || !is.vector(i))
-                  stop("must supply 'i', a vector")
+              if (is.null(i) || (!is.vector(i) && !is.function(i)))
+                  stop("must supply 'i', a vector or a function returning a vector")
               res <- setFlagsInternal(object=object, name=name, i=i, value=value, default=default, debug=debug-1)
               res
           })
