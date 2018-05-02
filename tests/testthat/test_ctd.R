@@ -463,7 +463,7 @@ test_that("original names pair with final names", {
 
 test_that("setting and handling flags", {
           data(ctd)
-          ctdQC <- setFlags(ctd, name="salinity", value=3, default=2, i=1:10)
+          ctdQC <- setFlags(ctd, name="salinity", i=1:10, value=3, initial=2)
           expect_equal(ctdQC[["salinityFlag"]], c(rep(3, 10), rep(2, length(ctdQC[["salinity"]])-10)))
           ctdCleaned <- handleFlags(ctdQC)
           expect_true(all(is.na(ctdCleaned[["salinity"]][1:10])))
