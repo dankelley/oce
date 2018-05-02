@@ -373,13 +373,13 @@ setMethod("handleFlags",
 #'
 #' @family things related to \code{adp} data
 setMethod("setFlags",
-          c(object="adp", name="ANY", i="ANY", value="ANY", initial="ANY", scheme="ANY", debug="ANY"),
-          function(object, name=NULL, i=NULL, value=NULL, initial=NULL, scheme=NULL, debug=getOption("oceDebug")) {
+          c(object="adp", name="ANY", i="ANY", value="ANY", initial="ANY", debug="ANY"),
+          function(object, name=NULL, i=NULL, value=NULL, initial=NULL, debug=getOption("oceDebug")) {
               if (is.null(name))
                   stop("must specify 'name'")
               if (name != "v")
                   stop("in adp objects, the only flag that can be set is for \"v\"")
-              setFlagsInternal(object=object, name=name, i=i, value=value, initial=initial, scheme=scheme, debug=debug-1)
+              setFlagsInternal(object, name, i, value, initial, debug-1)
           })
 
 

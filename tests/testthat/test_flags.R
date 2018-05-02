@@ -1,6 +1,27 @@
 library(oce)
 context("Flags")
 
+test_that("ctd flag scheme setup", {
+          data(ctd)
+          a <- ctd
+          a <- setFlagScheme(a, "WHP CTD exchange")
+          expect_equal(a[["flagScheme"]], 
+                      list(uncalibrated=1, acceptable=2, questionable=3, bad=4, unreported=5,
+                           interpolated=6, despiked=7, unsampled=9))
+          expect_equal(a[["flagSchemeName"]], "WHP CTD exchange")
+          expect_error(setFlagScheme(ctd, "unknown"), "unrecognized scheme")
+})
+
+test_that("ctd flag scheme action", {
+          data(ctd)
+          a <- ctd
+          a <- setFlags(a, "temperature", 1:3, 4, 2)
+          b <- ctd
+          b <- setFlagScheme(b, "WHP CTD exchange")
+          b <- setFlags(b, "temperature", 1:3, "bad", "acceptable")
+          expect_equal(a[["temperatureFlag"]], b[["temperatureFlag"]])
+})
+
 test_that("[[ and [[<- work with ctd flags", {
           data(section)
           ctd <- section[["station", 100]]

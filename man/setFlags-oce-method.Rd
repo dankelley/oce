@@ -6,7 +6,7 @@
 \title{Set data-quality flags within a oce object}
 \usage{
 \S4method{setFlags}{oce}(object, name = NULL, i = NULL, value = NULL,
-  initial = NULL, scheme = scheme, debug = getOption("oceDebug"))
+  initial = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An oce object.}
@@ -23,9 +23,6 @@ objects.}
 \item{initial}{A flag value to be used to initialize the flag structure, which
 will be done if \code{object} lacks an entry for flags of the indicated
 \code{name}.}
-
-\item{scheme}{A list describing the flag scheme, or a character string naming a standardized
-scheme (see \dQuote{Details}). This scheme is written in the processing log.}
 
 \item{debug}{Integer set to 0 for quiet action or to 1 for some debugging.}
 }
@@ -68,7 +65,7 @@ This generic function is overridden by specialized functions for some object cla
 }
 \section{Caution}{
 
-This function was added in late April, 2018, and is likely to undergo
+This function was added in early May, 2018, and is likely to undergo
 changes until the mid-summer of that year.  Use with caution.
 }
 
@@ -78,6 +75,9 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,adp-meth
   \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}},
+  \code{\link{setFlagScheme,ctd-method}},
+  \code{\link{setFlagScheme,oce-method}},
+  \code{\link{setFlagScheme}},
   \code{\link{setFlags,adp-method}},
   \code{\link{setFlags,ctd-method}}, \code{\link{setFlags}}
 }

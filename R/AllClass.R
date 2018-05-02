@@ -7,7 +7,7 @@
 #' @slot metadata A list containing information about the data. The
 #' contents vary across sub-classes, e.g. an \code{\link{adp-class}}
 #' object has information about beam patterns, which obviously would
-#' not make sense for a \code{\link{ctd-class}} object. In addition,
+#' not make sense for a \code{\link{ctd-class}} object In addition,
 #' all classes have items named \code{units} and \code{flags}, used
 #' to store information on the units of the data, and the data quality.
 #' @slot data A list containing the data.
@@ -26,7 +26,7 @@ setClass("oce",
                                       flags=list()),
                         data=list(),
                         processingLog=list(time=as.POSIXct(Sys.time()),
-                                           value="Create oce object.")
+                                           value="Create oce object")
                         )
          )
 
@@ -177,6 +177,11 @@ setMethod(f="summary",
               ## the data("ctd") that is provided with oce).
               flags <- object@metadata$flags
               if (length(flags)) {
+                  if (!is.null(object@metadata$flagScheme)) {
+                      cat("* Data-quality Flag Scheme\n\n")
+                      cat("    name       ", object@metadata$flagSchemeName, "\n")
+                      cat("    definition ", gsub(" = ", "=", as.character(deparse(object@metadata$flagScheme, width.cutoff=400))), "\n\n")
+                  }
                   cat("* Data-quality Flags\n\n")
                   width <- 1 + max(nchar(names(flags)))
                   for (name in names(flags)) {
@@ -248,7 +253,7 @@ setMethod(f="plot",
 #' versions for most sub-classes, e.g. \code{\link{subset,ctd-method}}
 #' for \code{ctd} objects.
 #'
-#' @param x an oce object.
+#' @param x an oce object
 #' @param subset a logical expression indicating how to take the subset; the form depends on the sub-class.
 #' @param ... optional arguments, used in some specialized methods (e.g. \code{\link{subset,section-method}}).
 #' @return An oce object.
@@ -506,8 +511,8 @@ setGeneric("handleFlags", function(object, flags=NULL, actions=NULL, debug=getOp
 #' @param actions Ignored.
 #' @param debug Ignored.
 setMethod("handleFlags",
-          c(object="vector", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=list(), actions=list(), debug=integer()) {
+          signature=c(object="vector", flags="ANY", actions="ANY", debug="ANY"),
+          definition=function(object, flags=list(), actions=list(), debug=integer()) {
               stop("handleFlags() can only be applied to objects inheriting from \"oce\"")
           })
 
@@ -584,10 +589,11 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
     object
 }
 
+
 #' @templateVar class oce
 #' @templateVar note This generic function is overridden by specialized functions for some object classes.
 #' @template setFlagsTemplate
-setGeneric("setFlags", function(object, name=NULL, i=NULL, value=NULL, initial=NULL, scheme=NULL, debug=0) {
+setGeneric("setFlags", function(object, name=NULL, i=NULL, value=NULL, initial=NULL, debug=0) {
            standardGeneric("setFlags")
          })
 
@@ -596,16 +602,15 @@ setGeneric("setFlags", function(object, name=NULL, i=NULL, value=NULL, initial=N
 #' @templateVar note This generic function is overridden by specialized functions for some object classes.
 #' @template setFlagsTemplate
 setMethod("setFlags",
-          c(object="oce", name="ANY", i="ANY", value="ANY", initial="ANY", scheme="ANY", debug="ANY"),
-          function(object, name=NULL, i=NULL, value=NULL, initial=NULL, scheme=scheme, debug=getOption("oceDebug")) {
-              setFlagsInternal(object=object, name=name, i=i, value=value, initial=initial, scheme=scheme, debug=debug)
+          signature=c(object="oce", name="ANY", i="ANY", value="ANY", initial="ANY", debug="ANY"),
+          definition=function(object, name=NULL, i=NULL, value=NULL, initial=NULL, debug=getOption("oceDebug")) {
+              setFlagsInternal(object, name, i, value, initial, debug)
           })
 
-setFlagsInternal <- function(object, name=NULL, i=NULL,
-                             value=NULL, initial=NULL, scheme=NULL, debug=getOption("oceDebug"))
+setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, initial=NULL,  debug=getOption("oceDebug"))
 {
     oceDebug(debug, "setFlagsInternal(object, name='", name, "', value=", value,
-             ", default=", default, ", i=", paste(i, collapse=" "),
+             ", initial=", initial, ", i=", paste(i, collapse=" "),
              ", debug=", debug, ") {\n", sep="",
              unindent=1)
     res <- object
@@ -621,13 +626,13 @@ setFlagsInternal <- function(object, name=NULL, i=NULL,
         stop("must supply 'i'")
     if (is.null(value))
         stop("must supply 'value'")
-    if (!is.null(scheme)) {
-        if (is.null(res@metadata$flagsScheme))
-            res@metadata$flagsScheme <- scheme
-        else
-            warning("ignoring 'scheme' because already set to: ",
-                    as.character(deparse(scheme)))
-    }
+    ##> if (!is.null(scheme)) {
+    ##>     if (is.null(res@metadata$flagsScheme))
+    ##>         res@metadata$flagsScheme <- scheme
+    ##>     else
+    ##>         warning("ignoring 'scheme' because already set to: ",
+    ##>                 as.character(deparse(scheme)))
+    ##> }
     ##> ## Warn if supplying 'initial' when it won't be used.
     ##> if (!is.null(object@metadata$flags[[name]]) && !is.null(initial))
     ##>     warning("ignoring 'initial' because the object already has a flag for '", name, "'")
@@ -641,22 +646,24 @@ setFlagsInternal <- function(object, name=NULL, i=NULL,
     ## exists and if these are contained within it.
     if (is.character(value)) {
         if (is.null(res@metadata$flagScheme)) {
-            stop("cannot have character 'value' without a 'scheme' supplied (or existing in object)")
+            stop("cannot have character 'value' because setFlagScheme() has not been called on object")
         } else {
             if (value %in% names(res@metadata$flagScheme))
                 value <- res@metadata$flagScheme[[value]]
-            else
-                stop("value=\"", value, "\" is not defined the 'scheme' supplied (or existing in object)")
+            else {
+                stop("value=\"", value, "\" is not defined in the object's flagScheme")
+            }
         }
     }
     if (is.character(initial)) {
         if (is.null(res@metadata$flagScheme)) {
-            stop("cannot have character 'initial' without a 'scheme' supplied (or existing in object)")
+            stop("cannot have character 'initial' because setFlagScheme() has not been called on object")
         } else {
-            if (value %in% names(res@metadata$flagScheme))
+            if (initial %in% names(res@metadata$flagScheme))
                 initial <- res@metadata$flagScheme[[initial]]
-            else
-                stop("initial=\"", initial, "\" is not defined the 'scheme' supplied (or existing in object)")
+            else {
+                stop("initial=\"", initial, "\" is not defined the 'flagScheme' for this object")
+            }
         }
     }
     ## Finally, apply the value (after initializing the flag to 'initial', if necessary)
@@ -700,12 +707,41 @@ setFlagsInternal <- function(object, name=NULL, i=NULL,
     }
     res@processingLog <- processingLogAppend(res@processingLog,
                                              paste("setFlags(object, \"", name, "\", i, value=", value,
-                                             ", initial=", initial, ", scheme=", deparse(scheme), ")", collapse=""))
+                                             ", initial=", initial, ")", collapse=""))
     oceDebug(debug, "} # setFlagsInternal \n", unindent=1)
     res
 }
 
+#' @templateVar class oce
+#' @templateVar details There are no pre-defined \code{scheme}s for this object class.
+#' @template setFlagSchemeTemplate
+setGeneric("setFlagScheme", function(object, scheme=NULL, debug=0) {
+           standardGeneric("setFlagScheme")
+         })
 
+#' @templateVar class oce
+#' @templateVar details There are no pre-defined \code{scheme}s for this object class.
+#' @template setFlagSchemeTemplate
+setMethod("setFlagScheme",
+          signature=c(object="oce", scheme="ANY", debug="ANY"),
+          definition=function(object, scheme=scheme, debug=getOption("oceDebug")) {
+              setFlagSchemeInternal(object, scheme, debug)
+          })
+
+setFlagSchemeInternal <- function(object, scheme=NULL, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "setFlagSchemeInternal(object, scheme=\"", scheme, "\", debug=", debug, ") {", sep="", unindent=1)
+    res <- object
+    if (!is.null(object@metadata$flagScheme))
+        warning("cannot alter a flagScheme that is already is place")
+    else
+        res@metadata$flagScheme <- scheme
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste("setFlagScheme(object, \",, scheme=",
+                                                   as.character(deparse(scheme)), ")", sep=""))
+    oceDebug(debug, "} # setFlagSchemeInternal", sep="", unindent=1)
+    res
+}
 
 #' Concatenate oce objects
 #' @param object An object of \code{\link{oce-class}}.
