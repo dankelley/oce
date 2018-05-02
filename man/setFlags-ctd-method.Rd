@@ -75,9 +75,9 @@ library(oce)
 data(ctdRaw)
 ## Salinity and temperature range checks
 qc <- ctdRaw
-oddS <- with(qc, salinity < 25 | 40 < salinity)
+oddS <- with(qc[["data"]], salinity < 25 | 40 < salinity)
 qc <- setFlags(qc, name="salinity", i=oddS, value=4, initial=2)
-oddT <- with(qc, temperature < -2 | 40 < temperature)
+oddT <- with(qc[["data"]], temperature < -2 | 40 < temperature)
 qc <- setFlags(qc, name="temperature", i=oddT, value=4, initial=2)
 # Compare results in TS space
 par(mfrow=c(2, 1))
