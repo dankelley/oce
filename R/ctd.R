@@ -2060,9 +2060,16 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' @param parameters A list whose elements depend on the method; see \dQuote{Details}.
 #'
+#' @param indices Logical value indicating what to return. If \code{indices=FALSE} (the default),
+#' then the return value is a subsetted \code{\link{ctd-class}} object. If \code{indices=TRUE},
+#' then the return value is a logical vector. The logical vector can be used together with
+#' \code{\link{setFlags,ctd-method}} to set flags that will indicate values that could be
+#' removed by using \code{\link{handleFlags,ctd-method}}.
+#'
 #' @template debugTemplate
 #'
-#' @return An object of \code{\link{ctd-class}}, with data having been trimmed in some way.
+#' @return Either an object of \code{\link{ctd-class}}, with data having been trimmed in some way (for
+#' the default case, where \code{indices} is \code{FALSE}) or a logical vector of length matching the data.
 #'
 #' @examples
 #' \dontrun{
@@ -2090,7 +2097,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' @family things related to \code{ctd} data
 ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
-                   debug=getOption("oceDebug"))
+                    indices=FALSE, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "ctdTrim() {\n", unindent=1)
     methodIsFunction <- !missing(method) && is.function(method)
@@ -2398,32 +2405,28 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
     } else {
         keep <- method(data=x@data, parameters=parameters)
     }
-    if (is.data.frame(res@data)) {
-        res@data <- res@data[keep, ]
-    } else {
-        for (i in seq_along(res@data)) {
-            res@data[[i]] <- res@data[[i]][keep]
-        }
-    }
-    ## waterDepthWarning <- FALSE
-    ## if (inferWaterDepth) {
-    ##     res@metadata$waterDepth <- max(res@data$pressure, na.rm=TRUE)
-    ##     waterDepthWarning <- TRUE
-    ## }
+
+    ## Handle depth inversions (may be a problem with noise)
     if (removeDepthInversions) {
-        badDepths <- c(FALSE, diff(pressure) <= 0)
-        nbad <- sum(badDepths)
-        if (nbad > 0) {
-            for (col in seq_along(x@data))
-                res@data[[col]] <- res@data[[col]][!badDepths]
-            msg <- sprintf("removed %d levels that had depth inversions", nbad)
-            warning(msg)
-            msg <- sprintf("Note: ctdTrim() removed %d levels that had depth inversions",
-                           nbad)
-            warning("should add note about trimming depth inversions to processingLog")
-        }
+        keep <- keep & c(TRUE, diff(pressure) >= 0)
     }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if (indices) {
+        res <- keep
+    } else {
+        ## Data
+        if (is.data.frame(res@data)) {
+            res@data <- res@data[keep, ]
+        } else {
+            for (i in seq_along(res@data)) {
+                res@data[[i]] <- res@data[[i]][keep]
+            }
+        }
+        ## Metadata
+        for (i in seq_len(length(res@metadata$flags))) {
+            res@metadata$flags[[i]] <- res@metadata$flags[[i]][keep]
+        }
+        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    }
     ## if (waterDepthWarning)
     ##     res@processingLog <- processingLogAppend(res@processingLog, "inferred water depth from maximum pressure")
     oceDebug(debug, "} # ctdTrim()\n", unindent=1)

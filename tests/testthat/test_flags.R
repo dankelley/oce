@@ -33,7 +33,7 @@ test_that("handleFLags works with the built-in argo dataset", {
           data(argo)
           argoNew <- handleFlags(argo, flags=list(salinity=4:5))
           ## Test a few that are identified by printing some values
-          ## for argo[["salinityFlag"]]. 
+          ## for argo[["salinityFlag"]].
           expect_true(is.na(argoNew[["salinity"]][13, 2]))
           expect_true(is.na(argoNew[["salinity"]][53, 8]))
           ## Test whether data with salinity flag of 4 get changed to NA
@@ -67,7 +67,7 @@ test_that("handleFLags works with the built-in section dataset", {
           STN1 <- SECTION[["station", 1]]
           expect_equal(c(2, 3, 3, 2, 2), stn1[["salinityFlag"]])
           ok <- which(2 == stn1[["salinityFlag"]])
-          expect_equal(stn1[["salinity"]][ok], STN1[["salinity"]][ok]) 
+          expect_equal(stn1[["salinity"]][ok], STN1[["salinity"]][ok])
           replace <- which(2 != stn1[["salinityFlag"]])
-          expect_equal(stn1[["salinityBottle"]][replace], STN1[["salinity"]][replace]) 
+          expect_equal(stn1[["salinityBottle"]][replace], STN1[["salinity"]][replace])
 })

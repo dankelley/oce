@@ -91,6 +91,16 @@ test_that("as.ctd() with an argo object, by profile", {
           expect_equal(ctdProfile2[["salinity"]], argo[["salinity"]][,2])
 })
 
+test_that("ctdTrim indices argument", {
+          data(ctd)
+          a <- ctdTrim(ctd, method="sbe")
+          b <- ctdTrim(ctd, method="sbe", indices=TRUE)
+          for (name in names(a[["data"]])) {
+            ## Must use oceGetData because [["time"]] grabs 'time' from
+            ## the metadata, which is a scalar.
+            expect_equal(oceGetData(ctd, name)[b], oceGetData(a, name))
+          }
+})
 
 test_that("ctd subsetting and trimming", {
           ## NOTE: this is brittle to changes in data(ctd), but that's a good thing, because
