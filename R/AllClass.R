@@ -651,7 +651,8 @@ setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, initial=NULL
             if (value %in% names(res@metadata$flagScheme))
                 value <- res@metadata$flagScheme[[value]]
             else {
-                stop("value=\"", value, "\" is not defined in the object's flagScheme")
+                stop("value=\"", value, "\" is not defined in the object's flagScheme; try one of: \"",
+                     paste(names(res@metadata$flagScheme), "\", \""), "\"", sep="")
             }
         }
     }
@@ -662,7 +663,8 @@ setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, initial=NULL
             if (initial %in% names(res@metadata$flagScheme))
                 initial <- res@metadata$flagScheme[[initial]]
             else {
-                stop("initial=\"", initial, "\" is not defined the 'flagScheme' for this object")
+                stop("initial=\"", initial, "\" is not defined in the object's flagScheme; try one of: \"",
+                     paste(names(res@metadata$flagScheme), "\", \""), "\"", sep="")
             }
         }
     }

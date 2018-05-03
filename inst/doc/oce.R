@@ -147,34 +147,6 @@ data(adp)
 plot(adp, which=1)
 lines(adp[['time']], adp[['pressure']], lwd=2)
 
-## ------------------------------------------------------------------------
-data(section)
-stn <- section[["station", 100]]
-head(stn[["salinityFlag"]])
-
-## ------------------------------------------------------------------------
-# fake second datum
-stn[["salinity"]][2] <- -999
-
-## ------------------------------------------------------------------------
-stn[["salinityFlag"]] <- ifelse(stn[["salinity"]] < 0, 3, stn[["salinityFlag"]])
-
-## ------------------------------------------------------------------------
-head(stn[["salinityFlag"]])
-
-## ------------------------------------------------------------------------
-stn2 <- stn
-stn2[["salinity"]] <- ifelse(stn2[["salinityFlag"]]!=2, NA, stn2[["salinity"]])
-head(stn2[["salinityFlag"]])
-
-## ------------------------------------------------------------------------
-stn3 <- stn
-stn3[["salinity"]][2] <- -999
-stn3 <- handleFlags(stn3, list(salinity=c(1,3:9)))
-
-## ------------------------------------------------------------------------
-head(data.frame(stnS=stn[["salinity"]], stn2S=stn2[["salinity"]], stn3S=stn3[["salinity"]]))
-
 ## ----fig.keep="none"-----------------------------------------------------
 library(oce)
 Sys.setenv(LANGUAGE="fr")
