@@ -4,11 +4,18 @@ context("Flags")
 test_that("ctd flag scheme setup", {
           data(ctd)
           a <- ctd
-          a <- setFlagScheme(a, "WHP CTD exchange")
-          expect_equal(a[["flagScheme"]], 
+          ## Newly-devised scheme
+          a <- setFlagScheme(a, list(unknown=1, good=2, bad=3))
+          expect_equal(a[["flagScheme"]], list(unknown=1, good=2, bad=3))
+          expect_equal(a[["flagSchemeName"]], "")
+          b <- ctd
+          ## Can we provide known schemes?
+          b <- setFlagScheme(b, "WHP CTD exchange")
+          expect_equal(b[["flagScheme"]],
                       list(uncalibrated=1, acceptable=2, questionable=3, bad=4, unreported=5,
                            interpolated=6, despiked=7, unsampled=9))
-          expect_equal(a[["flagSchemeName"]], "WHP CTD exchange")
+          expect_equal(b[["flagSchemeName"]], "WHP CTD exchange")
+          ## Can we detect unknown schemes?
           expect_error(setFlagScheme(ctd, "unknown"), "unrecognized scheme")
 })
 
@@ -54,7 +61,7 @@ test_that("handleFLags works with the built-in argo dataset", {
           data(argo)
           argoNew <- handleFlags(argo, flags=list(salinity=4:5))
           ## Test a few that are identified by printing some values
-          ## for argo[["salinityFlag"]]. 
+          ## for argo[["salinityFlag"]].
           expect_true(is.na(argoNew[["salinity"]][13, 2]))
           expect_true(is.na(argoNew[["salinity"]][53, 8]))
           ## Test whether data with salinity flag of 4 get changed to NA
@@ -88,7 +95,7 @@ test_that("handleFLags works with the built-in section dataset", {
           STN1 <- SECTION[["station", 1]]
           expect_equal(c(2, 3, 3, 2, 2), stn1[["salinityFlag"]])
           ok <- which(2 == stn1[["salinityFlag"]])
-          expect_equal(stn1[["salinity"]][ok], STN1[["salinity"]][ok]) 
+          expect_equal(stn1[["salinity"]][ok], STN1[["salinity"]][ok])
           replace <- which(2 != stn1[["salinityFlag"]])
-          expect_equal(stn1[["salinityBottle"]][replace], STN1[["salinity"]][replace]) 
+          expect_equal(stn1[["salinityBottle"]][replace], STN1[["salinity"]][replace])
 })
