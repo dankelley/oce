@@ -5,7 +5,7 @@
 \title{Trim Beginning and Ending of a CTD cast}
 \usage{
 ctdTrim(x, method, removeDepthInversions = FALSE, parameters = NULL,
-  debug = getOption("oceDebug"))
+  indices = FALSE, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -20,6 +20,11 @@ section, unless \code{\link{ctdDecimate}} will be used, which will remove the in
 
 \item{parameters}{A list whose elements depend on the method; see \dQuote{Details}.}
 
+\item{indices}{Logical value indicating what to return. If \code{indices=FALSE} (the default),
+then the return value is a subsetted \code{\link{ctd-class}} object. If \code{indices=TRUE},
+then the return value is a logical vector that could be used to subset the data
+with \code{\link{subset,ctd-method}} or to set data-quality flags.}
+
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
@@ -29,7 +34,10 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-An object of \code{\link{ctd-class}}, with data having been trimmed in some way.
+Either an object of \code{\link{ctd-class}} or a logical vector of length
+matching the data. The first option is the default. The second option,
+achieved by setting \code{indices=FALSE}, may be useful in constructing
+data flags to be inserted into the object.
 }
 \description{
 Often in CTD profiling, the goal is to isolate only the downcast, discarding measurements made in
