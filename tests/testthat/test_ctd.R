@@ -92,13 +92,21 @@ test_that("as.ctd() with an argo object, by profile", {
 })
 
 test_that("ctdTrim indices argument", {
-          data(ctd)
-          a <- ctdTrim(ctd, method="sbe")
-          b <- ctdTrim(ctd, method="sbe", indices=TRUE)
-          for (name in names(a[["data"]])) {
+          data(ctdRaw)
+          a <- ctdRaw
+          ## Insert a crazy flag, not for conventional use, but only
+          ## to trace whether subsetting works as intended.
+          a[["salinityFlag"]] <- seq_along(a[["salinity"]])
+          b <- ctdTrim(a, method="sbe")
+          c <- ctdTrim(a, method="sbe", indices=TRUE)
+          for (name in names(b[["data"]])) {
             ## Must use oceGetData because [["time"]] grabs 'time' from
             ## the metadata, which is a scalar.
-            expect_equal(oceGetData(ctd, name)[b], oceGetData(a, name))
+            expect_equal(oceGetData(a, name)[c], oceGetData(b, name))
+          }
+          ## Demonstrate that it works for flags
+          for (name in names(a[["flags"]])) {
+            expect_equal(a[[paste(name, "flag", sep="")]][c], b[[paste(name, "flag", sep="")]])
           }
 })
 
