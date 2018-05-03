@@ -22,9 +22,8 @@ section, unless \code{\link{ctdDecimate}} will be used, which will remove the in
 
 \item{indices}{Logical value indicating what to return. If \code{indices=FALSE} (the default),
 then the return value is a subsetted \code{\link{ctd-class}} object. If \code{indices=TRUE},
-then the return value is a logical vector. The logical vector can be used together with
-\code{\link{setFlags,ctd-method}} to set flags that will indicate values that could be
-removed by using \code{\link{handleFlags,ctd-method}}.}
+then the return value is a logical vector that could be used to subset the data
+with \code{\link{subset,ctd-method}} or to set data-quality flags.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -35,8 +34,10 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-Either an object of \code{\link{ctd-class}}, with data having been trimmed in some way (for
-the default case, where \code{indices} is \code{FALSE}) or a logical vector of length matching the data.
+Either an object of \code{\link{ctd-class}} or a logical vector of length
+matching the data. The first option is the default. The second option,
+achieved by setting \code{indices=FALSE}, may be useful in constructing
+data flags to be inserted into the object.
 }
 \description{
 Often in CTD profiling, the goal is to isolate only the downcast, discarding measurements made in

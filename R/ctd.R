@@ -2062,14 +2062,15 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'
 #' @param indices Logical value indicating what to return. If \code{indices=FALSE} (the default),
 #' then the return value is a subsetted \code{\link{ctd-class}} object. If \code{indices=TRUE},
-#' then the return value is a logical vector. The logical vector can be used together with
-#' \code{\link{setFlags,ctd-method}} to set flags that will indicate values that could be
-#' removed by using \code{\link{handleFlags,ctd-method}}.
+#' then the return value is a logical vector that could be used to subset the data
+#' with \code{\link{subset,ctd-method}} or to set data-quality flags.
 #'
 #' @template debugTemplate
 #'
-#' @return Either an object of \code{\link{ctd-class}}, with data having been trimmed in some way (for
-#' the default case, where \code{indices} is \code{FALSE}) or a logical vector of length matching the data.
+#' @return Either an object of \code{\link{ctd-class}} or a logical vector of length
+#' matching the data. The first option is the default. The second option,
+#' achieved by setting \code{indices=FALSE}, may be useful in constructing
+#' data flags to be inserted into the object.
 #'
 #' @examples
 #' \dontrun{
