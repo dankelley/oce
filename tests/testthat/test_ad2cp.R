@@ -1,6 +1,5 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 library(oce)
-data(adp)
 
 context("Nortek AD2CP")
 
