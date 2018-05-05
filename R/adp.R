@@ -723,6 +723,13 @@ setMethod(f="subset",
                           }
                       }
                   }
+                  if ("v" %in% names(x@metadata$flags)) {
+                      dim <- dim(x@metadata$flags$v)
+                      res@metadata$flags$v <- x@metadata$flags$v[keep, , , drop=FALSE]
+                      oceDebug(debug, "subsetting flags$v original dim=",
+                               paste(dim, collapse="x"), "; new dim=",
+                               paste(dim(res@metadata$flags$v), collapse="x"))
+                  }
               } else if (length(grep("distance", subsetString))) {
                   oceDebug(debug, "subsetting an adp by distance\n")
                   if (length(grep("time", subsetString)))
@@ -743,6 +750,14 @@ setMethod(f="subset",
                           oceDebug(debug, "after, dim(", name, ") =", dim(res@data[[name]]), "\n")
                       }
                   }
+                  oceDebug(debug, "names of flags: ", paste(names(x@metadata$flags), collapse=" "), "\n")
+                  if ("v" %in% names(x@metadata$flags)) {
+                      vdim <- dim(x@metadata$flags$v)
+                      res@metadata$flags$v <- x@metadata$flags$v[, keep, , drop=FALSE]
+                      oceDebug(debug, "subsetting flags$v original dim=",
+                               paste(vdim, collapse="x"), "; new dim=",
+                               paste(dim(res@metadata$flags$v), collapse="x"), "\n")
+                  }
               } else if (length(grep("pressure", subsetString))) {
                   keep <- eval(substitute(subset), x@data, parent.frame(2))
                   res <- x
@@ -750,6 +765,13 @@ setMethod(f="subset",
                   res@data$a <- res@data$a[keep, , ]
                   res@data$q <- res@data$q[keep, , ]
                   res@data$time <- res@data$time[keep]
+                  if ("v" %in% names(x@metadata$flags)) {
+                      dim <- dim(x@metadata$flags$v)
+                      res@metadata$flags$v <- x@metadata$flags$v[keep, , drop=FALSE]
+                      oceDebug(debug, "subsetting flags$v original dim=",
+                               paste(dim, collapse="x"), "; new dim=",
+                               paste(dim(res@metadata$flags$v), collapse="x"))
+                  }
                   ## the items below may not be in the dataset
                   names <- names(res@data)
                   if ("bottomRange" %in% names) res@data$bottomRange <- res@data$bottomRange[keep, ]

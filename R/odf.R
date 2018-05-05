@@ -81,6 +81,11 @@ setMethod(f="[[<-",
 #' @description
 #' This function is somewhat analogous to \code{\link{subset.data.frame}}.
 #'
+#' @details
+#' It seems likely that users will first convert the odf object into
+#' another class (e.g. ctd) and use the subset method of that class;
+#' note that some of those methods interpret the \dots argument.
+#'
 #' @param x an \code{odf} object.
 #' @param subset a condition to be applied to the \code{data} portion of
 #' \code{x}.  See \sQuote{Details}.
@@ -102,8 +107,11 @@ setMethod(f="subset",
                   stop("must specify a 'subset'")
               keep <- eval(substitute(subset), x@data, parent.frame(2)) # used for $ts and $ma, but $tsSlow gets another
               res <- x
-              for (name in names(x@data)) {
-                  res@data[[name]] <- x@data[[name]][keep]
+              for (i in seq_along(x@data)) {
+                  res@data[[i]] <- x@data[[i]][keep]
+              }
+              for (i in seq_along(x@metadata$flags)) {
+                  res@metadata$flags[[i]] <- x@metadata$flags[[i]][keep]
               }
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               res

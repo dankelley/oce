@@ -3567,25 +3567,33 @@ setMethod(f="subset",
                       stop("cannot specify both 'subset' and 'indices'")
                   res <- x
                   indices <- dots[["indices"]]
-                  for (datum in names(x@data)) {
-                      res[[datum]] <- x[[datum]][indices]
+                  for (i in seq_along(x@data)) {
+                      res@data[[i]] <- x@data[[i]][indices]
+                  }
+                  for (i in seq_along(x@metadata$flags)) {
+                      res@metadata$flags[[i]] <- x@metadata$flags[[i]][indices]
                   }
                   subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+                  res@processingLog <- processingLogAppend(res@processingLog,
+                                                           paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
                   return(res)
               }
               res <- new("ctd")
-
               res@metadata <- x@metadata
               res@processingLog <- x@processingLog
+              ## FIXME: next 2 lines used to be in the loop but I don't see why, so moved out
+              r <- eval(substitute(subset), x@data, parent.frame(2))
+              r <- r & !is.na(r)
               for (i in seq_along(x@data)) {
-                  r <- eval(substitute(subset), x@data, parent.frame(2))
-                  r <- r & !is.na(r)
                   res@data[[i]] <- x@data[[i]][r]
+              }
+              for (i in seq_along(x@metadata$flags)) {
+                  res@metadata$flags[[i]] <- x@metadata$flags[[i]][r]
               }
               names(res@data) <- names(x@data)
               subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
+              res@processingLog <- processingLogAppend(res@processingLog,
+                                                       paste("subset.ctd(x, subset=", subsetString, ")", sep=""))
               res
           })
 
