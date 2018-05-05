@@ -276,6 +276,8 @@ setMethod(f="subset",
               res <- x
               for (i in seq_along(x@data))
                   res@data[[i]] <- res@data[[i]][keep]
+              for (i in seq_along(x@metadata$flags))
+                  res@metadata$flags[[i]] <- res@metadata$flag[[i]][keep]
               res@processingLog <- processingLogAppend(res@processingLog,
                                                         paste(deparse(match.call(call=sys.call(sys.parent(1)))),
                                                               sep="", collapse=""))

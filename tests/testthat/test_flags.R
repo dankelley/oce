@@ -99,3 +99,61 @@ test_that("handleFLags works with the built-in section dataset", {
           replace <- which(2 != stn1[["salinityFlag"]])
           expect_equal(stn1[["salinityBottle"]][replace], STN1[["salinity"]][replace])
 })
+
+test_that("does subset() work on ctd flags? (issue 1410)", {
+          data(section)
+          stn <- section[["station", 100]]
+          stnTopKm <- subset(stn, pressure < 1000)
+          n <- length(stnTopKm[["temperature"]])
+          for (flag in names(stnTopKm[["flags"]])) {
+              flagName <- paste(flag, "Flag", sep="")
+              expect_equal(stnTopKm[[flagName]], head(stn[[flagName]], n))
+          }
+})
+
+test_that("does subset() work on odf flags? (issue 1410)", {
+          file <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce")
+          odf <- expect_warning(read.odf(file), "should be unitless")
+          ## # Find a region with interesting flags
+          ## > which(odf[["sigmaThetaFlag"]]!=1)
+          ## [1] 110 120 121 142
+          ## > which(odf[["salinityFlag"]]!=1)
+          ## [1] 121
+          iStart <- 100
+          iEnd <- 130
+          sub <- subset(odf, scan[iStart] <= scan & scan <= scan[iEnd])
+          n <- length(sub[["temperature"]])
+          for (name in names(sub[["flags"]])) {
+              flagName <- paste(name, "Flag", sep="")
+              expect_equal(sub[[flagName]], odf[[flagName]][iStart:iEnd])
+          }
+          for (namei in names(sub[["data"]])) {
+              expect_equal(sub[[name]], odf[[name]][iStart:iEnd])
+          }
+})
+
+test_that("does subset() work on adp flags? (issue 1410)", {
+          v <- adp[["v"]]
+          ## I'm fixing this in the 'develop' branch, which as of
+          ## the moment has not merged the 'dk' branch's ability to
+          ## set flags, so we do this the old fashioned way. And,
+          ## what the heck, there's no harm in keeping it this way,
+          ## as an extra check on things.
+          f <- array(FALSE, dim=dim(v))
+          updraft <- adp[["v"]][,,4] > 0
+          updraft[is.na(updraft)] <- FALSE # I don't like NA flags
+          for (beam in 1:4)
+              f[,,beam] <- updraft
+          adp[["vFlag"]] <- f
+          ## Subset by distance.
+          sub <- subset(adp, distance < 20)
+          expect_equal(dim(sub[["v"]]), dim(sub[["vFlag"]])) # flag dim = data dim?
+          look <- adp[["distance"]] < 20
+          expect_equal(adp[["vFlag"]][, look, ], sub[["vFlag"]]) # flag values ok?
+          ## Subset by time.
+          sub <- subset(adp, time <= adp[["time"]][10])
+          expect_equal(dim(sub[["v"]]), dim(sub[["vFlag"]])) # flag dim = data dim?
+          look <- adp[["time"]] <= adp[["time"]][10]
+          expect_equal(adp[["vFlag"]][look, , ], sub[["vFlag"]]) # flag values ok?
+})
+
