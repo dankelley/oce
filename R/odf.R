@@ -859,7 +859,10 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         if (length(grep("QQQQ", CODE))) {
             iNAME <- grep("^\\s*NAME\\s*=\\s*'", lines[lstart:lend])
             if (length(iNAME) == 1) {
-                NAME <- paste(gsub("^.*:\\s*'?(.*)([_0-9]*)'?.*$", "\\1", lines[lstart+iNAME-1]), "Flag", sep="")
+                ## Sample input line: "  NAME= 'Quality Flag for Parameter: TEMP_01',"
+                ## NAME <- paste(gsub("^.*:\\s*'?(.*)([_0-9]*)'?.*$", "\\1", lines[lstart+iNAME-1]), "Flag", sep="")
+                NAME <- paste(gsub(".*:[ ]*([A-Z0-9_]*).*", "\\1", lines[lstart+iNAME-1]), "Flag", sep="")
+                oceDebug(debug, "quality-control code '", lines[lstart+iNAME-1], "' yielded NAME='", NAME, "'")
             } else {
                 stop("cannot link flag to variable name in a PARAMETER_HEADER block starting at line ", lstart-1)
             }
