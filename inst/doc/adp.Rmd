@@ -32,8 +32,8 @@ handle measurements made by acoustic Doppler profilers.  The goal is to get
 users started, on the assumption that they will use the package documentation
 to learn more details, and that they will consult [the main oce
 vignette](oce.html) for general information about oce.  As in the related
-[vignette about working with data-quality flags data](flags.html), the material
-is organized to reflect typical workflow.
+[vignette about working with data-quality flags](flags.html), the material is
+organized to reflect typical workflow.
 
 **Colophon.**
 The sample code provided in this vignette all relies on the oce package, so

@@ -33,9 +33,9 @@ quirky data formats that are common in this field. It also provides functions
 for working with basic seawater properties such as the equation of state, and
 with derived quantities such as the buoyancy frequency.  Although simple enough
 to be used in a teaching context, `oce` is powerful enough for a research
-setting.  These things are illustrated here in a practical context.  Worked
-exercises are provided to help readers take early steps towards using the `oce`
-package in their research.
+setting.  These things are illustrated here in a general context; see also the
+vignettes on [using data-quality flags](flags.html) and processing data
+from [acoustic Doppler profilers](adp.html).
 
 # Introduction
 
@@ -401,8 +401,9 @@ plot(GSg, which=c(1,99), map.xlim=c(-85,-(64+13/60)))
 
 **Exercise 4.** Draw a $T$-$S$ diagram for the section data, using black
 symbols to the east of 30W and gray symbols to the west, thus highlighting
-Mediterranean-derived waters. Use `handleFlags()` to discard questionable
-data, and use the accessor function `[[`.
+Mediterranean-derived waters. Use `handleFlags()` (see [using data-quality
+flags](flags.html)) to discard questionable data, and use the accessor function
+`[[`.
 
 **Exercise 5.** Plot dynamic height and geostrophic velocity across the Gulf
 Stream. (Hint: use the `swDynamicHeight()` function.)
@@ -854,8 +855,9 @@ dev.off()
 
 **Exercise 4.** Draw a $T$-$S$ diagram for the section data, using black
 symbols to the east of 30W and gray symbols to the west, thus highlighting
-Mediterranean-derived waters.  Use `handleFlags()` to discard questionable
-data, and use the accessor function `[[`.
+Mediterranean-derived waters.  Use `handleFlags()` (see [using data-quality
+flags](flags.html)) to discard questionable data, and use the accessor function
+`[[`.
 
 We will use the Gibbs SeaWater system, so `as.ctd()` needs location information.
 
