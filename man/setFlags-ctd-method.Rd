@@ -5,8 +5,8 @@
 \alias{setFlags,ctd-method}
 \title{Set data-quality flags within a ctd object}
 \usage{
-\S4method{setFlags}{ctd}(object, name = NULL, i = NULL, value = 4,
-  initial = 2, debug = getOption("oceDebug"))
+\S4method{setFlags}{ctd}(object, name = NULL, i = NULL, value = NULL,
+  initial = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An oce object.}

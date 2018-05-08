@@ -609,7 +609,7 @@ setMethod("setFlags",
               setFlagsInternal(object, name, i, value, initial, debug)
           })
 
-setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, initial=NULL,  debug=getOption("oceDebug"))
+setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, initial=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "setFlagsInternal(object, name='", name, "', value=", value,
              ", initial=", initial, ", i=", paste(i, collapse=" "),
@@ -620,25 +620,32 @@ setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, initial=NULL
     if (is.null(name))
         stop("must supply a name")
     if (length(name) > 1)
-        stop("must specify one 'name' at a time") # maybe this should be a warning
+        stop("must specify one 'name' at a time") # FIXME: consider extending this (f2f CR 20180508)
     if (!(name %in% names(object@data)))
         stop("object data slot does not contain '", name, "'; try one of: ",
              paste(names(object@data), collapse=" "))
-    if (is.null(i))
-        stop("must supply 'i'")
-    if (is.null(value))
-        stop("must supply 'value'")
-    ##> if (!is.null(scheme)) {
-    ##>     if (is.null(res@metadata$flagsScheme))
-    ##>         res@metadata$flagsScheme <- scheme
-    ##>     else
-    ##>         warning("ignoring 'scheme' because already set to: ",
-    ##>                 as.character(deparse(scheme)))
-    ##> }
-    ##> ## Warn if supplying 'initial' when it won't be used.
-    ##> if (!is.null(object@metadata$flags[[name]]) && !is.null(initial))
-    ##>     warning("ignoring 'initial' because the object already has a flag for '", name, "'")
-    ## Demand that 'initial' be supplied when it is needed.
+    ## Handle interactions between terms.
+    if (is.null(i)) {
+        if (!is.null(value))
+            stop("must not supply 'value' unless 'i' is supplied")
+        if (is.null(initial))
+            stop("must supply 'i' to set a flag, or 'initial' to initialize one")
+    }
+    if (is.null(value) && !is.null(initial))
+        stop("must supply 'value' unless 'initial' is supplied")
+    ## FIXME: check the above for all possibilities ... complicated!
+    if (is.null(i) && is.null(value) && !is.null(initial)) {
+        message("FIXME: handle the initialization-only case (R/AllClass.R near line 638)")
+        if (is.character(initial)) {
+            if (!("flagScheme" %in% names(object@metadata)))
+                stop("'initial' cannot be a character value unless setFlagScheme() has been called")
+            message("FIXME: handle the char 'initial' case")
+        } else {
+            message("FIXME: handle the numerical 'initial' case")
+        }
+        stop("FIXME: code for 'initial'-only case!")
+    }
+
     if (is.null(object@metadata$flags[[name]]) && is.null(initial))
         stop("must give 'initial' to initialize flags for '", name, "'")
     ## Done with basic tests.

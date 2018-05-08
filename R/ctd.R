@@ -289,10 +289,10 @@ setMethod("handleFlags",
 #' @family things related to \code{ctd} data
 setMethod("setFlags",
           c(object="ctd", name="ANY", i="ANY", value="ANY", initial="ANY", debug="ANY"),
-          function(object, name=NULL, i=NULL, value=4, initial=2, debug=getOption("oceDebug")) {
+          function(object, name=NULL, i=NULL, value=NULL, initial=NULL, debug=getOption("oceDebug")) {
               oceDebug(debug, "setFlags,ctd-method name=", name, ", i, value=", value, ", initial=", initial, "\n")
-              if (is.null(i) || (!is.vector(i) && !is.function(i)))
-                  stop("must supply 'i', a vector or a function returning a vector")
+              if (is.null(initial) && (is.null(i) || (!is.vector(i) && !is.function(i))))
+                  stop("'i' must be a vector or a function returning a vector")
               res <- setFlagsInternal(object, name, i, value, initial, debug-1)
               res
           })
