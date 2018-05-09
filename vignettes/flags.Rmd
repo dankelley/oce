@@ -28,40 +28,30 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
 **Abstract.** This vignette explains the basics of working with data-quality
-flags in oce, with particular application to hydrographic data.  The The goal
-is to sketch the workflow, on the expectation that readers will consult the
-package documentation to learn details of the various functions mentioned, and
-that they will consult [the main oce vignette](oce.html) for general
-information about oce. As in the related [vignette about working with adp
-data](adp.html), the material is organized to reflect typical workflow.
-
-**Colophon.**
-The sample code provided in this vignette all relies on the oce package, so
-the first step in following along is to load it:
+flags in oce. As in the vignette about working with [adp data](adp.html), the
+material is organized to reflect typical workflow.  See [the main oce
+vignette](oce.html) for general information about oce.  The sample code
+provided in this vignette all relies on the oce package, so the first step in
+following along is to load it:
 ```{r}
 library(oce)
 ```
-
-The green text below the call to the `library()` function is the output of
-doing that call.  Output is shown for many of the code chunks provided in this
-vignette, but not in cases of voluminous output, or for functions
-that use data not provided with oce.
-
 
 # Overview
 
 ## Flag conventions
 
-Hydrographic and some other data may be accompanied by data-quality flags.  For
-example, salinity is subject to a variety of instrumental and other errors, and
-so archives of its value commonly contain quality flags.  These flags may
-derive from statistical checks, from the judgement of a human analyst, or a
-combination of the two.
+Hydrographic and some other data may be accompanied by data-quality flags. The
+idea is to retain the data (not for example setting values to `NA`), but to
+provide a separate indication of the trustworthiness of the values.  Those
+indications take the form of data-quality flags, often in numerical form, that
+are paired with the data, so that each datum has an associated flag value.
+Those values result from statistical analysis, from the judgement of a human
+analyst, or from a combination of the two.
 
-Some flags are in the form of numerical values (typically integers) but others
-may be expressed as character strings. A frustrating aspect of oceanographic
-analysis is that different data archiving agencies employ different systems for
-flags. For example, the [World Hydrographic
+A frustrating aspect of oceanographic analysis is that different data archiving
+agencies employ different systems for flags. For example, the [World
+Hydrographic
 Programme](https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm)
 designates good bottle/CTD data with a flag value of 2, whereas the [World
 Ocean
@@ -97,13 +87,13 @@ for any purpose that comes to mind. Simple cases may be handled with the oce
 function named [`handleFlags`](../help/handleFlags), which is set up to respond
 to particular flag values with particular actions.  It has reasonable defaults
 for different data types, and it can detect a flag scheme that has been set up
-with [`setFlagsScheme`](../help/initializeFlagScheme). The default action of setting
-the ``bad'' flagged data to `NA` may suffice in many plotting or analysis
-situations.
+with [`setFlagsScheme`](../help/initializeFlagScheme). The default action of
+setting the data that have been flagged as bad to the `NA` value may suffice in
+many plotting or analysis situations.
 
 # Sample working procedure
 
-## CTD profile data: range checks
+## CTD range checks
 
 (This section is an expansion of Example 1 in the
 [`setFlags,ctd-method`](../help/setFlags,ctd-method) documentation.)
@@ -115,20 +105,20 @@ data(ctdRaw)
 ```
 
 that contains some clearly anomolous values that are revealed clearly
-in a summary plot:
-```{r}
+in a summary plot (Figure 1):
+```{r fig.cap="Figure 1. Summary plot for raw CTD profile."}
 plot(ctdRaw)
 ```
 
-Although [`ctdTrim`](../help/ctdTrim) removes most of the anomolous data by
-examining the variation of the pressure signal over time, it may also be of
-interest to see how well simple range checks can perform in cleaning up the
-data. Salinity certainly cannot be negative, but in an oceanographic setting it
-is common to relax that criterion somewhat, perhaps insisting that Absolute
-Salinity $S_A$ exceed $25$g/kg. This value might work in other situations as
-well, and the same could be said of an upper limit of $40$g/kg. Similarly, it
-might make sense to bound temperature between, say, $-2^\circ$C and $40^\circ$C
-for application throughout much of the world ocean.
+As Figure 1 shows, [`ctdTrim`](../help/ctdTrim) removes most of the anomolous
+data by examining the variation of the pressure signal over time, it may also
+be of interest to see how well simple range checks can perform in cleaning up
+the data. Salinity certainly cannot be negative, but in an oceanographic
+setting it is common to relax that criterion somewhat, perhaps insisting that
+Absolute Salinity $S_A$ exceed $25$g/kg. This value might work in other
+situations as well, and the same could be said of an upper limit of $40$g/kg.
+Similarly, it might make sense to bound temperature between, say, $-2^\circ$C
+and $40^\circ$C for application throughout much of the world ocean.
 
 These criteria can be supplied to [`setFlags`](../help/setFlags) in various
 ways, but the simplest is to create logical vectors, e.g.
@@ -152,8 +142,8 @@ that the flag operations will not alter `ctdRaw`:
 qc <- ctdRaw
 ```
 
-Work flow is best documented if a flag scheme is established, and the ``WHP CTD
-exchange'' scheme is a reasonable choice; using
+Work flow is best documented if a flag scheme is established, and the "WHP CTD
+exchange" scheme is a reasonable choice; using
 ```{r}
 qc <- initializeFlagScheme(qc, "WHP CTD exchange")
 ```
@@ -167,7 +157,7 @@ qc <- initializeFlags(qc, "salinity", "acceptable")
 qc <- initializeFlags(qc, "temperature", "acceptable")
 ```
 
-to create storage, and initialize all entries to the ``acceptable'' value
+to create storage, and initialize all entries to the `"acceptable"` value
 (which, for this flag scheme, is the number `2`).  Once storage has been
 initialized for a given variable, further calls to
 [`initializeFlags`](../help/initializeFlags) will have no effect, apart from a
@@ -207,28 +197,27 @@ handled, and how many bad salinities and temperatures were flagged.
 If `qc` is plotted with `plot(qc)`, the results will match those of
 `plot(ctdRaw)`. This is because setting flags has no effect on plots, because
 it alters *flags* but not *data*. One more step is required to test whether
-this procedure has cleaned up the data significantly: we must ``handle'' the
+this procedure has cleaned up the data significantly: we must "handle" the
 flags, using
 ```{r}
 qch <- handleFlags(qc)
 ```
 
-Comparing the summary plot for `qch`, constructed with
-```{r}
+Comparing Figure 1 with the summary plot for `qch` (Figure 2), constructed with
+```{r fig.cap="Figure 2. Summary plot for range-checked CTD profile."}
 plot(qch)
 ```
 
-with the original summary plot for `ctdRaw` shows significant improvements. The
-downcast and the upcast can be seen quite clearly now, although there appears
-to be an issue of low salinity at the turnaround point.  Setting a flag for
-pressure increase with time will isolate the downcast somewhat, although some
-smoothing will be required.  Another issue related to the path of the
-instrument is that it may have been held below the surface for a while to
-equilibrate. Again, a flag could be set up to remove such data. However, it
-ought to be noted that [`ctdTrim`](../help/ctrTrim) can be used to address
-issues relating to instrument movement.
+shows significant improvements. The downcast and the upcast can be seen quite
+clearly now, although there appears to be an issue of low salinity at the
+turnaround point.  Setting a flag for pressure increase with time will isolate
+the downcast somewhat, although some smoothing will be required.  Another issue
+related to the path of the instrument is that it may have been held below the
+surface for a while to equilibrate. Again, a flag could be set up to remove
+such data. However, it ought to be noted that [`ctdTrim`](../help/ctrTrim) can
+be used to address issues relating to instrument movement.
 
-## CTD profile data: interactive editing
+## Interactive editing of CTD profiles
 
 (This section is an expansion of Example 2 in the
 [`setFlags,ctd-method`](../help/setFlags,ctd-method) documentation.)
@@ -280,13 +269,13 @@ indicate bad data. Another button might be provided to undo such operations, or
 to show the original data for comparison. The point is that a wide variety of
 flag operations are handled very easily in R, with oce.
 
-## Section data
+## Hydrographic sections
 
 The flag-handling functions work for a variety of oce objects. For example,
 sections, which are built up from a sequence of ctd profiles, are handled
 easily with functions of the *same names* as for the ctd case.
 
-As a simple example, the following shows how to clean up the ``A03'' Atlantic
+As a simple example, the following shows how to clean up the "A03" Atlantic
 section that is provided with oce.
 
 ```{r}
@@ -305,7 +294,7 @@ archived hydrographic data sets, are the result of a multifaceted inspection
 scheme that is more demanding and useful than simple range checks.
 
 
-## Acoustic-Doppler profiler data
+# Acoustic-Doppler profiler data
 
 By now, the reader should be able to understand the following use of
 data-quality flags for the `adp` dataset. Note that there is only a small
@@ -326,14 +315,13 @@ for (k in 1:3)
 adpQC2 <- initializeFlags(adp, "v", 2)
 adpQC2 <- setFlags(adpQC2, "v", i2, 3)
 adpClean2 <- handleFlags(adpQC2, flags=list(3), actions=list("NA"))
-## Top: original, bottom: altered
 par(mfrow=c(2,1))
-plot(adp, which="u1")
-plot(adpClean2, which="u1")
+plot(adp, which="u1")                  # original
+plot(adpClean2, which="u1")            # altered
 ```
 
 Note, in the above, that [`initializeFlagScheme`](../help/initializeFlagScheme)
 has not been used, because the author is unaware of any common notation for
 such data. The values used for `G` and `V4` were provided by colleagues at the
-Bedford Institute of Oceanography, and may be in use by USGS also.
+Bedford Institute of Oceanography.
 

@@ -8,7 +8,7 @@ library(oce)
 library(oce)
 data(ctdRaw)
 
-## ------------------------------------------------------------------------
+## ----fig.cap="Figure 1. Summary plot for raw CTD profile."---------------
 plot(ctdRaw)
 
 ## ------------------------------------------------------------------------
@@ -42,7 +42,7 @@ qc <- setFlags(qc, "temperature", badT, value="bad")
 ## ------------------------------------------------------------------------
 qch <- handleFlags(qc)
 
-## ------------------------------------------------------------------------
+## ----fig.cap="Figure 2. Summary plot for range-checked CTD profile."-----
 plot(qch)
 
 ## ----eval=FALSE----------------------------------------------------------
@@ -86,8 +86,7 @@ for (k in 1:3)
 adpQC2 <- initializeFlags(adp, "v", 2)
 adpQC2 <- setFlags(adpQC2, "v", i2, 3)
 adpClean2 <- handleFlags(adpQC2, flags=list(3), actions=list("NA"))
-## Top: original, bottom: altered
 par(mfrow=c(2,1))
-plot(adp, which="u1")
-plot(adpClean2, which="u1")
+plot(adp, which="u1")                  # original
+plot(adpClean2, which="u1")            # altered
 
