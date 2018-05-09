@@ -2224,8 +2224,8 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             abbreviated <- bquote("T"*.(L)*degree*"C"*.(R))
         } else {
             ##message("unit given for temperature")
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote("T"*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote("T"*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "conductivity mS/cm") {
         var <- gettext("Conductivity", domain="R-oce")
@@ -2239,7 +2239,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
         ## unitless form
         var <- gettext("Conductivity Ratio", domain="R-oce")
         unit <- gettext("unitless", domain="R-oce")
-        full <- bquote(.(var)*.(L)*.(unit)*.(R))
+        full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
         abbreviated <- bquote("C")
     } else if (item == "conservative temperature") {
         var <- gettext("Conservative Temperature", domain="R-oce")
@@ -2279,8 +2279,8 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var)*.(L)*Tu*.(R))
             abbreviated <- bquote(phantom()^3*H*.(L)*Tu*.(R))
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote(phantom()^3*H*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(phantom()^3*H*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "nitrate") {
         var <- gettext("Nitrate", domain="R-oce")
@@ -2288,8 +2288,8 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
             abbreviated <- bquote(N*O[3]*.(L)*mu*mol/kg*.(R))
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote(N*O[3]*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(N*O[3]*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "nitrite") {
         var <- gettext("Nitrite", domain="R-oce")
@@ -2297,8 +2297,8 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
             abbreviated <- bquote(N*O[2]*.(L)*mu*mol/kg*.(R))
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote(N*O[2]*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(N*O[2]*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "oxygen") {
         var <- gettext("oxygen", domain="R-oce")
@@ -2306,8 +2306,8 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var))
             abbreviated <- bquote(O[2])
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote(O[2]*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(O[2]*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "oxygen saturation") {
         var <- gettext("Oxygen saturation", domain="R-oce")
@@ -2331,8 +2331,8 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
             abbreviated <- bquote(P*O[4]*.(L)*mu*mol/kg*.(R))
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote(P*O[4]*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(P*O[4]*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "silicate") {
         var <- gettext("Silicate", domain="R-oce")
@@ -2340,8 +2340,8 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
             abbreviated <- bquote(Si*O[4]*.(L)*mu*mol/kg*.(R))
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote(Si*O[4]*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(Si*O[4]*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "fluorescence") {
         var <- gettext("Fluorescence", domain="R-oce")
@@ -2350,8 +2350,8 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var))
             abbreviated <- full
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote("Fluor."*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote("Fluor."*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "spice") {
         var <- gettext("Spice", domain="R-oce")
@@ -2359,7 +2359,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             full <- bquote(.(var)*.(L)*kg/m^3*.(R))
             abbreviated <- full
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- full
         }
     } else if (item == "S") {
@@ -2422,7 +2422,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
     } else if (item == "frequency cph") {
         var <- gettext("Frequency", domain="R-oce")
         unit <- gettext("cph", domain="R-oce")
-        abbreviated <- full <- bquote(.(var)*.(L)*.(unit)*.(R))
+        abbreviated <- full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
     } else if (item == "spectral density m2/cph") {
         var <- gettext("Spectral density", domain="R-oce")
         full <- bquote(.(var)*.(L)*m^2/cph*.(R))
@@ -2437,7 +2437,7 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
             abbreviated <- full
         } else {
             oceDebug(debug, "unit \"", unit, "\" given\n")
-            full <- bquote(.(item)*.(L)*.(unit)*.(R))
+            full <- bquote(.(item)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- full
         }
     }
