@@ -2,8 +2,6 @@
 ## a patch.
 library(oce)
 
-context("met")
-
 test_that("as.met() works", {
           if (FALSE) {
               if (!require(canadaHCD))

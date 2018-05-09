@@ -5,27 +5,30 @@ test_that("ctd flag scheme setup", {
           data(ctd)
           a <- ctd
           ## Newly-devised scheme
-          a <- setFlagScheme(a, list(unknown=1, good=2, bad=3))
+          a <- initializeFlagScheme(a, list(unknown=1, good=2, bad=3))
           expect_equal(a[["flagScheme"]], list(unknown=1, good=2, bad=3))
           expect_equal(a[["flagSchemeName"]], "")
           b <- ctd
           ## Can we provide known schemes?
-          b <- setFlagScheme(b, "WHP CTD exchange")
+          b <- initializeFlagScheme(b, "WHP CTD exchange")
           expect_equal(b[["flagScheme"]],
                       list(uncalibrated=1, acceptable=2, questionable=3, bad=4, unreported=5,
                            interpolated=6, despiked=7, unsampled=9))
           expect_equal(b[["flagSchemeName"]], "WHP CTD exchange")
           ## Can we detect unknown schemes?
-          expect_error(setFlagScheme(ctd, "unknown"), "unrecognized scheme")
+          expect_error(initializeFlagScheme(ctd, "unknown"), "unrecognized scheme")
 })
 
 test_that("ctd flag scheme action", {
           data(ctd)
           a <- ctd
-          a <- setFlags(a, "temperature", 1:3, 4, 2)
+          a <- initializeFlags(a, "temperature", 2) # 2="acceptable
+          expect_warning(initializeFlags(a, "temperature", 2), "cannot re-initialize flags")
+          a <- setFlags(a, "temperature", 1:3, 4) # 4="bad"
           b <- ctd
-          b <- setFlagScheme(b, "WHP CTD exchange")
-          b <- setFlags(b, "temperature", 1:3, "bad", "acceptable")
+          b <- initializeFlagScheme(b, "WHP CTD exchange")
+          b <- initializeFlags(b, "temperature", "acceptable")
+          b <- setFlags(b, "temperature", 1:3, "bad")
           expect_equal(a[["temperatureFlag"]], b[["temperatureFlag"]])
 })
 
@@ -133,6 +136,7 @@ test_that("does subset() work on odf flags? (issue 1410)", {
 })
 
 test_that("does subset() work on adp flags? (issue 1410)", {
+          data(adp)
           v <- adp[["v"]]
           ## I'm fixing this in the 'develop' branch, which as of
           ## the moment has not merged the 'dk' branch's ability to

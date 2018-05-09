@@ -82,7 +82,8 @@ G <- 25
 V4 <- 0.45
 for (k in 1:3)
     i2[,,k] <- ((g[,,k]+g[,,4]) < G) | (v[,,4] > V4)
-adpQC <- setFlags(adp, "v", i2, 3, 2)
+adpQC <- initializeFlags(adp, "v", 2)
+adpQC <- setFlags(adpQC, "v", i2, 3)
 adpClean <- handleFlags(adpQC, flags=list(3), actions=list("NA"))
 adpClean <- handleFlags(adp)
 # Demonstrate (subtle) change graphically.
@@ -96,9 +97,12 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,argo-met
   \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}},
-  \code{\link{setFlagScheme,ctd-method}},
-  \code{\link{setFlagScheme,oce-method}},
-  \code{\link{setFlagScheme}},
+  \code{\link{initializeFlagScheme,ctd-method}},
+  \code{\link{initializeFlagScheme,oce-method}},
+  \code{\link{initializeFlagScheme}},
+  \code{\link{initializeFlags,adp-method}},
+  \code{\link{initializeFlags,oce-method}},
+  \code{\link{initializeFlags}},
   \code{\link{setFlags,adp-method}},
   \code{\link{setFlags,ctd-method}},
   \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}

@@ -243,7 +243,7 @@ setMethod("handleFlags",
 
 #' @templateVar class ctd
 #'
-#' @templateVar note Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}). Note that \code{value} defaults to 4, the WHP-exchange code for a bad CTD measurement, and \code{initial} defaults to 2, the code for an acceptable CTD measurement.  Setting \code{scheme} to \code{"WHP CTD exchange"} (the default) is the same as setting it to \code{list(uncalibrated=1, acceptable=2, questionable=3, bad=4, unreported=5, interpolated=6, despiked=7, unsampled=9)}.
+#' @templateVar note Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}).
 #'
 #' @template setFlagsTemplate
 #'
@@ -253,10 +253,16 @@ setMethod("handleFlags",
 #' data(ctdRaw)
 #' ## Salinity and temperature range checks
 #' qc <- ctdRaw
+#' # Initialize flags to 2, meaning good data in the default
+#' # scheme for handleFlags(ctd).
+#' qc <- initializeFlags(qc, "salinity", 2)
+#' qc <- initializeFlags(qc, "temperature", 2)
+#' # Flag bad salinities as 4
 #' oddS <- with(qc[["data"]], salinity < 25 | 40 < salinity)
-#' qc <- setFlags(qc, name="salinity", i=oddS, value=4, initial=2)
+#' qc <- setFlags(qc, name="salinity", i=oddS, value=4)
+#' # Flag bad temperatures as 4
 #' oddT <- with(qc[["data"]], temperature < -2 | 40 < temperature)
-#' qc <- setFlags(qc, name="temperature", i=oddT, value=4, initial=2)
+#' qc <- setFlags(qc, name="temperature", i=oddT, value=4)
 #' # Compare results in TS space
 #' par(mfrow=c(2, 1))
 #' plotTS(ctdRaw)
@@ -268,7 +274,8 @@ setMethod("handleFlags",
 #' options(eos="gsw")
 #' data(ctd)
 #' qc <- ctd
-#' qc <- setFlagScheme(qc, "WHP CTD exchange")
+#' qc <- initializeFlagScheme(qc, "WHP CTD exchange")
+#' qc <- initializeFlags(qc, "salinity", "acceptable")
 #' Sspan <- diff(range(qc[["SA"]]))
 #' Tspan <- diff(range(qc[["CT"]]))
 #' n <- length(qc[["SA"]])
@@ -280,7 +287,7 @@ setMethod("handleFlags",
 #'     if (xy$x > par("usr")[2])
 #'         break
 #'     i <- which.min(abs(qc[["SA"]] - xy$x)/Sspan + abs(qc[["CT"]] - xy$y)/Tspan)
-#'     qc <- setFlags(qc, "salinity", i=i, value="bad", initial="acceptable")
+#'     qc <- setFlags(qc, "salinity", i=i, value="bad")
 #'     qc <- handleFlags(qc)
 #'     plotTS(ctdQC, type="o")
 #' }
@@ -288,19 +295,21 @@ setMethod("handleFlags",
 #'
 #' @family things related to \code{ctd} data
 setMethod("setFlags",
-          c(object="ctd", name="ANY", i="ANY", value="ANY", initial="ANY", debug="ANY"),
-          function(object, name=NULL, i=NULL, value=NULL, initial=NULL, debug=getOption("oceDebug")) {
-              oceDebug(debug, "setFlags,ctd-method name=", name, ", i, value=", value, ", initial=", initial, "\n")
-              if (is.null(initial) && (is.null(i) || (!is.vector(i) && !is.function(i))))
+          c(object="ctd", name="ANY", i="ANY", value="ANY", debug="ANY"),
+          function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
+              oceDebug(debug, "setFlags,ctd-method name=", name, ", i, value=", value, "\n")
+              if (is.null(i))
+                 stop("must supply i")
+              if (!is.vector(i) && !is.function(i))
                   stop("'i' must be a vector or a function returning a vector")
-              res <- setFlagsInternal(object, name, i, value, initial, debug-1)
+              res <- setFlagsInternal(object, name, i, value, debug-1)
               res
           })
 
 #' @templateVar class ctd
 #' @templateVar details If \code{scheme} is \code{"WHP CTD exchange"}, then the stored scheme will be \code{list(uncalibrated=1, acceptable=2, questionable=3, bad=4, unreported=5, interpolated=6, despiked=7, unsampled=9)}.
-#' @template setFlagSchemeTemplate
-setMethod("setFlagScheme",
+#' @template initializeFlagSchemeTemplate
+setMethod("initializeFlagScheme",
           signature=c(object="ctd", scheme="ANY", debug="ANY"),
           definition=function(object, scheme=NULL, debug=getOption("oceDebug")) {
               if (is.null(scheme))
@@ -315,12 +324,12 @@ setMethod("setFlagScheme",
                       stop("unrecognized scheme=\"", scheme, "\"; only \"WHP CTD exchange\" is allowed")
                   }
               } else if (is.list(scheme)) {
-                  ;
+                  schemeName <- ""
               } else {
                   stop("'scheme' must be either a list or \"WHP CTD exchange\"")
               }
-              object@metadata$flagSchemeName <- schemeName
               object@metadata$flagScheme <- scheme
+              object@metadata$flagSchemeName <- schemeName
               object
           })
 

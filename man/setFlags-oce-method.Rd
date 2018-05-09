@@ -6,7 +6,7 @@
 \title{Set data-quality flags within a oce object}
 \usage{
 \S4method{setFlags}{oce}(object, name = NULL, i = NULL, value = NULL,
-  initial = NULL, debug = getOption("oceDebug"))
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An oce object.}
@@ -19,10 +19,6 @@ general rules and \dQuote{Details} for rules for \code{\link{oce-class}}
 objects.}
 
 \item{value}{The value to be inserted in the flag.}
-
-\item{initial}{A flag value to be used to initialize the flag structure, which
-will be done if \code{object} lacks an entry for flags of the indicated
-\code{name}.}
 
 \item{debug}{Integer set to 0 for quiet action or to 1 for some debugging.}
 }
@@ -75,9 +71,12 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,adp-meth
   \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}},
-  \code{\link{setFlagScheme,ctd-method}},
-  \code{\link{setFlagScheme,oce-method}},
-  \code{\link{setFlagScheme}},
+  \code{\link{initializeFlagScheme,ctd-method}},
+  \code{\link{initializeFlagScheme,oce-method}},
+  \code{\link{initializeFlagScheme}},
+  \code{\link{initializeFlags,adp-method}},
+  \code{\link{initializeFlags,oce-method}},
+  \code{\link{initializeFlags}},
   \code{\link{setFlags,adp-method}},
   \code{\link{setFlags,ctd-method}}, \code{\link{setFlags}}
 }

@@ -312,7 +312,8 @@ setMethod(f="initialize",
 #' V4 <- 0.45
 #' for (k in 1:3)
 #'     i2[,,k] <- ((g[,,k]+g[,,4]) < G) | (v[,,4] > V4)
-#' adpQC <- setFlags(adp, "v", i2, 3, 2)
+#' adpQC <- initializeFlags(adp, "v", 2)
+#' adpQC <- setFlags(adpQC, "v", i2, 3)
 #' adpClean <- handleFlags(adpQC, flags=list(3), actions=list("NA"))
 #' adpClean <- handleFlags(adp)
 #' # Demonstrate (subtle) change graphically.
@@ -341,6 +342,22 @@ setMethod("handleFlags",
           })
 
 #' @templateVar class adp
+#' @templateVar details There are no agreed-upon flag schemes for adp data.
+#' @template initializeFlagsTemplate
+setMethod("initializeFlags",
+          c(object="adp", name="ANY", value="ANY", debug="ANY"),
+          function(object, name=NULL, value=NULL, debug=getOption("oceDebug")) {
+              oceDebug(debug, "setFlags,adp-method name=", name, ", value=", value, "\n")
+              if (is.null(name))
+                  stop("must supply 'name'")
+              if (name != "v")
+                  stop("the only flag that adp objects can handle is for \"v\"")
+              res <- initializeFlagsInternal(object, name, value, debug-1)
+              res
+          })
+
+
+#' @templateVar class adp
 #' @templateVar note The only flag that may be set is \code{v}, for the array holding velocity. See \dQuote{Indexing rules}, noting that adp data are stored in 3D arrays; Example 1 shows using a data frame for \code{i}, while Example 2 shows using an array.
 #' @template setFlagsTemplate
 #' @examples
@@ -349,7 +366,8 @@ setMethod("handleFlags",
 #'
 #' ## Example 1: flag first 10 samples in a mid-depth bin of beam 1
 #' i1 <- data.frame(1:20, 40, 1)
-#' adpQC <- setFlags(adp, "v", i1, 3, 2)
+#' adpQC <- initializeFlags(adp, "v", 2)
+#' adpQC <- setFlags(adpQC, "v", i1, 3)
 #' adpClean1 <- handleFlags(adpQC, flags=list(3), actions=list("NA"))
 #' par(mfrow=c(2, 1))
 #' ## Top: original, bottom: altered
@@ -365,7 +383,8 @@ setMethod("handleFlags",
 #' V4 <- 0.45
 #' for (k in 1:3)
 #'     i2[,,k] <- ((g[,,k]+g[,,4]) < G) | (v[,,4] > V4)
-#' adpQC2 <- setFlags(adp, "v", i2, 3, 2)
+#' adpQC2 <- initializeFlags(adp, "v", 2)
+#' adpQC2 <- setFlags(adpQC2, "v", i2, 3)
 #' adpClean2 <- handleFlags(adpQC2, flags=list(3), actions=list("NA"))
 #' ## Top: original, bottom: altered
 #' plot(adp, which="u1")
@@ -373,13 +392,13 @@ setMethod("handleFlags",
 #'
 #' @family things related to \code{adp} data
 setMethod("setFlags",
-          c(object="adp", name="ANY", i="ANY", value="ANY", initial="ANY", debug="ANY"),
-          function(object, name=NULL, i=NULL, value=NULL, initial=NULL, debug=getOption("oceDebug")) {
+          c(object="adp", name="ANY", i="ANY", value="ANY", debug="ANY"),
+          function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
               if (is.null(name))
                   stop("must specify 'name'")
               if (name != "v")
                   stop("in adp objects, the only flag that can be set is for \"v\"")
-              setFlagsInternal(object, name, i, value, initial, debug-1)
+              setFlagsInternal(object, name, i, value, debug-1)
           })
 
 

@@ -3,8 +3,9 @@
 #' @description
 #' This function stores adds an item called \code{flagScheme} to the
 #' \code{metadata} slot. The purpose is both to document a flag scheme
-#' and to make it so that \code{setFlags} can specify flags by
-#' name, in addition to number. A generic function, it is
+#' and to make it so that \code{\link{initializeFlags}}
+#' and \code{\link{setFlags}} can specify flags by
+#' name, as opposed to number. A generic function, it is
 #' specialized for some classes via interpretation of the
 #' \code{scheme} argument (see \dQuote{Details}, for those
 #' object classes that have such specializations).

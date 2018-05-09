@@ -49,10 +49,6 @@
 #'
 #' @param value The value to be inserted in the flag.
 #'
-#' @param initial A flag value to be used to initialize the flag structure, which
-#' will be done if \code{object} lacks an entry for flags of the indicated
-#' \code{name}.
-#'
 #' @param debug Integer set to 0 for quiet action or to 1 for some debugging.
 #'
 #' @return An object with flags set as indicated.

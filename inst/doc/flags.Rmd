@@ -75,7 +75,7 @@ coded values may contradict more formal flags, when both are present.
 
 Data-quality flags are stored in the `flags` entry in the `metadata` slot of
 `oce` objects. This entry is a list, containing items with names corresponding
-to names of data elements that are stored in the `data` slot. 
+to names of data elements that are stored in the `data` slot.
 
 It is possible to inspect flags using e.g.
 \code{a[["metadata"]]\$flags\$salinity} to see flags corresponding to
@@ -84,10 +84,11 @@ e.g. \code{a[["salinityFlag"]]} returning the flags for the salinity data
 (which may in turn be retrieved with \code{a[["salinity"]]}).
 
 Although it is possible to set and alter flags directly, it is much better to
-use [`setFlags`](../help/setFlags), in order to avoid making mistakes, and also
-to record processing steps. It is also recommended to use
-[`setFlagScheme`](../help/setFlagScheme) first, which makes it possible
-to refer to flags by name, and not just number.
+use [`initializeFlags`](../help/initializeFlags) and
+[`setFlags`](../help/setFlags), in order to avoid making mistakes, and also to
+record processing steps. It is also recommended to use
+[`initializeFlagScheme`](../help/initializeFlagScheme) first, which makes it
+possible to refer to flags by name, and not just number.
 
 ## Handling flags
 
@@ -96,7 +97,7 @@ for any purpose that comes to mind. Simple cases may be handled with the oce
 function named [`handleFlags`](../help/handleFlags), which is set up to respond
 to particular flag values with particular actions.  It has reasonable defaults
 for different data types, and it can detect a flag scheme that has been set up
-with [`setFlagsScheme`](../help/setFlagScheme). The default action of setting
+with [`setFlagsScheme`](../help/initializeFlagScheme). The default action of setting
 the ``bad'' flagged data to `NA` may suffice in many plotting or analysis
 situations.
 
@@ -127,7 +128,7 @@ is common to relax that criterion somewhat, perhaps insisting that Absolute
 Salinity $S_A$ exceed $25$g/kg. This value might work in other situations as
 well, and the same could be said of an upper limit of $40$g/kg. Similarly, it
 might make sense to bound temperature between, say, $-2^\circ$C and $40^\circ$C
-for application throughout much of the world ocean.  
+for application throughout much of the world ocean.
 
 These criteria can be supplied to [`setFlags`](../help/setFlags) in various
 ways, but the simplest is to create logical vectors, e.g.
@@ -152,14 +153,41 @@ qc <- ctdRaw
 ```
 
 Work flow is best documented if a flag scheme is established, and the ``WHP CTD
-exchange'' scheme is a reasonable choice
+exchange'' scheme is a reasonable choice; using
 ```{r}
-qc <- setFlagScheme(qc, "WHP CTD exchange")
+qc <- initializeFlagScheme(qc, "WHP CTD exchange")
 ```
 
-after which the bad salinities are flagged with
+stores a note on the scheme in the `metadata` slot of `qc`. Importantly,
+however, it does *not* store any flag values. The next step is to initialize
+flag values. For example, to set up flag storage for salinity and
+temperature, use e.g.
 ```{r}
-qc <- setFlags(qc, "salinity", badS, value="bad", initial="acceptable")
+qc <- initializeFlags(qc, "salinity", "acceptable")
+qc <- initializeFlags(qc, "temperature", "acceptable")
+```
+
+to create storage, and initialize all entries to the ``acceptable'' value
+(which, for this flag scheme, is the number `2`).  Once storage has been
+initialized for a given variable, further calls to
+[`initializeFlags`](../help/initializeFlags) will have no effect, apart from a
+warning.
+
+Note that it is entirely possible to use
+[`initializeFlags`](../help/initializeFlags) with a numerical value for its
+third argument.  One advantage of using
+[`initializeFlagScheme`](../help/initializeFlagScheme) is that it clarifies
+code, but the bigger advantage is that it embeds the scheme within the object,
+so that a second analyst could examine it later and be clear on the meanings of
+the numerical codes. This is very important, because there is not much
+agreement within the oceanographic community on which flag scheme to use, for
+many data types (Argo being an exception).
+
+At this stage, individidual data can be flagged with
+[`setFlags`](../help/setFlags). This function can be called any number of
+times. Continuing along with our example, we may mark bad salinities with
+```{r}
+qc <- setFlags(qc, "salinity", badS, value="bad")
 ```
 
 We can see that the flag got inserted by using `summary(qc)`, but for brevity here
@@ -170,7 +198,7 @@ names(qc[["flags"]])
 
 Now, temperature flags may be inserted with
 ```{r}
-qc <- setFlags(qc, "temperature", badT, value="bad", initial="acceptable")
+qc <- setFlags(qc, "temperature", badT, value="bad")
 ```
 
 Readers ought to use `summary(qc)` to get more details of how flags were
@@ -190,9 +218,9 @@ Comparing the summary plot for `qch`, constructed with
 plot(qch)
 ```
 
-with the original summary plot for `ctdRaw` shows signficant improvements. The
+with the original summary plot for `ctdRaw` shows significant improvements. The
 downcast and the upcast can be seen quite clearly now, although there appears
-to be an issue of low salinity at the turnaround point.  Setting a flag for 
+to be an issue of low salinity at the turnaround point.  Setting a flag for
 pressure increase with time will isolate the downcast somewhat, although some
 smoothing will be required.  Another issue related to the path of the
 instrument is that it may have been held below the surface for a while to
@@ -222,7 +250,8 @@ to `NA` where these flags indicate bad data.
 options(eos="gsw")
 data(ctd)
 qc <- ctd
-qc <- setFlagScheme(qc, "WHP CTD exchange")
+qc <- initializeFlagScheme(qc, "WHP CTD exchange")
+qc <- initializeFlags(qc, "salinity", "acceptable")
 Sspan <- diff(range(qc[["SA"]]))
 Tspan <- diff(range(qc[["CT"]]))
 n <- length(qc[["SA"]])
@@ -234,7 +263,7 @@ for (i in seq_len(n)) {
     if (xy$x > par("usr")[2])
         break
     i <- which.min(abs(qc[["SA"]] - xy$x)/Sspan + abs(qc[["CT"]] - xy$y)/Tspan)
-    qc <- setFlags(qc, "salinity", i=i, value="bad", initial="acceptable")
+    qc <- setFlags(qc, "salinity", i=i, value="bad")
     qc <- handleFlags(qc)
     plotTS(qc, type="o")
 }
@@ -255,7 +284,7 @@ flag operations are handled very easily in R, with oce.
 
 The flag-handling functions work for a variety of oce objects. For example,
 sections, which are built up from a sequence of ctd profiles, are handled
-easily with functions of the *same names* as for the ctd case. 
+easily with functions of the *same names* as for the ctd case.
 
 As a simple example, the following shows how to clean up the ``A03'' Atlantic
 section that is provided with oce.
@@ -294,7 +323,8 @@ G <- 25                  # for percent-good field, named 'g'
 V4 <- 0.45               # for error velocity field, in beam 4
 for (k in 1:3)
     i2[,,k] <- ((g[,,k]+g[,,4]) < G) | (v[,,4] > V4)
-adpQC2 <- setFlags(adp, "v", i2, 3, 2)
+adpQC2 <- initializeFlags(adp, "v", 2)
+adpQC2 <- setFlags(adpQC2, "v", i2, 3)
 adpClean2 <- handleFlags(adpQC2, flags=list(3), actions=list("NA"))
 ## Top: original, bottom: altered
 par(mfrow=c(2,1))
@@ -302,8 +332,8 @@ plot(adp, which="u1")
 plot(adpClean2, which="u1")
 ```
 
-Note, in the above, that [`setFlagScheme`](../help/setFlagScheme) has not been
-used, because the author is unaware of any common notation for such data. The
-values used for `G` and `V4` were provided by colleagues at the Bedford
-Institute of Oceanography, and may be in use by USGS also.
+Note, in the above, that [`initializeFlagScheme`](../help/initializeFlagScheme)
+has not been used, because the author is unaware of any common notation for
+such data. The values used for `G` and `V4` were provided by colleagues at the
+Bedford Institute of Oceanography, and may be in use by USGS also.
 

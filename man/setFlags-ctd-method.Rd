@@ -6,7 +6,7 @@
 \title{Set data-quality flags within a ctd object}
 \usage{
 \S4method{setFlags}{ctd}(object, name = NULL, i = NULL, value = NULL,
-  initial = NULL, debug = getOption("oceDebug"))
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An oce object.}
@@ -19,10 +19,6 @@ general rules and \dQuote{Details} for rules for \code{\link{ctd-class}}
 objects.}
 
 \item{value}{The value to be inserted in the flag.}
-
-\item{initial}{A flag value to be used to initialize the flag structure, which
-will be done if \code{object} lacks an entry for flags of the indicated
-\code{name}.}
 
 \item{debug}{Integer set to 0 for quiet action or to 1 for some debugging.}
 }
@@ -61,7 +57,7 @@ See \dQuote{Details} for the particular case of
 \code{\link{ctd-class}} objects.
 }
 \details{
-Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}). Note that \code{value} defaults to 4, the WHP-exchange code for a bad CTD measurement, and \code{initial} defaults to 2, the code for an acceptable CTD measurement.  Setting \code{scheme} to \code{"WHP CTD exchange"} (the default) is the same as setting it to \code{list(uncalibrated=1, acceptable=2, questionable=3, bad=4, unreported=5, interpolated=6, despiked=7, unsampled=9)}.
+Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}).
 }
 \section{Caution}{
 
@@ -75,10 +71,16 @@ library(oce)
 data(ctdRaw)
 ## Salinity and temperature range checks
 qc <- ctdRaw
+# Initialize flags to 2, meaning good data in the default
+# scheme for handleFlags(ctd).
+qc <- initializeFlags(qc, "salinity", 2)
+qc <- initializeFlags(qc, "temperature", 2)
+# Flag bad salinities as 4
 oddS <- with(qc[["data"]], salinity < 25 | 40 < salinity)
-qc <- setFlags(qc, name="salinity", i=oddS, value=4, initial=2)
+qc <- setFlags(qc, name="salinity", i=oddS, value=4)
+# Flag bad temperatures as 4
 oddT <- with(qc[["data"]], temperature < -2 | 40 < temperature)
-qc <- setFlags(qc, name="temperature", i=oddT, value=4, initial=2)
+qc <- setFlags(qc, name="temperature", i=oddT, value=4)
 # Compare results in TS space
 par(mfrow=c(2, 1))
 plotTS(ctdRaw)
@@ -90,7 +92,8 @@ plotScan(handleFlags(qc))
 options(eos="gsw")
 data(ctd)
 qc <- ctd
-qc <- setFlagScheme(qc, "WHP CTD exchange")
+qc <- initializeFlagScheme(qc, "WHP CTD exchange")
+qc <- initializeFlags(qc, "salinity", "acceptable")
 Sspan <- diff(range(qc[["SA"]]))
 Tspan <- diff(range(qc[["CT"]]))
 n <- length(qc[["SA"]])
@@ -102,7 +105,7 @@ for (i in seq_len(n)) {
     if (xy$x > par("usr")[2])
         break
     i <- which.min(abs(qc[["SA"]] - xy$x)/Sspan + abs(qc[["CT"]] - xy$y)/Tspan)
-    qc <- setFlags(qc, "salinity", i=i, value="bad", initial="acceptable")
+    qc <- setFlags(qc, "salinity", i=i, value="bad")
     qc <- handleFlags(qc)
     plotTS(ctdQC, type="o")
 }
@@ -115,9 +118,12 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,adp-meth
   \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}},
-  \code{\link{setFlagScheme,ctd-method}},
-  \code{\link{setFlagScheme,oce-method}},
-  \code{\link{setFlagScheme}},
+  \code{\link{initializeFlagScheme,ctd-method}},
+  \code{\link{initializeFlagScheme,oce-method}},
+  \code{\link{initializeFlagScheme}},
+  \code{\link{initializeFlags,adp-method}},
+  \code{\link{initializeFlags,oce-method}},
+  \code{\link{initializeFlags}},
   \code{\link{setFlags,adp-method}},
   \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
 

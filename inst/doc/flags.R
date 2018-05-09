@@ -24,16 +24,20 @@ bad <- (S < 25 | 40 < S) || (T < -2 | 40 < T)
 qc <- ctdRaw
 
 ## ------------------------------------------------------------------------
-qc <- setFlagScheme(qc, "WHP CTD exchange")
+qc <- initializeFlagScheme(qc, "WHP CTD exchange")
 
 ## ------------------------------------------------------------------------
-qc <- setFlags(qc, "salinity", badS, value="bad", initial="acceptable")
+qc <- initializeFlags(qc, "salinity", "acceptable")
+qc <- initializeFlags(qc, "temperature", "acceptable")
+
+## ------------------------------------------------------------------------
+qc <- setFlags(qc, "salinity", badS, value="bad")
 
 ## ------------------------------------------------------------------------
 names(qc[["flags"]])
 
 ## ------------------------------------------------------------------------
-qc <- setFlags(qc, "temperature", badT, value="bad", initial="acceptable")
+qc <- setFlags(qc, "temperature", badT, value="bad")
 
 ## ------------------------------------------------------------------------
 qch <- handleFlags(qc)
@@ -45,7 +49,8 @@ plot(qch)
 #  options(eos="gsw")
 #  data(ctd)
 #  qc <- ctd
-#  qc <- setFlagScheme(qc, "WHP CTD exchange")
+#  qc <- initializeFlagScheme(qc, "WHP CTD exchange")
+#  qc <- initializeFlags(qc, "salinity", "acceptable")
 #  Sspan <- diff(range(qc[["SA"]]))
 #  Tspan <- diff(range(qc[["CT"]]))
 #  n <- length(qc[["SA"]])
@@ -57,7 +62,7 @@ plot(qch)
 #      if (xy$x > par("usr")[2])
 #          break
 #      i <- which.min(abs(qc[["SA"]] - xy$x)/Sspan + abs(qc[["CT"]] - xy$y)/Tspan)
-#      qc <- setFlags(qc, "salinity", i=i, value="bad", initial="acceptable")
+#      qc <- setFlags(qc, "salinity", i=i, value="bad")
 #      qc <- handleFlags(qc)
 #      plotTS(qc, type="o")
 #  }
@@ -78,7 +83,8 @@ G <- 25                  # for percent-good field, named 'g'
 V4 <- 0.45               # for error velocity field, in beam 4
 for (k in 1:3)
     i2[,,k] <- ((g[,,k]+g[,,4]) < G) | (v[,,4] > V4)
-adpQC2 <- setFlags(adp, "v", i2, 3, 2)
+adpQC2 <- initializeFlags(adp, "v", 2)
+adpQC2 <- setFlags(adpQC2, "v", i2, 3)
 adpClean2 <- handleFlags(adpQC2, flags=list(3), actions=list("NA"))
 ## Top: original, bottom: altered
 par(mfrow=c(2,1))

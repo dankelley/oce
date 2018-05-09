@@ -7,7 +7,7 @@
 \title{Plot Echosounder Data}
 \usage{
 \S4method{plot}{echosounder}(x, which = 1, beam = "a", newx, xlab, ylab,
-  xlim, ylim, zlim, type = "l", col = oce.colorsJet, lwd = 2,
+  xlim, ylim, zlim, type = "l", col = oceColorsJet, lwd = 2,
   despike = FALSE, drawBottom, ignore = 5, drawTimeRange = FALSE,
   drawPalette = TRUE, radius, coastline, mgp = getOption("oceMgp"),
   mar = c(mgp[1] + 1, mgp[1] + 1, mgp[1] + 1, mgp[1] + 1), atTop, labelsTop,
