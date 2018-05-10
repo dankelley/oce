@@ -2349,7 +2349,7 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     } else if (coord == "sfm") {
         x <- xyzToEnuAdp(x, declination=declination, debug=debug-1)
     } else if (coord == "enu") {
-        ;
+        warning("toEnuAdp cannot convert, object is already in cooordinate system ENU, returning argument as-is")
     } else {
         warning("toEnuAdp cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
