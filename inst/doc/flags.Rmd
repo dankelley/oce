@@ -31,23 +31,35 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 flags in oce. As in the vignette about working with [adp data](adp.html), the
 material is organized to reflect typical workflow.  See [the main oce
 vignette](oce.html) for general information about oce.  The sample code
-provided in this vignette all relies on the oce package, so the first step in
-following along is to load it:
+provided here relies on the oce package, loaded as follows.
 ```{r}
 library(oce)
 ```
 
 # Overview
 
-## Flag conventions
+## Flag context
 
-Hydrographic and some other data may be accompanied by data-quality flags. The
-idea is to retain the data (not for example setting values to `NA`), but to
-provide a separate indication of the trustworthiness of the values.  Those
-indications take the form of data-quality flags, often in numerical form, that
-are paired with the data, so that each datum has an associated flag value.
-Those values result from statistical analysis, from the judgement of a human
-analyst, or from a combination of the two.
+It is common for oceanographers to link data with "flags" that indicate data
+quality.  This scheme permits retention of the original measurements, on the
+assumption that they still hold some value, while at the same time providing an
+indication of problems.  Using flags is superior to simply deleting suspicious
+data, or to changing recorded values to `NA`, because it lets analysts try to
+recover from the difficulty, perhaps by switching to another sensor, by
+reducing the weights of individual data during averaging operations, etc.
+
+Another advantage of using flags over simply discarding bad data is that flags
+can be nuanced; e.g. distinguishing between unchecked data, data thought to be
+good, data that are suspected of being bad, data that are sure to be faulty,
+etc.
+
+Flags are sometimes determined by automated analysis of data (e.g. range checks
+on individual fields, departures from gravitational stability, loops in TS
+diagrams, etc.). It is common for an analyst to use such tests as a starting
+point for further processing that incorporates the study of graphical displays,
+comparison with related measurements, etc.
+
+## Flag conventions
 
 A frustrating aspect of oceanographic analysis is that different data archiving
 agencies employ different systems for flags. For example, the [World
@@ -56,29 +68,65 @@ Programme](https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchan
 designates good bottle/CTD data with a flag value of 2, whereas the [World
 Ocean
 Database](http://data.nodc.noaa.gov/woa/WOD/CODES/TXT/Definition_of_Quality_Flags.txt)
-uses 0 for good data.  It is also common to indicate bad data by setting values
-to non-physical values, e.g. -999, -99.99, or similar, and sometimes these
-coded values may contradict more formal flags, when both are present.
+uses 0 for good data.
+
+Analysts must be aware of the scheme used for a particular dataset.  It is also
+good to be on the lookout for particular values in data, because oceanographers
+sometimes set suspicious values to non-physical values that are easy to
+recognize, e.g. -999, -99.99, or similar, and sometimes these coded values may
+contradict formal flags, when both are present.
 
 
 ## Flag storage
 
 Data-quality flags are stored in the `flags` entry in the `metadata` slot of
-`oce` objects. This entry is a list, containing items with names corresponding
-to names of data elements that are stored in the `data` slot.
+`oce` objects. This entry is a list, containing items with names matching the
+to names of data elements that are stored in the `data` slot. Oce functions
+assume that the flags and the data are in one-to-one correspondence, so the
+flags must have the same dimensionality as the data.
+
+## Flag inspection
 
 It is possible to inspect flags using e.g.
 \code{a[["metadata"]]\$flags\$salinity} to see flags corresponding to
 \code{a[["data"]]\$salinity}, but a simpler notation is also provided, with
-e.g. \code{a[["salinityFlag"]]} returning the flags for the salinity data
-(which may in turn be retrieved with \code{a[["salinity"]]}).
+e.g. \code{a[["salinityFlag"]]} returning the flags for the salinity data.
+(Note the \code{Flag} suffix in this notation; without that, the salinity data
+would be returned.)
+
+## Flag creation
 
 Although it is possible to set and alter flags directly, it is much better to
-use [`initializeFlags`](../help/initializeFlags) and
-[`setFlags`](../help/setFlags), in order to avoid making mistakes, and also to
-record processing steps. It is also recommended to use
-[`initializeFlagScheme`](../help/initializeFlagScheme) first, which makes it
-possible to refer to flags by name, and not just number.
+use oce functions to do so, because (a) they will not create dimensionality or
+name conflicts with the data and (b) they record their actions in the object's
+`processingLog` slot.
+
+Creating flags is usually a three-step process:
+
+1. Use [`initializeFlagScheme`](../help/initializeFlagScheme) to establish a
+   mapping between flag numerical value and flag meaning.  This step is not
+   strictly necessary, but it (a) lets other steps in processing refer to flags
+   by name and not number and it (b) stores the flag scheme, i.e. the mapping
+   between name and number, within the object's `metadata` slot. This step
+   may be done only once for a given object, because changing a flag scheme in
+   the middle of processing invites errors. (In future, oce may be able to
+   switch between schemes.)
+
+2. Use [`initializeFlags`](../help/initializeFlags) to set up space for flag
+   storage, and to initialize values (normally to a code indicating either
+   unchecked data or acceptable data). This may be done only once per data
+   item.
+
+3. Use [`setFlags`](../help/setFlags) to assign individual flag values to
+   individual data. This may be used repeatedly for a given object. Indeed, as
+   illustrated later in this document, it is common to call this function
+   within a loop that displays a graph, invites the user to click on points to
+   be flagged, then displays the new graph, etc.
+
+Note that some reading operations set up flags automatically, if the data file
+already holds flags. For example, [`read.argo`](../help/read.argo) can do this,
+because Argo data have a fixed flag scheme, and archived Argo data often come
+with flag values already inserted.
 
 ## Handling flags
 
@@ -87,7 +135,7 @@ for any purpose that comes to mind. Simple cases may be handled with the oce
 function named [`handleFlags`](../help/handleFlags), which is set up to respond
 to particular flag values with particular actions.  It has reasonable defaults
 for different data types, and it can detect a flag scheme that has been set up
-with [`setFlagsScheme`](../help/initializeFlagScheme). The default action of
+with [`setFlagScheme`](../help/initializeFlagScheme). The default action of
 setting the data that have been flagged as bad to the `NA` value may suffice in
 many plotting or analysis situations.
 
