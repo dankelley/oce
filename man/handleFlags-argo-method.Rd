@@ -73,27 +73,20 @@ in the data, the defaults are
 \code{actions=list("NA")}.
 }
 \examples{
-\dontrun{
 library(oce)
 data(argo)
-# 1. Default: anything not flagged as 1 is set to NA, to focus
-# solely on 'good', in the Argo scheme.
+# 1. Default: set to NA any data that is not flagged with
+# code value 1 (meaning \\code{"passed_all_tests"})
 argoNew <- handleFlags(argo)
-# demonstrate replacement, looking at the second profile
+# Demonstrate replacement, looking at the second profile
 f <- argo[["salinityFlag"]][,2] # first column with a flag=4 entry
 df <- data.frame(flag=f, orig=argo[["salinity"]][,2], new=argoNew[["salinity"]][,2])
-df[11:15,]
-##    flag   orig    new
-## 11    1 35.207 35.207
-## 12    1 35.207 35.207
-## 13    4 35.209     NA
-## 14    1 35.207 35.207
-## 15    1 35.207 35.207
+df[11:15,] # notice line 13
 
-# 2. A less restrictive case: include also 'questionable' data,
-# and only apply this action to salinity.
-argoNew <- handleFlags(argo, flags=list(salinity=4))
-}
+# 2. A less restrictive case: focussing just on salinity,
+# retain only data with flags 1 (meaning \\code{"passed_all_tests"})
+# and 2 (\\code{"probably_good"}).
+argoNew <- handleFlags(argo, flags=list(salinity=c(0, 3:9)))
 
 }
 \references{
@@ -121,4 +114,7 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{plot,argo-method}}, \code{\link{read.argo}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
+}
+\author{
+Dan Kelley
 }

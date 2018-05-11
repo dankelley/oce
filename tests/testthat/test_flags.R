@@ -1,32 +1,49 @@
 library(oce)
 context("Flags")
 
-test_that("ctd flag scheme setup", {
+test_that("argument existence", {
           data(ctd)
-          a <- ctd
-          ## Newly-devised scheme
-          a <- initializeFlagScheme(a, list(unknown=1, good=2, bad=3))
-          expect_equal(a[["flagScheme"]], list(unknown=1, good=2, bad=3))
-          expect_equal(a[["flagSchemeName"]], "")
-          b <- ctd
-          ## Can we provide known schemes?
-          b <- initializeFlagScheme(b, "WHP CTD exchange")
-          expect_equal(b[["flagScheme"]],
-                      list(uncalibrated=1, acceptable=2, questionable=3, bad=4, unreported=5,
-                           interpolated=6, despiked=7, unsampled=9))
-          expect_equal(b[["flagSchemeName"]], "WHP CTD exchange")
-          ## Can we detect unknown schemes?
-          expect_error(initializeFlagScheme(ctd, "unknown"), "unrecognized scheme")
+          expect_error(initializeFlagScheme(ctd, mapping=list(unknown=1, good=2, bad=3)),
+                       "must supply 'name'")
+          expect_error(initializeFlagScheme(ctd, name="unknown"),
+                       "must supply 'mapping' for new scheme named \"unknown\"")
+})
+
+test_that("predefined flag schemes", {
+          data(ctd)
+          a <- initializeFlagScheme(ctd, "WHP CTD")
+          expect_equal(a[["flagScheme"]],
+                       list(name="WHP CTD",
+                            mapping=list(not_calibrated=1, acceptable=2, questionable=3,
+                                         bad=4, not_reported=5, interpolated=6,
+                                         despiked=7, missing=9)))
+          a <- initializeFlagScheme(ctd, "WHP bottle")
+          expect_equal(a[["flagScheme"]],
+                       list(name="WHP bottle",
+                            mapping=list(no_information=1, no_problems_noted=2, leaking=3,
+                                         did_not_trip=4, not_reported=5, discrepency=6,
+                                         unknown_problem=7, did_not_trip=8, no_sample=9)))
+          a <- initializeFlagScheme(ctd, "argo")
+          expect_equal(a[["flagScheme"]],
+                       list(name="argo",
+                            mapping=list(not_assessed=0, passed_all_tests=1, probably_good=2,
+                                         probably_bad=3, bad=4, averaged=7,
+                                         interpolated=8, missing=9)))
+})
+
+test_that("user-created flag scheme", {
+          data(ctd)
+          a <- initializeFlagScheme(ctd, "myscheme", list(unknown=1, good=2, bad=3))
+          expect_equal(a[["flagScheme"]], list(name="myscheme",
+                                               mapping=list(unknown=1, good=2, bad=3)))
 })
 
 test_that("ctd flag scheme action", {
           data(ctd)
-          a <- ctd
-          a <- initializeFlags(a, "temperature", 2) # 2="acceptable
+          a <- initializeFlags(ctd, "temperature", 2) # 2="acceptable
           expect_warning(initializeFlags(a, "temperature", 2), "cannot re-initialize flags")
           a <- setFlags(a, "temperature", 1:3, 4) # 4="bad"
-          b <- ctd
-          b <- initializeFlagScheme(b, "WHP CTD exchange")
+          b <- initializeFlagScheme(ctd, "WHP CTD")
           b <- initializeFlags(b, "temperature", "acceptable")
           b <- setFlags(b, "temperature", 1:3, "bad")
           expect_equal(a[["temperatureFlag"]], b[["temperatureFlag"]])
@@ -60,7 +77,9 @@ test_that("handleFLags works with ctd data", {
                        sum(ctd[['salinityFlag']] == 4 | ctd[['salinityFlag']] == 5, na.rm=TRUE))
 })
 
-test_that("handleFLags works with the built-in argo dataset", {
+## FIXME: once read.argo sets flags, add tests on named flag values, not just integers
+
+test_that("handleFLags works with the built-in argo dataset (numeric flags)", {
           data(argo)
           argoNew <- handleFlags(argo, flags=list(salinity=4:5))
           ## Test a few that are identified by printing some values
@@ -85,6 +104,18 @@ test_that("handleFLags works with the built-in argo dataset", {
           argoNew3 <- handleFlags(argo, flags=list(salinity=4:5), actions=list(salinity=f))
           expect_equal(sum(argoNew3[['salinity']]==30, na.rm=TRUE),
                        sum(argo[['salinityFlag']] == 4 | argo[['salinityFlag']] == 5, na.rm=TRUE))
+})
+
+test_that("handleFLags works with the built-in argo dataset (named flags)", {
+          data(argo)
+          # list(not_assessed=0,passed_all_tests=1,probably_good=2,probably_bad=3,bad=4,averaged=7,interpolated=8,missing=9))
+          a <- handleFlags(argo,
+                           flags=list(salinity=c("not_assessed","probably_bad","bad",
+                                                 "averaged","interpolated","missing")))
+          b <- handleFlags(argo,
+                           flags=list(salinity=c(0, 3, 4,
+                                                 7, 8, 9)))
+          expect_equal(a[["salinity"]], b[["salinity"]])
 })
 
 test_that("handleFLags works with the built-in section dataset", {

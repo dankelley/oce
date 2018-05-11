@@ -179,8 +179,9 @@ setMethod(f="summary",
               if (length(flags)) {
                   if (!is.null(object@metadata$flagScheme)) {
                       cat("* Data-quality Flag Scheme\n\n")
-                      cat("    name       ", object@metadata$flagSchemeName, "\n")
-                      cat("    definition ", gsub(" = ", "=", as.character(deparse(object@metadata$flagScheme, width.cutoff=400))), "\n\n")
+                      cat("    name    \"", object@metadata$flagScheme$name, "\"\n", sep="")
+                      cat("    mapping ", gsub(" = ", "=", as.character(deparse(object@metadata$flagScheme$mapping,
+                                                                                   width.cutoff=400))), "\n\n", sep="")
                   }
                   cat("* Data-quality Flags\n\n")
                   width <- 1 + max(nchar(names(flags)))
@@ -532,6 +533,16 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
         debug <- 0
     if (any(names(flags)!=names(actions)))
         stop("names of flags must match those of actions")
+    schemeMappingNames <- names(object@metadata$flagScheme$mapping)
+    ##> if (is.character(flags[[1]])) {
+    ##>     for (f in flags[[1]]) {
+    ##>         if (!(f %in% schemeMappingNames))
+    ##>             stop("flag \"", f, "\" is not part of the flagScheme mapping; try one of: \"",
+    ##>                  paste(schemeMappingNames, collapse="\", \""), "\"")
+    ##>     }
+    ##>     flags <- as.numeric(object@metadata$flagScheme$mapping[flags[[1]]])
+    ##>     browser()
+    ##> }
     oceDebug(debug, "flags=", paste(as.vector(flags), collapse=","), "\n")
     if (length(object@metadata$flags)) {
         all <- is.null(names(flags)) # "ALL" %in% names(flags)
@@ -546,14 +557,24 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
                 dataItemLength <- length(object@data[[name]])
                 ##> message("name: ", name, ", flags: ", paste(object@metadata$flags[[name]], collapse=" "))
                 flagsThis <- if (all) flags[[1]] else flags[[name]]
-                oceDebug(debug, "flagsThis=", paste(flagsThis, collapse=","), "\n")
-                oceDebug(debug, "flags[", name, "]=", paste(flagsThis, collapse=","), "\n")
+                oceDebug(debug, "before converting to numbers, flagsThis=", paste(flagsThis, collapse=","), "\n")
+                ## Convert flags to numerical values
+                if (is.character(flagsThis)) {
+                    for (f in flagsThis) {
+                        if (!(f %in% schemeMappingNames))
+                            stop("flag \"", f, "\" is not part of the flagScheme mapping; try one of: \"",
+                                 paste(schemeMappingNames, collapse="\", \""), "\"")
+                    }
+                    flagsThis <- as.numeric(object@metadata$flagScheme$mapping[flagsThis])
+                }
+                oceDebug(debug, "after converting to numbers, flagsThis=", paste(flagsThis, collapse=","), "\n")
                 actionsThis <- if (all) actions[[1]] else actions[[name]]
                 ##> message("flagsThis:");print(flagsThis)
                 if (name %in% names(object@metadata$flags)) {
+                    oceDebug(debug, "name: \"", name, "\"", sep="")
                     actionNeeded <- object@metadata$flags[[name]] %in% flagsThis
-                    if (debug > 5)
-                        print(data.frame(flagsObject=flagsObject, actionNeeded=actionNeeded))
+                    ##> if (name == "salinity") browser()
+                    ##oceDebug(debug, "actionNeeded: ", paste(actionNeeded, collapse=" "))
                     if (any(actionNeeded)) {
                         oceDebug(debug, "  \"", name, "\" has ", dataItemLength, " data, of which ",
                                  100*sum(actionNeeded)/dataItemLength, "% are flagged\n", sep="")
@@ -573,7 +594,7 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
                             stop("action must be a character string or a function")
                         }
                     } else {
-                        oceDebug(debug, "  no action needed, since no", name, " data are flagged as stated\n")
+                        oceDebug(debug, "  no action needed, since no \"", name, "\" data are flagged as stated\n", sep="")
                     }
                 }
             } else {
@@ -635,11 +656,11 @@ setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, debug=getOpt
         if (is.null(res@metadata$flagScheme)) {
             stop("cannot have character 'value' because initializeFlagScheme() has not been called on object")
         } else {
-            if (value %in% names(res@metadata$flagScheme))
-                value <- res@metadata$flagScheme[[value]]
+            if (value %in% names(res@metadata$flagScheme$mapping))
+                value <- res@metadata$flagScheme$mapping[[value]]
             else
                 stop("value=\"", value, "\" is not defined in the object's flagScheme; try one of: \"",
-                     paste(names(res@metadata$flagScheme), "\", \""), "\"", sep="")
+                     paste(names(res@metadata$flagScheme$mapping), "\", \""), "\"", sep="")
         }
     }
     ## Finally, apply the value
@@ -701,12 +722,12 @@ initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOpti
     } else {
         if (is.character(value)) {
             if (is.null(object@metadata$flagScheme))
-                stop("cannot use character value because object has no flagScheme in its metadata") 
-            if (!(value %in% names(object@metadata$flagScheme)))
+                stop("cannot use character value because object has no flagScheme in its metadata")
+            if (!(value %in% names(object@metadata$flagScheme$mapping)))
                 stop("\"", value, "\" is not in the object's flagScheme; try one of: \"",
-                     paste(names(object@metadata$flagScheme), collapse="\", \""),
+                     paste(names(object@metadata$flagScheme$mapping), collapse="\", \""),
                      "\"")
-            value <- object@metadata$flagScheme[[value]]
+            value <- object@metadata$flagScheme$mapping[[value]]
         }
         if (!(name %in% names(object@data)))
             stop("name=\"", name, "\" is not in the data slot of object; try one of: \"",
@@ -733,7 +754,7 @@ initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOpti
 #' @templateVar class oce
 #' @templateVar details There are no pre-defined \code{scheme}s for this object class.
 #' @template initializeFlagSchemeTemplate
-setGeneric("initializeFlagScheme", function(object, scheme=NULL, debug=0) {
+setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, debug=0) {
            standardGeneric("initializeFlagScheme")
          })
 
@@ -741,22 +762,55 @@ setGeneric("initializeFlagScheme", function(object, scheme=NULL, debug=0) {
 #' @templateVar details There are no pre-defined \code{scheme}s for this object class.
 #' @template initializeFlagSchemeTemplate
 setMethod("initializeFlagScheme",
-          signature=c(object="oce", scheme="ANY", debug="ANY"),
-          definition=function(object, scheme=scheme, debug=getOption("oceDebug")) {
-              initializeFlagSchemeInternal(object, scheme, debug)
+          signature=c(object="oce", name="ANY", mapping="ANY", debug="ANY"),
+          definition=function(object, name, mapping, debug=getOption("oceDebug")) {
+              initializeFlagSchemeInternal(object, name, mapping, debug)
           })
 
-initializeFlagSchemeInternal <- function(object, scheme=NULL, debug=getOption("oceDebug"))
+initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "initializeFlagSchemeInternal(object, scheme=\"", scheme, "\", debug=", debug, ") {", sep="", unindent=1)
+    oceDebug(debug, "initializeFlagSchemeInternal(object, name=\"", name, "\", debug=", debug, ") {", sep="", unindent=1)
+    if (is.null(name))
+        stop("must supply 'name'")
     res <- object
     if (!is.null(object@metadata$flagScheme))
         warning("cannot alter a flagScheme that is already is place")
-    else
-        res@metadata$flagScheme <- scheme
+    else {
+        predefined <- c("WHP CTD", "WHP bottle", "argo")
+        if (name %in% predefined) {
+            if (name == "WHP CTD") {
+                if (!is.null(mapping))
+                    stop("cannot redefine the mapping for existing scheme named \"WHP CTD\"")
+                mapping <- list(not_calibrated=1, acceptable=2, questionable=3,
+                                bad=4, not_reported=5, interpolated=6,
+                                despiked=7, missing=9)
+            } else if (name == "WHP bottle") {
+                if (!is.null(mapping))
+                    stop("cannot redefine the mapping for existing scheme named \"WHP bottle\"")
+                mapping <- list(no_information=1, no_problems_noted=2, leaking=3,
+                                did_not_trip=4, not_reported=5, discrepency=6,
+                                unknown_problem=7, did_not_trip=8, no_sample=9)
+            } else if (name == "argo") {
+                if (!is.null(mapping))
+                    stop("cannot redefine the mapping for existing scheme named \"argo\"")
+                mapping <- list(not_assessed=0, passed_all_tests=1, probably_good=2,
+                                probably_bad=3, bad=4, averaged=7,
+                                interpolated=8, missing=9)
+            } else {
+                stop("internal coding error in initializeFlagSchemeInternal(); please report to developer")
+            }
+        } else {
+            if (is.null(mapping))
+                stop("must supply 'mapping' for new scheme named \"", name, "\"")
+        }
+        res@metadata$flagScheme <- list(name=name, mapping=mapping)
+    }
     res@processingLog <- processingLogAppend(res@processingLog,
-                                             paste("initializeFlagScheme(object, \",, scheme=",
-                                                   as.character(deparse(scheme)), ")", sep=""))
+                                             paste("initializeFlagScheme(object, name=\"", name,
+                                                   "\", mapping=",
+                                                   gsub(" ", "", paste(as.character(deparse(mapping)),
+                                                                                     sep="", collapse="")),
+                                                   ")", sep=""))
     oceDebug(debug, "} # initializeFlagSchemeInternal", sep="", unindent=1)
     res
 }

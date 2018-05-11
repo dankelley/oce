@@ -193,7 +193,7 @@ qc <- ctdRaw
 Work flow is best documented if a flag scheme is established, and the "WHP CTD
 exchange" scheme is a reasonable choice; using
 ```{r}
-qc <- initializeFlagScheme(qc, "WHP CTD exchange")
+qc <- initializeFlagScheme(qc, "WHP CTD")
 ```
 
 stores a note on the scheme in the `metadata` slot of `qc`. Importantly,
@@ -287,7 +287,7 @@ to `NA` where these flags indicate bad data.
 options(eos="gsw")
 data(ctd)
 qc <- ctd
-qc <- initializeFlagScheme(qc, "WHP CTD exchange")
+qc <- initializeFlagScheme(qc, "WHP CTD")
 qc <- initializeFlags(qc, "salinity", "acceptable")
 Sspan <- diff(range(qc[["SA"]]))
 Tspan <- diff(range(qc[["CT"]]))

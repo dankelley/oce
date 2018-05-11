@@ -266,7 +266,7 @@ setMethod("handleFlags",
 #' # Compare results in TS space
 #' par(mfrow=c(2, 1))
 #' plotTS(ctdRaw)
-#' plotScan(handleFlags(qc))
+#' plotTS(handleFlags(qc))
 #'
 #' # Example 2: Interactive flag assignment based on TS plot, using
 #' # WHP scheme to define 'acceptable' and 'bad' codes
@@ -274,7 +274,7 @@ setMethod("handleFlags",
 #' options(eos="gsw")
 #' data(ctd)
 #' qc <- ctd
-#' qc <- initializeFlagScheme(qc, "WHP CTD exchange")
+#' qc <- initializeFlagScheme(qc, "WHP CTD")
 #' qc <- initializeFlags(qc, "salinity", "acceptable")
 #' Sspan <- diff(range(qc[["SA"]]))
 #' Tspan <- diff(range(qc[["CT"]]))
@@ -289,7 +289,7 @@ setMethod("handleFlags",
 #'     i <- which.min(abs(qc[["SA"]] - xy$x)/Sspan + abs(qc[["CT"]] - xy$y)/Tspan)
 #'     qc <- setFlags(qc, "salinity", i=i, value="bad")
 #'     qc <- handleFlags(qc)
-#'     plotTS(ctdQC, type="o")
+#'     plotTS(qc, type="o")
 #' }
 #'}
 #'
@@ -307,30 +307,14 @@ setMethod("setFlags",
           })
 
 #' @templateVar class ctd
-#' @templateVar details If \code{scheme} is \code{"WHP CTD exchange"}, then the stored scheme will be \code{list(uncalibrated=1, acceptable=2, questionable=3, bad=4, unreported=5, interpolated=6, despiked=7, unsampled=9)}.
+#' @templateVar details {NA}
 #' @template initializeFlagSchemeTemplate
 setMethod("initializeFlagScheme",
-          signature=c(object="ctd", scheme="ANY", debug="ANY"),
-          definition=function(object, scheme=NULL, debug=getOption("oceDebug")) {
-              if (is.null(scheme))
-                  stop("must supply 'scheme', either a list or \"WHP CTD exchange\"")
-              schemeName <- ""
-              if (is.character(scheme)) {
-                  if (scheme == "WHP CTD exchange") {
-                      schemeName <- scheme
-                      scheme <- list(uncalibrated=1, acceptable=2, questionable=3, bad=4,
-                                     unreported=5, interpolated=6, despiked=7, unsampled=9)
-                  } else {
-                      stop("unrecognized scheme=\"", scheme, "\"; only \"WHP CTD exchange\" is allowed")
-                  }
-              } else if (is.list(scheme)) {
-                  schemeName <- ""
-              } else {
-                  stop("'scheme' must be either a list or \"WHP CTD exchange\"")
-              }
-              object@metadata$flagScheme <- scheme
-              object@metadata$flagSchemeName <- schemeName
-              object
+          signature=c(object="ctd", name="ANY", mapping="ANY", debug="ANY"),
+          definition=function(object, name=NULL, mapping=NULL, debug=getOption("oceDebug")) {
+              if (is.null(name))
+                  stop("must supply 'name'")
+              invisible(callNextMethod())
           })
 
 #' Initialize storage for a ctd object

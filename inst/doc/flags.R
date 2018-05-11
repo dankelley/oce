@@ -24,7 +24,7 @@ bad <- (S < 25 | 40 < S) || (T < -2 | 40 < T)
 qc <- ctdRaw
 
 ## ------------------------------------------------------------------------
-qc <- initializeFlagScheme(qc, "WHP CTD exchange")
+qc <- initializeFlagScheme(qc, "WHP CTD")
 
 ## ------------------------------------------------------------------------
 qc <- initializeFlags(qc, "salinity", "acceptable")
@@ -49,7 +49,7 @@ plot(qch)
 #  options(eos="gsw")
 #  data(ctd)
 #  qc <- ctd
-#  qc <- initializeFlagScheme(qc, "WHP CTD exchange")
+#  qc <- initializeFlagScheme(qc, "WHP CTD")
 #  qc <- initializeFlags(qc, "salinity", "acceptable")
 #  Sspan <- diff(range(qc[["SA"]]))
 #  Tspan <- diff(range(qc[["CT"]]))

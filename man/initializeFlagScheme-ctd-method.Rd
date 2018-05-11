@@ -5,35 +5,59 @@
 \alias{initializeFlagScheme,ctd-method}
 \title{Establish a data-quality scheme for a ctd object}
 \usage{
-\S4method{initializeFlagScheme}{ctd}(object, scheme = NULL,
+\S4method{initializeFlagScheme}{ctd}(object, name = NULL, mapping = NULL,
   debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An oce object.}
 
-\item{scheme}{A list describing the flag scheme, e.g \code{list(good=1, bad=2)}
-might be used for a hypothetical class. Some classes also permit \code{scheme}
-to be a character string that names a built-in scheme; see \dQuote{Details}.}
+\item{name}{Character value naming the scheme. If this refers
+to a pre-defined scheme, then \code{mapping} must not be provided.}
+
+\item{mapping}{A list of named items describing the mapping from
+flag meaning to flag numerical value, e.g \code{list(good=1, bad=2)}
+might be used for a hypothetical class.}
 
 \item{debug}{Integer set to 0 for quiet action or to 1 for some debugging.}
 }
 \value{
-An object with the \code{metadata} slot set to the indicated
-\code{scheme} (expanded to a list, if the argument was a recognized
-character string).
+An object with the \code{metadata} slot containing \code{flagScheme}.
 }
 \description{
-This function stores adds an item called \code{flagScheme} to the
-\code{metadata} slot. The purpose is both to document a flag scheme
-and to make it so that \code{\link{initializeFlags}}
-and \code{\link{setFlags}} can specify flags by
-name, as opposed to number. A generic function, it is
-specialized for some classes via interpretation of the
-\code{scheme} argument (see \dQuote{Details}, for those
-object classes that have such specializations).
+This function stores add an item named \code{flagScheme}
+to the \code{metadata} slot. This is a list containing two
+items: \code{name} and \code{mapping}, as provided in the
+function arguments.
+The purpose is both to document a flag scheme
+and to make it so that \code{\link{initializeFlags}},
+\code{\link{setFlags}} and \code{\link{handleFlags}}
+can specify flags by
+name, as opposed to number. This is a generic function,
+that may be specialized to the class of \code{object}
+(see \dQuote{Details}.
 }
 \details{
-If \code{scheme} is \code{"WHP CTD exchange"}, then the stored scheme will be \code{list(uncalibrated=1, acceptable=2, questionable=3, bad=4, unreported=5, interpolated=6, despiked=7, unsampled=9)}.
+\strong{General:}
+The following pre-defined schemes are available (note that the
+names are simplified from the phrases used in defining
+documentation):
+\itemize{
+\item \code{name="WHP CTD"} defaults \code{mapping} to
+\code{list(not_calibrated=1, acceptable=2, questionable=3,
+    bad=4, not_reported=5, interpolated=6,
+    despiked=7, missing=9)}
+\item \code{name="WHP bottle"} defaults \code{mapping} to
+\code{list(no_information=1, no_problems_noted=2, leaking=3,
+    did_not_trip=4, not_reported=5, discrepency=6,
+    unknown_problem=7, did_not_trip=8, missing=9)}
+\item \code{name="argo"} defaults \code{mapping} to
+\code{list(not_assessed=0, passed_all_tests=1, probably_good=2,
+    probably_bad=3, bad=4, averaged=7,
+    interpolated=8, missing=9)}
+}
+
+\strong{Specific to the ctd objects:}
+{NA}
 }
 \section{Caution}{
 
@@ -41,6 +65,13 @@ This function was added in early May, 2018, and is likely to undergo
 changes until the mid-summer of that year.  Use with caution.
 }
 
+\references{
+1. The codes for \code{"WHP CTD"} and \code{"WHP bottle"} are defined at
+\url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+
+2. The codes for \code{"Argo"} are defined at
+\url{http://www.oceannetworks.ca/data-tools/data-quality}
+}
 \seealso{
 Other functions relating to data-quality flags: \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,argo-method}},
