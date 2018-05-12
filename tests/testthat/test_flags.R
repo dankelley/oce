@@ -10,6 +10,7 @@ test_that("argument existence", {
 })
 
 test_that("predefined flag schemes", {
+          ## DEVELOPER NOTE: keep in synch with R/AllClass.R and man-roxygen/initializeFlagScheme.R
           data(ctd)
           a <- initializeFlagScheme(ctd, "argo")
           expect_equal(a[["flagScheme"]],
@@ -23,6 +24,12 @@ test_that("predefined flag schemes", {
                             mapping=list(no_quality_control=0, good=1, probably_good=2,
                                          probably_bad=3, bad=4, changed=5, below_detection=6,
                                          in_excess=7, interpolated=8, missing=9)))
+          a <- initializeFlagScheme(ctd, "DFO")
+          expect_equal(a[["flagScheme"]],
+                       list(name="DFO",
+                            mapping=list(no_quality_control=0, appears_correct=1, appears_inconsistent=2,
+                                         doubtful=3, erroneous=4, changed=5,
+                                         qc_by_originator=8, missing=9)))
           a <- initializeFlagScheme(ctd, "WHP bottle")
           expect_equal(a[["flagScheme"]],
                        list(name="WHP bottle",

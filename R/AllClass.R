@@ -773,10 +773,11 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, debug=
     if (is.null(name))
         stop("must supply 'name'")
     res <- object
-    if (!is.null(object@metadata$flagScheme))
+    if (!is.null(object@metadata$flagScheme)) {
         warning("cannot alter a flagScheme that is already is place")
-    else {
-        predefined <- c("argo", "BODC", "WHP bottle", "WHP CTD")
+    } else {
+        ## DEVELOPER NOTE: keep in synch with tests/testthat/test_flags.R and man-roxygen/initializeFlagScheme.R
+        predefined <- c("argo", "BODC", "DFO", "WHP bottle", "WHP CTD")
         if (name %in% predefined) {
             if (!is.null(mapping))
                 stop("cannot redefine the mapping for existing scheme named \"", name, "\"")
@@ -788,6 +789,10 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, debug=
                 mapping <- list(no_quality_control=0, good=1, probably_good=2,
                                 probably_bad=3, bad=4, changed=5, below_detection=6,
                                 in_excess=7, interpolated=8, missing=9)
+            } else  if (name == "DFO") {
+                mapping <- list(no_quality_control=0, appears_correct=1, appears_inconsistent=2,
+                                doubtful=3, erroneous=4, changed=5,
+                                qc_by_originator=8, missing=9)
             } else if (name == "WHP bottle") {
                 mapping <- list(no_information=1, no_problems_noted=2, leaking=3,
                                 did_not_trip=4, not_reported=5, discrepency=6,

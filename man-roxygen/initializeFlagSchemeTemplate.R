@@ -1,3 +1,5 @@
+## DEVELOPER NOTE: keep in synch with R/AllClass.R and tests/testthat/test_flags.R
+
 #' @title Establish a data-quality scheme for a <%=class%> object
 #'
 #' @description
@@ -36,17 +38,23 @@
 #' and note that codes \code{A} and \code{Q} are not provided in
 #' oce.
 #'
+#' \item \code{name="DFO"} defaults \code{mapping} to
+#' \code{list(no_quality_control=0, appears_correct=1, appears_inconsistent=2,
+#'            doubtful=3, erroneous=4, changed=5,
+#'            qc_by_originator=8, missing=9)}.
+#' See [3] for a deeper explanation of the meanings of these codes,
+#'
 #' \item \code{name="WHP bottle"} defaults \code{mapping} to
 #' \code{list(no_information=1, no_problems_noted=2, leaking=3,
 #'                 did_not_trip=4, not_reported=5, discrepency=6,
 #'                 unknown_problem=7, did_not_trip=8, no_sample=9)}.
-#' See [3] for a deeper explanation of the meanings of these codes.
+#' See [4] for a deeper explanation of the meanings of these codes.
 #'
 #' \item \code{name="WHP CTD"} defaults \code{mapping} to
 #' \code{list(not_calibrated=1, acceptable=2, questionable=3,
 #'                 bad=4, not_reported=5, interpolated=6,
 #'                 despiked=7, missing=9)}.
-#' See [3] for a deeper explanation of the meanings of these codes.
+#' See [4] for a deeper explanation of the meanings of these codes.
 #'
 #'}
 #'
@@ -77,7 +85,10 @@
 #' 2. The codes for \code{"BODC"} are defined at
 #' \url{http://seadatanet.maris2.nl/v_bodc_vocab_v2/browse.asp?order=conceptid&formname=search&screen=0&lib=l20}
 #'
-#' 3. The codes for \code{"WHP CTD"} and \code{"WHP bottle"} are defined at
+#' 3. The codes for \code{"DFO"} are defined at
+#' \url{http://www.dfo-mpo.gc.ca/science/data-donnees/code/list/014-eng.html}
+#'
+#' 4. The codes for \code{"WHP CTD"} and \code{"WHP bottle"} are defined at
 #' \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 #'
 #' @family functions relating to data-quality flags
