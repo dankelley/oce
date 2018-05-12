@@ -54,6 +54,7 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,adp-meth
   \code{\link{handleFlags}},
   \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{initializeFlagScheme,oce-method}},
+  \code{\link{initializeFlagScheme,section-method}},
   \code{\link{initializeFlagScheme}},
   \code{\link{initializeFlags,oce-method}},
   \code{\link{initializeFlags}},

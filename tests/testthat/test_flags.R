@@ -51,6 +51,13 @@ test_that("user-created flag scheme", {
                                                mapping=list(unknown=1, good=2, bad=3)))
 })
 
+test_that("cannot alter existing flag scheme", {
+          data(ctd)
+          a <- initializeFlagScheme(ctd, "myscheme", list(unknown=1, good=2, bad=3))
+          expect_warning(initializeFlagScheme(a, "WHP CTD"),
+                         "cannot alter a flagScheme that is already is place")
+})
+
 test_that("ctd flag scheme action", {
           data(ctd)
           a <- initializeFlags(ctd, "temperature", 2) # 2="acceptable
@@ -203,5 +210,17 @@ test_that("does subset() work on adp flags? (issue 1410)", {
           expect_equal(dim(sub[["v"]]), dim(sub[["vFlag"]])) # flag dim = data dim?
           look <- adp[["time"]] <= adp[["time"]][10]
           expect_equal(adp[["vFlag"]][look, , ], sub[["vFlag"]]) # flag values ok?
+})
+
+
+
+test_that("set flags on section object", {
+          data(section)
+          a <- initializeFlagScheme(section, "WHP bottle")
+          expect_equal(a[["station", 1]][["flagScheme"]],
+                       list(name="WHP bottle",
+                            mapping=list(no_information=1, no_problems_noted=2, leaking=3,
+                                         did_not_trip=4, not_reported=5, discrepency=6,
+                                         unknown_problem=7, did_not_trip=8, no_sample=9)))
 })
 

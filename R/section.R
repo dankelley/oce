@@ -146,6 +146,27 @@ setMethod("handleFlags",
               res
           })
 
+#' @templateVar details This applies \code{initializeFlagScheme} for each \code{ctd} station within the \code{stations} element of the \code{data} slot.
+#' @template initializeFlagSchemeTemplate
+#'
+#' @examples
+#' data(section)
+#' sectionWithFlags <- initializeFlagScheme(section, "WHP bottle")
+#' station1 <- sectionWithFlags[["station", 1]]
+#' str(station1[["flagScheme"]])
+setMethod("initializeFlagScheme",
+          c(object="section", name="ANY", mapping="ANY", debug="ANY"),
+          function(object, name=NULL, mapping=NULL, debug=getOption("oceDebug")) {
+              res <- object
+              for (i in seq_along(object@data$station)) {
+                  res@data$station[[i]] <- initializeFlagScheme(object@data$station[[i]], name, mapping, debug=debug-1)
+              }
+              res@processingLog <- processingLogAppend(res@processingLog,
+                                                       paste("initializeFlagScheme(object",
+                                                             ", name=\"", name,
+                                                             "\", mapping=", gsub(" ", "", paste(as.character(deparse(mapping))))))
+              res
+          })
 
 #' @title Summarize a Section Object
 #'
