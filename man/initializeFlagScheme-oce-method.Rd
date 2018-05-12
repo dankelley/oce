@@ -34,7 +34,7 @@ and to make it so that \code{\link{initializeFlags}},
 can specify flags by
 name, as opposed to number. This is a generic function,
 that may be specialized to the class of \code{object}
-(see \dQuote{Details}.
+(see \dQuote{Details}).
 }
 \details{
 The following pre-defined schemes are available (note that the
