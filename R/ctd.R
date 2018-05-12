@@ -3404,7 +3404,7 @@ setMethod(f="plot",
                           if (is.character(coastline)) {
                               oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
                               if (requireNamespace("ocedata", quietly=TRUE)) {
-                                  library(ocedata) # FIXME: is this needed?
+                                  #library(ocedata) # FIXME: is this needed?
                                   if (coastline == "best") {
                                       bestcoastline <- coastlineBest(span=span)
                                       oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
