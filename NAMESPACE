@@ -3,7 +3,8 @@ useDynLib(oce, .registration=TRUE)
 ## exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, sourceCpp)
 
-import(methods)
+importFrom("methods", "callNextMethod", "new", "slot<-", "slotNames",
+           "validObject")
 importFrom("gsw", "gsw_CT_freezing", "gsw_CT_from_t", "gsw_C_from_SP",
            "gsw_Nsquared", "gsw_SA_from_SP", "gsw_SA_from_rho", "gsw_SP_from_C",
            "gsw_SP_from_SA", "gsw_SR_from_SP", "gsw_Sstar_from_SA",
