@@ -1154,9 +1154,7 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
         x <- xyzToEnuAdv(beamToXyzAdv(x, debug=debug-1), declination=declination, debug=debug-1)
     } else if (coord == "xyz") {
         x <- xyzToEnuAdv(x, declination=declination, debug=debug-1)
-    } else if (coord == "enu") {
-        ;
-    } else {
+    } else if (coord != "enu") {
         warning("toEnuAdv cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
     oceDebug(debug, "} # adv.2enu()\n", unindent=1)

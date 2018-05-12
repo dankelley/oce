@@ -3155,12 +3155,14 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ## resized.
         ##   with sapply: 3.480 3.640 3.520
         ##   with loop:   3.260 3.440 3.430
+        ## NOTE: mapPolygonMethod is NOT documented, so we can assume
+        ## NOTE: that it will be NULL, so method=3 will be used.
         method <- options()$mapPolygonMethod
         if (0 == length(method))
             method <- 3 # method tested in issue 1284
         oceDebug(debug, "method=", method, " (set by options()$mapPolygonMethod or default of 3)\n")
         if (method==1) {
-            colPolygon <- sapply(1:(ni*nj), colorLookup)
+            colPolygon <- unlist(lapply(1:(ni*nj), colorLookup))
         } else if (method==2) {
             colPolygon <- character(ni*nj)
             for (ij in 1:(ni*nj)) {

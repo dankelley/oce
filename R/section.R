@@ -1311,8 +1311,8 @@ setMethod(f="plot",
               res <- x # will now be gridded (either originally or through above code)
 
               ## Trim stations that have zero good data FIXME: brittle to addition of new metadata
-              haveData <- sapply(x@data$station,
-                                 function(stn) 0 < length(stn[['pressure']]))
+              haveData <- unlist(lapply(x@data$station,
+                                        function(stn) 0 < length(stn[['pressure']])))
               x@data$station <- x@data$station[haveData]
               x@metadata$stationId <- x@metadata$stationId[haveData]
               x@metadata$latitude <- x@metadata$latitude[haveData]

@@ -930,17 +930,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             ##        warning("cannot parse sample-rate string in `",line,"'")
             sampleInterval <- as.double(rtmp[[1]][2]) / as.double(rtmp[[1]][1])
             sampleIntervalUnits <- "s"
-            if (rtmp[[1]][3] == "seconds") {
-                ;
+            if (rtmp[[1]][3] == "minutes") {
+                sampleInterval <- sampleInterval / 60
             } else {
-                if (rtmp[[1]][3] == "minutes") {
-                    sampleInterval <- sampleInterval / 60
+                if (rtmp[[1]][3] == "hours") {
+                    sampleInterval <- sampleInterval / 3600
                 } else {
-                    if (rtmp[[1]][3] == "hours") {
-                        sampleInterval <- sampleInterval / 3600
-                    } else {
-                        warning("cannot understand `", rtmp[[1]][2], "' as a unit of time for sampleInterval")
-                    }
+                    warning("cannot understand `", rtmp[[1]][2], "' as a unit of time for sampleInterval")
                 }
             }
         }

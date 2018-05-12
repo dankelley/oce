@@ -736,7 +736,7 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
     fSplit <- split(f, cut(x, xbreaks, include.lowest=TRUE, labels=FALSE))
     ##message("length(xbreaks)=", length(xbreaks))
     ##message("length(fSplit)=", length(fSplit))
-    result <- sapply(fSplit, FUN, ...)
+    result <- unlist(lapply(fSplit, FUN, ...))
     result[!is.finite(result)] <- NA
     names(result) <- NULL
     ## Put some NAs at start and end of 'result', if required because of
@@ -826,7 +826,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
     for (i in seq_along(A)) {
         fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE))
         ##res[, i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
-        res[, i] <- sapply(fSplit, FUN, ...)
+        res[, i] <- unlist(lapply(fSplit, FUN, ...))
     }
     res[!is.finite(res)] <- NA
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks),

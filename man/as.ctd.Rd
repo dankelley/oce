@@ -43,7 +43,7 @@ the length of \code{salinity}.}
 divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).}
 
 \item{scan}{optional scan number.  If not provided, this will be set to
-\code{1:length(salinity)}.}
+\code{seq_along(salinity)}.}
 
 \item{time}{optional vector of times of observation}
 
