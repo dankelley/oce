@@ -823,7 +823,7 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
     res <- matrix(nrow=nxbreaks-1, ncol=nybreaks-1)
     A <- split(f, cut(y, ybreaks, labels=FALSE))
     B <- split(x, cut(y, ybreaks, labels=FALSE))
-    for (i in 1:length(A)) {
+    for (i in seq_along(A)) {
         fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE))
         ##res[, i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
         res[, i] <- sapply(fSplit, FUN, ...)
@@ -3567,7 +3567,7 @@ byteToBinary <- function(x, endian)
     ## res <- NULL
     ## if (class(x) == "raw")
     ##     x <- readBin(x, "int", n=length(x), size=1, signed=FALSE)
-    ## for (i in 1:length(x)) {
+    ## for (i in seq_along(x)) {
     ##     if (x[i] < 0) {
     ##         res <- c(res, "??")
     ##     } else {

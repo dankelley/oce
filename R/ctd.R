@@ -850,7 +850,7 @@ setMethod(f="[[<-",
 ##1108 @param silicate optional silicate concentration
 ##1108
 #' @param scan optional scan number.  If not provided, this will be set to
-#' \code{1:length(salinity)}.
+#' \code{seq_along(salinity)}.
 #'
 #' @param time optional vector of times of observation
 #'
@@ -1775,7 +1775,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
     }
     dataNew[["pressure"]] <- pt
     ## convert any NaN to NA
-    for (i in 1:length(dataNew)) {
+    for (i in seq_along(dataNew)) {
         dataNew[[i]][is.nan(dataNew[[i]])] <- NA
     }
     ##message("ctd.R:733 dataNew[['pressure']]: ", paste(dataNew[['pressure']], collapse=" "))
@@ -1990,7 +1990,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
         oceDebug(debug, "start:", head(start), "... (after trimming)\n")
         oceDebug(debug, "end:", head(end), "... (after trimming)\n")
         if (length(end) > length(start))
-            end <- end[1:length(start)]
+            end <- end[seq_along(start)]
         keep <- abs(end - start) >= minLength
         oceDebug(debug, "start:", head(start[keep]), "... (using minLength)\n")
         oceDebug(debug, "end:", head(end[keep]), "... (using minLength)\n")
@@ -2547,10 +2547,10 @@ ctdUpdateHeader <- function (x, debug=FALSE)
         stop("there are no data in this CTD object")
     replaceHeaderElement<-function(h, match, new)
     {
-        for (i in 1:length(h)) {
+        for (i in seq_along(h)) {
             if (length(grep(match, h[i], perl=TRUE, useBytes=TRUE))) {
-                h[i] <- new;
-                break;
+                h[i] <- new
+                break
             }
         }
         return(h)
@@ -3134,7 +3134,7 @@ setMethod(f="plot",
                                        "pts"=32,
                                        "rhots"=33))
 
-              for (w in 1:length(which)) {
+              for (w in seq_along(which)) {
                   if (is.na(which[w])) {
                       if (whichOrig[w] %in% names(x@data)) {
                           plotProfile(x, xtype=x[[whichOrig[w]]], xlab=whichOrig[w],
@@ -4636,7 +4636,7 @@ plotProfile <- function (x,
             }
         }
     } else if (xtype == "index") {
-        index <- 1:length(x[["pressure"]])
+        index <- seq_along(x[["pressure"]])
         plot(index, x[["pressure"]], ylim=ylim, col=col, lty=lty, xlab="", ylab=yname,
              type=type, xaxs=xaxs, yaxs=yaxs, cex=cex, pch=pch, axes=FALSE)
         axis(3)
@@ -4655,7 +4655,7 @@ plotProfile <- function (x,
                      longitude=x[["longitude"]], latitude=x[["latitude"]], eos=eos)
         if (missing(densitylim))
             densitylim <- range(sig0, na.rm=TRUE)
-        look <- if (keepNA) 1:length(y) else !is.na(sig0) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(sig0) & !is.na(y)
         look <- as.vector(look)
         plot(sig0[look], y[look], xlim=densitylim, ylim=ylim, cex=cex, pch=pch,
              type=type, col=col.rho, lty=lty, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
@@ -4703,7 +4703,7 @@ plotProfile <- function (x,
         if (missing(densitylim))
             densitylim <- range(x[["sigmaTheta"]], na.rm=TRUE)
         st <- swSigmaTheta(x)
-        look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(st) & !is.na(y)
         look <- as.vector(look)
         plot(st[look], y[look],
              xlim=densitylim, ylim=ylim, col=col.rho, lty=lty, cex=cex, pch=pch,
@@ -4776,7 +4776,7 @@ plotProfile <- function (x,
                       side=3, line=axisNameLoc, cex=par("cex"))
             }
         } else {
-            look <- if (keepNA) 1:length(y) else !is.na(salinity) & !is.na(y)
+            look <- if (keepNA) seq_along(y) else !is.na(salinity) & !is.na(y)
             if (!add) {
                 plot(salinity[look], y[look],
                      xlim=Slim, ylim=ylim, lty=lty, cex=cex, pch=pch,
@@ -4847,7 +4847,7 @@ plotProfile <- function (x,
                 mtext(xlab, side=3, line=axisNameLoc, cex=par("cex"))
             }
         } else {
-            look <- if (keepNA) 1:length(y) else !is.na(conductivity) & !is.na(y)
+            look <- if (keepNA) seq_along(y) else !is.na(conductivity) & !is.na(y)
             if (!add) {
                 plot(conductivity[look], y[look],
                      xlim=Clim, ylim=ylim, lty=lty, cex=cex, pch=pch,
@@ -4916,7 +4916,7 @@ plotProfile <- function (x,
             oceDebug(debug, "line plot\n")
             ##message("ctd.R:4811")
             #browser()
-            look <- as.vector(if (keepNA) 1:length(y) else !is.na(xvar) & !is.na(y))
+            look <- as.vector(if (keepNA) seq_along(y) else !is.na(xvar) & !is.na(y))
             if (!add) {
                 oceDebug(debug, "add is FALSE so new plot\n")
                 if (ylimGiven) {
@@ -4963,7 +4963,7 @@ plotProfile <- function (x,
         }
     } else if (xtype == "Rrho" || xtype == "RrhoSF") {
         Rrho <- swRrho(x, sense=if (xtype=="Rrho") "diffusive" else "finger")
-        look <- if (keepNA) 1:length(y) else !is.na(Rrho) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(Rrho) & !is.na(y)
         if (!add) {
             if (ylimGiven) {
                 plot(Rrho, y[look], lty=lty,
@@ -5013,7 +5013,7 @@ plotProfile <- function (x,
                       side=3, line=axisNameLoc, cex=par("cex"))
             }
         } else {
-            look <- if (keepNA) 1:length(y) else !is.na(x[["temperature"]]) & !is.na(y)
+            look <- if (keepNA) seq_along(y) else !is.na(x[["temperature"]]) & !is.na(y)
             if (!add) {
                 plot(temperature[look], y[look], lty=lty,
                      xlim=Tlim, ylim=ylim, cex=cex, pch=pch,
@@ -5057,7 +5057,7 @@ plotProfile <- function (x,
                 mtext(resizableLabel(theta, "x", debug=debug-1),
                       side=3, line=axisNameLoc, cex=par("cex"))
         } else {
-            look <- if (keepNA) 1:length(y) else !is.na(theta) & !is.na(y)
+            look <- if (keepNA) seq_along(y) else !is.na(theta) & !is.na(y)
             if (!add) {
                 plot(theta[look], y[look], lty=lty,
                      xlim=Tlim, ylim=ylim, cex=cex, pch=pch,
@@ -5091,7 +5091,7 @@ plotProfile <- function (x,
     } else if (xtype == "sigmaTheta") {
         ## FIXME: do as theta above
         st <- swSigmaTheta(x)
-        look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(st) & !is.na(y)
         ## FIXME: if this works, extend to other x types
         look <- look & (min(ylim) <= y & y <= max(ylim))
         if (!add) {
@@ -5126,7 +5126,7 @@ plotProfile <- function (x,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "density") {
         rho <- swRho(x)
-        look <- if (keepNA) 1:length(y) else !is.na(rho) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(rho) & !is.na(y)
         ## FIXME: if this works, extend to other x types
         look <- look & (min(ylim) <= y & y <= max(ylim))
         if (!add) {
@@ -5167,7 +5167,7 @@ plotProfile <- function (x,
             warning("no valid sigma-0 data")
             return(invisible())
         }
-        look <- if (keepNA) 1:length(y) else !is.na(sig0) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(sig0) & !is.na(y)
         if (missing(densitylim))
             densitylim <- range(sig0, na.rm=TRUE)
         plot(sig0[look], y[look], lty=lty,
@@ -5199,7 +5199,7 @@ plotProfile <- function (x,
         N2[!is.finite(N2)] <- NA
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
-        look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(N2) & !is.na(y)
         if (0 == sum(look)) {
             warning("no valid N2 data")
             return(invisible())
@@ -5231,7 +5231,7 @@ plotProfile <- function (x,
         N2 <- swN2(x, df=df, eos=eos)
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
-        look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(N2) & !is.na(y)
         if (!add) {
             plot(N2[look], y[look], lty=lty,
                  xlim=N2lim, ylim=ylim, cex=cex, pch=pch,
@@ -5257,7 +5257,7 @@ plotProfile <- function (x,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "spice") {
         spice <-swSpice(x)
-        look <- if (keepNA) 1:length(y) else !is.na(spice) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(spice) & !is.na(y)
         if (!add) {
             plot(spice[look], y[look], lty=lty,
                  ylim=ylim, cex=cex, pch=pch,
@@ -5292,7 +5292,7 @@ plotProfile <- function (x,
         }
         if (missing(Slim)) Slim <- range(salinity, na.rm=TRUE)
         if (missing(Tlim)) Tlim <- range(temperature, na.rm=TRUE)
-        look <- if (keepNA) 1:length(y) else !is.na(temperature) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(temperature) & !is.na(y)
         plot(temperature[look], y[look],
              xlim=Tlim, ylim=ylim, col=col.temperature, lty=lty, cex=cex, pch=pch,
              type=type, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs)
@@ -5309,7 +5309,7 @@ plotProfile <- function (x,
         box()
         ## lines(temperature, y, col=col.temperature, lwd=lwd)
         par(new=TRUE)
-        look <- if (keepNA) 1:length(y) else !is.na(x[["salinity"]]) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(x[["salinity"]]) & !is.na(y)
         plot(salinity[look], y[look],
              xlim=Slim, ylim=ylim, col=col.salinity, lty=lty, cex=cex, pch=pch,
              type=type, xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs)
@@ -5334,7 +5334,7 @@ plotProfile <- function (x,
         w <- which(names(x@data) == xtype)
         if (length(w) < 1)
             stop("unknown xtype value (\"", xtype, "\")")
-        look <- if (keepNA) 1:length(y) else !is.na(x@data[[xtype]]) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(x@data[[xtype]]) & !is.na(y)
         dots <- list(...)
         ## message("names(dots)=", paste(names(dots), collapse=" "))
         if (!add) {

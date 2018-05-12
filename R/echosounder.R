@@ -529,7 +529,7 @@ setMethod(f="plot",
               oceDebug(debug, "which:", which, "\n")
               which <- oce.pmatch(which, list("zt image"=1, "zx image"=2, map=3))
               oceDebug(debug, "which:", which, "\n")
-              for (w in 1:length(which)) {
+              for (w in seq_along(which)) {
                   oceDebug(debug, "this which:", which[w], "\n")
                   if (which[w] == 1) {
                       time <- x[["time"]]

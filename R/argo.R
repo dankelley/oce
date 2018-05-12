@@ -457,7 +457,7 @@ setMethod(f="subset",
                   } else if (length(grep("profile", subsetString))) {
                       ## add profile into the data, then do as usual
                       tmp <- x@data
-                      tmp$profile <- 1:length(x@data$time)
+                      tmp$profile <- seq_along(x@data$time)
                       keep <- eval(substitute(subset), tmp, parent.frame(2))
                       rm(tmp)
                   } else if (length(grep("pressure", subsetString))) {

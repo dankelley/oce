@@ -99,7 +99,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## into parts by a deck unit.)
     frequency <- NA
     if (buf[1] == 0x10 && buf[2] == 0x02 && 96 == readBin(buf[3:4], "integer", n=1, size=2, signed=FALSE, endian="little")) {
-        oceDebug(debug, "have a header, but ignoring it for now\n");
+        oceDebug(debug, "have a header, but ignoring it for now\n")
         ## Comments like [p83] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
         cpuSoftwareVerNum <- as.integer(buf[13]) / 10 # CPUSoftwareVerNum [p83]
         dspSoftwareVerNum <- as.integer(buf[14]) / 10 # DSPSoftwareVerNum [p83]

@@ -573,7 +573,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
         cl <- contourLines(x=longitude[xx],
                            y=latitude[yy],
                            z=z, levels=levels[ilevel])
-        for (segment in 1:length(cl)) {
+        for (segment in seq_along(cl)) {
             if (length(cl) > 0) {
                 mapLines(cl[[segment]]$x, cl[[segment]]$y,
                          lty=lty[ilevel], lwd=lwd[ilevel], col=col[ilevel])

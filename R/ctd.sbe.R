@@ -922,7 +922,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             sampleIntervalUnits <- units
         } else if (0 < (r<-regexpr("^. sample rate =", lline))) {
             ## * sample rate = 1 scan every 5.0 seconds
-            rtmp <- lline;
+            rtmp <- lline
             rtmp <- sub("(.*) sample rate = ", "", rtmp)
             rtmp <- sub("scan every ", "", rtmp)
             rtmp <- strsplit(rtmp, " ")
@@ -934,10 +934,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                 ;
             } else {
                 if (rtmp[[1]][3] == "minutes") {
-                    sampleInterval <- sampleInterval / 60;
+                    sampleInterval <- sampleInterval / 60
                 } else {
                     if (rtmp[[1]][3] == "hours") {
-                        sampleInterval <- sampleInterval / 3600;
+                        sampleInterval <- sampleInterval / 3600
                     } else {
                         warning("cannot understand `", rtmp[[1]][2], "' as a unit of time for sampleInterval")
                     }
@@ -1041,7 +1041,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                 C <- data$conductivity
                 if (!is.null(res@metadata$units$conductivity)) {
                     unit <- as.character(res@metadata$units$conductivity$unit)
-                    ## Conductivity Ratio is conductivity divided by 42.914 mS/cm (Culkin and Smith 1980;
+                    ## Conductivity Ratio is conductivity divided by 42.914 mS/cm (Culkin and Smith 1980
                     ## see ?read.rsk for full citation)
                     if ("uS/cm" == unit) {
                         C <- C / 429.14

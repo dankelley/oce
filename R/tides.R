@@ -433,8 +433,8 @@ tidemVuf <- function(t, j, latitude=NULL)
     }
     if (length(v) < length(u)) {
         warning("trimming u and f to get same length as v -- this is a bug")
-        u <- u[1:length(v)]
-        f <- f[1:length(v)]
+        u <- u[seq_along(v)]
+        f <- f[seq_along(v)]
     }
     list(v=v, u=u, f=f)
 }

@@ -1157,7 +1157,7 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
     } else if (coord == "enu") {
         ;
     } else {
-        warning("adv.2enu cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
+        warning("toEnuAdv cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
     oceDebug(debug, "} # adv.2enu()\n", unindent=1)
     x

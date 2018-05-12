@@ -2993,7 +2993,7 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
         ##20171014 message("leaps C ", paste(leaps, collapse=" "))
         t <- as.POSIXct("1999-08-22 00:00:00", tz="UTC") + 86400*7*t[, 1] + t[, 2]
         ##>message("initially, t=", paste(t, collapse=" "))
-        for (l in 1:length(leaps)) {
+        for (l in seq_along(leaps)) {
             t <- t - ifelse(t >= leaps[l], 1, 0)
             ##20171014 message("l=", l, ", leaps[l]=", leaps[l],
             ##20171014         ", t=", paste(t, collapse=" "), ", t>=leaps[l] ", t>=leaps[l])
@@ -3120,7 +3120,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     thismar <- par('mar')
     par(mar=thismar+mar)
     if (debug > 1) {
-        cat("\n\nBEFORE expr, PAR IS:\n");
+        cat("\n\nBEFORE expr, PAR IS:\n")
         str(par())
     }
     mfg <- par('mfg')

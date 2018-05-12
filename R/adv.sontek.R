@@ -245,7 +245,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (!res@metadata$compassInstalled)
             stop("cannot handle data files for ADV files that lack compass data")
 
-        res@metadata$recorderInstalled <- if (as.integer(hardwareConfiguration[6]) == 1) TRUE else FALSE;
+        res@metadata$recorderInstalled <- if (as.integer(hardwareConfiguration[6]) == 1) TRUE else FALSE
         oceDebug(debug, "recorderInstalled=", res@metadata$recorderInstalled, "\n")
 
         res@metadata$thermometerInstalled <- as.integer(hardwareConfiguration[7]) == 1
@@ -562,7 +562,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (is.character(by)) {
             subsamplingRate <- floor(0.5 + ctimeToSeconds(by) * res@metadata$samplingRate)
             oceDebug(debug, paste(" by = '", by, "' yields subsamplingRate=", subsamplingRate, "\n"), sep="")
-            samples <- 1:length(iii)
+            samples <- seq_along(iii)
             oceDebug(debug, "before interpreting 'by', iii true for", sum(iii), "cases\n")
             iii <- iii & !(samples %% subsamplingRate)
             oceDebug(debug, "after  interpreting 'by', iii true for", sum(iii), "cases\n")
