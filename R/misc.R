@@ -1372,7 +1372,7 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
     text(-m, 0, "R=-1", pos=2)
     par(xpd=xpdOld)
     points(xSD, 0, pch=20, cex=1.5)
-    for (column in 1:ncol(y)) {
+    for (column in seq_len(ncol(y))) {
         ySD <- sd(y[, column], na.rm=TRUE)
         R <- cor(x, y[, column])^2
         ##cat("column=", column, "ySD=", ySD, "R=", R, "col=", col[column], "pch=", pch[column], "\n")
@@ -3207,9 +3207,9 @@ fillGap <- function(x, method=c("linear"), rule=1)
         res <- do_fill_gap_1d(x, rule)
     } else if (is.matrix(x))  {
         res <- x
-        for (col in 1:ncol(x))
+        for (col in seq_len(ncol(x)))
             res[, col] <- do_fill_gap_1d(x[, col], rule)
-        for (row in 1:nrow(x))
+        for (row in seq_len(nrow(x)))
             res[row, ] <- do_fill_gap_1d(x[row, ], rule)
     } else {
         stop("only works if 'x' is a vector or a matrix")
