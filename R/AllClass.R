@@ -776,26 +776,26 @@ initializeFlagSchemeInternal <- function(object, name=NULL, mapping=NULL, debug=
     if (!is.null(object@metadata$flagScheme))
         warning("cannot alter a flagScheme that is already is place")
     else {
-        predefined <- c("WHP CTD", "WHP bottle", "argo")
+        predefined <- c("argo", "BODC", "WHP bottle", "WHP CTD")
         if (name %in% predefined) {
-            if (name == "WHP CTD") {
-                if (!is.null(mapping))
-                    stop("cannot redefine the mapping for existing scheme named \"WHP CTD\"")
-                mapping <- list(not_calibrated=1, acceptable=2, questionable=3,
-                                bad=4, not_reported=5, interpolated=6,
-                                despiked=7, missing=9)
-            } else if (name == "WHP bottle") {
-                if (!is.null(mapping))
-                    stop("cannot redefine the mapping for existing scheme named \"WHP bottle\"")
-                mapping <- list(no_information=1, no_problems_noted=2, leaking=3,
-                                did_not_trip=4, not_reported=5, discrepency=6,
-                                unknown_problem=7, did_not_trip=8, no_sample=9)
-            } else if (name == "argo") {
-                if (!is.null(mapping))
-                    stop("cannot redefine the mapping for existing scheme named \"argo\"")
+            if (!is.null(mapping))
+                stop("cannot redefine the mapping for existing scheme named \"", name, "\"")
+            if (name == "argo") {
                 mapping <- list(not_assessed=0, passed_all_tests=1, probably_good=2,
                                 probably_bad=3, bad=4, averaged=7,
                                 interpolated=8, missing=9)
+            } else  if (name == "BODC") {
+                mapping <- list(no_quality_control=0, good=1, probably_good=2,
+                                probably_bad=3, bad=4, changed=5, below_detection=6,
+                                in_excess=7, interpolated=8, missing=9)
+            } else if (name == "WHP bottle") {
+                mapping <- list(no_information=1, no_problems_noted=2, leaking=3,
+                                did_not_trip=4, not_reported=5, discrepency=6,
+                                unknown_problem=7, did_not_trip=8, no_sample=9)
+            } else if (name == "WHP CTD") {
+                mapping <- list(not_calibrated=1, acceptable=2, questionable=3,
+                                bad=4, not_reported=5, interpolated=6,
+                                despiked=7, missing=9)
             } else {
                 stop("internal coding error in initializeFlagSchemeInternal(); please report to developer")
             }

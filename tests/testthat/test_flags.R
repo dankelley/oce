@@ -11,24 +11,30 @@ test_that("argument existence", {
 
 test_that("predefined flag schemes", {
           data(ctd)
-          a <- initializeFlagScheme(ctd, "WHP CTD")
-          expect_equal(a[["flagScheme"]],
-                       list(name="WHP CTD",
-                            mapping=list(not_calibrated=1, acceptable=2, questionable=3,
-                                         bad=4, not_reported=5, interpolated=6,
-                                         despiked=7, missing=9)))
-          a <- initializeFlagScheme(ctd, "WHP bottle")
-          expect_equal(a[["flagScheme"]],
-                       list(name="WHP bottle",
-                            mapping=list(no_information=1, no_problems_noted=2, leaking=3,
-                                         did_not_trip=4, not_reported=5, discrepency=6,
-                                         unknown_problem=7, did_not_trip=8, no_sample=9)))
           a <- initializeFlagScheme(ctd, "argo")
           expect_equal(a[["flagScheme"]],
                        list(name="argo",
                             mapping=list(not_assessed=0, passed_all_tests=1, probably_good=2,
                                          probably_bad=3, bad=4, averaged=7,
                                          interpolated=8, missing=9)))
+          a <- initializeFlagScheme(ctd, "BODC")
+          expect_equal(a[["flagScheme"]],
+                       list(name="BODC",
+                            mapping=list(no_quality_control=0, good=1, probably_good=2,
+                                         probably_bad=3, bad=4, changed=5, below_detection=6,
+                                         in_excess=7, interpolated=8, missing=9)))
+          a <- initializeFlagScheme(ctd, "WHP bottle")
+          expect_equal(a[["flagScheme"]],
+                       list(name="WHP bottle",
+                            mapping=list(no_information=1, no_problems_noted=2, leaking=3,
+                                         did_not_trip=4, not_reported=5, discrepency=6,
+                                         unknown_problem=7, did_not_trip=8, no_sample=9)))
+          a <- initializeFlagScheme(ctd, "WHP CTD")
+          expect_equal(a[["flagScheme"]],
+                       list(name="WHP CTD",
+                            mapping=list(not_calibrated=1, acceptable=2, questionable=3,
+                                         bad=4, not_reported=5, interpolated=6,
+                                         despiked=7, missing=9)))
 })
 
 test_that("user-created flag scheme", {
