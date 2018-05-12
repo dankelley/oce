@@ -1,6 +1,6 @@
 ## DEVELOPER NOTE: keep in synch with R/AllClass.R and tests/testthat/test_flags.R
 
-#' @title Establish a data-quality scheme for a <%=class%> object
+#' @title Establish a data-quality scheme for an oce object
 #'
 #' @description
 #' This function stores add an item named \code{flagScheme}
@@ -16,7 +16,6 @@
 #' (see \dQuote{Details}.
 #'
 #' @details
-#' \strong{General:}
 #' The following pre-defined schemes are available (note that the
 #' names are simplified from the phrases used in defining
 #' documentation):
@@ -57,9 +56,6 @@
 #' See [4] for a deeper explanation of the meanings of these codes.
 #'
 #'}
-#'
-#' \strong{Specific to the <%=class%> objects:}
-#' <%=details%>
 #'
 #' @section Caution:
 #' This function was added in early May, 2018, and is likely to undergo

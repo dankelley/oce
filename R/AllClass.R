@@ -758,7 +758,6 @@ setGeneric("initializeFlagScheme", function(object, name=NULL, mapping=NULL, deb
            standardGeneric("initializeFlagScheme")
          })
 
-#' @templateVar class oce
 #' @templateVar details There are no pre-defined \code{scheme}s for this object class.
 #' @template initializeFlagSchemeTemplate
 setMethod("initializeFlagScheme",

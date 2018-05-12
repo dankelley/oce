@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{initializeFlagScheme}
 \alias{initializeFlagScheme}
-\title{Establish a data-quality scheme for a oce object}
+\title{Establish a data-quality scheme for an oce object}
 \usage{
 initializeFlagScheme(object, name = NULL, mapping = NULL, debug = 0)
 }
@@ -35,7 +35,6 @@ that may be specialized to the class of \code{object}
 (see \dQuote{Details}.
 }
 \details{
-\strong{General:}
 The following pre-defined schemes are available (note that the
 names are simplified from the phrases used in defining
 documentation):
@@ -76,9 +75,6 @@ See [4] for a deeper explanation of the meanings of these codes.
 See [4] for a deeper explanation of the meanings of these codes.
 
 }
-
-\strong{Specific to the oce objects:}
-There are no pre-defined \code{scheme}s for this object class.
 }
 \section{Caution}{
 
