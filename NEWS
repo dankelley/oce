@@ -1,4 +1,6 @@
 0.9-24
+- flag improvements
+- rotateAboutZ() added
 - concatenate() added
 - read.woa() added
 - colormap() value has new item 'colfunction'

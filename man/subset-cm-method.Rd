@@ -33,6 +33,7 @@ Other things related to \code{cm} data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
   \code{\link{cm-class}}, \code{\link{cm}},
   \code{\link{plot,cm-method}}, \code{\link{read.cm}},
+  \code{\link{rotateAboutZ}},
   \code{\link{summary,cm-method}}
 
 Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
