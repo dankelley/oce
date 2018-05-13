@@ -65,7 +65,8 @@ to find items more directly, using \code{\link{oceGetData}} and
 Other things related to \code{cm} data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
   \code{\link{cm}}, \code{\link{plot,cm-method}},
-  \code{\link{read.cm}}, \code{\link{subset,cm-method}},
+  \code{\link{read.cm}}, \code{\link{rotateAboutZ}},
+  \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 
 Other classes provided by \code{oce}: \code{\link{adp-class}},

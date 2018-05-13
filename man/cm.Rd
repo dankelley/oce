@@ -36,6 +36,7 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
 Other things related to \code{cm} data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
   \code{\link{cm-class}}, \code{\link{plot,cm-method}},
-  \code{\link{read.cm}}, \code{\link{subset,cm-method}},
+  \code{\link{read.cm}}, \code{\link{rotateAboutZ}},
+  \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }

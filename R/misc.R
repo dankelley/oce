@@ -2457,6 +2457,89 @@ resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceD
 }
 
 
+#' Rotate velocity components within an oce object
+#'
+#' Alter the horizontal components of velocities in \code{adp},
+#' \code{adv} or \code{cm} objects, by applying a rotation about
+#' the vertical axis.
+#'
+#' @param x An oce object of class \code{adp}, \code{adv} or \code{cm}.
+#' @param angle The rotation angle about the z axis, in degrees counterclockwise.
+#' @author Dan Kelley
+#' @examples
+#' library(oce)
+#' par(mfcol=c(2, 3))
+#' # adp (acoustic Doppler profiler)
+#' data(adp)
+#' plot(adp, which="uv")
+#' mtext("adp", side=3, line=0, adj=1, cex=0.7)
+#' adpRotated <- rotateAboutZ(adp, 30)
+#' plot(adpRotated, which="uv")
+#' mtext("adp rotated 30 deg", side=3, line=0, adj=1, cex=0.7)
+#' # adv (acoustic Doppler velocimeter)
+#' data(adv)
+#' plot(adv, which="uv")
+#' mtext("adv", side=3, line=0, adj=1, cex=0.7)
+#' advRotated <- rotateAboutZ(adv, 125)
+#' plot(advRotated, which="uv")
+#' mtext("adv rotated 125 deg", side=3, line=0, adj=1, cex=0.7)
+#' # cm (current meter)
+#' data(cm)
+#' plot(cm, which="uv")
+#' mtext("cm", side=3, line=0, adj=1, cex=0.7)
+#' cmRotated <- rotateAboutZ(cm, 30)
+#' plot(cmRotated, which="uv")
+#' mtext("cm rotated 30 deg", side=3, line=0, adj=1, cex=0.7)
+#'
+#' @family things related to \code{adp} data
+#' @family things related to \code{adv} data
+#' @family things related to \code{cm} data
+rotateAboutZ <- function(x, angle)
+{
+    if (missing(angle))
+        stop("must supply angle")
+    S <- sin(angle * pi / 180)
+    C <- cos(angle * pi / 180)
+    rotation <- matrix(c(C, S, -S, C), nrow=2)
+    res <- x
+    allowedClasses <- c("adp", "adv", "cm")
+    if (!(class(x) %in% allowedClasses))
+        stop("cannot rotate for class \"", class(x), "\"; try one of: \"",
+             paste(allowedClasses, collapse="\" \""), "\")")
+    if (inherits(x, "adp")) {
+        if (x[["oceCoordinate"]] != "enu")
+            stop("cannot rotate adp unless coordinate system is 'enu'; see ?toEnu or ?xyzToEnu")
+        V <- x[["v"]]
+        ## Work through the bins, transforming a 3D array operation to a
+        ## sequence of 2D matrix operations.
+        for (j in seq_len(dim(V)[2])) {
+            uvr <- rotation %*% t(V[, j, 1:2])
+            V[, j, 1] <- uvr[1, ]
+            V[, j, 2] <- uvr[2, ]
+        }
+        res@data$v <- V
+    } else if (inherits(x, "adv")) {
+        if (x[["oceCoordinate"]] != "enu")
+            stop("cannot rotate adv unless coordinate system is 'enu'; see ?toEnu or ?xyzToEnu")
+        V <- x[["v"]]
+        uvr <- rotation %*% t(V[, 1:2])
+        V[, 1] <- uvr[1, ]
+        V[, 2] <- uvr[2, ]
+        res@data$v <- V
+    } else if (inherits(x, "cm")) {
+        uvr <- rotation %*% rbind(x@data$u, x@data$v)
+        res@data$u <- uvr[1, ]
+        res@data$v <- uvr[2, ]
+    } else {
+        stop("cannot rotate for class \"", class(x), "\"; try one of: \"",
+             paste(allowedClasses, collapse="\" \""), "\". (internal error: please report)")
+    }
+    ## Update processing log
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste("rotateAboutZ(x, angle=", angle, ")", sep=""))
+    res
+}
+
 #' Format a latitude-longitude pair
 #'
 #' Format a latitude-longitude pair, using "S" for negative latitudes, etc.

@@ -272,6 +272,40 @@ test_that("matrixSmooth", {
           expect_equal(mean(v[10,]), 127.9808743)
 })
 
+test_that("rotateAboutZ adp", {
+          data(adp)
+          v11 <- adp[["v"]][1, 1, ]
+          angle <- 45
+          adpRotated <- rotateAboutZ(adp, angle)
+          theta <- angle * pi / 180
+          m <- matrix(c(cos(theta), -sin(theta), sin(theta), cos(theta)), byrow=TRUE, nrow=2)
+          v11Rotated <- as.vector(m %*% cbind(v11[1:2]))
+          expect_equal(v11Rotated, adpRotated[["v"]][1, 1, 1:2])
+})
+
+test_that("rotateAboutZ adv", {
+          data(adv)
+          v1 <- adv[["v"]][1, ]
+          angle <- 45
+          advRotated <- rotateAboutZ(adv, angle)
+          theta <- angle * pi / 180
+          m <- matrix(c(cos(theta), -sin(theta), sin(theta), cos(theta)), byrow=TRUE, nrow=2)
+          v1Rotated <- as.vector(m %*% cbind(v1[1:2]))
+          expect_equal(v1Rotated, advRotated[["v"]][1, 1:2])
+})
+
+test_that("rotateAboutZ cm", {
+          data(cm)
+          u1 <- cm[["u"]][1]
+          v1 <- cm[["v"]][1]
+          angle <- 45
+          cmRotated <- rotateAboutZ(cm, angle)
+          theta <- angle * pi / 180
+          m <- matrix(c(cos(theta), -sin(theta), sin(theta), cos(theta)), byrow=TRUE, nrow=2)
+          uvRotated <- as.vector(m %*% cbind(c(u1, v1)))
+          expect_equal(uvRotated, c(cmRotated[["u"]][1], cmRotated[["v"]][1]))
+})
+
 test_that("runlm", {
           ## Test for same values after rewriting the C code in C++.
           x <- 1:8
