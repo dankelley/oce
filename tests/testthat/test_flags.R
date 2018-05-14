@@ -69,7 +69,7 @@ test_that("ctd flag scheme action", {
           expect_equal(a[["temperatureFlag"]], b[["temperatureFlag"]])
 })
 
-test_that("[[ and [[<- work with ctd flags", {
+test_that("[[ and [[<- with ctd flags", {
           data(section)
           ctd <- section[["station", 100]]
           expect_equal(c(2,2,2,2,2,3), ctd[["salinityFlag"]][1:6])
@@ -80,7 +80,7 @@ test_that("[[ and [[<- work with ctd flags", {
           expect_equal(is.na(ctd[["salinity"]][1:6]), c(FALSE, TRUE, FALSE, FALSE, FALSE, TRUE))
 })
 
-test_that("handleFLags works with ctd data", {
+test_that("handleFLags with ctd data (positive numeric flag)", {
           data(section)
           ctd <- section[["station", 100]]
           ## this stn has a few points with salinityFlag==3
@@ -97,9 +97,25 @@ test_that("handleFLags works with ctd data", {
                        sum(ctd[['salinityFlag']] == 4 | ctd[['salinityFlag']] == 5, na.rm=TRUE))
 })
 
+test_that("handleFLags with ctd data (negative numeric flag)", {
+          data(section)
+          i <- 100 # uncomment loop for more extensive, but slower, test
+          ##for (i in seq_along(section[["station"]])) {
+              ctd <- section[["station", i]]
+              ## this stn has a few points with salinityFlag==3
+              a <- handleFlags(ctd, flags=list(salinity=c(1, 3:9)))
+              expect_error(handleFlags(ctd, flags=list(salinity=-2)),
+                           "must use initializeFlagScheme\\(\\) before using negative flags")
+              b <- initializeFlagScheme(a, "WHP bottle")
+              b <- handleFlags(b, flags=list(salinity=-2))
+              expect_equal(a[["data"]], b[["data"]])
+          ##}
+})
+
+
 ## FIXME: once read.argo sets flags, add tests on named flag values, not just integers
 
-test_that("handleFLags works with the built-in argo dataset (numeric flags)", {
+test_that("handleFLags with the built-in argo dataset (numeric flags)", {
           data(argo)
           argoNew <- handleFlags(argo, flags=list(salinity=4:5))
           ## Test a few that are identified by printing some values
@@ -126,7 +142,7 @@ test_that("handleFLags works with the built-in argo dataset (numeric flags)", {
                        sum(argo[['salinityFlag']] == 4 | argo[['salinityFlag']] == 5, na.rm=TRUE))
 })
 
-test_that("handleFLags works with the built-in argo dataset (named flags)", {
+test_that("handleFLags with the built-in argo dataset (named flags)", {
           data(argo)
           # list(not_assessed=0,passed_all_tests=1,probably_good=2,probably_bad=3,bad=4,averaged=7,interpolated=8,missing=9))
           a <- handleFlags(argo,
@@ -138,7 +154,7 @@ test_that("handleFLags works with the built-in argo dataset (named flags)", {
           expect_equal(a[["salinity"]], b[["salinity"]])
 })
 
-test_that("handleFLags works with the built-in section dataset", {
+test_that("handleFLags with the built-in section dataset", {
           data(section)
           SECTION <- handleFlags(section)
           ## Inspection reveals that salinity are triggered in the first CTD entry, i.e.
@@ -154,7 +170,7 @@ test_that("handleFLags works with the built-in section dataset", {
           expect_equal(stn1[["salinityBottle"]][replace], STN1[["salinity"]][replace])
 })
 
-test_that("does subset() work on ctd flags? (issue 1410)", {
+test_that("ctd flag with subset() (issue 1410)", {
           data(section)
           stn <- section[["station", 100]]
           stnTopKm <- subset(stn, pressure < 1000)
@@ -165,7 +181,7 @@ test_that("does subset() work on ctd flags? (issue 1410)", {
           }
 })
 
-test_that("does subset() work on odf flags? (issue 1410)", {
+test_that("odf flag with subset() (issue 1410)", {
           file <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce")
           odf <- expect_warning(read.odf(file), "should be unitless")
           ## # Find a region with interesting flags
@@ -186,7 +202,7 @@ test_that("does subset() work on odf flags? (issue 1410)", {
           }
 })
 
-test_that("does subset() work on adp flags? (issue 1410)", {
+test_that("adp flag with subset() (issue 1410)", {
           data(adp)
           v <- adp[["v"]]
           ## I'm fixing this in the 'develop' branch, which as of
@@ -212,9 +228,7 @@ test_that("does subset() work on adp flags? (issue 1410)", {
           expect_equal(adp[["vFlag"]][look, , ], sub[["vFlag"]]) # flag values ok?
 })
 
-
-
-test_that("set flags on section object", {
+test_that("initializeFlagScheme with section", {
           data(section)
           a <- initializeFlagScheme(section, "WHP bottle")
           expect_equal(a[["station", 1]][["flagScheme"]],
