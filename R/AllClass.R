@@ -571,12 +571,13 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
                     sign <- rep(1, length(flagsThis))
                     for (iflag in seq_along(flagsThis)) {
                         f <- flagsThis[iflag]
+                        oceDebug(debug, "f=\"", f, "\"\n", sep="")
                         if ("-" == substr(f, 1, 1)) {
                             sign[iflag] <- -1
                             flagsThis[iflag] <- substr(f, 2, nchar(f))
                         }
-                        if (!(f %in% schemeMappingNames))
-                            stop("flag \"", f, "\" is not part of the flagScheme mapping; try one of: \"",
+                        if (!(flagsThis[iflag] %in% schemeMappingNames))
+                            stop("flag \"", flagsThis[iflag], "\" is not part of the flagScheme mapping; try one of: \"",
                                  paste(schemeMappingNames, collapse="\", \""), "\"")
                     }
                     oceDebug(debug, "flagsThis before sign adjustment: ", paste(flagsThis, collapse=" "), "\n")
@@ -609,7 +610,7 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
                 actionsThis <- if (all) actions[[1]] else actions[[name]]
                 ##> message("flagsThis:");print(flagsThis)
                 if (name %in% names(object@metadata$flags)) {
-                    oceDebug(debug, "name: \"", name, "\"", sep="")
+                    oceDebug(debug, "name: \"", name, "\"\n", sep="")
                     actionNeeded <- object@metadata$flags[[name]] %in% flagsThis
                     ##> if (name == "salinity") browser()
                     ##oceDebug(debug, "actionNeeded: ", paste(actionNeeded, collapse=" "))

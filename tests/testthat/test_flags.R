@@ -1,6 +1,8 @@
 library(oce)
 context("Flags")
 
+extensive <- TRUE
+
 test_that("argument existence", {
           data(ctd)
           expect_error(initializeFlagScheme(ctd, mapping=list(unknown=1, good=2, bad=3)),
@@ -99,21 +101,19 @@ test_that("handleFLags with ctd data (positive numeric flag)", {
 
 test_that("handleFLags with ctd data (negative numeric flag)", {
           data(section)
-          i <- 100 # uncomment loop for more extensive, but slower, test
-          ##for (i in seq_along(section[["station"]])) {
+          ## stn 100 has a few points with salinityFlag==3
+          for (i in if(extensive)seq_along(section[["station"]]) else 100) {
               ctd <- section[["station", i]]
-              ## this stn has a few points with salinityFlag==3
               a <- handleFlags(ctd, flags=list(salinity=c(1, 3:9)))
               expect_error(handleFlags(ctd, flags=list(salinity=-2)),
                            "must use initializeFlagScheme\\(\\) before using negative flags")
               b <- initializeFlagScheme(a, "WHP bottle")
               b <- handleFlags(b, flags=list(salinity=-2))
               expect_equal(a[["data"]], b[["data"]])
-          ##}
+              c <- handleFlags(b, flags=list(salinity="-no_problems_noted"))
+              expect_equal(a[["data"]], c[["data"]])
+          }
 })
-
-
-## FIXME: once read.argo sets flags, add tests on named flag values, not just integers
 
 test_that("handleFLags with the built-in argo dataset (numeric flags)", {
           data(argo)
@@ -144,7 +144,6 @@ test_that("handleFLags with the built-in argo dataset (numeric flags)", {
 
 test_that("handleFLags with the built-in argo dataset (named flags)", {
           data(argo)
-          # list(not_assessed=0,passed_all_tests=1,probably_good=2,probably_bad=3,bad=4,averaged=7,interpolated=8,missing=9))
           a <- handleFlags(argo,
                            flags=list(salinity=c("not_assessed","probably_bad","bad",
                                                  "averaged","interpolated","missing")))
