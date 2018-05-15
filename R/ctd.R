@@ -164,8 +164,8 @@ NULL
 #' suspicious, or bad data. Any data not flagged as good are set
 #' to \code{NA} in the returned value. (An exception is for salinity:
 #' if the item named \code{salinity} has a bad flag but \code{salinityBottle}
-#' has a good flag, then the bottle value is substituted, and a
-#' warning is issued.) Since WHP flag codes run
+#' has a good flag, then the bottle value is substituted.)
+#' Since WHP flag codes run
 #' from 1 to 9, this default is equivalent to
 #' setting \code{flags=list(all=c(1, 3:9))} along with
 #' \code{action=list("NA")}.
@@ -186,18 +186,10 @@ NULL
 #' # and only apply this action to salinity.
 #' STN <- handleFlags(stn, flags=list(salinity=c(1, 4:9)))
 #'
-#' # 3. A Canadian Department of Fisheries and Oceans convention for
-#' # some of its data files lists flags as 0=unchecked, 1=good,
-#' # 2=uncertain, 3=doubtful, 4=wrong, and 5=changed, so a
-#' # trusting arrangement would be to discard 2:4, and a more
-#' # cautious approach would be to also discard 0.
-#' STN <- handleFlags(stn, flags=list(2:4))
-#' STN <- handleFlags(stn, flags=list(c(0,2:4)))
-#'
-#' # 4. Use smoothed TS relationship to nudge questionable data.
+#' # 3. Use smoothed TS relationship to nudge questionable data.
 #' # This is not a recommended procedure, but rather just a simple
 #' # illustration of how to supply a function for an action.
-#' f<-function(x) {
+#' f <- function(x) {
 #'   S <- x[["salinity"]]
 #'   T <- x[["temperature"]]
 #'   df <- 0.5 * length(S) # smooths a bit

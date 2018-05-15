@@ -16,9 +16,15 @@ items with names of entries in the \code{data} slot of \code{object},
 or (b) a single unnamed item. In the first case, the attention is
 focussed on the named items, while in the second case the
 all the data in the \code{object}'s \code{data} slot are examined.
-Each element in the list must be set to an integer or vector of integers,
-specifying conditions to be met before actions are to be taken.
-See \dQuote{Details} for the default that is used if \code{flags} is not supplied.}
+Each element in the list must be a vector of one or more integers
+or character strings that define the flags upon which
+\code{handleFlags} will focus. A negative value indicates
+logical reversal, i.e. if the possible flag values are 1 through 9,
+then specifying \code{flag=-2} is equivalent to specifying
+\code{flag=c(1,3:9)}. Character strings are only permitted
+if \code{\link{initializeFlagScheme}} has been used to set up
+a mapping between flag name and flag numerical value for
+\code{object}. See \dQuote{Details} and \dQuote{Examples}.}
 
 \item{actions}{An optional \code{\link{list}} that contains items with
 names that match those in the \code{flags} argument.  If \code{actions}
