@@ -565,48 +565,47 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
                 ##> message("name: ", name, ", flags: ", paste(object@metadata$flags[[name]], collapse=" "))
                 flagsThis <- if (all) flags[[1]] else flags[[name]]
                 oceDebug(debug, "before converting to numbers, flagsThis=", paste(flagsThis, collapse=","), "\n")
-                ## Convert flags to numerical values
-                if (is.character(flagsThis)) {
-                    oceDebug(debug, "flags are character strings\n")
-                    sign <- rep(1, length(flagsThis))
-                    for (iflag in seq_along(flagsThis)) {
-                        f <- flagsThis[iflag]
-                        oceDebug(debug, "f=\"", f, "\"\n", sep="")
-                        if ("-" == substr(f, 1, 1)) {
-                            sign[iflag] <- -1
-                            flagsThis[iflag] <- substr(f, 2, nchar(f))
-                        }
-                        if (!(flagsThis[iflag] %in% schemeMappingNames))
-                            stop("flag \"", flagsThis[iflag], "\" is not part of the flagScheme mapping; try one of: \"",
-                                 paste(schemeMappingNames, collapse="\", \""), "\"")
-                    }
-                    oceDebug(debug, "flagsThis before sign adjustment: ", paste(flagsThis, collapse=" "), "\n")
-                    flagsThis <- sign * as.numeric(object@metadata$flagScheme$mapping[flagsThis])
-                    oceDebug(debug, "sign: ", paste(sign, collapse=" "), "\n")
-                    oceDebug(debug, "flagsThis after sign adjustment: ", paste(flagsThis, collapse=" "), "\n")
-                }
-                if (debug > 1) {
-                    message("before any() for neg, flagsThis:")
-                    print(flagsThis)
-                }
-
-                ## Handle negative flags (only works if flagScheme exists)
-                if (any(flagsThis < 0)) {
-                    if (!all(flagsThis < 0))
-                        stop("cannot mix positive and negative flag values")
-                    if (is.null(object@metadata$flagScheme))
-                        stop("must use initializeFlagScheme() before using negative flags")
-                    flagsOrig <- flags
-                    knownFlags <- as.numeric(object@metadata$flagScheme$mapping)
-                    which((-knownFlags) %in% knownFlags)
-                    flagsThis <- knownFlags[-intersect(-flagsThis, knownFlags)]
-                    if (debug > 1) {
-                        message("flags:     ", paste(flagsThis, collapse=" "))
-                        message("flagsOrig: ", paste(flagsOrig, collapse=" "))
-                    }
-                }
-
-                oceDebug(debug, "after converting to numbers, flagsThis= ", paste(flagsThis, collapse=","), "\n")
+                ##. ## Convert flags to numerical values
+                ##. if (is.character(flagsThis)) {
+                ##.     oceDebug(debug, "flags are character strings\n")
+                ##.     sign <- rep(1, length(flagsThis))
+                ##.     for (iflag in seq_along(flagsThis)) {
+                ##.         f <- flagsThis[iflag]
+                ##.         oceDebug(debug, "f=\"", f, "\"\n", sep="")
+                ##.         if ("-" == substr(f, 1, 1)) {
+                ##.             sign[iflag] <- -1
+                ##.             flagsThis[iflag] <- substr(f, 2, nchar(f))
+                ##.         }
+                ##.         if (!(flagsThis[iflag] %in% schemeMappingNames))
+                ##.             stop("flag \"", flagsThis[iflag], "\" is not part of the flagScheme mapping; try one of: \"",
+                ##.                  paste(schemeMappingNames, collapse="\", \""), "\"")
+                ##.     }
+                ##.     oceDebug(debug, "flagsThis before sign adjustment: ", paste(flagsThis, collapse=" "), "\n")
+                ##.     flagsThis <- sign * as.numeric(object@metadata$flagScheme$mapping[flagsThis])
+                ##.     oceDebug(debug, "sign: ", paste(sign, collapse=" "), "\n")
+                ##.     oceDebug(debug, "flagsThis after sign adjustment: ", paste(flagsThis, collapse=" "), "\n")
+                ##. }
+                ##. if (debug > 1) {
+                ##.     message("before any() for neg, flagsThis:")
+                ##.     print(flagsThis)
+                ##. }
+                ##.
+                ##. ## Handle negative flags (only works if flagScheme exists)
+                ##. if (any(flagsThis < 0)) {
+                ##.     if (!all(flagsThis < 0))
+                ##.         stop("cannot mix positive and negative flag values")
+                ##.     if (is.null(object@metadata$flagScheme))
+                ##.         stop("must use initializeFlagScheme() before using negative flags")
+                ##.     flagsOrig <- flags
+                ##.     knownFlags <- as.numeric(object@metadata$flagScheme$mapping)
+                ##.     which((-knownFlags) %in% knownFlags)
+                ##.     flagsThis <- knownFlags[-intersect(-flagsThis, knownFlags)]
+                ##.     if (debug > 1) {
+                ##.         message("flags:     ", paste(flagsThis, collapse=" "))
+                ##.         message("flagsOrig: ", paste(flagsOrig, collapse=" "))
+                ##.     }
+                ##. }
+                ##. oceDebug(debug, "after converting to numbers, flagsThis= ", paste(flagsThis, collapse=","), "\n")
                 actionsThis <- if (all) actions[[1]] else actions[[name]]
                 ##> message("flagsThis:");print(flagsThis)
                 if (name %in% names(object@metadata$flags)) {
@@ -759,15 +758,15 @@ initializeFlagsInternal <- function(object, name=NULL, value=NULL, debug=getOpti
     if (!is.null(object@metadata$flags[[name]])) {
         warning("cannot re-initialize flags; use setFlags() to alter values")
     } else {
-        if (is.character(value)) {
-            if (is.null(object@metadata$flagScheme))
-                stop("cannot use character value because object has no flagScheme in its metadata")
-            if (!(value %in% names(object@metadata$flagScheme$mapping)))
-                stop("\"", value, "\" is not in the object's flagScheme; try one of: \"",
-                     paste(names(object@metadata$flagScheme$mapping), collapse="\", \""),
-                     "\"")
-            value <- object@metadata$flagScheme$mapping[[value]]
-        }
+        ##. if (is.character(value)) {
+        ##.     if (is.null(object@metadata$flagScheme))
+        ##.         stop("cannot use character value because object has no flagScheme in its metadata")
+        ##.     if (!(value %in% names(object@metadata$flagScheme$mapping)))
+        ##.         stop("\"", value, "\" is not in the object's flagScheme; try one of: \"",
+        ##.              paste(names(object@metadata$flagScheme$mapping), collapse="\", \""),
+        ##.              "\"")
+        ##.     value <- object@metadata$flagScheme$mapping[[value]]
+        ##. }
         if (!(name %in% names(object@data)))
             stop("name=\"", name, "\" is not in the data slot of object; try one of: \"",
                  paste(name(object@data), collapse="\", \""), "\"")

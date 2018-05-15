@@ -157,18 +157,6 @@ NULL
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle Flags in CTD Objects
-#' @details
-#' If \code{flags} and \code{actions} are not provided, the
-#' default is to use WHP (World Hydrographic Program) flags [1], in which the
-#' value 2 indicates good data, and other values indicate either unchecked,
-#' suspicious, or bad data. Any data not flagged as good are set
-#' to \code{NA} in the returned value. (An exception is for salinity:
-#' if the item named \code{salinity} has a bad flag but \code{salinityBottle}
-#' has a good flag, then the bottle value is substituted.)
-#' Since WHP flag codes run
-#' from 1 to 9, this default is equivalent to
-#' setting \code{flags=list(all=c(1, 3:9))} along with
-#' \code{action=list("NA")}.
 #' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @template handleFlagsTemplate
 #' @references
@@ -179,16 +167,15 @@ NULL
 #' stn <- section[["station", 100]]
 #' # 1. Default: anything not flagged as 2 is set to NA, to focus
 #' # solely on 'good', in the World Hydrographic Program scheme.
-#' STN <- handleFlags(stn)
-#' data.frame(old=stn[['salinity']], flag=stn[['salinityFlag']], new=STN[['salinity']])
+#' STN1 <- handleFlags(stn, flags=list(c(1, 3:9)))
+#' data.frame(old=stn[["salinity"]], new=STN1[["salinity"]], salinityFlag=stn[["salinityFlag"]])
 #'
-#' # 2. A less restrictive case: include also 'questionable' data,
-#' # and only apply this action to salinity.
-#' STN <- handleFlags(stn, flags=list(salinity=c(1, 4:9)))
+#' # 2. Use bottle salinity, if it is good and ctd is bad
+#' replace <- 2 == stn[["salinityBottleFlag"]] && 2 != stn[["salinityFlag"]]
+#' S <- ifelse(replace, stn[["salinityBottle"]], stn[["salinity"]])
+#' STN2 <- oceSetData(stn, "salinity", S)
 #'
 #' # 3. Use smoothed TS relationship to nudge questionable data.
-#' # This is not a recommended procedure, but rather just a simple
-#' # illustration of how to supply a function for an action.
 #' f <- function(x) {
 #'   S <- x[["salinity"]]
 #'   T <- x[["temperature"]]
@@ -197,40 +184,26 @@ NULL
 #'   0.5 * (S + predict(sp, T)$y)
 #' }
 #' par(mfrow=c(1,2))
-#' STN <- handleFlags(stn, flags=list(salinity=c(1,3:9)), action=list(salinity=f))
+#' STN3 <- handleFlags(stn, flags=list(salinity=c(1,3:9)), action=list(salinity=f))
 #' plotProfile(stn, "salinity", mar=c(3, 3, 3, 1))
-#' p <- stn[['pressure']]
+#' p <- stn[["pressure"]]
 #' par(mar=c(3, 3, 3, 1))
-#' plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
+#' plot(STN3[["salinity"]] - stn[["salinity"]], p, ylim=rev(range(p)))
 #'
 #' @family things related to \code{ctd} data
 setMethod("handleFlags",
           c(object="ctd", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=list(), actions=list(), debug=integer()) {
+          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
-              ## Default to the World Hydrographic Program system, with
-              ## flags from 1 to 9, with flag=2 for acceptable data.
-              if (missing(flags))
-                  flags <- list(c(1, 3:9)) # DEVELOPER 2: alter this line to suit a new data class
-              if (missing(actions)) {
+              if (is.null(flags))
+                  stop("must supply flags")
+              if (is.null(actions)) {
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
               }
-              if (missing(debug))
-                  debug <- getOption("oceDebug")
               if (any(names(actions)!=names(flags)))
                   stop("names of flags and actions must match")
-              res <- handleFlagsInternal(object, flags, actions, debug)
-              if ("salinity" %in% names(res@data) && "salinityBottle" %in% names(res@data)) {
-                  nbadOrig <- sum(is.na(res@data$salinity))
-                  if (nbadOrig > 0) {
-                      res@data$salinity <- ifelse(is.na(res@data$salinity), res@data$salinityBottle, res@data$salinity)
-                      nbadLater <- sum(is.na(res@data$salinity))
-                      if (debug > 0 && nbadLater < nbadOrig)
-                          cat("In the CTD station named ", object[["station"]], ", substituted bottle salinities for ", nbadOrig-nbadLater, " levels\n", sep="")
-                  }
-              }
-              res
+              handleFlagsInternal(object, flags, actions, debug)
           })
 
 #' @templateVar class ctd
@@ -258,7 +231,7 @@ setMethod("handleFlags",
 #' # Compare results in TS space
 #' par(mfrow=c(2, 1))
 #' plotTS(ctdRaw)
-#' plotTS(handleFlags(qc))
+#' plotTS(handleFlags(qc, flags=list(1, 3:9)))
 #'
 #' # Example 2: Interactive flag assignment based on TS plot, using
 #' # WHP scheme to define 'acceptable' and 'bad' codes
@@ -267,7 +240,7 @@ setMethod("handleFlags",
 #' data(ctd)
 #' qc <- ctd
 #' qc <- initializeFlagScheme(qc, "WHP CTD")
-#' qc <- initializeFlags(qc, "salinity", "acceptable")
+#' qc <- initializeFlags(qc, "salinity", 2)
 #' Sspan <- diff(range(qc[["SA"]]))
 #' Tspan <- diff(range(qc[["CT"]]))
 #' n <- length(qc[["SA"]])
@@ -279,8 +252,8 @@ setMethod("handleFlags",
 #'     if (xy$x > par("usr")[2])
 #'         break
 #'     i <- which.min(abs(qc[["SA"]] - xy$x)/Sspan + abs(qc[["CT"]] - xy$y)/Tspan)
-#'     qc <- setFlags(qc, "salinity", i=i, value="bad")
-#'     qc <- handleFlags(qc)
+#'     qc <- setFlags(qc, "salinity", i=i, value=4)
+#'     qc <- handleFlags(qc, flags=list(salinity=4))
 #'     plotTS(qc, type="o")
 #' }
 #'}

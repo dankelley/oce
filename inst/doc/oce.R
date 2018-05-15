@@ -306,7 +306,7 @@ plotProfile(pycnocline, which="density+N2")
 ## ----fig.width=5, fig.height=5, fig.keep="none"--------------------------
 library(oce)
 data(section)
-s <- handleFlags(section)
+s <- handleFlags(section, flags=list(c(1, 3:9)))
 ctd <- as.ctd(s[["salinity"]], s[["temperature"]], s[["pressure"]],
               longitude=s[["longitude"]], latitude=s[["latitude"]])
 col <- ifelse(s[["longitude"]] > -30, "black", "gray")

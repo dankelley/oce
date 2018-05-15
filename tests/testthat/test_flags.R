@@ -65,10 +65,6 @@ test_that("ctd flag scheme action", {
           a <- initializeFlags(ctd, "temperature", 2) # 2="acceptable
           expect_warning(initializeFlags(a, "temperature", 2), "cannot re-initialize flags")
           a <- setFlags(a, "temperature", 1:3, 4) # 4="bad"
-          b <- initializeFlagScheme(ctd, "WHP CTD")
-          b <- initializeFlags(b, "temperature", "acceptable")
-          b <- setFlags(b, "temperature", 1:3, "bad")
-          expect_equal(a[["temperatureFlag"]], b[["temperatureFlag"]])
 })
 
 test_that("[[ and [[<- with ctd flags", {
@@ -82,7 +78,7 @@ test_that("[[ and [[<- with ctd flags", {
           expect_equal(is.na(ctd[["salinity"]][1:6]), c(FALSE, TRUE, FALSE, FALSE, FALSE, TRUE))
 })
 
-test_that("handleFLags with ctd data (positive numeric flag)", {
+test_that("handleFLags with ctd data", {
           data(section)
           ctd <- section[["station", 100]]
           ## this stn has a few points with salinityFlag==3
@@ -99,25 +95,25 @@ test_that("handleFLags with ctd data (positive numeric flag)", {
                        sum(ctd[['salinityFlag']] == 4 | ctd[['salinityFlag']] == 5, na.rm=TRUE))
 })
 
-test_that("handleFLags with ctd data (negative numeric flag)", {
-          data(section)
-          ## stn 100 has a few points with salinityFlag==3
-          for (i in if(extensive)seq_along(section[["station"]]) else 100) {
-              ctd <- section[["station", i]]
-              a <- handleFlags(ctd, flags=list(salinity=c(1, 3:9)))
-              expect_error(handleFlags(ctd, flags=list(salinity=-2)),
-                           "must use initializeFlagScheme\\(\\) before using negative flags")
-              b <- initializeFlagScheme(a, "WHP bottle")
-              b <- handleFlags(b, flags=list(salinity=-2))
-              expect_equal(a[["data"]], b[["data"]])
-              c <- handleFlags(b, flags=list(salinity="-no_problems_noted"))
-              expect_equal(a[["data"]], c[["data"]])
-          }
-})
+## test_that("handleFLags with ctd data (negative numeric flag)", {
+##           data(section)
+##           ## stn 100 has a few points with salinityFlag==3
+##           for (i in if(extensive)seq_along(section[["station"]]) else 100) {
+##               ctd <- section[["station", i]]
+##               a <- handleFlags(ctd, flags=list(salinity=c(1, 3:9)))
+##               expect_error(handleFlags(ctd, flags=list(salinity=-2)),
+##                            "must use initializeFlagScheme\\(\\) before using negative flags")
+##               b <- initializeFlagScheme(a, "WHP bottle")
+##               b <- handleFlags(b, flags=list(salinity=-2))
+##               expect_equal(a[["data"]], b[["data"]])
+##               c <- handleFlags(b, flags=list(salinity="-no_problems_noted"))
+##               expect_equal(a[["data"]], c[["data"]])
+##           }
+## })
 
-test_that("handleFLags with the built-in argo dataset (numeric flags)", {
+test_that("handleFLags with the built-in argo dataset", {
           data(argo)
-          argoNew <- handleFlags(argo, flags=list(salinity=4:5))
+          argoNew <- handleFlags(argo, flags=list(salinity=c(0, 3:9)))
           ## Test a few that are identified by printing some values
           ## for argo[["salinityFlag"]].
           expect_true(is.na(argoNew[["salinity"]][13, 2]))
@@ -129,7 +125,7 @@ test_that("handleFLags with the built-in argo dataset (numeric flags)", {
           ## the call to handleFlags() above, which was restricted to salinity.
           expect_true(!is.na(argoNew[["temperature"]][10, 2]))
           ## Now, handle *all* the flags, and check temperature again, and also salinity.
-          argoNew2 <- handleFlags(argo)
+          argoNew2 <- handleFlags(argo, flags=list(4:5))
           expect_true(is.na(argoNew2[["temperature"]][10, 2]))
           expect_true(all(is.na(argoNew2[["temperature"]][4==argo[["temperatureFlag"]]])))
           # Tests of overall numbers
@@ -142,20 +138,20 @@ test_that("handleFLags with the built-in argo dataset (numeric flags)", {
                        sum(argo[['salinityFlag']] == 4 | argo[['salinityFlag']] == 5, na.rm=TRUE))
 })
 
-test_that("handleFLags with the built-in argo dataset (named flags)", {
-          data(argo)
-          a <- handleFlags(argo,
-                           flags=list(salinity=c("not_assessed","probably_bad","bad",
-                                                 "averaged","interpolated","missing")))
-          b <- handleFlags(argo,
-                           flags=list(salinity=c(0, 3, 4,
-                                                 7, 8, 9)))
-          expect_equal(a[["salinity"]], b[["salinity"]])
-})
+## test_that("handleFLags with the built-in argo dataset (named flags)", {
+##           data(argo)
+##           a <- handleFlags(argo,
+##                            flags=list(salinity=c("not_assessed","probably_bad","bad",
+##                                                  "averaged","interpolated","missing")))
+##           b <- handleFlags(argo,
+##                            flags=list(salinity=c(0, 3, 4,
+##                                                  7, 8, 9)))
+##           expect_equal(a[["salinity"]], b[["salinity"]])
+## })
 
 test_that("handleFLags with the built-in section dataset", {
           data(section)
-          SECTION <- handleFlags(section)
+          SECTION<- handleFlags(section, flags=list(salinity=c(1, 3:9)))
           ## Inspection reveals that salinity are triggered in the first CTD entry, i.e.
           ## the station named "3" in this dataset.
 
@@ -163,10 +159,8 @@ test_that("handleFLags with the built-in section dataset", {
           stn1 <- section[["station", 1]]
           STN1 <- SECTION[["station", 1]]
           expect_equal(c(2, 3, 3, 2, 2), stn1[["salinityFlag"]])
-          ok <- which(2 == stn1[["salinityFlag"]])
-          expect_equal(stn1[["salinity"]][ok], STN1[["salinity"]][ok])
-          replace <- which(2 != stn1[["salinityFlag"]])
-          expect_equal(stn1[["salinityBottle"]][replace], STN1[["salinity"]][replace])
+          ok <- 2 == stn1[["salinityFlag"]]
+          expect_equal(!is.na(STN1[["salinity"]]), ok)
 })
 
 test_that("ctd flag with subset() (issue 1410)", {

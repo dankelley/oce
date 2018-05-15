@@ -105,12 +105,10 @@ Creating flags is usually a three-step process:
 
 1. Use [`initializeFlagScheme`](../help/initializeFlagScheme) to establish a
    mapping between flag numerical value and flag meaning.  This step is not
-   strictly necessary, but it (a) lets other steps in processing refer to flags
-   by name and not number and it (b) stores the flag scheme, i.e. the mapping
-   between name and number, within the object's `metadata` slot. This step
+   strictly necessary, but it is useful because it stores the flag scheme
+   within the object's `metadata` slot, as a form of documentation. This step
    may be done only once for a given object, because changing a flag scheme in
-   the middle of processing invites errors. (In future, oce may be able to
-   switch between schemes.)
+   the middle of processing invites errors.
 
 2. Use [`initializeFlags`](../help/initializeFlags) to set up space for flag
    storage, and to initialize values (normally to a code indicating either
@@ -201,8 +199,8 @@ however, it does *not* store any flag values. The next step is to initialize
 flag values. For example, to set up flag storage for salinity and
 temperature, use e.g.
 ```{r}
-qc <- initializeFlags(qc, "salinity", "acceptable")
-qc <- initializeFlags(qc, "temperature", "acceptable")
+qc <- initializeFlags(qc, "salinity", 2)
+qc <- initializeFlags(qc, "temperature", 2)
 ```
 
 to create storage, and initialize all entries to the `"acceptable"` value
@@ -248,7 +246,7 @@ it alters *flags* but not *data*. One more step is required to test whether
 this procedure has cleaned up the data significantly: we must "handle" the
 flags, using
 ```{r}
-qch <- handleFlags(qc)
+qch <- handleFlags(qc, flags=list(c(1, 3:9)))
 ```
 
 Comparing Figure 1 with the summary plot for `qch` (Figure 2), constructed with
@@ -288,7 +286,7 @@ options(eos="gsw")
 data(ctd)
 qc <- ctd
 qc <- initializeFlagScheme(qc, "WHP CTD")
-qc <- initializeFlags(qc, "salinity", "acceptable")
+qc <- initializeFlags(qc, "salinity", 2)
 Sspan <- diff(range(qc[["SA"]]))
 Tspan <- diff(range(qc[["CT"]]))
 n <- length(qc[["SA"]])
@@ -328,7 +326,7 @@ section that is provided with oce.
 
 ```{r}
 data(section)
-s <- handleFlags(section)
+s <- handleFlags(section, flags=list(c(1, 3:9)))
 par(mfrow=c(2, 1))
 plotTS(section)
 plotTS(s)

@@ -315,7 +315,6 @@ setMethod(f="initialize",
 #' adpQC <- initializeFlags(adp, "v", 2)
 #' adpQC <- setFlags(adpQC, "v", i2, 3)
 #' adpClean <- handleFlags(adpQC, flags=list(3), actions=list("NA"))
-#' adpClean <- handleFlags(adp)
 #' # Demonstrate (subtle) change graphically.
 #' par(mfcol=c(2, 1))
 #' plot(adp, which="u1")
@@ -324,21 +323,18 @@ setMethod(f="initialize",
 #' @family things related to \code{adp} data
 setMethod("handleFlags",
           c(object="adp", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=list(), actions=list(), debug=integer()) {
+          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               ## Flag=1 means bad velocity; 0 means good
-              if (missing(flags))
-                  flags <- list(1)     # DEVELOPER 2: alter this line to suit a new data class
-              if (missing(actions)) {
+              if (is.null(flags))
+                  stop("must supply flags")
+              if (is.null(actions)) {
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
               }
-              if (missing(debug))
-                  debug <- getOption("oceDebug")
               if (any(names(actions)!=names(flags)))
                   stop("names of flags and actions must match")
-              res <- handleFlagsInternal(object, flags, actions, debug)
-              res
+              handleFlagsInternal(object, flags, actions, debug)
           })
 
 #' @templateVar class adp

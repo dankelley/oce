@@ -5,26 +5,23 @@
 \alias{handleFlags,ctd-method}
 \title{Handle Flags in CTD Objects}
 \usage{
-\S4method{handleFlags}{ctd}(object, flags = list(), actions = list(),
-  debug = integer())
+\S4method{handleFlags}{ctd}(object, flags = NULL, actions = NULL,
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
 
-\item{flags}{An optional \code{\link{list}} containing (a)
-items with names of entries in the \code{data} slot of \code{object},
-or (b) a single unnamed item. In the first case, the attention is
-focussed on the named items, while in the second case the
-all the data in the \code{object}'s \code{data} slot are examined.
-Each element in the list must be a vector of one or more integers
-or character strings that define the flags upon which
-\code{handleFlags} will focus. A negative value indicates
-logical reversal, i.e. if the possible flag values are 1 through 9,
-then specifying \code{flag=-2} is equivalent to specifying
-\code{flag=c(1,3:9)}. Character strings are only permitted
-if \code{\link{initializeFlagScheme}} has been used to set up
-a mapping between flag name and flag numerical value for
-\code{object}. See \dQuote{Details} and \dQuote{Examples}.}
+\item{flags}{A \code{\link{list}} specifying flag values upon which
+actions will be taken. This can take two forms. In the first, the
+list has named elements each containing a vector of integers. For example,
+salinities flagged with values of 1 or 3 through 9 would be specified
+by \code{flags=list(salinity=c(1,3:9))}. Several data items can be specified,
+e.g. \code{flags=list(salinity=c(1,3:9), temperature=c(1,3:9))} indicates
+that the actions are to take place for both salinity and temperature.
+In the second form, \code{flags} is a list with unnamed vectors, and
+this means to apply the actions to all the data entries; thus,
+\code{flags=list(c(1,3:9))} means to apply not just to salinity and temperature,
+but also to everything else that is in the \code{data} slot.}
 
 \item{actions}{An optional \code{\link{list}} that contains items with
 names that match those in the \code{flags} argument.  If \code{actions}
@@ -59,26 +56,6 @@ Otherwise, \code{handleFlags} analyses the data-quality flags within
 the object, in relation to the \code{flags} argument, and interprets
 the \code{action} argument to select an action to be applied to matched
 data.
-
-Reasonable defaults are used if \code{flags} and \code{actions}
-are not supplied (see \sQuote{Details}),
-but different schemes are used in different
-data archives, so it is risky to rely on these defaults.
-It is usually necessary to tailor \code{flags} and \code{actions}
-to the data and the analysis goals.
-}
-\details{
-If \code{flags} and \code{actions} are not provided, the
-default is to use WHP (World Hydrographic Program) flags [1], in which the
-value 2 indicates good data, and other values indicate either unchecked,
-suspicious, or bad data. Any data not flagged as good are set
-to \code{NA} in the returned value. (An exception is for salinity:
-if the item named \code{salinity} has a bad flag but \code{salinityBottle}
-has a good flag, then the bottle value is substituted.)
-Since WHP flag codes run
-from 1 to 9, this default is equivalent to
-setting \code{flags=list(all=c(1, 3:9))} along with
-\code{action=list("NA")}.
 }
 \examples{
 library(oce)
@@ -86,16 +63,15 @@ data(section)
 stn <- section[["station", 100]]
 # 1. Default: anything not flagged as 2 is set to NA, to focus
 # solely on 'good', in the World Hydrographic Program scheme.
-STN <- handleFlags(stn)
-data.frame(old=stn[['salinity']], flag=stn[['salinityFlag']], new=STN[['salinity']])
+STN1 <- handleFlags(stn, flags=list(c(1, 3:9)))
+data.frame(old=stn[["salinity"]], new=STN1[["salinity"]], salinityFlag=stn[["salinityFlag"]])
 
-# 2. A less restrictive case: include also 'questionable' data,
-# and only apply this action to salinity.
-STN <- handleFlags(stn, flags=list(salinity=c(1, 4:9)))
+# 2. Use bottle salinity, if it is good and ctd is bad
+replace <- 2 == stn[["salinityBottleFlag"]] && 2 != stn[["salinityFlag"]]
+S <- ifelse(replace, stn[["salinityBottle"]], stn[["salinity"]])
+STN2 <- oceSetData(stn, "salinity", S)
 
 # 3. Use smoothed TS relationship to nudge questionable data.
-# This is not a recommended procedure, but rather just a simple
-# illustration of how to supply a function for an action.
 f <- function(x) {
   S <- x[["salinity"]]
   T <- x[["temperature"]]
@@ -104,11 +80,11 @@ f <- function(x) {
   0.5 * (S + predict(sp, T)$y)
 }
 par(mfrow=c(1,2))
-STN <- handleFlags(stn, flags=list(salinity=c(1,3:9)), action=list(salinity=f))
+STN3 <- handleFlags(stn, flags=list(salinity=c(1,3:9)), action=list(salinity=f))
 plotProfile(stn, "salinity", mar=c(3, 3, 3, 1))
-p <- stn[['pressure']]
+p <- stn[["pressure"]]
 par(mar=c(3, 3, 3, 1))
-plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
+plot(STN3[["salinity"]] - stn[["salinity"]], p, ylim=rev(range(p)))
 
 }
 \references{

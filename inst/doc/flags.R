@@ -27,8 +27,8 @@ qc <- ctdRaw
 qc <- initializeFlagScheme(qc, "WHP CTD")
 
 ## ------------------------------------------------------------------------
-qc <- initializeFlags(qc, "salinity", "acceptable")
-qc <- initializeFlags(qc, "temperature", "acceptable")
+qc <- initializeFlags(qc, "salinity", 2)
+qc <- initializeFlags(qc, "temperature", 2)
 
 ## ------------------------------------------------------------------------
 qc <- setFlags(qc, "salinity", badS, value="bad")
@@ -40,7 +40,7 @@ names(qc[["flags"]])
 qc <- setFlags(qc, "temperature", badT, value="bad")
 
 ## ------------------------------------------------------------------------
-qch <- handleFlags(qc)
+qch <- handleFlags(qc, flags=list(c(1, 3:9)))
 
 ## ----fig.cap="Figure 2. Summary plot for range-checked CTD profile."-----
 plot(qch)
@@ -50,7 +50,7 @@ plot(qch)
 #  data(ctd)
 #  qc <- ctd
 #  qc <- initializeFlagScheme(qc, "WHP CTD")
-#  qc <- initializeFlags(qc, "salinity", "acceptable")
+#  qc <- initializeFlags(qc, "salinity", 2)
 #  Sspan <- diff(range(qc[["SA"]]))
 #  Tspan <- diff(range(qc[["CT"]]))
 #  n <- length(qc[["SA"]])
@@ -69,7 +69,7 @@ plot(qch)
 
 ## ------------------------------------------------------------------------
 data(section)
-s <- handleFlags(section)
+s <- handleFlags(section, flags=list(c(1, 3:9)))
 par(mfrow=c(2, 1))
 plotTS(section)
 plotTS(s)
