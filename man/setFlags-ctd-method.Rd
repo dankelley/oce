@@ -84,7 +84,7 @@ qc <- setFlags(qc, name="temperature", i=oddT, value=4)
 # Compare results in TS space
 par(mfrow=c(2, 1))
 plotTS(ctdRaw)
-plotTS(handleFlags(qc))
+plotTS(handleFlags(qc, flags=list(1, 3:9)))
 
 # Example 2: Interactive flag assignment based on TS plot, using
 # WHP scheme to define 'acceptable' and 'bad' codes
@@ -93,7 +93,7 @@ options(eos="gsw")
 data(ctd)
 qc <- ctd
 qc <- initializeFlagScheme(qc, "WHP CTD")
-qc <- initializeFlags(qc, "salinity", "acceptable")
+qc <- initializeFlags(qc, "salinity", 2)
 Sspan <- diff(range(qc[["SA"]]))
 Tspan <- diff(range(qc[["CT"]]))
 n <- length(qc[["SA"]])
@@ -105,8 +105,8 @@ for (i in seq_len(n)) {
     if (xy$x > par("usr")[2])
         break
     i <- which.min(abs(qc[["SA"]] - xy$x)/Sspan + abs(qc[["CT"]] - xy$y)/Tspan)
-    qc <- setFlags(qc, "salinity", i=i, value="bad")
-    qc <- handleFlags(qc)
+    qc <- setFlags(qc, "salinity", i=i, value=4)
+    qc <- handleFlags(qc, flags=list(salinity=4))
     plotTS(qc, type="o")
 }
 }

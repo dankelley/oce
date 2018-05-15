@@ -81,7 +81,6 @@ for (k in 1:3)
 adpQC <- initializeFlags(adp, "v", 2)
 adpQC <- setFlags(adpQC, "v", i2, 3)
 adpClean <- handleFlags(adpQC, flags=list(3), actions=list("NA"))
-adpClean <- handleFlags(adp)
 # Demonstrate (subtle) change graphically.
 par(mfcol=c(2, 1))
 plot(adp, which="u1")
