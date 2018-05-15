@@ -19,3 +19,8 @@ A function is used internally to initialize processing logs.
 Users will probably prefer to use \code{\link{processingLogAppend}}
 instead.
 }
+\seealso{
+Other things related to processing logs: \code{\link{processingLog<-}},
+  \code{\link{processingLogAppend}},
+  \code{\link{processingLogShow}}
+}
