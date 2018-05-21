@@ -3,8 +3,16 @@ useDynLib(oce, .registration=TRUE)
 ## exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, sourceCpp)
 
-import(methods)
-import(gsw)
+importFrom("methods", "callNextMethod", "new", "slot<-", "slotNames",
+           "validObject")
+importFrom("gsw", "gsw_CT_freezing", "gsw_CT_from_t", "gsw_C_from_SP",
+           "gsw_Nsquared", "gsw_SA_from_SP", "gsw_SA_from_rho", "gsw_SP_from_C",
+           "gsw_SP_from_SA", "gsw_SR_from_SP", "gsw_Sstar_from_SA",
+           "gsw_Turner_Rsubrho", "gsw_adiabatic_lapse_rate_from_CT",
+           "gsw_alpha", "gsw_alpha_on_beta", "gsw_beta", "gsw_cp_t_exact",
+           "gsw_geo_strf_dyn_height", "gsw_p_from_z", "gsw_pot_rho_t_exact",
+           "gsw_pt_from_t", "gsw_rho", "gsw_sound_speed", "gsw_t_freezing",
+           "gsw_t_from_CT", "gsw_z_from_p")
 importFrom("graphics", ".filled.contour", "abline", "arrows", "axis", "Axis",
            "axis.POSIXct", "box", "contour", "frame", "grid", "hist", "image",
            "layout", "lcm", "legend", "lines", "locator", "mtext", "pairs", "par",
@@ -123,6 +131,8 @@ export(abbreviateTimeLabels,
        gravity,
        handleFlags,
        imagep,
+       initializeFlagScheme,
+       initializeFlags,
        interpBarnes,
        integerToAscii,
        integrateTrapezoid,
@@ -184,14 +194,14 @@ export(abbreviateTimeLabels,
        oce.colorsFreesurface, oce.colorsOxygen, oce.colorsPAR, oce.colorsPhase,
        oce.colorsSalinity, oce.colorsTemperature, oce.colorsTurbidity,
        oce.colorsVelocity, oce.colorsVorticity,
- 
+
        oceColorsCDOM, oceColorsChlorophyll, oceColorsDensity,
        oceColorsFreesurface, oceColorsOxygen, oceColorsPAR, oceColorsPhase,
        oceColorsSalinity, oceColorsTemperature, oceColorsTurbidity,
        oceColorsVelocity, oceColorsVorticity,
 
        oceCRS,
- 
+
        oceGetData, oceDeleteData, oceSetData,
        oceGetMetadata, oceDeleteMetadata, oceSetMetadata,
        oce.debug, oceDebug,
@@ -282,6 +292,7 @@ export(abbreviateTimeLabels,
        sectionGrid,
        sectionSmooth,
        sectionSort,
+       setFlags,
        shiftLongitude,
        showMetadataItem,
        siderealTime,

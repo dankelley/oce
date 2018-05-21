@@ -157,18 +157,6 @@ NULL
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle Flags in CTD Objects
-#' @details
-#' If \code{flags} and \code{actions} are not provided, the
-#' default is to use WHP (World Hydrographic Program) flags [1], in which the
-#' value 2 indicates good data, and other values indicate either unchecked,
-#' suspicious, or bad data. Any data not flagged as good are set
-#' to \code{NA} in the returned value. (An exception is for salinity:
-#' if the item named \code{salinity} has a bad flag but \code{salinityBottle}
-#' has a good flag, then the bottle value is substituted, and a
-#' warning is issued.) Since WHP flag codes run
-#' from 1 to 9, this default is equivalent to
-#' setting \code{flags=list(all=c(1, 3:9))} along with
-#' \code{action=list("NA")}.
 #' @param object A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #' @template handleFlagsTemplate
 #' @references
@@ -179,25 +167,16 @@ NULL
 #' stn <- section[["station", 100]]
 #' # 1. Default: anything not flagged as 2 is set to NA, to focus
 #' # solely on 'good', in the World Hydrographic Program scheme.
-#' STN <- handleFlags(stn)
-#' data.frame(old=stn[['salinity']], flag=stn[['salinityFlag']], new=STN[['salinity']])
+#' STN1 <- handleFlags(stn, flags=list(c(1, 3:9)))
+#' data.frame(old=stn[["salinity"]], new=STN1[["salinity"]], salinityFlag=stn[["salinityFlag"]])
 #'
-#' # 2. A less restrictive case: include also 'questionable' data,
-#' # and only apply this action to salinity.
-#' STN <- handleFlags(stn, flags=list(salinity=c(1, 4:9)))
+#' # 2. Use bottle salinity, if it is good and ctd is bad
+#' replace <- 2 == stn[["salinityBottleFlag"]] && 2 != stn[["salinityFlag"]]
+#' S <- ifelse(replace, stn[["salinityBottle"]], stn[["salinity"]])
+#' STN2 <- oceSetData(stn, "salinity", S)
 #'
-#' # 3. A Canadian Department of Fisheries and Oceans convention for
-#' # some of its data files lists flags as 0=unchecked, 1=good,
-#' # 2=uncertain, 3=doubtful, 4=wrong, and 5=changed, so a
-#' # trusting arrangement would be to discard 2:4, and a more
-#' # cautious approach would be to also discard 0.
-#' STN <- handleFlags(stn, flags=list(2:4))
-#' STN <- handleFlags(stn, flags=list(c(0,2:4)))
-#'
-#' # 4. Use smoothed TS relationship to nudge questionable data.
-#' # This is not a recommended procedure, but rather just a simple
-#' # illustration of how to supply a function for an action.
-#' f<-function(x) {
+#' # 3. Use smoothed TS relationship to nudge questionable data.
+#' f <- function(x) {
 #'   S <- x[["salinity"]]
 #'   T <- x[["temperature"]]
 #'   df <- 0.5 * length(S) # smooths a bit
@@ -205,40 +184,101 @@ NULL
 #'   0.5 * (S + predict(sp, T)$y)
 #' }
 #' par(mfrow=c(1,2))
-#' STN <- handleFlags(stn, flags=list(salinity=c(1,3:9)), action=list(salinity=f))
+#' STN3 <- handleFlags(stn, flags=list(salinity=c(1,3:9)), action=list(salinity=f))
 #' plotProfile(stn, "salinity", mar=c(3, 3, 3, 1))
-#' p <- stn[['pressure']]
+#' p <- stn[["pressure"]]
 #' par(mar=c(3, 3, 3, 1))
-#' plot(STN[['salinity']] - stn[['salinity']], p, ylim=rev(range(p)))
+#' plot(STN3[["salinity"]] - stn[["salinity"]], p, ylim=rev(range(p)))
 #'
 #' @family things related to \code{ctd} data
 setMethod("handleFlags",
           c(object="ctd", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=list(), actions=list(), debug=integer()) {
+          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
-              ## Default to the World Hydrographic Program system, with
-              ## flags from 1 to 9, with flag=2 for acceptable data.
-              if (missing(flags))
-                  flags <- list(c(1, 3:9)) # DEVELOPER 2: alter this line to suit a new data class
-              if (missing(actions)) {
+              if (is.null(flags))
+                  stop("must supply flags")
+              if (is.null(actions)) {
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
               }
-              if (missing(debug))
-                  debug <- getOption("oceDebug")
               if (any(names(actions)!=names(flags)))
                   stop("names of flags and actions must match")
-              res <- handleFlagsInternal(object, flags, actions, debug)
-              if ("salinity" %in% names(res@data) && "salinityBottle" %in% names(res@data)) {
-                  nbadOrig <- sum(is.na(res@data$salinity))
-                  if (nbadOrig > 0) {
-                      res@data$salinity <- ifelse(is.na(res@data$salinity), res@data$salinityBottle, res@data$salinity)
-                      nbadLater <- sum(is.na(res@data$salinity))
-                      if (debug > 0 && nbadLater < nbadOrig)
-                          cat("In the CTD station named ", object[["station"]], ", substituted bottle salinities for ", nbadOrig-nbadLater, " levels\n", sep="")
-                  }
-              }
+              handleFlagsInternal(object, flags, actions, debug)
+          })
+
+#' @templateVar class ctd
+#'
+#' @templateVar note Since all the entries in the \code{data} slot of ctd objects are vectors, \code{i} must be a vector (either logical as in Example 1 or integer as in Example 2), or a function taking a \code{ctd} object and returning such a vector (see \dQuote{Indexing rules}).
+#'
+#' @template setFlagsTemplate
+#'
+#' @examples
+#' library(oce)
+#' # Example 1: Range-check salinity
+#' data(ctdRaw)
+#' ## Salinity and temperature range checks
+#' qc <- ctdRaw
+#' # Initialize flags to 2, meaning good data in the default
+#' # scheme for handleFlags(ctd).
+#' qc <- initializeFlags(qc, "salinity", 2)
+#' qc <- initializeFlags(qc, "temperature", 2)
+#' # Flag bad salinities as 4
+#' oddS <- with(qc[["data"]], salinity < 25 | 40 < salinity)
+#' qc <- setFlags(qc, name="salinity", i=oddS, value=4)
+#' # Flag bad temperatures as 4
+#' oddT <- with(qc[["data"]], temperature < -2 | 40 < temperature)
+#' qc <- setFlags(qc, name="temperature", i=oddT, value=4)
+#' # Compare results in TS space
+#' par(mfrow=c(2, 1))
+#' plotTS(ctdRaw)
+#' plotTS(handleFlags(qc, flags=list(1, 3:9)))
+#'
+#' # Example 2: Interactive flag assignment based on TS plot, using
+#' # WHP scheme to define 'acceptable' and 'bad' codes
+#'\dontrun{
+#' options(eos="gsw")
+#' data(ctd)
+#' qc <- ctd
+#' qc <- initializeFlagScheme(qc, "WHP CTD")
+#' qc <- initializeFlags(qc, "salinity", 2)
+#' Sspan <- diff(range(qc[["SA"]]))
+#' Tspan <- diff(range(qc[["CT"]]))
+#' n <- length(qc[["SA"]])
+#' par(mfrow=c(1, 1))
+#' plotTS(qc, type="o")
+#' message("Click on bad points; quit by clicking to right of plot")
+#' for (i in seq_len(n)) {
+#'     xy <- locator(1)
+#'     if (xy$x > par("usr")[2])
+#'         break
+#'     i <- which.min(abs(qc[["SA"]] - xy$x)/Sspan + abs(qc[["CT"]] - xy$y)/Tspan)
+#'     qc <- setFlags(qc, "salinity", i=i, value=4)
+#'     qc <- handleFlags(qc, flags=list(salinity=4))
+#'     plotTS(qc, type="o")
+#' }
+#'}
+#'
+#' @family things related to \code{ctd} data
+setMethod("setFlags",
+          c(object="ctd", name="ANY", i="ANY", value="ANY", debug="ANY"),
+          function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
+              oceDebug(debug, "setFlags,ctd-method name=", name, ", i, value=", value, "\n")
+              if (is.null(i))
+                 stop("must supply i")
+              if (!is.vector(i) && !is.function(i))
+                  stop("'i' must be a vector or a function returning a vector")
+              res <- setFlagsInternal(object, name, i, value, debug-1)
               res
+          })
+
+#' @templateVar details {NA}
+#' @template initializeFlagSchemeTemplate
+setMethod("initializeFlagScheme",
+          signature=c(object="ctd", name="ANY", mapping="ANY", debug="ANY"),
+          definition=function(object, name=NULL, mapping=NULL, debug=getOption("oceDebug")) {
+              if (is.null(name))
+                  stop("must supply 'name'")
+              invisible(callNextMethod())
           })
 
 #' Initialize storage for a ctd object
@@ -775,7 +815,7 @@ setMethod(f="[[<-",
 ##1108 @param silicate optional silicate concentration
 ##1108
 #' @param scan optional scan number.  If not provided, this will be set to
-#' \code{1:length(salinity)}.
+#' \code{seq_along(salinity)}.
 #'
 #' @param time optional vector of times of observation
 #'
@@ -1700,7 +1740,7 @@ ctdDecimate <- function(x, p=1, method="boxcar", rule=1, e=1.5, debug=getOption(
     }
     dataNew[["pressure"]] <- pt
     ## convert any NaN to NA
-    for (i in 1:length(dataNew)) {
+    for (i in seq_along(dataNew)) {
         dataNew[[i]][is.nan(dataNew[[i]])] <- NA
     }
     ##message("ctd.R:733 dataNew[['pressure']]: ", paste(dataNew[['pressure']], collapse=" "))
@@ -1915,7 +1955,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
         oceDebug(debug, "start:", head(start), "... (after trimming)\n")
         oceDebug(debug, "end:", head(end), "... (after trimming)\n")
         if (length(end) > length(start))
-            end <- end[1:length(start)]
+            end <- end[seq_along(start)]
         keep <- abs(end - start) >= minLength
         oceDebug(debug, "start:", head(start[keep]), "... (using minLength)\n")
         oceDebug(debug, "end:", head(end[keep]), "... (using minLength)\n")
@@ -2472,10 +2512,10 @@ ctdUpdateHeader <- function (x, debug=FALSE)
         stop("there are no data in this CTD object")
     replaceHeaderElement<-function(h, match, new)
     {
-        for (i in 1:length(h)) {
+        for (i in seq_along(h)) {
             if (length(grep(match, h[i], perl=TRUE, useBytes=TRUE))) {
-                h[i] <- new;
-                break;
+                h[i] <- new
+                break
             }
         }
         return(h)
@@ -3059,7 +3099,7 @@ setMethod(f="plot",
                                        "pts"=32,
                                        "rhots"=33))
 
-              for (w in 1:length(which)) {
+              for (w in seq_along(which)) {
                   if (is.na(which[w])) {
                       if (whichOrig[w] %in% names(x@data)) {
                           plotProfile(x, xtype=x[[whichOrig[w]]], xlab=whichOrig[w],
@@ -3329,7 +3369,7 @@ setMethod(f="plot",
                           if (is.character(coastline)) {
                               oceDebug(debug, "coastline is a string: \"", coastline, "\"\n", sep="")
                               if (requireNamespace("ocedata", quietly=TRUE)) {
-                                  library(ocedata) # FIXME: is this needed?
+                                  #library(ocedata) # FIXME: is this needed?
                                   if (coastline == "best") {
                                       bestcoastline <- coastlineBest(span=span)
                                       oceDebug(debug, "'best' coastline is: \"", bestcoastline, '\"\n', sep="")
@@ -4561,7 +4601,7 @@ plotProfile <- function (x,
             }
         }
     } else if (xtype == "index") {
-        index <- 1:length(x[["pressure"]])
+        index <- seq_along(x[["pressure"]])
         plot(index, x[["pressure"]], ylim=ylim, col=col, lty=lty, xlab="", ylab=yname,
              type=type, xaxs=xaxs, yaxs=yaxs, cex=cex, pch=pch, axes=FALSE)
         axis(3)
@@ -4580,7 +4620,7 @@ plotProfile <- function (x,
                      longitude=x[["longitude"]], latitude=x[["latitude"]], eos=eos)
         if (missing(densitylim))
             densitylim <- range(sig0, na.rm=TRUE)
-        look <- if (keepNA) 1:length(y) else !is.na(sig0) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(sig0) & !is.na(y)
         look <- as.vector(look)
         plot(sig0[look], y[look], xlim=densitylim, ylim=ylim, cex=cex, pch=pch,
              type=type, col=col.rho, lty=lty, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ...)
@@ -4628,7 +4668,7 @@ plotProfile <- function (x,
         if (missing(densitylim))
             densitylim <- range(x[["sigmaTheta"]], na.rm=TRUE)
         st <- swSigmaTheta(x)
-        look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(st) & !is.na(y)
         look <- as.vector(look)
         plot(st[look], y[look],
              xlim=densitylim, ylim=ylim, col=col.rho, lty=lty, cex=cex, pch=pch,
@@ -4701,7 +4741,7 @@ plotProfile <- function (x,
                       side=3, line=axisNameLoc, cex=par("cex"))
             }
         } else {
-            look <- if (keepNA) 1:length(y) else !is.na(salinity) & !is.na(y)
+            look <- if (keepNA) seq_along(y) else !is.na(salinity) & !is.na(y)
             if (!add) {
                 plot(salinity[look], y[look],
                      xlim=Slim, ylim=ylim, lty=lty, cex=cex, pch=pch,
@@ -4772,7 +4812,7 @@ plotProfile <- function (x,
                 mtext(xlab, side=3, line=axisNameLoc, cex=par("cex"))
             }
         } else {
-            look <- if (keepNA) 1:length(y) else !is.na(conductivity) & !is.na(y)
+            look <- if (keepNA) seq_along(y) else !is.na(conductivity) & !is.na(y)
             if (!add) {
                 plot(conductivity[look], y[look],
                      xlim=Clim, ylim=ylim, lty=lty, cex=cex, pch=pch,
@@ -4841,7 +4881,7 @@ plotProfile <- function (x,
             oceDebug(debug, "line plot\n")
             ##message("ctd.R:4811")
             #browser()
-            look <- as.vector(if (keepNA) 1:length(y) else !is.na(xvar) & !is.na(y))
+            look <- as.vector(if (keepNA) seq_along(y) else !is.na(xvar) & !is.na(y))
             if (!add) {
                 oceDebug(debug, "add is FALSE so new plot\n")
                 if (ylimGiven) {
@@ -4888,7 +4928,7 @@ plotProfile <- function (x,
         }
     } else if (xtype == "Rrho" || xtype == "RrhoSF") {
         Rrho <- swRrho(x, sense=if (xtype=="Rrho") "diffusive" else "finger")
-        look <- if (keepNA) 1:length(y) else !is.na(Rrho) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(Rrho) & !is.na(y)
         if (!add) {
             if (ylimGiven) {
                 plot(Rrho, y[look], lty=lty,
@@ -4938,7 +4978,7 @@ plotProfile <- function (x,
                       side=3, line=axisNameLoc, cex=par("cex"))
             }
         } else {
-            look <- if (keepNA) 1:length(y) else !is.na(x[["temperature"]]) & !is.na(y)
+            look <- if (keepNA) seq_along(y) else !is.na(x[["temperature"]]) & !is.na(y)
             if (!add) {
                 plot(temperature[look], y[look], lty=lty,
                      xlim=Tlim, ylim=ylim, cex=cex, pch=pch,
@@ -4982,7 +5022,7 @@ plotProfile <- function (x,
                 mtext(resizableLabel(theta, "x", debug=debug-1),
                       side=3, line=axisNameLoc, cex=par("cex"))
         } else {
-            look <- if (keepNA) 1:length(y) else !is.na(theta) & !is.na(y)
+            look <- if (keepNA) seq_along(y) else !is.na(theta) & !is.na(y)
             if (!add) {
                 plot(theta[look], y[look], lty=lty,
                      xlim=Tlim, ylim=ylim, cex=cex, pch=pch,
@@ -5016,7 +5056,7 @@ plotProfile <- function (x,
     } else if (xtype == "sigmaTheta") {
         ## FIXME: do as theta above
         st <- swSigmaTheta(x)
-        look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(st) & !is.na(y)
         ## FIXME: if this works, extend to other x types
         look <- look & (min(ylim) <= y & y <= max(ylim))
         if (!add) {
@@ -5051,7 +5091,7 @@ plotProfile <- function (x,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "density") {
         rho <- swRho(x)
-        look <- if (keepNA) 1:length(y) else !is.na(rho) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(rho) & !is.na(y)
         ## FIXME: if this works, extend to other x types
         look <- look & (min(ylim) <= y & y <= max(ylim))
         if (!add) {
@@ -5092,7 +5132,7 @@ plotProfile <- function (x,
             warning("no valid sigma-0 data")
             return(invisible())
         }
-        look <- if (keepNA) 1:length(y) else !is.na(sig0) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(sig0) & !is.na(y)
         if (missing(densitylim))
             densitylim <- range(sig0, na.rm=TRUE)
         plot(sig0[look], y[look], lty=lty,
@@ -5124,7 +5164,7 @@ plotProfile <- function (x,
         N2[!is.finite(N2)] <- NA
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
-        look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(N2) & !is.na(y)
         if (0 == sum(look)) {
             warning("no valid N2 data")
             return(invisible())
@@ -5156,7 +5196,7 @@ plotProfile <- function (x,
         N2 <- swN2(x, df=df, eos=eos)
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
-        look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(N2) & !is.na(y)
         if (!add) {
             plot(N2[look], y[look], lty=lty,
                  xlim=N2lim, ylim=ylim, cex=cex, pch=pch,
@@ -5182,7 +5222,7 @@ plotProfile <- function (x,
                         keepNA=keepNA, debug=debug-1)
     } else if (xtype == "spice") {
         spice <-swSpice(x)
-        look <- if (keepNA) 1:length(y) else !is.na(spice) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(spice) & !is.na(y)
         if (!add) {
             plot(spice[look], y[look], lty=lty,
                  ylim=ylim, cex=cex, pch=pch,
@@ -5217,7 +5257,7 @@ plotProfile <- function (x,
         }
         if (missing(Slim)) Slim <- range(salinity, na.rm=TRUE)
         if (missing(Tlim)) Tlim <- range(temperature, na.rm=TRUE)
-        look <- if (keepNA) 1:length(y) else !is.na(temperature) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(temperature) & !is.na(y)
         plot(temperature[look], y[look],
              xlim=Tlim, ylim=ylim, col=col.temperature, lty=lty, cex=cex, pch=pch,
              type=type, xlab="", ylab=yname, axes=FALSE, xaxs=xaxs, yaxs=yaxs)
@@ -5234,7 +5274,7 @@ plotProfile <- function (x,
         box()
         ## lines(temperature, y, col=col.temperature, lwd=lwd)
         par(new=TRUE)
-        look <- if (keepNA) 1:length(y) else !is.na(x[["salinity"]]) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(x[["salinity"]]) & !is.na(y)
         plot(salinity[look], y[look],
              xlim=Slim, ylim=ylim, col=col.salinity, lty=lty, cex=cex, pch=pch,
              type=type, xlab="", ylab="", axes=FALSE, xaxs=xaxs, yaxs=yaxs)
@@ -5259,7 +5299,7 @@ plotProfile <- function (x,
         w <- which(names(x@data) == xtype)
         if (length(w) < 1)
             stop("unknown xtype value (\"", xtype, "\")")
-        look <- if (keepNA) 1:length(y) else !is.na(x@data[[xtype]]) & !is.na(y)
+        look <- if (keepNA) seq_along(y) else !is.na(x@data[[xtype]]) & !is.na(y)
         dots <- list(...)
         ## message("names(dots)=", paste(names(dots), collapse=" "))
         if (!add) {

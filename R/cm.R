@@ -509,7 +509,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "line", i, "contains: ", paste(items, collapse=" "), "\n")
         if (items[1] == "Sample #") {
             ## names <- sub('[ ]+$', '', sub('^[ ]+','', items))
-            ## names <- ifelse(0 == nchar(names), paste("column", 1:length(names), sep=""), names)
+            ## names <- ifelse(0 == nchar(names), paste("column", seq_along(names), sep=""), names)
         } else if (items[1] == "1") {
             start.day <- items[2]
         } else if (items[1] == "2") {

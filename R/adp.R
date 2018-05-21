@@ -285,6 +285,7 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+
 ## DEVELOPERS: please pattern functions and documentation on this, for uniformity.
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
@@ -302,43 +303,98 @@ setMethod(f="initialize",
 #' # Flag low "goodness" or high "error beam" values.
 #' library(oce)
 #' data(adp)
-#' # Extract the data, to compute the flag. Note that the
-#' # whole flag array is computed and then inserted into
-#' # the object as whole.
+#' # Same as Example 2 of ?'setFlags,adp-method'
 #' v <- adp[["v"]]
+#' i2 <- array(FALSE, dim=dim(v))
 #' g <- adp[["g", "numeric"]]
-#' vFlag <- array(0, dim=dim(v))
-#' gThreshold <- 25
-#' v4Threshold <- 0.45
-#' for (i in 1:3)
-#'     vFlag[,,i] <- ifelse((g[,,i]+g[,,4])<gThreshold | v[,,4]>v4Threshold, 1, 0)
-#' adp[["vFlag"]] <- vFlag
-#' # Now that the object has a velocity flag set, we may
-#' # use \code{handleFlags} to set corresponding data to NA.
-#' adpClean <- handleFlags(adp)
-#' # Demonstrate the (subtle) change graphically.
+#' # Thresholds on percent "goodness" and error "velocity"
+#' G <- 25
+#' V4 <- 0.45
+#' for (k in 1:3)
+#'     i2[,,k] <- ((g[,,k]+g[,,4]) < G) | (v[,,4] > V4)
+#' adpQC <- initializeFlags(adp, "v", 2)
+#' adpQC <- setFlags(adpQC, "v", i2, 3)
+#' adpClean <- handleFlags(adpQC, flags=list(3), actions=list("NA"))
+#' # Demonstrate (subtle) change graphically.
 #' par(mfcol=c(2, 1))
-#' plot(adp, which=1)      # top: data
-#' plot(adpClean, which=1) # bottom: after handling flags
+#' plot(adp, which="u1")
+#' plot(adpClean, which="u1")
 #'
 #' @family things related to \code{adp} data
 setMethod("handleFlags",
           c(object="adp", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=list(), actions=list(), debug=integer()) {
+          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               ## Flag=1 means bad velocity; 0 means good
-              if (missing(flags))
-                  flags <- list(1)     # DEVELOPER 2: alter this line to suit a new data class
-              if (missing(actions)) {
+              if (is.null(flags))
+                  stop("must supply flags")
+              if (is.null(actions)) {
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
               }
-              if (missing(debug))
-                  debug <- getOption("oceDebug")
               if (any(names(actions)!=names(flags)))
                   stop("names of flags and actions must match")
-              res <- handleFlagsInternal(object, flags, actions, debug)
+              handleFlagsInternal(object, flags, actions, debug)
+          })
+
+#' @templateVar class adp
+#' @templateVar details There are no agreed-upon flag schemes for adp data.
+#' @template initializeFlagsTemplate
+setMethod("initializeFlags",
+          c(object="adp", name="ANY", value="ANY", debug="ANY"),
+          function(object, name=NULL, value=NULL, debug=getOption("oceDebug")) {
+              oceDebug(debug, "setFlags,adp-method name=", name, ", value=", value, "\n")
+              if (is.null(name))
+                  stop("must supply 'name'")
+              if (name != "v")
+                  stop("the only flag that adp objects can handle is for \"v\"")
+              res <- initializeFlagsInternal(object, name, value, debug-1)
               res
+          })
+
+
+#' @templateVar class adp
+#' @templateVar note The only flag that may be set is \code{v}, for the array holding velocity. See \dQuote{Indexing rules}, noting that adp data are stored in 3D arrays; Example 1 shows using a data frame for \code{i}, while Example 2 shows using an array.
+#' @template setFlagsTemplate
+#' @examples
+#' library(oce)
+#' data(adp)
+#'
+#' ## Example 1: flag first 10 samples in a mid-depth bin of beam 1
+#' i1 <- data.frame(1:20, 40, 1)
+#' adpQC <- initializeFlags(adp, "v", 2)
+#' adpQC <- setFlags(adpQC, "v", i1, 3)
+#' adpClean1 <- handleFlags(adpQC, flags=list(3), actions=list("NA"))
+#' par(mfrow=c(2, 1))
+#' ## Top: original, bottom: altered
+#' plot(adp, which="u1")
+#' plot(adpClean1, which="u1")
+#'
+#' ## Example 2: percent-good and error-beam scheme
+#' v <- adp[["v"]]
+#' i2 <- array(FALSE, dim=dim(v))
+#' g <- adp[["g", "numeric"]]
+#' # Thresholds on percent "goodness" and error "velocity"
+#' G <- 25
+#' V4 <- 0.45
+#' for (k in 1:3)
+#'     i2[,,k] <- ((g[,,k]+g[,,4]) < G) | (v[,,4] > V4)
+#' adpQC2 <- initializeFlags(adp, "v", 2)
+#' adpQC2 <- setFlags(adpQC2, "v", i2, 3)
+#' adpClean2 <- handleFlags(adpQC2, flags=list(3), actions=list("NA"))
+#' ## Top: original, bottom: altered
+#' plot(adp, which="u1")
+#' plot(adpClean2, which="u1") # differs at 8h and 20h
+#'
+#' @family things related to \code{adp} data
+setMethod("setFlags",
+          c(object="adp", name="ANY", i="ANY", value="ANY", debug="ANY"),
+          function(object, name=NULL, i=NULL, value=NULL, debug=getOption("oceDebug")) {
+              if (is.null(name))
+                  stop("must specify 'name'")
+              if (name != "v")
+                  stop("in adp objects, the only flag that can be set is for \"v\"")
+              setFlagsInternal(object, name, i, value, debug-1)
           })
 
 
@@ -482,17 +538,9 @@ setMethod(f="concatenate",
               rval
           })
 
-#' @title Extract Something from of an adp Object
-#'
-#' In addition to the usual extraction of elements by name, some shortcuts
-#' are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
-#' for the other velocity components. The \code{a} and \code{q}
-#' data can be retrieved in \code{\link{raw}} form or numeric
-#' form (see examples). The coordinate system may be
-#' retrieved with e.g. \code{x[["coordinate"]]}.
+#' @title Extract Something from an adp Object
 #'
 #' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
-#' @template sub_subTemplate
 #'
 #' @examples
 #' data(adp)
@@ -501,6 +549,17 @@ setMethod(f="concatenate",
 #' adp[["a"]][1:5,1,1]
 #' adp[["a", "numeric"]][1:5,1,1]
 #' as.numeric(adp[["a"]][1:5,1,1]) # same as above
+#'
+#' @template sub_subTemplate
+#'
+#' @section Details of the specialized \code{adp} method:
+#'
+#' In addition to the usual extraction of elements by name, some shortcuts
+#' are also provided, e.g. \code{x[["u1"]]} retrieves \code{v[,1]}, and similarly
+#' for the other velocity components. The \code{a} and \code{q}
+#' data can be retrieved in \code{\link{raw}} form or numeric
+#' form (see examples). The coordinate system may be
+#' retrieved with e.g. \code{x[["coordinate"]]}.
 #'
 #' @author Dan Kelley
 #'

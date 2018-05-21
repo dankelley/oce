@@ -18,7 +18,7 @@ vignette: >
 ---
 
 <!-- HOW TO BUILD THE VIGNETTE. -->
-<!-- 1. edit this file in vignettes/oce.Rmd -->
+<!-- 1. edit this file in vignettes/adp.Rmd -->
 <!-- 2. run devtools::build_vignettes() -->
 <!-- 3. build oce -->
 
@@ -28,25 +28,14 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
 **Abstract.** This vignette explains the basics of using the oce package to
-handle measurements made by acoustic Doppler profilers.  The goal is to get
-users started, on the assumption that they will use the package documentation
-to learn more details, and that they will consult [the main oce
-vignette](oce.html) for general information about oce. The vignette is
-organized roughly along the steps of typical processing, and the use of a
-dataset provided by oce means that readers should find it easy to follow along.
-Engagement is encouraged by the highlighting of some important elements of the
-oce function documentation, and the provision of worked exercises.
-
-**Colophon.**
-The sample code provided in this vignette all relies on the oce package, so
-the first step in following along is to load it:
+handle measurements made by acoustic Doppler profilers.  As in the related
+vignette about working with [data-quality flags](flags.html), the material is
+organized to reflect typical workflow.  See [the main oce vignette](oce.html)
+for general information about oce.  The sample code
+provided here relies on the oce package, loaded as follows.
 ```{r}
 library(oce)
 ```
-The green text below the call to the `library()` function is the output of
-doing that call.  Output is shown for many of the code chunks provided in this
-vignette, but not in cases of voluminous output, or for functions
-that use data not provided with oce.
 
 # Reading adp files
 

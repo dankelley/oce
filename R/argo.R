@@ -457,7 +457,7 @@ setMethod(f="subset",
                   } else if (length(grep("profile", subsetString))) {
                       ## add profile into the data, then do as usual
                       tmp <- x@data
-                      tmp$profile <- 1:length(x@data$time)
+                      tmp$profile <- seq_along(x@data$time)
                       keep <- eval(substitute(subset), tmp, parent.frame(2))
                       rm(tmp)
                   } else if (length(grep("pressure", subsetString))) {
@@ -1026,6 +1026,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     res@processingLog <- if (is.character(file))
         processingLogAppend(res@processingLog, paste("read.argo(\"", file, "\")", sep=""))
     else processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res <- initializeFlagScheme(res, "argo")
     res
 }
 
@@ -1409,62 +1410,42 @@ setMethod(f="plot",
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle Flags in ARGO Objects
-#' @details
-#' If \code{flags} and \code{actions} are not provided, the
-#' default is to use ARGO flags [1], in which the
-#' value 1 indicates good data, and other values indicate either unchecked,
-#' suspicious, or bad data. Any data not flagged as good are set
-#' to \code{NA} in the returned value. Since Argo flag codes run
-#' from 0 to 9, with 1 indicating the highest level of confidence
-#' in the data, the defaults are
-#' \code{flags=list(c(0,2:9))} and
-#' \code{actions=list("NA")}.
 #' @param object An object of \code{\link{argo-class}}.
 #' @template handleFlagsTemplate
+#'
 #' @references
 #' 1. \url{http://www.argo.ucsd.edu/Argo_date_guide.html#dmodedata}
+#'
 #' @examples
-#'\dontrun{
 #' library(oce)
 #' data(argo)
-#' # 1. Default: anything not flagged as 1 is set to NA, to focus
-#' # solely on 'good', in the Argo scheme.
-#' argoNew <- handleFlags(argo)
-#' # demonstrate replacement, looking at the second profile
+#' # 1. Default: set to NA any data that is not flagged with
+#' # code value 1 (meaning \code{"passed_all_tests"})
+#' argoNew <- handleFlags(argo, flags=c(0, 2:9))
+#' # Demonstrate replacement, looking at the second profile
 #' f <- argo[["salinityFlag"]][,2] # first column with a flag=4 entry
 #' df <- data.frame(flag=f, orig=argo[["salinity"]][,2], new=argoNew[["salinity"]][,2])
-#' df[11:15,]
-#' ##    flag   orig    new
-#' ## 11    1 35.207 35.207
-#' ## 12    1 35.207 35.207
-#' ## 13    4 35.209     NA
-#' ## 14    1 35.207 35.207
-#' ## 15    1 35.207 35.207
+#' df[11:15,] # notice line 13
 #'
-#' # 2. A less restrictive case: include also 'questionable' data,
-#' # and only apply this action to salinity.
-#' argoNew <- handleFlags(argo, flags=list(salinity=4))
-#'}
+#' # 2. A less restrictive case: focussing just on salinity,
+#' # retain only data with flags 1 (meaning \code{"passed_all_tests"})
+#' # and 2 (\code{"probably_good"}).
+#' argoNew <- handleFlags(argo, flags=list(salinity=c(0, 3:9)))
+#'
+#' @author Dan Kelley
 #'
 #' @family things related to \code{argo} data
 setMethod("handleFlags",
           c(object="argo", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=list(), actions=list(), debug=integer()) {
+          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
-              ## Default to the Argo QC system, with
-              ## flags from 0 to 4, with flag=1 for acceptable data.
-              if (missing(flags))
-                  flags <- list(c(0, 2:9)) # DEVELOPER 2: alter this line to suit a newdata class
-              if (missing(actions)) {
+              if (is.null(flags))
+                  stop("must supply flags")
+              if (is.null(actions)) {
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
               }
-              if (missing(debug))
-                  debug <- getOption("oceDebug")
-              if (any(names(actions)!=names(flags))) {
+              if (any(names(actions)!=names(flags)))
                   stop("names of flags and actions must match")
-              }
-              if (missing(debug))
-                  debug <- 0
               handleFlagsInternal(object, flags, actions, debug)
           })

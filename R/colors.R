@@ -25,7 +25,7 @@ colormapNames <- c("gmt_relief", "gmt_ocean", "gmt_globe", "gmt_gebco")
 ## keeping this (which was called 'colorize' until 2014-05-07) for a while, but not in NAMESPACE.
 colormap_colorize <- function(z=NULL,
                               zlim, zclip=FALSE,
-                              breaks, col=oce.colorsJet, colormap=NULL, segments=1,
+                              breaks, col=oceColorsJet, colormap=NULL, segments=1,
                               missingColor="gray",
                               debug=getOption("oceDebug"))
 {
@@ -599,7 +599,7 @@ colormapFromName <- function(name)
 #' @family things related to colors
 colormap <- function(z=NULL,
                      zlim, zclip=FALSE,
-                     breaks, col=oce.colorsJet,
+                     breaks, col=oceColorsJet,
                      name, x0, x1, col0, col1, blend=0,
                      missingColor,
                      debug=getOption("oceDebug"))

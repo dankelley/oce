@@ -49,6 +49,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.aquadoppHR}},
   \code{\link{read.aquadoppProfiler}},
   \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
+  \code{\link{setFlags,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdp}}, \code{\link{xyzToEnu}}

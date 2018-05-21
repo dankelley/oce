@@ -1072,7 +1072,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
 
             ##profilesToShow <- 2 # only if debug>0
             if (monitor)
-                progressBar = txtProgressBar(max=profilesToRead, style=3, title="Reading profiles")
+                progressBar <- txtProgressBar(max=profilesToRead, style=3, title="Reading profiles")
 
             oceDebug(debug, "profilesToRead=", profilesToRead, "\n")
             unhandled <- list(xxGGA=0, xxVTA=0, xxGSA=0)

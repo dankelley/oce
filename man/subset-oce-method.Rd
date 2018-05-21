@@ -8,7 +8,7 @@
 \S4method{subset}{oce}(x, subset, ...)
 }
 \arguments{
-\item{x}{an oce object.}
+\item{x}{an oce object}
 
 \item{subset}{a logical expression indicating how to take the subset; the form depends on the sub-class.}
 

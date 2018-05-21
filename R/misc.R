@@ -736,7 +736,7 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
     fSplit <- split(f, cut(x, xbreaks, include.lowest=TRUE, labels=FALSE))
     ##message("length(xbreaks)=", length(xbreaks))
     ##message("length(fSplit)=", length(fSplit))
-    result <- sapply(fSplit, FUN, ...)
+    result <- unlist(lapply(fSplit, FUN, ...))
     result[!is.finite(result)] <- NA
     names(result) <- NULL
     ## Put some NAs at start and end of 'result', if required because of
@@ -823,10 +823,10 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
     res <- matrix(nrow=nxbreaks-1, ncol=nybreaks-1)
     A <- split(f, cut(y, ybreaks, labels=FALSE))
     B <- split(x, cut(y, ybreaks, labels=FALSE))
-    for (i in 1:length(A)) {
+    for (i in seq_along(A)) {
         fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE))
         ##res[, i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
-        res[, i] <- sapply(fSplit, FUN, ...)
+        res[, i] <- unlist(lapply(fSplit, FUN, ...))
     }
     res[!is.finite(res)] <- NA
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks),
@@ -1372,7 +1372,7 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
     text(-m, 0, "R=-1", pos=2)
     par(xpd=xpdOld)
     points(xSD, 0, pch=20, cex=1.5)
-    for (column in 1:ncol(y)) {
+    for (column in seq_len(ncol(y))) {
         ySD <- sd(y[, column], na.rm=TRUE)
         R <- cor(x, y[, column])^2
         ##cat("column=", column, "ySD=", ySD, "R=", R, "col=", col[column], "pch=", pch[column], "\n")
@@ -3290,9 +3290,9 @@ fillGap <- function(x, method=c("linear"), rule=1)
         res <- do_fill_gap_1d(x, rule)
     } else if (is.matrix(x))  {
         res <- x
-        for (col in 1:ncol(x))
+        for (col in seq_len(ncol(x)))
             res[, col] <- do_fill_gap_1d(x[, col], rule)
-        for (row in 1:nrow(x))
+        for (row in seq_len(nrow(x)))
             res[row, ] <- do_fill_gap_1d(x[row, ], rule)
     } else {
         stop("only works if 'x' is a vector or a matrix")
@@ -3650,7 +3650,7 @@ byteToBinary <- function(x, endian)
     ## res <- NULL
     ## if (class(x) == "raw")
     ##     x <- readBin(x, "int", n=length(x), size=1, signed=FALSE)
-    ## for (i in 1:length(x)) {
+    ## for (i in seq_along(x)) {
     ##     if (x[i] < 0) {
     ##         res <- c(res, "??")
     ##     } else {

@@ -473,7 +473,7 @@ setMethod(f="plot",
               which2 <- oce.pmatch(which, list(all=1, month=2, spectrum=3, cumulativespectrum=4))
               oceDebug(debug, "which2:", which2, "\n")
 
-              for (w in 1:length(which2)) {
+              for (w in seq_along(which2)) {
                   oceDebug(debug, "plotting for code which2[", w, "] = ", which2[w], "\n", sep="")
                   if (which2[w] == 1) {
                       plot(x@data$time, x@data$elevation-MSL,

@@ -43,7 +43,7 @@ the length of \code{salinity}.}
 divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).}
 
 \item{scan}{optional scan number.  If not provided, this will be set to
-\code{1:length(salinity)}.}
+\code{seq_along(salinity)}.}
 
 \item{time}{optional vector of times of observation}
 
@@ -208,6 +208,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{setFlags,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},

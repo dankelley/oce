@@ -116,7 +116,7 @@ setMethod(f="initialize",
 #' @examples
 #' library(oce)
 #' data(section)
-#' section2 <- handleFlags(section)
+#' section2 <- handleFlags(section, flags=c(1, 3:9))
 #' par(mfrow=c(2, 1))
 #' plotTS(section)
 #' plotTS(section2)
@@ -124,21 +124,16 @@ setMethod(f="initialize",
 #' @family things related to \code{section} data
 setMethod("handleFlags",
           c(object="section", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=list(), actions=list(), debug=integer()) {
+          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
-              ## Default to the World Hydrographic Program system, with
-              ## flags from 1 to 9, with flag=2 for acceptable data.
-              if (missing(flags))
-                  flags <- list(c(1, 3:9)) # DEVELOPER 2: alter this line to suit a newdata class
-              if (missing(actions)) {
+              if (is.null(flags))
+                  stop("must supply flags")
+              if (is.null(actions)) {
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
               }
-              if (missing(debug))
-                  debug <- getOption("oceDebug")
-              if (any(names(actions)!=names(flags))) {
+              if (any(names(actions)!=names(flags)))
                   stop("names of flags and actions must match")
-              }
               res <- object
               for (i in seq_along(res@data$station)) {
                   res@data$station[[i]] <- handleFlags(res@data$station[[i]], flags, actions, debug)
@@ -146,6 +141,27 @@ setMethod("handleFlags",
               res
           })
 
+#' @templateVar details This applies \code{initializeFlagScheme} for each \code{ctd} station within the \code{stations} element of the \code{data} slot.
+#' @template initializeFlagSchemeTemplate
+#'
+#' @examples
+#' data(section)
+#' sectionWithFlags <- initializeFlagScheme(section, "WHP bottle")
+#' station1 <- sectionWithFlags[["station", 1]]
+#' str(station1[["flagScheme"]])
+setMethod("initializeFlagScheme",
+          c(object="section", name="ANY", mapping="ANY", debug="ANY"),
+          function(object, name=NULL, mapping=NULL, debug=getOption("oceDebug")) {
+              res <- object
+              for (i in seq_along(object@data$station)) {
+                  res@data$station[[i]] <- initializeFlagScheme(object@data$station[[i]], name, mapping, debug=debug-1)
+              }
+              res@processingLog <- processingLogAppend(res@processingLog,
+                                                       paste("initializeFlagScheme(object",
+                                                             ", name=\"", name,
+                                                             "\", mapping=", gsub(" ", "", paste(as.character(deparse(mapping))))))
+              res
+          })
 
 #' @title Summarize a Section Object
 #'
@@ -1146,7 +1162,7 @@ sectionAddCtd <- sectionAddStation
 #'\dontrun{
 #' plot(GSg, which=1, ztype='image')
 #' T <- GS[['temperature']]
-#' col <- oce.colorsJet(100)[rescale(T, rlow=1, rhigh=100)]
+#' col <- oceColorsJet(100)[rescale(T, rlow=1, rhigh=100)]
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=3,col='white')
 #' points(GS[['distance']],GS[['depth']],pch=20,cex=2.5,col=col)
 #'}
@@ -1290,8 +1306,8 @@ setMethod(f="plot",
               res <- x # will now be gridded (either originally or through above code)
 
               ## Trim stations that have zero good data FIXME: brittle to addition of new metadata
-              haveData <- sapply(x@data$station,
-                                 function(stn) 0 < length(stn[['pressure']]))
+              haveData <- unlist(lapply(x@data$station,
+                                        function(stn) 0 < length(stn[['pressure']])))
               x@data$station <- x@data$station[haveData]
               x@metadata$stationId <- x@metadata$stationId[haveData]
               x@metadata$latitude <- x@metadata$latitude[haveData]
@@ -1491,7 +1507,7 @@ setMethod(f="plot",
                           nbreaks <- length(zbreaks)
                           if (nbreaks > 0) {
                               if (is.null(zcol))
-                                  zcol <- oce.colorsJet(nbreaks - 1)
+                                  zcol <- oceColorsJet(nbreaks - 1)
                               if (is.function(zcol))
                                   zcol <- zcol(nbreaks - 1)
                               zlim <- range(zbreaks)
