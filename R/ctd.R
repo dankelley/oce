@@ -462,9 +462,14 @@ setMethod(f="summary",
 
 
 #' @title Extract Something From a CTD Object
-#' @param x A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
 #'
-#' @templateVar class ctd
+#' @param x An \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.
+#'
+#' @examples
+#' data(ctd)
+#' head(ctd[["temperature"]])
+#'
+#' @template sub_subTemplate
 #'
 #' @section Details of the specialized \code{ctd} method:
 #'
@@ -509,12 +514,17 @@ setMethod(f="summary",
 #' will detect the setup, and subtract nitrite from the sum to yield
 #' nitrate.
 #'
-#' Below is a list of computed quantities, or at least quantities that are
-#' typically not stored in data files.  (This is a vague statement because
-#' Seabird software permits calculation of many of these and hence storage
-#' within \code{.cnv} files.)
+#' The list given below provides notes on some quantities that are computed.
 #'
 #' \itemize{
+#'
+#' \item \code{conductivity} without a second argument (e.g. \code{a[["conductivity"]]})
+#' returns the value stored in the object. However, if a second argument is given,
+#' and it is string specifying a unit, then conversion is made to that unit. The
+#' permitted units are: either \code{""} or \code{"ratio"} (for ratio),
+#' \code{"uS/cm"}, \code{"mS/cm"} and \code{"S/m"}. The calculations are based on
+#' the definition of conductivity ratio as the ratio between measured conductivity
+#' and the standard value 4.2914 S/m.
 #'
 #' \item \code{CT} or \code{Conservative Temperature}: Conservative Temperature,
 #' computed with \code{\link[gsw]{gsw_CT_from_t}} in the \code{gsw} package.
@@ -581,19 +591,41 @@ setMethod(f="summary",
 #'
 #'}
 #'
-#' @template sub_subTemplate
-#'
-#' @examples
-#' data(ctd)
-#' head(ctd[["temperature"]])
+#' @author Dan Kelley
 #'
 #' @family things related to \code{ctd} data
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
-          ##definition=function(x, i, j=NULL, drop=NULL) {
           definition=function(x, i, j, ...) {
               dataNames <- names(x@data)
-              if (i == "salinity" || i == "SP") {
+              if (i == "conductivity") {
+                  C <- x@data$conductivity
+                  ##message("i=", i, ", j=", if (missing(j)) "(missing)" else j)
+                  if (!is.null(C) && !missing(j)) {
+                      if (!(j %in% c("", "ratio", "uS/cm", "mS/cm", "S/m")))
+                          stop("unknown conductivity unit \"", unit, "\"; must be \"\", \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
+                      if (j == "")
+                          j <- "ratio" # lets us use switch() 
+                      unit <- x@metadata$units$conductivity$unit
+                      if (is.null(unit) || !length(unit)) {
+                          ## FIXME: maybe should look at median value, to make a guess
+                          ## warning("ctd object lack conductivity units; assuming \"ratio\"")
+                          unit <- "ratio"
+                      }
+                      ##message("A")
+                      unit <- as.character(unit)
+                      ##message("next is unit:")
+                      ##print(dput(unit))
+                      C <- x@data$conductivity
+                      ##message("B")
+                      ## Rather than convert from 3 inputs to 3 outputs, express as ratio, then convert as desired
+                      if (!unit %in% c("ratio", "uS/cm", "mS/cm", "S/m"))
+                          stop("object has unknown conductivity unit \"", unit, "\"; must be \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
+                      C <- C / switch(unit, "uS/cm"=42914, "mS/cm"=42.914, "S/m"=4.2914, "ratio"=1)
+                      C <- C * switch(j, "uS/cm"=42914, "mS/cm"=42.914, "S/m"=4.2914, "ratio"=1)
+                  }
+                  C
+              } else if (i == "salinity" || i == "SP") {
                   if ("salinity" %in% dataNames) {
                       S <- x@data$salinity
                   } else {

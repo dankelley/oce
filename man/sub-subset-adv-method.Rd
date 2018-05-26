@@ -28,13 +28,6 @@ objects, by looking for items within the various storage
 slots of the object. Items not actually stored can also be
 extracted, including derived data, units of measurement,
 and data-quality flags.
-A two-step process is used to try to find the
-requested information. First, a class-specific function
-tries to find it (see
-\dQuote{Details of the specialized ... method}), but
-if that fails, then a general function is used
-(see \sQuote{Details of the general method}). If both
-fail, \code{NULL} is returned.
 }
 \details{
 If the \code{adv} object holds slow variables (i.e. if \code{timeSlow} is
@@ -43,6 +36,14 @@ actually assign to a variable of that name, but instead assigns to
 \code{headingSlow}. To catch misapplication of this rule, an error
 message will be issued if the assigned value is not of the same length
 as \code{timeSlow}.
+
+A two-step process is used to try to find the
+requested information. First, a class-specific function
+tries to find it (see
+\dQuote{Details of the specialized ... method}), but
+if that fails, then a general function is used
+(see \sQuote{Details of the general method}). If both
+fail, \code{NULL} is returned.
 }
 \section{Details of the general method}{
 
