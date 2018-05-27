@@ -26,6 +26,8 @@ objects, by looking for items within the various storage
 slots of the object. Items not actually stored can also be
 extracted, including derived data, units of measurement,
 and data-quality flags.
+}
+\details{
 A two-step process is used to try to find the
 requested information. First, a class-specific function
 tries to find it (see

@@ -33,13 +33,6 @@ objects, by looking for items within the various storage
 slots of the object. Items not actually stored can also be
 extracted, including derived data, units of measurement,
 and data-quality flags.
-A two-step process is used to try to find the
-requested information. First, a class-specific function
-tries to find it (see
-\dQuote{Details of the specialized ... method}), but
-if that fails, then a general function is used
-(see \sQuote{Details of the general method}). If both
-fail, \code{NULL} is returned.
 }
 \details{
 Partial matches for \code{i}
@@ -74,6 +67,14 @@ result will be 255. If A is 254 (i.e. there is no observation),
 then B is returned, and the reverse holds also. Similarly, if either
 A or B equals 253 (bad observation), then the other is returned.
 The same is done for code 252 (ice) and code 251 (rain).
+
+A two-step process is used to try to find the
+requested information. First, a class-specific function
+tries to find it (see
+\dQuote{Details of the specialized ... method}), but
+if that fails, then a general function is used
+(see \sQuote{Details of the general method}). If both
+fail, \code{NULL} is returned.
 }
 \section{Details of the general method}{
 

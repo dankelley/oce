@@ -1,3 +1,7 @@
+#' @param i Character string indicating the name of item to extract.
+#' @param j Optional additional information on the \code{i} item.
+#' @param ... Optional additional information (ignored).
+#'
 #' @description
 #' The \code{[[} method works for all \code{oce} objects, i.e.
 #' objects inheriting from \code{\link{oce-class}}.  The purpose
@@ -6,6 +10,9 @@
 #' slots of the object. Items not actually stored can also be
 #' extracted, including derived data, units of measurement,
 #' and data-quality flags.
+#'
+#' @details
+#'
 #' A two-step process is used to try to find the
 #' requested information. First, a class-specific function
 #' tries to find it (see
@@ -52,9 +59,6 @@
 #'
 #' If none of the above-listed conditions holds, then \code{NULL} is returned.
 #'
-#' @param i Character string indicating the name of item to extract.
-#' @param j Optional additional information on the \code{i} item.
-#' @param ... Optional additional information (ignored).
-#'
 #' @family functions that extract parts of \code{oce} objects
+
 
