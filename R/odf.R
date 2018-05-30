@@ -557,6 +557,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(mu*mol/m^2/s), scale="")
         } else if (1 == length(grep("^UTC$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(), scale="")
+        } else if (1 == length(grep("^GMT$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(), scale="")
         } else if (ODFunits[i] == "V") {
             list(unit=expression(V), scale="")
         } else if (1 == length(grep("^%$", ODFunits[i], ignore.case=TRUE))) {
