@@ -557,6 +557,8 @@ ODFNames2oceNames <- function(ODFnames, ODFunits=NULL,
             list(unit=expression(mu*mol/m^2/s), scale="")
         } else if (1 == length(grep("^UTC$", ODFunits[i], ignore.case=TRUE))) {
             list(unit=expression(), scale="")
+        } else if (1 == length(grep("^GMT$", ODFunits[i], ignore.case=TRUE))) {
+            list(unit=expression(), scale="")
         } else if (ODFunits[i] == "V") {
             list(unit=expression(V), scale="")
         } else if (1 == length(grep("^%$", ODFunits[i], ignore.case=TRUE))) {
@@ -952,7 +954,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ##> ODFunits <- gsub("^[^']*'(.*)'.*$", "\\1", ODFunits) # e.g.  "  UNITS= 'none',"
     ##> ODFunits <- trimws(ODFunits)
     options(warn=options$warn)
-    oceDebug(debug, "nullValue=", nullValue, "; it's class is ", class(nullValue), "\n")
+    ##> oceDebug(debug, "nullValue=", nullValue, "; it's class is ", class(nullValue), "\n")
 
     ODFunits <- lines[grep("^\\s*UNITS\\s*=", lines)]
     ODFunits <- gsub("^[^']*'(.*)'.*$", "\\1", ODFunits) # e.g.  "  UNITS= 'none',"
@@ -1027,31 +1029,34 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         options <- options('warn')
         options(warn=-1)
         NAvalue <- try({as.numeric(unlist(NAvalue))}, silent=TRUE)
+        NAvalueList <- NAvalue
+        names(NAvalueList) <- namesUnits$names
         options(warn=options$warn)
-        isNumeric <- is.numeric(NAvalue)
-        if (any(!isNumeric)) {
-            warning("ignoring non-numeric NULL_VALUE (", NAvalue, ")")
-        }
-        if (any(isNumeric)) {
-            tmp <- NAvalue[isNumeric]
-            if (any(!is.finite(tmp)))
-                tmp <- tmp[is.finite(tmp)]
-            tmp <- unique(tmp)
-            ltmp <- length(tmp)
-            if (ltmp == 0) {
-                NAvalue <- NA
-            } else if (1 == ltmp) {
-                NAvalue <- tmp
-            } else if (1 < ltmp) {
-                warning("using first of ", ltmp, " unique NULL_VALUEs")
-                tmp <- tmp[is.finite(tmp)]
-                NAvalue <- tmp[[1]]
-            }
-        } else {
-            NAvalue <- NAvalue[[1]]
-        }
+        ##> isNumeric <- is.numeric(NAvalue)
+        ##> if (any(!isNumeric)) {
+        ##>     warning("ignoring non-numeric NULL_VALUE (", NAvalue, ")")
+        ##> }
+        ##> if (any(isNumeric)) {
+        ##>     tmp <- NAvalue[isNumeric]
+        ##>     if (any(!is.finite(tmp)))
+        ##>         tmp <- tmp[is.finite(tmp)]
+        ##>     tmp <- unique(tmp)
+        ##>     ltmp <- length(tmp)
+        ##>     if (ltmp == 0) {
+        ##>         NAvalue <- NA
+        ##>     } else if (1 == ltmp) {
+        ##>         NAvalue <- tmp
+        ##>     } else if (1 < ltmp) {
+        ##>         warning("using first of ", ltmp, " unique NULL_VALUEs")
+        ##>         tmp <- tmp[is.finite(tmp)]
+        ##>         NAvalue <- tmp[[1]]
+        ##>     }
+        ##> } else {
+        ##>     NAvalue <- NAvalue[[1]]
+        ##> }
     }
-    oceDebug(debug, "NAvalue=", NAvalue, "; it's class is ", class(NAvalue), "\n")
+    oceDebug(debug, "NAvalueList=", paste(deparse(NAvalueList),collapse=""), "\n")
+    ##oceDebug(debug, "NAvalue=", NAvalue, "; it's class is ", class(NAvalue), "\n")
 
     depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
     depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
@@ -1133,9 +1138,16 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     if (length(data) != length(namesUnits$names))
         stop("mismatch between length of data names (", length(namesUnits$names), ") and number of columns in data matrix (", length(data), ")")
     names(data) <- namesUnits$names
-    if (length(NAvalue) > 0 && !is.na(NAvalue)) {
-        data[data==NAvalue[1]] <- NA
+    if (length(NAvalueList)) {
+        for (name in names(data)) {
+            bad <- data[[name]] == NAvalueList[[name]]
+            data[[name]][bad] <- NA
+            oceDebug(debug, "set ", sum(bad), " values in '", name, "' to NA, because they matched the NULL_VALUE (", NAvalueList[[name]], ")\n", sep="")
+        }
     }
+    ##. if (length(NAvalue) > 0 && !is.na(NAvalue)) {
+    ##.     data[data==NAvalue[1]] <- NA
+    ##. }
     if ("time" %in% namesUnits$names)
         data$time <- as.POSIXct(strptime(as.character(data$time), format="%d-%b-%Y %H:%M:%S", tz="UTC"))
     ##res@metadata$names <- namesUnits$names
