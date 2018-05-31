@@ -68,7 +68,7 @@ library(oce)
 # so we must alter the unit before converting to a CTD object. Note that
 # read.odf() on this data file produces a warning suggesting that the user
 # repair the unit, using the method outlined here.
-odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
+odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce"))
 ctd <- as.ctd(odf) ## so we can e.g. extract potential temperature
 ctd[["conductivityUnit"]] <- list(unit=expression(), scale="")
 #

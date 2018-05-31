@@ -175,7 +175,7 @@ test_that("ctd flag with subset() (issue 1410)", {
 })
 
 test_that("odf flag with subset() (issue 1410)", {
-          file <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce")
+          file <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce")
           odf <- expect_warning(read.odf(file), "should be unitless")
           ## # Find a region with interesting flags
           ## > which(odf[["sigmaThetaFlag"]]!=1)

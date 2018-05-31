@@ -7,8 +7,8 @@ context("ODF")
 ## of distinct NULL_VALUE entries, one per data item, and by having the
 ## first few data entries modified. This tests the ability to handle
 ## a different code for each data type.
-test_that("ODF file", {
-          expect_warning(d <- read.ctd.odf("CTD_BCD2014666_008_1_DN_altered.ODF"),
+test_that("ODF CTD file", {
+          expect_warning(d <- read.ctd.odf("CTD_BCD2014666_008_1_DN_altered.ODF.gz"),
                          "\"CRAT_01\" should be unitless")
           expect_equal(d[["temperatureUnit"]]$unit, expression(degree*C))
           expect_equal(d[["temperatureUnit"]]$scale, "IPTS-68")
@@ -68,10 +68,41 @@ test_that("ODF file", {
           expect_equal(17, which(is.na(d[["oxygenFlag"]])))
           ## Next will be NA for bad pressure, salinity, temperature, but NOT
           ## for the altered bad sigmaTheta. This is because oce *calculates*
-          ## sigmaTheta.
+          ## sigmaTheta for the CTD case ... but contrast this with the
+          ## next test.
           expect_equal(c(2, 4, 14), which(is.na(d[["sigmaTheta"]]))) # computed
           expect_equal(18, which(is.na(d[["SIGP_01"]]))) # original data
           expect_equal(19, which(is.na(d[["sigmaThetaFlag"]])))
 
 })
 
+test_that("ODF CTD file (not as CTD)", {
+          expect_warning(d <- read.odf("CTD_BCD2014666_008_1_DN_altered.ODF.gz"),
+                         "\"CRAT_01\" should be unitless")
+          ## First, check as in the previous test.
+          expect_equal( 1, which(is.na(d[["scan"]])))
+          expect_equal( 2, which(is.na(d[["pressure"]])))
+          expect_equal( 3, which(is.na(d[["pressureFlag"]])))
+          expect_equal( 4, which(is.na(d[["temperature"]])))
+          expect_equal( 5, which(is.na(d[["temperatureFlag"]])))
+          expect_equal( 6, which(is.na(d[["conductivity"]])))
+          expect_equal( 7, which(is.na(d[["conductivityFlag"]])))
+          expect_equal( 8, which(is.na(d[["oxygenVoltage"]])))
+          expect_equal( 9, which(is.na(d[["oxygenVoltageFlag"]])))
+          expect_equal(10, which(is.na(d[["fluorometer"]])))
+          expect_equal(11, which(is.na(d[["fluorometerFlag"]])))
+          expect_equal(12, which(is.na(d[["par"]])))
+          expect_equal(13, which(is.na(d[["parFlag"]])))
+          expect_equal(14, which(is.na(d[["salinity"]])))
+          expect_equal(15, which(is.na(d[["salinityFlag"]])))
+          expect_equal(16, which(is.na(d[["oxygen"]])))
+          expect_equal(17, which(is.na(d[["oxygenFlag"]])))
+          ## Now, for the part that's different: in the present case,
+          ## the sigmaTheta value will be AS READ IN, not calculated.
+          ## That calculation only works when it knows it is a CTD. Therefore,
+          ## the next tests are different from in the previous block.
+          expect_equal(18, which(is.na(d[["sigmaTheta"]]))) # computed
+          expect_equal(18, which(is.na(d[["SIGP_01"]]))) # original data
+          expect_equal(19, which(is.na(d[["sigmaThetaFlag"]])))
+
+})

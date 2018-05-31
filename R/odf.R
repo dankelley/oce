@@ -743,7 +743,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' # so we must alter the unit before converting to a CTD object. Note that
 #' # read.odf() on this data file produces a warning suggesting that the user
 #' # repair the unit, using the method outlined here.
-#' odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF", package="oce"))
+#' odf <- read.odf(system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce"))
 #' ctd <- as.ctd(odf) ## so we can e.g. extract potential temperature
 #' ctd[["conductivityUnit"]] <- list(unit=expression(), scale="")
 #' #
@@ -1083,7 +1083,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     res@metadata$header <- NULL
 
     ## catch erroneous units on CRAT, which should be in a ratio, and hence have no units.
-    ## This is necessary for the sample file inst/extdata/CTD_BCD2014666_008_1_DN.ODF
+    ## This is necessary for the sample file inst/extdata/CTD_BCD2014666_008_1_DN.ODF.gz
     if (length(grep("CRAT", ODFnames))) {
         which <- grep("CRAT", ODFnames)
         for (w in which) {
