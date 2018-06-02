@@ -1,4 +1,5 @@
 0.9-24
+- as.tidem() added
 - read.odf() handles multiple NULL_VALUEs
 - flag improvements
 - rotateAboutZ() added
