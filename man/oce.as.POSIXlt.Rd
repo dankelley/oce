@@ -2,7 +2,7 @@
 % Please edit documentation in R/oce.R
 \name{oce.as.POSIXlt}
 \alias{oce.as.POSIXlt}
-\title{Oce Variant of as.POSIXlt [deprecated]}
+\title{Oce Variant of as.POSIXlt [defunct]}
 \usage{
 oce.as.POSIXlt(x, tz = "")
 }
@@ -17,6 +17,8 @@ A POSIXlt object.
 }
 \description{
 \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+}
+\details{
 It was realized in December of 2016 that this function was not used within
 oce, and also that \code{\link[lubridate]{parse_date_time}} in the
 \CRANpkg{lubridate} package was superior and therefore a better choice for
@@ -26,7 +28,8 @@ oce, and also that \code{\link[lubridate]{parse_date_time}} in the
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdAddColumn}},
   \code{\link{ctdUpdateHeader}},
-  \code{\link{mapMeridians}}, \code{\link{mapZones}}
+  \code{\link{findInOrdered}}, \code{\link{mapMeridians}},
+  \code{\link{mapZones}}
 }
 \author{
 Dan Kelley

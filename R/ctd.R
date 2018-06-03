@@ -1411,9 +1411,10 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 }
 
 
-#' Add a Column to the Data Slot of a CTD Object [deprecated]
+#' Add a Column to the Data Slot of a CTD Object [defunct]
 #'
-#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
+#'
 #' Use \code{\link{oceSetData}} instead of the present function.
 #'
 #' Add a column to the \code{data} slot of an object of
@@ -1443,21 +1444,14 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
 #' @seealso The documentation for \code{\link{ctd-class}} explains the structure
 #'    of CTD objects, and also outlines the other functions dealing with them.
 #'
-#' @examples
-#' library(oce)
-#' data(ctd)
-#' F <- 32 + (9/5)*ctd[["temperature"]]
-#' ctdNew <- ctdAddColumn(ctd, F, "temperatureF",
-#'     unit=list(unit=expression(degree*F), scale="ITS-90"))
-#'
 #' @author Dan Kelley
 #'
 #' @family functions that will be removed soon
 ctdAddColumn <- function (x, column, name, label, unit=NULL, log=TRUE, originalName="",
                           debug=getOption("oceDebug"))
 {
-    .Deprecated("oceSetData",
-                msg="ctdAddColume() will be removed soon. Use oceSetData() instead. See ?'oce-deprecated'.")
+    .Defunct("oceSetData",
+             msg="ctdAddColumn() is disallowed and will be removed soon. Use oceSetData() instead. See ?'oce-defunct'.")
     ## FIXME: not using the units
     oceDebug(debug, "ctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="", unindent=1)
     if (missing(column))
@@ -2507,9 +2501,9 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 }
 
 
-#' Update a CTD Header [deprecated]
+#' Update a CTD Header [defunct]
 #'
-#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
 #'
 #' Update the header of a \code{ctd} object, e.g. adjusting \code{nvalues} and the
 #' \code{span} of each column. This is done automatically by \code{ctdTrim}, for
@@ -2521,12 +2515,6 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 #'
 #' @return A new \code{\link{ctd-class}} object.
 #'
-#' @examples
-#' library(oce)
-#' data(ctd)
-#' ctd[["pressure"]] <- ctd[["pressure"]] + 3
-#' ctdNew <- ctdUpdateHeader(ctd)
-#'
 #' @references
 #' The Seabird CTD instrument is described at
 #'   \code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
@@ -2536,8 +2524,8 @@ ctdTrim <- function(x, method, removeDepthInversions=FALSE, parameters=NULL,
 #' @family functions that will be removed soon
 ctdUpdateHeader <- function (x, debug=FALSE)
 {
-    .Deprecated("oceSetMetadata",
-                msg="ctdUpdateHeader() will be removed soon. See ?'oce-deprecated'.")
+    .Defunct("oceSetMetadata",
+             msg="ctdUpdateHeader() is disallowed and will be removed soon. See ?'oce-defunct'.")
     if (length(x@metadata$header) < 1)
         stop("there is no header in this CTD object")
     if (length(x@data) < 1)
