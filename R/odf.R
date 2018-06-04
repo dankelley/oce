@@ -735,6 +735,23 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' details.
 #'
 #'
+#' @section Metadata conventions
+#'
+#' Some metadata items may be specific to certain instruments, and
+#' certain research groups. It can be important for analysts to be aware of
+#' the conventions used in datasets that are under study.
+#' For example, as of June 2018, \code{adp}
+#' objects created at the Bedford Institute of Oceanography may
+#' have metadata items \code{DEPTH_OFF_BOTTOM},
+#' \code{SAMPLING_INTERVAL}, as well as a wealth of metadata
+#' hidden inside the \code{HISTORY_HEADER} in the \code{PROCESS}
+#' item. (The \code{PROCESS} item is may be used to store any metadata
+#' included in other file formats such as netCDF.) If
+#' there has been drift or movement of a moored ADCP it is also possible that
+#' there will be two latitude and longitude values named \code{START_LATITUDE}
+#' (sometimes named \code{INITIAL_LATITUDE}) and \code{END_LATITUDE}, with
+#' longitude treated similarly.
+#'
 #' @examples
 #' library(oce)
 #" #

@@ -52,15 +52,6 @@ handles conversion for a few non-standard units. The documentation
 of \code{\link{ODFNames2oceNames}} should be consulted for more
 details.
 }
-\section{Caution}{
-
-ODF files do not store information on the temperature or salinity scale, and \code{read.odf}
-assumes them to be ITS-90 and PSS-78, respectively. These scales will not be correct for old
-data files. Note that the temperature scale can be converted from old scales
-using \code{\link{T90fromT68}} and \code{\link{T90fromT48}}, although the change will be in
-a fraction of a millidegree, which probably exceeds reasonable confidence in old data.
-}
-
 \examples{
 library(oce)
 # 1. Read a CTD cast made on the Scotian Shelf. Note that the file's metadata
