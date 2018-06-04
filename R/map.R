@@ -1819,7 +1819,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 }
 
 
-#' Add Meridians on a Map [deprecated]
+#' Add Meridians on a Map [defunct]
 #'
 #' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
 #' Use \code{\link{mapGrid}} instead of the present function.
@@ -1845,8 +1845,8 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 #' @family functions that will be removed soon
 mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
-    .Deprecated("mapGrid",
-                msg="mapMeridians() will be removed soon; use mapGrid() instead. See ?'oce-deprecated'.")
+    .Defunct("mapGrid",
+             msg="mapMeridians() will be removed soon. Use mapGrid() instead. See ?'oce-defunct'.")
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     warning("Use mapGrid(longitude=NULL,latitude=latitude) instead of mapMeridians(latitude)")
@@ -2108,7 +2108,7 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 }
 
 
-#' Add Zones to a Map [deprecated]
+#' Add Zones to a Map [defunct]
 #'
 #' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
 #'
@@ -2138,8 +2138,8 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 #' @family functions that will be removed soon
 mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
-    .Deprecated("mapGrid",
-                msg="mapZones() will be removed soon; use mapGrid() instead. See ?'oce-deprecated'.")
+    .Defunct("mapGrid",
+             msg="mapZones() will be removed soon. Use mapGrid() instead. See ?'oce-defunct'.")
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     warning("Use mapGrid(longitude=longitude,latitude=NULL) instead of mapZones(longitude)")

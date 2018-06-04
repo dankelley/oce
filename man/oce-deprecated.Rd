@@ -21,14 +21,7 @@ The next CRAN release of \sQuote{oce} will designate these functions as
 
 \tabular{lll}{
 \strong{Deprecated}       \tab \strong{Replacement}            \tab \strong{Notes}\cr
-\code{findInOrdered(x,f)} \tab \code{\link{findInterval}(f,x)} \tab Deprecated 2017-09-07\cr
-\code{mapZones}           \tab \code{\link{mapGrid}}           \tab Deprecated 2016-02-13\cr
-\code{mapMeridians}       \tab \code{\link{mapGrid}}           \tab Deprecated 2016-02-13\cr
-\code{addColumn}          \tab \code{\link{oceSetData}}        \tab Deprecated 2016-08-01\cr
-\code{oce.magic}          \tab \code{\link{oceMagic}}          \tab Deprecated 2016-09-01\cr
-\code{ctdAddColumn}       \tab \code{\link{oceSetData}}        \tab Deprecated 2016-11-11\cr
-\code{ctdUpdateHeader}    \tab -                               \tab Deprecated 2016-11-11\cr
-\code{oce.as.POSIXlt}     \tab \code{\link[lubridate]{parse_date_time}} \tab Deprecated 2016-12-17\cr
+\code{byteToBinary}       \tab \code{\link{rawToBits}}         \tab Deprecated in 2016?\cr
 }
 
 The following are marked "defunct", so calling them in the
@@ -37,16 +30,25 @@ function. Once a function is marked "defunct" on one CRAN release, it will
 be slated for outright deletion in a subsequent release.
 
 \tabular{lll}{
-\strong{Defunct}   \tab \strong{Replacement}     \tab \strong{Notes}\cr
-\code{makeSection} \tab \code{\link{as.section}} \tab Improve utility and name sensibility\cr
-\code{columns}     \tab \code{\link{read.ctd}}   \tab Unnecessary; never worked\cr
+\strong{Defunct}       \tab \strong{Replacement}                     \tab \strong{Version} \cr
+\code{addColumn}       \tab \code{\link{oceSetData}}                 \tab  0.9.24\cr
+\code{byteToBinary}    \tab \code{\link{rawToBits}}                  \tab  0.9.24 'endian="little" disallowed\cr
+\code{findInOrdered}   \tab \code{\link{findInterval}}               \tab  0.9.24\cr
+\code{ctdAddColumn}    \tab \code{\link{oceSetData}}                 \tab  0.9.24\cr
+\code{ctdUpdateHeader} \tab \code{\link{oceSetMetadata}}             \tab  0.9.24\cr
+\code{mapZones}        \tab \code{\link{mapGrid}}                    \tab  0.9.24\cr
+\code{mapMeridians}    \tab \code{\link{mapGrid}}                    \tab  0.9.24\cr
+\code{oce.as.POSIXlt}  \tab \code{\link[lubridate]{parse_date_time}} \tab  0.9.24\cr
+\code{oce.magic}       \tab \code{\link{oceMagic}}                   \tab  0.9.24\cr
 }
 
-The following were removed in recent years.
+The following were removed recently, having been marked as "deprecated"
+in at least one CRAN release, and thereafter as "defunct" in at least
+one CRAN release.
 
 \tabular{lll}{
-\strong{Function}  \tab \strong{Replacement}     \tab \strong{Notes}\cr
-FILL IN           \tab FILL IN                  \tab FILL IN
+\strong{Function}      \tab \strong{Replacement}         \tab \strong{Version}\cr
+\code{makeSection}     \tab \code{\link{as.section}}     \tab           0.9.24\cr
 }
 
 Several \sQuote{oce} function arguments are considered "deprecated", which

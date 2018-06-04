@@ -13,9 +13,10 @@ abbreviateVector <- function(x)
 }
 
 
-#' Add a Column to the Data Slot of an Oce object [deprecated]
+#' Add a Column to the Data Slot of an Oce object [defunct]
 #'
-#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
+#'
 #' Use \code{\link{oceSetData}} instead of the present function.
 #'
 #' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
@@ -29,8 +30,8 @@ abbreviateVector <- function(x)
 #' @family functions that will be removed soon
 addColumn <- function (x, data, name)
 {
-    .Deprecated("oceSetData",
-                msg="addColumn() will be removed soon; use oceSetData() instead. See ?'oce-deprecated'.")
+    .Defunct("oceSetData",
+             msg="addColumn() is disallowed and will be removed soon. Use oceSetData() instead. See ?'oce-defunct'.")
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (missing(data))
@@ -1234,31 +1235,18 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 }
 
 
-#' Find indices of times in an ordered vector [deprecated]
+#' Find indices of times in an ordered vector [defunct]
 #'
-#' \strong{WARNING:} This function will be removed soon;
-#' see \link{oce-deprecated}.  The replacement is trivial:
-#' just change a call like e.g. \code{findInOrdered(x,f)}
-#' to \code{\link{findInterval}(f,x)} (which is what the function
-#' started doing, on 2017-09-07, after a major bug was found).
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
 #'
-#' The indices point to the largest items in \code{x} that are less than or
-#' equal the values in \code{f}.  This works by simply calling
-#' \code{\link{findInterval}(x=f, vec=x)}, and users are probably
-#' better off using \code{\link{findInterval}} directly.
-#'
-#' @param x a numeric vector, in increasing order by value.
-#' @param f a numeric vector of items whose indices are sought.
-#' @return A numerical vector indicating the indices of left-sided neighbors.
+#' @param x Ignored, since this function is defunct.
+#' @param f Ignored, since this function is defunct.
 #' @author Dan Kelley
-#' @examples
-#'
-#' findInOrdered(seq(0, 10, 1), c(1.2, 7.3))
+#' @family functions that will be removed soon
 findInOrdered <- function(x, f)
 {
-    .Deprecated("mapGrid",
-                msg="findInOrdered(f,x) will be removed soon; use findInterval(f,x) instead. See ?'oce-deprecated'.")
-    findInterval(f, x)
+    .Defunct("findInterval",
+             msg="findInOrdered() is disallowed and will be removed soon. Use findInterval() instead. See ?'oce-defunct'.")
 }
 
 
@@ -3608,10 +3596,10 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 }
 
 
-#' Format bytes as binary
+#' Format bytes as binary [defunct]
 #'
 #' \strong{WARNING:} The \code{endian} argument will soon be removed
-#' from this function; see \link{oce-deprecated}.
+#' from this function; see \link{oce-defunct}.
 #' This is because the actions for \code{endian="little"} made
 #' no sense in practical work. The default value for \code{endian}
 #' was changed to \code{"big"} on 2017 May 6.
@@ -3631,15 +3619,13 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 #' library(oce)
 #' ## Note comparison with rawToBits():
 #' a <- as.raw(0x0a)
-#' byteToBinary(a, "big") # "00001010"
-#' rev(rawToBits(a))      # 00 00 00 00 01 00 01 00
-byteToBinary <- function(x, endian)
+#' byteToBinary(a, "big")        # "00001010"
+#' as.integer(rev(rawToBits(a))) # 0 0 0 0 1 0 1 0
+byteToBinary <- function(x, endian="big")
 {
-    if (missing(endian))
-        endian <- "big"
     if (endian != "big")
-        .Deprecated("rawToBits",
-                    msg="byteToBinary(): the endian=\"little\" argument will be disallowed soon; see ?'oce-deprecated'.")
+        .Defunct("rawToBits",
+                 msg="byteToBinary(.,'little') is disallowed and will be removed soon. See ?'oce-defunct'.")
     ## onebyte2binary <- function(x)
     ## {
     ##     c("0000", "0001", "0010", "0011",
