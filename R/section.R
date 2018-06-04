@@ -58,10 +58,10 @@ setClass("section", contains="oce")
 #' Multanovsky, undertaking a westward transect from the Mediterranean outflow
 #' region across to North America, with a change of heading in the last few dozen
 #' stations to run across the nominal Gulf Stream axis.
-#' The data flags follow the WHP CTD convention, i.e. 1 for uncalibrated,
-#' 2 for an acceptable measurement, 3 for a questionable measurement, 4
-#' for a bad measurement, etc; see \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
-#' for further details.
+#' The data flags follow the "WHP Bottle"convention, set by
+#' \code{initializeFlagScheme(section, "WHP bottle")}; see
+#' \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+#' for more information on World Hydrographic Program flag conventions.
 #'
 #' @examples
 #' \dontrun{
@@ -156,10 +156,12 @@ setMethod("initializeFlagScheme",
               for (i in seq_along(object@data$station)) {
                   res@data$station[[i]] <- initializeFlagScheme(object@data$station[[i]], name, mapping, debug=debug-1)
               }
-              res@processingLog <- processingLogAppend(res@processingLog,
-                                                       paste("initializeFlagScheme(object",
-                                                             ", name=\"", name,
-                                                             "\", mapping=", gsub(" ", "", paste(as.character(deparse(mapping))))))
+              res@processingLog <-
+                  processingLogAppend(res@processingLog,
+                                      paste("initializeFlagScheme(object",
+                                            ", name=\"", name,
+                                            "\", mapping=",
+                                            gsub("[ ]*", "", paste(as.character(deparse(mapping)))), ")", sep=""))
               res
           })
 
@@ -196,7 +198,7 @@ setMethod(f="summary",
               if (numStations > 0) {
                   cat("Overview of stations\n```\n")
                   cat(sprintf("%5s %5s %8s %8s %7s %5s\n", "Index", "ID", "Lon", "Lat", "Levels", "Depth"))
-                  for (i in 1:numStations) {
+                  for (i in seq_len(numStations)) {
                       ##stn <- object@data$station[[i]]
                       thisStn <- object@data$station[[i]]
                       id <- if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
@@ -209,6 +211,28 @@ setMethod(f="summary",
                                   length(thisStn@data$pressure), depth))
                   }
                   cat("```\n")
+                  names <- names(object@data$station[[1]]@metadata$flags)
+                  if (!is.null(names)) {
+                      cat("* Data-quality flags\n")
+                      width <- 1 + max(nchar(names))
+                      ## assume all stations have identical flags
+                      for (name in names) {
+                          padding <- rep(" ", width - nchar(name))
+                          cat("    ", name, ":", padding, sep="")
+                          flags <- NULL
+                          for (i in seq_len(numStations)) {
+                              flags <- c(flags, as.numeric(object[["station", i]][[paste(name, "Flag", sep="")]]))
+                          }
+                          flagTable <- table(flags)
+                          flagTableLength <- length(flagTable)
+                          if (flagTableLength) {
+                              for (i in seq_len(flagTableLength)) {
+                                  cat("\"", names(flagTable)[i], "\"", " ", flagTable[i], "", sep="")
+                                  if (i != flagTableLength) cat(", ") else cat("\n")
+                              }
+                          }
+                      }
+                  }
               } else {
                   cat("* No stations\n")
               }
