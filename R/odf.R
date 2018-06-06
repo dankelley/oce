@@ -712,11 +712,12 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' @description
 #' ODF (Ocean Data Format) is a
 #' format developed at the Bedford Institute of Oceanography and also used
-#' at other Canadian Department of Fisheries and Oceans (DFO) facilities.
+#' at other Canadian Department of Fisheries and Oceans (DFO) facilities
+#' (see [1] and [2]).
 #' It can hold various types of time-series data, which includes a variety
 #' of instrument types. Thus, \code{read.odf}
-#' is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2015,
-#' \code{read.odf} is still in development, with features being added as  a
+#' is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2018,
+#' \code{read.odf} is still in development, with features being added as a
 #' project with DFO makes available more files.
 #'
 #' @details
@@ -781,13 +782,31 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' states that a short-name of \code{"salt"} represents salinity, and that the unit is
 #' as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFNames2oceNames}},
 #' as appropriate, and takes precedence over the lookup table in that function.
+#' @param header An indication of whether, or how, to store the entirety the
+#' ODF file header within the \code{metadata} slot of the returned object, as opposed
+#' to just a few header entries. There are three choices for the value of the
+#' \code{header} argument. (1) If it is \code{FALSE}, then the header is not stored.
+#' (2) If it is \code{"character"},
+#' then the header is stored as an entry named \code{ODFHeader} in the \code{metadata}
+#' slot of the returned object, in the form of a vector of character strings, one
+#' per line of the file. (3) Finally, if it is \code{"list"}, then the header
+#' will be saved as \code{ODFHeader} in the \code{metadata} slot, in the form
+#' of a list whose elements are themselves lists. A key-value framework is used
+#' in the second-level lists. The naming of list entries follows that in the ODF header,
+#' except that \code{\link{unduplicateNames}} is used to transform repeated names;
+#' e.g., an ODF file with three
+#' \code{POLYNOMIAL_CAL_HEADER} entries will yield a list with items named
+#' \code{POLYNOMIAL_CAL_HEADER_001},
+#' \code{POLYNOMIAL_CAL_HEADER_002}, and
+#' \code{POLYNOMIAL_CAL_HEADER_003}. Renaming is performed at the two
+#' two list levels that typify ODF files.
 #' @template debugTemplate
 #'
 #' @return An object of class \code{oce}. It is up to a calling function to determine what to do with this object.
 #'
 #' @section Caution:
 #' ODF files do not store information on the temperature or salinity scale, and \code{read.odf}
-#' assumes them to be ITS-90 and PSS-78, respectively. These scales will not be correct for old
+#' assumes these to be ITS-90 and PSS-78, respectively. These scales may be incorrect for old
 #' data files. Note that the temperature scale can be converted from old scales
 #' using \code{\link{T90fromT68}} and \code{\link{T90fromT48}}, although the change will be in
 #' a fraction of a millidegree, which probably exceeds reasonable confidence in old data.
@@ -803,16 +822,13 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' in June 2011.)
 #'
 #' \item [2] The St Lawrence Global Observatory website has information on ODF format at
-#' \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
-#'
-#' \item [3] List of variable codes:
-#' \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
-#' (checked 2018-02-11); only a subset are handled.
+#' \url{https://slgo.ca/app-sgdo/en/docs_reference/documents.html} (link checked
+#' 2018-06-06) and this is perhaps the best resource to learn more.
 #'
 #'}
 #'
 #' @family things related to \code{odf} data
-read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
+read.odf <- function(file, columns=NULL, header=FALSE, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")
     if (is.character(file)) {
@@ -830,12 +846,14 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         open(file, "r")
         on.exit(close(file))
     }
-    lines <- readLines(file, 1000, encoding="UTF-8")
+    ## Try to find the header/data separator in first 1000 lines
+    ## but if not there (as in a huge file) then look at the whole file.
+    lines <- readLines(file, 1000, encoding="latin1") # issue 1430 re encoding
     pushBack(lines, file) # we used to read.table(text=lines, ...) but it is VERY slow
-    dataStart <- grep("-- DATA --", lines)
+    dataStart <- grep("^[ ]*-- DATA --[ ]*$", lines) # issue 1430 re leading/trailing spaces
     if (!length(dataStart)) {
         lines <- readLines(file, encoding="UTF-8")
-        dataStart <- grep("-- DATA --", lines)
+        dataStart <- grep("^[ ]*-- DATA --[ ]*$", lines) # issue 1430 re leading/trailing spaces
         if (!length(dataStart)) {
             stop("cannot locate a line containing '-- DATA --'")
         }
