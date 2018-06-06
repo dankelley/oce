@@ -735,7 +735,7 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' details.
 #'
 #'
-#' @section Metadata conventions
+#' @section Metadata conventions:
 #'
 #' Some metadata items may be specific to certain instruments, and
 #' certain research groups. It can be important for analysts to be aware of

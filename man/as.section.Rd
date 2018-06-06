@@ -80,6 +80,7 @@ summary(sec3)
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{handleFlags,section-method}},
+  \code{\link{initializeFlagScheme,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},

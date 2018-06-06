@@ -111,6 +111,7 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,adp-meth
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}},
   \code{\link{initializeFlagScheme,ctd-method}},
+  \code{\link{initializeFlagScheme,oce-method}},
   \code{\link{initializeFlagScheme}},
   \code{\link{initializeFlags,adp-method}},
   \code{\link{initializeFlags,oce-method}},
@@ -118,4 +119,16 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,adp-meth
   \code{\link{setFlags,adp-method}},
   \code{\link{setFlags,ctd-method}},
   \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
+
+Other things related to \code{section} data: \code{\link{[[,section-method}},
+  \code{\link{[[<-,section-method}},
+  \code{\link{as.section}},
+  \code{\link{handleFlags,section-method}},
+  \code{\link{plot,section-method}},
+  \code{\link{read.section}}, \code{\link{section-class}},
+  \code{\link{sectionAddStation}},
+  \code{\link{sectionGrid}}, \code{\link{sectionSmooth}},
+  \code{\link{sectionSort}}, \code{\link{section}},
+  \code{\link{subset,section-method}},
+  \code{\link{summary,section-method}}
 }

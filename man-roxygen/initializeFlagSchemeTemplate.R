@@ -89,4 +89,5 @@
 #' \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 #'
 #' @family functions relating to data-quality flags
+#' @family things related to \code{<%=class%>} data
 

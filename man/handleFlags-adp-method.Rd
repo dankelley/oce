@@ -93,6 +93,7 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,argo-met
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}},
   \code{\link{initializeFlagScheme,ctd-method}},
+  \code{\link{initializeFlagScheme,oce-method}},
   \code{\link{initializeFlagScheme,section-method}},
   \code{\link{initializeFlagScheme}},
   \code{\link{initializeFlags,adp-method}},
