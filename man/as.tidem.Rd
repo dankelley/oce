@@ -37,7 +37,9 @@ contents.
 \description{
 This function is intended to provide a bridge to
 \code{\link{predict.tidem}}, enabling tidal predictions based
-on published tables of harmonic fits.
+on published tables of harmonic fits. \strong{CAUTION:} this
+is a provisional function, and its action and argument list
+may change through the summer of 2018 ... use with caution!
 }
 \examples{
 # Simulate a tide table with output from tidem().
@@ -50,9 +52,9 @@ m1 <- as.tidem(mean(sealevelTuktoyaktuk[["time"]]), sealevelTuktoyaktuk[["latitu
 # Test agreement with tidem() result, by comparing predicted sealevels.
 p1 <- predict(m1, sealevelTuktoyaktuk[["time"]])
 expect_lt(max(abs(p1 - p0), na.rm=TRUE), 1e-10)
-# Simplified harmonic model, using large constituents 
+# Simplified harmonic model, using large constituents
 # > m0[["name"]][which(m[["amplitude"]]>0.05)]
-# [1] "Z0"  "MM"  "MSF" "O1"  "K1"  "OO1" "N2"  "M2"  "S2" 
+# [1] "Z0"  "MM"  "MSF" "O1"  "K1"  "OO1" "N2"  "M2"  "S2"
 h <- "
 name  amplitude      phase
   Z0 1.98061875   0.000000

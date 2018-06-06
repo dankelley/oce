@@ -271,6 +271,7 @@ setMethod("setFlags",
               res
           })
 
+#' @templateVar class ctd
 #' @templateVar details {NA}
 #' @template initializeFlagSchemeTemplate
 setMethod("initializeFlagScheme",
