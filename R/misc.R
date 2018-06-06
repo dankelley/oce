@@ -404,25 +404,43 @@ unitFromString <- function(s)
 #' the second occurrence of a name, etc.
 #'
 #' @param names Vector of strings with variable names.
+#' @param style An integer giving the style. If \code{1}, then
+#' e.g. a triplicate of \code{"a"} turns into \code{"a"}, \code{"a1"},
+#' and \code{"a2"}.  If \code{name} is \code{2},
+#' then the unduplicated names in this
+#' example become \code{"a_001"}, \code{"a_002"}, \code{"a_003"}.
+#' Names of CTD data are unduplicated with scheme 1, while
+#' names of items in ODF file headers are unduplicated with
+#' scheme 2.
+
 #' @return names Vector of strings with numbered variable names.
 #' @seealso used by \code{\link{read.ctd.sbe}}.
 #'
 #' @examples
 #' unduplicateNames(c("a", "b", "a", "c", "b"))
-unduplicateNames <- function(names)
+unduplicateNames <- function(names, style=1)
 {
     ## Handle duplicated names
-    for (i in seq_along(names)) {
-        w <- which(names == names[i])
-        if (1 < length(w)) {
-            ##print(w)
-            w <- w[-1]
-            ##message("duplicated: ", names[i])
-            ##message("w: ", paste(w, collapse=" "))
-            ##message(paste(names, collapse=" "))
-            names[w] <- paste(names[i], 1+seq.int(1, length(w)), sep="")
-            ##message(paste(names, collapse=" "))
+    if (style == 1) {
+        for (i in seq_along(names)) {
+            w <- which(names == names[i])
+            lw <- length(w)
+            if (lw > 1) {
+                w <- w[-1]
+                names[w] <- paste(names[i], 1+seq.int(1, length(w)), sep="")
+            }
         }
+    } else if (style == 2) {
+        for (i in seq_along(names)) {
+            w <- which(names == names[i])
+            lw <- length(w)
+            if (lw > 1) {
+                suffices <- seq_len(lw)
+                names[w] <- sprintf("%s_%03d", names[i], suffices)
+            }
+        }
+    } else {
+        stop("unknown style=", style, "; it must be 1 or 2")
     }
     names
 }
