@@ -215,8 +215,6 @@ test_that("Bedford Basin CTD profile 7 (with proper CODE tokens but no PSAR_01 u
           if (1 == length(list.files(path=".", pattern="local_data"))) {
               expect_warning(d <- read.oce("local_data/bedford_basin/D16667001.ODF"),
                              "\"CRAT_01\" should be unitless")
-              expect_warning(d <- read.oce("local_data/bedford_basin/D16667001.ODF"),
-                             "\"CRAT_01\" should be unitless")
               expect_equal(d[['startTime']], as.POSIXct("2016-01-06 13:17:37",tz="UTC"))
               ## oce names
               expect_equal(names(d[["data"]]),

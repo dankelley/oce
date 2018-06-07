@@ -1,5 +1,6 @@
 # vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+
 #' Class to Store ODF Data
 #'
 #' This class is for data stored in a format used at Canadian
@@ -242,12 +243,15 @@ setMethod(f="summary",
 
 
 ## find first match in header
-findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
+findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix=TRUE) # local function
 {
+    if (prefix)
+        key <- paste("^[ ]*", key, sep="")
     i <- grep(key, lines)
     rval <- ""
     rval <- list()
     for (j in seq_along(i)) {
+        ##.message("j=", j, " start")
         ## ----------
         ## RISKY CODE: only look at first match
         ## ----------
@@ -260,7 +264,13 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
             tmp <- gsub("(.*)D([-+])([0-9]{2})", "\\1e\\2\\3", tmp)
             rval[[j]] <- as.numeric(tmp)
         }
+        ##.message("j=", j, " end")
     }
+    ##.message("A")
+    ##.print(rval)
+    if (numeric)
+        rval <- as.numeric(rval)
+    ##.message("B")
     if (0 < length(rval)) {
         if (returnOnlyFirst) {
             rval[[1]]
@@ -798,15 +808,19 @@ ODFListFromHeader <- function(header)
 #' the conventions used in datasets that are under study.
 #' For example, as of June 2018, \code{adp}
 #' objects created at the Bedford Institute of Oceanography may
-#' have metadata items \code{DEPTH_OFF_BOTTOM},
-#' \code{SAMPLING_INTERVAL}, as well as a wealth of metadata
-#' hidden inside the \code{HISTORY_HEADER} in the \code{PROCESS}
-#' item. (The \code{PROCESS} item is may be used to store any metadata
-#' included in other file formats such as netCDF.) If
-#' there has been drift or movement of a moored ADCP it is also possible that
-#' there will be two latitude and longitude values named \code{START_LATITUDE}
-#' (sometimes named \code{INITIAL_LATITUDE}) and \code{END_LATITUDE}, with
-#' longitude treated similarly.
+#' have a metadata item named \code{depthOffBottom} (called
+#' \code{DEPTH_OFF_BOTTOM} in ODF files), which is not typically
+#' present in \code{ctd} files. This item illustrates the renaming
+#' convention, from the CAMEL_CASE used in ODF files to the snakeCase
+#' used in oce. Bearing this conversion in mind, users should not
+#' find it difficult to understand the meaning of items that \code{read.odf}
+#' stores within the \code{metadata} slot. Users should bear in mind
+#' that the intirety of the ODF header is saved as list by
+#' calling the function with \code{header="list"}, after which
+#' e.g. \code{str(rval[["header"]])} or \code{view(rval[["header"]])}
+#' can be used to isolate any information of interest (but bear in mind
+#' that suffices are used to disambiguate sibling items of identical
+#' name in the ODF header).
 #'
 #' @examples
 #' library(oce)
@@ -1090,23 +1104,34 @@ read.odf <- function(file, columns=NULL, header=NULL, debug=getOption("oceDebug"
 
     ##names <- ODFName2oceName(ODFnames, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
     oceDebug(debug, "oce names:", paste(namesUnits$names, collapse=" "), "\n")
-    scientist <- findInHeader("CHIEF_SCIENTIST", lines)
-    ship <- findInHeader("PLATFORM", lines) # maybe should rename, e.g. for helicopter
-    institute <- findInHeader("ORGANIZATION", lines) # maybe should rename, e.g. for helicopter
-    station <- findInHeader("EVENT_NUMBER", lines)
-    latitude <- as.numeric(findInHeader("INITIAL_LATITUDE", lines))
-    longitude <- as.numeric(findInHeader("INITIAL_LONGITUDE", lines))
-    cruise <- findInHeader("CRUISE_NAME", lines)
-    countryInstituteCode <- findInHeader("COUNTRY_INSTITUTE_CODE", lines)
-    cruiseNumber <- findInHeader("CRUISE_NUMBER", lines)
+
+    res <- new("odf")
+    res@metadata$depthOffBottom <- findInHeader("DEPTH_OFF_BOTTOM", lines, returnOnlyFirst=TRUE, numeric=TRUE)
+    res@metadata$initialLatitude <- findInHeader("INITIAL_LATITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
+    res@metadata$initialLongitude <- findInHeader("INITIAL_LONGITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
+    res@metadata$endLatitude <- findInHeader("END_LATITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
+    res@metadata$endLongitude <- findInHeader("END_LONGITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
+    res@metadata$samplingInterval <- findInHeader("SAMPLING_INTERVAL", lines, returnOnlyFirst=TRUE, numeric=TRUE)
+
+    res@metadata$scientist <- findInHeader("CHIEF_SCIENTIST", lines)
+    res@metadata$ship <- findInHeader("PLATFORM", lines) # maybe should rename, e.g. for helicopter
+    res@metadata$institute <- findInHeader("ORGANIZATION", lines) # maybe should rename, e.g. for helicopter
+    res@metadata$station <- findInHeader("EVENT_NUMBER", lines)
+    res@metadata$latitude <- as.numeric(res@metadata$initialLatitude)
+    res@metadata$longitude <- as.numeric(res@metadata$initialLongitude)
+    res@metadata$cruise <- findInHeader("CRUISE_NAME", lines)
+    res@metadata$countryInstituteCode <- findInHeader("COUNTRY_INSTITUTE_CODE", lines)
+    res@metadata$cruiseNumber <- findInHeader("CRUISE_NUMBER", lines)
     DATA_TYPE <- trimws(findInHeader("DATA_TYPE", lines))
-    deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
+    res@metadata$deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
     ## date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
 
     ## if any changes here, update ctd.R @ ODF_CTD_LINK {
-    startTime <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
-    eventNumber <- findInHeader("EVENT_NUMBER", lines) # synchronize with ctd.R at ODFMETADATA tag
-    eventQualifier <- findInHeader("EVENT_QUALIFIER", lines)# synchronize with ctd.R at ODFMETADATA tag
+    res@metadata$time <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
+    res@metadata$startTime <- res@metadata$time
+    res@metadata$date <- res@metadata$time
+    res@metadata$eventNumber <- findInHeader("EVENT_NUMBER", lines) # synchronize with ctd.R at ODFMETADATA tag
+    res@metadata$eventQualifier <- findInHeader("EVENT_QUALIFIER", lines)# synchronize with ctd.R at ODFMETADATA tag
     ## } ODF_CTD_LINK
 
     ## endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
@@ -1158,23 +1183,22 @@ read.odf <- function(file, columns=NULL, header=NULL, debug=getOption("oceDebug"
     oceDebug(debug, "NAvalueList=", paste(deparse(NAvalueList),collapse=""), "\n")
     ##oceDebug(debug, "NAvalue=", NAvalue, "; it's class is ", class(NAvalue), "\n")
 
-    depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
-    depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
-    sounding <- as.numeric(findInHeader("SOUNDING", lines))
+    res@metadata$depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
+    res@metadata$depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
+    res@metadata$sounding <- as.numeric(findInHeader("SOUNDING", lines))
     ## Compute waterDepth from "SOUNDING" by preference, or from "MAX_DEPTH" if necessary
-    waterDepth <- NA
-    if (length(sounding)) {
-        waterDepth <- sounding[1]
+    res@metadata$waterDepth <- NA
+    if (length(res@metadata$sounding)) {
+        res@metadata$waterDepth <- res@metadata$sounding[1]
     } else {
-        if (length(depthMax))
-            waterDepth <- depthMax[1]
+        if (length(res@metadata$depthMax))
+            res@metadata$waterDepth <- res@metadata$depthMax[1]
     }
-    type <- findInHeader("INST_TYPE", lines)
-    if (length(grep("sea", type, ignore.case=TRUE)))
-        type <- "SBE"
-    serialNumber <- findInHeader("SERIAL_NUMBER", lines)
-    model <- findInHeader("MODEL", lines)
-    res <- new("odf")
+    res@metadata$type <- findInHeader("INST_TYPE", lines)
+    if (length(grep("sea", res@metadata$type, ignore.case=TRUE)))
+        res@metadata$type <- "SBE"
+    res@metadata$serialNumber <- findInHeader("SERIAL_NUMBER", lines)
+    res@metadata$model <- findInHeader("MODEL", lines)
     if (is.null(header)) {
         res@metadata$header <- NULL
     } else if (header == "character") {
@@ -1201,29 +1225,29 @@ read.odf <- function(file, columns=NULL, header=NULL, debug=getOption("oceDebug"
     ##> res@metadata$dataNamesOriginal <- as.list(ODFnames)
     res@metadata$dataNamesOriginal <- as.list(ODForiginalNames)
     names(res@metadata$dataNamesOriginal) <- namesUnits$names
-    res@metadata$type <- type
-    res@metadata$model <- model
-    res@metadata$serialNumber <- serialNumber
-    res@metadata$eventNumber <- eventNumber
-    res@metadata$eventQualifier <- eventQualifier
-    res@metadata$ship <- ship
-    res@metadata$scientist <- scientist
-    res@metadata$institute <- institute
+    ##res@metadata$type <- type
+    ##res@metadata$model <- model
+    ##res@metadata$serialNumber <- serialNumber
+    ##res@metadata$eventNumber <- eventNumber
+    ##res@metadata$eventQualifier <- eventQualifier
+    ##res@metadata$ship <- ship
+    ##res@metadata$scientist <- scientist
+    ##res@metadata$institute <- institute
     res@metadata$address <- NULL
-    res@metadata$cruise <- cruise
-    res@metadata$station <- station
-    res@metadata$countryInstituteCode <- countryInstituteCode
-    res@metadata$cruiseNumber <- cruiseNumber
-    res@metadata$deploymentType <- deploymentType
-    res@metadata$date <- startTime
-    res@metadata$startTime <- startTime
-    res@metadata$latitude <- latitude
-    res@metadata$longitude <- longitude
+    ##res@metadata$cruise <- cruise
+    ##res@metadata$station <- station
+    ##res@metadata$countryInstituteCode <- countryInstituteCode
+    ##res@metadata$cruiseNumber <- cruiseNumber
+    ##res@metadata$deploymentType <- deploymentType
+    ##res@metadata$date <- startTime
+    ##res@metadata$startTime <- startTime
+    ##res@metadata$latitude <- latitude
+    ##res@metadata$longitude <- longitude
     res@metadata$recovery <- NULL
-    res@metadata$waterDepth <- waterDepth
-    res@metadata$depthMin <- depthMin
-    res@metadata$depthMax <- depthMax
-    res@metadata$sounding <- sounding
+    ##res@metadata$waterDepth <- waterDepth
+    ##res@metadata$depthMin <- depthMin
+    ##res@metadata$depthMax <- depthMax
+    ##res@metadata$sounding <- sounding
     res@metadata$sampleInterval <- NA
     res@metadata$filename <- filename
     ##> ## fix issue 768
@@ -1264,7 +1288,7 @@ read.odf <- function(file, columns=NULL, header=NULL, debug=getOption("oceDebug"
 
     ## Return to water depth issue. In a BIO file, I found that the missing-value code was
     ## -99, but that a SOUNDING was given as -99.9, so this is an extra check.
-    if (is.na(waterDepth) || waterDepth < 0) {
+    if (is.na(res@metadata$waterDepth) || res@metadata$waterDepth < 0) {
         if ('pressure' %in% names(res@data)) {
             res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
             warning("estimating waterDepth from maximum pressure")

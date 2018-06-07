@@ -77,15 +77,19 @@ certain research groups. It can be important for analysts to be aware of
 the conventions used in datasets that are under study.
 For example, as of June 2018, \code{adp}
 objects created at the Bedford Institute of Oceanography may
-have metadata items \code{DEPTH_OFF_BOTTOM},
-\code{SAMPLING_INTERVAL}, as well as a wealth of metadata
-hidden inside the \code{HISTORY_HEADER} in the \code{PROCESS}
-item. (The \code{PROCESS} item is may be used to store any metadata
-included in other file formats such as netCDF.) If
-there has been drift or movement of a moored ADCP it is also possible that
-there will be two latitude and longitude values named \code{START_LATITUDE}
-(sometimes named \code{INITIAL_LATITUDE}) and \code{END_LATITUDE}, with
-longitude treated similarly.
+have a metadata item named \code{depthOffBottom} (called
+\code{DEPTH_OFF_BOTTOM} in ODF files), which is not typically
+present in \code{ctd} files. This item illustrates the renaming
+convention, from the CAMEL_CASE used in ODF files to the snakeCase
+used in oce. Bearing this conversion in mind, users should not
+find it difficult to understand the meaning of items that \code{read.odf}
+stores within the \code{metadata} slot. Users should bear in mind
+that the intirety of the ODF header is saved as list by
+calling the function with \code{header="list"}, after which
+e.g. \code{str(rval[["header"]])} or \code{view(rval[["header"]])}
+can be used to isolate any information of interest (but bear in mind
+that suffices are used to disambiguate sibling items of identical
+name in the ODF header).
 }
 
 \section{Caution}{
