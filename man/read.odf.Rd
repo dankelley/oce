@@ -17,19 +17,20 @@ states that a short-name of \code{"salt"} represents salinity, and that the unit
 as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFNames2oceNames}},
 as appropriate, and takes precedence over the lookup table in that function.}
 
-\item{header}{An indication of whether, or how, to store the
-ODF file header within the \code{metadata} slot of the returned object.
-There are three choices for \code{header}. (1) If it is \code{NULL},
-the header is not stored in the \code{metadata} slot.
+\item{header}{An indication of whether, or how, to store the entire
+ODF file header in the \code{metadata} slot of the returned object.
+There are three choices for the \code{header} argument.
+(1) If it is \code{NULL}, then the ODF header is not stored in
+the \code{metadata} slot (although some of its contents are).
 (2) If it is \code{"character"}, the header is stored within
-the \code{metadata} as \code{ODFHeader}, which is a vector of
-character strings, one per line of the ODF file.
-(3) If it is \code{"list"}, then \code{ODFHeader} in the
-\code{metadata} slot of the returned object will be
-a list comprising elements that are themselves lists of key-value
-pairs.  The naming of list entries follows that in the ODF header,
-except that \code{\link{unduplicateNames}} is used to transform repeated names
-by adding numerical suffices.}
+the \code{metadata} as a vector named \code{header}, comprising
+a character string for each line of the header within the ODF file.
+(3) If it is \code{"list"}, then the \code{metadata} slot of the
+returned object will contain a \code{list} named \code{header} that
+has lists as its entries. (The sub-lists are in the form of
+key-value pairs.) The naming of list entries iis patterned on
+that in the ODF header, except that \code{\link{unduplicateNames}}
+is used to transform repeated names by adding numerical suffices.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
