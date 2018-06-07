@@ -28,7 +28,7 @@ a character string for each line of the header within the ODF file.
 (3) If it is \code{"list"}, then the \code{metadata} slot of the
 returned object will contain a \code{list} named \code{header} that
 has lists as its entries. (The sub-lists are in the form of
-key-value pairs.) The naming of list entries iis patterned on
+key-value pairs.) The naming of list entries is patterned on
 that in the ODF header, except that \code{\link{unduplicateNames}}
 is used to transform repeated names by adding numerical suffices.}
 
