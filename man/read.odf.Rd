@@ -4,7 +4,7 @@
 \alias{read.odf}
 \title{Read an ODF file}
 \usage{
-read.odf(file, columns = NULL, header = FALSE,
+read.odf(file, columns = NULL, header = NULL,
   debug = getOption("oceDebug"))
 }
 \arguments{
@@ -17,24 +17,19 @@ states that a short-name of \code{"salt"} represents salinity, and that the unit
 as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFNames2oceNames}},
 as appropriate, and takes precedence over the lookup table in that function.}
 
-\item{header}{An indication of whether, or how, to store the entirety the
-ODF file header within the \code{metadata} slot of the returned object, as opposed
-to just a few header entries. There are three choices for the value of the
-\code{header} argument. (1) If it is \code{FALSE}, then the header is not stored.
-(2) If it is \code{"character"},
-then the header is stored as an entry named \code{ODFHeader} in the \code{metadata}
-slot of the returned object, in the form of a vector of character strings, one
-per line of the file. (3) Finally, if it is \code{"list"}, then the header
-will be saved as \code{ODFHeader} in the \code{metadata} slot, in the form
-of a list whose elements are themselves lists. A key-value framework is used
-in the second-level lists. The naming of list entries follows that in the ODF header,
-except that \code{\link{unduplicateNames}} is used to transform repeated names;
-e.g., an ODF file with three
-\code{POLYNOMIAL_CAL_HEADER} entries will yield a list with items named
-\code{POLYNOMIAL_CAL_HEADER_001},
-\code{POLYNOMIAL_CAL_HEADER_002}, and
-\code{POLYNOMIAL_CAL_HEADER_003}. Renaming is performed at the two
-two list levels that typify ODF files.}
+\item{header}{An indication of whether, or how, to store the
+ODF file header within the \code{metadata} slot of the returned object.
+There are three choices for \code{header}. (1) If it is \code{NULL},
+the header is not stored in the \code{metadata} slot.
+(2) If it is \code{"character"}, the header is stored within
+the \code{metadata} as \code{ODFHeader}, which is a vector of
+character strings, one per line of the ODF file.
+(3) If it is \code{"list"}, then \code{ODFHeader} in the
+\code{metadata} slot of the returned object will be
+a list comprising elements that are themselves lists of key-value
+pairs.  The naming of list entries follows that in the ODF header,
+except that \code{\link{unduplicateNames}} is used to transform repeated names
+by adding numerical suffices.}
 
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
@@ -141,6 +136,7 @@ in June 2011.)
 package is released by the Canadian Department of Fisheries and Oceans.
 
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},

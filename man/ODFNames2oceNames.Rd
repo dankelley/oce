@@ -119,6 +119,7 @@ Other functions that interpret variable names and units from headers: \code{\lin
   \code{\link{woceUnit2oceUnit}}
 
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFListFromHeader}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
   \code{\link{plot,odf-method}},

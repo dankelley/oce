@@ -706,6 +706,61 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     res
 }
 
+#' Create a list of ODF header metadata
+#' @param header Vector of character strings, holding the header
+#' @return A list holding the metadata, with item names matching
+#' those in the ODF header, except that duplicates are transformed
+#' through the use of \code{\link{unduplicateNames}}.
+#'
+#' @family things related to \code{odf} data
+ODFListFromHeader <- function(header)
+{
+    ## remove trailing blanks
+    header <- gsub("[ ]*$", "", header)
+    A <- grep("^[A-Z].*,$", header)
+    h <- vector("list", length=length(A))
+    names(h) <- gsub(",.*$", "", header[A])
+    names(h) <- unduplicateNames(names(h), 2)
+    starts <- A + 1
+    ends <- c(A[-1], length(header) + 1) - 1
+    for (i in seq_along(starts)) {
+        ##msg(header[A[i]], "\n")
+        nitems <- 1 + ends[i] - starts[i]
+        ##msg("  nitems: ", nitems)
+        h[[i]] <- vector("list", length=nitems)
+        itemsNames <- NULL
+        itemsI <- 1
+        for (ii in starts[i]:ends[i]) {
+            ##msg("line <", header[ii], ">")
+            name <- gsub("^[ ]*([^=]*)[ ]*=.*$", "\\1", header[ii])
+            ##msg("    name  <", name, ">")
+            value <- gsub("^[ ]*([^=]*)[ ]*=[ ]*", "", header[ii])
+            ##msg("    value <", value, "> (original)")
+            ## Trim trailing comma (which seems to occur for all but last item in a list)
+            if ("," == substr(value, nchar(value), nchar(value)))
+                value <- substr(value, 1, nchar(value)-1)
+            ##msg("    value <", value, ">  (after trailing-comma removal)")
+            ## Trim leading single-quote, and its matching trailing single-quote; warn
+            ## if former is present but latter is missing.
+            if ("'" == substr(value, 1, 1)) {
+                value <- substr(value, 2, nchar(value))
+                if ("'" == substr(value, nchar(value), nchar(value))) {
+                    value <- substr(value, 1, nchar(value)-1)
+                } else {
+                    warning("malformed string in ODF header line <", header[ii], ">\n", sep="")
+                }
+            }
+            ##msg("    value <", value, ">    (after '' removal)")
+            itemsNames <- c(itemsNames, name)
+            h[[i]][[itemsI]] <- value
+            itemsI <- itemsI + 1
+        }
+        names(h[[i]]) <- itemsNames
+        names(h[[i]]) <- unduplicateNames(names(h[[i]]), 2)
+    }
+    h
+}
+
 
 #' @title Read an ODF file
 #'
@@ -782,24 +837,19 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' states that a short-name of \code{"salt"} represents salinity, and that the unit is
 #' as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFNames2oceNames}},
 #' as appropriate, and takes precedence over the lookup table in that function.
-#' @param header An indication of whether, or how, to store the entirety the
-#' ODF file header within the \code{metadata} slot of the returned object, as opposed
-#' to just a few header entries. There are three choices for the value of the
-#' \code{header} argument. (1) If it is \code{FALSE}, then the header is not stored.
-#' (2) If it is \code{"character"},
-#' then the header is stored as an entry named \code{ODFHeader} in the \code{metadata}
-#' slot of the returned object, in the form of a vector of character strings, one
-#' per line of the file. (3) Finally, if it is \code{"list"}, then the header
-#' will be saved as \code{ODFHeader} in the \code{metadata} slot, in the form
-#' of a list whose elements are themselves lists. A key-value framework is used
-#' in the second-level lists. The naming of list entries follows that in the ODF header,
-#' except that \code{\link{unduplicateNames}} is used to transform repeated names;
-#' e.g., an ODF file with three
-#' \code{POLYNOMIAL_CAL_HEADER} entries will yield a list with items named
-#' \code{POLYNOMIAL_CAL_HEADER_001},
-#' \code{POLYNOMIAL_CAL_HEADER_002}, and
-#' \code{POLYNOMIAL_CAL_HEADER_003}. Renaming is performed at the two
-#' two list levels that typify ODF files.
+#' @param header An indication of whether, or how, to store the
+#' ODF file header within the \code{metadata} slot of the returned object.
+#' There are three choices for \code{header}. (1) If it is \code{NULL},
+#' the header is not stored in the \code{metadata} slot.
+#' (2) If it is \code{"character"}, the header is stored within
+#' the \code{metadata} as \code{ODFHeader}, which is a vector of
+#' character strings, one per line of the ODF file.
+#' (3) If it is \code{"list"}, then \code{ODFHeader} in the
+#' \code{metadata} slot of the returned object will be
+#' a list comprising elements that are themselves lists of key-value
+#' pairs.  The naming of list entries follows that in the ODF header,
+#' except that \code{\link{unduplicateNames}} is used to transform repeated names
+#' by adding numerical suffices.
 #' @template debugTemplate
 #'
 #' @return An object of class \code{oce}. It is up to a calling function to determine what to do with this object.
@@ -828,9 +878,15 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #'}
 #'
 #' @family things related to \code{odf} data
-read.odf <- function(file, columns=NULL, header=FALSE, debug=getOption("oceDebug"))
+read.odf <- function(file, columns=NULL, header=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")
+    if (!is.null(header)) {
+        if (!is.character(header))
+            stop("the header argument must be NULL, \"character\", or \"list\"")
+        if (!(header %in% c("character", "list")))
+            stop("the header argument must be NULL, \"character\" or \"list\"")
+    }
     if (is.character(file)) {
         if (nchar(file) == 0)
             stop("'file' cannot be an empty string")
@@ -1115,7 +1171,15 @@ read.odf <- function(file, columns=NULL, header=FALSE, debug=getOption("oceDebug
     serialNumber <- findInHeader("SERIAL_NUMBER", lines)
     model <- findInHeader("MODEL", lines)
     res <- new("odf")
-    res@metadata$header <- NULL
+    if (is.null(header)) {
+        res@metadata$ODFHeader <- NULL
+    } else if (header == "character") {
+        res@metadata$ODFHeader <- lines[seq(1L, dataStart-1L)]
+    } else if (header == "list") {
+        res@metadata$ODFHeader <- ODFListFromHeader(lines[seq(1L, dataStart-1L)])
+    } else {
+        stop("problem decoding header argument; please report an error")
+    }
 
     ## catch erroneous units on CRAT, which should be in a ratio, and hence have no units.
     ## This is necessary for the sample file inst/extdata/CTD_BCD2014666_008_1_DN.ODF.gz
