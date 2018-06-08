@@ -817,7 +817,7 @@ ODFListFromHeader <- function(header)
 #' stores within the \code{metadata} slot. Users should bear in mind
 #' that the intirety of the ODF header is saved as list by
 #' calling the function with \code{header="list"}, after which
-#' e.g. \code{str(rval[["header"]])} or \code{view(rval[["header"]])}
+#' e.g. \code{\link{str}(rval[["header"]])} or \code{\link{View}(rval[["header"]])}
 #' can be used to isolate any information of interest (but bear in mind
 #' that suffices are used to disambiguate sibling items of identical
 #' name in the ODF header).
