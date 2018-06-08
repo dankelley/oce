@@ -1127,8 +1127,7 @@ read.odf <- function(file, columns=NULL, header=NULL, debug=getOption("oceDebug"
     ## date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
 
     ## if any changes here, update ctd.R @ ODF_CTD_LINK {
-    res@metadata$time <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
-    res@metadata$startTime <- res@metadata$time
+    res@metadata$startTime <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
     res@metadata$date <- res@metadata$time
     res@metadata$eventNumber <- findInHeader("EVENT_NUMBER", lines) # synchronize with ctd.R at ODFMETADATA tag
     res@metadata$eventQualifier <- findInHeader("EVENT_QUALIFIER", lines)# synchronize with ctd.R at ODFMETADATA tag
