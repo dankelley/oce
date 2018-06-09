@@ -101,14 +101,21 @@ setMethod(f="initialize",
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle flags in Section Objects
 #' @details
-#' If \code{flags} and \code{actions} are not provided, the
-#' default is to use WHP (World Hydrographic Program) flags [1], in which the
-#' value 2 indicates good data, and other values indicate either unchecked,
-#' suspicious, or bad data. Any data not flagged as good are set
-#' to \code{NA} in the returned value. Since WHP flag codes run
-#' from 1 to 9, this default is equivalent to
-#' setting \code{flags=list(all=c(1, 3:9))} along with
-#' \code{action=list("NA")}.
+#' If \code{flags} and \code{actions} are not provided, then first
+#' station in \code{object} is checked for the existence of an item
+#' named \code{flagScheme} in its metadata. The existence of this
+#' item indicates that \code{\link{initializeFlagScheme}} has been
+#' called to store a flag scheme in \code{object}. For certain
+#' flag schemes, \code{handleFlags} may be called without supplying
+#' the \code{flags} argument, yielding the following conservative defaults:
+#'\itemize{
+#' \item for \code{argo}, the default is \code{flag=c(0, 3:9)}, i.e. retain only 'passed_all_tests' and 'probably_good'
+#' \item for \code{BODC}, the default is \code{flag=c(0, 3:9)}, i.e. retain only 'good' and 'probably_good'
+#' \item for \code{DFO}, the default is \code{flag=c(0, 2:9)}, i.e. retain only 'appears_correct'
+#' \item for \code{WHP bottle}, the default is \code{flag=c(1, 3:9)}, i.e. retain only 'no_problems_noted'
+#' \item for \code{WHP ctd}, the default is \code{flag=c(1, 3:9)}, i.e. retain only 'acceptable'
+#'}
+#'
 #' @param object An object of \code{\link{section-class}}.
 #' @template handleFlagsTemplate
 #' @references
@@ -116,7 +123,7 @@ setMethod(f="initialize",
 #' @examples
 #' library(oce)
 #' data(section)
-#' section2 <- handleFlags(section, flags=c(1, 3:9))
+#' section2 <- handleFlags(section, flags=c(1,3:9))
 #' par(mfrow=c(2, 1))
 #' plotTS(section)
 #' plotTS(section2)
@@ -126,8 +133,25 @@ setMethod("handleFlags",
           c(object="section", flags="ANY", actions="ANY", debug="ANY"),
           function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
-              if (is.null(flags))
-                  stop("must supply flags")
+              if (is.null(flags)) {
+                  scheme <- object[["station",1]][["flagScheme"]]$name
+                  if (is.null(scheme))
+                      stop("must supply 'flags', or use initializeFlagScheme() on the section first")
+                  predefined <- c("argo", "BODC", "DFO", "WHP bottle", "WHP CTD") # see AllClass.R
+                  if (scheme == "argo") {
+                      flags <- c(0, 3:9) # retain passed_all_tests and probably_good
+                  } else if (scheme == "BODC") {
+                      flags <- c(0, 3:9) # retain good and probably_good
+                  } else if (scheme == "DFO") {
+                      flags <- c(0, 2:9) # retain appears_correct
+                  } else if (scheme == "WHP bottle") {
+                      flags <- c(1, 3:9) # retain no_problems_noted
+                  } else if (scheme == "WHP ctd") {
+                      flags <- c(1, 3:9) # retain acceptable
+                  } else {
+                      stop("'flags' has no default for scheme \"", scheme, "\"")
+                  }
+              }
               if (is.null(actions)) {
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
