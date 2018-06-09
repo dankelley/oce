@@ -18,7 +18,7 @@ Multanovsky, undertaking a westward transect from the Mediterranean outflow
 region across to North America, with a change of heading in the last few dozen
 stations to run across the nominal Gulf Stream axis.
 The data flags follow the "WHP Bottle"convention, set by
-\code{initializeFlagScheme(section, "WHP bottle")}; see
+\code{\link{initializeFlagScheme,section-method}} to \code{"WHP bottle"}; see
 \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 for more information on World Hydrographic Program flag conventions.
 }
@@ -49,6 +49,7 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{handleFlags,section-method}},
+  \code{\link{initializeFlagScheme,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},

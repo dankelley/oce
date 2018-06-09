@@ -106,3 +106,21 @@ test_that("ODF CTD file (not as CTD)", {
           expect_equal(19, which(is.na(d[["sigmaThetaFlag"]])))
 
 })
+
+test_that("ODF header", {
+          f <- system.file("extdata", "CTD_BCD2014666_008_1_DN.ODF.gz", package="oce")
+          expect_warning(d <- read.odf(f),
+                         "\"CRAT_01\" should be unitless")
+          expect_null(d[["header"]])
+          expect_warning(d <- read.odf(f, header="character"),
+                         "\"CRAT_01\" should be unitless")
+          expect_true(is.vector(d[["header"]]))
+          expect_equal(32, length(grep("^[A-Z].*,$", d[["header"]])))
+          expect_true(is.character(d[["header"]]))
+          expect_warning(d <- read.odf(f, header="list"),
+                         "\"CRAT_01\" should be unitless")
+          expect_true(is.list(d[["header"]]))
+          expect_equal(32, length(d[["header"]]))
+          expect_true(is.list(d[["header"]][[1]]))
+})
+

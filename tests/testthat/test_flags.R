@@ -223,8 +223,7 @@ test_that("adp flag with subset() (issue 1410)", {
 
 test_that("initializeFlagScheme with section", {
           data(section)
-          a <- initializeFlagScheme(section, "WHP bottle")
-          expect_equal(a[["station", 1]][["flagScheme"]],
+          expect_equal(section[["station", 1]][["flagScheme"]],
                        list(name="WHP bottle",
                             mapping=list(no_information=1, no_problems_noted=2, leaking=3,
                                          did_not_trip=4, not_reported=5, discrepency=6,

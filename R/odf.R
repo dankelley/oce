@@ -1,5 +1,6 @@
 # vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+
 #' Class to Store ODF Data
 #'
 #' This class is for data stored in a format used at Canadian
@@ -242,12 +243,15 @@ setMethod(f="summary",
 
 
 ## find first match in header
-findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
+findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix=TRUE) # local function
 {
+    if (prefix)
+        key <- paste("^[ ]*", key, sep="")
     i <- grep(key, lines)
     rval <- ""
     rval <- list()
     for (j in seq_along(i)) {
+        ##.message("j=", j, " start")
         ## ----------
         ## RISKY CODE: only look at first match
         ## ----------
@@ -260,7 +264,13 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE) # local function
             tmp <- gsub("(.*)D([-+])([0-9]{2})", "\\1e\\2\\3", tmp)
             rval[[j]] <- as.numeric(tmp)
         }
+        ##.message("j=", j, " end")
     }
+    ##.message("A")
+    ##.print(rval)
+    if (numeric)
+        rval <- as.numeric(rval)
+    ##.message("B")
     if (0 < length(rval)) {
         if (returnOnlyFirst) {
             rval[[1]]
@@ -706,17 +716,73 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
     res
 }
 
+#' Create a list of ODF header metadata
+#' @param header Vector of character strings, holding the header
+#' @return A list holding the metadata, with item names matching
+#' those in the ODF header, except that duplicates are transformed
+#' through the use of \code{\link{unduplicateNames}}.
+#'
+#' @family things related to \code{odf} data
+ODFListFromHeader <- function(header)
+{
+    ## remove trailing blanks
+    header <- gsub("[ ]*$", "", header)
+    A <- grep("^[A-Z].*,$", header)
+    h <- vector("list", length=length(A))
+    names(h) <- gsub(",.*$", "", header[A])
+    names(h) <- unduplicateNames(names(h), 2)
+    starts <- A + 1
+    ends <- c(A[-1], length(header) + 1) - 1
+    for (i in seq_along(starts)) {
+        ##msg(header[A[i]], "\n")
+        nitems <- 1 + ends[i] - starts[i]
+        ##msg("  nitems: ", nitems)
+        h[[i]] <- vector("list", length=nitems)
+        itemsNames <- NULL
+        itemsI <- 1
+        for (ii in starts[i]:ends[i]) {
+            ##msg("line <", header[ii], ">")
+            name <- gsub("^[ ]*([^=]*)[ ]*=.*$", "\\1", header[ii])
+            ##msg("    name  <", name, ">")
+            value <- gsub("^[ ]*([^=]*)[ ]*=[ ]*", "", header[ii])
+            ##msg("    value <", value, "> (original)")
+            ## Trim trailing comma (which seems to occur for all but last item in a list)
+            if ("," == substr(value, nchar(value), nchar(value)))
+                value <- substr(value, 1, nchar(value)-1)
+            ##msg("    value <", value, ">  (after trailing-comma removal)")
+            ## Trim leading single-quote, and its matching trailing single-quote; warn
+            ## if former is present but latter is missing.
+            if ("'" == substr(value, 1, 1)) {
+                value <- substr(value, 2, nchar(value))
+                if ("'" == substr(value, nchar(value), nchar(value))) {
+                    value <- substr(value, 1, nchar(value)-1)
+                } else {
+                    warning("malformed string in ODF header line <", header[ii], ">\n", sep="")
+                }
+            }
+            ##msg("    value <", value, ">    (after '' removal)")
+            itemsNames <- c(itemsNames, name)
+            h[[i]][[itemsI]] <- value
+            itemsI <- itemsI + 1
+        }
+        names(h[[i]]) <- itemsNames
+        names(h[[i]]) <- unduplicateNames(names(h[[i]]), 2)
+    }
+    h
+}
+
 
 #' @title Read an ODF file
 #'
 #' @description
 #' ODF (Ocean Data Format) is a
 #' format developed at the Bedford Institute of Oceanography and also used
-#' at other Canadian Department of Fisheries and Oceans (DFO) facilities.
+#' at other Canadian Department of Fisheries and Oceans (DFO) facilities
+#' (see [1] and [2]).
 #' It can hold various types of time-series data, which includes a variety
 #' of instrument types. Thus, \code{read.odf}
-#' is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2015,
-#' \code{read.odf} is still in development, with features being added as  a
+#' is used by \code{read.ctd.odf} for CTD data, etc. As of mid-2018,
+#' \code{read.odf} is still in development, with features being added as a
 #' project with DFO makes available more files.
 #'
 #' @details
@@ -734,6 +800,27 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' of \code{\link{ODFNames2oceNames}} should be consulted for more
 #' details.
 #'
+#'
+#' @section Metadata conventions:
+#'
+#' Some metadata items may be specific to certain instruments, and
+#' certain research groups. It can be important for analysts to be aware of
+#' the conventions used in datasets that are under study.
+#' For example, as of June 2018, \code{adp}
+#' objects created at the Bedford Institute of Oceanography may
+#' have a metadata item named \code{depthOffBottom} (called
+#' \code{DEPTH_OFF_BOTTOM} in ODF files), which is not typically
+#' present in \code{ctd} files. This item illustrates the renaming
+#' convention, from the CAMEL_CASE used in ODF files to the snakeCase
+#' used in oce. Bearing this conversion in mind, users should not
+#' find it difficult to understand the meaning of items that \code{read.odf}
+#' stores within the \code{metadata} slot. Users should bear in mind
+#' that the intirety of the ODF header is saved as list by
+#' calling the function with \code{header="list"}, after which
+#' e.g. \code{\link{str}(rval[["header"]])} or \code{\link{View}(rval[["header"]])}
+#' can be used to isolate any information of interest (but bear in mind
+#' that suffices are used to disambiguate sibling items of identical
+#' name in the ODF header).
 #'
 #' @examples
 #' library(oce)
@@ -758,19 +845,36 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' points(ctd[['salinity']][bad],ctd[['theta']][bad],col='red',pch=20)
 #'
 #' @param file the file containing the data.
+#'
 #' @param columns An optional \code{\link{list}} that can be used to convert unrecognized
 #' data names to resultant variable names.  For example,
 #' \code{columns=list(salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))}
 #' states that a short-name of \code{"salt"} represents salinity, and that the unit is
 #' as indicated. This is passed to \code{\link{cnvName2oceName}} or \code{\link{ODFNames2oceNames}},
 #' as appropriate, and takes precedence over the lookup table in that function.
+#'
+#' @param header An indication of whether, or how, to store the entire
+#' ODF file header in the \code{metadata} slot of the returned object.
+#' There are three choices for the \code{header} argument.
+#' (1) If it is \code{NULL}, then the ODF header is not stored in
+#' the \code{metadata} slot (although some of its contents are).
+#' (2) If it is \code{"character"}, the header is stored within
+#' the \code{metadata} as a vector named \code{header}, comprising
+#' a character string for each line of the header within the ODF file.
+#' (3) If it is \code{"list"}, then the \code{metadata} slot of the
+#' returned object will contain a \code{list} named \code{header} that
+#' has lists as its entries. (The sub-lists are in the form of
+#' key-value pairs.) The naming of list entries is patterned on
+#' that in the ODF header, except that \code{\link{unduplicateNames}}
+#' is used to transform repeated names by adding numerical suffices.
+#'
 #' @template debugTemplate
 #'
 #' @return An object of class \code{oce}. It is up to a calling function to determine what to do with this object.
 #'
 #' @section Caution:
 #' ODF files do not store information on the temperature or salinity scale, and \code{read.odf}
-#' assumes them to be ITS-90 and PSS-78, respectively. These scales will not be correct for old
+#' assumes these to be ITS-90 and PSS-78, respectively. These scales may be incorrect for old
 #' data files. Note that the temperature scale can be converted from old scales
 #' using \code{\link{T90fromT68}} and \code{\link{T90fromT48}}, although the change will be in
 #' a fraction of a millidegree, which probably exceeds reasonable confidence in old data.
@@ -786,18 +890,21 @@ ODF2oce <- function(ODF, coerce=TRUE, debug=getOption("oceDebug"))
 #' in June 2011.)
 #'
 #' \item [2] The St Lawrence Global Observatory website has information on ODF format at
-#' \url{https://slgo.ca/app-sgdo/en/docs_reference/format_odf.html}
-#'
-#' \item [3] List of variable codes:
-#' \url{https://slgo.ca/app-sgdo/en/docs_reference/code_parametre_odf.html}
-#' (checked 2018-02-11); only a subset are handled.
+#' \url{https://slgo.ca/app-sgdo/en/docs_reference/documents.html} (link checked
+#' 2018-06-06) and this is perhaps the best resource to learn more.
 #'
 #'}
 #'
 #' @family things related to \code{odf} data
-read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
+read.odf <- function(file, columns=NULL, header=NULL, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "read.odf(\"", file, "\", ...) {\n", unindent=1, sep="")
+    if (!is.null(header)) {
+        if (!is.character(header))
+            stop("the header argument must be NULL, \"character\", or \"list\"")
+        if (!(header %in% c("character", "list")))
+            stop("the header argument must be NULL, \"character\" or \"list\"")
+    }
     if (is.character(file)) {
         if (nchar(file) == 0)
             stop("'file' cannot be an empty string")
@@ -813,12 +920,14 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
         open(file, "r")
         on.exit(close(file))
     }
-    lines <- readLines(file, 1000, encoding="UTF-8")
+    ## Try to find the header/data separator in first 1000 lines
+    ## but if not there (as in a huge file) then look at the whole file.
+    lines <- readLines(file, 1000, encoding="latin1") # issue 1430 re encoding
     pushBack(lines, file) # we used to read.table(text=lines, ...) but it is VERY slow
-    dataStart <- grep("-- DATA --", lines)
+    dataStart <- grep("^[ ]*-- DATA --[ ]*$", lines) # issue 1430 re leading/trailing spaces
     if (!length(dataStart)) {
         lines <- readLines(file, encoding="UTF-8")
-        dataStart <- grep("-- DATA --", lines)
+        dataStart <- grep("^[ ]*-- DATA --[ ]*$", lines) # issue 1430 re leading/trailing spaces
         if (!length(dataStart)) {
             stop("cannot locate a line containing '-- DATA --'")
         }
@@ -995,23 +1104,33 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
 
     ##names <- ODFName2oceName(ODFnames, PARAMETER_HEADER=NULL, columns=columns, debug=debug-1)
     oceDebug(debug, "oce names:", paste(namesUnits$names, collapse=" "), "\n")
-    scientist <- findInHeader("CHIEF_SCIENTIST", lines)
-    ship <- findInHeader("PLATFORM", lines) # maybe should rename, e.g. for helicopter
-    institute <- findInHeader("ORGANIZATION", lines) # maybe should rename, e.g. for helicopter
-    station <- findInHeader("EVENT_NUMBER", lines)
-    latitude <- as.numeric(findInHeader("INITIAL_LATITUDE", lines))
-    longitude <- as.numeric(findInHeader("INITIAL_LONGITUDE", lines))
-    cruise <- findInHeader("CRUISE_NAME", lines)
-    countryInstituteCode <- findInHeader("COUNTRY_INSTITUTE_CODE", lines)
-    cruiseNumber <- findInHeader("CRUISE_NUMBER", lines)
+
+    res <- new("odf")
+    res@metadata$depthOffBottom <- findInHeader("DEPTH_OFF_BOTTOM", lines, returnOnlyFirst=TRUE, numeric=TRUE)
+    res@metadata$initialLatitude <- findInHeader("INITIAL_LATITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
+    res@metadata$initialLongitude <- findInHeader("INITIAL_LONGITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
+    res@metadata$endLatitude <- findInHeader("END_LATITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
+    res@metadata$endLongitude <- findInHeader("END_LONGITUDE", lines, returnOnlyFirst=TRUE, numeric=TRUE)
+    res@metadata$samplingInterval <- findInHeader("SAMPLING_INTERVAL", lines, returnOnlyFirst=TRUE, numeric=TRUE)
+
+    res@metadata$scientist <- findInHeader("CHIEF_SCIENTIST", lines)
+    res@metadata$ship <- findInHeader("PLATFORM", lines) # maybe should rename, e.g. for helicopter
+    res@metadata$institute <- findInHeader("ORGANIZATION", lines) # maybe should rename, e.g. for helicopter
+    res@metadata$station <- findInHeader("EVENT_NUMBER", lines)
+    res@metadata$latitude <- as.numeric(res@metadata$initialLatitude)
+    res@metadata$longitude <- as.numeric(res@metadata$initialLongitude)
+    res@metadata$cruise <- findInHeader("CRUISE_NAME", lines)
+    res@metadata$countryInstituteCode <- findInHeader("COUNTRY_INSTITUTE_CODE", lines)
+    res@metadata$cruiseNumber <- findInHeader("CRUISE_NUMBER", lines)
     DATA_TYPE <- trimws(findInHeader("DATA_TYPE", lines))
-    deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
+    res@metadata$deploymentType <- if ("CTD" == DATA_TYPE) "profile" else if ("MCTD" == DATA_TYPE) "moored" else "unknown"
     ## date <- strptime(findInHeader("START_DATE", lines), "%b %d/%y")
 
     ## if any changes here, update ctd.R @ ODF_CTD_LINK {
-    startTime <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
-    eventNumber <- findInHeader("EVENT_NUMBER", lines) # synchronize with ctd.R at ODFMETADATA tag
-    eventQualifier <- findInHeader("EVENT_QUALIFIER", lines)# synchronize with ctd.R at ODFMETADATA tag
+    res@metadata$startTime <- as.POSIXct(strptime(tolower(findInHeader("START_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC"))
+    res@metadata$date <- res@metadata$time
+    res@metadata$eventNumber <- findInHeader("EVENT_NUMBER", lines) # synchronize with ctd.R at ODFMETADATA tag
+    res@metadata$eventQualifier <- findInHeader("EVENT_QUALIFIER", lines)# synchronize with ctd.R at ODFMETADATA tag
     ## } ODF_CTD_LINK
 
     ## endTime <- strptime(tolower(findInHeader("END_DATE_TIME", lines)), "%d-%b-%Y %H:%M:%S", tz="UTC")
@@ -1063,24 +1182,31 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     oceDebug(debug, "NAvalueList=", paste(deparse(NAvalueList),collapse=""), "\n")
     ##oceDebug(debug, "NAvalue=", NAvalue, "; it's class is ", class(NAvalue), "\n")
 
-    depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
-    depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
-    sounding <- as.numeric(findInHeader("SOUNDING", lines))
+    res@metadata$depthMin <- as.numeric(findInHeader("MIN_DEPTH", lines))
+    res@metadata$depthMax <- as.numeric(findInHeader("MAX_DEPTH", lines))
+    res@metadata$sounding <- as.numeric(findInHeader("SOUNDING", lines))
     ## Compute waterDepth from "SOUNDING" by preference, or from "MAX_DEPTH" if necessary
-    waterDepth <- NA
-    if (length(sounding)) {
-        waterDepth <- sounding[1]
+    res@metadata$waterDepth <- NA
+    if (length(res@metadata$sounding)) {
+        res@metadata$waterDepth <- res@metadata$sounding[1]
     } else {
-        if (length(depthMax))
-            waterDepth <- depthMax[1]
+        if (length(res@metadata$depthMax))
+            res@metadata$waterDepth <- res@metadata$depthMax[1]
     }
-    type <- findInHeader("INST_TYPE", lines)
-    if (length(grep("sea", type, ignore.case=TRUE)))
-        type <- "SBE"
-    serialNumber <- findInHeader("SERIAL_NUMBER", lines)
-    model <- findInHeader("MODEL", lines)
-    res <- new("odf")
-    res@metadata$header <- NULL
+    res@metadata$type <- findInHeader("INST_TYPE", lines)
+    if (length(grep("sea", res@metadata$type, ignore.case=TRUE)))
+        res@metadata$type <- "SBE"
+    res@metadata$serialNumber <- findInHeader("SERIAL_NUMBER", lines)
+    res@metadata$model <- findInHeader("MODEL", lines)
+    if (is.null(header)) {
+        res@metadata$header <- NULL
+    } else if (header == "character") {
+        res@metadata$header <- lines[seq(1L, dataStart-1L)]
+    } else if (header == "list") {
+        res@metadata$header <- ODFListFromHeader(lines[seq(1L, dataStart-1L)])
+    } else {
+        stop("problem decoding header argument; please report an error")
+    }
 
     ## catch erroneous units on CRAT, which should be in a ratio, and hence have no units.
     ## This is necessary for the sample file inst/extdata/CTD_BCD2014666_008_1_DN.ODF.gz
@@ -1098,29 +1224,29 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
     ##> res@metadata$dataNamesOriginal <- as.list(ODFnames)
     res@metadata$dataNamesOriginal <- as.list(ODForiginalNames)
     names(res@metadata$dataNamesOriginal) <- namesUnits$names
-    res@metadata$type <- type
-    res@metadata$model <- model
-    res@metadata$serialNumber <- serialNumber
-    res@metadata$eventNumber <- eventNumber
-    res@metadata$eventQualifier <- eventQualifier
-    res@metadata$ship <- ship
-    res@metadata$scientist <- scientist
-    res@metadata$institute <- institute
+    ##res@metadata$type <- type
+    ##res@metadata$model <- model
+    ##res@metadata$serialNumber <- serialNumber
+    ##res@metadata$eventNumber <- eventNumber
+    ##res@metadata$eventQualifier <- eventQualifier
+    ##res@metadata$ship <- ship
+    ##res@metadata$scientist <- scientist
+    ##res@metadata$institute <- institute
     res@metadata$address <- NULL
-    res@metadata$cruise <- cruise
-    res@metadata$station <- station
-    res@metadata$countryInstituteCode <- countryInstituteCode
-    res@metadata$cruiseNumber <- cruiseNumber
-    res@metadata$deploymentType <- deploymentType
-    res@metadata$date <- startTime
-    res@metadata$startTime <- startTime
-    res@metadata$latitude <- latitude
-    res@metadata$longitude <- longitude
+    ##res@metadata$cruise <- cruise
+    ##res@metadata$station <- station
+    ##res@metadata$countryInstituteCode <- countryInstituteCode
+    ##res@metadata$cruiseNumber <- cruiseNumber
+    ##res@metadata$deploymentType <- deploymentType
+    ##res@metadata$date <- startTime
+    ##res@metadata$startTime <- startTime
+    ##res@metadata$latitude <- latitude
+    ##res@metadata$longitude <- longitude
     res@metadata$recovery <- NULL
-    res@metadata$waterDepth <- waterDepth
-    res@metadata$depthMin <- depthMin
-    res@metadata$depthMax <- depthMax
-    res@metadata$sounding <- sounding
+    ##res@metadata$waterDepth <- waterDepth
+    ##res@metadata$depthMin <- depthMin
+    ##res@metadata$depthMax <- depthMax
+    ##res@metadata$sounding <- sounding
     res@metadata$sampleInterval <- NA
     res@metadata$filename <- filename
     ##> ## fix issue 768
@@ -1161,7 +1287,7 @@ read.odf <- function(file, columns=NULL, debug=getOption("oceDebug"))
 
     ## Return to water depth issue. In a BIO file, I found that the missing-value code was
     ## -99, but that a SOUNDING was given as -99.9, so this is an extra check.
-    if (is.na(waterDepth) || waterDepth < 0) {
+    if (is.na(res@metadata$waterDepth) || res@metadata$waterDepth < 0) {
         if ('pressure' %in% names(res@data)) {
             res@metadata$waterDepth <- max(abs(res@data$pressure), na.rm=TRUE)
             warning("estimating waterDepth from maximum pressure")

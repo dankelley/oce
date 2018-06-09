@@ -2,7 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \name{initializeFlagScheme}
 \alias{initializeFlagScheme}
-\title{Establish a data-quality scheme for an oce object}
+\title{Establish a data-quality scheme for a oce object}
 \usage{
 initializeFlagScheme(object, name = NULL, mapping = NULL, debug = 0)
 }
@@ -23,7 +23,8 @@ An object with the \code{metadata} slot containing \code{flagScheme}.
 }
 \description{
 This function stores add an item named \code{flagScheme}
-to the \code{metadata} slot. This is a list containing two
+to the \code{metadata} slot of an object inheriting from
+\code{\link{oce-class}}. This is a list containing two
 items: \code{name} and \code{mapping}, as provided in the
 function arguments.
 The purpose is both to document a flag scheme
@@ -60,7 +61,7 @@ oce.
 \code{list(no_quality_control=0, appears_correct=1, appears_inconsistent=2,
            doubtful=3, erroneous=4, changed=5,
            qc_by_originator=8, missing=9)}.
-See [3] for a deeper explanation of the meanings of these codes,
+See [3] for a deeper explanation of the meanings of these codes.
 
 \item \code{name="WHP bottle"} defaults \code{mapping} to
 \code{list(no_information=1, no_problems_noted=2, leaking=3,
@@ -79,7 +80,7 @@ See [4] for a deeper explanation of the meanings of these codes.
 \section{Caution}{
 
 This function was added in early May, 2018, and is likely to undergo
-changes until the mid-summer of that year.  Use with caution.
+changes until the autumn of that year.  Use with caution.
 }
 
 \references{
@@ -110,4 +111,6 @@ Other functions relating to data-quality flags: \code{\link{handleFlags,adp-meth
   \code{\link{setFlags,adp-method}},
   \code{\link{setFlags,ctd-method}},
   \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
+
+Other things related to \code{oce} data: \code{\link{initializeFlagScheme,oce-method}}
 }

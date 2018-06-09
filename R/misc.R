@@ -398,33 +398,55 @@ unitFromString <- function(s)
 ##     res
 ## }
 
-#' Rename duplicated items (used in reading CTD files)
+#' Rename duplicated character strings
 #'
-#' Rename items to avoid name collision, by appending a \code{2} to
-#' the second occurrence of a name, etc.
+#' Append numeric suffices to character strings, to avoid repeats.
+#' This is used by various data
+#' input functions, to handle the fact that several oceanographic data
+#' formats permit the reuse of variable names within a given file.
 #'
-#' @param names Vector of strings with variable names.
-#' @return names Vector of strings with numbered variable names.
-#' @seealso used by \code{\link{read.ctd.sbe}}.
+#' @param strings Vector of character strings.
+#' @param style An integer giving the style. If \code{style}
+#' is \code{1}, then e.g. a triplicate of \code{"a"} yields
+#' \code{"a"}, \code{"a1"}, and \code{"a2"}.
+#' If \code{style} is \code{2}, then the same input yields
+#' \code{"a_001"}, \code{"a_002"}, and \code{"a_003"}.
+#'
+#' @return Vector of strings with repeats distinguished by suffix.
+#'
+#' @seealso Used by \code{\link{read.ctd.sbe}} with \code{style=1} to
+#' rename repeated data elements (e.g. for multiple temperature sensors)
+#' in CTD data, and by \code{\link{read.odf}} with \code{style=2} on
+#' key-value pairs within ODF metadata.
 #'
 #' @examples
 #' unduplicateNames(c("a", "b", "a", "c", "b"))
-unduplicateNames <- function(names)
+#' unduplicateNames(c("a", "b", "a", "c", "b"), style=2)
+unduplicateNames <- function(strings, style=1)
 {
     ## Handle duplicated names
-    for (i in seq_along(names)) {
-        w <- which(names == names[i])
-        if (1 < length(w)) {
-            ##print(w)
-            w <- w[-1]
-            ##message("duplicated: ", names[i])
-            ##message("w: ", paste(w, collapse=" "))
-            ##message(paste(names, collapse=" "))
-            names[w] <- paste(names[i], 1+seq.int(1, length(w)), sep="")
-            ##message(paste(names, collapse=" "))
+    if (style == 1) {
+        for (i in seq_along(strings)) {
+            w <- which(strings == strings[i])
+            lw <- length(w)
+            if (lw > 1) {
+                w <- w[-1]
+                strings[w] <- paste(strings[i], 1+seq.int(1, length(w)), sep="")
+            }
         }
+    } else if (style == 2) {
+        for (i in seq_along(strings)) {
+            w <- which(strings == strings[i])
+            lw <- length(w)
+            if (lw > 1) {
+                suffices <- seq_len(lw)
+                strings[w] <- sprintf("%s_%03d", strings[i], suffices)
+            }
+        }
+    } else {
+        stop("unknown style=", style, "; it must be 1 or 2")
     }
-    names
+    strings
 }
 
 

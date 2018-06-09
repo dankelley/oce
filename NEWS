@@ -1,4 +1,5 @@
 0.9-24
+- read.odf() stores ODF header in metadata
 - remove makeSection()
 - make defunct: addColumn byteToBinary ctdAddColumn ctdUpdateHeader findInOrdered
 - make defunct: mapZones mapMeridians oce.as.POSIXlt oce.magic
