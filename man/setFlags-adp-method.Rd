@@ -97,7 +97,8 @@ plot(adpClean2, which="u1") # differs at 8h and 20h
 
 }
 \seealso{
-Other functions relating to data-quality flags: \code{\link{handleFlags,adp-method}},
+Other functions relating to data-quality flags: \code{\link{defaultFlags}},
+  \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags,section-method}},

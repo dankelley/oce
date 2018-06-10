@@ -230,3 +230,36 @@ test_that("initializeFlagScheme with section", {
                                          unknown_problem=7, did_not_trip=8, no_sample=9)))
 })
 
+test_that("handleFlags default flags (section)", {
+          data(section)
+          ## "WHP bottle" scheme used in "section": good=2; bad or questionable=c(1,3:9)
+          S1 <- handleFlags(section)
+          S2 <- handleFlags(section, flags=c(1, 3:9))
+          for (i in seq_along(S1[["station"]])) {
+              expect_equal(S1[["station", i]], S1[["station", i]]) 
+          }
+})
+
+test_that("alter flag scheme", {
+          data(section)
+          ctd <- section[["station", 1]]
+          expect_equal(c(1, 3:9), defaultFlags(ctd))
+          expect_warning(ctd <- initializeFlagScheme(ctd, "will give error"),
+                         "cannot alter a flagScheme that is already is place")
+          ctd[["flagScheme"]] <- NULL 
+          ctd <- initializeFlagScheme(ctd, "argo")
+          expect_equal(c(0, 2:9), defaultFlags(ctd))
+})
+
+test_that("handleFlags default flags (ctd)", {
+          ## use first station of data(section) because data(ctd) has no flags
+          data(section)
+          ctd <- section[["station", 1]]
+          expect_equal(c(1, 3:9), defaultFlags(ctd))
+          C1 <- handleFlags(ctd)
+          C2 <- handleFlags(ctd, flags=c(1, 3:9))
+          expect_equal(C1@data, C2@data)
+          expect_equal(C1@metadata, C2@metadata)
+})
+
+

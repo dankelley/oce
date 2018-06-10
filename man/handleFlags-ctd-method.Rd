@@ -21,7 +21,9 @@ that the actions are to take place for both salinity and temperature.
 In the second form, \code{flags} is a list with unnamed vectors, and
 this means to apply the actions to all the data entries; thus,
 \code{flags=list(c(1,3:9))} means to apply not just to salinity and temperature,
-but also to everything else that is in the \code{data} slot.}
+but also to everything else that is in the \code{data} slot. If \code{flags}
+is not provided, then \code{\link{defaultFlags}} is called, to try to
+determine a conservative default.}
 
 \item{actions}{An optional \code{\link{list}} that contains items with
 names that match those in the \code{flags} argument.  If \code{actions}
@@ -91,7 +93,8 @@ plot(STN3[["salinity"]] - stn[["salinity"]], p, ylim=rev(range(p)))
 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 }
 \seealso{
-Other functions relating to data-quality flags: \code{\link{handleFlags,adp-method}},
+Other functions relating to data-quality flags: \code{\link{defaultFlags}},
+  \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,section-method}},
   \code{\link{handleFlags}},

@@ -651,6 +651,56 @@ handleFlagsInternal <- function(object, flags, actions, debug) {
 }
 
 
+#' Suggest a default flag for good data
+#'
+#' \code{defaultFlag} tries to suggest a reasonable default \code{flag} scheme
+#' for use by \code{\link{handleFlags}}. It does this by looking for an item
+#' named \code{flagScheme} in the \code{metdata} slot of \code{object}.
+#' If that is found, and if the scheme is recognized, then a numeric
+#' vector is returned that indicates bad or questionable data. The recognized
+#' schemes, and their defaults are as below; note that this is a very conservative
+#' setup, retaining only data that are flagged as being good, while discarding
+#' not just data that are marked as bad, but also data that are marked as
+#' questionable.
+#'\itemize{
+#' \item for \code{argo}, the default is \code{flag=c(0, 2:9)}, i.e. retain only data flagged as 'passed_all_tests'
+#' \item for \code{BODC}, the default is \code{flag=c(0, 2:9)}, i.e. retain only data flagged as 'good'
+#' \item for \code{DFO}, the default is \code{flag=c(0, 2:9)}, i.e. retain only data flagged as 'appears_correct'
+#' \item for \code{WHP bottle}, the default is \code{flag=c(1, 3:9)}, i.e. retain only data flagged as 'no_problems_noted'
+#' \item for \code{WHP ctd}, the default is \code{flag=c(1, 3:9)}, i.e. retain only data flagged as 'acceptable'
+#'}
+#'
+#' @param object An oce object
+#'
+#' @return A vector of one or more flag values, or \code{NULL} if \code{object}
+#' \code{metadata} slot lacks a \code{flagScheme} (as set by \code{\link{initializeFlagScheme}}),
+#' or if it has a scheme that is not in the list provide in \dQuote{Description}.
+#'
+#' @family functions relating to data-quality flags
+defaultFlags <- function(object)
+{
+    scheme <- object@metadata$flagScheme$name
+    if (is.null(scheme)) {
+        res <- NULL
+    } else {
+        if (scheme == "argo") {
+            res <- c(0, 2:9) # retain passed_all_tests
+        } else if (scheme == "BODC") {
+            res <- c(0, 2:9) # retain good
+        } else if (scheme == "DFO") {
+            res <- c(0, 2:9) # retain appears_correct
+        } else if (scheme == "WHP bottle") {
+            res <- c(1, 3:9) # retain no_problems_noted
+        } else if (scheme == "WHP ctd") {
+            res <- c(1, 3:9) # retain acceptable
+        } else {
+            res <- NULL
+        }
+    }
+    res
+}
+
+
 #' @templateVar class oce
 #' @templateVar note This generic function is overridden by specialized functions for some object classes.
 #' @template setFlagsTemplate

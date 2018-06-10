@@ -24,7 +24,9 @@
 #' In the second form, \code{flags} is a list with unnamed vectors, and
 #' this means to apply the actions to all the data entries; thus,
 #' \code{flags=list(c(1,3:9))} means to apply not just to salinity and temperature,
-#' but also to everything else that is in the \code{data} slot.
+#' but also to everything else that is in the \code{data} slot. If \code{flags}
+#' is not provided, then \code{\link{defaultFlags}} is called, to try to
+#' determine a conservative default.
 #'
 #' @param actions An optional \code{\link{list}} that contains items with
 #' names that match those in the \code{flags} argument.  If \code{actions}

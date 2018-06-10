@@ -100,21 +100,15 @@ setMethod(f="initialize",
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle flags in Section Objects
+#'
 #' @details
-#' If \code{flags} and \code{actions} are not provided, then first
-#' station in \code{object} is checked for the existence of an item
-#' named \code{flagScheme} in its metadata. The existence of this
-#' item indicates that \code{\link{initializeFlagScheme}} has been
-#' called to store a flag scheme in \code{object}. For certain
-#' flag schemes, \code{handleFlags} may be called without supplying
-#' the \code{flags} argument, yielding the following conservative defaults:
-#'\itemize{
-#' \item for \code{argo}, the default is \code{flag=c(0, 3:9)}, i.e. retain only 'passed_all_tests' and 'probably_good'
-#' \item for \code{BODC}, the default is \code{flag=c(0, 3:9)}, i.e. retain only 'good' and 'probably_good'
-#' \item for \code{DFO}, the default is \code{flag=c(0, 2:9)}, i.e. retain only 'appears_correct'
-#' \item for \code{WHP bottle}, the default is \code{flag=c(1, 3:9)}, i.e. retain only 'no_problems_noted'
-#' \item for \code{WHP ctd}, the default is \code{flag=c(1, 3:9)}, i.e. retain only 'acceptable'
-#'}
+#' The default for \code{flags} is based on 
+#' calling \code{\link{defaultFlags}} based on the
+#' \code{metadata} in the first station in the section. If the
+#' other stations have different flag schemes (which seems highly
+#' unlikely for archived data), this will not work well, and indeed
+#' the only way to proceed would be to use \code{\link{handleFlags,ctd-method}}
+#' on the stations, individually.
 #'
 #' @param object An object of \code{\link{section-class}}.
 #' @template handleFlagsTemplate
@@ -134,29 +128,15 @@ setMethod("handleFlags",
           function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               if (is.null(flags)) {
-                  scheme <- object[["station",1]][["flagScheme"]]$name
-                  if (is.null(scheme))
-                      stop("must supply 'flags', or use initializeFlagScheme() on the section first")
-                  predefined <- c("argo", "BODC", "DFO", "WHP bottle", "WHP CTD") # see AllClass.R
-                  if (scheme == "argo") {
-                      flags <- c(0, 3:9) # retain passed_all_tests and probably_good
-                  } else if (scheme == "BODC") {
-                      flags <- c(0, 3:9) # retain good and probably_good
-                  } else if (scheme == "DFO") {
-                      flags <- c(0, 2:9) # retain appears_correct
-                  } else if (scheme == "WHP bottle") {
-                      flags <- c(1, 3:9) # retain no_problems_noted
-                  } else if (scheme == "WHP ctd") {
-                      flags <- c(1, 3:9) # retain acceptable
-                  } else {
-                      stop("'flags' has no default for scheme \"", scheme, "\"")
-                  }
+                  flags <- defaultFlags(object[["station", 1]])
+                  if (is.null(flags))
+                      stop("must supply 'flags', or use initializeFlagScheme() on the section object first")
               }
               if (is.null(actions)) {
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
               }
-              if (any(names(actions)!=names(flags)))
+              if (any(sort(names(actions)) != sort(names(flags))))
                   stop("names of flags and actions must match")
               res <- object
               for (i in seq_along(res@data$station)) {

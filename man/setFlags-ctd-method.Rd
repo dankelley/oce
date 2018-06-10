@@ -113,7 +113,8 @@ for (i in seq_len(n)) {
 
 }
 \seealso{
-Other functions relating to data-quality flags: \code{\link{handleFlags,adp-method}},
+Other functions relating to data-quality flags: \code{\link{defaultFlags}},
+  \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags,section-method}},
