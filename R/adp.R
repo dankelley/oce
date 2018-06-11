@@ -326,8 +326,11 @@ setMethod("handleFlags",
           function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
               ## Flag=1 means bad velocity; 0 means good
-              if (is.null(flags))
-                  stop("must supply flags")
+              if (is.null(flags)) {
+                  flags <- defaultFlags(object)
+                  if (is.null(flags))
+                      stop("must supply 'flags', or use initializeFlagScheme() on the adp object first")
+              }
               if (is.null(actions)) {
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)

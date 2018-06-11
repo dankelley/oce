@@ -21,7 +21,9 @@ that the actions are to take place for both salinity and temperature.
 In the second form, \code{flags} is a list with unnamed vectors, and
 this means to apply the actions to all the data entries; thus,
 \code{flags=list(c(1,3:9))} means to apply not just to salinity and temperature,
-but also to everything else that is in the \code{data} slot.}
+but also to everything else that is in the \code{data} slot. If \code{flags}
+is not provided, then \code{\link{defaultFlags}} is called, to try to
+determine a conservative default.}
 
 \item{actions}{An optional \code{\link{list}} that contains items with
 names that match those in the \code{flags} argument.  If \code{actions}
@@ -58,20 +60,13 @@ the \code{action} argument to select an action to be applied to matched
 data.
 }
 \details{
-If \code{flags} and \code{actions} are not provided, then first
-station in \code{object} is checked for the existence of an item
-named \code{flagScheme} in its metadata. The existence of this
-item indicates that \code{\link{initializeFlagScheme}} has been
-called to store a flag scheme in \code{object}. For certain
-flag schemes, \code{handleFlags} may be called without supplying
-the \code{flags} argument, yielding the following conservative defaults:
-\itemize{
-\item for \code{argo}, the default is \code{flag=c(0, 3:9)}, i.e. retain only 'passed_all_tests' and 'probably_good'
-\item for \code{BODC}, the default is \code{flag=c(0, 3:9)}, i.e. retain only 'good' and 'probably_good'
-\item for \code{DFO}, the default is \code{flag=c(0, 2:9)}, i.e. retain only 'appears_correct'
-\item for \code{WHP bottle}, the default is \code{flag=c(1, 3:9)}, i.e. retain only 'no_problems_noted'
-\item for \code{WHP ctd}, the default is \code{flag=c(1, 3:9)}, i.e. retain only 'acceptable'
-}
+The default for \code{flags} is based on 
+calling \code{\link{defaultFlags}} based on the
+\code{metadata} in the first station in the section. If the
+other stations have different flag schemes (which seems highly
+unlikely for archived data), this will not work well, and indeed
+the only way to proceed would be to use \code{\link{handleFlags,ctd-method}}
+on the stations, individually.
 }
 \examples{
 library(oce)
@@ -86,7 +81,8 @@ plotTS(section2)
 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 }
 \seealso{
-Other functions relating to data-quality flags: \code{\link{handleFlags,adp-method}},
+Other functions relating to data-quality flags: \code{\link{defaultFlags}},
+  \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags}},

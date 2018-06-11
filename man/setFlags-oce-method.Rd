@@ -66,7 +66,8 @@ changes until the mid-summer of that year.  Use with caution.
 }
 
 \seealso{
-Other functions relating to data-quality flags: \code{\link{handleFlags,adp-method}},
+Other functions relating to data-quality flags: \code{\link{defaultFlags}},
+  \code{\link{handleFlags,adp-method}},
   \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags,section-method}},
