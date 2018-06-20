@@ -2176,8 +2176,8 @@ setMethod(f="plot",
                               max.bin <- dim(x@data$v)[2]
                               if (control$bin > max.bin)
                                   stop("cannot have control$bin larger than ", max.bin, " but got ", control$bin)
-                              u <- U[, control$bin, 1]
-                              v <- V[, control$bin, 2]
+                              u <- U[, control$bin] #EAC: bug fix, attempt to subset 2D matrix by 3 dimensions
+                              v <- V[, control$bin]
                           } else {
                               if (x@metadata$numberOfCells > 1) {
                                   u <- apply(U, 1, mean, na.rm=TRUE)
