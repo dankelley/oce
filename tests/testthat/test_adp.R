@@ -4,6 +4,10 @@ data(adp)
 
 context("ADP")
 
+test_that("plot(adp,which=23,control=list('bin'=1)) works", {
+          expect_silent(plot(adp, which=23, control=list('bin'=1)))
+})
+
 test_that("as.adp() inserts data properly", {
           data(adp)
           t <- adp[["time"]]
