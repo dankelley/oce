@@ -251,7 +251,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
     rval <- ""
     rval <- list()
     for (j in seq_along(i)) {
-        ##.message("j=", j, " start")
+        ##. cat("j=", j, ", i=", i, "\n")
         ## ----------
         ## RISKY CODE: only look at first match
         ## ----------
@@ -259,17 +259,21 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
         tmp <- gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i[j]], "=")[[1]][2]))))
         ## convert e.g. D+00 to e+00
         if (length(grep("[-A-CF-Za-cf-z ]", tmp))) {
+            ##. cat("case A. tmp '", tmp, "'\n", sep="")
             rval[[j]] <- tmp
         } else {
+            ##. cat("case B. tmp '", tmp, "'\n", sep="")
             tmp <- gsub("(.*)D([-+])([0-9]{2})", "\\1e\\2\\3", tmp)
-            rval[[j]] <- as.numeric(tmp)
+            number <- 0 == length(grep("[-+.0-9eEdD ]*", tmp))
+            ##. cat("number=", number, "\n")
+            rval[[j]] <- if (number && numeric) as.numeric(tmp) else tmp
         }
         ##.message("j=", j, " end")
     }
     ##.message("A")
     ##.print(rval)
-    if (numeric)
-        rval <- as.numeric(rval)
+    ##? if (numeric)
+    ##?     rval <- as.numeric(rval)
     ##.message("B")
     if (0 < length(rval)) {
         if (returnOnlyFirst) {
