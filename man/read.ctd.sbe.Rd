@@ -87,9 +87,10 @@ it is converted to a POSIX time object by \code{read.ctd.sbe} and stored
 within the \code{metadata} slot as \code{"startTime"}. Until 2018-07-05, that
 value was also stored in a \code{metadata} item named \code{"time"}, but this
 caused confusion for data files that also have an elapsed-time column, and so
-\code{metadata@time} is no longer stored, if an elapsed-time column exists
-in the data file. There is also a possibility for confusion in the storage
-of the elapsed-time entry within the \code{data} slot, because \code{read.ctd.sbe}
+an entry named \code{"time"} is no longer stored in the \code{metadata} slot,
+for those cases in which an elapsed-time column exists in the data file.
+Importantly, there is a possibility for confusion in the storage
+of that elapsed-time entry within the \code{data} slot, because \code{read.ctd.sbe}
 renames all of the ten variants of elapsed time (see [2] for a list)
 as, simply, \code{"time"} in the \code{data} slot of the returned value.
 (Numerical suffices will be used if the file contains multiple elapsed-time
