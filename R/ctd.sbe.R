@@ -977,7 +977,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$deploymentType <- "unknown"
     res@metadata$date <- date
     res@metadata$startTime <- startTime
-    res@metadata$time <- date          # standardized name
+##    res@metadata$time <- date          # standardized name
     res@metadata$latitude <- latitude
     res@metadata$longitude <- longitude
     res@metadata$recovery <- recovery
@@ -1092,6 +1092,12 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             warning("created 'pressure' from 'depth'")
         }
     }
+    ## Store time in metadata, if it's not in the data. This was done
+    ## 2018-07-05 in response to issue 1434, on the assumption that
+    ## some other code might be relying on `d[["time"]]` retrieving
+    ## *something**.
+    if (!("time" %in% names(res@data)))
+        res@metadata$time <- date
     ##res@metadata$dataNamesOriginal <- colNamesOriginal
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
 
