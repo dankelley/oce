@@ -60,7 +60,7 @@ the \code{action} argument to select an action to be applied to matched
 data.
 }
 \details{
-The default for \code{flags} is based on 
+The default for \code{flags} is based on
 calling \code{\link{defaultFlags}} based on the
 \code{metadata} in the first station in the section. If the
 other stations have different flag schemes (which seems highly

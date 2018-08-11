@@ -310,7 +310,7 @@ as.oce <- function(x, ...)
 ##DELETE     for (i in seq_len(ndots))
 ##DELETE         if (!inherits(dots[[i]], "oce"))
 ##DELETE             stop("concatenate() argument ", i, " does not inherit from \"oce\"")
-##DELETE 
+##DELETE
 ##DELETE     ## Concatenate the data (and flags, if there are such).
 ##DELETE     res <- dots[[1]]
 ##DELETE     n1 <- sort(names(dots[[1]]@data))

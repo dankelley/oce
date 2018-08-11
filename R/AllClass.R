@@ -727,7 +727,7 @@ setFlagsInternal <- function(object, name=NULL, i=NULL, value=NULL, debug=getOpt
     ## Ensure proper argument setup.
     if (is.null(name))
         stop("must supply a name")
-    if (is.null(i)) 
+    if (is.null(i))
         stop("must supply 'i'")
     if (is.null(value))
         stop("must supply 'value'")

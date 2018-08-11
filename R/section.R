@@ -102,7 +102,7 @@ setMethod(f="initialize",
 #' @title Handle flags in Section Objects
 #'
 #' @details
-#' The default for \code{flags} is based on 
+#' The default for \code{flags} is based on
 #' calling \code{\link{defaultFlags}} based on the
 #' \code{metadata} in the first station in the section. If the
 #' other stations have different flag schemes (which seems highly
@@ -2365,7 +2365,7 @@ read.section <- function(file, directory, sectionId="", flags,
 #' @param method The method to use to decimate data within the stations; see
 #' \code{\link{ctdDecimate}}, which is used for the decimation.
 #'
-#' @template debugTemplate                                        
+#' @template debugTemplate
 #'
 #' @param ... Optional arguments to be supplied to \code{\link{ctdDecimate}},
 #' e.g. \code{rule} controls extrapolation beyond the observed pressure range,
@@ -2426,7 +2426,7 @@ sectionGrid <- function(section, p, method="approx", debug=getOption("oceDebug")
                          "Removed flags from gridded section object. Use handleFlags() first to remove bad data.")
     for (i in 1:n) {
         ##message("i: ", i, ", p before decimation: ", paste(section@data$station[[i]]@data$pressure, " "))
-        suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, 
+        suppressWarnings(res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method,
                                                               debug=debug-1, ...))
         res@data$station[[i]]@metadata$flags <- NULL
         ##message("i: ", i, ", p after decimation: ", paste(res@data$station[[i]]@data$pressure, " "))

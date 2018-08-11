@@ -39,7 +39,7 @@ fail, \code{NULL} is returned.
 
 There are several possibilities, depending on the nature of \code{i}.
 \itemize{
-\item If \code{i} is the string \code{"SA"}, then 
+\item If \code{i} is the string \code{"SA"}, then
 Absolute Salinity is computed using \code{\link[gsw]{gsw_SA_from_SP}},
 with \code{salinityAdjusted} (etc) if available in the \code{data}
 slot of \code{x}, otherwise using \code{salinity} (etc).

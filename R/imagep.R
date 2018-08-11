@@ -1034,7 +1034,7 @@ imagep <- function(x, y, z,
             zlim <- c(-1, 1) * max(abs(z), na.rm=TRUE)
         }
     }
- 
+
     zlimHistogram <- zlimGiven && zlim == "histogram"
     breaksGiven <- !missing(breaks)
     colormapGiven <- !missing(colormap)

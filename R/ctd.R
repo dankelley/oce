@@ -609,7 +609,7 @@ setMethod(f="[[",
                       if (!(j %in% c("", "ratio", "uS/cm", "mS/cm", "S/m")))
                           stop("unknown conductivity unit \"", unit, "\"; must be \"\", \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
                       if (j == "")
-                          j <- "ratio" # lets us use switch() 
+                          j <- "ratio" # lets us use switch()
                       unit <- x@metadata$units$conductivity$unit
                       if (is.null(unit) || !length(unit)) {
                           ## FIXME: maybe should look at median value, to make a guess

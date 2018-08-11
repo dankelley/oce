@@ -3186,8 +3186,7 @@ coriolis <- function(latitude, degrees=TRUE)
 {
     ## Siderial day 86164.1 s.
     if (degrees) latitude <- latitude * 0.0174532925199433
-    ## http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf
-    7292115e-11 
+    ## http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf 7292115e-11
     2 * 7292115e-11 * sin(latitude)
 }
 

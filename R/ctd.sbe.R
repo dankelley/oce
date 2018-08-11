@@ -881,7 +881,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             if (0 < (r<-regexpr("station:", lline)))
                 station <- sub("[ ]*$", "", sub("(.*)station:([ ])*", "", ignore.case=TRUE, line))
             if (0 < (r<-regexpr("station_name:", lline)))
-                station <- sub("[ ]*$", "", sub("(.*)station_name:([ ])*", "", ignore.case=TRUE, line)) 
+                station <- sub("[ ]*$", "", sub("(.*)station_name:([ ])*", "", ignore.case=TRUE, line))
         }
         if (0 < (r<-regexpr("recovery:", lline)))
             recovery <- sub("(.*)recovery:([ ])*", "", lline)

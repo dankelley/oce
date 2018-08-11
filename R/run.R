@@ -1,5 +1,5 @@
 #' Calculate running linear models
-#' 
+#'
 #' The linear model is calculated from the slope of a localized least-squares
 #' regression model y=y(x).  The localization is defined by the x difference
 #' from the point in question, with data at distance exceeding L/2 being
@@ -8,7 +8,7 @@
 #' weighting function is used; the latter produces smoother derivatives, which
 #' can be useful for noisy data.  The function is based on internal
 #' calculation, not on \code{\link{lm}}.
-#' 
+#'
 #' @param x a vector holding x values.
 #' @param y a vector holding y values.
 #' @param xout optional vector of x values at which the derivative is to be
@@ -25,9 +25,9 @@
 #' returned, and if \code{deriv=1}, a vector of derivatives is returned.
 #' @author Dan Kelley
 #' @examples
-#' 
+#'
 #' library(oce)
-#' 
+#'
 #' # Case 1: smooth a noisy signal
 #' x <- 1:100
 #' y <- 1 + x/100 + sin(x/5)
@@ -37,7 +37,7 @@
 #' plot(x, y, type='l', lwd=7, col='gray')
 #' points(x, yn, pch=20, col='blue')
 #' lines(x, calc$y, lwd=2, col='red')
-#' 
+#'
 #' # Case 2: square of buoyancy frequency
 #' data(ctd)
 #' par(mfrow=c(1,1))

@@ -154,7 +154,7 @@ setMethod(f="plot",
               data <- x@data
               dataNames <- names(data)
               ## At the start, n is the number of non-time variables, but
-              ## later on we might switch it to equal nok, which is the 
+              ## later on we might switch it to equal nok, which is the
               ## number of non-time variables that contain finite data.
               if (!("time" %in% dataNames)) {
                   finite <- unlist(lapply(data, function(col) any(is.finite(col))))
@@ -181,7 +181,7 @@ setMethod(f="plot",
                           N <- as.integer(0.5 + sqrt(n - 1))
                           M <- as.integer(n / N)
                           ## may need to add 1, but use a loop in case my logic is mixed up
-                          ## if that would 
+                          ## if that would
                           while (N * M < n)
                               M <- M + 1
                           par(mfrow=c(N, M))

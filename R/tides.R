@@ -680,7 +680,7 @@ tidemAstron <- function(t)
 #' step was added on 2017-12-27, to make \code{tidem} behave the same
 #' way as the Foreman (1977) code [1], as illustrated in his
 #' Appendices 7.2 and 7.3. (As an aside, his Appendix 7.3 has some errors,
-#' e.g. the frequency for the 2SK5 constituent is listed there (p58) as 
+#' e.g. the frequency for the 2SK5 constituent is listed there (p58) as
 #' 0.20844743, but it is listed as 0.2084474129 in his Appendix 7.1 (p41).
 #' For this reason, the frequency comparison is relaxed to a \code{tol}
 #' value of \code{1e-7} in a portion of the oce test suite
