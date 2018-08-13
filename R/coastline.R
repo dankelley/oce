@@ -137,8 +137,9 @@ setMethod(f="summary",
           signature="coastline",
           definition=function(object, ...) {
               cat("Coastline Summary\n-----------------\n\n")
-              cat("* Number of points:", length(object@data$latitude), ", of which",
-                  sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
+              showMetadataItem(object, "filename",                  "File: ", quote=TRUE)
+              cat("* Number of points: ", length(object@data$latitude), ", of which ",
+                  sum(is.na(object@data$latitude)), " are NA (e.g. separating islands).\n", sep="")
               invisible(callNextMethod())        # summary
           })
 

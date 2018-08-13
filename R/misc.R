@@ -4234,7 +4234,7 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
         if (is.na(item))
             return()
         if (isdate) item <- format(item)
-        if (quote) item <- paste('`"', item, '"`', sep="")
+        if (quote) item <- paste('"', item, '"', sep="")
         cat(paste("* ", label, item, postlabel, "\n", sep=""))
     }
 }

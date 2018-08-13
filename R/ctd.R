@@ -433,7 +433,7 @@ setMethod(f="summary",
               ##showMetadataItem(object, "serialNumber",              "Instr. serial no.:   ")
               showMetadataItem(object, "serialNumberTemperature",   "Temp. serial no.:    ")
               showMetadataItem(object, "serialNumberConductivity",  "Cond. serial no.:    ")
-              showMetadataItem(object, "filename",                  "File:                ")
+              showMetadataItem(object, "filename",                  "File:                ", quote=TRUE)
               showMetadataItem(object, "hexfilename",               "Original file:       ")
               showMetadataItem(object, "institute",                 "Institute:           ")
               showMetadataItem(object, "scientist",                 "Chief scientist:     ")
