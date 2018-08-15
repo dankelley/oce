@@ -725,6 +725,10 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             }
             ##ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to), as.integer(by), 0L)
             ldc <- do_ldc_rdi_in_file(filename, from, to, by, 0L)
+            if (debug > 9) {
+                message("since debug > 9, exporting ldc to ldcDEBUG")
+                ldcDEBUG <<- ldc
+            }
             oceDebug(debug, "done with do_ldc_rdi_in_file() with numeric from and to, near adp.rdi.R line 683")
         } else {
             if (is.character(from))
@@ -735,6 +739,10 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 by <- ctimeToSeconds(by)
             ##ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to), as.integer(by), 1L)
             ldc <- do_ldc_rdi_in_file(filename, from, to, by, 1L)
+            if (debug > 9) {
+                message("since debug > 9, exporting ldc to ldcDEBUG")
+                ldcDEBUG <<- ldc
+            }
             oceDebug(debug, "done with do_ldc_rdi_in_file() with non-numeric from and to, near adp.rdi.R line 693")
         }
         ##old if (debug > 99) {
