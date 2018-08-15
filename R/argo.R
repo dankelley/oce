@@ -63,7 +63,7 @@ setClass("argo", contains="oce")
 #' @source This file was downloaded using the unix command
 #'\preformatted{
 #' ftp ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc
-#'} issued on 2017 July 7. 
+#'} issued on 2017 July 7.
 #'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{argo} data
@@ -79,7 +79,7 @@ NULL
 #'
 #' There are several possibilities, depending on the nature of \code{i}.
 #'\itemize{
-#' \item If \code{i} is the string \code{"SA"}, then 
+#' \item If \code{i} is the string \code{"SA"}, then
 #' Absolute Salinity is computed using \code{\link[gsw]{gsw_SA_from_SP}},
 #' with \code{salinityAdjusted} (etc) if available in the \code{data}
 #' slot of \code{x}, otherwise using \code{salinity} (etc).
@@ -195,15 +195,15 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #' Convert Argo Data Name to Oce Name
 #'
 #' This function is used internally by \code{\link{read.argo}} to convert Argo-convention
-#' data names to oce-convention names. Users should not call this directly, since 
+#' data names to oce-convention names. Users should not call this directly, since
 #' its return value may be changed at any moment (e.g. to include units as well
 #' as names).
-#' 
+#'
 #'
 #' The inference of names was done
 #' by inspection of some data files, using [1] as a reference. It should be noted,
 #' however, that the data files examined contain some names that are not
-#' undocumented in [1], and others that are listed only in its changelog, 
+#' undocumented in [1], and others that are listed only in its changelog,
 #' with no actual definitions being given. For example, the files had six distinct
 #' variable names that seem to relate to phase in the oxygen sensor, but
 #' these are not translated by the present function because these
@@ -211,7 +211,7 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #' in [2].
 #'
 #' The names are converted with
-#' \code{\link{gsub}}, using the \code{ignore.case} argument of the present 
+#' \code{\link{gsub}}, using the \code{ignore.case} argument of the present
 #' function.
 #' The procedure
 #' is to first handle the items listed in the following table, with string

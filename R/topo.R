@@ -266,14 +266,14 @@ setMethod(f="subset",
 #' the data source, but the URL has not been static. A list of the
 #' servers that have been used is provided below,
 #' in hopes that it can help users to make guesses
-#' for \code{server}, should \code{download.topo} fail because of 
+#' for \code{server}, should \code{download.topo} fail because of
 #' a fail to download the data. Another
 #' hint is to look at the source code for
 #' \code{\link[marmap]{getNOAA.bathy}} in the \CRANpkg{marmap} package,
 #' which is also forced to track the moving target that is NOAA.
 #'
 #' \itemize{
-#' \item August 2016. 
+#' \item August 2016.
 #' \samp{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
 #'
 #' \item December 2016.
@@ -301,7 +301,7 @@ download.topo <- function(west, east, south, north, resolution,
 {
     if (missing(server)) {
         server <- "https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"
-        ## server <- "http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz" 
+        ## server <- "http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"
         ## server <- "http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"
     }
     if (missing(destdir))

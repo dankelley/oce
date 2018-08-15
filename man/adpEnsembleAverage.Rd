@@ -17,7 +17,7 @@ in \code{x}. If \code{leftover} is \code{FALSE} (the default) then any extra
 ensembles at the end of \code{x} are ignored. Otherwise, they are used
 to create a final ensemble in the returned value.}
 
-\item{na.rm}{a logical value indicating whether NA values should be stripped 
+\item{na.rm}{a logical value indicating whether NA values should be stripped
 before the computation proceeds}
 
 \item{...}{extra arguments to be passed to the \code{mean()} function.}

@@ -52,7 +52,7 @@ oceNames2whpNames <- function(names)
 
 #' Translate oce unit to WHP unit
 #'
-#' Translate oce units to WHP-style strings, 
+#' Translate oce units to WHP-style strings,
 #' to match patterns. For example, the pattern \code{"oxygen"}
 #' is taken to mean \code{"CTDOXY"}.
 #'
@@ -198,7 +198,7 @@ woceNames2oceNames <- function(names)
 #' @family things related to \code{ctd} data
 #' @family functions that interpret variable names and units from headers
 woceUnit2oceUnit <- function(woceUnit)
-{   
+{
     ## message("woceUnit2oceUnit(\"", woceUnit, "\")", sep="")
     if (woceUnit == "DB" || woceUnit == "DBAR")
         return(list(unit=expression(dbar), scale=""))
@@ -706,7 +706,7 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, 
     if (length(names) == length(units)) {
         n <- length(names)
         ## example
-        ##  "DBAR"    "ITS-90"  "PSS-7"   "UMOL/KG" "V"       "V"       "OBS."    "*"      
+        ##  "DBAR"    "ITS-90"  "PSS-7"   "UMOL/KG" "V"       "V"       "OBS."    "*"
         for (i in 1:n) {
             if (units[i] == "DBAR") {
                 res@metadata$units[[names[i]]] <- list(unit=expression(dbar), scale="")

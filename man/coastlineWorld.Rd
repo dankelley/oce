@@ -6,7 +6,7 @@
 \title{World Coastline}
 \source{
 Downloaded from \url{http://www.naturalearthdata.com}, in
-\code{ne_110m_admin_0_countries.shp} in July 2015, with an 
+\code{ne_110m_admin_0_countries.shp} in July 2015, with an
 update on December 16, 2017.
 }
 \description{

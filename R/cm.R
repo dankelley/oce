@@ -412,7 +412,7 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' @return An object of \code{\link{cm-class}}.
 #' The \code{data} slot will contain all the data in the file, with names
 #' determined from the tokens in line 3 in that file, passed through
-#' \code{\link{make.names}}, except that 
+#' \code{\link{make.names}}, except that
 #' \code{Vnorth} is renamed \code{v} (after conversion from cm/s to m/s),
 #' \code{Veast} is renamed \code{u} (after conversion from cm/s to m/s),
 #' \code{Cond} is renamed \code{conductivity},

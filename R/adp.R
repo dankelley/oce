@@ -486,7 +486,7 @@ setMethod(f="summary",
               ## 20170107: drop the printing of these. In the new scheme, we can subsample
               ## 20170107: files, and therefore do not read to the end, and it seems silly
               ## 20170107: to use time going through the whole file to find this out. If we
-              ## 20170107: decide that this is needed, we could do a seek() to the end of the 
+              ## 20170107: decide that this is needed, we could do a seek() to the end of the
               ## 20170107: and then go back to find the final time.
 
               ## cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
@@ -3146,7 +3146,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 #' averaging during post-processing, thereby reducing the overall
 #' size of the data set and decreasing the uncertainty of the
 #' velocity estimates (by averaging out Doppler noise).
-#' 
+#'
 #' @param x an \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 #' @param n number of pings to average together.
 #' @param leftover a logical value indicating how to proceed in cases
@@ -3154,7 +3154,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 #' in \code{x}. If \code{leftover} is \code{FALSE} (the default) then any extra
 #' ensembles at the end of \code{x} are ignored. Otherwise, they are used
 #' to create a final ensemble in the returned value.
-#' @param na.rm a logical value indicating whether NA values should be stripped 
+#' @param na.rm a logical value indicating whether NA values should be stripped
 #' before the computation proceeds
 #' @param ... extra arguments to be passed to the \code{mean()} function.
 #'
@@ -3166,7 +3166,7 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
 #' data(adp)
 #' adpAvg <- adpEnsembleAverage(adp, n=2)
 #' plot(adpAvg)
-#' 
+#'
 #' @family things related to \code{adp} data
 adpEnsembleAverage <- function(x, n=5, leftover=FALSE, na.rm=TRUE, ...)
 {

@@ -6,6 +6,7 @@
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-month/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-week/oce)
 ![RStudio CRAN mirror downloads](https://cranlogs.r-pkg.org/badges/last-day/oce)
+[![Rdoc](http://www.rdocumentation.org/badges/version/oce)](http://www.rdocumentation.org/packages/oce)
 
 
 ``Oce`` is an R package for processing oceanographic data.  Its

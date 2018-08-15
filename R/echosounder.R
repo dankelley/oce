@@ -836,7 +836,7 @@ read.echosounder <- function(file, channel=1, soundSpeed,
     c <- matrix(NA_real_, nrow=1, ncol=1)
     ## FIXME: find out whether samplesPerPing is always defined prior to use in the code1==0x15 blocks.
     ## The Rstudio code-diagnostic complains that this variable is used before being defined,
-    ## but when I run test code there is no problem, because the variable has been defined. What I 
+    ## but when I run test code there is no problem, because the variable has been defined. What I
     ## do *not* know is whether files will always have these byte groupsing in this order, but at
     ## least setting to a zero value is likely to cause an error, if that ever occurs. (I may just
     ## need to reorder some code, if problems arise.)
@@ -1017,7 +1017,7 @@ read.echosounder <- function(file, channel=1, soundSpeed,
     res@metadata$fileType <- fileType
     res@metadata$blankedSamples <- blankedSamples
     if (missing(soundSpeed)) {
-        res@metadata$soundSpeed <- swSoundSpeed(35, 10, 30, eos="unesco") 
+        res@metadata$soundSpeed <- swSoundSpeed(35, 10, 30, eos="unesco")
     } else {
         res@metadata$soundSpeed <- soundSpeed
     }

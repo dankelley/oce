@@ -20,7 +20,7 @@ replacements having been made for all known quantities.
 }
 \description{
 This function is used internally by \code{\link{read.argo}} to convert Argo-convention
-data names to oce-convention names. Users should not call this directly, since 
+data names to oce-convention names. Users should not call this directly, since
 its return value may be changed at any moment (e.g. to include units as well
 as names).
 }
@@ -28,7 +28,7 @@ as names).
 The inference of names was done
 by inspection of some data files, using [1] as a reference. It should be noted,
 however, that the data files examined contain some names that are not
-undocumented in [1], and others that are listed only in its changelog, 
+undocumented in [1], and others that are listed only in its changelog,
 with no actual definitions being given. For example, the files had six distinct
 variable names that seem to relate to phase in the oxygen sensor, but
 these are not translated by the present function because these
@@ -36,7 +36,7 @@ variable names are not defined in [1], or not defined uniquely
 in [2].
 
 The names are converted with
-\code{\link{gsub}}, using the \code{ignore.case} argument of the present 
+\code{\link{gsub}}, using the \code{ignore.case} argument of the present
 function.
 The procedure
 is to first handle the items listed in the following table, with string

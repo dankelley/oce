@@ -154,7 +154,7 @@ setMethod(f="plot",
               data <- x@data
               dataNames <- names(data)
               ## At the start, n is the number of non-time variables, but
-              ## later on we might switch it to equal nok, which is the 
+              ## later on we might switch it to equal nok, which is the
               ## number of non-time variables that contain finite data.
               if (!("time" %in% dataNames)) {
                   finite <- unlist(lapply(data, function(col) any(is.finite(col))))
@@ -181,7 +181,7 @@ setMethod(f="plot",
                           N <- as.integer(0.5 + sqrt(n - 1))
                           M <- as.integer(n / N)
                           ## may need to add 1, but use a loop in case my logic is mixed up
-                          ## if that would 
+                          ## if that would
                           while (N * M < n)
                               M <- M + 1
                           par(mfrow=c(N, M))
@@ -251,7 +251,7 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
     rval <- ""
     rval <- list()
     for (j in seq_along(i)) {
-        ##.message("j=", j, " start")
+        ##. cat("j=", j, ", i=", i, "\n")
         ## ----------
         ## RISKY CODE: only look at first match
         ## ----------
@@ -259,17 +259,21 @@ findInHeader <- function(key, lines, returnOnlyFirst=TRUE, numeric=FALSE, prefix
         tmp <- gsub("\\s*$", "", gsub("^\\s*", "", gsub("'", "", gsub(",", "", strsplit(lines[i[j]], "=")[[1]][2]))))
         ## convert e.g. D+00 to e+00
         if (length(grep("[-A-CF-Za-cf-z ]", tmp))) {
+            ##. cat("case A. tmp '", tmp, "'\n", sep="")
             rval[[j]] <- tmp
         } else {
+            ##. cat("case B. tmp '", tmp, "'\n", sep="")
             tmp <- gsub("(.*)D([-+])([0-9]{2})", "\\1e\\2\\3", tmp)
-            rval[[j]] <- as.numeric(tmp)
+            number <- 0 == length(grep("[-+.0-9eEdD ]*", tmp))
+            ##. cat("number=", number, "\n")
+            rval[[j]] <- if (number && numeric) as.numeric(tmp) else tmp
         }
         ##.message("j=", j, " end")
     }
     ##.message("A")
     ##.print(rval)
-    if (numeric)
-        rval <- as.numeric(rval)
+    ##? if (numeric)
+    ##?     rval <- as.numeric(rval)
     ##.message("B")
     if (0 < length(rval)) {
         if (returnOnlyFirst) {

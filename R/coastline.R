@@ -48,7 +48,7 @@ setClass("coastline", contains="oce")
 #' startup file.
 #' @author Dan Kelley
 #' @source Downloaded from \url{http://www.naturalearthdata.com}, in
-#' \code{ne_110m_admin_0_countries.shp} in July 2015, with an 
+#' \code{ne_110m_admin_0_countries.shp} in July 2015, with an
 #' update on December 16, 2017.
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{coastline} data
@@ -137,8 +137,9 @@ setMethod(f="summary",
           signature="coastline",
           definition=function(object, ...) {
               cat("Coastline Summary\n-----------------\n\n")
-              cat("* Number of points:", length(object@data$latitude), ", of which",
-                  sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
+              showMetadataItem(object, "filename",                  "File: ", quote=TRUE)
+              cat("* Number of points: ", length(object@data$latitude), ", of which ",
+                  sum(is.na(object@data$latitude)), " are NA (e.g. separating islands).\n", sep="")
               invisible(callNextMethod())        # summary
           })
 
@@ -651,7 +652,7 @@ setMethod(f="plot",
                           ylabels <- formatPosition(yr.pretty, isLat=TRUE, type='expression',
                                                     showHemi=geographical==3)
                       }
- 
+
                       axis(1, at=xr.pretty, labels=xlabels, pos=usrTrimmed[3], cex.axis=cex.axis)
                       oceDebug(debug, "putting bottom x axis at", usrTrimmed[3], "with labels:", xlabels, "\n")
                       axis(2, at=yr.pretty, labels=ylabels, pos=usrTrimmed[1], cex.axis=cex.axis, cex=cex.axis)
