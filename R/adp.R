@@ -1464,6 +1464,7 @@ setMethod(f="plot",
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
 
               oceDebug(debug, "which:", which, "\n")
+              whichOrig <- which
               which <- oce.pmatch(which,
                                   list(u1=1, u2=2, u3=3, u4=4,
                                        a1=5, a2=6, a3=7, a4=8,
@@ -1494,6 +1495,9 @@ setMethod(f="plot",
                                        vertical=80:81,
                                        vv=80, va=81, vq=82, vg=83))
               nw <- length(which) # may be longer with e.g. which='velocity'
+              if (any(is.na(which)))
+                  stop("plot(): unrecognized 'which' code: ", paste(whichOrig[is.na(which)], collapse=" "),
+                       call.=FALSE)
               oceDebug(debug, "which:", which, "(after conversion to numerical codes)\n")
               images <- c(1:12, 70:73, 80:83)
               timeseries <- c(13:22, 40:44, 50:54, 55, 100)
