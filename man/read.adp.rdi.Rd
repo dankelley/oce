@@ -229,6 +229,32 @@ PRDID refers to heading, pitch and roll.
 }
 }
 
+\section{Error recovery}{
+
+
+Files can sometimes be corrupted, and \code{read.adp.rdi} has ways to handle two types
+of error that have been noticed in files supplied by users.
+\enumerate{
+
+\item There are two bytes within each ensemble that indicate the number of bytes to check within
+that ensemble, to get the checksum. Sometimes, those two bytes can be erroneous, so that
+the wrong number of bytes are checked, leading to a failed checksum. As a preventative
+measure, \code{read.adp.rdi} checks the stated ensemble length, whenever it detects a
+failed checksum. If that length agrees with the length of the most recent ensemble that
+had a good checksum, then the ensemble is declared as faulty and is ignored. However,
+if the length differs from that of the most recent accepted ensemble, then \code{read.adp.rdi}
+goes back to just after the start of the ensemble, and searches forward for the next two-byte
+pair, namely \code{0x7f 0x7f}, that designates the start of an ensemble.  Distinct notifications
+are given about these two cases, and they give the byte numbers in the original file, as a way
+to help analysts who want to look at the data stream with other tools.
+
+\item At the end of an ensemble, the next two characters ought to be \code{0x7f 0x7f}, and if they
+are not, then the next ensemble is faulty. If this error occurs, \code{read.adp.rdi} attempts
+to recover by searching forward to the next instance of this two-byte pair, discarding any
+information that is present in the mangled ensemble.
+}
+}
+
 \references{
 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
 format.} P/N 957-6156-00 (November 2007).  (Section 5.3 h details the binary

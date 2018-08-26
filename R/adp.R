@@ -444,6 +444,10 @@ setMethod(f="summary",
               cat("* Number of cells:   ", v.dim[2], "\n")
               cat("* Number of beams:   ", v.dim[3], "\n")
               cat("* Cell size:         ", object@metadata$cellSize, "m\n")
+              cat("* Table of time between profiles:\n")
+              dttable <- as.data.frame(table(diff(as.numeric(object@data$time))))
+              colnames(dttable) <- c("Seconds", "Count")
+              print(dttable, row.names=FALSE)
               if (1 == length(agrep("nortek", object@metadata$manufacturer, ignore.case=TRUE))) {
                   resSpecific <- list(internalCodeVersion=object@metadata$internalCodeVersion,
                                       hardwareRevision=object@metadata$hardwareRevision,
@@ -1022,17 +1026,17 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
     if (manufacturer == "rdi")
         read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
                      longitude=longitude, latitude=latitude,
-                     debug=debug-1, monitor=monitor, despike=despike,
+                     debug=debug, monitor=monitor, despike=despike,
                      processingLog=processingLog, ...)
     else if (manufacturer == "nortek")
         read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         longitude=longitude, latitude=latitude,
-                        debug=debug-1, monitor=monitor, despike=despike,
+                        debug=debug, monitor=monitor, despike=despike,
                         processingLog=processingLog, ...)
     else if (manufacturer == "sontek")
         read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
                         longitude=longitude, latitude=latitude,
-                        debug=debug-1, monitor=monitor, despike=despike,
+                        debug=debug, monitor=monitor, despike=despike,
                         processingLog=processingLog, ...)
 }
 
