@@ -135,10 +135,15 @@ variants.)
   \code{rhodflTC~}   \tab \code{Rhodamine}                    \tab ppb; Turner Cyclops  \tab   \cr
   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
+  \code{sbox~ML/L}   \tab \code{oxygen}                       \tab ml/l; SBE43 (?)      \tab   \cr
   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
+  \code{sbox~Mm/Kg}  \tab \code{oxygen}                       \tab umol/kg; SBE43 (?)   \tab   \cr
   \code{sbeox~Mm/L}  \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
+  \code{sbox~Mm/L}   \tab \code{oxygen}                       \tab umol/l; SBE43 (?)    \tab   \cr
   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
+  \code{sbox~PS}     \tab \code{oxygen}                       \tab percent; SBE43 (?)   \tab   \cr
   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
+  \code{sbox~V}      \tab \code{oxygenRaw}                    \tab V; SBE43 (?)         \tab   \cr
   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
   \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
