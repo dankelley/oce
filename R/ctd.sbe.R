@@ -110,10 +110,15 @@
 #'   \code{rhodflTC~}   \tab \code{Rhodamine}                    \tab ppb; Turner Cyclops  \tab   \cr
 #'   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
 #'   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
+#'   \code{sbox~ML/L}   \tab \code{oxygen}                       \tab ml/l; SBE43 (?)      \tab   \cr
 #'   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
+#'   \code{sbox~Mm/Kg}  \tab \code{oxygen}                       \tab umol/kg; SBE43 (?)   \tab   \cr
 #'   \code{sbeox~Mm/L}  \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
+#'   \code{sbox~Mm/L}   \tab \code{oxygen}                       \tab umol/l; SBE43 (?)    \tab   \cr
 #'   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
+#'   \code{sbox~PS}     \tab \code{oxygen}                       \tab percent; SBE43 (?)   \tab   \cr
 #'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
+#'   \code{sbox~V}      \tab \code{oxygenRaw}                    \tab V; SBE43 (?)         \tab   \cr
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
 #'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
 #'   \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
@@ -421,22 +426,34 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^sal[0-9]{2}$", name, useBytes=TRUE))) {
         name <- "salinity"
         unit <- list(unit=expression(), scale="PSS-78") # FIXME: guess on scale
-    } else if (1 == length(grep("^sbeox[0-9]ML/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]ML/L$", name, useBytes=TRUE))) {
+        if (length(grep("^sbo", name, useBytes=TRUE)))
+            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="SBE43")
-    } else if (1 == length(grep("^sbeox[0-9]Mg/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]Mg/L$", name, useBytes=TRUE))) {
+        if (length(grep("^sbo", name, useBytes=TRUE)))
+            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(mg/l), scale="SBE43")
-    } else if (1 == length(grep("^sbeox[0-9]Mm/Kg$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]Mm/Kg$", name, useBytes=TRUE))) {
+        if (length(grep("^sbo", name, useBytes=TRUE)))
+            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/kg), scale="SBE43")
-    } else if (1 == length(grep("^sbeox[0-9]Mm/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]Mm/L$", name, useBytes=TRUE))) {
+        if (length(grep("^sbo", name, useBytes=TRUE)))
+            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/l), scale="SBE43")
-    } else if (1 == length(grep("^sbeox[0-9]PS$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]PS$", name, useBytes=TRUE))) {
+        if (length(grep("^sbo", name, useBytes=TRUE)))
+            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(percent), scale="SBE43")
-    } else if (1 == length(grep("^sbeox[0-9]V$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]V$", name, useBytes=TRUE))) {
+        if (length(grep("^sbo", name, useBytes=TRUE)))
+            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygenRaw"
         unit <- list(unit=expression(V), scale="SBE43")
     } else if (1 == length(grep("^scan$", name, useBytes=TRUE))) {
