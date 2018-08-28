@@ -1323,12 +1323,12 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                     } else {
                         unknownWarningCount <- unknownWarningCount + 1
                         if (unknownWarningCount < 100) {
-                            warning("unknown 0x", buf[o], " 0x", buf[1+o],
-                                    " o=", o,
+                            warning("unknown data-type code, 0x", buf[o], " 0x", buf[1+o],
+                                    " encountered at o=", o,
                                     " i=", i,
                                     " chunk=", chunk,
                                     " dataOffset=", header$dataOffset[chunk],
-                                    " (at most 100 of these warnings will be issued)\n", sep="")
+                                    " 0. (At most 100 of these warnings will be issued)\n", sep="")
                         }
                     }
                     if (monitor)
