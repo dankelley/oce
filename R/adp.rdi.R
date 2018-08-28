@@ -1,4 +1,5 @@
 ## vim: tw=100 shiftwidth=4 softtabstop=4 expandtab:
+
 ## byte sequences at start of items
 ## FLH 00 00; VLH 00 80; vel 00 01; Cor 00 02;  echo 00 03; percent 00 04; bottom-track 00 06
 
@@ -748,12 +749,11 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                     }
                 }
             }
-            ##ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to), as.integer(by), 0L)
             ldc <- do_ldc_rdi_in_file(filename, from, to, by, 0L, debug-1)
-            if (debug > 9) {
-                message("since debug > 9, exporting ldc to ldcDEBUG")
-                ldcDEBUG <<- ldc
-            }
+            ##if (debug > 9) {
+            ##    message("since debug > 9, exporting ldc to ldcDEBUG")
+            ##    ldcDEBUG <<- ldc
+            ##}
             oceDebug(debug, "done with do_ldc_rdi_in_file() with numeric from and to, near adp.rdi.R line 683")
         } else {
             if (is.character(from))
@@ -764,10 +764,10 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 by <- ctimeToSeconds(by)
             ##ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to), as.integer(by), 1L)
             ldc <- do_ldc_rdi_in_file(filename, from, to, by, 1L, debug-1)
-            if (debug > 9) {
-                message("since debug > 9, exporting ldc to ldcDEBUG")
-                ldcDEBUG <<- ldc
-            }
+            ##if (debug > 9) {
+            ##    message("since debug > 9, exporting ldc to ldcDEBUG")
+            ##    ldcDEBUG <<- ldc
+            ##}
             oceDebug(debug, "done with do_ldc_rdi_in_file() with non-numeric from and to, near adp.rdi.R line 693")
         }
         ##old if (debug > 99) {
@@ -1605,6 +1605,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             res@metadata$filename <- filename
             res@metadata$longitude <- longitude
             res@metadata$latitude <- latitude
+            res@metadata$ensembleInFile <- ldc$ensemble_in_file
             res@metadata$velocityResolution <- velocityScale
             res@metadata$velocityMaximum <- velocityScale * 2^15
             res@metadata$numberOfSamples <- dim(v)[1]

@@ -139,8 +139,9 @@ subtracts 1 from the debug level, before calling this C++ fucction. In other
 words, calling `read.adp.rdi(...,debug=1)` does not turn debuggin on,
 but calling `read.adp.rdi(...,debug=2)` does.
 
-@value a list containing "ensembleStart", "time", "sec100", and
-"buf", which are used in the calling R function, read.adp.rdi().
+@value a list containing "ensembleStart", "time", "sec100", and "buf",
+and "ensemble_in_file", which are used in the calling R
+function, read.adp.rdi().
 
 @examples
 
@@ -224,6 +225,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   // Note that we do not check the Calloc() results because the R docs say that
   // Calloc() performs its won tests, and that R will handle any problems.
   unsigned long int nensembles = 100000; // BUFFER SIZE
+  unsigned int *ensemble_in_files = (unsigned int *)Calloc((size_t)nensembles, unsigned int);
   int *ensembles = (int *)Calloc((size_t)nensembles, int);
   int *times = (int *)Calloc((size_t)nensembles, int);
   int *sec100s = (int *)Calloc((size_t)nensembles, int);
@@ -337,6 +339,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
           nensembles = 3 * nensembles / 2;
           if (debug_value > -1)
             Rprintf("Increasing ensembles,times,sec100s storage to %d elements ...\n", nensembles);
+          ensemble_in_files = (unsigned int *) Realloc(ensemble_in_files, nensembles, unsigned int);
           ensembles = (int *) Realloc(ensembles, nensembles, int);
           times = (int *) Realloc(times, nensembles, int);
           sec100s = (int *)Realloc(sec100s, nensembles, int);
@@ -371,6 +374,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
             //if (out_ensemble<OUTLIM) Rprintf("  STAGE 3 in_ensemble=%d; from_value=%d; counter=%d; counter_last=%d\n", in_ensemble, from_value, counter,  counter_last);
             // Copy ensemble to output buffer, after 6 bytes of header
             // FIXME: next is wrong. should have a cumsum
+            ensemble_in_files[out_ensemble] = 1 + last7f7f; // use R index-from-1 notation
             ensembles[out_ensemble] = outEnsemblePointer;
             outEnsemblePointer = outEnsemblePointer + 6 + bytes_to_read; // 6 bytes for: 0x7f,0x7f,b1,b2,cs1,cs2
             times[out_ensemble] = ensemble_time;
@@ -511,17 +515,20 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
 
   // Finally, copy into some R memory. Possibly we should have been
   // using this all along, but I wasn't clear on how to reallocate it.
+  IntegerVector ensemble_in_file(out_ensemble);
   IntegerVector ensemble(out_ensemble);
   IntegerVector sec100(out_ensemble);
   IntegerVector time(out_ensemble);
   RawVector buf(iobuf);
 
   for (unsigned long int i = 0; i < out_ensemble; i++) {
+    ensemble_in_file[i] = ensemble_in_files[i];
     ensemble[i] = ensembles[i];
     time[i] = times[i];
     sec100[i] = sec100s[i];
     //Rprintf("i=%d ensemble=%d time=%d sec100=%d\n", i, ensemble[i], time[i], (int)sec100[i]);
   }
+  Free(ensemble_in_files);
   Free(ensembles);
   Free(times);
   Free(sec100s);
@@ -533,6 +540,7 @@ List do_ldc_rdi_in_file(StringVector filename, IntegerVector from, IntegerVector
   if (debug_value > 0)
     Rprintf("Returning from C++ function named do_ldc_rdi_in_file.\n");
   return(List::create(Named("ensembleStart")=ensemble, Named("time")=time,
-        Named("sec100")=sec100, Named("buf")=buf));
+        Named("sec100")=sec100, Named("buf")=buf,
+        Named("ensemble_in_file")=ensemble_in_file));
 }
 
