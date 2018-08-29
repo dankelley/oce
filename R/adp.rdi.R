@@ -490,24 +490,26 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'
 #' The following two-byte ID codes are recognized by \code{read.adp.rdi}
 #' at this time (with bytes listed in natural order, LSB byte before
-#' MSB):
+#' MSB). Items preceeded by an asterisk are recognized, but not handled,
+#' and so produce a warning.
 #'\preformatted{
-#' 0x00 0x01 velocity
-#' 0x00 0x02 correlation
-#' 0x00 0x03 echo intensity
-#' 0x00 0x04 percent good
-#' 0x00 0x06 bottom track
-#' 0x00 0x0a Sentinel vertical beam velocity
-#' 0x00 0x0b Sentinel vertical beam correlation
-#' 0x00 0x0c Sentinel vertical beam amplitude
-#' 0x00 0x0d Sentinel vertical beam percent good
-#' 0x00 0x20 VMDASS
-#' 0x00 0x32 Sentinel transformation matrix
-#' 0x00 0x0a Sentinel data
-#' 0x00 0x0b Sentinel correlation
-#' 0x00 0x0c Sentinel amplitude
-#' 0x00 0x0d Sentinel percent good
-#' 0x01 0x0f ?? something to do with V series and 4-beam
+#'   0x00 0x01 velocity
+#'   0x00 0x02 correlation
+#'   0x00 0x03 echo intensity
+#'   0x00 0x04 percent good
+#'   0x00 0x06 bottom track
+#'   0x00 0x0a Sentinel vertical beam velocity
+#'   0x00 0x0b Sentinel vertical beam correlation
+#'   0x00 0x0c Sentinel vertical beam amplitude
+#'   0x00 0x0d Sentinel vertical beam percent good
+#'   0x00 0x20 VMDASS
+#' * 0x00 0x30 binary fixed attitude (developer: see p169 of [3] for format)
+#'   0x00 0x32 Sentinel transformation matrix
+#'   0x00 0x0a Sentinel data
+#'   0x00 0x0b Sentinel correlation
+#'   0x00 0x0c Sentinel amplitude
+#'   0x00 0x0d Sentinel percent good
+#'   0x01 0x0f ?? something to do with V series and 4-beam
 #' }
 #'
 #' Lacking a comprehensive Teledyne-RDI listing of ID codes,
@@ -566,7 +568,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' Files can sometimes be corrupted, and \code{read.adp.rdi} has ways to handle two types
 #' of error that have been noticed in files supplied by users.
 #'\enumerate{
-#' 
+#'
 #' \item There are two bytes within each ensemble that indicate the number of bytes to check within
 #' that ensemble, to get the checksum. Sometimes, those two bytes can be erroneous, so that
 #' the wrong number of bytes are checked, leading to a failed checksum. As a preventative
@@ -578,7 +580,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' pair, namely \code{0x7f 0x7f}, that designates the start of an ensemble.  Distinct notifications
 #' are given about these two cases, and they give the byte numbers in the original file, as a way
 #' to help analysts who want to look at the data stream with other tools.
-#' 
+#'
 #' \item At the end of an ensemble, the next two characters ought to be \code{0x7f 0x7f}, and if they
 #' are not, then the next ensemble is faulty. If this error occurs, \code{read.adp.rdi} attempts
 #' to recover by searching forward to the next instance of this two-byte pair, discarding any
@@ -594,6 +596,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          debug=getOption("oceDebug"),
                          ...)
 {
+    warningBinaryFixedAttitudeCount <- 0
     fromGiven <- !missing(from) # FIXME document THIS
     toGiven <- !missing(to) # FIXME document THIS
     byGiven <- !missing(by) # FIXME document THIS
@@ -1250,10 +1253,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                                0.001*readBin(buf[o+88:89], 'integer', n=1, size=2, endian='little'))
                         primaryFlags <- c(primaryFlags,
                                           readBin(buf[o+90:91], 'integer', n=1, size=2, endian='little'))
-                        ##slow if (i <= profilesToShow) oceDebug(debug, "Navigaiton, profile", i, "\n")
-                    ##??? } else if (buf[1+o] == 0x30) { # FIXME: is this right? Why only checking one byte?
-                    ##???     ## fixme need to check first byte
-                    ##???     ##slow if (i <= profilesToShow) oceDebug(debug, "Variable attitude, profile", i, "\n")
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0a) {
                         ## vertical beam data
                         if (isSentinel) {
@@ -1304,6 +1303,11 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                             nmeaLen <- nmeaLen + 1
                             nmea[nmeaLen] <- nmeaTmp
                         }
+                    } else if (buf[o] == 0x00 & buf[1+o] == 0x30) {
+                        if (warningBinaryFixedAttitudeCount == 0)
+                        ## see p169 of [3] for format; see also https://github.com/dankelley/oce/issues/1439
+                        warning("ignoring binary-fixed-attitude data, signaled by 0x00 0x30, at o=", o, " (message given once per file).\n")
+                        warningBinaryFixedAttitudeCount <- 1 + warningBinaryFixedAttitudeCount
                     } else if (buf[o] == 0x02 & buf[1+o] == 0x21) {
                         ## 45 bytes (table 5 [WinRiver User Guide International Verion.pdf.pdf])
                         end <- .C("nmea_len", buf[o+2+0:42], 43L, integer(1))[[3]]

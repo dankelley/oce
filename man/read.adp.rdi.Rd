@@ -158,24 +158,26 @@ to introduce new ID codes with new instruments, that means that
 
 The following two-byte ID codes are recognized by \code{read.adp.rdi}
 at this time (with bytes listed in natural order, LSB byte before
-MSB):
+MSB). Items preceeded by an asterisk are recognized, but not handled,
+and so produce a warning.
 \preformatted{
-0x00 0x01 velocity
-0x00 0x02 correlation
-0x00 0x03 echo intensity
-0x00 0x04 percent good
-0x00 0x06 bottom track
-0x00 0x0a Sentinel vertical beam velocity
-0x00 0x0b Sentinel vertical beam correlation
-0x00 0x0c Sentinel vertical beam amplitude
-0x00 0x0d Sentinel vertical beam percent good
-0x00 0x20 VMDASS
-0x00 0x32 Sentinel transformation matrix
-0x00 0x0a Sentinel data
-0x00 0x0b Sentinel correlation
-0x00 0x0c Sentinel amplitude
-0x00 0x0d Sentinel percent good
-0x01 0x0f ?? something to do with V series and 4-beam
+  0x00 0x01 velocity
+  0x00 0x02 correlation
+  0x00 0x03 echo intensity
+  0x00 0x04 percent good
+  0x00 0x06 bottom track
+  0x00 0x0a Sentinel vertical beam velocity
+  0x00 0x0b Sentinel vertical beam correlation
+  0x00 0x0c Sentinel vertical beam amplitude
+  0x00 0x0d Sentinel vertical beam percent good
+  0x00 0x20 VMDASS
+* 0x00 0x30 binary fixed attitude (developer: see p169 of [3] for format)
+  0x00 0x32 Sentinel transformation matrix
+  0x00 0x0a Sentinel data
+  0x00 0x0b Sentinel correlation
+  0x00 0x0c Sentinel amplitude
+  0x00 0x0d Sentinel percent good
+  0x01 0x0f ?? something to do with V series and 4-beam
 }
 
 Lacking a comprehensive Teledyne-RDI listing of ID codes,
