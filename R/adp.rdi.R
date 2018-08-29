@@ -597,6 +597,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          ...)
 {
     warningBinaryFixedAttitudeCount <- 0
+    warningUnknownCode <- list()
     fromGiven <- !missing(from) # FIXME document THIS
     toGiven <- !missing(to) # FIXME document THIS
     byGiven <- !missing(by) # FIXME document THIS
@@ -1303,11 +1304,11 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                             nmeaLen <- nmeaLen + 1
                             nmea[nmeaLen] <- nmeaTmp
                         }
-                    } else if (buf[o] == 0x00 & buf[1+o] == 0x30) {
-                        if (warningBinaryFixedAttitudeCount == 0)
-                        ## see p169 of [3] for format; see also https://github.com/dankelley/oce/issues/1439
-                        warning("ignoring binary-fixed-attitude data, signaled by 0x00 0x30, at o=", o, " (message given once per file).\n")
-                        warningBinaryFixedAttitudeCount <- 1 + warningBinaryFixedAttitudeCount
+                    ##.} else if (buf[o] == 0x00 & buf[1+o] == 0x30) {
+                    ##.    if (warningBinaryFixedAttitudeCount == 0)
+                    ##.    ## see p169 of [3] for format; see also https://github.com/dankelley/oce/issues/1439
+                    ##.    warning("ignoring binary-fixed-attitude data, signaled by 0x00 0x30, at o=", o, " (message given once per file).\n")
+                    ##.    warningBinaryFixedAttitudeCount <- 1 + warningBinaryFixedAttitudeCount
                     } else if (buf[o] == 0x02 & buf[1+o] == 0x21) {
                         ## 45 bytes (table 5 [WinRiver User Guide International Verion.pdf.pdf])
                         end <- .C("nmea_len", buf[o+2+0:42], 43L, integer(1))[[3]]
@@ -1325,15 +1326,19 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                             nmea[nmeaLen] <- nmeaTmp
                         }
                     } else {
-                        unknownWarningCount <- unknownWarningCount + 1
-                        if (unknownWarningCount < 100) {
-                            warning("unknown data-type code, 0x", buf[o], " 0x", buf[1+o],
-                                    " encountered at o=", o,
-                                    " i=", i,
-                                    " chunk=", chunk,
-                                    " dataOffset=", header$dataOffset[chunk],
-                                    " 0. (At most 100 of these warnings will be issued)\n", sep="")
-                        }
+                        key <- paste("0x",as.character(buf[o]), " 0x", as.character(buf[o+1]), sep="")
+                        if (0 == length(warningUnknownCode[[key]]))
+                            warningUnknownCode[[key]] <- 1
+                        warningUnknownCode[[key]] <- warningUnknownCode[[key]] + 1
+                        ##.unknownWarningCount <- unknownWarningCount + 1
+                        ##.if (unknownWarningCount < 100) {
+                        ##.    warning("unknown data-type code, 0x", buf[o], " 0x", buf[1+o],
+                        ##.            " encountered at o=", o,
+                        ##.            " i=", i,
+                        ##.            " chunk=", chunk,
+                        ##.            " dataOffset=", header$dataOffset[chunk],
+                        ##.            " 0. (At most 100 of these warnings will be issued)\n", sep="")
+                        ##.}
                     }
                     if (monitor)
                         setTxtProgressBar(progressBar, i)
@@ -1519,6 +1524,12 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             if (debug > 0) {
                 oceDebug(debug, "Recognized but unhandled ID codes:\n")
                 print(unhandled)
+            }
+            if (length(warningUnknownCode) > 0) {
+                msg <- "A list of unhandled segment codes follows. Several Teledyne RDI manuals\n  describe such codes; see e.g. Table 33 of Teledyne RD Instruments, 2014.\n  Ocean Surveyor/Ocean Observer Technical Manual.\n  P/N 95A-6012-00 April 2014 (OS_TM_Apr14.pdf)\n"
+                for (name in names(warningUnknownCode))
+                    msg <- paste(msg, "    Code ", name, " occurred ", warningUnknownCode[[name]], " times\n", sep="")
+                warning(msg)
             }
 
             ## time <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart+4])), # year
