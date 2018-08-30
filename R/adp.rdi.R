@@ -1,4 +1,5 @@
 ## vim: tw=100 shiftwidth=4 softtabstop=4 expandtab:
+
 ## byte sequences at start of items
 ## FLH 00 00; VLH 00 80; vel 00 01; Cor 00 02;  echo 00 03; percent 00 04; bottom-track 00 06
 
@@ -489,24 +490,26 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #'
 #' The following two-byte ID codes are recognized by \code{read.adp.rdi}
 #' at this time (with bytes listed in natural order, LSB byte before
-#' MSB):
+#' MSB). Items preceeded by an asterisk are recognized, but not handled,
+#' and so produce a warning.
 #'\preformatted{
-#' 0x00 0x01 velocity
-#' 0x00 0x02 correlation
-#' 0x00 0x03 echo intensity
-#' 0x00 0x04 percent good
-#' 0x00 0x06 bottom track
-#' 0x00 0x0a Sentinel vertical beam velocity
-#' 0x00 0x0b Sentinel vertical beam correlation
-#' 0x00 0x0c Sentinel vertical beam amplitude
-#' 0x00 0x0d Sentinel vertical beam percent good
-#' 0x00 0x20 VMDASS
-#' 0x00 0x32 Sentinel transformation matrix
-#' 0x00 0x0a Sentinel data
-#' 0x00 0x0b Sentinel correlation
-#' 0x00 0x0c Sentinel amplitude
-#' 0x00 0x0d Sentinel percent good
-#' 0x01 0x0f ?? something to do with V series and 4-beam
+#'   0x00 0x01 velocity
+#'   0x00 0x02 correlation
+#'   0x00 0x03 echo intensity
+#'   0x00 0x04 percent good
+#'   0x00 0x06 bottom track
+#'   0x00 0x0a Sentinel vertical beam velocity
+#'   0x00 0x0b Sentinel vertical beam correlation
+#'   0x00 0x0c Sentinel vertical beam amplitude
+#'   0x00 0x0d Sentinel vertical beam percent good
+#'   0x00 0x20 VMDASS
+#' * 0x00 0x30 binary fixed attitude (developer: see p169 of [3] for format)
+#'   0x00 0x32 Sentinel transformation matrix
+#'   0x00 0x0a Sentinel data
+#'   0x00 0x0b Sentinel correlation
+#'   0x00 0x0c Sentinel amplitude
+#'   0x00 0x0d Sentinel percent good
+#'   0x01 0x0f ?? something to do with V series and 4-beam
 #' }
 #'
 #' Lacking a comprehensive Teledyne-RDI listing of ID codes,
@@ -559,6 +562,31 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' PRDID refers to heading, pitch and roll.
 #'}
 #'
+#'
+#' @section Error recovery:
+#'
+#' Files can sometimes be corrupted, and \code{read.adp.rdi} has ways to handle two types
+#' of error that have been noticed in files supplied by users.
+#'\enumerate{
+#'
+#' \item There are two bytes within each ensemble that indicate the number of bytes to check within
+#' that ensemble, to get the checksum. Sometimes, those two bytes can be erroneous, so that
+#' the wrong number of bytes are checked, leading to a failed checksum. As a preventative
+#' measure, \code{read.adp.rdi} checks the stated ensemble length, whenever it detects a
+#' failed checksum. If that length agrees with the length of the most recent ensemble that
+#' had a good checksum, then the ensemble is declared as faulty and is ignored. However,
+#' if the length differs from that of the most recent accepted ensemble, then \code{read.adp.rdi}
+#' goes back to just after the start of the ensemble, and searches forward for the next two-byte
+#' pair, namely \code{0x7f 0x7f}, that designates the start of an ensemble.  Distinct notifications
+#' are given about these two cases, and they give the byte numbers in the original file, as a way
+#' to help analysts who want to look at the data stream with other tools.
+#'
+#' \item At the end of an ensemble, the next two characters ought to be \code{0x7f 0x7f}, and if they
+#' are not, then the next ensemble is faulty. If this error occurs, \code{read.adp.rdi} attempts
+#' to recover by searching forward to the next instance of this two-byte pair, discarding any
+#' information that is present in the mangled ensemble.
+#'}
+#'
 #' @family things related to \code{adp} data
 read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          longitude=NA, latitude=NA,
@@ -568,6 +596,8 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          debug=getOption("oceDebug"),
                          ...)
 {
+    warningBinaryFixedAttitudeCount <- 0
+    warningUnknownCode <- list()
     fromGiven <- !missing(from) # FIXME document THIS
     toGiven <- !missing(to) # FIXME document THIS
     byGiven <- !missing(by) # FIXME document THIS
@@ -723,8 +753,11 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                     }
                 }
             }
-            ##ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to), as.integer(by), 0L)
-            ldc <- do_ldc_rdi_in_file(filename, from, to, by, 0L)
+            ldc <- do_ldc_rdi_in_file(filename, from, to, by, 0L, debug-1)
+            ##if (debug > 9) {
+            ##    message("since debug > 9, exporting ldc to ldcDEBUG")
+            ##    ldcDEBUG <<- ldc
+            ##}
             oceDebug(debug, "done with do_ldc_rdi_in_file() with numeric from and to, near adp.rdi.R line 683")
         } else {
             if (is.character(from))
@@ -734,7 +767,11 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             if (is.character(by))
                 by <- ctimeToSeconds(by)
             ##ldc <- .Call("ldc_rdi_in_file", filename, as.integer(from), as.integer(to), as.integer(by), 1L)
-            ldc <- do_ldc_rdi_in_file(filename, from, to, by, 1L)
+            ldc <- do_ldc_rdi_in_file(filename, from, to, by, 1L, debug-1)
+            ##if (debug > 9) {
+            ##    message("since debug > 9, exporting ldc to ldcDEBUG")
+            ##    ldcDEBUG <<- ldc
+            ##}
             oceDebug(debug, "done with do_ldc_rdi_in_file() with non-numeric from and to, near adp.rdi.R line 693")
         }
         ##old if (debug > 99) {
@@ -1217,10 +1254,6 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                                                0.001*readBin(buf[o+88:89], 'integer', n=1, size=2, endian='little'))
                         primaryFlags <- c(primaryFlags,
                                           readBin(buf[o+90:91], 'integer', n=1, size=2, endian='little'))
-                        ##slow if (i <= profilesToShow) oceDebug(debug, "Navigaiton, profile", i, "\n")
-                    ##??? } else if (buf[1+o] == 0x30) { # FIXME: is this right? Why only checking one byte?
-                    ##???     ## fixme need to check first byte
-                    ##???     ##slow if (i <= profilesToShow) oceDebug(debug, "Variable attitude, profile", i, "\n")
                     } else if (buf[o] == 0x00 & buf[1+o] == 0x0a) {
                         ## vertical beam data
                         if (isSentinel) {
@@ -1271,6 +1304,11 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                             nmeaLen <- nmeaLen + 1
                             nmea[nmeaLen] <- nmeaTmp
                         }
+                    ##.} else if (buf[o] == 0x00 & buf[1+o] == 0x30) {
+                    ##.    if (warningBinaryFixedAttitudeCount == 0)
+                    ##.    ## see p169 of [3] for format; see also https://github.com/dankelley/oce/issues/1439
+                    ##.    warning("ignoring binary-fixed-attitude data, signaled by 0x00 0x30, at o=", o, " (message given once per file).\n")
+                    ##.    warningBinaryFixedAttitudeCount <- 1 + warningBinaryFixedAttitudeCount
                     } else if (buf[o] == 0x02 & buf[1+o] == 0x21) {
                         ## 45 bytes (table 5 [WinRiver User Guide International Verion.pdf.pdf])
                         end <- .C("nmea_len", buf[o+2+0:42], 43L, integer(1))[[3]]
@@ -1288,15 +1326,19 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                             nmea[nmeaLen] <- nmeaTmp
                         }
                     } else {
-                        unknownWarningCount <- unknownWarningCount + 1
-                        if (unknownWarningCount < 100) {
-                            warning("unknown 0x", buf[o], " 0x", buf[1+o],
-                                    " o=", o,
-                                    " i=", i,
-                                    " chunk=", chunk,
-                                    " dataOffset=", header$dataOffset[chunk],
-                                    " (at most 100 of these warnings will be issued)\n", sep="")
-                        }
+                        key <- paste("0x",as.character(buf[o]), " 0x", as.character(buf[o+1]), sep="")
+                        if (0 == length(warningUnknownCode[[key]]))
+                            warningUnknownCode[[key]] <- 1
+                        warningUnknownCode[[key]] <- warningUnknownCode[[key]] + 1
+                        ##.unknownWarningCount <- unknownWarningCount + 1
+                        ##.if (unknownWarningCount < 100) {
+                        ##.    warning("unknown data-type code, 0x", buf[o], " 0x", buf[1+o],
+                        ##.            " encountered at o=", o,
+                        ##.            " i=", i,
+                        ##.            " chunk=", chunk,
+                        ##.            " dataOffset=", header$dataOffset[chunk],
+                        ##.            " 0. (At most 100 of these warnings will be issued)\n", sep="")
+                        ##.}
                     }
                     if (monitor)
                         setTxtProgressBar(progressBar, i)
@@ -1483,6 +1525,12 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                 oceDebug(debug, "Recognized but unhandled ID codes:\n")
                 print(unhandled)
             }
+            if (length(warningUnknownCode) > 0) {
+                msg <- "A list of unhandled segment codes follows. Several Teledyne RDI manuals\n  describe such codes; see e.g. Table 33 of Teledyne RD Instruments, 2014.\n  Ocean Surveyor/Ocean Observer Technical Manual.\n  P/N 95A-6012-00 April 2014 (OS_TM_Apr14.pdf)\n"
+                for (name in names(warningUnknownCode))
+                    msg <- paste(msg, "    Code ", name, " occurred ", warningUnknownCode[[name]], " times\n", sep="")
+                warning(msg)
+            }
 
             ## time <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart+4])), # year
             ##                     as.integer(buf[profileStart+5]),      # month
@@ -1572,6 +1620,7 @@ read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
             res@metadata$filename <- filename
             res@metadata$longitude <- longitude
             res@metadata$latitude <- latitude
+            res@metadata$ensembleInFile <- ldc$ensemble_in_file
             res@metadata$velocityResolution <- velocityScale
             res@metadata$velocityMaximum <- velocityScale * 2^15
             res@metadata$numberOfSamples <- dim(v)[1]

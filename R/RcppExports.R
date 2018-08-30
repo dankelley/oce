@@ -88,8 +88,8 @@ do_ldc_ad2cp_in_file <- function(filename, from, to, by) {
     .Call(`_oce_do_ldc_ad2cp_in_file`, filename, from, to, by)
 }
 
-do_ldc_rdi_in_file <- function(filename, from, to, by, mode) {
-    .Call(`_oce_do_ldc_rdi_in_file`, filename, from, to, by, mode)
+do_ldc_rdi_in_file <- function(filename, from, to, by, mode, debug) {
+    .Call(`_oce_do_ldc_rdi_in_file`, filename, from, to, by, mode, debug)
 }
 
 do_matrix_smooth <- function(mat) {

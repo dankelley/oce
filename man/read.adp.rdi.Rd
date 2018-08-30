@@ -158,24 +158,26 @@ to introduce new ID codes with new instruments, that means that
 
 The following two-byte ID codes are recognized by \code{read.adp.rdi}
 at this time (with bytes listed in natural order, LSB byte before
-MSB):
+MSB). Items preceeded by an asterisk are recognized, but not handled,
+and so produce a warning.
 \preformatted{
-0x00 0x01 velocity
-0x00 0x02 correlation
-0x00 0x03 echo intensity
-0x00 0x04 percent good
-0x00 0x06 bottom track
-0x00 0x0a Sentinel vertical beam velocity
-0x00 0x0b Sentinel vertical beam correlation
-0x00 0x0c Sentinel vertical beam amplitude
-0x00 0x0d Sentinel vertical beam percent good
-0x00 0x20 VMDASS
-0x00 0x32 Sentinel transformation matrix
-0x00 0x0a Sentinel data
-0x00 0x0b Sentinel correlation
-0x00 0x0c Sentinel amplitude
-0x00 0x0d Sentinel percent good
-0x01 0x0f ?? something to do with V series and 4-beam
+  0x00 0x01 velocity
+  0x00 0x02 correlation
+  0x00 0x03 echo intensity
+  0x00 0x04 percent good
+  0x00 0x06 bottom track
+  0x00 0x0a Sentinel vertical beam velocity
+  0x00 0x0b Sentinel vertical beam correlation
+  0x00 0x0c Sentinel vertical beam amplitude
+  0x00 0x0d Sentinel vertical beam percent good
+  0x00 0x20 VMDASS
+* 0x00 0x30 binary fixed attitude (developer: see p169 of [3] for format)
+  0x00 0x32 Sentinel transformation matrix
+  0x00 0x0a Sentinel data
+  0x00 0x0b Sentinel correlation
+  0x00 0x0c Sentinel amplitude
+  0x00 0x0d Sentinel percent good
+  0x01 0x0f ?? something to do with V series and 4-beam
 }
 
 Lacking a comprehensive Teledyne-RDI listing of ID codes,
@@ -226,6 +228,32 @@ HDT refers to heading, true;
 HDG refers to heading, deviation, and variation;
 and
 PRDID refers to heading, pitch and roll.
+}
+}
+
+\section{Error recovery}{
+
+
+Files can sometimes be corrupted, and \code{read.adp.rdi} has ways to handle two types
+of error that have been noticed in files supplied by users.
+\enumerate{
+
+\item There are two bytes within each ensemble that indicate the number of bytes to check within
+that ensemble, to get the checksum. Sometimes, those two bytes can be erroneous, so that
+the wrong number of bytes are checked, leading to a failed checksum. As a preventative
+measure, \code{read.adp.rdi} checks the stated ensemble length, whenever it detects a
+failed checksum. If that length agrees with the length of the most recent ensemble that
+had a good checksum, then the ensemble is declared as faulty and is ignored. However,
+if the length differs from that of the most recent accepted ensemble, then \code{read.adp.rdi}
+goes back to just after the start of the ensemble, and searches forward for the next two-byte
+pair, namely \code{0x7f 0x7f}, that designates the start of an ensemble.  Distinct notifications
+are given about these two cases, and they give the byte numbers in the original file, as a way
+to help analysts who want to look at the data stream with other tools.
+
+\item At the end of an ensemble, the next two characters ought to be \code{0x7f 0x7f}, and if they
+are not, then the next ensemble is faulty. If this error occurs, \code{read.adp.rdi} attempts
+to recover by searching forward to the next instance of this two-byte pair, discarding any
+information that is present in the mangled ensemble.
 }
 }
 
