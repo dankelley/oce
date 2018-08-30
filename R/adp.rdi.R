@@ -587,6 +587,17 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 #' information that is present in the mangled ensemble.
 #'}
 #'
+#' In each of these cases, warnings are printed about ensembles that seem problematic.
+#' Advanced users who want to diagnose the problem further might find it helpful to
+#' examine the original data file using other tools. To this end, \code{read.adp.rdi}
+#' inserts an element named \code{ensembleInFile} into the \code{metadata} slot.
+#' This gives the starting byte number of each inferred ensemble within the original data
+#' file.  For example, if \code{d} is an object read with \code{read.adp.rdi}, then using
+#'\preformatted{
+#' plot(d[["time"]][-1], diff(d[["ensembleInFile"]]))
+#'}
+#' can be a good way to narrow in on problems.
+#'
 #' @family things related to \code{adp} data
 read.adp.rdi <- function(file, from, to, by, tz=getOption("oceTz"),
                          longitude=NA, latitude=NA,
