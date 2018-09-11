@@ -908,7 +908,7 @@ setMethod(f="[[<-",
 #' degrees, positive in the eastern hemisphere. If this is a single number,
 #' then it is stored in the \code{metadata} slot of the returned value; if it
 #' is a vector of numbers, they are stored in \code{data} and a mean value is
-#' stored in \code{metadata}.
+#' stored as \code{longitudeMean} in the \code{metadata} slot.
 #'
 #' @param latitude optional numerical value containing the latitude in decimal
 #' degrees, positive in the northern hemisphere. See the note on length, for
@@ -1370,15 +1370,13 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
         ##1108 res@metadata$src <- src
         res@metadata$deploymentType <- deploymentType
         ## If lon and lat are vectors, place in data, with averages in metadata.
-        if (length(latitude) != length(latitude))
-            stop("lengths of longitude and latitude must match, but they are ",
-                 length(longitude), " and ", length(latitude), ", respectively")
         if (length(latitude) == 1) {
             res@metadata$latitude <- latitude[1]
         } else if (length(latitude) > 1) {
             if (length(latitude) != length(temperature))
                 stop("lengths of latitude and temperature must match")
             data$latitude <- latitude
+            res@metadata$latitudeMean <- mean(latitude, na.rm=TRUE)
         }
         if (length(longitude) == 1) {
             res@metadata$longitude <- longitude[1]
@@ -1386,6 +1384,7 @@ as.ctd <- function(salinity, temperature=NULL, pressure=NULL, conductivity=NULL,
             if (length(longitude) != length(temperature))
                 stop("lengths of longitude and temperature must match")
             data$longitude <- longitude
+            res@metadata$longitudeMean <- mean(longitude, na.rm=TRUE)
         }
         res@data <- data
     }

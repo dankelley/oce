@@ -237,7 +237,7 @@ context("Read ctd files")
 ##'** Longitude: w63 38.633'
 test_that("Dalhousie-produced cnv file", {
           d1 <- expect_warning(read.oce(system.file("extdata", "ctd.cnv", package="oce")),
-                              "this CNV file has temperature in the IPTS\\-68 scale")
+                               "this CNV file has temperature in the IPTS\\-68 scale")
           expect_equal(d1[["temperatureUnit"]]$unit, expression(degree*C))
           ## NB. the file holds IPTS-68 but we ## store ITS-90 internally
           expect_equal(d1[["temperatureUnit"]]$scale, "IPTS-68")
@@ -496,5 +496,49 @@ test_that("conductivity unit", {
           expect_equal(C, a[["conductivity", "S/m"]] / 4.2914)
           expect_equal(C, a[["conductivity", "ratio"]])
           expect_equal(C, a[["conductivity", ""]])
+})
+
+test_that("as.ctd() handles multiple longitude and latitude", {
+          ## test code for issue 1440 (https://github.com/dankelley/oce/issues/1440)
+          library(oce)
+          library(testthat)
+          for (n in c(1, 20)) {
+            T <- seq(2,3, length.out=n)
+            S <- seq(31.4, 31.6, length.out=n)
+            p <- seq(0, n, length.out=n)
+            lat <- rep(44.5, n)
+            lon <- rep(-63, n)
+            stn <- 'fake'
+            time <- seq(from=as.POSIXct("2012-01-01 00:00", tz='UTC'), by='min', length.out=20)
+            ctd <- as.ctd(salinity=S,
+                          temperature=T,
+                          pressure=p,
+                          time=time,
+                          longitude=lon,
+                          latitude=lat,
+                          station=stn,
+                          startTime=min(time))
+            if (n > 1) {
+              expect_true("longitude" %in% names(ctd[["data"]]))
+              expect_equal(length(ctd[["data"]][["longitude"]]), n)
+              expect_equal(length(ctd[["longitude"]]), n)
+              expect_true("latitude" %in% names(ctd[["data"]]))
+              expect_equal(length(ctd[["data"]][["latitude"]]), n)
+              expect_equal(length(ctd[["latitude"]]), n)
+              expect_true("longitudeMean" %in% names(ctd[["metadata"]]))
+              expect_equal(length(ctd[["longitude"]]), n)
+              expect_equal(length(ctd[["longitudeMean"]]), 1)
+              expect_true("latitudeMean" %in% names(ctd[["metadata"]]))
+              expect_equal(length(ctd[["latitude"]]), n)
+              expect_equal(length(ctd[["latitudeMean"]]), 1)
+            } else {
+              expect_equal(length(ctd[["longitude"]]), 1)
+              expect_equal(length(ctd[["latitude"]]), 1)
+              expect_false("longitude" %in% names(ctd[["data"]]))
+              expect_false("latitude" %in% names(ctd[["data"]]))
+              expect_true("longitude" %in% names(ctd[["metadata"]]))
+              expect_true("latitude" %in% names(ctd[["metadata"]]))
+            }
+          }
 })
 
