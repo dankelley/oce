@@ -212,7 +212,7 @@ setMethod(f="summary",
                           max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
                       cat(sprintf("%5d %5s %8.3f %8.3f %7.0f %5.0f\n",
                                   i, id,
-                                  thisStn@metadata$longitude, thisStn@metadata$latitude,
+                                  thisStn[["longitude"]][1], thisStn[["latitude"]][1],
                                   length(thisStn@data$pressure), depth))
                   }
                   cat("```\n")
@@ -433,10 +433,10 @@ setMethod(f="[[",
               } else if ("distance" == i) {
                   res <- NULL
                   for (stn in seq_along(x@data$station)) {
-                      distance <- geodDist(x@data$station[[stn]]@metadata$longitude,
-                                           x@data$station[[stn]]@metadata$latitude,
-                                           x@data$station[[1]]@metadata$longitude,
-                                           x@data$station[[1]]@metadata$latitude)
+                      distance <- geodDist(x@data$station[[stn]][["longitude"]][1],
+                                           x@data$station[[stn]][["latitude"]][1],
+                                           x@data$station[[1]][["longitude"]][1],
+                                           x@data$station[[1]][["latitude"]][1])
                       if (!missing(j) && j == "byStation")
                           res <- c(res, distance)
                       else
@@ -505,7 +505,7 @@ setMethod(f="show",
                           max(thisStn@data$pressure, na.rm=TRUE) else thisStn@metadata$waterDepth
                       cat(sprintf("%5d %5s %8.3f %8.3f %7.0f %5.0f\n",
                                   i, id,
-                                  thisStn@metadata$longitude, thisStn@metadata$latitude,
+                                  thisStn[["longitude"]][1], thisStn[["latitude"]][1],
                                   length(thisStn@data$pressure), depth))
                   }
               }
