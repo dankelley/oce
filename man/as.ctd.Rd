@@ -81,8 +81,7 @@ using \code{UTC} as the timezone.}
 \item{longitude}{optional numerical value containing longitude in decimal
 degrees, positive in the eastern hemisphere. If this is a single number,
 then it is stored in the \code{metadata} slot of the returned value; if it
-is a vector of numbers, they are stored in \code{data} and a mean value is
-stored as \code{longitudeMean} in the \code{metadata} slot.}
+is a vector of numbers, then they are stored in the \code{data} slot.}
 
 \item{latitude}{optional numerical value containing the latitude in decimal
 degrees, positive in the northern hemisphere. See the note on length, for

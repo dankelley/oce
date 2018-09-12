@@ -154,7 +154,10 @@ test_that("ctd subsetting and trimming", {
           lon <- ctd[["longitude"]] + rnorm(n, sd=0.05)
           lat <- ctd[["latitude"]] + rnorm(n, sd=0.05)
           ctdnew <- ctd
+          ## change from one-location object to multi-location one
+          ctdnew@metadata$longitude <- NULL
           ctdnew@data$longitude <- lon
+          ctdnew@metadata$latitude <- NULL
           ctdnew@data$latitude <- lat
           ctdnewSubset <- subset(ctdnew, 200 <= scan & scan <= 300)
           ctdnewTrim <- ctdTrim(ctdnew, method='scan', parameters = c(200, 300))
@@ -520,24 +523,22 @@ test_that("as.ctd() handles multiple longitude and latitude", {
                           startTime=min(time))
             if (n > 1) {
               expect_true("longitude" %in% names(ctd[["data"]]))
-              expect_equal(length(ctd[["data"]][["longitude"]]), n)
+              expect_false("longitude" %in% names(ctd[["metadata"]]))
+              expect_equal(length(ctd[["data"]]$longitude), n)
               expect_equal(length(ctd[["longitude"]]), n)
               expect_true("latitude" %in% names(ctd[["data"]]))
-              expect_equal(length(ctd[["data"]][["latitude"]]), n)
+              expect_false("latitude" %in% names(ctd[["metadata"]]))
+              expect_equal(length(ctd[["data"]]$latitude), n)
               expect_equal(length(ctd[["latitude"]]), n)
-              expect_true("longitudeMean" %in% names(ctd[["metadata"]]))
-              expect_equal(length(ctd[["longitude"]]), n)
-              expect_equal(length(ctd[["longitudeMean"]]), 1)
-              expect_true("latitudeMean" %in% names(ctd[["metadata"]]))
-              expect_equal(length(ctd[["latitude"]]), n)
-              expect_equal(length(ctd[["latitudeMean"]]), 1)
             } else {
-              expect_equal(length(ctd[["longitude"]]), 1)
-              expect_equal(length(ctd[["latitude"]]), 1)
               expect_false("longitude" %in% names(ctd[["data"]]))
-              expect_false("latitude" %in% names(ctd[["data"]]))
               expect_true("longitude" %in% names(ctd[["metadata"]]))
+              expect_false("latitude" %in% names(ctd[["data"]]))
               expect_true("latitude" %in% names(ctd[["metadata"]]))
+              expect_equal(length(ctd[["longitude"]]), 1)
+              expect_equal(length(ctd[["metadata"]]$longitude), 1)
+              expect_equal(length(ctd[["latitude"]]), 1)
+              expect_equal(length(ctd[["metadata"]]$latitude), 1)
             }
           }
 })
