@@ -88,7 +88,7 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
 #' ignored.
 #' @return A sidereal time, in hours in the range from 0 to 24.
 #' @author Dan Kelley
-#' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+#' @references Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages
 #' @examples
 #'
@@ -143,7 +143,7 @@ siderealTime <- function(t)
 #' @return A Julian-Day number, in astronomical convention as explained in
 #' Meeus.
 #' @author Dan Kelley
-#' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+#' @references Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages
 #' @examples
 #'
@@ -187,7 +187,7 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
 #' @param jd a julian day number, e.g. as given by \code{\link{julianDay}}.
 #' @return Julian century since noon on January 1, 1900.
 #' @author Dan Kelley
-#' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+#' @references Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages
 #' @examples
 #'
