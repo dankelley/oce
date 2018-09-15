@@ -296,6 +296,15 @@ setMethod(f="subset",
 #' \code{dataNamesOriginal} in the object's \code{metadata}
 #' slot, if that field exists. Failing that, \code{NULL} is returned.
 #'
+#' The full contents of the \code{metadata} slot of an object named
+#' \code{x} are returned with \code{x[["metadata"]]}, and
+#' \code{x[["data"]]} does the same thing for the data slot.
+#' Even if the full contents are not needed, this
+#' scheme can be useful in circumventing the searching scheme described
+#' in the previous paragraph, e.g. \code{x[["data"]]$longitude}
+#' might be used to select longitude from the data slot of \code{x},
+#' as an alternative to \code{\link{oceGetData}(x,"longitude")}.
+#'
 #' To get information on the specialized variants of this function,
 #' type e.g. \code{?"[[,adv-method"} for information on extracting
 #' data from an object of \code{\link{adv-class}}.
