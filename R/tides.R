@@ -1029,7 +1029,7 @@ tidem <- function(t, x, constituents, infer=NULL,
     nc <- length(name)
 
     ## Check Rayleigh criterion
-    interval <- abs((as.numeric(tail(sl@data$time, 1)) - as.numeric(sl@data$time[1])) / 3600)
+    interval <- diff(range(as.numeric(sl@data$time), na.rm=TRUE)) / 3600 # in hours
     oceDebug(debug, "interval=", interval, " hours\n")
     dropTerm <- NULL
     for (i in 1:nc) {
