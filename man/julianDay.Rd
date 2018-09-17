@@ -46,13 +46,12 @@ here.
 }
 \examples{
 
-t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="ET")+0.4*86400
-jd <- julianDay(t)
-cat(format(t), "is Julian Day", format(jd, digits=14), "\\n")
+t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="UTC")+0.4*86400
+expect_equal(julianDay(t), 2443259.9) # example from Meeus
 
 }
 \references{
-Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages
 }
 \seealso{

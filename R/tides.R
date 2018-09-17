@@ -1021,26 +1021,28 @@ tidem <- function(t, x, constituents, infer=NULL,
     name <- tc$name[indices]
     freq <- tc$freq[indices]
     kmpr <- tc$kmpr[indices]
-    if (debug > 2) {
-        cat("next is at line 875 (initial setup, before 'infer' handled)\n")
-        print(data.frame(name=name, indices=indices, freq=freq, kmpr=kmpr))
-    }
+    ## if (debug > 2) {
+    ##     cat("next is at line 875 (initial setup, before 'infer' handled)\n")
+    ##     print(data.frame(name=name, indices=indices, freq=freq, kmpr=kmpr))
+    ## }
 
     nc <- length(name)
 
     ## Check Rayleigh criterion
-    interval <- (as.numeric(tail(sl@data$time, 1)) - as.numeric(sl@data$time[1])) / 3600
+    interval <- diff(range(as.numeric(sl@data$time), na.rm=TRUE)) / 3600 # in hours
+    oceDebug(debug, "interval=", interval, " hours\n")
     dropTerm <- NULL
     for (i in 1:nc) {
         cc <- which(tc$name == kmpr[i])
         if (length(cc)) {
             cannotFit <- (interval * abs(freq[i]-tc$freq[cc])) < rc
-            ##cat("compare name=", name[i], "with", kmpr[i],":", cannotFit,"\n")
+            oceDebug(debug, "name=", name[i], "kmpr[", i, "]=", kmpr[i],", cannotFit=", cannotFit,"\n")
             if (cannotFit) {
                 dropTerm <- c(dropTerm, i)
             }
         }
     }
+    oceDebug(debug, "before trimming constituents, name=", paste(name, collapse=" "), "\n")
     if (length(dropTerm) > 0) {
         cat("Note: the tidal record is too short to fit for constituents: ", paste(name[dropTerm], collapse=" "), "\n")
         indices <- indices[-dropTerm]
@@ -1048,6 +1050,7 @@ tidem <- function(t, x, constituents, infer=NULL,
         freq <- freq[-dropTerm]
         kmpr <- kmpr[-dropTerm]
     }
+    oceDebug(debug, "after trimming, name=", paste(name, collapse=" "), "\n")
     ## Ensure that any added constitutents are in the list, i.e. prevent
     ## the Rayleigh criterion from trimming them. (Before work on
     ## issue 1350, they would simply be dropped if they failed the Rayleigh
@@ -1111,6 +1114,8 @@ tidem <- function(t, x, constituents, infer=NULL,
     rm(oindices) # clean up namespace
 
     nc <- length(name)
+    if (0 == nc)
+        stop("cannot fit for any constitutents")
     elevation <- sl[["elevation"]]
     time <- sl[["time"]]
     nt <- length(elevation)

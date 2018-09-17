@@ -27,7 +27,7 @@ print(siderealTime(t))
 
 }
 \references{
-Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages
 }
 \seealso{
