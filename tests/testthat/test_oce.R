@@ -426,3 +426,9 @@ test_that("concatenate ctd", {
             expect_equal(ab[[n]], ctd[[n]])
 })
 
+test_that("times", {
+          jd <- julianDay(as.POSIXct("2018-07-01 12:00:00", tz="UTC"))
+          t <- numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
+          expect_equal(t, as.POSIXct("2018-07-01 01:00:00", tz="UTC"))
+})
+

@@ -5,7 +5,7 @@
 \title{Convert a Numeric Time to a POSIXct Time}
 \usage{
 numberAsPOSIXct(t, type = c("unix", "matlab", "gps", "argo", "ncep1", "ncep2",
-  "sas", "spss", "yearday"), tz = "UTC")
+  "sas", "spss", "yearday", "epic"), tz = "UTC")
 }
 \arguments{
 \item{t}{an integer corresponding to a time, in a way that depends on
@@ -61,6 +61,12 @@ two-column matrix, with the first column being the year, and the second the
 yearday (starting at 1 for the first second of January 1, to match the
 convention used by Sea-Bird CTD software).
 
+\item \code{"epic"} employs a convention used in the EPIC software library,
+from the Pacific Marine Environmental Laboratory, in which \code{t} is a
+two-column matrix, with the first column being the julian Day (as defined in
+\code{\link{julianDay}}, for example), and with the second column being the
+millisecond within that day. See [4].
+
 }
 }
 \examples{
@@ -69,6 +75,11 @@ numberAsPOSIXct(0)                     # unix time 0
 numberAsPOSIXct(1, type="matlab")      # matlab time 1
 numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
 numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
+
+## Epic time, one hour into Canada Day of year 2018. In computing the
+## Julian day, note that this starts at noon.
+jd <- julianDay(as.POSIXct("2018-07-01 12:00:00", tz="UTC"))
+numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
 
 }
 \references{
@@ -79,6 +90,8 @@ numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
 
 [3] problem with NCEP times:
 \url{https://github.com/dankelley/oce/issues/738}
+
+[4] EPIC times: \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib}
 }
 \seealso{
 \code{\link{numberAsHMS}}
