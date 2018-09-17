@@ -392,6 +392,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// do_epic_time_to_ymdhms
+List do_epic_time_to_ymdhms(IntegerVector julianDay, IntegerVector millisecond);
+RcppExport SEXP _oce_do_epic_time_to_ymdhms(SEXP julianDaySEXP, SEXP millisecondSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type julianDay(julianDaySEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type millisecond(millisecondSEXP);
+    rcpp_result_gen = Rcpp::wrap(do_epic_time_to_ymdhms(julianDay, millisecond));
+    return rcpp_result_gen;
+END_RCPP
+}
 // do_trap
 NumericVector do_trap(NumericVector x, NumericVector y, NumericVector type);
 RcppExport SEXP _oce_do_trap(SEXP xSEXP, SEXP ySEXP, SEXP typeSEXP) {

@@ -2925,6 +2925,12 @@ numberAsHMS <- function(t, default=0)
 #' yearday (starting at 1 for the first second of January 1, to match the
 #' convention used by Sea-Bird CTD software).
 #'
+#' \item \code{"epic"} employs a convention used in the EPIC software library,
+#' from the Pacific Marine Environmental Laboratory, in which \code{t} is a
+#' two-column matrix, with the first column being the julian Day (as defined in
+#' \code{\link{julianDay}}, for example), and with the second column being the
+#' millisecond within that day. See [4].
+#'
 #' }
 #'
 #' @param t an integer corresponding to a time, in a way that depends on
@@ -2942,6 +2948,9 @@ numberAsHMS <- function(t, default=0)
 #'
 #' [3] problem with NCEP times:
 #' \url{https://github.com/dankelley/oce/issues/738}
+#'
+#' [4] EPIC times: \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib}
+#'
 #' @examples
 #'
 #' numberAsPOSIXct(0)                     # unix time 0
@@ -2949,10 +2958,15 @@ numberAsHMS <- function(t, default=0)
 #' numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
 #' numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
 #'
+#' ## Epic time, one hour into Canada Day of year 2018. In computing the
+#' ## Julian day, note that this starts at noon.
+#' jd <- julianDay(as.POSIXct("2018-07-01 12:00:00", tz="UTC"))
+#' numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
+#'
 #' @family things related to time
 numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
                                       "ncep1", "ncep2",
-                                      "sas", "spss", "yearday"), tz="UTC")
+                                      "sas", "spss", "yearday", "epic"), tz="UTC")
 {
     type <- match.arg(type)
     if (type == "unix") {
@@ -3006,8 +3020,13 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
         t <- as.POSIXct(t, origin="1582-10-14", tz=tz)
     } else if (type == "sas") {
         t <- as.POSIXct(t, origin="1960-01-01", tz=tz)
+    } else if (type == "epic") {
+        if (!is.matrix(t) || dim(t)[2] != 2)
+            stop("for epic times, 't' must be a two-column matrix, with first column the julian day, and second the millisecond within that day")
+        r <- do_epic_time_to_ymdhms(t[,1], t[,2])
+        t <- ISOdatetime(r$year, r$month, r$day, r$hour, r$minute, r$second, tz=tz)
     } else {
-        stop("type must be \"unix\", \"matlab\" or \"GPS\"")
+        stop("unknown type '", type, "'")
     }
     t
 }

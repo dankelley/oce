@@ -10,14 +10,14 @@ using namespace Rcpp;
 
    library(oce)
    library(Rcpp)
-   sourceCpp("time.cpp")
+   sourceCpp("src/time.cpp")
    now <- Sys.time()
-   julianDay <- as.integer(julianDay(now))     # julian day 
+   julianDay <- as.integer(julianDay(now))     # julian day
    sec <- 3600                            # seconds (made into milliseconds below)
    sec <- seq(0, 86400, 3600/2)
    julianDay <- rep(julianDay, length(sec))
    millisecond <- 1000 * sec
-   res <- epic_time_to_ymdhms(julianDay, millisecond)
+   res <- _do_epic_time_to_ymdhms(julianDay, millisecond)
    t <- ISOdatetime(res$year, res$month, res$day, res$hour, res$minute, res$second, tz="UTC")
    x <- seq_along(t)
    oce.plot.ts(t, x, type='p')
@@ -27,7 +27,7 @@ using namespace Rcpp;
 #define JULGREG   2299161
 
 // [[Rcpp::export]]
-List epic_time_to_ymdhms(IntegerVector julianDay, IntegerVector millisecond)
+List do_epic_time_to_ymdhms(IntegerVector julianDay, IntegerVector millisecond)
 {
   int n = julianDay.size(); // The R code ensures length matches that of millisecond
   IntegerVector year(n), month(n), day(n), hour(n), minute(n);

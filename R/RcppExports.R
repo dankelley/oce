@@ -120,6 +120,10 @@ do_ldc_sontek_adp <- function(buf, have_ctd, have_gps, have_bottom_track, pcadp,
     .Call(`_oce_do_ldc_sontek_adp`, buf, have_ctd, have_gps, have_bottom_track, pcadp, max)
 }
 
+do_epic_time_to_ymdhms <- function(julianDay, millisecond) {
+    .Call(`_oce_do_epic_time_to_ymdhms`, julianDay, millisecond)
+}
+
 do_trap <- function(x, y, type) {
     .Call(`_oce_do_trap`, x, y, type)
 }
