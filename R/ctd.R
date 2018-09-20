@@ -4238,7 +4238,11 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
         rhoLabel <- round(rhoLabel, digits)
         ## FIXME-gsw: will this handle gsw?
         Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
-        ok <- !is.na(Sline) # crazy T can give crazy S
+        ## Eliminate NA (for crazy T)
+        ok <- !is.na(Sline)
+        ## Eliminate ice values (BUG: only for unesco because what lon and lat to use?)
+        if (eos == "unesco")
+            ok <- ok & swTFreeze(Sline, 0, eos="unesco") < Tline
         if (sum(ok) > 2) {
             Sok <- Sline[ok]
             Tok <- Tline[ok]
