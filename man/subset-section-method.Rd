@@ -13,8 +13,11 @@
 \item{subset}{an optional indication of either the stations to be kept,
 or the data to be kept within the stations.  See \dQuote{Details}.}
 
-\item{...}{optional arguments, of which only the first is examined. The only
-possibility is that this argument be named \code{indices}. See \dQuote{Details}.}
+\item{...}{optional arguments, of which only the first is examined. The
+possibilities for this argument are \code{indices}, which must be a
+vector of station indices (see Example 6), or \code{within}, which must be
+a list or data frame, contianing items named either \code{x} and \code{y}
+or \code{longitude} and \code{latitude} (see Example 7).}
 }
 \value{
 A \code{\link{section-class}} object.
@@ -84,6 +87,14 @@ long <- subset(section,
                   function(s)
                     5 < length(s[["pressure"]]))))
 
+# 7. Use a polygon determined with locator()
+\dontrun{
+par(mfrow=c(2, 1))
+plot(section, which="map")
+bdy <- locator(4) # choose a polygon near N. America
+GS <- subset(section, within=bdy)
+plot(GS, which="map")
+}
 }
 \seealso{
 Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},

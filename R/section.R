@@ -555,8 +555,11 @@ setMethod(f="show",
 #' @param subset an optional indication of either the stations to be kept,
 #' or the data to be kept within the stations.  See \dQuote{Details}.
 #'
-#' @param ... optional arguments, of which only the first is examined. The only
-#' possibility is that this argument be named \code{indices}. See \dQuote{Details}.
+#' @param ... optional arguments, of which only the first is examined. The
+#' possibilities for this argument are \code{indices}, which must be a
+#' vector of station indices (see Example 6), or \code{within}, which must be
+#' a list or data frame, contianing items named either \code{x} and \code{y}
+#' or \code{longitude} and \code{latitude} (see Example 7).
 #'
 #' @return A \code{\link{section-class}} object.
 #'
@@ -585,6 +588,14 @@ setMethod(f="show",
 #'                   function(s)
 #'                     5 < length(s[["pressure"]]))))
 #'
+#' # 7. Use a polygon determined with locator()
+#' \dontrun{
+#' par(mfrow=c(2, 1))
+#' plot(section, which="map")
+#' bdy <- locator(4) # choose a polygon near N. America
+#' GS <- subset(section, within=bdy)
+#' plot(GS, which="map")
+#'}
 #' @family functions that subset \code{oce} objects
 #' @family things related to \code{section} data
 #'
@@ -597,6 +608,7 @@ setMethod(f="subset",
               dots <- list(...)
               dotsNames <- names(dots)
               indicesGiven <- length(dots) && ("indices" %in% dotsNames)
+              withinGiven <- length(dots) && ("within" %in% dotsNames)
               debug <- getOption("oceDebug")
               if (length(dots) && ("debug" %in% names(dots)))
                   debug <- dots$debug
@@ -626,6 +638,41 @@ setMethod(f="subset",
                   res@data <- data
                   res@processingLog <- x@processingLog
                   res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, indices=c(", paste(dots$indices, collapse=","), "))", sep=""))
+              } else if (withinGiven) {
+                  polygon <- dots$within
+                  if (!is.data.frame(polygon) && !is.list(polygon))
+                      stop("'within' must be a data frame or a polygon")
+                  polygonNames <- names(polygon)
+                  lonp <- if ("x" %in% polygonNames) {
+                      polygon$x
+                  } else if ("longitude" %in% polygonNames) {
+                      polygon$longitude
+                  } else {
+                      stop("'within' must contain either 'x' or 'longitude'")
+                  }
+                  latp <- if ("y" %in% polygonNames) {
+                      polygon$y
+                  } else if ("latitude" %in% polygonNames) {
+                      polygon$latitude
+                  } else {
+                      stop("'within' must contain either 'y' or 'latitude'")
+                  }
+                  lon <- x[["longitude", "byStation"]]
+                  lat <- x[["latitude", "byStation"]]
+                  if (requireNamespace("sp", quietly=TRUE)) {
+                      keep <- 1==sp::point.in.polygon(lon, lat, lonp, latp)
+                  } else {
+                      stop("cannot use 'within' becaue the 'sp' package is not installed")
+                  }
+                  res <- x
+                  res@metadata$stationId <- x@metadata$stationId[keep]
+                  res@metadata$longitude <- x@metadata$longitude[keep]
+                  res@metadata$latitude <- x@metadata$latitude[keep]
+                  res@metadata$time <- x@metadata$time[keep]
+                  res@data$station <- x@data$station[keep]
+                  res@processingLog <- processingLogAppend(res@processingLog,
+                                                           paste("subset(x, within) kept ", sum(keep), " of ",
+                                                                 length(keep), " stations", sep=""))
               } else {
                   if (missing(subset))
                       stop("must give 'subset' or (in ...) 'indices'")
