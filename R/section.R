@@ -1369,8 +1369,8 @@ setMethod(f="plot",
                       points(lon - 360, lat, col=col, pch=3, lwd=1/2)
                       if (showStations) {
                           stationId <- x[['station ID']]
-                          text(lon, lat, stationId, pos=2)
-                          text(lon-360, lat, stationId, pos=2)
+                          text(lon, lat, stationId, pos=2, cex=cex)
+                          text(lon-360, lat, stationId, pos=2, cex=cex)
                       }
                       if (xtype == "distance" && showStart) {
                           points(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
