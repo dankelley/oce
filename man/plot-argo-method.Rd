@@ -21,7 +21,7 @@ character matches, and that an error will occur if the match is
 not complete (e.g. \code{"salinity"} matches to both
 \code{"salinity ts"} and \code{"salinity profile"}.).
 \itemize{
-    \item \code{which=1} or \code{which="trajectory"} gives a
+    \item \code{which=1}, \code{which="trajectory"} or \code{which="map"} gives a
     plot of the argo trajectory, with the coastline, if one is provided.
 
     \item \code{which=2} or \code{"salinity ts"} gives a time series of

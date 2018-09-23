@@ -8,11 +8,16 @@
 \S4method{subset}{argo}(x, subset, ...)
 }
 \arguments{
-\item{x}{An object inheriting from \code{\link{argo-class}}.}
+\item{x}{An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.}
 
 \item{subset}{An expression indicating how to subset \code{x}.}
 
-\item{...}{Ignored.}
+\item{...}{optional arguments, of which only the first is examined. The
+only possibility is \code{within}, a polygon enclosing data to be
+retained. This must be either a list or data frame, containing items
+named either \code{x} and \code{y} or \code{longitude} and
+\code{latitude}; see Example 4.  If \code{within} is given,
+then \code{subset} is ignored.}
 }
 \value{
 An argo object.
@@ -60,6 +65,15 @@ plot(subset(argo, dataMode == "D"))
 par(mfrow=c(1,2))
 plotTS(argo)
 plotTS(subset(argo, "adjusted"))
+
+# Example 4. Subset by a polygon determined with locator()
+\dontrun{
+par(mfrow=c(2, 1))
+plot(argo, which="map")
+bdy <- locator(4) # Click the mouse on 4 boundary points
+argoSubset <- subset(argo, within=bdy)
+plot(argoSubset, which="map")
+}
 
 }
 \seealso{

@@ -369,9 +369,17 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' or \code{pressure} or by \code{profile} (a made-up variable)
 #' or \code{id} (from the \code{metadata} slot).
 #'
-#' @param x An object inheriting from \code{\link{argo-class}}.
+#' @param x An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.
+#'
 #' @param subset An expression indicating how to subset \code{x}.
-#' @param ... Ignored.
+#'
+#' @param ... optional arguments, of which only the first is examined. The
+#' only possibility is \code{within}, a polygon enclosing data to be
+#' retained. This must be either a list or data frame, containing items
+#' named either \code{x} and \code{y} or \code{longitude} and
+#' \code{latitude}; see Example 4.  If \code{within} is given,
+#' then \code{subset} is ignored.
+#'
 #' @return An argo object.
 #'
 #' @examples
@@ -394,6 +402,15 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' plotTS(argo)
 #' plotTS(subset(argo, "adjusted"))
 #'
+#' # Example 4. Subset by a polygon determined with locator()
+#' \dontrun{
+#' par(mfrow=c(2, 1))
+#' plot(argo, which="map")
+#' bdy <- locator(4) # Click the mouse on 4 boundary points
+#' argoSubset <- subset(argo, within=bdy)
+#' plot(argoSubset, which="map")
+#'}
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to \code{argo} data
@@ -401,14 +418,95 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
-              if (missing(subset)) {
-                  warning("subset.argo(): argument 'subset' must be given\n", call.=FALSE)
-                  return(x)
-              }
-              if (is.character(substitute(subset))) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              res <- x
+              dots <- list(...)
+              dotsNames <- names(dots)
+              withinGiven <- length(dots) && ("within" %in% dotsNames)
+              debug <- getOption("oceDebug")
+              if (length(dots) && ("debug" %in% names(dots)))
+                  debug <- dots$debug
+              if (withinGiven) {
+                  oceDebug(debug, "subsetting with 'within' method")
+                  polygon <- dots$within
+                  if (!is.data.frame(polygon) && !is.list(polygon))
+                      stop("'within' must be a data frame or a polygon")
+                  polygonNames <- names(polygon)
+                  lonp <- if ("x" %in% polygonNames) {
+                      polygon$x
+                  } else if ("longitude" %in% polygonNames) {
+                      polygon$longitude
+                  } else {
+                      stop("'within' must contain either 'x' or 'longitude'")
+                  }
+                  latp <- if ("y" %in% polygonNames) {
+                      polygon$y
+                  } else if ("latitude" %in% polygonNames) {
+                      polygon$latitude
+                  } else {
+                      stop("'within' must contain either 'y' or 'latitude'")
+                  }
+                  lon <- x[["longitude", "byStation"]]
+                  lat <- x[["latitude", "byStation"]]
+                  if (requireNamespace("sp", quietly=TRUE)) {
+                      keep <- 1==sp::point.in.polygon(lon, lat, lonp, latp)
+                  } else {
+                      stop("cannot use 'within' becaue the 'sp' package is not installed")
+                  }
+                  ## Metadata
+                  for (name in names(x@metadata)) {
+                      oceDebug(debug, "subsetting metadata item named '", name, "'\n", sep="")
+                      ## Pass oce-generated things through directly.
+                      if (name %in% c("units", "flags", "filename", "flagScheme", "dataNamesOriginal")) {
+                          ##.message("  ... special case, so passed directly")
+                          next
+                      }
+                      item <- x@metadata[[name]]
+                      ## Handle things that are encoded as characters in a string,
+                      ## namely 'direction', 'juldQc', and 'positionQc'.
+                      if (is.character(item) && length(item) == 1) {
+                          ##.message("'", name, "' is character-encoded")
+                          res@metadata[[name]] <- paste(strsplit(item,"")[[1]][keep],collapse="")
+                          ##.message(" ... ok")
+                      } else if (is.vector(name)) {
+                          ##.message("'", name, "' is a vector")
+                          res@metadata[[name]] <- item[keep]
+                          ##.message(" ... ok")
+                      } else if (is.matrix(name)) {
+                          ##.message("'", name, "' is a matrix")
+                          res@metadata[[name]] <- item[, keep]
+                          ##.message(" ... ok")
+                      } else {
+                          stop("cannot subset metadata item named '", name, "' because it is not a length-one string, a vector, or a matrix")
+                      }
+                  }
+                  ## Data
+                  for (name in names(x@data)) {
+                      oceDebug(debug, "subsetting data item named '", name, "'\n", sep="")
+                      item <- x@data[[name]]
+                      if ("time" == name) {
+                          ##.message("'", name, "' is time (not a vector)")
+                          res@data$time <- item[keep]
+                          ##.message(" ... ok")
+                      } else if (is.vector(item)) {
+                          ##.message("'", name, "' is vector")
+                          res@data[[name]] <- item[keep]
+                          ##.message(" ... ok")
+                      } else if (is.matrix(item)) {
+                          ##.message("'", name, "' is matrix")
+                          res@data[[name]] <- item[, keep]
+                          ##.message(" ... ok")
+                      } else {
+                          stop("argo object has data item '", name, "' that is neither a vector nor a matrix, so we cannot subset it")
+                      }
+                  }
+                  res@processingLog <- processingLogAppend(res@processingLog,
+                                                           paste("subset(x, within) kept ", sum(keep), " of ",
+                                                                 length(keep), " stations", sep=""))
+              } else {
+                  if (is.character(substitute(subset))) {
                   if (subset != "adjusted")
                       stop("if subset is a string, it must be \"adjusted\"")
-                  res <- x
                   dataNames <- names(x@data)
                   ## Seek 'Adjusted' names
                   adjustedIndices <- grep(".*Adjusted$", dataNames)
@@ -527,7 +625,8 @@ setMethod(f="subset",
                       ## res@data$salinity <- x@data$salinity[, keep]
                       ## res@data$temperature <- x@data$temperature[, keep]
                       ## res@data$pressure <- x@data$pressure[, keep]
-                      res@processingLog <- processingLogAppend(res@processingLog, paste("subset.argo(x, subset=", subsetString, ")", sep=""))
+                  }
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.argo(x, subset=", subsetString, ")", sep=""))
                   }
               }
               res
@@ -1113,7 +1212,7 @@ as.argo <- function(time, longitude, latitude,
 #' not complete (e.g. \code{"salinity"} matches to both
 #' \code{"salinity ts"} and \code{"salinity profile"}.).
 #' \itemize{
-#'     \item \code{which=1} or \code{which="trajectory"} gives a
+#'     \item \code{which=1}, \code{which="trajectory"} or \code{which="map"} gives a
 #'     plot of the argo trajectory, with the coastline, if one is provided.
 #'
 #'     \item \code{which=2} or \code{"salinity ts"} gives a time series of
@@ -1244,7 +1343,8 @@ setMethod(f="plot",
                             units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
                                        conductivity=list(list=expression(), scale=""))) # guess on units
               which <- oce.pmatch(which,
-                                  list(trajectory=1,
+                                  list("trajectory"=1,
+                                       "map"=1,
                                        "salinity ts"=2,
                                        "temperature ts"=3,
                                        "TS"=4,

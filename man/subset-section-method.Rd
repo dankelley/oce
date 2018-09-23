@@ -17,7 +17,8 @@ or the data to be kept within the stations.  See \dQuote{Details}.}
 possibilities for this argument are \code{indices}, which must be a
 vector of station indices (see Example 6), or \code{within}, which must be
 a list or data frame, contianing items named either \code{x} and \code{y}
-or \code{longitude} and \code{latitude} (see Example 7).}
+or \code{longitude} and \code{latitude} (see Example 7). If \code{within}
+is given, then \code{subset} is ignored.}
 }
 \value{
 A \code{\link{section-class}} object.
@@ -66,28 +67,28 @@ number, or a logical vector, again indicating which stations to keep.
 library(oce)
 data(section)
 
-# 1. Stations within 500 km of the first station
+# Example 1. Stations within 500 km of the first station
 starting <- subset(section, distance < 500)
 
-# 2. Stations east of 50W
+# Example 2. Stations east of 50W
 east <- subset(section, longitude > (-50))
 
-# 3. Gulf Stream
+# Example 3. Gulf Stream
 GS <- subset(section, 109 <= stationId & stationId <= 129)
 
-# 4. Only stations with more than 5 pressure levels
+# Example 4. Only stations with more than 5 pressure levels
 long <- subset(section, length(pressure) > 5)
 
-# 5. Only stations that have some data in top 50 dbar
+# Example 5. Only stations that have some data in top 50 dbar
 surfacing <- subset(section, min(pressure) < 50)
 
-# 6. Similar to #4, but done in more detailed way
+# Example 6. Similar to #4, but done in more detailed way
 long <- subset(section,
    indices=unlist(lapply(section[["station"]],
                   function(s)
                     5 < length(s[["pressure"]]))))
 
-# 7. Use a polygon determined with locator()
+# Example 7. Subset by a polygon determined with locator()
 \dontrun{
 par(mfrow=c(2, 1))
 plot(section, which="map")
@@ -95,6 +96,7 @@ bdy <- locator(4) # choose a polygon near N. America
 GS <- subset(section, within=bdy)
 plot(GS, which="map")
 }
+
 }
 \seealso{
 Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
