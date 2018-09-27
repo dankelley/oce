@@ -4,7 +4,8 @@
 \alias{equatorialToLocalHorizontal}
 \title{Convert equatorial to local horizontal coordinate}
 \usage{
-equatorialToLocalHorizontal(rightAscension, declination, t, longitude, latitude)
+equatorialToLocalHorizontal(rightAscension, declination, t, longitude,
+  latitude)
 }
 \arguments{
 \item{rightAscension}{right ascension, e.g. calculated with
@@ -46,3 +47,4 @@ Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
 \author{
 Dan Kelley, based on formulae in [1] and [2].
 }
+\concept{things related to astronomy}

@@ -95,3 +95,4 @@ Other functions relating to geodesy: \code{\link{geodDist}},
 \author{
 Dan Kelley
 }
+\concept{functions relating to geodesy}

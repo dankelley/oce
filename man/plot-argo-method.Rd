@@ -8,9 +8,9 @@
 \usage{
 \S4method{plot}{argo}(x, which = 1, level, coastline = c("best",
   "coastlineWorld", "coastlineWorldMedium", "coastlineWorldFine", "none"),
-  cex = 1, pch = 1, type = "p", col, fill = FALSE, projection = NULL,
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5, 1.5, 1.5),
-  tformat, debug = getOption("oceDebug"), ...)
+  cex = 1, pch = 1, type = "p", col, fill = FALSE,
+  projection = NULL, mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5,
+  mgp[1] + 1.5, 1.5, 1.5), tformat, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{object inheriting from \code{\link{argo-class}}.}
@@ -127,6 +127,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -144,3 +145,5 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{argo} data}

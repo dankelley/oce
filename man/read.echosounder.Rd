@@ -4,8 +4,9 @@
 \alias{read.echosounder}
 \title{Read an Echosounder File}
 \usage{
-read.echosounder(file, channel = 1, soundSpeed, tz = getOption("oceTz"),
-  debug = getOption("oceDebug"), processingLog)
+read.echosounder(file, channel = 1, soundSpeed,
+  tz = getOption("oceTz"), debug = getOption("oceDebug"),
+  processingLog)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -76,3 +77,4 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 \author{
 Dan Kelley, with help from Clark Richards
 }
+\concept{things related to \code{echosounder} data}

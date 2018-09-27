@@ -38,3 +38,5 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
 Other functions that create composite objects: \code{\link{composite,list-method}},
   \code{\link{composite}}
 }
+\concept{functions that create composite objects}
+\concept{things related to \code{amsr} data}

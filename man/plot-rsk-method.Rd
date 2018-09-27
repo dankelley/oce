@@ -6,12 +6,12 @@
 \alias{plot.rsk}
 \title{Plot Rsk Data}
 \usage{
-\S4method{plot}{rsk}(x, which = "timeseries", tlim, ylim, xlab, ylab, tformat,
-  drawTimeRange = getOption("oceDrawTimeRange"),
+\S4method{plot}{rsk}(x, which = "timeseries", tlim, ylim, xlab, ylab,
+  tformat, drawTimeRange = getOption("oceDrawTimeRange"),
   abbreviateTimeRange = getOption("oceAbbreviateTimeRange"),
-  useSmoothScatter = FALSE, mgp = getOption("oceMgp"), mar = c(mgp[1] +
-  1.5, mgp[1] + 1.5, 1.5, 1.5), main = "", debug = getOption("oceDebug"),
-  ...)
+  useSmoothScatter = FALSE, mgp = getOption("oceMgp"), mar = c(mgp[1]
+  + 1.5, mgp[1] + 1.5, 1.5, 1.5), main = "",
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{\code{rsk} object, typically result of \code{\link{read.rsk}}.}
@@ -113,6 +113,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -136,3 +137,5 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{rsk} data}

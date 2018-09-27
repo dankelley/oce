@@ -53,3 +53,4 @@ Other things related to colors: \code{\link{colormap}},
 \author{
 Krysten M. Thyng (Python version), Dan Kelley (R transliteration)
 }
+\concept{things related to colors}

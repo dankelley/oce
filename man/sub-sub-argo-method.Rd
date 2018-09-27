@@ -137,3 +137,5 @@ Other things related to \code{argo} data: \code{\link{[[<-,argo-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{argo} data}

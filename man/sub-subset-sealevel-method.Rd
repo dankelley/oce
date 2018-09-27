@@ -85,3 +85,5 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{sealevel} data}

@@ -76,3 +76,5 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
   \code{\link{subset,sealevel-method}},
   \code{\link{summary,sealevel-method}}
 }
+\concept{datasets provided with \code{oce}}
+\concept{things related to \code{sealevel} data}

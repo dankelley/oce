@@ -5,8 +5,9 @@
 \title{Read a Nortek Aquadopp File}
 \usage{
 read.aquadopp(file, from = 1, to, by = 1, tz = getOption("oceTz"),
-  longitude = NA, latitude = NA, orientation, distance, monitor = FALSE,
-  despike = FALSE, processingLog, debug = getOption("oceDebug"), ...)
+  longitude = NA, latitude = NA, orientation, distance,
+  monitor = FALSE, despike = FALSE, processingLog,
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -121,3 +122,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{adp} data}

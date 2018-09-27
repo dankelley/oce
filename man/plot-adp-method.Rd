@@ -7,16 +7,17 @@
 \title{Plot ADP Data}
 \usage{
 \S4method{plot}{adp}(x, which = 1:dim(x@data$v)[3], mode = c("normal",
-  "diagnostic"), col, breaks, zlim, titles, lwd = par("lwd"), type = "l",
-  ytype = c("profile", "distance"),
+  "diagnostic"), col, breaks, zlim, titles, lwd = par("lwd"),
+  type = "l", ytype = c("profile", "distance"),
   drawTimeRange = getOption("oceDrawTimeRange"), useSmoothScatter,
-  missingColor = "gray", mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5,
-  mgp[1] + 1.5, 1.5, 1.5), mai.palette = rep(0, 4), tformat,
-  marginsAsImage = FALSE, cex = par("cex"), cex.axis = par("cex.axis"),
-  cex.main = par("cex.main"), xlim, ylim, control, useLayout = FALSE,
-  coastline = "coastlineWorld", span = 300, main = "", grid = FALSE,
-  grid.col = "darkgray", grid.lty = "dotted", grid.lwd = 1,
-  debug = getOption("oceDebug"), ...)
+  missingColor = "gray", mgp = getOption("oceMgp"), mar = c(mgp[1] +
+  1.5, mgp[1] + 1.5, 1.5, 1.5), mai.palette = rep(0, 4), tformat,
+  marginsAsImage = FALSE, cex = par("cex"),
+  cex.axis = par("cex.axis"), cex.main = par("cex.main"), xlim, ylim,
+  control, useLayout = FALSE, coastline = "coastlineWorld",
+  span = 300, main = "", grid = FALSE, grid.col = "darkgray",
+  grid.lty = "dotted", grid.lwd = 1, debug = getOption("oceDebug"),
+  ...)
 }
 \arguments{
 \item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
@@ -340,6 +341,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -379,3 +381,5 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{adp} data}

@@ -105,3 +105,5 @@ Other things related to \code{met} data: \code{\link{[[<-,met-method}},
   \code{\link{subset,met-method}},
   \code{\link{summary,met-method}}
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{met} data}

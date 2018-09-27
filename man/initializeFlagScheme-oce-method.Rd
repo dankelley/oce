@@ -5,8 +5,8 @@
 \alias{initializeFlagScheme,oce-method}
 \title{Establish a data-quality scheme for a oce object}
 \usage{
-\S4method{initializeFlagScheme}{oce}(object, name = NULL, mapping = NULL,
-  debug = getOption("oceDebug"))
+\S4method{initializeFlagScheme}{oce}(object, name = NULL,
+  mapping = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An oce object.}
@@ -117,3 +117,5 @@ Other functions relating to data-quality flags: \code{\link{defaultFlags}},
 
 Other things related to \code{oce} data: \code{\link{initializeFlagScheme}}
 }
+\concept{functions relating to data-quality flags}
+\concept{things related to \code{oce} data}

@@ -82,3 +82,5 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
   \code{\link{subset,amsr-method}},
   \code{\link{summary,amsr-method}}
 }
+\concept{functions that download files}
+\concept{things related to \code{amsr} data}

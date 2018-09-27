@@ -44,3 +44,5 @@ Other things related to time: \code{\link{ctimeToSeconds}},
 \author{
 Dan Kelley
 }
+\concept{things related to astronomy}
+\concept{things related to time}

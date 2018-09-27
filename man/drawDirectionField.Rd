@@ -5,9 +5,9 @@
 \title{Draw a Direction Field}
 \usage{
 drawDirectionField(x, y, u, v, scalex, scaley, skip, length = 0.05,
-  add = FALSE, type = 1, col = par("fg"), pch = 1, cex = par("cex"),
-  lwd = par("lwd"), lty = par("lty"), xlab = "", ylab = "",
-  debug = getOption("oceDebug"), ...)
+  add = FALSE, type = 1, col = par("fg"), pch = 1,
+  cex = par("cex"), lwd = par("lwd"), lty = par("lty"), xlab = "",
+  ylab = "", debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x, y}{coordinates at which velocities are specified. The

@@ -92,3 +92,4 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{section} data}

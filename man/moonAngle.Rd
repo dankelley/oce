@@ -111,3 +111,4 @@ Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
 \author{
 Dan Kelley, based on formulae in Meeus [1982].
 }
+\concept{things related to astronomy}

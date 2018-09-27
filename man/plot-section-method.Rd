@@ -8,13 +8,13 @@
 \usage{
 \S4method{plot}{section}(x, which = c(1, 2, 3, 99), eos, at = NULL,
   labels = TRUE, grid = FALSE, contourLevels = NULL,
-  contourLabels = NULL, stationIndices, coastline = "best", xlim = NULL,
-  ylim = NULL, zlim = NULL, map.xlim = NULL, map.ylim = NULL,
-  clongitude, clatitude, span, projection = NULL, xtype = "distance",
-  ytype = "depth", ztype = "contour", zbreaks = NULL, zcol = NULL,
-  legend.loc = "bottomright", showStations = FALSE, showStart = TRUE,
-  showBottom = TRUE, axes = TRUE, mgp, mar, col, cex, pch, labcex = 1,
-  debug, ...)
+  contourLabels = NULL, stationIndices, coastline = "best",
+  xlim = NULL, ylim = NULL, zlim = NULL, map.xlim = NULL,
+  map.ylim = NULL, clongitude, clatitude, span, projection = NULL,
+  xtype = "distance", ytype = "depth", ztype = "contour",
+  zbreaks = NULL, zcol = NULL, legend.loc = "bottomright",
+  showStations = FALSE, showStart = TRUE, showBottom = TRUE,
+  axes = TRUE, mgp, mar, col, cex, pch, labcex = 1, debug, ...)
 }
 \arguments{
 \item{x}{a \code{section} object, e.g. as created by \code{\link{as.section}}
@@ -255,6 +255,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -283,3 +284,5 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{section} data}

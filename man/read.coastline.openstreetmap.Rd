@@ -4,8 +4,9 @@
 \alias{read.coastline.openstreetmap}
 \title{Read a Coastline File in Openstreetmap Format}
 \usage{
-read.coastline.openstreetmap(file, lonlim = c(-180, 180), latlim = c(-90,
-  90), debug = getOption("oceDebug"), monitor = FALSE, processingLog)
+read.coastline.openstreetmap(file, lonlim = c(-180, 180),
+  latlim = c(-90, 90), debug = getOption("oceDebug"),
+  monitor = FALSE, processingLog)
 }
 \arguments{
 \item{file}{name of file containing coastline data (a file ending in \code{.shp})
@@ -56,3 +57,4 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
+\concept{things related to \code{coastline} data}

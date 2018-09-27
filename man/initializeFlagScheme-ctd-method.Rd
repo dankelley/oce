@@ -5,8 +5,8 @@
 \alias{initializeFlagScheme,ctd-method}
 \title{Establish a data-quality scheme for a ctd object}
 \usage{
-\S4method{initializeFlagScheme}{ctd}(object, name = NULL, mapping = NULL,
-  debug = getOption("oceDebug"))
+\S4method{initializeFlagScheme}{ctd}(object, name = NULL,
+  mapping = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An oce object.}
@@ -136,3 +136,5 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
+\concept{functions relating to data-quality flags}
+\concept{things related to \code{ctd} data}

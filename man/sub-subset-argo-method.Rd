@@ -84,3 +84,5 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{argo} data}

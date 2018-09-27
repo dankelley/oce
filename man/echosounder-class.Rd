@@ -108,3 +108,4 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 \author{
 Dan Kelley
 }
+\concept{things related to \code{echosounder} data}

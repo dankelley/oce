@@ -95,6 +95,5 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
 \author{
 Dan Kelley and Chantelle Layton
 }
-\concept{
-satellite
-}
+\concept{satellite}
+\concept{things related to \code{amsr} data}

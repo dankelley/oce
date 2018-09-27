@@ -45,3 +45,4 @@ Other things related to astronomy: \code{\link{equatorialToLocalHorizontal}},
 \author{
 Dan Kelley, based on formulae in [1] and [2].
 }
+\concept{things related to astronomy}

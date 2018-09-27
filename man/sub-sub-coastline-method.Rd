@@ -116,3 +116,5 @@ Other things related to \code{coastline} data: \code{\link{[[<-,coastline-method
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{coastline} data}

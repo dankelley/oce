@@ -5,8 +5,8 @@
 \title{Plot CTD data in a Low-Level Fashion}
 \usage{
 plotScan(x, which = 1, xtype = "scan", type = "l",
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1],
-  mgp[1]), ..., debug = getOption("oceDebug"))
+  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5,
+  mgp[1], mgp[1]), ..., debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -65,6 +65,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -103,3 +104,5 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{ctd} data}

@@ -17,3 +17,4 @@ Other things related to processing logs: \code{\link{processingLog<-}},
   \code{\link{processingLogAppend}},
   \code{\link{processingLogItem}}
 }
+\concept{things related to processing logs}

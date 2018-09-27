@@ -89,3 +89,5 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{classes provided by \code{oce}}
+\concept{things related to \code{argo} data}

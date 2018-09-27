@@ -6,8 +6,8 @@
 \alias{plot.coastline}
 \title{Plot a Coastline}
 \usage{
-\S4method{plot}{coastline}(x, xlab = "", ylab = "", showHemi = TRUE, asp,
-  clongitude, clatitude, span, lonlabel = NULL, latlabel = NULL,
+\S4method{plot}{coastline}(x, xlab = "", ylab = "", showHemi = TRUE,
+  asp, clongitude, clatitude, span, lonlabel = NULL, latlabel = NULL,
   sides = NULL, projection = NULL, expand = 1,
   mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1), bg,
   fill, type = "polygon", border = NULL, col = NULL, axes = TRUE,
@@ -206,6 +206,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -235,3 +236,5 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{coastline} data}

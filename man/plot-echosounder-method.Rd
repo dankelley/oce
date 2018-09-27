@@ -6,12 +6,12 @@
 \alias{plot.echosounder}
 \title{Plot Echosounder Data}
 \usage{
-\S4method{plot}{echosounder}(x, which = 1, beam = "a", newx, xlab, ylab,
-  xlim, ylim, zlim, type = "l", col = oceColorsJet, lwd = 2,
+\S4method{plot}{echosounder}(x, which = 1, beam = "a", newx, xlab,
+  ylab, xlim, ylim, zlim, type = "l", col = oceColorsJet, lwd = 2,
   despike = FALSE, drawBottom, ignore = 5, drawTimeRange = FALSE,
   drawPalette = TRUE, radius, coastline, mgp = getOption("oceMgp"),
-  mar = c(mgp[1] + 1, mgp[1] + 1, mgp[1] + 1, mgp[1] + 1), atTop, labelsTop,
-  tformat, debug = getOption("oceDebug"), ...)
+  mar = c(mgp[1] + 1, mgp[1] + 1, mgp[1] + 1, mgp[1] + 1), atTop,
+  labelsTop, tformat, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{An \code{echosounder} object, e.g. as read by
@@ -134,3 +134,4 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 \author{
 Dan Kelley, with extensive help from Clark Richards
 }
+\concept{things related to \code{echosounder} data}

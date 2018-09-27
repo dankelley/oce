@@ -41,3 +41,5 @@ Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
 \author{
 Dan Kelley
 }
+\concept{datasets provided with \code{oce}}
+\concept{things related to \code{lobo} data}

@@ -58,3 +58,4 @@ Other things related to colors: \code{\link{colormap}},
 \author{
 Dan Kelley
 }
+\concept{things related to colors}

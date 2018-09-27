@@ -23,6 +23,5 @@ Other things related to satellite data: \code{\link{g1sst-class}},
 \author{
 Dan Kelley
 }
-\concept{
-satellite
-}
+\concept{satellite}
+\concept{things related to satellite data}

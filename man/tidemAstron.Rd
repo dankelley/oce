@@ -41,3 +41,4 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
 Dan Kelley translated this from \code{t_astron} in the \code{T_TIDE}
 package.
 }
+\concept{things related to \code{tidem} data}

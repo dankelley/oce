@@ -85,3 +85,5 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
+\concept{classes provided by \code{oce}}
+\concept{things related to \code{coastline} data}

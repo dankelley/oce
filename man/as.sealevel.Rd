@@ -5,9 +5,10 @@
 \title{Coerce Data Into a Sealevel Object}
 \usage{
 as.sealevel(elevation, time, header = NULL, stationNumber = NA,
-  stationVersion = NA, stationName = NULL, region = NULL, year = NA,
-  longitude = NA, latitude = NA, GMTOffset = NA, decimationMethod = NA,
-  referenceOffset = NA, referenceCode = NA, deltat)
+  stationVersion = NA, stationName = NULL, region = NULL,
+  year = NA, longitude = NA, latitude = NA, GMTOffset = NA,
+  decimationMethod = NA, referenceOffset = NA, referenceCode = NA,
+  deltat)
 }
 \arguments{
 \item{elevation}{a list of sea-level heights in metres, in an hourly
@@ -100,3 +101,4 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{sealevel} data}

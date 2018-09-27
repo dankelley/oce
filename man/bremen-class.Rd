@@ -82,3 +82,5 @@ Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
 \author{
 Dan Kelley
 }
+\concept{classes provided by \code{oce}}
+\concept{things related to \code{bremen} data}

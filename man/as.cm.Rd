@@ -4,9 +4,10 @@
 \alias{as.cm}
 \title{Coerce data into a CM object}
 \usage{
-as.cm(time, u = NULL, v = NULL, pressure = NULL, conductivity = NULL,
-  temperature = NULL, salinity = NULL, longitude = NA, latitude = NA,
-  filename = "", debug = getOption("oceDebug"))
+as.cm(time, u = NULL, v = NULL, pressure = NULL,
+  conductivity = NULL, temperature = NULL, salinity = NULL,
+  longitude = NA, latitude = NA, filename = "",
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{time}{A vector of times of observation, or an \code{oce} object that holds \code{time},
@@ -58,3 +59,4 @@ Other things related to \code{cm} data: \code{\link{[[,cm-method}},
   \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
+\concept{things related to \code{cm} data}

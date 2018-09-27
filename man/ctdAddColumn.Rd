@@ -66,3 +66,4 @@ Other functions that will be removed soon: \code{\link{addColumn}},
 \author{
 Dan Kelley
 }
+\concept{functions that will be removed soon}

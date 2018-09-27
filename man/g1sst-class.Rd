@@ -84,6 +84,5 @@ Other things related to satellite data: \code{\link{plot,satellite-method}},
 \author{
 Dan Kelley
 }
-\concept{
-satellite
-}
+\concept{satellite}
+\concept{things related to satellite data}

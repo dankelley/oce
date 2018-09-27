@@ -37,3 +37,4 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{topo} data}

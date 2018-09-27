@@ -81,3 +81,4 @@ Other functions relating to data-quality flags: \code{\link{defaultFlags}},
   \code{\link{setFlags,ctd-method}},
   \code{\link{setFlags,oce-method}}
 }
+\concept{functions relating to data-quality flags}

@@ -17,8 +17,6 @@
 \item{...}{Optional additional information (ignored).}
 }
 \description{
-Extract Something from an Echosounder Object
-
 The \code{[[} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose
 is to insulate users from the internal details of \code{oce}
@@ -134,3 +132,5 @@ Other things related to \code{echosounder} data: \code{\link{[[<-,echosounder-me
   \code{\link{subset,echosounder-method}},
   \code{\link{summary,echosounder-method}}
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{echosounder} data}

@@ -82,3 +82,5 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{landsat} data}

@@ -19,8 +19,6 @@
 \item{value}{The value to be inserted into \code{x}.}
 }
 \description{
-Replace Parts of an ADV Object
-
 The \code{[[} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose
 is to insulate users from the internal details of \code{oce}
@@ -127,3 +125,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{adv} data}

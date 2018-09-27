@@ -104,3 +104,5 @@ Other things related to \code{lisst} data: \code{\link{[[<-,lisst-method}},
   \code{\link{read.lisst}},
   \code{\link{summary,lisst-method}}
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{lisst} data}

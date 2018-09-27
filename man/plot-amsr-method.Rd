@@ -6,9 +6,9 @@
 \alias{plot.amsr}
 \title{Plot an amsr Object}
 \usage{
-\S4method{plot}{amsr}(x, y, asp, missingColor = list(land = "papayaWhip", none
-  = "lightGray", bad = "gray", rain = "plum", ice = "mediumVioletRed"),
-  debug = getOption("oceDebug"), ...)
+\S4method{plot}{amsr}(x, y, asp, missingColor = list(land = "papayaWhip",
+  none = "lightGray", bad = "gray", rain = "plum", ice =
+  "mediumVioletRed"), debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{An object inheriting from \code{\link{amsr-class}}.}
@@ -53,6 +53,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -77,6 +78,6 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
 \author{
 Dan Kelley
 }
-\concept{
-satellite
-}
+\concept{functions that plot \code{oce} data}
+\concept{satellite}
+\concept{things related to \code{amsr} data}

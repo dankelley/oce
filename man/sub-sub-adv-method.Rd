@@ -139,3 +139,5 @@ Other things related to \code{adv} data: \code{\link{[[<-,adv-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{adv} data}

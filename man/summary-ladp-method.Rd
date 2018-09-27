@@ -28,3 +28,4 @@ Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{ladp} data}

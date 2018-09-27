@@ -66,3 +66,5 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{woceNames2oceNames}},
   \code{\link{woceUnit2oceUnit}}, \code{\link{write.ctd}}
 }
+\concept{datasets provided with \code{oce}}
+\concept{things related to \code{ctd} data}

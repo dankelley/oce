@@ -110,3 +110,5 @@ Other things related to \code{ladp} data: \code{\link{[[<-,ladp-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{ladp} data}

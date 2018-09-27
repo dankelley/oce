@@ -82,3 +82,5 @@ Other things related to \code{cm} data: \code{\link{[[,cm-method}},
   \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{cm} data}

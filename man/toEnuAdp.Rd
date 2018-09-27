@@ -57,3 +57,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{adp} data}

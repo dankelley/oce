@@ -4,8 +4,8 @@
 \alias{numberAsPOSIXct}
 \title{Convert a Numeric Time to a POSIXct Time}
 \usage{
-numberAsPOSIXct(t, type = c("unix", "matlab", "gps", "argo", "ncep1", "ncep2",
-  "sas", "spss", "yearday", "epic"), tz = "UTC")
+numberAsPOSIXct(t, type = c("unix", "matlab", "gps", "argo", "ncep1",
+  "ncep2", "sas", "spss", "yearday", "epic"), tz = "UTC")
 }
 \arguments{
 \item{t}{an integer corresponding to a time, in a way that depends on
@@ -106,3 +106,4 @@ Other things related to time: \code{\link{ctimeToSeconds}},
 \author{
 Dan Kelley
 }
+\concept{things related to time}
