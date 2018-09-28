@@ -215,7 +215,14 @@ within R or in the operating system.}
 }
 }
 \references{
-1. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.
+1. A SBE data processing manual was once at
+\code{http://www.seabird.com/document/sbe-data-processing-manual},
+but as of summer 2018, this no longer seems to be provided by SeaBird.
+A web search will turn up copies of the manual that have been put
+online by various research groups and data-archiving agencies.
+As of 2018-07-05, the latest version was named
+\code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017,
+and this was the reference version used in coding \code{oce}.
 }
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
