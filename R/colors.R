@@ -187,7 +187,15 @@ colormapFromGmt <- function(file)
 {
     if (missing(file))
         stop("must give 'file'\n")
-    text <- readLines(file)
+    if (is.character(file)) {
+        if (file == "")
+            stop("'file' must be a non-empty string")
+        con <- file(file, "r")
+        on.exit(close(con))
+    } else if (inherits(file, "connection")) {
+        con <- file
+    }
+    text <- readLines(con)
     textData <- text[grep("^[ ]*[-0-9]", text)]
     textData <- gsub("/", " ", textData) # sometimes it is R/G/B
     d <- read.table(text=textData, col.names=c("x0", "r0", "g0", "b0", "x1", "r1", "g1", "b1"))
