@@ -9,12 +9,13 @@ exemptLabels:
 staleLabel: stale
 # Comment to post when marking an issue as stale. Set to `false` to disable
 markComment: >
-  This issue has been automatically marked as stale because 60 days have passed
-  with no response to a request that the reporter recheck oce.  A
-  developer has judged the issue to have been addressed, so this issue will be
-  closed automatically soon.
+  This issue has been automatically marked as stale because two weeks have
+  passed with no activity. Adding the 'pinned' label will prevent this from
+  ever going stale.
 # Comment to post when closing a stale issue. Set to `false` to disable
 closeComment: >
-  This issue has been closed, due to inactivity. If you think the issue has
-  not been addressed properly, please reopen the issue, adding a comment that
-  explains what you think remains to be done. Thanks!
+  This issue has been closed because it has been stale for a week. If the
+  reporter or one of the developers thinks that the issue has not been
+  addressed properly, then they are asked to reopen it, ideally adding a
+  comment that sheds more light on the matter.
+
