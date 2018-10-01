@@ -30,3 +30,4 @@ Other functions relating to time: \code{\link{decodeTime}}
 \author{
 Dan Kelley
 }
+\concept{functions relating to time}

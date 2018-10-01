@@ -3,13 +3,61 @@
 \docType{class}
 \name{landsat-class}
 \alias{landsat-class}
-\title{Class to Hold landsat Data}
+\title{Class to Store landsat Data}
 \description{
-This class has the standard slots of an \code{\link{oce-class}}
-object.  Landsat data are available at several websites (e.g. [1]).
+This class holds landsat data. Such are available at several
+websites (e.g. [1]).
 Although the various functions may work for other satellites, the
 discussion here focusses on Landsat 8 and Landsat 7.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{landsat} objects is a
+\code{\link{list}} containing the main data for the object.
+{}}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{landsat} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+{}}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{landsat} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
+
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{landsat} objects (see \code{\link{[[<-,landsat-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{landsat}
+object named \code{landsat} may be retrieved in the standard R way. For example,
+\code{slot(landsat, "data")} and \code{slot(landsat, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,landsat-method}} operator can also be used to access slots,
+with \code{landsat[["data"]]} and \code{landsat[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,landsat-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+}
+
 \section{Data storage}{
 
 
@@ -155,12 +203,14 @@ function \code{\link{decimate}}.  Images may be subsetted with
 \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 
 Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+  \code{\link{[[<-,landsat-method}},
   \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
   \code{\link{landsat}}, \code{\link{plot,landsat-method}},
   \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 
 Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+  \code{\link{[[<-,landsat-method}},
   \code{\link{landsatAdd}}, \code{\link{landsatTrim}},
   \code{\link{landsat}}, \code{\link{plot,landsat-method}},
   \code{\link{read.landsat}},
@@ -169,6 +219,5 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{
-satellite
-}
+\concept{satellite}
+\concept{things related to \code{landsat} data}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{addColumn}
 \alias{addColumn}
-\title{Add a Column to the Data Slot of an Oce object [deprecated]}
+\title{Add a Column to the Data Slot of an Oce object [defunct]}
 \usage{
 addColumn(x, data, name)
 }
@@ -19,7 +19,9 @@ An object of \code{\link[base]{class}} \code{oce}, with a new
 column.
 }
 \description{
-\strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+\strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
+}
+\details{
 Use \code{\link{oceSetData}} instead of the present function.
 }
 \seealso{
@@ -27,9 +29,10 @@ Please use \code{\link{oceSetData}} instead of the present function.
 
 Other functions that will be removed soon: \code{\link{ctdAddColumn}},
   \code{\link{ctdUpdateHeader}},
-  \code{\link{mapMeridians}}, \code{\link{mapZones}},
-  \code{\link{oce.as.POSIXlt}}
+  \code{\link{findInOrdered}}, \code{\link{mapMeridians}},
+  \code{\link{mapZones}}, \code{\link{oce.as.POSIXlt}}
 }
 \author{
 Dan Kelley
 }
+\concept{functions that will be removed soon}

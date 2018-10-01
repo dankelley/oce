@@ -4,9 +4,10 @@
 \alias{mapContour}
 \title{Add Contours on a Existing map}
 \usage{
-mapContour(longitude = seq(0, 1, length.out = nrow(z)), latitude = seq(0, 1,
-  length.out = ncol(z)), z, nlevels = 10, levels = pretty(range(z, na.rm =
-  TRUE), nlevels), col = par("fg"), lty = par("lty"), lwd = par("lwd"))
+mapContour(longitude = seq(0, 1, length.out = nrow(z)),
+  latitude = seq(0, 1, length.out = ncol(z)), z, nlevels = 10,
+  levels = pretty(range(z, na.rm = TRUE), nlevels), col = par("fg"),
+  lty = par("lty"), lwd = par("lwd"))
 }
 \arguments{
 \item{longitude}{vector of longitudes of points to be plotted, or an object of
@@ -21,7 +22,7 @@ class \code{topo} (see \code{\link{topo-class}}), in which case
 
 \item{levels}{vector of contour levels.}
 
-\item{col}{line colour.}
+\item{col}{line color.}
 
 \item{lty}{line type.}
 
@@ -75,3 +76,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley
 }
+\concept{functions related to maps}

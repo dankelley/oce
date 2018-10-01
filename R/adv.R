@@ -1,47 +1,38 @@
-#' Class to Hold adv Data
+#' Class to Store adv Data
 #'
 #' This class holds data from acoustic-Doppler velocimeters.
 #'
-#' The \code{metadata} slot
-#'     contains various items relating to the dataset, including source file name,
-#'     sampling rate, velocity resolution and scale, etc.  The
-#'     \code{processingLog} is in standard form and needs little comment.  The
-#'     \code{data} slot holds a numeric matrix \code{v} of velocities in m/s, with
-#'     the first index indicating time and the second indicating beam number.  The
-#'     meanings of the beams depends on whether the object is in beam
-#'     coordinates, frame coordinates, or earth coordinates.  The \code{data} slot
-#'     also contains identically-dimensioned raw matrices \code{a} and \code{q},
-#'     holding measures of signal strength and data quality quality, respectively.
-#'     It also contains a series of vectors, e.g. \code{time}, \code{temperature}
-#'     and \code{pressure}, etc., depending on what sensors are included in the
-#'     package.  For all of these quantities, the details can be different for
-#'     different instrument types, and it is assumed that the user will be
-#'     familiar with the details.
-#'
-#' Data may be extracted with \code{\link{[[,adv-method}} and inserted
-#' with \code{\link{[[<-,adv-method}}. Type \code{?"[[,adv-method"}
-#' or \code{?"[[<-,adv-method"} to learn more.
-#'
-#' @seealso
 #' A file containing ADV data is usually recognized by Oce, and so
-#'     \code{\link{read.oce}} will usually read the data.  If not, one may use the
-#'     general ADV function \code{\link{read.adv}} or specialized variants
-#'     \code{\link{read.adv.nortek}}, \code{\link{read.adv.sontek.adr}} or
-#'     \code{\link{read.adv.sontek.text}}.
+#' \code{\link{read.oce}} will usually read the data.  If not, one may use the
+#' general ADV function \code{\link{read.adv}} or specialized variants
+#' \code{\link{read.adv.nortek}}, \code{\link{read.adv.sontek.adr}} or
+#' \code{\link{read.adv.sontek.text}}.
 #'
-#'     ADV data may be plotted with \code{\link{plot,adv-method}} function, which is a
-#'     generic function so it may be called simply as \code{plot(x)}, where
-#'     \code{x} is an object inheriting from \code{\link{adv-class}}.
+#' ADV data may be plotted with \code{\link{plot,adv-method}} function, which is a
+#' generic function so it may be called simply as \code{plot(x)}, where
+#' \code{x} is an object inheriting from \code{\link{adv-class}}.
 #'
-#'     Statistical summaries of ADV data are provided by the generic function
-#'     \code{\link{summary,adv-method}}.
+#' Statistical summaries of ADV data are provided by the generic function
+#' \code{\link{summary,adv-method}}.
 #'
-#'     Conversion from beam to xyz coordinates may be done with
-#'     \code{\link{beamToXyzAdv}}, and from xyz to enu (east north up) may be done
-#'     with \code{\link{xyzToEnuAdv}}.  \code{\link{toEnuAdv}} may be used to
-#'     transfer either beam or xyz to enu.  Enu may be converted to other
-#'     coordinates (e.g. aligned with a coastline) with
-#'     \code{\link{enuToOtherAdv}}.
+#' Conversion from beam to xyz coordinates may be done with
+#' \code{\link{beamToXyzAdv}}, and from xyz to enu (east north up) may be done
+#' with \code{\link{xyzToEnuAdv}}.  \code{\link{toEnuAdv}} may be used to
+#' transfer either beam or xyz to enu.  Enu may be converted to other
+#' coordinates (e.g. aligned with a coastline) with
+#' \code{\link{enuToOtherAdv}}.
+#'
+#' @templateVar class adv
+#'
+#' @templateVar dataExample The key items stored in this slot include \code{time} and \code{v}.
+#'
+#' @templateVar metadataExample Examples that are of common interest include \code{frequency}, \code{oceCordinate}, and \code{frequency}.
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @examples
 #' data(adv)
@@ -133,7 +124,7 @@ setMethod(f="summary",
               invisible(callNextMethod()) # summary
           })
 
-#' @title Extract Parts of an ADV Object
+#' @title Extract Something from an adv Object
 #'
 #' @param x An \code{adv} object, i.e. one inheriting from \code{\link{adv-class}}.
 #'
@@ -142,7 +133,10 @@ setMethod(f="summary",
 #' head(adv[["q"]])            # in raw form
 #' head(adv[["q", "numeric"]]) # in numeric form
 #'
+#' @template sub_subTemplate
+#'
 #' @section Details of the specialized \code{adv} method:
+#'
 #' In addition to the usual extraction of elements by name, some shortcuts
 #' are also provided, e.g. \code{u1} retrieves \code{v[,1]}, and similarly
 #' for the other velocity components. The \code{a} and \code{q}
@@ -156,7 +150,8 @@ setMethod(f="summary",
 #' \code{x[["heading"]]} interpolates to the faster timescale, using
 #' \code{\link{approx}(timeSlow, headingSlow, time)}.
 #'
-#' @template sub_subTemplate
+#' @author Dan Kelley
+#'
 #' @family things related to \code{adv} data
 setMethod(f="[[",
           signature(x="adv", i="ANY", j="ANY"),
@@ -333,7 +328,6 @@ setMethod(f="subset",
                   stop("only 'time' is permitted for subsetting")
               }
               res@metadata$numberOfSamples <- dim(res@data$v)[1]
-              res@metadata$numberOfCells <- dim(res@data$v)[2]
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset(x, subset=", subsetString, ")", sep=""))
               res
           })
@@ -474,7 +468,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' down from the top of the page.  See \dQuote{Details} for the meanings of
 #' various values of \code{which}.
 #'
-#' @param col Optional indication of colour(s) to use.  If not provided, the
+#' @param col Optional indication of color(s) to use.  If not provided, the
 #' default for images is \code{oce.colorsPalette(128,1)}, and for lines and points
 #' is black.
 #'
@@ -531,10 +525,10 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #' @param brushCorrelation Optional number between 0 and 100, indicating a
 #' per-beam correlation threshold below which data are to be considered suspect.
 #' If the plot type is \code{p}, the suspect points (velocity, backscatter
-#' amplitude, or correlation) will be coloured red; otherwise, this argument is
+#' amplitude, or correlation) will be colored red; otherwise, this argument is
 #' ignored.
 #'
-#' @param colBrush Colour to use for brushed (bad) data, if
+#' @param colBrush Color to use for brushed (bad) data, if
 #' \code{brushCorrelation} is active.
 #'
 #' @param main Main title for plot, used just on the top panel, if there are
@@ -1150,7 +1144,7 @@ setMethod(f="plot",
 #' \code{"adv"} objects.  Also, see \code{\link{beamToXyzAdv}} and
 #' \code{\link{xyzToEnuAdv}}.
 #' @references
-#' \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+#' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 #' @family things related to \code{adv} data
 toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 {
@@ -1160,10 +1154,8 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
         x <- xyzToEnuAdv(beamToXyzAdv(x, debug=debug-1), declination=declination, debug=debug-1)
     } else if (coord == "xyz") {
         x <- xyzToEnuAdv(x, declination=declination, debug=debug-1)
-    } else if (coord == "enu") {
-        ;
-    } else {
-        warning("adv.2enu cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
+    } else if (coord != "enu") {
+        warning("toEnuAdv cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
     oceDebug(debug, "} # adv.2enu()\n", unindent=1)
     x
@@ -1195,7 +1187,7 @@ toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 #' @seealso See \code{\link{read.adv}} for notes on functions relating to
 #' \code{"adv"} objects.
 #' @references
-#' \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+#' \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 #' @family things related to \code{adp} data
 beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
@@ -1318,7 +1310,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 #' @seealso See \code{\link{read.adv}} for notes on functions relating to
 #' \code{adv} objects.
 #' @references
-#' 1. \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+#' 1. \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 #'
 #' 2. Clark Richards, 2012, PhD Dalhousie University Department of
 #' Oceanography.
@@ -1457,19 +1449,7 @@ xyzToEnuAdv <- function(x, declination=0,
         pitch <- rep(pitch, length.out=np)
     if (length(roll) < np)
         roll <- rep(roll, length.out=np)
-    enu <- .C("sfm_enu",
-              as.integer(np), 
-              as.double(heading + declination),
-              as.double(pitch),
-              as.double(roll),
-              as.double(starboard),
-              as.double(forward),
-              as.double(mast),
-              east = double(np),
-              north = double(np),
-              up = double(np),
-              NAOK=TRUE,
-              PACKAGE="oce")
+    enu <- do_sfm_enu(heading + declination, pitch, roll, starboard, forward, mast)
     x@data$v[, 1] <- enu$east
     x@data$v[, 2] <- enu$north
     x@data$v[, 3] <- enu$up
@@ -1526,22 +1506,10 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDeb
         pitch <- rep(pitch, length.out=np)
     if (length(roll) < np)
         roll <- rep(roll, length.out=np)
-    other <- .C("sfm_enu",
-              as.integer(np),
-              as.double(heading),
-              as.double(pitch),
-              as.double(roll),
-              as.double(x@data$v[, 1]),
-              as.double(x@data$v[, 2]),
-              as.double(x@data$v[, 3]),
-              v1new = double(np),
-              v2new = double(np),
-              v3new = double(np),
-              NAOK=TRUE,
-              PACKAGE="oce")
-    x@data$v[, 1] <- other$v1new
-    x@data$v[, 2] <- other$v2new
-    x@data$v[, 3] <- other$v3new
+    other <- do_sfm_enu(heading, pitch, roll, x@data$v[, 1], x@data$v[, 2], x@data$v[, 3])
+    x@data$v[, 1] <- other$east
+    x@data$v[, 2] <- other$north
+    x@data$v[, 3] <- other$up
     x@metadata$oceCoordinate <- "other"
     x@processingLog <- processingLogAppend(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "} # enuToOtherAdv()\n", unindent=1)

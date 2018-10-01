@@ -157,3 +157,4 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{argo} data}

@@ -4,7 +4,8 @@
 \alias{read.gps}
 \title{Read a GPS File}
 \usage{
-read.gps(file, type = NULL, debug = getOption("oceDebug"), processingLog)
+read.gps(file, type = NULL, debug = getOption("oceDebug"),
+  processingLog)
 }
 \arguments{
 \item{file}{name of file containing gps data.}
@@ -35,3 +36,4 @@ Other things related to \code{gps} data: \code{\link{[[,gps-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{gps} data}

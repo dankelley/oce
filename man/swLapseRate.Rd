@@ -5,8 +5,8 @@
 \title{Seawater lapse rate}
 \usage{
 swLapseRate(salinity, temperature = NULL, pressure = NULL,
-  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default =
-  "gsw"))
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS",
+  default = "gsw"))
 }
 \arguments{
 \item{salinity}{either salinity [PSU] (in which case \code{temperature} and
@@ -75,3 +75,4 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
 \author{
 Dan Kelley
 }
+\concept{functions that calculate seawater properties}

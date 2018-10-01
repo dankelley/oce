@@ -63,6 +63,9 @@
 NULL
 
 
+###################################################################################
+## IMPORTANT: Update this and test_deprecation, whenever function status changes. #
+###################################################################################
 #' Deprecated and Defunct Elements of package \sQuote{oce}
 #'
 #' Certain functions and function arguments are still provided for
@@ -80,14 +83,7 @@ NULL
 #'
 #' \tabular{lll}{
 #' \strong{Deprecated}       \tab \strong{Replacement}            \tab \strong{Notes}\cr
-#' \code{findInOrdered(x,f)} \tab \code{\link{findInterval}(f,x)} \tab Deprecated 2017-09-07\cr
-#' \code{mapZones}           \tab \code{\link{mapGrid}}           \tab Deprecated 2016-02-13\cr
-#' \code{mapMeridians}       \tab \code{\link{mapGrid}}           \tab Deprecated 2016-02-13\cr
-#' \code{addColumn}          \tab \code{\link{oceSetData}}        \tab Deprecated 2016-08-01\cr
-#' \code{oce.magic}          \tab \code{\link{oceMagic}}          \tab Deprecated 2016-09-01\cr
-#' \code{ctdAddColumn}       \tab \code{\link{oceSetData}}        \tab Deprecated 2016-11-11\cr
-#' \code{ctdUpdateHeader}    \tab -                               \tab Deprecated 2016-11-11\cr
-#' \code{oce.as.POSIXlt}     \tab \code{\link[lubridate]{parse_date_time}} \tab Deprecated 2016-12-17\cr
+#' \code{byteToBinary}       \tab \code{\link{rawToBits}}         \tab Deprecated in 2016?\cr
 #' }
 #'
 #' The following are marked "defunct", so calling them in the
@@ -95,17 +91,27 @@ NULL
 #' function. Once a function is marked "defunct" on one CRAN release, it will
 #' be slated for outright deletion in a subsequent release.
 #'
+## In table below, I put two spaces before version number, if a build-test exists.
 #'\tabular{lll}{
-#'\strong{Defunct}   \tab \strong{Replacement}     \tab \strong{Notes}\cr
-#'\code{makeSection} \tab \code{\link{as.section}} \tab Improve utility and name sensibility\cr
-#'\code{columns}     \tab \code{\link{read.ctd}}   \tab Unnecessary; never worked\cr
+#'\strong{Defunct}       \tab \strong{Replacement}                     \tab \strong{Version} \cr
+#'\code{addColumn}       \tab \code{\link{oceSetData}}                 \tab  0.9.24\cr
+#'\code{byteToBinary}    \tab \code{\link{rawToBits}}                  \tab  0.9.24 'endian="little" disallowed\cr
+#'\code{findInOrdered}   \tab \code{\link{findInterval}}               \tab  0.9.24\cr
+#'\code{ctdAddColumn}    \tab \code{\link{oceSetData}}                 \tab  0.9.24\cr
+#'\code{ctdUpdateHeader} \tab \code{\link{oceSetMetadata}}             \tab  0.9.24\cr
+#'\code{mapZones}        \tab \code{\link{mapGrid}}                    \tab  0.9.24\cr
+#'\code{mapMeridians}    \tab \code{\link{mapGrid}}                    \tab  0.9.24\cr
+#'\code{oce.as.POSIXlt}  \tab \code{\link[lubridate]{parse_date_time}} \tab  0.9.24\cr
+#'\code{oce.magic}       \tab \code{\link{oceMagic}}                   \tab  0.9.24\cr
 #'}
 #'
-#' The following were removed in recent years.
+#' The following were removed recently, having been marked as "deprecated"
+#' in at least one CRAN release, and thereafter as "defunct" in at least
+#' one CRAN release.
 #'
 #'\tabular{lll}{
-#'\strong{Function}  \tab \strong{Replacement}     \tab \strong{Notes}\cr
-#' FILL IN           \tab FILL IN                  \tab FILL IN
+#'\strong{Function}      \tab \strong{Replacement}         \tab \strong{Version}\cr
+#'\code{makeSection}     \tab \code{\link{as.section}}     \tab           0.9.24\cr
 #'}
 #'
 #' Several \sQuote{oce} function arguments are considered "deprecated", which
@@ -238,6 +244,140 @@ as.oce <- function(x, ...)
         res <- oceSetData(res, name=name, value=x[[name]])
     res
 }
+
+##DELETE #' Concatenate oce objects
+##DELETE #'
+##DELETE #' The elements in the \code{data} slot are combined sequentially, as
+##DELETE #' appropriate (e.g. it makes no sense to combine the \code{distance}
+##DELETE #' item within an \code{\link{adp-class}} object). Some elements of
+##DELETE #' the \code{metadata} slot may also be combined as appropriate (e.g.
+##DELETE #' the \code{flags} are concatenated, if extant). Some alignment
+##DELETE #' is also required for some object classes (e.g. \code{\link{adp-class}}
+##DELETE #' objects have \code{numberOfSamples} in the \code{metadata} slot,
+##DELETE #' and \code{\link{plot,adp-method}} requires that this values
+##DELETE #' matches up with the first dimension of \code{v} and similar
+##DELETE #' elements in the \code{data} slot). See \dQuote{Examples} for
+##DELETE #' illustrations with the object types that have been tested
+##DELETE #' to date, and \dQuote{History} for notes on development.
+##DELETE #'
+##DELETE #' @param ... one or more oce objects or a list containing such
+##DELETE #' objects, potentially followed by other items that are ignored.
+##DELETE #'
+##DELETE #' @return An oce object that is formed by concatenating the input objects.
+##DELETE #'
+##DELETE #' @author Dan Kelley
+##DELETE #'
+##DELETE #' @section History:
+##DELETE #' As of Apr 9, 2018, this function handles only objects of
+##DELETE #' \code{\link{met-class}} and \code{\link{adp-class}}.
+##DELETE #' Other classes may be handled at least partially, but a fair
+##DELETE #' bit of special-case coding may be required, because the internal
+##DELETE #' workings of the various classes differ. Users are asked
+##DELETE #' to report problems via github issues.
+##DELETE #'
+##DELETE #' @examples
+##DELETE #'
+##DELETE #' ## 1. Combine two adp objects (created by splitting one)
+##DELETE #' data(adp)
+##DELETE #' midtime <- median(adp[["time"]])
+##DELETE #' a <- subset(adp, time <= midtime)
+##DELETE #' b <- subset(adp, time > midtime)
+##DELETE #' ab <- concatenate(a, b)
+##DELETE #' plot(ab)
+##DELETE #'
+##DELETE #'\dontrun{
+##DELETE #' ## 2. Combine two monthly "met" datasets from Environment Canada.
+##DELETE #' d8 <- read.met(download.met(id=6358, year=2003, month=8, destdir="."))
+##DELETE #' d9 <- read.met(download.met(id=6358, year=2003, month=9, destdir="."))
+##DELETE #' dd <- concatenate(d8, d9)
+##DELETE #' plot(dd)
+##DELETE #'}
+##DELETE concatenate <- function(...)
+##DELETE {
+##DELETE     dots <- list(...)
+##DELETE     ndots <- length(dots)
+##DELETE     if (0 == ndots)
+##DELETE         return(NULL)
+##DELETE     ## Handle the case of first argument being a list (all other arguments
+##DELETE     ## then being ignored).
+##DELETE     if (is.list(dots[[1]])) {
+##DELETE         dots <- dots[[1]]
+##DELETE         ndots <- length(dots)
+##DELETE     }
+##DELETE     if (1 == ndots)
+##DELETE         return(dots[[1]])
+##DELETE     ## Insist everything be an oce object.
+##DELETE     for (i in seq_len(ndots))
+##DELETE         if (!inherits(dots[[i]], "oce"))
+##DELETE             stop("concatenate() argument ", i, " does not inherit from \"oce\"")
+##DELETE
+##DELETE     ## Concatenate the data (and flags, if there are such).
+##DELETE     res <- dots[[1]]
+##DELETE     n1 <- sort(names(dots[[1]]@data))
+##DELETE     f1 <- if ("flags" %in% names(dots[[1]]@metadata$flags))
+##DELETE         sort(names(dots[[1]]@metadata$flags)) else NULL
+##DELETE     for (i in 2:ndots) {
+##DELETE         ## Data.
+##DELETE         ni <- sort(names(dots[[i]]@data))
+##DELETE         if (!identical(n1, ni))
+##DELETE             stop("data name mismatch between object 1 (",
+##DELETE                  paste(n1, collapse=" "), ") and object ", i,
+##DELETE                  "(", paste(ni, collapse=" "), ")")
+##DELETE         data <- dots[[i]]@data
+##DELETE         for (n in ni) {
+##DELETE             if (is.vector(dots[[1]]@data[[n]]) || n == "time" || is.factor(n)) {
+##DELETE                 res@data[[n]] <- c(res@data[[n]], data[[n]])
+##DELETE             } else if (is.matrix(dots[[1]]@data[[n]])) {
+##DELETE                 res@data[[n]] <- rbind(res@data[[n]], data[[n]])
+##DELETE             } else if (is.array(dots[[1]]@data[[n]])) {
+##DELETE                 dim <- dim(dots[[1]]@data[[n]])
+##DELETE                 if (3 != length(dim))
+##DELETE                     stop("items in data must be vector, matrix, or 3d array (got ", length(dim), " dimensions)")
+##DELETE                 tmp <- array(res@data[[n]][1,1,1],
+##DELETE                              dim=c(dim[1]+dim(dots[[i]]@data[[n]])[1], dim[2], dim[3]))
+##DELETE                 for (k in seq_len(dim[3])) {
+##DELETE                     tmp[,,k] <- rbind(res@data[[n]][,,k], dots[[i]]@data[[n]][,,k])
+##DELETE                 }
+##DELETE                 res@data[[n]] <- tmp
+##DELETE             }
+##DELETE         }
+##DELETE         ## Fix up dimensionality
+##DELETE         for (n in ni) {
+##DELETE             if (is.array(dots[[1]]@data[[n]])) {
+##DELETE                 len <- length(res@data[[n]])
+##DELETE                 dim <- dim(dots[[1]]@data[[n]])
+##DELETE                 dim[1] <- length(res@data[[n]]) / dim[2] / dim[3]
+##DELETE                 dim(res@data[[n]]) <- dim
+##DELETE             }
+##DELETE         }
+##DELETE         ## Flags.
+##DELETE         if (!is.null(f1)) {
+##DELETE             metadata <- dots[[i]]@metadata
+##DELETE             fi <- sort(names(dots[[i]]@metadata$flags))
+##DELETE             if (!identical(f1, fi))
+##DELETE                 stop("flag mismatch between object 1 (",
+##DELETE                      paste(f1, collapse=" "), ") and object ", i,
+##DELETE                      "(", paste(fi, collapse=" "), ")")
+##DELETE             for (f in fi) {
+##DELETE                 res@metadata$flags[[f]] <- c(res@metadata$flags[[f]], metadata$flags[[f]])
+##DELETE             }
+##DELETE         }
+##DELETE     }
+##DELETE     ## Class-specific details
+##DELETE     if (inherits(res, "adp")) {
+##DELETE         ## for reasons unknown to me, the tzone gets localized
+##DELETE         attr(res@data$time, "tzone") <- attr(dots[[1]]@data$time, "tzone")
+##DELETE         ## really, we ought not to have this in the metadata, since it
+##DELETE         ## requires just this silly sort of synching (also with subset(),
+##DELETE         ## I assume)
+##DELETE         res@metadata$numberOfSamples <- dim(res@data$v)[1]
+##DELETE         ## undo copying ... we could also skip it earlier but
+##DELETE         ## it seems a bit cleaner this way
+##DELETE         res@data$distance <- dots[[1]]@data$distance
+##DELETE     }
+##DELETE     res
+##DELETE }
+
 
 
 #' Replace the Heading for One Instrument With That of Another
@@ -414,9 +554,12 @@ window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, ext
     } else {
         stop("unknown value of which \"", which, "\"") # cannot get here
     }
-    if (inherits(x, "adp") || inherits(x, "adv")) {
+    ## sync up some metadata that might have been altered
+    if (inherits(x, "adp")) {
         res@metadata$numberOfSamples <- dim(res@data$v)[1]
         res@metadata$numberOfCells <- dim(res@data$v)[2]
+    } else if (inherits(x, "adv")) {
+        res@metadata$numberOfSamples <- dim(res@data$v)[1]
     }
     oceDebug(debug, "} # window.oce()\n", unindent=1)
     res
@@ -425,23 +568,30 @@ window.oce <- function(x, start=NULL, end=NULL, frequency=NULL, deltat=NULL, ext
 
 #' Extract The Start of an Oce Object
 #'
-#' @param x An \code{oce} object of a suitable class (presently only \code{adp} is
-#' permitted).
-#' @param n Number of elements to extract.
+#' @templateVar headOrTail head
+#' @template head_or_tail
+#'
+#' @param x An \code{oce} object.
+#' @param n Number of elements to extract, as for \code{\link{head}}.
 #' @param ... ignored
 #' @seealso \code{\link{tail.oce}}, which yields the end of an \code{oce} object.
+#' @author Dan Kelley
 head.oce <- function(x, n=6L, ...)
+    headOrTail(x=x, n=n, headTail=head, ...)
+
+headOrTail <- function(x, n=6L, headTail=head, ...)
 {
-    res <- NULL
+    ## Using headTail (a) lets us handle both head.oce and
+    ## tail.oce and also handles both positive and negative n.
+    res <- x
     if (inherits(x, "adp") || inherits(x, "adv")) {
-        numberOfProfiles <- dim(x@data$v)[1]
-        look <- if (n < 0) seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
-            else seq.int(1, min(n, numberOfProfiles))
-        res <- x
+        look <- headTail(seq_len(dim(x@data$v)[1]), n)
         for (name in names(x@data)) {
             if ("distance" == name)
                 next
-            if (is.vector(x@data[[name]])) {
+            if (name == "time") {
+                res@data[[name]] <- headTail(x@data[[name]], n)
+            } else if (is.vector(x@data[[name]])) {
                 res@data[[name]] <- x@data[[name]][look]
             } else if (is.matrix(x@data[[name]])) {
                 res@data[[name]] <- x@data[[name]][look, ]
@@ -451,43 +601,129 @@ head.oce <- function(x, n=6L, ...)
                 res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
             }
         }
-        res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-        res
+    } else if (inherits(x, "amsr")) {
+        looklon <- headTail(seq_along(x@metadata$longitude), n)
+        looklat <- headTail(seq_along(x@metadata$latitude), n)
+        res@metadata$longitude <- x@metadata$longitude[looklon]
+        res@metadata$latitude <- x@metadata$latitude[looklat]
+        for (n in names(res@data)) {
+            if (is.matrix(res@data[[n]]))
+                res@data[[n]] <- x@data[[n]][looklon, looklat]
+        }
+    } else if (inherits(x, "argo")) {
+        for (name in names(x@metadata)) {
+            if (name %in% c("direction", "juldQc", "positionQc")) {
+                ## select characters in a string
+                look <- headTail(seq_len(nchar(x@metadata[[name]])), n)
+                res@metadata[[name]] <- substr(x@metadata[[name]], look[1], tail(look, 1))
+            } else if (name == "flags") {
+                look <- headTail(seq_len(dim(x@metadata$flags[[1]])[2]), n)
+                for (fname in names(x@metadata$flags)) {
+                    res@metadata$flags[[fname]] <- x@metadata$flags[[fname]][, look]
+                }
+            } else if (is.vector(x@metadata[[name]])) {
+                res@metadata[[name]] <- headTail(x@metadata[[name]], n)
+            } else if (is.matrix(x@metadata[[name]])) {
+                look <- headTail(seq_len(dim(x@metadata[[name]])[2]), n)
+                res@metadata[[name]] <- x@metadata[[name]][, look]
+            } else {
+                warning("ignoring metadata item: '", name, "'")
+            }
+        }
+        for (name in names(x@data)) {
+            if (is.vector(x@data[[name]])) {
+                res@data[[name]] <- headTail(x@data[[name]], n)
+            } else if (is.matrix(x@data[[name]])) {
+                look <- headTail(seq_len(dim(x@data[[name]])[2]), n)
+                res@data[[name]] <- x@data[[name]][, look]
+            } else if (name == "time") {
+                ## for reasons unknown, time is not a vector
+                res@data[[name]] <- headTail(x@data[[name]], n)
+            } else {
+                warning("ignoring data item: '", name, "'")
+            }
+        }
+    } else if (inherits(x, "ctd")) {
+        for (name in names(x@data))
+            res@data[[name]] <- headTail(x@data[[name]], n)
+    } else if (inherits(x, "coastline")) {
+        for (name in c("longitude", "latitude"))
+            res@data[[name]] <- headTail(x@data[[name]], n)
+    } else if (inherits(x, "echosounder")) {
+        look <- headTail(seq_along(x@data$latitude), n=n)
+        for (name in c("longitude", "latitude", "time"))
+            res@data[[name]] <- x@data[[name]][look]
+        res@data$a <- x@data$a[look, ]
+        ## FIXME: decide whether the 'Slow' variables should be altered
+    } else if (inherits(x, "g1sst")) {
+        ## not in the test suite, because the files are too big, but
+        ## looks fine manually on the following test file
+        ## f <- dc.g1sst(2015, 10, 14, -66, -60, 41, 46)
+        ## d <- read.g1sst(f)
+        looklon <- headTail(seq_along(x@metadata$longitude), n)
+        looklat <- headTail(seq_along(x@metadata$latitude), n)
+        res@metadata$longitude <- x@metadata$longitude[looklon]
+        res@metadata$latitude <- x@metadata$latitude[looklat]
+        res@data$SST <- x@data$SST[looklon, looklat]
+    } else if (inherits(x, "lisst")) {
+        look <- headTail(seq_along(x@data[[1]]), n=n)
+        for (name in names(x@data))
+            res@data[[name]] <- x@data[[name]][look]
+    } else if (inherits(x, "met")) {
+        look <- headTail(seq_along(x@data$temperature), n=n)
+        for (name in names(x@data))
+            res@data[[name]] <- x@data[[name]][look]
+    } else if (inherits(x, "section")) {
+        look <- headTail(seq_along(x@metadata$latitude), n=n)
+        for (name in c("stationId", "longitude", "latitude", "time"))
+            res@metadata[[name]] <- x@metadata[[name]][look]
+        res@data$station <- x@data$station[look]
+    } else if (inherits(x, "topo")) {
+        looklon <- headTail(seq_along(x@data$longitude), n)
+        looklat <- headTail(seq_along(x@data$latitude), n)
+        res@data$longitude <- x@data$longitude[looklon]
+        res@data$latitude <- x@data$latitude[looklat]
+        res@data$z <- x@data$z[looklon, looklat]
+    } else if (inherits(x, "landsat")) {
+        ## Actually, handling this would not be too hard, but there are some
+        ## interlocked metadata elements that require some thought.
+        warning("head.oce() and tail.oce() cannot handle landsat, so returning it unaltered\n")
     } else {
-        message("not sure how to 'head' this")
+        ## The following general code works on the following objects (and is tested
+        ## for them, in tests/testthat/test_oce.R)
+        ##
+        ##   cm
+        ##   ladp
+        ##   lobo
+        ##   rsk
+        ##   sealevel
+        for (name in names(x@data)) {
+            ## For reasons I don't understand, the 'time' items are not vectors.
+            if ((is.vector(x@data[[name]]) && !is.list(x@data[[name]])) || name=="time") {
+                res@data[[name]] <- headTail(x@data[[name]], n)
+            } else if (is.null(x@data[[name]])) {
+            } else {
+                warning("ignoring '", name, "' because it is not a vector\n")
+            }
+        }
     }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
 
 #' Extract the End of an Oce Object
 #'
-#' @inheritParams head.oce
+#' @templateVar headOrTail tail
+#' @template head_or_tail
+#'
+#' @param x An \code{oce} object.
+#' @param n Number of elements to extract, as for \code{\link{tail}}.
+#' @param ... ignored
 #' @seealso \code{\link{head.oce}}, which yields the start of an \code{oce} object.
+#' @author Dan Kelley
 tail.oce <- function(x, n=6L, ...)
-{
-    res <- NULL
-    if (inherits(x, "adp")) {
-        numberOfProfiles <- dim(x@data$v)[1]
-        look <- if (n < 0) seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
-            else seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
-        res <- x
-        for (name in names(x@data)) {
-            if (is.vector(x@data[[name]])) {
-                res@data[[name]] <- x@data[[name]][look]
-            } else if (is.matrix(x@data[[name]])) {
-                res@data[[name]] <- x@data[[name]][look, ]
-            } else if (is.array(x@data[[name]])) {
-                res@data[[name]] <- x@data[[name]][look, , ]
-            } else {
-                res@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
-            }
-        }
-    } else {
-        message("cannot 'tail' this")
-    }
-    res
-}
+    headOrTail(x=x, n=n, headTail=tail, ...)
 
 
 #' Draw a Polar Plot
@@ -645,8 +881,7 @@ oceApprox <- function(x, y, xout, method=c("rr", "unesco"))
     else
         if (any(is.na(xout)))
             stop("must not have any NA values in xout")
-    .Call("oce_approx", x=x, y=y, xout=xout,
-          method=pmatch(method, c("unesco", "rr")))
+    do_oceApprox(x=x, y=y, xout=xout, method=pmatch(method, c("unesco", "rr")))
 }
 oce.approx <- oceApprox
 
@@ -678,9 +913,9 @@ oce.approx <- oceApprox
 #' default, in order to use more space for the data and less for the axes.
 #' @param mar value to be used with \code{\link{par}("mar")}.
 #' @param xlab,ylab labels for the plot axes. The default is not to label them.
-#' @param col colour of sticks, in either numerical or character format. This is
+#' @param col color of sticks, in either numerical or character format. This is
 #' made to have length matching that of \code{x} by a call to \code{\link{rep}},
-#' which can be handy in e.g. colourizing a velocity field by day.
+#' which can be handy in e.g. colorizing a velocity field by day.
 #' @param \dots graphical parameters passed down to \code{\link{arrows}}.  It
 #' is common, for example, to use smaller arrow heads than \code{\link{arrows}}
 #' uses; see \dQuote{Examples}.
@@ -790,7 +1025,7 @@ plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 #'
 #' @param xat either a list of x values at which to draw the grid, or the return value from an oce plotting function
 #' @param yat a list of y values at which to plot the grid (ignored if \code{gx} was a return value from an oce plotting function)
-#' @param col colour of grid lines (see \code{\link{par}})
+#' @param col color of grid lines (see \code{\link{par}})
 #' @param lty type for grid lines (see \code{\link{par}})
 #' @param lwd width for grid lines (see \code{\link{par}})
 oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
@@ -864,7 +1099,7 @@ oce.grid <- function(xat, yat, col="lightgray", lty="dotted", lwd=par("lwd"))
 #' argument is needed, because calling \code{\link{grid}} after doing a
 #' sequence of plots will not result in useful results for the individual
 #' panels.
-#' @param grid.col colour of grid
+#' @param grid.col color of grid
 #' @param grid.lty line type of grid
 #' @param grid.lwd line width of grid
 #' @param debug a flag that turns on debugging.  Set to 1 to get a moderate
@@ -925,7 +1160,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
             stop("'xlim' must be of length 2")
         if (xlim[2] <= xlim[1])
             stop("the elements of xlim must be in order")
-        ends <- .Call("trim_ts", as.numeric(x), as.numeric(xlim), as.numeric(0.04))
+        ends <- trim_ts(x, xlim, 0.04)
         x <- x[seq.int(ends$from, ends$to)]
         y <- y[seq.int(ends$from, ends$to)]
     }
@@ -1010,9 +1245,10 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
 }
 
 
-#' Oce Variant of as.POSIXlt [deprecated]
+#' Oce Variant of as.POSIXlt [defunct]
 #'
 #' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+#'
 #' It was realized in December of 2016 that this function was not used within
 #' oce, and also that \code{\link[lubridate]{parse_date_time}} in the
 #' \CRANpkg{lubridate} package was superior and therefore a better choice for
@@ -1024,10 +1260,10 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
 #' @return A POSIXlt object.
 #' @author Dan Kelley
 #' @family functions that will be removed soon
-oce.as.POSIXlt <- function (x, tz = "")
+oce.as.POSIXlt <- function(x, tz = "")
 {
-    .Deprecated("lubridate::parse_date_time",
-                msg="oce.as.POSIXlt() will be removed soon; see ?'oce-deprecated'.")
+    .Defunct("lubridate::parse_date_time",
+             msg="oce.as.POSIXlt() will be removed soon. Use lubridate::parse_date_time() instead. See ?'oce-defunct'.")
     fromchar <- function(x)
     {
         xx <- x[1]
@@ -1106,12 +1342,12 @@ oce.as.POSIXlt <- function (x, tz = "")
 #' that value is modified. However, if \code{item} is not found in
 #' either \code{metadata} or \code{data}, then an error is reported
 #' (see 1B for how to add something that does not yet exist).
-#' 
+#'
 #' \item Case 1B. If the \code{item} string contains
 #' the \code{@} character, then the text to the left of that character
 #' must be either \code{"metadata"} or \code{"data"}, and it names the slot
 #' in which the change is done. In contrast with case 1A, this will
-#' \emph{create} a new item, if it is not already in existence. 
+#' \emph{create} a new item, if it is not already in existence.
 #'
 #' }
 #'
@@ -1314,10 +1550,8 @@ standardDepths <- function()
 #' within the file, the file name, or a combination of the two.
 #'
 #' \code{oceMagic} was previously called \code{oce.magic}, but that
-#' alias will be removed towards the end of the year 2016; see
-#' \link{oce-deprecated}.
+#' alias was removed in version 0.9.24; see \link{oce-defunct}.
 #'
-#' @aliases oceMagic oce.magic
 #' @param file a connection or a character string giving the name of the file
 #' to be checked.
 #' @param debug an integer, set non-zero to turn on debugging.  Higher values
@@ -1589,8 +1823,6 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
     oceDebug(debug, "this is unknown\n")
     return("unknown")
 }
-oce.magic <- oceMagic
-
 
 
 
@@ -1629,7 +1861,11 @@ read.oce <- function(file, ...)
     oceDebug(debug,
              "read.oce(\"", as.character(file), "\", ...) inferred type=\"", type, "\"\n",
              sep="", unindent=1)
-    processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    ##> OLD: deparse is unhelpful if "file" is a variable in the calling code
+    ##> OLD: processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    dots <- list(...)
+    processingLog <- paste('read.oce("', file, '"', ifelse(length(dots), ", ...)", ")"), sep="")
+
     ## read.index if (type == "index")
     ## read.index     return(read.index(file))
     if (type == "shapefile")
@@ -1666,7 +1902,7 @@ read.oce <- function(file, ...)
     if (type == "ctd/odf" || type == "mctd/odf" || type == "mvctd/odf")
         return(read.ctd.odf(file, processingLog=processingLog, ...))
     if (length(grep("/odf$", type)))
-        return(read.odf(file))
+        return(read.odf(file, debug=debug))
     if (type == "mtg/odf") {
         ## FIXME: document this data type
         ## Moored tide gauge: returns a data frame.
@@ -1825,130 +2061,25 @@ read.netcdf <- function(file, ...)
     res
 }
 
-
-#' Create a Palette of Colours
+#' Create two-color palette
 #'
-#' Create a palette of colours.
+#' Create colors ranging between two specified limits, with white
+#' in the middle.
 #'
-#' \code{oce.colorsPalette} provides a variety of pre-defined palettes.
-#' \code{which}=1 yields the ColorBrewer diverging red/blue scheme while
-#' \code{which}=2 yields the ColorBrewer diverging RYB scheme [1].
+#' @aliases oceColorsTwo oce.colorsTwo
 #'
-#' A family of nine-colour schemes is as follows: \code{which="jet"} (or
-#' \code{which="9A"} or \code{which=9.01} for the Jet scheme; \code{which="9B"}
-#' or \code{which=9.02} for a scheme similar to Jet but omitting the green, and
-#' somewhat desaturating the yellow and cyan.
-#'
-#' \code{\link{oce.colorsGebco}} provides palettes that mimic the GEBCO atlas colours,
-#' with shades of blue for water and of brown for land.  The blue values go
-#' from dark to light, and the brown ones from light to dark; in this way,
-#' topographic images have light values near sea-level, and get darker in
-#' either deeper water or higher terrain.
-#'
-#' \code{oce.colorsJet} provides a palette similar to the Matlab \dQuote{jet}
-#' palette.
-#'
-#' \code{oce.colorsTwo} provides a two-tone palette that fades to white at
-#' central values.
-#'
-#' \code{oce.colorsViridis} provides a matplotlib (python) colour scheme that
-#' became the standard in 2015; see [2]. This is a blue-yellow transition that
-#' is designed to reproduce well in black-and-white, and also to be
-#' interpretable by those with certain forms of colour blindness [3, 4, 5].
-#'
-#' \code{oce.colorsCDOM}, \code{oce.colorsChlorophyll},
-#' \code{oce.colorsDensity}, \code{oce.colorsFreesurface},
-#' \code{oce.colorsOxygen}, \code{oce.colorspAR}, \code{oce.colorsPhase},
-#' \code{oce.colorsSalinity}, \code{oce.colorsTemperature},
-#' \code{oce.colorsTurbidity}, \code{oce.colorsVelocity} and
-#' \code{oce.colorsVorticity} are based on RGB values set up by Kristen M.
-#' Thyng for her Python package named \code{cmcolor} [7].
-#'
-#' @aliases oce.colors oceColors oce.colorsJet oceColorsJet
-#' oce.colorsTwo oceColorsTwo oce.colorsPalette oceColorsPalette
-#' oce.colors9A oceColors9A oce.colors9B oceColors9B oce.colorsViridis
-#' oceColorsViridis oce.colorsCDOM oce.colorsChlorophyll oce.colorsDensity
-#' oce.colorsFreesurface oce.colorsOxygen oce.colorsPAR oce.colorsPhase
-#' oce.colorsSalinity oce.colorsTemperature oce.colorsTurbidity
-#' oce.colorsVelocity oce.colorsVorticity oceColorsCDOM oceColorsChlorophyll
-#' oceColorsDensity oceColorsFreesurface oceColorsOxygen oceColorsPAR
-#' oceColorsPhase oceColorsSalinity oceColorsTemperature oceColorsTurbidity
-#' oceColorsVelocity oceColorsVorticity
-#' @param n the number of colours (\eqn{\ge 1}{>=1}) to be in the palette.
-#' @param low the hue, in [0, 1], for the low end of a \code{oce.colorsTwo}
-#' scale.
-#' @param high the hue, in [0, 1], for the high end of a \code{oce.colorsTwo}
-#' scale.
-#' @param smax the maximum saturation, in [0, 1], for the colours of
-#' \code{oce.colorsTwo}.
-#' @param alpha the alpha value, in [0, 1], for the colours of
-#' \code{oce.colorsTwo}.
-#' @author Dan Kelley
-#' @references [1] Color Brewer. \url{http://colorbrewer2.org/}
-#'
-#' [2] A blog item on the Viridis (and related) matplotlib colour scales is at
-#' \url{http://bids.github.io/colormap/}.
-#'
-#' [3] Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
-#' Schemes for Improved Data Graphics. \emph{Eos Trans. AGU}, 85(40),
-#' doi:10.1029/2004EO400002.
-#'
-#' [4] Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
-#' Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
-#' \samp{https://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}.
-#'
-#' [5] Stephenson, David B., 2005. Comment on ``Color schemes for improved data
-#' graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).
-#'
-#' [6] The Geography department at the University of Oregon has good resources
-#' on colour schemes; see e.g.
-#' \code{http://geography.uoregon.edu/datagraphics/color_scales.htm} (This URL
-#' worked prior to December 8, 2015, but was found to fail on that date; it is
-#' included here in case users want to search for themselves.)
-#'
-#' [7] The \code{cmocean} Python package, written by Kristen M Thyng, is
-#' available at \url{https://github.com/kthyng/cmocean}.
+#' @param n number of colors to generate.
+#' @param low,high numerical values (in range 0 to 1) specifying the hue
+#' for the low and high ends of the color scale.
+#' @param smax numerical value (in range 0 to 1) for the color saturation.
+#' @param alpha numerical value (in ragne 0 to 1) for the alpha (transparency)
+#' of the colors.
 #' @examples
-#'
 #' library(oce)
-#' opar <- par(no.readonly = TRUE)
-#' # 1. Show a few palettes
-#' x <- array(1:1000, dim=c(1, 1000))
-#' par(mfrow=c(1, 5), mar=c(1, 3, 3, 1))
-#' image(x, col=oce.colorsTwo(200), main="oce.colorsTwo")
-#' image(x, col=oce.colorsJet(200), main="oce.colorsJet")
-#' image(x, col=oce.colorsGebco(200), main="oce.colorsGebco")
-#' image(x, col=oce.colorsPalette(200), main="oce.colorsPalette")
-#' image(x, col=oce.colorsViridis(200), main="oce.colorsViridis")
-#'
-#' # 4. Kristen M Thyng's 'cmocean' colours, specialised for oceanography.
-#' par(mfrow=c(3, 4), mar=c(1, 3, 3, 1))
-#' image(x, col=oce.colorsCDOM(200), main="oce.colorsCDOM")
-#' image(x, col=oce.colorsChlorophyll(200), main="oce.colorsChlorophyll")
-#' image(x, col=oce.colorsDensity(200), main="oce.colorsDensity")
-#' image(x, col=oce.colorsFreesurface(200), main="oce.colorsFreesurface")
-#' image(x, col=oce.colorsOxygen(200), main="oce.colorsOxygen")
-#' image(x, col=oce.colorsPAR(200), main="oce.colorsPAR")
-#' image(x, col=oce.colorsPhase(200), main="oce.colorsPhase")
-#' image(x, col=oce.colorsSalinity(200), main="oce.colorsSalinity")
-#' image(x, col=oce.colorsTemperature(200), main="oce.colorsTemperature")
-#' image(x, col=oce.colorsTurbidity(200), main="oce.colorsTurbidity")
-#' image(x, col=oce.colorsVelocity(200), main="oce.colorsVelocity")
-#' image(x, col=oce.colorsVorticity(200), main="oce.colorsVorticity")
-#'
-#' # 3. Acoustic-Doppler profiler data; note that plot,adp-method() puts makes
-#' # zlim be symmetric about zero velocity.
-#' par(mfrow=c(1, 1))
-#' data(adp)
-#' plot(adp, which='u1')
-#'
-#' # 4. Contrast Jet with Viridis, using standard Volcano dataset;
-#' # try printing the results in black and white.
-#' par(mfrow=c(2, 1))
-#' imagep(volcano, col=oce.colorsJet)
-#' imagep(volcano, col=oce.colorsViridis)
+#' imagep(volcano-mean(range(volcano)), col=oceColorsTwo(128),
+#'        zlim="symmetric", zlab="oceColorsTwo")
 #' @family things related to colors
-oce.colorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
+oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 {
     ## code borrows heavily from cm.color()
     if ( (n <- as.integer(n[1])) > 0 ) {
@@ -1965,16 +2096,21 @@ oce.colorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
     }
     else character(0)
 }
-oceColorsTwo <- oce.colorsTwo
+oce.colorsTwo <- oceColorsTwo
 
-#' Gebco Colors
-#' @aliases oceColorsGebco oce.colors.gebco
+#' Create colors in a Gebco-like scheme
+#' @aliases oceColorsGebco oce.colorsGebco
 #' @param n Number of colors to return
 #' @param region String indicating application region, one of \code{"water"}, \code{"land"},
 #' or \code{"both"}.
 #' @param type String indicating the purpose, one of \code{"fill"} or \code{"line"}.
 #' @family things related to colors
-oce.colorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill", "line"))
+#' @examples
+#' library(oce)
+#' imagep(min(volcano) - volcano, col=oceColorsGebco(128),
+#'        zlab="oceColorsGebco")
+#' @family things related to colors
+oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill", "line"))
 {
     region <- match.arg(region)
     type <- match.arg(type)
@@ -2013,36 +2149,151 @@ oce.colorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill
     }
     rgb(r, g, b)
 }
-oceColorsGebco <- oce.colorsGebco
+oce.colorsGebco <- oceColorsGebco
 
-
-oce.colorsCLOSURE <- function(colorname) {
+#' Create color functions
+#'
+#' This function generates other functions that are used to specify colors.
+#' It is used within oce to create \code{\link{oceColorsTemperature}}
+#' and its many cousins. Users may also find it helpful, for creating
+#' custom color schemes (see \dQuote{Examples}).
+#'
+#' @param spec Specification of the color scheme. This may be a
+#' character string, in which case it must be the name of an item stored
+#' in \code{data(\link{ocecolors})}, or either a 3-column data frame or
+#' matrix, in which case the columns specify red, green and blue values
+#' (in range from 0 to 1).
+#'
+#' @examples
+#'\dontrun{
+#' ## Update oxygen color scheme to latest matplotlib value.
+#' library(oce)
+#' oxy <- "https://raw.githubusercontent.com/matplotlib/cmocean/master/cmocean/rgb/oxy-rgb.txt"
+#' oxyrgb <- read.table(oxy, header=FALSE)
+#' oceColorsOxygenUpdated <- oceColorsClosure(oxyrgb)
+#' par(mfrow=c(1, 2))
+#' m <- matrix(1:256)
+#' imagep(m, col=oceColorsOxygen, zlab="oxygen")
+#' imagep(m, col=oceColorsOxygenUpdated, zlab="oxygenUpdated")
+#'}
+#'
+#' @family things related to colors
+oceColorsClosure <- function(spec) {
     function(n) {
-        data("colors", package="oce", envir=environment())
-        col <- get("colors")[[colorname]]
+        if (is.character(spec)) {
+            data("ocecolors", package="oce", envir=environment())
+            col <- get("ocecolors")[[spec]]
+        } else if (is.data.frame(spec) || is.matrix(spec)) {
+            col <- rgb(spec[,1], spec[,2], spec[,3])
+        } else {
+            stop("oceColorsClosure(): first arg must be character, data frame, or 3-column matrix", call.=FALSE)
+        }
         if (missing(n) || n <= 0) colorRampPalette(col) else colorRampPalette(col)(n)
     }
 }
 
-## Viridis is python matplotlib default colormap, as of mid/late 2015.
-oceColorsViridis <- oce.colorsViridis <- oce.colorsCLOSURE("viridis")
-## The next are from the cmocean colour schemes, as of 2015-10-01.
-oceColorsCDOM <- oce.colorsCDOM <- oce.colorsCLOSURE("cdom")
-oceColorsChlorophyll <- oce.colorsChlorophyll <- oce.colorsCLOSURE("chlorophyll")
-oceColorsDensity <- oce.colorsDensity <- oce.colorsCLOSURE("density")
-oceColorsFreesurface <- oce.colorsFreesurface <- oce.colorsCLOSURE("freesurface")
-oceColorsOxygen <- oce.colorsOxygen <- oce.colorsCLOSURE("oxygen")
-oceColorsPAR <- oce.colorsPAR <- oce.colorsCLOSURE("par")
-oceColorsPhase <- oce.colorsPhase <- oce.colorsCLOSURE("phase")
-oceColorsSalinity <- oce.colorsSalinity <- oce.colorsCLOSURE("salinity")
-oceColorsTemperature <- oce.colorsTemperature <- oce.colorsCLOSURE("temperature")
-oceColorsTurbidity <- oce.colorsTurbidity <- oce.colorsCLOSURE("turbidity")
-oceColorsVelocity <- oce.colorsVelocity <- oce.colorsCLOSURE("velocity")
-oceColorsVorticity <- oce.colorsVorticity <- oce.colorsCLOSURE("vorticity")
+#' Create colors similar to the matlab Viridis scheme
+#'
+#' This is patterned on a matlab/python scheme [1] that blends
+#' from yellow to blue in a way that is designed to reproduce well
+#' in black-and-white, and to be interpretable by those with
+#' certain forms of color blindness [3-4].
+#'
+#' @aliases oce.colorsViridis oceColorsViridis
+#' @param n number of colors to create.
+#' @references
+#' [1] A blog item on the Viridis (and related) matplotlib color
+#' scales is at \url{http://bids.github.io/colormap/}.
+#'
+#' [2] Light, A., and P. J. Bartlein, 2004. The End of the Rainbow? Color
+#' Schemes for Improved Data Graphics. \emph{Eos Trans. AGU}, 85(40),
+#' doi:10.1029/2004EO400002.
+#'
+#' [3] Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
+#' Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
+#' \samp{https://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}.
+#'
+#' [4] Stephenson, David B., 2005. Comment on ``Color schemes for improved data
+#' graphics,'' by A. Light and P. J. Bartlein. \emph{Eos Trans. AGU}, 86(20).
+#'
+#' @author Dan Kelley
+#' @examples
+#' library(oce)
+#' imagep(volcano, col=oceColorsViridis(128),
+#'        zlab="oceColorsViridis")
+#' @family things related to colors
+oceColorsViridis <- oce.colorsViridis <- oceColorsClosure("viridis")
+
+#' @templateVar colorItem CDOM
+#' @templateVar colorItemUC CDOM
+#' @template cmcolorTemplate
+oceColorsCDOM <- oce.colorsCDOM <- oceColorsClosure("cdom")
+
+#' @templateVar colorItem chlorophyll
+#' @templateVar colorItemUC Chlorophyll
+#' @template cmcolorTemplate
+oceColorsChlorophyll <- oce.colorsChlorophyll <- oceColorsClosure("chlorophyll")
+
+#' @templateVar colorItem density
+#' @templateVar colorItemUC Density
+#' @template cmcolorTemplate
+oceColorsDensity <- oce.colorsDensity <- oceColorsClosure("density")
+
+#' @templateVar colorItem freesurface
+#' @templateVar colorItemUC Freesurface
+#' @template cmcolorTemplate
+oceColorsFreesurface <- oce.colorsFreesurface <- oceColorsClosure("freesurface")
+
+#' @templateVar colorItem oxygen
+#' @templateVar colorItemUC Oxygen
+#' @template cmcolorTemplate
+oceColorsOxygen <- oce.colorsOxygen <- oceColorsClosure("oxygen")
+
+#' @templateVar colorItem PAR
+#' @templateVar colorItemUC PAR
+#' @template cmcolorTemplate
+oceColorsPAR <- oce.colorsPAR <- oceColorsClosure("par")
+
+#' @templateVar colorItem phase
+#' @templateVar colorItemUC Phase
+#' @template cmcolorTemplate
+oceColorsPhase <- oce.colorsPhase <- oceColorsClosure("phase")
+
+#' @templateVar colorItem salinity
+#' @templateVar colorItemUC Salinity
+#' @template cmcolorTemplate
+oceColorsSalinity <- oce.colorsSalinity <- oceColorsClosure("salinity")
+
+#' @templateVar colorItem temperature
+#' @templateVar colorItemUC Temperature
+#' @template cmcolorTemplate
+oceColorsTemperature <- oce.colorsTemperature <- oceColorsClosure("temperature")
+
+#' @templateVar colorItem turbidity
+#' @templateVar colorItemUC Turbidity
+#' @template cmcolorTemplate
+oceColorsTurbidity <- oce.colorsTurbidity <- oceColorsClosure("turbidity")
+
+#' @templateVar colorItem velocity
+#' @templateVar colorItemUC Velocity
+#' @template cmcolorTemplate
+oceColorsVelocity <- oce.colorsVelocity <- oceColorsClosure("velocity")
+
+#' @templateVar colorItem vorticity
+#' @templateVar colorItemUC Vorticity
+#' @template cmcolorTemplate
+oceColorsVorticity <- oce.colorsVorticity <- oceColorsClosure("vorticity")
 
 
-## Simulation of Matlab Jet Colors
-oce.colorsJet <- function(n)
+#' Create colors similar to the Matlab Jet scheme
+#' @aliases oceColorsJet oce.colorsJet oceColors9A oce.colors9A
+#' @param n number of colors
+#' @examples
+#' library(oce)
+#' imagep(volcano, col=oceColorsJet(128),
+#'        zlab="oceColorsJet")
+#' @family things related to colors
+oceColorsJet <- function(n)
 {
     if (missing(n) || n <= 0)
         colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
@@ -2052,15 +2303,24 @@ oce.colorsJet <- function(n)
                            "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(n)
     }
 }
-oceColorsJet <- oce.colorsJet
+oce.colors9A <- oceColors9A <- oce.colorsJet <- oceColorsJet
 
-oce.colors9A <- function(n)
-{
-    oce.colorsJet(n)
-}
-oceColors9A <- oce.colors9A
-
-oce.colors9B <- function(n)
+#' Create colors in a red-yellow-blue color scheme
+#'
+#' The results are similar to those of \code{\link{oceColorsJet}}, but
+#' with white hues in the centre, rather than green ones. The scheme
+#' may be useful in displaying signed quantities, and thus is somewhat
+#' analogous to \code{\link{oceColorsTwo}}, except that they (average)
+#' eye may be more able to distinguish colors with \code{oceColors9B}.
+#'
+#' @aliases oceColors9B oce.colors9B
+#' @param n number of colors
+#' @examples
+#' library(oce)
+#' imagep(volcano, col=oceColors9B(128),
+#'        zlab="oceColors9B")
+#' @family things related to colors
+oceColors9B <- function(n)
 {
     if (missing(n) || n <= 0)
         colorRampPalette(c("#00007F", "blue", "#007FFF", "#22e4e7",
@@ -2070,10 +2330,24 @@ oce.colors9B <- function(n)
                            "white", "#ffe45e", "#FF7F00", "red", "#7F0000"))(n)
     }
 }
-oceColors9B <- oce.colors9B
+oce.colors9B <- oceColors9B
 
-
-oce.colorsPalette <- function(n, which=1)
+#' Create a vector of colors
+#'
+#' @aliases oce.colorsPalette oceColorsPalette
+#' @details The available schemes are:
+#' \itemize{
+#' \item \code{which=1} for a red-white-blue scheme.
+#' \item \code{which=2} for a red-yellow-blue scheme.
+#' \item \code{which=9.01}, \code{which="9A"} or \code{which="jet"}
+#' for \code{\link{oceColorsJet}(n)}.
+#' \item \code{which=9.02} or \code{which="9B"} for \code{\link{oceColors9B}(n)}.
+#'}
+#' @param n number of colors to create
+#' @param which integer or character string indicating the palette
+#' to use; see \dQuote{Details}.
+#' @family things related to colors
+oceColorsPalette <- function(n, which=1)
 {
     if ( (n <- as.integer(n[1])) > 0 ) {
         if (which == 1) {
@@ -2112,14 +2386,14 @@ oce.colorsPalette <- function(n, which=1)
                     approx(i, b, xout, rule=1)$y))
         } else if (which == 9.01 || which == "9A" || which == "jet") {
             ## jet, also known as 9A or 9.01
-            oce.colorsJet(n)
+            oceColorsJet(n)
         } else if (which == 9.02 || which == "9B") {
-            oce.colors9B(n)
+            oceColors9B(n)
         } else stop("unknown which")
     }
     else character(0)
 }
-oceColorsPalette <- oce.colorsPalette
+oce.colorsPalette <- oceColorsPalette
 
 
 #' Oce Version of axis.POSIXct
@@ -2651,6 +2925,12 @@ numberAsHMS <- function(t, default=0)
 #' yearday (starting at 1 for the first second of January 1, to match the
 #' convention used by Sea-Bird CTD software).
 #'
+#' \item \code{"epic"} employs a convention used in the EPIC software library,
+#' from the Pacific Marine Environmental Laboratory, in which \code{t} is a
+#' two-column matrix, with the first column being the julian Day (as defined in
+#' \code{\link{julianDay}}, for example), and with the second column being the
+#' millisecond within that day. See [4].
+#'
 #' }
 #'
 #' @param t an integer corresponding to a time, in a way that depends on
@@ -2668,6 +2948,10 @@ numberAsHMS <- function(t, default=0)
 #'
 #' [3] problem with NCEP times:
 #' \url{https://github.com/dankelley/oce/issues/738}
+#'
+#' [4] EPIC times: software and manuals at \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
+#' see also Denbo, Donald W., and Nancy N. Soreide. “EPIC.” Oceanography 9 (1996). https://doi.org/10.5670/oceanog.1996.10.
+#'
 #' @examples
 #'
 #' numberAsPOSIXct(0)                     # unix time 0
@@ -2675,10 +2959,15 @@ numberAsHMS <- function(t, default=0)
 #' numberAsPOSIXct(cbind(566, 345615), type="gps") # Canada Day, zero hour UTC
 #' numberAsPOSIXct(cbind(2013, 0), type="yearday") # start of 2013
 #'
+#' ## Epic time, one hour into Canada Day of year 2018. In computing the
+#' ## Julian day, note that this starts at noon.
+#' jd <- julianDay(as.POSIXct("2018-07-01 12:00:00", tz="UTC"))
+#' numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
+#'
 #' @family things related to time
 numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
                                       "ncep1", "ncep2",
-                                      "sas", "spss", "yearday"), tz="UTC")
+                                      "sas", "spss", "yearday", "epic"), tz="UTC")
 {
     type <- match.arg(type)
     if (type == "unix") {
@@ -2722,7 +3011,7 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
         ##20171014 message("leaps C ", paste(leaps, collapse=" "))
         t <- as.POSIXct("1999-08-22 00:00:00", tz="UTC") + 86400*7*t[, 1] + t[, 2]
         ##>message("initially, t=", paste(t, collapse=" "))
-        for (l in 1:length(leaps)) {
+        for (l in seq_along(leaps)) {
             t <- t - ifelse(t >= leaps[l], 1, 0)
             ##20171014 message("l=", l, ", leaps[l]=", leaps[l],
             ##20171014         ", t=", paste(t, collapse=" "), ", t>=leaps[l] ", t>=leaps[l])
@@ -2732,8 +3021,13 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argo",
         t <- as.POSIXct(t, origin="1582-10-14", tz=tz)
     } else if (type == "sas") {
         t <- as.POSIXct(t, origin="1960-01-01", tz=tz)
+    } else if (type == "epic") {
+        if (!is.matrix(t) || dim(t)[2] != 2)
+            stop("for epic times, 't' must be a two-column matrix, with first column the julian day, and second the millisecond within that day")
+        r <- do_epic_time_to_ymdhms(t[,1], t[,2])
+        t <- ISOdatetime(r$year, r$month, r$day, r$hour, r$minute, r$second, tz=tz)
     } else {
-        stop("type must be \"unix\", \"matlab\" or \"GPS\"")
+        stop("unknown type '", type, "'")
     }
     t
 }
@@ -2849,7 +3143,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     thismar <- par('mar')
     par(mar=thismar+mar)
     if (debug > 1) {
-        cat("\n\nBEFORE expr, PAR IS:\n");
+        cat("\n\nBEFORE expr, PAR IS:\n")
         str(par())
     }
     mfg <- par('mfg')
@@ -2979,7 +3273,7 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 #' \code{type}:\itemize{
 #' \item For \code{type=1}, each indicator is drawn with a symbol, according to the
 #' value of \code{pch} (either supplied globally, or as an element of the
-#' \code{...} list) and of size \code{cex}, and colour \code{col}.   Then, a
+#' \code{...} list) and of size \code{cex}, and color \code{col}.   Then, a
 #' line segment is drawn for each, and for this \code{lwd} and \code{col} may
 #' be set globally or in the \code{...} list.
 #' \item For \code{type=2}, the points are not drawn, but arrows are drawn instead
@@ -3017,7 +3311,7 @@ decodeTime <- function(time, timeFormats, tz="UTC")
 #'     the direction field later.
 #' @param type indication of the style of arrow-like indication of the
 #'     direction.
-#' @param col colour of line segments or arrows
+#' @param col color of line segments or arrows
 #' @param pch,cex plot character and expansion factor, used for
 #'     \code{type=1}
 #' @param lwd,lty line width and type, used for \code{type=2}

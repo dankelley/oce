@@ -5,20 +5,25 @@
 \alias{handleFlags,section-method}
 \title{Handle flags in Section Objects}
 \usage{
-\S4method{handleFlags}{section}(object, flags = list(), actions = list(),
-  debug = integer())
+\S4method{handleFlags}{section}(object, flags = NULL, actions = NULL,
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An object of \code{\link{section-class}}.}
 
-\item{flags}{An optional \code{\link{list}} containing (a)
-items with names of entries in the \code{data} slot of \code{object},
-or (b) a single unnamed item. In the first case, the attention is
-focussed on the named items, while in the second case the
-all the data in the \code{object}'s \code{data} slot are examined.
-Each element in the list must be set to an integer or vector of integers,
-specifying conditions to be met before actions are to be taken.
-See \dQuote{Details} for the default that is used if \code{flags} is not supplied.}
+\item{flags}{A \code{\link{list}} specifying flag values upon which
+actions will be taken. This can take two forms. In the first, the
+list has named elements each containing a vector of integers. For example,
+salinities flagged with values of 1 or 3 through 9 would be specified
+by \code{flags=list(salinity=c(1,3:9))}. Several data items can be specified,
+e.g. \code{flags=list(salinity=c(1,3:9), temperature=c(1,3:9))} indicates
+that the actions are to take place for both salinity and temperature.
+In the second form, \code{flags} is a list with unnamed vectors, and
+this means to apply the actions to all the data entries; thus,
+\code{flags=list(c(1,3:9))} means to apply not just to salinity and temperature,
+but also to everything else that is in the \code{data} slot. If \code{flags}
+is not provided, then \code{\link{defaultFlags}} is called, to try to
+determine a conservative default.}
 
 \item{actions}{An optional \code{\link{list}} that contains items with
 names that match those in the \code{flags} argument.  If \code{actions}
@@ -53,28 +58,20 @@ Otherwise, \code{handleFlags} analyses the data-quality flags within
 the object, in relation to the \code{flags} argument, and interprets
 the \code{action} argument to select an action to be applied to matched
 data.
-
-Reasonable defaults are used if \code{flags} and \code{actions}
-are not supplied (see \sQuote{Details}),
-but different schemes are used in different
-data archives, so it is risky to rely on these defaults.
-It is usually necessary to tailor \code{flags} and \code{actions}
-to the data and the analysis goals.
 }
 \details{
-If \code{flags} and \code{actions} are not provided, the
-default is to use WHP (World Hydrographic Program) flags [1], in which the
-value 2 indicates good data, and other values indicate either unchecked,
-suspicious, or bad data. Any data not flagged as good are set
-to \code{NA} in the returned value. Since WHP flag codes run
-from 1 to 9, this default is equivalent to
-setting \code{flags=list(all=c(1, 3:9))} along with
-\code{action=list("NA")}.
+The default for \code{flags} is based on
+calling \code{\link{defaultFlags}} based on the
+\code{metadata} in the first station in the section. If the
+other stations have different flag schemes (which seems highly
+unlikely for archived data), this will not work well, and indeed
+the only way to proceed would be to use \code{\link{handleFlags,ctd-method}}
+on the stations, individually.
 }
 \examples{
 library(oce)
 data(section)
-section2 <- handleFlags(section)
+section2 <- handleFlags(section, flags=c(1,3:9))
 par(mfrow=c(2, 1))
 plotTS(section)
 plotTS(section2)
@@ -84,13 +81,26 @@ plotTS(section2)
 1. \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
 }
 \seealso{
-Other functions that handle data-quality flags: \code{\link{handleFlags,argo-method}},
+Other functions relating to data-quality flags: \code{\link{defaultFlags}},
+  \code{\link{handleFlags,adp-method}},
+  \code{\link{handleFlags,argo-method}},
   \code{\link{handleFlags,ctd-method}},
-  \code{\link{handleFlags}}
+  \code{\link{handleFlags}},
+  \code{\link{initializeFlagScheme,ctd-method}},
+  \code{\link{initializeFlagScheme,oce-method}},
+  \code{\link{initializeFlagScheme,section-method}},
+  \code{\link{initializeFlagScheme}},
+  \code{\link{initializeFlags,adp-method}},
+  \code{\link{initializeFlags,oce-method}},
+  \code{\link{initializeFlags}},
+  \code{\link{setFlags,adp-method}},
+  \code{\link{setFlags,ctd-method}},
+  \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
 
 Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
+  \code{\link{initializeFlagScheme,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},
@@ -99,3 +109,5 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }
+\concept{functions relating to data-quality flags}
+\concept{things related to \code{section} data}

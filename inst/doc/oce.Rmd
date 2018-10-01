@@ -33,9 +33,9 @@ quirky data formats that are common in this field. It also provides functions
 for working with basic seawater properties such as the equation of state, and
 with derived quantities such as the buoyancy frequency.  Although simple enough
 to be used in a teaching context, `oce` is powerful enough for a research
-setting.  These things are illustrated here in a practical context.  Worked
-exercises are provided to help readers take early steps towards using the `oce`
-package in their research.
+setting.  These things are illustrated here in a general context; see also the
+vignettes on [using data-quality flags](flags.html) and processing data
+from [acoustic Doppler profilers](adp.html).
 
 # Introduction
 
@@ -63,7 +63,7 @@ As illustrated in Figure 1, each `oce` object contains three slots:
 * `data`, a list containing the actual data, e.g., for a CTD object, this will
   contain `pressure`, `temperature`, etc.
 * `metadata`, a list containing information about the data, such as units,
-  quality flags, sampling locations, etc.
+  data-quality flags, sampling locations, etc.
 * `processingLog`, a list that documents how the object was created and
   possibly changed thereafter.
 
@@ -401,8 +401,9 @@ plot(GSg, which=c(1,99), map.xlim=c(-85,-(64+13/60)))
 
 **Exercise 4.** Draw a $T$-$S$ diagram for the section data, using black
 symbols to the east of 30W and gray symbols to the west, thus highlighting
-Mediterranean-derived waters. Use `handleFlags()` to discard questionable
-data, and use the accessor function `[[`.
+Mediterranean-derived waters. Use `handleFlags()` (see [using data-quality
+flags](flags.html)) to discard questionable data, and use the accessor function
+`[[`.
 
 **Exercise 5.** Plot dynamic height and geostrophic velocity across the Gulf
 Stream. (Hint: use the `swDynamicHeight()` function.)
@@ -543,7 +544,8 @@ The following commands produce Figure 10, showing one velocity component of
 currents measured in the St Lawrence Estuary Internal Wave Experiment. This
 plot type is just one of many provided by the `adp` variant of the
 generic `plot` function
-(use `help("plot,adp-method")` to learn more).
+(see `?"plot,adp-method"`). See [the adp vignette](adp.html) for much more on
+acoustic Doppler profiler data.
 ```{r fig.cap="**Figure 10.** Measurements made with a bottom-mounted ADP in the St Lawrence Estuary. The line near the surface indicates pressure measured by the ADP.", fig.width=4, fig.height=2, dpi=72}
 library(oce)
 data(adp)
@@ -553,110 +555,11 @@ lines(adp[['time']], adp[['pressure']], lwd=2)
 
 # Handling data-quality flags
 
-## About flags
-Hydrographic and some other data may be accompanied by data-quality flags.  For
-example, salinity is subject to a variety of instrumental and other errors, and
-so archives of its value commonly contain quality flags.  These flags may
-derive from statistical checks, from the judgement of a human analyst, or a
-combination of the two.
-
-Some flags are in the form of numerical values (typically integers) but others
-may be expressed as character strings. A frustrating aspect of oceanographic
-analysis is that different data archiving agencies employ different systems for
-flags. For example, the [World Hydrographic
-Programme](https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm)
-designates good bottle/CTD data with a flag value of 2, whereas the [World
-Ocean
-Database](http://data.nodc.noaa.gov/woa/WOD/CODES/TXT/Definition_of_Quality_Flags.txt)
-uses 0 for good data.  It is also common to indicate bad data by setting values
-to non-physical values, e.g. -999, -99.99, or similar, and sometimes these
-coded values may contradict more formal flags, when both are present.
-
-Dealing with flags often requires ad hoc analysis methods, and for this reason,
-the `oce` package offers tools for dealing with flags in a variety of ways.
-The first thing to realize is that only certain data types contain flags, and
-only certain data objects will contain flags. For example, hydrographic data
-are quite likely to be provided with data-quality flags, but these are never
-provided with coastline data.
-
-Data-quality flags are stored in the `flags` entry in the `metadata` slot of
-`oce` objects. This entry is a list, containing items with names corresponding
-to names of data elements that are stored in the `data` slot. Direct
-manipulation is possible, although it is more convenient to use the `[[` and
-`[[<-` access methods provided in `oce`, or, for some tasks, the `handleFlags`
-function provided by `oce`.
-
-## Retrieving and changing flags
-
-An example should clarify a working procedure. The `section` dataset provided
-with `oce` holds many `ctd` objects that each have data-quality flags. 
-The first few salinity flags for the 100th station may be found as follows.
-```{r}
-data(section)
-stn <- section[["station", 100]]
-head(stn[["salinityFlag"]])
-```
-Note that these data use the WHP scheme, i.e. good data are indicated with 2,
-whereas questionable data are indicated with 3.
-
-Before discussing how such flags might be handled, it is important to note that
-it is often necessary to alter such flags. For example, some datasets will have
-flags set to indicate good data, even though the data are set to -999, which is
-one of several old-fashioned missing-value codes. The `section` dataset does
-not contain any such cases, but the situation may be simulated as follows.
-```{r}
-# fake second datum
-stn[["salinity"]][2] <- -999
-```
-With this, the setting of flags might be done with
-```{r}
-stn[["salinityFlag"]] <- ifelse(stn[["salinity"]] < 0, 3, stn[["salinityFlag"]])
-```
-with a check being done with
-```{r}
-head(stn[["salinityFlag"]])
-```
-
-It should be obvious to the reader that this procedure could be extended in
-more sophisticated ways, e.g. with schemes searching for pressure inversions,
-large departures from a TS relationship, loops on TS diagrams, etc. It can be
-useful to combine automatic schemes with interactive plotting, to identify bad
-data.
-
-
-**Exercise 8.** Manipulating flags. The dataset provided with oce using
-```r
-library(oce)
-d <- read.oce(system.file("extdata", "d201211_0011.cnv", package="oce"))
-```
-contains a column named `flags` that consists of a 3-digit number. The first
-digit is a flag for temperature, the second for conductivity, and the third for
-oxygen. Compute the individual flags and add them to the metadata of the `ctd` object.
-
-## Using flags to manipulate data
-
-A conservative approach is to set data to the missing-value code `NA` if the
-data-quality flag indicates a problem. For example, in the WHP scheme, values
-other than 2 indicate unchecked, bad or suspect data, and those data could be
-set to the missing-value code as follows, where `stn2` is the new version:
-```{r}
-stn2 <- stn
-stn2[["salinity"]] <- ifelse(stn2[["salinityFlag"]]!=2, NA, stn2[["salinity"]])
-head(stn2[["salinityFlag"]])
-```
-
-This can be expressed more compactly with `handleFlags`, e.g.
-```{r}
-stn3 <- stn
-stn3[["salinity"]][2] <- -999
-stn3 <- handleFlags(stn3, list(salinity=c(1,3:9)))
-```
-
-A summary of the salinities follows
-```{r}
-head(data.frame(stnS=stn[["salinity"]], stn2S=stn2[["salinity"]], stn3S=stn3[["salinity"]]))
-```
-
+Archives of CTD/bottle and Argo drifter measurements commonly supply
+data-quality flags that provide an indication of the trust to be put in
+individual data points. Oce has a flexible scheme for dealing with such flags,
+and also for inserting flags into these or any data type; see the [using
+data-quality flags vignette](flags.html) for more..
 
 
 #  Working in non-English languages
@@ -952,15 +855,16 @@ dev.off()
 
 **Exercise 4.** Draw a $T$-$S$ diagram for the section data, using black
 symbols to the east of 30W and gray symbols to the west, thus highlighting
-Mediterranean-derived waters.  Use `handleFlags()` to discard questionable
-data, and use the accessor function `[[`.
+Mediterranean-derived waters.  Use `handleFlags()` (see [using data-quality
+flags](flags.html)) to discard questionable data, and use the accessor function
+`[[`.
 
 We will use the Gibbs SeaWater system, so `as.ctd()` needs location information.
 
 ```{r fig.width=5, fig.height=5, fig.keep="none"}
 library(oce)
 data(section)
-s <- handleFlags(section)
+s <- handleFlags(section, flags=list(c(1, 3:9)))
 ctd <- as.ctd(s[["salinity"]], s[["temperature"]], s[["pressure"]],
               longitude=s[["longitude"]], latitude=s[["latitude"]])
 col <- ifelse(s[["longitude"]] > -30, "black", "gray")

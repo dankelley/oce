@@ -27,3 +27,4 @@ the particular bad-data codes of that particular class.
 Other functions that create composite objects: \code{\link{composite,amsr-method}},
   \code{\link{composite}}
 }
+\concept{functions that create composite objects}

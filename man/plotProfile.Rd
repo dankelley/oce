@@ -8,13 +8,13 @@ plotProfile(x, xtype = "salinity+temperature", ytype = "pressure",
   eos = getOption("oceEOS", default = "gsw"), lty = 1, xlab = NULL,
   ylab = NULL, col = "black", col.salinity = "darkgreen",
   col.temperature = "red", col.rho = "blue", col.N2 = "brown",
-  col.dpdt = "darkgreen", col.time = "darkgreen", pt.bg = "transparent",
-  grid = TRUE, col.grid = "lightgray", lty.grid = "dotted", Slim, Clim,
-  Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim, xlim, ylim,
-  lwd = par("lwd"), xaxs = "r", yaxs = "r", cex = 1, pch = 1,
-  useSmoothScatter = FALSE, df, keepNA = FALSE, type = "l",
-  mgp = getOption("oceMgp"), mar, add = FALSE, inset = FALSE,
-  debug = getOption("oceDebug", 0), ...)
+  col.dpdt = "darkgreen", col.time = "darkgreen",
+  pt.bg = "transparent", grid = TRUE, col.grid = "lightgray",
+  lty.grid = "dotted", Slim, Clim, Tlim, densitylim, N2lim, Rrholim,
+  dpdtlim, timelim, plim, xlim, ylim, lwd = par("lwd"), xaxs = "r",
+  yaxs = "r", cex = 1, pch = 1, useSmoothScatter = FALSE, df,
+  keepNA = FALSE, type = "l", mgp = getOption("oceMgp"), mar,
+  add = FALSE, inset = FALSE, debug = getOption("oceDebug", 0), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -82,26 +82,26 @@ to 0dbar (i.e. the surface), 1000dbar, 2000dbar, 3000dbar, and 4000dbar.
 \item{ylab}{optional label for y axis.  Set to \code{""} to prevent
 labelling the axis.}
 
-\item{col}{colour for a general profile.}
+\item{col}{color for a general profile.}
 
-\item{col.salinity}{colour for salinity profile (see \dQuote{Details}).}
+\item{col.salinity}{color for salinity profile (see \dQuote{Details}).}
 
-\item{col.temperature}{colour for temperature (see \dQuote{Details}).}
+\item{col.temperature}{color for temperature (see \dQuote{Details}).}
 
-\item{col.rho}{colour for density (see \dQuote{Details}).}
+\item{col.rho}{color for density (see \dQuote{Details}).}
 
-\item{col.N2}{colour for square of buoyancy frequency (see
+\item{col.N2}{color for square of buoyancy frequency (see
 \dQuote{Details}).}
 
-\item{col.dpdt}{colour for dP/dt.}
+\item{col.dpdt}{color for dP/dt.}
 
-\item{col.time}{colour for delta-time.}
+\item{col.time}{color for delta-time.}
 
-\item{pt.bg}{inside colour for symbols with \code{pch} in 21:25}
+\item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
 
 \item{grid}{logical, set to \code{TRUE} to get a grid.}
 
-\item{col.grid}{colour for grid.}
+\item{col.grid}{color for grid.}
 
 \item{lty.grid}{line type for grid.}
 
@@ -127,7 +127,7 @@ labelling the axis.}
 
 \item{xlim}{Optional limit for x axis, which can apply to any plot type.
 This is ignored if the plotted x variable is something for which a limit
-may be specified with an argument, e.g. \code{xlim} is ignored for a 
+may be specified with an argument, e.g. \code{xlim} is ignored for a
 salinity profile, because \code{Slim} ought to be given in such a case.}
 
 \item{ylim}{Optional limit for y axis, which can apply to any plot type,
@@ -187,7 +187,7 @@ Plot a profile, showing variation of some quantity (or quantities) with
 pressure, using the oceanographic convention of putting lower pressures
 nearer the top of the plot. This works for any \code{oce} object that has a
 pressure column in its \code{data} slot.
-The colours (\code{col.salinity}, etc.) are only used if two profiles appear
+The colors (\code{col.salinity}, etc.) are only used if two profiles appear
 on a plot.
 }
 \examples{
@@ -212,6 +212,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -232,6 +233,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
+  \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotScan}},
@@ -239,6 +242,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{setFlags,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
@@ -247,3 +251,5 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{ctd} data}

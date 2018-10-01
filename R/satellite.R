@@ -1,6 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to hold satellite data
+#' Class to Store Satellite Data
 #'
 #' This class holds satellite data of various types, including
 #' \code{\link{amsr-class}} and \code{\link{g1sst-class}}.
@@ -63,7 +63,7 @@ setMethod(f="summary",
 #' @param asp Optional aspect ratio for plot.
 #' @param debug A debugging flag, integer.
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
-#' \code{col} to control colours.
+#' \code{col} to control colors.
 #'
 #' @concept satellite
 #' @author Dan Kelley

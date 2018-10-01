@@ -5,9 +5,9 @@
 \title{Read an ADV data file}
 \usage{
 read.adv.sontek.serial(file, from = 1, to, by = 1,
-  tz = getOption("oceTz"), longitude = NA, latitude = NA, start = NULL,
-  deltat = NULL, debug = getOption("oceDebug"), monitor = FALSE,
-  processingLog = NULL)
+  tz = getOption("oceTz"), longitude = NA, latitude = NA,
+  start = NULL, deltat = NULL, debug = getOption("oceDebug"),
+  monitor = FALSE, processingLog = NULL)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -306,7 +306,8 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{read.adv.nortek}},
   \code{\link{read.adv.sontek.adr}},
   \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{subset,adv-method}},
+  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
+  \code{\link{subset,adv-method}},
   \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
@@ -314,3 +315,4 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{adv} data}

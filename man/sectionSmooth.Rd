@@ -4,8 +4,8 @@
 \alias{sectionSmooth}
 \title{Smooth a Section}
 \usage{
-sectionSmooth(section, method = c("spline", "barnes"), xg, yg, xgl, ygl, xr,
-  yr, gamma = 0.5, iterations = 2, trim = 0, pregrid = FALSE,
+sectionSmooth(section, method = c("spline", "barnes"), xg, yg, xgl, ygl,
+  xr, yr, gamma = 0.5, iterations = 2, trim = 0, pregrid = FALSE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -85,6 +85,7 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{handleFlags,section-method}},
+  \code{\link{initializeFlagScheme,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},
@@ -96,3 +97,4 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{section} data}

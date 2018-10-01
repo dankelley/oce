@@ -76,7 +76,7 @@ read.ctd.itp <- function(file, columns=NULL, station=NULL, missingValue, monitor
                     unit <- gsub("(.*)\\((.*)\\)", "\\2", tokens[i])
                     if (unit == "umol/kg")
                         units[[names[i]]] <- list(unit=expression(mu*mol/kg), scale="")
-                    else 
+                    else
                         units[[names[i]]] <- list(unit=expression(unit), scale="")
                 } else if (names[i] != "year" && names[i] != "day") {
                     unit <- gsub("(.*)\\((.*)\\)", "\\2", tokens[i])

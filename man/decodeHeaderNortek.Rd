@@ -4,8 +4,8 @@
 \alias{decodeHeaderNortek}
 \title{Decode a Nortek Header}
 \usage{
-decodeHeaderNortek(buf, type = c("aquadoppHR", "aquadoppProfiler", "aquadopp",
-  "vector"), debug = getOption("oceDebug"), ...)
+decodeHeaderNortek(buf, type = c("aquadoppHR", "aquadoppProfiler",
+  "aquadopp", "vector"), debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{buf}{a ``raw'' buffer containing the header}

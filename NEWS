@@ -1,3 +1,19 @@
+1.0-1
+- Renamed 0.9-24, released with OAR book publication.
+0.9-24
+- read.odf() stores ODF header in metadata
+- remove makeSection()
+- make defunct: addColumn byteToBinary ctdAddColumn ctdUpdateHeader findInOrdered
+- make defunct: mapZones mapMeridians oce.as.POSIXlt oce.magic
+- byteToBinary(., endian="little") designated as defunct
+- as.tidem() added
+- read.odf() handles multiple NULL_VALUEs
+- flag improvements
+- rotateAboutZ() added
+- concatenate() added
+- read.woa() added
+- colormap() value has new item 'colfunction'
+
 0.9-23
 - tidem() permits inferred constituents
 - tidem() follows T_TIDE phase convention

@@ -79,9 +79,33 @@ slot as \code{dataNamesOriginal}, and are displayed with \code{summary} alongsid
 numerical summary. See the Appendix VI of [2] for the meanings of these
 names (in the "Short Name" column of the table spanning pages 161 through 172).
 }
+\section{A note on sampling times}{
+
+SBE files can be somewhat confusing as regards the time of measurement. If
+the data file contains metadata item called \code{start_time}, then
+it is converted to a POSIX time object by \code{read.ctd.sbe} and stored
+within the \code{metadata} slot as \code{"startTime"}. Until 2018-07-05, that
+value was also stored in a \code{metadata} item named \code{"time"}, but this
+caused confusion for data files that also have an elapsed-time column, and so
+an entry named \code{"time"} is no longer stored in the \code{metadata} slot,
+for those cases in which an elapsed-time column exists in the data file.
+Importantly, there is a possibility for confusion in the storage
+of that elapsed-time entry within the \code{data} slot, because \code{read.ctd.sbe}
+renames all of the ten variants of elapsed time (see [2] for a list)
+as, simply, \code{"time"} in the \code{data} slot of the returned value.
+(Numerical suffices will be used if the file contains multiple elapsed-time
+columns.) This imposes upon the user the burden of using \code{summary()} on
+the return value, to discover the original name of the elapsed time column,
+because \code{read.ctd.sbe} does not convert the 10 possible units to
+a standard, but rather simply records the numerical values that are in
+the data file. The most common column name is likely \code{timeS}, for
+elapsed time in seconds; see [2] for the meanings of the other 9
+schemes.
+}
+
 \section{A note on scales}{
 
-The user may encounter data files with a variety of scales for temperature and
+The user might encounter data files with a variety of scales for temperature and
 salinity. Oce keeps track of these scales in the units it sets up for the stored
 variables. For example, if \code{A} is a CTD object, then
 \code{A[["temperatureUnit"]]$scale} is a character string that will indicate the scale.
@@ -96,7 +120,6 @@ retrieve the stored values (if the scale is ITS-90) or converted values (if
 the scale is IPTS-68). Even though this procedure should work, users who
 really care about the details of their data are well-advised to do a couple
 of tests after examining the first data line of their data file in an editor.
-
 Note that reading a file that contains IPTS-68 temperatures produces a warning.
 }
 
@@ -113,9 +136,16 @@ d <- read.ctd(f, columns=list(
 1. The Sea-Bird SBE 19plus profiler is described at
 \code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
 information is given in the Sea-Bird data-processing manual
-\url{http://www.seabird.com/document/sbe-data-processing-manual}.
+(next item).
 
-2. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.
+2. A SBE data processing manual was once at
+\code{http://www.seabird.com/document/sbe-data-processing-manual},
+but as of summer 2018, this no longer seems to be provided by SeaBird.
+A web search will turn up copies of the manual that have been put
+online by various research groups and data-archiving agencies.
+As of 2018-07-05, the latest version was named
+\code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017,
+and this was the reference version used in coding \code{oce}.
 }
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
@@ -124,6 +154,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
+  \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
@@ -131,6 +163,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.itp}}, \code{\link{read.ctd.odf}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{setFlags,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
@@ -139,3 +172,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{ctd} data}

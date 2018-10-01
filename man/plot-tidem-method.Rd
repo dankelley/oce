@@ -8,8 +8,8 @@
 \usage{
 \S4method{plot}{tidem}(x, which = 1, constituents = c("SA", "O1", "K1",
   "M2", "S2", "M4"), sides = NULL, col = "blue", log = "",
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, mgp[2] + 0.25,
-  mgp[2] + 1), ...)
+  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, mgp[2] +
+  0.25, mgp[2] + 1), ...)
 }
 \arguments{
 \item{x}{A \code{tidem} object, i.e. one inheriting from
@@ -30,7 +30,7 @@ all R graphics, the value \code{1} indicates the bottom of the plot, and
 are drawn at the top. Any value of \code{sides} that is not either 1 or 3
 is converted to 3.}
 
-\item{col}{a character vector naming colours to be used for \code{constituents}.
+\item{col}{a character vector naming colors to be used for \code{constituents}.
 Ignored if \code{sides=3}. Repeated to be of the same length as
 \code{constituents}, otherwise.}
 
@@ -74,6 +74,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -98,3 +99,5 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{tidem} data}

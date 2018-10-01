@@ -5,8 +5,9 @@
 \title{Coerce Data into an Echosounder Object}
 \usage{
 as.echosounder(time, depth, a, src = "", sourceLevel = 220,
-  receiverSensitivity = -55.4, transmitPower = 0, pulseDuration = 400,
-  beamwidthX = 6.5, beamwidthY = 6.5, frequency = 41800, correction = 0)
+  receiverSensitivity = -55.4, transmitPower = 0,
+  pulseDuration = 400, beamwidthX = 6.5, beamwidthY = 6.5,
+  frequency = 41800, correction = 0)
 }
 \arguments{
 \item{time}{times of pings}
@@ -65,3 +66,4 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 \author{
 Dan Kelley
 }
+\concept{things related to \code{echosounder} data}

@@ -27,3 +27,4 @@ Other things related to \code{bremen} data: \code{\link{[[,bremen-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{bremen} data}

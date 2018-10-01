@@ -7,6 +7,7 @@
 #' processingLogShow(ctd)
 #' processingLog(ctd) <- "test"
 #' processingLogShow(ctd)
+#' @family things related to processing logs
 "processingLog<-" <- function(x, value)
 {
     if (inherits(x, "oce")) {
@@ -31,6 +32,7 @@
 #' @param h either the \code{processingLog} slot of an object, or
 #' an \code{oce} object from which the processingLog will be extracted
 #' @param value A string indicating the text of the log entry.
+#' @family things related to processing logs
 processingLogAppend <- function(h, value="")
 {
     if (inherits(h, "oce"))
@@ -56,6 +58,7 @@ processingLogAppend <- function(h, value="")
 #' @return A \code{\link{list}} containing \code{time}, which is
 #' the \code{\link{Sys.time}} at the moment the function is called and
 #' \code{value}, a string that is set to the argument of the same name.
+#' @family things related to processing logs
 processingLogItem <- function(value="")
 {
     list(time=c(Sys.time()), value=value)
@@ -63,6 +66,7 @@ processingLogItem <- function(value="")
 
 #' Show the processing log of an \code{oce} object
 #' @param x An \code{oce} object.
+#' @family things related to processing logs
 processingLogShow <- function(x)
 {
     cat("* Processing Log\n")

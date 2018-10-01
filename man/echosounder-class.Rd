@@ -5,11 +5,15 @@
 \alias{echosounder-class}
 \title{Class to Store Echosounder Data}
 \description{
-Class to store echosounder data.
+This class stores echosounder data. Echosounder objects may be
+read with \code{\link{read.echosounder}},
+summarized with \code{\link{summary,echosounder-method}},
+and plotted with \code{\link{plot,echosounder-method}}.
+The \code{\link{findBottom}}
+function infers the ocean bottom from tracing the strongest reflector from
+ping to ping.
 }
 \details{
-The \code{data} slot is a list containing
-
 \itemize{
 
 \item An infrequently updated record of the intrument position, in
@@ -43,36 +47,55 @@ y-angle data.
 
 }
 }
-\section{Methods}{
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{echosounder} objects is a
+\code{\link{list}} containing the main data for the object.
+{}}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{echosounder} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+{}}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{echosounder} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
 
 
-\emph{Accessing values.} Data may be accessed as e.g.
-\code{echosounder[["time"]]}, \code{echosounder[["depth"]]},
-\code{echosounder[["a"]]}, etc.  Items in \code{metadata} must be specified
-by full name, but those in \code{data} may be abbreviated, so long as the
-abbreviation is unique. In addition to the actual data, some derived fields
-are also available: \code{echosounder[["distance"]]} calls
-\code{\link{geodDist}} to compute calculate distance along the ship track,
-\code{echosounder[["Sv"]]} returns a matrix of backscatter strength in DB,
-and \code{echosounder[["TS"]]} returns a matrix of target strength in dB.
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{echosounder} objects (see \code{\link{[[<-,echosounder-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
 
-\emph{Assigning values.} Everything that may be accessed may also be
-assigned, e.g.  \code{echosounder[["time"]] <- 3600 + echosounder[["time"]]}
-adds an hour to time.
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{echosounder}
+object named \code{echosounder} may be retrieved in the standard R way. For example,
+\code{slot(echosounder, "data")} and \code{slot(echosounder, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,echosounder-method}} operator can also be used to access slots,
+with \code{echosounder[["data"]]} and \code{echosounder[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,echosounder-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
 }
 
 \seealso{
-Other classes provided by \code{oce}: \code{\link{adp-class}},
-  \code{\link{adv-class}}, \code{\link{argo-class}},
-  \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}},
-  \code{\link{section-class}}, \code{\link{topo-class}},
-  \code{\link{windrose-class}}
-
 Other things related to \code{echosounder} data: \code{\link{[[,echosounder-method}},
   \code{\link{[[<-,echosounder-method}},
   \code{\link{as.echosounder}}, \code{\link{echosounder}},
@@ -84,17 +107,5 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 }
 \author{
 Dan Kelley
-
-Statistical summaries are provided by \code{\link{summary,echosounder-method}},
-while \code{\link{show}} displays an overview.  The \code{\link{findBottom}}
-function infers the ocean bottom from tracing the strongest reflector from
-ping to ping.
-
-Echosounder objects may be plotted with \code{\link{plot,echosounder-method}}.
-
-The contents of \code{echosounder} objects may be altered with
-\code{\link{subset,echosounder-method}}, or with the \code{[[]]} scheme
-discussed in the previous section; skilled users may also manipulate the
-contents directly, but this is not recommended because it is brittle to
-changes in the data structure.
 }
+\concept{things related to \code{echosounder} data}

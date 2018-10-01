@@ -4,8 +4,9 @@
 \alias{read.ctd}
 \title{Read a General CTD File}
 \usage{
-read.ctd(file, type = NULL, columns = NULL, station = NULL, missingValue,
-  monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
+read.ctd(file, type = NULL, columns = NULL, station = NULL,
+  missingValue, monitor = FALSE, debug = getOption("oceDebug"),
+  processingLog, ...)
 }
 \arguments{
 \item{file}{A connection or a character string giving the name of the file to
@@ -83,6 +84,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
+  \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
@@ -91,6 +94,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}},
+  \code{\link{setFlags,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
@@ -99,3 +103,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{ctd} data}

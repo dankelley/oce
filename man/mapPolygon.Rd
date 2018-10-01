@@ -4,8 +4,9 @@
 \alias{mapPolygon}
 \title{Add a Polygon to a Map}
 \usage{
-mapPolygon(longitude, latitude, density = NULL, angle = 45, border = NULL,
-  col = NA, lty = par("lty"), ..., fillOddEven = FALSE)
+mapPolygon(longitude, latitude, density = NULL, angle = 45,
+  border = NULL, col = NA, lty = par("lty"), ...,
+  fillOddEven = FALSE)
 }
 \arguments{
 \item{longitude}{longitudes of points to be plotted, or an object from
@@ -56,3 +57,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley
 }
+\concept{functions related to maps}

@@ -6,11 +6,11 @@
 \alias{plot.topo}
 \title{Plot a Topo Object}
 \usage{
-\S4method{plot}{topo}(x, xlab = "", ylab = "", asp, clongitude, clatitude,
-  span, expand = 1.5, water.z, col.water, lty.water, lwd.water, land.z,
-  col.land, lty.land, lwd.land, geographical = FALSE, location = "topright",
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1),
-  debug = getOption("oceDebug"), ...)
+\S4method{plot}{topo}(x, xlab = "", ylab = "", asp, clongitude,
+  clatitude, span, expand = 1.5, water.z, col.water, lty.water,
+  lwd.water, land.z, col.land, lty.land, lwd.land, geographical = FALSE,
+  location = "topright", mgp = getOption("oceMgp"), mar = c(mgp[1] +
+  1, mgp[1] + 1, 1, 1), debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{topo} object, i.e. inheriting from \code{\link{topo-class}}.}
@@ -46,8 +46,8 @@ ignored if either \code{xlim} or \code{ylim} is given.}
 \item{water.z}{Depths at which to plot water contours.  If not provided, these
 are inferred from the data.}
 
-\item{col.water}{Colours corresponding to \code{water.z} values.  If not
-provided, these will be \code{"fill"} colours from
+\item{col.water}{Colors corresponding to \code{water.z} values.  If not
+provided, these will be \code{"fill"} colors from
 \code{\link{oce.colorsGebco}}.}
 
 \item{lty.water}{Line type(s) for water contours.}
@@ -58,8 +58,8 @@ provided, these will be \code{"fill"} colours from
 are inferred from the data.  If set to \code{NULL}, no land contours will be
 plotted.}
 
-\item{col.land}{Colours corresponding to \code{land.z} values.  If not
-provided, these will be \code{"fill"} colours from
+\item{col.land}{Colors corresponding to \code{land.z} values.  If not
+provided, these will be \code{"fill"} colors from
 \code{\link{oce.colorsGebco}}.}
 
 \item{lty.land}{Line type(s) for land contours.}
@@ -107,6 +107,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -131,3 +132,5 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{topo} data}

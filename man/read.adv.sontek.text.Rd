@@ -4,9 +4,10 @@
 \alias{read.adv.sontek.text}
 \title{Read an ADV data file}
 \usage{
-read.adv.sontek.text(file, from = 1, to, by = 1, tz = getOption("oceTz"),
-  originalCoordinate = "xyz", transformationMatrix, longitude = NA,
-  latitude = NA, debug = getOption("oceDebug"), monitor = FALSE,
+read.adv.sontek.text(file, from = 1, to, by = 1,
+  tz = getOption("oceTz"), originalCoordinate = "xyz",
+  transformationMatrix, longitude = NA, latitude = NA,
+  debug = getOption("oceDebug"), monitor = FALSE,
   processingLog = NULL)
 }
 \arguments{
@@ -317,7 +318,8 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{read.adv.nortek}},
   \code{\link{read.adv.sontek.adr}},
   \code{\link{read.adv.sontek.serial}},
-  \code{\link{read.adv}}, \code{\link{subset,adv-method}},
+  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
+  \code{\link{subset,adv-method}},
   \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
@@ -325,3 +327,4 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{adv} data}

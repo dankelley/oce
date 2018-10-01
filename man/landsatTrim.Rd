@@ -50,6 +50,7 @@ structure of landsat objects, and also outlines the other functions dealing
 with them.
 
 Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+  \code{\link{[[<-,landsat-method}},
   \code{\link{landsat-class}}, \code{\link{landsatAdd}},
   \code{\link{landsat}}, \code{\link{plot,landsat-method}},
   \code{\link{read.landsat}},
@@ -58,6 +59,5 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{
-satellite
-}
+\concept{satellite}
+\concept{things related to \code{landsat} data}

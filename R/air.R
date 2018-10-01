@@ -1,10 +1,10 @@
 #' Wind dataset
-#' 
+#'
 #' Wind data inferred from Figure 5 of Koch et al. (1983), provided to
 #' illustrate the \code{\link{interpBarnes}} function.
 #' Columns \code{wind$x} and \code{wind$y} are location, while \code{wind$z} is
 #' the wind speed, in m/s.
-#' 
+#'
 #' @name wind
 #' @docType data
 #'
@@ -16,13 +16,13 @@ NULL
 
 
 #' Air density
-#' 
+#'
 #' Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of air.
-#' 
+#'
 #' This will eventually be a proper equation of state, but for now it's just
 #' returns something from wikipedia (i.e. not trustworthy), and not using
 #' humidity.
-#' 
+#'
 #' @param temperature \emph{in-situ} temperature [\eqn{^\circ}{deg}C]
 #' @param pressure pressure in Pa (NOT kPa) -- ignored at present
 #' @param humidity ignored at present

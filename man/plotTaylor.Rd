@@ -19,7 +19,7 @@ deviation.}
 
 \item{pch}{list of characters to plot, one for each column of \code{y}.}
 
-\item{col}{list of colours for points on the plot, one for each column of
+\item{col}{list of colors for points on the plot, one for each column of
 \code{y}.}
 
 \item{labels}{optional vector of strings to use for labelling the points.}

@@ -48,6 +48,7 @@ the name of the (i-1)-th column and appending \code{"Flag"}.
     \code{CRAT_*.*} \tab \code{conductivity}       \tab Conductivity ratio                                         \cr
     \code{COND_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)               \cr
     \code{CNDC_*.*} \tab \code{conductivity}       \tab Conductivity in mS/cm or S/m (unit detected)               \cr
+    \code{DCHG_*.*} \tab \code{discharge}          \tab                                                            \cr
     \code{DEPH_*.*} \tab \code{pressure}           \tab Sensor depth below sea level                               \cr
     \code{DOXY_*.*} \tab \code{oxygen}             \tab Used mainly in \code{ctd} objects                          \cr
     \code{ERRV_*.*} \tab \code{error}              \tab Used in \code{adp} objects                                 \cr
@@ -118,6 +119,7 @@ Other functions that interpret variable names and units from headers: \code{\lin
   \code{\link{woceUnit2oceUnit}}
 
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFListFromHeader}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
   \code{\link{plot,odf-method}},
@@ -128,3 +130,5 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
 \author{
 Dan Kelley
 }
+\concept{functions that interpret variable names and units from headers}
+\concept{things related to \code{odf} data}

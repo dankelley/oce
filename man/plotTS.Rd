@@ -6,14 +6,15 @@
 \usage{
 plotTS(x, inSitu = FALSE, type = "p", referencePressure = 0,
   nlevels = 6, levels, grid = TRUE, col.grid = "lightgray",
-  lty.grid = "dotted", rho1000 = FALSE, eos = getOption("oceEOS", default
-  = "gsw"), cex = par("cex"), col = par("col"), pch = par("pch"), bg,
-  pt.bg = "transparent", col.rho = "darkgray", cex.rho = 3/4 * par("cex"),
-  rotate = TRUE, useSmoothScatter = FALSE, xlab, ylab, Slim, Tlim,
-  drawFreezing = TRUE, mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5,
-  mgp[1] + 1.5, mgp[1], mgp[1]), lwd = par("lwd"), lty = par("lty"),
-  lwd.rho = par("lwd"), lty.rho = par("lty"), add = FALSE,
-  inset = FALSE, debug = getOption("oceDebug"), ...)
+  lty.grid = "dotted", rho1000 = FALSE, eos = getOption("oceEOS",
+  default = "gsw"), cex = par("cex"), col = par("col"),
+  pch = par("pch"), bg, pt.bg = "transparent", col.rho = "darkgray",
+  cex.rho = 3/4 * par("cex"), rotate = TRUE,
+  useSmoothScatter = FALSE, xlab, ylab, Slim, Tlim,
+  drawFreezing = TRUE, mgp = getOption("oceMgp"), mar = c(mgp[1] +
+  1.5, mgp[1] + 1.5, mgp[1], mgp[1]), lwd = par("lwd"),
+  lty = par("lty"), lwd.rho = par("lwd"), lty.rho = par("lty"),
+  add = FALSE, inset = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -37,7 +38,7 @@ potential temperature, if \code{inSitu} is \code{FALSE}.}
 
 \item{grid}{a flag that can be set to \code{TRUE} to get a grid.}
 
-\item{col.grid}{colour for grid.}
+\item{col.grid}{color for grid.}
 
 \item{lty.grid}{line type for grid.}
 
@@ -50,16 +51,16 @@ e.g. 24}
 \item{cex}{character-expansion factor for symbols, as in
 \code{\link{par}("cex")}.}
 
-\item{col}{colour for symbols.}
+\item{col}{color for symbols.}
 
 \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
 
-\item{bg}{optional colour to be painted under plotting area, before
+\item{bg}{optional color to be painted under plotting area, before
 plotting.  (This is useful for cases in which \code{inset=TRUE}.)}
 
-\item{pt.bg}{inside colour for symbols with \code{pch} in 21:25}
+\item{pt.bg}{inside color for symbols with \code{pch} in 21:25}
 
-\item{col.rho}{colour for isopycnal lines.}
+\item{col.rho}{color for isopycnal lines.}
 
 \item{cex.rho}{size of isopycnal labels.}
 
@@ -141,6 +142,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -161,6 +163,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
+  \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
@@ -168,6 +172,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.odf}}, \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{setFlags,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
@@ -176,3 +181,5 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{ctd} data}

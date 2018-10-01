@@ -5,8 +5,8 @@
 \title{Draw a palette, leaving margins suitable for accompanying plot}
 \usage{
 drawPalette(zlim, zlab = "", breaks, col, colormap, mai,
-  cex.axis = par("cex.axis"), pos = 4, labels = NULL, at = NULL, levels,
-  drawContours = FALSE, plot = TRUE, fullpage = FALSE,
+  cex.axis = par("cex.axis"), pos = 4, labels = NULL, at = NULL,
+  levels, drawContours = FALSE, plot = TRUE, fullpage = FALSE,
   drawTriangles = FALSE, axisPalette, tformat,
   debug = getOption("oceDebug"), ...)
 }
@@ -17,13 +17,13 @@ is used.}
 
 \item{zlab}{label for the palette scale.}
 
-\item{breaks}{the z values for breaks in the colour scheme.}
+\item{breaks}{the z values for breaks in the color scheme.}
 
-\item{col}{either a vector of colours corresponding to the breaks, of length
-1 less than the number of breaks, or a function specifying colours, e.g.
+\item{col}{either a vector of colors corresponding to the breaks, of length
+1 less than the number of breaks, or a function specifying colors, e.g.
 \code{\link{oce.colorsJet}} for a rainbow.}
 
-\item{colormap}{a colour map as created by \code{\link{colormap}}.  If
+\item{colormap}{a color map as created by \code{\link{colormap}}.  If
 provided, this takes precedence over \code{breaks} and \code{col}.}
 
 \item{mai}{margins for palette, as defined in the usual way; see
@@ -45,7 +45,7 @@ correspond with \code{at})}
 values, to be added to the image if \code{drawContours} is \code{TRUE}.}
 
 \item{drawContours}{logical value indicating whether to draw contours on the
-palette, at the colour breaks.}
+palette, at the color breaks.}
 
 \item{plot}{logical value indicating whether to plot the palette, the
 default, or whether to just alter the margins to make space for where the

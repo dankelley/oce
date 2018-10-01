@@ -5,9 +5,57 @@
 \alias{gps-class}
 \title{Class to Store GPS Data}
 \description{
-Class to store gps data. These objects may be read with
+This class stores GPS data. These objects may be read with
 \code{\link{read.gps}} or assembled with \code{\link{as.gps}}.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{gps} objects is a
+\code{\link{list}} containing the main data for the object.
+{}}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{gps} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+{}}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{gps} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
+
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{gps} objects (see \code{\link{[[<-,gps-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{gps}
+object named \code{gps} may be retrieved in the standard R way. For example,
+\code{slot(gps, "data")} and \code{slot(gps, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,gps-method}} operator can also be used to access slots,
+with \code{gps[["data"]]} and \code{gps[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,gps-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+}
+
 \seealso{
 Other things related to \code{gps} data: \code{\link{[[,gps-method}},
   \code{\link{[[<-,gps-method}}, \code{\link{as.gps}},
@@ -17,3 +65,4 @@ Other things related to \code{gps} data: \code{\link{[[,gps-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{gps} data}

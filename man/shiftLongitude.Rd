@@ -34,3 +34,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
   \code{\link{oceCRS}}, \code{\link{usrLonLat}},
   \code{\link{utm2lonlat}}
 }
+\concept{functions related to maps}

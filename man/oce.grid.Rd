@@ -4,14 +4,15 @@
 \alias{oce.grid}
 \title{Add a Grid to an Existing Oce Plot}
 \usage{
-oce.grid(xat, yat, col = "lightgray", lty = "dotted", lwd = par("lwd"))
+oce.grid(xat, yat, col = "lightgray", lty = "dotted",
+  lwd = par("lwd"))
 }
 \arguments{
 \item{xat}{either a list of x values at which to draw the grid, or the return value from an oce plotting function}
 
 \item{yat}{a list of y values at which to plot the grid (ignored if \code{gx} was a return value from an oce plotting function)}
 
-\item{col}{colour of grid lines (see \code{\link{par}})}
+\item{col}{color of grid lines (see \code{\link{par}})}
 
 \item{lty}{type for grid lines (see \code{\link{par}})}
 

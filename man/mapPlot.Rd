@@ -4,11 +4,12 @@
 \alias{mapPlot}
 \title{Draw a Map}
 \usage{
-mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg, fill,
-  border = NULL, col = NULL, clip = TRUE, type = "polygon",
-  axes = TRUE, cex, cex.axis = 1, mgp = c(0, 0.5, 0), drawBox = TRUE,
-  showHemi = TRUE, polarCircle = 0, lonlabel = NULL, latlabel = NULL,
-  sides = NULL, projection = "+proj=moll", tissot = FALSE, trim = TRUE,
+mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg,
+  fill, border = NULL, col = NULL, clip = TRUE, type = "polygon",
+  axes = TRUE, cex, cex.axis = 1, mgp = c(0, 0.5, 0),
+  drawBox = TRUE, showHemi = TRUE, polarCircle = 0,
+  lonlabel = NULL, latlabel = NULL, sides = NULL,
+  projection = "+proj=moll", tissot = FALSE, trim = TRUE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -44,16 +45,16 @@ examination of the scale used in middle 10 percent of the plot area, and for
 most projections this works quite well.  If not, one may set
 \code{grid=FALSE} and add a grid later with \code{\link{mapGrid}}.}
 
-\item{bg}{colour of the background (ignored).}
+\item{bg}{color of the background (ignored).}
 
 \item{fill}{\strong{(deprecated)} is a deprecated argument; see
 \link{oce-deprecated}.}
 
-\item{border}{colour of coastlines and international borders (ignored unless
+\item{border}{color of coastlines and international borders (ignored unless
 \code{type="polygon"}.}
 
-\item{col}{either the colour for filling polygons (if \code{type="polygon"})
-or the colour of the points and line segments (if \code{type="p"},
+\item{col}{either the color for filling polygons (if \code{type="polygon"})
+or the color of the points and line segments (if \code{type="p"},
 \code{type="l"}, or \code{type="o"}). If \code{col=NULL} then a default
 will be set: no coastline filling for the \code{type="polygon"} case,
 or black coastlines, for \code{type="p"}, \code{type="l"}, or
@@ -508,3 +509,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{functions related to maps}

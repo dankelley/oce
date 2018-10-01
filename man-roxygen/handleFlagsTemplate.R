@@ -14,21 +14,19 @@
 #' the \code{action} argument to select an action to be applied to matched
 #' data.
 #'
-#' Reasonable defaults are used if \code{flags} and \code{actions}
-#' are not supplied (see \sQuote{Details}),
-#' but different schemes are used in different
-#' data archives, so it is risky to rely on these defaults.
-#' It is usually necessary to tailor \code{flags} and \code{actions}
-#' to the data and the analysis goals.
-#'
-#' @param flags An optional \code{\link{list}} containing (a)
-#' items with names of entries in the \code{data} slot of \code{object},
-#' or (b) a single unnamed item. In the first case, the attention is
-#' focussed on the named items, while in the second case the
-#' all the data in the \code{object}'s \code{data} slot are examined.
-#' Each element in the list must be set to an integer or vector of integers,
-#' specifying conditions to be met before actions are to be taken.
-#' See \dQuote{Details} for the default that is used if \code{flags} is not supplied.
+#' @param flags A \code{\link{list}} specifying flag values upon which
+#' actions will be taken. This can take two forms. In the first, the
+#' list has named elements each containing a vector of integers. For example,
+#' salinities flagged with values of 1 or 3 through 9 would be specified
+#' by \code{flags=list(salinity=c(1,3:9))}. Several data items can be specified,
+#' e.g. \code{flags=list(salinity=c(1,3:9), temperature=c(1,3:9))} indicates
+#' that the actions are to take place for both salinity and temperature.
+#' In the second form, \code{flags} is a list with unnamed vectors, and
+#' this means to apply the actions to all the data entries; thus,
+#' \code{flags=list(c(1,3:9))} means to apply not just to salinity and temperature,
+#' but also to everything else that is in the \code{data} slot. If \code{flags}
+#' is not provided, then \code{\link{defaultFlags}} is called, to try to
+#' determine a conservative default.
 #'
 #' @param actions An optional \code{\link{list}} that contains items with
 #' names that match those in the \code{flags} argument.  If \code{actions}
@@ -47,11 +45,5 @@
 #' handled for each data item. If not supplied, this defaults to the value of
 #' \code{\link{getOption}("oceDebug")}.
 #'
-## @section Implementation status: \code{handleFlags} is a new function as of March 2016,
-## and it will probably continue to evolve through the rest of 2016.
-## Users are asked to be patient, and to provide help by
-## looking at the documentation and telling the developers
-## whether the planned functioning seems reasonable.
-#'
-#' @family functions that handle data-quality flags
+#' @family functions relating to data-quality flags
 

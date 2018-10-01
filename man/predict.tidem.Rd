@@ -2,7 +2,7 @@
 % Please edit documentation in R/tides.R
 \name{predict.tidem}
 \alias{predict.tidem}
-\title{Predict a Time Series from a Tidem Tidal Model}
+\title{Predict a Time Series from a Tidal Model}
 \usage{
 \method{predict}{tidem}(object, newdata, ...)
 }
@@ -10,9 +10,12 @@
 \item{object}{A \code{tidem} object, i.e. one inheriting from
 \code{\link{tidem-class}}.}
 
-\item{newdata}{optional vector of POSIXt times at which to make the
-prediction.  If not present, \code{predict.tidem} uses the times that were
-provided in the original call to \code{\link{tidem}}.}
+\item{newdata}{vector of POSIXt times at which to make the
+prediction.  For models created with \code{\link{tidem}},
+\code{newdata} is optional, and if it is not provided, then
+the predictions are at the observation times given to
+\code{\link{tidem}}. However, \code{newdata} is required,
+if \code{\link{as.tidem}} had been used to create \code{object}.}
 
 \item{\dots}{optional arguments passed on to children.}
 }
@@ -21,7 +24,6 @@ A vector of predictions.
 }
 \description{
 Predict a time series from a tidal model.
-This is a wrapper around the predict method for \code{object$model}.
 }
 \examples{
 
@@ -46,7 +48,7 @@ elevation <- sealevel[["elevation"]]
 oce.plot.ts(time[look], elevation[look])
 # 360s = 10 minute timescale
 t <- seq(from=time[1], to=time[max(look)], by=360)
-lines(t, predict(m,newdata=t), col='red')
+lines(t, predict(m, newdata=t), col='red')
 legend("topright", col=c("black","red"),
 legend=c("data","model"),lwd=1)
 }
@@ -64,3 +66,4 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{tidem} data}

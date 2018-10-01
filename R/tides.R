@@ -2,10 +2,21 @@
 
 ##. TESTinfer1 <- !TRUE
 
-#' @title Class to Store Tidal Models
+#' Class to Store Tidal Models
 #'
-#' @description
-#' Class to store tidal-constituent models.
+#' This class stores tidal-constituent models.
+#'
+#' @templateVar class tidem
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #' @family functions that plot \code{oce} data
@@ -15,6 +26,7 @@ setClass("tidem", contains="oce")
 setMethod(f="initialize",
           signature="tidem",
           definition=function(.Object) {
+              .Object@metadata$version <- ""
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'tidem' object"
               return(.Object)
@@ -115,9 +127,10 @@ NULL
 setMethod(f="summary",
           signature="tidem",
           definition=function(object, p, constituent, ...) {
+              version <- object@metadata$version
               if (missing(p))
                   p <- 1
-              ok <- object@data$p <= p
+              ok <- object@data$p <= p || version == "3"
               haveP <- any(!is.na(object@data$p))
               if (missing(constituent)) {
                   fit <- data.frame(Const=object@data$const[ok],
@@ -141,20 +154,26 @@ setMethod(f="summary",
                                     p=object@data$p[i])
               }
               cat("tidem summary\n-------------\n")
-              cat("\nCall:\n")
-              cat(paste(deparse(object[["call"]]), sep="\n", collapse="\n"), "\n", sep="")
-              cat("RMS misfit to data: ", sqrt(var(object[["model"]]$residuals)), '\n')
-              cat("\nFitted model:\n")
-              f <- fit[3:6]
-              rownames(f) <- as.character(fit[, 2])
-              digits <- 3
-              if (haveP) {
-                  printCoefmat(f, digits=digits,
-                               signif.stars=getOption("show.signif.stars"),
-                               signif.legend=TRUE,
-                               P.values=TRUE, has.Pvalue=TRUE, ...)
+              if (version != "3") {
+                  cat("\nCall:\n")
+                  cat(paste(deparse(object[["call"]]), sep="\n", collapse="\n"), "\n", sep="")
+                  cat("RMS misfit to data: ", sqrt(var(object[["model"]]$residuals)), '\n')
+                  cat("\nFitted Model:\n")
+                  f <- fit[3:6]
+                  rownames(f) <- as.character(fit[, 2])
+                  if (haveP) {
+                      printCoefmat(f, digits=3,
+                                   signif.stars=getOption("show.signif.stars"),
+                                   signif.legend=TRUE,
+                                   P.values=TRUE, has.Pvalue=TRUE, ...)
+                  } else {
+                      printCoefmat(f[, -4], digits=3)
+                  }
               } else {
-                  printCoefmat(f[, -4], digits=digits)
+                  cat("\nSupplied Model:\n")
+                  f <- fit[3:5]
+                  rownames(f) <- as.character(fit[, 2])
+                  printCoefmat(f, digits=3)
               }
               processingLogShow(object)
               invisible()
@@ -220,7 +239,7 @@ setMethod(f="[[<-",
 #' are drawn at the top. Any value of \code{sides} that is not either 1 or 3
 #' is converted to 3.
 #'
-#' @param col a character vector naming colours to be used for \code{constituents}.
+#' @param col a character vector naming colors to be used for \code{constituents}.
 #' Ignored if \code{sides=3}. Repeated to be of the same length as
 #' \code{constituents}, otherwise.
 #'
@@ -312,6 +331,121 @@ setMethod(f="plot",
               ##mtext(x$call, side=4, adj=1, cex=2/3)
               if (!all(is.na(pmatch(names(list(...)), "main")))) title(...)
           })
+
+#' Create tidem object from fitted harmonic data
+#'
+#' This function is intended to provide a bridge to
+#' \code{\link{predict.tidem}}, enabling tidal predictions based
+#' on published tables of harmonic fits. \strong{CAUTION:} this
+#' is a provisional function, and its action and argument list
+#' may change through the summer of 2018 ... use with caution!
+#'
+#' @param tRef a POSIXt value indicating the mean time of the
+#' observations used to develop the harmonic model. This is rounded
+#' to the nearest hour in \code{as.tidem}, to match \code{\link{tidem}}.
+#'
+#' @param latitude Numerical value indicating the latitude of the
+#' observations that were used to create the harmonic model.
+#'
+#' @param name Character vector holding names of constituents, in the
+#' notation used within the \code{const} element of \code{data(tidedata)}.
+#'
+#' @param amplitude Numeric vector of constituent amplitudes.
+#'
+#' @param phase Numeric vector of constituent Greenwich phases.
+#' @template debugTemplate
+#'
+#' @return An object of \code{\link{tidem-class}}, with only minimal
+#' contents.
+#'
+#' @examples
+#' # Simulate a tide table with output from tidem().
+#' data(sealevelTuktoyaktuk)
+#' # 'm0' is model fitted by tidem()
+#' m0 <- tidem(sealevelTuktoyaktuk)
+#' p0 <- predict(m0, sealevelTuktoyaktuk[["time"]])
+#' m1 <- as.tidem(mean(sealevelTuktoyaktuk[["time"]]), sealevelTuktoyaktuk[["latitude"]],
+#'                m0[["name"]], m0[["amplitude"]], m0[["phase"]])
+#' # Test agreement with tidem() result, by comparing predicted sealevels.
+#' p1 <- predict(m1, sealevelTuktoyaktuk[["time"]])
+#' expect_lt(max(abs(p1 - p0), na.rm=TRUE), 1e-10)
+#' # Simplified harmonic model, using large constituents
+#' # > m0[["name"]][which(m[["amplitude"]]>0.05)]
+#' # [1] "Z0"  "MM"  "MSF" "O1"  "K1"  "OO1" "N2"  "M2"  "S2"
+#' h <- "
+#' name  amplitude      phase
+#'   Z0 1.98061875   0.000000
+#'   MM 0.21213065 263.344739
+#'  MSF 0.15605629 133.795004
+#'   O1 0.07641438  74.233130
+#'   K1 0.13473817  81.093134
+#'  OO1 0.05309911 235.749693
+#'   N2 0.08377108  44.521462
+#'   M2 0.49041340  77.703594
+#'   S2 0.22023705 137.475767"
+#' coef <- read.table(text=h, header=TRUE)
+#' m2 <- as.tidem(mean(sealevelTuktoyaktuk[["time"]]),
+#'                sealevelTuktoyaktuk[["latitude"]],
+#'                coef$name, coef$amplitude, coef$phase)
+#' p2 <- predict(m2, sealevelTuktoyaktuk[["time"]])
+#' expect_lt(max(abs(p2 - p0), na.rm=TRUE), 1)
+#' par(mfrow=c(3, 1))
+#' oce.plot.ts(sealevelTuktoyaktuk[["time"]], p0)
+#' ylim <- par("usr")[3:4] # to match scales in other panels
+#' oce.plot.ts(sealevelTuktoyaktuk[["time"]], p1, ylim=ylim)
+#' oce.plot.ts(sealevelTuktoyaktuk[["time"]], p2, ylim=ylim)
+as.tidem <- function(tRef, latitude, name, amplitude, phase, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "as.tidem() {\n", sep="", unindent=1)
+    if (missing(tRef))
+        stop("tRef must be given")
+    if (missing(latitude))
+        stop("latitude must be given")
+    if (missing(name))
+        stop("name must be given")
+    if (missing(amplitude))
+        stop("amplitude must be given")
+    if (missing(phase))
+        stop("phase must be given")
+    nname <- length(name)
+    if (nname != length(amplitude))
+        stop("lengths of name and amplitude must be equal but they are ", nname, " and ", length(amplitude))
+    if (nname != length(phase))
+        stop("lengths of name and phase must be equal but they are ", nname, " and ", length(phase))
+    data("tidedata", package="oce", envir=environment())
+    tidedata <- get("tidedata")
+    tRef <- numberAsPOSIXct(3600 * round(as.numeric(tRef, tz="UTC") / 3600), tz="UTC")
+    oceDebug(debug, "input head(name): ", paste(head(name), collapse=" "), "\n")
+    oceDebug(debug, "input head(phase): ", paste(head(phase), collapse=" "), "\n")
+    oceDebug(debug, "input head(amplitude): ", paste(head(amplitude), collapse=" "), "\n")
+
+    freq <- rep(NA, nname)
+    indices <- rep(NA, nname)
+    for (i in seq_along(name)) {
+        j <- which(tidedata$const$name==name[i])
+        vuf <- tidemVuf(tRef, j=j, latitude=latitude)
+        ## oceDebug(debug, "j=", j, ", vuf=", deparse(vuf), "\n")
+        indices[i] <- j
+        amplitude[i] <- amplitude[i] * vuf$f
+        phase[i] <- phase[i] - (vuf$v+vuf$u)*360
+        freq[i] <- tidedata$const$freq[j]
+    }
+    oceDebug(debug, "after vuf correction, head(phase): ", paste(head(phase), collapse=" "), "\n")
+    oceDebug(debug, "after vuf correction, head(amplitude): ", paste(head(amplitude), collapse=" "), "\n")
+    oceDebug(debug, "} # as.tidem()\n", sep="", unindent=1)
+    phase <- phase %% 360
+    res <- new('tidem')
+    res@data <- list(tRef=tRef,
+                      const=indices,
+                      name=name,
+                      freq=freq,
+                      amplitude=amplitude,
+                      phase=phase,
+                      p=rep(NA, nname))
+    res@metadata$version <- "3"
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
+}
 
 
 #' @title Nodal Modulation Calculations for Tidem
@@ -422,8 +556,8 @@ tidemVuf <- function(t, j, latitude=NULL)
     }
     if (length(v) < length(u)) {
         warning("trimming u and f to get same length as v -- this is a bug")
-        u <- u[1:length(v)]
-        f <- f[1:length(v)]
+        u <- u[seq_along(v)]
+        f <- f[seq_along(v)]
     }
     list(v=v, u=u, f=f)
 }
@@ -546,7 +680,7 @@ tidemAstron <- function(t)
 #' step was added on 2017-12-27, to make \code{tidem} behave the same
 #' way as the Foreman (1977) code [1], as illustrated in his
 #' Appendices 7.2 and 7.3. (As an aside, his Appendix 7.3 has some errors,
-#' e.g. the frequency for the 2SK5 constituent is listed there (p58) as 
+#' e.g. the frequency for the 2SK5 constituent is listed there (p58) as
 #' 0.20844743, but it is listed as 0.2084474129 in his Appendix 7.1 (p41).
 #' For this reason, the frequency comparison is relaxed to a \code{tol}
 #' value of \code{1e-7} in a portion of the oce test suite
@@ -887,26 +1021,28 @@ tidem <- function(t, x, constituents, infer=NULL,
     name <- tc$name[indices]
     freq <- tc$freq[indices]
     kmpr <- tc$kmpr[indices]
-    if (debug > 2) {
-        cat("next is at line 875 (initial setup, before 'infer' handled)\n")
-        print(data.frame(name=name, indices=indices, freq=freq, kmpr=kmpr))
-    }
+    ## if (debug > 2) {
+    ##     cat("next is at line 875 (initial setup, before 'infer' handled)\n")
+    ##     print(data.frame(name=name, indices=indices, freq=freq, kmpr=kmpr))
+    ## }
 
     nc <- length(name)
 
     ## Check Rayleigh criterion
-    interval <- (as.numeric(tail(sl@data$time, 1)) - as.numeric(sl@data$time[1])) / 3600
+    interval <- diff(range(as.numeric(sl@data$time), na.rm=TRUE)) / 3600 # in hours
+    oceDebug(debug, "interval=", interval, " hours\n")
     dropTerm <- NULL
     for (i in 1:nc) {
         cc <- which(tc$name == kmpr[i])
         if (length(cc)) {
             cannotFit <- (interval * abs(freq[i]-tc$freq[cc])) < rc
-            ##cat("compare name=", name[i], "with", kmpr[i],":", cannotFit,"\n")
+            oceDebug(debug, "name=", name[i], "kmpr[", i, "]=", kmpr[i],", cannotFit=", cannotFit,"\n")
             if (cannotFit) {
                 dropTerm <- c(dropTerm, i)
             }
         }
     }
+    oceDebug(debug, "before trimming constituents, name=", paste(name, collapse=" "), "\n")
     if (length(dropTerm) > 0) {
         cat("Note: the tidal record is too short to fit for constituents: ", paste(name[dropTerm], collapse=" "), "\n")
         indices <- indices[-dropTerm]
@@ -914,6 +1050,7 @@ tidem <- function(t, x, constituents, infer=NULL,
         freq <- freq[-dropTerm]
         kmpr <- kmpr[-dropTerm]
     }
+    oceDebug(debug, "after trimming, name=", paste(name, collapse=" "), "\n")
     ## Ensure that any added constitutents are in the list, i.e. prevent
     ## the Rayleigh criterion from trimming them. (Before work on
     ## issue 1350, they would simply be dropped if they failed the Rayleigh
@@ -977,6 +1114,8 @@ tidem <- function(t, x, constituents, infer=NULL,
     rm(oindices) # clean up namespace
 
     nc <- length(name)
+    if (0 == nc)
+        stop("cannot fit for any constitutents")
     elevation <- sl[["elevation"]]
     time <- sl[["time"]]
     nt <- length(elevation)
@@ -1081,7 +1220,7 @@ tidem <- function(t, x, constituents, infer=NULL,
             if (infer$from[n] %in% name) {
                 ifrom <- which(name == infer$from[n])[1]
                 if (infer$name[n] %in% name) {
-                    message("name already in list")
+                    ##message("name already in list")
                     iname <- which(name == infer$name[n])[1]
                     ## Update, skipping 'indices', 'name' and 'freq', since they are already OK.
                     amplitude[iname] <- infer$amp[n] * amplitude[ifrom]
@@ -1236,19 +1375,25 @@ tidem <- function(t, x, constituents, infer=NULL,
 }
 
 
-#' @title Predict a Time Series from a Tidem Tidal Model
+#' @title Predict a Time Series from a Tidal Model
 #'
 #' @description
 #' Predict a time series from a tidal model.
-#' This is a wrapper around the predict method for \code{object$model}.
 #'
 #' @param object A \code{tidem} object, i.e. one inheriting from
 #' \code{\link{tidem-class}}.
-#' @param newdata optional vector of POSIXt times at which to make the
-#' prediction.  If not present, \code{predict.tidem} uses the times that were
-#' provided in the original call to \code{\link{tidem}}.
+#'
+#' @param newdata vector of POSIXt times at which to make the
+#' prediction.  For models created with \code{\link{tidem}},
+#' \code{newdata} is optional, and if it is not provided, then
+#' the predictions are at the observation times given to
+#' \code{\link{tidem}}. However, \code{newdata} is required,
+#' if \code{\link{as.tidem}} had been used to create \code{object}.
+#'
 #' @param \dots optional arguments passed on to children.
+#'
 #' @return A vector of predictions.
+#'
 #' @examples
 #'
 #' \dontrun{
@@ -1272,7 +1417,7 @@ tidem <- function(t, x, constituents, infer=NULL,
 #' oce.plot.ts(time[look], elevation[look])
 #' # 360s = 10 minute timescale
 #' t <- seq(from=time[1], to=time[max(look)], by=360)
-#' lines(t, predict(m,newdata=t), col='red')
+#' lines(t, predict(m, newdata=t), col='red')
 #' legend("topright", col=c("black","red"),
 #' legend=c("data","model"),lwd=1)
 #' }
@@ -1281,9 +1426,29 @@ tidem <- function(t, x, constituents, infer=NULL,
 #' @family things related to \code{tidem} data
 predict.tidem <- function(object, newdata, ...)
 {
-    if (!missing(newdata) && !is.null(newdata)) {
-        ##newdata.class <- class(newdata)
-        if (inherits(newdata, "POSIXt")) {
+    if (!missing(newdata) && !inherits(newdata, "POSIXt"))
+        stop("newdata must be of class POSIXt")
+    version <- object@metadata$version
+    if (!is.null(version) && version == 3) {
+        if (missing(newdata))
+            stop("must supply newdata because object was created with as.tidem()")
+        hour2pi <- 2 * pi * (as.numeric(newdata) - as.numeric(object[["tRef"]])) / 3600
+        ## message("head(hour2pi): ", paste(head(hour2pi), collapse=" "))
+        nc <- length(object@data$name)
+        res <- rep(0, nc)
+        for (i in seq_len(nc)) {
+            ## signal = a*sin() + b*cos()
+            ## amp = sqrt(a^2 + b^2)
+            ## pha = atan(a/b)
+            ## a = amp*sin(pha)
+            ## b = amp*cos(pha)
+            omega.t <- object@data$freq[i] * hour2pi
+            a <- object@data$amplitude[i] * sin(2 * pi * object@data$phase[i] / 360)
+            b <- object@data$amplitude[i] * cos(2 * pi * object@data$phase[i] / 360)
+            res <- res + a*sin(omega.t) + b*cos(omega.t)
+        }
+    } else {
+        if (!missing(newdata) && !is.null(newdata)) {
             freq <- object@data$freq[-1]     # drop first (intercept)
             name <- object@data$name[-1]     # drop "z0" (intercept)
             nc <- length(freq)
@@ -1302,14 +1467,12 @@ predict.tidem <- function(object, newdata, ...)
             colnames(x) <- name2
             res <- predict(object@data$model, newdata=list(x=x), ...)
         } else {
-            stop("newdata must be of class POSIXt")
+            if (!("version" %in% names(object@metadata)))
+                warning("prediction is being made based on an old object; it may be wrong\n")
+            res <- as.numeric(predict(object@data$model, ...))
         }
-    } else {
-        if (!("version" %in% names(object@metadata)))
-            warning("prediction is being made based on an old object; it may be wrong\n")
-        res <- predict(object@data$model, ...)
     }
-    as.numeric(res)
+    res
 }
 
 

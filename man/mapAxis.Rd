@@ -6,9 +6,9 @@
 \usage{
 mapAxis(side = 1:2, longitude = NULL, latitude = NULL, tick = TRUE,
   line = NA, pos = NA, outer = FALSE, font = NA, lty = "solid",
-  lwd = 1, lwd.ticks = lwd, col = NULL, col.ticks = NULL, hadj = NA,
-  padj = NA, tcl = -0.3, cex.axis = 1, mgp = c(0, 0.5, 0),
-  debug = getOption("oceDebug"))
+  lwd = 1, lwd.ticks = lwd, col = NULL, col.ticks = NULL,
+  hadj = NA, padj = NA, tcl = -0.3, cex.axis = 1, mgp = c(0, 0.5,
+  0), debug = getOption("oceDebug"))
 }
 \arguments{
 \item{side}{the side at which labels are to be drawn.  If not provided,
@@ -38,9 +38,9 @@ interesections of the grid lines with the plotting box.}
 
 \item{lwd.ticks}{tick line width, passed to \code{\link{axis}}.}
 
-\item{col}{axis colour, passed to \code{\link{axis}}.}
+\item{col}{axis color, passed to \code{\link{axis}}.}
 
-\item{col.ticks}{axis tick colour, passed to \code{\link{axis}}.}
+\item{col.ticks}{axis tick color, passed to \code{\link{axis}}.}
 
 \item{hadj}{an argument that is transmitted to \code{\link{axis}}.}
 
@@ -100,3 +100,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley
 }
+\concept{functions related to maps}

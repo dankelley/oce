@@ -5,20 +5,25 @@
 \alias{handleFlags,argo-method}
 \title{Handle Flags in ARGO Objects}
 \usage{
-\S4method{handleFlags}{argo}(object, flags = list(), actions = list(),
-  debug = integer())
+\S4method{handleFlags}{argo}(object, flags = NULL, actions = NULL,
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{An object of \code{\link{argo-class}}.}
 
-\item{flags}{An optional \code{\link{list}} containing (a)
-items with names of entries in the \code{data} slot of \code{object},
-or (b) a single unnamed item. In the first case, the attention is
-focussed on the named items, while in the second case the
-all the data in the \code{object}'s \code{data} slot are examined.
-Each element in the list must be set to an integer or vector of integers,
-specifying conditions to be met before actions are to be taken.
-See \dQuote{Details} for the default that is used if \code{flags} is not supplied.}
+\item{flags}{A \code{\link{list}} specifying flag values upon which
+actions will be taken. This can take two forms. In the first, the
+list has named elements each containing a vector of integers. For example,
+salinities flagged with values of 1 or 3 through 9 would be specified
+by \code{flags=list(salinity=c(1,3:9))}. Several data items can be specified,
+e.g. \code{flags=list(salinity=c(1,3:9), temperature=c(1,3:9))} indicates
+that the actions are to take place for both salinity and temperature.
+In the second form, \code{flags} is a list with unnamed vectors, and
+this means to apply the actions to all the data entries; thus,
+\code{flags=list(c(1,3:9))} means to apply not just to salinity and temperature,
+but also to everything else that is in the \code{data} slot. If \code{flags}
+is not provided, then \code{\link{defaultFlags}} is called, to try to
+determine a conservative default.}
 
 \item{actions}{An optional \code{\link{list}} that contains items with
 names that match those in the \code{flags} argument.  If \code{actions}
@@ -53,56 +58,43 @@ Otherwise, \code{handleFlags} analyses the data-quality flags within
 the object, in relation to the \code{flags} argument, and interprets
 the \code{action} argument to select an action to be applied to matched
 data.
-
-Reasonable defaults are used if \code{flags} and \code{actions}
-are not supplied (see \sQuote{Details}),
-but different schemes are used in different
-data archives, so it is risky to rely on these defaults.
-It is usually necessary to tailor \code{flags} and \code{actions}
-to the data and the analysis goals.
-}
-\details{
-If \code{flags} and \code{actions} are not provided, the
-default is to use ARGO flags [1], in which the
-value 1 indicates good data, and other values indicate either unchecked,
-suspicious, or bad data. Any data not flagged as good are set
-to \code{NA} in the returned value. Since Argo flag codes run
-from 0 to 9, with 1 indicating the highest level of confidence
-in the data, the defaults are
-\code{flags=list(c(0,2:9))} and
-\code{actions=list("NA")}.
 }
 \examples{
-\dontrun{
 library(oce)
 data(argo)
-# 1. Default: anything not flagged as 1 is set to NA, to focus
-# solely on 'good', in the Argo scheme.
-argoNew <- handleFlags(argo)
-# demonstrate replacement, looking at the second profile
+# 1. Default: set to NA any data that is not flagged with
+# code value 1 (meaning \\code{"passed_all_tests"})
+argoNew <- handleFlags(argo, flags=c(0, 2:9))
+# Demonstrate replacement, looking at the second profile
 f <- argo[["salinityFlag"]][,2] # first column with a flag=4 entry
 df <- data.frame(flag=f, orig=argo[["salinity"]][,2], new=argoNew[["salinity"]][,2])
-df[11:15,]
-##    flag   orig    new
-## 11    1 35.207 35.207
-## 12    1 35.207 35.207
-## 13    4 35.209     NA
-## 14    1 35.207 35.207
-## 15    1 35.207 35.207
+df[11:15,] # notice line 13
 
-# 2. A less restrictive case: include also 'questionable' data,
-# and only apply this action to salinity.
-argoNew <- handleFlags(argo, flags=list(salinity=4))
-}
+# 2. A less restrictive case: focussing just on salinity,
+# retain only data with flags 1 (meaning \\code{"passed_all_tests"})
+# and 2 (\\code{"probably_good"}).
+argoNew <- handleFlags(argo, flags=list(salinity=c(0, 3:9)))
 
 }
 \references{
 1. \url{http://www.argo.ucsd.edu/Argo_date_guide.html#dmodedata}
 }
 \seealso{
-Other functions that handle data-quality flags: \code{\link{handleFlags,ctd-method}},
+Other functions relating to data-quality flags: \code{\link{defaultFlags}},
+  \code{\link{handleFlags,adp-method}},
+  \code{\link{handleFlags,ctd-method}},
   \code{\link{handleFlags,section-method}},
-  \code{\link{handleFlags}}
+  \code{\link{handleFlags}},
+  \code{\link{initializeFlagScheme,ctd-method}},
+  \code{\link{initializeFlagScheme,oce-method}},
+  \code{\link{initializeFlagScheme,section-method}},
+  \code{\link{initializeFlagScheme}},
+  \code{\link{initializeFlags,adp-method}},
+  \code{\link{initializeFlags,oce-method}},
+  \code{\link{initializeFlags}},
+  \code{\link{setFlags,adp-method}},
+  \code{\link{setFlags,ctd-method}},
+  \code{\link{setFlags,oce-method}}, \code{\link{setFlags}}
 
 Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{[[<-,argo-method}}, \code{\link{argo-class}},
@@ -112,3 +104,8 @@ Other things related to \code{argo} data: \code{\link{[[,argo-method}},
   \code{\link{subset,argo-method}},
   \code{\link{summary,argo-method}}
 }
+\author{
+Dan Kelley
+}
+\concept{functions relating to data-quality flags}
+\concept{things related to \code{argo} data}

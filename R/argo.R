@@ -1,20 +1,30 @@
 # vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to hold Argo data
+#' Class to Store Argo Data
 #'
-#' This class stores data from argo floats.
+#' This class stores data from Argo floats.
 #'
 #' An \code{argo} object may be read with \code{\link{read.argo}} or
 #' created with \code{\link{as.argo}}.  Argo data can be gridded to constant
-#' pressures with \code{\link{argoGrid}}.  Plots can be made with
-#' \code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}} produces statistical
-#' summaries and \code{show} produces overviews. The usual oce generic
-#' functions are available, e.g. \code{\link{[[,argo-method}} may
-#' be used to extract data, and \code{\link{[[<-,argo-method}} may
-#' be used to insert data.
+#' pressures with \code{\link{argoGrid}} or subsetted with
+#' \code{\link{subset,argo-method}}.  Plots can be made with
+#' \code{\link{plot,argo-method}}, while \code{\link{summary,argo-method}}
+#' produces statistical summaries and \code{show} produces overviews.
 #'
 #' See \url{http://www.argo.ucsd.edu/Gridded_fields.html} for some
 #' argo-related datasets that may be useful in a wider context.
+#'
+#' @templateVar class argo
+#'
+#' @templateVar dataExample The key items stored in this slot include  equal-length vectors \code{time}, \code{longitude}, \code{latitude} and equal-dimension matrices \code{pressure}, \code{salinity}, and \code{temperature}.
+#'
+#' @templateVar metadataExample Examples that are of common interest include \code{id}, a vector of ID codes for the profiles, and \code{dataMode}, a vector of strings indicating whether the profile is in archived mode (\code{"A"}), realtime mode (\code{"R"}), or delayed mode (\code{"D"}).
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley and Clark Richards
 #'
@@ -53,35 +63,46 @@ setClass("argo", contains="oce")
 #' @source This file was downloaded using the unix command
 #'\preformatted{
 #' ftp ftp://ftp.ifremer.fr/ifremer/argo/dac/bodc/6900388/6900388_prof.nc
-#'} issued on 2017 July 7. 
+#'} issued on 2017 July 7.
 #'
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{argo} data
 NULL
 
 
-
-
 #' @title Extract Something From an Argo Object
 #' @param x An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.
-#' @examples
-#' data(argo)
-#' dim(argo[['temperature']])
 #'
-#' @section Details of the specialized argo method:
+#' @templateVar class argo
+#'
+#' @section Details of the specialized \code{argo} method:
+#'
+#' There are several possibilities, depending on the nature of \code{i}.
 #'\itemize{
-#' \item If \code{i} is the string \code{"SA"}, then the method
-#' computes Absolute Salinity using \code{\link[gsw]{gsw_SA_from_SP}},
-#' using \code{salinityAdjusted} (etc) if available in the \code{data}
-#' slot of \code{x}, otherwise using \code{salinity}.
-#' \item Similarly, for \code{"CT"}, Conservative Temperature is returned.
-#' \item Otherwise, if \code{i} is in the \code{data} slot of \code{x},
+#' \item If \code{i} is the string \code{"SA"}, then
+#' Absolute Salinity is computed using \code{\link[gsw]{gsw_SA_from_SP}},
+#' with \code{salinityAdjusted} (etc) if available in the \code{data}
+#' slot of \code{x}, otherwise using \code{salinity} (etc).
+#' \item For \code{"CT"}, Conservative Temperature is returned.
+#' \item For \code{"depth"},  matrix of depths is returned.
+#' \item If \code{i} is in the \code{data} slot of \code{x},
 #' then it is returned, otherwise if it is in the \code{metadata} slot,
 #' then that is returned, otherwise \code{NULL} is returned.
 #'}
 #'
 #' @template sub_subTemplate
+#'
+#' @examples
+#' data(argo)
+#' # 1. show that dataset has 223 profiles, each with 56 levels
+#' dim(argo[['temperature']])
+#'
+#' # 2. show importance of focussing on data flagged 'good'
+#' fivenum(argo[["salinity"]],na.rm=TRUE)
+#' fivenum(argo[["salinity"]][argo[["salinityFlag"]]==1],na.rm=TRUE)
+#'
 #' @family things related to \code{argo} data
+#' @author Dan Kelley
 setMethod(f="[[",
           signature(x="argo", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
@@ -174,15 +195,15 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #' Convert Argo Data Name to Oce Name
 #'
 #' This function is used internally by \code{\link{read.argo}} to convert Argo-convention
-#' data names to oce-convention names. Users should not call this directly, since 
+#' data names to oce-convention names. Users should not call this directly, since
 #' its return value may be changed at any moment (e.g. to include units as well
 #' as names).
-#' 
+#'
 #'
 #' The inference of names was done
 #' by inspection of some data files, using [1] as a reference. It should be noted,
 #' however, that the data files examined contain some names that are not
-#' undocumented in [1], and others that are listed only in its changelog, 
+#' undocumented in [1], and others that are listed only in its changelog,
 #' with no actual definitions being given. For example, the files had six distinct
 #' variable names that seem to relate to phase in the oxygen sensor, but
 #' these are not translated by the present function because these
@@ -190,7 +211,7 @@ getData <- function(file, name) # a local function -- no need to pollute namesap
 #' in [2].
 #'
 #' The names are converted with
-#' \code{\link{gsub}}, using the \code{ignore.case} argument of the present 
+#' \code{\link{gsub}}, using the \code{ignore.case} argument of the present
 #' function.
 #' The procedure
 #' is to first handle the items listed in the following table, with string
@@ -348,9 +369,17 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' or \code{pressure} or by \code{profile} (a made-up variable)
 #' or \code{id} (from the \code{metadata} slot).
 #'
-#' @param x An object inheriting from \code{\link{argo-class}}.
+#' @param x An \code{argo} object, i.e. one inheriting from \code{\link{argo-class}}.
+#'
 #' @param subset An expression indicating how to subset \code{x}.
-#' @param ... Ignored.
+#'
+#' @param ... optional arguments, of which only the first is examined. The
+#' only possibility is \code{within}, a polygon enclosing data to be
+#' retained. This must be either a list or data frame, containing items
+#' named either \code{x} and \code{y} or \code{longitude} and
+#' \code{latitude}; see Example 4.  If \code{within} is given,
+#' then \code{subset} is ignored.
+#'
 #' @return An argo object.
 #'
 #' @examples
@@ -373,6 +402,15 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 #' plotTS(argo)
 #' plotTS(subset(argo, "adjusted"))
 #'
+#' # Example 4. Subset by a polygon determined with locator()
+#' \dontrun{
+#' par(mfrow=c(2, 1))
+#' plot(argo, which="map")
+#' bdy <- locator(4) # Click the mouse on 4 boundary points
+#' argoSubset <- subset(argo, within=bdy)
+#' plot(argoSubset, which="map")
+#'}
+#'
 #' @author Dan Kelley
 #'
 #' @family things related to \code{argo} data
@@ -380,14 +418,95 @@ argoNames2oceNames <- function(names, ignore.case=TRUE)
 setMethod(f="subset",
           signature="argo",
           definition=function(x, subset, ...) {
-              if (missing(subset)) {
-                  warning("subset.argo(): argument 'subset' must be given\n", call.=FALSE)
-                  return(x)
-              }
-              if (is.character(substitute(subset))) {
+              subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+              res <- x
+              dots <- list(...)
+              dotsNames <- names(dots)
+              withinGiven <- length(dots) && ("within" %in% dotsNames)
+              debug <- getOption("oceDebug")
+              if (length(dots) && ("debug" %in% names(dots)))
+                  debug <- dots$debug
+              if (withinGiven) {
+                  oceDebug(debug, "subsetting with 'within' method")
+                  polygon <- dots$within
+                  if (!is.data.frame(polygon) && !is.list(polygon))
+                      stop("'within' must be a data frame or a polygon")
+                  polygonNames <- names(polygon)
+                  lonp <- if ("x" %in% polygonNames) {
+                      polygon$x
+                  } else if ("longitude" %in% polygonNames) {
+                      polygon$longitude
+                  } else {
+                      stop("'within' must contain either 'x' or 'longitude'")
+                  }
+                  latp <- if ("y" %in% polygonNames) {
+                      polygon$y
+                  } else if ("latitude" %in% polygonNames) {
+                      polygon$latitude
+                  } else {
+                      stop("'within' must contain either 'y' or 'latitude'")
+                  }
+                  lon <- x[["longitude", "byStation"]]
+                  lat <- x[["latitude", "byStation"]]
+                  if (requireNamespace("sp", quietly=TRUE)) {
+                      keep <- 1==sp::point.in.polygon(lon, lat, lonp, latp)
+                  } else {
+                      stop("cannot use 'within' becaue the 'sp' package is not installed")
+                  }
+                  ## Metadata
+                  for (name in names(x@metadata)) {
+                      oceDebug(debug, "subsetting metadata item named '", name, "'\n", sep="")
+                      ## Pass oce-generated things through directly.
+                      if (name %in% c("units", "flags", "filename", "flagScheme", "dataNamesOriginal")) {
+                          ##.message("  ... special case, so passed directly")
+                          next
+                      }
+                      item <- x@metadata[[name]]
+                      ## Handle things that are encoded as characters in a string,
+                      ## namely 'direction', 'juldQc', and 'positionQc'.
+                      if (is.character(item) && length(item) == 1) {
+                          ##.message("'", name, "' is character-encoded")
+                          res@metadata[[name]] <- paste(strsplit(item,"")[[1]][keep],collapse="")
+                          ##.message(" ... ok")
+                      } else if (is.vector(name)) {
+                          ##.message("'", name, "' is a vector")
+                          res@metadata[[name]] <- item[keep]
+                          ##.message(" ... ok")
+                      } else if (is.matrix(name)) {
+                          ##.message("'", name, "' is a matrix")
+                          res@metadata[[name]] <- item[, keep]
+                          ##.message(" ... ok")
+                      } else {
+                          stop("cannot subset metadata item named '", name, "' because it is not a length-one string, a vector, or a matrix")
+                      }
+                  }
+                  ## Data
+                  for (name in names(x@data)) {
+                      oceDebug(debug, "subsetting data item named '", name, "'\n", sep="")
+                      item <- x@data[[name]]
+                      if ("time" == name) {
+                          ##.message("'", name, "' is time (not a vector)")
+                          res@data$time <- item[keep]
+                          ##.message(" ... ok")
+                      } else if (is.vector(item)) {
+                          ##.message("'", name, "' is vector")
+                          res@data[[name]] <- item[keep]
+                          ##.message(" ... ok")
+                      } else if (is.matrix(item)) {
+                          ##.message("'", name, "' is matrix")
+                          res@data[[name]] <- item[, keep]
+                          ##.message(" ... ok")
+                      } else {
+                          stop("argo object has data item '", name, "' that is neither a vector nor a matrix, so we cannot subset it")
+                      }
+                  }
+                  res@processingLog <- processingLogAppend(res@processingLog,
+                                                           paste("subset(x, within) kept ", sum(keep), " of ",
+                                                                 length(keep), " stations", sep=""))
+              } else {
+                  if (is.character(substitute(subset))) {
                   if (subset != "adjusted")
                       stop("if subset is a string, it must be \"adjusted\"")
-                  res <- x
                   dataNames <- names(x@data)
                   ## Seek 'Adjusted' names
                   adjustedIndices <- grep(".*Adjusted$", dataNames)
@@ -436,7 +555,7 @@ setMethod(f="subset",
                   } else if (length(grep("profile", subsetString))) {
                       ## add profile into the data, then do as usual
                       tmp <- x@data
-                      tmp$profile <- 1:length(x@data$time)
+                      tmp$profile <- seq_along(x@data$time)
                       keep <- eval(substitute(subset), tmp, parent.frame(2))
                       rm(tmp)
                   } else if (length(grep("pressure", subsetString))) {
@@ -506,7 +625,8 @@ setMethod(f="subset",
                       ## res@data$salinity <- x@data$salinity[, keep]
                       ## res@data$temperature <- x@data$temperature[, keep]
                       ## res@data$pressure <- x@data$pressure[, keep]
-                      res@processingLog <- processingLogAppend(res@processingLog, paste("subset.argo(x, subset=", subsetString, ")", sep=""))
+                  }
+                  res@processingLog <- processingLogAppend(res@processingLog, paste("subset.argo(x, subset=", subsetString, ")", sep=""))
                   }
               }
               res
@@ -1005,6 +1125,7 @@ read.argo <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     res@processingLog <- if (is.character(file))
         processingLogAppend(res@processingLog, paste("read.argo(\"", file, "\")", sep=""))
     else processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res <- initializeFlagScheme(res, "argo")
     res
 }
 
@@ -1091,7 +1212,7 @@ as.argo <- function(time, longitude, latitude,
 #' not complete (e.g. \code{"salinity"} matches to both
 #' \code{"salinity ts"} and \code{"salinity profile"}.).
 #' \itemize{
-#'     \item \code{which=1} or \code{which="trajectory"} gives a
+#'     \item \code{which=1}, \code{which="trajectory"} or \code{which="map"} gives a
 #'     plot of the argo trajectory, with the coastline, if one is provided.
 #'
 #'     \item \code{which=2} or \code{"salinity ts"} gives a time series of
@@ -1126,10 +1247,10 @@ as.argo <- function(time, longitude, latitude,
 #'
 #' @param type plot type, either \code{"l"} or \code{"p"}.
 #'
-#' @param col optional list of colours for plotting.
+#' @param col optional list of colors for plotting.
 #'
 #' @param fill Either a logical, indicating whether to fill the land with
-#' light-gray, or a colour name.  Owing to problems with some projections, the
+#' light-gray, or a color name.  Owing to problems with some projections, the
 #' default is not to fill.
 #'
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also for
@@ -1222,7 +1343,8 @@ setMethod(f="plot",
                             units=list(temperature=list(unit=expression(degree*C), scale="ITS-90"),
                                        conductivity=list(list=expression(), scale=""))) # guess on units
               which <- oce.pmatch(which,
-                                  list(trajectory=1,
+                                  list("trajectory"=1,
+                                       "map"=1,
                                        "salinity ts"=2,
                                        "temperature ts"=3,
                                        "TS"=4,
@@ -1388,62 +1510,45 @@ setMethod(f="plot",
 ## DEVELOPERS: You will need to change the docs, and the 3 spots in the code
 ## DEVELOPERS: marked '# DEVELOPER 1:', etc.
 #' @title Handle Flags in ARGO Objects
-#' @details
-#' If \code{flags} and \code{actions} are not provided, the
-#' default is to use ARGO flags [1], in which the
-#' value 1 indicates good data, and other values indicate either unchecked,
-#' suspicious, or bad data. Any data not flagged as good are set
-#' to \code{NA} in the returned value. Since Argo flag codes run
-#' from 0 to 9, with 1 indicating the highest level of confidence
-#' in the data, the defaults are
-#' \code{flags=list(c(0,2:9))} and
-#' \code{actions=list("NA")}.
 #' @param object An object of \code{\link{argo-class}}.
 #' @template handleFlagsTemplate
+#'
 #' @references
 #' 1. \url{http://www.argo.ucsd.edu/Argo_date_guide.html#dmodedata}
+#'
 #' @examples
-#'\dontrun{
 #' library(oce)
 #' data(argo)
-#' # 1. Default: anything not flagged as 1 is set to NA, to focus
-#' # solely on 'good', in the Argo scheme.
-#' argoNew <- handleFlags(argo)
-#' # demonstrate replacement, looking at the second profile
+#' # 1. Default: set to NA any data that is not flagged with
+#' # code value 1 (meaning \code{"passed_all_tests"})
+#' argoNew <- handleFlags(argo, flags=c(0, 2:9))
+#' # Demonstrate replacement, looking at the second profile
 #' f <- argo[["salinityFlag"]][,2] # first column with a flag=4 entry
 #' df <- data.frame(flag=f, orig=argo[["salinity"]][,2], new=argoNew[["salinity"]][,2])
-#' df[11:15,]
-#' ##    flag   orig    new
-#' ## 11    1 35.207 35.207
-#' ## 12    1 35.207 35.207
-#' ## 13    4 35.209     NA
-#' ## 14    1 35.207 35.207
-#' ## 15    1 35.207 35.207
+#' df[11:15,] # notice line 13
 #'
-#' # 2. A less restrictive case: include also 'questionable' data,
-#' # and only apply this action to salinity.
-#' argoNew <- handleFlags(argo, flags=list(salinity=4))
-#'}
+#' # 2. A less restrictive case: focussing just on salinity,
+#' # retain only data with flags 1 (meaning \code{"passed_all_tests"})
+#' # and 2 (\code{"probably_good"}).
+#' argoNew <- handleFlags(argo, flags=list(salinity=c(0, 3:9)))
+#'
+#' @author Dan Kelley
 #'
 #' @family things related to \code{argo} data
 setMethod("handleFlags",
           c(object="argo", flags="ANY", actions="ANY", debug="ANY"),
-          function(object, flags=list(), actions=list(), debug=integer()) {
+          function(object, flags=NULL, actions=NULL, debug=getOption("oceDebug")) {
               ## DEVELOPER 1: alter the next comment to explain your setup
-              ## Default to the Argo QC system, with
-              ## flags from 0 to 4, with flag=1 for acceptable data.
-              if (missing(flags))
-                  flags <- list(c(0, 2:9)) # DEVELOPER 2: alter this line to suit a newdata class
-              if (missing(actions)) {
+              if (is.null(flags)) {
+                  flags <- defaultFlags(object)
+                  if (is.null(flags))
+                      stop("must supply 'flags', or use initializeFlagScheme() on the argo object first")
+              }
+              if (is.null(actions)) {
                   actions <- list("NA") # DEVELOPER 3: alter this line to suit a new data class
                   names(actions) <- names(flags)
               }
-              if (missing(debug))
-                  debug <- getOption("oceDebug")
-              if (any(names(actions)!=names(flags))) {
+              if (any(names(actions)!=names(flags)))
                   stop("names of flags and actions must match")
-              }
-              if (missing(debug))
-                  debug <- 0
               handleFlagsInternal(object, flags, actions, debug)
           })

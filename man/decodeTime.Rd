@@ -92,3 +92,4 @@ Other functions relating to time: \code{\link{GMTOffsetFromTz}}
 \author{
 Dan Kelley
 }
+\concept{functions relating to time}

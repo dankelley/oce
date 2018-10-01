@@ -1,10 +1,8 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-#' @title Class to Store Meteorological Data
+#' Class to Store Meteorological Data
 #'
-#' @description
-#' Class to store meteorological data, with standard slots \code{metadata},
-#' \code{data} and \code{processingLog}.  For objects created with
+#' This class stores meteorological data. For objects created with
 #' \code{\link{read.met}}, the \code{data} slot will contain all the columns
 #' within the original file (with some guesses as to units) in addition to
 #' several calculated quantities such as \code{u} and \code{v}, which are
@@ -12,25 +10,17 @@
 #' obey the oceanographic convention that \code{u>0} is a wind towards the
 #' east.
 #'
-#' @section Methods:
+#' @templateVar class met
 #'
-#' \emph{Accessing values.} For an object named \code{m}, temperature (in degC)
-#' may be accessed as \code{m[["temperature"]]}, dew point (in degC) as
-#' \code{m[["dewPoint"]]}, pressure (in kPa) as \code{m[["pressure"]]},
-#' eastward wind component (in m/s) as \code{m[["u"]]}, northward wind
-#' component (in m/s) as \code{m[["v"]]}, and wind direction (in degrees
-#' clockwise of North) as \code{"direction"}.
-#' The filename from which the data came
-#' (if any) may be found with \code{m[["filename"]]}.  Items in \code{metadata}
-#' must be specifield by full name, but those in \code{data} may be
-#' abbreviated, so long as the abbreviation is unique.
+#' @templateVar dataExample {}
 #'
-#' \emph{Assigning values.} Everything that may be accessed may also be
-#' assigned, e.g.
-#' \preformatted{
-#' m[["temperature"]] <- 1 + m[["temperature"]]
-#' }
-#' increases temperature by 1C.
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}
@@ -209,7 +199,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
             names <- names(time)
         }
         ## Change the following names.
-        ## DateTime Temp DewPointTemp RelHumidity WindDir WindSpeed Visibility Pressure Humidex WindChill Weather 
+        ## DateTime Temp DewPointTemp RelHumidity WindDir WindSpeed Visibility Pressure Humidex WindChill Weather
         if ("WindDir" %in% names)
             time$WindDir <- 10 * time$WindDir
         if ("WindSpeed" %in% names)
@@ -285,7 +275,7 @@ as.met <- function(time, temperature, pressure, u, v, filename="(constructed fro
 #' a copy of the Environment Canada listing of stations, and its
 #' \code{find_station} function provides an easy way to determine Station IDs.
 #' After that, its \code{hcd_hourly} function (and related functions) make
-#' it easy to read data. These data can then be converted to the 
+#' it easy to read data. These data can then be converted to the
 #' \code{met} class with \code{\link{as.met}}, although doing so leaves
 #' many important metadata blank.
 #'
@@ -508,7 +498,7 @@ metNames2oceNames <- function(names, scheme)
 #' m/s and are the components of the vector of wind direction.  In other words,
 #' the oceanographic convention on velocity is employed, not the meteorological
 #' one; the weather forecaster's "North wind" has positive \code{v} and zero
-#' \code{u}.  In addition to these things, \code{data} also contains 
+#' \code{u}.  In addition to these things, \code{data} also contains
 #' \code{wind} (in km/h), taken straight from the data file.
 #' @section Note: There seem to be several similar formats in use, so this
 #' function may not work in all cases.
@@ -578,7 +568,9 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
     res@metadata$WMOIdentifier <- WMOIdentifier
     res@metadata$TCIdentifier <- TCIdentifier
     res@metadata$filename <- filename
-    rawData <- read.csv(text=text, skip=skip, encoding="UTF-8", header=TRUE)
+    ## Use stringsAsFactors=TRUE to compact weather conditions somewhat ... note that flags are converted to character type
+    ## later on, when they are moved from 'data' into 'metadata$flags'.
+    rawData <- read.csv(text=text, skip=skip, encoding="UTF-8", header=TRUE, stringsAsFactors=TRUE)
     names <- names(rawData)
     ## FIXME: handle daily data, if the column names differ
     if ("Day" %in% names && "Time" %in% names) {
@@ -616,7 +608,7 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
         rawData[["v"]][zero] <- 0
     }
     rawData$time <- time
-    res@data <- rawData
+    res@data <- as.list(rawData)
     pl <- paste("read.met(\"", filename, "\", type=", if (is.null(type)) "NULL" else type, ", tz=\"", tz, "\")", sep="")
     res@processingLog <- processingLogAppend(res@processingLog, pl)
     names <- names(res@data)
@@ -725,7 +717,11 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
                        "windChill")) {
         flagName <- paste(flagType, "Flag", sep="")
         if (flagName %in% names) {
-            res@metadata$flags[[flagType]] <- res@data[[flagName]]
+            ## The check on being logical type handles the case where a flag consists entirely of empty strings in the .csv
+            ## file. I think that in that case, all the values end up being NA, so we just ignore this and make a bunch of
+            ## zero-length strings.
+            res@metadata$flags[[flagType]] <- if (is.logical(res@data[[flagName]])) rep("", length(res@data[[flagName]]))
+                else as.character(res@data[[flagName]])
             res@data[[flagName]] <- NULL
         }
     }
@@ -796,12 +792,12 @@ read.met <- function(file, type=NULL, skip, tz=getOption("oceTz"), debug=getOpti
 #'
 #' ## Wind speed and direction during Hurricane Juan
 #' ## Compare with the final figure in a white paper by Chris Fogarty
-#' ## (available at http://www.novaweather.net/Hurricane_Juan_files/McNabs_plot.pdf 
+#' ## (available at http://www.novaweather.net/Hurricane_Juan_files/McNabs_plot.pdf
 #' ## downloaded 2017-01-02).
 #' library(oce)
 #' data(met)
 #' t0 <- as.POSIXct("2003-09-29 04:00:00", tz="UTC")
-#' dt <- 12 * 3600 
+#' dt <- 12 * 3600
 #' juan <- subset(met, t0 - dt <= time & time <= t0 + dt)
 #' par(mfrow=c(2,1))
 #' plot(juan, which=5)

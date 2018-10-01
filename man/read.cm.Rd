@@ -51,7 +51,7 @@ provides is better for normal calls by a user.}
 An object of \code{\link{cm-class}}.
 The \code{data} slot will contain all the data in the file, with names
 determined from the tokens in line 3 in that file, passed through
-\code{\link{make.names}}, except that 
+\code{\link{make.names}}, except that
 \code{Vnorth} is renamed \code{v} (after conversion from cm/s to m/s),
 \code{Veast} is renamed \code{u} (after conversion from cm/s to m/s),
 \code{Cond} is renamed \code{conductivity},
@@ -129,10 +129,11 @@ return value, but it is no longer stored, since it can be derived from the
 Other things related to \code{cm} data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{as.cm}},
   \code{\link{cm-class}}, \code{\link{cm}},
-  \code{\link{plot,cm-method}},
+  \code{\link{plot,cm-method}}, \code{\link{rotateAboutZ}},
   \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
 \author{
 Dan Kelley
 }
+\concept{things related to \code{cm} data}

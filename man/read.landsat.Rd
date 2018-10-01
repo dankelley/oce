@@ -105,6 +105,7 @@ decimated, and to access certain derived quantities.  A sample dataset named
 \code{\link{landsat}} is provided by the \CRANpkg{oce} package.
 
 Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
+  \code{\link{[[<-,landsat-method}},
   \code{\link{landsat-class}}, \code{\link{landsatAdd}},
   \code{\link{landsatTrim}}, \code{\link{landsat}},
   \code{\link{plot,landsat-method}},
@@ -113,6 +114,5 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
 \author{
 Dan Kelley
 }
-\concept{
-satellite
-}
+\concept{satellite}
+\concept{things related to \code{landsat} data}

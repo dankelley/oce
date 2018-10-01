@@ -21,7 +21,8 @@ if (requireNamespace("rgdal", quietly=TRUE)) {
             utm <- lonlat2utm(lonlat$longitude, lonlat$latitude)
             expect_equal(utm$easting, easting, tolerance=1e-5)
             expect_equal(utm$northing, northing, tolerance=1e-5)
-            expect_equal(utm$zone, zone, tolerance=1e-5)})
+            expect_equal(utm$zone, zone, tolerance=1e-5)
+})
 
   test_that("lonlat2map() on image for issue 707 (corners cross zones)", {
             ## CORNER_UL_LAT_PRODUCT = 70.68271
@@ -52,17 +53,16 @@ if (requireNamespace("rgdal", quietly=TRUE)) {
             ## Use tolerance to check to within a metre, surely sufficient
             ## for any purpose with landsat-8, given its pixel size.
             expect_equal(utm$northing, northing, scale=1, tolerance=0.5)
-            expect_equal(utm$easting, easting, scale=1, tolerance=0.5)})
+            expect_equal(utm$easting, easting, scale=1, tolerance=0.5)
+})
 
   test_that("lonlat2map() near Cape Split", {
             ## "cs" is near Cape Split, in the Bay of Fundy
             cs <- list(longitude=-64.4966,latitude=45.3346)
             xy <- lonlat2map(cs$longitude, cs$latitude, "+proj=merc")
             cs2 <- map2lonlat(xy$x, xy$y)
-            expect_equal(cs, cs2, tolerance=1e-6)})
-
-  test_that("geodDist()", {
-            d <- geodDist(10, 45, 10, 46)
-            expect_equal(d, 111.1415, tolerance=1e-4)})
+            expect_equal(cs, cs2, tolerance=1e-6)
+})
 }
+
 

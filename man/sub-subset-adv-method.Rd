@@ -19,24 +19,13 @@
 \item{value}{The value to be inserted into \code{x}.}
 }
 \description{
-Replace Parts of an ADV Object
-
 The \code{[[} method works for all \code{oce} objects, i.e.
-objects inheriting from \code{\link{oce-class}}.  The purpose,
-as with the related replacement method, \code{\link{[[<-}},
+objects inheriting from \code{\link{oce-class}}.  The purpose
 is to insulate users from the internal details of \code{oce}
 objects, by looking for items within the various storage
 slots of the object. Items not actually stored can also be
 extracted, including derived data, units of measurement,
 and data-quality flags.
-
-The method uses a two-step process to try to find the
-requested information. First, a class-specific function
-is used to try to access the requested information (see
-\dQuote{Details of the specialized ... method}).
-Second, if no match is found, a general function is used
-(see \sQuote{Details of the general method}). If neither
-method can locates the requested item, \code{NULL} is returned.
 }
 \details{
 If the \code{adv} object holds slow variables (i.e. if \code{timeSlow} is
@@ -45,6 +34,14 @@ actually assign to a variable of that name, but instead assigns to
 \code{headingSlow}. To catch misapplication of this rule, an error
 message will be issued if the assigned value is not of the same length
 as \code{timeSlow}.
+
+A two-step process is used to try to find the
+requested information. First, a class-specific function
+tries to find it (see
+\dQuote{Details of the specialized ... method}), but
+if that fails, then a general function is used
+(see \sQuote{Details of the general method}). If both
+fail, \code{NULL} is returned.
 }
 \section{Details of the general method}{
 
@@ -99,6 +96,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,g1sst-method}},
   \code{\link{[[,gps-method}},
   \code{\link{[[,ladp-method}},
+  \code{\link{[[,landsat-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
   \code{\link{[[,met-method}}, \code{\link{[[,odf-method}},
@@ -118,7 +116,8 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{read.adv.sontek.adr}},
   \code{\link{read.adv.sontek.serial}},
   \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{subset,adv-method}},
+  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
+  \code{\link{subset,adv-method}},
   \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
@@ -126,3 +125,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{adv} data}

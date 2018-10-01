@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdAddColumn}
 \alias{ctdAddColumn}
-\title{Add a Column to the Data Slot of a CTD Object [deprecated]}
+\title{Add a Column to the Data Slot of a CTD Object [defunct]}
 \usage{
 ctdAddColumn(x, column, name, label, unit = NULL, log = TRUE,
   originalName = "", debug = getOption("oceDebug"))
@@ -45,21 +45,14 @@ by specifying higher \code{debug} values.}
 A ctd object.
 }
 \description{
-\strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
-Use \code{\link{oceSetData}} instead of the present function.
+\strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
 }
 \details{
+Use \code{\link{oceSetData}} instead of the present function.
+
 Add a column to the \code{data} slot of an object of
 \code{\link{ctd-class}}, also updating the \code{metadata}
 slot as appropriate.
-}
-\examples{
-library(oce)
-data(ctd)
-F <- 32 + (9/5)*ctd[["temperature"]]
-ctdNew <- ctdAddColumn(ctd, F, "temperatureF",
-    unit=list(unit=expression(degree*F), scale="ITS-90"))
-
 }
 \seealso{
 The documentation for \code{\link{ctd-class}} explains the structure
@@ -67,9 +60,10 @@ The documentation for \code{\link{ctd-class}} explains the structure
 
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdUpdateHeader}},
-  \code{\link{mapMeridians}}, \code{\link{mapZones}},
-  \code{\link{oce.as.POSIXlt}}
+  \code{\link{findInOrdered}}, \code{\link{mapMeridians}},
+  \code{\link{mapZones}}, \code{\link{oce.as.POSIXlt}}
 }
 \author{
 Dan Kelley
 }
+\concept{functions that will be removed soon}
