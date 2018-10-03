@@ -1,5 +1,6 @@
 1.0-1
 - Renamed 0.9-24, released with OAR book publication.
+
 0.9-24
 - read.odf() stores ODF header in metadata
 - remove makeSection()
