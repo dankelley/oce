@@ -40,10 +40,10 @@
 #' @concept satellite
 #' @references
 #' 1. Information on the satellite, how to cite the data, etc. is
-#' provided at \url{http://www.remss.com/missions/amsr/}.
+#' provided at \code{http://www.remss.com/missions/amsr/}.
 #'
 #' 2. A simple interface for viewing and downloading data is at
-#' \url{http://images.remss.com/amsr/amsr2_data_daily.html}.
+#' \code{http://images.remss.com/amsr/amsr2_data_daily.html}.
 #'
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 #'
@@ -456,7 +456,7 @@ setMethod(f="plot",
 #' @family functions that download files
 #' @family things related to \code{amsr} data
 #' @references
-#' \url{http://images.remss.com/amsr/amsr2_data_daily.html}
+#' \code{http://images.remss.com/amsr/amsr2_data_daily.html}
 #' provides daily images going back to 2012. Three-day,
 #' monthly, and monthly composites are also provided on that site.
 download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v08")
