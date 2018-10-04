@@ -782,7 +782,7 @@ argoDecodeFlags <- function(f) # local function
 #' Read an Argo Data File
 #'
 #' \code{read.argo} is used to read an Argo file, producing an object of type
-#' \code{argo}. The file must be in the ARGO-style netCDF format described at
+#' \code{argo}. The file must be in the ARGO-style NetCDF format described at
 #' in the Argo documentation [2,3].
 #'
 #' @details

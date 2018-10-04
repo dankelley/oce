@@ -1629,7 +1629,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                     else return("netcdf")
                 }
             } else {
-                stop('must install.packages("ncdf4") to read a netCDF file')
+                stop('must install.packages("ncdf4") to read a NetCDF file')
             }
         }
         if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) {

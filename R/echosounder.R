@@ -315,7 +315,7 @@ setMethod(f="subset",
 #' @param src optional string indicating data source
 #' @param sourceLevel source level, in dB (uPa at 1m), denoted \code{sl} in [1
 #' p15], where it is in units 0.1dB (uPa at 1m)
-#' @param receiverSensitivity receiver sensivity of the main element, in
+#' @param receiverSensitivity receiver sensivitity of the main element, in
 #' dB(counts/uPa), denoted \code{rs} in [1 p15], where it is in units of
 #' 0.1dB(counts/uPa)
 #' @param transmitPower transmit power reduction factor, in dB, denoted

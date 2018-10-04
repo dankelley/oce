@@ -474,7 +474,7 @@ topoInterpolate <- function(longitude, latitude, topo)
 #' \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #'
-#' @param mar Four-element numericl vector to be used with
+#' @param mar Four-element numerical vector to be used with
 #' \code{\link{par}("mar")}.
 #'
 #' @param debug Numerical value, with positive values indicating higher levels of
@@ -824,7 +824,7 @@ read.topo <- function(file, debug=getOption("oceDebug"))
     dataNamesOriginal <- list()
     if (is.character(file) && length(grep(".nc$", file))) {
         if (!requireNamespace("ncdf4", quietly=TRUE)) {
-            stop('must install.packages("ncdf4") to read topo data from a netCDF file')
+            stop('must install.packages("ncdf4") to read topo data from a NetCDF file')
         } else {
             ##message("file: '", file, "'")
             ## "GEBCO NetCDF" (NOT the same as "NetCDF")

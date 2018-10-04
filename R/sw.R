@@ -1985,7 +1985,7 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' salty compared with less spicy water. Another interpretation is that spice
 #' is a variable measuring distance orthogonal to isopycnal lines on TS
 #' diagrams (if the diagrams are scaled to make the isopycnals run at 45
-#' degres). The definition used here is that of Pierre Flament. (Other
+#' degrees). The definition used here is that of Pierre Flament. (Other
 #' formulations exist.)  Note that pressure is ignored in the definition.
 #' Spiciness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
 #'
