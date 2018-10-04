@@ -38,7 +38,7 @@ with the \code{\link{filter}} function of the stats package.
 \section{Bugs}{
  Only a preliminary version of this function is provided in
 the present package.  It only works for objects of class \code{echosounder},
-for which the decmation is done after applying a running median filter and
+for which the decimation is done after applying a running median filter and
 then a boxcar filter, each of length equal to the corresponding component of
 \code{by}.
 }

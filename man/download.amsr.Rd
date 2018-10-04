@@ -67,7 +67,7 @@ mtext(d[["filename"]], side=3, line=0, adj=0)
 }
 }
 \references{
-\url{http://images.remss.com/amsr/amsr2_data_daily.html}
+\code{http://images.remss.com/amsr/amsr2_data_daily.html}
 provides daily images going back to 2012. Three-day,
 monthly, and monthly composites are also provided on that site.
 }

@@ -75,7 +75,7 @@ longitudes without minus signs.}
 \code{par(mar)}, computed from this.  The default is tighter than the R
 default, in order to use more space for the data and less for the axes.}
 
-\item{mar}{Four-element numericl vector to be used with
+\item{mar}{Four-element numerical vector to be used with
 \code{\link{par}("mar")}.}
 
 \item{debug}{Numerical value, with positive values indicating higher levels of

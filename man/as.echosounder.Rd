@@ -21,7 +21,7 @@ as.echosounder(time, depth, a, src = "", sourceLevel = 220,
 \item{sourceLevel}{source level, in dB (uPa at 1m), denoted \code{sl} in [1
 p15], where it is in units 0.1dB (uPa at 1m)}
 
-\item{receiverSensitivity}{receiver sensivity of the main element, in
+\item{receiverSensitivity}{receiver sensivitity of the main element, in
 dB(counts/uPa), denoted \code{rs} in [1 p15], where it is in units of
 0.1dB(counts/uPa)}
 
