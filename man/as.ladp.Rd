@@ -4,8 +4,8 @@
 \alias{as.ladp}
 \title{Coerce data into an ladp object}
 \usage{
-as.ladp(longitude, latitude, station, time, pressure, u, v, uz, vz, salinity,
-  temperature, ...)
+as.ladp(longitude, latitude, station, time, pressure, u, v, uz, vz,
+  salinity, temperature, ...)
 }
 \arguments{
 \item{longitude}{longitude in degrees east, or an \code{oce} object that
@@ -43,9 +43,11 @@ shears, salinity, temperature, etc.
 }
 \seealso{
 Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
-  \code{\link{ladp-class}}, \code{\link{plot,ladp-method}},
+  \code{\link{[[<-,ladp-method}}, \code{\link{ladp-class}},
+  \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
 }
 \author{
 Dan Kelley
 }
+\concept{things related to \code{ladp} data}

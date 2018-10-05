@@ -4,8 +4,9 @@
 \alias{read.rsk}
 \title{Read a Rsk file}
 \usage{
-read.rsk(file, from = 1, to, by = 1, type, tz = getOption("oceTz", default
-  = "UTC"), patm = FALSE, processingLog, debug = getOption("oceDebug"))
+read.rsk(file, from = 1, to, by = 1, type, tz = getOption("oceTz",
+  default = "UTC"), patm = FALSE, processingLog,
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file to
@@ -114,3 +115,4 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{things related to \code{rsk} data}

@@ -27,21 +27,12 @@ Extract something from the \code{metadata} or \code{data} slot of an
 \code{\link{amsr-class}} object.
 
 The \code{[[} method works for all \code{oce} objects, i.e.
-objects inheriting from \code{\link{oce-class}}.  The purpose,
-as with the related replacement method, \code{\link{[[<-}},
+objects inheriting from \code{\link{oce-class}}.  The purpose
 is to insulate users from the internal details of \code{oce}
 objects, by looking for items within the various storage
 slots of the object. Items not actually stored can also be
 extracted, including derived data, units of measurement,
 and data-quality flags.
-
-The method uses a two-step process to try to find the
-requested information. First, a class-specific function
-is used to try to access the requested information (see
-\dQuote{Details of the specialized ... method}).
-Second, if no match is found, a general function is used
-(see \sQuote{Details of the general method}). If neither
-method can locates the requested item, \code{NULL} is returned.
 }
 \details{
 Partial matches for \code{i}
@@ -76,6 +67,14 @@ result will be 255. If A is 254 (i.e. there is no observation),
 then B is returned, and the reverse holds also. Similarly, if either
 A or B equals 253 (bad observation), then the other is returned.
 The same is done for code 252 (ice) and code 251 (rain).
+
+A two-step process is used to try to find the
+requested information. First, a class-specific function
+tries to find it (see
+\dQuote{Details of the specialized ... method}), but
+if that fails, then a general function is used
+(see \sQuote{Details of the general method}). If both
+fail, \code{NULL} is returned.
 }
 \section{Details of the general method}{
 
@@ -147,6 +146,7 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
   \code{\link{[[,g1sst-method}},
   \code{\link{[[,gps-method}},
   \code{\link{[[,ladp-method}},
+  \code{\link{[[,landsat-method}},
   \code{\link{[[,lisst-method}},
   \code{\link{[[,lobo-method}},
   \code{\link{[[,met-method}}, \code{\link{[[,odf-method}},
@@ -161,3 +161,6 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
 \author{
 Dan Kelley
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{amsr} data
+get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA}

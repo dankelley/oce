@@ -110,7 +110,7 @@ lines(g$zg, g$xg, col="red")
 }
 \references{
 S. E.  Koch and M.  DesJardins and P. J. Kocin, 1983.  ``An
-interactive Barnes objective map anlaysis scheme for use with satellite and
+interactive Barnes objective map analysis scheme for use with satellite and
 conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22, p. 1487-1503.
 }
 \seealso{

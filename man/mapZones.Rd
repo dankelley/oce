@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapZones}
 \alias{mapZones}
-\title{Add Zones to a Map [deprecated]}
+\title{Add Zones to a Map [defunct]}
 \usage{
 mapZones(longitude, polarCircle = 0, lty = "solid", lwd = 0.5 *
   par("lwd"), col = "darkgray", ...)
@@ -18,7 +18,7 @@ extending from the poles, within which zones are not drawn.}
 
 \item{lwd}{line width.}
 
-\item{col}{line colour.}
+\item{col}{line color.}
 
 \item{...}{optional arguments passed to \code{\link{lines}}.}
 }
@@ -38,8 +38,10 @@ Please use mapGrid() instead.
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdAddColumn}},
   \code{\link{ctdUpdateHeader}},
-  \code{\link{mapMeridians}}, \code{\link{oce.as.POSIXlt}}
+  \code{\link{findInOrdered}}, \code{\link{mapMeridians}},
+  \code{\link{oce.as.POSIXlt}}
 }
 \author{
 Dan Kelley
 }
+\concept{functions that will be removed soon}

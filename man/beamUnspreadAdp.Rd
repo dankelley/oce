@@ -4,8 +4,8 @@
 \alias{beamUnspreadAdp}
 \title{Adjust ADP Signal for Spherical Spreading}
 \usage{
-beamUnspreadAdp(x, count2db = c(0.45, 0.45, 0.45, 0.45), asMatrix = FALSE,
-  debug = getOption("oceDebug"))
+beamUnspreadAdp(x, count2db = c(0.45, 0.45, 0.45, 0.45),
+  asMatrix = FALSE, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
@@ -36,7 +36,7 @@ First, beam echo intensity is converted from counts to decibels, by
 multiplying by \code{count2db}.  Then, the signal decrease owing to
 spherical spreading is compensated for by adding the term
 \eqn{20\log10(r)}{20*log10(r)}, where \eqn{r}{r} is the distance from the
-sensor head to the water from which scattering is occuring.  \eqn{r}{r} is
+sensor head to the water from which scattering is occurring.  \eqn{r}{r} is
 given by \code{x[["distance"]]}.
 }
 \examples{
@@ -70,6 +70,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{binmapAdp}},
   \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
+  \code{\link{handleFlags,adp-method}},
   \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
@@ -77,7 +78,8 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
   \code{\link{read.aquadoppHR}},
   \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}},
+  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
+  \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
@@ -86,3 +88,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{adp} data}

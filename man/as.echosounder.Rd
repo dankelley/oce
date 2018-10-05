@@ -5,8 +5,9 @@
 \title{Coerce Data into an Echosounder Object}
 \usage{
 as.echosounder(time, depth, a, src = "", sourceLevel = 220,
-  receiverSensitivity = -55.4, transmitPower = 0, pulseDuration = 400,
-  beamwidthX = 6.5, beamwidthY = 6.5, frequency = 41800, correction = 0)
+  receiverSensitivity = -55.4, transmitPower = 0,
+  pulseDuration = 400, beamwidthX = 6.5, beamwidthY = 6.5,
+  frequency = 41800, correction = 0)
 }
 \arguments{
 \item{time}{times of pings}
@@ -20,14 +21,14 @@ as.echosounder(time, depth, a, src = "", sourceLevel = 220,
 \item{sourceLevel}{source level, in dB (uPa at 1m), denoted \code{sl} in [1
 p15], where it is in units 0.1dB (uPa at 1m)}
 
-\item{receiverSensitivity}{receiver sensivity of the main element, in
+\item{receiverSensitivity}{receiver sensivitity of the main element, in
 dB(counts/uPa), denoted \code{rs} in [1 p15], where it is in units of
 0.1dB(counts/uPa)}
 
 \item{transmitPower}{transmit power reduction factor, in dB, denoted
 \code{tpow} in [1 p10], where it is in units 0.1 dB.}
 
-\item{pulseDuration}{duration of transmited pulse in us}
+\item{pulseDuration}{duration of transmitted pulse in us}
 
 \item{beamwidthX}{x-axis -3dB one-way beamwidth in deg, denoted \code{bwx}
 in [1 p16], where the unit is 0.2 deg}
@@ -65,3 +66,4 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 \author{
 Dan Kelley
 }
+\concept{things related to \code{echosounder} data}

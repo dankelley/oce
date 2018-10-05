@@ -62,6 +62,8 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,echosounder-method}},
   \code{\link{[[<-,g1sst-method}},
   \code{\link{[[<-,gps-method}},
+  \code{\link{[[<-,ladp-method}},
+  \code{\link{[[<-,landsat-method}},
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
   \code{\link{[[<-,met-method}},
@@ -81,3 +83,5 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
   \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
   \code{\link{tidem}}
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{tidem} data}

@@ -12,6 +12,29 @@ test_that("data(section) has not altered", {
           expect_equal(124, length(section@data$station))
 })
 
+test_that("section[['z']] == -section[['depth']]", {
+          data(section)
+          z <- section[["z"]]
+          depth <- section[["depth"]]
+          expect_equal(z, -depth)
+})
+
+test_that("section[[...]] and [[..., \"byStation\"]] work", {
+          data(section)
+          for (i in c("CT", "depth", "nitrate", "nitrite", "oxygen",
+                      "phosphate", "potential temperature", "pressure", "SA",
+                      "salinity", "sigmaTheta", "silicate", "spice",
+                      "temperature", "theta", "z")) {
+            v <- section[[i]]
+            expect_true(is.vector(v))
+            expect_equal(length(v), 2841)
+            l <- section[[i, "byStation"]]
+            expect_true(is.list(l))
+            expect_equal(head(v, 5), l[[1]])
+            expect_equal(length(l), 124)
+          }
+})
+
 test_that("as.section() data-quality flags", {
           data(section)
           ## The below is also in ../../create_data/section/check_section.R, and it would be
@@ -41,13 +64,6 @@ test_that("section station extraction", {
           expect_equal(section[["station", "103"]][["station"]], "103")
 })
 
-
-test_that("accessors for 'z' and 'depth' work", {
-          data(section)
-          z <- section[["z"]]
-          depth <- section[["depth"]]
-          expect_equal(z, -depth)
-})
 
 test_that("as.section() works with names of CTD objects", {
           data(ctd)

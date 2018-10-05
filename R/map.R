@@ -15,7 +15,7 @@
 #' Trace along the plot box, converting from xy coordinates to lonlat
 #' coordinates. The results are used by \code{\link{mapGrid}}
 #' and \code{\link{mapAxis}} to ignore out-of-frame grid
-#' lines and axis labels. 
+#' lines and axis labels.
 #'
 #' Note: this procedure does not work for projections that have trouble
 #' inverting points that are "off the globe". For this reason, this function
@@ -29,7 +29,7 @@
 #' @return a list containing \code{lonmin}, \code{lonmax},
 #' \code{latmin}, \code{latmax}, and \code{ok}; the last
 #' of which indicates whether at least one point on the plot box
-#' is invertable. Note that longitude are expressed in the
+#' is invertible. Note that longitude are expressed in the
 #' range from -180 to 180 degrees.
 #' @author Dan Kelley
 #' @family functions related to maps
@@ -41,11 +41,11 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
     if (length(grep("wintri", .Projection()$projection)))
         return(list(lonmin=NA, lonmax=NA, latmin=NA, latmax=NA, ok=FALSE))
     x <- c(seq(usr[1], usr[2], length.out=n),
-           rep(usr[2], n), 
+           rep(usr[2], n),
            seq(usr[2], usr[1], length.out=n),
-           rep(usr[1], n)) 
+           rep(usr[1], n))
     y <- c(rep(usr[3], n),
-           seq(usr[3], usr[4], length.out=n), 
+           seq(usr[3], usr[4], length.out=n),
            rep(usr[4], n),
            seq(usr[4], usr[3], length.out=n))
     g <- expand.grid(x=seq(usr[1], usr[2], length.out=n),
@@ -98,7 +98,7 @@ usrLonLat <- function(n=25, debug=getOption("oceDebug"))
                  ok=nok/n>0.5&&is.finite(lonmin)&&is.finite(lonmax)&&is.finite(latmin)&&is.finite(latmax))
     rval
 }
- 
+
 #' Coordinate Reference System strings for some oceans
 #'
 #' Create a coordinate reference string (CRS), suitable for use as a
@@ -163,7 +163,7 @@ oceCRS <- function(region)
 #' simply by subtracting 180 from each longitude, if any longitude
 #' in the vector exceeds 180.
 #'
-#' @param longitudes a numericl vector of longitudes
+#' @param longitudes a numerical vector of longitudes
 #' @return vector of longitudes, shifted to the desired range.
 #' @seealso \code{\link{matrixShiftLongitude}} and \code{\link{standardizeLongitude}}.
 #' @family functions related to maps
@@ -254,7 +254,7 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'
 #' @param longitude vector of longitudes to indicate.  If not provided, and if
 #' a grid has already been drawn, then the labels will be at the
-#' interesections of the grid lines with the plotting box.
+#' intersections of the grid lines with the plotting box.
 #'
 #' @param latitude vector of latitudes to indicate.  If not provided, and if a
 #' grid has already been drawn, then the labels will be at the
@@ -276,9 +276,9 @@ badFillFix2 <- function(x, y, xorig, yorig)
 #'
 #' @param lwd.ticks tick line width, passed to \code{\link{axis}}.
 #'
-#' @param col axis colour, passed to \code{\link{axis}}.
+#' @param col axis color, passed to \code{\link{axis}}.
 #'
-#' @param col.ticks axis tick colour, passed to \code{\link{axis}}.
+#' @param col.ticks axis tick color, passed to \code{\link{axis}}.
 #'
 #' @param hadj an argument that is transmitted to \code{\link{axis}}.
 #'
@@ -499,7 +499,7 @@ mapAxis <- function(side=1:2, longitude=NULL, latitude=NULL,
 #'
 #' @param levels vector of contour levels.
 #'
-#' @param col line colour.
+#' @param col line color.
 #'
 #' @param lty line type.
 #'
@@ -573,7 +573,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
         cl <- contourLines(x=longitude[xx],
                            y=latitude[yy],
                            z=z, levels=levels[ilevel])
-        for (segment in 1:length(cl)) {
+        for (segment in seq_along(cl)) {
             if (length(cl) > 0) {
                 mapLines(cl[[segment]]$x, cl[[segment]]$y,
                          lty=lty[ilevel], lwd=lwd[ilevel], col=col[ilevel])
@@ -593,11 +593,11 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 #' to indicate a coordinate system set up so that one axis is parallel
 #' to a coastline.
 #'
-#' @details This is a preliminary version of this function. It only 
+#' @details This is a preliminary version of this function. It only
 #' works if the lines of constant latitude are horizontal on the plot.
 #'
 #' @param latitude numeric value of latitude in degrees.
-#' @param longitude numeric value of longiutde in degrees.
+#' @param longitude numeric value of longitude in degrees.
 #' @param L axis length in km.
 #' @param phi angle, in degrees counterclockwise, that the "x" axis makes to a line of latitude.
 #' @param ... plotting arguments, passed to \code{\link{mapArrows}};
@@ -609,7 +609,7 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 #' data(coastlineWorldFine, package='ocedata')
 #' HfxLon <- -63.5752
 #' HfxLat <- 44.6488
-#' mapPlot(coastlineWorldFine, proj='+proj=merc', 
+#' mapPlot(coastlineWorldFine, proj='+proj=merc',
 #'         longitudelim=HfxLon+c(-2,2), latitudelim=HfxLat+c(-2,2),
 #'         col='lightgrey')
 #' mapCoordinateSystem(HfxLon, HfxLat, phi=45, length=0.05)
@@ -617,9 +617,9 @@ mapContour <- function(longitude=seq(0, 1, length.out=nrow(z)),
 #' @author Chantelle Layton
 mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 {
-    if (missing(longitude)) 
+    if (missing(longitude))
         stop('must supply longitude')
-    if (missing(latitude)) 
+    if (missing(latitude))
         stop('must supply latitude')
     R <- 6371
     pi <- 4 * atan2(1, 1)
@@ -651,8 +651,8 @@ mapCoordinateSystem <- function(longitude, latitude, L=100, phi=0, ...)
 #'
 #' @param code code of arrows, passed to \code{\link{arrows}}.
 #'
-#' @param col colour of arrows.  This may be a single colour, or a matrix
-#'     of colours of the same dimension as \code{u}.
+#' @param col color of arrows.  This may be a single color, or a matrix
+#'     of colors of the same dimension as \code{u}.
 #'
 #' @param \dots optional arguments passed to \code{\link{arrows}}, e.g.
 #'     \code{angle} and \code{lwd} can be useful in differentiating different
@@ -812,16 +812,16 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' most projections this works quite well.  If not, one may set
 #' \code{grid=FALSE} and add a grid later with \code{\link{mapGrid}}.
 #'
-#' @param bg colour of the background (ignored).
+#' @param bg color of the background (ignored).
 #'
 #' @param fill \strong{(deprecated)} is a deprecated argument; see
 #' \link{oce-deprecated}.
 #'
-#' @param border colour of coastlines and international borders (ignored unless
+#' @param border color of coastlines and international borders (ignored unless
 #' \code{type="polygon"}.
 #'
-#' @param col either the colour for filling polygons (if \code{type="polygon"})
-#' or the colour of the points and line segments (if \code{type="p"},
+#' @param col either the color for filling polygons (if \code{type="polygon"})
+#' or the color of the points and line segments (if \code{type="p"},
 #' \code{type="l"}, or \code{type="o"}). If \code{col=NULL} then a default
 #' will be set: no coastline filling for the \code{type="polygon"} case,
 #' or black coastlines, for \code{type="p"}, \code{type="l"}, or
@@ -829,7 +829,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #'
 #' @param clip logical value indicating whether to trim any coastline elements that lie wholly
 #' outside the plot region. This can prevent e.g. a problem of filling the whole plot area of
-#' an Arctic stereopolar view, because the projected trace for Antarctica lies outside all 
+#' an Arctic stereopolar view, because the projected trace for Antarctica lies outside all
 #' other regions so the whole of the world ends up being "land".  Setting \code{clip=FALSE}
 #' disables this action, which may be of benefit in rare instances in the line connecting
 #' two points on a coastline may cross the plot domain, even if those points are outside
@@ -1210,7 +1210,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' See \url{https://github.com/dankelley/oce/issues/1337} for details.
 #'
 #' \item 2017-09-30: \code{lcca} removed, because its inverse was
-#' wildly inaccurate in a Pacific Antartic-Alaska application
+#' wildly inaccurate in a Pacific Antarctic-Alaska application
 #' (see \url{https://github.com/dankelley/oce/issues/1303}).
 #'
 #' }
@@ -1237,7 +1237,7 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' the place to start to learn about the code.
 #'
 #' 6. \code{PROJ.4} projection details were once at
-#' \code{http://www.remotesensing.org/geotiff/proj_list/} but it was 
+#' \code{http://www.remotesensing.org/geotiff/proj_list/} but it was
 #' discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
 #' seems to have been significant reorganization of websites related to this.
 #' The base website seems to be \url{https://trac.osgeo.org/geotiff/} and that
@@ -1605,7 +1605,7 @@ mapPlot <- function(longitude, latitude, longitudelim, latitudelim, grid=TRUE,
 #' @param latitude vector of latitudes, or \code{NULL} to prevent drawing
 #' latitude lines.
 #'
-#' @param col colour of lines
+#' @param col color of lines
 #'
 #' @param lty line type
 #'
@@ -1819,7 +1819,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 }
 
 
-#' Add Meridians on a Map [deprecated]
+#' Add Meridians on a Map [defunct]
 #'
 #' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
 #' Use \code{\link{mapGrid}} instead of the present function.
@@ -1833,7 +1833,7 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 #'
 #' @param lwd line width.
 #'
-#' @param col line colour.
+#' @param col line color.
 #'
 #' @param ... optional arguments passed to \code{\link{lines}}.
 #'
@@ -1845,8 +1845,8 @@ mapGrid <- function(dlongitude=15, dlatitude=15, longitude, latitude,
 #' @family functions that will be removed soon
 mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
-    .Deprecated("mapGrid",
-                msg="mapMeridians() will be removed soon; use mapGrid() instead. See ?'oce-deprecated'.")
+    .Defunct("mapGrid",
+             msg="mapMeridians() will be removed soon. Use mapGrid() instead. See ?'oce-defunct'.")
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     warning("Use mapGrid(longitude=NULL,latitude=latitude) instead of mapMeridians(latitude)")
@@ -1909,7 +1909,7 @@ mapMeridians <- function(latitude, lty='solid', lwd=0.5*par('lwd'), col='darkgra
 #'
 #' @param lwd line width of the scalebar.
 #'
-#' @param col colour of the scalebar.
+#' @param col color of the scalebar.
 #'
 #' @param cex character expansion factor for the scalebar text.
 #'
@@ -2108,7 +2108,7 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 }
 
 
-#' Add Zones to a Map [deprecated]
+#' Add Zones to a Map [defunct]
 #'
 #' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
 #'
@@ -2126,7 +2126,7 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 #'
 #' @param lwd line width.
 #'
-#' @param col line colour.
+#' @param col line color.
 #'
 #' @param ... optional arguments passed to \code{\link{lines}}.
 #'
@@ -2138,8 +2138,8 @@ mapTissot <- function(grid=rep(15, 2), scale=0.2, crosshairs=FALSE, ...)
 #' @family functions that will be removed soon
 mapZones <- function(longitude, polarCircle=0, lty='solid', lwd=0.5*par('lwd'), col='darkgray', ...)
 {
-    .Deprecated("mapGrid",
-                msg="mapZones() will be removed soon; use mapGrid() instead. See ?'oce-deprecated'.")
+    .Defunct("mapGrid",
+             msg="mapZones() will be removed soon. Use mapGrid() instead. See ?'oce-defunct'.")
     if ("none" == .Projection()$type)
         stop("must create a map first, with mapPlot()\n")
     warning("Use mapGrid(longitude=longitude,latitude=NULL) instead of mapZones(longitude)")
@@ -2320,7 +2320,7 @@ mapPoints <- function(longitude, latitude, debug=getOption("oceDebug"), ...)
 #' @param length length of the arrow heads, passed to \code{\link{arrows}}.
 #' @param angle angle of the arrow heads, passed to \code{\link{arrows}}.
 #' @param code numerical code indicating the type of arrows, passed to \code{\link{arrows}}.
-#' @param col arrow colour, passed to \code{\link{arrows}}.
+#' @param col arrow color, passed to \code{\link{arrows}}.
 #' @param lty arrow line type, passed to \code{\link{arrows}}.
 #' @param lwd arrow line width, passed to \code{\link{arrows}}.
 #' @param ... optional arguments passed to \code{\link{arrows}}.
@@ -2721,23 +2721,23 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #'
 #' @param z matrix to be represented as an image.
 #'
-#' @param zlim limit for z (colour).
+#' @param zlim limit for z (color).
 #'
 #' @param zclip A logical value, \code{TRUE} indicating that out-of-range
 #' \code{z} values should be painted with \code{missingColor} and \code{FALSE}
 #' indicating that these values should be painted with the nearest
-#' in-range colour.  If \code{zlim} is given then its min and max set the
+#' in-range color.  If \code{zlim} is given then its min and max set the
 #' range.  If \code{zlim} is not given but \code{breaks} is given, then
 #' the min and max of \code{breaks} sets the range used for z.  If neither
 #' \code{zlim} nor \code{breaks} is given, clipping is not done, i.e. the
 #' action is as if \code{zclip} were \code{FALSE}.
 #'
-#' @param breaks The z values for breaks in the colour scheme.  If this is of
+#' @param breaks The z values for breaks in the color scheme.  If this is of
 #' length 1, the value indicates the desired number of breaks, which is
 #' supplied to \code{\link{pretty}}, in determining clean break points.
 #'
-#' @param col Either a vector of colours corresponding to the breaks, of length
-#' 1 plus the number of breaks, or a function specifying colours,
+#' @param col Either a vector of colors corresponding to the breaks, of length
+#' 1 plus the number of breaks, or a function specifying colors,
 #' e.g. \code{\link{oce.colorsJet}} for a rainbow.
 #'
 #' @param colormap optional colormap, as created by \code{\link{colormap}}.
@@ -2745,14 +2745,14 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' over \code{breaks}, \code{col}, \code{missingColor}, and \code{zclip}
 #' specified to \code{mapImage}.
 #'
-#' @param border Colour used for borders of patches (passed to
+#' @param border Color used for borders of patches (passed to
 #' \code{\link{polygon}}); the default \code{NA} means no border.
 #'
 #' @param lwd line width, used if borders are drawn.
 #'
 #' @param lty line type, used if borders are drawn.
 #'
-#' @param missingColor a colour to be used to indicate missing data, or
+#' @param missingColor a color to be used to indicate missing data, or
 #' \code{NA} to skip the drawing of such regions (which will retain
 #' whatever material has already been drawn at the regions).
 #'
@@ -2833,7 +2833,7 @@ mapPolygon <- function(longitude, latitude, density=NULL, angle=45,
 #' box()
 #' mapLines(coastlineWorld)
 #'
-#' ## 2. Northern polar region, with colour-coded bathymetry
+#' ## 2. Northern polar region, with color-coded bathymetry
 #' par(mfrow=c(1,1))
 #' drawPalette(c(-5000, 0), zlim=c(-5000, 0), col=oce.colorsJet)
 #' mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
@@ -3018,7 +3018,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         }
     } else {
         if (zlimGiven) {
-            oceDebug(debug, "'zlim' given, so using those zlim colours for out-of-range values\n")
+            oceDebug(debug, "'zlim' given, so using those zlim colors for out-of-range values\n")
             zlimMin <- min(zlim, na.rm=TRUE)
             zlimMax <- max(zlim, na.rm=TRUE)
             z[z <= zlimMin] <- zlimMin * (1 + sign(zlimMin) * small)
@@ -3037,7 +3037,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
     }
     ## Construct polygons centred on the specified longitudes and latitudes.  Each
     ## polygon has 5 points, four to trace the boundary and a fifth that is (NA,NA),
-    ## to signal the end of the polygon.  The z values (and hence the colours)
+    ## to signal the end of the polygon.  The z values (and hence the colors)
     ## map one per polygon.
     poly <- .Call("map_assemble_polygons", longitude, latitude, z,
                   NAOK=TRUE, PACKAGE="oce")
@@ -3151,16 +3151,18 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ## Profile times in seconds, as below. (is 0.1 to 0.2s meaningful?)
         ## Caution: profile times depend on Rstudio window size etc, so
         ## be careful in testing! The values below were from a particular
-        ## window and panel size but results were 1s different when I 
+        ## window and panel size but results were 1s different when I
         ## resized.
         ##   with sapply: 3.480 3.640 3.520
         ##   with loop:   3.260 3.440 3.430
+        ## NOTE: mapPolygonMethod is NOT documented, so we can assume
+        ## NOTE: that it will be NULL, so method=3 will be used.
         method <- options()$mapPolygonMethod
         if (0 == length(method))
             method <- 3 # method tested in issue 1284
         oceDebug(debug, "method=", method, " (set by options()$mapPolygonMethod or default of 3)\n")
         if (method==1) {
-            colPolygon <- sapply(1:(ni*nj), colorLookup)
+            colPolygon <- unlist(lapply(1:(ni*nj), colorLookup))
         } else if (method==2) {
             colPolygon <- character(ni*nj)
             for (ij in 1:(ni*nj)) {
@@ -3220,7 +3222,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
         ##.              latitude=latitude,
         ##.              z=z,
         ##.              breaks=breaks,
-        ##.              col=col, 
+        ##.              col=col,
         ##.              ii=ii)
         ##. message("DEBUGGING: defined global var 'dan'")
     }

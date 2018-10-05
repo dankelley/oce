@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{mapMeridians}
 \alias{mapMeridians}
-\title{Add Meridians on a Map [deprecated]}
+\title{Add Meridians on a Map [defunct]}
 \usage{
 mapMeridians(latitude, lty = "solid", lwd = 0.5 * par("lwd"),
   col = "darkgray", ...)
@@ -15,7 +15,7 @@ a meridian grid, or a vector of latitudes at which to draw meridians.}
 
 \item{lwd}{line width.}
 
-\item{col}{line colour.}
+\item{col}{line color.}
 
 \item{...}{optional arguments passed to \code{\link{lines}}.}
 }
@@ -33,9 +33,11 @@ Please use mapGrid() instead.
 \seealso{
 Other functions that will be removed soon: \code{\link{addColumn}},
   \code{\link{ctdAddColumn}},
-  \code{\link{ctdUpdateHeader}}, \code{\link{mapZones}},
+  \code{\link{ctdUpdateHeader}},
+  \code{\link{findInOrdered}}, \code{\link{mapZones}},
   \code{\link{oce.as.POSIXlt}}
 }
 \author{
 Dan Kelley
 }
+\concept{functions that will be removed soon}

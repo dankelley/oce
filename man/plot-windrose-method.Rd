@@ -6,10 +6,10 @@
 \alias{plot.windrose}
 \title{Plot Windrose data}
 \usage{
-\S4method{plot}{windrose}(x, type = c("count", "mean", "median", "fivenum"),
-  convention = c("meteorological", "oceanographic"),
-  mgp = getOption("oceMgp"), mar = c(mgp[1], mgp[1], 1 + mgp[1], mgp[1]),
-  col, ...)
+\S4method{plot}{windrose}(x, type = c("count", "mean", "median",
+  "fivenum"), convention = c("meteorological", "oceanographic"),
+  mgp = getOption("oceMgp"), mar = c(mgp[1], mgp[1], 1 + mgp[1],
+  mgp[1]), col, ...)
 }
 \arguments{
 \item{x}{A \code{windrose} object, e.g. inheriting from \code{\link{windrose-class}}.}
@@ -20,7 +20,7 @@ a \code{\link{fivenum}} representation of the values.}
 
 \item{convention}{String indicating whether to use meteorological convention or
 oceanographic convention for the arrows that emanate from the centre of the
-rose.  In meteorological convenction, an arrow emanates towards the right on
+rose.  In meteorological convection, an arrow emanates towards the right on
 the diagram if the wind is from the east; in oceanographic convention, such an
 arrow indicates flow \emph{to} the east.}
 
@@ -30,11 +30,11 @@ default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{Four-element numerical vector to be used with \code{\link{par}("mar")}.}
 
-\item{col}{Optional list of colours to use.  If not set, the colours will be
+\item{col}{Optional list of colors to use.  If not set, the colors will be
 \code{c("red", "pink", "blue", "lightgray")}.  For the first three types of
-plot, the first colour in this list is used to fill in the rose, the third is
+plot, the first color in this list is used to fill in the rose, the third is
 used for the petals of the rose, and the fourth is used for grid lines. For the
-\code{"fivenum"} type, the first colour is used for the inter-quartile range,
+\code{"fivenum"} type, the first color is used for the inter-quartile range,
 the second is used outside this range, the third is used for the median, and
 the fourth is, again, used for the grid lines.}
 
@@ -66,6 +66,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -88,3 +89,5 @@ Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{windrose} data}

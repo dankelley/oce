@@ -2,23 +2,35 @@
 % Please edit documentation in R/misc.R
 \name{unduplicateNames}
 \alias{unduplicateNames}
-\title{Rename duplicated items (used in reading CTD files)}
+\title{Rename duplicated character strings}
 \usage{
-unduplicateNames(names)
+unduplicateNames(strings, style = 1)
 }
 \arguments{
-\item{names}{Vector of strings with variable names.}
+\item{strings}{Vector of character strings.}
+
+\item{style}{An integer giving the style. If \code{style}
+is \code{1}, then e.g. a triplicate of \code{"a"} yields
+\code{"a"}, \code{"a1"}, and \code{"a2"}.
+If \code{style} is \code{2}, then the same input yields
+\code{"a_001"}, \code{"a_002"}, and \code{"a_003"}.}
 }
 \value{
-names Vector of strings with numbered variable names.
+Vector of strings with repeats distinguished by suffix.
 }
 \description{
-Rename items to avoid name collision, by appending a \code{2} to
-the second occurrence of a name, etc.
+Append numeric suffices to character strings, to avoid repeats.
+This is used by various data
+input functions, to handle the fact that several oceanographic data
+formats permit the reuse of variable names within a given file.
 }
 \examples{
 unduplicateNames(c("a", "b", "a", "c", "b"))
+unduplicateNames(c("a", "b", "a", "c", "b"), style=2)
 }
 \seealso{
-used by \code{\link{read.ctd.sbe}}.
+Used by \code{\link{read.ctd.sbe}} with \code{style=1} to
+rename repeated data elements (e.g. for multiple temperature sensors)
+in CTD data, and by \code{\link{read.odf}} with \code{style=2} on
+key-value pairs within ODF metadata.
 }

@@ -60,3 +60,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that subset \code{oce} objects}
+\concept{things related to \code{echosounder} data}

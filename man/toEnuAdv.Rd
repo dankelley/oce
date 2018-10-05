@@ -24,7 +24,7 @@ by specifying higher \code{debug} values.}
 Convert an ADV Object to ENU Coordinates
 }
 \references{
-\url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+\url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 }
 \seealso{
 See \code{\link{read.adv}} for notes on functions relating to
@@ -40,7 +40,8 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{read.adv.sontek.adr}},
   \code{\link{read.adv.sontek.serial}},
   \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{subset,adv-method}},
+  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
+  \code{\link{subset,adv-method}},
   \code{\link{summary,adv-method}}, \code{\link{toEnu}},
   \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
@@ -48,3 +49,4 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{adv} data}

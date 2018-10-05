@@ -25,7 +25,7 @@
 #' It is important to note that this table is by no means complete, since there
 #' are a great many SBE names listed in their document [1], plus names
 #' not listed there but present in data files
-#' supplied by prominent archiving agencies. If an SBE name is not recogized,
+#' supplied by prominent archiving agencies. If an SBE name is not recognized,
 #' then the oce name is set to that SBE name. This can cause problems in
 #' some other processing steps (e.g. if \code{\link{swRho}} or a similar
 #' function is called with an \code{oce} object as first argument), and so
@@ -110,12 +110,17 @@
 #'   \code{rhodflTC~}   \tab \code{Rhodamine}                    \tab ppb; Turner Cyclops  \tab   \cr
 #'   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
 #'   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
+#'   \code{sbox~ML/L}   \tab \code{oxygen}                       \tab ml/l; SBE43 (?)      \tab   \cr
 #'   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
+#'   \code{sbox~Mm/Kg}  \tab \code{oxygen}                       \tab umol/kg; SBE43 (?)   \tab   \cr
 #'   \code{sbeox~Mm/L}  \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
+#'   \code{sbox~Mm/L}   \tab \code{oxygen}                       \tab umol/l; SBE43 (?)    \tab   \cr
 #'   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
+#'   \code{sbox~PS}     \tab \code{oxygen}                       \tab percent; SBE43 (?)   \tab   \cr
 #'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
+#'   \code{sbox~V}      \tab \code{oxygenRaw}                    \tab V; SBE43 (?)         \tab   \cr
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
-#'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
+#'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; Seapoint        \tab   \cr
 #'   \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
 #'   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
 #'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
@@ -191,7 +196,14 @@
 #' @return a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
 #' @author Dan Kelley
 #' @references
-#' 1. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.
+#' 1. A SBE data processing manual was once at
+#' \code{http://www.seabird.com/document/sbe-data-processing-manual},
+#' but as of summer 2018, this no longer seems to be provided by SeaBird.
+#' A web search will turn up copies of the manual that have been put
+#' online by various research groups and data-archiving agencies.
+#' As of 2018-07-05, the latest version was named
+#' \code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017,
+#' and this was the reference version used in coding \code{oce}.
 #'
 #' @family things related to \code{ctd} data
 #' @family functions that interpret variable names and units from headers
@@ -293,10 +305,10 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^flSP[0-9]?$", name, useBytes=TRUE))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint")
-    } else if (1 == length(grep("^flsPR$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flSPR$", name, useBytes=TRUE))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint, Rhodamine")
-    } else if (1 == length(grep("^flsPuv[0-9]?$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^flSPuv[0-9]?$", name, useBytes=TRUE))) {
         name <- "fluorescence"
         unit <- list(unit=expression(), scale="Seapoint, UV")
     } else if (1 == length(grep("^flS$", name, useBytes=TRUE))) {
@@ -421,22 +433,34 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^sal[0-9]{2}$", name, useBytes=TRUE))) {
         name <- "salinity"
         unit <- list(unit=expression(), scale="PSS-78") # FIXME: guess on scale
-    } else if (1 == length(grep("^sbeox[0-9]ML/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]ML/L$", name, useBytes=TRUE))) {
+        if (length(grep("^sbo", name, useBytes=TRUE)))
+            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(ml/l), scale="SBE43")
-    } else if (1 == length(grep("^sbeox[0-9]Mg/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]Mg/L$", name, useBytes=TRUE))) {
+        if (length(grep("^sbo", name, useBytes=TRUE)))
+            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(mg/l), scale="SBE43")
-    } else if (1 == length(grep("^sbeox[0-9]Mm/Kg$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]Mm/Kg$", name, useBytes=TRUE))) {
+        if (length(grep("^sbo", name, useBytes=TRUE)))
+            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/kg), scale="SBE43")
-    } else if (1 == length(grep("^sbeox[0-9]Mm/L$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]Mm/L$", name, useBytes=TRUE))) {
+        if (length(grep("^sbo", name, useBytes=TRUE)))
+            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(mu*mol/l), scale="SBE43")
-    } else if (1 == length(grep("^sbeox[0-9]PS$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]PS$", name, useBytes=TRUE))) {
+        if (length(grep("^sbo", name, useBytes=TRUE)))
+            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygen"
         unit <- list(unit=expression(percent), scale="SBE43")
-    } else if (1 == length(grep("^sbeox[0-9]V$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^sbe?ox[0-9]V$", name, useBytes=TRUE))) {
+        if (length(grep("^sbo", name, useBytes=TRUE)))
+            warning("assuming '", name, "' is equivalent to '", gsub("^sb", "sbe", name), "'", sep="")
         name <- "oxygenRaw"
         unit <- list(unit=expression(V), scale="SBE43")
     } else if (1 == length(grep("^scan$", name, useBytes=TRUE))) {
@@ -447,7 +471,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         unit <- list(unit=expression(), scale="PSS-78")
     } else if (1 == length(grep("^seaTurbMtr[1]?$", name, useBytes=TRUE))) {
         name <- "turbidity"
-        unit <- list(unit=expression(FTU), scale="SeaPoint")
+        unit <- list(unit=expression(FTU), scale="Seapoint")
     } else if (1 == length(grep("sigma-t[0-9]{2}", name, useBytes=TRUE))) {
         name <- "sigmaT"
         unit <- list(unit=expression(kg/m^3), scale="")
@@ -628,8 +652,30 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' numerical summary. See the Appendix VI of [2] for the meanings of these
 #' names (in the "Short Name" column of the table spanning pages 161 through 172).
 #'
+#' @section A note on sampling times:
+#' SBE files can be somewhat confusing as regards the time of measurement. If
+#' the data file contains metadata item called \code{start_time}, then
+#' it is converted to a POSIX time object by \code{read.ctd.sbe} and stored
+#' within the \code{metadata} slot as \code{"startTime"}. Until 2018-07-05, that
+#' value was also stored in a \code{metadata} item named \code{"time"}, but this
+#' caused confusion for data files that also have an elapsed-time column, and so
+#' an entry named \code{"time"} is no longer stored in the \code{metadata} slot,
+#' for those cases in which an elapsed-time column exists in the data file.
+#' Importantly, there is a possibility for confusion in the storage
+#' of that elapsed-time entry within the \code{data} slot, because \code{read.ctd.sbe}
+#' renames all of the ten variants of elapsed time (see [2] for a list)
+#' as, simply, \code{"time"} in the \code{data} slot of the returned value.
+#' (Numerical suffices will be used if the file contains multiple elapsed-time
+#' columns.) This imposes upon the user the burden of using \code{summary()} on
+#' the return value, to discover the original name of the elapsed time column,
+#' because \code{read.ctd.sbe} does not convert the 10 possible units to
+#' a standard, but rather simply records the numerical values that are in
+#' the data file. The most common column name is likely \code{timeS}, for
+#' elapsed time in seconds; see [2] for the meanings of the other 9
+#' schemes.
+#'
 #' @section A note on scales:
-#' The user may encounter data files with a variety of scales for temperature and
+#' The user might encounter data files with a variety of scales for temperature and
 #' salinity. Oce keeps track of these scales in the units it sets up for the stored
 #' variables. For example, if \code{A} is a CTD object, then
 #' \code{A[["temperatureUnit"]]$scale} is a character string that will indicate the scale.
@@ -644,9 +690,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' the scale is IPTS-68). Even though this procedure should work, users who
 #' really care about the details of their data are well-advised to do a couple
 #' of tests after examining the first data line of their data file in an editor.
-#'
 #' Note that reading a file that contains IPTS-68 temperatures produces a warning.
-#'
 #'
 #' @examples
 #' f <- system.file("extdata", "ctd.cnv", package="oce")
@@ -659,10 +703,17 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' @references
 #' 1. The Sea-Bird SBE 19plus profiler is described at
 #' \code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
-#' information is given in the Sea-Bird data-processing manaual
-#' \url{http://www.seabird.com/document/sbe-data-processing-manual}.
+#' information is given in the Sea-Bird data-processing manual
+#' (next item).
 #'
-#' 2. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.
+#' 2. A SBE data processing manual was once at
+#' \code{http://www.seabird.com/document/sbe-data-processing-manual},
+#' but as of summer 2018, this no longer seems to be provided by SeaBird.
+#' A web search will turn up copies of the manual that have been put
+#' online by various research groups and data-archiving agencies.
+#' As of 2018-07-05, the latest version was named
+#' \code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017,
+#' and this was the reference version used in coding \code{oce}.
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
@@ -857,7 +908,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         }
         if (is.null(station)) {
             if (0 < (r<-regexpr("station:", lline)))
-                station <- sub("[ ]*$", "", sub("(.*)station:([ ])*", "", ignore.case=TRUE, line)) # full string
+                station <- sub("[ ]*$", "", sub("(.*)station:([ ])*", "", ignore.case=TRUE, line))
+            if (0 < (r<-regexpr("station_name:", lline)))
+                station <- sub("[ ]*$", "", sub("(.*)station_name:([ ])*", "", ignore.case=TRUE, line))
         }
         if (0 < (r<-regexpr("recovery:", lline)))
             recovery <- sub("(.*)recovery:([ ])*", "", lline)
@@ -920,7 +973,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             sampleIntervalUnits <- units
         } else if (0 < (r<-regexpr("^. sample rate =", lline))) {
             ## * sample rate = 1 scan every 5.0 seconds
-            rtmp <- lline;
+            rtmp <- lline
             rtmp <- sub("(.*) sample rate = ", "", rtmp)
             rtmp <- sub("scan every ", "", rtmp)
             rtmp <- strsplit(rtmp, " ")
@@ -928,17 +981,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             ##        warning("cannot parse sample-rate string in `",line,"'")
             sampleInterval <- as.double(rtmp[[1]][2]) / as.double(rtmp[[1]][1])
             sampleIntervalUnits <- "s"
-            if (rtmp[[1]][3] == "seconds") {
-                ;
+            if (rtmp[[1]][3] == "minutes") {
+                sampleInterval <- sampleInterval / 60
             } else {
-                if (rtmp[[1]][3] == "minutes") {
-                    sampleInterval <- sampleInterval / 60;
+                if (rtmp[[1]][3] == "hours") {
+                    sampleInterval <- sampleInterval / 3600
                 } else {
-                    if (rtmp[[1]][3] == "hours") {
-                        sampleInterval <- sampleInterval / 3600;
-                    } else {
-                        warning("cannot understand `", rtmp[[1]][2], "' as a unit of time for sampleInterval")
-                    }
+                    warning("cannot understand `", rtmp[[1]][2], "' as a unit of time for sampleInterval")
                 }
             }
         }
@@ -979,7 +1028,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$deploymentType <- "unknown"
     res@metadata$date <- date
     res@metadata$startTime <- startTime
-    res@metadata$time <- date          # standardized name
+##    res@metadata$time <- date          # standardized name
     res@metadata$latitude <- latitude
     res@metadata$longitude <- longitude
     res@metadata$recovery <- recovery
@@ -1039,7 +1088,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                 C <- data$conductivity
                 if (!is.null(res@metadata$units$conductivity)) {
                     unit <- as.character(res@metadata$units$conductivity$unit)
-                    ## Conductivity Ratio is conductivity divided by 42.914 mS/cm (Culkin and Smith 1980;
+                    ## Conductivity Ratio is conductivity divided by 42.914 mS/cm (Culkin and Smith 1980
                     ## see ?read.rsk for full citation)
                     if ("uS/cm" == unit) {
                         C <- C / 429.14
@@ -1094,6 +1143,12 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             warning("created 'pressure' from 'depth'")
         }
     }
+    ## Store time in metadata, if it's not in the data. This was done
+    ## 2018-07-05 in response to issue 1434, on the assumption that
+    ## some other code might be relying on `d[["time"]]` retrieving
+    ## *something**.
+    if (!("time" %in% names(res@data)))
+        res@metadata$time <- date
     ##res@metadata$dataNamesOriginal <- colNamesOriginal
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
 

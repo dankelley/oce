@@ -52,3 +52,4 @@ Other bin-related functions: \code{\link{binApply2D}},
 \author{
 Dan Kelley
 }
+\concept{bin-related functions}

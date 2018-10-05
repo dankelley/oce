@@ -5,7 +5,7 @@
 \title{Trim Beginning and Ending of a CTD cast}
 \usage{
 ctdTrim(x, method, removeDepthInversions = FALSE, parameters = NULL,
-  debug = getOption("oceDebug"))
+  indices = FALSE, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -20,6 +20,11 @@ section, unless \code{\link{ctdDecimate}} will be used, which will remove the in
 
 \item{parameters}{A list whose elements depend on the method; see \dQuote{Details}.}
 
+\item{indices}{Logical value indicating what to return. If \code{indices=FALSE} (the default),
+then the return value is a subsetted \code{\link{ctd-class}} object. If \code{indices=TRUE},
+then the return value is a logical vector that could be used to subset the data
+with \code{\link{subset,ctd-method}} or to set data-quality flags.}
+
 \item{debug}{an integer specifying whether debugging information is
 to be printed during the processing. This is a general parameter that
 is used by many \code{oce} functions. Generally, setting \code{debug=0}
@@ -29,7 +34,10 @@ be printed. If one function calls another, it usually reduces the value of
 by specifying higher \code{debug} values.}
 }
 \value{
-An object of \code{\link{ctd-class}}, with data having been trimmed in some way.
+Either an object of \code{\link{ctd-class}} or a logical vector of length
+matching the data. The first option is the default. The second option,
+achieved by setting \code{indices=FALSE}, may be useful in constructing
+data flags to be inserted into the object.
 }
 \description{
 Often in CTD profiling, the goal is to isolate only the downcast, discarding measurements made in
@@ -85,7 +93,7 @@ varies, a variety of approaches are taken to trimming the dataset.
   include \code{minSoak} (the minimum depth for the soak) and
   \code{maxSoak} the maximum depth of the soak. The method finds
   the minimum pressure prior to the \code{maxSoak} value being
-  passed, each of which occuring after the scan in which the
+  passed, each of which occurring after the scan in which the
   \code{minSoak} value was reached. For the method to work, the
   pre-cast pressure minimum must be less than the \code{minSoak}
   value. The default values of \code{minSoak} and \code{maxSoak}
@@ -147,6 +155,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
+  \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
@@ -155,6 +165,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{setFlags,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
@@ -163,3 +174,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{things related to \code{ctd} data}

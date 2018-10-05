@@ -4,7 +4,8 @@
 \alias{applyMagneticDeclination}
 \title{Earth magnetic declination}
 \usage{
-applyMagneticDeclination(x, declination = 0, debug = getOption("oceDebug"))
+applyMagneticDeclination(x, declination = 0,
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{an oce object.}
@@ -37,3 +38,4 @@ Other things related to magnetism: \code{\link{magneticField}}
 \author{
 Dan Kelley
 }
+\concept{things related to magnetism}

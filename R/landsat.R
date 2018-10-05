@@ -1,12 +1,24 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 
-#' Class to Hold landsat Data
+#' Class to Store landsat Data
 #'
-#' This class has the standard slots of an \code{\link{oce-class}}
-#' object.  Landsat data are available at several websites (e.g. [1]).
+#' This class holds landsat data. Such are available at several
+#' websites (e.g. [1]).
 #' Although the various functions may work for other satellites, the
 #' discussion here focusses on Landsat 8 and Landsat 7.
+#'
+#' @templateVar class landsat
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @section Data storage:
 #'
@@ -70,7 +82,7 @@
 #'
 #' Band 8 is panchromatic, and has the highest resolution.  For convenience of
 #' programming, \code{\link{read.landsat}} subsamples the \code{tirs1} and
-#' \code{tirs2} bands to the 30m resultion of the other bands.  See Reference
+#' \code{tirs2} bands to the 30m resolution of the other bands.  See Reference
 #' [3] for information about the evolution of Landsat 8 calibration
 #' coefficients, which as of summer 2014 are still subject to change.
 #'
@@ -240,12 +252,19 @@ setMethod(f="summary",
           })
 
 
-#' Extract Something From a landsat Object
+#' @title Extract Something From a landsat Object
+#'
+#' @param x An landsat object, i.e. one inheriting from \code{\link{landsat-class}}.
+#'
+#' @templateVar class landsat
+#'
+#' @template sub_subTemplate
+#'
+#' @section Details of the specialized \code{landsat} method:
 #'
 #' Users are isolated from the details of the two-byte storage system
 #' by using the \code{[[} operator.
 #'
-#' @details
 #' \emph{Accessing band data.}  The data may be accessed with e.g.
 #' \code{landsat[["panchromatic"]]}, for the panchromatic band.  If a new
 #' ``band'' is added with \code{\link{landsatAdd}}, it may be referred by
@@ -295,10 +314,6 @@ setMethod(f="summary",
 #' decimation.  An exception is the lat-lon box, which is altered by
 #' \code{\link{landsatTrim}}.
 #'
-#' @param x An landsat object, i.e. one inheriting from \code{\link{landsat-class}}.
-#' @param i The item to extract.
-#' @param j Optional additional information on the \code{i} item (ignored).
-#' @param ... Optional additional information (ignored).
 #' @concept satellite
 #'
 #' @author Dan Kelley
@@ -508,11 +523,24 @@ setMethod(f="[[",
               }
           })
 
+
+#' @title Replace Parts of a landsat Object
+#' @param x A \code{landsat} object, i.e. one inheriting from \code{\link{landsat-class}}.
+#' @template sub_subsetTemplate
+#'
+#' @family things related to \code{landsat} data
+setMethod(f="[[<-",
+          signature(x="landsat", i="ANY", j="ANY"),
+          definition=function(x, i, j, ..., value) {
+              callNextMethod(x=x, i=i, j=j, ..., value=value) # [[<-
+          })
+
+
 #' Plot a landsat Object
 #'
 #' Plot the data within a landsat image, or information computed from the
 #' data. The second category includes possibilities such as an estimate of
-#' surface temperature and the \code{"terralook"} estimate of a natural-colour
+#' surface temperature and the \code{"terralook"} estimate of a natural-color
 #' view.
 #'
 #' @details
@@ -541,7 +569,7 @@ setMethod(f="[[",
 #' of at-satellite brightness temperature, computed from the
 #' \code{tirs1} band.
 #' \item Setting \code{band="terralook"} will plot a sort of natural
-#' colour by combining the \code{red}, \code{green}, \code{blue} and
+#' color by combining the \code{red}, \code{green}, \code{blue} and
 #' \code{nir} bands according to the formula provided at
 #' \code{https://lta.cr.usgs.gov/terralook/what_is_terralook} (a
 #' website that worked once, but failed as of Feb 2, 2017), namely
@@ -571,7 +599,7 @@ setMethod(f="[[",
 #' otherwise the first band will be used.  In addition to the above, using
 #' \code{band="temperature"} will plot an estimate of at-satellite
 #' brightness temperature, computed from the \code{tirs1} band, and
-#' \code{band="terralook"} will plot a sort of natural colour by combining
+#' \code{band="terralook"} will plot a sort of natural color by combining
 #' the \code{red}, \code{green}, \code{blue} and \code{nir} bands
 #' according to the formula provided at
 #' \code{https://lta.cr.usgs.gov/terralook/what_is_terralook} (a
@@ -585,7 +613,7 @@ setMethod(f="[[",
 #' full-size images, since no graphical displays can show 16 thousand pixels
 #' on a side.
 #'
-#' @param zlim Either a pair of numbers giving the limits for the colourscale,
+#' @param zlim Either a pair of numbers giving the limits for the colorscale,
 #' or \code{"histogram"} to have a flattened histogram (i.e. to maximally
 #' increase contrast throughout the domain.)  If not given, the 1 and 99
 #' percent quantiles are calculated and used as limits.
@@ -593,12 +621,12 @@ setMethod(f="[[",
 #' @param utm A logical value indicating whether to use UTS (easting and northing) instead
 #' of longitude and latitude on plot.
 #'
-#' @param col Either a function yielding colours, taking a single integer
-#' argument with the desired number of colours, or the string
+#' @param col Either a function yielding colors, taking a single integer
+#' argument with the desired number of colors, or the string
 #' \code{"natural"}, which combines the information in the \code{red},
 #' \code{green} and \code{blue} bands and produces a natural-hue image.  In
 #' the latter case, the band designation is ignored, and the object must
-#' contain the three colour bands.
+#' contain the three color bands.
 #'
 #' @param drawPalette Indication of the type of palette to draw, if
 #' any. See \code{\link{imagep}} for details.
@@ -606,25 +634,25 @@ setMethod(f="[[",
 #' @param showBandName A logical indicating whether the band name is to
 #' plotted in the top margin, near the right-hand side.
 #'
-#' @param alpha.f Argument used if \code{col="natural"}, to adjust colours
+#' @param alpha.f Argument used if \code{col="natural"}, to adjust colors
 #' with \code{\link{adjustcolor}}.
 #'
-#' @param red.f Argument used if \code{col="natural"}, to adjust colours with
+#' @param red.f Argument used if \code{col="natural"}, to adjust colors with
 #' \code{\link{adjustcolor}}.  Higher values of \code{red.f} cause red hues
 #' to be emphasized (e.g. dry land).
 #'
-#' @param green.f Argument used if \code{col="natural"}, to adjust colours with
+#' @param green.f Argument used if \code{col="natural"}, to adjust colors with
 #' \code{\link{adjustcolor}}.  Higher values of \code{green.f} emphasize
 #' green hues (e.g. forests).
 #'
-#' @param blue.f Argument used if \code{band="terralook"}, to adjust colours with
+#' @param blue.f Argument used if \code{band="terralook"}, to adjust colors with
 #' \code{\link{adjustcolor}}.  Higher values of \code{blue.f} emphasize blue
 #' hues (e.g. ocean).
 #'
-#' @param offset Argument used if \code{band="terralook"}, to adjust colours with
+#' @param offset Argument used if \code{band="terralook"}, to adjust colors with
 #' \code{\link{adjustcolor}}.
 #'
-#' @param transform Argument used if \code{band="terralook"}, to adjust colours
+#' @param transform Argument used if \code{band="terralook"}, to adjust colors
 #' with \code{\link{adjustcolor}}.
 #'
 #' @param debug Set to a positive value to get debugging information during
@@ -637,7 +665,7 @@ setMethod(f="[[",
 #' @author Dan Kelley
 #'
 #' @family things related to \code{landsat} data
-#' @family functions that plot \oce{oce} data
+#' @family functions that plot \code{oce} data
 #' @aliases plot.landsat
 setMethod(f="plot",
           signature=signature("landsat"),
@@ -675,16 +703,16 @@ setMethod(f="plot",
                       b <- x[["blue", decimate]]
                       dim <- dim(r)
                       if (spacecraft == "LANDSAT_8") {
-                          oceDebug(debug, "colours for landsat 8 (range 0 to 2^16-1)\n")
+                          oceDebug(debug, "colors for landsat 8 (range 0 to 2^16-1)\n")
                           colors <- rgb(r, g, b, maxColorValue=2^16-1)
                       } else {
-                          oceDebug(debug, "colours for landsat 7 (range 0 to 2^8-1)\n")
+                          oceDebug(debug, "colors for landsat 7 (range 0 to 2^8-1)\n")
                           colors <- rgb(r, g, b, maxColorValue=2^8-1)
                       }
                       rm(list=c("r", "g", "b")) # clean up asap
                       col <- unique(colors)
                       d <- array(match(colors, col), dim=dim) # method of Clark Richards
-                      oceDebug(debug, "colour compaction: ", floor(prod(dim)/length(col)), '\n')
+                      oceDebug(debug, "color compaction: ", floor(prod(dim)/length(col)), '\n')
                       oceDebug(debug, "adjusting colors: orig=", paste(head(col), collapse=" "), "\n")
                       col <- adjustcolor(col, alpha.f=alpha.f, red.f=red.f, green.f=green.f, blue.f=blue.f,
                                          offset=offset, transform=transform)
@@ -713,16 +741,16 @@ setMethod(f="plot",
                       g[g<0] <- 0
                       b[b<0] <- 0
                       if (spacecraft == "LANDSAT_8") {
-                          oceDebug(debug, "colours for landsat 8 (range 0 to 2^16-1)\n")
+                          oceDebug(debug, "colors for landsat 8 (range 0 to 2^16-1)\n")
                           colors <- rgb(r, g, b, maxColorValue=2^16-1)
                       } else {
-                          oceDebug(debug, "colours for landsat 7 (range 0 to 2^8-1)\n")
+                          oceDebug(debug, "colors for landsat 7 (range 0 to 2^8-1)\n")
                           colors <- rgb(r, g, b, maxColorValue=2^8-1)
                       }
                       rm(list=c("r", "g", "b")) # clean up asap
                       col <- unique(colors)
                       d <- array(match(colors, col), dim=dim) # method of Clark Richards
-                      oceDebug(debug, "colour compaction: ", floor(prod(dim)/length(col)), '\n')
+                      oceDebug(debug, "color compaction: ", floor(prod(dim)/length(col)), '\n')
                       oceDebug(debug, "adjusting colors: orig=", paste(head(col), collapse=" "), "\n")
                       col <- adjustcolor(col, alpha.f=alpha.f, red.f=red.f, green.f=green.f, blue.f=blue.f,
                                          offset=offset, transform=transform)
@@ -985,11 +1013,11 @@ read.landsatmeta <- function(file, debug=getOption("oceDebug"))
 #' from Konda et al.  (1994). These authors suggest an uncertainty of 0.04,
 #' but a wider range of values can be found in the literature.  The value of
 #' \code{metadata$emissivity} is easy to alter, either as a single value or
-#' as a matrix, yielding flexibility of calcuation.
+#' as a matrix, yielding flexibility of calculation.
 #'
 #' @param decimate optional positive integer indicating the degree to which
 #' the data should be subsampled after reading and before storage. Setting
-#' this to 10 can speed up reding by a factor of 3 or more, but higher values
+#' this to 10 can speed up reading by a factor of 3 or more, but higher values
 #' have diminishing effect.  In exploratory work, it is useful to set
 #' \code{decimate=10}, to plot the image to determine a subregion
 #' of interest, and then to use \code{\link{landsatTrim}} to trim the image.
@@ -1117,14 +1145,14 @@ read.landsat <- function(file, band="all", emissivity=0.984, decimate, debug=get
         ##> print("assembling bytes")
         ##> print(system.time({
         if ("LANDSAT_8" == header$spacecraft) {
-            d <- .Call("landsat_numeric_to_bytes", d, 16) # reuse 'd' to try to save storage
-            res@data[[header$bandnames[band[b]]]] <- list(msb=.Call("landsat_transpose_flip", d$msb),
-                                                          lsb=.Call("landsat_transpose_flip", d$lsb))
+            dd <- do_landsat_numeric_to_bytes(d, 16L)
+            res@data[[header$bandnames[band[b]]]] <- list(msb=do_landsat_transpose_flip(dd$msb),
+                                                          lsb=do_landsat_transpose_flip(dd$lsb))
         } else {
             ## FIXME: assume all others are 1-byte, like LANDSAT_7
-            d <- .Call("landsat_numeric_to_bytes", d, 8) # reuse 'd' to try to save storage
+            dd <- do_landsat_numeric_to_bytes(d, 8L)
             res@data[[header$bandnames[band[b]]]] <- list(msb=0,
-                                                          lsb=.Call("landsat_transpose_flip", d$lsb))
+                                                          lsb=do_landsat_transpose_flip(dd$lsb))
         }
         ##> }))
         ##> print("--DONE assembling bytes")

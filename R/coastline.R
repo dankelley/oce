@@ -1,13 +1,24 @@
-#' @title Class to Store Coastline Data
+#' Class to Store Coastline Data
 #'
-#' @description
-#' Class to store coastline data, which may be read with
+#' This class stores coastline data, which may be read with
 #' \code{\link{read.coastline}} or constructed with \code{\link{as.coastline}},
 #' plotted with \code{\link{plot,coastline-method}} or summarized with
 #' \code{\link{summary,coastline-method}}. Data within \code{coastline}
 #' objects may be retrieved with \code{\link{[[,coastline-method}}
 #' or replaced with \code{\link{[[<-,coastline-method}}.
 #'
+#' @templateVar class coastline
+#'
+#' @templateVar dataExample The key items stored in this slot are \code{longitude} and \code{latitude}.
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
+##'
 #' @author Dan Kelley
 #'
 #' @family classes provided by \code{oce}
@@ -37,7 +48,7 @@ setClass("coastline", contains="oce")
 #' startup file.
 #' @author Dan Kelley
 #' @source Downloaded from \url{http://www.naturalearthdata.com}, in
-#' \code{ne_110m_admin_0_countries.shp} in July 2015, with an 
+#' \code{ne_110m_admin_0_countries.shp} in July 2015, with an
 #' update on December 16, 2017.
 #' @family datasets provided with \code{oce}
 #' @family things related to \code{coastline} data
@@ -57,6 +68,14 @@ setMethod(f="initialize",
 
 #' @title Extract Something From a Coastline Object
 #' @param x A coastline object, i.e. one inheriting from \code{\link{coastline-class}}.
+#'
+#' @templateVar class coastline
+#'
+#' @section Details of the specialized \code{coastline} method:
+#' There are no specialized methods, and invocations such as
+#' \code{coastline[["longitude"]]} and \code{coastline[["latitude"]]}
+#' probably account for the vast majority of use cases.
+#'
 #' @template sub_subTemplate
 #' @family things related to \code{coastline} data
 setMethod(f="[[",
@@ -118,8 +137,9 @@ setMethod(f="summary",
           signature="coastline",
           definition=function(object, ...) {
               cat("Coastline Summary\n-----------------\n\n")
-              cat("* Number of points:", length(object@data$latitude), ", of which",
-                  sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
+              showMetadataItem(object, "filename",                  "File: ", quote=TRUE)
+              cat("* Number of points: ", length(object@data$latitude), ", of which ",
+                  sum(is.na(object@data$latitude)), " are NA (e.g. separating islands).\n", sep="")
               invisible(callNextMethod())        # summary
           })
 
@@ -242,7 +262,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' plot edges (a problem that plagues map projections).  If \code{projection}
 #' is not set, a Mercator projection is used for latitudes below about 70
 #' degrees, as if \code{projection="+proj=merc"} had been supplied, or a
-#' Stereopoloar one is used as if \code{projection="+proj=stere"}.  Otherwise,
+#' Stereopolar one is used as if \code{projection="+proj=stere"}.  Otherwise,
 #' \code{projection} must be a character string identifying a projection
 #' accepted by \code{\link{mapPlot}}.
 #'
@@ -257,7 +277,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #'
 #' @param mar value to be used with \code{\link{par}("mar")}.
 #'
-#' @param bg optional colour to be used for the background of the map.  This
+#' @param bg optional color to be used for the background of the map.  This
 #' comes in handy for drawing insets (see \dQuote{details}).
 #'
 #' @param fill a legacy parameter that will be permitted only temporarily; see
@@ -267,11 +287,11 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' \code{"p"} for points, \code{"l"} for line segments, or \code{"o"} for points
 #' overlain with line segments.
 #'
-#' @param border colour of coastlines and international borders (ignored unless
+#' @param border color of coastlines and international borders (ignored unless
 #' \code{type="polygon"}.
 #'
-#' @param col either the colour for filling polygons (if \code{type="polygon"})
-#' or the colour of the points and line segments (if \code{type="p"},
+#' @param col either the color for filling polygons (if \code{type="polygon"})
+#' or the color of the points and line segments (if \code{type="p"},
 #' \code{type="l"}, or \code{type="o"}).
 #'
 #' @param axes boolean, set to \code{TRUE} to plot axes.
@@ -314,7 +334,7 @@ as.coastline <- function(longitude, latitude, fillable=FALSE)
 #' @return None.
 #'
 #' @section History: Until February, 2016, \code{plot,coastline-method} relied on a
-#' now-defunct argument \code{fill} to control colours; \code{col} is to be
+#' now-defunct argument \code{fill} to control colors; \code{col} is to be
 #' used now, instead. Also, in February, 2016, the arguments named
 #' \code{parameters} and \code{orientation} were both removed, as they had
 #' become nonfunctional about a year previously, in the transition to using
@@ -632,7 +652,7 @@ setMethod(f="plot",
                           ylabels <- formatPosition(yr.pretty, isLat=TRUE, type='expression',
                                                     showHemi=geographical==3)
                       }
- 
+
                       axis(1, at=xr.pretty, labels=xlabels, pos=usrTrimmed[3], cex.axis=cex.axis)
                       oceDebug(debug, "putting bottom x axis at", usrTrimmed[3], "with labels:", xlabels, "\n")
                       axis(2, at=yr.pretty, labels=ylabels, pos=usrTrimmed[1], cex.axis=cex.axis, cex=cex.axis)
@@ -655,6 +675,8 @@ setMethod(f="plot",
                       if (is.null(col))
                           col <- "lightgray"
                       polygon(longitude, latitude, border=border, col=col, ...)
+                      if (axes)
+                          box()
                   } else {
                       if (is.null(col))
                           col <- "black"
@@ -694,7 +716,7 @@ setMethod(f="plot",
 #'
 #' @template downloadDestTemplate
 #'
-#' @param server A character value specifying the server that is to suppply
+#' @param server A character value specifying the server that is to supply
 #' the data. At the moment, the only permitted value is \code{"naturalearth"},
 #' which is the default if \code{server} is not supplied.
 #'

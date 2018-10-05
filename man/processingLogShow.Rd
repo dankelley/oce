@@ -12,3 +12,9 @@ processingLogShow(x)
 \description{
 Show the processing log of an \code{oce} object
 }
+\seealso{
+Other things related to processing logs: \code{\link{processingLog<-}},
+  \code{\link{processingLogAppend}},
+  \code{\link{processingLogItem}}
+}
+\concept{things related to processing logs}

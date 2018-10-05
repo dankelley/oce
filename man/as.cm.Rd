@@ -4,9 +4,10 @@
 \alias{as.cm}
 \title{Coerce data into a CM object}
 \usage{
-as.cm(time, u = NULL, v = NULL, pressure = NULL, conductivity = NULL,
-  temperature = NULL, salinity = NULL, longitude = NA, latitude = NA,
-  filename = "", debug = getOption("oceDebug"))
+as.cm(time, u = NULL, v = NULL, pressure = NULL,
+  conductivity = NULL, temperature = NULL, salinity = NULL,
+  longitude = NA, latitude = NA, filename = "",
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{time}{A vector of times of observation, or an \code{oce} object that holds \code{time},
@@ -29,7 +30,7 @@ Ignored if the first argument contains an \code{oce} object holding pressure.}
 Ignored if the first argument contains an \code{oce} object holding temperature}
 
 \item{salinity}{Optional vector of salinity, assumed to be Practical Salinity.
-Ignored if the first argument contains an \code{oce} object holding saliity}
+Ignored if the first argument contains an \code{oce} object holding salinity}
 
 \item{longitude}{Optional longitude in degrees East.
 Ignored if the first argument contains an \code{oce} object holding longitude.}
@@ -54,6 +55,8 @@ Coerce data into a CM object
 Other things related to \code{cm} data: \code{\link{[[,cm-method}},
   \code{\link{[[<-,cm-method}}, \code{\link{cm-class}},
   \code{\link{cm}}, \code{\link{plot,cm-method}},
-  \code{\link{read.cm}}, \code{\link{subset,cm-method}},
+  \code{\link{read.cm}}, \code{\link{rotateAboutZ}},
+  \code{\link{subset,cm-method}},
   \code{\link{summary,cm-method}}
 }
+\concept{things related to \code{cm} data}

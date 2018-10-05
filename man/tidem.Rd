@@ -56,7 +56,7 @@ Fortran analysis code and also in Pawlowicz et al. (2002) [4] discussion
 of the T_TIDE Matlab code.
 Rounded to the 0.1mm resolution of values reported in [1] and [2],
 the \code{tidem} results have root-mean-square amplitude difference
-to Foreman's Appendix 7.3 of 0.06mm; by comparision,
+to Foreman's Appendix 7.3 of 0.06mm; by comparison,
 the results in Table 1 of Pawlowicz et al. (2002) agree with Foreman's
 results to RMS difference 0.04mm.)}
 
@@ -120,7 +120,7 @@ order.  Each of these constituents is based on the name of a tidal
 constituent in the Foreman (1977) notation.  (To get the list, execute
 \code{data(tidedata)} and then execute \code{cat(tideData$name)}.)  Each
 named constituent is added to the existing list, if it is not already there.
-But, if the constituent is preceeded by a minus sign, then it is removed
+But, if the constituent is preceded by a minus sign, then it is removed
 from the list (if it is already there).  Thus, for example,
 \code{constituents=c("standard", "-M2", "ST32")} would remove the M2
 constituent and add the ST32 constituent.
@@ -149,7 +149,7 @@ any are found to have been removed, then they are added back. This last
 step was added on 2017-12-27, to make \code{tidem} behave the same
 way as the Foreman (1977) code [1], as illustrated in his
 Appendices 7.2 and 7.3. (As an aside, his Appendix 7.3 has some errors,
-e.g. the frequency for the 2SK5 constituent is listed there (p58) as 
+e.g. the frequency for the 2SK5 constituent is listed there (p58) as
 0.20844743, but it is listed as 0.2084474129 in his Appendix 7.1 (p41).
 For this reason, the frequency comparison is relaxed to a \code{tol}
 value of \code{1e-7} in a portion of the oce test suite
@@ -165,7 +165,7 @@ Similarly, Table 2 of [1] dictates the removal of
 \code{PI1}, \code{S1} and \code{PSI1} from the list. And, finally,
 Table 3 of [1] dictates the removal of
 \code{H1}, \code{H2}, \code{T2} and \code{R2}.  Also, since Table 3
-of [1] indiates that \code{GAM2} gets subsumed into \code{H1},
+of [1] indicates that \code{GAM2} gets subsumed into \code{H1},
 and if \code{H1} is already being deleted in this test case, then
 \code{GAM2} will also be deleted.
 
@@ -270,3 +270,4 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{tidem} data}

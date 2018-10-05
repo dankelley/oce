@@ -6,11 +6,12 @@
 \alias{plot.gps}
 \title{Plot a GPS Object}
 \usage{
-\S4method{plot}{gps}(x, xlab = "", ylab = "", asp, clongitude, clatitude,
-  span, projection, parameters = NULL, orientation = NULL, expand = 1,
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1), bg,
-  axes = TRUE, cex.axis = par("cex.axis"), add = FALSE, inset = FALSE,
-  geographical = 0, debug = getOption("oceDebug"), ...)
+\S4method{plot}{gps}(x, xlab = "", ylab = "", asp, clongitude,
+  clatitude, span, projection, parameters = NULL, orientation = NULL,
+  expand = 1, mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] +
+  1, 1, 1), bg, axes = TRUE, cex.axis = par("cex.axis"), add = FALSE,
+  inset = FALSE, geographical = 0, debug = getOption("oceDebug"),
+  ...)
 }
 \arguments{
 \item{x}{A \code{gps} object, as read by \code{\link{read.gps}} or created
@@ -66,7 +67,7 @@ default, in order to use more space for the data and less for the axes.}
 
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
 
-\item{bg}{optional colour to be used for the background of the map.  This
+\item{bg}{optional color to be used for the background of the map.  This
 comes in handy for drawing insets (see \dQuote{details}).}
 
 \item{axes}{boolean, set to \code{TRUE} to plot axes.}
@@ -117,6 +118,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,coastline-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -139,3 +141,5 @@ Other things related to \code{gps} data: \code{\link{[[,gps-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{gps} data}

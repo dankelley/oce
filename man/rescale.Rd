@@ -29,9 +29,9 @@ A new vector, which has minimum \code{lim[1]} and maximum
 \code{lim[2]}.
 }
 \description{
-This is helpful in e.g. developing a colour scale for an image plot.  It is
+This is helpful in e.g. developing a color scale for an image plot.  It is
 not necessary that \code{rlow} be less than \code{rhigh}, and in fact
-reversing them is a good way to get a reversed colour scale for a plot.
+reversing them is a good way to get a reversed color scale for a plot.
 }
 \examples{
 library(oce)

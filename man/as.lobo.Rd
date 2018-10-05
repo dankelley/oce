@@ -18,9 +18,9 @@ as.lobo(time, u, v, salinity, temperature, pressure, nitrate, fluorescence,
 
 \item{temperature}{vector of temperature observations}
 
-\item{pressure}{vector of pressure observationss}
+\item{pressure}{vector of pressure observations}
 
-\item{nitrate}{vector of nitrate observationss}
+\item{nitrate}{vector of nitrate observations}
 
 \item{fluorescence}{vector of fluoresence observations}
 
@@ -42,3 +42,4 @@ Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{lobo} data}

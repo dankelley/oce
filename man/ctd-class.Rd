@@ -5,7 +5,7 @@
 \alias{ctd-class}
 \title{Class to Store CTD (or general hydrographic) Data}
 \description{
-Class to store hydrographic data such as measured with a CTD (conductivity,
+This class stores hydrographic data such as measured with a CTD (conductivity,
 temperature, depth) instrument, or with other systems that produce
 similar data.  Data repositories may store conductivity, temperature
 and depth, as in the instrument name, but it is also common to store
@@ -37,55 +37,56 @@ pressure may be stored in either dbars or PSI, but e.g. \code{ctd[["pressure"]]}
 returns a value in dbars, after multiplying by 0.689476 if the value is
 stored in PSI. Luckily, there is (as of early 2016) only one salinity scale in
 common use in data files, namely PSS-78.
-
-The TEOS-10 notation for these quantities also works, with \code{ctd[["SP"]]},
-\code{ctd[["t"]]} and \code{ctd[["p"]]} returning identical values to those
-returned for the longer names.
-
-After the names listed above have been checked, the remaining names in the
-\code{data} slot are checked using \code{\link{pmatch}}, so that e.g.
-\code{ctd[["sal"]]} will recover practical \code{salinity}, \code{ctd[["sc"]]}
-will recover \code{scan} (if it exists), etc.
 }
-\section{Accessing data}{
+\section{Slots}{
 
-Data may be extracted with \code{\link{[[,ctd-method}} and inserted
-with \code{\link{[[<-,ctd-method}}. As noted above, \code{\link{[[,ctd-method}}
-returns temperature in the ITS-90 scale and pressure in dbar, regardless of the
-scale and unit of the data within the object. Type \code{?"[[,ctd-method"}
-or \code{?"[[<-,ctd-method"} to learn more.
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{ctd} objects is a
+\code{\link{list}} containing the main data for the object.
+The key items stored in this slot are: \code{salinity}, \code{temperature}, and \code{pressure}, although in many instances there are quite a few additional items.}
 
-Depth is accessed with e.g. \code{ctd[["depth"]]}, while its negative, the
-vertical coordinate, is accessed with e.g.  \code{ctd[["z"]]}; note that these
-are calculated using \code{\link{swDepth}} and \code{\link{swZ}}, and that any
-values that may have been read in a data file are ignored.
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{ctd} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+An example of the former might be the location at which a \code{ctd} measurement was made, stored in \code{longitude} and \code{latitude}, and of the latter might be \code{filename}, the name of the data source.}
 
-Potential temperature defined according to UNESCO-1980 is calculated with
-\code{ctd[["theta"]]} or \code{ctd[["potential temperature"]]}.  Salinity is
-retrieved with \code{ctd[["S"]]} or \code{ctd[["salinity"]]}.
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{ctd} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
 
-Conservative Temperature defined according to TEOS-2010 is calculated with
-\code{ctd[["CT"]]} or \code{ctd[["conservative temperature"]]}.  Absolute
-salinity is calculated with \code{ctd[["SA"]]} or \code{ctd[["absolute
-salinity"]]}. Note that the \code{CT}, \code{SA} and \code{Sstar} calculations
-require latitude and longitude, and so errors result if these items
-are sought for a \code{ctd} object that lacks latitude or longitude.
-(Until 2017 May 14, defaults of 300E and 30N were used if position
-was not stored in the object.)
+\section{Modifying slot contents}{
 
-The square of buoyancy frequency is retrieved with \code{ctd[["N2"]]} or
-\code{\link{swN2}}, density ratio with \code{ctd[["Rrho"]]} and spiciness with
-\code{ctd[["spice"]]}.
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{ctd} objects (see \code{\link{[[<-,ctd-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
 }
 
-\section{Extracting values}{
+\section{Retrieving slot contents}{
 
-Items stored in the object may be altered with e.g.  \code{ctd[["salinity"]]
-  <- rep(35,10)}.  For obvious reasons, this does not work with derived
-quantities such as conservative temperature, etc.
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{ctd}
+object named \code{ctd} may be retrieved in the standard R way. For example,
+\code{slot(ctd, "data")} and \code{slot(ctd, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,ctd-method}} operator can also be used to access slots,
+with \code{ctd[["data"]]} and \code{ctd[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,ctd-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
 }
 
-\section{Reading/creating data}{
+\section{Reading/creating \code{ctd} objects}{
 
 A file containing CTD profile data may be read with
 \code{\link{read.ctd}}, and a CTD object can also be created with
@@ -112,6 +113,18 @@ many of the contents of CTD objects may be altered with the \code{\link{[[,ctd-m
 discussed above, and skilled users may also manipulate the contents directly.
 }
 
+\examples{
+
+# 1. Create a ctd object with fake data.
+a <- as.ctd(salinity=35+1:3/10, temperature=10-1:3/10, pressure=1:3)
+summary(a)
+
+# 2. Fix a typo in a station latitude (fake! it's actually okay)
+data(ctd)
+ctd <- oceSetMetadata(ctd, "latitude", ctd[["latitude"]]-0.001,
+                     "fix latitude typo in log book")
+
+}
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{[[<-,ctd-method}}, \code{\link{as.ctd}},
@@ -119,6 +132,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
+  \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
@@ -127,6 +142,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{setFlags,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
@@ -135,15 +151,15 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
-  \code{\link{coastline-class}},
-  \code{\link{echosounder-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}},
+  \code{\link{coastline-class}}, \code{\link{lisst-class}},
+  \code{\link{lobo-class}}, \code{\link{met-class}},
+  \code{\link{oce-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 }
 \author{
 Dan Kelley
 }
+\concept{classes provided by \code{oce}}
+\concept{things related to \code{ctd} data}

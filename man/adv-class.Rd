@@ -3,65 +3,92 @@
 \docType{class}
 \name{adv-class}
 \alias{adv-class}
-\title{Class to Hold adv Data}
+\title{Class to Store adv Data}
 \description{
-This class holds data from acoustic-Dopper velocimeters.
+This class holds data from acoustic-Doppler velocimeters.
 }
 \details{
-The \code{metadata} slot
-    contains various items relating to the dataset, including source file name,
-    sampling rate, velocity resolution and scale, etc.  The
-    \code{processingLog} is in standard form and needs little comment.  The
-    \code{data} slot holds a numeric matrix \code{v} of velocities in m/s, with
-    the first index indicating time and the second indicating beam number.  The
-    meanings of the beams depends on whether the object is in beam
-    coordinates, frame coordinates, or earth coordinates.  The \code{data} slot
-    also contains identically-dimensioned raw matrices \code{a} and \code{q},
-    holding measures of signal strength and data quality quality, respectively.
-    It also contains a series of vectors, e.g. \code{time}, \code{temperature}
-    and \code{pressure}, etc., depending on what sensors are included in the
-    package.  For all of these quantities, the details can be different for
-    different instrument types, and it is assumed that the user will be
-    familiar with the details.
+A file containing ADV data is usually recognized by Oce, and so
+\code{\link{read.oce}} will usually read the data.  If not, one may use the
+general ADV function \code{\link{read.adv}} or specialized variants
+\code{\link{read.adv.nortek}}, \code{\link{read.adv.sontek.adr}} or
+\code{\link{read.adv.sontek.text}}.
 
-Data may be extracted with \code{\link{[[,adv-method}} and inserted
-with \code{\link{[[<-,adv-method}}. Type \code{?"[[,adv-method"}
-or \code{?"[[<-,adv-method"} to learn more.
+ADV data may be plotted with \code{\link{plot,adv-method}} function, which is a
+generic function so it may be called simply as \code{plot(x)}, where
+\code{x} is an object inheriting from \code{\link{adv-class}}.
+
+Statistical summaries of ADV data are provided by the generic function
+\code{\link{summary,adv-method}}.
+
+Conversion from beam to xyz coordinates may be done with
+\code{\link{beamToXyzAdv}}, and from xyz to enu (east north up) may be done
+with \code{\link{xyzToEnuAdv}}.  \code{\link{toEnuAdv}} may be used to
+transfer either beam or xyz to enu.  Enu may be converted to other
+coordinates (e.g. aligned with a coastline) with
+\code{\link{enuToOtherAdv}}.
 }
+\section{Slots}{
+
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{adv} objects is a
+\code{\link{list}} containing the main data for the object.
+The key items stored in this slot include \code{time} and \code{v}.}
+
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{adv} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+Examples that are of common interest include \code{frequency}, \code{oceCordinate}, and \code{frequency}.}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{adv} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
+
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{adv} objects (see \code{\link{[[<-,adv-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{adv}
+object named \code{adv} may be retrieved in the standard R way. For example,
+\code{slot(adv, "data")} and \code{slot(adv, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,adv-method}} operator can also be used to access slots,
+with \code{adv[["data"]]} and \code{adv[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,adv-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
+}
+
 \examples{
 data(adv)
 adv[["v"]] <- 0.001 + adv[["v"]] # add 1mm/s to all velocity components
 
 }
 \seealso{
-A file containing ADV data is usually recognized by Oce, and so
-    \code{\link{read.oce}} will usually read the data.  If not, one may use the
-    general ADV function \code{\link{read.adv}} or specialized variants
-    \code{\link{read.adv.nortek}}, \code{\link{read.adv.sontek.adr}} or
-    \code{\link{read.adv.sontek.text}}.
-
-    ADV data may be plotted with \code{\link{plot,adv-method}} function, which is a
-    generic function so it may be called simply as \code{plot(x)}, where
-    \code{x} is an object inheriting from \code{\link{adv-class}}.
-
-    Statistical summaries of ADV data are provided by the generic function
-    \code{\link{summary,adv-method}}.
-
-    Conversion from beam to xyz coordinates may be done with
-    \code{\link{beamToXyzAdv}}, and from xyz to enu (east north up) may be done
-    with \code{\link{xyzToEnuAdv}}.  \code{\link{toEnuAdv}} may be used to
-    transfer either beam or xyz to enu.  Enu may be converted to other
-    coordinates (e.g. aligned with a coastline) with
-    \code{\link{enuToOtherAdv}}.
-
 Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{argo-class}}, \code{\link{bremen-class}},
   \code{\link{cm-class}}, \code{\link{coastline-class}},
-  \code{\link{ctd-class}}, \code{\link{echosounder-class}},
-  \code{\link{lisst-class}}, \code{\link{lobo-class}},
-  \code{\link{met-class}}, \code{\link{oce-class}},
-  \code{\link{odf-class}}, \code{\link{rsk-class}},
-  \code{\link{sealevel-class}},
+  \code{\link{ctd-class}}, \code{\link{lisst-class}},
+  \code{\link{lobo-class}}, \code{\link{met-class}},
+  \code{\link{oce-class}}, \code{\link{odf-class}},
+  \code{\link{rsk-class}}, \code{\link{sealevel-class}},
   \code{\link{section-class}}, \code{\link{topo-class}},
   \code{\link{windrose-class}}
 
@@ -74,8 +101,11 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{read.adv.sontek.adr}},
   \code{\link{read.adv.sontek.serial}},
   \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{subset,adv-method}},
+  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
+  \code{\link{subset,adv-method}},
   \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
+\concept{classes provided by \code{oce}}
+\concept{things related to \code{adv} data}

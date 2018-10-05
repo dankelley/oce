@@ -4,8 +4,8 @@
 \alias{swCSTp}
 \title{Electrical conductivity ratio from salinity, temperature and pressure}
 \usage{
-swCSTp(salinity, temperature = 15, pressure = 0, eos = getOption("oceEOS",
-  default = "gsw"))
+swCSTp(salinity, temperature = 15, pressure = 0,
+  eos = getOption("oceEOS", default = "gsw"))
 }
 \arguments{
 \item{salinity}{practical salinity, or a CTD object (in which case its
@@ -84,3 +84,4 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
 \author{
 Dan Kelley
 }
+\concept{functions that calculate seawater properties}

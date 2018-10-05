@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{ctdUpdateHeader}
 \alias{ctdUpdateHeader}
-\title{Update a CTD Header [deprecated]}
+\title{Update a CTD Header [defunct]}
 \usage{
 ctdUpdateHeader(x, debug = FALSE)
 }
@@ -21,19 +21,12 @@ by specifying higher \code{debug} values.}
 A new \code{\link{ctd-class}} object.
 }
 \description{
-\strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
+\strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
 }
 \details{
 Update the header of a \code{ctd} object, e.g. adjusting \code{nvalues} and the
 \code{span} of each column. This is done automatically by \code{ctdTrim}, for
 example.
-}
-\examples{
-library(oce)
-data(ctd)
-ctd[["pressure"]] <- ctd[["pressure"]] + 3
-ctdNew <- ctdUpdateHeader(ctd)
-
 }
 \references{
 The Seabird CTD instrument is described at
@@ -41,9 +34,11 @@ The Seabird CTD instrument is described at
 }
 \seealso{
 Other functions that will be removed soon: \code{\link{addColumn}},
-  \code{\link{ctdAddColumn}}, \code{\link{mapMeridians}},
-  \code{\link{mapZones}}, \code{\link{oce.as.POSIXlt}}
+  \code{\link{ctdAddColumn}}, \code{\link{findInOrdered}},
+  \code{\link{mapMeridians}}, \code{\link{mapZones}},
+  \code{\link{oce.as.POSIXlt}}
 }
 \author{
 Dan Kelley
 }
+\concept{functions that will be removed soon}

@@ -69,3 +69,4 @@ Dan Kelley wrote the R code and a fortran wrapper to the
 British Geological Survey and distributed ``without limitation'' (email from
 SM to DK dated June 5, 2015).
 }
+\concept{things related to magnetism}

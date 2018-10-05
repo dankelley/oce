@@ -1,4 +1,7 @@
 library(oce)
+
+context("met")
+
 d <- read.met("test_met.dat.gz")
 expect_equal(names(d@data),c("dataQuality", "temperature", "dewPoint",
                              "humidity", "direction", "wind", "visibility",

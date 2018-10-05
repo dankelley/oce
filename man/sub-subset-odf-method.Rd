@@ -62,6 +62,8 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,echosounder-method}},
   \code{\link{[[<-,g1sst-method}},
   \code{\link{[[<-,gps-method}},
+  \code{\link{[[<-,ladp-method}},
+  \code{\link{[[<-,landsat-method}},
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
   \code{\link{[[<-,met-method}},
@@ -74,6 +76,7 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,windrose-method}}
 
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}}, \code{\link{odf-class}},
   \code{\link{plot,odf-method}},
@@ -81,3 +84,5 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{odf} data}

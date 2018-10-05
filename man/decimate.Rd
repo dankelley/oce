@@ -11,7 +11,7 @@ decimate(x, by = 10, to, filter, debug = getOption("oceDebug"))
 
 \item{by}{an indication of the subsampling.  If this is a single number,
 then it indicates the spacing between elements of \code{x} that are
-selected.  If it is two numbers (a condition only applicabile if \code{x} is
+selected.  If it is two numbers (a condition only applicable if \code{x} is
 an \code{echosounder} object, at present), then the first number indicates
 the time spacing and the second indicates the depth spacing.}
 
@@ -38,7 +38,7 @@ with the \code{\link{filter}} function of the stats package.
 \section{Bugs}{
  Only a preliminary version of this function is provided in
 the present package.  It only works for objects of class \code{echosounder},
-for which the decmation is done after applying a running median filter and
+for which the decimation is done after applying a running median filter and
 then a boxcar filter, each of length equal to the corresponding component of
 \code{by}.
 }

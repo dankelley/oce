@@ -5,8 +5,8 @@
 \alias{handleFlags,vector-method}
 \title{Signal erroneous application to non-oce objects}
 \usage{
-\S4method{handleFlags}{vector}(object, flags = list(), actions = list(),
-  debug = integer())
+\S4method{handleFlags}{vector}(object, flags = list(),
+  actions = list(), debug = getOption("oceDebug"))
 }
 \arguments{
 \item{object}{A vector, which cannot be the case for \code{oce} objects.}

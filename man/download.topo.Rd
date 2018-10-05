@@ -4,8 +4,8 @@
 \alias{download.topo}
 \title{Download and Cache a topo File}
 \usage{
-download.topo(west, east, south, north, resolution, destdir, destfile, format,
-  server, debug = getOption("oceDebug"))
+download.topo(west, east, south, north, resolution, destdir, destfile,
+  format, server, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{west, east}{Longitudes of the western and eastern sides of the box.}
@@ -85,14 +85,14 @@ All versions of \code{download.topo} to date have used a NOAA server as
 the data source, but the URL has not been static. A list of the
 servers that have been used is provided below,
 in hopes that it can help users to make guesses
-for \code{server}, should \code{download.topo} fail because of 
+for \code{server}, should \code{download.topo} fail because of
 a fail to download the data. Another
 hint is to look at the source code for
 \code{\link[marmap]{getNOAA.bathy}} in the \CRANpkg{marmap} package,
 which is also forced to track the moving target that is NOAA.
 
 \itemize{
-\item August 2016. 
+\item August 2016.
 \samp{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
 
 \item December 2016.
@@ -141,3 +141,5 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that download files}
+\concept{things related to \code{topo} data}

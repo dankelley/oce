@@ -4,7 +4,8 @@
 \alias{swPressure}
 \title{Water pressure}
 \usage{
-swPressure(depth, latitude = 45, eos = getOption("oceEOS", default = "gsw"))
+swPressure(depth, latitude = 45, eos = getOption("oceEOS", default =
+  "gsw"))
 }
 \arguments{
 \item{depth}{distance below the surface in metres.}
@@ -64,3 +65,4 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
 \author{
 Dan Kelley
 }
+\concept{functions that calculate seawater properties}

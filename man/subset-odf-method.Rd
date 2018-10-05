@@ -21,8 +21,14 @@ A new \code{odf} object.
 \description{
 This function is somewhat analogous to \code{\link{subset.data.frame}}.
 }
+\details{
+It seems likely that users will first convert the odf object into
+another class (e.g. ctd) and use the subset method of that class;
+note that some of those methods interpret the \dots argument.
+}
 \seealso{
 Other things related to \code{odf} data: \code{\link{ODF2oce}},
+  \code{\link{ODFListFromHeader}},
   \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
@@ -49,3 +55,5 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that subset \code{oce} objects}
+\concept{things related to \code{odf} data}

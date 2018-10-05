@@ -1,7 +1,4 @@
 library(oce)
-source("../../R/ctd.sbe.R")
-source("../../R/ctd.R")
-source("../../R/oce.R")
 ctd <- read.oce("ctd.cnv")
 ctd <- oce.edit(ctd, "startTime", ctd[["systemUploadTime"]],
                 reason="startTime in file has Y2K error", person="Dan Kelley")

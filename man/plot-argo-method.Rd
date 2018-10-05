@@ -8,9 +8,9 @@
 \usage{
 \S4method{plot}{argo}(x, which = 1, level, coastline = c("best",
   "coastlineWorld", "coastlineWorldMedium", "coastlineWorldFine", "none"),
-  cex = 1, pch = 1, type = "p", col, fill = FALSE, projection = NULL,
-  mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5, mgp[1] + 1.5, 1.5, 1.5),
-  tformat, debug = getOption("oceDebug"), ...)
+  cex = 1, pch = 1, type = "p", col, fill = FALSE,
+  projection = NULL, mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5,
+  mgp[1] + 1.5, 1.5, 1.5), tformat, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{object inheriting from \code{\link{argo-class}}.}
@@ -21,7 +21,7 @@ character matches, and that an error will occur if the match is
 not complete (e.g. \code{"salinity"} matches to both
 \code{"salinity ts"} and \code{"salinity profile"}.).
 \itemize{
-    \item \code{which=1} or \code{which="trajectory"} gives a
+    \item \code{which=1}, \code{which="trajectory"} or \code{which="map"} gives a
     plot of the argo trajectory, with the coastline, if one is provided.
 
     \item \code{which=2} or \code{"salinity ts"} gives a time series of
@@ -56,14 +56,14 @@ map, or \code{"best"} to pick the one with highest resolution, or
 
 \item{type}{plot type, either \code{"l"} or \code{"p"}.}
 
-\item{col}{optional list of colours for plotting.}
+\item{col}{optional list of colors for plotting.}
 
 \item{fill}{Either a logical, indicating whether to fill the land with
-light-gray, or a colour name.  Owing to problems with some projections, the
+light-gray, or a color name.  Owing to problems with some projections, the
 default is not to fill.}
 
 \item{projection}{indication of the projection to be used
-in trajetory maps. If this is \code{NULL}, no projection is used, although
+in trajectory maps. If this is \code{NULL}, no projection is used, although
 the plot aspect ratio will be set to yield zero shape distortion at the
 mean float latitude.  If \code{projection="automatic"}, then one
 of two projections is used: stereopolar (i.e. \code{"+proj=stere +lon_0=X"}
@@ -127,6 +127,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -144,3 +145,5 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{argo} data}

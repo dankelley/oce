@@ -18,7 +18,7 @@ and \code{length(y)} exceeds 1, then \code{x} is replaced by
 \item{type}{Flag indicating the desired return value (see \dQuote{Value}).}
 
 \item{xmin, xmax}{Optional numbers indicating the range of the integration.
-These values may be used to restrict the range of integration, or to 
+These values may be used to restrict the range of integration, or to
 extend it; in either case, \code{\link{approx}} with \code{rule=2}
 is used to create new x and y vectors.}
 }
@@ -26,7 +26,7 @@ is used to create new x and y vectors.}
 If \code{type="A"} (the default), a single value is returned,
 containing the estimate of the integral of \code{y=y(x)}.  If
 \code{type="dA"}, a numeric vector of the same length as \code{x}, of which
-the first element is zer0, the second element is the integral between
+the first element is zero, the second element is the integral between
 \code{x[1]} and \code{x[2]}, etc.  If \code{type="cA"}, the result is the
 cumulative sum (as in \code{\link{cumsum}}) of the values that would be
 returned for \code{type="dA"}.  See \dQuote{Examples}.

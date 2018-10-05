@@ -7,16 +7,17 @@
 \title{Plot ADP Data}
 \usage{
 \S4method{plot}{adp}(x, which = 1:dim(x@data$v)[3], mode = c("normal",
-  "diagnostic"), col, breaks, zlim, titles, lwd = par("lwd"), type = "l",
-  ytype = c("profile", "distance"),
+  "diagnostic"), col, breaks, zlim, titles, lwd = par("lwd"),
+  type = "l", ytype = c("profile", "distance"),
   drawTimeRange = getOption("oceDrawTimeRange"), useSmoothScatter,
-  missingColor = "gray", mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5,
-  mgp[1] + 1.5, 1.5, 1.5), mai.palette = rep(0, 4), tformat,
-  marginsAsImage = FALSE, cex = par("cex"), cex.axis = par("cex.axis"),
-  cex.main = par("cex.main"), xlim, ylim, control, useLayout = FALSE,
-  coastline = "coastlineWorld", span = 300, main = "", grid = FALSE,
-  grid.col = "darkgray", grid.lty = "dotted", grid.lwd = 1,
-  debug = getOption("oceDebug"), ...)
+  missingColor = "gray", mgp = getOption("oceMgp"), mar = c(mgp[1] +
+  1.5, mgp[1] + 1.5, 1.5, 1.5), mai.palette = rep(0, 4), tformat,
+  marginsAsImage = FALSE, cex = par("cex"),
+  cex.axis = par("cex.axis"), cex.main = par("cex.main"), xlim, ylim,
+  control, useLayout = FALSE, coastline = "coastlineWorld",
+  span = 300, main = "", grid = FALSE, grid.col = "darkgray",
+  grid.lty = "dotted", grid.lwd = 1, debug = getOption("oceDebug"),
+  ...)
 }
 \arguments{
 \item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
@@ -32,11 +33,11 @@ the case of Aquadopp instruments.  Perhaps a third option will become
 available in the future, for the \code{burst} mode that some instruments
 provide.}
 
-\item{col}{optional indication of colour(s) to use.  If not provided, the
+\item{col}{optional indication of color(s) to use.  If not provided, the
 default for images is \code{oce.colorsPalette(128,1)}, and for lines and
 points is black.}
 
-\item{breaks}{optional breaks for colour scheme}
+\item{breaks}{optional breaks for color scheme}
 
 \item{zlim}{a range to be used as the \code{zlim} parameter to the
 \code{\link{imagep}} call that is used to create the image.  If omitted,
@@ -78,7 +79,7 @@ margin of the plot.}
 not provided a default is used, with \code{\link{smoothScatter}} being used
 if there are more than 2000 points to plot.}
 
-\item{missingColor}{colour used to indicate \code{NA} values in images (see
+\item{missingColor}{color used to indicate \code{NA} values in images (see
 \code{\link{imagep}}); set to \code{NULL} to avoid this indication.}
 
 \item{mgp}{A 3-element numerical vector used with \code{\link{par}("mgp")}
@@ -135,7 +136,7 @@ argument is needed, because calling \code{\link{grid}} after doing a
 sequence of plots will not result in useful results for the individual
 panels.}
 
-\item{grid.col}{colour of grid}
+\item{grid.col}{color of grid}
 
 \item{grid.lty}{line type of grid}
 
@@ -151,7 +152,7 @@ by specifying higher \code{debug} values.}
 
 \item{\dots}{optional arguments passed to plotting functions.  For example,
 supplying \code{despike=TRUE} will cause time-series panels to be de-spiked
-with \code{\link{despike}}.  Another common action is to set the colour for
+with \code{\link{despike}}.  Another common action is to set the color for
 missing values on image plots, with the argument \code{missingColor} (see
 \code{\link{imagep}}).  Note that it is an error to give \code{breaks} in
 \dots{}, if the formal argument \code{zlim} was also given, because they
@@ -300,7 +301,7 @@ equivalent to \code{which=14:15} (temperature and pressure) \item
 \code{which="angles"} equivalent to \code{which=16:18} (heading, pitch and
 roll) }
 
-The colour scheme for image plots (\code{which} in 1:12) is provided by the
+The color scheme for image plots (\code{which} in 1:12) is provided by the
 \code{col} argument, which is passed to \code{\link{image}} to do the actual
 plotting.  See \dQuote{Examples} for some comparisons.
 
@@ -340,6 +341,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adv-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -361,14 +363,16 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}}, \code{\link{read.ad2cp}},
-  \code{\link{read.adp.nortek}},
+  \code{\link{enuToOther}},
+  \code{\link{handleFlags,adp-method}},
+  \code{\link{read.ad2cp}}, \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
   \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
   \code{\link{read.aquadoppHR}},
   \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}},
+  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
+  \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
@@ -377,3 +381,5 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{adp} data}

@@ -4,7 +4,8 @@
 \alias{resizableLabel}
 \title{Provide axis names in adjustable sizes}
 \usage{
-resizableLabel(item, axis, sep, unit = NULL)
+resizableLabel(item, axis = "x", sep, unit = NULL,
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{item}{code for the label.  This must be an element from the following
@@ -33,6 +34,9 @@ used as the separator; if not, no separator is used.}
 
 \item{unit}{optional unit to use, if the default is not satisfactory. This
 might be the case if for example temperature was not measured in Celcius.}
+
+\item{debug}{optional debugging flag. Setting to 0 turns off debugging,
+while setting to 1 causes some debugging information to be printed.}
 }
 \value{
 A character string or expression, in either a long or a shorter

@@ -59,3 +59,4 @@ Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
 \author{
 Dan Kelley, with considerable help from Alex Deckmyn.
 }
+\concept{things related to \code{windrose} data}

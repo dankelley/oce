@@ -9,6 +9,8 @@ library(oce)
 ##data("adv")
 ##data("argo")
 
+context("datasets")
+
 test_that("cm", {
           data("cm")
           S <- cm[["salinity"]]
@@ -73,7 +75,7 @@ test_that("topoWorld", {
 
 ## below constructed from the files in oce/data
 test_that("units", {
-          names <- c("adp", "adv", "argo", "cm", "coastlineWorld", "colors", "ctd",
+          names <- c("adp", "adv", "argo", "cm", "coastlineWorld", "ocecolors", "ctd",
                      "ctdRaw", "echosounder", "landsat", "lisst", "lobo", "met", "rsk",
                      "sealevel", "sealevelTuktoyaktuk", "section", "tidedata",
                      "topoWorld", "wind")

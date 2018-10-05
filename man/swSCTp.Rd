@@ -4,8 +4,8 @@
 \alias{swSCTp}
 \title{Salinity from electrical conductivity, temperature and pressure}
 \usage{
-swSCTp(conductivity, temperature = NULL, pressure = NULL, conductivityUnit,
-  eos = getOption("oceEOS", default = "gsw"))
+swSCTp(conductivity, temperature = NULL, pressure = NULL,
+  conductivityUnit, eos = getOption("oceEOS", default = "gsw"))
 }
 \arguments{
 \item{conductivity}{a measure of conductivity (see also \code{conductivityUnit})
@@ -83,3 +83,4 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
 \author{
 Dan Kelley
 }
+\concept{functions that calculate seawater properties}

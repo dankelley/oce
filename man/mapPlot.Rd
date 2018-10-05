@@ -4,11 +4,12 @@
 \alias{mapPlot}
 \title{Draw a Map}
 \usage{
-mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg, fill,
-  border = NULL, col = NULL, clip = TRUE, type = "polygon",
-  axes = TRUE, cex, cex.axis = 1, mgp = c(0, 0.5, 0), drawBox = TRUE,
-  showHemi = TRUE, polarCircle = 0, lonlabel = NULL, latlabel = NULL,
-  sides = NULL, projection = "+proj=moll", tissot = FALSE, trim = TRUE,
+mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg,
+  fill, border = NULL, col = NULL, clip = TRUE, type = "polygon",
+  axes = TRUE, cex, cex.axis = 1, mgp = c(0, 0.5, 0),
+  drawBox = TRUE, showHemi = TRUE, polarCircle = 0,
+  lonlabel = NULL, latlabel = NULL, sides = NULL,
+  projection = "+proj=moll", tissot = FALSE, trim = TRUE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -44,16 +45,16 @@ examination of the scale used in middle 10 percent of the plot area, and for
 most projections this works quite well.  If not, one may set
 \code{grid=FALSE} and add a grid later with \code{\link{mapGrid}}.}
 
-\item{bg}{colour of the background (ignored).}
+\item{bg}{color of the background (ignored).}
 
 \item{fill}{\strong{(deprecated)} is a deprecated argument; see
 \link{oce-deprecated}.}
 
-\item{border}{colour of coastlines and international borders (ignored unless
+\item{border}{color of coastlines and international borders (ignored unless
 \code{type="polygon"}.}
 
-\item{col}{either the colour for filling polygons (if \code{type="polygon"})
-or the colour of the points and line segments (if \code{type="p"},
+\item{col}{either the color for filling polygons (if \code{type="polygon"})
+or the color of the points and line segments (if \code{type="p"},
 \code{type="l"}, or \code{type="o"}). If \code{col=NULL} then a default
 will be set: no coastline filling for the \code{type="polygon"} case,
 or black coastlines, for \code{type="p"}, \code{type="l"}, or
@@ -61,7 +62,7 @@ or black coastlines, for \code{type="p"}, \code{type="l"}, or
 
 \item{clip}{logical value indicating whether to trim any coastline elements that lie wholly
 outside the plot region. This can prevent e.g. a problem of filling the whole plot area of
-an Arctic stereopolar view, because the projected trace for Antarctica lies outside all 
+an Arctic stereopolar view, because the projected trace for Antarctica lies outside all
 other regions so the whole of the world ends up being "land".  Setting \code{clip=FALSE}
 disables this action, which may be of benefit in rare instances in the line connecting
 two points on a coastline may cross the plot domain, even if those points are outside
@@ -374,7 +375,7 @@ This is a also problem in the standalone PROJ.4 application version
 See \url{https://github.com/dankelley/oce/issues/1337} for details.
 
 \item 2017-09-30: \code{lcca} removed, because its inverse was
-wildly inaccurate in a Pacific Antartic-Alaska application
+wildly inaccurate in a Pacific Antarctic-Alaska application
 (see \url{https://github.com/dankelley/oce/issues/1303}).
 
 }
@@ -469,7 +470,7 @@ prior to Nov 16, 2016, but was found to fail on that date.)
 the place to start to learn about the code.
 
 6. \code{PROJ.4} projection details were once at
-\code{http://www.remotesensing.org/geotiff/proj_list/} but it was 
+\code{http://www.remotesensing.org/geotiff/proj_list/} but it was
 discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
 seems to have been significant reorganization of websites related to this.
 The base website seems to be \url{https://trac.osgeo.org/geotiff/} and that
@@ -508,3 +509,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{functions related to maps}

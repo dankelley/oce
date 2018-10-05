@@ -71,6 +71,7 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{handleFlags,section-method}},
+  \code{\link{initializeFlagScheme,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{section-class}},
   \code{\link{sectionAddStation}},
@@ -82,3 +83,4 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{section} data}

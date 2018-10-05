@@ -4,8 +4,8 @@
 \alias{download.coastline}
 \title{Download a coastline File}
 \usage{
-download.coastline(resolution, item = "coastline", destdir = ".", destfile,
-  server = "naturalearth", debug = getOption("oceDebug"))
+download.coastline(resolution, item = "coastline", destdir = ".",
+  destfile, server = "naturalearth", debug = getOption("oceDebug"))
 }
 \arguments{
 \item{resolution}{A character value specifying the desired resolution. The permitted
@@ -31,7 +31,7 @@ parameters of the function call, so subsequent calls with the same
 parameters will yield the same result, thus providing the key
 to the caching scheme.}
 
-\item{server}{A character value specifying the server that is to suppply
+\item{server}{A character value specifying the server that is to supply
 the data. At the moment, the only permitted value is \code{"naturalearth"},
 which is the default if \code{server} is not supplied.}
 
@@ -85,3 +85,5 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
   \code{\link{subset,coastline-method}},
   \code{\link{summary,coastline-method}}
 }
+\concept{functions that download files}
+\concept{things related to \code{coastline} data}

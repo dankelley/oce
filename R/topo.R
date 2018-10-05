@@ -1,15 +1,24 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 
-#' @title Class to Store Topographic Data
+#' Class to Store Topographic Data
 #'
-#' @description
-#' Topographic data may be read with \code{\link{read.topo}} or assembled with
-#' \code{\link{as.topo}}.  Plotting are handled with \code{\link{plot,topo-method}}
-#' and summaries with \code{\link{summary,topo-method}}. Data retrieval may be
-#' done with \code{\link{[[,topo-method}} and replacement with
-#' \code{\link{[[<-,topo-method}}.  The key data, stored within the data slot,
-#' are: \code{longititude}, \code{latitude}, and \code{z}.
+#' This class stores topographic data, as read with
+#' \code{\link{read.topo}} or assembled with \code{\link{as.topo}}.
+#' Plotting is handled with \code{\link{plot,topo-method}}
+#' and summaries with \code{\link{summary,topo-method}}.
+#'
+#' @templateVar class topo
+#'
+#' @templateVar dataExample The key items stored in this slot are: \code{longititude}, \code{latitude}, and \code{z}.
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #'
@@ -257,14 +266,14 @@ setMethod(f="subset",
 #' the data source, but the URL has not been static. A list of the
 #' servers that have been used is provided below,
 #' in hopes that it can help users to make guesses
-#' for \code{server}, should \code{download.topo} fail because of 
+#' for \code{server}, should \code{download.topo} fail because of
 #' a fail to download the data. Another
 #' hint is to look at the source code for
 #' \code{\link[marmap]{getNOAA.bathy}} in the \CRANpkg{marmap} package,
 #' which is also forced to track the moving target that is NOAA.
 #'
 #' \itemize{
-#' \item August 2016. 
+#' \item August 2016.
 #' \samp{http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy}
 #'
 #' \item December 2016.
@@ -292,7 +301,7 @@ download.topo <- function(west, east, south, north, resolution,
 {
     if (missing(server)) {
         server <- "https://gis.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"
-        ## server <- "http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz" 
+        ## server <- "http://mapserver.ngdc.noaa.gov/cgi-bin/public/wcs/etopo1.xyz"
         ## server <- "http://maps.ngdc.noaa.gov/mapviewer-support/wcs-proxy/wcs.groovy"
     }
     if (missing(destdir))
@@ -390,7 +399,7 @@ topoInterpolate <- function(longitude, latitude, topo)
     if (missing(latitude)) stop("must supply latitude")
     if (missing(topo)) stop("must supply topo")
     if (length(latitude) != length(longitude)) stop("lengths of latitude and longitude must match")
-    .Call("topo_interpolate", latitude, longitude, topo[["latitude"]], topo[["longitude"]], topo[["z"]])
+    bilinearInterp(longitude, latitude, topo[["longitude"]], topo[["latitude"]], topo[["z"]])
 }
 
 
@@ -436,8 +445,8 @@ topoInterpolate <- function(longitude, latitude, topo)
 #' @param water.z Depths at which to plot water contours.  If not provided, these
 #' are inferred from the data.
 #'
-#' @param col.water Colours corresponding to \code{water.z} values.  If not
-#' provided, these will be \code{"fill"} colours from
+#' @param col.water Colors corresponding to \code{water.z} values.  If not
+#' provided, these will be \code{"fill"} colors from
 #' \code{\link{oce.colorsGebco}}.
 #'
 #' @param lty.water Line type(s) for water contours.
@@ -448,8 +457,8 @@ topoInterpolate <- function(longitude, latitude, topo)
 #' are inferred from the data.  If set to \code{NULL}, no land contours will be
 #' plotted.
 #'
-#' @param col.land Colours corresponding to \code{land.z} values.  If not
-#' provided, these will be \code{"fill"} colours from
+#' @param col.land Colors corresponding to \code{land.z} values.  If not
+#' provided, these will be \code{"fill"} colors from
 #' \code{\link{oce.colorsGebco}}.
 #'
 #' @param lty.land Line type(s) for land contours.
@@ -465,7 +474,7 @@ topoInterpolate <- function(longitude, latitude, topo)
 #' \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
 #'
-#' @param mar Four-element numericl vector to be used with
+#' @param mar Four-element numerical vector to be used with
 #' \code{\link{par}("mar")}.
 #'
 #' @param debug Numerical value, with positive values indicating higher levels of
@@ -784,7 +793,7 @@ setMethod(f="plot",
 #' by NOAA as "?"; (2) a NetCDF format described by NOAA as "GMT NetCDF"
 #' (recognized by the presence of a variable named \code{}), and
 #' (3) another NetCDF format described by NOAA as "NetCDF" (recognized
-#' by the presence of a variable called \code{}). Files in each of these formatss
+#' by the presence of a variable called \code{}). Files in each of these formats
 #' can be downloaded with \code{\link{download.topo}}.
 #'
 #' @param file Name of a file containing an ETOPO-format dataset. Three
@@ -815,7 +824,7 @@ read.topo <- function(file, debug=getOption("oceDebug"))
     dataNamesOriginal <- list()
     if (is.character(file) && length(grep(".nc$", file))) {
         if (!requireNamespace("ncdf4", quietly=TRUE)) {
-            stop('must install.packages("ncdf4") to read topo data from a netCDF file')
+            stop('must install.packages("ncdf4") to read topo data from a NetCDF file')
         } else {
             ##message("file: '", file, "'")
             ## "GEBCO NetCDF" (NOT the same as "NetCDF")

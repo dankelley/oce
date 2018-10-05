@@ -20,3 +20,9 @@ processingLogShow(ctd)
 processingLog(ctd) <- "test"
 processingLogShow(ctd)
 }
+\seealso{
+Other things related to processing logs: \code{\link{processingLogAppend}},
+  \code{\link{processingLogItem}},
+  \code{\link{processingLogShow}}
+}
+\concept{things related to processing logs}

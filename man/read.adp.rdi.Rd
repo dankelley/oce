@@ -4,9 +4,9 @@
 \alias{read.adp.rdi}
 \title{Read a Teledyne/RDI ADP File}
 \usage{
-read.adp.rdi(file, from, to, by, tz = getOption("oceTz"), longitude = NA,
-  latitude = NA, type = c("workhorse"), monitor = FALSE,
-  despike = FALSE, processingLog, testing = FALSE,
+read.adp.rdi(file, from, to, by, tz = getOption("oceTz"),
+  longitude = NA, latitude = NA, type = c("workhorse"),
+  monitor = FALSE, despike = FALSE, processingLog, testing = FALSE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -62,6 +62,10 @@ amount of debugging information, or to 2 to get more.}
 }
 \value{
 An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+The form of this object varies with instrument type. In some cases
+navigational data may be included, e.g. \code{read.adp.rdi} can
+read NMEA strings (which get stored in an item called \code{nmea}
+in the \code{data} slot).
 }
 \description{
 Read a Teledyne/RDI ADCP file (called 'adp' in oce).
@@ -100,7 +104,7 @@ A key issue is that RDI files store velocities in 2-byte values, which is
 not a format that R supports. These velocities become 8-byte (numeric) values
 in R. Thus, the R object created by \code{read.adp.rdi} will require more memory
 than that of the data file. A scale factor can be estimated by ignoring
-vector quanties (e.g. time, which has just one value per profile) and concentrating on matrix properties
+vector quantities (e.g. time, which has just one value per profile) and concentrating on matrix properties
 such as velocity, backscatter, and correlation. These three elements have equal dimensions.
 Thus, each 4-byte slide in the data file (2 bytes + 1 byte + 1 byte)
 corresponds to 10 bytes in the object (8 bytes + 1 byte + 1 byte).
@@ -110,7 +114,7 @@ size of the R object corresponds to a 3X smaller limit on file size.
 Various things can limit the size of objects in R, but a strong upper limit
 is set by the space the operating system provides to R. The least-performant machines
 in typical use appear to be Microsoft-Windows systems, which limit R objects to
-about 2e6 bytes [3].  Since R routinely duplicates objects for certain tasks
+about 2e6 bytes (see \code{?Memory-limits}).  Since R routinely duplicates objects for certain tasks
 (e.g. for call-by-value in function evaluation), \code{read.adp.rdi} uses a safety
 factor in its calculation of when to auto-decimate a file. This factor is set to 3,
 based partly on the developers' experience with datasets in their possession.
@@ -143,6 +147,127 @@ and also \code{monitor} is set to \code{TRUE}, so that a textual progress bar
 is shown.
 }
 
+\section{Development Notes}{
+
+An important part of the work of this function is to recognize what
+will be called "data chunks" by two-byte ID sequences. This function is
+developed in a practical way, with emphasis being focussed on
+data files in the possession of the developers. Since Teledyne-RDI tends
+to introduce new ID codes with new instruments, that means that
+\code{read.adp.rdi} may not work on recently-developed instruments.
+
+The following two-byte ID codes are recognized by \code{read.adp.rdi}
+at this time (with bytes listed in natural order, LSB byte before
+MSB). Items preceeded by an asterisk are recognized, but not handled,
+and so produce a warning.
+\preformatted{
+  0x00 0x01 velocity
+  0x00 0x02 correlation
+  0x00 0x03 echo intensity
+  0x00 0x04 percent good
+  0x00 0x06 bottom track
+  0x00 0x0a Sentinel vertical beam velocity
+  0x00 0x0b Sentinel vertical beam correlation
+  0x00 0x0c Sentinel vertical beam amplitude
+  0x00 0x0d Sentinel vertical beam percent good
+  0x00 0x20 VMDASS
+* 0x00 0x30 binary fixed attitude (developer: see p169 of [3] for format)
+  0x00 0x32 Sentinel transformation matrix
+  0x00 0x0a Sentinel data
+  0x00 0x0b Sentinel correlation
+  0x00 0x0c Sentinel amplitude
+  0x00 0x0d Sentinel percent good
+  0x01 0x0f ?? something to do with V series and 4-beam
+}
+
+Lacking a comprehensive Teledyne-RDI listing of ID codes,
+the authors have cobbled together a listing from documents to which they
+have access, viz.
+\itemize{
+
+\item
+Table 33 of [3] lists codes as follows:
+\preformatted{
+Standard ID    Standard plus 1D    DESCRIPTION
+===========    ================    ===========================
+ MSB    LSB          MSB    LSB
+ ---    ---          ---    ---
+  7F     7F           7F     7F    Header
+  00     00           00     01    Fixed Leader
+  00     80           00     81    Variable Leader
+  01     00           01     01    Velocity Profile Data
+  02     00           02     01    Correlation Profile Data
+  03     00           03     01    Echo Intensity Profile Data
+  04     00           04     01    Percent Good Profile Data
+  05     00           05     01    Status Profile Data
+  06     00           06     01    Bottom Track Data
+  20     00           20     00    Navigation
+  30     00           30     00    Binary Fixed Attitude
+  30  40-F0           30  40–F0    Binary Variable Attitude
+}
+\item
+Table 6 on p90 of [4] lists "Fixed Leader Navigation" ID
+codes (none of which are handled by \code{read.adp.rdi} yet)
+as follows (the format is reproduced literally; note that
+e.g. 0x2100 is 0x00,0x21 in the oce notation):
+\preformatted{
+ID       Description
+======   ===========
+0x2100   $xxDBT
+0x2101   $xxGGA
+0x2102   $xxVTG
+0x2103   $xxGSA
+0x2104   $xxHDT, $xxHGD or $PRDID
+}
+and following pages in that manual reveal that
+DBT refers to depth below transducer;
+GGA refers to global positioning system;
+VTA refers to track made good and ground speed;
+GSA refers to GPS DOP and active satellites;
+HDT refers to heading, true;
+HDG refers to heading, deviation, and variation;
+and
+PRDID refers to heading, pitch and roll.
+}
+}
+
+\section{Error recovery}{
+
+
+Files can sometimes be corrupted, and \code{read.adp.rdi} has ways to handle two types
+of error that have been noticed in files supplied by users.
+\enumerate{
+
+\item There are two bytes within each ensemble that indicate the number of bytes to check within
+that ensemble, to get the checksum. Sometimes, those two bytes can be erroneous, so that
+the wrong number of bytes are checked, leading to a failed checksum. As a preventative
+measure, \code{read.adp.rdi} checks the stated ensemble length, whenever it detects a
+failed checksum. If that length agrees with the length of the most recent ensemble that
+had a good checksum, then the ensemble is declared as faulty and is ignored. However,
+if the length differs from that of the most recent accepted ensemble, then \code{read.adp.rdi}
+goes back to just after the start of the ensemble, and searches forward for the next two-byte
+pair, namely \code{0x7f 0x7f}, that designates the start of an ensemble.  Distinct notifications
+are given about these two cases, and they give the byte numbers in the original file, as a way
+to help analysts who want to look at the data stream with other tools.
+
+\item At the end of an ensemble, the next two characters ought to be \code{0x7f 0x7f}, and if they
+are not, then the next ensemble is faulty. If this error occurs, \code{read.adp.rdi} attempts
+to recover by searching forward to the next instance of this two-byte pair, discarding any
+information that is present in the mangled ensemble.
+}
+
+In each of these cases, warnings are printed about ensembles that seem problematic.
+Advanced users who want to diagnose the problem further might find it helpful to
+examine the original data file using other tools. To this end, \code{read.adp.rdi}
+inserts an element named \code{ensembleInFile} into the \code{metadata} slot.
+This gives the starting byte number of each inferred ensemble within the original data
+file.  For example, if \code{d} is an object read with \code{read.adp.rdi}, then using
+\preformatted{
+plot(d[["time"]][-1], diff(d[["ensembleInFile"]]))
+}
+can be a good way to narrow in on problems.
+}
+
 \references{
 1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
 format.} P/N 957-6156-00 (November 2007).  (Section 5.3 h details the binary
@@ -152,11 +277,14 @@ followed by the sequence number of the profile, represented as a
 little-endian two-byte short integer.  \code{read.adp.rdi} uses these
 sequences to interpret data files.)
 
-2. Teledyne-RDI, 2015. \emph{V Series output data format.} P/N 95D-6022-00 (May 2015).
+2. Teledyne RD Instruments, 2015. \emph{V Series monitor, sentinel Output Data Format.}
+P/N 95D-6022-00 (May 2015). \code{SV_ODF_May15.pdf}
 
-3. See \code{\link{Memory-limits}} for more on the 2 GB limit for R on windows
-machines (but note that this documentation erroneously states the unit as Gb, which is
-typically used for gigabits).
+3. Teledyne RD Instruments, 2014. \emph{Ocean Surveyor / Ocean Observer Technical Manual.}
+P/N 95A-6012-00 (April 2014). \code{OS_TM_Apr14.pdf}
+
+4. Teledyne RD Instruments, 201?. \emph{WinRiver User's Guide International Version}
+P/N 957-6171-00 (June 2001) \code{WinRiver User Guide International Version.pdf.pdf}
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
@@ -166,13 +294,16 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
-  \code{\link{read.ad2cp}}, \code{\link{read.adp.nortek}},
+  \code{\link{enuToOther}},
+  \code{\link{handleFlags,adp-method}},
+  \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
+  \code{\link{read.adp.nortek}},
   \code{\link{read.adp.sontek.serial}},
   \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
   \code{\link{read.aquadoppHR}},
   \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}},
+  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
+  \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
@@ -181,3 +312,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{things related to \code{adp} data}

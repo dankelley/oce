@@ -50,7 +50,7 @@ with \code{~} in the table; their decoding is done with \code{\link{grep}}.
 It is important to note that this table is by no means complete, since there
 are a great many SBE names listed in their document [1], plus names
 not listed there but present in data files
-supplied by prominent archiving agencies. If an SBE name is not recogized,
+supplied by prominent archiving agencies. If an SBE name is not recognized,
 then the oce name is set to that SBE name. This can cause problems in
 some other processing steps (e.g. if \code{\link{swRho}} or a similar
 function is called with an \code{oce} object as first argument), and so
@@ -135,12 +135,17 @@ variants.)
   \code{rhodflTC~}   \tab \code{Rhodamine}                    \tab ppb; Turner Cyclops  \tab   \cr
   \code{sal~~}       \tab \code{salinity}                     \tab -, PSS-78            \tab 4 \cr
   \code{sbeox~ML/L}  \tab \code{oxygen}                       \tab ml/l; SBE43          \tab   \cr
+  \code{sbox~ML/L}   \tab \code{oxygen}                       \tab ml/l; SBE43 (?)      \tab   \cr
   \code{sbeox~Mm/Kg} \tab \code{oxygen}                       \tab umol/kg; SBE43       \tab   \cr
+  \code{sbox~Mm/Kg}  \tab \code{oxygen}                       \tab umol/kg; SBE43 (?)   \tab   \cr
   \code{sbeox~Mm/L}  \tab \code{oxygen}                       \tab umol/l; SBE43        \tab   \cr
+  \code{sbox~Mm/L}   \tab \code{oxygen}                       \tab umol/l; SBE43 (?)    \tab   \cr
   \code{sbeox~PS}    \tab \code{oxygen}                       \tab percent; SBE43       \tab   \cr
+  \code{sbox~PS}     \tab \code{oxygen}                       \tab percent; SBE43 (?)   \tab   \cr
   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
+  \code{sbox~V}      \tab \code{oxygenRaw}                    \tab V; SBE43 (?)         \tab   \cr
   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
-  \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
+  \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; Seapoint        \tab   \cr
   \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
@@ -210,7 +215,14 @@ within R or in the operating system.}
 }
 }
 \references{
-1. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.
+1. A SBE data processing manual was once at
+\code{http://www.seabird.com/document/sbe-data-processing-manual},
+but as of summer 2018, this no longer seems to be provided by SeaBird.
+A web search will turn up copies of the manual that have been put
+online by various research groups and data-archiving agencies.
+As of 2018-07-05, the latest version was named
+\code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017,
+and this was the reference version used in coding \code{oce}.
 }
 \seealso{
 Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
@@ -219,6 +231,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
+  \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
@@ -227,6 +241,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{setFlags,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
@@ -243,3 +258,5 @@ Other functions that interpret variable names and units from headers: \code{\lin
 \author{
 Dan Kelley
 }
+\concept{functions that interpret variable names and units from headers}
+\concept{things related to \code{ctd} data}

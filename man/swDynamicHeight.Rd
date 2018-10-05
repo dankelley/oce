@@ -5,8 +5,8 @@
 \title{Dynamic height of seawater profile}
 \usage{
 swDynamicHeight(x, referencePressure = 2000, subdivisions = 500,
-  rel.tol = .Machine$double.eps^0.25, eos = getOption("oceEOS", default =
-  "gsw"))
+  rel.tol = .Machine$double.eps^0.25, eos = getOption("oceEOS", default
+  = "gsw"))
 }
 \arguments{
 \item{x}{a \code{section} object, \strong{or} a \code{ctd} object.}
@@ -128,3 +128,4 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
 \author{
 Dan Kelley
 }
+\concept{functions that calculate seawater properties}
