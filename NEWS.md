@@ -1,7 +1,7 @@
 1.0-2.1
 * Development version, which will eventually yield 1.0-2. Exploratory work
   is done in the "develop" git branch, or of branches that feed into "develop".
-  The rightmost fractional number is not increased with updates to "develop".
+  The rightmost fractional number is not always increased with updates to "develop".
 
 1.0-1
 * Renamed 0.9-24, released with OAR book publication.
