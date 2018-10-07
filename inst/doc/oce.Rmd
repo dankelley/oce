@@ -1,6 +1,6 @@
 ---
 title: "Oce"
-author: "Dan Kelley and Clark Richards"
+author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911) and Clark Richards (https://orcid.org/0000-0002-7833-206X)"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:

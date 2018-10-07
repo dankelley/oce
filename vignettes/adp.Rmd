@@ -1,6 +1,6 @@
 ---
 title: "Acoustic Doppler profilers"
-author: "Dan Kelley"
+author: "Dan Kelley (https://orcid.org/0000-0001-7808-5911)"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
