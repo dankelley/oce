@@ -203,7 +203,7 @@ approx3d <- function(x, y, z, f, xout, yout, zout)
         stop("length of x and dim(f)[1] must agree, but they are ", length(x), " and ", dim(f)[1])
     if (length(y) != dim(f)[2])
         stop("length of y and dim(f)[2] must agree, but they are ", length(y), " and ", dim(f)[2])
-    if (length(z) != dim(f)[2])
+    if (length(z) != dim(f)[3])
         stop("length of z and dim(f)[3] must agree, but they are ", length(z), " and ", dim(f)[3])
     ## Are x, y and z equi-spaced?
     if (length(x) > 2) {
