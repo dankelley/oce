@@ -219,6 +219,5 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
 \author{
 Dan Kelley and Clark Richards
 }
-\concept{
-satellite
-}
+\concept{satellite}
+\concept{things related to \code{landsat} data}

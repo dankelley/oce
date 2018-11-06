@@ -124,3 +124,4 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley, in collaboration with Clark Richards
 }
+\concept{things related to \code{adv} data}

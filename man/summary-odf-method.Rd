@@ -34,3 +34,4 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{odf} data}

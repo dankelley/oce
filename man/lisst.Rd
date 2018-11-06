@@ -29,3 +29,4 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
 \author{
 Dan Kelley
 }
+\concept{datasets provided with \code{oce}}

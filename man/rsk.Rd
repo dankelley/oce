@@ -43,3 +43,5 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
   \code{\link{rskToc}}, \code{\link{subset,rsk-method}},
   \code{\link{summary,rsk-method}}
 }
+\concept{datasets provided with \code{oce}}
+\concept{things related to \code{rsk} data}

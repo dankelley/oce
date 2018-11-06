@@ -4,6 +4,21 @@ data(argo)
 
 context("Argo")
 
+test_that("subset(argo, within=(POLYGON))", {
+          ## Labrador Sea (this test will fail if data(argo) is changed)
+          nold <- 223
+          nnew <- 53
+          expect_equal(nold, nchar(argo[["direction"]]))
+          expect_equal(c(56, nold), dim(argo[["pressure"]]))
+          expect_equal(nold, length(argo[["latitude"]]))
+          bdy <- list(x=c(-41.05788, -41.92521, -68.96441, -69.55673),
+                      y=c(64.02579, 49.16223, 50.50927, 61.38379))
+          argoSubset <- subset(argo, within=bdy)
+          expect_equal(nnew, nchar(argoSubset[["direction"]]))
+          expect_equal(c(56, nnew), dim(argoSubset[["pressure"]]))
+          expect_equal(nnew, length(argoSubset[["latitude"]]))
+})
+
 test_that("subset.argo(argo, \"adjusted\") correctly alters metadata and data", {
           a <- subset(argo, "adjusted")
           expect_equal(a@metadata$flags$pressureQc, argo@metadata$flags$pressureAdjustedQc)

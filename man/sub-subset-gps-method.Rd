@@ -80,3 +80,5 @@ Other things related to \code{gps} data: \code{\link{[[,gps-method}},
   \code{\link{plot,gps-method}}, \code{\link{read.gps}},
   \code{\link{summary,gps-method}}
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{gps} data}

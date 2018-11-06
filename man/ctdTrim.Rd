@@ -93,7 +93,7 @@ varies, a variety of approaches are taken to trimming the dataset.
   include \code{minSoak} (the minimum depth for the soak) and
   \code{maxSoak} the maximum depth of the soak. The method finds
   the minimum pressure prior to the \code{maxSoak} value being
-  passed, each of which occuring after the scan in which the
+  passed, each of which occurring after the scan in which the
   \code{minSoak} value was reached. For the method to work, the
   pre-cast pressure minimum must be less than the \code{minSoak}
   value. The default values of \code{minSoak} and \code{maxSoak}
@@ -174,3 +174,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{things related to \code{ctd} data}

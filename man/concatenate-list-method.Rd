@@ -21,3 +21,4 @@ Other functions that concatenate \code{oce} objects.: \code{\link{concatenate,ad
   \code{\link{concatenate,oce-method}},
   \code{\link{concatenate}}
 }
+\concept{functions that concatenate \code{oce} objects.}

@@ -133,3 +133,5 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }
+\concept{functions relating to data-quality flags}
+\concept{things related to \code{section} data}

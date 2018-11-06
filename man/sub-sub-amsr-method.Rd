@@ -161,3 +161,6 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
 \author{
 Dan Kelley
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{amsr} data
+get numeric band, changing land, n-obs, bad-obs, sea-ice and windy to NA}

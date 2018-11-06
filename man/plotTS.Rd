@@ -6,14 +6,15 @@
 \usage{
 plotTS(x, inSitu = FALSE, type = "p", referencePressure = 0,
   nlevels = 6, levels, grid = TRUE, col.grid = "lightgray",
-  lty.grid = "dotted", rho1000 = FALSE, eos = getOption("oceEOS", default
-  = "gsw"), cex = par("cex"), col = par("col"), pch = par("pch"), bg,
-  pt.bg = "transparent", col.rho = "darkgray", cex.rho = 3/4 * par("cex"),
-  rotate = TRUE, useSmoothScatter = FALSE, xlab, ylab, Slim, Tlim,
-  drawFreezing = TRUE, mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5,
-  mgp[1] + 1.5, mgp[1], mgp[1]), lwd = par("lwd"), lty = par("lty"),
-  lwd.rho = par("lwd"), lty.rho = par("lty"), add = FALSE,
-  inset = FALSE, debug = getOption("oceDebug"), ...)
+  lty.grid = "dotted", rho1000 = FALSE, eos = getOption("oceEOS",
+  default = "gsw"), cex = par("cex"), col = par("col"),
+  pch = par("pch"), bg, pt.bg = "transparent", col.rho = "darkgray",
+  cex.rho = 3/4 * par("cex"), rotate = TRUE,
+  useSmoothScatter = FALSE, xlab, ylab, Slim, Tlim,
+  drawFreezing = TRUE, mgp = getOption("oceMgp"), mar = c(mgp[1] +
+  1.5, mgp[1] + 1.5, mgp[1], mgp[1]), lwd = par("lwd"),
+  lty = par("lty"), lwd.rho = par("lwd"), lty.rho = par("lty"),
+  add = FALSE, inset = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -141,6 +142,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -179,3 +181,5 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{ctd} data}

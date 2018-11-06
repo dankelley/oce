@@ -115,3 +115,5 @@ Other functions relating to data-quality flags: \code{\link{defaultFlags}},
 
 Other things related to \code{oce} data: \code{\link{initializeFlagScheme,oce-method}}
 }
+\concept{functions relating to data-quality flags}
+\concept{things related to \code{oce} data}

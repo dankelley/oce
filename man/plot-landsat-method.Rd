@@ -9,8 +9,9 @@
 \S4method{plot}{landsat}(x, band, which = 1, decimate = TRUE, zlim,
   utm = FALSE, col = oce.colorsPalette, drawPalette = TRUE,
   showBandName = TRUE, alpha.f = 1, red.f = 1.7, green.f = 1.5,
-  blue.f = 6, offset = c(0, -0.05, -0.2, 0), transform = diag(c(red.f,
-  green.f, blue.f, alpha.f)), debug = getOption("oceDebug"), ...)
+  blue.f = 6, offset = c(0, -0.05, -0.2, 0),
+  transform = diag(c(red.f, green.f, blue.f, alpha.f)),
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{landsat} object, e.g. as read by \code{\link{read.landsat}}.}
@@ -142,10 +143,34 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{landsatTrim}}, \code{\link{landsat}},
   \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
+
+Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
+  \code{\link{plot,adv-method}},
+  \code{\link{plot,amsr-method}},
+  \code{\link{plot,argo-method}},
+  \code{\link{plot,bremen-method}},
+  \code{\link{plot,cm-method}},
+  \code{\link{plot,coastline-method}},
+  \code{\link{plot,ctd-method}},
+  \code{\link{plot,gps-method}},
+  \code{\link{plot,ladp-method}},
+  \code{\link{plot,lisst-method}},
+  \code{\link{plot,lobo-method}},
+  \code{\link{plot,met-method}},
+  \code{\link{plot,odf-method}},
+  \code{\link{plot,rsk-method}},
+  \code{\link{plot,satellite-method}},
+  \code{\link{plot,sealevel-method}},
+  \code{\link{plot,section-method}},
+  \code{\link{plot,tidem-method}},
+  \code{\link{plot,topo-method}},
+  \code{\link{plot,windrose-method}},
+  \code{\link{plotProfile}}, \code{\link{plotScan}},
+  \code{\link{plotTS}}, \code{\link{tidem-class}}
 }
 \author{
 Dan Kelley
 }
-\concept{
-satellite
-}
+\concept{functions that plot \code{oce} data}
+\concept{satellite}
+\concept{things related to \code{landsat} data}

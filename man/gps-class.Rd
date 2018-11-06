@@ -65,3 +65,4 @@ Other things related to \code{gps} data: \code{\link{[[,gps-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{gps} data}

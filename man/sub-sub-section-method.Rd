@@ -170,3 +170,5 @@ Other things related to \code{section} data: \code{\link{[[<-,section-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{section} data}

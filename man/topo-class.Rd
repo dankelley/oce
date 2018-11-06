@@ -80,3 +80,5 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
 \author{
 Dan Kelley
 }
+\concept{classes provided by \code{oce}}
+\concept{things related to \code{topo} data}

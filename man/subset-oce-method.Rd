@@ -48,3 +48,4 @@ Other functions that subset \code{oce} objects: \code{\link{subset,adp-method}},
   \code{\link{subset,section-method}},
   \code{\link{subset,topo-method}}
 }
+\concept{functions that subset \code{oce} objects}

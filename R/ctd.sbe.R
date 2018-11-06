@@ -120,7 +120,7 @@
 #'   \code{sbeox~V}     \tab \code{oxygenRaw}                    \tab V; SBE43             \tab   \cr
 #'   \code{sbox~V}      \tab \code{oxygenRaw}                    \tab V; SBE43 (?)         \tab   \cr
 #'   \code{scan}        \tab \code{scan}                         \tab -                    \tab   \cr
-#'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; SeaPoint        \tab   \cr
+#'   \code{seaTurbMtr~} \tab \code{turbidity}                    \tab FTU; Seapoint        \tab   \cr
 #'   \code{secS-priS}   \tab \code{salinityDifference}           \tab -, PSS-78            \tab   \cr
 #'   \code{sigma-t}     \tab \code{sigmaT}                       \tab kg/m^3               \tab   \cr
 #'   \code{sigma-theta} \tab \code{sigmaTheta}                   \tab kg/m^3               \tab 5 \cr
@@ -196,7 +196,14 @@
 #' @return a list containing \code{name} (the oce name), \code{nameOriginal} (the SBE name) and \code{unit}.
 #' @author Dan Kelley
 #' @references
-#' 1. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual}.
+#' 1. A SBE data processing manual was once at
+#' \code{http://www.seabird.com/document/sbe-data-processing-manual},
+#' but as of summer 2018, this no longer seems to be provided by SeaBird.
+#' A web search will turn up copies of the manual that have been put
+#' online by various research groups and data-archiving agencies.
+#' As of 2018-07-05, the latest version was named
+#' \code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017,
+#' and this was the reference version used in coding \code{oce}.
 #'
 #' @family things related to \code{ctd} data
 #' @family functions that interpret variable names and units from headers
@@ -464,7 +471,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         unit <- list(unit=expression(), scale="PSS-78")
     } else if (1 == length(grep("^seaTurbMtr[1]?$", name, useBytes=TRUE))) {
         name <- "turbidity"
-        unit <- list(unit=expression(FTU), scale="SeaPoint")
+        unit <- list(unit=expression(FTU), scale="Seapoint")
     } else if (1 == length(grep("sigma-t[0-9]{2}", name, useBytes=TRUE))) {
         name <- "sigmaT"
         unit <- list(unit=expression(kg/m^3), scale="")
@@ -697,11 +704,16 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' 1. The Sea-Bird SBE 19plus profiler is described at
 #' \code{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  Some more
 #' information is given in the Sea-Bird data-processing manual
-#' \url{http://www.seabird.com/document/sbe-data-processing-manual}.
+#' (next item).
 #'
-#' 2. A SBE data processing manual is at \url{http://www.seabird.com/document/sbe-data-processing-manual};
-#' as of 2018-07-05, the latest version was named
-#' \code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017.
+#' 2. A SBE data processing manual was once at
+#' \code{http://www.seabird.com/document/sbe-data-processing-manual},
+#' but as of summer 2018, this no longer seems to be provided by SeaBird.
+#' A web search will turn up copies of the manual that have been put
+#' online by various research groups and data-archiving agencies.
+#' As of 2018-07-05, the latest version was named
+#' \code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017,
+#' and this was the reference version used in coding \code{oce}.
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {

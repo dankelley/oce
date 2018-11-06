@@ -35,3 +35,5 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
   \code{\link{read.landsat}},
   \code{\link{summary,landsat-method}}
 }
+\concept{datasets provided with \code{oce}}
+\concept{things related to \code{landsat} data}

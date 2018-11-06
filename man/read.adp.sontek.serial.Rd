@@ -6,8 +6,8 @@
 \usage{
 read.adp.sontek.serial(file, from = 1, to, by = 1,
   tz = getOption("oceTz"), longitude = NA, latitude = NA,
-  type = c("adp", "pcadp"), beamAngle = 25, orientation, monitor = FALSE,
-  processingLog, debug = getOption("oceDebug"))
+  type = c("adp", "pcadp"), beamAngle = 25, orientation,
+  monitor = FALSE, processingLog, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -99,3 +99,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{things related to \code{adp} data}

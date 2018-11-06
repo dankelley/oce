@@ -60,3 +60,4 @@ Other functions relating to vector calculus: \code{\link{curl}}
 \author{
 Dan Kelley, based on advice of Clark Richards, and mimicking a matlab function.
 }
+\concept{functions relating to vector calculus}

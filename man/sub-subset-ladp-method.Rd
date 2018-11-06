@@ -80,3 +80,5 @@ Other things related to \code{ladp} data: \code{\link{[[,ladp-method}},
   \code{\link{plot,ladp-method}},
   \code{\link{summary,ladp-method}}
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{ladp} data}

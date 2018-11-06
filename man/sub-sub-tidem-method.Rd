@@ -116,3 +116,5 @@ Other things related to \code{tidem} data: \code{\link{[[<-,tidem-method}},
   \code{\link{tidemAstron}}, \code{\link{tidemVuf}},
   \code{\link{tidem}}
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{tidem} data}

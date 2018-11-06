@@ -161,3 +161,5 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
 \author{
 Dan Kelley
 }
+\concept{classes provided by \code{oce}}
+\concept{things related to \code{ctd} data}

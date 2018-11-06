@@ -39,3 +39,4 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{sealevel} data}

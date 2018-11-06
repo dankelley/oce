@@ -61,3 +61,4 @@ Other things related to satellite data: \code{\link{g1sst-class}},
 \author{
 Dan Kelley
 }
+\concept{things related to satellite data}

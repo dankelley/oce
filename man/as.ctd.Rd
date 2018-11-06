@@ -4,11 +4,12 @@
 \alias{as.ctd}
 \title{Coerce data into CTD object}
 \usage{
-as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
-  scan = NULL, time = NULL, other = NULL, units = NULL, flags = NULL,
-  missingValue = NULL, type = "", serialNumber = "", ship = NULL,
-  cruise = NULL, station = NULL, startTime = NULL, longitude = NULL,
-  latitude = NULL, deploymentType = "unknown", pressureAtmospheric = 0,
+as.ctd(salinity, temperature = NULL, pressure = NULL,
+  conductivity = NULL, scan = NULL, time = NULL, other = NULL,
+  units = NULL, flags = NULL, missingValue = NULL, type = "",
+  serialNumber = "", ship = NULL, cruise = NULL, station = NULL,
+  startTime = NULL, longitude = NULL, latitude = NULL,
+  deploymentType = "unknown", pressureAtmospheric = 0,
   sampleInterval = NA, profile = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
@@ -217,3 +218,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{ctd} data}

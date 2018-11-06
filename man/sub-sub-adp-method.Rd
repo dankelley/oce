@@ -144,3 +144,5 @@ Other things related to \code{adp} data: \code{\link{[[<-,adp-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{adp} data}

@@ -77,10 +77,10 @@ to find items more directly, using \code{\link{oceGetData}} and
 
 \references{
 1. Information on the satellite, how to cite the data, etc. is
-provided at \url{http://www.remss.com/missions/amsr/}.
+provided at \code{http://www.remss.com/missions/amsr/}.
 
 2. A simple interface for viewing and downloading data is at
-\url{http://images.remss.com/amsr/amsr2_data_daily.html}.
+\code{http://images.remss.com/amsr/amsr2_data_daily.html}.
 }
 \seealso{
 \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
@@ -95,6 +95,5 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
 \author{
 Dan Kelley and Chantelle Layton
 }
-\concept{
-satellite
-}
+\concept{satellite}
+\concept{things related to \code{amsr} data}

@@ -100,3 +100,5 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
 \author{
 Dan Kelley
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{section} data}

@@ -174,18 +174,47 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
 #' points(xout[m], f[n,n,n])
 approx3d <- function(x, y, z, f, xout, yout, zout)
 {
-    equispaced <- function(x) sd(diff(x)) / mean(diff(x)) < 1e-5
-    if (missing(x)) stop("must provide x")
-    if (missing(y)) stop("must provide y")
-    if (missing(z)) stop("must provide z")
-    if (missing(f)) stop("must provide f")
-    if (missing(xout)) stop("must provide xout")
-    if (missing(yout)) stop("must provide yout")
-    if (missing(zout)) stop("must provide zout")
-    if (!equispaced(x)) stop("x values must be equi-spaced")
-    if (!equispaced(y)) stop("y values must be equi-spaced")
-    if (!equispaced(z)) stop("z values must be equi-spaced")
-    ##.Call("approx3d", x, y, z, f, xout, yout, zout)
+    ## Were all arguments given?
+    if (missing(x))
+        stop("must provide x")
+    if (missing(y))
+        stop("must provide y")
+    if (missing(z))
+        stop("must provide z")
+    if (missing(f))
+        stop("must provide f")
+    if (missing(xout))
+        stop("must provide xout")
+    if (missing(yout))
+        stop("must provide yout")
+    if (missing(zout))
+        stop("must provide zout")
+    ## Are there enough data to interpolate?
+    if (length(x) < 2)
+        stop("must have more than one x value")
+    if (length(y) < 2)
+        stop("must have more than one y value")
+    if (length(x) < 2)
+        stop("must have more than one z value")
+    ## Are the array dimensions consistent with x, y, and z?
+    if (3 != length(dim(f)))
+        stop("f must be an array with 3 dimensions")
+    if (length(x) != dim(f)[1])
+        stop("length of x and dim(f)[1] must agree, but they are ", length(x), " and ", dim(f)[1])
+    if (length(y) != dim(f)[2])
+        stop("length of y and dim(f)[2] must agree, but they are ", length(y), " and ", dim(f)[2])
+    if (length(z) != dim(f)[3])
+        stop("length of z and dim(f)[3] must agree, but they are ", length(z), " and ", dim(f)[3])
+    ## Are x, y and z equi-spaced?
+    if (length(x) > 2) {
+        equispaced <- function(a) sd(diff(a)) / mean(diff(a)) < 1e-5
+        if (!equispaced(x))
+            stop("x values must be equi-spaced")
+        if (!equispaced(y))
+            stop("y values must be equi-spaced")
+        if (!equispaced(z))
+            stop("z values must be equi-spaced")
+    }
     do_approx3d(x, y, z, f, xout, yout, zout)
 }
 
@@ -3335,7 +3364,7 @@ fillGap <- function(x, method=c("linear"), rule=1)
 #' subsampled appropriately.
 #' @section Bugs: Only a preliminary version of this function is provided in
 #' the present package.  It only works for objects of class \code{echosounder},
-#' for which the decmation is done after applying a running median filter and
+#' for which the decimation is done after applying a running median filter and
 #' then a boxcar filter, each of length equal to the corresponding component of
 #' \code{by}.
 #' @author Dan Kelley

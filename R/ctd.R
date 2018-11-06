@@ -2083,7 +2083,7 @@ ctdFindProfiles <- function(x, cutoff=0.5, minLength=10, minHeight=0.1*diff(rang
 #'   include \code{minSoak} (the minimum depth for the soak) and
 #'   \code{maxSoak} the maximum depth of the soak. The method finds
 #'   the minimum pressure prior to the \code{maxSoak} value being
-#'   passed, each of which occuring after the scan in which the
+#'   passed, each of which occurring after the scan in which the
 #'   \code{minSoak} value was reached. For the method to work, the
 #'   pre-cast pressure minimum must be less than the \code{minSoak}
 #'   value. The default values of \code{minSoak} and \code{maxSoak}
@@ -4238,7 +4238,11 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
         rhoLabel <- round(rhoLabel, digits)
         ## FIXME-gsw: will this handle gsw?
         Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
-        ok <- !is.na(Sline) # crazy T can give crazy S
+        ## Eliminate NA (for crazy T)
+        ok <- !is.na(Sline)
+        ## Eliminate ice values (BUG: only for unesco because what lon and lat to use?)
+        if (eos == "unesco")
+            ok <- ok & swTFreeze(Sline, 0, eos="unesco") < Tline
         if (sum(ok) > 2) {
             Sok <- Sline[ok]
             Tok <- Tline[ok]
@@ -4248,9 +4252,9 @@ drawIsopycnals <- function(nlevels=6, levels, rotate=TRUE, rho1000=FALSE, digits
                     ## to right of box
                     i <- match(TRUE, Sok > SAxisMax)
                     if (rotate)
-                        mtext(rhoLabel, side=4, at=Tline[i], line=0.1, cex=cex, col=col)
+                        mtext(rhoLabel, side=4, at=Tok[i], line=0.1, cex=cex, col=col)
                     else
-                        text(usr[2], Tline[i], rhoLabel, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
+                        text(usr[2], Tok[i], rhoLabel, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
                 } else {
                     ## above box ... if the line got there
                     if (max(Tok) > (TAxisMax - 0.05 * (TAxisMax - TAxisMin)))

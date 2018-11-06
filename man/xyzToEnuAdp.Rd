@@ -114,3 +114,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{things related to \code{adp} data}

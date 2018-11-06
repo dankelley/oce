@@ -4,8 +4,8 @@
 \alias{numberAsPOSIXct}
 \title{Convert a Numeric Time to a POSIXct Time}
 \usage{
-numberAsPOSIXct(t, type = c("unix", "matlab", "gps", "argo", "ncep1", "ncep2",
-  "sas", "spss", "yearday", "epic"), tz = "UTC")
+numberAsPOSIXct(t, type = c("unix", "matlab", "gps", "argo", "ncep1",
+  "ncep2", "sas", "spss", "yearday", "epic"), tz = "UTC")
 }
 \arguments{
 \item{t}{an integer corresponding to a time, in a way that depends on
@@ -91,7 +91,8 @@ numberAsPOSIXct(cbind(jd, 1e3 * 1 * 3600), type="epic", tz="UTC")
 [3] problem with NCEP times:
 \url{https://github.com/dankelley/oce/issues/738}
 
-[4] EPIC times: \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib}
+[4] EPIC times: software and manuals at \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
+see also Denbo, Donald W., and Nancy N. Soreide. “EPIC.” Oceanography 9 (1996). https://doi.org/10.5670/oceanog.1996.10.
 }
 \seealso{
 \code{\link{numberAsHMS}}
@@ -105,3 +106,4 @@ Other things related to time: \code{\link{ctimeToSeconds}},
 \author{
 Dan Kelley
 }
+\concept{things related to time}

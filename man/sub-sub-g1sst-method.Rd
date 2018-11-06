@@ -100,3 +100,5 @@ Other functions that extract parts of \code{oce} objects: \code{\link{[[,adp-met
 
 Other things related to \code{g1sst} data: \code{\link{[[<-,g1sst-method}}
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{g1sst} data}

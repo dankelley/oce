@@ -4,8 +4,8 @@
 \alias{colormap}
 \title{Calculate color map}
 \usage{
-colormap(z = NULL, zlim, zclip = FALSE, breaks, col = oceColorsJet, name,
-  x0, x1, col0, col1, blend = 0, missingColor,
+colormap(z = NULL, zlim, zclip = FALSE, breaks, col = oceColorsJet,
+  name, x0, x1, col0, col1, blend = 0, missingColor,
   debug = getOption("oceDebug"))
 }
 \arguments{
@@ -265,3 +265,4 @@ Other things related to colors: \code{\link{oceColors9B}},
 \author{
 Dan Kelley
 }
+\concept{things related to colors}

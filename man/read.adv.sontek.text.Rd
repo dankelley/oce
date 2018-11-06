@@ -4,9 +4,10 @@
 \alias{read.adv.sontek.text}
 \title{Read an ADV data file}
 \usage{
-read.adv.sontek.text(file, from = 1, to, by = 1, tz = getOption("oceTz"),
-  originalCoordinate = "xyz", transformationMatrix, longitude = NA,
-  latitude = NA, debug = getOption("oceDebug"), monitor = FALSE,
+read.adv.sontek.text(file, from = 1, to, by = 1,
+  tz = getOption("oceTz"), originalCoordinate = "xyz",
+  transformationMatrix, longitude = NA, latitude = NA,
+  debug = getOption("oceDebug"), monitor = FALSE,
   processingLog = NULL)
 }
 \arguments{
@@ -326,3 +327,4 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{adv} data}

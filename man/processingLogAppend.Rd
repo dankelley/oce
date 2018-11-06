@@ -25,3 +25,4 @@ Other things related to processing logs: \code{\link{processingLog<-}},
   \code{\link{processingLogItem}},
   \code{\link{processingLogShow}}
 }
+\concept{things related to processing logs}

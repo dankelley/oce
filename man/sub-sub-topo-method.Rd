@@ -117,3 +117,5 @@ Other things related to \code{topo} data: \code{\link{[[<-,topo-method}},
   \code{\link{topo-class}}, \code{\link{topoInterpolate}},
   \code{\link{topoWorld}}
 }
+\concept{functions that extract parts of \code{oce} objects}
+\concept{things related to \code{topo} data}

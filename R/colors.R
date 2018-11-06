@@ -40,7 +40,7 @@ colormap_colorize <- function(z=NULL,
              "colormap=", if (is.null(colormap)) "(missing)" else colormap, ",",
              "segments=", segments, ",",
              "missingColor=", missingColor,
-             ") { # an internal function\n", unindent=1)
+             ") { # an internal function\n", sep="", unindent=1)
     if (is.null(colormap)) {
         if (is.function(col)) {
             oceDebug(debug, "col is a function\n")
@@ -151,7 +151,7 @@ colormap_colorize <- function(z=NULL,
     }
     res <- list(zlim=zlim, breaks=breaks, col=col, zcol=zcol, missingColor=missingColor)
     class(res) <- c("list", "colormap")
-    oceDebug(debug, "} # colormap_colorize(), an internal function\n", unindent=1)
+    oceDebug(debug, "} # colormap_colorize(), an internal function\n", sep="", unindent=1)
     res
 }
 
@@ -183,11 +183,20 @@ colormapGMT <- function(x0, x1, col0, col1, bpl=1)
 
 ## Q: Why does this name contain "Gmt"?
 ## NB: I've not documented this, because it is not in the NAMESPACE.
-colormapFromGmt <- function(file)
+colormapFromGmt <- function(file, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "colormapFromGmt(..., debug=", debug, ")\n", sep="", unindent=1)
     if (missing(file))
         stop("must give 'file'\n")
-    text <- readLines(file)
+    if (is.character(file)) {
+        ## It's a string to read
+        con <- textConnection(file)
+        on.exit(close(con))
+    } else if (inherits(file, "connection")) {
+        ## It's a connection (i.e. a file). Q: does this ever happen??
+        con <- file
+    }
+    text <- readLines(con)
     textData <- text[grep("^[ ]*[-0-9]", text)]
     textData <- gsub("/", " ", textData) # sometimes it is R/G/B
     d <- read.table(text=textData, col.names=c("x0", "r0", "g0", "b0", "x1", "r1", "g1", "b1"))
@@ -243,15 +252,18 @@ colormapFromGmt <- function(file)
     }
     res <- list(x0=d$x0, x1=d$x1, col0=col0, col1=col1, missingColor=N)
     class(res) <- c("list", "colormap")
+    oceDebug(debug, "} # colormapFromGmt()\n", sep="", unindent=1)
     res
 }
 
-colormapFromName <- function(name)
+colormapFromName <- function(name, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "colormapFromName(name=\"", name, "\", debug=", debug, ")\n", sep="", unindent=1)
     id <- pmatch(name, colormapNames)
     if (is.na(id))
         stop("unknown colormap name \"", name, "\"; try one of: ", paste(names, collapse=", "))
     name <- colormapNames[id]
+    oceDebug(debug, "name=", name, "\n")
     if (name == "gmt_relief") {
         ## $Id: GMT_relief.cpt,v 1.1 2001/09/23 23:11:20 pwessel Exp $
         ##
@@ -373,7 +385,9 @@ colormapFromName <- function(name)
     } else {
         stop("unknown colormap name; try one of: ", paste(colormapNames, collapse=", "))
     }
-    colormapFromGmt(textConnection(text))
+    res <- colormapFromGmt(text, debug=debug-1)
+    oceDebug(debug, "} # colormapFromName()\n", sep="", unindent=1)
+    res
 }
 
 #' Calculate color map
@@ -604,7 +618,8 @@ colormap <- function(z=NULL,
                      missingColor,
                      debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "colormap() {\n", unindent=1)
+    debug <- min(debug, 3)
+    oceDebug(debug, "colormap(..., debug=", debug, ") {\n", sep="", unindent=1)
     zKnown <- !is.null(z)
     zlimKnown <- !missing(zlim)
     if (zlimKnown) {
@@ -826,14 +841,14 @@ colormap <- function(z=NULL,
         res$col0[findInterval(z, res$x0)]
     }
     class(res) <- c("list", "colormap")
-    oceDebug(debug, "} # colormap()\n", unindent=1)
+    oceDebug(debug, "} # colormap()\n", sep="", unindent=1)
     res
 }
 
 ## keeping this (which was called 'colormap' until 2014-05-07) for a while, but not in NAMESPACE.
 colormap_colormap <- function(name, x0, x1, col0, col1, n=1, zclip=FALSE, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "colormap_colormap() {\n", unindent=1)
+    oceDebug(debug, "colormap_colormap(..., debug=", debug, ") {\n", sep="", unindent=1)
     if (missing(name)) {
         if (missing(x0) || missing(x1) || missing(col0) || missing(col1))
             stop('give either "name" or all of: "x0", "x1", "col0" and "col1"')
@@ -873,12 +888,13 @@ colormap_colormap <- function(name, x0, x1, col0, col1, n=1, zclip=FALSE, debug=
         res <- list(x0=x0r, x1=x1r, col0=col0r, col1=col1r)
     } else {
         id <- pmatch(name, colormapNames)
+        oceDebug(debug, "id=", id, "\n")
         ## NB> next two functions not in NAMESPACE
-        res <- if (is.na(id)) colormapFromGmt(name) else colormapFromName(colormapNames[id])
+        res <- if (is.na(id)) colormapFromGmt(name, debug=debug-1) else colormapFromName(colormapNames[id], debug=debug-1)
     }
     res$zclip <- zclip
     class(res) <- c("list", "colormap")
-    oceDebug(debug, "} # colormap_colormap()\n", unindent=1)
+    oceDebug(debug, "} # colormap_colormap()\n", sep="", unindent=1)
     res
 }
 

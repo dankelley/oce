@@ -46,3 +46,4 @@ Other functions relating to geodesy: \code{\link{geodDist}},
 Dan Kelley, based on code from Clark Richards, in turn based on
 formulae provided by Ed Williams [1].
 }
+\concept{functions relating to geodesy}

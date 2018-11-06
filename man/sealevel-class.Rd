@@ -79,3 +79,5 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
 \author{
 Dan Kelley
 }
+\concept{classes provided by \code{oce}}
+\concept{things related to \code{sealevel} data}

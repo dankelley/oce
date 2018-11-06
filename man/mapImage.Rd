@@ -4,9 +4,9 @@
 \alias{mapImage}
 \title{Add an Image to a Map}
 \usage{
-mapImage(longitude, latitude, z, zlim, zclip = FALSE, breaks, col, colormap,
-  border = NA, lwd = par("lwd"), lty = par("lty"), missingColor = NA,
-  filledContour = FALSE, gridder = "binMean2D",
+mapImage(longitude, latitude, z, zlim, zclip = FALSE, breaks, col,
+  colormap, border = NA, lwd = par("lwd"), lty = par("lty"),
+  missingColor = NA, filledContour = FALSE, gridder = "binMean2D",
   debug = getOption("oceDebug"))
 }
 \arguments{
@@ -181,3 +181,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley
 }
+\concept{functions related to maps}

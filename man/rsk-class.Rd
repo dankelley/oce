@@ -87,3 +87,5 @@ Other things related to \code{rsk} data: \code{\link{[[,rsk-method}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{classes provided by \code{oce}}
+\concept{things related to \code{rsk} data}

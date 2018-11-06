@@ -75,3 +75,4 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{tidem} data}

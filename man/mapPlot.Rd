@@ -4,11 +4,12 @@
 \alias{mapPlot}
 \title{Draw a Map}
 \usage{
-mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg, fill,
-  border = NULL, col = NULL, clip = TRUE, type = "polygon",
-  axes = TRUE, cex, cex.axis = 1, mgp = c(0, 0.5, 0), drawBox = TRUE,
-  showHemi = TRUE, polarCircle = 0, lonlabel = NULL, latlabel = NULL,
-  sides = NULL, projection = "+proj=moll", tissot = FALSE, trim = TRUE,
+mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg,
+  fill, border = NULL, col = NULL, clip = TRUE, type = "polygon",
+  axes = TRUE, cex, cex.axis = 1, mgp = c(0, 0.5, 0),
+  drawBox = TRUE, showHemi = TRUE, polarCircle = 0,
+  lonlabel = NULL, latlabel = NULL, sides = NULL,
+  projection = "+proj=moll", tissot = FALSE, trim = TRUE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -508,3 +509,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{functions related to maps}

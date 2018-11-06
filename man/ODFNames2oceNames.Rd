@@ -130,3 +130,5 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
 \author{
 Dan Kelley
 }
+\concept{functions that interpret variable names and units from headers}
+\concept{things related to \code{odf} data}

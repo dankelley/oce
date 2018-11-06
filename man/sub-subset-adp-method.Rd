@@ -104,3 +104,5 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{adp} data}

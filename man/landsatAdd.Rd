@@ -42,6 +42,5 @@ Other things related to \code{landsat} data: \code{\link{[[,landsat-method}},
 \author{
 Dan Kelley
 }
-\concept{
-satellite
-}
+\concept{satellite}
+\concept{things related to \code{landsat} data}

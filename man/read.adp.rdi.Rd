@@ -4,9 +4,9 @@
 \alias{read.adp.rdi}
 \title{Read a Teledyne/RDI ADP File}
 \usage{
-read.adp.rdi(file, from, to, by, tz = getOption("oceTz"), longitude = NA,
-  latitude = NA, type = c("workhorse"), monitor = FALSE,
-  despike = FALSE, processingLog, testing = FALSE,
+read.adp.rdi(file, from, to, by, tz = getOption("oceTz"),
+  longitude = NA, latitude = NA, type = c("workhorse"),
+  monitor = FALSE, despike = FALSE, processingLog, testing = FALSE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -312,3 +312,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{things related to \code{adp} data}

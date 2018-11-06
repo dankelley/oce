@@ -38,6 +38,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -54,6 +55,6 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{
-satellite
-}
+\concept{functions that plot \code{oce} data}
+\concept{satellite}
+\concept{things related to satellite data}

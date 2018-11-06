@@ -6,18 +6,19 @@
 \alias{plot.ctd}
 \title{Plot CTD Data}
 \usage{
-\S4method{plot}{ctd}(x, which, col = par("fg"), fill, borderCoastline = NA,
-  colCoastline = "lightgray", eos = getOption("oceEOS", default = "gsw"),
-  ref.lat = NaN, ref.lon = NaN, grid = TRUE, coastline = "best", Slim,
-  Clim, Tlim, plim, densitylim, N2lim, Rrholim, dpdtlim, timelim, lonlim,
-  latlim, drawIsobaths = FALSE, clongitude, clatitude, span,
-  showHemi = TRUE, lonlabel = NULL, latlabel = NULL, sides = NULL,
+\S4method{plot}{ctd}(x, which, col = par("fg"), fill,
+  borderCoastline = NA, colCoastline = "lightgray",
+  eos = getOption("oceEOS", default = "gsw"), ref.lat = NaN,
+  ref.lon = NaN, grid = TRUE, coastline = "best", Slim, Clim, Tlim,
+  plim, densitylim, N2lim, Rrholim, dpdtlim, timelim, lonlim, latlim,
+  drawIsobaths = FALSE, clongitude, clatitude, span, showHemi = TRUE,
+  lonlabel = NULL, latlabel = NULL, sides = NULL,
   projection = NULL, parameters = NULL, orientation = NULL,
   latlon.pch = 20, latlon.cex = 1.5, latlon.col = "red", cex = 1,
   cex.axis = par("cex.axis"), pch = 1, useSmoothScatter = FALSE, df,
-  keepNA = FALSE, type = "l", mgp = getOption("oceMgp"), mar = c(mgp[1]
-  + 1.5, mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1), inset = FALSE,
-  add = FALSE, debug = getOption("oceDebug"), ...)
+  keepNA = FALSE, type = "l", mgp = getOption("oceMgp"),
+  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1.5, mgp[1] + 1),
+  inset = FALSE, add = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -299,6 +300,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,coastline-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -337,3 +339,5 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{ctd} data}

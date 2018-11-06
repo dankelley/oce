@@ -4,8 +4,8 @@
 \alias{mapScalebar}
 \title{Add a Scalebar to a Map}
 \usage{
-mapScalebar(x, y = NULL, length, lwd = 1.5 * par("lwd"), cex = par("cex"),
-  col = "black")
+mapScalebar(x, y = NULL, length, lwd = 1.5 * par("lwd"),
+  cex = par("cex"), col = "black")
 }
 \arguments{
 \item{x, y}{position of the scalebar.  Eventually this may be similar to
@@ -60,3 +60,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley
 }
+\concept{functions related to maps}

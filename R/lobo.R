@@ -435,7 +435,7 @@ read.lobo <- function(file, cols=7, processingLog)
 #' @param salinity vector of salinity observations
 #' @param temperature vector of temperature observations
 #' @param pressure vector of pressure observations
-#' @param nitrate vector of nitrate observationss
+#' @param nitrate vector of nitrate observations
 #' @param fluorescence vector of fluoresence observations
 #' @param filename source filename
 #' @return An object of \code{\link{lobo-class}}.

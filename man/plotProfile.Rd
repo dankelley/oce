@@ -8,13 +8,13 @@ plotProfile(x, xtype = "salinity+temperature", ytype = "pressure",
   eos = getOption("oceEOS", default = "gsw"), lty = 1, xlab = NULL,
   ylab = NULL, col = "black", col.salinity = "darkgreen",
   col.temperature = "red", col.rho = "blue", col.N2 = "brown",
-  col.dpdt = "darkgreen", col.time = "darkgreen", pt.bg = "transparent",
-  grid = TRUE, col.grid = "lightgray", lty.grid = "dotted", Slim, Clim,
-  Tlim, densitylim, N2lim, Rrholim, dpdtlim, timelim, plim, xlim, ylim,
-  lwd = par("lwd"), xaxs = "r", yaxs = "r", cex = 1, pch = 1,
-  useSmoothScatter = FALSE, df, keepNA = FALSE, type = "l",
-  mgp = getOption("oceMgp"), mar, add = FALSE, inset = FALSE,
-  debug = getOption("oceDebug", 0), ...)
+  col.dpdt = "darkgreen", col.time = "darkgreen",
+  pt.bg = "transparent", grid = TRUE, col.grid = "lightgray",
+  lty.grid = "dotted", Slim, Clim, Tlim, densitylim, N2lim, Rrholim,
+  dpdtlim, timelim, plim, xlim, ylim, lwd = par("lwd"), xaxs = "r",
+  yaxs = "r", cex = 1, pch = 1, useSmoothScatter = FALSE, df,
+  keepNA = FALSE, type = "l", mgp = getOption("oceMgp"), mar,
+  add = FALSE, inset = FALSE, debug = getOption("oceDebug", 0), ...)
 }
 \arguments{
 \item{x}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -212,6 +212,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -250,3 +251,5 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{ctd} data}

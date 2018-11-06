@@ -4,8 +4,9 @@
 \alias{read.ctd}
 \title{Read a General CTD File}
 \usage{
-read.ctd(file, type = NULL, columns = NULL, station = NULL, missingValue,
-  monitor = FALSE, debug = getOption("oceDebug"), processingLog, ...)
+read.ctd(file, type = NULL, columns = NULL, station = NULL,
+  missingValue, monitor = FALSE, debug = getOption("oceDebug"),
+  processingLog, ...)
 }
 \arguments{
 \item{file}{A connection or a character string giving the name of the file to
@@ -102,3 +103,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{ctd} data}

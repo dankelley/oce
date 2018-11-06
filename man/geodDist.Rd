@@ -85,3 +85,4 @@ Dan Kelley based this on R code sent to him by Darren Gillis, who in
 2003 had modified Fortran code that, according to comments in the source,
 had been written in 1974 by L. Pfeifer and J. G. Gergen.
 }
+\concept{functions relating to geodesy}

@@ -27,3 +27,4 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}
 }
+\concept{datasets provided with \code{oce}}

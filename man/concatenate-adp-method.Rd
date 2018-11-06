@@ -17,8 +17,6 @@ objects (in which case the remaining arguments are ignored).}
 An object of \code{\link{adp-class}}.
 }
 \description{
-Concatenate adp objects
-
 This function concatenates adp objects. It is intended
 for objects holding data sampled through time, and it works by pasting
 together data linearly if they are vectors, by row if they are matrices,
@@ -64,3 +62,4 @@ Other functions that concatenate \code{oce} objects.: \code{\link{concatenate,li
 \author{
 Dan Kelley
 }
+\concept{functions that concatenate \code{oce} objects.}

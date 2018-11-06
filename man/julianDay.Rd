@@ -4,8 +4,8 @@
 \alias{julianDay}
 \title{Convert a POSIXt time to a Julian day}
 \usage{
-julianDay(t, year = NA, month = NA, day = NA, hour = NA, min = NA,
-  sec = NA, tz = "UTC")
+julianDay(t, year = NA, month = NA, day = NA, hour = NA,
+  min = NA, sec = NA, tz = "UTC")
 }
 \arguments{
 \item{t}{a time, in POSIXt format, e.g. as created by
@@ -70,3 +70,5 @@ Other things related to time: \code{\link{ctimeToSeconds}},
 \author{
 Dan Kelley
 }
+\concept{things related to astronomy}
+\concept{things related to time}

@@ -46,3 +46,5 @@ Other things related to colors: \code{\link{colormap}},
 \author{
 Authored by matplotlib contributers, packaged (with license permission) in oce by Dan Kelley
 }
+\concept{datasets provided with \code{oce}}
+\concept{things related to colors}

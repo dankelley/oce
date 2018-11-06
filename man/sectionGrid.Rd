@@ -4,8 +4,8 @@
 \alias{sectionGrid}
 \title{Grid a Section}
 \usage{
-sectionGrid(section, p, method = "approx", debug = getOption("oceDebug"),
-  ...)
+sectionGrid(section, p, method = "approx",
+  debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{section}{A \code{section} object containing the section to be gridded.}
@@ -84,3 +84,4 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{section} data}

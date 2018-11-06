@@ -40,3 +40,4 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{adv} data}

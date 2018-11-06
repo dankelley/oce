@@ -232,6 +232,7 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 #' @param eos equation of state, either \code{"unesco"} or \code{"gsw"}.
 #' @param \dots additional argument, passed to \code{\link{smooth.spline}}, in
 #' the case that \code{derivs="smoothing"}.  See \dQuote{Details}.
+#' @template debugTemplate
 #' @return Square of buoyancy frequency [\eqn{radian^2/s^2}{radian^2/s^2}].
 #' @author Dan Kelley
 #' @examples
@@ -251,8 +252,10 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 #' abline(v=0)
 #' @family functions that calculate seawater properties
 swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
-                 eos=getOption("oceEOS", default="gsw"), ...)
+                 eos=getOption("oceEOS", default="gsw"),
+                 debug=getOption("oceDebug"),  ...)
 {
+    oceDebug(debug, "swN2(...) {\n", sep="", unindent=1)
     ##cat("swN2(..., df=", df, ")\n",sep="")
     eos <- match.arg(eos, c("unesco", "gsw"))
     ##useSmoothing <- !missing(df) && is.finite(df)
@@ -307,10 +310,16 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
         p <- ctd[["pressure"]]
         ##np <- length(p)
         ok <- !is.na(p) & !is.na(SA) & !is.na(CT)
-        if (missing(df))
-            df <- round(sum(ok) / 10)
-        df <- max(df, 2) # smooth.spline won't work if df<2
-        df <- min(df, sum(ok))
+        depths <- sum(!is.na(p))
+        if (missing(df)) {
+            df <- if (depths > 100) f <- floor(depths / 10) # at least 10
+                else if (depths > 20) f <- floor(depths / 3) # at least 7
+                else if (depths > 10) f <- floor(depths / 2) # at least 5
+                else depths
+            oceDebug(debug, "df=", df, " (calculated using depths=", depths, ")\n", sep="")
+        } else {
+            oceDebug(debug, "df=", df, " (given as an argument to swNw())\n", sep="")
+        }
         if (sum(ok) > 4 && is.finite(df)) {
             SA <- predict(smooth.spline(p[ok], SA[ok], df=df), p[ok])$y
             CT <- predict(smooth.spline(p[ok], CT[ok], df=df), p[ok])$y
@@ -325,6 +334,7 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
         y <- l$N2[ok]
         res <- approx(x, y, p, rule=2)$y
     }
+    oceDebug(debug, "} # swN2()\n", sep="", unindent=1)
     res
 }
 
@@ -1975,7 +1985,7 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' salty compared with less spicy water. Another interpretation is that spice
 #' is a variable measuring distance orthogonal to isopycnal lines on TS
 #' diagrams (if the diagrams are scaled to make the isopycnals run at 45
-#' degres). The definition used here is that of Pierre Flament. (Other
+#' degrees). The definition used here is that of Pierre Flament. (Other
 #' formulations exist.)  Note that pressure is ignored in the definition.
 #' Spiciness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
 #'

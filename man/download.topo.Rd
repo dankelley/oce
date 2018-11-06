@@ -4,8 +4,8 @@
 \alias{download.topo}
 \title{Download and Cache a topo File}
 \usage{
-download.topo(west, east, south, north, resolution, destdir, destfile, format,
-  server, debug = getOption("oceDebug"))
+download.topo(west, east, south, north, resolution, destdir, destfile,
+  format, server, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{west, east}{Longitudes of the western and eastern sides of the box.}
@@ -141,3 +141,5 @@ Other things related to \code{topo} data: \code{\link{[[,topo-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that download files}
+\concept{things related to \code{topo} data}

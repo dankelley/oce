@@ -665,7 +665,7 @@ setMethod(f="[[<-",
 #' @author Dan Kelley
 #'
 #' @family things related to \code{landsat} data
-#' @family functions that plot \oce{oce} data
+#' @family functions that plot \code{oce} data
 #' @aliases plot.landsat
 setMethod(f="plot",
           signature=signature("landsat"),

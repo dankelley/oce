@@ -1629,7 +1629,7 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
                     else return("netcdf")
                 }
             } else {
-                stop('must install.packages("ncdf4") to read a netCDF file')
+                stop('must install.packages("ncdf4") to read a NetCDF file')
             }
         }
         if (length(grep(".osm.xml$", filename, ignore.case=TRUE))) {
@@ -2949,7 +2949,8 @@ numberAsHMS <- function(t, default=0)
 #' [3] problem with NCEP times:
 #' \url{https://github.com/dankelley/oce/issues/738}
 #'
-#' [4] EPIC times: \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib}
+#' [4] EPIC times: software and manuals at \url{https://www.pmel.noaa.gov/epic/download/index.html#epslib};
+#' see also Denbo, Donald W., and Nancy N. Soreide. “EPIC.” Oceanography 9 (1996). https://doi.org/10.5670/oceanog.1996.10.
 #'
 #' @examples
 #'

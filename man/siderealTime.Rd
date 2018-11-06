@@ -40,3 +40,4 @@ Other things related to astronomy: \code{\link{eclipticalToEquatorial}},
 \author{
 Dan Kelley
 }
+\concept{things related to astronomy}

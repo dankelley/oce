@@ -7,7 +7,8 @@
 read.adv.nortek(file, from = 1, to, by = 1, tz = getOption("oceTz"),
   header = TRUE, longitude = NA, latitude = NA, type = c("vector",
   "aquadopp"), haveAnalog1 = FALSE, haveAnalog2 = FALSE,
-  debug = getOption("oceDebug"), monitor = FALSE, processingLog = NULL)
+  debug = getOption("oceDebug"), monitor = FALSE,
+  processingLog = NULL)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -320,3 +321,4 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{adv} data}

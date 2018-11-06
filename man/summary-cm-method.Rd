@@ -30,3 +30,4 @@ Other things related to \code{cm} data: \code{\link{[[,cm-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{cm} data}

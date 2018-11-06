@@ -4,7 +4,8 @@
 \alias{write.ctd}
 \title{Write a CTD Data Object as a CSV File}
 \usage{
-write.ctd(object, file, metadata = TRUE, flags = TRUE, format = "csv")
+write.ctd(object, file, metadata = TRUE, flags = TRUE,
+  format = "csv")
 }
 \arguments{
 \item{object}{A \code{ctd} object, i.e. one inheriting from \code{\link{ctd-class}}.}
@@ -73,3 +74,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{ctd} data}

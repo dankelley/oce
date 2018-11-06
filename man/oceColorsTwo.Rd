@@ -46,3 +46,4 @@ Other things related to colors: \code{\link{colormap}},
   \code{\link{oceColorsViridis}},
   \code{\link{oceColorsVorticity}}, \code{\link{ocecolors}}
 }
+\concept{things related to colors}

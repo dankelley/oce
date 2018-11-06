@@ -32,3 +32,4 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
+\concept{things related to \code{coastline} data}

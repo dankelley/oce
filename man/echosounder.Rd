@@ -37,3 +37,5 @@ Other things related to \code{echosounder} data: \code{\link{[[,echosounder-meth
 \author{
 Dan Kelley
 }
+\concept{datasets provided with \code{oce}}
+\concept{things related to \code{echosounder} data}

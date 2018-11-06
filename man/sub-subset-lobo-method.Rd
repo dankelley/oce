@@ -81,3 +81,5 @@ Other things related to \code{lobo} data: \code{\link{[[,lobo-method}},
   \code{\link{subset,lobo-method}},
   \code{\link{summary,lobo-method}}
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{lobo} data}

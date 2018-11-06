@@ -60,3 +60,5 @@ Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 }
+\concept{datasets provided with \code{oce}}
+\concept{things related to \code{ctd} data}

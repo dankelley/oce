@@ -58,3 +58,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
 }
+\concept{things related to \code{adp} data}
+\concept{things related to \code{adv} data}

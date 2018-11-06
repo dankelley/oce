@@ -4,8 +4,8 @@
 \alias{swSTrho}
 \title{Seawater salinity from temperature and density}
 \usage{
-swSTrho(temperature, density, pressure, eos = getOption("oceEOS", default =
-  "gsw"))
+swSTrho(temperature, density, pressure, eos = getOption("oceEOS", default
+  = "gsw"))
 }
 \arguments{
 \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C], defined
@@ -86,3 +86,4 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
 \author{
 Dan Kelley
 }
+\concept{functions that calculate seawater properties}

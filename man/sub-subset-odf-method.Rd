@@ -84,3 +84,5 @@ Other things related to \code{odf} data: \code{\link{ODF2oce}},
   \code{\link{subset,odf-method}},
   \code{\link{summary,odf-method}}
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{odf} data}

@@ -26,3 +26,4 @@ Other things related to \code{met} data: \code{\link{[[,met-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{met} data}

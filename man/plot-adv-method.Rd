@@ -6,11 +6,12 @@
 \alias{plot.adv}
 \title{Plot ADV data}
 \usage{
-\S4method{plot}{adv}(x, which = c(1:3, 14, 15), col, titles, type = "l",
-  lwd = par("lwd"), drawTimeRange = getOption("oceDrawTimeRange"),
-  drawZeroLine = FALSE, useSmoothScatter, mgp = getOption("oceMgp"),
-  mar = c(mgp[1] + 1.5, mgp[1] + 1.5, 1.5, 1.5), tformat,
-  marginsAsImage = FALSE, cex = par("cex"), cex.axis = par("cex.axis"),
+\S4method{plot}{adv}(x, which = c(1:3, 14, 15), col, titles,
+  type = "l", lwd = par("lwd"),
+  drawTimeRange = getOption("oceDrawTimeRange"), drawZeroLine = FALSE,
+  useSmoothScatter, mgp = getOption("oceMgp"), mar = c(mgp[1] + 1.5,
+  mgp[1] + 1.5, 1.5, 1.5), tformat, marginsAsImage = FALSE,
+  cex = par("cex"), cex.axis = par("cex.axis"),
   cex.main = par("cex.main"), xlim, ylim, brushCorrelation,
   colBrush = "red", main = "", debug = getOption("oceDebug"), ...)
 }
@@ -194,6 +195,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -225,3 +227,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
+\concept{functions that plot \code{oce} data}
+\concept{things related to \code{adv} data}
