@@ -178,6 +178,7 @@ variants.)
   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
   \code{timeH}       \tab \code{time}                         \tab hour; elapsed        \tab   \cr
   \code{timeJ}       \tab \code{time}                         \tab day; elapsed         \tab   \cr
+  \code{timeJV2}     \tab \code{time}                         \tab day; elapsed         \tab   \cr
   \code{timeK}       \tab \code{time}                         \tab s; since Jan 1, 2000 \tab\cr
   \code{timeM}       \tab \code{time}                         \tab minute; elapsed      \tab   \cr
   \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr

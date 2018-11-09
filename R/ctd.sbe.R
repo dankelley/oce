@@ -153,6 +153,7 @@
 #'   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{timeH}       \tab \code{time}                         \tab hour; elapsed        \tab   \cr
 #'   \code{timeJ}       \tab \code{time}                         \tab day; elapsed         \tab   \cr
+#'   \code{timeJV2}     \tab \code{time}                         \tab day; elapsed         \tab   \cr
 #'   \code{timeK}       \tab \code{time}                         \tab s; since Jan 1, 2000 \tab\cr
 #'   \code{timeM}       \tab \code{time}                         \tab minute; elapsed      \tab   \cr
 #'   \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr
@@ -209,6 +210,7 @@
 #' @family functions that interpret variable names and units from headers
 cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "cnvName2oceName() {\n", unindent=1)
     if (length(h) != 1)
         stop("oceNameFromSBE() expects just 1 line of header")
     ## An example, for which the grep is designed, is below.
@@ -221,16 +223,18 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 
     ## If 'name' is mentioned in columns, then use columns and ignore the lookup table.
     if (!is.null(columns)) {
-        ##message("name:", name)
+        oceDebug(debug, "columns given. Look for name='", name, "' in it\n", sep="")
+        message("next is columns:")
+        print(columns)
         cnames <- names(columns)
         for (i in seq_along(cnames)) {
             if (name == columns[[i]]$name) {
-                ##message("HIT; name=", cnames[i])
-                ##message("HIT; unit$scale=", columns[[i]]$unit$scale)
+                oceDebug(debug, "recognized this name in names(columns)[", i, "]\n")
                 return(list(name=cnames[i], nameOriginal=name, unit=columns[[i]]$unit))
             }
         }
     }
+
     ## Since 'name' is not mentioned in 'columns', try looking it up. Some of these
     ## tests are a bit subtle, and could be wrong.
     if (1 == length(grep("^alt[M]?$", name, useBytes=TRUE))) {
@@ -553,6 +557,9 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^timeJ$", name, useBytes=TRUE))) {
         name <- "time"
         unit <- list(unit=expression(day), scale="elapsed")
+    } else if (1 == length(grep("^timeJV2$", name, useBytes=TRUE))) {
+        name <- "time"
+        unit <- list(unit=expression(day), scale="elapsed")
     } else if (1 == length(grep("^timeK$", name, useBytes=TRUE))) {
         name <- "time"
         unit <- list(unit=expression(s), scale="since Jan 1, 2000")
@@ -627,6 +634,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     }
     if (debug > 0)
         message("cnvName2oceName(): '", nameOriginal, "' -> '", name, "' (", unit$scale, ")")
+    oceDebug(debug, "} # cnvName2oceName()\n")
     list(name=name, nameOriginal=nameOriginal, unit=unit)
 }
 
@@ -732,7 +740,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         oceDebug(debug, "} # read.ctd.sbe() {\n")
         return(res)
     }
-    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent=1)
+    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read an individual file\n", unindent=1)
 
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
@@ -1083,44 +1091,49 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             if (foundConductivityRatio) {
                 C <- data$conductivityratio
                 S <- swSCTp(C, data$temperature, data$pressure)
-                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'")
+                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate.=TRUE)
             } else if (foundConductivity) {
                 C <- data$conductivity
                 if (!is.null(res@metadata$units$conductivity)) {
                     unit <- as.character(res@metadata$units$conductivity$unit)
                     ## Conductivity Ratio is conductivity divided by 42.914 mS/cm (Culkin and Smith 1980
                     ## see ?read.rsk for full citation)
-                    if ("uS/cm" == unit) {
-                        C <- C / 429.14
-                    } else if ("mS/cm" == unit) {
-                        C <- C / 42.914 # e.g. RSK
-                    } else if ("S/m" == unit) {
-                        C <- C / 4.2914
+                    if (length(unit)) {
+                        oceDebug(debug, "'columns' indicates that the conductivity unit is '", unit, "'\n", sep="")
+                        if ("uS/cm" == unit) {
+                            C <- C / 429.14
+                        } else if ("mS/cm" == unit) {
+                            C <- C / 42.914 # e.g. RSK
+                        } else if ("S/m" == unit) {
+                            C <- C / 4.2914
+                        } else {
+                            warning("unrecognized conductivity unit '", unit, "'; assuming unitless for salinity calculation -- results should be used with caution", immediate.=TRUE)
+                        }
                     } else {
-                        warning("unrecognized conductivity unit '", unit,
-                                "'; assuming mS/cm for salinity calculation -- results should be used with caution")
+                        warning("missing conductivity unit, so assuming unitless for salinity calculation -- results should be used with caution", immediate.=TRUE)
                     }
                 } else {
-                    warning("missing conductivity unit; guessing a unit based on maximum value")
+                    warning("missing conductivity unit; guessing a unit based on maximum value", immediate.=TRUE)
                     cmax <- max(C, na.rm=TRUE)
                     if (cmax > 10) {
-                        warning("max(conductivity) > 10, so using using conductivity/42.914 as a conductivity ratio for computation of salinity")
+                        warning("max(conductivity) > 10, so using using conductivity/42.914 as a conductivity ratio for computation of salinity", immediate.=TRUE)
                         C <- C / 42.914
                     } else if (cmax > 1) {
-                        warning("max(conductivity) between 1 and 10, so using using conductivity/4.2914 as a conductivity ratio for computation of salinity")
+                        warning("max(conductivity) between 1 and 10, so using using conductivity/4.2914 as a conductivity ratio for computation of salinity", immediate.=TRUE)
                         C <- C / 4.2914
                     }
                 }
                 S <- swSCTp(C, data$temperature, data$pressure)
-                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'")
+                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate.=TRUE)
             } else {
-                warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items")
+                warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items", immediate.=TRUE)
             }
             ## FIXME: move this to the very end, where we add 'scan' if that's not found.
             ## res <- ctdAddColumn(res, S, name="salinity", label="Salinity",
             ##                     unit=c(unit=expression(), scale="PSS-78"), debug=debug-1)
-            res <- oceSetData(res, name="salinity", value=S,
-                              unit=list(unit=expression(), scale="PSS-78"))
+            if (exists("S"))
+                res <- oceSetData(res, name="salinity", value=S,
+                                  unit=list(unit=expression(), scale="PSS-78"))
             ## colNamesOriginal <- c(colNamesOriginal, "NA")
         }
         if ("pressurePSI" %in% names && !("pressure" %in% names)) {
