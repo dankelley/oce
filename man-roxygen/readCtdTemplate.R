@@ -9,22 +9,30 @@
 #' value is a vector containing CTD objects created by reading the files from
 #' \code{\link{list.files}} with \code{pattern} set to the specified wildcard
 #' pattern.
-#' 
+#'
 #' @param debug An integer specifying whether debugging information is
 #' to be printed during the processing. This is a general parameter that
 #' is used by many \code{oce} functions. Generally, setting \code{debug=0}
 #' turns off the printing, while higher values suggest that more information
 #' be printed.
-#' 
+#'
 #' @param columns An optional \code{\link{list}} that can be used to convert unrecognized
 #' data names to resultant variable names.  This is used only by
-#' \code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}; see
-#' \dQuote{Examples}.
-#' 
+#' \code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}. For example,
+#' if a data file named salinity as \code{"SAL"}, then using
+#' \preformatted{
+#' d <- read.ctd(f, columns=list(
+#'     salinity=list(name="SAL",
+#'                   unit=list(unit=expression(),
+#'                   scale="PSS-78"))))
+#'}
+#' would assign the \code{"SAL"} column to the \code{salinity} entry in the data
+#' slot of the CTD object returned by the \code{read.*} function.
+#'
 #' @param station Optional character string containing an identifying name or
 #' number for the station. This can be useful if the routine cannot determine the
 #' name automatically, or if another name is preferred.
-#' 
+#'
 #' @param missingValue Optional missing-value flag; data matching this value will
 #' be set to \code{NA} upon reading. If this is provided, then it overrules any
 #' missing-value flag found in the data. For Seabird (\code{.cnv}) files, there is

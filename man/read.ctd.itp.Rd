@@ -17,8 +17,16 @@ pattern.}
 
 \item{columns}{An optional \code{\link{list}} that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
-\code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}; see
-\dQuote{Examples}.}
+\code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}. For example,
+if a data file named salinity as \code{"SAL"}, then using
+\preformatted{
+d <- read.ctd(f, columns=list(
+    salinity=list(name="SAL",
+                  unit=list(unit=expression(),
+                  scale="PSS-78"))))
+}
+would assign the \code{"SAL"} column to the \code{salinity} entry in the data
+slot of the CTD object returned by the \code{read.*} function.}
 
 \item{station}{Optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the

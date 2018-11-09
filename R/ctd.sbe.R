@@ -51,8 +51,11 @@
 #'   \code{C2-C1mS/cm}  \tab \code{conductivityDifference}       \tab mS/cm               \tab    \cr
 #'   \code{C2-C1uS/cm}  \tab \code{conductivityDifference}       \tab uS/cm               \tab    \cr
 #'   \code{c~mS/cm}     \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
+#'   \code{cond~mS/cm}  \tab \code{conductivity}                 \tab mS/cm               \tab    \cr
 #'   \code{c~S/m}       \tab \code{conductivity}                 \tab S/m                 \tab    \cr
+#'   \code{cond~S/m}    \tab \code{conductivity}                 \tab S/m                 \tab    \cr
 #'   \code{c~uS/cm}     \tab \code{conductivity}                 \tab uS/cm               \tab    \cr
+#'   \code{cond~uS/cm}  \tab \code{conductivity}                 \tab uS/cm               \tab    \cr
 #'   \code{CStarAt~}    \tab \code{beamAttenuation}              \tab 1/m                 \tab    \cr
 #'   \code{CStarTr~}    \tab \code{beamTransmission}             \tab percent             \tab    \cr
 #'   \code{density~~}   \tab \code{density}                      \tab kg/m^3              \tab    \cr
@@ -151,13 +154,14 @@
 #'   \code{t38~90C}     \tab \code{temperature}                  \tab degC; ITS-90         \tab   \cr
 #'   \code{t3868C~}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
 #'   \code{t38~38C}     \tab \code{temperature}                  \tab degC; IPTS-68        \tab   \cr
-#'   \code{timeH}       \tab \code{time}                         \tab hour; elapsed        \tab   \cr
-#'   \code{timeJ}       \tab \code{time}                         \tab day; elapsed         \tab   \cr
-#'   \code{timeK}       \tab \code{time}                         \tab s; since Jan 1, 2000 \tab\cr
-#'   \code{timeM}       \tab \code{time}                         \tab minute; elapsed      \tab   \cr
-#'   \code{timeN}       \tab \code{time}                         \tab s; NMEA since Jan 1, 1970\tab\cr
-#'   \code{timeQ}       \tab \code{time}                         \tab s; NMEA since Jan 1, 2000\tab\cr
-#'   \code{timeS}       \tab \code{time}                         \tab s; elapsed           \tab   \cr
+#'   \code{timeH}       \tab \code{timeH}                        \tab hour; elapsed        \tab   \cr
+#'   \code{timeJ}       \tab \code{timeJ}                        \tab julian day           \tab   \cr
+#'   \code{timeJV2}     \tab \code{timeJV2}                      \tab julian day           \tab   \cr
+#'   \code{timeK}       \tab \code{timeK}                        \tab s; since Jan 1, 2000 \tab   \cr
+#'   \code{timeM}       \tab \code{timeM}                        \tab minute; elapsed      \tab   \cr
+#'   \code{timeN}       \tab \code{timeN}                        \tab s; NMEA since Jan 1, 1970\tab\cr
+#'   \code{timeQ}       \tab \code{timeQ}                        \tab s; NMEA since Jan 1, 2000\tab\cr
+#'   \code{timeS}       \tab \code{timeS}                        \tab s; elapsed           \tab   \cr
 #'   \code{turbflTC~}   \tab \code{turbidity}                    \tab NTU; Turner Cyclops  \tab   \cr
 #'   \code{turbflTCdiff}\tab \code{turbidityDifference}          \tab NTU; Turner Cyclops  \tab   \cr
 #'   \code{turbWETbb~}  \tab \code{turbidity}                    \tab 1/(m*sr); WET Labs ECO\tab   \cr
@@ -209,6 +213,7 @@
 #' @family functions that interpret variable names and units from headers
 cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "cnvName2oceName() {\n", unindent=1)
     if (length(h) != 1)
         stop("oceNameFromSBE() expects just 1 line of header")
     ## An example, for which the grep is designed, is below.
@@ -221,16 +226,16 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 
     ## If 'name' is mentioned in columns, then use columns and ignore the lookup table.
     if (!is.null(columns)) {
-        ##message("name:", name)
+        oceDebug(debug, "columns given. Look for name='", name, "' in it\n", sep="")
         cnames <- names(columns)
         for (i in seq_along(cnames)) {
             if (name == columns[[i]]$name) {
-                ##message("HIT; name=", cnames[i])
-                ##message("HIT; unit$scale=", columns[[i]]$unit$scale)
+                oceDebug(debug, "recognized this name in names(columns)[", i, "]\n")
                 return(list(name=cnames[i], nameOriginal=name, unit=columns[[i]]$unit))
             }
         }
     }
+
     ## Since 'name' is not mentioned in 'columns', try looking it up. Some of these
     ## tests are a bit subtle, and could be wrong.
     if (1 == length(grep("^alt[M]?$", name, useBytes=TRUE))) {
@@ -251,13 +256,13 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     } else if (1 == length(grep("^C2-C1uS/cm$", name, useBytes=TRUE))) {
         name <- "conductivityDifference"
         unit <- list(unit=expression(mu*S/cm), scale="")
-    } else if (1 == length(grep("^c((_)|([0-2]))mS/cm$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^c(ond)?((_)|([0-2]))mS/cm$", name, useBytes=TRUE))) {
         name <- "conductivity"
         unit <- list(unit=expression(mS/cm), scale="")
-    } else if (1 == length(grep("^c((_)|([0-2]))S/m$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^c(ond)?((_)|([0-2]))S/m$", name, useBytes=TRUE))) {
         name <- "conductivity"
         unit <- list(unit=expression(S/m), scale="")
-    } else if (1 == length(grep("^c((_)|([0-2]))uS/cm$", name, useBytes=TRUE))) {
+    } else if (1 == length(grep("^c(ond)?((_)|([0-2]))uS/cm$", name, useBytes=TRUE))) {
         name <- "conductivity"
         unit <- list(unit=expression(mu*S/cm), scale="")
     } else if (1 == length(grep("^CStarTr[0-9]$", name, useBytes=TRUE))) {
@@ -548,26 +553,29 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         name <- "temperature"
         unit <- list(unit=expression(degree*C), scale="ITS-90")
     } else if (1 == length(grep("^timeH$", name, useBytes=TRUE))) {
-        name <- "time"
-        unit <- list(unit=expression(hour), scale="elapsed")
+        name <- "timeH"
+        unit <- list(unit=expression(hour), scale="")
     } else if (1 == length(grep("^timeJ$", name, useBytes=TRUE))) {
-        name <- "time"
-        unit <- list(unit=expression(day), scale="elapsed")
+        name <- "timeJ"
+        unit <- list(unit=expression(day), scale="")
+    } else if (1 == length(grep("^timeJV2$", name, useBytes=TRUE))) {
+        name <- "timeJV2"
+        unit <- list(unit=expression(day), scale="")
     } else if (1 == length(grep("^timeK$", name, useBytes=TRUE))) {
-        name <- "time"
+        name <- "timeK"
         unit <- list(unit=expression(s), scale="since Jan 1, 2000")
     } else if (1 == length(grep("^timeM$", name, useBytes=TRUE))) {
-        name <- "time"
-        unit <- list(unit=expression(minute), scale="elapsed")
+        name <- "timeM"
+        unit <- list(unit=expression(minute), scale="")
     } else if (1 == length(grep("^timeN$", name, useBytes=TRUE))) {
-        name <- "time"
+        name <- "timeN"
         unit <- list(unit=expression(s), scale="NMEA since Jan 1, 1970")
     } else if (1 == length(grep("^timeQ$", name, useBytes=TRUE))) {
-        name <- "time"
+        name <- "timeQ"
         unit <- list(unit=expression(s), scale="NMEA since Jan 1, 2000")
     } else if (1 == length(grep("^timeS$", name, useBytes=TRUE))) {
-        name <- "time"
-        unit <- list(unit=expression(s), scale="elapsed")
+        name <- "timeS"
+        unit <- list(unit=expression(s), scale="")
     } else if (1 == length(grep("^tsa$", name, useBytes=TRUE))) {
         name <- "thermostericAnomaly"
         unit <- list(unit=expression(10^-8*m^3/kg), scale="")
@@ -627,6 +635,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
     }
     if (debug > 0)
         message("cnvName2oceName(): '", nameOriginal, "' -> '", name, "' (", unit$scale, ")")
+    oceDebug(debug, "} # cnvName2oceName()\n")
     list(name=name, nameOriginal=nameOriginal, unit=unit)
 }
 
@@ -658,15 +667,19 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' it is converted to a POSIX time object by \code{read.ctd.sbe} and stored
 #' within the \code{metadata} slot as \code{"startTime"}. Until 2018-07-05, that
 #' value was also stored in a \code{metadata} item named \code{"time"}, but this
-#' caused confusion for data files that also have an elapsed-time column, and so
+#' caused confusion for data files that also have a time column, and so
 #' an entry named \code{"time"} is no longer stored in the \code{metadata} slot,
-#' for those cases in which an elapsed-time column exists in the data file.
-#' Importantly, there is a possibility for confusion in the storage
+#' for those cases in which an time column exists in the data file.
+#'
+#' @section A note on time columns:
+#' Until Nov 9, 2018,
+#' there was a possibility for confusion in the storage
 #' of that elapsed-time entry within the \code{data} slot, because \code{read.ctd.sbe}
 #' renames all of the ten variants of elapsed time (see [2] for a list)
 #' as, simply, \code{"time"} in the \code{data} slot of the returned value.
-#' (Numerical suffices will be used if the file contains multiple elapsed-time
-#' columns.) This imposes upon the user the burden of using \code{summary()} on
+#' Howver, on that date, a change was made, so that \code{read.ctd.sbe} simply
+#' used the column names as Seabird intends.
+#' This imposes upon the user the burden of using \code{summary()} on
 #' the return value, to discover the original name of the elapsed time column,
 #' because \code{read.ctd.sbe} does not convert the 10 possible units to
 #' a standard, but rather simply records the numerical values that are in
@@ -698,7 +711,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' d <- read.ctd(f)
 #' ## Read an imaginary file, in which salinity is named 'salt'
 #' d <- read.ctd(f, columns=list(
-#'   salinity=list(name="salt", unit=list(expression(), scale="PSS-78"))))
+#'   salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))))
 #'
 #' @references
 #' 1. The Sea-Bird SBE 19plus profiler is described at
@@ -732,7 +745,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         oceDebug(debug, "} # read.ctd.sbe() {\n")
         return(res)
     }
-    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") {\n", unindent=1)
+    oceDebug(debug, "read.ctd.sbe(file=\"", file, "\") { # will read an individual file\n", unindent=1)
 
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
@@ -1083,44 +1096,49 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             if (foundConductivityRatio) {
                 C <- data$conductivityratio
                 S <- swSCTp(C, data$temperature, data$pressure)
-                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'")
+                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate.=TRUE)
             } else if (foundConductivity) {
                 C <- data$conductivity
                 if (!is.null(res@metadata$units$conductivity)) {
                     unit <- as.character(res@metadata$units$conductivity$unit)
                     ## Conductivity Ratio is conductivity divided by 42.914 mS/cm (Culkin and Smith 1980
                     ## see ?read.rsk for full citation)
-                    if ("uS/cm" == unit) {
-                        C <- C / 429.14
-                    } else if ("mS/cm" == unit) {
-                        C <- C / 42.914 # e.g. RSK
-                    } else if ("S/m" == unit) {
-                        C <- C / 4.2914
+                    if (length(unit)) {
+                        oceDebug(debug, "'columns' indicates that the conductivity unit is '", unit, "'\n", sep="")
+                        if ("uS/cm" == unit) {
+                            C <- C / 429.14
+                        } else if ("mS/cm" == unit) {
+                            C <- C / 42.914 # e.g. RSK
+                        } else if ("S/m" == unit) {
+                            C <- C / 4.2914
+                        } else {
+                            warning("unrecognized conductivity unit '", unit, "'; assuming unitless for salinity calculation -- results should be used with caution", immediate.=TRUE)
+                        }
                     } else {
-                        warning("unrecognized conductivity unit '", unit,
-                                "'; assuming mS/cm for salinity calculation -- results should be used with caution")
+                        warning("missing conductivity unit, so assuming unitless for salinity calculation -- results should be used with caution", immediate.=TRUE)
                     }
                 } else {
-                    warning("missing conductivity unit; guessing a unit based on maximum value")
+                    warning("missing conductivity unit; guessing a unit based on maximum value", immediate.=TRUE)
                     cmax <- max(C, na.rm=TRUE)
                     if (cmax > 10) {
-                        warning("max(conductivity) > 10, so using using conductivity/42.914 as a conductivity ratio for computation of salinity")
+                        warning("max(conductivity) > 10, so using using conductivity/42.914 as a conductivity ratio for computation of salinity", immediate.=TRUE)
                         C <- C / 42.914
                     } else if (cmax > 1) {
-                        warning("max(conductivity) between 1 and 10, so using using conductivity/4.2914 as a conductivity ratio for computation of salinity")
+                        warning("max(conductivity) between 1 and 10, so using using conductivity/4.2914 as a conductivity ratio for computation of salinity", immediate.=TRUE)
                         C <- C / 4.2914
                     }
                 }
                 S <- swSCTp(C, data$temperature, data$pressure)
-                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'")
+                warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate.=TRUE)
             } else {
-                warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items")
+                warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items", immediate.=TRUE)
             }
             ## FIXME: move this to the very end, where we add 'scan' if that's not found.
             ## res <- ctdAddColumn(res, S, name="salinity", label="Salinity",
             ##                     unit=c(unit=expression(), scale="PSS-78"), debug=debug-1)
-            res <- oceSetData(res, name="salinity", value=S,
-                              unit=list(unit=expression(), scale="PSS-78"))
+            if (exists("S"))
+                res <- oceSetData(res, name="salinity", value=S,
+                                  unit=list(unit=expression(), scale="PSS-78"))
             ## colNamesOriginal <- c(colNamesOriginal, "NA")
         }
         if ("pressurePSI" %in% names && !("pressure" %in% names)) {

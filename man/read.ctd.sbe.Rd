@@ -17,8 +17,16 @@ pattern.}
 
 \item{columns}{An optional \code{\link{list}} that can be used to convert unrecognized
 data names to resultant variable names.  This is used only by
-\code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}; see
-\dQuote{Examples}.}
+\code{\link{read.ctd.sbe}} and \code{\link{read.ctd.odf}}. For example,
+if a data file named salinity as \code{"SAL"}, then using
+\preformatted{
+d <- read.ctd(f, columns=list(
+    salinity=list(name="SAL",
+                  unit=list(unit=expression(),
+                  scale="PSS-78"))))
+}
+would assign the \code{"SAL"} column to the \code{salinity} entry in the data
+slot of the CTD object returned by the \code{read.*} function.}
 
 \item{station}{Optional character string containing an identifying name or
 number for the station. This can be useful if the routine cannot determine the
@@ -86,15 +94,21 @@ the data file contains metadata item called \code{start_time}, then
 it is converted to a POSIX time object by \code{read.ctd.sbe} and stored
 within the \code{metadata} slot as \code{"startTime"}. Until 2018-07-05, that
 value was also stored in a \code{metadata} item named \code{"time"}, but this
-caused confusion for data files that also have an elapsed-time column, and so
+caused confusion for data files that also have a time column, and so
 an entry named \code{"time"} is no longer stored in the \code{metadata} slot,
-for those cases in which an elapsed-time column exists in the data file.
-Importantly, there is a possibility for confusion in the storage
+for those cases in which an time column exists in the data file.
+}
+
+\section{A note on time columns}{
+
+Until Nov 9, 2018,
+there was a possibility for confusion in the storage
 of that elapsed-time entry within the \code{data} slot, because \code{read.ctd.sbe}
 renames all of the ten variants of elapsed time (see [2] for a list)
 as, simply, \code{"time"} in the \code{data} slot of the returned value.
-(Numerical suffices will be used if the file contains multiple elapsed-time
-columns.) This imposes upon the user the burden of using \code{summary()} on
+Howver, on that date, a change was made, so that \code{read.ctd.sbe} simply
+used the column names as Seabird intends.
+This imposes upon the user the burden of using \code{summary()} on
 the return value, to discover the original name of the elapsed time column,
 because \code{read.ctd.sbe} does not convert the 10 possible units to
 a standard, but rather simply records the numerical values that are in
@@ -129,7 +143,7 @@ f <- system.file("extdata", "ctd.cnv", package="oce")
 d <- read.ctd(f)
 ## Read an imaginary file, in which salinity is named 'salt'
 d <- read.ctd(f, columns=list(
-  salinity=list(name="salt", unit=list(expression(), scale="PSS-78"))))
+  salinity=list(name="salt", unit=list(unit=expression(), scale="PSS-78"))))
 
 }
 \references{
