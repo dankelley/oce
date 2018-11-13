@@ -742,6 +742,11 @@ read.rsk <- function(file, from=1, to, by=1, type, tz=getOption("oceTz", default
         }, silent=TRUE)
         if (warn)
             warning("non-standard pressureAtmospheric value: ", pressureAtmospheric)
+        ## some cases can have an empty pressureAtmospheric
+        if (length(pressureAtmospheric) == 0) {
+            warning("empty pressureAtmospheric value in rsk file. Setting to default value of 10.1325")
+            pressureAtmospheric <- 10.1325
+        }
         ##message("NEW: pressureAtmospheric:", pressureAtmospheric)
         oceDebug(debug, "after studying the RSK file, now have pressureAtmospheric=", pressureAtmospheric, "\n")
 
