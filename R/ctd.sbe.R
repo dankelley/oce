@@ -633,15 +633,17 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
         warning("unrecognized SBE name '", name, "'; consider using 'columns' to define this name")
         unit <- list(unit=expression(), scale="")
     }
-    if (debug > 0)
-        message("cnvName2oceName(): '", nameOriginal, "' -> '", name, "' (", unit$scale, ")")
-    oceDebug(debug, "} # cnvName2oceName()\n")
+    oceDebug(debug, " SBE name '", nameOriginal, "' converted to oce name '", name, "'; the scale is '", unit$scale, "'\n", sep="")
+    oceDebug(debug, "} # cnvName2oceName()\n", unindent=1)
     list(name=name, nameOriginal=nameOriginal, unit=unit)
 }
 
 
 #' Read a Seabird CTD File
+#'
 #' @template readCtdTemplate
+#'
+#' @author Dan Kelley and Clark Richards
 #'
 #' @details
 #' This function reads files stored in Seabird \code{.cnv} format.
@@ -662,30 +664,32 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' names (in the "Short Name" column of the table spanning pages 161 through 172).
 #'
 #' @section A note on sampling times:
-#' SBE files can be somewhat confusing as regards the time of measurement. If
-#' the data file contains metadata item called \code{start_time}, then
-#' it is converted to a POSIX time object by \code{read.ctd.sbe} and stored
-#' within the \code{metadata} slot as \code{"startTime"}. Until 2018-07-05, that
-#' value was also stored in a \code{metadata} item named \code{"time"}, but this
-#' caused confusion for data files that also have a time column, and so
-#' an entry named \code{"time"} is no longer stored in the \code{metadata} slot,
-#' for those cases in which an time column exists in the data file.
-#'
-#' @section A note on time columns:
-#' Until Nov 9, 2018,
-#' there was a possibility for confusion in the storage
-#' of that elapsed-time entry within the \code{data} slot, because \code{read.ctd.sbe}
-#' renames all of the ten variants of elapsed time (see [2] for a list)
-#' as, simply, \code{"time"} in the \code{data} slot of the returned value.
-#' Howver, on that date, a change was made, so that \code{read.ctd.sbe} simply
-#' used the column names as Seabird intends.
-#' This imposes upon the user the burden of using \code{summary()} on
-#' the return value, to discover the original name of the elapsed time column,
-#' because \code{read.ctd.sbe} does not convert the 10 possible units to
-#' a standard, but rather simply records the numerical values that are in
-#' the data file. The most common column name is likely \code{timeS}, for
-#' elapsed time in seconds; see [2] for the meanings of the other 9
-#' schemes.
+#' Until November of 2018,
+#' there was a possibility for great confusion in the storage
+#' of the time entries within the \code{data} slot, because \code{read.ctd.sbe}
+#' renamed each of the ten variants of time (see [2] for a list)
+#' as \code{"time"} in the \code{data} slot of the returned value.
+#' For CTD profiles, this was perhaps not a great problem, but it could
+#' lead to great confusion for moored data. Therefore, a change to \code{read.ctd.sbe} was
+#' made, so that it would Seabird times, using the \code{start_time} entry in
+#' the CNV file header (which is stored as \code{startTime} in the object
+#' \code{metadata} slot), along with specific time columns as follows
+#' (and as documented, with uneven clarity, in the
+#' SBE Seasoft data processing manual, revision 7.26.8, Appendix VI):
+#' \code{timeS} (seconds elapsed since \code{start_time}),
+#' \code{timeM} (minutes elapsed since \code{start_time}),
+#' \code{timeH} (hours elapsed since \code{start_time}),
+#' \code{timeJ} (Julian days since the start of the year of the first observation),
+#' \code{timeN} (NMEA-based time, in seconds past Jan 1, 1970),
+#' \code{timeQ} (NMEA-based time, in seconds past Jan 1, 2000),
+#' \code{timeK} (NMEA-based time, in seconds past Jan 1, 2000),
+#' \code{timeJV2} (as \code{timeJ}),
+#' \code{timeSCP} (as \code{timeJ}),
+#' and
+#' \code{timeY} (computer time, in seconds past Jan 1, 1970).
+#' NOTE: not all of these times have been tested properly, and so users
+#' are asked to report incorrect times, so that \code{read.ctd.sbe} can
+#' be improved.
 #'
 #' @section A note on scales:
 #' The user might encounter data files with a variety of scales for temperature and
@@ -768,9 +772,9 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     sampleIntervalUnits <- ""
     systemUploadTime <- NULL
     latitude <- longitude <- NA
-    startTime <- NULL
     waterDepth <- NA
-    date <- recovery <- NA
+    startTime <- recoveryTime <- NA
+    date <- NA # is this used? (or useful?)
     header <- c()
     ##conductivity.standard <- 4.2914
     foundHeaderLatitude <- foundHeaderLongitude <- FALSE
@@ -855,10 +859,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             serialNumberTemperature <- gsub("^.*=\\s", "", lline)
         if (length(grep("^\\* Conductivity SN", lline, ignore.case=TRUE)))
             serialNumberConductivity <- gsub("^.*=\\s", "", lline)
-        if (0 < (r<-regexpr("date:", lline))) {
-            d <- sub("(.*)date:([ ])*", "", lline)
-            date <- decodeTime(d, "%Y%m%d") # e.g. 20130701 Canada Day
-        }
+        ##20181014 (issue 1460): if (0 < (r<-regexpr("date:", lline))) {
+        ##20181014 (issue 1460):     oceDebug(debug, "found 'date:' header line\n")
+        ##20181014 (issue 1460):     d <- sub("(.*)date:([ ])*", "", lline)
+        ##20181014 (issue 1460):     date <- decodeTime(d, "%Y%m%d") # e.g. 20130701 Canada Day
+        ##20181014 (issue 1460): }
         if (length(grep("^#[ \t]*file_type[ \t]*=[ \t]*", lline))) {
             ## file_type = ascii
             ## file_type = binary
@@ -870,6 +875,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
         ##* system upload time = jan 26 2010 13:02:57
         if (length(grep("^\\* .*time.*=.*$", lline))) {
             if (0 == length(grep("real-time sample interval", lline))) {
+                oceDebug(debug, "found 'real-time sample interval' header line\n")
                 d <- sub(".*=", "", lline)
                 d <- sub("^ *", "", d)
                 d <- sub(" *$", "", d)
@@ -926,7 +932,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                 station <- sub("[ ]*$", "", sub("(.*)station_name:([ ])*", "", ignore.case=TRUE, line))
         }
         if (0 < (r<-regexpr("recovery:", lline)))
-            recovery <- sub("(.*)recovery:([ ])*", "", lline)
+            recoveryTime <- sub("(.*)recovery:([ ])*", "", lline)
 
         if (length(grep("^#[ \t]+bad_flag[ \t]*=", lline))) {
             ## bad_flag = -9.990e-29
@@ -1011,11 +1017,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             warning("'* sample rate =' not found in header")
         if (is.nan(latitude))
             warning("'** Latitude:' not found in header")
-        if (is.nan(longitude))
+        if (is.na(longitude))
             warning("'** Longitude:' not found in header")
-        if (is.null(date))
+        if (is.na(date))
             warning("'** Date:' not found in header")
-        if (is.null(recovery))
+        if (is.na(recoveryTime))
             warning("'** Recovery' not found in header")
     }
     ## Require p,S,T data at least
@@ -1041,10 +1047,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$deploymentType <- "unknown"
     res@metadata$date <- date
     res@metadata$startTime <- startTime
+    res@metadata$recoveryTime <- recoveryTime
 ##    res@metadata$time <- date          # standardized name
     res@metadata$latitude <- latitude
     res@metadata$longitude <- longitude
-    res@metadata$recovery <- recovery
     res@metadata$waterDepth <- waterDepth # if NA, will update later
     res@metadata$sampleInterval <- sampleInterval
     res@metadata$sampleIntervalUnits <- sampleIntervalUnits
@@ -1096,6 +1102,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             if (foundConductivityRatio) {
                 C <- data$conductivityratio
                 S <- swSCTp(C, data$temperature, data$pressure)
+                res <- oceSetData(res, name="salinity", value=S,
+                                  unit=list(unit=expression(), scale="PSS-78"))
                 warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate.=TRUE)
             } else if (foundConductivity) {
                 C <- data$conductivity
@@ -1129,17 +1137,12 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
                     }
                 }
                 S <- swSCTp(C, data$temperature, data$pressure)
+                res <- oceSetData(res, name="salinity", value=S,
+                                  unit=list(unit=expression(), scale="PSS-78"))
                 warning("created 'salinity' from 'temperature', 'conductivity' and 'pressure'", immediate.=TRUE)
             } else {
                 warning("cannot find salinity or conductivity in .cnv file; try using columns argument if the file actually contains these items", immediate.=TRUE)
             }
-            ## FIXME: move this to the very end, where we add 'scan' if that's not found.
-            ## res <- ctdAddColumn(res, S, name="salinity", label="Salinity",
-            ##                     unit=c(unit=expression(), scale="PSS-78"), debug=debug-1)
-            if (exists("S"))
-                res <- oceSetData(res, name="salinity", value=S,
-                                  unit=list(unit=expression(), scale="PSS-78"))
-            ## colNamesOriginal <- c(colNamesOriginal, "NA")
         }
         if ("pressurePSI" %in% names && !("pressure" %in% names)) {
             ## DK 20170114: I cannot find what I consider to be a definitive source, so
@@ -1161,12 +1164,12 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
             warning("created 'pressure' from 'depth'")
         }
     }
-    ## Store time in metadata, if it's not in the data. This was done
-    ## 2018-07-05 in response to issue 1434, on the assumption that
-    ## some other code might be relying on `d[["time"]]` retrieving
-    ## *something**.
-    if (!("time" %in% names(res@data)))
-        res@metadata$time <- date
+    ##20181014(issue 1460) ## Store time in metadata, if it's not in the data. This was done
+    ##20181014(issue 1460) ## 2018-07-05 in response to issue 1434, on the assumption that
+    ##20181014(issue 1460) ## some other code might be relying on `d[["time"]]` retrieving
+    ##20181014(issue 1460) ## *something**.
+    ##20181014(issue 1460) if (!("time" %in% names(res@data)))
+    ##20181014(issue 1460)     res@metadata$time <- date
     ##res@metadata$dataNamesOriginal <- colNamesOriginal
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
 
@@ -1180,6 +1183,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     ## in user code, and it became unnecessary when the scale started being
     ## stored in the unit. See the "note on scales" in the documentation for
     ## the scheme used to prevent problems.
+
 
     oceDebug(debug, "} # read.ctd.sbe()\n")
     res

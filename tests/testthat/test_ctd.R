@@ -234,13 +234,12 @@ context("Read ctd files")
 test_that("column renaming with a cnv file", {
           d1 <- expect_warning(read.oce(system.file("extdata", "ctd.cnv", package="oce")),
                                "this CNV file has temperature in the IPTS\\-68 scale")
-          d2 <- expect_warning(read.oce(system.file("extdata", "ctd.cnv", package="oce"),
-                                        columns=list(FAKE=list(name="sal00",
-                                                               unit=list(unit=expression(),
-                                                                         scale="PSS-78")))),
-                               "this CNV file has temperature in the IPTS\\-68 scale")
           expect_equal(names(d1[["data"]]),
                              c("scan","timeS","pressure","depth","temperature","salinity","flag"))
+          d2 <- expect_warning(read.oce(system.file("extdata", "ctd.cnv", package="oce"),
+                                        columns=list(FAKE=list(name="sal00",
+                                                               unit=list(unit=expression(), scale="PSS-78")))),
+                               "this CNV file has temperature in the IPTS\\-68 scale")
           expect_equal(names(d2[["data"]]),
                              c("scan","timeS","pressure","depth","temperature","FAKE","flag"))
 })

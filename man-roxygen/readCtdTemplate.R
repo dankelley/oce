@@ -2,7 +2,7 @@
 #' depend on the source file. The \code{metadata} slot is particularly 
 #' variable across data formats, because the meta-information provided
 #' in those formats varies widely.
-#' 
+#'
 #' @param file A connection or a character string giving the name of the file to
 #' load.  For \code{read.ctd.sbe()} and \code{read.ctd.woce()}, this may be a
 #' wildcard (e.g. \code{"*.cnv"} or \code{"*.csv"}) in which case the return
@@ -45,16 +45,14 @@
 #' this should catch common values in files, without false positives. A warning
 #' will be issued in this case, and a note inserted in the processing log of
 #' the return value.
-#' 
+#'
 #' @param monitor Boolean, set to \code{TRUE} to provide an indication of
 #' progress.  This is useful if \code{filename} is a wildcard.
-#' 
+#'
 #' @param processingLog If provided, the action item to be stored in the log.
 #' This is typically only provided for internal calls; the default that it provides is
 #' better for normal calls by a user.
-#' 
+#'
 #' @param ... additional arguments, passed to called routines.
-#' 
-#' @author Dan Kelley
-#' 
+#'
 #' @family things related to \code{ctd} data
