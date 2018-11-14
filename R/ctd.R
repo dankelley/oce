@@ -755,7 +755,7 @@ setMethod(f="[[",
                           wraps <- sum(diff(timeJ) < 0)
                           n <- length(timeJ)
                           for (w in rev(which(diff(timeJ)<0))) {
-                              timeJ[seq(w+1, n)] <- round(j[w]) + j[seq(w+1, n)]
+                              timeJ[seq(w+1, n)] <- round(timeJ[w]) + timeJ[seq(w+1, n)]
                           }
                           t0 + 86400 * (timeJ - 1)
                       }
@@ -776,7 +776,7 @@ setMethod(f="[[",
                           wraps <- sum(diff(timeJV2) < 0)
                           n <- length(timeJV2)
                           for (w in rev(which(diff(timeJV2)<0))) {
-                              timeJV2[seq(w+1, n)] <- round(j[w]) + j[seq(w+1, n)]
+                              timeJV2[seq(w+1, n)] <- round(timeJV2[w]) + timeJV2[seq(w+1, n)]
                           }
                           t0 + 86400 * (timeJV2 - 1)
                       }
@@ -791,11 +791,10 @@ setMethod(f="[[",
                           wraps <- sum(diff(timeSCP) < 0)
                           n <- length(timeSCP)
                           for (w in rev(which(diff(timeSCP)<0))) {
-                              timeSCP[seq(w+1, n)] <- round(j[w]) + j[seq(w+1, n)]
+                              timeSCP[seq(w+1, n)] <- round(timeSCP[w]) + timeSCP[seq(w+1, n)]
                           }
                           t0 + 86400 * (timeSCP - 1)
                       }
- 
                   } else if ("timeY" %in% dataNames) {
                       as.POSIXct(data$timeY, origin="1970-01-01",tz="UTC")
                   } else if ("time" %in% metadataNames) {
