@@ -118,7 +118,8 @@ latter with name \code{`NO2+NO3`}. In this case, e.g. \code{x[["nitrate"]]}
 will detect the setup, and subtract nitrite from the sum to yield
 nitrate.
 
-The list given below provides notes on some quantities that are computed.
+The list given below provides notes on some quantities that are,
+or may be, computed.
 
 \itemize{
 
@@ -189,6 +190,19 @@ See \code{SA} for a note on longitude and latitude.
 \item \code{theta}: potential temperature in the UNESCO formulation,
 computed with \code{\link{swTheta}(x)}. This is a synonym for
 \code{potential temperature}.
+
+\item \code{time}: returns either a vector of times, a single
+time, or \code{NULL}. A vector is returned if \code{time}
+is present in the \code{data} slot, or if a time can be
+inferred from other entries in the \code{data} slot (some of which,
+such as the common \code{timeS}, also employ
+\code{startTime} within the \code{metadata} slot). A single
+value is returned if the dataset only has information on the start
+time (which is stored as \code{startTime} within the \code{metadata}
+slot. If it is impossible to determine the sampling time, then
+\code{NULL} is returned. These time variants occur, in the
+present version of oce, only for data read by \code{\link{read.ctd.sbe}},
+the documention of which explains how times are computed.
 
 \item \code{z}: Vertical coordinate in metres above the surface, computed with
 \code{\link{swZ}(x)}.

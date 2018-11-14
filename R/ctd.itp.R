@@ -1,5 +1,8 @@
 #' Read an ITP-type CTD File
+#'
 #' @template readCtdTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @details
 #' \code{read.ctd.itp()} reads ice-tethered-profiler data that are stored

@@ -518,7 +518,8 @@ setMethod(f="summary",
 #' will detect the setup, and subtract nitrite from the sum to yield
 #' nitrate.
 #'
-#' The list given below provides notes on some quantities that are computed.
+#' The list given below provides notes on some quantities that are,
+#' or may be, computed.
 #'
 #' \itemize{
 #'
@@ -590,6 +591,19 @@ setMethod(f="summary",
 #' computed with \code{\link{swTheta}(x)}. This is a synonym for
 #' \code{potential temperature}.
 #'
+#' \item \code{time}: returns either a vector of times, a single
+#' time, or \code{NULL}. A vector is returned if \code{time}
+#' is present in the \code{data} slot, or if a time can be
+#' inferred from other entries in the \code{data} slot (some of which,
+#' such as the common \code{timeS}, also employ
+#' \code{startTime} within the \code{metadata} slot). A single
+#' value is returned if the dataset only has information on the start
+#' time (which is stored as \code{startTime} within the \code{metadata}
+#' slot. If it is impossible to determine the sampling time, then
+#' \code{NULL} is returned. These time variants occur, in the
+#' present version of oce, only for data read by \code{\link{read.ctd.sbe}},
+#' the documention of which explains how times are computed.
+#'
 #' \item \code{z}: Vertical coordinate in metres above the surface, computed with
 #' \code{\link{swZ}(x)}.
 #'
@@ -601,17 +615,19 @@ setMethod(f="summary",
 setMethod(f="[[",
           signature(x="ctd", i="ANY", j="ANY"),
           definition=function(x, i, j, ...) {
-              dataNames <- names(x@data)
-              metadataNames <- names(x@metadata)
+              data <- x@data
+              metadata <- x@metadata
+              dataNames <- names(data)
+              metadataNames <- names(metadata)
               if (i == "conductivity") {
-                  C <- x@data$conductivity
+                  C <- data$conductivity
                   ##message("i=", i, ", j=", if (missing(j)) "(missing)" else j)
                   if (!is.null(C) && !missing(j)) {
                       if (!(j %in% c("", "ratio", "uS/cm", "mS/cm", "S/m")))
                           stop("unknown conductivity unit \"", unit, "\"; must be \"\", \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
                       if (j == "")
                           j <- "ratio" # lets us use switch()
-                      unit <- x@metadata$units$conductivity$unit
+                      unit <- metadata$units$conductivity$unit
                       if (is.null(unit) || !length(unit)) {
                           ## FIXME: maybe should look at median value, to make a guess
                           ## warning("ctd object lack conductivity units; assuming \"ratio\"")
@@ -621,7 +637,7 @@ setMethod(f="[[",
                       unit <- as.character(unit)
                       ##message("next is unit:")
                       ##print(dput(unit))
-                      C <- x@data$conductivity
+                      C <- data$conductivity
                       ##message("B")
                       ## Rather than convert from 3 inputs to 3 outputs, express as ratio, then convert as desired
                       if (!unit %in% c("ratio", "uS/cm", "mS/cm", "S/m"))
@@ -632,14 +648,14 @@ setMethod(f="[[",
                   C
               } else if (i == "salinity" || i == "SP") {
                   if ("salinity" %in% dataNames) {
-                      S <- x@data$salinity
+                      S <- data$salinity
                   } else {
-                      C <- x@data$conductivity
+                      C <- data$conductivity
                       if (!is.null(C)) {
-                          if (is.null(x@metadata$units$conductivity)) {
+                          if (is.null(metadata$units$conductivity)) {
                               warning("conductivity has no unit, so guessing it is conductivity-ratio. Be cautious on calculated salinity.")
                           } else {
-                              unit <- as.character(x@metadata$units$conductivity$unit)
+                              unit <- as.character(metadata$units$conductivity$unit)
                               if (0 == length(unit)) {
                                   S <- swSCTp(C, x[["temperature"]], x[["pressure"]])
                                   warning("constructed salinity from temperature, conductivity-ratio and pressure")
@@ -667,39 +683,129 @@ setMethod(f="[[",
               } else if (i == "Sstar") {
                   if (!any(is.finite(x[["longitude"]])) || !any(is.finite(x[["latitude"]])))
                       stop("object lacks location information, so Sstar cannot be computed")
-                  n <- length(x@data$salinity)
+                  n <- length(data$salinity)
                   ## Lengthen lon and lat if necessary, by repeating.
-                  lon <- x@metadata$longitude
+                  lon <- metadata$longitude
                   if (n != length(lon))
-                      lon <- rep(x@metadata$longitude, length.out=n)
-                  lat <- x@metadata$latitude
+                      lon <- rep(metadata$longitude, length.out=n)
+                  lat <- metadata$latitude
                   if (n != length(lat))
-                      lat <- rep(x@metadata$latitude, length.out=n)
+                      lat <- rep(metadata$latitude, length.out=n)
                   lon <- ifelse(lon < 0, lon + 360, lon) # not required because gsw_saar() does this ... but UNDOCUMENTED
                   ## Do the calculation in two steps
                   SA <- gsw::gsw_SA_from_SP(SP=x[["salinity"]], p=x[["pressure"]], longitude=lon, latitude=lat)
                   gsw::gsw_Sstar_from_SA(SA=SA, p=x[["pressure"]], longitude=lon, latitude=lat)
               } else if (i == "temperature") {
-                  scale <- x@metadata$units[["temperature"]]$scale
+                  scale <- metadata$units[["temperature"]]$scale
                   if (!is.null(scale) && "IPTS-68" == scale)
-                      T90fromT68(x@data$temperature)
-                  else x@data$temperature
+                      T90fromT68(data$temperature)
+                  else data$temperature
               } else if (i == "pressure") {
                   if ("pressure" %in% dataNames) {
-                      pressure <- x@data$pressure
-                      unit <- x@metadata$units[["pressure"]]$unit
+                      pressure <- data$pressure
+                      unit <- metadata$units[["pressure"]]$unit
                       if (!is.null(unit) && "psi" == as.character(unit))
                           pressure * 0.6894757 # 1 psi=6894.757 Pa
                       else pressure
                   } else {
                       if ("depth" %in% dataNames)
-                          swPressure(x@data$depth)
+                          swPressure(data$depth)
                       else stop("object's data slot does not contain 'pressure' or 'depth'")
                   }
               } else if (i == "longitude") {
-                  if ("longitude" %in% metadataNames) x@metadata$longitude else x@data$longitude
+                  if ("longitude" %in% metadataNames) metadata$longitude else data$longitude
               } else if (i == "latitude") {
-                  if ("latitude" %in% metadataNames) x@metadata$latitude else x@data$latitude
+                  if ("latitude" %in% metadataNames) metadata$latitude else data$latitude
+              } else if (i == "time") {
+                  ## After checking for 'time' literally in the metadata
+                  ## and data slots, we turn to the 10 time variants
+                  ## listed in the SBE Seasoft data processing manual,
+                  ## revision 7.26.8, Appendix VI.
+                  if ("time" %in% dataNames) {
+                      data$time
+                  } else if ("timeS" %in% dataNames) {
+                      if (!("startTime" %in% metadataNames)) {
+                          warning("have timeS in data slot, but no startTime in metadata slot, so cannot compute [[\"time\"]]\n")
+                          NULL
+                      } else {
+                          metadata$startTime + data$timeS
+                      }
+                  } else if ("timeM" %in% dataNames) {
+                      if (!("startTime" %in% metadataNames)) {
+                          warning("have timeM in data slot, but no startTime in metadata slot, so cannot compute [[\"time\"]]\n")
+                          NULL
+                      } else {
+                          metadata$startTime + 60 * data$timeM
+                      }
+                  } else if ("timeH" %in% dataNames) {
+                      if (!("startTime" %in% metadataNames)) {
+                          warning("have timeH in data slot, but no startTime in metadata slot, so cannot compute [[\"time\"]]\n")
+                          NULL
+                      } else {
+                          metadata$startTime + 3600 * data$timeH
+                      }
+                  } else if ("timeJ" %in% dataNames) {
+                      if (!("startTime" %in% metadataNames)) {
+                          warning("have timeJ in data slot, but no startTime in metadata slot, so cannot compute [[\"time\"]]\n")
+                          NULL
+                      } else {
+                          t0 <- ISOdatetime(1900 + as.POSIXlt(metadata$startTime)$year, 1, 1, 0, 0, 0, tz="UTC")
+                          timeJ <- data$timeJ
+                          ## Handle wraparound (FIXME: this code is tricky and not well-tested, esp wrt leap year)
+                          wraps <- sum(diff(timeJ) < 0)
+                          n <- length(timeJ)
+                          for (w in rev(which(diff(timeJ)<0))) {
+                              timeJ[seq(w+1, n)] <- round(j[w]) + j[seq(w+1, n)]
+                          }
+                          t0 + 86400 * (timeJ - 1)
+                      }
+                  } else if ("timeN" %in% dataNames) {
+                      as.POSIXct(data$timeN, origin="1970-01-01",tz="UTC")
+                  } else if ("timeQ" %in% dataNames) {
+                      as.POSIXct(data$timeQ, origin="2000-01-01",tz="UTC")
+                  } else if ("timeK" %in% dataNames) {
+                      as.POSIXct(data$timeK, origin="2000-01-01",tz="UTC")
+                  } else if ("timeJV2" %in% dataNames) {
+                      if (!("startTime" %in% metadataNames)) {
+                          warning("have timeJV2 in data slot, but no startTime in metadata slot, so cannot compute [[\"time\"]]\n")
+                          NULL
+                      } else {
+                          t0 <- ISOdatetime(1900 + as.POSIXlt(metadata$startTime)$year, 1, 1, 0, 0, 0, tz="UTC")
+                          timeJV2 <- data$timeJV2
+                          ## Handle wraparound (FIXME: this code is tricky and not well-tested, esp wrt leap year)
+                          wraps <- sum(diff(timeJV2) < 0)
+                          n <- length(timeJV2)
+                          for (w in rev(which(diff(timeJV2)<0))) {
+                              timeJV2[seq(w+1, n)] <- round(j[w]) + j[seq(w+1, n)]
+                          }
+                          t0 + 86400 * (timeJV2 - 1)
+                      }
+                  } else if ("timeSCP" %in% dataNames) {
+                      if (!("startTime" %in% metadataNames)) {
+                          warning("have timeSCP in data slot, but no startTime in metadata slot, so cannot compute [[\"time\"]]\n")
+                          NULL
+                      } else {
+                          t0 <- ISOdatetime(1900 + as.POSIXlt(metadata$startTime)$year, 1, 1, 0, 0, 0, tz="UTC")
+                          timeSCP <- data$timeSCP
+                          ## Handle wraparound (FIXME: this code is tricky and not well-tested, esp wrt leap year)
+                          wraps <- sum(diff(timeSCP) < 0)
+                          n <- length(timeSCP)
+                          for (w in rev(which(diff(timeSCP)<0))) {
+                              timeSCP[seq(w+1, n)] <- round(j[w]) + j[seq(w+1, n)]
+                          }
+                          t0 + 86400 * (timeSCP - 1)
+                      }
+ 
+                  } else if ("timeY" %in% dataNames) {
+                      as.POSIXct(data$timeY, origin="1970-01-01",tz="UTC")
+                  } else if ("time" %in% metadataNames) {
+                      metadata$time
+                  } else if ("startTime" %in% metadataNames) {
+                      metadata$startTime
+                  } else {
+                      NULL
+                  }
+                  ## end of time decoding (whew!)
               } else if (i == "N2") {
                   swN2(x)
               } else if (i == "density") {
@@ -754,24 +860,24 @@ setMethod(f="[[",
                   gsw::gsw_CT_from_t(SA=x[["SA"]], t=x[["temperature"]], p=x[["pressure"]])
               } else if (i == "nitrate") {
                   if ("nitrate" %in% dataNames) {
-                      x@data$nitrate
+                      data$nitrate
                   } else {
                       if ("nitrite" %in% dataNames && "NO2+NO3" %in% dataNames)
-                          x@data[["NO2+NO3"]] - x@data$nitrite
+                          data[["NO2+NO3"]] - data$nitrite
                       else NULL
                   }
               } else if (i == "nitrite") {
                   if ("nitrite" %in% dataNames) {
-                      x@data$nitrite
+                      data$nitrite
                   } else {
                       if ("nitrate" %in% dataNames && "NO2+NO3" %in% dataNames)
-                          x@data[["NO2+NO3"]] - x@data$nitrate
+                          data[["NO2+NO3"]] - data$nitrate
                       else NULL
                   }
               } else if (i == "z") {
                   swZ(x) # FIXME-gsw: permit gsw version here
               } else if (i == "depth") {
-                  if ("depth" %in% names(x@data)) x@data$depth else swDepth(x) # FIXME-gsw: permit gsw version here
+                  if ("depth" %in% names(data)) data$depth else swDepth(x) # FIXME-gsw: permit gsw version here
               } else if (i == "N2") {
                   swN2(x)
               } else {
@@ -3007,7 +3113,7 @@ setMethod(f="plot",
                       if ("profile" == dt) {
                           which <- c(1, 2, 3, 5)
                       } else if ("moored" == dt) {
-                          which <- c(30, 3, 31, 5)
+                          which <- c(30, 31, 32, 5) # S T p map
                       } else if ("thermosalinograph" == dt) {
                           which <- c(30, 3, 31, 5)
                       } else if ("tsg" == dt) {
@@ -3067,13 +3173,24 @@ setMethod(f="plot",
                   par(mar=mar)
               par(mgp=mgp)
 
-              if (lw > 1) {
-                  ##oldpar <- par(no.readonly=TRUE)
-                  if (lw > 2) layout(matrix(1:4, nrow=2, byrow=TRUE)) else
-                      layout(matrix(1:2, nrow=2, byrow=TRUE))
-                  ##layout.show(lay)
-                  ##stop()
+              if (lw == 2) {
+                  par(mfcol=c(2, 1))
+              } else if (lw == 3) {
+                  par(mfcol=c(3, 1))
+              } else if (lw == 4) {
+                  par(mfcol=c(2, 2))
+              } else {
+                  nnn <- floor(sqrt(lw))
+                  par(mfcol=c(nnn, ceiling(lw/nnn)))
+                  rm(nnn)
               }
+              ##20181114 if (lw > 1) {
+              ##20181114     ##oldpar <- par(no.readonly=TRUE)
+              ##20181114     if (lw > 2) layout(matrix(1:4, nrow=2, byrow=TRUE)) else
+              ##20181114         layout(matrix(1:2, nrow=2, byrow=TRUE))
+              ##20181114     ##layout.show(lay)
+              ##20181114     ##stop()
+              ##20181114 }
               ## Ignore any bottom region consisting of NA for temperature and salinity, e.g.
               ## as created by as.section() or read.section().
               if (0 == length(x[["salinity"]])) {
@@ -3754,7 +3871,11 @@ plotScan <- function(x, which=1, xtype="scan",
 }
 
 #' Read a General CTD File
+#'
 #' @template readCtdTemplate
+#'
+#' @author Dan Kelley
+#'
 #' @param type If \code{NULL}, then the first line is studied, in order to
 #' determine the file type.  If \code{type="SBE19"}, then a \emph{Seabird 19}, or
 #' similar, CTD format is assumed. If \code{type="WOCE"} then a WOCE-exchange file
@@ -3889,7 +4010,10 @@ time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 
 
 ## #' Read an ODV-type CTD File
+## #'
 ## #' @template readCtdTemplate
+## #'
+## #' @author Dan Kelley
 ## #'
 ## #' @details
 ## #' \code{read.ctd.odf()} reads files stored in ODV format, used by some European data providers.

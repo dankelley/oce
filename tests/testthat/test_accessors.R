@@ -72,7 +72,9 @@ test_that("three methods for specifying units", {
 
 test_that("can use original names", {
           data("ctd")
-          expect_equal(ctd[["time"]], as.POSIXct("2003-10-15 11:38:38", tz="UTC"))
+          ## next two tests relate to issues 1460 and 1547
+          expect_equal(diff(ctd[["timeS"]]), diff(as.numeric(ctd[["time"]])))
+          expect_equal(length(ctd[["time"]]), length(ctd[["pressure"]])) # 1460,1547
           expect_equal(ctd[["pressure"]], ctd[["pr"]])
           expect_equal(ctd[["depth"]], ctd[["depS"]])
           expect_equal(ctd[["temperature"]], T90fromT68(ctd[["t068"]]))

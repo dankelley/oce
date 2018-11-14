@@ -828,7 +828,7 @@ ODFListFromHeader <- function(header)
 #'
 #' @examples
 #' library(oce)
-#" #
+#' #
 #' # 1. Read a CTD cast made on the Scotian Shelf. Note that the file's metadata
 #' # states that conductivity is in S/m, but it is really conductivity ratio,
 #' # so we must alter the unit before converting to a CTD object. Note that

@@ -17,6 +17,7 @@ for (i in seq_along(files)) {
     testthat::expect_false(is.na(d[['longitude']][1]))
     testthat::expect_true("temperature" %in% names(d[['data']]))
     summary(d)                         # so we can look ... hard to do, though
+    cat("time starts: ", paste(d[["time"]][1:3], collapse=", "), "\n", sep="")
     plot(d)
 }
 cat("Successfully checked", nfiles, "CNV files in /data/flemishCap/CTD/*/\n")

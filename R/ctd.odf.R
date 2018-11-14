@@ -1,7 +1,10 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 #' Read a CTD file in ODF format
+#'
 #' @template readCtdTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @details
 #' \code{read.ctd.odf} reads files stored in Ocean Data Format, used in

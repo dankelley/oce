@@ -227,7 +227,10 @@ woceUnit2oceUnit <- function(woceUnit)
 
 
 #' Read a WOCE-type CTD file with First Word "CTD"
+#'
 #' @template readCtdTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @details
 #' \code{read.ctd.woce()} reads files stored in the exchange format used
@@ -643,7 +646,10 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
 }
 
 #' Read a WOCE-type CTD file with First Word "EXPOCODE"
+#'
 #' @template readCtdTemplate
+#'
+#' @author Dan Kelley
 #'
 #' @details
 #' \code{read.ctd.woce.other()} reads files stored in the exchange format used
