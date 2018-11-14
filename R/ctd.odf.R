@@ -18,8 +18,8 @@
 #' varies between some sample files the author has encountered in his research.
 #' @family things related to \code{ctd} data
 #' @family things related to \code{odf} data
-read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, monitor=FALSE,
-                         debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
+                         monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     oceDebug(debug, "read.ctd.odf(\"", file, "\", ...) {\n", sep="", unindent=1)
     if (!is.null(columns)) warning("'columns' is ignored by read.ctd.odf() at present")
@@ -36,6 +36,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missingValue, monitor
     for (mname in names(odf@metadata))
         res@metadata[[mname]] <- odf@metadata[[mname]]
     res@metadata$pressureType <- "sea"
+    res@metadata$deploymentType <- deploymentType
     oceDebug(debug, "} # read.ctd.odf()\n", unindent=1)
     res
 }

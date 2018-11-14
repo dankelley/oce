@@ -3889,7 +3889,7 @@ plotScan <- function(x, which=1, xtype="scan",
 #' \code{\link{read.ctd.woce.other}} for a variant of WOCE data,
 #' \code{\link{read.ctd.itp}} for ice-tethered-profiler data, or
 #' \code{\link{read.ctd.sbe}} for Seabird data.
-read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue,
+read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                      monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     ## Special case: ruskin files are handled by read.rsk()
@@ -3937,17 +3937,17 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, missingValue,
     }                                   # FIXME: should just use oce.magic() here
     res <- switch(type,
                   SBE19=read.ctd.sbe(file, columns=columns, station=station,
-                                     missingValue=missingValue, monitor=monitor,
-                                     debug=debug, processingLog=processingLog, ...),
+                                     missingValue=missingValue, deploymentType=deploymentType,
+                                     monitor=monitor, debug=debug, processingLog=processingLog, ...),
                   WOCE=read.ctd.woce(file, columns=columns, station=station,
-                                     missingValue=missingValue, monitor=monitor,
-                                     debug=debug, processingLog=processingLog, ...),
+                                     missingValue=missingValue, deploymentType=deploymentType,
+                                     monitor=monitor, debug=debug, processingLog=processingLog, ...),
                   ODF=read.ctd.odf(file, columns=columns, station=station,
-                                   missingValue=missingValue, monitor=monitor,
-                                   debug=debug, processingLog=processingLog, ...),
+                                   missingValue=missingValue, deploymentType=deploymentType,
+                                   monitor=monitor, debug=debug, processingLog=processingLog, ...),
                   ITP=read.ctd.itp(file, columns=columns, station=station,
-                                   missingValue=missingValue, monitor=monitor,
-                                   debug=debug, processingLog=processingLog, ...))
+                                   missingValue=missingValue, deploymentType=deploymentType,
+                                   monitor=monitor, debug=debug, processingLog=processingLog, ...))
     res
 }
 
