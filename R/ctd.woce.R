@@ -244,8 +244,8 @@ woceUnit2oceUnit <- function(woceUnit)
 #' \code{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
 #' and a sample file is at
 #' \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
-read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monitor=FALSE,
-                          debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
+                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (length(grep("\\*", file))) {
         oceDebug(debug, "read.ctd.woce(file=\"", file, "\") { # will read a series of files\n", unindent=1)
@@ -255,7 +255,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
             pb <- txtProgressBar(1, nfiles, style=3)
         res <- vector("list", nfiles)
         for (i in 1:nfiles) {
-            res[[i]] <- read.ctd.woce(files[i], debug=debug-1)
+            res[[i]] <- read.ctd.woce(files[i], deploymentType=deploymentType, debug=debug-1)
             if (monitor)
                 setTxtProgressBar(pb, i)
         }
@@ -286,7 +286,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
     latitude <- longitude <- NaN
     startTime <- NULL
     waterDepth <- NA
-    date <- recovery <- NULL
+    date <- recoveryTime <- NULL
     header <- c()
     ##col.names.inferred <- NULL
     ##conductivity.standard <- 4.2914
@@ -328,7 +328,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
             units[[names[i]]] <- woceUnit2oceUnit(unitsOriginal[i])
         }
         for (i in seq_along(header)) {
-            message("header[", i, "=\"", header[i], "\"")
+            oceDebug(debug, " header[", i, "]=\"", header[i], "\"\n", sep="")
             if (length(grep("CRUISE", header[i], ignore.case=TRUE))) {
                 cruise<- sub("CRUISE[ ]*NAME[ ]*=[ ]*", "", header[i], ignore.case=TRUE)
                 cruise <- sub("[ ]*$", "", cruise)
@@ -369,12 +369,12 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         res@metadata$address <- address
         res@metadata$cruise <- NULL
         res@metadata$station <- station
-        res@metadata$deploymentType <- "unknown"
         res@metadata$date <- date
         res@metadata$startTime <- startTime
+        res@metadata$recoveryTime <- recoveryTime
         res@metadata$latitude <- latitude
         res@metadata$longitude <- longitude
-        res@metadata$recovery <- recovery
+        res@metadata$deploymentType <- deploymentType
         res@metadata$waterDepth <- max(abs(data$pressure), na.rm=TRUE) # not in header
         res@metadata$sampleInterval <- sampleInterval
         ##res@metadata$names <- names
@@ -587,12 +587,12 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
         res@metadata$address <- address
         res@metadata$cruise <- NULL
         res@metadata$station <- station
-        res@metadata$deploymentType <- "unknown"
         res@metadata$date <- date
         res@metadata$startTime <- startTime
+        res@metadata$recoveryTime <- recoveryTime
         res@metadata$latitude <- latitude
         res@metadata$longitude <- longitude
-        res@metadata$recovery <- recovery
+        res@metadata$deploymentType <- deploymentType
         res@metadata$waterDepth <- waterDepth
         res@metadata$sampleInterval <- sampleInterval
         ##res@metadata$names <- names
@@ -655,8 +655,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missingValue, monito
 #' \code{read.ctd.woce.other()} reads files stored in the exchange format used
 #' by the World Ocean Circulation Experiment (WOCE), in which the first
 #' word in the file is \code{EXPOCODE}.
-read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, monitor=FALSE,
-                                debug=getOption("oceDebug"), processingLog, ...)
+read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
+                                monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     ##EXPOCODE 06MT18/1      WHP-ID A1E    DATE 090591
     ##STNNBR    558 CASTNO   1 NO.RECORDS=   83
@@ -729,5 +729,6 @@ read.ctd.woce.other <- function(file, columns=NULL, station=NULL, missingValue, 
     } else {
         warning("problem assigning units\n")
     }
+    res@metadata$deploymentType <- deploymentType
     res
 }

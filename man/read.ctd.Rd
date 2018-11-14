@@ -5,8 +5,8 @@
 \title{Read a General CTD File}
 \usage{
 read.ctd(file, type = NULL, columns = NULL, station = NULL,
-  missingValue, monitor = FALSE, debug = getOption("oceDebug"),
-  processingLog, ...)
+  missingValue, deploymentType = "unknown", monitor = FALSE,
+  debug = getOption("oceDebug"), processingLog, ...)
 }
 \arguments{
 \item{file}{A connection or a character string giving the name of the file to
@@ -52,6 +52,15 @@ whether salinity and/or temperature has a minimum that is under -8 in value;
 this should catch common values in files, without false positives. A warning
 will be issued in this case, and a note inserted in the processing log of
 the return value.}
+
+\item{deploymentType}{character string indicating the type of deployment. Use
+\code{"unknown"} if this is not known, \code{"profile"} for a profile (in
+which the data were acquired during a downcast, while the device was lowered
+into the water column, perhaps also including an upcast; \code{"moored"} if
+the device is installed on a fixed mooring, \code{"thermosalinograph"} (or
+\code{"tsg"}) if the device is mounted on a moving vessel, to record
+near-surface properties, or \code{"towyo"} if the device is repeatedly
+lowered and raised.}
 
 \item{monitor}{Boolean, set to \code{TRUE} to provide an indication of
 progress.  This is useful if \code{filename} is a wildcard.}

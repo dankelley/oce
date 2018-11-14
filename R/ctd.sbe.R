@@ -731,7 +731,7 @@ cnvName2oceName <- function(h, columns=NULL, debug=getOption("oceDebug"))
 #' As of 2018-07-05, the latest version was named
 #' \code{SBEDataProcessing_7.26.4.pdf} and had release date 12/08/2017,
 #' and this was the reference version used in coding \code{oce}.
-read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
+read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue, deploymentType="unknown",
                          monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (length(grep("\\*", file, ignore.case=TRUE))) {
@@ -1044,7 +1044,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     res@metadata$address <- address
     res@metadata$cruise <- cruise
     res@metadata$station <- station
-    res@metadata$deploymentType <- "unknown"
+    res@metadata$deploymentType <- deploymentType
     res@metadata$date <- date
     res@metadata$startTime <- startTime
     res@metadata$recoveryTime <- recoveryTime
@@ -1176,7 +1176,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missingValue,
     if (("temperature" %in% names(res@metadata$units)) && res@metadata$units$temperature$scale == "IPTS-68") {
         warning("this CNV file has temperature in the IPTS-68 scale, and this is stored in the object; note that [[\"temperature\"]] and the sw* functions will convert to the modern ITS-90 value")
     }
-
     ## Note: previously, at this spot, there was code to switch from the IPTS-68 scale
     ## to the ITS-90 scale. The old-scale data were saved in a column named
     ## "temperature68". However, that scheme could be confusing both in oce code and
