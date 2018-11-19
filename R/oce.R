@@ -1142,14 +1142,14 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
     ##ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
-    oceDebug(debug, "oce.plot.ts(..., debug=", debug, ", type=\"", type, "\", \n", sep="", unindent=1)
-    oceDebug(debug, "  mar=c(", paste(mar, collapse=", "), "),\n", sep="")
-    oceDebug(debug, "  mgp=c(", paste(mgp, collapse=", "), "),\n", sep="")
-    oceDebug(debug, "  ...) {\n", sep="")
-    oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
-    oceDebug(debug, "cex=", cex, " cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
-    oceDebug(debug, "mar=c(", paste(mar, collapse=","), ")\n")
-    oceDebug(debug, "marginsAsImage=", marginsAsImage, ")\n")
+    oceDebug(debug, "oce.plot.ts(...,debug=", debug,
+             ",type=\"", type, "\"",
+             ",mar=c(", paste(mar, collapse=","), ")",
+             ",mgp=c(", paste(mgp, collapse=","), ")",
+             ",cex=", cex,
+             ",...){\n", sep="", unindent=1)
+    #oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
+    #oceDebug(debug, "marginsAsImage=", marginsAsImage, ")\n")
     oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
     pc <- paletteCalculations(maidiff=rep(0, 4))
     par(mgp=mgp, mar=mar)
@@ -2542,11 +2542,21 @@ oce.axis.POSIXct <- function (side, x, at, tformat, labels = TRUE,
             tformat <- "%.1S" # NOTE: this .1 is interpreted at BOOKMARK 1B
             oceDebug(debug, "automatic tformat='", tformat, "'\n")
         }
-    } else if (d <= 60) {
-        oceDebug(debug, "Time range is between 2 sec and 1 min\n")
+    } else if (d <= 20) {
+        oceDebug(debug, "Time range is between 2 sec and 20 sec\n")
         t.start <- trunc(rr[1]-1, "secs")
         t.end <- trunc(rr[2]+1, "secs")
         z <- seq(t.start, t.end, by="1 sec")
+        oceDebug(debug, vectorShow(z))
+        if (missing(tformat)) {
+            tformat <- "%S"
+            oceDebug(debug, "automatic tformat='", tformat, "'\n")
+        }
+     } else if (d <= 60) {
+        oceDebug(debug, "Time range is between 20 sec and 1 min\n")
+        t.start <- trunc(rr[1]-1, "secs")
+        t.end <- trunc(rr[2]+1, "secs")
+        z <- seq(t.start, t.end, by="2 sec")
         oceDebug(debug, vectorShow(z))
         if (missing(tformat)) {
             tformat <- "%S"
