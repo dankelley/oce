@@ -4,11 +4,12 @@
 \alias{mapPlot}
 \title{Draw a Map}
 \usage{
-mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg, fill,
-  border = NULL, col = NULL, clip = TRUE, type = "polygon",
-  axes = TRUE, cex, cex.axis = 1, mgp = c(0, 0.5, 0), drawBox = TRUE,
-  showHemi = TRUE, polarCircle = 0, lonlabel = NULL, latlabel = NULL,
-  sides = NULL, projection = "+proj=moll", tissot = FALSE, trim = TRUE,
+mapPlot(longitude, latitude, longitudelim, latitudelim, grid = TRUE, bg,
+  fill, border = NULL, col = NULL, clip = TRUE, type = "polygon",
+  axes = TRUE, cex, cex.axis = 1, mgp = c(0, 0.5, 0),
+  drawBox = TRUE, showHemi = TRUE, polarCircle = 0,
+  lonlabel = NULL, latlabel = NULL, sides = NULL,
+  projection = "+proj=moll", tissot = FALSE, trim = TRUE,
   debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -44,16 +45,16 @@ examination of the scale used in middle 10 percent of the plot area, and for
 most projections this works quite well.  If not, one may set
 \code{grid=FALSE} and add a grid later with \code{\link{mapGrid}}.}
 
-\item{bg}{colour of the background (ignored).}
+\item{bg}{color of the background (ignored).}
 
 \item{fill}{\strong{(deprecated)} is a deprecated argument; see
 \link{oce-deprecated}.}
 
-\item{border}{colour of coastlines and international borders (ignored unless
+\item{border}{color of coastlines and international borders (ignored unless
 \code{type="polygon"}.}
 
-\item{col}{either the colour for filling polygons (if \code{type="polygon"})
-or the colour of the points and line segments (if \code{type="p"},
+\item{col}{either the color for filling polygons (if \code{type="polygon"})
+or the color of the points and line segments (if \code{type="p"},
 \code{type="l"}, or \code{type="o"}). If \code{col=NULL} then a default
 will be set: no coastline filling for the \code{type="polygon"} case,
 or black coastlines, for \code{type="p"}, \code{type="l"}, or
@@ -61,7 +62,7 @@ or black coastlines, for \code{type="p"}, \code{type="l"}, or
 
 \item{clip}{logical value indicating whether to trim any coastline elements that lie wholly
 outside the plot region. This can prevent e.g. a problem of filling the whole plot area of
-an Arctic stereopolar view, because the projected trace for Antarctica lies outside all 
+an Arctic stereopolar view, because the projected trace for Antarctica lies outside all
 other regions so the whole of the world ends up being "land".  Setting \code{clip=FALSE}
 disables this action, which may be of benefit in rare instances in the line connecting
 two points on a coastline may cross the plot domain, even if those points are outside
@@ -223,7 +224,6 @@ Hatano asymmetrical equal area            \tab \code{hatano}   \tab - \cr
 HEALPix                                   \tab \code{healpix}  \tab - \cr
 rHEALPix                                  \tab \code{rhealpix} \tab \code{north_square}, \code{south_square}\cr
 Interrupted Goode homolosine              \tab \code{igh}      \tab -\cr
-Int'l map of the world polyconic          \tab \code{imw_p}    \tab \code{lat_1}, \code{lat_2}, \code{lon_1}\cr
 Kavraisky V                               \tab \code{kav5}     \tab - \cr
 Kavraisky VII                             \tab \code{kav7}     \tab - \cr
 Lambert azimuthal equal area              \tab \code{laea}     \tab - \cr
@@ -231,7 +231,6 @@ Longitude and latitude                    \tab \code{lonlat}   \tab - \cr
 Longitude and latitude                    \tab \code{longlat}   \tab - \cr
 Longitude and latitude                    \tab \code{latlon}   \tab - \cr
 Lambert conformal conic                   \tab \code{lcc}      \tab \code{lat_1}, \code{lat_2}, \code{lat_0}\cr
-Lambert conformal conic alt. [DEPRECATED] \tab \code{lcca}     \tab \code{lat_0}\cr
 Lambert equal area conic                  \tab \code{leac}     \tab \code{lat_1}, \code{south}\cr
 Loximuthal                                \tab \code{loxim}    \tab\cr
 Space oblique for Landsat                 \tab \code{lsat}     \tab \code{lsat}, \code{path}\cr
@@ -362,9 +361,23 @@ those used in the examples.
 \section{Changes}{
 
 \itemize{
-\item 2017-09-30: \code{lcca} deprecated, because its inverse was
-wildly inaccurate in a Pacific Antartic-Alaska application
+
+\item 2017-11-19: \code{imw_p} removed, because it has problems doing
+inverse calculations.
+This is a also problem in the standalone PROJ.4 application version
+4.9.3, downloaded and built on OSX.
+See \url{https://github.com/dankelley/oce/issues/1319} for details.
+
+\item 2017-11-17: \code{lsat} removed, because it does not work in
+\code{rgdal} or in the latest standalone PROJ.4 application.
+This is a also problem in the standalone PROJ.4 application version
+4.9.3, downloaded and built on OSX.
+See \url{https://github.com/dankelley/oce/issues/1337} for details.
+
+\item 2017-09-30: \code{lcca} removed, because its inverse was
+wildly inaccurate in a Pacific Antarctic-Alaska application
 (see \url{https://github.com/dankelley/oce/issues/1303}).
+
 }
 }
 
@@ -457,7 +470,7 @@ prior to Nov 16, 2016, but was found to fail on that date.)
 the place to start to learn about the code.
 
 6. \code{PROJ.4} projection details were once at
-\code{http://www.remotesensing.org/geotiff/proj_list/} but it was 
+\code{http://www.remotesensing.org/geotiff/proj_list/} but it was
 discovered on Dec 18, 2016, that this link no longer exists. Indeed, there
 seems to have been significant reorganization of websites related to this.
 The base website seems to be \url{https://trac.osgeo.org/geotiff/} and that
@@ -496,3 +509,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{functions related to maps}

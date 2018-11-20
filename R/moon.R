@@ -12,7 +12,7 @@
 #' @return A data frame containing columns \code{rightAscension} and
 #' \code{declination} both in degrees.
 #' @author Dan Kelley, based on formulae in [1] and [2].
-#' @references 1. Meeus, Jean, 1982. Astronomical formuae for Calculators.
+#' @references 1. Meeus, Jean, 1982. Astronomical formulae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages.
 #'
 #' 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA,
@@ -88,7 +88,7 @@ equatorialToLocalHorizontal <- function(rightAscension, declination, t, longitud
 #' ignored.
 #' @return A sidereal time, in hours in the range from 0 to 24.
 #' @author Dan Kelley
-#' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+#' @references Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages
 #' @examples
 #'
@@ -143,13 +143,12 @@ siderealTime <- function(t)
 #' @return A Julian-Day number, in astronomical convention as explained in
 #' Meeus.
 #' @author Dan Kelley
-#' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+#' @references Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages
 #' @examples
 #'
-#' t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="ET")+0.4*86400
-#' jd <- julianDay(t)
-#' cat(format(t), "is Julian Day", format(jd, digits=14), "\n")
+#' t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="UTC")+0.4*86400
+#' expect_equal(julianDay(t), 2443259.9) # example from Meeus
 #'
 #' @family things related to astronomy
 #' @family things related to time
@@ -187,7 +186,7 @@ julianDay <- function(t, year=NA, month=NA, day=NA, hour=NA, min=NA, sec=NA, tz=
 #' @param jd a julian day number, e.g. as given by \code{\link{julianDay}}.
 #' @return Julian century since noon on January 1, 1900.
 #' @author Dan Kelley
-#' @references Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+#' @references Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 #' Willmann-Bell. Richmond VA, USA. 201 pages
 #' @examples
 #'

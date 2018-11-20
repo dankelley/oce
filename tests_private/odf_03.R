@@ -2,7 +2,7 @@ library(oce)
 options(warn=1) # print warnings as they occur
 
 dir <- "local_odf_files"
-files <- system(sprintf("find '%s' -name '*.ODF'", dir), intern=TRUE)
+files <- system(sprintf("find '%s' -iname '*.ODF'", dir), intern=TRUE)
 
 i <- 0
 for (file in files) {

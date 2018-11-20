@@ -1,17 +1,27 @@
 ## vim:textwidth=100:expandtab:shiftwidth=4:softtabstop=4
 
 
-#' @title Class to Store Current Meter (CM) Data
+#' Class to Store Current Meter Data
 #'
-#' @description
-#' Class to store current meter data, e.g. from an Interocean/S4 device
+#' This class stores current meter data, e.g. from an Interocean/S4 device
 #' or an Aanderaa/RCM device.  A file
 #' containing Interocean/S4 data may be read with \code{\link{read.cm}}.
 #' Alternatively, \code{\link{as.cm}} can be used to create \code{cm} objects.
 #' Objects of this class can be
 #' plotted with \code{\link{plot,cm-method}} or summarized with
-#' \code{\link{summary,cm-method}}.  Data may be retrieved with
-#' \code{\link{[[,cm-method}} or replaced with \ \code{\link{[[<-,cm-method}}.
+#' \code{\link{summary,cm-method}}.
+#'
+#' @templateVar class cm
+#'
+#' @templateVar dataExample The key items stored in this slot are \code{time}, \code{u} and \code{v}.
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #'
@@ -121,7 +131,7 @@ setMethod(f="summary",
               showMetadataItem(object, "model",         "Instrument model:   ")
               showMetadataItem(object, "serialNumber",  "Serial Number:      ")
               showMetadataItem(object, "version",       "Version:            ")
-              callNextMethod() # summary
+              invisible(callNextMethod()) # summary
           })
 
 
@@ -200,7 +210,7 @@ setMethod(f="subset",
 #' @param conductivity Optional vector of conductivity.
 #' Ignored if the first argument contains an \code{oce} object holding pressure.
 #' @param salinity Optional vector of salinity, assumed to be Practical Salinity.
-#' Ignored if the first argument contains an \code{oce} object holding saliity
+#' Ignored if the first argument contains an \code{oce} object holding salinity
 #' @param temperature Optional vector of temperature.
 #' Ignored if the first argument contains an \code{oce} object holding temperature
 #' @param longitude Optional longitude in degrees East.
@@ -402,7 +412,7 @@ as.cm <- function(time, u=NULL, v=NULL,
 #' @return An object of \code{\link{cm-class}}.
 #' The \code{data} slot will contain all the data in the file, with names
 #' determined from the tokens in line 3 in that file, passed through
-#' \code{\link{make.names}}, except that 
+#' \code{\link{make.names}}, except that
 #' \code{Vnorth} is renamed \code{v} (after conversion from cm/s to m/s),
 #' \code{Veast} is renamed \code{u} (after conversion from cm/s to m/s),
 #' \code{Cond} is renamed \code{conductivity},
@@ -499,7 +509,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "line", i, "contains: ", paste(items, collapse=" "), "\n")
         if (items[1] == "Sample #") {
             ## names <- sub('[ ]+$', '', sub('^[ ]+','', items))
-            ## names <- ifelse(0 == nchar(names), paste("column", 1:length(names), sep=""), names)
+            ## names <- ifelse(0 == nchar(names), paste("column", seq_along(names), sep=""), names)
         } else if (items[1] == "1") {
             start.day <- items[2]
         } else if (items[1] == "2") {
@@ -716,12 +726,12 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{cm} data
+#' @aliases plot.cm
 setMethod(f="plot",
           signature=signature("cm"),
           definition=function(x,
                               which=c(1:2, 7:9),
                               type="l",
-                              ##adorn=NULL,
                               drawTimeRange=getOption("oceDrawTimeRange"),
                               drawZeroLine=FALSE,
                               mgp=getOption("oceMgp"),
@@ -733,6 +743,8 @@ setMethod(f="plot",
                               ...)
           {
               oceDebug(debug, "plot.cm() {\n", unindent=1)
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,cm-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
               if (3 != sum(c("time", "u", "v") %in% names(x@data))) {
@@ -759,11 +771,6 @@ setMethod(f="plot",
                                        pressure=7, salinity=8, temperature=9, TS=10, conductivity=11,
                                        direction=20))
               oceDebug(debug, "which:", which, "\n")
-              ##adorn.length <- length(adorn)
-              ##if (adorn.length == 1) {
-              ##    adorn <- rep(adorn, lw)
-              ##    adorn.length <- lw
-              ##}
 
               tt <- x@data$time
               class(tt) <- "POSIXct"              # otherwise image() gives warnings
@@ -884,11 +891,6 @@ setMethod(f="plot",
                   } else {
                       stop("unknown value of which (", which[w], ")")
                   }
-                  ## if (w <= adorn.length) {
-                  ##     t <- try(eval(adorn[w]), silent=TRUE)
-                  ##     if (class(t) == "try-error")
-                  ##         warning("cannot evaluate adorn[", w, "]")
-                  ## }
               }
               oceDebug(debug, "} # plot.cm()\n", unindent=1)
               invisible()

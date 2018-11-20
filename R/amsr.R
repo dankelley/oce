@@ -1,11 +1,13 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to Hold amsr Data
+#' Class to Store AMSR-2 Satellite Data
+#'
+#' This class stores data from the AMSR-2 satellite.
 #'
 #' The Advanced Microwave Scanning Radiometer (AMSR-2) is in current operation on
 #' the Japan Aerospace Exploration Agency (JAXA) GCOM-W1 space craft, launched in
 #' May 2012. Data are processed by Remote Sensing Systems. The satellite
-#' completes an ascending and descending pass during local daytime and nightime
+#' completes an ascending and descending pass during local daytime and nighttime
 #' hours respectively. Each daily file contains 7 daytime and 7 nighttime
 #' maps of variables named as follows within the \code{data}
 #' slot of amsr objects: \code{timeDay},
@@ -16,20 +18,32 @@
 #' See [1] for additional information on the instrument, how
 #' to cite the data source in a paper, etc.
 #'
-#' @details
 #' The bands are stored in \code{\link{raw}} form, to save storage. The accessor
 #' function \code{\link{[[,amsr-method}} can provide these values in \code{raw}
 #' form or in physical units; \code{\link{plot,amsr-method}}, and
 #' \code{\link{summary,amsr-method}} work with physical units.
 #'
+#' @templateVar class amsr
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample Examples that are of common interest include  \code{longitude} and \code{latitude}, which define the grid.
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
+#
+#'
 #' @author Dan Kelley and Chantelle Layton
 #' @concept satellite
 #' @references
 #' 1. Information on the satellite, how to cite the data, etc. is
-#' provided at \url{http://www.remss.com/missions/amsr/}.
+#' provided at \code{http://www.remss.com/missions/amsr/}.
 #'
 #' 2. A simple interface for viewing and downloading data is at
-#' \url{http://images.remss.com/amsr/amsr2_data_daily.html}.
+#' \code{http://images.remss.com/amsr/amsr2_data_daily.html}.
 #'
 #' @seealso \code{\link{landsat-class}} for handling data from the Landsat-8 satellite.
 #'
@@ -78,7 +92,7 @@ setMethod(f="summary",
               for (name in names(object@data)) {
                   object@data[[name]] <- object[[name]] # translate to science units
               }
-              callNextMethod()         # summary
+              invisible(callNextMethod())        # summary
           })
 
 #' Extract Something From an amsr Object
@@ -183,48 +197,48 @@ setMethod(f="[[",
                   ## what that means, and am extracting what seems to be seconds in the day.
                   if      (i == "timeDay") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
                   else if (i == "timeNight") res <- 60*6*getBand(x@data[[i]]) # FIXME: guessing on amsr time units
-                  else if (i == "time") res <- 60*6*getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]))
+                  else if (i == "time") res <- 60*6*getBand(do_amsr_average(x@data[["timeDay"]], x@data[["timeNight"]]))
                   else if (i == "SSTDay") res <- -3 + 0.15 * getBand(x@data[[i]])
                   else if (i == "SSTNight") res <- -3 + 0.15 * getBand(x@data[[i]])
-                  else if (i == "SST") res <- -3 + 0.15 * getBand(.Call("amsr_average", x@data[["SSTDay"]], x@data[["SSTNight"]]))
+                  else if (i == "SST") res <- -3 + 0.15 * getBand(do_amsr_average(x@data[["SSTDay"]], x@data[["SSTNight"]]))
                   else if (i == "LFwindDay") res <- 0.2 * getBand(x@data[[i]])
                   else if (i == "LFwindNight") res <- 0.2 * getBand(x@data[[i]])
-                  else if (i == "LFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["LFwindDay"]], x@data[["LFwindNight"]]))
+                  else if (i == "LFwind") res <- 0.2 * getBand(do_amsr_average(x@data[["LFwindDay"]], x@data[["LFwindNight"]]))
                   else if (i == "MFwindDay") res <- 0.2 * getBand(x@data[[i]])
                   else if (i == "MFwindNight") res <- 0.2 * getBand(x@data[[i]])
-                  else if (i == "MFwind") res <- 0.2 * getBand(.Call("amsr_average", x@data[["MFwindDay"]], x@data[["MFwindNight"]]))
+                  else if (i == "MFwind") res <- 0.2 * getBand(do_amsr_average(x@data[["MFwindDay"]], x@data[["MFwindNight"]]))
                   else if (i == "vaporDay") res <- 0.3 * getBand(x@data[[i]])
                   else if (i == "vaporNight") res <- 0.3 * getBand(x@data[[i]])
-                  else if (i == "vapor") res <- 0.3 * getBand(.Call("amsr_average", x@data[["vaporDay"]], x@data[["vaporNight"]]))
+                  else if (i == "vapor") res <- 0.3 * getBand(do_amsr_average(x@data[["vaporDay"]], x@data[["vaporNight"]]))
                   else if (i == "cloudDay") res <- -0.05 + 0.01 * getBand(x@data[[i]])
                   else if (i == "cloudNight") res <- -0.05 + 0.01 * getBand(x@data[[i]])
-                  else if (i == "cloud") res <- -0.05 + 0.01 * getBand(.Call("amsr_average", x@data[["cloudDay"]], x@data[["cloudNight"]]))
+                  else if (i == "cloud") res <- -0.05 + 0.01 * getBand(do_amsr_average(x@data[["cloudDay"]], x@data[["cloudNight"]]))
                   else if (i == "rainDay") res <- 0.01 * getBand(x@data[[i]])
                   else if (i == "rainNight") res <- 0.01 * getBand(x@data[[i]])
-                  else if (i == "rain") res <- 0.01 * getBand(.Call("amsr_average", x@data[["rainDay"]], x@data[["rainNight"]]))
+                  else if (i == "rain") res <- 0.01 * getBand(do_amsr_average(x@data[["rainDay"]], x@data[["rainNight"]]))
                   else if (i == "data") return(x@data)
               } else {
                   if      (i == "timeDay") res <- x@data[[i]]
                   else if (i == "timeNight") res <- x@data[[i]]
-                  else if (i == "time") res <- getBand(.Call("amsr_average", x@data[["timeDay"]], x@data[["timeNight"]]))
+                  else if (i == "time") res <- getBand(do_amsr_average(x@data[["timeDay"]], x@data[["timeNight"]]))
                   else if (i == "SSTDay") res <- x@data[[i]]
                   else if (i == "SSTNight") res <- x@data[[i]]
-                  else if (i == "SST") res <- .Call("amsr_average", x@data[["SSTDay"]], x@data[["SSTNight"]])
+                  else if (i == "SST") res <- do_amsr_average(x@data[["SSTDay"]], x@data[["SSTNight"]])
                   else if (i == "LFwindDay") res <- x@data[[i]]
                   else if (i == "LFwindNight") res <- x@data[[i]]
-                  else if (i == "LFwind") res <- .Call("amsr_average", x@data[["LFwindDay"]], x@data[["LFwindNight"]])
+                  else if (i == "LFwind") res <- do_amsr_average(x@data[["LFwindDay"]], x@data[["LFwindNight"]])
                   else if (i == "MFwindDay") res <- x@data[[i]]
                   else if (i == "MFwindNight") res <- x@data[[i]]
-                  else if (i == "MFwind") res <- .Call("amsr_average", x@data[["MFwindDay"]], x@data[["MFwindNight"]])
+                  else if (i == "MFwind") res <- do_amsr_average(x@data[["MFwindDay"]], x@data[["MFwindNight"]])
                   else if (i == "vaporDay") res <- x@data[[i]]
                   else if (i == "vaporNight") res <- x@data[[i]]
-                  else if (i == "vapor") res <- .Call("amsr_average", x@data[["vaporDay"]], x@data[["vaporNight"]])
+                  else if (i == "vapor") res <- do_amsr_average(x@data[["vaporDay"]], x@data[["vaporNight"]])
                   else if (i == "cloudDay") res <- x@data[[i]]
                   else if (i == "cloudNight") res <- x@data[[i]]
-                  else if (i == "cloud") res <- .Call("amsr_average", x@data[["cloudDay"]], x@data[["cloudNight"]])
+                  else if (i == "cloud") res <- do_amsr_average(x@data[["cloudDay"]], x@data[["cloudNight"]])
                   else if (i == "rainDay") res <- x@data[[i]]
                   else if (i == "rainNight") res <- x@data[[i]]
-                  else if (i == "rain") res <- .Call("amsr_average", x@data[["rainDay"]], x@data[["rainNight"]])
+                  else if (i == "rain") res <- do_amsr_average(x@data[["rainDay"]], x@data[["rainNight"]])
                   else if (i == "data") return(x@data)
               }
               dim(res) <- dim
@@ -295,22 +309,22 @@ setMethod(f="subset",
 
 #' Plot an amsr Object
 #'
-#' @param x An object inherting from \code{\link{amsr-class}}.
+#' @param x An object inheriting from \code{\link{amsr-class}}.
 #' @param y String indicating the name of the band to plot; if not provided,
 #' \code{SST} is used; see \code{\link{amsr-class}} for a list of bands.
 #' @param asp Optional aspect ratio for plot.
 #'
-#' @param missingColor List of colours for problem cases. The names of the
-#' elements in this list must be as in the default, but the colours may
+#' @param missingColor List of colors for problem cases. The names of the
+#' elements in this list must be as in the default, but the colors may
 #' be changed to any desired values. These default values work reasonably
 #' well for SST images, which are the default image, and which employ a
-#' blue-white-red blend of colours, no mixture of which matches the
+#' blue-white-red blend of colors, no mixture of which matches the
 #' default values in \code{missingColor}.
 #'
 #' @param debug A debugging flag, integer.
 #'
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
-#' \code{col} to control colours.
+#' \code{col} to control colors.
 #'
 #' @concept satellite
 #'
@@ -327,6 +341,7 @@ setMethod(f="subset",
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{amsr} data
+#' @aliases plot.amsr
 setMethod(f="plot",
           signature=signature("amsr"),
           ## FIXME: how to let it default on band??
@@ -377,7 +392,7 @@ setMethod(f="plot",
                   bad <- x[[y, "raw"]][lonDecIndices, latDecIndices] == as.raw(codes[[codeName]])
                   image(lon, lat, bad,
                         col=c("transparent", missingColor[[codeName]]), add=TRUE)
-                  ##message("did code ", codes[[codeName]], " (colour ", missingColor[[codeName]], ")")
+                  ##message("did code ", codes[[codeName]], " (color ", missingColor[[codeName]], ")")
               }
               box()
               oceDebug(debug, "} # plot.amsr()\n", unindent=1)
@@ -420,6 +435,12 @@ setMethod(f="plot",
 #' This site was found by a web search, but it seems to provide proper data.
 #' It is assumed that users will do some checking on the best source.
 #'
+#' On 23 January 2018, it was noticed that the server-url naming convention
+#' had changed, e.g.
+#' \code{http://data.remss.com/amsr2/bmaps_v07.2/y2017/m01/f34_20170114v7.2.gz}
+#' becoming
+#' \code{http://data.remss.com/amsr2/bmaps_v08/y2017/m01/f34_20170114v8.gz}
+#'
 #' @return A character value indicating the filename of the result; if
 #' there is a problem of any kind, the result will be the empty
 #' string.
@@ -435,10 +456,10 @@ setMethod(f="plot",
 #' @family functions that download files
 #' @family things related to \code{amsr} data
 #' @references
-#' \url{http://images.remss.com/amsr/amsr2_data_daily.html}
+#' \code{http://images.remss.com/amsr/amsr2_data_daily.html}
 #' provides daily images going back to 2012. Three-day,
 #' monthly, and monthly composites are also provided on that site.
-download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v07.2")
+download.amsr <- function(year, month, day, destdir=".", server="http://data.remss.com/amsr2/bmaps_v08")
 {
     ## ftp ftp://ftp.ssmi.com/amsr2/bmaps_v07.2/y2016/m08/f34_20160804v7.2.gz
     if (missing(year) && missing(month)) {
@@ -453,7 +474,7 @@ download.amsr <- function(year, month, day, destdir=".", server="http://data.rem
     year <- as.integer(year)
     month <- as.integer(month)
     day <- as.integer(day)
-    destfile <- sprintf("f34_%4d%02d%02dv7.2.gz", year, month, day)
+    destfile <- sprintf("f34_%4d%02d%02dv8.gz", year, month, day)
     destpath <- paste(destdir, destfile, sep="/")
     ## example
     ## http://data.remss.com/amsr2/bmaps_v07.2/y2015/m11/f34_20151101v7.2.gz
@@ -638,7 +659,7 @@ setMethod("composite",
                       ##message("D idot=", idot)
                   }
                   ##message("E")
-                  A <- .Call("amsr_composite", a)
+                  A <- do_amsr_composite(a, dim(a))
                   ##message("F")
                   res@data[[name]] <- A
               }

@@ -179,11 +179,11 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' This may also be a vector of any length exceeding 1, in which case its range
 #' is used.
 #' @param zlab label for the palette scale.
-#' @param breaks the z values for breaks in the colour scheme.
-#' @param col either a vector of colours corresponding to the breaks, of length
-#' 1 less than the number of breaks, or a function specifying colours, e.g.
+#' @param breaks the z values for breaks in the color scheme.
+#' @param col either a vector of colors corresponding to the breaks, of length
+#' 1 less than the number of breaks, or a function specifying colors, e.g.
 #' \code{\link{oce.colorsJet}} for a rainbow.
-#' @param colormap a colour map as created by \code{\link{colormap}}.  If
+#' @param colormap a color map as created by \code{\link{colormap}}.  If
 #' provided, this takes precedence over \code{breaks} and \code{col}.
 #' @param mai margins for palette, as defined in the usual way; see
 #' \code{\link{par}}.  If not given, reasonable values are inferred from the
@@ -198,7 +198,7 @@ paletteCalculations <- function(separation=par('cin')[2]/2,
 #' @param levels optional contour levels, in preference to \code{breaks}
 #' values, to be added to the image if \code{drawContours} is \code{TRUE}.
 #' @param drawContours logical value indicating whether to draw contours on the
-#' palette, at the colour breaks.
+#' palette, at the color breaks.
 #' @param plot logical value indicating whether to plot the palette, the
 #' default, or whether to just alter the margins to make space for where the
 #' palette would have gone.  The latter case may be useful in lining up plots,
@@ -341,7 +341,7 @@ drawPalette <- function(zlim, zlab="",
                     contours <- breaks
                 } else {
                     if (is.function(col)) {
-                        breaks <- seq(zlim[1], zlim[2], length.out=PLEN) # smooth image colour scale
+                        breaks <- seq(zlim[1], zlim[2], length.out=PLEN) # smooth image color scale
                         contours <- pretty(zlim)
                     } else {
                         breaks <- seq(zlim[1], zlim[2], length.out=1+length(col))
@@ -523,17 +523,17 @@ drawPalette <- function(zlim, zlab="",
 
 #' Plot an Image with a Color Palette
 #'
-#' Plot an image with a colour palette, in a way that does not conflict with
+#' Plot an image with a color palette, in a way that does not conflict with
 #' \code{\link{par}(mfrow)} or \code{\link{layout}}.  To plot just a palette,
-#' e.g. to get an x-y plot with points coloured according to a palette, use
+#' e.g. to get an x-y plot with points colored according to a palette, use
 #' \code{\link{drawPalette}} and then draw the main diagram.
 #'
 #' @details
-#' By default, creates an image with a colour palette to the right.  The effect is similar to
+#' By default, creates an image with a color palette to the right.  The effect is similar to
 #' \code{\link{filled.contour}} except that with \code{imagep} it is possible to
 #' set the \code{\link{layout}} outside the function, which enables the creation
 #' of plots with many image-palette panels.  Note that the contour lines may not
-#' coincide with the colour transitions, in the case of coarse images.
+#' coincide with the color transitions, in the case of coarse images.
 #'
 #' Note that this does not use \code{\link{layout}} or any of the other screen
 #' splitting methods.  It simply manipulates margins, and draws two plots
@@ -574,19 +574,19 @@ drawPalette <- function(zlim, zlab="",
 #' @param  xlim,ylim Limits on x and y axes.
 #' @param  zlim If missing, the z scale is determined by the range of the data.
 #'         If provided, \code{zlim} may take several forms. First, it may be a pair
-#'         of numbers that specify the limits for the colour scale.  Second,
+#'         of numbers that specify the limits for the color scale.  Second,
 #'         it could be the string \code{"histogram"}, to yield a flattened
 #'         histogram (i.e. to increase contrast). Third, it could be the
 #'         string \code{"symmetric"}, to yield limits that are symmetric
 #'         about zero, which can be helpful in drawing velocity fields,
 #'         for which a zero value has a particular meaning (in which case,
-#'         a good colour scheme might be \code{col=\link{oceColorsTwo}}).
-#' @param  zclip Logical, indicating whether to clip the colours to those
+#'         a good color scheme might be \code{col=\link{oceColorsTwo}}).
+#' @param  zclip Logical, indicating whether to clip the colors to those
 #'         corresponding to \code{zlim}. This only works if \code{zlim} is
-#'         provided. Clipped regions will be coloured with \code{missingColor}.
+#'         provided. Clipped regions will be colored with \code{missingColor}.
 #'         Thus, clipping an image is somewhat analogous to clipping in an xy
 #'         plot, with clipped data being ignored, which in an image means to be be
-#'         coloured with \code{missingColor}.
+#'         colored with \code{missingColor}.
 #' @param  flipy Logical, with \code{TRUE} indicating that the image
 #'         should be flipped top to bottom (e.g. to produce a profile image
 #'         for a downward-looking acoustic-doppler profile).
@@ -602,7 +602,7 @@ drawPalette <- function(zlim, zlab="",
 #'         in the horizontal or vertical direction (or both) if the length of the
 #'         corresponding edge of the \code{z} matrix exceeds 800. (This also creates
 #'         a warning message.) The decimation
-#'         factor is computed as the integet just below the ratio of \code{z} dimension
+#'         factor is computed as the integer just below the ratio of \code{z} dimension
 #'         to 400. Thus, no decimation is done if the dimension is less than 800,
 #'         but if the dimension s between 800 and 1199, only every second grid
 #'         point is mapped to a pixel in the image.  \strong{Case 3.}
@@ -612,13 +612,13 @@ drawPalette <- function(zlim, zlab="",
 #'         \code{decimate} is a vector of two integers, the first is used for
 #'         the first index of \code{z}, and the second is used for the second
 #'         index.
-#' @param  breaks The z values for breaks in the colour scheme.  If this is of
+#' @param  breaks The z values for breaks in the color scheme.  If this is of
 #'         length 1, the value indicates the desired number of breaks, which is
 #'         supplied to \code{\link{pretty}}, in determining clean break points.
-#' @param  col Either a vector of colours corresponding to the breaks, of length
-#'         1 plus the number of breaks, or a function specifying colours,
+#' @param  col Either a vector of colors corresponding to the breaks, of length
+#'         1 plus the number of breaks, or a function specifying colors,
 #'         e.g. \code{\link{oce.colorsJet}} for a rainbow.
-#' @param  colormap A colour map as created by \code{\link{colormap}}.  If
+#' @param  colormap A color map as created by \code{\link{colormap}}.  If
 #'         provided, then \code{colormap$breaks} and \code{colormap$col} take
 #'         precedence over the present arguments \code{breaks} and \code{col}.
 #'         (All of the other contents of \code{colormap} are ignored, though.)
@@ -626,7 +626,7 @@ drawPalette <- function(zlim, zlab="",
 #'         correspond with \code{at}).
 #' @param  at Optional vector of positions for the \code{label}s.
 #' @param  drawContours Logical value indicating whether to draw contours on the
-#'         image, and palette, at the colour breaks.  Images with a great deal of
+#'         image, and palette, at the color breaks.  Images with a great deal of
 #'         high-wavenumber variation look poor with contours.
 #' @param  tformat Optional argument passed to \code{\link{oce.plot.ts}}, for
 #'         plot types that call that function.  (See \code{\link{strptime}} for the
@@ -650,13 +650,13 @@ drawPalette <- function(zlim, zlab="",
 #'         \code{\link{drawPalette}}.
 #' @param  filledContour Boolean value indicating whether to use filled
 #'         contours to plot the image.
-#' @param  missingColor A colour to be used to indicate missing data, or
+#' @param  missingColor A color to be used to indicate missing data, or
 #'         \code{NULL} for transparent (to see this, try setting
 #'         \code{par("bg")<-"red"}).
 #' @param useRaster A logical value passed to \code{\link{image}}, in cases
 #'        where \code{filledContour} is \code{FALSE}. Setting \code{useRaster=TRUE}
 #'        can alleviate some anti-aliasing effects on some plot devices;
-#'        see the documentaiton for \code{\link{image}}.
+#'        see the documentation for \code{\link{image}}.
 #' @param  mgp A 3-element numerical vector to use for \code{par(mgp)}, and
 #'         also for \code{par(mar)}, computed from this.  The default is
 #'         tighter than the R default, in order to use more space for the
@@ -676,8 +676,6 @@ drawPalette <- function(zlim, zlab="",
 #'        mean latitude in \code{x}, as a way to reduce geographical distortion.
 #'        Otherwise, if \code{asp} is not \code{NA}, then it is used directly.
 #' @param  cex Size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").
-#'
-#' @template adornTemplate
 #'
 #' @param  axes Logical, set \code{TRUE} to get axes on the main image.
 #' @param  main Title for plot.
@@ -776,7 +774,6 @@ imagep <- function(x, y, z,
                    xaxs="i", yaxs="i",
                    asp=NA,
                    cex=par("cex"),
-                   adorn=NULL,
                    axes=TRUE,
                    main="",
                    axisPalette,
@@ -784,7 +781,11 @@ imagep <- function(x, y, z,
                    debug=getOption("oceDebug"),
                    ...)
 {
+
+    if ("adorn" %in% names(list(...)))
+        warning("the 'adorn' argument was removed in November 2017")
     zlabPosition <- match.arg(zlabPosition)
+
     oceDebug(debug, "imagep(x, y, z, ",
              argShow(cex),
              argShow(flipy),
@@ -823,14 +824,18 @@ imagep <- function(x, y, z,
                 z[z < zlim[1]] <- zlim[1]
                 z[z > zlim[2]] <- zlim[2]
             } else {
-              oceDebug(debug, "using missingColour for out-of-range values")
+              oceDebug(debug, "using missingColor for out-of-range values")
                 z[z < zlim[1]] <- NA
                 z[z > zlim[2]] <- NA
             }
             oceDebug(debug, "decimate: ", paste(decimate, collapse=" "), " (before calculation)\n")
             if (is.logical(decimate)) {
-                decimate <- as.integer(dim(z) / 400)
-                decimate <- ifelse(decimate < 1, 1, decimate)
+                if (decimate) {
+                    decimate <- as.integer(dim(z) / 400)
+                    decimate <- ifelse(decimate < 1, 1, decimate)
+                } else {
+                    decimate <- c(1, 1)
+                }
             } else {
                 decimate <- rep(as.numeric(decimate), length.out=2)
             }
@@ -847,21 +852,14 @@ imagep <- function(x, y, z,
         stop("'add' must be a logical value")
     }
 
-    if (!is.null(adorn))
-        warning("In imagep() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
     xlimGiven <- !missing(xlim)
     ylimGiven <- !missing(ylim)
     zlimGiven <- !missing(zlim) && !is.null(zlim) # latter is used by plot,adp-method
     ## Guard against poor setup
     if (xlimGiven && length(xlim) != 2) stop("length of xlim must be 2")
     if (ylimGiven && length(ylim) != 2) stop("length of ylim must be 2")
-    if (zlimGiven && length(zlim) != 2) stop("length of zlim must be 2")
+    if (zlimGiven && !(length(zlim) %in% 1:2)) stop("length of zlim must be 1 or 2")
 
-    if (zlimGiven && is.character(zlim)) {
-        if ("symmetric" == zlim) {
-            zlim <- c(-1, 1) * max(abs(z), na.rm=TRUE)
-        }
-    }
     breaksGiven <- !missing(breaks)
     if (zlimGiven && breaksGiven && length(breaks) > 1)
         stop("cannot specify both zlim and breaks, unless length(breaks)==1")
@@ -1031,6 +1029,12 @@ imagep <- function(x, y, z,
 
     par(mgp=mgp, mar=mar, cex=cex)
 
+    if (zlimGiven && is.character(zlim)) {
+        if ("symmetric" == zlim) {
+            zlim <- c(-1, 1) * max(abs(z), na.rm=TRUE)
+        }
+    }
+
     zlimHistogram <- zlimGiven && zlim == "histogram"
     breaksGiven <- !missing(breaks)
     colormapGiven <- !missing(colormap)
@@ -1048,10 +1052,10 @@ imagep <- function(x, y, z,
         ## Determine breaks unless zlim=="histogram".
         if (zlimHistogram) {
             if (missing(col))
-                col <- oce.colorsPalette(200) # FIXME: how many colours to use?
+                col <- oce.colorsPalette(200) # FIXME: how many colors to use?
         } else {
             if (!breaksGiven) {
-                nbreaks <- 128                 # smooth image colour scale
+                nbreaks <- 128                 # smooth image color scale
                 if (missing(zlim)) {
                     if (missing(col)) {
                         breaks <- pretty(zrange, n=nbreaks)
@@ -1094,7 +1098,7 @@ imagep <- function(x, y, z,
         breaks2 <- if (missing(breaks)) NULL else breaks
         col2 <- if (missing(col)) NULL else col
         ## message("imagep() col:  ", paste(col, collapse=" "))
-        ## If not z clipping, enlarge breaks/cols to avoid missing-colour regions
+        ## If not z clipping, enlarge breaks/cols to avoid missing-color regions
         oceDebug(debug, "zrange=c(", zrange[1], ",", zrange[2], ")\n", sep="")
         oceDebug(debug, "zclip:", zclip, "\n")
         oceDebug(debug, "zlimHistogram:", zlimHistogram, "\n")
@@ -1199,7 +1203,7 @@ imagep <- function(x, y, z,
     ## zlim <- if (missing(zlim)) range(z, na.rm=TRUE) else zlim
     ## oceDebug(debug, "zlim=c(", paste(zlim, collapse=","), ")\n", sep="")
 
-    ## trim image to limits, so endpoint colours will indicate outliers
+    ## trim image to limits, so endpoint colors will indicate outliers
     if (!zclip && !zlimHistogram) {
         oceDebug(debug, "using zlim[1:2]=c(", zlim[1], ",", zlim[2], ") for out-of-range values\n")
         z[z < zlim[1]] <- zlim[1]
@@ -1212,7 +1216,7 @@ imagep <- function(x, y, z,
         ylim <- rev(ylim)
     }
     if (zclip && !zlimHistogram) {
-        oceDebug(debug, "using missingColour for out-of-range values")
+        oceDebug(debug, "using missingColor for out-of-range values")
         z[z < zlim[1]] <- NA
         z[z > zlim[2]] <- NA
     }
@@ -1307,11 +1311,6 @@ imagep <- function(x, y, z,
     }
     if (zlabPosition == "top")
         mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/8)
-    if (!missing(adorn)) {
-        t <- try(eval.parent(adorn), silent=!TRUE)
-        if (class(t) == "try-error")
-            warning("cannot evaluate adorn='", adorn, "'")
-    }
     par(cex=ocex)
     oceDebug(debug, "par('mai')=c(",
              paste(format(par('mai'), digits=2), collapse=","), "); par('mar')=c(",

@@ -5,22 +5,54 @@
 \alias{sealevel-class}
 \title{Class to Store Sealevel Data}
 \description{
-Class to store sealevel data, e.g. from a tide gauge, with standard slots
-\code{metadata}, \code{data} and \code{processingLog}.
+This class stores sealevel data, e.g. from a tide gauge.
 }
-\section{Methods}{
- Data may be accessed as e.g.  \code{sealevel[["time"]]},
-where the string could also be e.g.  \code{"elevation"} for the
-corresponding sea-level elevation, or e.g.  \code{"longitude"} or
-\code{"latitude"} for scalars.  Items in \code{metadata} must be specifield
-by full name, but those in \code{data} may be abbreviated, so long as the
-abbreviation is unique.
+\section{Slots}{
 
-Everything that may be accessed may also be assigned, e.g.
-\code{sealevel[["elevation"]] <- value}.
+\describe{
+\item{\code{data}}{As with all \code{oce} objects, the \code{data} slot
+for \code{sealevel} objects is a
+\code{\link{list}} containing the main data for the object.
+The key items stored in this slot are \code{time} and \code{elevation}.}
 
-The \code{show} method displays information about the object, while
-\code{\link{summary,sealevel-method}} provides a statistical summary.
+\item{\code{metadata}}{As with all \code{oce} objects, the \code{metadata} slot
+for \code{sealevel} objects is a \code{\link{list}} containing
+information about the \code{data} or about the object itself.
+An example of the former might be the location at which a \code{sealevel} measurement was made, stored in \code{longitude} and \code{latitude}, and of the latter might be \code{filename}, the name of the data source.}
+
+\item{\code{processingLog}}{As with all \code{oce} objects, the \code{processingLog} slot
+for \code{sealevel} objects is a
+\code{\link{list}} with entries describing the creation and evolution
+of the object. The contents are updated by various \code{oce} functions to
+keep a record of processing steps.  Object summaries and
+\code{\link{processingLogShow}} both display the log.}
+}}
+
+\section{Modifying slot contents}{
+
+
+Although the \code{[[<-} operator may permit modification of the contents
+of \code{sealevel} objects (see \code{\link{[[<-,sealevel-method}}),
+it is better to use \code{\link{oceSetData}}
+and \code{\link{oceSetMetadata}}, because that will save an entry
+in the \code{processingLog} to describe the change.
+}
+
+\section{Retrieving slot contents}{
+
+
+The full contents of the \code{data} and \code{metadata} slots of a \code{sealevel}
+object named \code{sealevel} may be retrieved in the standard R way. For example,
+\code{slot(sealevel, "data")} and \code{slot(sealevel, "metadata")} return
+the \code{data} and \code{metadata} slots, respectively. The
+\code{\link{[[,sealevel-method}} operator can also be used to access slots,
+with \code{sealevel[["data"]]} and \code{sealevel[["metadata"]]}, respectively.
+Furthermore, \code{\link{[[,sealevel-method}} can be used to retrieve
+named items (and potentially some derived items) within the
+\code{metadata} and \code{data} slots, the former taking precedence
+over the latter in the lookup. It is also possible
+to find items more directly, using \code{\link{oceGetData}} and
+\code{\link{oceGetMetadata}}, but this cannot retrieve derived items.
 }
 
 \seealso{
@@ -28,7 +60,6 @@ Other classes provided by \code{oce}: \code{\link{adp-class}},
   \code{\link{adv-class}}, \code{\link{argo-class}},
   \code{\link{bremen-class}}, \code{\link{cm-class}},
   \code{\link{coastline-class}}, \code{\link{ctd-class}},
-  \code{\link{echosounder-class}},
   \code{\link{lisst-class}}, \code{\link{lobo-class}},
   \code{\link{met-class}}, \code{\link{oce-class}},
   \code{\link{odf-class}}, \code{\link{rsk-class}},
@@ -48,3 +79,5 @@ Other things related to \code{sealevel} data: \code{\link{[[,sealevel-method}},
 \author{
 Dan Kelley
 }
+\concept{classes provided by \code{oce}}
+\concept{things related to \code{sealevel} data}

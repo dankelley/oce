@@ -21,7 +21,7 @@ be a function or a string naming a built-in method.  The built-in methods are
 interpolation between neighboring points, using \code{\link{approx}}
 with the \code{rule} argument specified here), \code{"lm"} (based on local
 regression, with \code{e} setting the size of the local region), \code{"rr"}
-(for the Reineger and Ross method, carried out with \code{\link{oce.approx}})
+(for the Reiniger and Ross method, carried out with \code{\link{oce.approx}})
 and \code{"unesco"} (for the UNESCO method, carried out with.
 \code{\link{oce.approx}}.  If \code{method} is a function, then it must take
 three arguments, the first being pressure, the second being an arbitrary
@@ -114,6 +114,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdFindProfiles}}, \code{\link{ctdRaw}},
   \code{\link{ctdTrim}}, \code{\link{ctd}},
   \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
+  \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
@@ -122,6 +124,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{setFlags,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
@@ -130,3 +133,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{ctd} data}

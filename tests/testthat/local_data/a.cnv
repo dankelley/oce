@@ -1,0 +1,116 @@
+* Sea-Bird SBE 9 Data File:
+* FileName = C:\CTD\SurveyNord_2012\44.hex
+* Software Version Seasave V 7.17
+* Temperature SN = 1419
+* Conductivity SN = 1090
+* Number of Bytes Per Scan = 28
+* Number of Voltage Words = 3
+* Number of Scans Averaged by the Deck Unit = 1
+* System UpLoad Time = Sep 10 2012 06:07:32
+* NMEA Latitude = 25 12.94 N
+* NMEA Longitude = 033 19.58 E
+* NMEA UTC (Time) = Sep 10 2012  06:02:47
+* Store Lat/Lon Data = Append to Every Scan
+** Ship:G. xxx 
+** Cruise: xxx 
+** Station: 44
+** Depth: 16
+# nquan = 11
+# nvalues = 31                          
+# units = specified
+# name 0 = prDM: Pressure, Digiquartz [db]
+# name 1 = t090C: Temperature [ITS-90, deg C]
+# name 2 = flScufa: Fluorescence, Turner SCUFA [RFU]
+# name 3 = obsscufa: OBS, Turner SCUFA [NTU]
+# name 4 = svCM: Sound Velocity [Chen-Millero, m/s]
+# name 5 = c0S/m: Conductivity [S/m]
+# name 6 = sbeox0ML/L: Oxygen, SBE 43 [ml/l]
+# name 7 = sbeox0PS: Oxygen, SBE 43 [% saturation]
+# name 8 = sal00: Salinity [PSU]
+# name 9 = sigma-�00: Density [sigma-theta, Kg/m^3]
+# name 10 = flag:
+# span 0 =      1.000,     16.000       
+# span 1 =    22.5884,    23.4665       
+# span 2 =     0.3225,     0.7191       
+# span 3 =     0.0766,     0.1480       
+# span 4 =    1531.83,    1533.53       
+# span 5 =   5.424785,   5.480658       
+# span 6 =    4.40325,    4.62734       
+# span 7 =   91.06328,   96.48873       
+# span 8 =    37.5608,    37.8752       
+# span 9 =    25.7403,    26.2366       
+# span 10 = 0.0000e+00, 0.0000e+00      
+# interval = decibars: 0.5              
+# start_time = Sep 10 2012 06:07:32
+# bad_flag = -9.990e-29
+# sensor 0 = Frequency  0  temperature, 1419, 25-Oct-11
+# sensor 1 = Frequency  1  conductivity, 1090, 21-Oct-11, cpcor = -9.5700e-08
+# sensor 2 = Frequency  2  pressure, 0308, 09-Dic-05
+# sensor 3 = Extrnl Volt  0  Oxygen, SBE, primary, 0065, 12-set-2011
+# sensor 4 = Extrnl Volt  2  Fluorometer, Turner, SCUFA, primary
+# sensor 5 = Extrnl Volt  3  OBS, Turner, SCUFA
+# sensor 6 = Extrnl Volt  4  altimeter
+# datcnv_date = Sep 25 2012 17:46:02, 7.17a
+# datcnv_in = c:\ctd\surveynord_2012\processing\44.hex c:\ctd\surveynord_2012\processing\SurveyNord_2012.CON
+# datcnv_skipover = 0
+# filter_date = Sep 25 2012 17:46:20, 7.17a
+# filter_in = c:\ctd\surveynord_2012\processing\44.cnv
+# filter_low_pass_tc_A = 0.000
+# filter_low_pass_tc_B = 0.150
+# filter_low_pass_A_vars = t090C
+# filter_low_pass_B_vars = prDM
+# alignctd_date = Sep 25 2012 17:46:24, 7.17a
+# alignctd_in = c:\ctd\surveynord_2012\processing\44.cnv
+# alignctd_adv = sbeox0V 3.000                                                                                                                                                                                                       
+# celltm_date = Sep 25 2012 17:46:28, 7.17a
+# celltm_in = c:\ctd\surveynord_2012\processing\44.cnv
+# celltm_alpha = 0.0300, 0.0000
+# celltm_tau = 7.0000, 0.0000
+# celltm_temp_sensor_use_for_cond = primary, 
+# Derive_date = Sep 25 2012 17:46:32, 7.17a
+# Derive_in = c:\ctd\surveynord_2012\processing\44.cnv c:\ctd\surveynord_2012\processing\SurveyNord_2012.CON
+# derive_time_window_docdt = seconds: 2
+# binavg_date = Sep 25 2012 17:46:37, 7.17a
+# binavg_in = c:\ctd\surveynord_2012\processing\44.cnv
+# binavg_bintype = decibars
+# binavg_binsize = 0.5
+# binavg_excl_bad_scans = yes
+# binavg_skipover = 0
+# binavg_surface_bin = yes, min = 0.000, max = 0.250, value = 0.000
+# Derive_date = Sep 25 2012 17:46:41, 7.17a
+# Derive_in = c:\ctd\surveynord_2012\processing\44.cnv c:\ctd\surveynord_2012\processing\SurveyNord_2012.CON
+# strip_date = Sep 25 2012 17:46:46, 7.17a
+# strip_in = c:\ctd\surveynord_2012\processing\44.cnv
+# file_type = ascii
+*END*
+      1.000    23.4665     0.4373     0.0879    1533.44   5.480658    4.56493   95.24649    37.5608    25.7403 0.0000e+00
+      1.500    23.4620     0.3913     0.0895    1533.44   5.480222    4.61079   96.19614    37.5610    25.7419 0.0000e+00
+      2.000    23.4614     0.3225     0.0766    1533.44   5.480183    4.61050   96.18900    37.5611    25.7422 0.0000e+00
+      2.500    23.4599     0.3403     0.0785    1533.45   5.480043    4.61696   96.32124    37.5611    25.7426 0.0000e+00
+      3.000    23.4593     0.4210     0.0877    1533.46   5.479990    4.62226   96.43076    37.5610    25.7427 0.0000e+00
+      3.500    23.4594     0.4904     0.0950    1533.47   5.480054    4.62356   96.45828    37.5612    25.7429 0.0000e+00
+      4.000    23.4599     0.4706     0.0947    1533.47   5.480096    4.60250   96.01962    37.5610    25.7426 0.0000e+00
+      4.500    23.4605     0.4950     0.1046    1533.48   5.480187    4.60266   96.02386    37.5610    25.7425 0.0000e+00
+      5.000    23.4610     0.4990     0.1006    1533.49   5.480290    4.62490   96.48873    37.5612    25.7426 0.0000e+00
+      5.500    23.4611     0.5001     0.0954    1533.50   5.480313    4.62151   96.41824    37.5611    25.7425 0.0000e+00
+      6.000    23.4613     0.4997     0.0941    1533.51   5.480342    4.59655   95.89759    37.5610    25.7424 0.0000e+00
+      6.500    23.4594     0.4986     0.0938    1533.52   5.480193    4.59451   95.85231    37.5613    25.7431 0.0000e+00
+      7.000    23.4576     0.4915     0.0941    1533.52   5.479989    4.57765   95.49737    37.5611    25.7436 0.0000e+00
+      7.500    23.4581     0.5063     0.0935    1533.53   5.480037    4.58075   95.56274    37.5608    25.7432 0.0000e+00
+      8.000    23.4567     0.4958     0.0935    1533.53   5.479957    4.59180   95.79104    37.5612    25.7440 0.0000e+00
+      8.500    23.4465     0.5001     0.0959    1533.53   5.480170    4.59945   95.93935    37.5714    25.7548 0.0000e+00
+      9.000    23.3750     0.5082     0.0995    1533.41   5.478392    4.61014   96.06971    37.6185    25.8116 0.0000e+00
+      9.500    23.2932     0.5110     0.0987    1533.25   5.473548    4.59741   95.68668    37.6506    25.8601 0.0000e+00
+     10.000    23.2620     0.5276     0.1035    1533.19   5.471152    4.58958   95.47660    37.6586    25.8754 0.0000e+00
+     10.500    23.2250     0.5318     0.1096    1533.11   5.467680    4.60202   95.67637    37.6632    25.8898 0.0000e+00
+     11.000    23.1965     0.5337     0.1115    1533.05   5.465231    4.62734   96.15820    37.6684    25.9021 0.0000e+00
+     11.500    23.1641     0.5348     0.1153    1532.99   5.462667    4.62501   96.06005    37.6761    25.9175 0.0000e+00
+     12.000    23.1477     0.5348     0.1159    1532.96   5.461252    4.59111   95.33057    37.6789    25.9245 0.0000e+00
+     12.500    23.1203     0.5511     0.1204    1532.91   5.459007    4.55207   94.47813    37.6848    25.9370 0.0000e+00
+     13.000    23.0438     0.5895     0.1297    1532.76   5.454910    4.52523   93.81471    37.7184    25.9850 0.0000e+00
+     13.500    22.9601     0.5992     0.1302    1532.60   5.450962    4.53119   93.82364    37.7595    26.0407 0.0000e+00
+     14.000    22.9211     0.6106     0.1269    1532.53   5.449097    4.50993   93.33055    37.7784    26.0664 0.0000e+00
+     14.500    22.8766     0.6063     0.1268    1532.45   5.446844    4.40325   91.06328    37.7990    26.0951 0.0000e+00
+     15.000    22.8227     0.6119     0.1327    1532.34   5.442665 -9.990e-29 -9.990e-29    37.8127    26.1212 0.0000e+00
+     15.500    22.7385     0.6501     0.1444    1532.16   5.436771 -9.990e-29 -9.990e-29    37.8393    26.1659 0.0000e+00
+     16.000    22.5884     0.7191     0.1480    1531.83   5.424785 -9.990e-29 -9.990e-29    37.8752    26.2366 0.0000e+00

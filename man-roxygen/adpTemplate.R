@@ -42,3 +42,8 @@
 #' @param \dots additional arguments, passed to called routines.
 #'
 #' @return An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+#' The form of this object varies with instrument type. In some cases
+#' navigational data may be included, e.g. \code{read.adp.rdi} can
+#' read NMEA strings (which get stored in an item called \code{nmea}
+#' in the \code{data} slot).
+

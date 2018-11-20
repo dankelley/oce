@@ -232,6 +232,7 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 #' @param eos equation of state, either \code{"unesco"} or \code{"gsw"}.
 #' @param \dots additional argument, passed to \code{\link{smooth.spline}}, in
 #' the case that \code{derivs="smoothing"}.  See \dQuote{Details}.
+#' @template debugTemplate
 #' @return Square of buoyancy frequency [\eqn{radian^2/s^2}{radian^2/s^2}].
 #' @author Dan Kelley
 #' @examples
@@ -251,8 +252,10 @@ swRrho <- function(ctd, sense=c("diffusive", "finger"), smoothingLength=10, df,
 #' abline(v=0)
 #' @family functions that calculate seawater properties
 swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
-                 eos=getOption("oceEOS", default="gsw"), ...)
+                 eos=getOption("oceEOS", default="gsw"),
+                 debug=getOption("oceDebug"),  ...)
 {
+    oceDebug(debug, "swN2(...) {\n", sep="", unindent=1)
     ##cat("swN2(..., df=", df, ")\n",sep="")
     eos <- match.arg(eos, c("unesco", "gsw"))
     ##useSmoothing <- !missing(df) && is.finite(df)
@@ -307,20 +310,31 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, df,
         p <- ctd[["pressure"]]
         ##np <- length(p)
         ok <- !is.na(p) & !is.na(SA) & !is.na(CT)
-        if (missing(df))
-            df <- round(length(p[ok]) / 10)
-        df <- max(df, 2) # smooth.spline won't work if df<2
-        if (length(p[ok]) > 4 && is.finite(df)) {
-            SA <- predict(smooth.spline(p[ok], SA[ok], df=df), p)$y
-            CT <- predict(smooth.spline(p[ok], CT[ok], df=df), p)$y
+        depths <- sum(!is.na(p))
+        if (missing(df)) {
+            df <- if (depths > 100) f <- floor(depths / 10) # at least 10
+                else if (depths > 20) f <- floor(depths / 3) # at least 7
+                else if (depths > 10) f <- floor(depths / 2) # at least 5
+                else depths
+            oceDebug(debug, "df=", df, " (calculated using depths=", depths, ")\n", sep="")
+        } else {
+            oceDebug(debug, "df=", df, " (given as an argument to swNw())\n", sep="")
+        }
+        if (sum(ok) > 4 && is.finite(df)) {
+            SA <- predict(smooth.spline(p[ok], SA[ok], df=df), p[ok])$y
+            CT <- predict(smooth.spline(p[ok], CT[ok], df=df), p[ok])$y
         }
         latitude <- ctd[["latitude"]]
         if (is.na(latitude[1]))
             latitude <- 0
         l <- gsw::gsw_Nsquared(SA=SA, CT=CT, p=p, latitude=latitude[1])
         ## approx back to the given pressures
-        res <- approx(l$p_mid, l$N2, p, rule=2)$y
+        ok <- is.finite(l$p_mid) & is.finite(l$N2)
+        x <- l$p_mid[ok]
+        y <- l$N2[ok]
+        res <- approx(x, y, p, rule=2)$y
     }
+    oceDebug(debug, "} # swN2()\n", sep="", unindent=1)
     res
 }
 
@@ -776,11 +790,9 @@ swTFreeze <- function(salinity, pressure=0,
             stop("must supply longitude")
         if (is.null(latitude))
             stop("must supply latitude")
-        l <- lookWithin(list(salinity=salinity, pressure=pressure,
-                             longitude=longitude, latitude=latitude,
-                             saturation_fraction=saturation_fraction, eos=eos))
+        l <- lookWithin(list(salinity=salinity, pressure=pressure, longitude=longitude, latitude=latitude))
     } else {
-        l <- lookWithin(list(salinity=salinity, pressure=pressure, eos=eos))
+        l <- lookWithin(list(salinity=salinity, pressure=pressure))
     }
     Smatrix <- is.matrix(l$salinity)
     dim <- dim(l$salinity)
@@ -789,7 +801,7 @@ swTFreeze <- function(salinity, pressure=0,
         res <- T90fromT68(res)
     } else if (eos == "gsw") {
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
-        res <- gsw::gsw_t_freezing(SA=SA, p=0, saturation_fraction=l$saturation_fraction)
+        res <- gsw::gsw_t_freezing(SA=SA, p=0, saturation_fraction=saturation_fraction)
     }
     if (Smatrix) dim(res) <- dim
     res
@@ -876,7 +888,7 @@ swAlpha <- function(salinity, temperature=NULL, pressure=0,
 #' @return Value in psu/\eqn{^\circ}{deg}C.
 #' @author Dan Kelley
 #' @references The \code{eos="unesco"} formulae are based on the UNESCO
-#' equation of state, but are formulaed empirically by Trevor J. McDougall,
+#' equation of state, but are formulated empirically by Trevor J. McDougall,
 #' 1987, Neutral Surfaces, Journal of Physical Oceanography, volume 17, pages
 #' 1950-1964. The \code{eos="gsw"} formulae come from GSW; see references in
 #' the \code{\link{swRho}} documentation.
@@ -1578,7 +1590,7 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL,
 #' @author Dan Kelley
 #' @references See citations provided in the \code{\link{swRho}} documentation.
 #' @examples
-#' expect_equal(26.42066, swSigmaTheta(35, 13, 1000, eos="unesco"), tolerance=0.00001)
+#' expect_equal(26.4212790994, swSigmaTheta(35, 13, 1000, eos="unesco"))
 #'
 #' @family functions that calculate seawater properties
 swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
@@ -1973,9 +1985,9 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=0,
 #' salty compared with less spicy water. Another interpretation is that spice
 #' is a variable measuring distance orthogonal to isopycnal lines on TS
 #' diagrams (if the diagrams are scaled to make the isopycnals run at 45
-#' degres). The definition used here is that of Pierre Flament. (Other
+#' degrees). The definition used here is that of Pierre Flament. (Other
 #' formulations exist.)  Note that pressure is ignored in the definition.
-#' Spiceness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
+#' Spiciness is sometimes denoted \eqn{\pi(S,t,p)}{pi(S,t,p)}.
 #'
 #' @param salinity either salinity [PSU] (in which case \code{temperature} and
 #' \code{pressure} must be provided) \strong{or} a \code{ctd} object (in which
@@ -2069,7 +2081,7 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
 #' @examples
 #' library(oce)
 #' ## test value from Fofonoff et al., 1983
-#' expect_equal(36.89073, swTheta(40, T90fromT68(40), 10000, 0, eos="unesco"), tolerance=0.00001)
+#' expect_equal(36.8818748026, swTheta(40, T90fromT68(40), 10000, 0, eos="unesco"))
 #'
 #' # Example from a cross-Atlantic section
 #' data(section)
@@ -2121,11 +2133,14 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
         SA <- gsw::gsw_SA_from_SP(SP=l$salinity, p=l$pressure, longitude=l$longitude, latitude=l$latitude)
         res <- gsw::gsw_pt_from_t(SA=SA, t=l$temperature, p=l$pressure, p_ref=referencePressure)
     } else if (eos == "unesco") {
+        ## Note the conversion to the T68 scale, because that's the scale
+        ## used by the UNESCO formula.
         res <- .C("theta_UNESCO_1983",
                   as.integer(nS),
                   as.double(l$salinity), as.double(T68fromT90(l$temperature)), as.double(l$pressure),
                   as.double(referencePressure),
                   value=double(nS), NAOK=TRUE, PACKAGE = "oce")$value
+        res <- T90fromT68(res)
     }
     if (Smatrix)
         dim(res) <- dim

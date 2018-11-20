@@ -40,7 +40,7 @@ used is to find the distance \emph{along a
 geodesic curve} connecting (\code{longitude[i]}, \code{latitude[i]}) with
 (\code{longitudeRef}, \code{latitude[i]}). The resultant distance
 is multiplied by -1 if \code{longitude[i]-longitudeRef} is negative,
-and the result is assigned to \code{x[i]}. 
+and the result is assigned to \code{x[i]}.
 A similar procedure is used for \code{y[i]}.
 }
 \section{Caution}{
@@ -82,7 +82,7 @@ mapCoordinateSystem(lonR, latR, 500, angle, col=2)
 UTM <- lonlat2utm(lon, lat, zone=18) # we need to set the zone for this task!
 angleUTM <- 180/pi*atan(coef(lm(northing~easting, data=UTM))[2])
 mapCoordinateSystem(lonR, latR, 500, angleUTM, col=3)
-legend("topright", lwd=1, col=2:3, bg="white", title="Axis Rotation Angle", 
+legend("topright", lwd=1, col=2:3, bg="white", title="Axis Rotation Angle",
        legend=c(sprintf("geod: \%.1f deg", angle), sprintf("utm: \%.1f deg",angleUTM)))
 }
 }
@@ -95,3 +95,4 @@ Other functions relating to geodesy: \code{\link{geodDist}},
 \author{
 Dan Kelley
 }
+\concept{functions relating to geodesy}

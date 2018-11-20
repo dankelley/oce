@@ -24,7 +24,7 @@ objects inheriting from \code{\link{oce-class}}.  The purpose,
 as with the related extraction method, \code{\link{[[}},
 is to insulate users from the internal details of \code{oce}
 objects, by looking for items within the various storage
-slots of the object. Items not actually stored can also be 
+slots of the object. Items not actually stored can also be
 replaced, including units and data-quality
 flags.
 }
@@ -61,6 +61,8 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,ctd-method}},
   \code{\link{[[<-,echosounder-method}},
   \code{\link{[[<-,g1sst-method}},
+  \code{\link{[[<-,ladp-method}},
+  \code{\link{[[<-,landsat-method}},
   \code{\link{[[<-,lisst-method}},
   \code{\link{[[<-,lobo-method}},
   \code{\link{[[<-,met-method}},
@@ -78,3 +80,5 @@ Other things related to \code{gps} data: \code{\link{[[,gps-method}},
   \code{\link{plot,gps-method}}, \code{\link{read.gps}},
   \code{\link{summary,gps-method}}
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{gps} data}

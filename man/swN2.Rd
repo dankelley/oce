@@ -5,7 +5,7 @@
 \title{Squared buoyancy frequency for seawater}
 \usage{
 swN2(pressure, sigmaTheta = NULL, derivs, df, eos = getOption("oceEOS",
-  default = "gsw"), ...)
+  default = "gsw"), debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{pressure}{either pressure [dbar] (in which case \code{sigmaTheta} must
@@ -23,6 +23,14 @@ be a character string or a function of two arguments.  See \dQuote{Details}.}
 used for smoothing; set to \code{NA} to prevent smoothing.}
 
 \item{eos}{equation of state, either \code{"unesco"} or \code{"gsw"}.}
+
+\item{debug}{an integer specifying whether debugging information is
+to be printed during the processing. This is a general parameter that
+is used by many \code{oce} functions. Generally, setting \code{debug=0}
+turns off the printing, while higher values suggest that more information
+be printed. If one function calls another, it usually reduces the value of
+\code{debug} first, so that a user can often obtain deeper debugging
+by specifying higher \code{debug} values.}
 
 \item{\dots}{additional argument, passed to \code{\link{smooth.spline}}, in
 the case that \code{derivs="smoothing"}.  See \dQuote{Details}.}
@@ -124,3 +132,4 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
 \author{
 Dan Kelley
 }
+\concept{functions that calculate seawater properties}

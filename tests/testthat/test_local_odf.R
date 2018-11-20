@@ -5,12 +5,11 @@
 
 library(oce)
 
-context("ODF files (a format used by BIO and some other DFO sites)")
+context("ODF files")
 
 test_that("Flemish Cap adcp file (with malformed CODE tokens that lack ' characters)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              expect_warning(d <- read.oce("local_data/flemish_cap/MADCPS_hud2013021_1840_12556-106_3600.ODF"),
-                             "using first of 2 unique NULL_VALUEs")
+              d <- read.oce("local_data/flemish_cap/MADCPS_hud2013021_1840_12556-106_3600.ODF")
               ## oce names
               expect_equal(names(d[["data"]]), c("u", "v", "w", "error", "a", "unknown", "time"))
               ## original names
@@ -214,8 +213,6 @@ test_that("Bedford Basin CTD profile 6 (with proper CODE tokens)", {
 
 test_that("Bedford Basin CTD profile 7 (with proper CODE tokens but no PSAR_01 unit)", {
           if (1 == length(list.files(path=".", pattern="local_data"))) {
-              expect_warning(d <- read.oce("local_data/bedford_basin/D16667001.ODF"),
-                             "\"CRAT_01\" should be unitless")
               expect_warning(d <- read.oce("local_data/bedford_basin/D16667001.ODF"),
                              "\"CRAT_01\" should be unitless")
               expect_equal(d[['startTime']], as.POSIXct("2016-01-06 13:17:37",tz="UTC"))

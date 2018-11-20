@@ -4,9 +4,9 @@
 \alias{mapImage}
 \title{Add an Image to a Map}
 \usage{
-mapImage(longitude, latitude, z, zlim, zclip = FALSE, breaks, col, colormap,
-  border = NA, lwd = par("lwd"), lty = par("lty"), missingColor = NA,
-  filledContour = FALSE, gridder = "binMean2D",
+mapImage(longitude, latitude, z, zlim, zclip = FALSE, breaks, col,
+  colormap, border = NA, lwd = par("lwd"), lty = par("lty"),
+  missingColor = NA, filledContour = FALSE, gridder = "binMean2D",
   debug = getOption("oceDebug"))
 }
 \arguments{
@@ -16,23 +16,23 @@ mapImage(longitude, latitude, z, zlim, zclip = FALSE, breaks, col, colormap,
 
 \item{z}{matrix to be represented as an image.}
 
-\item{zlim}{limit for z (colour).}
+\item{zlim}{limit for z (color).}
 
 \item{zclip}{A logical value, \code{TRUE} indicating that out-of-range
 \code{z} values should be painted with \code{missingColor} and \code{FALSE}
 indicating that these values should be painted with the nearest
-in-range colour.  If \code{zlim} is given then its min and max set the
+in-range color.  If \code{zlim} is given then its min and max set the
 range.  If \code{zlim} is not given but \code{breaks} is given, then
 the min and max of \code{breaks} sets the range used for z.  If neither
 \code{zlim} nor \code{breaks} is given, clipping is not done, i.e. the
 action is as if \code{zclip} were \code{FALSE}.}
 
-\item{breaks}{The z values for breaks in the colour scheme.  If this is of
+\item{breaks}{The z values for breaks in the color scheme.  If this is of
 length 1, the value indicates the desired number of breaks, which is
 supplied to \code{\link{pretty}}, in determining clean break points.}
 
-\item{col}{Either a vector of colours corresponding to the breaks, of length
-1 plus the number of breaks, or a function specifying colours,
+\item{col}{Either a vector of colors corresponding to the breaks, of length
+1 plus the number of breaks, or a function specifying colors,
 e.g. \code{\link{oce.colorsJet}} for a rainbow.}
 
 \item{colormap}{optional colormap, as created by \code{\link{colormap}}.
@@ -40,14 +40,14 @@ If a \code{colormap} is provided, then its properties takes precedence
 over \code{breaks}, \code{col}, \code{missingColor}, and \code{zclip}
 specified to \code{mapImage}.}
 
-\item{border}{Colour used for borders of patches (passed to
+\item{border}{Color used for borders of patches (passed to
 \code{\link{polygon}}); the default \code{NA} means no border.}
 
 \item{lwd}{line width, used if borders are drawn.}
 
 \item{lty}{line type, used if borders are drawn.}
 
-\item{missingColor}{a colour to be used to indicate missing data, or
+\item{missingColor}{a color to be used to indicate missing data, or
 \code{NA} to skip the drawing of such regions (which will retain
 whatever material has already been drawn at the regions).}
 
@@ -69,7 +69,8 @@ more than 10,000 data points in the present graphical view. This
 moderate amount of debugging information, or to 2 to get more.}
 }
 \description{
-Plot an image on an existing map.
+Plot an image on an existing map that was created with \code{\link{mapPlot}}.
+(See example 4 for a way to start  with a blank map.)
 }
 \details{
 Adds an image to an existing map, by analogy to \code{\link{image}}.
@@ -107,6 +108,7 @@ library(oce)
 data(coastlineWorld)
 data(topoWorld)
 
+## 1. topography
 par(mfrow=c(2, 1), mar=c(2, 2, 1, 1))
 lonlim <- c(-70, -50)
 latlim <- c(40, 50)
@@ -127,7 +129,7 @@ mapImage(topo, filledContour=TRUE, col=oce.colorsGebco, breaks=breaks)
 box()
 mapLines(coastlineWorld)
 
-## Northern polar region, with colour-coded bathymetry
+## 2. Northern polar region, with color-coded bathymetry
 par(mfrow=c(1,1))
 drawPalette(c(-5000, 0), zlim=c(-5000, 0), col=oce.colorsJet)
 mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
@@ -135,7 +137,7 @@ mapPlot(coastlineWorld, projection="+proj=stere +lat_0=90",
 mapImage(topoWorld, zlim=c(-5000, 0), col=oce.colorsJet)
 mapLines(coastlineWorld[['longitude']], coastlineWorld[['latitude']])
 
-# Levitus SST
+## 3. Levitus SST
 par(mfrow=c(1,1))
 data(levitus, package='ocedata')
 lon <- levitus$longitude
@@ -147,6 +149,13 @@ drawPalette(Tlim, col=oce.colorsJet)
 mapPlot(coastlineWorld, projection="+proj=moll", grid=FALSE)
 mapImage(lon, lat, SST, col=oce.colorsJet, zlim=Tlim)
 mapPolygon(coastlineWorld, col='gray')
+
+## 4. Topography without drawing a coastline first
+data(topoWorld)
+cm <- colormap(topoWorld[['z']], name='gmt_relief')
+drawPalette(colormap=cm)
+mapPlot(c(-180,180), c(-90,90), type="n") # defaults to moll projection
+mapImage(topoWorld, colormap=cm)
 }
 
 }
@@ -172,3 +181,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley
 }
+\concept{functions related to maps}

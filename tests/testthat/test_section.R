@@ -12,6 +12,29 @@ test_that("data(section) has not altered", {
           expect_equal(124, length(section@data$station))
 })
 
+test_that("section[['z']] == -section[['depth']]", {
+          data(section)
+          z <- section[["z"]]
+          depth <- section[["depth"]]
+          expect_equal(z, -depth)
+})
+
+test_that("section[[...]] and [[..., \"byStation\"]] work", {
+          data(section)
+          for (i in c("CT", "depth", "nitrate", "nitrite", "oxygen",
+                      "phosphate", "potential temperature", "pressure", "SA",
+                      "salinity", "sigmaTheta", "silicate", "spice",
+                      "temperature", "theta", "z")) {
+            v <- section[[i]]
+            expect_true(is.vector(v))
+            expect_equal(length(v), 2841)
+            l <- section[[i, "byStation"]]
+            expect_true(is.list(l))
+            expect_equal(head(v, 5), l[[1]])
+            expect_equal(length(l), 124)
+          }
+})
+
 test_that("as.section() data-quality flags", {
           data(section)
           ## The below is also in ../../create_data/section/check_section.R, and it would be
@@ -41,13 +64,6 @@ test_that("section station extraction", {
           expect_equal(section[["station", "103"]][["station"]], "103")
 })
 
-
-test_that("accessors for 'z' and 'depth' work", {
-          data(section)
-          z <- section[["z"]]
-          depth <- section[["depth"]]
-          expect_equal(z, -depth)
-})
 
 test_that("as.section() works with names of CTD objects", {
           data(ctd)
@@ -140,5 +156,52 @@ test_that("subset(section, length(pressure) > 5)", {
 
 test_that("sectionSort", {
           data(section)
+          expect_equal(section[["stationId"]],
+                       c("3", "4", "6", "7", "8", "9", "10", "12", "13", "14",
+                         "15", "16", "17", "18", "19", "20", "21", "22", "23",
+                         "24", "25", "26", "28", "29", "30", "32", "33", "34",
+                         "35", "36", "37", "38", "39", "40", "41", "42", "43",
+                         "44", "45", "46", "47", "48", "49", "50", "51", "52",
+                         "53", "54", "55", "56", "57", "58", "59", "60", "61",
+                         "62", "63", "64", "65", "66", "67", "68", "69", "71",
+                         "72", "74", "75", "76", "77", "78", "79", "80", "81",
+                         "82", "83", "84", "85", "86", "87", "88", "89", "90",
+                         "91", "92", "93", "94", "95", "96", "97", "98", "99",
+                         "100", "101", "102", "103", "104", "106", "107", "108",
+                         "109", "110", "111", "112", "113", "114", "115", "116",
+                         "117", "118", "119", "120", "121", "122", "123", "124",
+                         "125", "126", "127", "128", "129", "130", "131", "132",
+                         "133"))
           ss <- sectionSort(section)
+          expect_equal(ss[["stationId"]],
+                       c("10", "100", "101", "102", "103", "104", "106", "107",
+                         "108", "109", "110", "111", "112", "113", "114", "115",
+                         "116", "117", "118", "119", "12", "120", "121", "122",
+                         "123", "124", "125", "126", "127", "128", "129", "13",
+                         "130", "131", "132", "133", "14", "15", "16", "17",
+                         "18", "19", "20", "21", "22", "23", "24", "25",
+                         "26", "28", "29", "3", "30", "32", "33", "34",
+                         "35", "36", "37", "38", "39", "4", "40", "41",
+                         "42", "43", "44", "45", "46", "47", "48", "49",
+                         "50", "51", "52", "53", "54", "55", "56", "57",
+                         "58", "59", "6", "60", "61", "62", "63", "64",
+                         "65", "66", "67", "68", "69", "7", "71", "72",
+                         "74", "75", "76", "77", "78", "79", "8", "80",
+                         "81", "82", "83", "84", "85", "86", "87", "88",
+                         "89", "9", "90", "91", "92", "93", "94", "95",
+                         "96", "97", "98", "99"))
 })
+
+test_that("stationReplaceIndividualStation", {
+          data(section)
+          section[["station"]][[1]] <- "not a CTD object"
+          expect_equal(section@data$station[[1]], "not a CTD object")
+})
+
+test_that("stationReplaceAllStations", {
+          data(section)
+          expect_false("N2" %in% names(section[["station",1]][["data"]]))
+          section[["station"]] <- lapply(section[["station"]], function(x) oceSetData(x, "N2", swN2(x)))
+          expect_true("N2" %in% names(section[["station",1]][["data"]]))
+})
+

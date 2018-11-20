@@ -40,7 +40,8 @@ any users except those involved in the development of \code{oce} and
 }
 
 \seealso{
-Other things related to \code{odf} data: \code{\link{ODFNames2oceNames}},
+Other things related to \code{odf} data: \code{\link{ODFListFromHeader}},
+  \code{\link{ODFNames2oceNames}},
   \code{\link{[[,odf-method}},
   \code{\link{[[<-,odf-method}}, \code{\link{odf-class}},
   \code{\link{plot,odf-method}},
@@ -51,3 +52,4 @@ Other things related to \code{odf} data: \code{\link{ODFNames2oceNames}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{odf} data}

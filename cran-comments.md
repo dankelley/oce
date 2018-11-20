@@ -1,22 +1,36 @@
 ## Test environments
-* local OS X install, R 3.4.1
-* ubuntu 12.04 (on travis-ci), R 3.4.1
-* win-builder (devel and release)
+* local R-3.5.1 MacOS install OK
+* local R-3.4.4 ubuntu (on MacOS via virtual-box) install OK
+* devtools::build_win(version="R-release")
+* devtools::build_win(version="R-devel")
 
 ## R CMD check results
+There were no ERRORs or WARNINGs.
+
+There was 1 NOTE, as follows.
+
+* checking installed package size ... NOTE
+  installed size is  9.0Mb
+  sub-directories of 1Mb or more:
+    R      3.0Mb
+    doc    1.6Mb
+    help   2.6Mb
+
+
 
 0 errors | 0 warnings | 1 note
 
-* This is a new release.
-
 ## Reverse dependencies
 
-This is a new release, so there are no reverse dependencies.
+devtools::revdep_check() reports as follows
+
+Checked dendroTools : 0 errors | 0 warnings | 0 notes
+Checked graticule   : 0 errors | 0 warnings | 0 notes
+Checked seacarb     : 0 errors | 0 warnings | 0 notes
+Checked skyscapeR   : 0 errors | 0 warnings | 1 note 
+Checked soundecology: 0 errors | 0 warnings | 0 notes
+Checked SWMPr       : 0 errors | 0 warnings | 0 notes
 
 ---
 
-* I have run R CMD check on the downstream dependencies.  All pass except for
-  'soundecology', but I cannot build 'soundecology' on my osx machine, because
-I get an error with building the 'seewave' package (which I assume is the same
-error as reported on the CRAN check results webpage for 'soundecology'). 
 

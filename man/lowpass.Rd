@@ -4,7 +4,8 @@
 \alias{lowpass}
 \title{Perform lowpass digital filtering}
 \usage{
-lowpass(x, filter = "hamming", n, replace = TRUE, coefficients = FALSE)
+lowpass(x, filter = "hamming", n, replace = TRUE,
+  coefficients = FALSE)
 }
 \arguments{
 \item{x}{a vector to be smoothed}

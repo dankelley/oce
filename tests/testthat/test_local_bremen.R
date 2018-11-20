@@ -11,8 +11,8 @@ test_that("lowered adcp", {
               expect_equal(b[["longitude"]], -46.8539833333333)
               expect_equal(b[["latitude"]], 47.1067833333333)
               expect_equal(b[["time"]], as.POSIXct("2013-04-20 14:20:00", tz="UTC"))
-              summary(b)
-              plot(b)
+              ##> summary(b)
+              ##> plot(b)
           }
 })
 

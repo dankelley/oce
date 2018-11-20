@@ -1,12 +1,24 @@
-#' @title Class to Store LOBO Data
+#' Class to Store LOBO Data
 #'
-#' @description
-#' Class to store LOBO data.
+#' This class stores LOBO data.
+#'
 #' A \code{lobo} object may be read with \code{\link{read.lobo}} or
 #' constructed with \code{\link{as.lobo}}.  Plots can be made with
 #' \code{\link{plot,lobo-method}}, while \code{\link{summary,lobo-method}} produces
 #' statistical summaries. Data within a \code{lobo} object may be retrieved with
 #' \code{\link{[[,lobo-method}} and altered with \code{\link{[[,lobo-method}}.
+#'
+#' @templateVar class lobo
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @author Dan Kelley
 #' @family classes provided by \code{oce}
@@ -127,7 +139,7 @@ setMethod(f="summary",
           definition=function(object, ...) {
               cat("Lobo Summary\n------------\n\n")
               cat("* source: \"", object@metadata$filename, "\"\n", sep="")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 
@@ -255,9 +267,6 @@ plot.lobo.TS <- function(lobo, ...)
 #' timeseries of the v component of velocity; \code{6} or \code{"nitrate"} for
 #' a timeseries of nitrate concentration; \code{7} or \code{"fluorescence"} for
 #' a timeseries of fluorescence value.
-#'
-#' @template adornTemplate
-#'
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
 #' default, in order to use more space for the data and less for the axes.
@@ -268,19 +277,19 @@ plot.lobo.TS <- function(lobo, ...)
 #'
 #' @family functions that plot \code{oce} data
 #' @family things related to \code{lobo} data
+#' @aliases plot.lobo
 setMethod(f="plot",
           signature=signature("lobo"),
           definition=function(x,
                               which=c(1, 2, 3),
-                              adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25),
                               debug=getOption("oceDebug"),
                               ...)
           {
               oceDebug(debug, "plot.lobo(...)\n", sep="")
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,lobo-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
               oceDebug(debug, "which:", which, "\n")
@@ -289,11 +298,6 @@ setMethod(f="plot",
               oceDebug(debug, "which2:", which2, "\n")
               if (length(which) > 1) on.exit(par(opar))
               par(mgp=mgp, mar=mar)
-              adornLength <- length(adorn)
-              if (adornLength < nw) {
-                  adorn <- rep(adorn, nw)
-                  adornLength <- nw
-              }
               par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
               par(mfrow=c(nw, 1))
               for (w in which2) {
@@ -303,7 +307,7 @@ setMethod(f="plot",
                       oce.plot.ts(x[["time"]], x[["salinity"]], ylab=resizableLabel("S"), debug=debug-1, ...)
                   } else if (w == 3) {
                       if (any(!is.na(x[['pressure']]))) {
-                          plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), eos="unesco", debug=debug-1, ...) 
+                          plotTS(as.ctd(x[["salinity"]], x[["temperature"]], x[["pressure"]]), eos="unesco", debug=debug-1, ...)
                       } else {
                           plotTS(as.ctd(x[["salinity"]], x[["temperature"]], 0), eos="unesco", debug=debug-1, ...)
                       }
@@ -316,34 +320,18 @@ setMethod(f="plot",
                   } else if (w == 7) {
                       oce.plot.ts(x[["time"]], x[["fluorescence"]], ylab=resizableLabel("fluorescence", axis="y"), debug=debug-1, ...)
                   }
-                  if (adornLength > 0) {
-                      t <- try(eval(adorn[1]), silent=TRUE)
-                      if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]")
-                  }
               }
 
 #              if (any(!is.na(x@data$u) & !is.na(x@data$v))) {
 #                  par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
 #                  plot.lobo.timeseries.uv(x, ...)
-#                  if (adornLength > 0) {
-#                      t <- try(eval(adorn[2]), silent=TRUE)
-#                      if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]")
-#                  }
 #              }
 #
 #              par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
 #              plot.lobo.timeseries.biology(x, ...)
-#              if (adornLength > 0) {
-#                  t <- try(eval(adorn[3]), silent=TRUE)
-#                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 3, "]")
-#              }
 #
 #              par(mar=c(mgp[1]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
 #              plot.lobo.TS(x, ...)
-#              if (adornLength > 0) {
-#                  t <- try(eval(adorn[4]), silent=TRUE)
-#                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]")
-#              }
           })
 
 
@@ -446,8 +434,8 @@ read.lobo <- function(file, cols=7, processingLog)
 #' @param v vector of y velocity component observations
 #' @param salinity vector of salinity observations
 #' @param temperature vector of temperature observations
-#' @param pressure vector of pressure observationss
-#' @param nitrate vector of nitrate observationss
+#' @param pressure vector of pressure observations
+#' @param nitrate vector of nitrate observations
 #' @param fluorescence vector of fluoresence observations
 #' @param filename source filename
 #' @return An object of \code{\link{lobo-class}}.

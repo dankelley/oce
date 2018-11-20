@@ -32,7 +32,7 @@ while (TRUE) {
     if (debug > 2) print(items)
     nitems <- length(items)
     if (nitems == 0)
-        break;
+        break
     if (nitems != 2 && nitems != 3) stop("wrong number of entries on line", ic)
     name[ic] <- gsub(" ", "", items[1])
     freq[ic] <- as.numeric(items[2])

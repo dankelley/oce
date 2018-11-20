@@ -4,7 +4,8 @@
 \alias{read.lisst}
 \title{Read a LISST File}
 \usage{
-read.lisst(file, year = 0, tz = "UTC", longitude = NA, latitude = NA)
+read.lisst(file, year = 0, tz = "UTC", longitude = NA,
+  latitude = NA)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -42,3 +43,4 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{lisst} data}

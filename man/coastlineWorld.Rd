@@ -6,9 +6,8 @@
 \title{World Coastline}
 \source{
 Downloaded from \url{http://www.naturalearthdata.com}, in
-\code{ne_110m_admin_0_countries.shp}. This procedure worked in July 2015 and
-also in October 2015, so it is likely to be reasonably stable, but be aware
-that webpages do tend to change.
+\code{ne_110m_admin_0_countries.shp} in July 2015, with an
+update on December 16, 2017.
 }
 \description{
 This is a coarse resolution coastline at scale 1:110M, with 10,696 points,
@@ -31,11 +30,11 @@ startup file.
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{colors}}, \code{\link{ctdRaw}},
-  \code{\link{ctd}}, \code{\link{echosounder}},
-  \code{\link{landsat}}, \code{\link{lisst}},
-  \code{\link{lobo}}, \code{\link{met}}, \code{\link{rsk}},
-  \code{\link{sealevelTuktoyaktuk}},
+  \code{\link{ctdRaw}}, \code{\link{ctd}},
+  \code{\link{echosounder}}, \code{\link{landsat}},
+  \code{\link{lisst}}, \code{\link{lobo}},
+  \code{\link{met}}, \code{\link{ocecolors}},
+  \code{\link{rsk}}, \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{section}},
   \code{\link{topoWorld}}, \code{\link{wind}}
 
@@ -54,3 +53,5 @@ Other things related to \code{coastline} data: \code{\link{[[,coastline-method}}
 \author{
 Dan Kelley
 }
+\concept{datasets provided with \code{oce}}
+\concept{things related to \code{coastline} data}

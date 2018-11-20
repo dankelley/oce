@@ -4,7 +4,8 @@
 \alias{swZ}
 \title{Vertical coordinate}
 \usage{
-swZ(pressure, latitude = 45, eos = getOption("oceEOS", default = "gsw"))
+swZ(pressure, latitude = 45, eos = getOption("oceEOS", default =
+  "gsw"))
 }
 \arguments{
 \item{pressure}{either pressure [dbar], in which case \code{lat} must also
@@ -43,3 +44,4 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
   \code{\link{swThermalConductivity}},
   \code{\link{swTheta}}, \code{\link{swViscosity}}
 }
+\concept{functions that calculate seawater properties}

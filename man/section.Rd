@@ -17,10 +17,10 @@ The chief scientist was Tereschenkov of SOI, working aboard the Russian ship
 Multanovsky, undertaking a westward transect from the Mediterranean outflow
 region across to North America, with a change of heading in the last few dozen
 stations to run across the nominal Gulf Stream axis.
-The data flags follow the WHP CTD convention, i.e. 1 for uncalibrated,
-2 for an acceptable measurement, 3 for a questionable measurement, 4
-for a bad measurement, etc; see \url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
-for further details.
+The data flags follow the "WHP Bottle"convention, set by
+\code{\link{initializeFlagScheme,section-method}} to \code{"WHP bottle"}; see
+\url{https://www.nodc.noaa.gov/woce/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm}
+for more information on World Hydrographic Program flag conventions.
 }
 \examples{
 \dontrun{
@@ -36,11 +36,11 @@ plot(GSg, map.xlim=c(-80,-60))
 \seealso{
 Other datasets provided with \code{oce}: \code{\link{adp}},
   \code{\link{adv}}, \code{\link{argo}}, \code{\link{cm}},
-  \code{\link{coastlineWorld}}, \code{\link{colors}},
-  \code{\link{ctdRaw}}, \code{\link{ctd}},
-  \code{\link{echosounder}}, \code{\link{landsat}},
-  \code{\link{lisst}}, \code{\link{lobo}},
-  \code{\link{met}}, \code{\link{rsk}},
+  \code{\link{coastlineWorld}}, \code{\link{ctdRaw}},
+  \code{\link{ctd}}, \code{\link{echosounder}},
+  \code{\link{landsat}}, \code{\link{lisst}},
+  \code{\link{lobo}}, \code{\link{met}},
+  \code{\link{ocecolors}}, \code{\link{rsk}},
   \code{\link{sealevelTuktoyaktuk}},
   \code{\link{sealevel}}, \code{\link{topoWorld}},
   \code{\link{wind}}
@@ -49,6 +49,7 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{[[<-,section-method}},
   \code{\link{as.section}},
   \code{\link{handleFlags,section-method}},
+  \code{\link{initializeFlagScheme,section-method}},
   \code{\link{plot,section-method}},
   \code{\link{read.section}}, \code{\link{section-class}},
   \code{\link{sectionAddStation}},
@@ -57,3 +58,5 @@ Other things related to \code{section} data: \code{\link{[[,section-method}},
   \code{\link{subset,section-method}},
   \code{\link{summary,section-method}}
 }
+\concept{datasets provided with \code{oce}}
+\concept{things related to \code{section} data}

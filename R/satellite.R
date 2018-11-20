@@ -1,6 +1,6 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
-#' Class to hold satellite data
+#' Class to Store Satellite Data
 #'
 #' This class holds satellite data of various types, including
 #' \code{\link{amsr-class}} and \code{\link{g1sst-class}}.
@@ -51,7 +51,7 @@ setMethod(f="summary",
               ##         format(object@metadata$time, "%Y-%m-%d %H:%M:%S %z"), "\n", sep="")
               ## }
               ## message("JUNK END")
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
 #' Plot a satellite object
@@ -63,12 +63,13 @@ setMethod(f="summary",
 #' @param asp Optional aspect ratio for plot.
 #' @param debug A debugging flag, integer.
 #' @param ... extra arguments passed to \code{\link{imagep}}, e.g. set
-#' \code{col} to control colours.
+#' \code{col} to control colors.
 #'
 #' @concept satellite
 #' @author Dan Kelley
 #' @family things related to satellite data
 #' @family functions that plot \code{oce} data
+#' @aliases plot.satellite
 setMethod(f="plot",
           signature=signature("satellite"),
           definition=function(x, y, asp, debug=getOption("oceDebug"), ...)

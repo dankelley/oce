@@ -2,35 +2,26 @@
 % Please edit documentation in R/misc.R
 \name{findInOrdered}
 \alias{findInOrdered}
-\title{Find indices of times in an ordered vector [deprecated]}
+\title{Find indices of times in an ordered vector [defunct]}
 \usage{
 findInOrdered(x, f)
 }
 \arguments{
-\item{x}{a numeric vector, in increasing order by value.}
+\item{x}{Ignored, since this function is defunct.}
 
-\item{f}{a numeric vector of items whose indices are sought.}
-}
-\value{
-A numerical vector indicating the indices of left-sided neighbors.
+\item{f}{Ignored, since this function is defunct.}
 }
 \description{
-\strong{WARNING:} This function will be removed soon;
-see \link{oce-deprecated}.  The replacement is trivial:
-just change a call like e.g. \code{findInOrdered(x,f)}
-to \code{\link{findInterval}(f,x)} (which is what the function
-started doing, on 2017-09-07, after a major bug was found).
+\strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
 }
-\details{
-The indices point to the largest items in \code{x} that are less than or
-equal the values in \code{f}.  This works by simply calling
-\code{\link{findInterval}(x=f, vec=x)}, and users are probably
-better off using \code{\link{findInterval}} directly.
-}
-\examples{
-
-findInOrdered(seq(0, 10, 1), c(1.2, 7.3))
+\seealso{
+Other functions that will be removed soon: \code{\link{addColumn}},
+  \code{\link{ctdAddColumn}},
+  \code{\link{ctdUpdateHeader}},
+  \code{\link{mapMeridians}}, \code{\link{mapZones}},
+  \code{\link{oce.as.POSIXlt}}
 }
 \author{
 Dan Kelley
 }
+\concept{functions that will be removed soon}

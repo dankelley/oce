@@ -28,3 +28,4 @@ Other things related to \code{windrose} data: \code{\link{[[,windrose-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{windrose} data}

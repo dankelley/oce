@@ -4,8 +4,8 @@
 \alias{decodeHeaderNortek}
 \title{Decode a Nortek Header}
 \usage{
-decodeHeaderNortek(buf, type = c("aquadoppHR", "aquadoppProfiler", "aquadopp",
-  "vector"), debug = getOption("oceDebug"), ...)
+decodeHeaderNortek(buf, type = c("aquadoppHR", "aquadoppProfiler",
+  "aquadopp", "vector"), debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{buf}{a ``raw'' buffer containing the header}
@@ -31,7 +31,7 @@ designed to be used by \code{\link{read.adp}} and \code{\link{read.adv}},
 but can be used directly as well.  The code is based on information in the
 Nortek System Integrator Guide (2008) and on postings on the Nortek
 ``knowledge center'' discussion board.  One might assume that the latter is
-less authorative than the former.  For example, the inference of cell size
+less authoritative than the former.  For example, the inference of cell size
 follows advice found at
 \url{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
 (downloaded June 2012)), which contains a typo in an early posting that is

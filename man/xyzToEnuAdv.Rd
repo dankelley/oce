@@ -45,7 +45,7 @@ velocimeters.
 Generally, the transformation must be done on a time-by-time basis, which is
 a slow operation.  However, this function checks whether the vectors for
 heading, pitch and roll, are all of unit length, and in that case, the
-calculation is altered, resulting in shorter executation times.  Note that
+calculation is altered, resulting in shorter execution times.  Note that
 the angles are held in (\code{data$timeSlow}, \code{data$headingSlow}, ...)
 for Nortek instruments and (\code{data$time}, \code{data$heading}, ...) for
 Sontek instruments.
@@ -97,7 +97,7 @@ yes \tab yes \tab down \tab H-90 \tab R \tab P \tab X \tab -Y \tab -Z\cr 5
 Z\cr }
 }
 \references{
-1. \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
+1. \url{https://www.nortekgroup.com/faq/how-is-a-coordinate-transformation-done}
 
 2. Clark Richards, 2012, PhD Dalhousie University Department of
 Oceanography.
@@ -115,7 +115,8 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{read.adv.sontek.adr}},
   \code{\link{read.adv.sontek.serial}},
   \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{subset,adv-method}},
+  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
+  \code{\link{subset,adv-method}},
   \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnu}}
@@ -123,3 +124,4 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley, in collaboration with Clark Richards
 }
+\concept{things related to \code{adv} data}

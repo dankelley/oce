@@ -1,5 +1,7 @@
 ## vim:textwidth=80:expandtab:shiftwidth=4:softtabstop=4
 
+## alphabetized functions START
+
 abbreviateVector <- function(x)
 {
     if (1 >= length(x)) {
@@ -9,6 +11,313 @@ abbreviateVector <- function(x)
         if (1 == length(ud) && 1 == ud) return(paste(x[1], ":", tail(x, 1), sep="")) else return(x)
     }
 }
+
+
+#' Add a Column to the Data Slot of an Oce object [defunct]
+#'
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
+#'
+#' Use \code{\link{oceSetData}} instead of the present function.
+#'
+#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
+#' @param data the data.  The length of this item must match that of the
+#' existing data entries in the \code{data} slot).
+#' @param name the name of the column.
+#' @return An object of \code{\link[base]{class}} \code{oce}, with a new
+#' column.
+#' @author Dan Kelley
+#' @seealso Please use \code{\link{oceSetData}} instead of the present function.
+#' @family functions that will be removed soon
+addColumn <- function (x, data, name)
+{
+    .Defunct("oceSetData",
+             msg="addColumn() is disallowed and will be removed soon. Use oceSetData() instead. See ?'oce-defunct'.")
+    if (!inherits(x, "oce"))
+        stop("method is only for oce objects")
+    if (missing(data))
+        stop("must supply data")
+    if (missing(name))
+        stop("must supply name")
+    n <- length(data)
+    nd <- length(x@data)
+    if (n != length(data))
+        stop("data length is ", n, " but it must be ", nd, " to match existing data")
+    if (inherits(x, "ctd")) {
+        ## res <- ctdAddColumn(x, data, name) # FIXME: supply units
+        res <- oceSetData(x, name=name, value=data) # FIXME: supply units
+    } else {
+        res <- x
+        res@data[[name]] <- data
+    }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res
+}
+
+
+#' Convert angles from 0:360 to -180:180
+#'
+#' This is mostly used for instrument heading angles, in cases where the
+#' instrument is aligned nearly northward, so that small variations in heading
+#' (e.g. due to mooring motion) can yield values that swing from small angles
+#' to large angles, because of the modulo-360 cut point.
+#' The method is to use the cosine and sine of the angle in order to find "x"
+#' and "y" values on a unit circle, and then to use \code{\link{atan2}} to
+#' infer the angles.
+#'
+#' @param theta an angle (in degrees) that is in the range from 0 to 360
+#' degrees
+#' @return A vector of angles, in the range -180 to 180.
+#' @author Dan Kelley
+#' @examples
+#'
+#' library(oce)
+#' ## fake some heading data that lie near due-north (0 degrees)
+#' n <- 20
+#' heading <- 360 + rnorm(n, sd=10)
+#' heading <- ifelse(heading > 360, heading - 360, heading)
+#' x <- 1:n
+#' plot(x, heading, ylim=c(-10, 360), type='l', col='lightgray', lwd=10)
+#' lines(x, angleRemap(heading))
+angleRemap <- function(theta)
+{
+    toRad <- atan2(1, 1) / 45
+    atan2(sin(toRad * theta), cos(toRad * theta)) / toRad
+}
+
+
+#' Earth magnetic declination
+#'
+#' Instruments that use magnetic compasses to determine current direction need
+#' to have corrections applied for magnetic declination, to get currents with
+#' the y component oriented to geographic, not magnetic, north.  Sometimes, and
+#' for some instruments, the declination is specified when the instrument is
+#' set up, so that the velocities as recorded are already.  Other times, the
+#' data need to be adjusted.  This function is for the latter case.
+#'
+#' @param x an oce object.
+#' @param declination magnetic declination (to be added to the heading)
+#' @param debug a debugging flag, set to a positive value to get debugging.
+#' @return Object, with velocity components adjusted to be aligned with
+#' geographic north and east.
+#' @author Dan Kelley
+#' @seealso Use \code{\link{magneticField}} to determine the declination,
+#' inclination and intensity at a given spot on the world, at a given time.
+#' @references \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
+#'
+#' @family things related to magnetism
+applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "applyMagneticDeclination(x,declination=", declination, ") {\n", sep="", unindent=1)
+    if (inherits(x, "cm")) {
+        oceDebug(debug, "object is of type 'cm'\n")
+        res <- x
+        S <- sin(-declination * pi / 180)
+        C <- cos(-declination * pi / 180)
+        r <- matrix(c(C, S, -S, C), nrow=2)
+        uvr <- r %*% rbind(x@data$u, x@data$v)
+        res@data$u <- uvr[1, ]
+        res@data$v <- uvr[2, ]
+        oceDebug(debug, "originally, first u:", x@data$u[1:3], "\n")
+        oceDebug(debug, "originally, first v:", x@data$v[1:3], "\n")
+        oceDebug(debug, "after application, first u:", res@data$u[1:3], "\n")
+        oceDebug(debug, "after application, first v:", res@data$v[1:3], "\n")
+    } else {
+        stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
+    }
+    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "} # applyMagneticDeclination\n", unindent=1)
+    res
+}
+
+
+#' Trilinear interpolation in a 3D array
+#'
+#' Interpolate within a 3D array, using the trilinear approximation.
+#'
+#' Trilinear interpolation is used to interpolate within the \code{f} array,
+#' for those (\code{xout}, \code{yout} and \code{zout}) triplets that are
+#' inside the region specified by \code{x}, \code{y} and \code{z}.  Triplets
+#' that lie outside the range of \code{x}, \code{y} or \code{z} result in
+#' \code{NA} values.
+#'
+#' @param x vector of x values for grid (must be equi-spaced)
+#' @param y vector of y values for grid (must be equi-spaced)
+#' @param z vector of z values for grid (must be equi-spaced)
+#' @param f matrix of rank 3, with the gridd values mapping to the \code{x}
+#' values (first index of \code{f}), etc.
+#' @param xout vector of x values for output.
+#' @param yout vector of y values for output (length must match that of
+#' \code{xout}).
+#' @param zout vector of z values for output (length must match that of
+#' \code{xout}).
+#' @return A vector of interpolated values (or \code{NA} values), with length
+#' matching that of \code{xout}.
+#' @author Dan Kelley and Clark Richards
+#'
+#' @examples
+#' ## set up a grid
+#' library(oce)
+#' n <- 5
+#' x <- seq(0, 1, length.out=n)
+#' y <- seq(0, 1, length.out=n)
+#' z <- seq(0, 1, length.out=n)
+#' f <- array(1:n^3, dim=c(length(x), length(y), length(z)))
+#' ## interpolate along a diagonal line
+#' m <- 100
+#' xout <- seq(0, 1, length.out=m)
+#' yout <- seq(0, 1, length.out=m)
+#' zout <- seq(0, 1, length.out=m)
+#' approx <- approx3d(x, y, z, f, xout, yout, zout)
+#' ## graph the results
+#' plot(xout, approx, type='l')
+#' points(xout[1], f[1, 1, 1])
+#' points(xout[m], f[n,n,n])
+approx3d <- function(x, y, z, f, xout, yout, zout)
+{
+    ## Were all arguments given?
+    if (missing(x))
+        stop("must provide x")
+    if (missing(y))
+        stop("must provide y")
+    if (missing(z))
+        stop("must provide z")
+    if (missing(f))
+        stop("must provide f")
+    if (missing(xout))
+        stop("must provide xout")
+    if (missing(yout))
+        stop("must provide yout")
+    if (missing(zout))
+        stop("must provide zout")
+    ## Are there enough data to interpolate?
+    if (length(x) < 2)
+        stop("must have more than one x value")
+    if (length(y) < 2)
+        stop("must have more than one y value")
+    if (length(x) < 2)
+        stop("must have more than one z value")
+    ## Are the array dimensions consistent with x, y, and z?
+    if (3 != length(dim(f)))
+        stop("f must be an array with 3 dimensions")
+    if (length(x) != dim(f)[1])
+        stop("length of x and dim(f)[1] must agree, but they are ", length(x), " and ", dim(f)[1])
+    if (length(y) != dim(f)[2])
+        stop("length of y and dim(f)[2] must agree, but they are ", length(y), " and ", dim(f)[2])
+    if (length(z) != dim(f)[3])
+        stop("length of z and dim(f)[3] must agree, but they are ", length(z), " and ", dim(f)[3])
+    ## Are x, y and z equi-spaced?
+    if (length(x) > 2) {
+        equispaced <- function(a) sd(diff(a)) / mean(diff(a)) < 1e-5
+        if (!equispaced(x))
+            stop("x values must be equi-spaced")
+        if (!equispaced(y))
+            stop("y values must be equi-spaced")
+        if (!equispaced(z))
+            stop("z values must be equi-spaced")
+    }
+    do_approx3d(x, y, z, f, xout, yout, zout)
+}
+
+
+#' Show an argument to a function, e.g. for debugging
+#'
+#' @param x the argument
+#' @param nshow number of values to show at first (if length(x)> 1)
+#' @param last indicates whether this is the final argument to the function
+#' @param sep the separator between name and value
+argShow <- function(x, nshow=2, last=FALSE, sep="=")
+{
+    if (missing(x))
+        return("")
+    name <- paste(substitute(x))
+    res <- ""
+    if (missing(x)) {
+        res <- "(missing)"
+    } else {
+        if (is.null(x)) {
+            res <- NULL
+        } else {
+            nx <- length(x)
+            if (nx > 1)
+                name <- paste(name, "[", nx, "]", sep="")
+            if (is.function(x)) {
+                res <- "(provided)"
+            } else if (is.character(x) && nx==1) {
+                res <- paste('"', x[1], '"', sep="")
+            } else {
+                look <- 1:min(nshow, nx)
+                res <- paste(format(x[look], digits=4), collapse=" ")
+                if (nx > nshow)
+                    res <- paste(res, "...", x[nx])
+            }
+        }
+    }
+    if (!last)
+        res <- paste(res, ", ", sep="")
+    paste(name, res, sep="=")
+}
+
+#' Read a World Ocean Atlas NetCDF File
+#'
+#' @param file character string naming the file
+#' @param name of variable to extract. If not provided, an
+#' error message is issued that lists the names of data in the file.
+#' @param positive logical value indicating whether \code{longitude} should
+#' be converted to be in the range from 0 to 360, with \code{name}
+#' being shuffled accordingly. This is set to \code{FALSE} by default,
+#' because the usual oce convention is for longitude to range between -180
+#' to +180.
+#'
+#' @return A list containing vectors \code{longitude}, \code{latitude},
+#' \code{depth}, and an array with the specified name. If \code{positive}
+#' is true, then \code{longitude} will be converted to range from 0
+#' to 360, and the array will be shuffled accordingly.
+#'
+#' @examples
+#'\dontrun{
+#' ## Mean SST at 5-degree spatial resolution
+#' tmn <- read.woa("/data/woa13/woa13_decav_t00_5dv2.nc", "t_mn")
+#' imagep(tmn$longitude, tmn$latitude, tmn$t_mn[,,1], zlab="SST")
+#'}
+read.woa <- function(file, name, positive=FALSE)
+{
+    if (!is.character(file))
+        stop("'file' must be a character string")
+    con <- ncdf4::nc_open(file)
+    if (missing(name)) {
+        varnames <- names(con$var)
+        stop("must supply a name from the list: ", paste(varnames, collapse=", "))
+        return(NULL)
+    }
+    longitude <- as.vector(ncdf4::ncvar_get(con, "lon"))
+    latitude <- as.vector(ncdf4::ncvar_get(con, "lat"))
+    depth <- as.vector(ncdf4::ncvar_get(con, "depth"))
+    field <- ncdf4::ncvar_get(con, name)
+    if (positive) {
+        lon2 <- ifelse(longitude < 0, longitude + 360, longitude)
+        i  <- order(lon2)
+        longitude <- longitude[i]
+        ## Crude method to reorder field on first index, whether it is 2D, 3D or 4D,
+        ## although I'm not sure that any 4D items occur in the World Ocean Atlas.
+        if (is.array(field)) {
+            ndim <- length(dim(field))
+            if (ndim == 2)
+                field <- field[i,]
+            else if (ndim == 3)
+                field <- field[i,,]
+            else if (ndim == 4)
+                field <- field[i,,,]
+        }
+    }
+    rval <- list(longitude=longitude, latitude=latitude, depth=depth, field=field)
+    names(rval) <- c(head(names(rval), -1), name)
+    rval
+}
+
+## alphabetized functions END
+
+
+## unalphabetized functions START
 
 shortenTimeString <- function(t, debug=getOption("oceDebug"))
 {
@@ -118,33 +427,55 @@ unitFromString <- function(s)
 ##     res
 ## }
 
-#' Rename duplicated items (used in reading CTD files)
+#' Rename duplicated character strings
 #'
-#' Rename items to avoid name collision, by appending a \code{2} to
-#' the second occurrence of a name, etc.
+#' Append numeric suffices to character strings, to avoid repeats.
+#' This is used by various data
+#' input functions, to handle the fact that several oceanographic data
+#' formats permit the reuse of variable names within a given file.
 #'
-#' @param names Vector of strings with variable names.
-#' @return names Vector of strings with numbered variable names.
-#' @seealso used by \code{\link{read.ctd.sbe}}.
+#' @param strings Vector of character strings.
+#' @param style An integer giving the style. If \code{style}
+#' is \code{1}, then e.g. a triplicate of \code{"a"} yields
+#' \code{"a"}, \code{"a1"}, and \code{"a2"}.
+#' If \code{style} is \code{2}, then the same input yields
+#' \code{"a_001"}, \code{"a_002"}, and \code{"a_003"}.
+#'
+#' @return Vector of strings with repeats distinguished by suffix.
+#'
+#' @seealso Used by \code{\link{read.ctd.sbe}} with \code{style=1} to
+#' rename repeated data elements (e.g. for multiple temperature sensors)
+#' in CTD data, and by \code{\link{read.odf}} with \code{style=2} on
+#' key-value pairs within ODF metadata.
 #'
 #' @examples
 #' unduplicateNames(c("a", "b", "a", "c", "b"))
-unduplicateNames <- function(names)
+#' unduplicateNames(c("a", "b", "a", "c", "b"), style=2)
+unduplicateNames <- function(strings, style=1)
 {
     ## Handle duplicated names
-    for (i in seq_along(names)) {
-        w <- which(names == names[i])
-        if (1 < length(w)) {
-            ##print(w)
-            w <- w[-1]
-            ##message("duplicated: ", names[i])
-            ##message("w: ", paste(w, collapse=" "))
-            ##message(paste(names, collapse=" "))
-            names[w] <- paste(names[i], 1+seq.int(1, length(w)), sep="")
-            ##message(paste(names, collapse=" "))
+    if (style == 1) {
+        for (i in seq_along(strings)) {
+            w <- which(strings == strings[i])
+            lw <- length(w)
+            if (lw > 1) {
+                w <- w[-1]
+                strings[w] <- paste(strings[i], 1+seq.int(1, length(w)), sep="")
+            }
         }
+    } else if (style == 2) {
+        for (i in seq_along(strings)) {
+            w <- which(strings == strings[i])
+            lw <- length(w)
+            if (lw > 1) {
+                suffices <- seq_len(lw)
+                strings[w] <- sprintf("%s_%03d", strings[i], suffices)
+            }
+        }
+    } else {
+        stop("unknown style=", style, "; it must be 1 or 2")
     }
-    names
+    strings
 }
 
 
@@ -218,44 +549,6 @@ bound125 <- function(x)
 #' \code{\link{matrixShiftLongitude}} and \code{\link{shiftLongitude}} are more
 #' powerful relatives to \code{standardizeLongitude}.
 standardizeLongitude <- function(longitude) ifelse(longitude > 180, longitude-360, longitude)
-
-#' Show an argument to a function, e.g. for debugging
-#'
-#' @param x the argument
-#' @param nshow number of values to show at first (if length(x)> 1)
-#' @param last indicates whether this is the final argument to the function
-#' @param sep the separator between name and value
-argShow <- function(x, nshow=2, last=FALSE, sep="=")
-{
-    if (missing(x))
-        return("")
-    name <- paste(substitute(x))
-    res <- ""
-    if (missing(x)) {
-        res <- "(missing)"
-    } else {
-        if (is.null(x)) {
-            res <- NULL
-        } else {
-            nx <- length(x)
-            if (nx > 1)
-                name <- paste(name, "[", nx, "]", sep="")
-            if (is.function(x)) {
-                res <- "(provided)"
-            } else if (is.character(x) && nx==1) {
-                res <- paste('"', x[1], '"', sep="")
-            } else {
-                look <- 1:min(nshow, nx)
-                res <- paste(format(x[look], digits=4), collapse=" ")
-                if (nx > nshow)
-                    res <- paste(res, "...", x[nx])
-            }
-        }
-    }
-    if (!last)
-        res <- paste(res, ", ", sep="")
-    paste(name, res, sep="=")
-}
 
 #' Try to associate data names with units, for use by summary()
 #'
@@ -418,9 +711,9 @@ curl <- function(u, v, x, y, geographical=FALSE, method=1)
     if (!is.logical(geographical)) stop("geographical must be a logical quantity")
     method <- as.integer(round(method))
     if (1 == method)
-        res <- .Call("curl1", u, v, x, y, geographical)
+        res <- do_curl1(u, v, x, y, geographical)
     else if (2 == method)
-        res <- .Call("curl2", u, v, x, y, geographical)
+        res <- do_curl2(u, v, x, y, geographical)
     else
         stop("method must be 1 or 2")
     res
@@ -495,7 +788,7 @@ binApply1D <- function(x, f, xbreaks, FUN, ...)
     fSplit <- split(f, cut(x, xbreaks, include.lowest=TRUE, labels=FALSE))
     ##message("length(xbreaks)=", length(xbreaks))
     ##message("length(fSplit)=", length(fSplit))
-    result <- sapply(fSplit, FUN, ...)
+    result <- unlist(lapply(fSplit, FUN, ...))
     result[!is.finite(result)] <- NA
     names(result) <- NULL
     ## Put some NAs at start and end of 'result', if required because of
@@ -582,10 +875,10 @@ binApply2D <- function(x, y, f, xbreaks, ybreaks, FUN, ...)
     res <- matrix(nrow=nxbreaks-1, ncol=nybreaks-1)
     A <- split(f, cut(y, ybreaks, labels=FALSE))
     B <- split(x, cut(y, ybreaks, labels=FALSE))
-    for (i in 1:length(A)) {
+    for (i in seq_along(A)) {
         fSplit <- split(A[[i]], cut(B[[i]], xbreaks, labels=FALSE))
         ##res[, i] <- binApply1D(B[[i]], A[[i]], xbreaks, FUN)$result
-        res[, i] <- sapply(fSplit, FUN, ...)
+        res[, i] <- unlist(lapply(fSplit, FUN, ...))
     }
     res[!is.finite(res)] <- NA
     list(xbreaks=xbreaks, xmids=xbreaks[-1]-0.5*diff(xbreaks),
@@ -918,66 +1211,6 @@ ungrid <- function(x, y, grid)
 }
 
 
-
-#' Trilinear interpolation in a 3D array
-#'
-#' Interpolate within a 3D array, using the trilinear approximation.
-#'
-#' Trilinear interpolation is used to interpolate within the \code{f} array,
-#' for those (\code{xout}, \code{yout} and \code{zout}) triplets that are
-#' inside the region specified by \code{x}, \code{y} and \code{z}.  Triplets
-#' that lie outside the range of \code{x}, \code{y} or \code{z} result in
-#' \code{NA} values.
-#'
-#' @param x vector of x values for grid (must be equi-spaced)
-#' @param y vector of y values for grid (must be equi-spaced)
-#' @param z vector of z values for grid (must be equi-spaced)
-#' @param f matrix of rank 3, with the gridd values mapping to the \code{x}
-#' values (first index of \code{f}), etc.
-#' @param xout vector of x values for output.
-#' @param yout vector of y values for output (length must match that of
-#' \code{xout}).
-#' @param zout vector of z values for output (length must match that of
-#' \code{xout}).
-#' @return A vector of interpolated values (or \code{NA} values), with length
-#' matching that of \code{xout}.
-#' @author Dan Kelley and Clark Richards
-#'
-#' @examples
-#' ## set up a grid
-#' library(oce)
-#' n <- 5
-#' x <- seq(0, 1, length.out=n)
-#' y <- seq(0, 1, length.out=n)
-#' z <- seq(0, 1, length.out=n)
-#' f <- array(1:n^3, dim=c(length(x), length(y), length(z)))
-#' ## interpolate along a diagonal line
-#' m <- 100
-#' xout <- seq(0, 1, length.out=m)
-#' yout <- seq(0, 1, length.out=m)
-#' zout <- seq(0, 1, length.out=m)
-#' approx <- approx3d(x, y, z, f, xout, yout, zout)
-#' ## graph the results
-#' plot(xout, approx, type='l')
-#' points(xout[1], f[1, 1, 1])
-#' points(xout[m], f[n,n,n])
-approx3d <- function(x, y, z, f, xout, yout, zout)
-{
-    equispaced <- function(x) sd(diff(x)) / mean(diff(x)) < 1e-5
-    if (missing(x)) stop("must provide x")
-    if (missing(y)) stop("must provide y")
-    if (missing(z)) stop("must provide z")
-    if (missing(f)) stop("must provide f")
-    if (missing(xout)) stop("must provide xout")
-    if (missing(yout)) stop("must provide yout")
-    if (missing(zout)) stop("must provide zout")
-    if (!equispaced(x)) stop("x values must be equi-spaced")
-    if (!equispaced(y)) stop("y values must be equi-spaced")
-    if (!equispaced(z)) stop("z values must be equi-spaced")
-    .Call("approx3d", x, y, z, f, xout, yout, zout)
-}
-
-
 #' Draw error bars on an existing xy diagram
 #'
 #' @param x x coordinates of points on the existing plot.
@@ -1053,31 +1286,18 @@ errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
 }
 
 
-#' Find indices of times in an ordered vector [deprecated]
+#' Find indices of times in an ordered vector [defunct]
 #'
-#' \strong{WARNING:} This function will be removed soon;
-#' see \link{oce-deprecated}.  The replacement is trivial:
-#' just change a call like e.g. \code{findInOrdered(x,f)}
-#' to \code{\link{findInterval}(f,x)} (which is what the function
-#' started doing, on 2017-09-07, after a major bug was found).
+#' \strong{WARNING:} This function will be removed soon; see \link{oce-defunct}.
 #'
-#' The indices point to the largest items in \code{x} that are less than or
-#' equal the values in \code{f}.  This works by simply calling
-#' \code{\link{findInterval}(x=f, vec=x)}, and users are probably
-#' better off using \code{\link{findInterval}} directly.
-#'
-#' @param x a numeric vector, in increasing order by value.
-#' @param f a numeric vector of items whose indices are sought.
-#' @return A numerical vector indicating the indices of left-sided neighbors.
+#' @param x Ignored, since this function is defunct.
+#' @param f Ignored, since this function is defunct.
 #' @author Dan Kelley
-#' @examples
-#'
-#' findInOrdered(seq(0, 10, 1), c(1.2, 7.3))
+#' @family functions that will be removed soon
 findInOrdered <- function(x, f)
 {
-    .Deprecated("mapGrid",
-                msg="findInOrdered(f,x) will be removed soon; use findInterval(f,x) instead. See ?'oce-deprecated'.")
-    findInterval(f, x)
+    .Defunct("findInterval",
+             msg="findInOrdered() is disallowed and will be removed soon. Use findInterval() instead. See ?'oce-defunct'.")
 }
 
 
@@ -1127,7 +1347,7 @@ filterSomething <- function(x, filter)
 #' @param scale optional scale, interpreted as the maximum value of standard
 #' deviation.
 #' @param pch list of characters to plot, one for each column of \code{y}.
-#' @param col list of colours for points on the plot, one for each column of
+#' @param col list of colors for points on the plot, one for each column of
 #' \code{y}.
 #' @param labels optional vector of strings to use for labelling the points.
 #' @param pos optional vector of positions for labelling strings.  If not
@@ -1191,7 +1411,7 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
     text(-m, 0, "R=-1", pos=2)
     par(xpd=xpdOld)
     points(xSD, 0, pch=20, cex=1.5)
-    for (column in 1:ncol(y)) {
+    for (column in seq_len(ncol(y))) {
         ySD <- sd(y[, column], na.rm=TRUE)
         R <- cor(x, y[, column])^2
         ##cat("column=", column, "ySD=", ySD, "R=", R, "col=", col[column], "pch=", pch[column], "\n")
@@ -1277,9 +1497,9 @@ smoothSomething <- function(x, ...)
 
 #' Rescale values to lie in a given range
 #'
-#' This is helpful in e.g. developing a colour scale for an image plot.  It is
+#' This is helpful in e.g. developing a color scale for an image plot.  It is
 #' not necessary that \code{rlow} be less than \code{rhigh}, and in fact
-#' reversing them is a good way to get a reversed colour scale for a plot.
+#' reversing them is a good way to get a reversed color scale for a plot.
 #'
 #' @param x a numeric vector.
 #' @param xlow \code{x} value to correspond to \code{rlow}.  If not given, it
@@ -1732,36 +1952,6 @@ unabbreviateYear <- function(year)
 }
 
 
-#' Convert angles from 0:360 to -180:180
-#'
-#' This is mostly used for instrument heading angles, in cases where the
-#' instrument is aligned nearly northward, so that small variations in heading
-#' (e.g. due to mooring motion) can yield values that swing from small angles
-#' to large angles, because of the modulo-360 cut point.
-#' The method is to use the cosine and sine of the angle in order to find "x"
-#' and "y" values on a unit circle, and then to use \code{\link{atan2}} to
-#' infer the angles.
-#'
-#' @param theta an angle (in degrees) that is in the range from 0 to 360
-#' degrees
-#' @return A vector of angles, in the range -180 to 180.
-#' @author Dan Kelley
-#' @examples
-#'
-#' library(oce)
-#' ## fake some heading data that lie near due-north (0 degrees)
-#' n <- 20
-#' heading <- 360 + rnorm(n, sd=10)
-#' heading <- ifelse(heading > 360, heading - 360, heading)
-#' x <- 1:n
-#' plot(x, heading, ylim=c(-10, 360), type='l', col='lightgray', lwd=10)
-#' lines(x, angleRemap(heading))
-angleRemap <- function(theta)
-{
-    toRad <- atan2(1, 1) / 45
-    atan2(sin(toRad * theta), cos(toRad * theta)) / toRad
-}
-
 
 #' Unwrap an angle that suffers modulo-360 problems
 #'
@@ -2012,6 +2202,8 @@ fullFilename <- function(filename)
 #' used as the separator; if not, no separator is used.
 #' @param unit optional unit to use, if the default is not satisfactory. This
 #' might be the case if for example temperature was not measured in Celcius.
+#' @param debug optional debugging flag. Setting to 0 turns off debugging,
+#' while setting to 1 causes some debugging information to be printed.
 #' @return A character string or expression, in either a long or a shorter
 #' format, for use in the indicated axis at the present plot size.  Whether the
 #' unit is enclosed in parentheses or square brackets is determined by the
@@ -2019,12 +2211,14 @@ fullFilename <- function(filename)
 #' \code{"("}.  Whether spaces are used between the unit and these deliminators
 #' is set by \code{psep} or \code{\link{getOption}("oceUnitSep")}.
 #' @author Dan Kelley
-resizableLabel <- function(item, axis, sep, unit=NULL)
+resizableLabel <- function(item, axis="x", sep, unit=NULL, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "resizableLabel(item=\"", item,
+             "\", axis=\"", axis,
+             "\", sep=\"", if (missing(sep)) "(missing)" else sep, "\", ...) {\n",
+            sep="", unindent=1)
     if (missing(item))
         stop("must provide 'item'")
-    if (missing(axis))
-        axis <- "x"
     if (axis != "x" && axis != "y")
         stop("axis must be \"x\" or \"y\"")
     itemAllowed <- c("S", "C", "conductivity mS/cm", "conductivity S/m", "T",
@@ -2041,7 +2235,8 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
         if (is.list(unit)) {
             unit <- unit[[1]] # second item is a scale
         }
-        unit <- unit[[1]] # focus on just the unit (which is an expression)
+        if (0 == length(unit) || 0 == nchar(unit))
+            unit <- NULL
     }
     ## Previous to 2016-06-11, an error was reported if there was no match.
     itemAllowedMatch <- pmatch(item, itemAllowed)
@@ -2068,8 +2263,8 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
             abbreviated <- bquote("T"*.(L)*degree*"C"*.(R))
         } else {
             ##message("unit given for temperature")
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote("T"*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote("T"*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "conductivity mS/cm") {
         var <- gettext("Conductivity", domain="R-oce")
@@ -2083,7 +2278,7 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
         ## unitless form
         var <- gettext("Conductivity Ratio", domain="R-oce")
         unit <- gettext("unitless", domain="R-oce")
-        full <- bquote(.(var)*.(L)*.(unit)*.(R))
+        full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
         abbreviated <- bquote("C")
     } else if (item == "conservative temperature") {
         var <- gettext("Conservative Temperature", domain="R-oce")
@@ -2123,8 +2318,8 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
             full <- bquote(.(var)*.(L)*Tu*.(R))
             abbreviated <- bquote(phantom()^3*H*.(L)*Tu*.(R))
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote(phantom()^3*H*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(phantom()^3*H*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "nitrate") {
         var <- gettext("Nitrate", domain="R-oce")
@@ -2132,8 +2327,8 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
             full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
             abbreviated <- bquote(N*O[3]*.(L)*mu*mol/kg*.(R))
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote(N*O[3]*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(N*O[3]*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "nitrite") {
         var <- gettext("Nitrite", domain="R-oce")
@@ -2141,8 +2336,8 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
             full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
             abbreviated <- bquote(N*O[2]*.(L)*mu*mol/kg*.(R))
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote(N*O[2]*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(N*O[2]*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "oxygen") {
         var <- gettext("oxygen", domain="R-oce")
@@ -2150,8 +2345,8 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
             full <- bquote(.(var))
             abbreviated <- bquote(O[2])
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote(O[2]*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(O[2]*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "oxygen saturation") {
         var <- gettext("Oxygen saturation", domain="R-oce")
@@ -2175,8 +2370,8 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
             full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
             abbreviated <- bquote(P*O[4]*.(L)*mu*mol/kg*.(R))
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote(P*O[4]*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(P*O[4]*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "silicate") {
         var <- gettext("Silicate", domain="R-oce")
@@ -2184,8 +2379,8 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
             full <- bquote(.(var)*.(L)*mu*mol/kg*.(R))
             abbreviated <- bquote(Si*O[4]*.(L)*mu*mol/kg*.(R))
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote(Si*O[4]*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote(Si*O[4]*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "fluorescence") {
         var <- gettext("Fluorescence", domain="R-oce")
@@ -2194,8 +2389,8 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
             full <- bquote(.(var))
             abbreviated <- full
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
-            abbreviated <- bquote("Fluor."*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
+            abbreviated <- bquote("Fluor."*.(L)*.(unit[[1]])*.(R))
         }
     } else if (item == "spice") {
         var <- gettext("Spice", domain="R-oce")
@@ -2203,7 +2398,7 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
             full <- bquote(.(var)*.(L)*kg/m^3*.(R))
             abbreviated <- full
         } else {
-            full <- bquote(.(var)*.(L)*.(unit)*.(R))
+            full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- full
         }
     } else if (item == "S") {
@@ -2266,21 +2461,22 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
     } else if (item == "frequency cph") {
         var <- gettext("Frequency", domain="R-oce")
         unit <- gettext("cph", domain="R-oce")
-        abbreviated <- full <- bquote(.(var)*.(L)*.(unit)*.(R))
+        abbreviated <- full <- bquote(.(var)*.(L)*.(unit[[1]])*.(R))
     } else if (item == "spectral density m2/cph") {
         var <- gettext("Spectral density", domain="R-oce")
         full <- bquote(.(var)*.(L)*m^2/cph*.(R))
         var <- gettext("Spec. dens.", domain="R-oce")
         abbreviated <- bquote(.(var)*.(L)*m^2/cph*.(R))
     } else {
-        ##message("unknown quantity")
+        oceDebug(debug, "unknown item=\"", item, "\"\n", sep="")
         if (is.null(unit)) {
+            oceDebug(debug, "no unit given\n")
             ##message("no unit given")
             full <- item
             abbreviated <- full
         } else {
-            ##message("unit given")
-            full <- bquote(.(item)*.(L)*.(unit)*.(R))
+            oceDebug(debug, "unit \"", unit, "\" given\n")
+            full <- bquote(.(item)*.(L)*.(unit[[1]])*.(R))
             abbreviated <- full
         }
     }
@@ -2295,9 +2491,93 @@ resizableLabel <- function(item, axis, sep, unit=NULL)
     ##cat("fraction=", fraction, "\n")
     #print(full)
     #print(abbreviated)
+    oceDebug(debug, "} # resizableLabel\n", unindent=1)
     if (fraction < 1) full else abbreviated
 }
 
+
+#' Rotate velocity components within an oce object
+#'
+#' Alter the horizontal components of velocities in \code{adp},
+#' \code{adv} or \code{cm} objects, by applying a rotation about
+#' the vertical axis.
+#'
+#' @param x An oce object of class \code{adp}, \code{adv} or \code{cm}.
+#' @param angle The rotation angle about the z axis, in degrees counterclockwise.
+#' @author Dan Kelley
+#' @examples
+#' library(oce)
+#' par(mfcol=c(2, 3))
+#' # adp (acoustic Doppler profiler)
+#' data(adp)
+#' plot(adp, which="uv")
+#' mtext("adp", side=3, line=0, adj=1, cex=0.7)
+#' adpRotated <- rotateAboutZ(adp, 30)
+#' plot(adpRotated, which="uv")
+#' mtext("adp rotated 30 deg", side=3, line=0, adj=1, cex=0.7)
+#' # adv (acoustic Doppler velocimeter)
+#' data(adv)
+#' plot(adv, which="uv")
+#' mtext("adv", side=3, line=0, adj=1, cex=0.7)
+#' advRotated <- rotateAboutZ(adv, 125)
+#' plot(advRotated, which="uv")
+#' mtext("adv rotated 125 deg", side=3, line=0, adj=1, cex=0.7)
+#' # cm (current meter)
+#' data(cm)
+#' plot(cm, which="uv")
+#' mtext("cm", side=3, line=0, adj=1, cex=0.7)
+#' cmRotated <- rotateAboutZ(cm, 30)
+#' plot(cmRotated, which="uv")
+#' mtext("cm rotated 30 deg", side=3, line=0, adj=1, cex=0.7)
+#'
+#' @family things related to \code{adp} data
+#' @family things related to \code{adv} data
+#' @family things related to \code{cm} data
+rotateAboutZ <- function(x, angle)
+{
+    if (missing(angle))
+        stop("must supply angle")
+    S <- sin(angle * pi / 180)
+    C <- cos(angle * pi / 180)
+    rotation <- matrix(c(C, S, -S, C), nrow=2)
+    res <- x
+    allowedClasses <- c("adp", "adv", "cm")
+    if (!(class(x) %in% allowedClasses))
+        stop("cannot rotate for class \"", class(x), "\"; try one of: \"",
+             paste(allowedClasses, collapse="\" \""), "\")")
+    if (inherits(x, "adp")) {
+        if (x[["oceCoordinate"]] != "enu")
+            stop("cannot rotate adp unless coordinate system is 'enu'; see ?toEnu or ?xyzToEnu")
+        V <- x[["v"]]
+        ## Work through the bins, transforming a 3D array operation to a
+        ## sequence of 2D matrix operations.
+        for (j in seq_len(dim(V)[2])) {
+            uvr <- rotation %*% t(V[, j, 1:2])
+            V[, j, 1] <- uvr[1, ]
+            V[, j, 2] <- uvr[2, ]
+        }
+        res@data$v <- V
+    } else if (inherits(x, "adv")) {
+        if (x[["oceCoordinate"]] != "enu")
+            stop("cannot rotate adv unless coordinate system is 'enu'; see ?toEnu or ?xyzToEnu")
+        V <- x[["v"]]
+        uvr <- rotation %*% t(V[, 1:2])
+        V[, 1] <- uvr[1, ]
+        V[, 2] <- uvr[2, ]
+        res@data$v <- V
+    } else if (inherits(x, "cm")) {
+        uvr <- rotation %*% rbind(x@data$u, x@data$v)
+        res@data$u <- uvr[1, ]
+        res@data$v <- uvr[2, ]
+    } else {
+        stop("cannot rotate for class \"", class(x), "\"; try one of: \"",
+             paste(allowedClasses, collapse="\" \""), "\". (internal error: please report)")
+    }
+    ## Update processing log
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste("rotateAboutZ(x, angle=", angle, ")", sep=""))
+    res
+}
 
 #' Format a latitude-longitude pair
 #'
@@ -2662,7 +2942,7 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
 #'
 #' By contrast with the \code{\link{filter}} function of R, \code{oce.filter}
 #' lacks the option to do a circular filter.  As a consequence,
-#' \code{oce.filter} introduces a phase lag.  One way to remove this lag is to
+#' \code{oceFilter} introduces a phase lag.  One way to remove this lag is to
 #' run the filter forwards and then backwards, as in the \dQuote{Examples}.
 #' However, the result is still problematic, in the sense that applying it in
 #' the reverse order would yield a different result.  (Matlab's \code{filtfilt}
@@ -2690,12 +2970,12 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
 #' a <- 1
 #' x <- seq(0, 10)
 #' y <- ifelse(x == 5, 1, 0)
-#' f1 <- oce.filter(y, a, b)
+#' f1 <- oceFilter(y, a, b)
 #' plot(x, y, ylim=c(-0, 1.5), pch="o", type='b')
 #' points(x, f1, pch="x", col="red")
 #'
 #' # remove the phase lag
-#' f2 <- oce.filter(y, a, b, TRUE)
+#' f2 <- oceFilter(y, a, b, TRUE)
 #' points(x, f2, pch="+", col="blue")
 #'
 #' legend("topleft", col=c("black","red","blue"), pch=c("o","x","+"),
@@ -2710,11 +2990,11 @@ oceFilter <- function(x, a=1, b, zero.phase=FALSE)
     if (missing(b))
         stop("must supply b")
     if (!zero.phase) {
-        return(.Call("oce_filter", x, a, b))
+        return(do_oce_filter(x, a, b))
     } else {
-        res <- .Call("oce_filter", x, a, b)
+        res <- do_oce_filter(x, a, b)
         res <- rev(res)
-        res <- .Call("oce_filter", res, a, b)
+        res <- do_oce_filter(res, a, b)
         return(rev(res))
     }
 }
@@ -2773,7 +3053,7 @@ oce.filter <- oceFilter
 #' @author Dan Kelley
 #' @seealso See \code{\link{wind}}.
 #' @references S. E.  Koch and M.  DesJardins and P. J. Kocin, 1983.  ``An
-#' interactive Barnes objective map anlaysis scheme for use with satellite and
+#' interactive Barnes objective map analysis scheme for use with satellite and
 #' conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22, p. 1487-1503.
 #' @examples
 #'
@@ -2897,12 +3177,7 @@ interpBarnes <- function(x, y, z, w,
     oceDebug(debug, "gamma:", gamma, "iterations:", iterations, "\n")
 
     ok <- !is.na(x) & !is.na(y) & !is.na(z) & !is.na(w)
-    g <- .Call("interp_barnes",
-               as.double(x[ok]), as.double(y[ok]), as.double(z[ok]), as.double(w[ok]),
-               as.double(xg), as.double(yg),
-               as.double(xr), as.double(yr),
-               as.double(gamma),
-               as.integer(iterations))
+    g <- do_interp_barnes(x[ok], y[ok], z[ok], w[ok], xg, yg, xr, yr, gamma, iterations)
     oceDebug(debug, "} # interpBarnes(...)\n", unindent=1)
     if (trim >= 0 && trim <= 1) {
         bad <- g$wg < quantile(g$wg, trim, na.rm=TRUE)
@@ -2940,8 +3215,7 @@ coriolis <- function(latitude, degrees=TRUE)
 {
     ## Siderial day 86164.1 s.
     if (degrees) latitude <- latitude * 0.0174532925199433
-    ## http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf
-    7292115e-11 
+    ## http://www.iag-aig.org/attach/e354a3264d1e420ea0a9920fe762f2a0/51-groten.pdf 7292115e-11
     2 * 7292115e-11 * sin(latitude)
 }
 
@@ -3050,57 +3324,18 @@ fillGap <- function(x, method=c("linear"), rule=1)
     method <- match.arg(method)
     class <- class(x)
     if (is.vector(x)) {
-        res <- .Call("fillgap1d", as.numeric(x), rule)
+        ##res <- .Call("fillgap1d", as.numeric(x), rule)
+        res <- do_fill_gap_1d(x, rule)
     } else if (is.matrix(x))  {
         res <- x
-        for (col in 1:ncol(x))
-            res[, col] <- .Call("fillgap1d", as.numeric(x[, col]), rule)
-        for (row in 1:nrow(x))
-            res[row, ] <- .Call("fillgap1d", as.numeric(x[row, ]), rule)
+        for (col in seq_len(ncol(x)))
+            res[, col] <- do_fill_gap_1d(x[, col], rule)
+        for (row in seq_len(nrow(x)))
+            res[row, ] <- do_fill_gap_1d(x[row, ], rule)
     } else {
         stop("only works if 'x' is a vector or a matrix")
     }
     class(res) <-  class
-    res
-}
-
-
-#' Add a Column to the Data Slot of an Oce object [deprecated]
-#'
-#' \strong{WARNING:} This function will be removed soon; see \link{oce-deprecated}.
-#' Use \code{\link{oceSetData}} instead of the present function.
-#'
-#' @param x A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.
-#' @param data the data.  The length of this item must match that of the
-#' existing data entries in the \code{data} slot).
-#' @param name the name of the column.
-#' @return An object of \code{\link[base]{class}} \code{oce}, with a new
-#' column.
-#' @author Dan Kelley
-#' @seealso Please use \code{\link{oceSetData}} instead of the present function.
-#' @family functions that will be removed soon
-addColumn <- function (x, data, name)
-{
-    .Deprecated("oceSetData",
-                msg="addColumn() will be removed soon; use oceSetData() instead. See ?'oce-deprecated'.")
-    if (!inherits(x, "oce"))
-        stop("method is only for oce objects")
-    if (missing(data))
-        stop("must supply data")
-    if (missing(name))
-        stop("must supply name")
-    n <- length(data)
-    nd <- length(x@data)
-    if (n != length(data))
-        stop("data length is ", n, " but it must be ", nd, " to match existing data")
-    if (inherits(x, "ctd")) {
-        ## res <- ctdAddColumn(x, data, name) # FIXME: supply units
-        res <- oceSetData(x, name=name, value=data) # FIXME: supply units
-    } else {
-        res <- x
-        res@data[[name]] <- data
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -3114,7 +3349,7 @@ addColumn <- function (x, data, name)
 #' @param x an \code{oce} object containing a \code{data} element.
 #' @param by an indication of the subsampling.  If this is a single number,
 #' then it indicates the spacing between elements of \code{x} that are
-#' selected.  If it is two numbers (a condition only applicabile if \code{x} is
+#' selected.  If it is two numbers (a condition only applicable if \code{x} is
 #' an \code{echosounder} object, at present), then the first number indicates
 #' the time spacing and the second indicates the depth spacing.
 #' @param to Indices at which to subsample.  If given, this over-rides
@@ -3129,7 +3364,7 @@ addColumn <- function (x, data, name)
 #' subsampled appropriately.
 #' @section Bugs: Only a preliminary version of this function is provided in
 #' the present package.  It only works for objects of class \code{echosounder},
-#' for which the decmation is done after applying a running median filter and
+#' for which the decimation is done after applying a running median filter and
 #' then a boxcar filter, each of length equal to the corresponding component of
 #' \code{by}.
 #' @author Dan Kelley
@@ -3411,10 +3646,10 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 }
 
 
-#' Format bytes as binary
+#' Format bytes as binary [defunct]
 #'
 #' \strong{WARNING:} The \code{endian} argument will soon be removed
-#' from this function; see \link{oce-deprecated}.
+#' from this function; see \link{oce-defunct}.
 #' This is because the actions for \code{endian="little"} made
 #' no sense in practical work. The default value for \code{endian}
 #' was changed to \code{"big"} on 2017 May 6.
@@ -3434,15 +3669,13 @@ bcdToInteger <- function(x, endian=c("little", "big"))
 #' library(oce)
 #' ## Note comparison with rawToBits():
 #' a <- as.raw(0x0a)
-#' byteToBinary(a, "big") # "00001010"
-#' rev(rawToBits(a))      # 00 00 00 00 01 00 01 00
-byteToBinary <- function(x, endian)
+#' byteToBinary(a, "big")        # "00001010"
+#' as.integer(rev(rawToBits(a))) # 0 0 0 0 1 0 1 0
+byteToBinary <- function(x, endian="big")
 {
-    if (missing(endian))
-        endian <- "big"
     if (endian != "big")
-        .Deprecated("rawToBits",
-                    msg="byteToBinary(): the endian=\"little\" argument will be disallowed soon; see ?'oce-deprecated'.")
+        .Defunct("rawToBits",
+                 msg="byteToBinary(.,'little') is disallowed and will be removed soon. See ?'oce-defunct'.")
     ## onebyte2binary <- function(x)
     ## {
     ##     c("0000", "0001", "0010", "0011",
@@ -3453,7 +3686,7 @@ byteToBinary <- function(x, endian)
     ## res <- NULL
     ## if (class(x) == "raw")
     ##     x <- readBin(x, "int", n=length(x), size=1, signed=FALSE)
-    ## for (i in 1:length(x)) {
+    ## for (i in seq_along(x)) {
     ##     if (x[i] < 0) {
     ##         res <- c(res, "??")
     ##     } else {
@@ -3502,7 +3735,7 @@ byteToBinary <- function(x, endian)
 #' also recommending that the \eqn{\pm}{+/-} notation be avoided altogether.
 #'
 #' The \code{parentheses} notation is often called the compact notation.  In
-#' it, the digits in parenthese indicate the uncertainty in the corresponding
+#' it, the digits in parentheses indicate the uncertainty in the corresponding
 #' digits to their left, e.g. 12.34(3) means that the last digit (4) has an
 #' uncertainty of 3.  However, as with the \eqn{\pm}{+/-} notation, different
 #' authorities offer different advice on defining this uncertainty; Mills et
@@ -3657,51 +3890,6 @@ integerToAscii <- function(i)
       "\xee", "\xef", "\xf0", "\xf1", "\xf2", "\xf3", "\xf4", "\xf5",
       "\xf6", "\xf7", "\xf8", "\xf9", "\xfa", "\xfb", "\xfc", "\xfd",
       "\xfe", "\xff")[i+1]
-}
-
-
-#' Earth magnetic declination
-#'
-#' Instruments that use magnetic compasses to determine current direction need
-#' to have corrections applied for magnetic declination, to get currents with
-#' the y component oriented to geographic, not magnetic, north.  Sometimes, and
-#' for some instruments, the declination is specified when the instrument is
-#' set up, so that the velocities as recorded are already.  Other times, the
-#' data need to be adjusted.  This function is for the latter case.
-#'
-#' @param x an oce object.
-#' @param declination magnetic declination (to be added to the heading)
-#' @param debug a debugging flag, set to a positive value to get debugging.
-#' @return Object, with velocity components adjusted to be aligned with
-#' geographic north and east.
-#' @author Dan Kelley
-#' @seealso Use \code{\link{magneticField}} to determine the declination,
-#' inclination and intensity at a given spot on the world, at a given time.
-#' @references \samp{https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html}
-#'
-#' @family things related to magnetism
-applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
-{
-    oceDebug(debug, "applyMagneticDeclination(x,declination=", declination, ") {\n", sep="", unindent=1)
-    if (inherits(x, "cm")) {
-        oceDebug(debug, "object is of type 'cm'\n")
-        res <- x
-        S <- sin(-declination * pi / 180)
-        C <- cos(-declination * pi / 180)
-        r <- matrix(c(C, S, -S, C), nrow=2)
-        uvr <- r %*% rbind(x@data$u, x@data$v)
-        res@data$u <- uvr[1, ]
-        res@data$v <- uvr[2, ]
-        oceDebug(debug, "originally, first u:", x@data$u[1:3], "\n")
-        oceDebug(debug, "originally, first v:", x@data$v[1:3], "\n")
-        oceDebug(debug, "after application, first u:", res@data$u[1:3], "\n")
-        oceDebug(debug, "after application, first v:", res@data$v[1:3], "\n")
-    } else {
-        stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
-    }
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "} # applyMagneticDeclination\n", unindent=1)
-    res
 }
 
 
@@ -3906,7 +4094,8 @@ matrixSmooth <- function(m, passes=1)
     storage.mode(m) <- "double"
     if (passes > 0) {
         for (pass in seq.int(1, passes, 1)) {
-            m <- .Call("matrix_smooth", m)
+            message("pass=", pass)
+            m <- do_matrix_smooth(m)
         }
     } else {
         warning("matrixSmooth given passes<=0, so returning matrix unmodified")
@@ -4074,7 +4263,7 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
         if (is.na(item))
             return()
         if (isdate) item <- format(item)
-        if (quote) item <- paste('`"', item, '"`', sep="")
+        if (quote) item <- paste('"', item, '"', sep="")
         cat(paste("* ", label, item, postlabel, "\n", sep=""))
     }
 }
@@ -4094,14 +4283,14 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 #' \code{x*seq_along(y)}.
 #' @param type Flag indicating the desired return value (see \dQuote{Value}).
 #' @param xmin,xmax Optional numbers indicating the range of the integration.
-#' These values may be used to restrict the range of integration, or to 
+#' These values may be used to restrict the range of integration, or to
 #' extend it; in either case, \code{\link{approx}} with \code{rule=2}
 #' is used to create new x and y vectors.
 #'
 #' @return If \code{type="A"} (the default), a single value is returned,
 #' containing the estimate of the integral of \code{y=y(x)}.  If
 #' \code{type="dA"}, a numeric vector of the same length as \code{x}, of which
-#' the first element is zer0, the second element is the integral between
+#' the first element is zero, the second element is the integral between
 #' \code{x[1]} and \code{x[2]}, etc.  If \code{type="cA"}, the result is the
 #' cumulative sum (as in \code{\link{cumsum}}) of the values that would be
 #' returned for \code{type="dA"}.  See \dQuote{Examples}.
@@ -4120,6 +4309,7 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
 #' print(integrateTrapezoid(y))
 integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 {
+    type <- match.arg(type)
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) {
         y <- x
@@ -4161,25 +4351,50 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
     ## message("\nabout to .Call(\"trap\", xout, yout, ...) with:\n")
     ## message("xout as follows:\n", paste(head(xout, 10), collapse="\n"))
     ## message("yout as follows:\n", paste(head(yout, 10), collapse="\n"))
-    res <- .Call("trap", xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
+    ##:::res <- .Call("trap", xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
+    ##:::res <- trap(x=xout, y=yout, type=as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
+    ##
+    ## I think we should be able to use trap(), which gets defined into
+    ## R/RcppExports.R but that doesn't seem to be put into the loadspace.
+    ## My guess is that the problem is because we are not doing exports in
+    ## the recommended (automatic) way, but I don't want to do exports that
+    ## way since things are ok now, and have been for years.
+    ## I don't see much point trying to figure this out, because we already
+    ## have things set up for a .Call() from before the switch from C to Cpp.
+    ##
+    ## NOTE: must run Rcpp::compileAttributes() after creating trap in
+    ## src/trap.cpp
+    res <- do_trap(xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
+    ##> res <- trap( xout, yout, as.integer(switch(match.arg(type), A=0, dA=1, cA=2)))
     res
 }
 
 
-#' Calculate the grad of a matrix by first differences
+#' Calculate Matrix Gradient
 #'
 #' In the interior of the matrix, centred second-order differences are used to
 #' infer the components of the grad.  Along the edges, first-order differences
 #' are used.
 #'
-#' @param h a matrix
-#' @param x x values
-#' @param y y values
-#' @return A list containing \code{gx} and \code{gy}, matrices of the same
-#' dimension as \code{h}.
+#' @param h a matrix of values
+#' @param x vector of coordinates along matrix columns (defaults to integers)
+#' @param y vector of coordinates along matrix rows (defaults to integers)
+#' @return A list containing \eqn{|\nabla h|}{abs(grad(h))} as \code{g},
+#' \eqn{\partial h/\partial x}{dh/dx} as \code{gx},
+#' and \eqn{\partial h/\partial y}{dh/dy} as \code{gy},
+#' each of which is a matrix of the same dimension as \code{h}.
 #' @author Dan Kelley, based on advice of Clark Richards, and mimicking a matlab function.
 #' @examples
-#' ## Geostrophic flow around an eddy
+#' ## 1. Built-in volcano dataset
+#' g <- grad(volcano)
+#' par(mfrow=c(2, 2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
+#' imagep(volcano, zlab="h")
+#' imagep(g$g, zlab="|grad(h)|")
+#' zlim <- c(-1, 1) * max(g$g)
+#' imagep(g$gx, zlab="dh/dx", zlim=zlim)
+#' imagep(g$gy, zlab="dh/dy", zlim=zlim)
+#'
+#' ## 2. Geostrophic flow around an eddy
 #' library(oce)
 #' dx <- 5e3
 #' dy <- 10e3
@@ -4198,14 +4413,23 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"), xmin, xmax)
 #' contour(x, y, v, asp=1, main=expression(v))
 #' contour(x, y, sqrt(u^2+v^2), asp=1, main=expression(speed))
 #' @family functions relating to vector calculus
-grad <- function(h, x, y)
+grad <- function(h, x=seq(0, 1, length.out=nrow(h)), y=seq(0, 1, length.out=ncol(h)))
 {
-    if (missing(h)) stop("must give h")
-    if (missing(x)) stop("must give x")
-    if (missing(y)) stop("must give y")
-    if (length(x) != nrow(h)) stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")
-    if (length(y) != ncol(h)) stop("length of y (", length(y), ") must equal number of cols in h (", ncol(h), ")")
-    .Call("gradient", h, as.double(x), as.double(y))
+    if (missing(h))
+        stop("must give h")
+    if (length(x) != nrow(h))
+        stop("length of x (", length(x), ") must equal number of rows in h (", nrow(h), ")")
+    if (length(y) != ncol(h))
+        stop("length of y (", length(y), ") must equal number of cols in h (", ncol(h), ")")
+    ## ensure that all three args are double, so the C code won't misinterpret
+    dim <- dim(h)
+    h <- as.double(h)
+    dim(h) <- dim
+    x <- as.double(x)
+    y <- as.double(y)
+    rval <- do_gradient(h, x, y)
+    rval$g <- sqrt(rval$gx^2 + rval$gy^2)
+    rval
 }
 
 
@@ -4267,7 +4491,7 @@ oce.as.raw <- function(x)
 #'
 oceConvolve <- function(x, f, end=2)
 {
-    .Call("oce_convolve", x, f, end)
+    do_oce_convolve(x, f, end)
 }
 oce.convolve <- oceConvolve
 
@@ -4363,3 +4587,4 @@ lowpass <- function(x, filter="hamming", n, replace=TRUE, coefficients=FALSE)
     rval
 }
 
+## unalphabetized functions END

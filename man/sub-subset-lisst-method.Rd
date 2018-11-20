@@ -19,14 +19,12 @@
 \item{value}{The value to be placed into \code{x}, somewhere.}
 }
 \description{
-Replace Parts of a LISST Object
-
 The \code{[[<-} method works for all \code{oce} objects, i.e.
 objects inheriting from \code{\link{oce-class}}.  The purpose,
 as with the related extraction method, \code{\link{[[}},
 is to insulate users from the internal details of \code{oce}
 objects, by looking for items within the various storage
-slots of the object. Items not actually stored can also be 
+slots of the object. Items not actually stored can also be
 replaced, including units and data-quality
 flags.
 }
@@ -64,6 +62,8 @@ Other functions that replace parts of \code{oce} objects: \code{\link{[[<-,adp-m
   \code{\link{[[<-,echosounder-method}},
   \code{\link{[[<-,g1sst-method}},
   \code{\link{[[<-,gps-method}},
+  \code{\link{[[<-,ladp-method}},
+  \code{\link{[[<-,landsat-method}},
   \code{\link{[[<-,lobo-method}},
   \code{\link{[[<-,met-method}},
   \code{\link{[[<-,oce-method}},
@@ -81,3 +81,5 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
   \code{\link{read.lisst}},
   \code{\link{summary,lisst-method}}
 }
+\concept{functions that replace parts of \code{oce} objects}
+\concept{things related to \code{lisst} data}

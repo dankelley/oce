@@ -106,3 +106,4 @@ Other functions relating to vector calculus: \code{\link{grad}}
 \author{
 Dan Kelley and Chantelle Layton
 }
+\concept{functions relating to vector calculus}

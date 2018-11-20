@@ -4,10 +4,11 @@
 \alias{as.ctd}
 \title{Coerce data into CTD object}
 \usage{
-as.ctd(salinity, temperature = NULL, pressure = NULL, conductivity = NULL,
-  scan = NULL, time = NULL, other = NULL, units = NULL, flags = NULL,
-  missingValue = NULL, type = "", serialNumber = "", ship, cruise,
-  station, startTime = NULL, longitude, latitude,
+as.ctd(salinity, temperature = NULL, pressure = NULL,
+  conductivity = NULL, scan = NULL, time = NULL, other = NULL,
+  units = NULL, flags = NULL, missingValue = NULL, type = "",
+  serialNumber = "", ship = NULL, cruise = NULL, station = NULL,
+  startTime = NULL, longitude = NULL, latitude = NULL,
   deploymentType = "unknown", pressureAtmospheric = 0,
   sampleInterval = NA, profile = NULL, debug = getOption("oceDebug"))
 }
@@ -26,7 +27,7 @@ then only the first column is used, and a warning to that effect is given,
 unless the \code{profile} argument is specified and then that specific
 profile is extracted. (3) It can be an object of \code{\link{rsk-class}},
 (see \dQuote{Converting rsk objects} for details). (4)
-It can be unspecified, in whch case \code{conductivity} becomes a mandatory
+It can be unspecified, in which case \code{conductivity} becomes a mandatory
 argument, because it will be needed for computing actual salinity,
 using \code{\link{swSCTp}}.}
 
@@ -43,7 +44,7 @@ the length of \code{salinity}.}
 divide by 42.914 to get conductivity ratio (see Culkin and Smith, 1980).}
 
 \item{scan}{optional scan number.  If not provided, this will be set to
-\code{1:length(salinity)}.}
+\code{seq_along(salinity)}.}
 
 \item{time}{optional vector of times of observation}
 
@@ -81,8 +82,7 @@ using \code{UTC} as the timezone.}
 \item{longitude}{optional numerical value containing longitude in decimal
 degrees, positive in the eastern hemisphere. If this is a single number,
 then it is stored in the \code{metadata} slot of the returned value; if it
-is a vector of numbers, they are stored in \code{data} and a mean value is
-stored in \code{metadata}.}
+is a vector of numbers, then they are stored in the \code{data} slot.}
 
 \item{latitude}{optional numerical value containing the latitude in decimal
 degrees, positive in the northern hemisphere. See the note on length, for
@@ -142,7 +142,7 @@ are ignored in this instance, because \code{rsk} objects already
 contain their information. If required, any data or metadata
 element can be added to the value returned by \code{as.ctd}
 using \code{\link{oceSetData}} or \code{\link{oceSetMetadata}},
-erspectively.
+respectively.
 
 The returned \code{\link{rsk-class}} object contains pressure in a form that
 may need to be adjusted, because \code{rsk} objects may contain
@@ -158,7 +158,7 @@ than the atmospheric pressure.
 sum of sea pressure and atmospheric pressure), depending on how the object was
 created with \code{\link{as.rsk}} or \code{\link{read.rsk}}.  However,
 \code{\link{ctd-class}} objects store sea pressure, which is needed for
-plotting, calculating density, etc. This poses no difficulities, however,
+plotting, calculating density, etc. This poses no difficulties, however,
 because \code{as.ctd} automatically converts absolute pressure to sea pressure,
 if the metadata in the \code{\link{rsk-class}} object indicates that this is
 appropriate. Further alteration of the pressure can be accomplished with the
@@ -199,6 +199,8 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{ctdDecimate}}, \code{\link{ctdFindProfiles}},
   \code{\link{ctdRaw}}, \code{\link{ctdTrim}},
   \code{\link{ctd}}, \code{\link{handleFlags,ctd-method}},
+  \code{\link{initialize,ctd-method}},
+  \code{\link{initializeFlagScheme,ctd-method}},
   \code{\link{oceNames2whpNames}},
   \code{\link{oceUnits2whpUnits}},
   \code{\link{plot,ctd-method}}, \code{\link{plotProfile}},
@@ -207,6 +209,7 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
   \code{\link{read.ctd.sbe}},
   \code{\link{read.ctd.woce.other}},
   \code{\link{read.ctd.woce}}, \code{\link{read.ctd}},
+  \code{\link{setFlags,ctd-method}},
   \code{\link{subset,ctd-method}},
   \code{\link{summary,ctd-method}},
   \code{\link{woceNames2oceNames}},
@@ -215,3 +218,4 @@ Other things related to \code{ctd} data: \code{\link{[[,ctd-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{ctd} data}

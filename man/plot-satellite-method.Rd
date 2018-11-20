@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plot,satellite-method}
 \alias{plot,satellite-method}
+\alias{plot.satellite}
 \title{Plot a satellite object}
 \usage{
 \S4method{plot}{satellite}(x, y, asp, debug = getOption("oceDebug"), ...)
@@ -17,7 +18,7 @@
 \item{debug}{A debugging flag, integer.}
 
 \item{...}{extra arguments passed to \code{\link{imagep}}, e.g. set
-\code{col} to control colours.}
+\code{col} to control colors.}
 }
 \description{
 For an example using \code{g1sst} data, see \code{\link{read.g1sst}}.
@@ -37,6 +38,7 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
   \code{\link{plot,ctd-method}},
   \code{\link{plot,gps-method}},
   \code{\link{plot,ladp-method}},
+  \code{\link{plot,landsat-method}},
   \code{\link{plot,lisst-method}},
   \code{\link{plot,lobo-method}},
   \code{\link{plot,met-method}},
@@ -53,6 +55,6 @@ Other functions that plot \code{oce} data: \code{\link{plot,adp-method}},
 \author{
 Dan Kelley
 }
-\concept{
-satellite
-}
+\concept{functions that plot \code{oce} data}
+\concept{satellite}
+\concept{things related to satellite data}

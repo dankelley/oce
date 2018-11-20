@@ -9,6 +9,8 @@ library(oce)
 ##data("adv")
 ##data("argo")
 
+context("datasets")
+
 test_that("cm", {
           data("cm")
           S <- cm[["salinity"]]
@@ -28,7 +30,9 @@ test_that("ctd", {
           data("ctd")
           expect_equal(ctd[["latitude"]],   44.6842666666667)
           expect_equal(ctd[["longitude"]], -63.6438833333333)
-          expect_equal(ctd[["time"]], as.POSIXct("2003-10-15 11:38:38", tz="UTC"))
+          ## next two lines test issues 1460 and 1547
+          expect_equal(ctd[["time"]][1], as.POSIXct("2003-10-15 15:40:47", tz="UTC"))
+          expect_equal(length(ctd[["time"]]), length(ctd[["pressure"]]))
           ## units are checked in test_accessors.R
           expect_equal(ctd[["pressureType"]], "sea")
 })
@@ -52,7 +56,7 @@ test_that("sealevel", {
 
 test_that("sealevel", {
           data("section")
-          stopifnot(all.equal(section[["sectionId"]], "a03"))
+          expect_equal(section[["sectionId"]], "a03")
           expect_equal(length(section@data$station), 124)
           expect_equal(section@data$station[[1]]@metadata$station, "3")
           expect_equal(section@data$station[[1]][["station"]], "3")
@@ -73,7 +77,7 @@ test_that("topoWorld", {
 
 ## below constructed from the files in oce/data
 test_that("units", {
-          names <- c("adp", "adv", "argo", "cm", "coastlineWorld", "colors", "ctd",
+          names <- c("adp", "adv", "argo", "cm", "coastlineWorld", "ocecolors", "ctd",
                      "ctdRaw", "echosounder", "landsat", "lisst", "lobo", "met", "rsk",
                      "sealevel", "sealevelTuktoyaktuk", "section", "tidedata",
                      "topoWorld", "wind")

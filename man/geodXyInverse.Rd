@@ -4,7 +4,8 @@
 \alias{geodXyInverse}
 \title{Inverse Geodesic Calculation}
 \usage{
-geodXyInverse(x, y, longitudeRef, latitudeRef, debug = getOption("oceDebug"))
+geodXyInverse(x, y, longitudeRef, latitudeRef,
+  debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{value of x in metres, as given by \code{\link{geodXy}}}
@@ -36,7 +37,7 @@ See \dQuote{Caution}.
 The minimum is calculated in C for speed, using the \code{nmmin} function
 that is the underpinning for the Nelder-Meade version of the R function
 \code{\link{optim}}. If you find odd results, try setting \code{debug=1}
-and rerunning, to see whether this optimizer is having difficulting
+and rerunning, to see whether this optimizer is having difficulty
 finding a minimum of the mismatch function.
 }
 \section{Caution}{
@@ -48,3 +49,4 @@ users should read the documentation carefully before deciding to use it.
 Other functions relating to geodesy: \code{\link{geodDist}},
   \code{\link{geodGc}}, \code{\link{geodXy}}
 }
+\concept{functions relating to geodesy}

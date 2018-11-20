@@ -6,7 +6,7 @@
 \usage{
 plotSticks(x, y, u, v, yscale = 1, add = FALSE, length = 1/20,
   mgp = getOption("oceMgp"), mar = c(mgp[1] + 1, mgp[1] + 1, 1, 1 +
-  par("cex")), xlab = "", ylab = "", ...)
+  par("cex")), xlab = "", ylab = "", col = 1, ...)
 }
 \arguments{
 \item{x}{x coordinates of stick origins.}
@@ -34,6 +34,10 @@ default, in order to use more space for the data and less for the axes.}
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
 
 \item{xlab, ylab}{labels for the plot axes. The default is not to label them.}
+
+\item{col}{color of sticks, in either numerical or character format. This is
+made to have length matching that of \code{x} by a call to \code{\link{rep}},
+which can be handy in e.g. colorizing a velocity field by day.}
 
 \item{\dots}{graphical parameters passed down to \code{\link{arrows}}.  It
 is common, for example, to use smaller arrow heads than \code{\link{arrows}}

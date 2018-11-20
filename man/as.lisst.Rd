@@ -45,3 +45,4 @@ Other things related to \code{lisst} data: \code{\link{[[,lisst-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{lisst} data}

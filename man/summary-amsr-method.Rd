@@ -27,6 +27,5 @@ Other things related to \code{amsr} data: \code{\link{[[<-,amsr-method}},
 \author{
 Dan Kelley
 }
-\concept{
-satellite
-}
+\concept{satellite}
+\concept{things related to \code{amsr} data}

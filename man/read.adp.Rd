@@ -62,6 +62,10 @@ amount of debugging information, or to 2 to get more.}
 }
 \value{
 An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
+The form of this object varies with instrument type. In some cases
+navigational data may be included, e.g. \code{read.adp.rdi} can
+read NMEA strings (which get stored in an item called \code{nmea}
+in the \code{data} slot).
 }
 \description{
 Read an ADP data file, producing an \code{adp} object, i.e. one inheriting
@@ -83,14 +87,17 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{binmapAdp}}, \code{\link{enuToOtherAdp}},
-  \code{\link{enuToOther}}, \code{\link{plot,adp-method}},
-  \code{\link{read.ad2cp}}, \code{\link{read.adp.nortek}},
+  \code{\link{enuToOther}},
+  \code{\link{handleFlags,adp-method}},
+  \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
+  \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},
   \code{\link{read.adp.sontek}},
   \code{\link{read.aquadoppHR}},
   \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}},
+  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
+  \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
@@ -99,3 +106,4 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
 \author{
 Dan Kelley and Clark Richards
 }
+\concept{things related to \code{adp} data}

@@ -21,7 +21,7 @@ by specifying higher \code{debug} values.}
 a list containing \code{lonmin}, \code{lonmax},
 \code{latmin}, \code{latmax}, and \code{ok}; the last
 of which indicates whether at least one point on the plot box
-is invertable. Note that longitude are expressed in the
+is invertible. Note that longitude are expressed in the
 range from -180 to 180 degrees.
 }
 \description{
@@ -56,3 +56,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley
 }
+\concept{functions related to maps}

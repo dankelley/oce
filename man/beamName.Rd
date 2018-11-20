@@ -31,6 +31,7 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{beamToXyzAdv}}, \code{\link{beamToXyz}},
   \code{\link{beamUnspreadAdp}}, \code{\link{binmapAdp}},
   \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
+  \code{\link{handleFlags,adp-method}},
   \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
@@ -38,7 +39,8 @@ Other things related to \code{adp} data: \code{\link{[[,adp-method}},
   \code{\link{read.adp.sontek}}, \code{\link{read.adp}},
   \code{\link{read.aquadoppHR}},
   \code{\link{read.aquadoppProfiler}},
-  \code{\link{read.aquadopp}},
+  \code{\link{read.aquadopp}}, \code{\link{rotateAboutZ}},
+  \code{\link{setFlags,adp-method}},
   \code{\link{subset,adp-method}},
   \code{\link{summary,adp-method}}, \code{\link{toEnuAdp}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
@@ -53,7 +55,8 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
   \code{\link{read.adv.sontek.adr}},
   \code{\link{read.adv.sontek.serial}},
   \code{\link{read.adv.sontek.text}},
-  \code{\link{read.adv}}, \code{\link{subset,adv-method}},
+  \code{\link{read.adv}}, \code{\link{rotateAboutZ}},
+  \code{\link{subset,adv-method}},
   \code{\link{summary,adv-method}}, \code{\link{toEnuAdv}},
   \code{\link{toEnu}}, \code{\link{velocityStatistics}},
   \code{\link{xyzToEnuAdv}}, \code{\link{xyzToEnu}}
@@ -61,3 +64,5 @@ Other things related to \code{adv} data: \code{\link{[[,adv-method}},
 \author{
 Dan Kelley
 }
+\concept{things related to \code{adp} data}
+\concept{things related to \code{adv} data}

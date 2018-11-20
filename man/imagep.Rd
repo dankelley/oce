@@ -4,14 +4,14 @@
 \alias{imagep}
 \title{Plot an Image with a Color Palette}
 \usage{
-imagep(x, y, z, xlim, ylim, zlim, zclip = FALSE, flipy = FALSE, xlab = "",
-  ylab = "", zlab = "", zlabPosition = c("top", "side"),
+imagep(x, y, z, xlim, ylim, zlim, zclip = FALSE, flipy = FALSE,
+  xlab = "", ylab = "", zlab = "", zlabPosition = c("top", "side"),
   decimate = TRUE, breaks, col, colormap, labels = NULL, at = NULL,
   drawContours = FALSE, drawPalette = TRUE, drawTriangles = FALSE,
   tformat, drawTimeRange = getOption("oceDrawTimeRange"),
   filledContour = FALSE, missingColor = NULL, useRaster,
-  mgp = getOption("oceMgp"), mar, mai.palette, xaxs = "i", yaxs = "i",
-  asp = NA, cex = par("cex"), adorn = NULL, axes = TRUE, main = "",
+  mgp = getOption("oceMgp"), mar, mai.palette, xaxs = "i",
+  yaxs = "i", asp = NA, cex = par("cex"), axes = TRUE, main = "",
   axisPalette, add = FALSE, debug = getOption("oceDebug"), ...)
 }
 \arguments{
@@ -46,20 +46,20 @@ description here.)}
 
 \item{zlim}{If missing, the z scale is determined by the range of the data.
 If provided, \code{zlim} may take several forms. First, it may be a pair
-of numbers that specify the limits for the colour scale.  Second,
+of numbers that specify the limits for the color scale.  Second,
 it could be the string \code{"histogram"}, to yield a flattened
 histogram (i.e. to increase contrast). Third, it could be the
 string \code{"symmetric"}, to yield limits that are symmetric
 about zero, which can be helpful in drawing velocity fields,
 for which a zero value has a particular meaning (in which case,
-a good colour scheme might be \code{col=\link{oceColorsTwo}}).}
+a good color scheme might be \code{col=\link{oceColorsTwo}}).}
 
-\item{zclip}{Logical, indicating whether to clip the colours to those
+\item{zclip}{Logical, indicating whether to clip the colors to those
 corresponding to \code{zlim}. This only works if \code{zlim} is
-provided. Clipped regions will be coloured with \code{missingColor}.
+provided. Clipped regions will be colored with \code{missingColor}.
 Thus, clipping an image is somewhat analogous to clipping in an xy
 plot, with clipped data being ignored, which in an image means to be be
-coloured with \code{missingColor}.}
+colored with \code{missingColor}.}
 
 \item{flipy}{Logical, with \code{TRUE} indicating that the image
 should be flipped top to bottom (e.g. to produce a profile image
@@ -79,7 +79,7 @@ If \code{decimate=TRUE}, then decimation will be done
 in the horizontal or vertical direction (or both) if the length of the
 corresponding edge of the \code{z} matrix exceeds 800. (This also creates
 a warning message.) The decimation
-factor is computed as the integet just below the ratio of \code{z} dimension
+factor is computed as the integer just below the ratio of \code{z} dimension
 to 400. Thus, no decimation is done if the dimension is less than 800,
 but if the dimension s between 800 and 1199, only every second grid
 point is mapped to a pixel in the image.  \strong{Case 3.}
@@ -90,15 +90,15 @@ the same is done for the \code{y} direction. \strong{Case 4.} If
 the first index of \code{z}, and the second is used for the second
 index.}
 
-\item{breaks}{The z values for breaks in the colour scheme.  If this is of
+\item{breaks}{The z values for breaks in the color scheme.  If this is of
 length 1, the value indicates the desired number of breaks, which is
 supplied to \code{\link{pretty}}, in determining clean break points.}
 
-\item{col}{Either a vector of colours corresponding to the breaks, of length
-1 plus the number of breaks, or a function specifying colours,
+\item{col}{Either a vector of colors corresponding to the breaks, of length
+1 plus the number of breaks, or a function specifying colors,
 e.g. \code{\link{oce.colorsJet}} for a rainbow.}
 
-\item{colormap}{A colour map as created by \code{\link{colormap}}.  If
+\item{colormap}{A color map as created by \code{\link{colormap}}.  If
 provided, then \code{colormap$breaks} and \code{colormap$col} take
 precedence over the present arguments \code{breaks} and \code{col}.
 (All of the other contents of \code{colormap} are ignored, though.)}
@@ -109,7 +109,7 @@ correspond with \code{at}).}
 \item{at}{Optional vector of positions for the \code{label}s.}
 
 \item{drawContours}{Logical value indicating whether to draw contours on the
-image, and palette, at the colour breaks.  Images with a great deal of
+image, and palette, at the color breaks.  Images with a great deal of
 high-wavenumber variation look poor with contours.}
 
 \item{drawPalette}{Indication of the type of palette to draw, if any.  If
@@ -139,14 +139,14 @@ hours if the range is less than a day, etc.}
 \item{filledContour}{Boolean value indicating whether to use filled
 contours to plot the image.}
 
-\item{missingColor}{A colour to be used to indicate missing data, or
+\item{missingColor}{A color to be used to indicate missing data, or
 \code{NULL} for transparent (to see this, try setting
 \code{par("bg")<-"red"}).}
 
 \item{useRaster}{A logical value passed to \code{\link{image}}, in cases
 where \code{filledContour} is \code{FALSE}. Setting \code{useRaster=TRUE}
 can alleviate some anti-aliasing effects on some plot devices;
-see the documentaiton for \code{\link{image}}.}
+see the documentation for \code{\link{image}}.}
 
 \item{mgp}{A 3-element numerical vector to use for \code{par(mgp)}, and
 also for \code{par(mar)}, computed from this.  The default is
@@ -173,24 +173,6 @@ mean latitude in \code{x}, as a way to reduce geographical distortion.
 Otherwise, if \code{asp} is not \code{NA}, then it is used directly.}
 
 \item{cex}{Size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").}
-
-\item{adorn}{(\strong{Defunct})
-An \code{\link{expression}} or vector of expressions that contain
-R code that is to be executed immediately after each panel of the plot.
-If the number of expressions matches the number of panels, then the 
-expressions are used for the corresponding panels; otherwise, the
-expression list is extended to match the number of panels (i.e.
-to obtain \code{length(which)} elements). Note that \code{adorn}
-is a dangerous argument, because if the expressions contained
-therein set up local storage, there is a chance of entirely
-disrupting the plotting. \strong{For this reason, \code{adorn} was
-marked as defunct in June 2016, and will be removed entirely 
-after the July CRAN release.} Users with existing code that uses
-\code{adorn} should simply plot the panels individually, and
-use conventional R functions, e.g. \code{\link{lines}} etc.,
-after each panel, to achieve the desired effect.  (See
-\code{\link{oce-defunct}} for notes on other deprecated or
-defunct \code{oce} features.)}
 
 \item{axes}{Logical, set \code{TRUE} to get axes on the main image.}
 
@@ -220,17 +202,17 @@ A list is silently returned, containing \code{xat} and \code{yat},
     plot.
 }
 \description{
-Plot an image with a colour palette, in a way that does not conflict with
+Plot an image with a color palette, in a way that does not conflict with
 \code{\link{par}(mfrow)} or \code{\link{layout}}.  To plot just a palette,
-e.g. to get an x-y plot with points coloured according to a palette, use
+e.g. to get an x-y plot with points colored according to a palette, use
 \code{\link{drawPalette}} and then draw the main diagram.
 }
 \details{
-By default, creates an image with a colour palette to the right.  The effect is similar to
+By default, creates an image with a color palette to the right.  The effect is similar to
 \code{\link{filled.contour}} except that with \code{imagep} it is possible to
 set the \code{\link{layout}} outside the function, which enables the creation
 of plots with many image-palette panels.  Note that the contour lines may not
-coincide with the colour transitions, in the case of coarse images.
+coincide with the color transitions, in the case of coarse images.
 
 Note that this does not use \code{\link{layout}} or any of the other screen
 splitting methods.  It simply manipulates margins, and draws two plots

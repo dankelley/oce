@@ -18,7 +18,7 @@ to be done.}
 \item{method}{method to use.  See \dQuote{Details}.}
 }
 \value{
-A vector of interplated values, corresponding to the \code{xout}
+A vector of interpolated values, corresponding to the \code{xout}
 values and equal in number.
 }
 \description{

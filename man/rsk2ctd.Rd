@@ -4,8 +4,9 @@
 \alias{rsk2ctd}
 \title{Create a ctd Object from an rsk Object}
 \usage{
-rsk2ctd(x, pressureAtmospheric = 0, longitude, latitude, ship, cruise,
-  station, deploymentType, debug = getOption("oceDebug"))
+rsk2ctd(x, pressureAtmospheric = 0, longitude = NULL,
+  latitude = NULL, ship = NULL, cruise = NULL, station = NULL,
+  deploymentType = NULL, debug = getOption("oceDebug"))
 }
 \arguments{
 \item{x}{An \code{rsk} object, i.e. one inheriting from \code{\link{rsk-class}}.}

@@ -4,8 +4,8 @@
 \alias{mapScalebar}
 \title{Add a Scalebar to a Map}
 \usage{
-mapScalebar(x, y = NULL, length, lwd = 1.5 * par("lwd"), cex = par("cex"),
-  col = "black")
+mapScalebar(x, y = NULL, length, lwd = 1.5 * par("lwd"),
+  cex = par("cex"), col = "black")
 }
 \arguments{
 \item{x, y}{position of the scalebar.  Eventually this may be similar to
@@ -19,7 +19,7 @@ reasonable choice is made, based on the underlying map.}
 
 \item{cex}{character expansion factor for the scalebar text.}
 
-\item{col}{colour of the scalebar.}
+\item{col}{color of the scalebar.}
 }
 \description{
 Draw a scalebar on an existing map.
@@ -60,3 +60,4 @@ Other functions related to maps: \code{\link{lonlat2map}},
 \author{
 Dan Kelley
 }
+\concept{functions related to maps}

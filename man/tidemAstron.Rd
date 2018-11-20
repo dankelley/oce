@@ -7,8 +7,10 @@
 tidemAstron(t)
 }
 \arguments{
-\item{t}{The time in \code{POSIXct} format.  (It is \strong{very} important to
-use \code{tz="GMT"} in constructing \code{t}.)}
+\item{t}{Either a time in \code{POSIXct} format (with \code{"UTC"} timezone),
+or an integer. In the second case, it is converted to a time with
+\code{\link{numberAsPOSIXct}(t,tz="UTC")}.
+If \code{t} (It is \strong{very} important to use \code{tz="GMT"} in constructing \code{t}.)}
 }
 \value{
 A \code{\link[base]{list}} containing items named
@@ -39,3 +41,4 @@ Other things related to \code{tidem} data: \code{\link{[[,tidem-method}},
 Dan Kelley translated this from \code{t_astron} in the \code{T_TIDE}
 package.
 }
+\concept{things related to \code{tidem} data}

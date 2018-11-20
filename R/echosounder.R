@@ -4,13 +4,29 @@
 ##   [1] "DT4 Data File Format Specification" [July, 2010] DT4_format_2010.pdf
 
 
-#' @title Class to Store Echosounder Data
+#' Class to Store Echosounder Data
 #'
-#' @description
-#' Class to store echosounder data.
+#' This class stores echosounder data. Echosounder objects may be
+#' read with \code{\link{read.echosounder}},
+#' summarized with \code{\link{summary,echosounder-method}},
+#' and plotted with \code{\link{plot,echosounder-method}}.
+#' The \code{\link{findBottom}}
+#' function infers the ocean bottom from tracing the strongest reflector from
+#' ping to ping.
+#'
+#' @templateVar class echosounder
+#'
+#' @templateVar dataExample {}
+#'
+#' @templateVar metadataExample {}
+#'
+#' @template slot_summary
+#'
+#' @template slot_put
+#'
+#' @template slot_get
 #'
 #' @details
-#' The \code{data} slot is a list containing
 #'
 #' \itemize{
 #'
@@ -45,41 +61,10 @@
 #'
 #' }
 #'
-#'
 #' @name echosounder-class
 #' @docType class
 #'
-#' @section Methods:
-#'
-#' \emph{Accessing values.} Data may be accessed as e.g.
-#' \code{echosounder[["time"]]}, \code{echosounder[["depth"]]},
-#' \code{echosounder[["a"]]}, etc.  Items in \code{metadata} must be specifield
-#' by full name, but those in \code{data} may be abbreviated, so long as the
-#' abbreviation is unique. In addition to the actual data, some derived fields
-#' are also available: \code{echosounder[["distance"]]} calls
-#' \code{\link{geodDist}} to compute calculate distance along the ship track,
-#' \code{echosounder[["Sv"]]} returns a matrix of backscatter strength in DB,
-#' and \code{echosounder[["TS"]]} returns a matrix of target strength in dB.
-#'
-#' \emph{Assigning values.} Everything that may be accessed may also be
-#' assigned, e.g.  \code{echosounder[["time"]] <- 3600 + echosounder[["time"]]}
-#' adds an hour to time.
-#'
 #' @author Dan Kelley
-#'
-#' Statistical summaries are provided by \code{\link{summary,echosounder-method}},
-#' while \code{\link{show}} displays an overview.  The \code{\link{findBottom}}
-#' function infers the ocean bottom from tracing the strongest reflector from
-#' ping to ping.
-#'
-#' Echosounder objects may be plotted with \code{\link{plot,echosounder-method}}.
-#'
-#' The contents of \code{echosounder} objects may be altered with
-#' \code{\link{subset,echosounder-method}}, or with the \code{[[]]} scheme
-#' discussed in the previous section; skilled users may also manipulate the
-#' contents directly, but this is not recommended because it is brittle to
-#' changes in the data structure.
-#' @family classes provided by \code{oce}
 #' @family things related to \code{echosounder} data
 setClass("echosounder", contains="oce")
 
@@ -88,7 +73,7 @@ setClass("echosounder", contains="oce")
 #'
 #' @description
 #' This is degraded subsample of measurements that were made with a Biosonics
-#' scientific echousounder, as part of the St Lawrence Internal Wave Experiment
+#' scientific echosounder, as part of the St Lawrence Internal Wave Experiment
 #' (SLEIWEX).
 #'
 #' @name echosounder
@@ -146,13 +131,17 @@ setMethod(f="summary",
               cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
               cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
               cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
-              callNextMethod()         # summary
+              invisible(callNextMethod()) # summary
           })
 
-#' @title Extract Parts of an Echosounder Object
+
+#' Extract Something from an Echosounder Object
 #' @param x A \code{echosounder} object, i.e. one inheriting from \code{\link{echosounder-class}}.
 #'
+#' @templateVar class echosounder
+#'
 #' @section Details of the specialized \code{echosounder} method:
+#'
 #' If \code{i} is the string \code{"Sv"}, the return value is calculated according to
 #' \preformatted{
 #' Sv <- 20*log10(a) -
@@ -307,7 +296,7 @@ setMethod(f="subset",
               } else {
                   stop("can only subset an echosounder object by 'time' or 'depth'")
               }
-              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
+              res@processingLog <- processingLogAppend(res@processingLog, paste("subset.echosounder(x, subset=", subsetString, ")", sep=""))
               res
           })
 
@@ -326,12 +315,12 @@ setMethod(f="subset",
 #' @param src optional string indicating data source
 #' @param sourceLevel source level, in dB (uPa at 1m), denoted \code{sl} in [1
 #' p15], where it is in units 0.1dB (uPa at 1m)
-#' @param receiverSensitivity receiver sensivity of the main element, in
+#' @param receiverSensitivity receiver sensivitity of the main element, in
 #' dB(counts/uPa), denoted \code{rs} in [1 p15], where it is in units of
 #' 0.1dB(counts/uPa)
 #' @param transmitPower transmit power reduction factor, in dB, denoted
 #' \code{tpow} in [1 p10], where it is in units 0.1 dB.
-#' @param pulseDuration duration of transmited pulse in us
+#' @param pulseDuration duration of transmitted pulse in us
 #' @param beamwidthX x-axis -3dB one-way beamwidth in deg, denoted \code{bwx}
 #' in [1 p16], where the unit is 0.2 deg
 #' @param beamwidthY y-axis -3dB one-way beamwidth in deg, denoted \code{bwx}
@@ -417,7 +406,7 @@ findBottom <- function(x, ignore=5, clean=despike)
 #'
 #' @description
 #' Plot echosounder data.
-#' Simple linear approximation is used when a \code{newx} value is specifie
+#' Simple linear approximation is used when a \code{newx} value is specified
 #' with the \code{which=2} method, but arguably a gridding method should be
 #' used, and this may be added in the future.
 #'
@@ -443,10 +432,10 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' not provided, the labels depend on the value of \code{which}.
 #' @param xlim optional range for x axis.
 #' @param ylim optional range for y axis.
-#' @param zlim optional range for colour scale.
+#' @param zlim optional range for color scale.
 #' @param type type of graph, \code{"l"} for line, \code{"p"} for points, or
 #' \code{"b"} for both.
-#' @param col colour scale for image, a function
+#' @param col color scale for image, a function
 #' @param lwd line width (ignored if \code{type="p"})
 #' @param atTop optional vector of time values, for labels at the top of the
 #' plot produced with \code{which=2}.  If \code{labelsTop} is provided, then it
@@ -463,7 +452,7 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' @param drawBottom optional flag used for section images.  If \code{TRUE},
 #' then the bottom is inferred as a smoothed version of the ridge of highest
 #' image value, and data below that are grayed out after the image is drawn.
-#' If \code{drawBottom} is a colour, then that colour is used, instead of
+#' If \code{drawBottom} is a color, then that color is used, instead of
 #' white.  The bottom is detected with \code{\link{findBottom}}, using the
 #' \code{ignore} value described next.
 #' @param ignore optional flag specifying the thickness in metres of a surface
@@ -476,8 +465,6 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' \code{which="map"}.
 #' @param coastline coastline to use for maps; ignored unless \code{which=3} or
 #' \code{which="map"}.
-#'
-#' @template adornTemplate
 #'
 #' @param mgp 3-element numerical vector to use for \code{par(mgp)}, and also
 #' for \code{par(mar)}, computed from this.  The default is tighter than the R
@@ -499,6 +486,7 @@ findBottom <- function(x, ignore=5, clean=despike)
 #' plot(echosounder, which=c(1,2), drawBottom=TRUE)
 #' }
 #' @family things related to \code{echosounder} data
+#' @aliases plot.echosounder
 setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
@@ -506,12 +494,11 @@ setMethod(f="plot",
                               newx,
                               xlab, ylab,
                               xlim, ylim, zlim,
-                              type="l", col=oce.colorsJet, lwd=2,
+                              type="l", col=oceColorsJet, lwd=2,
                               despike=FALSE,
                               drawBottom, ignore=5,
                               drawTimeRange=FALSE, drawPalette=TRUE,
                               radius, coastline,
-                              adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[1]+1, mgp[1]+1),
                               atTop, labelsTop,
@@ -523,17 +510,12 @@ setMethod(f="plot",
               res <- list(xat=NULL, yat=NULL)
               dotsNames <- names(dots)
               oceDebug(debug, "plot() { # for echosounder\n", unindent=1)
-              if (!is.null(adorn))
-                  warning("In plot() : the 'adorn' argument is defunct, and will be removed soon", call.=FALSE)
+              if ("adorn" %in% names(list(...)))
+                  warning("In plot,echosounder-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
               if (length(beam) < lw)
                   beam <- rep(beam, lw)
-              adorn.length <- length(adorn)
-              if (adorn.length == 1) {
-                  adorn <- rep(adorn, lw)
-                  adorn.length <- lw
-              }
               opar <- par(no.readonly = TRUE)
               par(mgp=mgp, mar=mar)
               if (lw > 1) {
@@ -547,7 +529,7 @@ setMethod(f="plot",
               oceDebug(debug, "which:", which, "\n")
               which <- oce.pmatch(which, list("zt image"=1, "zx image"=2, map=3))
               oceDebug(debug, "which:", which, "\n")
-              for (w in 1:length(which)) {
+              for (w in seq_along(which)) {
                   oceDebug(debug, "this which:", which[w], "\n")
                   if (which[w] == 1) {
                       time <- x[["time"]]
@@ -714,11 +696,6 @@ setMethod(f="plot",
                       }
                       lines(lon, lat, col=if (!is.function(col)) col else "black", lwd=lwd)
                   }
-                  if (w <= adorn.length && nchar(adorn[w]) > 0) {
-                      t <- try(eval(adorn[w]), silent=TRUE)
-                      if (class(t) == "try-error")
-                          warning("cannot evaluate adorn[", w, "]")
-                  }
               }
               oceDebug(debug, "} # plot.echosounder()\n", unindent=1)
               invisible(res)
@@ -750,7 +727,7 @@ setMethod(f="plot",
 #' are described in the documentation for the object
 #' \code{\link{echosounder-class}}.
 #' @section Bugs: Only the amplitude information (in counts) is determined.  A
-#' future version of this funciton may provide conversion to dB, etc.  The
+#' future version of this function may provide conversion to dB, etc.  The
 #' handling of dual-beam and split-beam files is limited.  In the dual-beam
 #' cse, only the wide beam signal is processed (I think ... it could be the
 #' narrow beam, actually, given the confusing endian tricks being played).  In
@@ -760,7 +737,7 @@ setMethod(f="plot",
 #' @seealso The documentation for \code{\link{echosounder-class}} explains the
 #' structure of \code{ctd} objects, and also outlines the other functions
 #' dealing with them.
-#' @references Various echousounder instruments provided by BioSonics are
+#' @references Various echosounder instruments provided by BioSonics are
 #' described at the company website, \url{http://www.biosonicsinc.com/}.  The
 #' document listed as [1] below was provided to the author of this function in
 #' November 2011, which suggests that the data format was not changed since
@@ -857,6 +834,13 @@ read.echosounder <- function(file, channel=1, soundSpeed,
     a <- matrix(NA_real_, nrow=1, ncol=1)
     b <- matrix(NA_real_, nrow=1, ncol=1)
     c <- matrix(NA_real_, nrow=1, ncol=1)
+    ## FIXME: find out whether samplesPerPing is always defined prior to use in the code1==0x15 blocks.
+    ## The Rstudio code-diagnostic complains that this variable is used before being defined,
+    ## but when I run test code there is no problem, because the variable has been defined. What I
+    ## do *not* know is whether files will always have these byte groupsing in this order, but at
+    ## least setting to a zero value is likely to cause an error, if that ever occurs. (I may just
+    ## need to reorder some code, if problems arise.)
+    samplesPerPing <- 0 ## overriddent later; here just to prevent code-diagnostic warning
     while (offset < fileSize) {
         ##print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
@@ -871,6 +855,7 @@ read.echosounder <- function(file, channel=1, soundSpeed,
             thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res
             pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4L, n=1L, endian="little")
             pingElapsedTime <- 0.001 * readBin(buf[offset+10+1:4], "integer", size=4L, n=1L, endian="little")
+            ##message("samplersPerPing=", samplesPerPing)
             ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1), NAOK=TRUE, PACKAGE="oce")$res # number of samples
             if (thisChannel == channelNumber[channel]) {
                 if (debug > 3) {
@@ -885,14 +870,14 @@ read.echosounder <- function(file, channel=1, soundSpeed,
                 ## Note the time reversal in the assignment to the data matrix 'a'
                 ## FIXME: is it faster to flip the data matrix later?
                 if (code1 == 0x15) {
-                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing, ns, 0)
+                    tmp <- do_biosonics_ping(buf[offset+16+1:(2*ns)], samplesPerPing, ns, 0)
                     beamType <- "single-beam"
                 } else if (code1 == 0x1c) {
-                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 1)
+                    tmp <- do_biosonics_ping(buf[offset+16+1:(4*ns)], samplesPerPing, ns, 1)
                     beamType <- "dual-beam"
                 } else if (code1 == 0x1d) {
                     ## e.g. 01-Fish.dt4 sample file from Biosonics
-                    tmp <- .Call("biosonics_ping", buf[offset+16+1:(4*ns)], samplesPerPing, ns, 2)
+                    tmp <- do_biosonics_ping(buf[offset+16+1:(4*ns)], samplesPerPing, ns, 2)
                     beamType <- "split-beam"
                 } else {
                     stop("unknown 'tuple' 0x", code1, sep="")
@@ -1032,7 +1017,7 @@ read.echosounder <- function(file, channel=1, soundSpeed,
     res@metadata$fileType <- fileType
     res@metadata$blankedSamples <- blankedSamples
     if (missing(soundSpeed)) {
-        res@metadata$soundSpeed <- swSoundSpeed(35, 10, 30, eos="unesco") 
+        res@metadata$soundSpeed <- swSoundSpeed(35, 10, 30, eos="unesco")
     } else {
         res@metadata$soundSpeed <- soundSpeed
     }
@@ -1139,7 +1124,12 @@ read.echosounder <- function(file, channel=1, soundSpeed,
     if ("latitudeSlow" %in% names) res@metadata$units$latitudeSlow <- list(unit=expression(degree*N), scale="")
     if ("longitudeSlow" %in% names) res@metadata$units$longitudeSlow <- list(unit=expression(degree*E), scale="")
     if ("depth" %in% names) res@metadata$units$depth <- list(unit=expression(m), scale="")
-    res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+
+    if (!missing(processingLog))
+        res@processingLog <- processingLogItem(processingLog)
+    res@processingLog <- processingLogAppend(res@processingLog,
+                                             paste("read.echosounder(\"", filename, "\", channel=", channel, ", soundSpeed=",
+                                                   if (missing(soundSpeed)) "(missing)" else soundSpeed, ", tz=\"", tz, "\", debug=", debug, ", processingLog)", sep=""))
     .C("biosonics_free_storage", package="oce") # clear temporary storage space
     res
 }

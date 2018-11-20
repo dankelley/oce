@@ -7,8 +7,8 @@ Source= http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f
 check value: cpsw = 3849.500 j/(kg deg. c) for s = 40 (ipss-78),}
 \usage{
 swSpecificHeat(salinity, temperature = NULL, pressure = 0,
-  longitude = NULL, latitude = NULL, eos = getOption("oceEOS", default =
-  "gsw"))
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS",
+  default = "gsw"))
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}
@@ -72,3 +72,4 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
 \author{
 Dan Kelley
 }
+\concept{functions that calculate seawater properties}

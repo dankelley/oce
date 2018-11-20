@@ -4,8 +4,9 @@
 \alias{swSigmaT}
 \title{Seawater quasi-potential density anomaly}
 \usage{
-swSigmaT(salinity, temperature = NULL, pressure = NULL, longitude = NULL,
-  latitude = NULL, eos = getOption("oceEOS", default = "gsw"))
+swSigmaT(salinity, temperature = NULL, pressure = NULL,
+  longitude = NULL, latitude = NULL, eos = getOption("oceEOS",
+  default = "gsw"))
 }
 \arguments{
 \item{salinity}{either practical salinity (in which case \code{temperature}
@@ -78,3 +79,4 @@ Other functions that calculate seawater properties: \code{\link{T68fromT90}},
 \author{
 Dan Kelley
 }
+\concept{functions that calculate seawater properties}

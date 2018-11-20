@@ -26,7 +26,7 @@ cat(format(t), "is Julian Century anomaly", format(jca, digits=8), "\\n")
 
 }
 \references{
-Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 Willmann-Bell. Richmond VA, USA. 201 pages
 }
 \seealso{
@@ -44,3 +44,5 @@ Other things related to time: \code{\link{ctimeToSeconds}},
 \author{
 Dan Kelley
 }
+\concept{things related to astronomy}
+\concept{things related to time}
