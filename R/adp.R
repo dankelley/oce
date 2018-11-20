@@ -605,6 +605,25 @@ setMethod(f="[[",
                       res <- x@data$g
                   }
                   res
+              } else if (i == "v") {
+                  ## AD2CP is stored in a tricky way, with data interspersed
+                  ## within a list, as opposed to the simple array form that
+                  ## is used for other instrument types.
+                  instrumentType <- x@metadata$instrumentType
+                  if (!is.null(instrumentType) && instrumentType == "AD2CP") {
+                      look <- which(x@metadata$id == 22)
+                      if (length(look)) {
+                          dim <- c(length(look), dim(x@data$v[[look[1]]]))
+                          res <- array(numeric(), dim=dim)
+                          for (ilook in seq_along(look))
+                              res[ilook, ,] <- x@data$v[[look[ilook]]]
+                          res
+                      } else {
+                          NULL
+                      }
+                  } else {
+                      x@data$v
+                  }
               } else if (i == "va") {
                   if (!missing(j) && j == "numeric") {
                       res <- x@data$va

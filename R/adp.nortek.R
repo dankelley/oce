@@ -485,7 +485,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             if (version[ch] == 3) {
                 ## oceDebug(debug, "got version[ch=", ch, "]==3 (if more than once, consider caching)\n", sep="")
                 offsetOfData <- as.integer(d$buf[d$index[ch]+2])
-                if (ch==2) message("offsetOfData=", offsetOfData)
+                ## if (ch==2) message("offsetOfData=", offsetOfData)
                 i <- d$index[ch]
                 if (is.null(res@metadata$serialNumber)) # I'm not sure if this speeds up or not
                     res@metadata$serialNumber <- readBin(d$buf[i+5:8], "integer", size=4, endian="little")
