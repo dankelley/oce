@@ -444,10 +444,12 @@ setMethod(f="summary",
               cat("* Number of cells:   ", v.dim[2], "\n")
               cat("* Number of beams:   ", v.dim[3], "\n")
               cat("* Cell size:         ", object@metadata$cellSize, "m\n")
-              cat("* Table of time between profiles:\n")
-              dttable <- as.data.frame(table(diff(as.numeric(object@data$time))))
-              colnames(dttable) <- c("Seconds", "Count")
-              print(dttable, row.names=FALSE)
+              if ("time" %in% names(object@data)) {
+                  cat("* Table of time between profiles:\n")
+                  dttable <- as.data.frame(table(diff(as.numeric(object@data$time))))
+                  colnames(dttable) <- c("Seconds", "Count")
+                  print(dttable, row.names=FALSE)
+              }
               if (1 == length(agrep("nortek", object@metadata$manufacturer, ignore.case=TRUE))) {
                   resSpecific <- list(internalCodeVersion=object@metadata$internalCodeVersion,
                                       hardwareRevision=object@metadata$hardwareRevision,
@@ -505,19 +507,30 @@ setMethod(f="summary",
               ##             format(subsampleStart), attr(subsampleStart, "tzone"),
               ##             format(subsampleEnd),  attr(subsampleEnd, "tzone"),
               ##             1 / subsampleDeltat))
-              if (object@metadata$numberOfCells > 1)
-                  cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
-                              object@metadata$numberOfCells, object@data$distance[1],  tail(object@data$distance, 1), diff(object@data$distance[1:2])),  ...)
-              else
-                  cat(sprintf("* Cells:              one cell, centered at %.3f m\n", object@data$distance[1]), ...)
-
-              cat("* Coordinate system: ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n", ...)
-              cat("* Frequency:         ", object@metadata$frequency, "kHz\n", ...)
-              if ("oceBeamUnspreaded" %in% mnames)
-                  cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnspreaded) &
-                                                                                  object@metadata$oceBeamUnspreaded) "beams (attenuated)" else "beams (not attenuated)",
+              metadataNames <- names(object@metadata)
+              if ("numberOfCells" %in% metadataNames) {
+                  if (object@metadata$numberOfCells > 1) {
+                      cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
+                                  object@metadata$numberOfCells, object@data$distance[1],  tail(object@data$distance, 1), diff(object@data$distance[1:2])),  ...)
+                  } else {
+                      cat(sprintf("* Cells:              one cell, centered at %.3f m\n", object@data$distance[1]), ...)
+                  }
+              }
+              cat("* Coordinate system: ",
+                  if ("originalCoordinate" %in% metadataNames)
+                      object@metadata$originalCoordinate else "?",
+                      "[originally],",
+                      if ("oceCoordinate" %in% metadataNames) object@metadata$oceCoordinate else "?",
+                      "[presently]\n", ...)
+              cat("* Frequency:         ",
+                  if ("frequency" %in% object@metadata) object@metadata$frequency else "?",
+                  "kHz\n", ...)
+              if (3 == sum(c("numberOfBeams", "oceBeamUnspreaded", "orientation") %in% metadataNames)) {
+                  cat("* Beams:             ", object@metadata$numberOfBeams, "beams",
+                      if (!is.null(object@metadata$oceBeamUnspreaded) & object@metadata$oceBeamUnspreaded) "(attenuated)" else "(not attenuated)",
                       "oriented", object@metadata$orientation, "with angle", object@metadata$beamAngle, "deg to axis\n", ...)
-              if (!is.null(object@metadata$transformationMatrix)) {
+              }
+              if ("transformationMatrix" %in% metadataNames && !is.null(object@metadata$transformationMatrix)) {
                   digits <- 4
                   cat("* Transformation matrix::\n\n")
                   cat("  ", format(object@metadata$transformationMatrix[1, ], width=digits+4, digits=digits, justify="right"), "\n")
@@ -525,6 +538,10 @@ setMethod(f="summary",
                   cat("  ", format(object@metadata$transformationMatrix[3, ], width=digits+4, digits=digits, justify="right"), "\n")
                   if (object@metadata$numberOfBeams > 3)
                       cat("  ", format(object@metadata$transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
+              }
+              if ("instrumentType" %in% metadataNames && !is.null(object@metadata$instrumentType) && object@metadata$instrumentType == "AD2CP") {
+                  cat("* Table of ID values:\n")
+                  print(table(object@metadata$id))
               }
               invisible(callNextMethod()) # summary
           })

@@ -391,6 +391,8 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))
+    } else {
+        filename <- "(connection)"
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
@@ -616,6 +618,9 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     value$time <- NULL
     value$id <- NULL
     res@data <- value
+    if (missing(processingLog))
+        processingLog <- paste("read.ad2cp(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep="")
+    res@processingLog <- processingLogItem(processingLog)
     oceDebug(debug, "} # read.ad2cp()\n", unindent=1)
     res
 }
@@ -1171,7 +1176,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$units$attitude <- list(unit=expression(degree), scale="")
 
     if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+        processingLog <- paste("read.adp.nortek(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep="")
     res@processingLog <- processingLogItem(processingLog)
     res
 }                                       # read.adp.nortek()

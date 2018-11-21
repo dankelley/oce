@@ -55,8 +55,9 @@ setClass("oce",
 setMethod(f="summary",
           signature="oce",
           definition=function(object, ...) {
-              names <- names(object@data)
-              isTime <- grepl("^time", names, ignore.case=TRUE) # pass timestampIMU
+              dataNames <- names(object@data)
+              metadataNames <- names(object@metadata)
+              isTime <- grepl("^time", dataNames, ignore.case=TRUE) # pass timestampIMU
               if (any(isTime)) {
                   time <- object@data[[which(isTime)[1]]]
                   ## Times are always in POSIXct, so the length() does something useful
@@ -83,12 +84,17 @@ setMethod(f="summary",
               ndata <- length(object@data)
               threes <- NULL
               if (ndata > 0) {
-                  threes <- matrix(nrow=ndata, ncol=4)
-                  for (i in 1:ndata) {
-                      threes[i, ] <- threenum(object@data[[i]])
+                  if ("instrumentType" %in% metadataNames && object@metadata$instrumentType=="AD2CP") {
+                      threes <- matrix(nrow=1, ncol=4)
+                      threes[1, ] <- threenum(object[["v"]])
+                  } else {
+                      threes <- matrix(nrow=ndata, ncol=4)
+                      for (i in 1:ndata) {
+                          threes[i, ] <- threenum(object@data[[i]])
+                      }
                   }
                   ##rownames(threes) <- paste("   ", names[!isTime])
-                  units <- if ("units" %in% names(object@metadata)) object@metadata$units else NULL
+                  units <- if ("units" %in% metadataNames) object@metadata$units else NULL
                   ## paste the scale after the unit
                   unitsNames <- names(object@metadata$units)
                   units <- unlist(lapply(seq_along(object@metadata$units),
@@ -138,12 +144,16 @@ setMethod(f="summary",
                   names(units) <- unitsNames
                   ##> message("units:");str(units)
                   if (!is.null(threes)) {
-                      rownames(threes) <- paste("    ", dataLabel(names, units), sep="")
+                      if ("instrumentType" %in% metadataNames && object@metadata$instrumentType=="AD2CP") {
+                          rownames(threes) <- "v"
+                      } else {
+                          rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
+                      }
                       colnames(threes) <- c("Min.", "Mean", "Max.", "Dim.")
                       cat("* Data\n\n")
-                      if ("dataNamesOriginal" %in% names(object@metadata)) {
+                      if ("dataNamesOriginal" %in% metadataNames) {
                           if (is.list(object@metadata$dataNamesOriginal)) {
-                              OriginalName <- unlist(lapply(names, function(n)
+                              OriginalName <- unlist(lapply(dataNames, function(n)
                                                             if (n %in% names(object@metadata$dataNamesOriginal))
                                                                 object@metadata$dataNamesOriginal[[n]] else "-"))
                           } else {
@@ -156,15 +166,19 @@ setMethod(f="summary",
                       ## I'm not sure the following will ever happen, if we always remember
                       ## to use ctdAddColumn(), but I don't want names getting recycled, so
                       ## the next if-block prevents that.
-                      if (length(OriginalName) < length(names))
-                          OriginalName <- c(OriginalName, rep("-", length(names)-length(OriginalName)))
+                      if (length(OriginalName) < length(dataNames))
+                          OriginalName <- c(OriginalName, rep("-", length(dataNames)-length(OriginalName)))
                       ##print(OriginalName)
                       OriginalName[0==nchar(OriginalName, "bytes")] <- "-"
                       if (!is.null(OriginalName)) {
-                          threes <- cbind(threes, OriginalName)
+                          if ("instrumentType" %in% metadataNames && object@metadata$instrumentType=="AD2CP") {
+                              threes <- cbind(threes, "-")
+                          } else {
+                              threes <- cbind(threes, OriginalName)
+                          }
                       }
-                      if ("time" %in% names)
-                          threes <- threes[-which("time"==names), , drop=FALSE]
+                      if ("time" %in% dataNames)
+                          threes <- threes[-which("time"==dataNames), , drop=FALSE]
                       owidth <- options('width')
                       options(width=150) # make wide to avoid line breaks
                       print(threes, quote=FALSE)
