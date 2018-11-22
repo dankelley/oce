@@ -540,8 +540,13 @@ setMethod(f="summary",
                       cat("  ", format(object@metadata$transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
               }
               if ("instrumentType" %in% metadataNames && !is.null(object@metadata$instrumentType) && object@metadata$instrumentType == "AD2CP") {
-                  cat("* Table of ID values:\n")
-                  print(table(object@metadata$id))
+                  cat("* Counts of 'id' values (which indicate data record types):\n")
+                  id <- object@metadata$id
+                  cat(sprintf("%10d burst (code 21=0x15)\n", sum(id == 21)))
+                  cat(sprintf("%10d average (code 22=0x16)\n", sum(id == 22)))
+                  cat(sprintf("%10d bottom track (code 23=0x17)\n", sum(id == 23)))
+                  cat(sprintf("%10d interleaved burst (code 24=0x18)\n", sum(id == 24)))
+                  cat(sprintf("%10d string, e.g. GPS NMEA data or comment (code 160=0xa0)\n", sum(id == 160)))
               }
               invisible(callNextMethod()) # summary
           })
@@ -1242,8 +1247,9 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #'
 #' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 #' @param which list of desired plot types.  These are graphed in panels
-#' running down from the top of the page.  See \dQuote{Details} for the
-#' meanings of various values of \code{which}.
+#' running down from the top of the page.  If \code{which} is not given,
+#' the plot will show images of the distance-time dependence of velocity
+#' for each beam. See \dQuote{Details} for the meanings of various values of \code{which}.
 #' @param mode a string indicating whether to plot the conventional signal
 #' (\code{normal}) or or, in the special case of Aquadopp single-bin profilers,
 #' possibly the \code{diagnostic} signal.  This argument is ignored except in
@@ -1349,7 +1355,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' @aliases plot.adp
 setMethod(f="plot",
           signature=signature("adp"),
-          definition=function(x, which=1:dim(x@data$v)[3], mode=c("normal", "diagnostic"),
+          definition=function(x, which, mode=c("normal", "diagnostic"),
                               col, breaks, zlim,
                               titles,
                               lwd=par('lwd'),
@@ -1376,6 +1382,13 @@ setMethod(f="plot",
               debug <- max(0, min(debug, 4))
               if ("adorn" %in% names(list(...)))
                   warning("In plot,adp-method() : the 'adorn' argument was removed in November 2017", call.=FALSE)
+              if (missing(which)) {
+                  if ("instrumentType" %in% names(x@metadata) && !is.null(x@metadata$instrumentType) && x@metadata$instrumentType=="AD2CP") {
+                      which <- 1:4
+                  } else {
+                      which <- 1:dim(x@data$v)[3]
+                  }
+              }
               colGiven <- !missing(col)
               breaksGiven <- !missing(breaks)
               zlimGiven <- !missing(zlim)
@@ -1418,6 +1431,34 @@ setMethod(f="plot",
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
               nbeams  <- x@metadata$numberOfBeams
+
+              if ("instrumentType" %in% names(x@metadata) && !is.null(x@metadata$instrumentType) && x@metadata$instrumentType == "AD2CP") {
+                  warning("In plot,adp-method() : AD2CP objects are handled very crudely, ignoring most function arguments", call.=FALSE)
+                  par(mfrow=c(4, 1))
+                  firstVelo <- which(x[["id"]] == 22)[1]
+                  if (length(firstVelo)) {
+                      v <- x[["v"]]
+                      distance <- x[["blanking"]][firstVelo] + x[["cellSize"]][firstVelo]*seq(1, dim(v)[2])
+                      tt <- d[["time"]][d[["id"]]==22]
+                      imagep(x=tt, y=distance, z=v[,,4], zlab="beam 4",
+                             xlab="Time", ylab=resizableLabel("distance"),
+                             zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,4])))
+                      imagep(x=tt, y=distance, z=v[,,3], zlab="beam 3",
+                             xlab="Time", ylab=resizableLabel("distance"),
+                             zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,3])))
+                      imagep(x=tt, y=distance, z=v[,,2], zlab="beam 2",
+                             xlab="Time", ylab=resizableLabel("distance"),
+                             zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,2])))
+                      imagep(x=tt, y=distance, z=v[,,1], zlab="beam 1",
+                             xlab="Time", ylab=resizableLabel("distance"),
+                             zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,1])))
+                      return(invisible())
+                  } else {
+                      stop("no average-mode data to plot")
+                  }
+              }
+
+
               if (nw == 1) {
                   pm <- pmatch(which, c("velocity", "amplitude", "quality", "hydrography", "angles"))
                   if (!is.na(pm)) {

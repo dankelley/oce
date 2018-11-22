@@ -6,9 +6,9 @@
 \alias{plot.adp}
 \title{Plot ADP Data}
 \usage{
-\S4method{plot}{adp}(x, which = 1:dim(x@data$v)[3], mode = c("normal",
-  "diagnostic"), col, breaks, zlim, titles, lwd = par("lwd"),
-  type = "l", ytype = c("profile", "distance"),
+\S4method{plot}{adp}(x, which, mode = c("normal", "diagnostic"), col,
+  breaks, zlim, titles, lwd = par("lwd"), type = "l",
+  ytype = c("profile", "distance"),
   drawTimeRange = getOption("oceDrawTimeRange"), useSmoothScatter,
   missingColor = "gray", mgp = getOption("oceMgp"), mar = c(mgp[1] +
   1.5, mgp[1] + 1.5, 1.5, 1.5), mai.palette = rep(0, 4), tformat,
@@ -23,8 +23,9 @@
 \item{x}{An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.}
 
 \item{which}{list of desired plot types.  These are graphed in panels
-running down from the top of the page.  See \dQuote{Details} for the
-meanings of various values of \code{which}.}
+running down from the top of the page.  If \code{which} is not given,
+the plot will show images of the distance-time dependence of velocity
+for each beam. See \dQuote{Details} for the meanings of various values of \code{which}.}
 
 \item{mode}{a string indicating whether to plot the conventional signal
 (\code{normal}) or or, in the special case of Aquadopp single-bin profilers,
