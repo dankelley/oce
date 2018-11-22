@@ -439,7 +439,7 @@ setMethod(f="summary",
                                                                                                    object@metadata$longitude),
                             "\n", sep=''))
               }
-              v.dim <- dim(object@data$v)
+              v.dim <- dim(object[["v"]])
               cat("* Number of profiles:", v.dim[1], "\n")
               cat("* Number of cells:   ", v.dim[2], "\n")
               cat("* Number of beams:   ", v.dim[3], "\n")
@@ -542,11 +542,11 @@ setMethod(f="summary",
               if ("instrumentType" %in% metadataNames && !is.null(object@metadata$instrumentType) && object@metadata$instrumentType == "AD2CP") {
                   cat("* Counts of 'id' values (which indicate data record types):\n")
                   id <- object@metadata$id
-                  cat(sprintf("%10d burst (code 21=0x15)\n", sum(id == 21)))
-                  cat(sprintf("%10d average (code 22=0x16)\n", sum(id == 22)))
-                  cat(sprintf("%10d bottom track (code 23=0x17)\n", sum(id == 23)))
-                  cat(sprintf("%10d interleaved burst (code 24=0x18)\n", sum(id == 24)))
-                  cat(sprintf("%10d string, e.g. GPS NMEA data or comment (code 160=0xa0)\n", sum(id == 160)))
+                  cat(sprintf("%6d burst (code 21=0x15)\n", sum(id == 21)))
+                  cat(sprintf("%6d average (code 22=0x16)\n", sum(id == 22)))
+                  cat(sprintf("%6d bottom track (code 23=0x17)\n", sum(id == 23)))
+                  cat(sprintf("%6d interleaved burst (code 24=0x18)\n", sum(id == 24)))
+                  cat(sprintf("%6d string, e.g. GPS NMEA data or comment (code 160=0xa0)\n", sum(id == 160)))
               }
               invisible(callNextMethod()) # summary
           })
@@ -627,7 +627,19 @@ setMethod(f="[[",
                       res <- x@data$g
                   }
                   res
-              } else if (i == "v") {
+                  ##.} else if (i == "distance") {
+                  ##.    ## AD2CP is stored in a tricky way, with data interspersed
+                  ##.    ## within a list, as opposed to the simple array form that
+                  ##.    ## is used for other instrument types.
+                  ##.    instrumentType <- x@metadata$instrumentType
+                  ##.    if (!is.null(instrumentType) && instrumentType == "AD2CP") {
+                  ##.        firstVelo <- which(x[["id"]] == 22)[1]
+                  ##.        numberOfCells <- dim(d@data$v[[firstVelo]])[1]
+                  ##.        x[["blanking"]][firstVelo] + x[["cellSize"]][firstVelo]*1:x[["numberOfCells"]]
+                  ##.    } else {
+                  ##.        x@data$distance
+                  ##.    }
+               } else if (i == "v") {
                   ## AD2CP is stored in a tricky way, with data interspersed
                   ## within a list, as opposed to the simple array form that
                   ## is used for other instrument types.
@@ -645,6 +657,13 @@ setMethod(f="[[",
                       }
                   } else {
                       x@data$v
+                  }
+              } else if (i == "time") {
+                  instrumentType <- x@metadata$instrumentType
+                  if (!is.null(instrumentType) && instrumentType == "AD2CP") {
+                      x@data$time[x@metadata$id == 22]
+                  } else {
+                      x@data$time
                   }
               } else if (i == "va") {
                   if (!missing(j) && j == "numeric") {
@@ -1425,36 +1444,38 @@ setMethod(f="plot",
               if (!inherits(x, "adp"))
                   stop("method is only for objects of class '", "adp", "'")
               if (!(is.null(x@metadata$haveActualData) || x@metadata$haveActualData)) {
-                  warning("there are no profiles in this dataset")
-                  return()
+                  warning("In plot,adp-method() : there are no profiles in this dataset", call.=FALSE)
+                  return(invisible())
               }
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
-              nbeams  <- x@metadata$numberOfBeams
+              nbeams  <- x[["numberOfBeams"]]
 
-              if ("instrumentType" %in% names(x@metadata) && !is.null(x@metadata$instrumentType) && x@metadata$instrumentType == "AD2CP") {
+              ## FIXME: delete this block
+              if (FALSE && "instrumentType" %in% names(x@metadata) && !is.null(x@metadata$instrumentType) && x@metadata$instrumentType == "AD2CP") {
                   warning("In plot,adp-method() : AD2CP objects are handled very crudely, ignoring most function arguments", call.=FALSE)
-                  par(mfrow=c(4, 1))
                   firstVelo <- which(x[["id"]] == 22)[1]
                   if (length(firstVelo)) {
-                      v <- x[["v"]]
+                      stop("no average-mode velocity data")
+                      par(mfrow=c(nw, 1))
                       distance <- x[["blanking"]][firstVelo] + x[["cellSize"]][firstVelo]*seq(1, dim(v)[2])
-                      tt <- d[["time"]][d[["id"]]==22]
-                      imagep(x=tt, y=distance, z=v[,,4], zlab="beam 4",
-                             xlab="Time", ylab=resizableLabel("distance"),
-                             zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,4])))
-                      imagep(x=tt, y=distance, z=v[,,3], zlab="beam 3",
-                             xlab="Time", ylab=resizableLabel("distance"),
-                             zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,3])))
-                      imagep(x=tt, y=distance, z=v[,,2], zlab="beam 2",
-                             xlab="Time", ylab=resizableLabel("distance"),
-                             zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,2])))
-                      imagep(x=tt, y=distance, z=v[,,1], zlab="beam 1",
-                             xlab="Time", ylab=resizableLabel("distance"),
-                             zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,1])))
-                      return(invisible())
-                  } else {
-                      stop("no average-mode data to plot")
+                      for (w in which) {
+                          v <- x[["v"]]
+                          tt <- x[["time"]][x[["id"]]==22]
+                          imagep(x=tt, y=distance, z=v[,,4], zlab="beam 4",
+                                 xlab="Time", ylab=resizableLabel("distance"),
+                                 zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,4])))
+                          imagep(x=tt, y=distance, z=v[,,3], zlab="beam 3",
+                                 xlab="Time", ylab=resizableLabel("distance"),
+                                 zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,3])))
+                          imagep(x=tt, y=distance, z=v[,,2], zlab="beam 2",
+                                 xlab="Time", ylab=resizableLabel("distance"),
+                                 zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,2])))
+                          imagep(x=tt, y=distance, z=v[,,1], zlab="beam 1",
+                                 xlab="Time", ylab=resizableLabel("distance"),
+                                 zlim=if(zlimGiven) zlim else c(-1,1)*max(abs(v[,,1])))
+                          return(invisible())
+                      }
                   }
               }
 
@@ -1578,15 +1599,19 @@ setMethod(f="plot",
                                        vv=80, va=81, vq=82, vg=83))
               nw <- length(which) # may be longer with e.g. which='velocity'
               if (any(is.na(which)))
-                  stop("plot(): unrecognized 'which' code: ", paste(whichOrig[is.na(which)], collapse=" "),
+                  stop("plot,adp-method(): unrecognized 'which' code: ", paste(whichOrig[is.na(which)], collapse=" "),
                        call.=FALSE)
               oceDebug(debug, "which:", which, "(after conversion to numerical codes)\n")
+              if ("instrumentType" %in% names(x@metadata) && !is.null(x@metadata$instrumentType) && x@metadata$instrumentType == "AD2CP") {
+                  if (!all(which %in% 1:4))
+                      stop("In plot,adp-method() : 'which' must be <5 for AD2CP data", call.=FALSE)
+              }
               images <- c(1:12, 70:73, 80:83)
               timeseries <- c(13:22, 40:44, 50:54, 55, 100)
               spatial <- 23:27
               #speed <- 28
 
-              tt <- x@data$time
+              tt <- x[["time"]]
               ##ttDia <- x@data$timeDia  # may be null
               class(tt) <- "POSIXct"              # otherwise image() gives warnings
               if (!zlimGiven && all(which %in% 5:8)) {
@@ -1626,6 +1651,7 @@ setMethod(f="plot",
               numberOfCells <- x[["numberOfCells"]]
               haveTimeImages <- any(which %in% images) && 1 < numberOfCells
               oceDebug(debug, 'haveTimeImages=', haveTimeImages, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
+              v <- x[["v"]]
               for (w in 1:nw) {
                   oceDebug(debug, "which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n")
                   if (which[w] %in% images) {
@@ -1642,16 +1668,16 @@ setMethod(f="plot",
                                   max(abs(x@data$vDia[, y.look, which[w]]), na.rm=TRUE) * c(-1, 1)
                           } else {
                               oceDebug(debug, "a velocity component image/timeseries\n")
-                              z <- x@data$v[, , which[w]]
+                              z <- v[, , which[w]]
                               zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
                               y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= x@data$distance & x@data$distance <= ylimAsGiven[w, 2] else rep(TRUE, length(x@data$distance))
                               if (0 == sum(y.look))
                                   stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse=","), ")")
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
-                                  if (breaksGiven) NULL else max(abs(x@data$v[, y.look, which[w]]), na.rm=TRUE) * c(-1, 1)
+                                  if (breaksGiven) NULL else max(abs(v[, y.look, which[w]]), na.rm=TRUE) * c(-1, 1)
                               }
                           }
-                          oceDebug(debug, 'flipy=', flipy, '\n')
+                          oceDebug(debug, 'flipy =', flipy, '\n')
                       } else if (which[w] %in% 5:(4+x@metadata$numberOfBeams)) {
                           ## amplitude
                           if (mode == "diagnostic" && "aDia" %in% names(x@data)) {
@@ -1757,9 +1783,11 @@ setMethod(f="plot",
                           skip <- TRUE
                       }
                       if (!skip) {
+                                  message("AAAAAAAAAA 0")
                           if (numberOfCells > 1) {
                               if (xlimGiven) {
-                                  ats <- imagep(x=tt, y=x@data$distance, z=z,
+                                  message("AAAAAAAAAA 1")
+                                  ats <- imagep(x=tt, y=x[["distance"]], z=z,
                                                 xlim=xlim[w, ],
                                                 zlim=zlim,
                                                 flipy=flipy,
@@ -1783,7 +1811,8 @@ setMethod(f="plot",
                                                 debug=debug-1,
                                                 ...)
                               } else {
-                                  ats <- imagep(x=tt, y=x@data$distance, z=z,
+                                  message("AAAAAAAAAA 2")
+                                  ats <- imagep(x=tt, y=x[["distance"]], z=z,
                                                 zlim=zlim,
                                                 flipy=flipy,
                                                 ylim=if (ylimGiven) ylim[w, ] else
@@ -1809,7 +1838,7 @@ setMethod(f="plot",
                                                     ...)
                               }
                               if (showBottom)
-                                  lines(x@data$time, bottom)
+                                  lines(x[["time"]], bottom)
                           } else {
                               col <- if (colGiven) rep(col, length.out=nw) else rep("black", length.out=nw)
                               time  <- if (mode== "diagnostic") x@data$timeDia else x@data$time

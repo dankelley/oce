@@ -610,14 +610,20 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                   v=v, amplitude=amplitude, correlation=correlation)
 
     res@metadata$header <- header
-    res@metadata$time <- time
     res@metadata$id <- id
+    res@metadata$numberOfBeams <- 4
+    firstVelo <- which(id == 22)[1]
+    res@metadata$numberOfSamples <- sum(id == 22)
+    res@metadata$numberOfCells <- dim(v[[firstVelo]])[1] # FIXME: is this the same for all data records?
 
     ## Delete some temporary working items
     value$header <- NULL
     value$time <- NULL
     value$id <- NULL
     res@data <- value
+    res@metadata$cellSize <- cellSize[firstVelo]
+    res@data$distance <- blanking[firstVelo] + res@metadata$cellSize*1:res@metadata$numberOfCells
+    res@data$time <- time
     if (missing(processingLog))
         processingLog <- paste("read.ad2cp(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep="")
     res@processingLog <- processingLogItem(processingLog)
