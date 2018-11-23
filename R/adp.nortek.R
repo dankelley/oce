@@ -386,7 +386,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 {
     oceDebug(debug, "read.ad2cp(...,from=", format(from), ",to=", if (missing(to)) "(missing)" else format(to), "...)\n", sep="", unindent=1)
     if (missing(to))
-        error("Must supply 'to'. (This is a temporary constraint, whilst read.ad2cp() is being developed.)")
+        stop("Must supply 'to'. (This is a temporary constraint, whilst read.ad2cp() is being developed.)")
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")

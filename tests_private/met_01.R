@@ -1,6 +1,7 @@
 ## As of 20180405, hcd_hourly() cannot read the env-can data. I sent
 ## a patch.
 library(oce)
+library(testthat)
 
 test_that("as.met() works", {
           if (FALSE) {
