@@ -1783,10 +1783,8 @@ setMethod(f="plot",
                           skip <- TRUE
                       }
                       if (!skip) {
-                                  message("AAAAAAAAAA 0")
                           if (numberOfCells > 1) {
                               if (xlimGiven) {
-                                  message("AAAAAAAAAA 1")
                                   ats <- imagep(x=tt, y=x[["distance"]], z=z,
                                                 xlim=xlim[w, ],
                                                 zlim=zlim,
@@ -1811,7 +1809,6 @@ setMethod(f="plot",
                                                 debug=debug-1,
                                                 ...)
                               } else {
-                                  message("AAAAAAAAAA 2")
                                   ats <- imagep(x=tt, y=x[["distance"]], z=z,
                                                 zlim=zlim,
                                                 flipy=flipy,
