@@ -499,6 +499,19 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     heading <- 0.01 * readBin(d$buf[pointer2 + 25], "integer", size=2, n=N, endian="little")
     pitch <- 0.01 * readBin(d$buf[pointer2 + 27], "integer", size=2, n=N, endian="little")
     roll <- 0.01 * readBin(d$buf[pointer2 + 29], "integer", size=2, n=N, endian="little")
+    ## BCC uses packed bits to hold info on # beams, coordinate-system, and # cells.
+    ## "N3015-007 Integrators Guide AD2CP.pdf" page 49 indicates 2 cases:
+    ## case 1: Standard bit 9-0 ncell; bit 11-10 coord (00=enu, 01=xyz, 10=beam, 11=NA); bit 15-12 nbeams
+    ## case 2: bit 15-0 number of echo sounder cells
+    ## We set this up as a matrix of 0s and 1s, with rows corresponding to times, for easy
+    ## transformation into integers.
+    BCC <- ifelse(0x01 == rawToBits(d$buf[pointer2 + 31]), 1, 0)
+    dim(BCC) <- c(16, N)
+    BCC <- t(BCC)
+    ## Use Horner's rule for clarity (for lispers, anyway!)
+    ncells <- BCC[,1]+2*(BCC[,2]+2*(BCC[,3]+2*(BCC[,4]+2*(BCC[,5]+2*(BCC[,6]+2*(BCC[,7]+2*(BCC[,8]+2*(BCC[,9]+2*BCC[,10]))))))))
+    nbeams <- BCC[,13]+2*(BCC[,14]+2*(BCC[,15]+2*BCC[,16]))
+    coordinateSystem <- c("enu", "xyz", "beam", "?")[BCC[,11]+2*BCC[,12]]
     cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size=2, n=N, signed=FALSE, endian="little")
     ## NB. blanking may be altered later, if statusBits[2]==0x01
     blanking <- 0.001 * readBin(d$buf[pointer2 + 35], "integer", size=2, n=N, signed=FALSE, endian="little")
@@ -519,7 +532,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## docs refer to the first bit as 0, which becomes [1,] in this array.
     dim(statusBits) <- c(32, N)
     ## Nortek docs say bit 1 in 'status' indicats blanking scale factor.
-    blanking <- blanking * ifelse(statusBits[2, ] == 0x01, 1, 10) 
+    blanking <- blanking * ifelse(statusBits[2, ] == 0x01, 1, 10)
     ## Nortek docs say bit 17 indicates the active configuration
     activeConfiguration <- as.integer(statusBits[18, ])
     ensemble <- readBin(d$buf[pointer4+73], "integer", size=4, n=N, endian="little")
@@ -579,11 +592,11 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 ## bit 10 to 11: 01 OK
                 ## bit 12 to 15: 0010 OK
 
-                bits <- rawToBits(d$buf[i+31:32])==0x01
-                ncells[ch] <- sum(unlist(lapply(1:10, function(i) bits[0+i]*2^(i-1))))
-                nbeams[ch] <- sum(unlist(lapply(1:4, function(i) bits[12+i]*2^(i-1))))
-                BCC[ch] <- paste(ifelse(bits, "1", "0"), collapse="")
-                coordinateSystem[ch] <- c("enu", "xyz", "beam", "?")[1+bits[11]+2*bits[12]]
+                ##OLD bits <- rawToBits(d$buf[i+31:32])==0x01
+                ##OLD ncells[ch] <- sum(unlist(lapply(1:10, function(i) bits[0+i]*2^(i-1))))
+                ##OLD nbeams[ch] <- sum(unlist(lapply(1:4, function(i) bits[12+i]*2^(i-1))))
+                ##OLD BCC[ch] <- paste(ifelse(bits, "1", "0"), collapse="")
+                ##OLD coordinateSystem[ch] <- c("enu", "xyz", "beam", "?")[1+bits[11]+2*bits[12]]
                 ##OLD cellSize[ch] <- 0.001 * readBin(d$buf[i+33:34], "integer", size=2, signed=FALSE, endian="little")
                 ## FIXME: the docs say mm for blanking, but cm matches matlab and the .cfg file
                 ## Update from nortek forum: the blanking unit depends on the configuration; see
@@ -615,6 +628,8 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 velocity <- velocityFactor[ch] * readBin(d$buf[i+77+seq(0, nbytes-1)],
                                                          "integer", size=2, n=nbeams[ch]*ncells[ch],
                                                          endian="little")
+                ## FIXME: save to plan[[.]]$average$v or plan[[.]]$burst$v, etc., where '.' is activeConfiguration+1
+                ## FIXME: maybe we can save the whole shebang, actually, with more thoughtful indexing
                 v[[ch]] <- matrix(velocity, ncol=nbeams[ch], nrow=ncells[ch], byrow=FALSE)
                 amp <- d$buf[i+77+nbytes+seq(0, nn-1)]
                 amplitude[[ch]] <- matrix(amp, ncol=nbeams[ch], nrow=ncells[ch], byrow=FALSE)
@@ -639,7 +654,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                   time=time, id=id, vsn=version,
                   soundSpeed=soundSpeed, temperature=temperature, pressure=pressure,
                   heading=heading, pitch=pitch, roll=roll,
-                  BCC=BCC, coord=coordinateSystem, nbeams=nbeams, ncells=ncells,
+                  coord=coordinateSystem, nbeams=nbeams, ncells=ncells,
                   cellSize=cellSize, blanking=blanking,
                   nomcor=nominalCorrelation,
                   accx=accelerometerx,
