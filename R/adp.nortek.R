@@ -471,6 +471,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     temperatureMagnetometer <- vector("numeric", N)
     temperatureRTC <- vector("numeric", N)
     status <- vector("integer", N)
+    activeConfiguration <- vector("integer", N)
     ensemble <- vector("numeric", N)
     v <- vector("list", N)
     amplitude <- vector("list", N)
@@ -566,10 +567,10 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 error <- readBin(d$buf[i+65:68], "integer", size=4, endian="little") # NOT USED YET
                 status[ch] <- readBin(d$buf[i+69:72], "integer", size=4, endian="little")
                 statusBits <- intToBits(status[ch])
-                if (statusBits[2] == 0x01) {
+                if (statusBits[2] == 0x01) { # "Bit 1" in docs (they count from 0)
                     blanking[ch] <- blanking[ch] * 10
                 }
-                ## if (ch<5) message("status= ", paste(statusBits, collapse=" "))
+                activeConfiguration[ch] <- as.integer(statusBits[18]) # " Bit 17" in docs (they count from zero)
                 ensemble[ch] <- readBin(d$buf[i+73:76], "integer", size=4, endian="little")
                 ## 77=1+offsetOfData
                 nn <- nbeams[ch] * ncells[ch]
@@ -584,8 +585,15 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 correlation[[ch]] <- matrix(cor, ncol=nbeams[ch], nrow=ncells[ch], byrow=FALSE)
                 ## FIXME: read correlation etc
                 oceDebug(debug, "chunk ", ch, " decoded\n")
+                if (monitor)
+                    cat("ch:", ch, ", id:", d$id[ch], ", ncells:", ncells[ch], ", nbeams:", nbeams[ch],
+                        ", cellSize:", cellSize[ch], ", blanking:", blanking[ch],
+                        ", coordinateSystem:", coordinateSystem[ch],
+                        ", status:", paste(gsub("0(.)","\\1",intToBits(FIXMEdan)),collapse=""),
+                        ", activeConfiguration:", activeConfiguration[ch],
+                        "\n", sep="")
             } else {
-                oceDebug(debug, "chunk ", ch, " is id=", d$id[ch], " version=", version, "\n", sep="")
+                message("Can only handle data records with version=3, but chunk ", ch, ", with id=", d$id[ch], ", has version=", version[ch])
             }
         } else {
             oceDebug(debug, "chunk ", ch, " is id=", d$id[ch], "\n", sep="")
