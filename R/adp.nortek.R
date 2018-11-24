@@ -443,7 +443,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## out of order).
     if (by != 1)
         stop("must have by=1 for this preliminary version of read.ad2cp()")
-    N <- as.integer((to - from) / by)
+    N <- 1 + as.integer((to - from) / by)
     if (N <= 0)
         stop("must have to > from")
     time <- vector("numeric", N)
@@ -477,6 +477,54 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     amplitude <- vector("list", N)
     correlation <- vector("list", N)
 
+    ## 1. get some things in fast vector-based form.
+    pointer1 <- d$index
+    pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
+    pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
+    version <- as.integer(d$buf[pointer1 + 1])
+    firstData <- which(d$id != 160)[1]
+    serialNumber <- readBin(d$buf[d$index[firstData]+5:8], "integer", size=4, endian="little")
+    ## Construct pointers for indexing 1-byte and 2-byte quantities
+    time <- ISOdatetime(year=1900+ as.integer(d$buf[pointer1 + 9]),
+                        month=1+ as.integer(d$buf[pointer1 + 10]), # starts at 0, based on matlab valueults
+                        day=as.integer(d$buf[pointer1 + 11]),
+                        hour=as.integer(d$buf[pointer1 + 12]),
+                        min=as.integer(d$buf[pointer1 + 13]),
+                        sec=as.integer(d$buf[pointer1 + 14]) +
+                        1e-4 * readBin(d$buf[pointer1 + 15], "integer", size=2, n=N, signed=FALSE, endian="little"),
+                        tz="UTC")
+    soundSpeed <- 0.1 * readBin(d$buf[pointer2 + 17], "integer", size=2, n=N, signed=FALSE, endian="little")
+    temperature <- 0.01 * readBin(d$buf[pointer2 + 19], "integer", size=2, n=N, signed=FALSE, endian="little")
+    pressure <- 0.001 * readBin(d$buf[pointer2 + 21], "integer", size=2, n=N, signed=FALSE, endian="little")
+    heading <- 0.01 * readBin(d$buf[pointer2 + 25], "integer", size=2, n=N, endian="little")
+    pitch <- 0.01 * readBin(d$buf[pointer2 + 27], "integer", size=2, n=N, endian="little")
+    roll <- 0.01 * readBin(d$buf[pointer2 + 29], "integer", size=2, n=N, endian="little")
+    cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size=2, n=N, signed=FALSE, endian="little")
+    ## NB. blanking may be altered later, if statusBits[2]==0x01
+    blanking <- 0.001 * readBin(d$buf[pointer2 + 35], "integer", size=2, n=N, signed=FALSE, endian="little")
+    nominalCorrelation <- as.integer(d$buf[pointer1 + 37])
+    accelerometerx <- 1.0/16384.0 * readBin(d$buf[pointer2 + 47], "integer", size=2, n=N, signed=TRUE, endian="little")
+    accelerometery <- 1.0/16384.0 * readBin(d$buf[pointer2 + 49], "integer", size=2, n=N, signed=TRUE, endian="little")
+    accelerometerz <- 1.0/16384.0 * readBin(d$buf[pointer2 + 51], "integer", size=2, n=N, signed=TRUE, endian="little")
+    transmitEnergy <- readBin(d$buf[pointer2 + 57], "integer", size=2, n=N, signed=FALSE, endian="little")
+    velocityFactor <- 10^readBin(d$buf[pointer1 + 59], "integer", size=1, n=N, signed=TRUE, endian="little")
+    powerLevel <- readBin(d$buf[pointer1 + 60], "integer", size=1, n=N, signed=TRUE, endian="little")
+    temperatureMagnetometer <- 0.001 * readBin(d$buf[pointer2 + 61], "integer", size=2, n=N, signed=TRUE, endian="little")
+    temperatureRTC <- 0.01 * readBin(d$buf[pointer2 + 63], "integer", size=2, n=N, endian="little")
+    error <- readBin(d$buf[pointer2 + 65], "integer", size=4, n=N, endian="little") # FIXME: UNUSED
+    status <- readBin(d$buf[pointer4 + 69], "integer", size=4, n=N, endian="little")
+    statusBits <- intToBits(status)
+    warning("the bit interpretation may be wrong (what is the order, with intToBits?)\n")
+    ## Construct an array to store the bits within th 'status' vector. The nortek
+    ## docs refer to the first bit as 0, which becomes [1,] in this array.
+    dim(statusBits) <- c(32, N)
+    ## Nortek docs say bit 1 in 'status' indicats blanking scale factor.
+    blanking <- blanking * ifelse(statusBits[2, ] == 0x01, 1, 10) 
+    ## Nortek docs say bit 17 indicates the active configuration
+    activeConfiguration <- as.integer(statusBits[18, ])
+    ensemble <- readBin(d$buf[pointer4+73], "integer", size=4, n=N, endian="little")
+
+    ## 2. get some things in slow index-based form.
     for (ch in 1:N) {
         id[ch] <- d$id[ch]
         if (d$id[ch] == 160) {
@@ -484,29 +532,18 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             chars <- rawToChar(d$buf[seq.int(2+d$index[ch], by=1, length.out=-1+d$length[ch])])
             header <- strsplit(chars, "\r\n")[[1]]
         } else if (d$id[ch] %in% c(21, 22)) {
-            version[ch] <- as.integer(d$buf[d$index[ch]+1])
+            ## version[ch] <- as.integer(d$buf[d$index[ch]+1])
             if (version[ch] == 3) {
                 ## oceDebug(debug, "got version[ch=", ch, "]==3 (if more than once, consider caching)\n", sep="")
-                offsetOfData <- as.integer(d$buf[d$index[ch]+2])
+                ##OLD offsetOfData <- as.integer(d$buf[d$index[ch]+2])
                 ## if (ch==2) message("offsetOfData=", offsetOfData)
                 i <- d$index[ch]
-                if (is.null(res@metadata$serialNumber)) # I'm not sure if this speeds up or not
-                    res@metadata$serialNumber <- readBin(d$buf[i+5:8], "integer", size=4, endian="little")
-                year<-as.integer(d$buf[i+9])
-                month <- 1 + as.integer(d$buf[i+10]) # starts at 0, based on matlab valueults
-                day<-as.integer(d$buf[i+11])
-                hour<-as.integer(d$buf[i+12])
-                min<-as.integer(d$buf[i+13])
-                sec<-as.integer(d$buf[i+14])
-                usec100 <- readBin(d$buf[d$index[ch]+15:16], "integer", size=2, signed=FALSE, endian="little")
-                t <- ISOdatetime(1900+year,month,day,hour,min,sec+usec100/1e4,tz="UTC")
-                time[ch] <- t
-                soundSpeed[ch] <- 0.1 * readBin(d$buf[i+17:18], "integer", size=2, endian="little")
-                temperature[ch] <- 0.01 * readBin(d$buf[i+19:20], "integer", size=2, endian="little")
-                pressure[ch] <- 0.001 * readBin(d$buf[i+21:24], "integer", size=4, endian="little")
-                heading[ch] <- 0.01 * readBin(d$buf[i+25:26], "integer", size=2, endian="little")
-                pitch[ch] <- 0.01 * readBin(d$buf[i+27:28], "integer", size=2, endian="little")
-                roll[ch] <- 0.01 * readBin(d$buf[i+29:30], "integer", size=2, endian="little")
+                ##OLD soundSpeed[ch] <- 0.1 * readBin(d$buf[i+17:18], "integer", size=2, endian="little")
+                ##OLD temperature[ch] <- 0.01 * readBin(d$buf[i+19:20], "integer", size=2, endian="little")
+                ##OLD pressure[ch] <- 0.001 * readBin(d$buf[i+21:24], "integer", size=4, endian="little")
+                ##OLD heading[ch] <- 0.01 * readBin(d$buf[i+25:26], "integer", size=2, endian="little")
+                ##OLD pitch[ch] <- 0.01 * readBin(d$buf[i+27:28], "integer", size=2, endian="little")
+                ##OLD roll[ch] <- 0.01 * readBin(d$buf[i+29:30], "integer", size=2, endian="little")
                 ## Notes on decoding the nbeam/coord/ncell structure.
                 ## According to p47 of the ad2cp doc:
                 ##  bits  9 to  0: ncells
@@ -547,49 +584,48 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 nbeams[ch] <- sum(unlist(lapply(1:4, function(i) bits[12+i]*2^(i-1))))
                 BCC[ch] <- paste(ifelse(bits, "1", "0"), collapse="")
                 coordinateSystem[ch] <- c("enu", "xyz", "beam", "?")[1+bits[11]+2*bits[12]]
-                cellSize[ch] <- 0.001 * readBin(d$buf[i+33:34], "integer", size=2, signed=FALSE, endian="little")
+                ##OLD cellSize[ch] <- 0.001 * readBin(d$buf[i+33:34], "integer", size=2, signed=FALSE, endian="little")
                 ## FIXME: the docs say mm for blanking, but cm matches matlab and the .cfg file
                 ## Update from nortek forum: the blanking unit depends on the configuration; see
                 ## http://www.nortek-as.com/en/knowledge-center/forum/current-profilers-and-current-meters/519140451
                 ## NOTE that we may multiply blanking[ch] by 10 to get cm, a few lines below when we check
                 ## status.
-                blanking[ch] <- 0.001 * readBin(d$buf[i+35:36], "integer", size=2, signed=FALSE, endian="little")
-                nominalCorrelation[ch] <- as.integer(d$buf[i+37])
+                ##OLD blanking[ch] <- 0.001 * readBin(d$buf[i+35:36], "integer", size=2, signed=FALSE, endian="little")
+                ##OLD nominalCorrelation[ch] <- as.integer(d$buf[i+37])
                 ## skipping some variables
-                accelerometerz[ch] <- 1/16384 * readBin(d$buf[i+51:52], "integer", size=2, signed=TRUE, endian="little")
+                ##OLD accelerometerz[ch] <- 1/16384 * readBin(d$buf[i+51:52], "integer", size=2, signed=TRUE, endian="little")
                 ## skipping some variables
-                transmitEnergy[ch] <- readBin(d$buf[i+57:58], "integer", size=2, signed=FALSE, endian="little")
-                velocityScaling[ch] <- readBin(d$buf[i+59], "integer", size=1, signed=TRUE, endian="little")
-                velocityFactor <- 10^velocityScaling[ch]
-                powerLevel[ch] <- readBin(d$buf[i+60], "integer", size=1, signed=TRUE, endian="little")
-                temperatureMagnetometer[ch] <- 0.001 * readBin(d$buf[i+61:62], "integer", size=2, signed=TRUE, endian="little")
-                temperatureRTC[ch] <- 0.01 * readBin(d$buf[i+63:64], "integer", size=2, endian="little")
-                error <- readBin(d$buf[i+65:68], "integer", size=4, endian="little") # NOT USED YET
-                status[ch] <- readBin(d$buf[i+69:72], "integer", size=4, endian="little")
-                statusBits <- intToBits(status[ch])
-                if (statusBits[2] == 0x01) { # "Bit 1" in docs (they count from 0)
-                    blanking[ch] <- blanking[ch] * 10
-                }
-                activeConfiguration[ch] <- as.integer(statusBits[18]) # " Bit 17" in docs (they count from zero)
-                ensemble[ch] <- readBin(d$buf[i+73:76], "integer", size=4, endian="little")
+                ##OLD transmitEnergy[ch] <- readBin(d$buf[i+57:58], "integer", size=2, signed=FALSE, endian="little")
+                ##OLD velocityScaling[ch] <- readBin(d$buf[i+59], "integer", size=1, signed=TRUE, endian="little")
+                ##OLD velocityFactor <- 10^velocityScaling[ch]
+                ##OLD powerLevel[ch] <- readBin(d$buf[i+60], "integer", size=1, signed=TRUE, endian="little")
+                ##OLD temperatureMagnetometer[ch] <- 0.001 * readBin(d$buf[i+61:62], "integer", size=2, signed=TRUE, endian="little")
+                ##OLD temperatureRTC[ch] <- 0.01 * readBin(d$buf[i+63:64], "integer", size=2, endian="little")
+                ##OLD error <- readBin(d$buf[i+65:68], "integer", size=4, endian="little") # FIXME: UNUSED
+                ##OLD status[ch] <- readBin(d$buf[i+69:72], "integer", size=4, endian="little")
+                ##OLD statusBits <- intToBits(status[ch])
+                ##OLD if (statusBits[2] == 0x01) { # "Bit 1" in docs (they count from 0)
+                ##OLD     blanking[ch] <- blanking[ch] * 10
+                ##OLD }
+                ##OLD activeConfiguration[ch] <- as.integer(statusBits[18]) # " Bit 17" in docs (they count from zero)
+                ##OLD ensemble[ch] <- readBin(d$buf[i+73:76], "integer", size=4, endian="little")
                 ## 77=1+offsetOfData
                 nn <- nbeams[ch] * ncells[ch]
                 nbytes <- 2 * nn
-                velocity <- velocityFactor * readBin(d$buf[i+77+seq(0, nbytes-1)],
-                                                     "integer", size=2, n=nbeams[ch]*ncells[ch],
-                                                     endian="little")
+                velocity <- velocityFactor[ch] * readBin(d$buf[i+77+seq(0, nbytes-1)],
+                                                         "integer", size=2, n=nbeams[ch]*ncells[ch],
+                                                         endian="little")
                 v[[ch]] <- matrix(velocity, ncol=nbeams[ch], nrow=ncells[ch], byrow=FALSE)
                 amp <- d$buf[i+77+nbytes+seq(0, nn-1)]
                 amplitude[[ch]] <- matrix(amp, ncol=nbeams[ch], nrow=ncells[ch], byrow=FALSE)
                 cor <- d$buf[i+77+nbytes+nn+seq(0, nn-1)]
                 correlation[[ch]] <- matrix(cor, ncol=nbeams[ch], nrow=ncells[ch], byrow=FALSE)
                 ## FIXME: read correlation etc
-                oceDebug(debug, "chunk ", ch, " decoded\n")
                 if (monitor)
                     cat("ch:", ch, ", id:", d$id[ch], ", ncells:", ncells[ch], ", nbeams:", nbeams[ch],
                         ", cellSize:", cellSize[ch], ", blanking:", blanking[ch],
                         ", coordinateSystem:", coordinateSystem[ch],
-                        ", status:", paste(gsub("0(.)","\\1",intToBits(FIXMEdan)),collapse=""),
+                        ## ", status:", paste(gsub("0(.)","\\1",intToBits(FIXMEdan)),collapse=""),
                         ", activeConfiguration:", activeConfiguration[ch],
                         "\n", sep="")
             } else {
@@ -599,7 +635,6 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, "chunk ", ch, " is id=", d$id[ch], "\n", sep="")
         }
     }
-    time <- as.POSIXct(time, origin="1970-01-01 00:00:00", tz="UTC")
     value <- list(header=header,
                   time=time, id=id, vsn=version,
                   soundSpeed=soundSpeed, temperature=temperature, pressure=pressure,
@@ -607,16 +642,19 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                   BCC=BCC, coord=coordinateSystem, nbeams=nbeams, ncells=ncells,
                   cellSize=cellSize, blanking=blanking,
                   nomcor=nominalCorrelation,
+                  accx=accelerometerx,
+                  accy=accelerometery,
                   accz=accelerometerz,
                   transmitEnergy=transmitEnergy,
-                  velocityScaling=velocityScaling,
+                  ##velocityScaling=velocityScaling,
                   powerLevel=powerLevel,
                   temperatureMagnetometer=temperatureMagnetometer,
                   temperatureRTC=temperatureRTC,
-                  status=status,
+                  status=status, activeConfiguration=activeConfiguration,
                   ensemble=ensemble,
                   v=v, amplitude=amplitude, correlation=correlation)
 
+    res@metadata$serialNumber <- serialNumber
     res@metadata$header <- header
     res@metadata$id <- id
     res@metadata$numberOfBeams <- 4

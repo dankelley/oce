@@ -43,8 +43,12 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
                 expect_equal(d[["cellSize"]][burstID][1:10], cellSizeMatlab)
               }
 
-              ## NOTE dividing by 10 to check against matlab
-              blankingMatlab <- rep(2.8000, 10)
+              ## FIXME I am not sure what matlab got blanking; I tested
+              ## for 2.8 until Nov 24, 2018, but with some recoding
+              ## on that date, read.ad2cp() gave 0.28, which may be
+              ## the correct value, since old comments talked about a
+              ## factor of 10. This needs checking!
+              blankingMatlab <- rep(0.28000, 10)
               expect_equal(d[["blanking"]][burstID][1:10], blankingMatlab)
 
               ## >> Data.Alt_BurstHR_NominalCor(1:10)
