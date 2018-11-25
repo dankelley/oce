@@ -540,13 +540,10 @@ setMethod(f="summary",
                       cat("  ", format(object@metadata$transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
               }
               if ("instrumentType" %in% metadataNames && !is.null(object@metadata$instrumentType) && object@metadata$instrumentType == "AD2CP") {
-                  cat("* Counts of 'id' values (which indicate data record types):\n")
-                  id <- object@metadata$id
-                  cat(sprintf("%6d burst (code 21=0x15)\n", sum(id == 21)))
-                  cat(sprintf("%6d average (code 22=0x16)\n", sum(id == 22)))
-                  cat(sprintf("%6d bottom track (code 23=0x17)\n", sum(id == 23)))
-                  cat(sprintf("%6d interleaved burst (code 24=0x18)\n", sum(id == 24)))
-                  cat(sprintf("%6d string, e.g. GPS NMEA data or comment (code 160=0xa0)\n", sum(id == 160)))
+                  cat("* Counts of record types:\n")
+                  for (rt in names(object@metadata$recordCount)) {
+                      cat("    ", rt, ": ", object@metadata$recordCount[[rt]], "\n", sep="")
+                  }
               }
               invisible(callNextMethod()) # summary
           })
@@ -627,45 +624,58 @@ setMethod(f="[[",
                       res <- x@data$g
                   }
                   res
-                  ##.} else if (i == "distance") {
-                  ##.    ## AD2CP is stored in a tricky way, with data interspersed
-                  ##.    ## within a list, as opposed to the simple array form that
-                  ##.    ## is used for other instrument types.
-                  ##.    instrumentType <- x@metadata$instrumentType
-                  ##.    if (!is.null(instrumentType) && instrumentType == "AD2CP") {
-                  ##.        firstVelo <- which(x[["id"]] == 22)[1]
-                  ##.        numberOfCells <- dim(d@data$v[[firstVelo]])[1]
-                  ##.        x[["blanking"]][firstVelo] + x[["cellSize"]][firstVelo]*1:x[["numberOfCells"]]
-                  ##.    } else {
-                  ##.        x@data$distance
-                  ##.    }
-               } else if (i == "v") {
-                  ## AD2CP is stored in a tricky way, with data interspersed
-                  ## within a list, as opposed to the simple array form that
-                  ## is used for other instrument types.
+               } else if (i == "distance") {
                   instrumentType <- x@metadata$instrumentType
                   if (!is.null(instrumentType) && instrumentType == "AD2CP") {
-                      look <- which(x@metadata$id == 22)
-                      if (length(look)) {
-                          dim <- c(length(look), dim(x@data$v[[look[1]]]))
-                          res <- array(numeric(), dim=dim)
-                          for (ilook in seq_along(look))
-                              res[ilook, ,] <- x@data$v[[look[ilook]]]
-                          res
-                      } else {
-                          NULL
+                      ## AD2CP is stored in a tricky way.
+                      if (missing(j)) {
+                          dataNames <- names(x@data)
+                          j <- if ("average" %in% dataNames) "average" else if ("burst" %in% dataNames) "burst" else return(NULL)
                       }
+                      if (!(j %in% c("average", "burst")))
+                          return(NULL)
+                      x@data[[j]]$blanking + x@data[[j]]$cellSize*seq(1, x@data[[j]]$numberOfCells)
                   } else {
-                      x@data$v
+                      x@data$distance
                   }
-              } else if (i == "time") {
+              } else if (i %in% c("accelerometerx", "accelerometery", "accelerometerz",
+                                  "cellSize", "blanking",
+                                  "heading", "pitch", "roll",
+                                  "ensemble", "time", "pressure", "soundSpeed", "temperature",
+                                  "v")) {
                   instrumentType <- x@metadata$instrumentType
                   if (!is.null(instrumentType) && instrumentType == "AD2CP") {
-                      x@data$time[x@metadata$id == 22]
+                      ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
+                      if (missing(j)) { # default to 'average', if it exists, or to 'burst' if that exists, or fail.
+                          dataNames <- names(x@data)
+                          j <- if ("average" %in% dataNames) "average" else if ("burst" %in% dataNames) "burst" else return(NULL)
+                      }
+                      ## don't let user specify an incorrect list (FIXME: document 'j' methodology)
+                      if (!(j %in% c("average", "burst")))
+                          return(NULL)
+                      x@data[[j]][[i]]
                   } else {
-                      x@data$time
+                      x@data[[i]]
                   }
-              } else if (i == "va") {
+              } else if (i %in% c("numberOfBeams", "numberOfCells")) {
+                  ##message("AA i=", i)
+                  instrumentType <- x@metadata$instrumentType
+                  if (!is.null(instrumentType) && instrumentType == "AD2CP") {
+                      ##message("BB")
+                      ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
+                      if (missing(j)) { # default to 'average', if it exists, or to 'burst' if that exists, or fail.
+                          dataNames <- names(x@data)
+                          j <- if ("average" %in% dataNames) "average" else if ("burst" %in% dataNames) "burst" else return(NULL)
+                      }
+                      ##message("CC j=", j)
+                      ## don't let user specify an incorrect list (FIXME: document 'j' methodology)
+                      if (!(j %in% c("average", "burst")))
+                          return(NULL)
+                      x@data[[j]][[i]]
+                  } else {
+                      x@metadata[[i]]
+                  }
+                 } else if (i == "va") {
                   if (!missing(j) && j == "numeric") {
                       res <- x@data$va
                       dim <- dim(res)
@@ -866,7 +876,7 @@ setMethod(f="subset",
                   if (sum(keep) < 2)
                       stop("must keep at least 2 bins")
                   res <- x
-                  res@data$distance <- x@data$distance[keep]
+                  res@data$distance <- x@data$distance[keep] # FIXME: broken for AD2CP
                   for (name in names(x@data)) {
                       if (name == "time")
                           next
@@ -1648,7 +1658,10 @@ setMethod(f="plot",
                   }
               }
               flipy <- ytype == "profile" && x@metadata$orientation == "downward"
+              numberOfBeams <- x[["numberOfBeams"]]
               numberOfCells <- x[["numberOfCells"]]
+              ##message("numberOfBeams=", numberOfBeams)
+              ##message("numberOfCells=", numberOfCells)
               haveTimeImages <- any(which %in% images) && 1 < numberOfCells
               oceDebug(debug, 'haveTimeImages=', haveTimeImages, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
               v <- x[["v"]]
@@ -1657,20 +1670,22 @@ setMethod(f="plot",
                   if (which[w] %in% images) {
                       ## image types
                       skip <- FALSE
-                      if (which[w] %in% 1:(x@metadata$numberOfBeams)) {
+                      if (which[w] %in% 1:numberOfBeams) {
                           ## velocity
                           if (mode == "diagnostic") {
                               oceDebug(debug, "a diagnostic velocity component image/timeseries\n")
                               z <- x@data$vDia[, , which[w]]
                               zlab <- if (missing(titles)) paste(beamName(x, which[w]), "Dia", sep="") else titles[w]
-                              y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= x@data$distance & x@data$distance <= ylimAsGiven[w, 2] else rep(TRUE, length(x@data$distance))
+                              xdistance <- x[["distance"]]
+                              y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else
                                   max(abs(x@data$vDia[, y.look, which[w]]), na.rm=TRUE) * c(-1, 1)
                           } else {
                               oceDebug(debug, "a velocity component image/timeseries\n")
                               z <- v[, , which[w]]
                               zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
-                              y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= x@data$distance & x@data$distance <= ylimAsGiven[w, 2] else rep(TRUE, length(x@data$distance))
+                              xdistance <- x[["distance"]]
+                              y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
                               if (0 == sum(y.look))
                                   stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse=","), ")")
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
@@ -1678,13 +1693,14 @@ setMethod(f="plot",
                               }
                           }
                           oceDebug(debug, 'flipy =', flipy, '\n')
-                      } else if (which[w] %in% 5:(4+x@metadata$numberOfBeams)) {
+                      } else if (which[w] %in% 5:(4+x[["numberOfBeams"]])) {
                           ## amplitude
                           if (mode == "diagnostic" && "aDia" %in% names(x@data)) {
                               oceDebug(debug, "a diagnostic amplitude component image/timeseries\n")
                               z <- as.numeric(x@data$aDia[, , which[w]-4])
                               dim(z) <- dim(x@data$aDia)[1:2]
-                              y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
+                              xdistance <- x[["distance"]]
+                              y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
                                   if (breaksGiven) NULL else range(as.numeric(x@data$aDia[, y.look, ]), na.rm=TRUE)
                               }
@@ -1693,7 +1709,8 @@ setMethod(f="plot",
                               oceDebug(debug, "an amplitude component image/timeseries\n")
                               z <- as.numeric(x@data$a[, , which[w]-4])
                               dim(z) <- dim(x@data$a)[1:2]
-                              y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
+                              xdistance <- x[["distance"]]
+                              y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
                                   if (breaksGiven) NULL else range(as.numeric(x@data$a[, y.look, ]), na.rm=TRUE)
                               }
@@ -1707,16 +1724,17 @@ setMethod(f="plot",
                               zlim <- c(0, 256)
                               zlab <- c(expression(q[1]), expression(q[2]), expression(q[3]))[which[w]-8]
                           } else if ("amp" %in% names(x@data)) {
-                              z <- as.numeric(x@data$amp[, , which[w]-8])
+                              z <- as.numeric(x[["a"]][, , which[w]-8])
                               dim(z) <- dim(x@data$amp)[1:2]
                               zlim <- c(0, max(as.numeric(x@data$amp)))
                               zlab <- c(expression(amp[1]), expression(amp[2]), expression(amp[3]))[which[w]-8]
                           }
                       } else if (which[w] %in% 70:(69+x@metadata$numberOfBeams)) {
                           ## correlation
-                          if ("g" %in% names(x@data)) {
-                              z <- as.numeric(x@data$g[, , which[w]-69])
-                              dim(z) <- dim(x@data$g)[1:2]
+                          xg <- x[["g"]]
+                          if (!is.null(xg)) {
+                              z <- as.numeric(xg[, , which[w]-69])
+                              dim(z) <- dim(xg)[1:2]
                               zlim <- c(0, 100)
                               zlab <- c(expression(g[1]), expression(g[2]), expression(g[3]))[which[w]-8]
                           } else {
@@ -1728,7 +1746,8 @@ setMethod(f="plot",
                               oceDebug(debug, "vertical beam velocity\n")
                               z <- x@data$vv
                               zlab <- if (missing(titles)) expression(w[vert]) else titles[w]
-                              y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= x@data$distance & x@data$distance <= ylimAsGiven[w, 2] else rep(TRUE, length(x@data$distance))
+                              xdistance <- x[["distance"]]
+                              y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
                               if (0 == sum(y.look))
                                   stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse=","), ")")
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
@@ -1743,7 +1762,8 @@ setMethod(f="plot",
                               oceDebug(debug, "vertical beam amplitude\n")
                               z <- as.numeric(x@data$va)
                               dim(z) <- dim(x@data$va)
-                              y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
+                              xdistance <- x[["distance"]]
+                              y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
                                   if (breaksGiven) NULL else range(as.numeric(x@data$va[, y.look]), na.rm=TRUE)
                               }
@@ -1757,7 +1777,8 @@ setMethod(f="plot",
                               oceDebug(debug, "vertical beam correlation\n")
                               z <- as.numeric(x@data$vq)
                               dim(z) <- dim(x@data$vq)
-                              y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
+                              xdistance <- x[["distance"]]
+                              y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
                                   if (breaksGiven) NULL else range(as.numeric(x@data$vq[, y.look]), na.rm=TRUE)
                               }
@@ -1771,7 +1792,8 @@ setMethod(f="plot",
                               oceDebug(debug, "vertical beam percent good\n")
                               z <- as.numeric(x@data$vg)
                               dim(z) <- dim(x@data$vg)
-                              y.look <- if (ylimGiven) ylimAsGiven[1] <= x@data$distance & x@data$distance <= ylimAsGiven[2] else rep(TRUE, length(x@data$distance))
+                              xdistance <- x[["distance"]]
+                              y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
                                   if (breaksGiven) NULL else range(as.numeric(x@data$vg[, y.look]), na.rm=TRUE)
                               }
@@ -1812,27 +1834,23 @@ setMethod(f="plot",
                                   ats <- imagep(x=tt, y=x[["distance"]], z=z,
                                                 zlim=zlim,
                                                 flipy=flipy,
-                                                ylim=if (ylimGiven) ylim[w, ] else
-                                                    range(x@data$distance, na.rm=TRUE),
-                                                    col=if (colGiven) col else {
-                                                        if (missing(breaks)) oce.colorsPalette(128, 1)
-                                                        else oce.colorsPalette(length(breaks)-1, 1)
-                                                    },
-                                                    breaks=breaks,
-                                                    ylab=resizableLabel("distance"),
-                                                    xlab="Time",
-                                                    zlab=zlab,
-                                                    tformat=tformat,
-                                                    drawTimeRange=drawTimeRange,
-                                                    drawContours=FALSE,
-                                                    missingColor=missingColor,
-                                                    mgp=mgp,
-                                                    mar=mar,
-                                                    mai.palette=mai.palette,
-                                                    cex=cex * (1 - min(nw / 8, 1/4)),
-                                                    main=main[w],
-                                                    debug=debug-1,
-                                                    ...)
+                                                ylim=if (ylimGiven) ylim[w, ] else range(x[["distance"]], na.rm=TRUE),
+                                                col=if (colGiven) col else { if (missing(breaks)) oce.colorsPalette(128, 1) else oce.colorsPalette(length(breaks)-1, 1) },
+                                                breaks=breaks,
+                                                ylab=resizableLabel("distance"),
+                                                xlab="Time",
+                                                zlab=zlab,
+                                                tformat=tformat,
+                                                drawTimeRange=drawTimeRange,
+                                                drawContours=FALSE,
+                                                missingColor=missingColor,
+                                                mgp=mgp,
+                                                mar=mar,
+                                                mai.palette=mai.palette,
+                                                cex=cex * (1 - min(nw / 8, 1/4)),
+                                                main=main[w],
+                                                debug=debug-1,
+                                                ...)
                               }
                               if (showBottom)
                                   lines(x[["time"]], bottom)
@@ -2315,7 +2333,7 @@ setMethod(f="plot",
                               warning("cannot use which=27 for a 3-beam instrument")
                           } else {
                               value <- apply(x@data$v[, , which[w]-23], 2, mean, na.rm=TRUE)
-                              yy <- x@data$distance
+                              yy <- x[["distance"]]
                               if (ytype == "profile" && x@metadata$orientation == "downward" && !ylimGiven) {
                                   plot(value, yy, xlab=beamName(x, which[w]-23),
                                        ylab=resizableLabel("distance"), type='l', ylim=rev(range(yy)), ...)
@@ -2589,7 +2607,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
     }
     numberOfProfiles <- dim(x@data$a)[1]
     oceDebug(debug, "numberOfProfiles=", numberOfProfiles, "\n")
-    correction <- matrix(rep(20 * log10(x@data$distance), numberOfProfiles),
+    correction <- matrix(rep(20 * log10(x[["distance"]]), numberOfProfiles),
                          nrow=numberOfProfiles, byrow=TRUE)
     if (asMatrix) {
         res <- array(double(), dim=dim(x@data$a))

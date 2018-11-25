@@ -83,9 +83,13 @@ directory. THIS IS ONLY FOR DEVELOPERS.
 \examples{
 \dontrun{
 f <- "/Users/kelley/Dropbox/oce_ad2cp/labtestsig3.ad2cp"
-d <- read.ad2cp(f, 1, 10, 1)
+d <- read.ad2cp(f, to=100) # or read.oce()
 }
 
+}
+\references{
+1. Nortek, 2017. Signature Integration (55|250|500|1000kHz),
+(file \code{N3015-007 Integrators Guide AD2CP.pdf})
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},

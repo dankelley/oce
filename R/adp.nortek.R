@@ -372,10 +372,14 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 #' @examples
 #' \dontrun{
 #' f <- "/Users/kelley/Dropbox/oce_ad2cp/labtestsig3.ad2cp"
-#' d <- read.ad2cp(f, 1, 10, 1)
+#' d <- read.ad2cp(f, to=100) # or read.oce()
 #'}
 #'
 #' @author Dan Kelley
+#'
+#' @references
+#' 1. Nortek, 2017. Signature Integration (55|250|500|1000kHz),
+#' (file \code{N3015-007 Integrators Guide AD2CP.pdf})
 #'
 #' @family things related to \code{adp} data
 read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
@@ -473,9 +477,6 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     status <- vector("integer", N)
     activeConfiguration <- vector("integer", N)
     ensemble <- vector("numeric", N)
-    v <- vector("list", N)
-    amplitude <- vector("list", N)
-    correlation <- vector("list", N)
 
     ## 1. get some things in fast vector-based form.
     pointer1 <- d$index
@@ -536,153 +537,210 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     activeConfiguration <- as.integer(statusBits[18, ])
     ensemble <- readBin(d$buf[pointer4+73], "integer", size=4, n=N, endian="little")
 
+    ## Limitations
+    if (1 < length(unique(activeConfiguration)))
+        stop("cannot handle more than 1 active configuration. Please contact the developers, if you need this.")
+    ## Record codes [1, sec 6.1, page 47]
+    ## 0x15 – Burst Data Record.
+    ## 0x16 – Average Data Record.
+    ## 0x17 – Bottom Track Data Record.
+    ## 0x18 – Interleaved Burst Data Record (beam 5).
+    ## 0x1A - Burst Altimeter Raw Record.
+    ## 0x1B - DVL Bottom Track Record.
+    ## 0x1C - Echo Sounder Record.
+    ## 0x1D - DVL Water Track Record.
+    ## 0x1E - Altimeter Record.
+    ## 0x1F - Avg Altimeter Raw Record.
+    ## 0xA0 - String Data Record, eg. GPS NMEA data, comment from the FWRITE command.
+    burstPointer <- which(d$id==0x15)
+    averagePointer <- which(d$id==0x16)
+    bottomTrackPointer <- which(d$id==0x17)
+    interleavedBurstPointer <- which(d$id==0x18)
+    burstAltimeterPointer <- which(d$id==0x1a)
+    DVLBottomTrackPointer <- which(d$id==0x1b)
+    echosounderPointer <- which(d$id==0x1c)
+    waterTrackPointer <- which(d$id==0x1d)
+    altimeterPointer <- which(d$id==0x1e)
+    averageAltimeterPointer <- which(d$id==0x1f)
+    stringPointer <- which(d$id==0xa0)
+    
+    res@metadata$recordCount <- list(burst=sum(d$id == 0x15),
+                                     average=sum(d$id == 0x16),
+                                     bottomTrack=sum(d$id == 0x17),
+                                     interleavedBurst=sum(d$id == 0x18),
+                                     burstAltimeter=sum(d$id == 0x1a),
+                                     DVLBottomTrack=sum(d$id == 0x1b),
+                                     echosounder=sum(d$id == 0x1c),
+                                     waterTrack=sum(d$id == 0x1d),
+                                     altimeter=sum(d$id == 0x1e),
+                                     averageAltimeter=sum(d$id == 0x1f),
+                                     string=sum(d$id == 0xa0))
+    ## Inform the user of things we don't attempt to read, and invite them to ask for new capabilities.
+    for (n in c("bottomTrack", "interleavedBurst", "burstAltimeter",
+                "DVLBottomTrack", "echosounder", "waterTrack", "altimeter",
+                "averageAltimeter")) {
+        if (res@metadata$recordCount[n] > 0) {
+            warning("ignoring ", res@metadata$recordCount[n], " '", n, "' data records (plae contact the developers, if you need this type)\n", sep="")
+        }
+    }
     ## 2. get some things in slow index-based form.
+    pBurst <- which(d$id==0x15)        # pointer
+    if (length(pBurst) > 0) {
+        if (any(version[pBurst] != 3))
+            stop("can only decode 'burst' data records that are in 'version 3' format")
+        nbeamsBurst <- nbeams[pBurst[1]]
+        ncellsBurst <- ncells[pBurst[1]]
+        oceDebug(debug, "burst data records: nbeams:", nbeamsBurst, ", ncells:", ncellsBurst, "\n")
+        if (any(ncells[pBurst] != ncellsBurst))
+            stop("the 'burst' data records do not all have the same number of cells")
+        if (any(nbeams[pBurst] != nbeamsBurst))
+            stop("the 'burst' data records do not all have the same number of beams")
+        ## FIXME: read other fields to the following list.
+        burst <- list(i=1,
+                      numberOfCells=ncellsBurst,
+                      numberOfBeams=nbeamsBurst,
+                      cellSize=cellSize[pBurst[1]],
+                      blanking=blanking[pBurst[1]],
+                      ensemble=ensemble[pBurst],
+                      time=time[pBurst],
+                      heading=heading[pBurst],
+                      pitch=pitch[pBurst],
+                      roll=roll[pBurst],
+                      pressure=pressure[pBurst],
+                      temperature=temperature[pBurst],
+                      soundSpeed=soundSpeed[pBurst],
+                      accelerometerx=accelerometerx[pBurst],
+                      accelerometery=accelerometery[pBurst],
+                      accelerometerz=accelerometerz[pBurst],
+                      v=array(double(), dim=c(length(pBurst), ncellsBurst, nbeamsBurst)),
+                      a=array(raw(), dim=c(length(pBurst), ncellsBurst, nbeamsBurst)),
+                      q=array(raw(), dim=c(length(pBurst), ncellsBurst, nbeamsBurst)))
+    } else {
+        burst <- list()
+    }
+    pAverage <- which(d$id==0x16)        # pointer
+    if (length(pAverage) > 0) {
+        if (any(version[pAverage] != 3))
+            stop("can only decode 'average' data records that are in 'version 3' format")
+        nbeamsAverage <- nbeams[pAverage[1]]
+        ncellsAverage <- ncells[pAverage[1]]
+        oceDebug(debug, "average data records: nbeams:", nbeamsAverage, ", ncells:", ncellsAverage, "\n")
+        if (any(ncells[pAverage] != ncellsAverage))
+            stop("the 'average' data records do not all have the same number of cells")
+        if (any(nbeams[pAverage] != nbeamsAverage))
+            stop("the 'average' data records do not all have the same number of beams")
+        ## FIXME: read other fields to the following list.
+        average <- list(i=1,
+                        numberOfCells=ncellsAverage,
+                        numberOfBeams=nbeamsAverage,
+                        cellSize=cellSize[pAverage[1]],
+                        blanking=blanking[pAverage[1]],
+                        ensemble=ensemble[pAverage],
+                        time=time[pAverage],
+                        heading=heading[pAverage],
+                        pitch=pitch[pAverage],
+                        roll=roll[pAverage],
+                        pressure=pressure[pAverage],
+                        temperature=temperature[pAverage],
+                        soundSpeed=soundSpeed[pAverage],
+                        accelerometerx=accelerometerx[pAverage],
+                        accelerometery=accelerometery[pAverage],
+                        accelerometerz=accelerometerz[pAverage],
+                        v=array(double(), dim=c(length(pAverage), ncellsAverage, nbeamsAverage)),
+                        a=array(raw(), dim=c(length(pAverage), ncellsAverage, nbeamsAverage)),
+                        q=array(raw(), dim=c(length(pAverage), ncellsAverage, nbeamsAverage)))
+    } else {
+        average <- list()
+    }
+    ## Fill up th arrays in a loop. This could also be vectorized, if it proves slow.
     for (ch in 1:N) {
         id[ch] <- d$id[ch]
         if (d$id[ch] == 160) {
             ## skip an extra byte at start because it is a code
             chars <- rawToChar(d$buf[seq.int(2+d$index[ch], by=1, length.out=-1+d$length[ch])])
             header <- strsplit(chars, "\r\n")[[1]]
-        } else if (d$id[ch] %in% c(21, 22)) {
-            ## version[ch] <- as.integer(d$buf[d$index[ch]+1])
-            if (version[ch] == 3) {
-                ## oceDebug(debug, "got version[ch=", ch, "]==3 (if more than once, consider caching)\n", sep="")
-                ##OLD offsetOfData <- as.integer(d$buf[d$index[ch]+2])
-                ## if (ch==2) message("offsetOfData=", offsetOfData)
-                i <- d$index[ch]
-                ##OLD soundSpeed[ch] <- 0.1 * readBin(d$buf[i+17:18], "integer", size=2, endian="little")
-                ##OLD temperature[ch] <- 0.01 * readBin(d$buf[i+19:20], "integer", size=2, endian="little")
-                ##OLD pressure[ch] <- 0.001 * readBin(d$buf[i+21:24], "integer", size=4, endian="little")
-                ##OLD heading[ch] <- 0.01 * readBin(d$buf[i+25:26], "integer", size=2, endian="little")
-                ##OLD pitch[ch] <- 0.01 * readBin(d$buf[i+27:28], "integer", size=2, endian="little")
-                ##OLD roll[ch] <- 0.01 * readBin(d$buf[i+29:30], "integer", size=2, endian="little")
-                ## Notes on decoding the nbeam/coord/ncell structure.
-                ## According to p47 of the ad2cp doc:
-                ##  bits  9 to  0: ncells
-                ##  bits 11 to 10: coord system (00=enu, 01=xyz, 10=beam, 11=NA)
-                ##  bits 15 to 12: nbeams
-                ##
-                ## Try using intToBits() etc ... these functions return with least-signficant
-                ## bit first, e.g. 2 decimal corvalueponds to 0,1 and not 1,0 as one would write
-                ## on paper. This has to be borne in mind whilst reading the Nortek documents,
-                ## which list e.g. bit 9 to bit 0 (which in R, with intToBits() etc,
-                ## corvalueponds to bit 1 to bit 10).
-                ##
-                ## ch==2 (burst) expect nbeam=1, ncell=256, "beam"(?)
-                ## > substr(paste(ifelse(intToBits(256)==0x01, "1", "0"), collapse=""), 1, 10)
-                ## [1] "0000000010"
-                ## > substr(paste(ifelse(intToBits(1)==0x01, "1", "0"), collapse=""), 1, 4)
-                ## [1] "1000"
-                ## > paste(ifelse(rawToBits(d$buf[i+31:32])==0x01, "1", "0"), collapse="")
-                ## [1] "0000000010011000"
-                ## bit  0 to  9: 0000000010 OK
-                ## bit 10 to 11: 01 OK
-                ## bit 12 to 15: 1000 OK
-                ##
-                ## ch==3 (avg) expect nbeam=4, ncell=150, "beam"(?)
-                ## ncell=150 so expect bit pattern
-                ## > substr(paste(ifelse(intToBits(150)==0x01, "1", "0"), collapse=""), 1, 10)
-                ## [1] "0110100100"
-                ## > substr(paste(ifelse(intToBits(4)==0x01, "1", "0"), collapse=""), 1, 4)
-                ## [1] "0010"
-                ## > paste(ifelse(rawToBits(d$buf[i+31:32])==0x01, "1", "0"), collapse="")
-                ## [1] "0110100100010010"
-                ## bit  0 to  9: 0110100100 OK
-                ## bit 10 to 11: 01 OK
-                ## bit 12 to 15: 0010 OK
-
-                ##OLD bits <- rawToBits(d$buf[i+31:32])==0x01
-                ##OLD ncells[ch] <- sum(unlist(lapply(1:10, function(i) bits[0+i]*2^(i-1))))
-                ##OLD nbeams[ch] <- sum(unlist(lapply(1:4, function(i) bits[12+i]*2^(i-1))))
-                ##OLD BCC[ch] <- paste(ifelse(bits, "1", "0"), collapse="")
-                ##OLD coordinateSystem[ch] <- c("enu", "xyz", "beam", "?")[1+bits[11]+2*bits[12]]
-                ##OLD cellSize[ch] <- 0.001 * readBin(d$buf[i+33:34], "integer", size=2, signed=FALSE, endian="little")
-                ## FIXME: the docs say mm for blanking, but cm matches matlab and the .cfg file
-                ## Update from nortek forum: the blanking unit depends on the configuration; see
-                ## http://www.nortek-as.com/en/knowledge-center/forum/current-profilers-and-current-meters/519140451
-                ## NOTE that we may multiply blanking[ch] by 10 to get cm, a few lines below when we check
-                ## status.
-                ##OLD blanking[ch] <- 0.001 * readBin(d$buf[i+35:36], "integer", size=2, signed=FALSE, endian="little")
-                ##OLD nominalCorrelation[ch] <- as.integer(d$buf[i+37])
-                ## skipping some variables
-                ##OLD accelerometerz[ch] <- 1/16384 * readBin(d$buf[i+51:52], "integer", size=2, signed=TRUE, endian="little")
-                ## skipping some variables
-                ##OLD transmitEnergy[ch] <- readBin(d$buf[i+57:58], "integer", size=2, signed=FALSE, endian="little")
-                ##OLD velocityScaling[ch] <- readBin(d$buf[i+59], "integer", size=1, signed=TRUE, endian="little")
-                ##OLD velocityFactor <- 10^velocityScaling[ch]
-                ##OLD powerLevel[ch] <- readBin(d$buf[i+60], "integer", size=1, signed=TRUE, endian="little")
-                ##OLD temperatureMagnetometer[ch] <- 0.001 * readBin(d$buf[i+61:62], "integer", size=2, signed=TRUE, endian="little")
-                ##OLD temperatureRTC[ch] <- 0.01 * readBin(d$buf[i+63:64], "integer", size=2, endian="little")
-                ##OLD error <- readBin(d$buf[i+65:68], "integer", size=4, endian="little") # FIXME: UNUSED
-                ##OLD status[ch] <- readBin(d$buf[i+69:72], "integer", size=4, endian="little")
-                ##OLD statusBits <- intToBits(status[ch])
-                ##OLD if (statusBits[2] == 0x01) { # "Bit 1" in docs (they count from 0)
-                ##OLD     blanking[ch] <- blanking[ch] * 10
-                ##OLD }
-                ##OLD activeConfiguration[ch] <- as.integer(statusBits[18]) # " Bit 17" in docs (they count from zero)
-                ##OLD ensemble[ch] <- readBin(d$buf[i+73:76], "integer", size=4, endian="little")
-                ## 77=1+offsetOfData
-                nn <- nbeams[ch] * ncells[ch]
-                nbytes <- 2 * nn
-                velocity <- velocityFactor[ch] * readBin(d$buf[i+77+seq(0, nbytes-1)],
-                                                         "integer", size=2, n=nbeams[ch]*ncells[ch],
-                                                         endian="little")
-                ## FIXME: save to plan[[.]]$average$v or plan[[.]]$burst$v, etc., where '.' is activeConfiguration+1
-                ## FIXME: maybe we can save the whole shebang, actually, with more thoughtful indexing
-                v[[ch]] <- matrix(velocity, ncol=nbeams[ch], nrow=ncells[ch], byrow=FALSE)
-                amp <- d$buf[i+77+nbytes+seq(0, nn-1)]
-                amplitude[[ch]] <- matrix(amp, ncol=nbeams[ch], nrow=ncells[ch], byrow=FALSE)
-                cor <- d$buf[i+77+nbytes+nn+seq(0, nn-1)]
-                correlation[[ch]] <- matrix(cor, ncol=nbeams[ch], nrow=ncells[ch], byrow=FALSE)
-                ## FIXME: read correlation etc
-                if (monitor)
-                    cat("ch:", ch, ", id:", d$id[ch], ", ncells:", ncells[ch], ", nbeams:", nbeams[ch],
-                        ", cellSize:", cellSize[ch], ", blanking:", blanking[ch],
-                        ", coordinateSystem:", coordinateSystem[ch],
-                        ## ", status:", paste(gsub("0(.)","\\1",intToBits(FIXMEdan)),collapse=""),
-                        ", activeConfiguration:", activeConfiguration[ch],
-                        "\n", sep="")
-            } else {
-                message("Can only handle data records with version=3, but chunk ", ch, ", with id=", d$id[ch], ", has version=", version[ch])
-            }
-        } else {
-            oceDebug(debug, "chunk ", ch, " is id=", d$id[ch], "\n", sep="")
+        } else if (d$id[ch] == 0x15) { # burst
+            i <- d$index[ch]
+            ncol <- burst$numberOfBeams
+            nrow <- burst$numberOfCells
+            n <- ncol * nrow
+            nn <- 2 * n
+            ## FIXME: is next proper? I don't see why the 2*nn.
+            ## v <- velocityFactor[ch]*readBin(d$buf[i+77+seq(0,2*nn-1)],"integer",size=2,n=n,endian="little")
+            v <- velocityFactor[ch]*readBin(d$buf[i+77+seq(0,nn-1)],"integer",size=2,n=n,endian="little")
+            burst$v[burst$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+            a <- d$buf[i+77 + 2*nn + seq(0, nn-1)]
+            burst$a[burst$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+            q <- d$buf[i+77 + 3*nn + seq(0, nn-1)]
+            burst$q[burst$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+            burst$i <- burst$i + 1
+            ## FIXME: read other fields
+        } else if (d$id[ch] == 0x16) { # average
+            i <- d$index[ch]
+            ncol <- average$numberOfBeams
+            nrow <- average$numberOfCells
+            n <- ncol * nrow
+            nn <- 2 * n
+            ## FIXME: is next proper? I don't see why the 2*nn.
+            ## v <- velocityFactor[ch]*readBin(d$buf[i+77+seq(0,2*nn-1)],"integer",size=2,n=n,endian="little")
+            v <- velocityFactor[ch]*readBin(d$buf[i+77+seq(0,nn-1)],"integer",size=2,n=n,endian="little")
+            average$v[average$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+            a <- d$buf[i+77 + 2*nn + seq(0, nn-1)]
+            average$a[average$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+            q <- d$buf[i+77 + 3*nn + seq(0, nn-1)]
+            average$q[average$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+            average$i <- average$i + 1
+            ## FIXME: read other fields
+         } else {
+            stop("cannot decode record type '", d$id[ch])
         }
     }
-    value <- list(header=header,
-                  time=time, id=id, vsn=version,
-                  soundSpeed=soundSpeed, temperature=temperature, pressure=pressure,
-                  heading=heading, pitch=pitch, roll=roll,
-                  coord=coordinateSystem, nbeams=nbeams, ncells=ncells,
-                  cellSize=cellSize, blanking=blanking,
-                  nomcor=nominalCorrelation,
-                  accx=accelerometerx,
-                  accy=accelerometery,
-                  accz=accelerometerz,
-                  transmitEnergy=transmitEnergy,
-                  ##velocityScaling=velocityScaling,
-                  powerLevel=powerLevel,
-                  temperatureMagnetometer=temperatureMagnetometer,
-                  temperatureRTC=temperatureRTC,
-                  status=status, activeConfiguration=activeConfiguration,
-                  ensemble=ensemble,
-                  v=v, amplitude=amplitude, correlation=correlation)
+    ## Clean lists of temporary index.
+    if (length(burst))
+        burst$i <- NULL
+    if (length(average))
+        average$i <- NULL
+    data <- list(header=header,
+                 ##time=time,
+                 ##id=id,
+                 ##vsn=version,
+                 ##soundSpeed=soundSpeed, temperature=temperature, pressure=pressure,
+                 ##heading=heading, pitch=pitch, roll=roll,
+                 coord=coordinateSystem,
+                 ##nbeams=nbeams, ncells=ncells,
+                 ##cellSize=cellSize, blanking=blanking,
+                 nomcor=nominalCorrelation,
+                 ##accx=accelerometerx,
+                 ##accy=accelerometery,
+                 ##accz=accelerometerz,
+                 transmitEnergy=transmitEnergy,
+                 ##velocityScaling=velocityScaling,
+                 powerLevel=powerLevel,
+                 ##temperatureMagnetometer=temperatureMagnetometer,
+                 ##temperatureRTC=temperatureRTC,
+                 status=status,
+                 activeConfiguration=activeConfiguration,
+                 ##ensemble=ensemble,
+                 average=average,
+                 burst=burst) # FIXME: add other fields here
 
     res@metadata$serialNumber <- serialNumber
     res@metadata$header <- header
     res@metadata$id <- id
-    res@metadata$numberOfBeams <- 4
-    firstVelo <- which(id == 22)[1]
-    res@metadata$numberOfSamples <- sum(id == 22)
-    res@metadata$numberOfCells <- dim(v[[firstVelo]])[1] # FIXME: is this the same for all data records?
+    ##OLD ## FIXME: next needs updating for burst/average
+    ##OLD res@metadata$numberOfBeams <- list(average=nbeamsAverage, burst=nbeamsBurst)
+    ##OLD res@metadata$numberOfCells <- list(average=ncellsAverage, burst=ncellsBurst)
+    ##OLD res@metadata$numberOfSamples <- list(average=NA, burst=NA)
 
     ## Delete some temporary working items
-    value$header <- NULL
-    value$time <- NULL
-    value$id <- NULL
-    res@data <- value
-    res@metadata$cellSize <- cellSize[firstVelo]
-    res@data$distance <- blanking[firstVelo] + res@metadata$cellSize*1:res@metadata$numberOfCells
+    data$header <- NULL
+    data$time <- NULL
+    data$id <- NULL
+    res@data <- data
+    res@metadata$cellSizeBurst <- NA #cellSize[firstVelo]
+    res@metadata$cellSizeAverage <- NA #cellSize[firstVelo]
+    res@data$distanceBurst <- NA
+    res@data$distanceAverage <- NA
     res@data$time <- time
     if (missing(processingLog))
         processingLog <- paste("read.ad2cp(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep="")
