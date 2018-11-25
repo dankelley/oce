@@ -527,7 +527,6 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     error <- readBin(d$buf[pointer2 + 65], "integer", size=4, n=N, endian="little") # FIXME: UNUSED
     status <- readBin(d$buf[pointer4 + 69], "integer", size=4, n=N, endian="little")
     statusBits <- intToBits(status)
-    warning("the bit interpretation may be wrong (what is the order, with intToBits?)\n")
     ## Construct an array to store the bits within th 'status' vector. The nortek
     ## docs refer to the first bit as 0, which becomes [1,] in this array.
     dim(statusBits) <- c(32, N)
