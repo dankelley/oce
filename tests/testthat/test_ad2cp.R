@@ -38,16 +38,21 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
                               -78.080, -78.080, -78.080, -78.080, -78.080)
               expect_equal(d[["roll", "burst"]][1:10], rollMatlab)
 
-              cellSizeMatlab <- 0.02
-              expect_equal(d[["cellSize", "burst"]], cellSizeMatlab)
+              ## >> Data.Average_CellSize
+              ## ans = single 0.2000
+              expect_equal(d[["cellSize", "average"]], 0.2)
+              ## >> Data.BurstHR_CellSize(1)
+              ## ans = single 0.0200
+              expect_equal(d[["cellSize", "burst"]], 0.02)
 
-              ## FIXME I am not sure what matlab got blanking; I tested
-              ## for 2.8 until Nov 24, 2018, but with some recoding
-              ## on that date, read.ad2cp() gave 0.28, which may be
-              ## the correct value, since old comments talked about a
-              ## factor of 10. This needs checking!
-              blankingMatlab <- 0.28000
-              expect_equal(d[["blanking", "burst"]], blankingMatlab)
+              ## >> Data.Average_Blanking(1)
+              ## ans = 0.1000
+              blankingAverageMatlab <- 0.1 # BD=0.10 line 7 of .cfg file
+              expect_equal(d[["blanking", "average"]], blankingAverageMatlab)
+              ## >> Data.BurstHR_Blanking(1)
+              ## ans = 2.8000
+              blankingBurstMatlab <- 2.8 # BD=2.8 line 21 of .cfg file
+              expect_equal(d[["blanking", "burst"]], blankingBurstMatlab)
 
               if (TRUE) {
                 warning("skipping test of nominalCorrelation (not coded yet)")
