@@ -634,12 +634,12 @@ setMethod(f="[[",
                       }
                       if (!(j %in% c("average", "burst")))
                           return(NULL)
-                      x@data[[j]]$blanking + x@data[[j]]$cellSize*seq(1, x@data[[j]]$numberOfCells)
+                      x@data[[j]]$blankingDistance + x@data[[j]]$cellSize*seq(1, x@data[[j]]$numberOfCells)
                   } else {
                       x@data$distance
                   }
               } else if (i %in% c("accelerometerx", "accelerometery", "accelerometerz",
-                                  "cellSize", "blanking",
+                                  "cellSize", "blankingDistance",
                                   "heading", "pitch", "roll",
                                   "ensemble", "time", "pressure", "soundSpeed", "temperature",
                                   "v")) {
@@ -1468,7 +1468,7 @@ setMethod(f="plot",
                   if (length(firstVelo)) {
                       stop("no average-mode velocity data")
                       par(mfrow=c(nw, 1))
-                      distance <- x[["blanking"]][firstVelo] + x[["cellSize"]][firstVelo]*seq(1, dim(v)[2])
+                      distance <- x[["blankingDistance"]][firstVelo] + x[["cellSize"]][firstVelo]*seq(1, dim(v)[2])
                       for (w in which) {
                           v <- x[["v"]]
                           tt <- x[["time"]][x[["id"]]==22]

@@ -47,12 +47,10 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
 
               ## >> Data.Average_Blanking(1)
               ## ans = 0.1000
-              blankingAverageMatlab <- 0.1 # BD=0.10 line 7 of .cfg file
-              expect_equal(d[["blanking", "average"]], blankingAverageMatlab)
+              expect_equal(d[["blankingDistance", "average"]], 0.1)
               ## >> Data.BurstHR_Blanking(1)
               ## ans = 2.8000
-              blankingBurstMatlab <- 2.8 # BD=2.8 line 21 of .cfg file
-              expect_equal(d[["blanking", "burst"]], blankingBurstMatlab)
+              expect_equal(d[["blankingDistance", "burst"]], 2.8)
 
               if (TRUE) {
                 warning("skipping test of nominalCorrelation (not coded yet)")

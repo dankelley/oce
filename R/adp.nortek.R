@@ -464,7 +464,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ncells <- vector("numeric", N)
     nbeams <- vector("numeric", N)
     cellSize <- vector("numeric", N)
-    blanking <- vector("numeric", N)
+    blankingDistance <- vector("numeric", N)
     nominalCorrelation <- vector("numeric", N)
     accelerometerx <- vector("numeric", N)
     accelerometery <- vector("numeric", N)
@@ -513,11 +513,11 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ncells <- BCC[,1]+2*(BCC[,2]+2*(BCC[,3]+2*(BCC[,4]+2*(BCC[,5]+2*(BCC[,6]+2*(BCC[,7]+2*(BCC[,8]+2*(BCC[,9]+2*BCC[,10]))))))))
     nbeams <- BCC[,13]+2*(BCC[,14]+2*(BCC[,15]+2*BCC[,16]))
     coordinateSystem <- c("enu", "xyz", "beam", "?")[BCC[,11]+2*BCC[,12]]
+    ## cell size is recorded in mm [1, table 6.1.2, page 47]
     cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size=2, n=N, signed=FALSE, endian="little")
+    ## blanking distance is recorded in cm [1, table 6.1.2, page 47]
     ## NB. blanking may be altered later, if statusBits[2]==0x01
-    blanking <- 0.001 * readBin(d$buf[pointer2 + 35], "integer", size=2, n=N, signed=FALSE, endian="little")
-    cat("AAAAA blanking:\n") # FIXME
-    print(head(blanking)) # FIXME
+    blankingDistance <- 0.01 * readBin(d$buf[pointer2 + 35], "integer", size=2, n=N, signed=FALSE, endian="little")
     nominalCorrelation <- as.integer(d$buf[pointer1 + 37])
     accelerometerx <- 1.0/16384.0 * readBin(d$buf[pointer2 + 47], "integer", size=2, n=N, signed=TRUE, endian="little")
     accelerometery <- 1.0/16384.0 * readBin(d$buf[pointer2 + 49], "integer", size=2, n=N, signed=TRUE, endian="little")
@@ -534,11 +534,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## docs refer to the first bit as 0, which becomes [1,] in this array.
     dim(statusBits) <- c(32, N)
     ## Nortek docs say bit 1 in 'status' indicats blanking scale factor.
-    blanking <- blanking * ifelse(statusBits[2, ] == 0x01, 1, 10)
-    cat("BBBBB blanking:\n") # FIXME
-    print(head(blanking)) # FIXME
-    cat("BBBBB statusbits:\n") # FIXME
-    for (sb in 1:10) print(statusBits[,sb]) # FIXME
+    blankingDistance <- blankingDistance * ifelse(statusBits[2, ] == 0x01, 1, 10)
 
     ## Nortek docs say bit 17 indicates the active configuration
     activeConfiguration <- as.integer(statusBits[18, ])
@@ -607,7 +603,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                       numberOfCells=ncellsBurst,
                       numberOfBeams=nbeamsBurst,
                       cellSize=cellSize[pBurst[1]],
-                      blanking=blanking[pBurst[1]],
+                      blankingDistance=blankingDistance[pBurst[1]],
                       ensemble=ensemble[pBurst],
                       time=time[pBurst],
                       heading=heading[pBurst],
@@ -641,7 +637,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         numberOfCells=ncellsAverage,
                         numberOfBeams=nbeamsAverage,
                         cellSize=cellSize[pAverage[1]],
-                        blanking=blanking[pAverage[1]],
+                        blankingDistance=blankingDistance[pAverage[1]],
                         ensemble=ensemble[pAverage],
                         time=time[pAverage],
                         heading=heading[pAverage],
@@ -708,18 +704,10 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (length(average))
         average$i <- NULL
     data <- list(header=header,
-                 ##time=time,
-                 ##id=id,
-                 ##vsn=version,
                  ##soundSpeed=soundSpeed, temperature=temperature, pressure=pressure,
                  ##heading=heading, pitch=pitch, roll=roll,
                  coord=coordinateSystem,
-                 ##nbeams=nbeams, ncells=ncells,
-                 ##cellSize=cellSize, blanking=blanking,
                  nomcor=nominalCorrelation,
-                 ##accx=accelerometerx,
-                 ##accy=accelerometery,
-                 ##accz=accelerometerz,
                  transmitEnergy=transmitEnergy,
                  ##velocityScaling=velocityScaling,
                  powerLevel=powerLevel,
