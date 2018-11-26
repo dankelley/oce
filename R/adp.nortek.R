@@ -516,6 +516,8 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size=2, n=N, signed=FALSE, endian="little")
     ## NB. blanking may be altered later, if statusBits[2]==0x01
     blanking <- 0.001 * readBin(d$buf[pointer2 + 35], "integer", size=2, n=N, signed=FALSE, endian="little")
+    cat("AAAAA blanking:\n") # FIXME
+    print(head(blanking)) # FIXME
     nominalCorrelation <- as.integer(d$buf[pointer1 + 37])
     accelerometerx <- 1.0/16384.0 * readBin(d$buf[pointer2 + 47], "integer", size=2, n=N, signed=TRUE, endian="little")
     accelerometery <- 1.0/16384.0 * readBin(d$buf[pointer2 + 49], "integer", size=2, n=N, signed=TRUE, endian="little")
@@ -533,6 +535,11 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     dim(statusBits) <- c(32, N)
     ## Nortek docs say bit 1 in 'status' indicats blanking scale factor.
     blanking <- blanking * ifelse(statusBits[2, ] == 0x01, 1, 10)
+    cat("BBBBB blanking:\n") # FIXME
+    print(head(blanking)) # FIXME
+    cat("BBBBB statusbits:\n") # FIXME
+    for (sb in 1:10) print(statusBits[,sb]) # FIXME
+
     ## Nortek docs say bit 17 indicates the active configuration
     activeConfiguration <- as.integer(statusBits[18, ])
     ensemble <- readBin(d$buf[pointer4+73], "integer", size=4, n=N, endian="little")
