@@ -9,35 +9,60 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
             d <- read.ad2cp(f, 1, 100, 1)
             if (inherits(d, "oce")) {
               expect_equal(d[["serialNumber"]], 100159)
-              burstID <- d[["id"]] == 21
-              averageID <- d[["id"]] == 22
               ## >> load labtestsig3.ad2cp.00000_1.mat
               ## >> fieldnames(Data)
-              ## >> Data.BurstHR_Pressure(1:10)
-              pressureMatlab <- c(10.260, 10.258, 10.264, 10.261, 10.263,
-                                  10.260, 10.260, 10.261, 10.259, 10.259)
-              expect_equal(d[["pressure", "burst"]][1:10], pressureMatlab)
 
+
+              context("pressure (average and burst)")
+              ## >> Data.Average_Pressure(1:10)
+              pressureAverageMatlab <- c(10.259, 10.260, 10.262, 10.262, 10.258,
+                                         10.260, 10.261, 10.256, 10.259, 10.261)
+              expect_equal(d[["pressure", "average"]][1:10], pressureAverageMatlab)
+              ## >> Data.BurstHR_Pressure(1:10)
+              pressureBurstMatlab <- c(10.260, 10.258, 10.264, 10.261, 10.263,
+                                       10.260, 10.260, 10.261, 10.259, 10.259)
+              expect_equal(d[["pressure", "burst"]][1:10], pressureBurstMatlab)
+
+
+              context("temperature (3 types, each average and burst)")
               ## >> Data.BurstHR_WaterTemperature(1:10)
               temperatureMatlab <- c(24.010, 24.000, 24.010, 24.010, 24.010,
                                      24.010, 24.010, 24.010, 24.010, 24.000)
               expect_equal(d[["temperature", "burst"]][1:10], temperatureMatlab)
+              ## > Data.AverageHR_MagnetometerTemperature(1:10)
+              temperatureMagnetometerAverageMatlab <- c(25.8920, 25.8920, 25.8920, 25.8450, 25.8920,
+                                                        25.8450, 25.8920, 25.8450, 25.8920, 25.8450)
+              expect_equal(d[["temperatureMagnetometer", "average"]][1:10], temperatureMagnetometerAverageMatlab)
+              ## > Data.AverageHR_RTCTemperature(1:10)
+              temperatureRTCAverageMatlab <- c(28.5000, 28.5000, 28.7500, 28.7500, 28.7500,
+                                               28.7500, 28.7500, 28.7500, 28.7500, 28.7500)
+              expect_equal(d[["temperatureRTC", "average"]][1:10], temperatureRTCAverageMatlab)
+              ## > Data.BurstHR_MagnetometerTemperature(1:10)
+              temperatureMagnetometerBurstMatlab <- c(25.7980, 25.8450, 25.9390, 25.8920, 25.8450,
+                                                      25.7510, 25.7980, 25.8920, 25.8450, 25.7980)
+              expect_equal(d[["temperatureMagnetometer", "burst"]][1:10], temperatureMagnetometerBurstMatlab)
+              ## > Data.BurstHR_RTCTemperature(1:10)
+              temperatureRTCBurstMatlab <- c(28.500, 28.500, 28.500, 28.500, 28.500,
+                                             28.500, 28.500, 28.500, 28.500, 28.500)
+              expect_equal(d[["temperatureRTC", "burst"]][1:10], temperatureRTCBurstMatlab)
 
+
+              context("heading, pitch and roll")
               ## >> Data.BurstHR_Heading(1:10)
               headingMatlab <- c(10.890, 10.910, 10.920, 10.980, 10.960,
                                  10.910, 10.900, 10.900, 10.900, 10.900)
               expect_equal(d[["heading", "burst"]][1:10], headingMatlab)
-
               ## >> Data.BurstHR_Pitch(1:10)
               pitchMatlab <- c(-71.280, -71.280, -71.270, -71.280, -71.280,
                                -71.280, -71.270, -71.270, -71.270, -71.270)
               expect_equal(d[["pitch", "burst"]][1:10], pitchMatlab)
-
               ## >> Data.BurstHR_ROll(1:10)
               rollMatlab <- c(-78.050, -78.080, -78.080, -78.090, -78.090,
                               -78.080, -78.080, -78.080, -78.080, -78.080)
               expect_equal(d[["roll", "burst"]][1:10], rollMatlab)
 
+
+              context("cellSize")
               ## >> Data.Average_CellSize
               ## ans = single 0.2000
               expect_equal(d[["cellSize", "average"]], 0.2)
@@ -45,6 +70,8 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
               ## ans = single 0.0200
               expect_equal(d[["cellSize", "burst"]], 0.02)
 
+
+              context("blankingDistance")
               ## >> Data.Average_Blanking(1)
               ## ans = 0.1000
               expect_equal(d[["blankingDistance", "average"]], 0.1)
@@ -52,6 +79,8 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
               ## ans = 2.8000
               expect_equal(d[["blankingDistance", "burst"]], 2.8)
 
+
+              context("nominalCorrelation")
               ## >> Data.BurstHR_NominalCor(1:10)
               nominalCorrelationBurstMatlab <- rep(100, 10)
               ##R > d[["nomcor", "burst"]][1:10]
@@ -61,6 +90,8 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
               nominalCorrelationAverageMatlab <- rep(33, 10)
               expect_equal(d[["nominalCorrelation", "average"]][1:10], nominalCorrelationAverageMatlab)
 
+
+              context("acceleration (limited tests: should do 3 directions, burst and average)")
               ##>> Data.BurstHR_AccelerometerZ(1:10)
               acczMatlab <- c(0.066895, 0.065918, 0.065430, 0.066406, 0.065918,
                               0.068359, 0.070801, 0.068359, 0.069336, 0.069336)
@@ -83,30 +114,15 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
                 expect_equal(d[["transmitEnergy"]][burstID][1:10], transmitEnergyMatlab)
               }
 
-              ## > Data.AverageHR_MagnetometerTemperature(1:10)
-              temperatureMagnetometerAverageMatlab <- c(25.8920, 25.8920, 25.8920, 25.8450, 25.8920,
-                                                        25.8450, 25.8920, 25.8450, 25.8920, 25.8450)
-              expect_equal(d[["temperatureMagnetometer", "average"]][1:10], temperatureMagnetometerAverageMatlab)
-              ## > Data.AverageHR_RTCTemperature(1:10)
-              temperatureRTCAverageMatlab <- c(28.5000, 28.5000, 28.7500, 28.7500, 28.7500,
-                                               28.7500, 28.7500, 28.7500, 28.7500, 28.7500)
-              expect_equal(d[["temperatureRTC", "average"]][1:10], temperatureRTCAverageMatlab)
 
-              ## > Data.BurstHR_MagnetometerTemperature(1:10)
-              temperatureMagnetometerBurstMatlab <- c(25.7980, 25.8450, 25.9390, 25.8920, 25.8450,
-                                                      25.7510, 25.7980, 25.8920, 25.8450, 25.7980)
-              expect_equal(d[["temperatureMagnetometer", "burst"]][1:10], temperatureMagnetometerBurstMatlab)
-              ## > Data.BurstHR_RTCTemperature(1:10)
-              temperatureRTCBurstMatlab <- c(28.500, 28.500, 28.500, 28.500, 28.500,
-                                             28.500, 28.500, 28.500, 28.500, 28.500)
-              expect_equal(d[["temperatureRTC", "burst"]][1:10], temperatureRTCBurstMatlab)
-
+              context("ensemble")
               ##> Data.BurstHR_EnsembleCount(1:10)
               ensembleMatlab <- c(969, 970, 971, 972, 973,
                                   974, 975, 976, 977, 978)
               expect_equal(d[["ensemble", "burst"]][1:10], ensembleMatlab)
               ##> Data.Average_EnsembleCount
               expect_true(all(1==d[["ensemble","average"]]))
+
 
               context("timestamps")
               ## >> format long
@@ -116,7 +132,6 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
                                         1.490564529063300, 1.490564530063300)
               timeAverageMatlab <- numberAsPOSIXct(secAverageMatlab)
               expect_equal(d[["time", "average"]][1:10], timeAverageMatlab)
-
               ## >> format long
               ## >> Data.BurstHR_TimeStamp(1:10)
               secBurstMatlab <- 1e9*c(1.490564521001000, 1.490564521125800, 1.490564521251000, 1.490564521376000,
@@ -125,7 +140,8 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
               timeBurstMatlab <- numberAsPOSIXct(secBurstMatlab)
               expect_equal(d[["time", "burst"]][1:10], timeBurstMatlab)
 
-              context("nbeams and ncells")
+
+              context("numberOfBeams and numberOfCcells")
               expect_equal(d[["numberOfBeams", "burst"]], 1)
               expect_equal(d[["numberOfCells", "burst"]], 256)
               expect_equal(d[["numberOfBeams", "average"]], 4)
