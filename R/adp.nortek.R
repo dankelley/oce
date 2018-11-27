@@ -486,13 +486,16 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     firstData <- which(d$id != 160)[1]
     serialNumber <- readBin(d$buf[d$index[firstData]+5:8], "integer", size=4, endian="little")
     ## Construct pointers for indexing 1-byte and 2-byte quantities
+    ## NOTE: the 100usec part of time sometimes exceeds 1s, when multiplied by 1e4. But we get
+    ## the same result as matlab in a test file, so I won't worry about this, assuming instead
+    ## that this is a quirk of the nortek setup.
     time <- ISOdatetime(year=1900+ as.integer(d$buf[pointer1 + 9]),
                         month=1+ as.integer(d$buf[pointer1 + 10]), # starts at 0, based on matlab valueults
                         day=as.integer(d$buf[pointer1 + 11]),
                         hour=as.integer(d$buf[pointer1 + 12]),
                         min=as.integer(d$buf[pointer1 + 13]),
                         sec=as.integer(d$buf[pointer1 + 14]) +
-                        1e-4 * readBin(d$buf[pointer1 + 15], "integer", size=2, n=N, signed=FALSE, endian="little"),
+                        1e-4 * readBin(d$buf[pointer2 + 15], "integer", size=2, n=N, signed=FALSE, endian="little"),
                         tz="UTC")
     soundSpeed <- 0.1 * readBin(d$buf[pointer2 + 17], "integer", size=2, n=N, signed=FALSE, endian="little")
     temperature <- 0.01 * readBin(d$buf[pointer2 + 19], "integer", size=2, n=N, signed=FALSE, endian="little")
@@ -518,7 +521,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## blanking distance is recorded in cm [1, table 6.1.2, page 47]
     ## NB. blanking may be altered later, if statusBits[2]==0x01
     blankingDistance <- 0.01 * readBin(d$buf[pointer2 + 35], "integer", size=2, n=N, signed=FALSE, endian="little")
-    nominalCorrelation <- as.integer(d$buf[pointer1 + 37])
+    nominalCorrelation <- readBin(d$buf[pointer1 + 37], "integer", size=1, n=N, signed=FALSE, endian="little")
     accelerometerx <- 1.0/16384.0 * readBin(d$buf[pointer2 + 47], "integer", size=2, n=N, signed=TRUE, endian="little")
     accelerometery <- 1.0/16384.0 * readBin(d$buf[pointer2 + 49], "integer", size=2, n=N, signed=TRUE, endian="little")
     accelerometerz <- 1.0/16384.0 * readBin(d$buf[pointer2 + 51], "integer", size=2, n=N, signed=TRUE, endian="little")
@@ -566,7 +569,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     altimeterPointer <- which(d$id==0x1e)
     averageAltimeterPointer <- which(d$id==0x1f)
     stringPointer <- which(d$id==0xa0)
-    
+
     res@metadata$recordCount <- list(burst=sum(d$id == 0x15),
                                      average=sum(d$id == 0x16),
                                      bottomTrack=sum(d$id == 0x17),
@@ -611,10 +614,13 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                       roll=roll[pBurst],
                       pressure=pressure[pBurst],
                       temperature=temperature[pBurst],
+                      temperatureMagnetometer=temperatureMagnetometer[pBurst],
+                      temperatureRTC=temperatureRTC[pBurst],
                       soundSpeed=soundSpeed[pBurst],
                       accelerometerx=accelerometerx[pBurst],
                       accelerometery=accelerometery[pBurst],
                       accelerometerz=accelerometerz[pBurst],
+                      nominalCorrelation=nominalCorrelation[pBurst],
                       v=array(double(), dim=c(length(pBurst), ncellsBurst, nbeamsBurst)),
                       a=array(raw(), dim=c(length(pBurst), ncellsBurst, nbeamsBurst)),
                       q=array(raw(), dim=c(length(pBurst), ncellsBurst, nbeamsBurst)))
@@ -645,10 +651,13 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         roll=roll[pAverage],
                         pressure=pressure[pAverage],
                         temperature=temperature[pAverage],
+                        temperatureMagnetometer=temperatureMagnetometer[pAverage],
+                        temperatureRTC=temperatureRTC[pAverage],
                         soundSpeed=soundSpeed[pAverage],
                         accelerometerx=accelerometerx[pAverage],
                         accelerometery=accelerometery[pAverage],
                         accelerometerz=accelerometerz[pAverage],
+                        nominalCorrelation=nominalCorrelation[pAverage],
                         v=array(double(), dim=c(length(pAverage), ncellsAverage, nbeamsAverage)),
                         a=array(raw(), dim=c(length(pAverage), ncellsAverage, nbeamsAverage)),
                         q=array(raw(), dim=c(length(pAverage), ncellsAverage, nbeamsAverage)))
@@ -695,7 +704,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             average$i <- average$i + 1
             ## FIXME: read other fields
          } else {
-            stop("cannot decode record type '", d$id[ch])
+            stop("cannot decode data-record type '. Please contact the developers if you need this.", d$id[ch])
         }
     }
     ## Clean lists of temporary index.
@@ -707,15 +716,12 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                  ##soundSpeed=soundSpeed, temperature=temperature, pressure=pressure,
                  ##heading=heading, pitch=pitch, roll=roll,
                  coord=coordinateSystem,
-                 nomcor=nominalCorrelation,
-                 transmitEnergy=transmitEnergy,
+                 ##nomcor=nominalCorrelation,
+                 ##transmitEnergy=transmitEnergy,
                  ##velocityScaling=velocityScaling,
                  powerLevel=powerLevel,
-                 ##temperatureMagnetometer=temperatureMagnetometer,
-                 ##temperatureRTC=temperatureRTC,
                  status=status,
                  activeConfiguration=activeConfiguration,
-                 ##ensemble=ensemble,
                  average=average,
                  burst=burst) # FIXME: add other fields here
 
@@ -732,11 +738,8 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     data$time <- NULL
     data$id <- NULL
     res@data <- data
-    res@metadata$cellSizeBurst <- NA #cellSize[firstVelo]
-    res@metadata$cellSizeAverage <- NA #cellSize[firstVelo]
     res@data$distanceBurst <- NA
     res@data$distanceAverage <- NA
-    res@data$time <- time
     if (missing(processingLog))
         processingLog <- paste("read.ad2cp(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep="")
     res@processingLog <- processingLogItem(processingLog)

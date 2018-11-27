@@ -641,8 +641,10 @@ setMethod(f="[[",
               } else if (i %in% c("accelerometerx", "accelerometery", "accelerometerz",
                                   "cellSize", "blankingDistance",
                                   "heading", "pitch", "roll",
-                                  "ensemble", "time", "pressure", "soundSpeed", "temperature",
-                                  "v")) {
+                                  "ensemble", "time", "pressure", "soundSpeed",
+                                  "temperature", "temperatureMagnetometer", "temperatureRTC",
+                                  "nominalCorrelation",
+                                  "v", "a", "q")) {
                   instrumentType <- x@metadata$instrumentType
                   if (!is.null(instrumentType) && instrumentType == "AD2CP") {
                       ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
