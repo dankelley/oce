@@ -605,6 +605,8 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         burst <- list(i=1,
                       numberOfCells=ncellsBurst,
                       numberOfBeams=nbeamsBurst,
+                      originalCoordinate=coordinateSystem[pBurst[1]],
+                      oceCoordinate=coordinateSystem[pBurst[1]],
                       cellSize=cellSize[pBurst[1]],
                       blankingDistance=blankingDistance[pBurst[1]],
                       ensemble=ensemble[pBurst],
@@ -642,6 +644,8 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         average <- list(i=1,
                         numberOfCells=ncellsAverage,
                         numberOfBeams=nbeamsAverage,
+                        originalCoordinate=coordinateSystem[pAverage[1]],
+                        oceCoordinate=coordinateSystem[pAverage[1]],
                         cellSize=cellSize[pAverage[1]],
                         blankingDistance=blankingDistance[pAverage[1]],
                         ensemble=ensemble[pAverage],
@@ -715,7 +719,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     data <- list(header=header,
                  ##soundSpeed=soundSpeed, temperature=temperature, pressure=pressure,
                  ##heading=heading, pitch=pitch, roll=roll,
-                 coord=coordinateSystem,
+                 ##coord=coordinateSystem,
                  ##nomcor=nominalCorrelation,
                  ##transmitEnergy=transmitEnergy,
                  ##velocityScaling=velocityScaling,
@@ -728,18 +732,14 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     res@metadata$serialNumber <- serialNumber
     res@metadata$header <- header
     res@metadata$id <- id
-    ##OLD ## FIXME: next needs updating for burst/average
-    ##OLD res@metadata$numberOfBeams <- list(average=nbeamsAverage, burst=nbeamsBurst)
-    ##OLD res@metadata$numberOfCells <- list(average=ncellsAverage, burst=ncellsBurst)
-    ##OLD res@metadata$numberOfSamples <- list(average=NA, burst=NA)
+    ## Trim some things that make no sense for AD2CP data
+    res@metadata$oceCoordinate <- NULL
 
     ## Delete some temporary working items
     data$header <- NULL
     data$time <- NULL
     data$id <- NULL
     res@data <- data
-    res@data$distanceBurst <- NA
-    res@data$distanceAverage <- NA
     if (missing(processingLog))
         processingLog <- paste("read.ad2cp(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep="")
     res@processingLog <- processingLogItem(processingLog)

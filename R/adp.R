@@ -516,12 +516,11 @@ setMethod(f="summary",
                       cat(sprintf("* Cells:              one cell, centered at %.3f m\n", object@data$distance[1]), ...)
                   }
               }
+              originalCoordinate <- object[["originalCoordinate"]]
+              oceCoordinate <- object[["oceCoordinate"]]
               cat("* Coordinate system: ",
-                  if ("originalCoordinate" %in% metadataNames)
-                      object@metadata$originalCoordinate else "?",
-                      "[originally],",
-                      if ("oceCoordinate" %in% metadataNames) object@metadata$oceCoordinate else "?",
-                      "[presently]\n", ...)
+                  if (is.null(originalCoordinate)) "?" else originalCoordinate, "[originally],",
+                  if (is.null(oceCoordinate)) "?" else oceCoordinate, "[presently]\n", ...)
               cat("* Frequency:         ",
                   if ("frequency" %in% object@metadata) object@metadata$frequency else "?",
                   "kHz\n", ...)
@@ -624,7 +623,7 @@ setMethod(f="[[",
                       res <- x@data$g
                   }
                   res
-               } else if (i == "distance") {
+              } else if (i == "distance") {
                   instrumentType <- x@metadata$instrumentType
                   if (!is.null(instrumentType) && instrumentType == "AD2CP") {
                       ## AD2CP is stored in a tricky way.
@@ -638,8 +637,9 @@ setMethod(f="[[",
                   } else {
                       x@data$distance
                   }
-              } else if (i %in% c("accelerometerx", "accelerometery", "accelerometerz",
+              } else if (i %in% c("originalCoordinate", "oceCoordinate",
                                   "cellSize", "blankingDistance",
+                                  "accelerometerx", "accelerometery", "accelerometerz",
                                   "heading", "pitch", "roll",
                                   "ensemble", "time", "pressure", "soundSpeed",
                                   "temperature", "temperatureMagnetometer", "temperatureRTC",
@@ -659,7 +659,7 @@ setMethod(f="[[",
                   } else {
                       x@data[[i]]
                   }
-              } else if (i %in% c("numberOfBeams", "numberOfCells")) {
+              } else if (i %in% c("numberOfBeams", "numberOfCells", "coordinate")) {
                   ##message("AA i=", i)
                   instrumentType <- x@metadata$instrumentType
                   if (!is.null(instrumentType) && instrumentType == "AD2CP") {
@@ -707,8 +707,8 @@ setMethod(f="[[",
                       res <- x@data$vg
                   }
                   res
-              } else if (i == "coordinate") {
-                  res <- x@metadata$oceCoordinate
+              ##} else if (i == "coordinate") {
+              ##    res <- x@metadata$oceCoordinate
               } else {
                   callNextMethod()     # [[
               }
