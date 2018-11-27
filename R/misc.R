@@ -2546,6 +2546,9 @@ rotateAboutZ <- function(x, angle)
         stop("cannot rotate for class \"", class(x), "\"; try one of: \"",
              paste(allowedClasses, collapse="\" \""), "\")")
     if (inherits(x, "adp")) {
+        instrumentType <- x[["instrumentType"]]
+        if (!is.null(instrumentType) && instrumentType == "AD2CP")
+            stop("this function does not work yet for AD2CP data")
         if (x[["oceCoordinate"]] != "enu")
             stop("cannot rotate adp unless coordinate system is 'enu'; see ?toEnu or ?xyzToEnu")
         V <- x[["v"]]

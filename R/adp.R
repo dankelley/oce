@@ -646,10 +646,12 @@ setMethod(f="[[",
                                   "nominalCorrelation",
                                   "v", "a", "q")) {
                   instrumentType <- x@metadata$instrumentType
+                  metadataNames <- names(x@metadata)
+                  dataNames <- names(x@data)
                   if (!is.null(instrumentType) && instrumentType == "AD2CP") {
+                      message("AAA")
                       ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
                       if (missing(j)) { # default to 'average', if it exists, or to 'burst' if that exists, or fail.
-                          dataNames <- names(x@data)
                           j <- if ("average" %in% dataNames) "average" else if ("burst" %in% dataNames) "burst" else return(NULL)
                       }
                       ## don't let user specify an incorrect list (FIXME: document 'j' methodology)
@@ -657,11 +659,19 @@ setMethod(f="[[",
                           return(NULL)
                       x@data[[j]][[i]]
                   } else {
-                      x@data[[i]]
+                      if (!missing(j) && j == "numeric") {
+                          res <- x@data[[i]]
+                          dim <- dim(res)
+                          res <- as.numeric(res)
+                          dim(res) <- dim
+                          res
+                      } else {
+                          if (i %in% metadataNames) x@metadata[[i]] else x@data[[i]]
+                      }
                   }
-              } else if (i %in% c("numberOfBeams", "numberOfCells", "coordinate")) {
+              } else if (i %in% c("numberOfBeams", "numberOfCells")) {
                   ##message("AA i=", i)
-                  instrumentType <- x@metadata$instrumentType
+                  instrumentType <- x[["instrumentType"]]
                   if (!is.null(instrumentType) && instrumentType == "AD2CP") {
                       ##message("BB")
                       ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
@@ -3073,8 +3083,11 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adp"))
         stop("method is only for objects of class '", "adp", "'")
-    if (x@metadata$oceCoordinate != "enu")
-        stop("input must be in enu coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
+    if (!is.null(instrumentType) && instrumentType == "AD2CP")
+        stop("this function does not work yet for AD2CP data")
+    oceCoordinate <- x[["oceCoordinate"]]
+    if (oceCoordinate != "enu")
+        stop("input must be in enu coordinates, but it is in ", oceCoordinate, " coordinates")
     res <- x
     np <- dim(x[["v"]])[1]           # number of profiles
     if (length(heading) != np)
