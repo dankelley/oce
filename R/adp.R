@@ -614,7 +614,7 @@ setMethod(f="[[",
               ##     }
               ##     res
               if (i == "g") {
-                  if (!missing(j) && j == "numeric") {
+                  if (!missing(j) && 1 == length("numeric", j)) {
                       res <- x@data$g
                       dim <- dim(res)
                       res <- as.numeric(res)
@@ -624,7 +624,7 @@ setMethod(f="[[",
                   }
                   res
               } else if (i == "distance") {
-                  instrumentType <- x@metadata$instrumentType
+                  instrumentType <- x[["instrumentType"]]
                   if (!is.null(instrumentType) && instrumentType == "AD2CP") {
                       ## AD2CP is stored in a tricky way.
                       if (missing(j)) {
@@ -645,21 +645,44 @@ setMethod(f="[[",
                                   "temperature", "temperatureMagnetometer", "temperatureRTC",
                                   "nominalCorrelation",
                                   "v", "a", "q")) {
-                  instrumentType <- x@metadata$instrumentType
                   metadataNames <- names(x@metadata)
                   dataNames <- names(x@data)
+                  instrumentType <- x[["instrumentType"]]
                   if (!is.null(instrumentType) && instrumentType == "AD2CP") {
-                      message("AAA")
                       ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
+                      ## Permit e.g. "burst:numeric" and "burst numeric" ## FIXME: document this
+                      if (missing(j)) {
+                          j <- "average"
+                          jorig <- "(missing)"
+                      } else {
+                          jorig <- j
+                      }
+                      ##message("1. j = '", j, "'", sep="")
+                      numericMode <- 1 == length(grep("numeric", j))
+                      ##message("2. numericMode=", numericMode)
+                      j <- gsub("[: ]?numeric", "", j)
+                      ##message("3. j = '", j, "'", sep="")
                       if (missing(j)) { # default to 'average', if it exists, or to 'burst' if that exists, or fail.
                           j <- if ("average" %in% dataNames) "average" else if ("burst" %in% dataNames) "burst" else return(NULL)
                       }
-                      ## don't let user specify an incorrect list (FIXME: document 'j' methodology)
-                      if (!(j %in% c("average", "burst")))
-                          return(NULL)
-                      x@data[[j]][[i]]
+                      ##message("4. j = '", j, "'", sep="")
+                      ## Default to "average" if no mode specified
+                      if (1 == length(grep("^[ ]*$", j)))
+                          j <- "average"
+                      ##message("5. j = '", j, "'", sep="")
+                      if (j == "average" || j == "burst") {
+                          res <- x@data[[j]][[i]]
+                          if (numericMode) {
+                              dim <- dim(res)
+                              res <- as.numeric(res)
+                              dim(res) <- dim
+                          }
+                          res
+                      } else {
+                          stop("cannot decode j='", jorig, "'")
+                      }
                   } else {
-                      if (!missing(j) && j == "numeric") {
+                      if (!missing(j) && 1 == length("numeric", j)) {
                           res <- x@data[[i]]
                           dim <- dim(res)
                           res <- as.numeric(res)
@@ -688,7 +711,7 @@ setMethod(f="[[",
                       x@metadata[[i]]
                   }
               } else if (i == "va") {
-                  if (!missing(j) && j == "numeric") {
+                  if (!missing(j) && 1 == length("numeric", j)) {
                       res <- x@data$va
                       dim <- dim(res)
                       res <- as.numeric(res)
@@ -698,7 +721,7 @@ setMethod(f="[[",
                   }
                   res
               } else if (i == "vq") {
-                  if (!missing(j) && j == "numeric") {
+                  if (!missing(j) && 1 == length("numeric", j)) {
                       res <- x@data$vq
                       dim <- dim(res)
                       res <- as.numeric(res)
@@ -708,7 +731,7 @@ setMethod(f="[[",
                   }
                   res
               } else if (i == "vg") {
-                  if (!missing(j) && j == "numeric") {
+                  if (!missing(j) && 1 == length("numeric", j)) {
                       res <- x@data$vg
                       dim <- dim(res)
                       res <- as.numeric(res)
@@ -3083,6 +3106,7 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adp"))
         stop("method is only for objects of class '", "adp", "'")
+    instrumentType <- x[["instrumentType"]]
     if (!is.null(instrumentType) && instrumentType == "AD2CP")
         stop("this function does not work yet for AD2CP data")
     oceCoordinate <- x[["oceCoordinate"]]
