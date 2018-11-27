@@ -85,8 +85,11 @@ setMethod(f="summary",
               threes <- NULL
               if (ndata > 0) {
                   if ("instrumentType" %in% metadataNames && object@metadata$instrumentType=="AD2CP") {
-                      threes <- matrix(nrow=1, ncol=4)
+                      threes <- matrix(nrow=3, ncol=4)
+                      ## FIXME get burst and average separately
                       threes[1, ] <- threenum(object[["v"]])
+                      threes[2, ] <- threenum(object[["a"]])
+                      threes[3, ] <- threenum(object[["q"]])
                   } else {
                       threes <- matrix(nrow=ndata, ncol=4)
                       for (i in 1:ndata) {
@@ -145,7 +148,7 @@ setMethod(f="summary",
                   ##> message("units:");str(units)
                   if (!is.null(threes)) {
                       if ("instrumentType" %in% metadataNames && object@metadata$instrumentType=="AD2CP") {
-                          rownames(threes) <- "v"
+                          rownames(threes) <- c("v", "a", "q")
                       } else {
                           rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
                       }
