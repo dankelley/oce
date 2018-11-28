@@ -613,17 +613,18 @@ setMethod(f="[[",
               ##         res <- x@data$q
               ##     }
               ##     res
-              if (i == "g") {
-                  if (!missing(j) && 1 == length("numeric", j)) {
-                      res <- x@data$g
-                      dim <- dim(res)
-                      res <- as.numeric(res)
-                      dim(res) <- dim
-                  } else {
-                      res <- x@data$g
-                  }
-                  res
-              } else if (i == "distance") {
+              ## if (i == "g") {
+              ##     if (!missing(j) && 1 == length("numeric", j)) {
+              ##         res <- x@data$g
+              ##         dim <- dim(res)
+              ##         res <- as.numeric(res)
+              ##         dim(res) <- dim
+              ##     } else {
+              ##         res <- x@data$g
+              ##     }
+              ##     res
+              ##} else
+              if (i == "distance") {
                   instrumentType <- x[["instrumentType"]]
                   if (!is.null(instrumentType) && instrumentType == "AD2CP") {
                       ## AD2CP is stored in a tricky way.
@@ -644,7 +645,7 @@ setMethod(f="[[",
                                   "ensemble", "time", "pressure", "soundSpeed",
                                   "temperature", "temperatureMagnetometer", "temperatureRTC",
                                   "nominalCorrelation",
-                                  "v", "a", "q")) {
+                                  "v", "a", "q", "g")) {
                   metadataNames <- names(x@metadata)
                   dataNames <- names(x@data)
                   instrumentType <- x[["instrumentType"]]
@@ -657,7 +658,7 @@ setMethod(f="[[",
                       } else {
                           jorig <- j
                       }
-                      ##message("1. j = '", j, "'", sep="")
+                      ##message("1. j = '", j, "'; jorig='", jorig, "'", sep="")
                       numericMode <- 1 == length(grep("numeric", j))
                       ##message("2. numericMode=", numericMode)
                       j <- gsub("[: ]?numeric", "", j)
@@ -682,7 +683,7 @@ setMethod(f="[[",
                           stop("cannot decode j='", jorig, "'")
                       }
                   } else {
-                      if (!missing(j) && 1 == length("numeric", j)) {
+                      if (!missing(j) && 1 == length(grep("numeric", j))) {
                           res <- x@data[[i]]
                           dim <- dim(res)
                           res <- as.numeric(res)
