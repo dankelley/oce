@@ -624,7 +624,7 @@ setMethod(f="[[",
                   ##message("i=", i, ", j=", if (missing(j)) "(missing)" else j)
                   if (!is.null(C) && !missing(j)) {
                       if (!(j %in% c("", "ratio", "uS/cm", "mS/cm", "S/m")))
-                          stop("unknown conductivity unit \"", unit, "\"; must be \"\", \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
+                          stop("unknown conductivity unit \"", j, "\"; must be \"\", \"ratio\", \"uS/cm\", \"mS/cm\" or \"S/m\"")
                       if (j == "")
                           j <- "ratio" # lets us use switch()
                       unit <- metadata$units$conductivity$unit

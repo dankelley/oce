@@ -712,7 +712,7 @@ setMethod(f="[[",
                       x@metadata[[i]]
                   }
               } else if (i == "va") {
-                  if (!missing(j) && 1 == length("numeric", j)) {
+                  if (!missing(j) && 1 == length(grep("numeric", j))) {
                       res <- x@data$va
                       dim <- dim(res)
                       res <- as.numeric(res)
@@ -722,7 +722,7 @@ setMethod(f="[[",
                   }
                   res
               } else if (i == "vq") {
-                  if (!missing(j) && 1 == length("numeric", j)) {
+                  if (!missing(j) && 1 == length(grep("numeric", j))) {
                       res <- x@data$vq
                       dim <- dim(res)
                       res <- as.numeric(res)
@@ -732,7 +732,7 @@ setMethod(f="[[",
                   }
                   res
               } else if (i == "vg") {
-                  if (!missing(j) && 1 == length("numeric", j)) {
+                  if (!missing(j) && 1 == length(grep("numeric", j))) {
                       res <- x@data$vg
                       dim <- dim(res)
                       res <- as.numeric(res)
