@@ -444,10 +444,9 @@ setMethod(f="summary",
               cat("* Number of cells:   ", v.dim[2], "\n")
               cat("* Number of beams:   ", v.dim[3], "\n")
               cat("* Cell size:         ", object@metadata$cellSize, "m\n")
-              cat("* Table of time between profiles:\n")
-              dttable <- as.data.frame(table(diff(as.numeric(object@data$time))))
-              colnames(dttable) <- c("Seconds", "Count")
-              print(dttable, row.names=FALSE)
+              cat("* Summary of times between profiles:\n")
+              dttable <- summary(diff(as.numeric(object@data$time)))
+              print(dttable)
               if (1 == length(agrep("nortek", object@metadata$manufacturer, ignore.case=TRUE))) {
                   resSpecific <- list(internalCodeVersion=object@metadata$internalCodeVersion,
                                       hardwareRevision=object@metadata$hardwareRevision,
