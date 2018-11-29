@@ -477,6 +477,8 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     status <- vector("integer", N)
     activeConfiguration <- vector("integer", N)
     ensemble <- vector("numeric", N)
+    beam2xyzAverage <- NULL
+    beam2xyzBurst  <- NULL
 
     ## 1. get some things in fast vector-based form.
     pointer1 <- d$index
@@ -687,8 +689,56 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             burst$v[burst$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
             a <- d$buf[i+77 + 2*nn + seq(0, nn-1)]
             burst$a[burst$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+            ## Correlation data
             q <- d$buf[i+77 + 3*nn + seq(0, nn-1)]
             burst$q[burst$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+            ##? altimeterDistance <- readBin(d$buf[i+77+4*nn+seq(0, 3)], "numeric", size=4, n=1, endian="little")
+            ##? message("altimeterDistance: ", altimeterDistance)
+            ##? altimeterQuality <- readBin(d$buf[i+77+4*nn+4+seq(0, 1)], "integer", size=2, n=1, endian="little") # FLOAT
+            ##? message("altimeterQuality: ", altimeterQuality)
+            ##? altimeterStatus <- readBin(d$buf[i+77+4*nn+6+seq(0, 1)], "integer", size=2, n=1, endian="little")
+            ##? message("altimeterStatus: ", altimeterStatus)
+            ##? ASTdistance <- readBin(d$buf[i+77+4*nn+8+seq(0, 3)], "numeric", size=4, n=1, endian="little")
+            ##? message("ASTdistance: ", ASTdistance)
+
+            ## altimeter distance 4 bytes
+            ## altimeter quality 4 bytes
+            ## altimeter status 2 bytes
+            ## AST distance 4 bytes
+            ## AST quality 2 bytes
+            ## AST offset 100us 2 bytes
+            ## AST pressure 4 bytes
+            ## AST spare 8 bytes
+            ## AST raw data number of samples 4 bytes
+            ## AST raw data sample distance 2 bytes
+            ## AST raw data samples 2*NC bytes (OPTIONAL, I think)
+            ## (page 52. Why does it list a 3x3 matrix, whereas page 41 suggest 4x4?)
+            ## AHRS rotation matrix M11 4 bytes
+            ## AHRS rotation matrix M12 4 bytes
+            ## AHRS rotation matrix M13 4 bytes
+            ## AHRS rotation matrix M21 4 bytes
+            ## AHRS rotation matrix M22 4 bytes
+            ## AHRS rotation matrix M23 4 bytes
+            ## AHRS rotation matrix M31 4 bytes
+            ## AHRS rotation matrix M32 4 bytes
+            ## AHRS rotation matrix M33 4 bytes
+            ## lots more.
+            ## NOTE: matlab has e.g.
+            ## >> Data.BurstHR_AHRSRotationMatrix(1:2,:)
+            ##
+            ## ans =
+            ##
+            ##   2×9 single matrix
+            ##
+            ##   Columns 1 through 6
+            ##
+            ##    0.0606537  -0.3782397  -0.9236842   0.3150578  -0.8707919   0.3772714
+            ##    0.0607401  -0.3781854  -0.9237415   0.3150813  -0.8708751   0.3772591
+            ##
+            ##   Columns 7 through 9
+            ##
+            ##   -0.9470989  -0.3138947   0.0664139
+            ##   -0.9471254  -0.3139688   0.0662500
             burst$i <- burst$i + 1
             ## FIXME: read other fields
         } else if (d$id[ch] == 0x16) { # average

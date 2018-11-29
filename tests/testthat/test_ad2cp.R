@@ -113,6 +113,17 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
             expect_equal(d[["blankingDistance", "burst"]], 2.8)
 
 
+            context("beam2xyz")
+            ## > Config.avg_beam2xyz
+            beam2xyzAverageMatlab <- matrix(c(1.1831000,  0.00000000, -1.1831000, 0.0000000,
+                                              0.0000000, -1.1831000,   0.0000000, 1.1831000,
+                                              0.5518000,  0.00000000,  0.5518000, 0.0000000,
+                                              0.0000000,  0.5518000,   0.0000000, 0.5518000),
+                                            nrow=4, byrow=TRUE)
+            print("test_ad2cp.R below is the matrix from matlab\n")
+            print(beam2xyzAverageMatlab)
+
+
             context("nominalCorrelation")
             ## >> Data.BurstHR_NominalCor(1:10)
             nominalCorrelationBurstMatlab <- rep(100, 10)

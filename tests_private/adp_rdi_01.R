@@ -11,6 +11,7 @@ for (file in files) {
         if ("adp/rdi" == oceMagic(file)) {
             cat("is adp/rdi\n")
             d <- read.oce(file)
+            summary(d)
             n <- n + 1
         } else {
             cat("is not adp/rdi, so it is being skipped\n")
