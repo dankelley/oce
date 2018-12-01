@@ -720,6 +720,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         average <- list()
     }
     ## Fill up th arrays in a loop. This could also be vectorized, if it proves slow.
+    unhandled <- 0
     for (ch in 1:N) {
         id[ch] <- d$id[ch]
         if (d$id[ch] == 160) {
@@ -836,10 +837,12 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             }
             average$i <- average$i + 1
             ## FIXME: read other fields
-         } else {
-            stop("cannot decode data-record type '. Please contact the developers if you need this.", d$id[ch])
+        } else {
+            unhandled <- unhandled + 1
         }
     }
+    if (unhandled)
+        warning("skipped ", unhandled, " data records; only 'burst' (0x15), 'average' (0x16), and 'text' (0xa0) are handled (ask developer of you need others)\n")
     ## Clean lists of temporary index.
     if (length(burst))
         burst$i <- NULL
