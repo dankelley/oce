@@ -163,6 +163,70 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
             expect_equal(d[["accelerometerz", "burst"]][1:10], acczBurstMatlab, tolerance=1e-6)
 
 
+            context("burst velocity")
+            ## >> Data.BurstHR_VelBeam5(1,1:10)
+            ## Note that bursts store in beam 5.
+            expect_equal(d[["v", "burst"]][1, 1:4, 1], c(0.36240, 0.35830, 0.36430, 0.20590))
+
+
+            context("average velocity")
+            ## >> Data.Average_VelBeam1(1,1:4)
+            expect_equal(d[["v"]][1, 1:4, 1], c(-0.8170, -0.8890, -1.9170, -2.1110))
+            expect_equal(d[["v", "average"]][1, 1:4, 1], c(-0.8170, -0.8890, -1.9170, -2.1110))
+            ##>> Data.Average_VelBeam1(2,1:4)
+            expect_equal(d[["v", "average"]][2, 1:4, 1], c(-0.7800, -2.3230, -1.0840, -0.8010))
+            ## >> Data.Average_VelBeam2(1,1:4)
+            expect_equal(d[["v", "average"]][1, 1:4, 2], c(-0.1630,  1.6930,  1.8490,  1.1120))
+            ##>> Data.Average_VelBeam2(2,1:4)
+            expect_equal(d[["v", "average"]][2, 1:4, 2], c(-0.6340,  1.4590,  1.9590,  0.9400))
+            ##>> Data.Average_VelBeam3(1,1:4)
+            expect_equal(d[["v", "average"]][1, 1:4, 3], c(-1.5600,  1.4140,  1.5630,   1.5510))
+
+
+            context("burst amplitude")
+            ##>> Data.BurstHR_AmpBeam5(1:4,1,1)
+            expect_equal(0.5 * d[['a','burst numeric']][1:4, 1, 1], c(34.0, 34.0, 36.0, 34.0))
+            ## >> Data.BurstHR_AmpBeam5(1:4,2,1)
+            expect_equal(0.5 * d[['a','burst numeric']][1:4, 2, 1], c(34.5000, 35.0000, 36.5000, 35.0000))
+            ## >> Data.BurstHR_AmpBeam5(1:4,3,1)
+            expect_equal(0.5 * d[['a','burst numeric']][1:4, 3, 1], c(34.5000, 35.5000, 37.5000, 34.0000))
+                         ## >> Data.BurstHR_AmpBeam5(1:4,4,1)
+            expect_equal(0.5 * d[['a','burst numeric']][1:4, 4, 1], c(35.0000, 37.5000, 36.0000, 36.5000))
+
+
+            context("average amplitude")
+            ##>> Data.Average_AmpBeam1(1:4,1,1)
+            expect_equal(0.5 * d[['a','numeric']][1:4, 1, 1], c(43.5000, 42.5000, 44.0000, 43.0000))
+            expect_equal(0.5 * d[['a','average numeric']][1:4, 1, 1], c(43.5000, 42.5000, 44.0000, 43.0000))
+            ##>> Data.Average_AmpBeam1(1:4,2,1)
+            expect_equal(0.5 * d[['a','average numeric']][1:4, 2, 1], c(40.0000, 40.0000, 39.5000, 39.5000))
+            ##>> Data.Average_AmpBeam1(1:4,3,1)
+            expect_equal(0.5 * d[['a','average numeric']][1:4, 3, 1], c(39.5000, 40.0000, 39.5000, 40.0000))
+
+
+            context("burst correlation")
+            ##>> Data.BurstHR_CorBeam5(1:4,1)
+            expect_equal(d[["q", "burst numeric"]][1:4, 1, 1], c(72, 81, 63, 78))
+            ##>> Data.BurstHR_CorBeam5(1:4,2)
+            expect_equal(d[["q", "burst numeric"]][1:4, 2, 1], c(76, 49, 89, 79))
+            ##>> Data.BurstHR_CorBeam5(1:4,3)
+            expect_equal(d[["q", "burst numeric"]][1:4, 3, 1], c(91, 76, 70, 72))
+
+
+            context("average correlation")
+            ##>> Data.Average_CorBeam1(1:4,1)
+            expect_equal(d[["q", "numeric"]][1:4, 1, 1], c(49, 44, 36, 44 ))
+            expect_equal(d[["q", "average numeric"]][1:4, 1, 1], c(49, 44, 36, 44))
+            ##>> Data.Average_CorBeam1(1:4,2)
+            expect_equal(d[["q", "average numeric"]][1:4, 2, 1], c( 7,  4,  5,  3))
+            ##>> Data.Average_CorBeam2(1:4,1)
+            expect_equal(d[["q", "average numeric"]][1:4, 1, 2], c(19,  3,  3,  3))
+            ##>> Data.Average_CorBeam3(1:4,1)
+            expect_equal(d[["q", "average numeric"]][1:4, 1, 3], c( 4, 11,  8, 15))
+            ##>> Data.Average_CorBeam4(1:4,1)
+            expect_equal(d[["q", "average numeric"]][1:4, 1, 4], c(38, 53, 71, 66))
+
+
             if (TRUE) {
               warning("skipping powerlevel (not coded yet)")
             } else {
@@ -177,58 +241,6 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
               transmitEnergyMatlab <- c(4, 0, 4, 4, 4,
                                         4, 4, 4, 4, 0)
               expect_equal(d[["transmitEnergy"]][burstID][1:10], transmitEnergyMatlab)
-            }
-
-            if (TRUE) {
-              warning("several velo tests -- do we already have them, though?")
-            } else {
-              ## Ensemble 2 is "burst" mode (beam5)
-              ## >> Data.BurstHR_VelBeam5(1,1:10)
-              v <- oceGetData(d, "v") # NOT the same as d[["v"]]
-              vv <- c(0.36240, 0.35830, 0.36430, 0.20590, 0.35690, 0.35650, 0.35730, 0.36090, 0.36390, 0.36600)
-              expect_equal(d@data$v[[2]][1:10], vv, tolerance=1e-5)
-              expect_equal(v[[2]][1:10], vv, tolerance=1e-5)
-
-              ## Ensemble 3 is in "average" mode.
-              ## >> Data.Average_VelBeam1(1,1:10)
-              vv <- c(-0.81700,-0.88900,-1.91700,-2.11100,-1.00000,-2.08900,-1.54000,-0.85800,-1.93400,-1.56100)
-              expect_equal(v[[3]][1:10,1], vv)
-
-              ## >> Data.Average_VelBeam2(1,1:10)
-              vv <- c(-0.16300,1.69300,1.84900,1.11200,1.57300,-1.50400,1.60000,-2.52800,1.72100,1.68400)
-              expect_equal(v[[3]][1:10,2], vv)
-
-              ## >> Data.Average_VelBeam3(1,1:10)
-              vv <- c(-1.56000,1.41400,1.56300,1.55100,-0.32300,-1.27200,-2.11300,-1.28600,-2.36900,-2.38800)
-              expect_equal(v[[3]][1:10,3], vv)
-
-              ## >> Data.Average_VelBeam4(1,1:10)
-              vv <- c(-0.079000,1.522000,1.587000,1.702000,1.674000,1.230000,2.855000,2.999000,2.913000,1.486000)
-              expect_equal(v[[3]][1:10,4], vv)
-
-
-              ## Ensemble 2 is burst mode.
-              ## The bursts are just beam 5.
-              ## >> Data.BurstHR_VelBeam5(1,1:10)
-              vv <- c(0.36240, 0.35830, 0.36430, 0.20590, 0.35690, 0.35650, 0.35730, 0.36090, 0.36390, 0.36600)
-              expect_equal(d@data$v[[2]][1:10], vv, tolerance=1e-5)
-
-              ## Ensemble 3 is average mode.
-              ## >> Data.Average_VelBeam1(1,1:10)
-              vv <- c(-0.81700,-0.88900,-1.91700,-2.11100,-1.00000,-2.08900,-1.54000,-0.85800,-1.93400,-1.56100)
-              expect_equal(d@data$v[[3]][1:10,1], vv, tolerance=1e-5)
-
-              ## >> Data.Average_VelBeam2(1,1:10)
-              vv <- c(-0.16300,1.69300,1.84900,1.11200,1.57300,-1.50400,1.60000,-2.52800,1.72100,1.68400)
-              expect_equal(d@data$v[[3]][1:10,2], vv, tolerance=1e-5)
-
-              ## >> Data.Average_VelBeam3(1,1:10)
-              vv <- c(-1.56000,1.41400,1.56300,1.55100,-0.32300,-1.27200,-2.11300,-1.28600,-2.36900,-2.38800)
-              expect_equal(d@data$v[[3]][1:10,3], vv, tolerance=1e-5)
-
-              ## >> Data.Average_VelBeam4(1,1:10)
-              vv <- c(-0.079000,1.522000,1.587000,1.702000,1.674000,1.230000,2.855000,2.999000,2.913000,1.486000)
-              expect_equal(d@data$v[[3]][1:10,4], vv, tolerance=1e-5)
             }
           }
 })

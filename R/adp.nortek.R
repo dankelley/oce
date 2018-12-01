@@ -417,7 +417,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     headerSize <- as.integer(buf[2])
     oceDebug(debug, "headerSize:", headerSize, "\n")
     ID <- buf[3]
-    oceDebug(debug, "ID: 0x", ID, " (NB: 0x15=burst data record; 0x16=avg data record; 0x17=bottom track record; 0x18=interleaved data record; 0xa0=string data record, e.g. GPS NMEA, comment from the FWRITE command\n", sep="")
+    oceDebug(debug, "ID: 0x", ID, " (NB: 0x15=burst data record; 0x16=avg data record; 0x17=bottom track record; 0x18=interleaved data record; 0xa0=string data record, e.g. GPS NMEA, comment from the FWRITE command)\n", sep="")
     dataSize <- readBin(buf[5:6], what="integer", n=1, size=2, endian="little", signed=FALSE)
     oceDebug(debug, "dataSize:", dataSize, "\n")
     ## if (ID == 0xa0) {
@@ -479,25 +479,74 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ensemble <- vector("numeric", N)
     beam2xyzAverage <- NULL
     beam2xyzBurst  <- NULL
+    ## Serial number. (It may also be in text records, but it is hard
+    ## to imagine data without non-text records, and I know for sure this is
+    ## in both average and burst records.
+    ## FIXME: see if next will always work for serial number.
+    firstData <- which(d$id != 160)[1]
+    serialNumber <- readBin(d$buf[d$index[firstData]+5:8], "integer", size=4, endian="little")
 
-    ## 1. get some things in fast vector-based form.
+    ## Create pointers for accessing 1-byte, 2-byte, and 4-byte chunks
     pointer1 <- d$index
     pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
     pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
+
+    ## "Version" in nortek docs [1 page 48]. FIXME: is this present in other data types?
     version <- as.integer(d$buf[pointer1 + 1])
-    firstData <- which(d$id != 160)[1]
-    serialNumber <- readBin(d$buf[d$index[firstData]+5:8], "integer", size=4, endian="little")
-    ## Construct pointers for indexing 1-byte and 2-byte quantities
-    ## NOTE: the 100usec part of time sometimes exceeds 1s, when multiplied by 1e4. But we get
-    ## the same result as matlab in a test file, so I won't worry about this, assuming instead
-    ## that this is a quirk of the nortek setup.
+
+    ## 1. get some things in fast vector-based form.
+
+    ## 'Configuration' in nortek docs [1 page 48, table 6.1.2]. Put bits in a
+    ## logical matrix with rows corresponding to data records. In the docs,
+    ## bits are counted from 0, so e.g. 'bit 0' indicates whether pressure is
+    ## valid, in the docs.
+    configuration <- rawToBits(d$buf[pointer2 + 3]) == 0x01
+    dim(configuration) <- c(16, N)
+    configuration <- t(configuration)
+    ## Extract columns as simply-named flags, for convenience.
+    pressureValid <- configuration[, 1]
+    temperatureValid <- configuration[, 2]
+    compassValid <- configuration[, 3]
+    tiltValid <- configuration[, 4]
+    ## configuration[, 5] -
+    velocityIncluded <- configuration[, 6]
+    amplitudeIncluded <- configuration[, 7]
+    correlationIncluded <- configuration[, 8]
+    altimeterIncluded <- configuration[, 9]
+    altimeterRawIncluded <- configuration[,10]
+    ASTIncluded <- configuration[,11]
+    echoSounderIncluded <- configuration[,12]
+    AHRSIncluded <- configuration[,13]
+    percentGoodIncluded<- configuration[,14]
+    stdDevIncluded <- configuration[,15]
+    ## configuration[, 16] Unused
+    rm(configuration)                  # prune namespace for clarity
+    oceDebug(debug, "velocityIncluded:     ", paste(head(velocityIncluded), collapse=" "), "\n")
+    oceDebug(debug, "amplitudeIncluded:    ", paste(head(amplitudeIncluded), collapse=" "), "\n")
+    oceDebug(debug, "correlationIncluded:  ", paste(head(correlationIncluded), collapse=" "), "\n")
+    oceDebug(debug, "altimeterIncluded:    ", paste(head(altimeterIncluded), collapse=" "), "\n")
+    oceDebug(debug, "altimeterRawIncluded: ", paste(head(altimeterRawIncluded), collapse=" "), "\n")
+    oceDebug(debug, "ASTIncluded:          ", paste(head(ASTIncluded), collapse=" "), "\n")
+    oceDebug(debug, "echoSounderIncluded:  ", paste(head(echoSounderIncluded), collapse=" "), "\n")
+    oceDebug(debug, "AHRSIncluded:         ", paste(head(AHRSIncluded), collapse=" "), "\n")
+    oceDebug(debug, "percentGoodIncluded:  ", paste(head(percentGoodIncluded), collapse=" "), "\n")
+    oceDebug(debug, "stdDevIncluded:       ", paste(head(stdDevIncluded), collapse=" "), "\n")
+
+
+    ## Now, start decoding actual data.
+
+    ## Decode time. Note that the 100usec part sometimes exceeds 1s, when
+    ## multiplied by 1e4.  But we get the same result as nortek-supplied matlab
+    ## code in a test file, so I won't worry about this, assuming instead that
+    ## this is a quirk of the nortek setup.
     time <- ISOdatetime(year=1900+ as.integer(d$buf[pointer1 + 9]),
-                        month=1+ as.integer(d$buf[pointer1 + 10]), # starts at 0, based on matlab valueults
+                        month=1+as.integer(d$buf[pointer1 + 10]),
                         day=as.integer(d$buf[pointer1 + 11]),
                         hour=as.integer(d$buf[pointer1 + 12]),
                         min=as.integer(d$buf[pointer1 + 13]),
                         sec=as.integer(d$buf[pointer1 + 14]) +
-                        1e-4 * readBin(d$buf[pointer2 + 15], "integer", size=2, n=N, signed=FALSE, endian="little"),
+                        1e-4 * readBin(d$buf[pointer2 + 15],
+                                       "integer", size=2, n=N, signed=FALSE, endian="little"),
                         tz="UTC")
     soundSpeed <- 0.1 * readBin(d$buf[pointer2 + 17], "integer", size=2, n=N, signed=FALSE, endian="little")
     temperature <- 0.01 * readBin(d$buf[pointer2 + 19], "integer", size=2, n=N, signed=FALSE, endian="little")
@@ -506,11 +555,11 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     pitch <- 0.01 * readBin(d$buf[pointer2 + 27], "integer", size=2, n=N, endian="little")
     roll <- 0.01 * readBin(d$buf[pointer2 + 29], "integer", size=2, n=N, endian="little")
     ## BCC uses packed bits to hold info on # beams, coordinate-system, and # cells.
-    ## "N3015-007 Integrators Guide AD2CP.pdf" page 49 indicates 2 cases:
+    ## [1 page 49] indicates 2 cases:
     ## case 1: Standard bit 9-0 ncell; bit 11-10 coord (00=enu, 01=xyz, 10=beam, 11=NA); bit 15-12 nbeams
     ## case 2: bit 15-0 number of echo sounder cells
-    ## We set this up as a matrix of 0s and 1s, with rows corresponding to times, for easy
-    ## transformation into integers.
+    ## As for 'configuration' above, we set this up as a matrix of 0s and 1s,
+    ## with rows corresponding to times, for easy transformation into integers.
     BCC <- ifelse(0x01 == rawToBits(d$buf[pointer2 + 31]), 1, 0)
     dim(BCC) <- c(16, N)
     BCC <- t(BCC)
@@ -682,16 +731,32 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ncol <- burst$numberOfBeams
             nrow <- burst$numberOfCells
             n <- ncol * nrow
-            nn <- 2 * n
-            ## FIXME: is next proper? I don't see why the 2*nn.
-            ## v <- velocityFactor[ch]*readBin(d$buf[i+77+seq(0,2*nn-1)],"integer",size=2,n=n,endian="little")
-            v <- velocityFactor[ch]*readBin(d$buf[i+77+seq(0,nn-1)],"integer",size=2,n=n,endian="little")
-            burst$v[burst$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
-            a <- d$buf[i+77 + 2*nn + seq(0, nn-1)]
-            burst$a[burst$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+            n2 <- 2 * n
+            i0 <- 77
+            if (velocityIncluded[ch]) {
+                v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
+                burst$v[burst$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n2
+            } else {
+                stop("at ch=", ch, " how can velocityIncluded be false?")
+            }
+            if (amplitudeIncluded[ch]) {
+                a <- d$buf[i + i0 + seq(0, n-1)]
+                burst$a[burst$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n
+            } else {
+                stop("at ch=", ch, " how can amplitudeIncluded be false?")
+            }
+            if (correlationIncluded[ch]) {
+                q <- d$buf[i + i0 + seq(0, n-1)]
+                burst$q[burst$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n
+            } else {
+                stop("at ch=", ch, " how can correlationIncluded be false?")
+            }
+
+
             ## Correlation data
-            q <- d$buf[i+77 + 3*nn + seq(0, nn-1)]
-            burst$q[burst$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
             ##? altimeterDistance <- readBin(d$buf[i+77+4*nn+seq(0, 3)], "numeric", size=4, n=1, endian="little")
             ##? message("altimeterDistance: ", altimeterDistance)
             ##? altimeterQuality <- readBin(d$buf[i+77+4*nn+4+seq(0, 1)], "integer", size=2, n=1, endian="little") # FLOAT
@@ -746,15 +811,29 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ncol <- average$numberOfBeams
             nrow <- average$numberOfCells
             n <- ncol * nrow
-            nn <- 2 * n
-            ## FIXME: is next proper? I don't see why the 2*nn.
-            ## v <- velocityFactor[ch]*readBin(d$buf[i+77+seq(0,2*nn-1)],"integer",size=2,n=n,endian="little")
-            v <- velocityFactor[ch]*readBin(d$buf[i+77+seq(0,nn-1)],"integer",size=2,n=n,endian="little")
-            average$v[average$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
-            a <- d$buf[i+77 + 2*nn + seq(0, nn-1)]
-            average$a[average$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
-            q <- d$buf[i+77 + 3*nn + seq(0, nn-1)]
-            average$q[average$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+            n2 <- 2 * n
+            i0 <- 77
+            if (velocityIncluded[ch]) {
+                v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
+                average$v[average$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n2
+            } else {
+                stop("at ch=", ch, " how can velocityIncluded be false?")
+            }
+            if (amplitudeIncluded[ch]) {
+                a <- d$buf[i + i0 + seq(0, n-1)]
+                average$a[average$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n
+            } else {
+                stop("at ch=", ch, " how can amplitudeIncluded be false?")
+            }
+            if (correlationIncluded[ch]) {
+                q <- d$buf[i + i0 + seq(0, n-1)]
+                average$q[average$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n
+            } else {
+                stop("at ch=", ch, " how can correlationIncluded be false?")
+            }
             average$i <- average$i + 1
             ## FIXME: read other fields
          } else {
