@@ -12,7 +12,7 @@
 
 <meta name="author" content="Dan Kelley (https://orcid.org/0000-0001-7808-5911) and Clark Richards (https://orcid.org/0000-0002-7833-206X)" />
 
-<meta name="date" content="2018-11-28" />
+<meta name="date" content="2018-12-02" />
 
 <title>Oce</title>
 
@@ -278,7 +278,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Oce</h1>
 <h4 class="author"><em>Dan Kelley (<a href="https://orcid.org/0000-0001-7808-5911" class="uri">https://orcid.org/0000-0001-7808-5911</a>) and Clark Richards (<a href="https://orcid.org/0000-0002-7833-206X" class="uri">https://orcid.org/0000-0002-7833-206X</a>)</em></h4>
-<h4 class="date"><em>2018-11-28</em></h4>
+<h4 class="date"><em>2018-12-02</em></h4>
 
 
 <div id="TOC">
@@ -674,7 +674,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb30-5" data-line-number="5"><span class="co">#&gt;   .. ..$ flags: list()</span></a>
 <a class="sourceLine" id="cb30-6" data-line-number="6"><span class="co">#&gt;   ..@ data         : list()</span></a>
 <a class="sourceLine" id="cb30-7" data-line-number="7"><span class="co">#&gt;   ..@ processingLog:List of 2</span></a>
-<a class="sourceLine" id="cb30-8" data-line-number="8"><span class="co">#&gt;   .. ..$ time : POSIXct[1:1], format: &quot;2018-11-28 06:54:14.961&quot;</span></a>
+<a class="sourceLine" id="cb30-8" data-line-number="8"><span class="co">#&gt;   .. ..$ time : POSIXct[1:1], format: &quot;2018-12-02 10:36:27.074&quot;</span></a>
 <a class="sourceLine" id="cb30-9" data-line-number="9"><span class="co">#&gt;   .. ..$ value: chr &quot;Create oce object&quot;</span></a></code></pre></div>
 <p>As noted previously, it’s possible to insert <code>t</code>, <code>u</code>, and <code>v</code> directly into the <code>data</code> slot, but it’s better to use <code>oceSetData</code> to do that, because it can set up units, and it leaves a trail in the processing log.</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1">o &lt;-<span class="st"> </span><span class="kw">oceSetData</span>(o, <span class="st">&quot;t&quot;</span>, t, <span class="kw">list</span>(<span class="dt">unit=</span><span class="kw">expression</span>(s), <span class="dt">scale=</span><span class="st">&quot;&quot;</span>))</a>
@@ -693,12 +693,12 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb33-7" data-line-number="7"><span class="co">#&gt;     v [m/s] -0.49996   -0.0048211 0.49998    193  -           </span></a>
 <a class="sourceLine" id="cb33-8" data-line-number="8"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb33-9" data-line-number="9"><span class="co">#&gt; * Processing Log</span></a>
-<a class="sourceLine" id="cb33-10" data-line-number="10"><span class="co">#&gt;     - 2018-11-28 06:54:14.961 UTC: `Create oce object`</span></a>
-<a class="sourceLine" id="cb33-11" data-line-number="11"><span class="co">#&gt;     - 2018-11-28 06:56:14.367 UTC: `oceSetData(object = o, name = &quot;t&quot;, value = t, unit = list(unit = expression(s),     scale = &quot;&quot;))`</span></a>
-<a class="sourceLine" id="cb33-12" data-line-number="12"><span class="co">#&gt;     - 2018-11-28 06:56:14.368 UTC: `oceSetData(object = o, name = &quot;u&quot;, value = u, unit = list(unit = expression(m/s),     scale = &quot;&quot;))`</span></a>
-<a class="sourceLine" id="cb33-13" data-line-number="13"><span class="co">#&gt;     - 2018-11-28 06:56:14.370 UTC: `oceSetData(object = o, name = &quot;v&quot;, value = v, unit = list(unit = expression(m/s),     scale = &quot;&quot;))`</span></a>
-<a class="sourceLine" id="cb33-14" data-line-number="14"><span class="co">#&gt;     - 2018-11-28 06:56:14.378 UTC: `oceSetMetadata(object = o, name = &quot;longitude&quot;, value = lon)`</span></a>
-<a class="sourceLine" id="cb33-15" data-line-number="15"><span class="co">#&gt;     - 2018-11-28 06:56:14.380 UTC: `oceSetMetadata(object = o, name = &quot;latitude&quot;, value = lat)`</span></a></code></pre></div>
+<a class="sourceLine" id="cb33-10" data-line-number="10"><span class="co">#&gt;     - 2018-12-02 10:36:27.074 UTC: `Create oce object`</span></a>
+<a class="sourceLine" id="cb33-11" data-line-number="11"><span class="co">#&gt;     - 2018-12-02 10:45:24.835 UTC: `oceSetData(object = o, name = &quot;t&quot;, value = t, unit = list(unit = expression(s),     scale = &quot;&quot;))`</span></a>
+<a class="sourceLine" id="cb33-12" data-line-number="12"><span class="co">#&gt;     - 2018-12-02 10:45:24.837 UTC: `oceSetData(object = o, name = &quot;u&quot;, value = u, unit = list(unit = expression(m/s),     scale = &quot;&quot;))`</span></a>
+<a class="sourceLine" id="cb33-13" data-line-number="13"><span class="co">#&gt;     - 2018-12-02 10:45:24.839 UTC: `oceSetData(object = o, name = &quot;v&quot;, value = v, unit = list(unit = expression(m/s),     scale = &quot;&quot;))`</span></a>
+<a class="sourceLine" id="cb33-14" data-line-number="14"><span class="co">#&gt;     - 2018-12-02 10:45:24.849 UTC: `oceSetMetadata(object = o, name = &quot;longitude&quot;, value = lon)`</span></a>
+<a class="sourceLine" id="cb33-15" data-line-number="15"><span class="co">#&gt;     - 2018-12-02 10:45:24.850 UTC: `oceSetMetadata(object = o, name = &quot;latitude&quot;, value = lat)`</span></a></code></pre></div>
 <p>and individual data components may be extracted with the <code>[[</code> notation</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1">o[[<span class="st">&quot;latitude&quot;</span>]]                        <span class="co"># from metadata</span></a>
 <a class="sourceLine" id="cb34-2" data-line-number="2"><span class="co">#&gt; [1] -30</span></a>
@@ -766,7 +766,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb40-11" data-line-number="11"><span class="co">#&gt;     v [m/s] -0.49996 -0.0048211 0.49998 193  -           </span></a>
 <a class="sourceLine" id="cb40-12" data-line-number="12"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb40-13" data-line-number="13"><span class="co">#&gt; * Processing Log</span></a>
-<a class="sourceLine" id="cb40-14" data-line-number="14"><span class="co">#&gt;     - 2018-11-28 06:56:14.656 UTC: `create 'uv' object`</span></a>
+<a class="sourceLine" id="cb40-14" data-line-number="14"><span class="co">#&gt;     - 2018-12-02 10:45:25.337 UTC: `create 'uv' object`</span></a>
 <a class="sourceLine" id="cb40-15" data-line-number="15"><span class="co">#&gt; NULL</span></a></code></pre></div>
 <p>Finally, let’s make a custom method for <code>plot</code>. This is usually the most complicated part of handling any new object class, because there are usually many ways to look at data. (Some <code>oce</code> objects have over a dozen specialized plot styles.) Let’s suppose there are only two desired plot styles: one showing timeseries of <code>u</code> and <code>v</code> in a two panel plot, and the other showing how <code>u</code> and <code>v</code> covary.</p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1"><span class="kw">setMethod</span>(<span class="dt">f=</span><span class="st">&quot;plot&quot;</span>,</a>
