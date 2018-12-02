@@ -597,7 +597,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Limitations
     if (1 < length(unique(activeConfiguration)))
         stop("cannot handle more than 1 active configuration. Please contact the developers, if you need this.")
-    ## Record codes [1, sec 6.1, page 47]
+    ## Record-type codes [1, sec 6.1, page 47]:
     ## 0x15 – Burst Data Record.
     ## 0x16 – Average Data Record.
     ## 0x17 – Bottom Track Data Record.
@@ -609,125 +609,120 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## 0x1E - Altimeter Record.
     ## 0x1F - Avg Altimeter Raw Record.
     ## 0xA0 - String Data Record, eg. GPS NMEA data, comment from the FWRITE command.
-    burstPointer <- which(d$id==0x15)
-    averagePointer <- which(d$id==0x16)
-    bottomTrackPointer <- which(d$id==0x17)
-    interleavedBurstPointer <- which(d$id==0x18)
-    burstAltimeterPointer <- which(d$id==0x1a)
-    DVLBottomTrackPointer <- which(d$id==0x1b)
-    echosounderPointer <- which(d$id==0x1c)
-    waterTrackPointer <- which(d$id==0x1d)
-    altimeterPointer <- which(d$id==0x1e)
-    averageAltimeterPointer <- which(d$id==0x1f)
-    stringPointer <- which(d$id==0xa0)
-
-    res@metadata$recordCount <- list(burst=sum(d$id == 0x15),
-                                     average=sum(d$id == 0x16),
-                                     bottomTrack=sum(d$id == 0x17),
-                                     interleavedBurst=sum(d$id == 0x18),
-                                     burstAltimeter=sum(d$id == 0x1a),
-                                     DVLBottomTrack=sum(d$id == 0x1b),
-                                     echosounder=sum(d$id == 0x1c),
-                                     waterTrack=sum(d$id == 0x1d),
-                                     altimeter=sum(d$id == 0x1e),
-                                     averageAltimeter=sum(d$id == 0x1f),
-                                     string=sum(d$id == 0xa0))
+    p <- list(burst=which(d$id==0x15),
+              average=which(d$id==0x16),
+              bottomTrack=which(d$id==0x17),
+              interleavedBurst=which(d$id==0x18),
+              burstAltimeter=which(d$id==0x1a),
+              DVLBottomTrack=which(d$id==0x1b),
+              echosounder=which(d$id==0x1c),
+              waterTrack=which(d$id==0x1d),
+              altimeter=which(d$id==0x1e),
+              averageAltimeter=which(d$id==0x1f),
+              text=which(d$id==0xa0))
+    res@metadata$recordCount <- lapply(p, length)
     ## Inform the user of things we don't attempt to read, and invite them to ask for new capabilities.
     for (n in c("bottomTrack", "interleavedBurst", "burstAltimeter",
                 "DVLBottomTrack", "echosounder", "waterTrack", "altimeter",
                 "averageAltimeter")) {
-        if (res@metadata$recordCount[n] > 0) {
-            warning("ignoring ", res@metadata$recordCount[n], " '", n, "' data records (plae contact the developers, if you need this type)\n", sep="")
+        if (res@metadata$recordCount[[n]] > 0) {
+            warning("this version of read.ad2cp() cannot handle the ", res@metadata$recordCount[[n]], " instances of data-type '", n, "'. Pplease contact the developers, if this is a problem for you.\n", sep="")
         }
     }
     ## 2. get some things in slow index-based form.
-    pBurst <- which(d$id==0x15)        # pointer
-    if (length(pBurst) > 0) {
-        if (any(version[pBurst] != 3))
+    if (length(p$burst) > 0) {
+        if (any(version[p$burst] != 3))
             stop("can only decode 'burst' data records that are in 'version 3' format")
-        nbeamsBurst <- nbeams[pBurst[1]]
-        ncellsBurst <- ncells[pBurst[1]]
+        nbeamsBurst <- nbeams[p$burst[1]]
+        ncellsBurst <- ncells[p$burst[1]]
         oceDebug(debug, "burst data records: nbeams:", nbeamsBurst, ", ncells:", ncellsBurst, "\n")
-        if (any(ncells[pBurst] != ncellsBurst))
+        if (any(ncells[p$burst] != ncellsBurst))
             stop("the 'burst' data records do not all have the same number of cells")
-        if (any(nbeams[pBurst] != nbeamsBurst))
+        if (any(nbeams[p$burst] != nbeamsBurst))
             stop("the 'burst' data records do not all have the same number of beams")
         ## FIXME: read other fields to the following list.
         burst <- list(i=1,
                       numberOfCells=ncellsBurst,
                       numberOfBeams=nbeamsBurst,
-                      originalCoordinate=coordinateSystem[pBurst[1]],
-                      oceCoordinate=coordinateSystem[pBurst[1]],
-                      cellSize=cellSize[pBurst[1]],
-                      blankingDistance=blankingDistance[pBurst[1]],
-                      ensemble=ensemble[pBurst],
-                      time=time[pBurst],
-                      heading=heading[pBurst],
-                      pitch=pitch[pBurst],
-                      roll=roll[pBurst],
-                      pressure=pressure[pBurst],
-                      temperature=temperature[pBurst],
-                      temperatureMagnetometer=temperatureMagnetometer[pBurst],
-                      temperatureRTC=temperatureRTC[pBurst],
-                      soundSpeed=soundSpeed[pBurst],
-                      accelerometerx=accelerometerx[pBurst],
-                      accelerometery=accelerometery[pBurst],
-                      accelerometerz=accelerometerz[pBurst],
-                      nominalCorrelation=nominalCorrelation[pBurst],
-                      v=array(double(), dim=c(length(pBurst), ncellsBurst, nbeamsBurst)),
-                      a=array(raw(), dim=c(length(pBurst), ncellsBurst, nbeamsBurst)),
-                      q=array(raw(), dim=c(length(pBurst), ncellsBurst, nbeamsBurst)))
+                      originalCoordinate=coordinateSystem[p$burst[1]],
+                      oceCoordinate=coordinateSystem[p$burst[1]],
+                      cellSize=cellSize[p$burst[1]],
+                      blankingDistance=blankingDistance[p$burst[1]],
+                      ensemble=ensemble[p$burst],
+                      time=time[p$burst],
+                      heading=heading[p$burst],
+                      pitch=pitch[p$burst],
+                      roll=roll[p$burst],
+                      pressure=pressure[p$burst],
+                      temperature=temperature[p$burst],
+                      temperatureMagnetometer=temperatureMagnetometer[p$burst],
+                      temperatureRTC=temperatureRTC[p$burst],
+                      soundSpeed=soundSpeed[p$burst],
+                      accelerometerx=accelerometerx[p$burst],
+                      accelerometery=accelerometery[p$burst],
+                      accelerometerz=accelerometerz[p$burst],
+                      nominalCorrelation=nominalCorrelation[p$burst],
+                      v=array(double(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst)),
+                      a=array(raw(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst)),
+                      q=array(raw(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst)))
     } else {
         burst <- list()
     }
-    pAverage <- which(d$id==0x16)        # pointer
-    if (length(pAverage) > 0) {
-        if (any(version[pAverage] != 3))
+    if (length(p$average) > 0) {
+        if (any(version[p$average] != 3))
             stop("can only decode 'average' data records that are in 'version 3' format")
-        nbeamsAverage <- nbeams[pAverage[1]]
-        ncellsAverage <- ncells[pAverage[1]]
+        nbeamsAverage <- nbeams[p$average[1]]
+        ncellsAverage <- ncells[p$average[1]]
         oceDebug(debug, "average data records: nbeams:", nbeamsAverage, ", ncells:", ncellsAverage, "\n")
-        if (any(ncells[pAverage] != ncellsAverage))
+        if (any(ncells[p$average] != ncellsAverage))
             stop("the 'average' data records do not all have the same number of cells")
-        if (any(nbeams[pAverage] != nbeamsAverage))
+        if (any(nbeams[p$average] != nbeamsAverage))
             stop("the 'average' data records do not all have the same number of beams")
         ## FIXME: read other fields to the following list.
         average <- list(i=1,
                         numberOfCells=ncellsAverage,
                         numberOfBeams=nbeamsAverage,
-                        originalCoordinate=coordinateSystem[pAverage[1]],
-                        oceCoordinate=coordinateSystem[pAverage[1]],
-                        cellSize=cellSize[pAverage[1]],
-                        blankingDistance=blankingDistance[pAverage[1]],
-                        ensemble=ensemble[pAverage],
-                        time=time[pAverage],
-                        heading=heading[pAverage],
-                        pitch=pitch[pAverage],
-                        roll=roll[pAverage],
-                        pressure=pressure[pAverage],
-                        temperature=temperature[pAverage],
-                        temperatureMagnetometer=temperatureMagnetometer[pAverage],
-                        temperatureRTC=temperatureRTC[pAverage],
-                        soundSpeed=soundSpeed[pAverage],
-                        accelerometerx=accelerometerx[pAverage],
-                        accelerometery=accelerometery[pAverage],
-                        accelerometerz=accelerometerz[pAverage],
-                        nominalCorrelation=nominalCorrelation[pAverage],
-                        v=array(double(), dim=c(length(pAverage), ncellsAverage, nbeamsAverage)),
-                        a=array(raw(), dim=c(length(pAverage), ncellsAverage, nbeamsAverage)),
-                        q=array(raw(), dim=c(length(pAverage), ncellsAverage, nbeamsAverage)))
+                        originalCoordinate=coordinateSystem[p$average[1]],
+                        oceCoordinate=coordinateSystem[p$average[1]],
+                        cellSize=cellSize[p$average[1]],
+                        blankingDistance=blankingDistance[p$average[1]],
+                        ensemble=ensemble[p$average],
+                        time=time[p$average],
+                        heading=heading[p$average],
+                        pitch=pitch[p$average],
+                        roll=roll[p$average],
+                        pressure=pressure[p$average],
+                        temperature=temperature[p$average],
+                        temperatureMagnetometer=temperatureMagnetometer[p$average],
+                        temperatureRTC=temperatureRTC[p$average],
+                        soundSpeed=soundSpeed[p$average],
+                        accelerometerx=accelerometerx[p$average],
+                        accelerometery=accelerometery[p$average],
+                        accelerometerz=accelerometerz[p$average],
+                        nominalCorrelation=nominalCorrelation[p$average],
+                        v=array(double(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)),
+                        a=array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)),
+                        q=array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)))
     } else {
         average <- list()
     }
+    if (length(p$text) > 0) {
+        text <- list(i=1, text=list()) # vector("character", length(p$text)))
+    } else {
+        text <- list()
+    }
     ## Fill up th arrays in a loop. This could also be vectorized, if it proves slow.
     unhandled <- 0
+    id <- d$id
     for (ch in 1:N) {
-        id[ch] <- d$id[ch]
-        if (d$id[ch] == 160) {
-            ## skip an extra byte at start because it is a code
+        oceDebug(debug, "d$id[", ch, "]=", d$id[[ch]], "\n")
+        if (d$id[ch] == 0xa0) {        # text (0xa0 = 160)
             chars <- rawToChar(d$buf[seq.int(2+d$index[ch], by=1, length.out=-1+d$length[ch])])
-            header <- strsplit(chars, "\r\n")[[1]]
-        } else if (d$id[ch] == 0x15) { # burst
+            text$text[[text$i]] <- strsplit(chars, "\r\n")[[1]]
+            ##text$text[text$i] <- chars
+            text$i <- text$i + 1
+            oceDebug(debug, "added to text; now, text$i=", text$i, "\n")
+        } else if (d$id[ch] == 0x15) { # burst (0x15 = 21)
             i <- d$index[ch]
             ncol <- burst$numberOfBeams
             nrow <- burst$numberOfCells
@@ -807,7 +802,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ##   -0.9471254  -0.3139688   0.0662500
             burst$i <- burst$i + 1
             ## FIXME: read other fields
-        } else if (d$id[ch] == 0x16) { # average
+        } else if (d$id[ch] == 0x16) { # average (0x16 = 22)
             i <- d$index[ch]
             ncol <- average$numberOfBeams
             nrow <- average$numberOfCells
@@ -843,34 +838,25 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     if (unhandled)
         warning("skipped ", unhandled, " data records; only 'burst' (0x15), 'average' (0x16), and 'text' (0xa0) are handled (ask developer of you need others)\n")
-    ## Clean lists of temporary index.
+    ## Clean lists of temporary indices.
+    if (length(text))
+        text$i <- NULL
     if (length(burst))
         burst$i <- NULL
     if (length(average))
         average$i <- NULL
-    data <- list(header=header,
-                 ##soundSpeed=soundSpeed, temperature=temperature, pressure=pressure,
-                 ##heading=heading, pitch=pitch, roll=roll,
-                 ##coord=coordinateSystem,
-                 ##nomcor=nominalCorrelation,
-                 ##transmitEnergy=transmitEnergy,
-                 ##velocityScaling=velocityScaling,
-                 powerLevel=powerLevel,
+    data <- list(powerLevel=powerLevel,
                  status=status,
                  activeConfiguration=activeConfiguration,
+                 text=text,
                  average=average,
                  burst=burst) # FIXME: add other fields here
-
     res@metadata$serialNumber <- serialNumber
-    res@metadata$header <- header
+    ##? res@metadata$header <- text
     res@metadata$id <- id
-    ## Trim some things that make no sense for AD2CP data
+    ## Remove the overall coordiante (created by initializer) since it has no meaning here.
     res@metadata$oceCoordinate <- NULL
 
-    ## Delete some temporary working items
-    data$header <- NULL
-    data$time <- NULL
-    data$id <- NULL
     res@data <- data
     if (missing(processingLog))
         processingLog <- paste("read.ad2cp(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep="")

@@ -507,11 +507,12 @@ setMethod(f="summary",
               ##             1 / subsampleDeltat))
               metadataNames <- names(object@metadata)
               if ("numberOfCells" %in% metadataNames) {
-                  if (object@metadata$numberOfCells > 1) {
+                  dist <- object[["distance"]]
+                  if (object[["numberOfCells"]] > 1) {
                       cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
-                                  object@metadata$numberOfCells, object@data$distance[1],  tail(object@data$distance, 1), diff(object@data$distance[1:2])),  ...)
+                                  object[["numberOfCells"]], dist[1], tail(dist, 1), diff(dist[1:2])), ...)
                   } else {
-                      cat(sprintf("* Cells:              one cell, centered at %.3f m\n", object@data$distance[1]), ...)
+                      cat(sprintf("* Cells:              one cell, centered at %.3f m\n", dist[1]), ...)
                   }
               }
               originalCoordinate <- object[["originalCoordinate"]]
@@ -555,10 +556,10 @@ setMethod(f="concatenate",
           definition=function(object, ...) {
               rval <- callNextMethod() # do general work
               ## Make the metadata profile count match the data array dimensions.
-              rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
+              rval@metadata$numberOfSamples <- dim(rval@data$v)[1] # FIXME: handle AD2CP
               ## The general method didn't know that 'distance' was special, and should
               ## not be concatenated, so undo that.
-              rval@data$distance <- object@data$distance
+              rval@data$distance <- object@data$distance # FIXME: handle AD2CP
               rval
           })
 
@@ -956,8 +957,8 @@ setMethod(f="subset",
               } else {
                   stop("should express the subset in terms of distance or time")
               }
-              res@metadata$numberOfSamples <- dim(res@data$v)[1]
-              res@metadata$numberOfCells <- dim(res@data$v)[2]
+              res@metadata$numberOfSamples <- dim(res@data$v)[1] # FIXME: handle AD2CP
+              res@metadata$numberOfCells <- dim(res@data$v)[2] # FIXME: handle AD2CP
               res@processingLog <- processingLogAppend(res@processingLog, paste("subset.adp(x, subset=", subsetString, ")", sep=""))
               res
           })
@@ -999,12 +1000,12 @@ as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coor
 {
     res <- new("adp", time=time, distance=distance, v=v, a=a, q=q)
     if (!missing(v)) {
-        res@metadata$numberOfBeams <- dim(v)[3]
-        res@metadata$numberOfCells <- dim(v)[2]
+        res@metadata$numberOfBeams <- dim(v)[3] # FIXME: handle AD2CP
+        res@metadata$numberOfCells <- dim(v)[2] # FIXME: handle AD2CP
     }
-    res@metadata$oceCoordinate <- coordinate
-    res@metadata$orientation <- orientation
-    res@metadata$cellSize <- if (missing(distance)) NA else diff(distance[1:2])
+    res@metadata$oceCoordinate <- coordinate # FIXME: handle AD2CP
+    res@metadata$orientation <- orientation # FIXME: handle AD2CP
+    res@metadata$cellSize <- if (missing(distance)) NA else diff(distance[1:2]) # FIXME: handle AD2CP
     res@metadata$units <- list(v="m/s", distance="m")
     res
 }
@@ -1075,16 +1076,18 @@ as.adp <- function(time, distance, v, a=NULL, q=NULL, orientation="upward", coor
 #' @family things related to \code{adv} data
 beamName <- function(x, which)
 {
-    if (x@metadata$oceCoordinate == "beam") {
+
+    bn <- x[["oceCoordinate"]]
+    if (bn == "beam") {
         paste(gettext("beam", domain="R-oce"), 1:4)[which]
-    } else if (x@metadata$oceCoordinate == "enu") {
+    } else if (bn == "enu") {
         c(gettext("east", domain="R-oce"),
           gettext("north", domain="R-oce"),
           gettext("up", domain="R-oce"),
           gettext("error", domain="R-oce"))[which]
-    } else if (x@metadata$oceCoordinate == "xyz") {
+    } else if (bn == "xyz") {
         c("u", "v", "w", "e")[which]
-    } else if (x@metadata$oceCoordinate == "other") {
+    } else if (bn == "other") {
         c("u'", "v'", "w'", "e")[which]
     } else {
         " "
@@ -2345,7 +2348,7 @@ setMethod(f="plot",
                               u <- U[, control$bin] #EAC: bug fix, attempt to subset 2D matrix by 3 dimensions
                               v <- V[, control$bin]
                           } else {
-                              if (x@metadata$numberOfCells > 1) {
+                              if (x[["numberOfCells"]] > 1) {
                                   u <- apply(U, 1, mean, na.rm=TRUE)
                                   v <- apply(V, 1, mean, na.rm=TRUE)
                               } else {
@@ -2397,7 +2400,7 @@ setMethod(f="plot",
                           u <- x[["v"]][, control$bin, 1]
                           v <- x[["v"]][, control$bin, 2]
                       } else {
-                          if (x@metadata$numberOfCells > 1) {
+                          if (x[["numberOfCells"]] > 1) {
                               u <- apply(x[["v"]][, , 1], 1, mean, na.rm=TRUE)
                               v <- apply(x[["v"]][, , 2], 1, mean, na.rm=TRUE)
                           } else {
@@ -3380,7 +3383,7 @@ adpEnsembleAverage <- function(x, n=5, leftover=FALSE, na.rm=TRUE, ...)
             }
         }
     }
-    res@metadata$numberOfSamples <- length(res@data$time)
+    res@metadata$numberOfSamples <- length(res@data$time) # FIXME: handle AD2CP
     res@processingLog <- processingLogAppend(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
