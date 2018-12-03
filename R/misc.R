@@ -4094,7 +4094,6 @@ matrixSmooth <- function(m, passes=1)
     storage.mode(m) <- "double"
     if (passes > 0) {
         for (pass in seq.int(1, passes, 1)) {
-            message("pass=", pass)
             m <- do_matrix_smooth(m)
         }
     } else {
