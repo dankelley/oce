@@ -5,7 +5,7 @@
 \title{Read an AD2CP File}
 \usage{
 read.ad2cp(file, from = 1, to, by = 1, tz = getOption("oceTz"),
-  longitude = NA, latitude = NA, orientation, distance,
+  longitude = NA, latitude = NA, orientation, distance, plan,
   monitor = FALSE, despike = FALSE, processingLog,
   debug = getOption("oceDebug"), ...)
 }
@@ -51,6 +51,10 @@ be given if the function determines the distances correctly from the data.
 The problem is that the distance is poorly documented in the Nortek System
 Integrator Guide (2008 edition, page 31), so the function must rely on
 word-of-mouth formulae that do not work in all cases.}
+
+\item{plan}{Optional integer specifying which 'plan' to focus on (see [1]
+for the meaning of 'plan').  If this is not given, it defaults to the most
+common plan in the requested subset of the data.}
 
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
 in reading the file, either by printing a dot for each profile or by writing

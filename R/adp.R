@@ -629,7 +629,8 @@ setMethod(f="[[",
                       ## AD2CP is stored in a tricky way.
                       if (missing(j)) {
                           dataNames <- names(x@data)
-                          j <- if ("average" %in% dataNames) "average" else if ("burst" %in% dataNames) "burst" else return(NULL)
+                          j <- if (length(x@data$average)) "average" else if (length(x@data$burst))
+                              "burst" else stop("object's data slot does not contain either 'average' or 'burst'")
                       }
                       if (!(j %in% c("average", "burst")))
                           return(NULL)
@@ -652,8 +653,10 @@ setMethod(f="[[",
                       ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
                       ## Permit e.g. "burst:numeric" and "burst numeric" ## FIXME: document this
                       if (missing(j)) {
-                          j <- "average"
+                          j <- if (length(x@data$average)) "average" else if (length(x@data$burst))
+                              "burst" else stop("object's data slot does not contain either 'average' or 'burst'")
                           jorig <- "(missing)"
+                          ## message("'[[' is defaulting to '", j, "' type of data-record, since 'j' not specified", sep="")
                       } else {
                           jorig <- j
                       }
@@ -663,7 +666,8 @@ setMethod(f="[[",
                       j <- gsub("[: ]?numeric", "", j)
                       ##message("3. j = '", j, "'", sep="")
                       if (missing(j)) { # default to 'average', if it exists, or to 'burst' if that exists, or fail.
-                          j <- if ("average" %in% dataNames) "average" else if ("burst" %in% dataNames) "burst" else return(NULL)
+                          j <- if (length(x@data$average)) "average" else if (length(x@data$burst))
+                              "burst" else stop("object's data slot does not contain either 'average' or 'burst'")
                       }
                       ##message("4. j = '", j, "'", sep="")
                       ## Default to "average" if no mode specified
@@ -700,7 +704,8 @@ setMethod(f="[[",
                       ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
                       if (missing(j)) { # default to 'average', if it exists, or to 'burst' if that exists, or fail.
                           dataNames <- names(x@data)
-                          j <- if ("average" %in% dataNames) "average" else if ("burst" %in% dataNames) "burst" else return(NULL)
+                          j <- if (length(x@data$average)) "average" else if (length(x@data$burst))
+                              "burst" else stop("object's data slot does not contain either 'average' or 'burst'")
                       }
                       ##message("CC j=", j)
                       ## don't let user specify an incorrect list (FIXME: document 'j' methodology)
@@ -1709,6 +1714,7 @@ setMethod(f="plot",
                   if (which[w] %in% images) {
                       ## image types
                       skip <- FALSE
+                      numberOfBeams <- x[["numberOfBeams"]]
                       if (which[w] %in% 1:numberOfBeams) {
                           ## velocity
                           if (mode == "diagnostic") {

@@ -365,6 +365,9 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 #' The problem is that the distance is poorly documented in the Nortek System
 #' Integrator Guide (2008 edition, page 31), so the function must rely on
 #' word-of-mouth formulae that do not work in all cases.
+#' @param plan Optional integer specifying which 'plan' to focus on (see [1]
+#' for the meaning of 'plan').  If this is not given, it defaults to the most
+#' common plan in the requested subset of the data.
 #' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
 #' anomalous spikes in heading, etc.
 #' @template adpTemplate
@@ -384,11 +387,11 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 #' @family things related to \code{adp} data
 read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                        longitude=NA, latitude=NA,
-                       orientation, distance,
+                       orientation, distance, plan,
                        monitor=FALSE, despike=FALSE, processingLog,
                        debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "read.ad2cp(...,from=", format(from), ",to=", if (missing(to)) "(missing)" else format(to), "...)\n", sep="", unindent=1)
+    oceDebug(debug, "read.ad2cp(...,from=", format(from), ",to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", plan=", if(missing(plan)) "(missing)" else plan, ",...)\n", sep="", unindent=1)
     if (missing(to))
         stop("Must supply 'to'. (This is a temporary constraint, whilst read.ad2cp() is being developed.)")
     if (is.character(file)) {
@@ -438,15 +441,14 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     nav <- do_ldc_ad2cp_in_file(filename, from, to, by)
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
     res <- new("adp")
-    if (0x10 == d$buf[d$index[1]+1]) # 0x10 = AD2CP (p38 integrators guide)
+    if (0x10 == d$buf[d$index[1]+1]) { # 0x10 = AD2CP (p38 integrators guide)
         res <- oceSetMetadata(res, "instrumentType", "AD2CP")
-    ## DK NOTES FROM A SAMPLE FILE...
-    ## I know that the second one is a data/burst chunk. I think it is
-    ## version "3", at least in the beginning ones. Certainly, the time
-    ## fields seem (mostly) to be ok (except that they are slightly
-    ## out of order).
+    } else {
+        stop("this file is not in AD2CP format, since the first byte is not 0x10")
+    }
+    oceDebug(debug, "focussing on ", length(d$index), " data records\n")
     if (by != 1)
-        stop("must have by=1 for this preliminary version of read.ad2cp()")
+        stop("must have by=1 for this preliminary version of read.ad2cp() (FIXME: check whether this is still required)")
     N <- 1 + as.integer((to - from) / by)
     if (N <= 0)
         stop("must have to > from")
@@ -490,6 +492,50 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     pointer1 <- d$index
     pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
     pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
+    oceDebug(debug, "focussing on ", length(pointer1), " data records\n")
+
+    ## {{{
+    ## Handle multiple plans (FIXME: this is limited to a single plan, at present)
+    status <- readBin(d$buf[pointer4 + 69], "integer", size=4, n=N, endian="little")
+    statusBits <- intToBits(status)
+    ## Construct an array to store the bits within th 'status' vector. The nortek
+    ## docs refer to the first bit as 0, which becomes [1,] in this array.
+    dim(statusBits) <- c(32, N)
+    ## Nortek docs say bit 17 indicates the active configuration
+    activeConfiguration <- as.integer(statusBits[18, ])
+    ## If the 'plan' argument is missing, we select the most common one in the data subset.
+    if (missing(plan)) {
+        u <- unique(activeConfiguration)
+        nu <- length(u)
+        if (nu == 1) {
+            plan <- activeConfiguration[1]
+        } else {
+            ## tabulate() might be handy here, but the following may be simpler to read.
+            plan <- u[which.max(unlist(lapply(u,function(x)sum(activeConfiguration==x))))]
+        }
+        message("since 'plan' was not given, using the most common value, namely ", plan)
+    }
+    keep <- activeConfiguration == plan
+    if (sum(keep) < length(keep)) {
+        message("Note: this plan has ", sum(keep), " data records, out of a total of ", length(keep), " in the file")
+        d$index <- d$index[keep]
+        d$length <- d$length[keep]
+        d$id <- d$id[keep]
+        statusBits <- statusBits[, keep]
+        activeConfiguration <- activeConfiguration[keep]
+        N <- sum(keep)
+        pointer1 <- d$index
+        pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
+        pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
+        oceDebug(debug, "focussing on ", length(pointer1), " data records (after subsetting for plan=", plan, ")\n")
+    }
+    if (sum(keep) == 0) {
+        warning("no data for this plan. The plans in the file are tabulated below.\n")
+        print(table(activeConfiguration))
+        return(res)
+    }
+    ## }}}
+
 
     ## "Version" in nortek docs [1 page 48]. FIXME: is this present in other data types?
     version <- as.integer(d$buf[pointer1 + 1])
@@ -582,21 +628,23 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     temperatureMagnetometer <- 0.001 * readBin(d$buf[pointer2 + 61], "integer", size=2, n=N, signed=TRUE, endian="little")
     temperatureRTC <- 0.01 * readBin(d$buf[pointer2 + 63], "integer", size=2, n=N, endian="little")
     error <- readBin(d$buf[pointer2 + 65], "integer", size=4, n=N, endian="little") # FIXME: UNUSED
-    status <- readBin(d$buf[pointer4 + 69], "integer", size=4, n=N, endian="little")
-    statusBits <- intToBits(status)
-    ## Construct an array to store the bits within th 'status' vector. The nortek
-    ## docs refer to the first bit as 0, which becomes [1,] in this array.
-    dim(statusBits) <- c(32, N)
+ 
     ## Nortek docs say bit 1 in 'status' indicats blanking scale factor.
     blankingDistance <- blankingDistance * ifelse(statusBits[2, ] == 0x01, 1, 10)
 
-    ## Nortek docs say bit 17 indicates the active configuration
-    activeConfiguration <- as.integer(statusBits[18, ])
     ensemble <- readBin(d$buf[pointer4+73], "integer", size=4, n=N, endian="little")
 
     ## Limitations
-    if (1 < length(unique(activeConfiguration)))
-        stop("cannot handle more than 1 active configuration. Please contact the developers, if you need this.")
+    nconfiguration <- length(unique(activeConfiguration))
+    if (1 < nconfiguration) {
+        cat("developer-aimed information:\n")
+        print(unique(activeConfiguration))
+        print(table(activeConfiguration))
+        browser()
+        stop("This file has ",
+             nconfiguration, " active configurations, but read.ad2cp() can only handle one. Please contact the oce developers if you need to work with this file.")
+    }
+    
     ## Record-type codes [1, sec 6.1, page 47]:
     ## 0x15 – Burst Data Record.
     ## 0x16 – Average Data Record.
@@ -626,7 +674,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 "DVLBottomTrack", "echosounder", "waterTrack", "altimeter",
                 "averageAltimeter")) {
         if (res@metadata$recordCount[[n]] > 0) {
-            warning("this version of read.ad2cp() cannot handle the ", res@metadata$recordCount[[n]], " instances of data-type '", n, "'. Pplease contact the developers, if this is a problem for you.\n", sep="")
+            warning("this version of read.ad2cp() cannot handle the ", res@metadata$recordCount[[n]], " instances of data-type '", n, "'. Please contact the developers, if this is a problem for you.\n", sep="")
         }
     }
     ## 2. get some things in slow index-based form.
@@ -715,13 +763,13 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     unhandled <- 0
     id <- d$id
     for (ch in 1:N) {
-        oceDebug(debug, "d$id[", ch, "]=", d$id[[ch]], "\n")
+        oceDebug(debug>2, "  d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
         if (d$id[ch] == 0xa0) {        # text (0xa0 = 160)
             chars <- rawToChar(d$buf[seq.int(2+d$index[ch], by=1, length.out=-1+d$length[ch])])
             text$text[[text$i]] <- strsplit(chars, "\r\n")[[1]]
             ##text$text[text$i] <- chars
             text$i <- text$i + 1
-            oceDebug(debug, "added to text; now, text$i=", text$i, "\n")
+            ##oceDebug(debug, "added to text; now, text$i=", text$i, "\n")
         } else if (d$id[ch] == 0x15) { # burst (0x15 = 21)
             i <- d$index[ch]
             ncol <- burst$numberOfBeams

@@ -167,9 +167,9 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
   // The table in [1 sec 6.1] says header pieces are 10 bytes
   // long, so once we get an 0xA5, we'll try to get 9 more bytes.
   unsigned char hbuf[HEADER_SIZE]; // header buffer
-  unsigned int dbuflen = 10; // may be increased later
+  unsigned int dbuflen = 10000; // may be increased later
   unsigned char *dbuf = (unsigned char *)Calloc((size_t)dbuflen, unsigned char);
-  unsigned int nchunk = 100;
+  unsigned int nchunk = 10000;
   unsigned int *index_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
   unsigned int *length_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
   unsigned int *id_buf = (unsigned int*)Calloc((size_t)nchunk, unsigned int);
