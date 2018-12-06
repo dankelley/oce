@@ -1710,7 +1710,7 @@ setMethod(f="plot",
               oceDebug(debug, 'haveTimeImages=', haveTimeImages, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
               v <- x[["v"]]
               for (w in 1:nw) {
-                  oceDebug(debug, "which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n")
+                  oceDebug(debug, " which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n", sep="")
                   if (which[w] %in% images) {
                       ## image types
                       skip <- FALSE
@@ -1739,47 +1739,60 @@ setMethod(f="plot",
                           }
                           oceDebug(debug, 'flipy =', flipy, '\n')
                       } else if (which[w] %in% 5:(4+x[["numberOfBeams"]])) {
+                          oceDebug(debug, " which[", w, "]=", which[w], "; this is some type of amplitude\n", sep="")
                           ## amplitude
                           if (mode == "diagnostic" && "aDia" %in% names(x@data)) {
                               oceDebug(debug, "a diagnostic amplitude component image/timeseries\n")
-                              z <- as.numeric(x@data$aDia[, , which[w]-4])
-                              dim(z) <- dim(x@data$aDia)[1:2]
+                              z <- x[["aDia", "numeric"]][, , which[w]-4]
+                              ##OLD dim(z) <- dim(x@data$aDia)[1:2] # FIXME: why was this here?
                               xdistance <- x[["distance"]]
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
-                                  if (breaksGiven) NULL else range(as.numeric(x@data$aDia[, y.look, ]), na.rm=TRUE)
+                                  if (breaksGiven) NULL else range(as.numeric(z[, y.look]), na.rm=TRUE)
                               }
                               zlab <- c(expression(aDia[1]), expression(a[2]), expression(aDia[3]), expression(aDia[4]))[which[w]-4]
                           } else {
                               oceDebug(debug, "an amplitude component image/timeseries\n")
-                              z <- as.numeric(x@data$a[, , which[w]-4])
-                              dim(z) <- dim(x@data$a)[1:2]
+                              z <- x[["a", "numeric"]][, , which[w]-4]
+                              ##OLD dim(z) <- dim(x@data$a)[1:2] # FIXME: why was this here?
                               xdistance <- x[["distance"]]
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
-                                  if (breaksGiven) NULL else range(as.numeric(x@data$a[, y.look, ]), na.rm=TRUE)
+                                  if (breaksGiven) NULL else range(as.numeric(z[, y.look]), na.rm=TRUE)
                               }
                               zlab <- c(expression(a[1]), expression(a[2]), expression(a[3]), expression(a[4]))[which[w]-4]
                           }
                       } else if (which[w] %in% 9:(8+x[["numberOfBeams"]])) {
-                          ## correlation
-                          if ("q" %in% names(x@data)) {
-                              z <- as.numeric(x@data$q[, , which[w]-8])
-                              dim(z) <- dim(x@data$q)[1:2]
+                          oceDebug(debug, " which[",w,"]=",which[w],": quality or correlation\n",sep="")
+                          ## correlation, or quality. First, try 'q', then 'amp'
+                          q <- x[["q", "numeric"]]
+                          if (!is.null(q)) {
+                              oceDebug(debug, "[['q']] works for this object\n")
+                              z <- q[, , which[w]-8]
+                              dim(z) <- dim(q)[1:2]
+                              rm(q)
                               zlim <- c(0, 256)
                               zlab <- c(expression(q[1]), expression(q[2]), expression(q[3]))[which[w]-8]
-                          } else if ("amp" %in% names(x@data)) {
-                              z <- as.numeric(x[["a"]][, , which[w]-8])
-                              dim(z) <- dim(x@data$amp)[1:2]
-                              zlim <- c(0, max(as.numeric(x@data$amp)))
-                              zlab <- c(expression(amp[1]), expression(amp[2]), expression(amp[3]))[which[w]-8]
+                          } else {
+                              amp <- x[["amp"]]
+                              if (!is.null(amp)) {
+                                  oceDebug(debug, "[['amp']] works for this object\n")
+                                  z <- amp[, , which[w]-8]
+                                  dim(z) <- dim(amp)[1:2]
+                                  rm(amp)
+                                  zlim <- c(0, max(z, na.rm=TRUE))
+                                  zlab <- c(expression(amp[1]), expression(amp[2]), expression(amp[3]))[which[w]-8]
+                              } else {
+                                  stop('cannot plot quality/correlation because both x[["q"]] and x[["amp"]] return NULL')
+                              }
                           }
                       } else if (which[w] %in% 70:(69+x[["numberOfBeams"]])) {
                           ## correlation
-                          xg <- x[["g"]]
+                          xg <- x[["g", "numeric"]]
                           if (!is.null(xg)) {
                               z <- as.numeric(xg[, , which[w]-69])
                               dim(z) <- dim(xg)[1:2]
+                              rm(xg)
                               zlim <- c(0, 100)
                               zlab <- c(expression(g[1]), expression(g[2]), expression(g[3]))[which[w]-8]
                           } else {
@@ -1787,9 +1800,9 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 80) {
                           ## vertical beam velocity
-                          if ("vv" %in% names(x@data)) {
+                          z <- x[["vv"]]
+                          if (!is.null(z)) {
                               oceDebug(debug, "vertical beam velocity\n")
-                              z <- x@data$vv
                               zlab <- if (missing(titles)) expression(w[vert]) else titles[w]
                               xdistance <- x[["distance"]]
                               y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
@@ -1803,10 +1816,9 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 81) {
                           ## vertical beam amplitude
-                          if ("va" %in% names(x@data)) {
+                          z <- x[["va", "numeric"]]
+                          if (!is.null(z)) {
                               oceDebug(debug, "vertical beam amplitude\n")
-                              z <- as.numeric(x@data$va)
-                              dim(z) <- dim(x@data$va)
                               xdistance <- x[["distance"]]
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
@@ -1818,10 +1830,9 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 82) {
                           ## vertical beam correlation
-                          if ("vq" %in% names(x@data)) {
+                          z <- x[["vq", "numeric"]]
+                          if (!is.null(z)) {
                               oceDebug(debug, "vertical beam correlation\n")
-                              z <- as.numeric(x@data$vq)
-                              dim(z) <- dim(x@data$vq)
                               xdistance <- x[["distance"]]
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
@@ -1833,14 +1844,13 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 83) {
                           ## vertical beam percent good
-                          if ("vg" %in% names(x@data)) {
+                          z <- x[["vg", "numeric"]]
+                          if (!is.null(z)) {
                               oceDebug(debug, "vertical beam percent good\n")
-                              z <- as.numeric(x@data$vg)
-                              dim(z) <- dim(x@data$vg)
                               xdistance <- x[["distance"]]
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
-                                  if (breaksGiven) NULL else range(as.numeric(x@data$vg[, y.look]), na.rm=TRUE)
+                                  if (breaksGiven) NULL else range(x[["vg", "numeric"]][, y.look], na.rm=TRUE)
                               }
                               zlab <- expression(g[vert])
                           } else {

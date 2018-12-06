@@ -80,9 +80,9 @@ read NMEA strings (which get stored in an item called \code{nmea}
 in the \code{data} slot).
 }
 \description{
-This function, introduced in April 2017, is just a temporary interface
-for separate interpretation code that lives in the 1219 issue
-directory. THIS IS ONLY FOR DEVELOPERS.
+This function is incomplete in several ways, and is still in active
+development. Users should not expect a stable version until the
+summer of 2019.
 }
 \examples{
 \dontrun{
@@ -93,7 +93,7 @@ d <- read.ad2cp(f, to=100) # or read.oce()
 }
 \references{
 1. Nortek, 2017. Signature Integration (55|250|500|1000kHz),
-(file \code{N3015-007 Integrators Guide AD2CP.pdf})
+available as a file named "\code{N3015-007 Integrators Guide AD2CP.pdf}".
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},

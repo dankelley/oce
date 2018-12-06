@@ -6,16 +6,18 @@ context("Nortek AD2CP")
 test_that("read.ad2cp() on private file (compare with matlab)", {
             f <- "~/Dropbox/oce_ad2cp/labtestsig3.ad2cp"
             if (file.exists(f)) {
-              d <- read.ad2cp(f, 1, 100, 1)
-              expect_equal(d[["serialNumber"]], 100159)
-              ## >> load labtestsig3.ad2cp.00000_1.mat
-              ## >> fieldnames(Data)
+              expect_warning(d <- read.ad2cp(f, 1, 100, 1),
+                             "since 'plan' was not given, using the most common value, namely 0")
 
+              expect_equal(d[["serialNumber"]], 100159)
+
+              ## >> load labtestsig3.ad2cp.00000_1.mat
               context("numberOfBeams and numberOfCcells")
               expect_equal(d[["numberOfBeams", "burst"]], 1)
               expect_equal(d[["numberOfCells", "burst"]], 256)
               expect_equal(d[["numberOfBeams", "average"]], 4)
               expect_equal(d[["numberOfCells", "average"]], 150)
+
 
 
               context("ensemble")
@@ -120,8 +122,8 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
                                                 0.5518000,  0.00000000,  0.5518000, 0.0000000,
                                                 0.0000000,  0.5518000,   0.0000000, 0.5518000),
                                               nrow=4, byrow=TRUE)
-              print("test_ad2cp.R below is the matrix from matlab\n")
-              print(beam2xyzAverageMatlab)
+              ## FIXME: check beam2xyzAverageMatlab
+              ## print(beam2xyzAverageMatlab)
 
 
               context("nominalCorrelation")
@@ -161,6 +163,12 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
               acczBurstMatlab <- c(0.066895, 0.065918, 0.065430, 0.066406, 0.065918,
                                    0.068359, 0.070801, 0.068359, 0.069336, 0.069336)
               expect_equal(d[["accelerometerz", "burst"]][1:10], acczBurstMatlab, tolerance=1e-6)
+
+              context("velocity dimensionality")
+              expect_error(d[["v", "junk"]], "cannot decode j='junk'")
+              expect_equal(dim(d[["v"]]), c(11, 150, 4))
+              expect_equal(dim(d[["v", "average"]]), c(11, 150, 4))
+              expect_equal(dim(d[["v", "burst"]]), c(88, 256, 1))
 
 
               context("burst velocity")
@@ -225,6 +233,16 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
               expect_equal(d[["q", "average numeric"]][1:4, 1, 3], c( 4, 11,  8, 15))
               ##>> Data.Average_CorBeam4(1:4,1)
               expect_equal(d[["q", "average numeric"]][1:4, 1, 4], c(38, 53, 71, 66))
+
+              context("plotting")
+              if (interactive()) {
+                plot(d)
+                plot(d, which="velocity")
+                plot(d, which="amplitude")
+                plot(d, which="quality")
+                plot(d, which="hydrography")
+                plot(d, which="angles")
+              }
 
 
               if (TRUE) {

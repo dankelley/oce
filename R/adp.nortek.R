@@ -351,9 +351,9 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 
 #' Read an AD2CP File
 #'
-#' This function, introduced in April 2017, is just a temporary interface
-#' for separate interpretation code that lives in the 1219 issue
-#' directory. THIS IS ONLY FOR DEVELOPERS.
+#' This function is incomplete in several ways, and is still in active
+#' development. Users should not expect a stable version until the
+#' summer of 2019.
 #'
 #' @param orientation Optional character string specifying the orientation of the
 #' sensor, provided for those cases in which it cannot be inferred from the
@@ -382,7 +382,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 #'
 #' @references
 #' 1. Nortek, 2017. Signature Integration (55|250|500|1000kHz),
-#' (file \code{N3015-007 Integrators Guide AD2CP.pdf})
+#' available as a file named "\code{N3015-007 Integrators Guide AD2CP.pdf}".
 #'
 #' @family things related to \code{adp} data
 read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
@@ -423,21 +423,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "ID: 0x", ID, " (NB: 0x15=burst data record; 0x16=avg data record; 0x17=bottom track record; 0x18=interleaved data record; 0xa0=string data record, e.g. GPS NMEA, comment from the FWRITE command)\n", sep="")
     dataSize <- readBin(buf[5:6], what="integer", n=1, size=2, endian="little", signed=FALSE)
     oceDebug(debug, "dataSize:", dataSize, "\n")
-    ## if (ID == 0xa0) {
-    ##     oceDebug(debug, "type is 0xa0 so trying to read a string...\n")
-    ##     a <- readBin(buf[headerSize+1:dataSize], "character", 1)
-    ##     text <- gsub("\\r","",strsplit(a, "\\n")[[1]])
-    ##     print(text)
-    ## }
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1+headerSize+dataSize, "]=0x", buf[1+headerSize+dataSize], " (expect 0xa5)\n", sep="")
-    ## if (0xa5 == buf[1+headerSize+dataSize]) {
-    ##     o <- 1 + headerSize + dataSize
-    ##     oceDebug(debug, 'record 2 starts at BUF[', o, "]\n", sep="")
-    ##     oceDebug(debug, 'first 10 bytes in record 2: ',
-    ##              paste(paste("0x", buf[o+0:9], sep=""), collapse=" "),
-    ##              "\n", sep="")
-    ##     tst <- readBin(buf[o+headerSize+1:dataSize], "character", 1)
-    ## }
     nav <- do_ldc_ad2cp_in_file(filename, from, to, by)
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
     res <- new("adp")
@@ -513,7 +499,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ## tabulate() might be handy here, but the following may be simpler to read.
             plan <- u[which.max(unlist(lapply(u,function(x)sum(activeConfiguration==x))))]
         }
-        message("since 'plan' was not given, using the most common value, namely ", plan)
+        warning("since 'plan' was not given, using the most common value, namely ", plan, "\n")
     }
     keep <- activeConfiguration == plan
     if (sum(keep) < length(keep)) {
@@ -530,9 +516,13 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "focussing on ", length(pointer1), " data records (after subsetting for plan=", plan, ")\n")
     }
     if (sum(keep) == 0) {
-        warning("no data for this plan. The plans in the file are tabulated below.\n")
+        warning("there are no data for this plan. Below is a table() of the plans in this subset of the file:\n")
         print(table(activeConfiguration))
         return(res)
+    }
+    if (debug > 0) {
+        oceDebug(debug, "below is table() of the 'plan' values in this subset of the file:\n")
+        print(table(activeConfiguration))
     }
     ## }}}
 
@@ -628,7 +618,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     temperatureMagnetometer <- 0.001 * readBin(d$buf[pointer2 + 61], "integer", size=2, n=N, signed=TRUE, endian="little")
     temperatureRTC <- 0.01 * readBin(d$buf[pointer2 + 63], "integer", size=2, n=N, endian="little")
     error <- readBin(d$buf[pointer2 + 65], "integer", size=4, n=N, endian="little") # FIXME: UNUSED
- 
+
     ## Nortek docs say bit 1 in 'status' indicats blanking scale factor.
     blankingDistance <- blankingDistance * ifelse(statusBits[2, ] == 0x01, 1, 10)
 
@@ -644,7 +634,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         stop("This file has ",
              nconfiguration, " active configurations, but read.ad2cp() can only handle one. Please contact the oce developers if you need to work with this file.")
     }
-    
+
     ## Record-type codes [1, sec 6.1, page 47]:
     ## 0x15 – Burst Data Record.
     ## 0x16 – Average Data Record.
@@ -674,7 +664,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 "DVLBottomTrack", "echosounder", "waterTrack", "altimeter",
                 "averageAltimeter")) {
         if (res@metadata$recordCount[[n]] > 0) {
-            warning("this version of read.ad2cp() cannot handle the ", res@metadata$recordCount[[n]], " instances of data-type '", n, "'. Please contact the developers, if this is a problem for you.\n", sep="")
+            warning("skipped ", res@metadata$recordCount[[n]], " '", n, "' data records; only 'average', 'burst' and 'text' are handled in this version of oce\n", sep="")
         }
     }
     ## 2. get some things in slow index-based form.
@@ -760,7 +750,6 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         text <- list()
     }
     ## Fill up th arrays in a loop. This could also be vectorized, if it proves slow.
-    unhandled <- 0
     id <- d$id
     for (ch in 1:N) {
         oceDebug(debug>2, "  d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
@@ -798,56 +787,6 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             } else {
                 stop("at ch=", ch, " how can correlationIncluded be false?")
             }
-
-
-            ## Correlation data
-            ##? altimeterDistance <- readBin(d$buf[i+77+4*nn+seq(0, 3)], "numeric", size=4, n=1, endian="little")
-            ##? message("altimeterDistance: ", altimeterDistance)
-            ##? altimeterQuality <- readBin(d$buf[i+77+4*nn+4+seq(0, 1)], "integer", size=2, n=1, endian="little") # FLOAT
-            ##? message("altimeterQuality: ", altimeterQuality)
-            ##? altimeterStatus <- readBin(d$buf[i+77+4*nn+6+seq(0, 1)], "integer", size=2, n=1, endian="little")
-            ##? message("altimeterStatus: ", altimeterStatus)
-            ##? ASTdistance <- readBin(d$buf[i+77+4*nn+8+seq(0, 3)], "numeric", size=4, n=1, endian="little")
-            ##? message("ASTdistance: ", ASTdistance)
-
-            ## altimeter distance 4 bytes
-            ## altimeter quality 4 bytes
-            ## altimeter status 2 bytes
-            ## AST distance 4 bytes
-            ## AST quality 2 bytes
-            ## AST offset 100us 2 bytes
-            ## AST pressure 4 bytes
-            ## AST spare 8 bytes
-            ## AST raw data number of samples 4 bytes
-            ## AST raw data sample distance 2 bytes
-            ## AST raw data samples 2*NC bytes (OPTIONAL, I think)
-            ## (page 52. Why does it list a 3x3 matrix, whereas page 41 suggest 4x4?)
-            ## AHRS rotation matrix M11 4 bytes
-            ## AHRS rotation matrix M12 4 bytes
-            ## AHRS rotation matrix M13 4 bytes
-            ## AHRS rotation matrix M21 4 bytes
-            ## AHRS rotation matrix M22 4 bytes
-            ## AHRS rotation matrix M23 4 bytes
-            ## AHRS rotation matrix M31 4 bytes
-            ## AHRS rotation matrix M32 4 bytes
-            ## AHRS rotation matrix M33 4 bytes
-            ## lots more.
-            ## NOTE: matlab has e.g.
-            ## >> Data.BurstHR_AHRSRotationMatrix(1:2,:)
-            ##
-            ## ans =
-            ##
-            ##   2×9 single matrix
-            ##
-            ##   Columns 1 through 6
-            ##
-            ##    0.0606537  -0.3782397  -0.9236842   0.3150578  -0.8707919   0.3772714
-            ##    0.0607401  -0.3781854  -0.9237415   0.3150813  -0.8708751   0.3772591
-            ##
-            ##   Columns 7 through 9
-            ##
-            ##   -0.9470989  -0.3138947   0.0664139
-            ##   -0.9471254  -0.3139688   0.0662500
             burst$i <- burst$i + 1
             ## FIXME: read other fields
         } else if (d$id[ch] == 0x16) { # average (0x16 = 22)
@@ -879,13 +818,13 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 stop("at ch=", ch, " how can correlationIncluded be false?")
             }
             average$i <- average$i + 1
-            ## FIXME: read other fields
+        } else if (d$id[ch] == 0x18) { # interleaved burst (0x18 = 24 )
+            if (debug > 0)
+                message("ignoring interleaved burst at ch=", ch)
         } else {
-            unhandled <- unhandled + 1
+            ## FIXME: read other fields
         }
     }
-    if (unhandled)
-        warning("skipped ", unhandled, " data records; only 'burst' (0x15), 'average' (0x16), and 'text' (0xa0) are handled (ask developer of you need others)\n")
     ## Clean lists of temporary indices.
     if (length(text))
         text$i <- NULL

@@ -2,11 +2,20 @@
 library(oce)
 data(adp)
 
-context("ADP")
+context("ADP plotting")
 
 test_that("plot(adp,which=23,control=list('bin'=1)) works", {
           expect_silent(plot(adp, which=23, control=list('bin'=1)))
+          expect_silent(plot(adp))
+          expect_silent(plot(adp, which="velocity"))
+          expect_silent(plot(adp, which="amplitude"))
+          expect_silent(plot(adp, which="quality"))
+          expect_silent(plot(adp, which="hydrography"))
+          expect_silent(plot(adp, which="angles"))
 })
+
+
+context("ADP other")
 
 test_that("as.adp() inserts data properly", {
           data(adp)
