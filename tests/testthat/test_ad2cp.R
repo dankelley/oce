@@ -3,8 +3,8 @@ library(oce)
 
 context("Nortek AD2CP")
 
-test_that("read.ad2cp() on private file (compare with matlab)", {
-            f <- "~/Dropbox/oce_ad2cp/labtestsig3.ad2cp"
+test_that("read.ad2cp() on a private file that has 'average' and 'burst' data", {
+            f <- "~/Dropbox/ad2cp_secret_1.ad2cp"
             if (file.exists(f)) {
               expect_warning(d <- read.ad2cp(f, 1, 100, 1),
                              "since 'plan' was not given, using the most common value, namely 0")
@@ -264,3 +264,14 @@ test_that("read.ad2cp() on private file (compare with matlab)", {
           })
 
 
+test_that("read.ad2cp() on a secret file with only 'burst' data", {
+          f <- "~/Dropbox/ad2cp_secret_2.ad2cp"
+          if (file.exists(f)) {
+            d <- read.oce(f, from=1, to=1e3, by=1)
+            expect_true("burst" %in% names(d[["data"]]))
+            expect_false("average" %in% names(d[["data"]]))
+            expect_equal(dim(d[['v']]), c(999, 1, 4))
+            expect_true(is.numeric(d[['v']]))
+            expect_true(is.raw(d[['a', 'raw']]))
+          }
+          })

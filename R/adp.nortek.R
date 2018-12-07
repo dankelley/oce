@@ -704,7 +704,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                       a=array(raw(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst)),
                       q=array(raw(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst)))
     } else {
-        burst <- list()
+        burst <- NULL
     }
     if (length(p$average) > 0) {
         if (any(version[p$average] != 3))
@@ -742,7 +742,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         a=array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)),
                         q=array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)))
     } else {
-        average <- list()
+        average <- NULL
     }
     if (length(p$text) > 0) {
         text <- list(i=1, text=list()) # vector("character", length(p$text)))
@@ -835,9 +835,11 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     data <- list(powerLevel=powerLevel,
                  status=status,
                  activeConfiguration=activeConfiguration,
-                 text=text,
-                 average=average,
-                 burst=burst) # FIXME: add other fields here
+                 text=text)
+    if (!is.null(average))
+        data$average <- average
+    if (!is.null(burst))
+        data$burst <- burst
     res@metadata$serialNumber <- serialNumber
     ##? res@metadata$header <- text
     res@metadata$id <- id

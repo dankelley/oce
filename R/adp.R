@@ -563,6 +563,20 @@ setMethod(f="concatenate",
               rval
           })
 
+## private function
+ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst"))
+{
+    dataNames <- names(x@data)
+    if (is.null(j)) {
+        i <- which(order %in% dataNames)
+        if (length(i)) order[i[1]] else stop("ad2cp object does not contain any of '", paste(order, collapse="', '"), "'")
+    } else {
+        if (j %in% dataNames) j else stop("ad2cp object does not contain data item '", j, "'")
+    }
+}
+
+
+
 #' @title Extract Something from an adp Object
 #'
 #' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
@@ -652,35 +666,56 @@ setMethod(f="[[",
                   if (!is.null(instrumentType) && instrumentType == "AD2CP") {
                       ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
                       ## Permit e.g. "burst:numeric" and "burst numeric" ## FIXME: document this
+                      returnNumeric <- FALSE # defult: leave 'raw' data as 'raw'.
                       if (missing(j)) {
-                          j <- if (length(x@data$average)) "average" else if (length(x@data$burst))
-                              "burst" else stop("object's data slot does not contain either 'average' or 'burst'")
+                          message("0 a")
+                          j <- ad2cpDefaultDataItem(x)
+                          returnNumeric <- FALSE
                           jorig <- "(missing)"
                           ## message("'[[' is defaulting to '", j, "' type of data-record, since 'j' not specified", sep="")
                       } else {
                           jorig <- j
+                          message("0 a. j='", j, "'")
+                          ## find out if numeric or raw, and clean 'j' of that flag once it is known
+                          if (length(grep("numeric", j))) {
+                              returnNumeric <- TRUE
+                              j <- gsub("numeric", "", j)
+                              message("0 b. j='", j, "'")
+                          } else if (length(grep("raw", j))) {
+                              returnNumeric <- FALSE
+                              j <- gsub("raw", "", j)
+                              message("0 c. j='", j, "'")
+                          }
+                          j <- gsub("[ :]+", "", j) # clean spaces or colons, if any
+                          ## Look up this name
+                          message("0 d. j='", j, "'")
+                          j <- ad2cpDefaultDataItem(x, j)
+                          message("0 e. j='", j, "'")
                       }
-                      ##message("1. j = '", j, "'; jorig='", jorig, "'", sep="")
-                      numericMode <- 1 == length(grep("numeric", j))
+                      message("1. j = '", j, "'; jorig='", jorig, "'", sep="")
+                      ##numericMode <- 1 == length(grep("numeric", j))
                       ##message("2. numericMode=", numericMode)
-                      j <- gsub("[: ]?numeric", "", j)
+                      ##j <- gsub("[: ]?numeric", "", j)
                       ##message("3. j = '", j, "'", sep="")
-                      if (missing(j)) { # default to 'average', if it exists, or to 'burst' if that exists, or fail.
-                          j <- if (length(x@data$average)) "average" else if (length(x@data$burst))
-                              "burst" else stop("object's data slot does not contain either 'average' or 'burst'")
-                      }
-                      ##message("4. j = '", j, "'", sep="")
+                      #if (missing(j)) { # default to 'average', if it exists, or to 'burst' if that exists, or fail.
+                      #    j <- if (length(x@data$average)) "average" else if (length(x@data$burst))
+                      #        "burst" else stop("object's data slot does not contain either 'average' or 'burst'")
+                      #}
+                      message("4. j = '", j, "'", sep="")
                       ## Default to "average" if no mode specified
                       if (1 == length(grep("^[ ]*$", j)))
                           j <- "average"
-                      ##message("5. j = '", j, "'", sep="")
+                      message("5. j = '", j, "'", sep="")
                       if (j == "average" || j == "burst") {
+                          message("6. i='", i, "', j='", j, "', returnNumeric=", returnNumeric)
                           res <- x@data[[j]][[i]]
-                          if (numericMode) {
+                          if (returnNumeric) {
+                              message("6-a.")
                               dim <- dim(res)
                               res <- as.numeric(res)
                               dim(res) <- dim
                           }
+                          message("7")
                           res
                       } else {
                           stop("cannot decode j='", jorig, "'")
