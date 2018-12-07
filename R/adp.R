@@ -1569,13 +1569,14 @@ setMethod(f="plot",
 
               if (nw == 1) {
                   pm <- pmatch(which, c("velocity", "amplitude", "quality", "hydrography", "angles"))
+                  ## FIXME: decide what to do about 5-beam ADCPs
                   if (!is.na(pm)) {
                       if (pm == 1)
-                          which <- 0 + seq(1, nbeams)
+                          which <- 0 + seq(1, max(4, nbeams)) # 5th beam not included
                       else if (pm == 2)
-                          which <- 4 + seq(1, nbeams)
+                          which <- 4 + seq(1, max(4, nbeams)) # 5th beam not included
                       else if (pm == 3)
-                          which <- 8 + seq(1, nbeams)
+                          which <- 8 + seq(1, max(4, nbeams)) # 5th beam not included
                       else if (pm == 4)
                           which <- 14:15
                       else if (pm == 5)
@@ -1743,29 +1744,32 @@ setMethod(f="plot",
               ##message("numberOfCells=", numberOfCells)
               haveTimeImages <- any(which %in% images) && 1 < numberOfCells
               oceDebug(debug, 'haveTimeImages=', haveTimeImages, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
-              v <- x[["v"]]
               for (w in 1:nw) {
                   oceDebug(debug, " which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n", sep="")
                   if (which[w] %in% images) {
                       ## image types
                       skip <- FALSE
                       numberOfBeams <- x[["numberOfBeams"]]
-                      if (which[w] %in% 1:numberOfBeams) {
+                      v <- x[["v"]]
+                      if (which[w] %in% 1:4) {
                           ## velocity
                           if (mode == "diagnostic") {
                               oceDebug(debug, "a diagnostic velocity component image/timeseries\n")
                               z <- x@data$vDia[, , which[w]]
                               zlab <- if (missing(titles)) paste(beamName(x, which[w]), "Dia", sep="") else titles[w]
                               xdistance <- x[["distance"]]
-                              y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
+                              y.look <- if (ylimGiven) (ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2]) else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else
                                   max(abs(x@data$vDia[, y.look, which[w]]), na.rm=TRUE) * c(-1, 1)
                           } else {
                               oceDebug(debug, "a velocity component image/timeseries\n")
-                              z <- v[, , which[w]]
+                              z <- x[["v"]][, , which[w]]
                               zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
+                              oceDebug(debug, "zlab:", zlab, "\n")
                               xdistance <- x[["distance"]]
+                              oceDebug(debug, "xdistance:", paste(xdistance, collapse=" "), "\n")
                               y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
+                              oceDebug(debug, "y.look:", paste(y.look, collapse=" "), "\n")
                               if (0 == sum(y.look))
                                   stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse=","), ")")
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
@@ -1773,7 +1777,7 @@ setMethod(f="plot",
                               }
                           }
                           oceDebug(debug, 'flipy =', flipy, '\n')
-                      } else if (which[w] %in% 5:(4+x[["numberOfBeams"]])) {
+                      } else if (which[w] %in% 5:8) {
                           oceDebug(debug, " which[", w, "]=", which[w], "; this is some type of amplitude\n", sep="")
                           ## amplitude
                           if (mode == "diagnostic" && "aDia" %in% names(x@data)) {
@@ -1788,16 +1792,23 @@ setMethod(f="plot",
                               zlab <- c(expression(aDia[1]), expression(a[2]), expression(aDia[3]), expression(aDia[4]))[which[w]-4]
                           } else {
                               oceDebug(debug, "an amplitude component image/timeseries\n")
-                              z <- x[["a", "numeric"]][, , which[w]-4]
+                              a <- x[["a", "numeric"]]
+                              z <- a[, , which[w]-4]
+                              dim(z) <- dim(a)[1:2]
+                              oceDebug(debug, "accessed data, of dim=", paste(dim(z), collapse="x"), "\n")
                               ##OLD dim(z) <- dim(x@data$a)[1:2] # FIXME: why was this here?
                               xdistance <- x[["distance"]]
+                              oceDebug(debug, "distance: ", paste(distance, collapse=" "), "\n")
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
+                              oceDebug(debug, "y.look: ", paste(y.look, collapse=" "), "\n")
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
                                   if (breaksGiven) NULL else range(as.numeric(z[, y.look]), na.rm=TRUE)
                               }
+                              oceDebug(debug, "zlim: ", paste(zlim, collapse=" "), "\n")
                               zlab <- c(expression(a[1]), expression(a[2]), expression(a[3]), expression(a[4]))[which[w]-4]
+                              oceDebug(debug, "zlab: '", zlab, "'\n")
                           }
-                      } else if (which[w] %in% 9:(8+x[["numberOfBeams"]])) {
+                      } else if (which[w] %in% 9:12) {
                           oceDebug(debug, " which[",w,"]=",which[w],": quality or correlation\n",sep="")
                           ## correlation, or quality. First, try 'q', then 'amp'
                           q <- x[["q", "numeric"]]
@@ -1974,6 +1985,7 @@ setMethod(f="plot",
                       ##par(mgp=mgp, mar=mar, cex=cex)
                       tlim <- range(x[["time"]])
                       if (which[w] == 13) {
+                          oceDebug(debug, " which[", w, "] == 13 (salinity)\n", sep="")
                           if (haveTimeImages) drawPalette(debug=debug-1)
                           ats <- oce.plot.ts(x[["time"]], x[["salinity"]],
                                              xlim=if (xlimGiven) xlim[w, ] else tlim,
@@ -1992,6 +2004,7 @@ setMethod(f="plot",
                                              tformat=tformat,
                                              debug=debug-1)
                       } else if (which[w] == 14) {
+                          oceDebug(debug, " which[", w, "] == 14 (temperature)\n", sep="")
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           if (mode == "diagnostic" && "temperatureDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$temperatureDia,
@@ -2028,6 +2041,7 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 15) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
+                          oceDebug(debug, " which[", w, "] == 15 (pressure)\n", sep="")
                           if (mode == "diagnostic" && "pressureDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$pressureDia,
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
