@@ -658,7 +658,6 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
               altimeter=which(d$id==0x1e),
               averageAltimeter=which(d$id==0x1f),
               text=which(d$id==0xa0))
-    pDAN<<-p
     res@metadata$recordCount <- lapply(p, length)
     ## Inform the user of things we don't attempt to read, and invite them to ask for new capabilities.
     for (n in c("bottomTrack", "burstAltimeter",
