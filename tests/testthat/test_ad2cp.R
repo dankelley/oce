@@ -223,14 +223,17 @@ test_that("read.ad2cp() on a private file that has 'average' and 'burst' data", 
             ##>> Data.Average_CorBeam4(1:4,1)
             expect_equal(d[["q", "average numeric"]][1:4, 1, 4], c(38, 53, 71, 66))
 
-            if (interactive()) {
-              plot(d)
-              plot(d, which="velocity")
-              plot(d, which="amplitude")
-              plot(d, which="quality")
-              plot(d, which="hydrography")
-              plot(d, which="angles")
-            }
+            expect_silent(plot(d))
+            expect_silent(plot(d, which="velocity"))
+            expect_silent(plot(d, which="amplitude"))
+            expect_silent(plot(d, which="quality"))
+            expect_silent(plot(d, which="hydrography"))
+            expect_silent(plot(d, which="angles"))
+            expect_silent(plot(d, which="uv"))
+            expect_silent(plot(d, which="uv+ellipse"))
+            expect_silent(plot(d, which="uv+ellipse+arrow"))
+            expect_warning(plot(d, which="bottomRange"), "cannot handle which= 40 because this instrument lacked bottom tracking")
+            expect_silent(plot(d, which="progressiveVector"))
 
 
             if (TRUE) {
@@ -285,13 +288,5 @@ test_that("read.ad2cp() on a secret file with only 'burst' data", {
             expect_equal(dim(d[["q", "raw"]]), c(N-1, 1, 4))
             expect_equal(dim(d[["q", "burst raw"]]), c(N-1, 1, 4))
             expect_equal(dim(d[["q", "raw burst"]]), c(N-1, 1, 4))
-            if (interactive()) {
-              plot(d)
-              plot(d, which="velocity")
-              plot(d, which="amplitude")
-              plot(d, which="quality")
-              plot(d, which="hydrography")
-              plot(d, which="angles")
-            }
           }
 })

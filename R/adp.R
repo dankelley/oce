@@ -1271,7 +1271,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' beam 4, for \code{beam} coordinates, or velocity estimate, for other
 #' coordinates.  (This is ignored for 3-beam data.)
 #'
-#' \item \code{which=23} yields a progressive-vector diagram in the horizontal
+#' \item \code{which="progressiveVector"} (or \code{which=23}) yields a progressive-vector diagram in the horizontal
 #' plane, plotted with \code{asp=1}.  Normally, the depth-averaged velocity
 #' components are used, but if the \code{control} list contains an item named
 #' \code{bin}, then the depth bin will be used (with an error resulting if the
@@ -1319,14 +1319,29 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' \item \code{which=100} (or \code{"soundSpeed"}) for a time series of sound
 #' speed.
 #'
-#' } In addition to the above, there are some groupings defined: \itemize{
-#' \item \code{which="velocity"} equivalent to \code{which=1:3} (velocity
-#' components) \item \code{which="amplitude"} equivalent to \code{which=5:7}
-#' (backscatter intensity components) \item \code{which="quality"} equivalent
-#' to \code{which=9:11} (quality components) \item \code{which="hydrography"}
-#' equivalent to \code{which=14:15} (temperature and pressure) \item
-#' \code{which="angles"} equivalent to \code{which=16:18} (heading, pitch and
-#' roll) }
+#' }
+#'
+#' In addition to the above, the following shortcuts are defined:
+#'
+#' \itemize{
+#'
+#' \item \code{which="velocity"} equivalent to \code{which=1:3} or \code{1:4}
+#' (depending on the device) for velocity components.
+#'
+#' \item \code{which="amplitude"} equivalent to \code{which=5:7}
+#' or \code{5:8} (depending on the device) for backscatter intensity
+#' components.
+#'
+#' \item \code{which="quality"} equivalent to \code{which=9:11} or \code{9:12}
+#' (depending on the device) for quality components.
+#'
+#' \item \code{which="hydrography"} equivalent to \code{which=14:15}
+#' for temperature and pressure.
+#'
+#' \item \code{which="angles"} equivalent to \code{which=16:18} for
+#' heading, pitch and roll.
+#'
+#' }
 #'
 #' The color scheme for image plots (\code{which} in 1:12) is provided by the
 #' \code{col} argument, which is passed to \code{\link{image}} to do the actual
@@ -1667,7 +1682,7 @@ setMethod(f="plot",
                                        heading=16,
                                        pitch=17,
                                        roll=18,
-                                       progressivevector=23,
+                                       progressiveVector=23,
                                        uv=28,
                                        "uv+ellipse"=29,
                                        "uv+ellipse+arrow"=30,
