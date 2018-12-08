@@ -86,8 +86,7 @@ summer of 2019.
 }
 \examples{
 \dontrun{
-f <- "/Users/kelley/Dropbox/oce_ad2cp/labtestsig3.ad2cp"
-d <- read.ad2cp(f, to=100) # or read.oce()
+d <- read.ad2cp("~/test.ad2cp", to=100) # or read.oce()
 }
 
 }

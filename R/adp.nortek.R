@@ -374,8 +374,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 #'
 #' @examples
 #' \dontrun{
-#' f <- "/Users/kelley/Dropbox/oce_ad2cp/labtestsig3.ad2cp"
-#' d <- read.ad2cp(f, to=100) # or read.oce()
+#' d <- read.ad2cp("~/test.ad2cp", to=100) # or read.oce()
 #'}
 #'
 #' @author Dan Kelley
@@ -602,7 +601,8 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Use Horner's rule for clarity (for lispers, anyway!)
     ncells <- BCC[,1]+2*(BCC[,2]+2*(BCC[,3]+2*(BCC[,4]+2*(BCC[,5]+2*(BCC[,6]+2*(BCC[,7]+2*(BCC[,8]+2*(BCC[,9]+2*BCC[,10]))))))))
     nbeams <- BCC[,13]+2*(BCC[,14]+2*(BCC[,15]+2*BCC[,16]))
-    coordinateSystem <- c("enu", "xyz", "beam", "?")[BCC[,11]+2*BCC[,12]]
+    ## b00=enu, b01=xyz, b10=beam, b11=- [1 page 49]
+    coordinateSystem <- c("enu", "xyz", "beam", "?")[1 + BCC[,11] + 2*BCC[,12]]
     ## cell size is recorded in mm [1, table 6.1.2, page 47]
     cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size=2, n=N, signed=FALSE, endian="little")
     ## blanking distance is recorded in cm [1, table 6.1.2, page 47]

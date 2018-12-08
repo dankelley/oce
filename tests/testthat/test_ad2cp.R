@@ -8,6 +8,7 @@ test_that("read.ad2cp() on a private file that has 'average' and 'burst' data", 
           if (file.exists(f)) {
             expect_warning(d <- read.ad2cp(f, 1, 100, 1),
                            "since 'plan' was not given, using the most common value, namely 0")
+            expect_equal("beam", d[["oceCoordinate"]])
             expect_equal(sort(names(d[["burst"]])),
                          c("a", "accelerometerx", "accelerometery",
                            "accelerometerz", "blankingDistance", "cellSize",
@@ -261,7 +262,7 @@ test_that("read.ad2cp() on a secret file with only 'burst' data", {
             N <- 500
             expect_warning(d <- read.ad2cp(f, from=1, to=N, by=1),
                            "since 'plan' was not given, using the most common value, namely 0")
-
+            expect_equal("beam", d[["oceCoordinate"]])
             expect_equal(sort(names(d[["burst"]])),
                          c("a", "accelerometerx", "accelerometery",
                            "accelerometerz", "blankingDistance", "cellSize",
@@ -341,6 +342,10 @@ test_that("read.ad2cp() on a secret file with only 'burst' data", {
             text(0.5, 0.5, "interleavedBurst has only 1 beam")
             plot(c(0,1), c(0,1), xlab="", ylab="", axes=FALSE, type="n")
             text(0.5, 0.5, paste("time range:\n", min(tb), "\n to\n ", max(tb)))
+            ## below is how we know this is 'beam'
+            ## t <- d[["text"]]$text[[1]]
+            ## t[grep('CY=',t)[1]]
+            expect_equal("beam", d[["oceCoordinate"]])
           }
 })
 
