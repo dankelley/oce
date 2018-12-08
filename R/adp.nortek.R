@@ -658,16 +658,55 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
               altimeter=which(d$id==0x1e),
               averageAltimeter=which(d$id==0x1f),
               text=which(d$id==0xa0))
+    pDAN<<-p
     res@metadata$recordCount <- lapply(p, length)
     ## Inform the user of things we don't attempt to read, and invite them to ask for new capabilities.
-    for (n in c("bottomTrack", "interleavedBurst", "burstAltimeter",
+    for (n in c("bottomTrack", "burstAltimeter",
                 "DVLBottomTrack", "echosounder", "waterTrack", "altimeter",
                 "averageAltimeter")) {
         if (res@metadata$recordCount[[n]] > 0) {
-            warning("skipped ", res@metadata$recordCount[[n]], " '", n, "' data records; only 'average', 'burst' and 'text' are handled in this version of oce\n", sep="")
+            warning("skipped ", res@metadata$recordCount[[n]], " '", n, "' data records; only 'average', 'burst', 'interleavedBurst' and 'text' are handled in this version of oce\n", sep="")
         }
     }
-    ## 2. get some things in slow index-based form.
+    ## 2. get some things in slow index-based form. (Items are alphabetized.)
+    if (length(p$average) > 0) {
+        if (any(version[p$average] != 3))
+            stop("can only decode 'average' data records that are in 'version 3' format")
+        nbeamsAverage <- nbeams[p$average[1]]
+        ncellsAverage <- ncells[p$average[1]]
+        oceDebug(debug, "average data records: nbeams:", nbeamsAverage, ", ncells:", ncellsAverage, "\n")
+        if (any(ncells[p$average] != ncellsAverage))
+            stop("the 'average' data records do not all have the same number of cells")
+        if (any(nbeams[p$average] != nbeamsAverage))
+            stop("the 'average' data records do not all have the same number of beams")
+        ## FIXME: read other fields to the following list.
+        average <- list(i=1,
+                        numberOfCells=ncellsAverage,
+                        numberOfBeams=nbeamsAverage,
+                        originalCoordinate=coordinateSystem[p$average[1]],
+                        oceCoordinate=coordinateSystem[p$average[1]],
+                        cellSize=cellSize[p$average[1]],
+                        blankingDistance=blankingDistance[p$average[1]],
+                        ensemble=ensemble[p$average],
+                        time=time[p$average],
+                        heading=heading[p$average],
+                        pitch=pitch[p$average],
+                        roll=roll[p$average],
+                        pressure=pressure[p$average],
+                        temperature=temperature[p$average],
+                        temperatureMagnetometer=temperatureMagnetometer[p$average],
+                        temperatureRTC=temperatureRTC[p$average],
+                        soundSpeed=soundSpeed[p$average],
+                        accelerometerx=accelerometerx[p$average],
+                        accelerometery=accelerometery[p$average],
+                        accelerometerz=accelerometerz[p$average],
+                        nominalCorrelation=nominalCorrelation[p$average],
+                        v=array(double(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)),
+                        a=array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)),
+                        q=array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)))
+    } else {
+        average <- NULL
+    }
     if (length(p$burst) > 0) {
         if (any(version[p$burst] != 3))
             stop("can only decode 'burst' data records that are in 'version 3' format")
@@ -706,43 +745,43 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     } else {
         burst <- NULL
     }
-    if (length(p$average) > 0) {
-        if (any(version[p$average] != 3))
-            stop("can only decode 'average' data records that are in 'version 3' format")
-        nbeamsAverage <- nbeams[p$average[1]]
-        ncellsAverage <- ncells[p$average[1]]
-        oceDebug(debug, "average data records: nbeams:", nbeamsAverage, ", ncells:", ncellsAverage, "\n")
-        if (any(ncells[p$average] != ncellsAverage))
-            stop("the 'average' data records do not all have the same number of cells")
-        if (any(nbeams[p$average] != nbeamsAverage))
-            stop("the 'average' data records do not all have the same number of beams")
+    if (length(p$interleavedBurst) > 0) {
+        if (any(version[p$interleavedBurst] != 3))
+            stop("can only decode 'interleavedBurst' data records that are in 'version 3' format")
+        nbeamsInterleavedBurst <- nbeams[p$interleavedBurst[1]]
+        ncellsInterleavedBurst <- ncells[p$interleavedBurst[1]]
+        oceDebug(debug, "interleavedBurst data records: nbeams:", nbeamsInterleavedBurst, ", ncells:", ncellsInterleavedBurst, "\n")
+        if (any(ncells[p$interleavedBurst] != ncellsInterleavedBurst))
+            stop("the 'interleavedBurst' data records do not all have the same number of cells")
+        if (any(nbeams[p$interleavedBurst] != nbeamsInterleavedBurst))
+            stop("the 'interleavedBurst' data records do not all have the same number of beams")
         ## FIXME: read other fields to the following list.
-        average <- list(i=1,
-                        numberOfCells=ncellsAverage,
-                        numberOfBeams=nbeamsAverage,
-                        originalCoordinate=coordinateSystem[p$average[1]],
-                        oceCoordinate=coordinateSystem[p$average[1]],
-                        cellSize=cellSize[p$average[1]],
-                        blankingDistance=blankingDistance[p$average[1]],
-                        ensemble=ensemble[p$average],
-                        time=time[p$average],
-                        heading=heading[p$average],
-                        pitch=pitch[p$average],
-                        roll=roll[p$average],
-                        pressure=pressure[p$average],
-                        temperature=temperature[p$average],
-                        temperatureMagnetometer=temperatureMagnetometer[p$average],
-                        temperatureRTC=temperatureRTC[p$average],
-                        soundSpeed=soundSpeed[p$average],
-                        accelerometerx=accelerometerx[p$average],
-                        accelerometery=accelerometery[p$average],
-                        accelerometerz=accelerometerz[p$average],
-                        nominalCorrelation=nominalCorrelation[p$average],
-                        v=array(double(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)),
-                        a=array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)),
-                        q=array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)))
+        interleavedBurst <- list(i=1,
+                      numberOfCells=ncellsInterleavedBurst,
+                      numberOfBeams=nbeamsInterleavedBurst,
+                      originalCoordinate=coordinateSystem[p$interleavedBurst[1]],
+                      oceCoordinate=coordinateSystem[p$interleavedBurst[1]],
+                      cellSize=cellSize[p$interleavedBurst[1]],
+                      blankingDistance=blankingDistance[p$interleavedBurst[1]],
+                      ensemble=ensemble[p$interleavedBurst],
+                      time=time[p$interleavedBurst],
+                      heading=heading[p$interleavedBurst],
+                      pitch=pitch[p$interleavedBurst],
+                      roll=roll[p$interleavedBurst],
+                      pressure=pressure[p$interleavedBurst],
+                      temperature=temperature[p$interleavedBurst],
+                      temperatureMagnetometer=temperatureMagnetometer[p$interleavedBurst],
+                      temperatureRTC=temperatureRTC[p$interleavedBurst],
+                      soundSpeed=soundSpeed[p$interleavedBurst],
+                      accelerometerx=accelerometerx[p$interleavedBurst],
+                      accelerometery=accelerometery[p$interleavedBurst],
+                      accelerometerz=accelerometerz[p$interleavedBurst],
+                      nominalCorrelation=nominalCorrelation[p$interleavedBurst],
+                      v=array(double(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst)),
+                      a=array(raw(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst)),
+                      q=array(raw(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst)))
     } else {
-        average <- NULL
+        interleavedBurst <- NULL
     }
     if (length(p$text) > 0) {
         text <- list(i=1, text=list()) # vector("character", length(p$text)))
@@ -819,27 +858,59 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             }
             average$i <- average$i + 1
         } else if (d$id[ch] == 0x18) { # interleaved burst (0x18 = 24 )
-            if (debug > 0)
-                message("ignoring interleaved burst at ch=", ch)
+            i <- d$index[ch]
+            ncol <- interleavedBurst$numberOfBeams
+            nrow <- interleavedBurst$numberOfCells
+            n <- ncol * nrow
+            n2 <- 2 * n
+            i0 <- 77
+            if (velocityIncluded[ch]) {
+                v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
+                interleavedBurst$v[interleavedBurst$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n2
+            } else {
+                stop("at ch=", ch, " how can velocityIncluded be false?")
+            }
+            if (amplitudeIncluded[ch]) {
+                a <- d$buf[i + i0 + seq(0, n-1)]
+                interleavedBurst$a[interleavedBurst$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n
+            } else {
+                stop("at ch=", ch, " how can amplitudeIncluded be false?")
+            }
+            if (correlationIncluded[ch]) {
+                q <- d$buf[i + i0 + seq(0, n-1)]
+                interleavedBurst$q[interleavedBurst$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n
+            } else {
+                stop("at ch=", ch, " how can correlationIncluded be false?")
+            }
+            interleavedBurst$i <- interleavedBurst$i + 1
         } else {
             ## FIXME: read other fields
         }
     }
     ## Clean lists of temporary indices.
-    if (length(text))
-        text$i <- NULL
-    if (length(burst))
-        burst$i <- NULL
     if (length(average))
         average$i <- NULL
-    data <- list(powerLevel=powerLevel,
+    if (length(burst))
+        burst$i <- NULL
+    if (length(interleavedBurst))
+        interleavedBurst$i <- NULL
+    if (length(text))
+        text$i <- NULL
+    data <- list(powerLevel=powerLevel, # FIXME: put in individual items?
                  status=status,
-                 activeConfiguration=activeConfiguration,
-                 text=text)
+                 activeConfiguration=activeConfiguration)
     if (!is.null(average))
         data$average <- average
     if (!is.null(burst))
         data$burst <- burst
+    if (!is.null(interleavedBurst))
+        data$interleavedBurst <- interleavedBurst
+    if (!is.null(text))
+        data$text <- text
+
     res@metadata$serialNumber <- serialNumber
     ##? res@metadata$header <- text
     res@metadata$id <- id

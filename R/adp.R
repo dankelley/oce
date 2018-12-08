@@ -564,7 +564,7 @@ setMethod(f="concatenate",
           })
 
 ## private function
-ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst"))
+ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interleavedBurst"))
 {
     dataNames <- names(x@data)
     if (is.null(j) || nchar(j) == 0) {
@@ -643,10 +643,12 @@ setMethod(f="[[",
                       ## AD2CP is stored in a tricky way.
                       if (missing(j)) {
                           dataNames <- names(x@data)
-                          j <- if (length(x@data$average)) "average" else if (length(x@data$burst))
-                              "burst" else stop("object's data slot does not contain either 'average' or 'burst'")
+                          j <- if (length(x@data$average)) { "average" 
+                          } else if (length(x@data$burst)) { "burst" 
+                          } else if (length(x@data$interleavedBurst)) { "interleavedBurst" 
+                          } else stop("object's data slot does not contain 'average', 'burst', or 'interleavedBurst'")
                       }
-                      if (!(j %in% c("average", "burst")))
+                      if (!(j %in% c("average", "burst", "interleavedBurst")))
                           return(NULL)
                       x@data[[j]]$blankingDistance + x@data[[j]]$cellSize*seq(1, x@data[[j]]$numberOfCells)
                   } else {
@@ -706,7 +708,7 @@ setMethod(f="[[",
                       if (1 == length(grep("^[ ]*$", j)))
                           j <- "average"
                       ##message("5. j = '", j, "'", sep="")
-                      if (j == "average" || j == "burst") {
+                      if (j %in% c("average", "burst", "interleavedBurst")) {
                           ##message("6. i='", i, "', j='", j, "', returnNumeric=", returnNumeric)
                           res <- x@data[[j]][[i]]
                           if (returnNumeric) {

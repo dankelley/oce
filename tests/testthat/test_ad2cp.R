@@ -290,3 +290,57 @@ test_that("read.ad2cp() on a secret file with only 'burst' data", {
             expect_equal(dim(d[["q", "raw burst"]]), c(N-1, 1, 4))
           }
 })
+
+
+test_that("read.ad2cp() on a secret file with only 'burst' data", {
+          f <- "~/Dropbox/ad2cp_secret_3.ad2cp"
+          if (file.exists(f)) {
+            N <- 500
+            expect_warning(d <- read.ad2cp(f, from=1, to=N, by=1),
+                           "since 'plan' was not given, using the most common value, namely 0")
+            ## The dimension tests are not ground-truthed; they merely reflect
+            ## what the oce code gives, so that a flag will go off if things
+            ## change greatly in the code. This also checks the accessors
+            ## against direct lookup.
+            vb <- d[["v", "burst"]]
+            vib <- d[["v", "interleavedBurst"]]
+            expect_equal(dim(d@data$burst$v), c(250, 88, 4))
+            expect_equal(dim(vb), c(250, 88, 4))
+            expect_equal(dim(d@data$interleavedBurst$v), c(249, 88, 1))
+            expect_equal(dim(vib), c(249, 88, 1))
+            ab <- d[["a", "burst"]]
+            aib <- d[["a", "interleavedBurst"]]
+            expect_equal(dim(d@data$burst$a), c(250, 88, 4))
+            expect_equal(dim(ab), c(250, 88, 4))
+            expect_equal(dim(d@data$interleavedBurst$a), c(249, 88, 1))
+            expect_equal(dim(aib), c(249, 88, 1))
+            qb <- d[["q", "burst"]]
+            qib <- d[["q", "interleavedBurst"]]
+            expect_equal(dim(d@data$burst$q), c(250, 88, 4))
+            expect_equal(dim(qb), c(250, 88, 4))
+            expect_equal(dim(d@data$interleavedBurst$q), c(249, 88, 1))
+            expect_equal(dim(qib), c(249, 88, 1))
+
+            ## This plot might help in determining just what the interleaved
+            ## burst is. I'm surprised that it doesn't look more like the other
+            ## data, but I don't even know if it is actually beam1 or maybe
+            ## beam5 ... I just know that the matrix has only 1 entry in the
+            ## fourth index
+            par(mfcol=c(4, 2))
+            zlim <- c(-3, 3)
+            tb <- d[["time", "burst"]]
+            tib <- d[["time", "interleavedBurst"]]
+            db <- d[["distance", "burst"]]
+            dib <- d[["distance", "interleavedBurst"]]
+            imagep(tb, db, vb[,,1], zlim=zlim, zlab="d[[\"v\", \"burst\"]][,,1]", drawTimeRange=FALSE, ylab="Distance [m]")
+            imagep(tb, db, vb[,,2], zlim=zlim, zlab="d[[\"v\", \"burst\"]][,,2]", drawTimeRange=FALSE, ylab="Distance [m]")
+            imagep(tb, db, vb[,,3], zlim=zlim, zlab="d[[\"v\", \"burst\"]][,,3]", drawTimeRange=FALSE, ylab="Distance [m]")
+            imagep(tb, db, vb[,,4], zlim=zlim, zlab="d[[\"v\", \"burst\"]][,,4]", drawTimeRange=FALSE, ylab="Distance [m]")
+            imagep(tib, dib, vib[,,1], zlim=zlim, zlab="d[[\"v\", \"interleavedBurst\"]][,,1]", drawTimeRange=FALSE, ylab="Distance [m]")
+            plot(c(0,1), c(0,1), xlab="", ylab="", axes=FALSE, type="n")
+            text(0.5, 0.5, "interleavedBurst has only 1 beam")
+            plot(c(0,1), c(0,1), xlab="", ylab="", axes=FALSE, type="n")
+            text(0.5, 0.5, paste("time range:\n", min(tb), "\n to\n ", max(tb)))
+          }
+})
+
