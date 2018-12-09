@@ -6,9 +6,8 @@
 \alias{plot.adp}
 \title{Plot ADP Data}
 \usage{
-\S4method{plot}{adp}(x, which, mode = c("normal", "diagnostic"), col,
-  breaks, zlim, titles, lwd = par("lwd"), type = "l",
-  ytype = c("profile", "distance"),
+\S4method{plot}{adp}(x, which, mode, col, breaks, zlim, titles,
+  lwd = par("lwd"), type = "l", ytype = c("profile", "distance"),
   drawTimeRange = getOption("oceDrawTimeRange"), useSmoothScatter,
   missingColor = "gray", mgp = getOption("oceMgp"), mar = c(mgp[1] +
   1.5, mgp[1] + 1.5, 1.5, 1.5), mai.palette = rep(0, 4), tformat,
@@ -27,12 +26,14 @@ running down from the top of the page.  If \code{which} is not given,
 the plot will show images of the distance-time dependence of velocity
 for each beam. See \dQuote{Details} for the meanings of various values of \code{which}.}
 
-\item{mode}{a string indicating whether to plot the conventional signal
-(\code{normal}) or or, in the special case of Aquadopp single-bin profilers,
-possibly the \code{diagnostic} signal.  This argument is ignored except in
-the case of Aquadopp instruments.  Perhaps a third option will become
-available in the future, for the \code{burst} mode that some instruments
-provide.}
+\item{mode}{optional string specifying a sub-class of \code{which}. For
+Nortek Aquadopp profilers, this may either be \code{"default"} (or missing)
+to get the main signal, or \code{"diagnostic"} to get a diagnostic
+signal. For Nortek AD2CP profiles, this may be any one of
+\code{"average"} (or missing) for averaged data, \code{"burst"}
+for burst data, or \code{"interleaved burst"} for interleaved burst data;
+more data types are provided by that instrument, and may be added here
+at some future time.}
 
 \item{col}{optional indication of color(s) to use.  If not provided, the
 default for images is \code{oce.colorsPalette(128,1)}, and for lines and
