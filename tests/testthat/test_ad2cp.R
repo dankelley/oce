@@ -292,6 +292,16 @@ test_that("read.ad2cp() on a secret file with only 'burst' data", {
           }
 })
 
+ad2cpHeaderValue <- function(x, key, value, numeric=TRUE)
+{
+  header <- x[["text"]]$text[[1]]
+  key2 <- paste("^", key, ",", sep="")
+  hline <- header[grep(key2, header)]
+  if (length(hline) > 1)
+    stop("header line is not distinct; try using a comma at the end of key")
+  res <- gsub(paste("^.*", value, "=([^,]*).*$", sep=""), "\\1", hline)
+  if (numeric) as.numeric(res) else gsub('"', '', res)
+}
 
 test_that("read.ad2cp() on a secret file with only 'burst' data", {
           f3 <- "~/Dropbox/ad2cp_secret_3.ad2cp"
@@ -299,6 +309,20 @@ test_that("read.ad2cp() on a secret file with only 'burst' data", {
             N <- 100
             expect_warning(d3 <- read.ad2cp(f3, from=1, to=N, by=1),
                            "since 'plan' was not given, using the most common value, namely 0")
+            expect_equal(d3[["cellSize", "burst"]],
+                         ad2cpHeaderValue(d3, "GETBURST", "CS"))
+            expect_equal(d3[["blankingDistance", "burst"]],
+                         ad2cpHeaderValue(d3, "GETBURST", "BD"))
+            expect_equal(d3[["oceCoordinate", "burst"]],
+                         tolower(ad2cpHeaderValue(d3, "GETBURST", "CY", FALSE)))
+            if (FALSE) {
+              expect_equal(d3[["numberOfBeams", "burst"]],
+                           ad2cpHeaderValue(d3, "GETBURST", "NB"))
+            } else {
+              message("a test of numberOfBeams was skipped, because it fails (reasons under investigation)")
+            }
+            ## FIXME: I think the nbeams is wrong for burst
+
             ## The dimension tests are not ground-truthed; they merely reflect
             ## what the oce code gives, so that a flag will go off if things
             ## change greatly in the code. This also checks the accessors
@@ -346,20 +370,21 @@ test_that("read.ad2cp() on a secret file with only 'burst' data", {
             ## t <- d3[["text"]]$text[[1]]
             ## t[grep('CY=',t)[1]]
             expect_equal("beam", d3[["oceCoordinate"]])
+            expect_error(plot(d3, mode="average"), "ad2cp object does not contain data item 'average'")
             plot(d3)
-            plot(d3, which="velocity")
+            plot(d3, mode="burst") # as above, since object holds 'average' data
+            plot(d3, which="velocity") # as above, since which='velocity' is default
             plot(d3, which="amplitude")
             plot(d3, which="quality")
             plot(d3, mode="burst")
             plot(d3, which="velocity", mode="burst")
             plot(d3, which="amplitude", mode="burst")
             plot(d3, which="quality", mode="burst")
-            par(mfrow=c(1, 1)) # make single-panel since interleaveBurst is just 1 beam
+            par(mfrow=c(1, 1)) # use single-panel since interleavedBurst is just 1 beam
             plot(d3, mode="interleavedBurst")
-            plot(d3, which="velocity", mode="interleavedBurst")
+            plot(d3, which="velocity", mode="interleavedBurst") # as above
             plot(d3, which="amplitude", mode="interleavedBurst")
             plot(d3, which="quality", mode="interleavedBurst")
-            expect_error(plot(d3, mode="average"), "ad2cp object does not contain data item 'average'")
           }
 })
 

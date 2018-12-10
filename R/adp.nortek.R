@@ -711,6 +711,10 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             stop("can only decode 'burst' data records that are in 'version 3' format")
         nbeamsBurst <- nbeams[p$burst[1]]
         ncellsBurst <- ncells[p$burst[1]]
+        ##debug DANnbeams<<-nbeams
+        ##debug DANncells<<-ncells
+        ##debug DANpburst<<-p$burst
+        ##debug message("TEMPORARY: exported DANnbeams, DANncells, DANpburst")
         oceDebug(debug, "burst data records: nbeams:", nbeamsBurst, ", ncells:", ncellsBurst, "\n")
         if (any(ncells[p$burst] != ncellsBurst))
             stop("the 'burst' data records do not all have the same number of cells")
