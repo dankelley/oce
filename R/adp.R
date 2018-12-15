@@ -653,6 +653,7 @@ setMethod(f="[[",
                                   "ensemble", "time", "pressure", "soundSpeed",
                                   "temperature", "temperatureMagnetometer", "temperatureRTC",
                                   "nominalCorrelation",
+                                  "powerLevel", "transmitEnergy",
                                   "v", "a", "q", "g")) {
                   metadataNames <- names(x@metadata)
                   dataNames <- names(x@data)

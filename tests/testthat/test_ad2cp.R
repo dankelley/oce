@@ -14,10 +14,10 @@ test_that("read.ad2cp() on a private file that has 'average' and 'burst' data", 
                            "accelerometerz", "blankingDistance", "cellSize",
                            "ensemble", "heading", "nominalCorrelation",
                            "numberOfBeams", "numberOfCells", "oceCoordinate",
-                           "originalCoordinate", "pitch", "pressure", "q",
+                           "originalCoordinate", "pitch", "powerLevel", "pressure", "q",
                            "roll", "soundSpeed", "temperature",
                            "temperatureMagnetometer", "temperatureRTC", "time",
-                           "v"))
+                           "transmitEnergy", "v"))
 
             expect_equal(d1[["serialNumber"]], 100159)
 
@@ -52,6 +52,11 @@ test_that("read.ad2cp() on a private file that has 'average' and 'burst' data", 
                                     1.490564522125800)
             timeBurstMatlab <- numberAsPOSIXct(secBurstMatlab)
             expect_equal(d1[["time", "burst"]][1:10], timeBurstMatlab)
+
+            ##>> Data.BurstHR_TransmitEnergy(1:10)
+            expect_equal(d1[["transmitEnergy", "burst"]][1:10], c(4, 0, 4, 4, 4, 4, 4, 4, 4, 0))
+            ##>> Data.Average_TransmitEnergy(1:10)
+            expect_equal(d1[["transmitEnergy", "average"]][1:10], c(82, 82, 82, 82, 82, 82, 82, 82, 82, 82))
 
 
             ## >> Data.Average_Pressure(1:10)
@@ -268,10 +273,10 @@ test_that("read.ad2cp() on a secret file with only 'burst' data", {
                            "accelerometerz", "blankingDistance", "cellSize",
                            "ensemble", "heading", "nominalCorrelation",
                            "numberOfBeams", "numberOfCells", "oceCoordinate",
-                           "originalCoordinate", "pitch", "pressure", "q",
+                           "originalCoordinate", "pitch", "powerLevel", "pressure", "q",
                            "roll", "soundSpeed", "temperature",
                            "temperatureMagnetometer", "temperatureRTC", "time",
-                           "v"))
+                           "transmitEnergy", "v"))
             expect_true(is.numeric(d2[["v"]]))
             expect_error(d2[["v", "average"]], "ad2cp object does not contain data item 'average'")
             expect_equal(dim(d2[["v"]]), c(N-1, 1, 4))
