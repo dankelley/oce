@@ -11,13 +11,29 @@ test_that("read.ad2cp() on a private file that has 'average' and 'burst' data", 
             expect_equal("beam", d1[["oceCoordinate"]])
             expect_equal(sort(names(d1[["burst"]])),
                          c("a", "accelerometerx", "accelerometery",
-                           "accelerometerz", "blankingDistance", "cellSize",
+                           "accelerometerz", "AHRS", "blankingDistance", "cellSize",
                            "ensemble", "heading", "nominalCorrelation",
                            "numberOfBeams", "numberOfCells", "oceCoordinate",
                            "originalCoordinate", "pitch", "powerLevel", "pressure", "q",
                            "roll", "soundSpeed", "temperature",
                            "temperatureMagnetometer", "temperatureRTC", "time",
                            "transmitEnergy", "v"))
+
+            ## FIXME: the next tests will fail if we store AHRS as 3D array
+            ## >> Data.BurstHR_AHRSRotationMatrix(1,:)
+            expect_equal(d1@data$burst$AHRS[1, ], c(0.060653746, -0.37823972, -0.92368418,
+                                                    0.31505784, -0.87079191, 0.37727141,
+                                                    -0.94709891, -0.31389475, 0.066413939))
+            expect_equal(d1[["AHRS", "burst"]][1, ], c(0.060653746, -0.37823972, -0.92368418,
+                                                       0.31505784, -0.87079191, 0.37727141,
+                                                       -0.94709891, -0.31389475, 0.066413939))
+            expect_equal(d1[["AHRS", "burst"]][2, ], c(0.060740113, -0.37818542, -0.92374152,
+                                                       0.31508127, -0.87087512, 0.37725908,
+                                                       -0.94712538, -0.31396884, 0.066250026))
+            expect_equal(d1[["AHRS", "average"]][1, ], c(0.060653746,-0.37824112, -0.92372596,
+                                                         0.31505644, -0.87087524, 0.37728685,
+                                                         -0.94714069, -0.31391019, 0.066330612))
+
 
             expect_equal(d1[["serialNumber"]], 100159)
 

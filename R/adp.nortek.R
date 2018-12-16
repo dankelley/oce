@@ -550,22 +550,22 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     altimeterIncluded <- configuration[, 9]
     altimeterRawIncluded <- configuration[,10]
     ASTIncluded <- configuration[,11]
-    echoSounderIncluded <- configuration[,12]
+    echosounderIncluded <- configuration[,12]
     AHRSIncluded <- configuration[,13]
     percentGoodIncluded<- configuration[,14]
     stdDevIncluded <- configuration[,15]
     ## configuration[, 16] Unused
     rm(configuration)                  # prune namespace for clarity
-    oceDebug(debug, "velocityIncluded:     ", paste(head(velocityIncluded), collapse=" "), "\n")
-    oceDebug(debug, "amplitudeIncluded:    ", paste(head(amplitudeIncluded), collapse=" "), "\n")
-    oceDebug(debug, "correlationIncluded:  ", paste(head(correlationIncluded), collapse=" "), "\n")
-    oceDebug(debug, "altimeterIncluded:    ", paste(head(altimeterIncluded), collapse=" "), "\n")
-    oceDebug(debug, "altimeterRawIncluded: ", paste(head(altimeterRawIncluded), collapse=" "), "\n")
-    oceDebug(debug, "ASTIncluded:          ", paste(head(ASTIncluded), collapse=" "), "\n")
-    oceDebug(debug, "echoSounderIncluded:  ", paste(head(echoSounderIncluded), collapse=" "), "\n")
-    oceDebug(debug, "AHRSIncluded:         ", paste(head(AHRSIncluded), collapse=" "), "\n")
-    oceDebug(debug, "percentGoodIncluded:  ", paste(head(percentGoodIncluded), collapse=" "), "\n")
-    oceDebug(debug, "stdDevIncluded:       ", paste(head(stdDevIncluded), collapse=" "), "\n")
+    oceDebug(debug, vectorShow(velocityIncluded))
+    oceDebug(debug, vectorShow(amplitudeIncluded))
+    oceDebug(debug, vectorShow(correlationIncluded))
+    oceDebug(debug, vectorShow(altimeterIncluded))
+    oceDebug(debug, vectorShow(altimeterRawIncluded))
+    oceDebug(debug, vectorShow(ASTIncluded))
+    oceDebug(debug, vectorShow(echosounderIncluded))
+    oceDebug(debug, vectorShow(AHRSIncluded))
+    oceDebug(debug, vectorShow(percentGoodIncluded))
+    oceDebug(debug, vectorShow(stdDevIncluded))
 
 
     ## Now, start decoding actual data.
@@ -705,6 +705,15 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         v=array(double(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)),
                         a=array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)),
                         q=array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)))
+        if (any(altimeterIncluded[p$average])) {
+            if (1 < length(unique(altimeterIncluded[p$average])))
+                stop("altimeterIncluded values non-unique across 'average' data records")
+            ## FIXME: we could save storage here by just saving 1 value
+            average$altimeterDistance <- vector("numeric", length(p$average))
+        }
+        if (any(AHRSIncluded[p$average])) {
+            average$AHRS <- matrix(numeric(), nrow=length(p$average), ncol=9)
+        }
     } else {
         average <- NULL
     }
@@ -749,6 +758,14 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                       v=array(double(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst)),
                       a=array(raw(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst)),
                       q=array(raw(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst)))
+        if (any(altimeterIncluded[p$burst])) {
+            if (1 < length(unique(altimeterIncluded[p$burst])))
+                stop("altimeterIncluded values non-unique across 'burst' data records")
+            burst$altimeterDistance <- vector("numeric", length(p$burst))
+        }
+        if (any(AHRSIncluded[p$burst])) {
+            burst$AHRS <- matrix(numeric(), nrow=length(p$burst), ncol=9)
+        }
     } else {
         burst <- NULL
     }
@@ -789,6 +806,14 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                       v=array(double(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst)),
                       a=array(raw(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst)),
                       q=array(raw(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst)))
+        if (any(altimeterIncluded[p$interleavedBurst])) {
+            if (1 < length(unique(altimeterIncluded[p$burst])))
+                stop("altimeterIncluded values non-unique across 'interleavedBurst' data records")
+            interleavedBurst$altimeterDistance <- vector("numeric", length(p$interleavedBurst))
+        }
+        if (any(AHRSIncluded[p$interleavedBurst])) {
+            interleavedBurst$AHRS <- matrix(numeric(), nrow=length(p$interleavedBurst), ncol=9)
+        }
     } else {
         interleavedBurst <- NULL
     }
@@ -835,6 +860,28 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             } else {
                 stop("at ch=", ch, " how can correlationIncluded be false?")
             }
+            if (altimeterIncluded[ch]) {
+                burst$altimeterDistance[burst$i] <- readBin(d$buf[i + i0 + seq(0,3)],"numeric", size=4,n=1,endian="little")
+                ## FIXME: perhaps save altimeterQuality from next 2 bytes
+                ## FIXME: perhaps save altimeterStatus from next 2 bytes
+                i0 <- i0 + 8
+            }
+            if (ASTIncluded[ch]) {
+                ## FIXME: perhaps read the data
+                i0 <- i0 + 20          # 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
+            }
+            if (altimeterRawIncluded[ch]) {
+                ## FIXME: perhaps read the data
+                i0 <- i0 + 8           # 4(number)+2(distance)+2(samples)
+            }
+            if (echosounderIncluded[ch]) {
+                ## FIXME: read the echosounder data
+                i0 <- i0 + 2 * burst$numberOfCells
+            }
+            if (AHRSIncluded[ch]) {
+                burst$AHRS[burst$i,] <-
+                    readBin(d$buf[i + i0 + seq(0,35)], "numeric", size=4, n=9, endian="little")
+            }
             burst$i <- burst$i + 1
             ## FIXME: read other fields
         } else if (d$id[ch] == 0x16) { # average (0x16 = 22)
@@ -865,6 +912,28 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             } else {
                 stop("at ch=", ch, " how can correlationIncluded be false?")
             }
+            if (altimeterIncluded[ch]) {
+                average$altimeterDistance[average$i] <- readBin(d$buf[i + i0 + seq(0,3)],"numeric", size=4,n=1,endian="little")
+                ## FIXME: perhaps save altimeterQuality from next 2 bytes
+                ## FIXME: perhaps save altimeterStatus from next 2 bytes
+                i0 <- i0 + 8
+            }
+            if (ASTIncluded[ch]) {
+                ## FIXME: perhaps read the data
+                i0 <- i0 + 20          # 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
+            }
+            if (altimeterRawIncluded[ch]) {
+                ## FIXME: perhaps read the data
+                i0 <- i0 + 8           # 4(number)+2(distance)+2(samples)
+            }
+            if (echosounderIncluded[ch]) {
+                ## FIXME: read the echosounder data
+                i0 <- i0 + 2 * average$numberOfCells
+            }
+            if (AHRSIncluded[ch]) {
+                average$AHRS[average$i,] <-
+                    readBin(d$buf[i + i0 + seq(0,35)],"numeric", size=4, n=9, endian="little")
+            }
             average$i <- average$i + 1
         } else if (d$id[ch] == 0x18) { # interleaved burst (0x18 = 24 )
             i <- d$index[ch]
@@ -894,32 +963,62 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             } else {
                 stop("at ch=", ch, " how can correlationIncluded be false?")
             }
+            if (altimeterIncluded[ch]) {
+                interleavedBurst$altimeterDistance[interleavedBurst$i] <- readBin(d$buf[i + i0 + seq(0,3)],"numeric", size=4,n=1,endian="little")
+                ## FIXME: perhaps save altimeterQuality from next 2 bytes
+                ## FIXME: perhaps save altimeterStatus from next 2 bytes
+                i0 <- i0 + 8
+            }
+            if (ASTIncluded[ch]) {
+                ## FIXME: perhaps read the data
+                i0 <- i0 + 20          # 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
+            }
+            if (altimeterRawIncluded[ch]) {
+                ## FIXME: perhaps read the data
+                i0 <- i0 + 8           # 4(number)+2(distance)+2(samples)
+            }
+            if (echosounderIncluded[ch]) {
+                ## FIXME: read the echosounder data
+                i0 <- i0 + 2 * interleavedBurst$numberOfCells
+            }
+            if (AHRSIncluded[ch]) {
+                interleavedBurst$AHRS[interleavedBurst$i,] <-
+                    readBin(d$buf[i + i0 + seq(0,35)], "numeric", size=4, n=9, endian="little")
+            }
             interleavedBurst$i <- interleavedBurst$i + 1
         } else {
             ## FIXME: read other fields
         }
     }
-    ## Clean lists of temporary indices.
-    if (length(average))
-        average$i <- NULL
-    if (length(burst))
-        burst$i <- NULL
-    if (length(interleavedBurst))
-        interleavedBurst$i <- NULL
-    if (length(text))
-        text$i <- NULL
+
+    ## Prepare data
     data <- list(powerLevel=powerLevel, # FIXME: put in individual items?
                  status=status,
                  activeConfiguration=activeConfiguration)
-    if (!is.null(average))
+    if (!is.null(average)) {
+        ##if (!is.null(average$AHRS))
+        ##    average$AHRS <- array(average$AHRS, dim=c(3, 3, length(average$ensemble)))
+        average$i <- NULL
         data$average <- average
-    if (!is.null(burst))
+    }
+    if (!is.null(burst)) {
+        ##if (!is.null(burst$AHRS))
+        ##    burst$AHRS <- array(burst$AHRS, dim=c(3, 3, length(burst$ensemble)))
+        burst$i <- NULL
         data$burst <- burst
-    if (!is.null(interleavedBurst))
+    }
+    if (!is.null(interleavedBurst)) {
+        ##if (!is.null(interleavedBurst$AHRS))
+        ##    interleavedBurst$AHRS <- array(interleavedBurst$AHRS, dim=c(3, 3, length(interleavedBurst$ensemble)))
+        interleavedBurst$i <- NULL
         data$interleavedBurst <- interleavedBurst
-    if (!is.null(text))
+    }
+    if (!is.null(text)) {
+        text$i <- NULL
         data$text <- text
+    }
 
+    ## Prepare metadata
     res@metadata$serialNumber <- serialNumber
     ##? res@metadata$header <- text
     res@metadata$id <- id

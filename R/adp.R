@@ -654,7 +654,8 @@ setMethod(f="[[",
                                   "temperature", "temperatureMagnetometer", "temperatureRTC",
                                   "nominalCorrelation",
                                   "powerLevel", "transmitEnergy",
-                                  "v", "a", "q", "g")) {
+                                  "v", "a", "q", "g",
+                                  "AHRS")) {
                   metadataNames <- names(x@metadata)
                   dataNames <- names(x@data)
                   instrumentType <- x[["instrumentType"]]
