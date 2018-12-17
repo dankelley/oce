@@ -155,8 +155,8 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
             oceDebug(debug, "head$beamAngles=", head$beamAngles, "(deg)\n")
             ## Transformation matrix (before division by 4096)
             ## FIXME: should we change the sign of rows 2 and 3 if pointed down??
-            head$transformationMatrix <- matrix(readBin(buf[o+31:48], "integer", n=9, size=2, endian="little"),
-                                                 nrow=3, byrow=TRUE) / 4096
+	    head$transformationMatrix <- matrix(readBin(buf[o+31:48], "integer", n=9, size=2, endian="little"),
+						nrow=3, byrow=TRUE) / 4096
             oceDebug(debug, "head$transformationMatrix\n")
             oceDebug(debug, format(head$transformationMatrix[1, ], width=15), "\n")
             oceDebug(debug, format(head$transformationMatrix[2, ], width=15), "\n")
@@ -359,18 +359,34 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 #' sensor, provided for those cases in which it cannot be inferred from the
 #' data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
 #' \code{"sideward"}.
+#'
 #' @param distance Optional vector holding the distances of bin centres from the
 #' sensor.  This argument is ignored except for Nortek profilers, and need not
 #' be given if the function determines the distances correctly from the data.
 #' The problem is that the distance is poorly documented in the Nortek System
 #' Integrator Guide (2008 edition, page 31), so the function must rely on
 #' word-of-mouth formulae that do not work in all cases.
+#'
 #' @param plan Optional integer specifying which 'plan' to focus on (see [1]
 #' for the meaning of 'plan').  If this is not given, it defaults to the most
 #' common plan in the requested subset of the data.
+#'
+#' @param type Type of Nortek instrument. If not provided, then \code{"nortek1000"}
+#' is used. The other choices are \code{"nortek500"} and \code{"nortek250"}. See
+#' the note on converting from beam to xyz coordinates, for why the type matters.
+#'
 #' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
 #' anomalous spikes in heading, etc.
 #' @template adpTemplate
+#'
+#' @section Beam-to-xyz conversion:
+#' The slant-beam angle does not seem to be encoded in the data, according
+#' to the reference guide in [1]. Although [2] reveals the
+#' angle to be 25deg for Signature1000 and Signature500 instruments,
+#' and 20deg for Signature250, the instrument type is not stored in the
+#' data, either. Therefore, supplying the correct subtype to this
+#' function is important, if conversion from beam to xyz coordinates
+#' is to be made possible.
 #'
 #' @examples
 #' \dontrun{
@@ -380,17 +396,25 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 #' @author Dan Kelley
 #'
 #' @references
-#' 1. Nortek, 2017. Signature Integration (55|250|500|1000kHz),
-#' available as a file named "\code{N3015-007 Integrators Guide AD2CP.pdf}".
+#' 1. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2017.
+#'
+#' 2. Nortek AS. “Operations Manual - Signature250, 500 and 1000.” Nortek AS, September 21, 2018.
 #'
 #' @family things related to \code{adp} data
 read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                        longitude=NA, latitude=NA,
-                       orientation, distance, plan,
+                       orientation, distance, plan, type="nortek1000",
                        monitor=FALSE, despike=FALSE, processingLog,
                        debug=getOption("oceDebug"), ...)
 {
-    oceDebug(debug, "read.ad2cp(...,from=", format(from), ",to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", plan=", if(missing(plan)) "(missing)" else plan, ",...)\n", sep="", unindent=1)
+    oceDebug(debug, "read.ad2cp(...,from=", format(from),
+             ",to=", if (missing(to)) "(missing)" else format(to),
+             ", by=", by,
+             ", plan=", if(missing(plan)) "(missing)" else plan,
+             ", type=\"", type, "\",...)\n", sep="", unindent=1)
+    type <- match.arg(type, c("nortek1000", "nortek500", "nortek250"))
+    if (is.na(type))
+        stop("type must be \"nortek1000\", \"nortek500\", or \"nortek250\"")
     if (missing(to))
         stop("Must supply 'to'. (This is a temporary constraint, whilst read.ad2cp() is being developed.)")
     if (is.character(file)) {
@@ -1029,6 +1053,19 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (missing(processingLog))
         processingLog <- paste("read.ad2cp(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep="")
     res@processingLog <- processingLogItem(processingLog)
+    ## FIXME: infer beamAngle from the file, if possible. (I do not see how.)
+    res@metadata$beamAngle <- switch(type, "nortek1000"=25, "nortek500"=25, "nortek250"=20)
+    theta <- res@metadata$beamAngle * atan2(1,1) / 45
+    ## The creation of a transformation matrix is covered in Section 5.3 of
+    ## RD Instruments. “ADCP Coordinate Transformation.” RD Instruments, July 1998.
+    TMc <- 1 # for convex beam stup; use -1 for concave
+    TMa <- 1 / (2 * sin(theta))
+    TMb <- 1 / (4 * cos(theta))
+    TMd <- TMa / sqrt(2)
+    res@metadata$transformationMatrix <- rbind(c(TMc*TMa, -TMc*TMa,        0,       0),
+                                               c(      0,        0, -TMc*TMa, TMc*TMa),
+                                               c(    TMb,      TMb,      TMb,     TMb),
+                                               c(    TMd,      TMd,     -TMd,    -TMd))
     oceDebug(debug, "} # read.ad2cp()\n", unindent=1)
     res
 }

@@ -6,8 +6,8 @@
 \usage{
 read.ad2cp(file, from = 1, to, by = 1, tz = getOption("oceTz"),
   longitude = NA, latitude = NA, orientation, distance, plan,
-  monitor = FALSE, despike = FALSE, processingLog,
-  debug = getOption("oceDebug"), ...)
+  type = "nortek1000", monitor = FALSE, despike = FALSE,
+  processingLog, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -56,6 +56,10 @@ word-of-mouth formulae that do not work in all cases.}
 for the meaning of 'plan').  If this is not given, it defaults to the most
 common plan in the requested subset of the data.}
 
+\item{type}{Type of Nortek instrument. If not provided, then \code{"nortek1000"}
+is used. The other choices are \code{"nortek500"} and \code{"nortek250"}. See
+the note on converting from beam to xyz coordinates, for why the type matters.}
+
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
 in reading the file, either by printing a dot for each profile or by writing
 a textual progress bar with \code{\link{txtProgressBar}}.}
@@ -84,6 +88,17 @@ This function is incomplete in several ways, and is still in active
 development. Users should not expect a stable version until the
 summer of 2019.
 }
+\section{Beam-to-xyz conversion}{
+
+The slant-beam angle does not seem to be encoded in the data, according
+to the reference guide in [1]. Although [2] reveals the
+angle to be 25deg for Signature1000 and Signature500 instruments,
+and 20deg for Signature250, the instrument type is not stored in the
+data, either. Therefore, supplying the correct subtype to this
+function is important, if conversion from beam to xyz coordinates
+is to be made possible.
+}
+
 \examples{
 \dontrun{
 d <- read.ad2cp("~/test.ad2cp", to=100) # or read.oce()
@@ -91,8 +106,9 @@ d <- read.ad2cp("~/test.ad2cp", to=100) # or read.oce()
 
 }
 \references{
-1. Nortek, 2017. Signature Integration (55|250|500|1000kHz),
-available as a file named "\code{N3015-007 Integrators Guide AD2CP.pdf}".
+1. Nortek AS. “Signature Integration 55|250|500|1000kHz.” Nortek AS, 2017.
+
+2. Nortek AS. “Operations Manual - Signature250, 500 and 1000.” Nortek AS, September 21, 2018.
 }
 \seealso{
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},

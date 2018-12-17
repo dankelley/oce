@@ -408,6 +408,20 @@ test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedB
             plot(d3, which="velocity", mode="interleavedBurst") # as above
             plot(d3, which="amplitude", mode="interleavedBurst")
             plot(d3, which="quality", mode="interleavedBurst")
+            ## Explore transformation matrix (does not work directly yet,
+            ## because which velo to apply it to, etc)
+            tm <- d3[["transformationMatrix"]]
+            v <- d3[["v"]]
+            E <- tm[1,1]*v[,,1] + tm[1,1]*v[,,2]
+            N <- tm[2,3]*v[,,3] + tm[2,4]*v[,,4]
+            U <- tm[3,1]*v[,,1]+tm[3,2]*v[,,2]+tm[3,3]*v[,,3]+tm[3,4]*v[,,4]
+            par(mfrow=c(3, 1))
+            time <- d3[["time"]]
+            distance <- d3[["distance"]]
+            zlim <- c(-2, 2)
+            imagep(time, distance, E, zlim=zlim, zlab="East [m/s]", ylab="Distance [m]")
+            imagep(time, distance, N, zlim=zlim, zlab="North [m/s]", ylab="Distance [m]")
+            imagep(time, distance, U, zlim=zlim, zlab="Up [m/s]", ylab="Distance [m]")
           }
 })
 
