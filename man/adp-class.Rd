@@ -260,7 +260,9 @@ format.} P/N 957-6156-00 (November 2007).
 A file containing ADP data is usually recognized by Oce, and so
 \code{\link{read.oce}} will usually read the data.  If not, one may use the
 general ADP function \code{\link{read.adp}} or specialized variants
-\code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}} or
+\code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}},
+\code{\link{read.ad2cp}} [\bold{FIXME: THIS FUNCTION MAY BE SUBSUMED INTO
+read.adp.nortek()}]  or
 \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
 
 ADP data may be plotted with \code{\link{plot,adp-method}}, which is a

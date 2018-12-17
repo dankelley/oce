@@ -825,7 +825,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Fill up th arrays in a loop. This could also be vectorized, if it proves slow.
     id <- d$id
     for (ch in 1:N) {
-        oceDebug(debug>2, "  d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
+        oceDebug(debug>5, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
         if (d$id[ch] == 0xa0) {        # text (0xa0 = 160)
             chars <- rawToChar(d$buf[seq.int(2+d$index[ch], by=1, length.out=-1+d$length[ch])])
             text$text[[text$i]] <- strsplit(chars, "\r\n")[[1]]

@@ -3,7 +3,7 @@ library(oce)
 
 context("Nortek AD2CP")
 
-test_that("read.ad2cp() on a private file that has 'average' and 'burst' data", {
+test_that("read.ad2cp() on a private AD2CP file that has 'average' and 'burst' data", {
           f1 <- "~/Dropbox/ad2cp_secret_1.ad2cp"
           if (file.exists(f1)) {
             expect_warning(d1 <- read.ad2cp(f1, 1, 100, 1),
@@ -277,11 +277,12 @@ test_that("read.ad2cp() on a private file that has 'average' and 'burst' data", 
 })
 
 
-test_that("read.ad2cp() on a secret file with only 'burst' data", {
+test_that("read.adp() on a private AD2CP file that has only 'burst' data", {
           f2 <- "~/Dropbox/ad2cp_secret_2.ad2cp"
           if (file.exists(f2)) {
             N <- 500
-            expect_warning(d2 <- read.ad2cp(f2, from=1, to=N, by=1),
+            ## Note: using read.adp() to ensure that it also works
+            expect_warning(d2 <- read.adp(f2, from=1, to=N, by=1),
                            "since 'plan' was not given, using the most common value, namely 0")
             expect_equal("beam", d2[["oceCoordinate"]])
             expect_equal(sort(names(d2[["burst"]])),
@@ -324,11 +325,12 @@ ad2cpHeaderValue <- function(x, key, value, numeric=TRUE)
   if (numeric) as.numeric(res) else gsub('"', '', res)
 }
 
-test_that("read.ad2cp() on a secret file with only 'burst' data", {
+test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedBurst' data", {
           f3 <- "~/Dropbox/ad2cp_secret_3.ad2cp"
           if (file.exists(f3)) {
             N <- 100
-            expect_warning(d3 <- read.ad2cp(f3, from=1, to=N, by=1),
+            ## Note: using read.oce() to ensure that it also works
+            expect_warning(d3 <- read.oce(f3, from=1, to=N, by=1),
                            "since 'plan' was not given, using the most common value, namely 0")
             expect_equal(d3[["cellSize", "burst"]],
                          ad2cpHeaderValue(d3, "GETBURST", "CS"))

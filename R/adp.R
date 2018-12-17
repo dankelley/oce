@@ -211,7 +211,9 @@
 #' A file containing ADP data is usually recognized by Oce, and so
 #' \code{\link{read.oce}} will usually read the data.  If not, one may use the
 #' general ADP function \code{\link{read.adp}} or specialized variants
-#' \code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}} or
+#' \code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}},
+#' \code{\link{read.ad2cp}} [\bold{FIXME: THIS FUNCTION MAY BE SUBSUMED INTO
+#' read.adp.nortek()}]  or
 #' \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
 #'
 #' ADP data may be plotted with \code{\link{plot,adp-method}}, which is a
@@ -1130,9 +1132,13 @@ beamName <- function(x, which)
 #' ``aquadopp'' instrument is a one-cell profiler that might just as well have
 #' been documented under the heading \code{\link{read.adv}}.
 #'
-#' @param manufacturer a character string indicating the manufacturer, used by
-#' the general function \code{read.adp} to select a subsidiary function to use,
-#' such as \code{read.adp.nortek}.
+#' @param manufacturer an optional character string indicating the manufacturer, used by
+#' the general function \code{read.adp} to select a subsidiary function to use. If this
+#' is not given, then \code{\link{oceMagic}} is used to try to infer the type. If this
+#' is provided, then the value \code{"rdi"} will cause \code{\link{read.adp.rdi}}
+#' to be used, \code{"nortek"} will cause \code{\link{read.adp.nortek}} to be used,
+#' and \code{"sontek"} will cause \code{\link{read.adp.sontek}} to be used.
+#'
 #' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
 #' anomalous spikes in heading, etc.
 #' @template adpTemplate
@@ -1142,7 +1148,7 @@ beamName <- function(x, which)
 #' @family things related to \code{adp} data
 read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
                      longitude=NA, latitude=NA,
-                     manufacturer=c("rdi", "nortek", "sontek"),
+                     manufacturer,
                      monitor=FALSE, despike=FALSE, processingLog,
                      debug=getOption("oceDebug"),
                      ...)
@@ -1150,25 +1156,36 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
     oceDebug(debug, "read.adp(...,from=", from,
              ",to=", if (missing(to)) "(missing)" else to,
              ",by=", by,
-             ",manufacturer=", if (missing(manufacturer)) "(missing)" else manufacturer, ",...)\n")
-    manufacturer <- match.arg(manufacturer)
-    if (monitor)
-        cat(file, "\n", ...)
-    if (manufacturer == "rdi")
-        read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
-                     longitude=longitude, latitude=latitude,
-                     debug=debug, monitor=monitor, despike=despike,
-                     processingLog=processingLog, ...)
-    else if (manufacturer == "nortek")
-        read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
+             ",manufacturer=", if (missing(manufacturer)) "(missing)" else manufacturer, ",...) {\n",
+             sep="", unindent=1)
+    if (missing(manufacturer)) {
+        oceDebug(debug, "using read.oce() since 'manufacturer' argument is missing\n")
+        res <- read.oce(file=file, from=from, to=to, by=by, tz=tz,
                         longitude=longitude, latitude=latitude,
-                        debug=debug, monitor=monitor, despike=despike,
-                        processingLog=processingLog, ...)
-    else if (manufacturer == "sontek")
-        read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
-                        longitude=longitude, latitude=latitude,
-                        debug=debug, monitor=monitor, despike=despike,
-                        processingLog=processingLog, ...)
+                        debug=debug-1, monitor=monitor, despike=despike,
+                        ...)
+    } else {
+        manufacturer <- pmatch(manufacturer, c("rdi", "nortek", "sontek"))
+        oceDebug(debug, "inferred manufacturer to be \"", manufacturer, "\"\n")
+        res <- if (manufacturer == "rdi") {
+            read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
+                         longitude=longitude, latitude=latitude,
+                         debug=debug-1, monitor=monitor, despike=despike,
+                         processingLog=processingLog, ...)
+        } else if (manufacturer == "nortek") {
+            read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
+                            longitude=longitude, latitude=latitude,
+                            debug=debug-1, monitor=monitor, despike=despike,
+                            processingLog=processingLog, ...)
+        } else if (manufacturer == "sontek") {
+            read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
+                            longitude=longitude, latitude=latitude,
+                            debug=debug-1, monitor=monitor, despike=despike,
+                            processingLog=processingLog, ...)
+        }
+    }
+    oceDebug(debug, "} # read.adp()\n", unindent=1)
+    res
 }
 
 

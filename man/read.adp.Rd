@@ -5,9 +5,8 @@
 \title{Read an ADP File}
 \usage{
 read.adp(file, from, to, by, tz = getOption("oceTz"), longitude = NA,
-  latitude = NA, manufacturer = c("rdi", "nortek", "sontek"),
-  monitor = FALSE, despike = FALSE, processingLog,
-  debug = getOption("oceDebug"), ...)
+  latitude = NA, manufacturer, monitor = FALSE, despike = FALSE,
+  processingLog, debug = getOption("oceDebug"), ...)
 }
 \arguments{
 \item{file}{a connection or a character string giving the name of the file
@@ -40,9 +39,12 @@ East.}
 \item{latitude}{optional signed number indicating the latitude in degrees
 North.}
 
-\item{manufacturer}{a character string indicating the manufacturer, used by
-the general function \code{read.adp} to select a subsidiary function to use,
-such as \code{read.adp.nortek}.}
+\item{manufacturer}{an optional character string indicating the manufacturer, used by
+the general function \code{read.adp} to select a subsidiary function to use. If this
+is not given, then \code{\link{oceMagic}} is used to try to infer the type. If this
+is provided, then the value \code{"rdi"} will cause \code{\link{read.adp.rdi}}
+to be used, \code{"nortek"} will cause \code{\link{read.adp.nortek}} to be used,
+and \code{"sontek"} will cause \code{\link{read.adp.sontek}} to be used.}
 
 \item{monitor}{boolean, set to \code{TRUE} to provide an indication of progress
 in reading the file, either by printing a dot for each profile or by writing
