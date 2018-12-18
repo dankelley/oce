@@ -81,8 +81,8 @@ bottom a vector of "mast" values.  Finally, the columns of
 multiplication.
 }
 \references{
-1. RD Instruments, 1998.  \emph{ADCP Coordinate
-Transformation, formulas and calculations.} P/N 951-6079-00 (July 1998).
+1. Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas and Calculations,”
+January 2010. P/N 951-6079-00.
 
 2. Clark Richards, 2012, PhD Dalhousie University Department of
 Oceanography.

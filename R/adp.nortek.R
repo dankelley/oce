@@ -403,7 +403,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 #' @family things related to \code{adp} data
 read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                        longitude=NA, latitude=NA,
-                       orientation, distance, plan, type="nortek1000",
+                       orientation, distance, plan, type="Signature1000",
                        monitor=FALSE, despike=FALSE, processingLog,
                        debug=getOption("oceDebug"), ...)
 {
@@ -412,9 +412,9 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
              ", by=", by,
              ", plan=", if(missing(plan)) "(missing)" else plan,
              ", type=\"", type, "\",...)\n", sep="", unindent=1)
-    type <- match.arg(type, c("nortek1000", "nortek500", "nortek250"))
+    type <- match.arg(type, c("Signature1000", "Signature500", "Signature250"))
     if (is.na(type))
-        stop("type must be \"nortek1000\", \"nortek500\", or \"nortek250\"")
+        stop("type must be \"Signature1000\", \"Signature500\", or \"Signature250\"")
     if (missing(to))
         stop("Must supply 'to'. (This is a temporary constraint, whilst read.ad2cp() is being developed.)")
     if (is.character(file)) {
@@ -449,18 +449,21 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "buf[1+headerSize+dataSize=", 1+headerSize+dataSize, "]=0x", buf[1+headerSize+dataSize], " (expect 0xa5)\n", sep="")
     nav <- do_ldc_ad2cp_in_file(filename, from, to, by)
     d <- list(buf=buf, index=nav$index, length=nav$length, id=nav$id)
-    res <- new("adp")
-    if (0x10 == d$buf[d$index[1]+1]) { # 0x10 = AD2CP (p38 integrators guide)
-        res <- oceSetMetadata(res, "instrumentType", "AD2CP")
-    } else {
+    if (0x10 != d$buf[d$index[1]+1]) # 0x10 = AD2CP (p38 integrators guide)
         stop("this file is not in AD2CP format, since the first byte is not 0x10")
-    }
     oceDebug(debug, "focussing on ", length(d$index), " data records\n")
     if (by != 1)
         stop("must have by=1 for this preliminary version of read.ad2cp() (FIXME: check whether this is still required)")
     N <- 1 + as.integer((to - from) / by)
     if (N <= 0)
         stop("must have to > from")
+
+    ## Set up object, with key metadata to allow other functions to work.
+    res <- new("adp")
+    res@metadata$manufacturer <- "nortek"
+    res@metadata$type <- type
+    res@metadata$instrumentType <- "AD2CP"
+    ## Set up data storage
     time <- vector("numeric", N)
     id <- vector("numeric", N)
     version <- vector("numeric", N)
@@ -1054,7 +1057,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         processingLog <- paste("read.ad2cp(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep="")
     res@processingLog <- processingLogItem(processingLog)
     ## FIXME: infer beamAngle from the file, if possible. (I do not see how.)
-    res@metadata$beamAngle <- switch(type, "nortek1000"=25, "nortek500"=25, "nortek250"=20)
+    res@metadata$beamAngle <- switch(type, "Signature1000"=25, "Signature500"=25, "Signature250"=20)
     theta <- res@metadata$beamAngle * atan2(1,1) / 45
     ## The creation of a transformation matrix is covered in Section 5.3 of
     ## RD Instruments. “ADCP Coordinate Transformation.” RD Instruments, July 1998.

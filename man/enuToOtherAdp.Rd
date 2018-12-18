@@ -45,8 +45,8 @@ plot(o, which=1:3)
 
 }
 \references{
-RD Instruments, 1998. \emph{ADP Coordinate Transformation,
-formulas and calculations.} P/N 951-6079-00 (July 1998)
+1. Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas and
+Calculations,” January 2010. P/N 951-6079-00.
 }
 \seealso{
 See \code{\link{read.adp}} for other functions that relate to

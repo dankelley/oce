@@ -6,7 +6,7 @@
 \usage{
 read.ad2cp(file, from = 1, to, by = 1, tz = getOption("oceTz"),
   longitude = NA, latitude = NA, orientation, distance, plan,
-  type = "nortek1000", monitor = FALSE, despike = FALSE,
+  type = "Signature1000", monitor = FALSE, despike = FALSE,
   processingLog, debug = getOption("oceDebug"), ...)
 }
 \arguments{

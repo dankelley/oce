@@ -3,11 +3,27 @@ library(oce)
 
 context("Nortek AD2CP")
 
+ad2cpHeaderValue <- function(x, key, value, numeric=TRUE)
+{
+  header <- x[["text"]]$text[[1]]
+  key2 <- paste("^", key, ",", sep="")
+  ##message("key2='", key2, "'")
+  hline <- header[grep(key2, header)]
+  ##message("hline='",hline,"'")
+  if (length(hline) > 1)
+    stop("header line is not distinct; try using a comma at the end of key")
+  res <- gsub(paste("^.*", value, "=([^,]*).*$", sep=""), "\\1", hline)
+  if (numeric) as.numeric(res) else gsub('"', '', res)
+}
+
+
 test_that("read.ad2cp() on a private AD2CP file that has 'average' and 'burst' data", {
           f1 <- "~/Dropbox/ad2cp_secret_1.ad2cp"
           if (file.exists(f1)) {
             expect_warning(d1 <- read.ad2cp(f1, 1, 100, 1),
                            "since 'plan' was not given, using the most common value, namely 0")
+            expect_equal(ad2cpHeaderValue(d1, "ID", "STR", FALSE), "Signature1000")
+            expect_equal(ad2cpHeaderValue(d1, "ID", "STR", FALSE), d1[["type"]])
             expect_equal("beam", d1[["oceCoordinate"]])
             expect_equal(sort(names(d1[["burst"]])),
                          c("a", "accelerometerx", "accelerometery",
@@ -284,6 +300,7 @@ test_that("read.adp() on a private AD2CP file that has only 'burst' data", {
             ## Note: using read.adp() to ensure that it also works
             expect_warning(d2 <- read.adp(f2, from=1, to=N, by=1),
                            "since 'plan' was not given, using the most common value, namely 0")
+            ## NB. we cannot check the header, because this dataset lacks a text record
             expect_equal("beam", d2[["oceCoordinate"]])
             expect_equal(sort(names(d2[["burst"]])),
                          c("a", "accelerometerx", "accelerometery",
@@ -314,16 +331,6 @@ test_that("read.adp() on a private AD2CP file that has only 'burst' data", {
           }
 })
 
-ad2cpHeaderValue <- function(x, key, value, numeric=TRUE)
-{
-  header <- x[["text"]]$text[[1]]
-  key2 <- paste("^", key, ",", sep="")
-  hline <- header[grep(key2, header)]
-  if (length(hline) > 1)
-    stop("header line is not distinct; try using a comma at the end of key")
-  res <- gsub(paste("^.*", value, "=([^,]*).*$", sep=""), "\\1", hline)
-  if (numeric) as.numeric(res) else gsub('"', '', res)
-}
 
 test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedBurst' data", {
           f3 <- "~/Dropbox/ad2cp_secret_3.ad2cp"
@@ -332,6 +339,8 @@ test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedB
             ## Note: using read.oce() to ensure that it also works
             expect_warning(d3 <- read.oce(f3, from=1, to=N, by=1),
                            "since 'plan' was not given, using the most common value, namely 0")
+            expect_equal(ad2cpHeaderValue(d3, "ID", "STR", FALSE), "Signature1000")
+            expect_equal(ad2cpHeaderValue(d3, "ID", "STR", FALSE), d3[["type"]])
             expect_equal(d3[["cellSize", "burst"]],
                          ad2cpHeaderValue(d3, "GETBURST", "CS"))
             expect_equal(d3[["blankingDistance", "burst"]],
@@ -408,20 +417,20 @@ test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedB
             plot(d3, which="velocity", mode="interleavedBurst") # as above
             plot(d3, which="amplitude", mode="interleavedBurst")
             plot(d3, which="quality", mode="interleavedBurst")
-            ## Explore transformation matrix (does not work directly yet,
-            ## because which velo to apply it to, etc)
-            tm <- d3[["transformationMatrix"]]
-            v <- d3[["v"]]
-            E <- tm[1,1]*v[,,1] + tm[1,1]*v[,,2]
-            N <- tm[2,3]*v[,,3] + tm[2,4]*v[,,4]
-            U <- tm[3,1]*v[,,1]+tm[3,2]*v[,,2]+tm[3,3]*v[,,3]+tm[3,4]*v[,,4]
-            par(mfrow=c(3, 1))
-            time <- d3[["time"]]
-            distance <- d3[["distance"]]
+            ## Compare beams in three coordinate systems
+            par(mfcol=c(3, 3))
             zlim <- c(-2, 2)
-            imagep(time, distance, E, zlim=zlim, zlab="East [m/s]", ylab="Distance [m]")
-            imagep(time, distance, N, zlim=zlim, zlab="North [m/s]", ylab="Distance [m]")
-            imagep(time, distance, U, zlim=zlim, zlab="Up [m/s]", ylab="Distance [m]")
+            plot(d3, which=1, zlim=zlim, drawTimeRange=FALSE)
+            plot(d3, which=2, zlim=zlim, drawTimeRange=FALSE)
+            plot(d3, which=3, zlim=zlim, drawTimeRange=FALSE)
+            d3xyz <- beamToXyz(d3)
+            plot(d3xyz, which=1, zlim=zlim, drawTimeRange=FALSE)
+            plot(d3xyz, which=2, zlim=zlim, drawTimeRange=FALSE)
+            plot(d3xyz, which=3, zlim=zlim, drawTimeRange=FALSE)
+            d3enu <- xyzToEnu(d3xyz)
+            plot(d3enu, which=1, zlim=zlim, drawTimeRange=FALSE)
+            plot(d3enu, which=2, zlim=zlim, drawTimeRange=FALSE)
+            plot(d3enu, which=3, zlim=zlim, drawTimeRange=FALSE)
           }
 })
 

@@ -57,8 +57,8 @@ In the above, \eqn{c=1}{c=1} if the beam geometry is convex, and
 beams make to the instrument \dQuote{vertical}.
 }
 \references{
-1. R D Instruments, 1998. \emph{ADP Coordinate Transformation, formulas and
-calculations.} P/N 951-6079-00 (July 1998).
+1. Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas and
+Calculations,” January 2010. P/N 951-6079-00.
 
 2. WHOI/USGS-provided Matlab code for beam-enu transformation
 \samp{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
