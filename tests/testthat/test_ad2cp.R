@@ -339,8 +339,16 @@ test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedB
             ## Note: using read.oce() to ensure that it also works
             expect_warning(d3 <- read.oce(f3, from=1, to=N, by=1),
                            "since 'plan' was not given, using the most common value, namely 0")
+            ## subsetting
+            nnn <- c("average", "burst", "interleavedBurst")
+            expect_equal(c(FALSE, TRUE, TRUE), nnn %in% names(d3@data))
+            expect_equal(c(FALSE, FALSE, FALSE), nnn %in% names(subset(d3, "average")@data))
+            expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(subset(d3, "burst")@data))
+            expect_equal(c(FALSE, FALSE, TRUE), nnn %in% names(subset(d3, "interleavedBurst")@data))
+            ## some header values
             expect_equal(ad2cpHeaderValue(d3, "ID", "STR", FALSE), "Signature1000")
             expect_equal(ad2cpHeaderValue(d3, "ID", "STR", FALSE), d3[["type"]])
+            ## cell geometry
             expect_equal(d3[["cellSize", "burst"]],
                          ad2cpHeaderValue(d3, "GETBURST", "CS"))
             expect_equal(d3[["blankingDistance", "burst"]],
@@ -353,7 +361,7 @@ test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedB
             } else {
               message("a test of numberOfBeams was skipped, because it fails (reasons under investigation)")
             }
-            ## FIXME: I think the nbeams is wrong for burst
+            ## FIXME: I think the nbeams might be wrong for burst
 
             ## The dimension tests are not ground-truthed; they merely reflect
             ## what the oce code gives, so that a flag will go off if things

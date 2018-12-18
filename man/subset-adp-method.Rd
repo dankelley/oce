@@ -20,9 +20,14 @@ A new \code{\link{adp-class}} object.
 }
 \description{
 Subset an adp (acoustic Doppler profile) object, in a manner that is function
-is somewhat analogous to \code{\link{subset.data.frame}}.  Subsetting can be by
-\code{time} or \code{distance}, but these may not be combined; use a sequence
-of calls to subset by both.
+is somewhat analogous to \code{\link{subset.data.frame}}. For any data type,
+subsetting can be by \code{time} or \code{distance}, but these may not be
+combined; use a sequence of calls to subset by both. For the special
+case of AD2CP data (see \code{\link{read.ad2cp}}), it is possible to subset
+to the "average" data records with \code{subset="average"}, to the
+"burst" records with \code{subset="burst"}, or to the "interleavedBurst"
+with \code{subset="interleavedBurst"}; note that no warning is issued,
+if this leaves an object with no useful data.
 }
 \examples{
 library(oce)

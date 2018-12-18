@@ -843,9 +843,14 @@ setValidity("adp",
 #' Subset an ADP Object
 #'
 #' Subset an adp (acoustic Doppler profile) object, in a manner that is function
-#' is somewhat analogous to \code{\link{subset.data.frame}}.  Subsetting can be by
-#' \code{time} or \code{distance}, but these may not be combined; use a sequence
-#' of calls to subset by both.
+#' is somewhat analogous to \code{\link{subset.data.frame}}. For any data type,
+#' subsetting can be by \code{time} or \code{distance}, but these may not be
+#' combined; use a sequence of calls to subset by both. For the special
+#' case of AD2CP data (see \code{\link{read.ad2cp}}), it is possible to subset
+#' to the "average" data records with \code{subset="average"}, to the
+#' "burst" records with \code{subset="burst"}, or to the "interleavedBurst"
+#' with \code{subset="interleavedBurst"}; note that no warning is issued,
+#' if this leaves an object with no useful data.
 #'
 #' @param x An \code{adp} object, i.e. one inheriting from \code{\link{adp-class}}.
 #'
@@ -983,8 +988,18 @@ setMethod(f="subset",
                   if ("heading" %in% names) res@data$heading <- res@data$heading[keep]
                   if ("pitch" %in% names) res@data$pitch <- res@data$pitch[keep]
                   if ("roll" %in% names) res@data$roll <- res@data$roll[keep]
+              } else if (length(grep("average", subsetString))) {
+                  res@data$burst <- NULL
+                  res@data$interleavedBurst <- NULL
+              } else if (length(grep("burst", subsetString))) {
+                  res@data$average <- NULL
+                  res@data$interleavedBurst <- NULL
+              } else if (length(grep("interleavedBurst", subsetString))) {
+                  res@data$average <- NULL
+                  res@data$burst <- NULL
               } else {
-                  stop("should express the subset in terms of distance or time")
+                  stop('subset should be "distance", "time", "average", "burst", or "interleavedBurst"; "',
+                       subsetString, '" is not permitted')
               }
               res@metadata$numberOfSamples <- dim(res@data$v)[1] # FIXME: handle AD2CP
               res@metadata$numberOfCells <- dim(res@data$v)[2] # FIXME: handle AD2CP
