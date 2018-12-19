@@ -386,7 +386,7 @@ test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedB
             expect_equal(dim(d3@data$interleavedBurst$q), c(49, 88, 1))
             expect_equal(dim(qib), c(49, 88, 1))
 
-            ## Note that the interleavedBurst mode has just one beam, which
+            ## Note that the interleavedBurst j has just one beam, which
             ## I'm guessing might be the vertical one, but that's just a guess,
             ## because the nortek system integrator doc has the string
             ## 'interleave' on just a single page!
@@ -410,21 +410,21 @@ test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedB
             ## t <- d3[["text"]]$text[[1]]
             ## t[grep('CY=',t)[1]]
             expect_equal("beam", d3[["oceCoordinate"]])
-            expect_error(plot(d3, mode="average"), "ad2cp object does not contain data item 'average'")
+            expect_error(plot(d3, j="average"), "ad2cp object does not contain data item 'average'")
             plot(d3)
-            plot(d3, mode="burst") # as above, since object holds 'average' data
+            plot(d3, j="burst") # as above, since object holds 'average' data
             plot(d3, which="velocity") # as above, since which='velocity' is default
             plot(d3, which="amplitude")
             plot(d3, which="quality")
-            plot(d3, mode="burst")
-            plot(d3, which="velocity", mode="burst")
-            plot(d3, which="amplitude", mode="burst")
-            plot(d3, which="quality", mode="burst")
+            plot(d3, j="burst")
+            plot(d3, which="velocity", j="burst")
+            plot(d3, which="amplitude", j="burst")
+            plot(d3, which="quality", j="burst")
             par(mfrow=c(1, 1)) # use single-panel since interleavedBurst is just 1 beam
-            plot(d3, mode="interleavedBurst")
-            plot(d3, which="velocity", mode="interleavedBurst") # as above
-            plot(d3, which="amplitude", mode="interleavedBurst")
-            plot(d3, which="quality", mode="interleavedBurst")
+            plot(d3, j="interleavedBurst")
+            plot(d3, which="velocity", j="interleavedBurst") # as above
+            plot(d3, which="amplitude", j="interleavedBurst")
+            plot(d3, which="quality", j="interleavedBurst")
             ## Compare beams in three coordinate systems
             par(mfcol=c(3, 3))
             zlim <- c(-2, 2)

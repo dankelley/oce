@@ -407,6 +407,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                        monitor=FALSE, despike=FALSE, processingLog,
                        debug=getOption("oceDebug"), ...)
 {
+    ## FIXME: _AD2CPrecordtype_ update [["recordTypes"]] etc if new record types are handled here
     oceDebug(debug, "read.ad2cp(...,from=", format(from),
              ",to=", if (missing(to)) "(missing)" else format(to),
              ", by=", by,
@@ -685,13 +686,13 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
               altimeter=which(d$id==0x1e),
               averageAltimeter=which(d$id==0x1f),
               text=which(d$id==0xa0))
-    res@metadata$recordCount <- lapply(p, length)
+    recordCount <- lapply(p, length)
     ## Inform the user of things we don't attempt to read, and invite them to ask for new capabilities.
     for (n in c("bottomTrack", "burstAltimeter",
                 "DVLBottomTrack", "echosounder", "waterTrack", "altimeter",
                 "averageAltimeter")) {
-        if (res@metadata$recordCount[[n]] > 0) {
-            warning("skipped ", res@metadata$recordCount[[n]], " '", n, "' data records; only 'average', 'burst', 'interleavedBurst' and 'text' are handled in this version of oce\n", sep="")
+        if (recordCount[[n]] > 0) {
+            warning("skipped ", recordCount[[n]], " '", n, "' data records; only 'average', 'burst', 'interleavedBurst' and 'text' are handled in this version of oce\n", sep="")
         }
     }
     ## 2. get some things in slow index-based form. (Items are alphabetized.)

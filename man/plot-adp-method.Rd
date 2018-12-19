@@ -6,7 +6,7 @@
 \alias{plot.adp}
 \title{Plot ADP Data}
 \usage{
-\S4method{plot}{adp}(x, which, mode, col, breaks, zlim, titles,
+\S4method{plot}{adp}(x, which, j, col, breaks, zlim, titles,
   lwd = par("lwd"), type = "l", ytype = c("profile", "distance"),
   drawTimeRange = getOption("oceDrawTimeRange"), useSmoothScatter,
   missingColor = "gray", mgp = getOption("oceMgp"), mar = c(mgp[1] +
@@ -26,7 +26,7 @@ running down from the top of the page.  If \code{which} is not given,
 the plot will show images of the distance-time dependence of velocity
 for each beam. See \dQuote{Details} for the meanings of various values of \code{which}.}
 
-\item{mode}{optional string specifying a sub-class of \code{which}. For
+\item{j}{optional string specifying a sub-class of \code{which}. For
 Nortek Aquadopp profilers, this may either be \code{"default"} (or missing)
 to get the main signal, or \code{"diagnostic"} to get a diagnostic
 signal. For Nortek AD2CP profiles, this may be any one of

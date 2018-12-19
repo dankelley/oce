@@ -442,10 +442,13 @@ setMethod(f="summary",
                             "\n", sep=''))
               }
               v.dim <- dim(object[["v"]])
-              cat("* Number of profiles:", v.dim[1], "\n")
-              cat("* Number of cells:   ", v.dim[2], "\n")
-              cat("* Number of beams:   ", v.dim[3], "\n")
-              cat("* Cell size:         ", object[["cellSize"]], "m\n")
+              instrumentType <- object[["instrumentType"]]
+              if (is.null(instrumentType) || instrumentType != "AD2CP") {
+                  cat("* Number of profiles:", v.dim[1], "\n")
+                  cat("* Number of cells:   ", v.dim[2], "\n")
+                  cat("* Number of beams:   ", v.dim[3], "\n")
+                  cat("* Cell size:         ", object[["cellSize"]], "m\n")
+              }
               if ("time" %in% names(object@data)) {
                   cat("* Summary of times between profiles:\n")
                   print(summary(diff(as.numeric(object@data$time))))
@@ -541,14 +544,23 @@ setMethod(f="summary",
                   if (numberOfBeams > 3)
                       cat("  ", format(transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
               }
-              instrumentType <- object[["instrumentType"]]
               if (!is.null(instrumentType) && instrumentType == "AD2CP") {
-                  cat("* Counts of record types:\n")
-                  for (rt in names(object@metadata$recordCount)) {
-                      cat("    ", rt, ": ", object@metadata$recordCount[[rt]], "\n", sep="")
+                  #cat("* Counts of record types:\n")
+                  #for (rt in names(object@metadata$recordCount)) {
+                  #    cat("    ", rt, ": ", object@metadata$recordCount[[rt]], "\n", sep="")
+                  #}
+                  for (rt in object[["recordTypes"]]) {
+                      cat("* Record type '", rt, "':\n", sep="")
+                      cat("  Number of profiles: ", length(object[["time", rt]]), "\n")
+                      cat("  Number of cells:    ", object[["numberOfCells", rt]], "\n")
+                      cat("  Number of beams:    ", object[["numberOfBeams", rt]], "\n")
+                      cat("  Cell size:          ", object[["cellSize", rt]], "\n")
+                      cat("  Blanking distance:  ", object[["blankingDistance", rt]], "\n")
+                      cat("  Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
                   }
+              } else {
+                  invisible(callNextMethod()) # summary
               }
-              invisible(callNextMethod()) # summary
           })
 
 #' Concatenate adp objects
@@ -704,7 +716,7 @@ setMethod(f="[[",
                       #        "burst" else stop("object's data slot does not contain either 'average' or 'burst'")
                       #}
                       ##message("4. j = '", j, "'", sep="")
-                      ## Default to "average" if no mode specified
+                      ## Default to "average" if no j specified
                       if (1 == length(grep("^[ ]*$", j)))
                           j <- "average"
                       ##message("5. j = '", j, "'", sep="")
@@ -719,7 +731,7 @@ setMethod(f="[[",
                       }
                       ##message("7")
                       res
-                  } else {
+                 } else {
                       if (!missing(j) && 1 == length(grep("numeric", j))) {
                           res <- x@data[[i]]
                           dim <- dim(res)
@@ -739,6 +751,10 @@ setMethod(f="[[",
                   } else {
                       x@metadata[[i]]
                   }
+              } else if (i == "recordTypes") {
+                  ## FIXME: _AD2CPrecordtype_ update if new record types added to read.ad2cp()
+                  allowed <- c("average", "burst", "interleavedBurst")
+                  allowed[allowed %in% names(x@data)]
               } else if (i == "va") {
                   if (!missing(j) && 1 == length(grep("numeric", j))) {
                       res <- x@data$va
@@ -1390,7 +1406,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' running down from the top of the page.  If \code{which} is not given,
 #' the plot will show images of the distance-time dependence of velocity
 #' for each beam. See \dQuote{Details} for the meanings of various values of \code{which}.
-#' @param mode optional string specifying a sub-class of \code{which}. For
+#' @param j optional string specifying a sub-class of \code{which}. For
 #' Nortek Aquadopp profilers, this may either be \code{"default"} (or missing)
 #' to get the main signal, or \code{"diagnostic"} to get a diagnostic
 #' signal. For Nortek AD2CP profiles, this may be any one of
@@ -1497,7 +1513,7 @@ read.adp <- function(file, from, to, by, tz=getOption("oceTz"),
 #' @aliases plot.adp
 setMethod(f="plot",
           signature=signature("adp"),
-          definition=function(x, which, mode,
+          definition=function(x, which, j,
                               col, breaks, zlim,
                               titles,
                               lwd=par('lwd'),
@@ -1525,7 +1541,7 @@ setMethod(f="plot",
               oceDebug(debug, "plot,adp-method(x,",
                        ", which=", if (missing(which)) "(missing)" else paste(which, collapse=","),
                        ", breaks=", if (missing(breaks)) "(missing)" else paste("c(", paste(breaks, collapse=","), ")", sep=""),
-                       ", mode=", if (missing(mode)) "(missing)" else paste("\"", mode, "\"", sep=""), "\"",
+                       ", j=", if (missing(j)) "(missing)" else paste("\"", j, "\"", sep=""), "\"",
                        ", ...) {\n", sep="", unindent=1)
               ## oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
               ## oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
@@ -1537,30 +1553,30 @@ setMethod(f="plot",
               if (is.null(instrumentType))
                   instrumentType <- "" # simplifies later checks
               oceDebug(debug, "instrumentType=\"", instrumentType, "\"\n", sep="")
-              ## interpret mode
-              if (missing(mode))
-                  mode <- ""
+              ## interpret mode, j
+              if (missing(j))
+                  j <- ""
               if (instrumentType == "aquadopp") {
-                  if (!missing(mode) && mode == "diagnostic") {
+                  if (!missing(j) && j == "diagnostic") {
                       if (x[["numberOfCells"]] != 1) {
-                          warning("This object claims to be Nortek Aquadopp, but there is more than 1 cell, so it must not be; so mode=\"diagnostic\" is being ignored")
-                          mode <- 'normal'
+                          warning("This object claims to be Nortek Aquadopp, but there is more than 1 cell, so it must not be; so j=\"diagnostic\" is being ignored")
+                          j <- 'normal'
                       }
                       if (!("timeDia" %in% names(x@data))) {
-                          warning("This instrument did not record Diagnostic data, so mode=\"diagnostic\" is being ignored")
-                          mode <- "normal"
+                          warning("This instrument did not record Diagnostic data, so j=\"diagnostic\" is being ignored")
+                          j <- "normal"
                       }
                   }
               } else if (instrumentType == "AD2CP") {
-                  modeOrig <- mode
-                  mode <- ad2cpDefaultDataItem(x, mode)
-                  if (mode != modeOrig)
-                      oceDebug(debug, "given the object contents, 'mode' was changed from \"", modeOrig, "\" to \"", mode, "\", for this Nortek AD2CP instrument\n", sep="")
+                  jOrig <- j
+                  j <- ad2cpDefaultDataItem(x, j)
+                  if (j != jOrig)
+                      oceDebug(debug, "given the object contents, 'j' was changed from \"", jOrig, "\" to \"", j, "\", for this Nortek AD2CP instrument\n", sep="")
               }
 
               if (missing(which)) {
-                  ## Note that mode is ignored for e.g. RDI adp.
-                  which <- 1:dim(x[["v", mode]])[3]
+                  ## Note that j is ignored for e.g. RDI adp.
+                  which <- 1:dim(x[["v", j]])[3]
                   oceDebug(debug, "setting which=c(", paste(which, collapse=","), "), based on the data\n", sep="")
               }
               colGiven <- !missing(col)
@@ -1583,10 +1599,10 @@ setMethod(f="plot",
               }
               opar <- par(no.readonly = TRUE)
               nw <- length(which)
-              numberOfBeams <- x[["numberOfBeams", mode]]
-              oceDebug(debug, "numberOfBeams=", numberOfBeams, " (note: mode=\"", mode, "\")\n", sep="")
-              numberOfCells <- x[["numberOfCells", mode]]
-              oceDebug(debug, "numberOfCells=", numberOfCells, " (note: mode=\"", mode, "\")\n", sep="")
+              numberOfBeams <- x[["numberOfBeams", j]]
+              oceDebug(debug, "numberOfBeams=", numberOfBeams, " (note: j=\"", j, "\")\n", sep="")
+              numberOfCells <- x[["numberOfCells", j]]
+              oceDebug(debug, "numberOfCells=", numberOfCells, " (note: j=\"", j, "\")\n", sep="")
 
               ## DELETE: ## FIXME: delete this block
               ## DELETE: if (FALSE && "instrumentType" %in% names(x@metadata) && !is.null(x@metadata$instrumentType) && x@metadata$instrumentType == "AD2CP") {
@@ -1751,7 +1767,7 @@ setMethod(f="plot",
               spatial <- 23:27
               #speed <- 28
 
-              tt <- x[["time", mode]]
+              tt <- x[["time", j]]
               ##ttDia <- x@data$timeDia  # may be null
               class(tt) <- "POSIXct"              # otherwise image() gives warnings
               if (!zlimGiven && all(which %in% 5:8)) {
@@ -1797,26 +1813,26 @@ setMethod(f="plot",
                   if (which[w] %in% images) {
                       ## image types
                       skip <- FALSE
-                      numberOfBeams <- x[["numberOfBeams", mode]]
+                      numberOfBeams <- x[["numberOfBeams", j]]
                       v <- x[["v"]]
                       if (which[w] %in% 1:4) {
                           oceDebug(debug, "which[", w, "]=", which[w], "\n")
                           ## velocity
-                          if (instrumentType == "aquadopp" && mode == "diagnostic") {
+                          if (instrumentType == "aquadopp" && j == "diagnostic") {
                               oceDebug(debug, "a diagnostic velocity component image/timeseries\n")
                               z <- x@data$vDia[, , which[w]]
                               zlab <- if (missing(titles)) paste(beamName(x, which[w]), "Dia", sep="") else titles[w]
-                              xdistance <- x[["distance", mode]]
+                              xdistance <- x[["distance", j]]
                               oceDebug(debug, vectorShow(xdistance))
                               y.look <- if (ylimGiven) (ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2]) else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else
                                   max(abs(x@data$vDia[, y.look, which[w]]), na.rm=TRUE) * c(-1, 1)
                           } else {
                               oceDebug(debug, "a velocity component image/timeseries\n")
-                              z <- x[["v", mode]][, , which[w]]
+                              z <- x[["v", j]][, , which[w]]
                               zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
                               oceDebug(debug, "zlab:", zlab, "\n")
-                              xdistance <- x[["distance", mode]]
+                              xdistance <- x[["distance", j]]
                               oceDebug(debug, vectorShow(xdistance))
                               y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
                               oceDebug(debug, vectorShow(y.look))
@@ -1831,10 +1847,10 @@ setMethod(f="plot",
                       } else if (which[w] %in% 5:8) {
                           oceDebug(debug, " which[", w, "]=", which[w], "; this is some type of amplitude\n", sep="")
                           ## amplitude
-                          if (mode == "diagnostic" && "aDia" %in% names(x@data)) {
+                          if (j == "diagnostic" && "aDia" %in% names(x@data)) {
                               oceDebug(debug, "a diagnostic amplitude component image/timeseries\n")
                               z <- x[["aDia", "numeric"]][, , which[w]-4]
-                              xdistance <- x[["distance", mode]]
+                              xdistance <- x[["distance", j]]
                               oceDebug(debug, vectorShow(xdistance))
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               oceDebug(debug, vectorShow(y.look))
@@ -1844,12 +1860,12 @@ setMethod(f="plot",
                               zlab <- c(expression(aDia[1]), expression(a[2]), expression(aDia[3]), expression(aDia[4]))[which[w]-4]
                           } else {
                               oceDebug(debug, "an amplitude component image/timeseries\n")
-                              a <- x[["a", paste(mode, "numeric")]]
+                              a <- x[["a", paste(j, "numeric")]]
                               z <- a[, , which[w]-4]
                               dim(z) <- dim(a)[1:2]
                               oceDebug(debug, "accessed data, of dim=", paste(dim(z), collapse="x"), "\n")
                               ##OLD dim(z) <- dim(x@data$a)[1:2] # FIXME: why was this here?
-                              xdistance <- x[["distance", mode]]
+                              xdistance <- x[["distance", j]]
                               oceDebug(debug, vectorShow(xdistance))
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               oceDebug(debug, vectorShow(y.look))
@@ -1863,7 +1879,7 @@ setMethod(f="plot",
                       } else if (which[w] %in% 9:12) {
                           oceDebug(debug, " which[",w,"]=",which[w],": quality or correlation\n",sep="")
                           ## correlation, or quality. First, try 'q', then 'amp'
-                          q <- x[["q", paste(mode, "numeric")]]
+                          q <- x[["q", paste(j, "numeric")]]
                           if (!is.null(q)) {
                               oceDebug(debug, "[['q']] works for this object\n")
                               z <- q[, , which[w]-8]
@@ -1886,7 +1902,7 @@ setMethod(f="plot",
                           }
                       } else if (which[w] %in% 70:(69+x[["numberOfBeams"]])) {
                           ## correlation
-                          xg <- x[["g", paste(mode, "numeric")]]
+                          xg <- x[["g", paste(j, "numeric")]]
                           if (!is.null(xg)) {
                               z <- as.numeric(xg[, , which[w]-69])
                               dim(z) <- dim(xg)[1:2]
@@ -1898,11 +1914,11 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 80) {
                           ## vertical beam velocity
-                          z <- x[["vv", mode]]
+                          z <- x[["vv", j]]
                           if (!is.null(z)) {
                               oceDebug(debug, "vertical beam velocity\n")
                               zlab <- if (missing(titles)) expression(w[vert]) else titles[w]
-                              xdistance <- x[["distance", mode]]
+                              xdistance <- x[["distance", j]]
                               y.look <- if (ylimGiven) ylimAsGiven[w, 1] <= xdistance & xdistance <= ylimAsGiven[w, 2] else rep(TRUE, length(xdistance))
                               if (0 == sum(y.look))
                                   stop("no data in the provided ylim=c(", paste(ylimAsGiven[w, ], collapse=","), ")")
@@ -1914,10 +1930,10 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 81) {
                           ## vertical beam amplitude
-                          z <- x[["va", paste(mode, "numeric")]]
+                          z <- x[["va", paste(j, "numeric")]]
                           if (!is.null(z)) {
                               oceDebug(debug, "vertical beam amplitude\n")
-                              xdistance <- x[["distance", mode]]
+                              xdistance <- x[["distance", j]]
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
                                   if (breaksGiven) NULL else range(as.numeric(x@data$va[, y.look]), na.rm=TRUE)
@@ -1928,10 +1944,10 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 82) {
                           ## vertical beam correlation
-                          z <- x[["vq", paste(mode, "numeric")]]
+                          z <- x[["vq", paste(j, "numeric")]]
                           if (!is.null(z)) {
                               oceDebug(debug, "vertical beam correlation\n")
-                              xdistance <- x[["distance", mode]]
+                              xdistance <- x[["distance", j]]
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
                                   if (breaksGiven) NULL else range(as.numeric(x@data$vq[, y.look]), na.rm=TRUE)
@@ -1942,10 +1958,10 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 83) {
                           ## vertical beam percent good
-                          z <- x[["vg", paste(mode, "numeric")]]
+                          z <- x[["vg", paste(j, "numeric")]]
                           if (!is.null(z)) {
                               oceDebug(debug, "vertical beam percent good\n")
-                              xdistance <- x[["distance", mode]]
+                              xdistance <- x[["distance", j]]
                               y.look <- if (ylimGiven) ylimAsGiven[1] <= xdistance & xdistance <= ylimAsGiven[2] else rep(TRUE, length(xdistance))
                               zlim <- if (zlimGiven) zlimAsGiven[w, ] else {
                                   if (breaksGiven) NULL else range(x[["vg", "numeric"]][, y.look], na.rm=TRUE)
@@ -1960,7 +1976,7 @@ setMethod(f="plot",
                       if (!skip) {
                           if (numberOfCells > 1) {
                               if (xlimGiven) {
-                                  ats <- imagep(x=tt, y=x[["distance", mode]], z=z,
+                                  ats <- imagep(x=tt, y=x[["distance", j]], z=z,
                                                 xlim=xlim[w, ],
                                                 zlim=zlim,
                                                 flipy=flipy,
@@ -1984,10 +2000,10 @@ setMethod(f="plot",
                                                 debug=debug-1,
                                                 ...)
                               } else {
-                                  ats <- imagep(x=tt, y=x[["distance", mode]], z=z,
+                                  ats <- imagep(x=tt, y=x[["distance", j]], z=z,
                                                 zlim=zlim,
                                                 flipy=flipy,
-                                                ylim=if (ylimGiven) ylim[w, ] else range(x[["distance", mode]], na.rm=TRUE),
+                                                ylim=if (ylimGiven) ylim[w, ] else range(x[["distance", j]], na.rm=TRUE),
                                                 col=if (colGiven) col else { if (missing(breaks)) oce.colorsPalette(128, 1) else oce.colorsPalette(length(breaks)-1, 1) },
                                                 breaks=breaks,
                                                 ylab=resizableLabel("distance"),
@@ -2006,10 +2022,10 @@ setMethod(f="plot",
                                                 ...)
                               }
                               if (showBottom)
-                                  lines(x[["time", mode]], bottom)
+                                  lines(x[["time", j]], bottom)
                           } else {
                               col <- if (colGiven) rep(col, length.out=nw) else rep("black", length.out=nw)
-                              time  <- if (mode== "diagnostic") x@data$timeDia else x[["time"]]
+                              time  <- if (j== "diagnostic") x@data$timeDia else x[["time"]]
                               tlim <- range(time)
                               ats <- oce.plot.ts(time, z, ylab=zlab,
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
@@ -2035,11 +2051,11 @@ setMethod(f="plot",
                       col <- if (colGiven) rep(col, length.out=nw) else rep("black", length.out=nw)
                       oceDebug(debug, "graph", w, "is a timeseries\n")
                       ##par(mgp=mgp, mar=mar, cex=cex)
-                      tlim <- range(x[["time", mode]])
+                      tlim <- range(x[["time", j]])
                       if (which[w] == 13) {
                           oceDebug(debug, " which[", w, "] == 13 (salinity)\n", sep="")
                           if (haveTimeImages) drawPalette(debug=debug-1)
-                          ats <- oce.plot.ts(x[["time", mode]], x[["salinity", mode]],
+                          ats <- oce.plot.ts(x[["time", j]], x[["salinity", j]],
                                              xlim=if (xlimGiven) xlim[w, ] else tlim,
                                              ylim=if (ylimGiven) ylim[w, ],
                                              xaxs="i",
@@ -2058,7 +2074,7 @@ setMethod(f="plot",
                       } else if (which[w] == 14) {
                           oceDebug(debug, " which[", w, "] == 14 (temperature)\n", sep="")
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          if (mode == "diagnostic" && "temperatureDia" %in% names(x@data)) {
+                          if (j == "diagnostic" && "temperatureDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$temperatureDia,
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
@@ -2075,7 +2091,7 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
-                              ats <- oce.plot.ts(x[["time", mode]], x[["temperature", mode]],
+                              ats <- oce.plot.ts(x[["time", j]], x[["temperature", j]],
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
                                                  xaxs="i",
@@ -2094,7 +2110,7 @@ setMethod(f="plot",
                       } else if (which[w] == 15) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           oceDebug(debug, " which[", w, "] == 15 (pressure)\n", sep="")
-                          if (mode == "diagnostic" && "pressureDia" %in% names(x@data)) {
+                          if (j == "diagnostic" && "pressureDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$pressureDia,
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
@@ -2112,7 +2128,7 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
-                              ats <- oce.plot.ts(x[["time", mode]], x[["pressure", mode]],
+                              ats <- oce.plot.ts(x[["time", j]], x[["pressure", j]],
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
                                                  xaxs="i",
@@ -2131,7 +2147,7 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 16) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          if (mode == "diagnostic" && "headingDia" %in% names(x@data)) {
+                          if (j == "diagnostic" && "headingDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$headingDia,
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
@@ -2149,7 +2165,7 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
-                              ats <- oce.plot.ts(x[["time", mode]], x[["heading", mode]],
+                              ats <- oce.plot.ts(x[["time", j]], x[["heading", j]],
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
                                                  xaxs="i",
@@ -2168,7 +2184,7 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 17) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          if (mode == "diagnostic" && "pitchDia" %in% names(x@data)) {
+                          if (j == "diagnostic" && "pitchDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$pitchDia,
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
@@ -2186,7 +2202,7 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
-                              ats <- oce.plot.ts(x[["time", mode]], x[["pitch", mode]],
+                              ats <- oce.plot.ts(x[["time", j]], x[["pitch", j]],
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
                                                  xaxs="i",
@@ -2205,7 +2221,7 @@ setMethod(f="plot",
                           }
                       } else if (which[w] == 18) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          if (mode == "diagnostic" && "rollDia" %in% names(x@data)) {
+                          if (j == "diagnostic" && "rollDia" %in% names(x@data)) {
                               ats <- oce.plot.ts(x@data$timeDia, x@data$rollDia,
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
@@ -2223,7 +2239,7 @@ setMethod(f="plot",
                                                  tformat=tformat,
                                                  debug=debug-1)
                           } else {
-                              ats <- oce.plot.ts(x[["time", mode]], x[["roll", mode]],
+                              ats <- oce.plot.ts(x[["time", j]], x[["roll", j]],
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
                                                  xaxs="i",
@@ -2243,7 +2259,7 @@ setMethod(f="plot",
                       } else if (which[w] == 19) {
                           if (x[["numberOfBeams"]] > 0) {
                               if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                              ats <- oce.plot.ts(x[["time", mode]], apply(x[["v", mode]][, , 1], 1, mean, na.rm=TRUE),
+                              ats <- oce.plot.ts(x[["time", j]], apply(x[["v", j]][, , 1], 1, mean, na.rm=TRUE),
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
                                                  xaxs="i",
@@ -2266,7 +2282,7 @@ setMethod(f="plot",
                       } else if (which[w] == 20) {
                           if (x[["numberOfBeams"]] > 1) {
                               if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                              ats <- oce.plot.ts(x[["time", mode]], apply(x[["v", mode]][, , 2], 1, mean, na.rm=TRUE),
+                              ats <- oce.plot.ts(x[["time", j]], apply(x[["v", j]][, , 2], 1, mean, na.rm=TRUE),
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
                                                  xaxs="i",
@@ -2289,7 +2305,7 @@ setMethod(f="plot",
                       } else if (which[w] == 21) {
                           if (x[["numberOfBeams"]] > 2) {
                               if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                              ats <- oce.plot.ts(x[["time", mode]], apply(x[["v", mode]][, , 3], 1, mean, na.rm=TRUE),
+                              ats <- oce.plot.ts(x[["time", j]], apply(x[["v", j]][, , 3], 1, mean, na.rm=TRUE),
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
                                                  xaxs="i",
@@ -2312,7 +2328,7 @@ setMethod(f="plot",
                       } else if (which[w] == 22) {
                           if (x[["numberOfBeams"]] > 3) {
                               if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                              ats <- oce.plot.ts(x[["time", mode]], apply(x[["v", mode]][, , 4], 1, mean, na.rm=TRUE),
+                              ats <- oce.plot.ts(x[["time", j]], apply(x[["v", j]][, , 4], 1, mean, na.rm=TRUE),
                                                  xlim=if (xlimGiven) xlim[w, ] else tlim,
                                                  ylim=if (ylimGiven) ylim[w, ],
                                                  xaxs="i",
@@ -2336,7 +2352,7 @@ setMethod(f="plot",
                                        ## heaving
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           dt <- as.numeric(x[["time"]][2]) - as.numeric(x[["time"]][1])
-                          ats <- oce.plot.ts(x[["time", mode]], dt * cumsum(apply(x[["v", mode]][, , 3], 1, mean)),
+                          ats <- oce.plot.ts(x[["time", j]], dt * cumsum(apply(x[["v", j]][, , 3], 1, mean)),
                                              xlim=if (xlimGiven) xlim[w, ] else tlim,
                                              ylim=if (ylimGiven) ylim[w, ],
                                              xaxs="i",
@@ -2357,7 +2373,7 @@ setMethod(f="plot",
                       } else if (which[w] == 100) {
                           oceDebug(debug, "draw(ctd, ...) of type 'soundSpeed'\n")
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
-                          ats <- oce.plot.ts(x[["time", mode]], x[["soundSpeed", mode]],
+                          ats <- oce.plot.ts(x[["time", j]], x[["soundSpeed", j]],
                                              xlim=if (xlimGiven) xlim[w, ] else tlim,
                                              ylim=if (ylimGiven) ylim[w, ],
                                              xaxs="i",
@@ -2379,7 +2395,7 @@ setMethod(f="plot",
                           if ("br" %in% names(x@data)) {
                               if (which[w] == 40) {
                                   R <- apply(x@data$br, 1, mean, na.rm=TRUE)
-                                  ats <- oce.plot.ts(x[["time", mode]], R,
+                                  ats <- oce.plot.ts(x[["time", j]], R,
                                                      ylab="Bottom range [m]",
                                                      type=type,
                                                      xlim=if (xlimGiven) xlim[w, ] else tlim,
@@ -2442,19 +2458,19 @@ setMethod(f="plot",
                       if (which[w] == 23) {
                           ## progressive vector
                           par(mar=c(mgp[1]+1, mgp[1]+1, 1, 1))
-                          if (mode == 'diagnostic')
+                          if (j == 'diagnostic')
                               dt <- as.numeric(difftime(x@data$timeDia[2], x@data$timeDia[1], units="sec")) # FIXME: should not assume all equal
                           else
                               dt <- as.numeric(difftime(x[["time"]][2], x[["time"]][1], units="sec")) # FIXME: should not assume all equal
                           mPerKm <- 1000
-                          if (mode == 'diagnostic') {
+                          if (j == 'diagnostic') {
                               U <- x@data$vDia[, 1, 1]
                               V <- x@data$vDia[, 1, 2]
                               ttt <- x@data$timeDia
                           } else {
-                              U <- x[["v", mode]][, , 1]
-                              V <- x[["v", mode]][, , 2]
-                              ttt <- x[["time", mode]]
+                              U <- x[["v", j]][, , 1]
+                              V <- x[["v", j]][, , 2]
+                              ttt <- x[["time", j]]
                           }
                           if (!missing(control) && !is.null(control$bin)) {
                               if (control$bin < 1)
@@ -2465,7 +2481,7 @@ setMethod(f="plot",
                               u <- U[, control$bin] #EAC: bug fix, attempt to subset 2D matrix by 3 dimensions
                               v <- V[, control$bin]
                           } else {
-                              if (x[["numberOfCells", mode]] > 1) {
+                              if (x[["numberOfCells", j]] > 1) {
                                   u <- apply(U, 1, mean, na.rm=TRUE)
                                   v <- apply(V, 1, mean, na.rm=TRUE)
                               } else {
@@ -2488,8 +2504,8 @@ setMethod(f="plot",
                           if (which[w] == 27 && x[["numberOfBeams"]] < 4) {
                               warning("cannot use which=27 for a 3-beam instrument")
                           } else {
-                              value <- apply(x[["v", mode]][, , which[w]-23], 2, mean, na.rm=TRUE)
-                              yy <- x[["distance", mode]]
+                              value <- apply(x[["v", j]][, , which[w]-23], 2, mean, na.rm=TRUE)
+                              yy <- x[["distance", j]]
                               if (ytype == "profile" && x@metadata$orientation == "downward" && !ylimGiven) {
                                   plot(value, yy, xlab=beamName(x, which[w]-23),
                                        ylab=resizableLabel("distance"), type='l', ylim=rev(range(yy)), ...)
@@ -2507,22 +2523,22 @@ setMethod(f="plot",
                   } else if (which[w] %in% 28:30) {
                       ## "uv", "uv+ellipse", or "uv+ellipse+arrow"
                       par(mar=c(mgp[1]+1, mgp[1]+1, 1, 1))
-                      n <- dim(x[["v", mode]])[1]
+                      n <- dim(x[["v", j]])[1]
                       if (!missing(control) && !is.null(control$bin)) {
                           if (control$bin < 1)
                               stop("cannot have control$bin less than 1, but got ", control$bin)
                           max.bin <- dim(x[["v"]])[2]
                           if (control$bin > max.bin)
                               stop("cannot have control$bin larger than ", max.bin, " but got ", control$bin)
-                          u <- x[["v", mode]][, control$bin, 1]
-                          v <- x[["v", mode]][, control$bin, 2]
+                          u <- x[["v", j]][, control$bin, 1]
+                          v <- x[["v", j]][, control$bin, 2]
                       } else {
-                          if (x[["numberOfCells", mode]] > 1) {
+                          if (x[["numberOfCells", j]] > 1) {
                               u <- apply(x[["v"]][, , 1], 1, mean, na.rm=TRUE)
                               v <- apply(x[["v"]][, , 2], 1, mean, na.rm=TRUE)
                           } else {
-                              u <- x[["v", mode]][, 1, 1]
-                              v <- x[["v", mode]][, 1, 2]
+                              u <- x[["v", j]][, 1, 1]
+                              v <- x[["v", j]][, 1, 2]
                           }
                       }
                       oceDebug(debug, "uv type plot\n")
@@ -2588,11 +2604,11 @@ setMethod(f="plot",
                                   max.bin <- dim(x[["v"]])[2]
                                   if (control$bin > max.bin)
                                       stop("cannot have control$bin larger than ", max.bin, " but got ", control$bin)
-                                  umean <- mean(x[["v", mode]][, control$bin, 2], na.rm=TRUE)
-                                  vmean <- mean(x[["v", mode]][, control$bin, 2], na.rm=TRUE)
+                                  umean <- mean(x[["v", j]][, control$bin, 2], na.rm=TRUE)
+                                  vmean <- mean(x[["v", j]][, control$bin, 2], na.rm=TRUE)
                               } else {
-                                  umean <- mean(x[["v", mode]][, , 1], na.rm=TRUE)
-                                  vmean <- mean(x[["v", mode]][, , 2], na.rm=TRUE)
+                                  umean <- mean(x[["v", j]][, , 1], na.rm=TRUE)
+                                  vmean <- mean(x[["v", j]][, , 2], na.rm=TRUE)
                               }
                               res$meanU <- umean
                               res$meanV <- vmean
