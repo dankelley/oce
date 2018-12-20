@@ -1041,7 +1041,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         interleavedBurst$i <- NULL
         data$interleavedBurst <- interleavedBurst
     }
-    if (!is.null(text)) {
+    if (length(text)) {
         text$i <- NULL
         data$text <- text
     }
