@@ -1885,7 +1885,7 @@ read.oce <- function(file, ...)
     } else if (type == "adp/nortek/aquadoppHR") {
         res <- read.aquadoppHR(file, processingLog=processingLog, ...)
     } else if (type == "adp/nortek/ad2cp") {
-        res <- read.ad2cp(file, processingLog=processingLog, ...)
+        res <- read.adp.ad2cp(file, processingLog=processingLog, ...)
     } else if (type == "adv/nortek/vector") {
         res <- read.adv.nortek(file, processingLog=processingLog, ...)
     } else if (type == "adv/sontek/adr") {

@@ -173,7 +173,7 @@
 #'     \code{adp[["vq"]]}, and \code{adp[["vg"]]} in analogy with the
 #'     standard 4-beam fields.
 #'
-#' @section Accessing and altering information within \code{adp-class} objects:
+#' @section Accessing and altering information within \code{\link{adp-class}} objects:
 #' \emph{Extracting values} Matrix data may be accessed as illustrated
 #' above, e.g.  or an adp object named \code{adv}, the data are provided by
 #' \code{adp[["v"]]}, \code{adp[["a"]]}, and \code{adp[["q"]]}.  As a
@@ -212,8 +212,7 @@
 #' \code{\link{read.oce}} will usually read the data.  If not, one may use the
 #' general ADP function \code{\link{read.adp}} or specialized variants
 #' \code{\link{read.adp.rdi}}, \code{\link{read.adp.nortek}},
-#' \code{\link{read.ad2cp}} [\bold{FIXME: THIS FUNCTION MAY BE SUBSUMED INTO
-#' read.adp.nortek()}]  or
+#' \code{\link{read.adp.ad2cp}},
 #' \code{\link{read.adp.sontek}} or \code{\link{read.adp.sontek.serial}}.
 #'
 #' ADP data may be plotted with \code{\link{plot,adp-method}}, which is a
@@ -442,8 +441,7 @@ setMethod(f="summary",
                             "\n", sep=''))
               }
               v.dim <- dim(object[["v"]])
-              instrumentType <- object[["instrumentType"]]
-              if (is.null(instrumentType) || instrumentType != "AD2CP") {
+              if (!is.ad2cp(object)) {
                   cat("* Number of profiles:", v.dim[1], "\n")
                   cat("* Number of cells:   ", v.dim[2], "\n")
                   cat("* Number of beams:   ", v.dim[3], "\n")
@@ -544,11 +542,7 @@ setMethod(f="summary",
                   if (numberOfBeams > 3)
                       cat("  ", format(transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
               }
-              if (!is.null(instrumentType) && instrumentType == "AD2CP") {
-                  #cat("* Counts of record types:\n")
-                  #for (rt in names(object@metadata$recordCount)) {
-                  #    cat("    ", rt, ": ", object@metadata$recordCount[[rt]], "\n", sep="")
-                  #}
+              if (is.ad2cp(object)) {
                   for (rt in object[["recordTypes"]]) {
                       cat("* Record type '", rt, "':\n", sep="")
                       cat("  Number of profiles: ", length(object[["time", rt]]), "\n")
@@ -579,18 +573,6 @@ setMethod(f="concatenate",
               rval@data$distance <- object@data$distance # FIXME: handle AD2CP
               rval
           })
-
-## private function
-ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interleavedBurst"))
-{
-    dataNames <- names(x@data)
-    if (is.null(j) || nchar(j) == 0) {
-        i <- which(order %in% dataNames)
-        if (length(i)) order[i[1]] else stop("ad2cp object does not contain any of '", paste(order, collapse="', '"), "'")
-    } else {
-        if (j %in% dataNames) j else stop("ad2cp object does not contain data item '", j, "'")
-    }
-}
 
 
 
@@ -655,8 +637,7 @@ setMethod(f="[[",
               ##     res
               ##} else
               if (i == "distance") {
-                  instrumentType <- x[["instrumentType"]]
-                  if (!is.null(instrumentType) && instrumentType == "AD2CP") {
+                  if (is.ad2cp(x)) {
                       ## AD2CP is stored in a tricky way.
                       j <- if (missing(j)) ad2cpDefaultDataItem(x) else ad2cpDefaultDataItem(x, j)
                       x@data[[j]]$blankingDistance + x@data[[j]]$cellSize*seq(1, x@data[[j]]$numberOfCells)
@@ -676,8 +657,7 @@ setMethod(f="[[",
                   ##message("i='", i, "'")
                   metadataNames <- names(x@metadata)
                   dataNames <- names(x@data)
-                  instrumentType <- x[["instrumentType"]]
-                  if (!is.null(instrumentType) && instrumentType == "AD2CP") {
+                  if (is.ad2cp(x)) {
                       ## AD2CP has 'burst' data records in one list, with 'average' records in another one.
                       ## Permit e.g. "burst:numeric" and "burst numeric" ## FIXME: document this
                       returnNumeric <- FALSE # defult: leave 'raw' data as 'raw'.
@@ -744,15 +724,14 @@ setMethod(f="[[",
                   }
               } else if (i %in% c("numberOfBeams", "numberOfCells")) {
                   ##message("AA i=", i)
-                  instrumentType <- x[["instrumentType"]]
-                  if (!is.null(instrumentType) && instrumentType == "AD2CP") {
+                  if (is.ad2cp(x)) {
                       j <- if (missing(j)) ad2cpDefaultDataItem(x) else ad2cpDefaultDataItem(x, j)
                       x@data[[j]][[i]]
                   } else {
                       x@metadata[[i]]
                   }
               } else if (i == "recordTypes") {
-                  ## FIXME: _AD2CPrecordtype_ update if new record types added to read.ad2cp()
+                  ## FIXME: _AD2CPrecordtype_ update if new record types added to read.adp.ad2cp()
                   allowed <- c("average", "burst", "interleavedBurst")
                   allowed[allowed %in% names(x@data)]
               } else if (i == "va") {
@@ -862,7 +841,7 @@ setValidity("adp",
 #' is somewhat analogous to \code{\link{subset.data.frame}}. For any data type,
 #' subsetting can be by \code{time} or \code{distance}, but these may not be
 #' combined; use a sequence of calls to subset by both. For the special
-#' case of AD2CP data (see \code{\link{read.ad2cp}}), it is possible to subset
+#' case of AD2CP data (see \code{\link{read.adp.ad2cp}}), it is possible to subset
 #' to the "average" data records with \code{subset="average"}, to the
 #' "burst" records with \code{subset="burst"}, or to the "interleavedBurst"
 #' with \code{subset="interleavedBurst"}; note that no warning is issued,
@@ -2896,9 +2875,8 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         }
         res@metadata$oceCoordinate <- "xyz"
     } else if (length(grep(".*nortek.*", manufacturer))) {
-        instrumentType <- x[["instrumentType"]]
         if (nb == 3) {
-            if (!is.null(instrumentType) && instrumentType == "AD2CP")
+            if (is.ad2cp(x))
                 stop("only 4-beam AD2CP data are handled")
             res@data$v[,,1] <- tm[1,1]*V[,,1] + tm[1,2]*V[,,2] + tm[1,3]*V[,,3]
             res@data$v[,,2] <- tm[2,1]*V[,,1] + tm[2,2]*V[,,2] + tm[2,3]*V[,,3]
@@ -2912,7 +2890,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
             }
             res@metadata$oceCoordinate <- "xyz"
         } else if (nb == 4) {
-            if (!is.null(instrumentType) && instrumentType == "AD2CP") {
+            if (is.ad2cp(x)) {
                 ## AD2CP is stored in a tricky way.
                 j <- ad2cpDefaultDataItem(x) # FIXME: should we let user specify this?
                 if (is.null(j))
@@ -3038,12 +3016,9 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     pitch <- x[["pitch"]]
     roll <- x[["roll"]]
     res <- x
-    instrumentType <- x[["instrumentType"]]
-    isAD2CP <- !is.null(instrumentType) && instrumentType == "AD2CP"
+    isAD2CP <- is.ad2cp(x)
     haveBv <- "bv" %in% names(x@data)
     ## Case-by-case alteration of heading, pitch and roll, so we can use one formula for all.
-    ## There are three instrumentType values, ("teledyn rdi", "nortek", and "sontek"), and
-    ## three orientation values ("upward", "downward", and "sideward").
     if (1 == length(agrep("rdi", manufacturer, ignore.case=TRUE))) {
         ## "teledyne rdi"
         ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14, revised 2011-03-15
@@ -3266,8 +3241,7 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adp"))
         stop("method is only for objects of class '", "adp", "'")
-    instrumentType <- x[["instrumentType"]]
-    if (!is.null(instrumentType) && instrumentType == "AD2CP")
+    if (is.ad2cp(x))
         stop("this function does not work yet for AD2CP data")
     oceCoordinate <- x[["oceCoordinate"]]
     if (oceCoordinate != "enu")

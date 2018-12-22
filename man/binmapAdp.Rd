@@ -55,14 +55,16 @@ See \code{\link{adp-class}} for a discussion of \code{adp} objects
 and notes on the many functions dealing with them.
 
 Other things related to \code{adp} data: \code{\link{[[,adp-method}},
-  \code{\link{[[<-,adp-method}}, \code{\link{adp-class}},
+  \code{\link{[[<-,adp-method}},
+  \code{\link{ad2cpHeaderValue}}, \code{\link{adp-class}},
   \code{\link{adpEnsembleAverage}}, \code{\link{adp}},
   \code{\link{as.adp}}, \code{\link{beamName}},
   \code{\link{beamToXyzAdp}}, \code{\link{beamToXyzAdv}},
   \code{\link{beamToXyz}}, \code{\link{beamUnspreadAdp}},
   \code{\link{enuToOtherAdp}}, \code{\link{enuToOther}},
   \code{\link{handleFlags,adp-method}},
-  \code{\link{plot,adp-method}}, \code{\link{read.ad2cp}},
+  \code{\link{is.ad2cp}}, \code{\link{plot,adp-method}},
+  \code{\link{read.adp.ad2cp}},
   \code{\link{read.adp.nortek}},
   \code{\link{read.adp.rdi}},
   \code{\link{read.adp.sontek.serial}},

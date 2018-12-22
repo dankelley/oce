@@ -349,6 +349,100 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
     list(hardware=hardware, head=head, user=user, offset=o+1)
 }
 
+## private function
+ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interleavedBurst"))
+{
+    if (!is.ad2cp(x))
+        stop("x is not an AD2CP object")
+    dataNames <- names(x@data)
+    if (is.null(j) || nchar(j) == 0) {
+        i <- which(order %in% dataNames)
+        if (length(i)) order[i[1]] else stop("ad2cp object does not contain any of '", paste(order, collapse="', '"), "'")
+    } else {
+        if (j %in% dataNames) j else stop("ad2cp object does not contain data item '", j, "'")
+    }
+}
+
+
+#' Decode an item from a Nortek AD2CP file
+#'
+#' @param x Adp object of the ad2cp variety, i.e. an object created
+#' by \code{\link{read.adp.ad2cp}}.
+#'
+#' @param key Character value that identifies a particular line in \code{x[["text"]]}.
+#'
+#' @param item Character value indicating the name of the item sought.
+#'
+#' @param numeric Logical value indicating whether to convert the return value
+#' from a string to a numerical value.
+#'
+#' @return String or number interpreted from the \code{x[["text"]]}, or \code{NULL},
+#' if the desired item is not found there, or if \code{x} is not of the required
+#' class and variety.
+#'
+#' @examples
+#'\dontrun{
+#' d <- read.oce("a.ad2cp")
+#' # The examples start with the line in x[["text"]][[1]]; note that in the second
+#' # example, it would be insuficient to use a key of "BEAMCFGLIST", because that will
+#' # yield 4 lines, and the function is not designed to handle that.
+#'
+#' # ID,STR=\"Signature1000\",SN=123456
+#' type <- ad2cpHeaderValue(d, "ID", "STR", numeric=FALSE)
+#' serialNumber <- ad2cpHeaderValue(d, "ID", "SN")
+#'
+#' # BEAMCFGLIST,BEAM=1,THETA=25.00,PHI=0.00,FREQ=1000,BW=25,BRD=1,HWBEAM=1,ZNOM=60.00
+#' beam1Angle <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "THETA")
+#' frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ")
+#'}
+#'
+#' @family things related to \code{adp} data
+ad2cpHeaderValue <- function(x, key, item, numeric=TRUE)
+{
+    if (missing(x))
+        stop("must provide x")
+    if (!is.ad2cp(x))
+        stop("x is not an AD2CP object")
+    if (missing(key))
+        stop("must provide key")
+    if (missing(item))
+        stop("must provide item")
+    text <- x[["text"]]
+    if (is.null(text))
+        return(NULL)
+    header <- text$text[[1]]
+    if (is.null(header))
+        return(NULL)
+    key2 <- paste("^", key, ",", sep="")
+    ##message("key2='", key2, "'")
+    hline <- header[grep(key2, header)]
+    ##message("hline='",hline,"'")
+    if (length(hline) > 1)
+        stop("header line is not distinct; try using a comma at the end of key")
+    res <- gsub(paste("^.*", item, "=([^,]*).*$", sep=""), "\\1", hline)
+    if (numeric) as.numeric(res) else gsub('"', '', res)
+}
+
+#' Test whether object is an AD2CP type
+#'
+#' @param x An item
+#'
+#' @return Logical value indicating whether the object inherits from the
+#' \code{\link{adp-class}} and has \code{instrumentType} in its
+#' \code{metadata} slot equal to \code{"AD2CP"}.
+#'
+#' @family things related to \code{adp} data
+is.ad2cp <- function(x)
+{
+    if (!inherits(x, "adp")) {
+        FALSE
+    } else {
+        instrumentType <- x[["instrumentType"]]
+        !is.null(instrumentType) && instrumentType == "AD2CP"
+    }
+ }
+
+
 #' Read an AD2CP File
 #'
 #' This function is incomplete in several ways, and is still in active
@@ -371,9 +465,15 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 #' for the meaning of 'plan').  If this is not given, it defaults to the most
 #' common plan in the requested subset of the data.
 #'
-#' @param type Type of Nortek instrument. If not provided, then \code{"nortek1000"}
-#' is used. The other choices are \code{"nortek500"} and \code{"nortek250"}. See
-#' the note on converting from beam to xyz coordinates, for why the type matters.
+#' @param type Optional character value indicating the type of Nortek instrument.
+#' If this is not provided, an attempt is made to infer it
+#' from the file header (if there is one), and \code{"Signature1000"}
+#' is used, otherwise. The importance
+#' of knowing the type is for inferring the beam angle, which is usd in the
+#' conversion from beam coordinates to xyz or enu coordinates. If \code{type} is
+#' provided, it must be one of \code{"Signature250"}, \code{"Signature500"},
+#' or \code{"Signature1000"}. The slant-beam angle is 20 degrees for Signature250,
+#' and 25 degrees for the other types (see [2], section 2 on page 6).
 #'
 #' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
 #' anomalous spikes in heading, etc.
@@ -390,7 +490,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 #'
 #' @examples
 #' \dontrun{
-#' d <- read.ad2cp("~/test.ad2cp", to=100) # or read.oce()
+#' d <- read.adp.ad2cp("~/test.ad2cp", to=100) # or read.oce()
 #'}
 #'
 #' @author Dan Kelley
@@ -401,23 +501,30 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 #' 2. Nortek AS. “Operations Manual - Signature250, 500 and 1000.” Nortek AS, September 21, 2018.
 #'
 #' @family things related to \code{adp} data
-read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                       longitude=NA, latitude=NA,
-                       orientation, distance, plan, type="Signature1000",
-                       monitor=FALSE, despike=FALSE, processingLog,
-                       debug=getOption("oceDebug"), ...)
+read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+                           longitude=NA, latitude=NA,
+                           orientation, distance, plan, type,
+                           monitor=FALSE, despike=FALSE, processingLog,
+                           debug=getOption("oceDebug"), ...)
 {
     ## FIXME: _AD2CPrecordtype_ update [["recordTypes"]] etc if new record types are handled here
-    oceDebug(debug, "read.ad2cp(...,from=", format(from),
+    planGiven <- !missing(plan)
+    typeGiven <- !missing(type)
+    oceDebug(debug, "read.adp.ad2cp(...,from=", format(from),
              ",to=", if (missing(to)) "(missing)" else format(to),
              ", by=", by,
-             ", plan=", if(missing(plan)) "(missing)" else plan,
-             ", type=\"", type, "\",...)\n", sep="", unindent=1)
-    type <- match.arg(type, c("Signature1000", "Signature500", "Signature250"))
-    if (is.na(type))
-        stop("type must be \"Signature1000\", \"Signature500\", or \"Signature250\"")
+             ", plan=", if (planGiven) plan else "(missing)",
+             ", type=\"", if (typeGiven) type else "(missing)",
+             "\",...)\n", sep="", unindent=1)
+    if (typeGiven) {
+        typeAllowed <- c("Signature1000", "Signature500", "Signature250")
+        typei <- match.arg(arg=type, choices=typeAllowed)
+        if (is.na(typei))
+            stop("type must be \"Signature1000\", \"Signature500\", or \"Signature250\"")
+        type <- typeAllowed[typei]
+    }
     if (missing(to))
-        stop("Must supply 'to'. (This is a temporary constraint, whilst read.ad2cp() is being developed.)")
+        stop("Must supply 'to'. (This is a temporary constraint, whilst read.adp.ad2cp() is being developed.)")
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -454,16 +561,13 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         stop("this file is not in AD2CP format, since the first byte is not 0x10")
     oceDebug(debug, "focussing on ", length(d$index), " data records\n")
     if (by != 1)
-        stop("must have by=1 for this preliminary version of read.ad2cp() (FIXME: check whether this is still required)")
+        stop("must have by=1 for this preliminary version of read.adp.ad2cp() (FIXME: check whether this is still required)")
     N <- 1 + as.integer((to - from) / by)
     if (N <= 0)
         stop("must have to > from")
 
     ## Set up object, with key metadata to allow other functions to work.
     res <- new("adp")
-    res@metadata$manufacturer <- "nortek"
-    res@metadata$type <- type
-    res@metadata$instrumentType <- "AD2CP"
     ## Set up data storage
     time <- vector("numeric", N)
     id <- vector("numeric", N)
@@ -517,7 +621,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Nortek docs say bit 17 indicates the active configuration
     activeConfiguration <- as.integer(statusBits[18, ])
     ## If the 'plan' argument is missing, we select the most common one in the data subset.
-    if (missing(plan)) {
+    if (!planGiven) {
         u <- unique(activeConfiguration)
         nu <- length(u)
         if (nu == 1) {
@@ -660,7 +764,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         print(table(activeConfiguration))
         browser()
         stop("This file has ",
-             nconfiguration, " active configurations, but read.ad2cp() can only handle one. Please contact the oce developers if you need to work with this file.")
+             nconfiguration, " active configurations, but read.adp.ad2cp() can only handle one. Please contact the oce developers if you need to work with this file.")
     }
 
     ## Record-type codes [1, sec 6.1, page 47]:
@@ -687,6 +791,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
               averageAltimeter=which(d$id==0x1f),
               text=which(d$id==0xa0))
     recordCount <- lapply(p, length)
+
     ## Inform the user of things we don't attempt to read, and invite them to ask for new capabilities.
     for (n in c("bottomTrack", "burstAltimeter",
                 "DVLBottomTrack", "echosounder", "waterTrack", "altimeter",
@@ -756,7 +861,7 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ##debug message("TEMPORARY: exported DANnbeams, DANncells, DANpburst")
         oceDebug(debug, "burst data records: nbeams:", nbeamsBurst, ", ncells:", ncellsBurst, "\n")
         if (any(ncells[p$burst] != ncellsBurst))
-            stop("the 'burst' data records do not all have the same number of cells")
+            warning("the 'burst' data records do not all have the same number of cells\n")
         if (any(nbeams[p$burst] != nbeamsBurst))
             stop("the 'burst' data records do not all have the same number of beams")
         ## FIXME: read other fields to the following list.
@@ -856,7 +961,12 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug>5, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
         if (d$id[ch] == 0xa0) {        # text (0xa0 = 160)
             chars <- rawToChar(d$buf[seq.int(2+d$index[ch], by=1, length.out=-1+d$length[ch])])
-            text$text[[text$i]] <- strsplit(chars, "\r\n")[[1]]
+            t <- strsplit(chars, "\r\n")[[1]]
+            if (!typeGiven) {
+                type <- gsub('.*STR="([^"]*)".*$', '\\1', t[grep("^ID,",t)])
+                typeGiven <- TRUE
+            }
+            text$text[[text$i]] <- t
             ##text$text[text$i] <- chars
             text$i <- text$i + 1
             ##oceDebug(debug, "added to text; now, text$i=", text$i, "\n")
@@ -1046,17 +1156,17 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         data$text <- text
     }
 
-    ## Prepare metadata
-    res@metadata$serialNumber <- serialNumber
-    ##? res@metadata$header <- text
+    ## Insert metadata
     res@metadata$id <- id
-    ## Remove the overall coordiante (created by initializer) since it has no meaning here.
-    res@metadata$oceCoordinate <- NULL
-
-    res@data <- data
-    if (missing(processingLog))
-        processingLog <- paste("read.ad2cp(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep="")
-    res@processingLog <- processingLogItem(processingLog)
+    res@metadata$manufacturer <- "nortek"
+    res@metadata$instrumentType <- "AD2CP"
+    res@metadata$serialNumber <- serialNumber
+    ## Warn if we had to guess the type
+    if (!typeGiven) {
+        type <- "Signature1000"
+        warning("defaulting 'type' to '", type, "'")
+    }
+    res@metadata$type <- type
     ## FIXME: infer beamAngle from the file, if possible. (I do not see how.)
     res@metadata$beamAngle <- switch(type, "Signature1000"=25, "Signature500"=25, "Signature250"=20)
     theta <- res@metadata$beamAngle * atan2(1,1) / 45
@@ -1070,7 +1180,15 @@ read.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                c(      0,        0, -TMc*TMa, TMc*TMa),
                                                c(    TMb,      TMb,      TMb,     TMb),
                                                c(    TMd,      TMd,     -TMd,    -TMd))
-    oceDebug(debug, "} # read.ad2cp()\n", unindent=1)
+    ## Remove the overall coordinate (created by initializer) since it has no meaning here.
+    res@metadata$oceCoordinate <- NULL
+    ## Insert data 
+    res@data <- data
+    ## Insert processingLog
+    if (missing(processingLog))
+        processingLog <- paste("read.adp.ad2cp(file=\"", filename, "\", from=", from, ", to=", to, ", by=", by, ")", sep="")
+    res@processingLog <- processingLogItem(processingLog)
+    oceDebug(debug, "} # read.adp.ad2cp()\n", unindent=1)
     res
 }
 

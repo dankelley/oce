@@ -1,30 +1,15 @@
 ## vim:textwidth=80:expandtab:shiftwidth=2:softtabstop=2
+
 library(oce)
 
 context("Nortek AD2CP")
 
-ad2cpHeaderValue <- function(x, key, value, numeric=TRUE)
-{
-  header <- x[["text"]]$text[[1]]
-  key2 <- paste("^", key, ",", sep="")
-  ##message("key2='", key2, "'")
-  hline <- header[grep(key2, header)]
-  ##message("hline='",hline,"'")
-  if (length(hline) > 1)
-    stop("header line is not distinct; try using a comma at the end of key")
-  res <- gsub(paste("^.*", value, "=([^,]*).*$", sep=""), "\\1", hline)
-  if (numeric) as.numeric(res) else gsub('"', '', res)
-}
-
-
-test_that("read.ad2cp() on a private AD2CP file that has 'average' and 'burst' data", {
+test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burst' data", {
           f1 <- "~/Dropbox/ad2cp_secret_1.ad2cp"
           if (file.exists(f1)) {
-            expect_warning(d1 <- read.ad2cp(f1, 1, 100, 1),
+            expect_silent(read.adp.ad2cp(f1, 1, 100, 1, plan=0))
+            expect_warning(d1 <- read.adp.ad2cp(f1, 1, 100, 1),
                            "since 'plan' was not given, using the most common value, namely 0")
-            expect_equal(ad2cpHeaderValue(d1, "ID", "STR", FALSE), "Signature1000")
-            expect_equal(ad2cpHeaderValue(d1, "ID", "STR", FALSE), d1[["type"]])
-            expect_equal("beam", d1[["oceCoordinate"]])
             expect_equal(sort(names(d1[["burst"]])),
                          c("a", "accelerometerx", "accelerometery",
                            "accelerometerz", "AHRS", "blankingDistance", "cellSize",
@@ -35,7 +20,12 @@ test_that("read.ad2cp() on a private AD2CP file that has 'average' and 'burst' d
                            "temperatureMagnetometer", "temperatureRTC", "time",
                            "transmitEnergy", "v"))
 
+            expect_equal(d1[["oceCoordinate"]], "beam")
+            expect_equal(d1[["oceCoordinate", "burst"]], "beam")
             if (!is.null(d1[["text"]])) {
+              expect_equal("Signature1000", ad2cpHeaderValue(d1, "ID", "STR", FALSE))
+              expect_equal(d1[["instrumentType"]], "AD2CP")
+              expect_equal(d1[["type"]], ad2cpHeaderValue(d1, "ID", "STR", FALSE))
               expect_equal(d1[["cellSize", "average"]], ad2cpHeaderValue(d1, "GETAVG", "CS"))
               expect_equal(d1[["blankingDistance", "average"]], ad2cpHeaderValue(d1, "GETAVG", "BD"))
               expect_equal(d1[["oceCoordinate", "average"]], tolower(ad2cpHeaderValue(d1, "GETAVG", "CY", FALSE)))
@@ -356,21 +346,22 @@ test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedB
             expect_equal(c(FALSE, TRUE, FALSE), nnn %in% names(subset(d3, "burst")@data))
             expect_equal(c(FALSE, FALSE, TRUE), nnn %in% names(subset(d3, "interleavedBurst")@data))
             ## some header values
-            if (!is.null(d1[["text"]])) {
+            if (!is.null(d3[["text"]])) {
               expect_equal("Signature1000", ad2cpHeaderValue(d3, "ID", "STR", FALSE))
+              expect_equal(d3[["instrumentType"]], "AD2CP")
               expect_equal(d3[["type"]], ad2cpHeaderValue(d3, "ID", "STR", FALSE))
-              expect_equal(d1[["cellSize", "average"]], ad2cpHeaderValue(d1, "GETAVG", "CS"))
-              expect_equal(d1[["blankingDistance", "average"]], ad2cpHeaderValue(d1, "GETAVG", "BD"))
-              expect_equal(d1[["oceCoordinate", "average"]], tolower(ad2cpHeaderValue(d1, "GETAVG", "CY", FALSE)))
-              expect_equal(d1[["cellSize", "burst"]], ad2cpHeaderValue(d1, "GETBURSTHR", "CS"))
-              expect_equal(d1[["blankingDistance", "burst"]], ad2cpHeaderValue(d1, "GETBURSTHR", "BD"))
-              ## NOTE: the next uses GETBURTS, not GETBURSTHR. I do not understand the format
-              expect_equal(d1[["oceCoordinate", "burst"]], tolower(ad2cpHeaderValue(d1, "GETBURST", "CY", FALSE)))
+              expect_equal(d3[["cellSize", "burst"]], ad2cpHeaderValue(d3, "GETBURST", "CS"))
+              expect_equal(d3[["blankingDistance", "burst"]], ad2cpHeaderValue(d3, "GETBURST", "BD"))
+              ## NOTE: the next uses GETBURST, not GETBURSTHR. I do not understand the format
+              expect_equal(d3[["oceCoordinate", "burst"]], tolower(ad2cpHeaderValue(d3, "GETBURST", "CY", FALSE)))
               if (FALSE) {
                 expect_equal(d3[["numberOfBeams", "burst"]], ad2cpHeaderValue(d3, "GETBURST", "NB"))
               } else {
                 message("a test of numberOfBeams was skipped, because it fails (reasons under investigation)")
               }
+              expect_equal(d3[["cellSize", "interleavedBurst"]], ad2cpHeaderValue(d3, "GETBURST1", "CS"))
+              expect_equal(d3[["blankingDistance", "interleavedBurst"]], ad2cpHeaderValue(d3, "GETBURST1", "BD"))
+              expect_equal(d3[["oceCoordinate", "interleavedBurst"]], tolower(ad2cpHeaderValue(d3, "GETBURST1", "CY", FALSE)))
             }
             ## FIXME: I think the nbeams might be wrong for burst
 

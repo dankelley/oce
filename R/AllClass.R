@@ -84,7 +84,7 @@ setMethod(f="summary",
               ndata <- length(object@data)
               threes <- NULL
               if (ndata > 0) {
-                  if ("instrumentType" %in% metadataNames && object@metadata$instrumentType=="AD2CP") {
+                  if (is.ad2cp(object)) {
                       threes <- matrix(nrow=3, ncol=4)
                       ## FIXME get burst and average separately
                       threes[1, ] <- threenum(object[["v"]])
@@ -147,7 +147,7 @@ setMethod(f="summary",
                   names(units) <- unitsNames
                   ##> message("units:");str(units)
                   if (!is.null(threes)) {
-                      if ("instrumentType" %in% metadataNames && object@metadata$instrumentType=="AD2CP") {
+                      if (is.ad2cp(object)) {
                           rownames(threes) <- c("v", "a", "q")
                       } else {
                           rownames(threes) <- paste("    ", dataLabel(dataNames, units), sep="")
@@ -174,7 +174,7 @@ setMethod(f="summary",
                       ##print(OriginalName)
                       OriginalName[0==nchar(OriginalName, "bytes")] <- "-"
                       if (!is.null(OriginalName)) {
-                          if ("instrumentType" %in% metadataNames && object@metadata$instrumentType=="AD2CP") {
+                          if (is.ad2cp(object)) {
                               threes <- cbind(threes, "-")
                           } else {
                               threes <- cbind(threes, OriginalName)
