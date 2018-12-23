@@ -407,10 +407,7 @@ ad2cpHeaderValue <- function(x, key, item, numeric=TRUE)
         stop("must provide key")
     if (missing(item))
         stop("must provide item")
-    text <- x[["text"]]
-    if (is.null(text))
-        return(NULL)
-    header <- text$text[[1]]
+    header <- x[["header"]]
     if (is.null(header))
         return(NULL)
     key2 <- paste("^", key, ",", sep="")
@@ -428,7 +425,7 @@ ad2cpHeaderValue <- function(x, key, item, numeric=TRUE)
 #' @param x An item
 #'
 #' @return Logical value indicating whether the object inherits from the
-#' \code{\link{adp-class}} and has \code{instrumentType} in its
+#' \code{\link{adp-class}} and has \code{fileType} in its
 #' \code{metadata} slot equal to \code{"AD2CP"}.
 #'
 #' @family things related to \code{adp} data
@@ -437,8 +434,8 @@ is.ad2cp <- function(x)
     if (!inherits(x, "adp")) {
         FALSE
     } else {
-        instrumentType <- x[["instrumentType"]]
-        !is.null(instrumentType) && instrumentType == "AD2CP"
+        fileType <- x[["fileType"]]
+        !is.null(fileType) && fileType == "AD2CP"
     }
  }
 
@@ -518,9 +515,9 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
              "\",...)\n", sep="", unindent=1)
     if (typeGiven) {
         typeAllowed <- c("Signature1000", "Signature500", "Signature250")
-        typei <- match.arg(arg=type, choices=typeAllowed)
+        typei <- pmatch(type, typeAllowed)
         if (is.na(typei))
-            stop("type must be \"Signature1000\", \"Signature500\", or \"Signature250\"")
+            stop("type must be \"Signature1000\", \"Signature500\", or \"Signature250\", but it is \"", type, "\"")
         type <- typeAllowed[typei]
     }
     if (missing(to))
@@ -618,8 +615,12 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Construct an array to store the bits within th 'status' vector. The nortek
     ## docs refer to the first bit as 0, which becomes [1,] in this array.
     dim(statusBits) <- c(32, N)
-    ## Nortek docs say bit 17 indicates the active configuration
-    activeConfiguration <- as.integer(statusBits[18, ])
+    ## Nortek docs say bit 16 indicates the active configuration, but they
+    ## count from 0, so it is bit 17 here.
+    activeConfiguration <- as.integer(statusBits[17, ])
+    ## DEBUG message("table(activeConfiguration):")
+    ## DEBUG print(table(activeConfiguration))
+    ## DEBUG browser()
     ## If the 'plan' argument is missing, we select the most common one in the data subset.
     if (!planGiven) {
         u <- unique(activeConfiguration)
@@ -632,24 +633,35 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         }
         warning("since 'plan' was not given, using the most common value, namely ", plan, "\n")
     }
+    ## Try to find a header, as the first record-type that has id=0xa0.
+    header <- NULL
+    idHeader <- which(d$id == 0xa0)[1]
+    if (length(idHeader)) {
+        oceDebug(debug, "this file has a header at id=", idHeader, "\n")
+        chars <- rawToChar(d$buf[seq.int(2+d$index[idHeader], by=1, length.out=-1+d$length[idHeader])])
+        header <- strsplit(chars, "\r\n")[[1]]
+        if (!typeGiven) {
+            type <- gsub('.*STR="([^"]*)".*$', '\\1', header[grep("^ID,", header)])
+            typeGiven <- TRUE
+        }
+    }
     keep <- activeConfiguration == plan
-    if (sum(keep) < length(keep)) {
-        message("Note: this plan has ", sum(keep), " data records, out of a total of ", length(keep), " in the file")
+    if (sum(keep) == 0) {
+        warning("there are no data for plan=", plan, "; try one of the following values instead: ", paste(unique(activeConfiguration), collapse=" "))
+        return(res)
+    }
+     if (sum(keep) < length(keep)) {
+        oceDebug(debug, "this plan has ", sum(keep), " data records, out of a total of ", length(keep), " in the file subset\n")
         d$index <- d$index[keep]
         d$length <- d$length[keep]
         d$id <- d$id[keep]
-        statusBits <- statusBits[, keep]
+        statusBits <- statusBits[, keep, drop=FALSE]
         activeConfiguration <- activeConfiguration[keep]
         N <- sum(keep)
         pointer1 <- d$index
         pointer2 <- as.vector(t(cbind(pointer1, 1 + pointer1))) # rbind() would be fine, too.
         pointer4 <- as.vector(t(cbind(pointer1, 1 + pointer1, 2 + pointer1, 3 + pointer1)))
         oceDebug(debug, "focussing on ", length(pointer1), " data records (after subsetting for plan=", plan, ")\n")
-    }
-    if (sum(keep) == 0) {
-        warning("there are no data for this plan. Below is a table() of the plans in this subset of the file:\n")
-        print(table(activeConfiguration))
-        return(res)
     }
     if (debug > 0) {
         oceDebug(debug, "below is table() of the 'plan' values in this subset of the file:\n")
@@ -735,9 +747,9 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     nbeams <- BCC[,13]+2*(BCC[,14]+2*(BCC[,15]+2*BCC[,16]))
     ## b00=enu, b01=xyz, b10=beam, b11=- [1 page 49]
     coordinateSystem <- c("enu", "xyz", "beam", "?")[1 + BCC[,11] + 2*BCC[,12]]
-    ## cell size is recorded in mm [1, table 6.1.2, page 47]
+    ## cell size is recorded in mm [1, table 6.1.2, page 49]
     cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size=2, n=N, signed=FALSE, endian="little")
-    ## blanking distance is recorded in cm [1, table 6.1.2, page 47]
+    ## blanking distance is recorded in cm [1, table 6.1.2, page 49]
     ## NB. blanking may be altered later, if statusBits[2]==0x01
     blankingDistance <- 0.01 * readBin(d$buf[pointer2 + 35], "integer", size=2, n=N, signed=FALSE, endian="little")
     nominalCorrelation <- readBin(d$buf[pointer1 + 37], "integer", size=1, n=N, signed=FALSE, endian="little")
@@ -751,8 +763,15 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     temperatureRTC <- 0.01 * readBin(d$buf[pointer2 + 63], "integer", size=2, n=N, endian="little")
     error <- readBin(d$buf[pointer2 + 65], "integer", size=4, n=N, endian="little") # FIXME: UNUSED
 
-    ## Nortek docs say bit 1 in 'status' indicats blanking scale factor.
-    blankingDistance <- blankingDistance * ifelse(statusBits[2, ] == 0x01, 1, 10)
+    ## Nortek docs [2 p51] say bit 1 (in 0-offset notation) in 'status' indicates blankingDistance
+    ## unit, either 0 for m or 1 for cm. (Above, it was read and converted to m, assuming cm.)
+    if (debug > 0) {
+        cat(vectorShow(statusBits[2,]))
+        cat(vectorShow(blankingDistance))
+    }
+    blankingDistance <- blankingDistance * ifelse(statusBits[2, ] == 0x01, 1, 0.1)
+    if (debug > 0)
+        cat(vectorShow(blankingDistance))
 
     ensemble <- readBin(d$buf[pointer4+73], "integer", size=4, n=N, endian="little")
 
@@ -762,7 +781,6 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         cat("developer-aimed information:\n")
         print(unique(activeConfiguration))
         print(table(activeConfiguration))
-        browser()
         stop("This file has ",
              nconfiguration, " active configurations, but read.adp.ad2cp() can only handle one. Please contact the oce developers if you need to work with this file.")
     }
@@ -861,7 +879,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ##debug message("TEMPORARY: exported DANnbeams, DANncells, DANpburst")
         oceDebug(debug, "burst data records: nbeams:", nbeamsBurst, ", ncells:", ncellsBurst, "\n")
         if (any(ncells[p$burst] != ncellsBurst))
-            warning("the 'burst' data records do not all have the same number of cells\n")
+            stop("the 'burst' data records do not all have the same number of cells")
         if (any(nbeams[p$burst] != nbeamsBurst))
             stop("the 'burst' data records do not all have the same number of beams")
         ## FIXME: read other fields to the following list.
@@ -964,6 +982,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             t <- strsplit(chars, "\r\n")[[1]]
             if (!typeGiven) {
                 type <- gsub('.*STR="([^"]*)".*$', '\\1', t[grep("^ID,",t)])
+                message("984: inferred type as '", type, "' from a text record")
                 typeGiven <- TRUE
             }
             text$text[[text$i]] <- t
@@ -1159,12 +1178,13 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Insert metadata
     res@metadata$id <- id
     res@metadata$manufacturer <- "nortek"
-    res@metadata$instrumentType <- "AD2CP"
+    res@metadata$fileType <- "AD2CP"
     res@metadata$serialNumber <- serialNumber
+    res@metadata$header <- header
     ## Warn if we had to guess the type
     if (!typeGiven) {
         type <- "Signature1000"
-        warning("defaulting 'type' to '", type, "'")
+        warning("defaulting 'type' to '", type, "', since no header was found in the file, and the 'type' argument was not provided")
     }
     res@metadata$type <- type
     ## FIXME: infer beamAngle from the file, if possible. (I do not see how.)
@@ -1687,7 +1707,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         orientation <- match.arg(orientation, c("sideward", "upward", "downward"))
     }
     res@metadata$manufacturer <- "nortek"
-    res@metadata$instrumentType <- type #"aquadopp-hr"
+    res@metadata$fileType <- type
     res@metadata$filename <- filename
     res@metadata$latitude <- latitude
     res@metadata$longitude <- longitude

@@ -11,7 +11,7 @@ is.ad2cp(x)
 }
 \value{
 Logical value indicating whether the object inherits from the
-\code{\link{adp-class}} and has \code{instrumentType} in its
+\code{\link{adp-class}} and has \code{fileType} in its
 \code{metadata} slot equal to \code{"AD2CP"}.
 }
 \description{

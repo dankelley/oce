@@ -705,9 +705,9 @@ setMethod(f="[[",
                       res <- x@data[[j]][[i]]
                       if (returnNumeric) {
                           ##message("6-a.")
-                          dim <- dim(res)
+                          dimres <- dim(res)
                           res <- as.numeric(res)
-                          dim(res) <- dim
+                          dim(res) <- dimres
                       }
                       ##message("7")
                       res
