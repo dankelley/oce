@@ -197,7 +197,8 @@ List do_ldc_ad2cp_in_file(CharacterVector filename, IntegerVector from, IntegerV
     size_t bytes_read;
     bytes_read = fread(hbuf, 1, HEADER_SIZE, fp);
     if (bytes_read != HEADER_SIZE) {
-      Rprintf("warning: malformed header at cindex=%d. This may mean that the file is incomplete.\n", cindex);
+      if (cindex != fileSize)
+        Rprintf("warning: cannot read record starting at byte %d of a %d-byte file. This may mean that the file is incomplete.\n", cindex, fileSize);
       break;
     }
     cindex += bytes_read;

@@ -520,8 +520,12 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             stop("type must be \"Signature1000\", \"Signature500\", or \"Signature250\", but it is \"", type, "\"")
         type <- typeAllowed[typei]
     }
+    if (by != 1)
+        stop("must have by=1, since skipping makes no sense in complex ad2cp files")
+    if (by < 1)
+        stop("cannot have by < 1")
     if (missing(to))
-        stop("Must supply 'to'. (This is a temporary constraint, whilst read.adp.ad2cp() is being developed.)")
+        to <- 1e9                      # this should be enough to read any file
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -557,9 +561,13 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (0x10 != d$buf[d$index[1]+1]) # 0x10 = AD2CP (p38 integrators guide)
         stop("this file is not in AD2CP format, since the first byte is not 0x10")
     oceDebug(debug, "focussing on ", length(d$index), " data records\n")
-    if (by != 1)
-        stop("must have by=1 for this preliminary version of read.adp.ad2cp() (FIXME: check whether this is still required)")
-    N <- 1 + as.integer((to - from) / by)
+    Nmax <- length(d$index)
+    if (to > Nmax) {
+        warning("using to=", Nmax, " based on file contents")
+        to <- Nmax
+    }
+    focusIndex <- seq(from, to, by=by)
+    N <- length(focusIndex)
     if (N <= 0)
         stop("must have to > from")
 
