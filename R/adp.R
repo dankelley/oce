@@ -509,6 +509,7 @@ setMethod(f="summary",
               ##             format(subsampleEnd),  attr(subsampleEnd, "tzone"),
               ##             1 / subsampleDeltat))
               metadataNames <- names(object@metadata)
+              isAD2CP <- is.ad2cp(object)
               if ("numberOfCells" %in% metadataNames) {
                   dist <- object[["distance"]]
                   if (object[["numberOfCells"]] > 1) {
@@ -527,13 +528,17 @@ setMethod(f="summary",
                   if ("frequency" %in% object@metadata) object@metadata$frequency else "?",
                   "kHz\n", ...)
               numberOfBeams <- object[["numberOfBeams"]]
-              if (3 == sum(c("numberOfBeams", "oceBeamUnspreaded", "orientation") %in% metadataNames)) {
-                  cat("* Beams:             ", numberOfBeams, "beams",
-                      if (!is.null(object@metadata$oceBeamUnspreaded) & object@metadata$oceBeamUnspreaded) "(attenuated)" else "(not attenuated)",
-                      "oriented", object@metadata$orientation, "with angle", object@metadata$beamAngle, "deg to axis\n", ...)
+              beamAngle <- object[["beamAngle"]]
+              beamOrientation <- object[["beamOrientation"]]
+              beamUnspreaded <- object[["beamUnspreaded"]]
+              if (!isAD2CP) {
+                  cat("* Beam number      : ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "\n")
+                  cat("*      angle       : ", if (is.null(beamAngle)) "?" else beamAngle , "\n")
+                  cat("       orientation : ", if (is.null(beamOrientation)) "?" else beamOrientation, "\n")
+                  cat("       orientation : ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n")
               }
               transformationMatrix <- object[["transformationMatrix"]]
-              if (!is.null(transformationMatrix)) {
+              if (!is.null(transformationMatrix) && dim(transformationMatrix)[2] >= 3) { 
                   digits <- 4
                   cat("* Transformation matrix::\n\n")
                   cat("  ", format(transformationMatrix[1, ], width=digits+4, digits=digits, justify="right"), "\n")
@@ -542,14 +547,17 @@ setMethod(f="summary",
                   if (numberOfBeams > 3)
                       cat("  ", format(transformationMatrix[4, ], width=digits+4, digits=digits, justify="right"), "\n")
               }
-              if (is.ad2cp(object)) {
+              if (isAD2CP) {
+                  default <- ad2cpDefaultDataItem(object)
                   for (rt in object[["recordTypes"]]) {
-                      cat("* Record type '", rt, "':\n", sep="")
+                      isTheDefault <- rt == default
+                      cat("* Record type '", rt, "'", if (isTheDefault) " (the default item):\n" else ":\n", sep="")
                       cat("  Number of profiles: ", length(object[["time", rt]]), "\n")
                       cat("  Number of cells:    ", object[["numberOfCells", rt]], "\n")
-                      cat("  Number of beams:    ", object[["numberOfBeams", rt]], "\n")
-                      cat("  Cell size:          ", object[["cellSize", rt]], "\n")
                       cat("  Blanking distance:  ", object[["blankingDistance", rt]], "\n")
+                      cat("  Cell size:          ", object[["cellSize", rt]], "\n")
+                      cat("  Number of beams:    ", object[["numberOfBeams", rt]], "\n")
+                      cat("  Beam angle:         ", object[["beamAngle", rt]], "\n")
                       cat("  Coordinate system:  ", object[["oceCoordinate", rt]], "\n")
                   }
               } else {
@@ -645,7 +653,8 @@ setMethod(f="[[",
                       x@data$distance
                   }
               } else if (i %in% c("originalCoordinate", "oceCoordinate",
-                                  "cellSize", "blankingDistance",
+                                  "cellSize", "blankingDistance", "orientation",
+                                  "beamAngle", "beamUnspreaded",
                                   "accelerometerx", "accelerometery", "accelerometerz",
                                   "heading", "pitch", "roll",
                                   "ensemble", "time", "pressure", "soundSpeed",
@@ -653,7 +662,7 @@ setMethod(f="[[",
                                   "nominalCorrelation",
                                   "powerLevel", "transmitEnergy",
                                   "v", "a", "q", "g",
-                                  "AHRS")) {
+                                  "echosounder", "AHRS")) {
                   ##message("i='", i, "'")
                   metadataNames <- names(x@metadata)
                   dataNames <- names(x@data)
@@ -3010,6 +3019,10 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     manufacturer <- x[["manufacturer"]]
     oceCoordinate = x[["oceCoordinate"]]
     orientation = x[["orientation"]]
+    if (is.null(orientation)) {
+        warning("instrument orientation is not stored in x; assuming it is \"upward\"")
+        orientation <- "upward"
+    }
     if (is.null(oceCoordinate) || (oceCoordinate != "xyz" & oceCoordinate != "sfm"))
         stop("input must be in xyz or sfm coordinates")
     heading <- x[["heading"]]
