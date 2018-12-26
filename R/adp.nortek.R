@@ -477,13 +477,8 @@ is.ad2cp <- function(x)
 #' @template adpTemplate
 #'
 #' @section Beam-to-xyz conversion:
-#' The slant-beam angle does not seem to be encoded in the data, according
-#' to the reference guide in [1]. Although [2] reveals the
-#' angle to be 25deg for Signature1000 and Signature500 instruments,
-#' and 20deg for Signature250, the instrument type is not stored in the
-#' data, either. Therefore, supplying the correct subtype to this
-#' function is important, if conversion from beam to xyz coordinates
-#' is to be made possible.
+#' The device orientation is not inferred correctly from the file, and
+#' so a default is assumed -- that the orientation is upwards.
 #'
 #' @examples
 #' \dontrun{
@@ -618,14 +613,25 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
     ## {{{
     ## Handle multiple plans (FIXME: this is limited to a single plan, at present)
-    status <- readBin(d$buf[pointer4 + 69], "integer", size=4, n=N, endian="little")
-    statusBits <- intToBits(status)
+    status <- intToBits(readBin(d$buf[pointer4 + 69], "integer", size=4, n=N, endian="little"))
     ## Construct an array to store the bits within th 'status' vector. The nortek
     ## docs refer to the first bit as 0, which becomes [1,] in this array.
-    dim(statusBits) <- c(32, N)
+    dim(status) <- c(32, N)
     ## Nortek docs say bit 16 indicates the active configuration, but they
     ## count from 0, so it is bit 17 here.
-    activeConfiguration <- as.integer(statusBits[17, ])
+    activeConfiguration <- as.integer(status[17, ])
+    ## Nortek docs say bits 25-27 (0-offset notation) store orientation, so 26-28 here.
+    ## Table 1 tells how to interpret the bits:
+    ## 0=xup 1=xdown 4=zup 5=zdown
+    ## but I am not getting such values in my test files. Maybe . Am I looking
+    ## at
+    orientation1 <- as.integer(status[26, ])
+    orientation2 <- as.integer(status[27, ])
+    orientation3 <- as.integer(status[28, ])
+    O1 <- orientation1 + 2*orientation2 + 4*orientation3
+    O2 <- 4*orientation1 + 2*orientation2 + orientation3
+    if (debug > 0) message(vectorShow(O1))
+    if (debug > 0) message(vectorShow(O2))
     ## DEBUG message("table(activeConfiguration):")
     ## DEBUG print(table(activeConfiguration))
     ## DEBUG browser()
@@ -663,7 +669,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         d$index <- d$index[keep]
         d$length <- d$length[keep]
         d$id <- d$id[keep]
-        statusBits <- statusBits[, keep, drop=FALSE]
+        status <- status[, keep, drop=FALSE]
         activeConfiguration <- activeConfiguration[keep]
         N <- sum(keep)
         pointer1 <- d$index
@@ -758,7 +764,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## cell size is recorded in mm [1, table 6.1.2, page 49]
     cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size=2, n=N, signed=FALSE, endian="little")
     ## blanking distance is recorded in cm [1, table 6.1.2, page 49]
-    ## NB. blanking may be altered later, if statusBits[2]==0x01
+    ## NB. blanking may be altered later, if status[2]==0x01
     blankingDistance <- 0.01 * readBin(d$buf[pointer2 + 35], "integer", size=2, n=N, signed=FALSE, endian="little")
     nominalCorrelation <- readBin(d$buf[pointer1 + 37], "integer", size=1, n=N, signed=FALSE, endian="little")
     accelerometerx <- 1.0/16384.0 * readBin(d$buf[pointer2 + 47], "integer", size=2, n=N, signed=TRUE, endian="little")
@@ -777,10 +783,10 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Nortek docs [2 p51] say bit 1 (in 0-offset notation) in 'status' indicates blankingDistance
     ## unit, either 0 for m or 1 for cm. (Above, it was read and converted to m, assuming cm.)
     if (debug > 0) {
-        cat(vectorShow(statusBits[2,]))
+        cat(vectorShow(status[2,]))
         cat(vectorShow(blankingDistance))
     }
-    blankingDistance <- blankingDistance * ifelse(statusBits[2, ] == 0x01, 1, 0.1)
+    blankingDistance <- blankingDistance * ifelse(status[2, ] == 0x01, 1, 0.1)
     if (debug > 0)
         cat(vectorShow(blankingDistance))
 
@@ -877,7 +883,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             average$ASTPressure <- vector("numeric", length(p$average))
         }
         if (any(echosounderIncluded[p$average])) {
-            average$echosounder <- matrix(double(), ncols=length(p$average), nrows=ncellsAverage)
+            average$echosounder <- matrix(double(), ncol=length(p$average), nrow=ncellsAverage)
         }
         if (any(AHRSIncluded[p$average])) {
             average$AHRS <- matrix(numeric(), nrow=length(p$average), ncol=9)
@@ -936,7 +942,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             burst$ASTPressure <- vector("numeric", length(p$burst))
         }
         if (any(echosounderIncluded[p$burst])) {
-            burst$echosounder <- matrix(double(), ncols=length(p$burst), nrows=ncellsBurst)
+            burst$echosounder <- matrix(double(), ncol=length(p$burst), nrow=ncellsBurst)
         }
         if (any(AHRSIncluded[p$burst])) {
             burst$AHRS <- matrix(numeric(), nrow=length(p$burst), ncol=9)
@@ -992,7 +998,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             echosounder$ASTPressure <- vector("numeric", length(p$echosounder))
         }
         if (any(echosounderIncluded[p$echosounder])) {
-            echosounder$echosounder <- matrix(double(), ncols=length(p$echosounder), nrows=ncellsAverage)
+            echosounder$echosounder <- matrix(double(), ncol=length(p$echosounder), nrow=ncellsAverage)
         }
         if (any(AHRSIncluded[p$average])) {
             echosounder$AHRS <- matrix(numeric(), nrow=length(p$echosounder), ncol=9)
@@ -1047,7 +1053,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             interleavedBurst$ASTPressure <- vector("numeric", length(p$interleavedBurst))
         }
         if (any(echosounderIncluded[p$interleavedBurst])) {
-            interleavedBurst$echosounder <- matrix(double(), ncols=length(p$interleavedBurst), nrows=ncellsInterleavedBurst)
+            interleavedBurst$echosounder <- matrix(double(), ncol=length(p$interleavedBurst), nrow=ncellsInterleavedBurst)
         }
         if (any(AHRSIncluded[p$interleavedBurst])) {
             interleavedBurst$AHRS <- matrix(numeric(), nrow=length(p$interleavedBurst), ncol=9)

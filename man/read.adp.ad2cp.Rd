@@ -96,13 +96,8 @@ summer of 2019.
 }
 \section{Beam-to-xyz conversion}{
 
-The slant-beam angle does not seem to be encoded in the data, according
-to the reference guide in [1]. Although [2] reveals the
-angle to be 25deg for Signature1000 and Signature500 instruments,
-and 20deg for Signature250, the instrument type is not stored in the
-data, either. Therefore, supplying the correct subtype to this
-function is important, if conversion from beam to xyz coordinates
-is to be made possible.
+The device orientation is not inferred correctly from the file, and
+so a default is assumed -- that the orientation is upwards.
 }
 
 \examples{
