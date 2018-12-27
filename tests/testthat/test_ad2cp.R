@@ -472,20 +472,23 @@ test_that("read.oce() on a private AD2CP file that has 'burst' and 'interleavedB
             plot(d3, which="velocity", j="interleavedBurst") # as above
             plot(d3, which="amplitude", j="interleavedBurst")
             plot(d3, which="quality", j="interleavedBurst")
-            ## Compare beams in three coordinate systems
-            par(mfcol=c(3, 3))
+            ## Compare beams in three coordinate systems, with 6 plots over two pages
+            par(mfcol=c(3, 2))
             zlim <- c(-2, 2)
             plot(d3, which=1, zlim=zlim, drawTimeRange=FALSE)
             plot(d3, which=2, zlim=zlim, drawTimeRange=FALSE)
             plot(d3, which=3, zlim=zlim, drawTimeRange=FALSE)
+            plot(d3, which='a1', zlim=c(0, 255), drawTimeRange=FALSE)
+            plot(d3, which='a2', zlim=c(0, 255), drawTimeRange=FALSE)
+            plot(d3, which='a3', zlim=c(0, 255), drawTimeRange=FALSE)
             d3xyz <- beamToXyz(d3)
             plot(d3xyz, which=1, zlim=zlim, drawTimeRange=FALSE)
             plot(d3xyz, which=2, zlim=zlim, drawTimeRange=FALSE)
-            plot(d3xyz, which=3, zlim=zlim, drawTimeRange=FALSE)
+            plot(d3xyz, which=3, zlim=zlim/4, drawTimeRange=FALSE)
             d3enu <- xyzToEnu(d3xyz)
             plot(d3enu, which=1, zlim=zlim, drawTimeRange=FALSE)
             plot(d3enu, which=2, zlim=zlim, drawTimeRange=FALSE)
-            plot(d3enu, which=3, zlim=zlim, drawTimeRange=FALSE)
+            plot(d3enu, which=3, zlim=zlim/4, drawTimeRange=FALSE)
           }
 })
 

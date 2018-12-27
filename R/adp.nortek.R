@@ -401,13 +401,17 @@ ad2cpHeaderValue <- function(x, key, item, numeric=TRUE)
 {
     if (missing(x))
         stop("must provide x")
-    if (!is.ad2cp(x))
-        stop("x is not an AD2CP object")
+    if (is.character(x)) {
+        header <- x
+    } else if (is.ad2cp(x)) {
+        header <- x[["header"]]
+    } else {
+        stop("x must be either a character value or an AD2CP object")
+    }
     if (missing(key))
         stop("must provide key")
     if (missing(item))
         stop("must provide item")
-    header <- x[["header"]]
     if (is.null(header))
         return(NULL)
     key2 <- paste("^", key, ",", sep="")
@@ -472,8 +476,9 @@ is.ad2cp <- function(x)
 #' or \code{"Signature1000"}. The slant-beam angle is 20 degrees for Signature250,
 #' and 25 degrees for the other types (see [2], section 2 on page 6).
 #'
-#' @param despike if \code{TRUE}, \code{\link{despike}} will be used to clean
-#' anomalous spikes in heading, etc.
+#' @param despike Ignored by this function, and provided only for similarity
+#' to other adp-reading functions.
+#'
 #' @template adpTemplate
 #'
 #' @section Beam-to-xyz conversion:
@@ -499,7 +504,6 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                            monitor=FALSE, despike=FALSE, processingLog,
                            debug=getOption("oceDebug"), ...)
 {
-    ## FIXME: _AD2CPrecordtype_ update [["recordTypes"]] etc if new record types are handled here
     planGiven <- !missing(plan)
     typeGiven <- !missing(type)
     oceDebug(debug, "read.adp.ad2cp(...,from=", format(from),
@@ -809,33 +813,34 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## 0x18 -- Interleaved Burst Data Record (beam 5).
     ## 0x1A -  Burst Altimeter Raw Record.
     ## 0x1B -  DVL Bottom Track Record.
-    ## 0x1C -  Echo Sounder Record.
+    ## 0x1C -- Echo Sounder Record.
     ## 0x1D -  DVL Water Track Record.
     ## 0x1E -  Altimeter Record.
     ## 0x1F -  Avg Altimeter Raw Record.
     ## 0xA0 -- String Data Record, eg. GPS NMEA data, comment from the FWRITE command.
-    p <- list(burst=which(d$id==0x15), # partially coded
-              average=which(d$id==0x16), # partially coded
+    p <- list(burst=which(d$id==0x15), # coded
+              average=which(d$id==0x16), # coded
               bottomTrack=which(d$id==0x17),
-              interleavedBurst=which(d$id==0x18), # partially coded
+              interleavedBurst=which(d$id==0x18), # coded
               burstAltimeter=which(d$id==0x1a),
               DVLBottomTrack=which(d$id==0x1b),
-              echosounder=which(d$id==0x1c), # partially coded (no plot functions)
+              echosounder=which(d$id==0x1c), # coded but no sample-data test and no plot()
               waterTrack=which(d$id==0x1d),
               altimeter=which(d$id==0x1e),
               averageAltimeter=which(d$id==0x1f),
-              text=which(d$id==0xa0))
+              text=which(d$id==0xa0)) # coded
     recordCount <- lapply(p, length)
 
-    ## Inform the user of things we don't attempt to read, and invite them to ask for new capabilities.
+    ## Inform the user of things we don't attempt to read
     for (n in c("bottomTrack", "burstAltimeter",
                 "DVLBottomTrack", "waterTrack", "altimeter",
                 "averageAltimeter")) {
         if (recordCount[[n]] > 0) {
-            warning("skipped ", recordCount[[n]], " '", n, "' data records; only 'average', 'burst', 'interleavedBurst', 'echosounder' and 'text' are handled in this version of oce\n", sep="")
+            warning("skipped ", recordCount[[n]], " '", n, "' data records; only 'average', 'burst', 'interleavedBurst', 'echosounder' and 'text' are handled\n", sep="")
         }
     }
     ## 2. get some things in slow index-based form. (Items are alphabetized.)
+    ## FIXME: _AD2CPrecordtype_ update [["recordTypes"]] etc if new record types are handled here
     if (length(p$average) > 0) {
         if (any(version[p$average] != 3))
             stop("can only decode 'average' data records that are in 'version 3' format")
@@ -896,10 +901,6 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             stop("can only decode 'burst' data records that are in 'version 3' format")
         nbeamsBurst <- nbeams[p$burst[1]]
         ncellsBurst <- ncells[p$burst[1]]
-        ##debug DANnbeams<<-nbeams
-        ##debug DANncells<<-ncells
-        ##debug DANpburst<<-p$burst
-        ##debug message("TEMPORARY: exported DANnbeams, DANncells, DANpburst")
         oceDebug(debug, "burst data records: nbeams:", nbeamsBurst, ", ncells:", ncellsBurst, "\n")
         if (any(ncells[p$burst] != ncellsBurst))
             stop("the 'burst' data records do not all have the same number of cells")
@@ -1069,17 +1070,16 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Fill up th arrays in a loop. This could also be vectorized, if it proves slow.
     id <- d$id
     for (ch in 1:N) {
-        oceDebug(debug>5, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
+        oceDebug(debug>2, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
         if (d$id[ch] == 0xa0) {        # text (0xa0 = 160)
             chars <- rawToChar(d$buf[seq.int(2+d$index[ch], by=1, length.out=-1+d$length[ch])])
             t <- strsplit(chars, "\r\n")[[1]]
             if (!typeGiven) {
                 type <- gsub('.*STR="([^"]*)".*$', '\\1', t[grep("^ID,",t)])
-                message("984: inferred type as '", type, "' from a text record")
+                message("inferred type as '", type, "' from a text record")
                 typeGiven <- TRUE
             }
             text$text[[text$i]] <- t
-            ##text$text[text$i] <- chars
             text$i <- text$i + 1
             ##oceDebug(debug, "added to text; now, text$i=", text$i, "\n")
         } else if (d$id[ch] == 0x15) { # burst (0x15 = 21)
@@ -1337,7 +1337,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         warning("defaulting 'type' to '", type, "', since no header was found in the file, and the 'type' argument was not provided")
     }
     res@metadata$type <- type
-    ## FIXME: infer beamAngle from the file, if possible. (I do not see how.)
+    res@metadata$frequency <- ad2cpHeaderValue(header, "BEAMCFGLIST,BEAM=1", "FREQ")
     res@metadata$beamAngle <- switch(type, "Signature1000"=25, "Signature500"=25, "Signature250"=20)
     theta <- res@metadata$beamAngle * atan2(1,1) / 45
     ## The creation of a transformation matrix is covered in Section 5.3 of
@@ -1352,7 +1352,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                c(    TMd,      TMd,     -TMd,    -TMd))
     ## Remove the overall coordinate (created by initializer) since it has no meaning here.
     res@metadata$oceCoordinate <- NULL
-    ## Insert data 
+    ## Insert data
     res@data <- data
     ## Insert processingLog
     if (missing(processingLog))

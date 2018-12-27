@@ -524,21 +524,19 @@ setMethod(f="summary",
               cat("* Coordinate system: ",
                   if (is.null(originalCoordinate)) "?" else originalCoordinate, "[originally],",
                   if (is.null(oceCoordinate)) "?" else oceCoordinate, "[presently]\n", ...)
-              cat("* Frequency:         ",
-                  if ("frequency" %in% object@metadata) object@metadata$frequency else "?",
-                  "kHz\n", ...)
+              cat("* Frequency:         ", object[["frequency"]], "kHz\n", ...)
               numberOfBeams <- object[["numberOfBeams"]]
               beamAngle <- object[["beamAngle"]]
-              beamOrientation <- object[["beamOrientation"]]
-              beamUnspreaded <- object[["beamUnspreaded"]]
+              orientation <- object[["orientation"]]
+              beamUnspreaded <- object[["oceBeamUnspreaded"]]
               if (!isAD2CP) {
-                  cat("* Beam number      : ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "\n")
-                  cat("*      angle       : ", if (is.null(beamAngle)) "?" else beamAngle , "\n")
-                  cat("       orientation : ", if (is.null(beamOrientation)) "?" else beamOrientation, "\n")
-                  cat("       orientation : ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n")
+                  cat("* Beam number:      ", if (is.null(numberOfBeams)) "?" else numberOfBeams, "\n")
+                  cat("       angle:       ", if (is.null(beamAngle)) "?" else beamAngle , "\n")
+                  cat("       orientation: ", if (is.null(orientation)) "?" else orientation, "\n")
+                  cat("       unspreaded:  ", if (is.null(beamUnspreaded)) "?" else beamUnspreaded, "\n")
               }
               transformationMatrix <- object[["transformationMatrix"]]
-              if (!is.null(transformationMatrix) && dim(transformationMatrix)[2] >= 3) { 
+              if (!is.null(transformationMatrix) && dim(transformationMatrix)[2] >= 3) {
                   digits <- 4
                   cat("* Transformation matrix::\n\n")
                   cat("  ", format(transformationMatrix[1, ], width=digits+4, digits=digits, justify="right"), "\n")
@@ -741,7 +739,7 @@ setMethod(f="[[",
                   }
               } else if (i == "recordTypes") {
                   ## FIXME: _AD2CPrecordtype_ update if new record types added to read.adp.ad2cp()
-                  allowed <- c("average", "burst", "interleavedBurst")
+                  allowed <- c("average", "burst", "echosounder", "interleavedBurst")
                   allowed[allowed %in% names(x@data)]
               } else if (i == "va") {
                   if (!missing(j) && 1 == length(grep("numeric", j))) {
