@@ -364,7 +364,7 @@ ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interle
 }
 
 
-#' Decode an item from a Nortek AD2CP file
+#' Decode an item from a Nortek AD2CP file header
 #'
 #' @param x Adp object of the ad2cp variety, i.e. an object created
 #' by \code{\link{read.adp.ad2cp}}.
@@ -375,6 +375,10 @@ ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interle
 #'
 #' @param numeric Logical value indicating whether to convert the return value
 #' from a string to a numerical value.
+#'
+#' @param default Optional value to be used if the item is not found in the
+#' header, or if the header is \code{NULL} (as in the case of a split-up file
+#' that lacks the initial header information)
 #'
 #' @return String or number interpreted from the \code{x[["text"]]}, or \code{NULL},
 #' if the desired item is not found there, or if \code{x} is not of the required
@@ -393,11 +397,11 @@ ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interle
 #'
 #' # BEAMCFGLIST,BEAM=1,THETA=25.00,PHI=0.00,FREQ=1000,BW=25,BRD=1,HWBEAM=1,ZNOM=60.00
 #' beam1Angle <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "THETA")
-#' frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ")
+#' frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
 #'}
 #'
 #' @family things related to \code{adp} data
-ad2cpHeaderValue <- function(x, key, item, numeric=TRUE)
+ad2cpHeaderValue <- function(x, key, item, numeric=TRUE, default)
 {
     if (missing(x))
         stop("must provide x")
@@ -413,15 +417,25 @@ ad2cpHeaderValue <- function(x, key, item, numeric=TRUE)
     if (missing(item))
         stop("must provide item")
     if (is.null(header))
-        return(NULL)
+        return(if (missing(default)) NULL else default)
     key2 <- paste("^", key, ",", sep="")
     ##message("key2='", key2, "'")
     hline <- header[grep(key2, header)]
     ##message("hline='",hline,"'")
     if (length(hline) > 1)
         stop("header line is not distinct; try using a comma at the end of key")
+    if (0 == length(hline))
+        return(if (missing(default)) NULL else default)
+    if (0 == length(grep(item, hline))) {
+        return(if (missing(default)) NULL else default)
+    }
     res <- gsub(paste("^.*", item, "=([^,]*).*$", sep=""), "\\1", hline)
-    if (numeric) as.numeric(res) else gsub('"', '', res)
+    if (nchar(res)) {
+        res <- if (numeric) as.numeric(res) else gsub('"', '', res)
+    } else {
+        res <- if (missing(default)) NULL else default
+    }
+    res
 }
 
 #' Test whether object is an AD2CP type
@@ -1337,7 +1351,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         warning("defaulting 'type' to '", type, "', since no header was found in the file, and the 'type' argument was not provided")
     }
     res@metadata$type <- type
-    res@metadata$frequency <- ad2cpHeaderValue(header, "BEAMCFGLIST,BEAM=1", "FREQ")
+    res@metadata$frequency <- ad2cpHeaderValue(x=header, key="BEAMCFGLIST,BEAM=1", item="FREQ", default=NA)
     res@metadata$beamAngle <- switch(type, "Signature1000"=25, "Signature500"=25, "Signature250"=20)
     theta <- res@metadata$beamAngle * atan2(1,1) / 45
     ## The creation of a transformation matrix is covered in Section 5.3 of

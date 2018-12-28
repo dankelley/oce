@@ -2,9 +2,9 @@
 % Please edit documentation in R/adp.nortek.R
 \name{ad2cpHeaderValue}
 \alias{ad2cpHeaderValue}
-\title{Decode an item from a Nortek AD2CP file}
+\title{Decode an item from a Nortek AD2CP file header}
 \usage{
-ad2cpHeaderValue(x, key, item, numeric = TRUE)
+ad2cpHeaderValue(x, key, item, numeric = TRUE, default)
 }
 \arguments{
 \item{x}{Adp object of the ad2cp variety, i.e. an object created
@@ -16,6 +16,10 @@ by \code{\link{read.adp.ad2cp}}.}
 
 \item{numeric}{Logical value indicating whether to convert the return value
 from a string to a numerical value.}
+
+\item{default}{Optional value to be used if the item is not found in the
+header, or if the header is \code{NULL} (as in the case of a split-up file
+that lacks the initial header information)}
 }
 \value{
 String or number interpreted from the \code{x[["text"]]}, or \code{NULL},
@@ -23,7 +27,7 @@ if the desired item is not found there, or if \code{x} is not of the required
 class and variety.
 }
 \description{
-Decode an item from a Nortek AD2CP file
+Decode an item from a Nortek AD2CP file header
 }
 \examples{
 \dontrun{
@@ -38,7 +42,7 @@ serialNumber <- ad2cpHeaderValue(d, "ID", "SN")
 
 # BEAMCFGLIST,BEAM=1,THETA=25.00,PHI=0.00,FREQ=1000,BW=25,BRD=1,HWBEAM=1,ZNOM=60.00
 beam1Angle <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "THETA")
-frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ")
+frequency <- ad2cpHeaderValue(d, "BEAMCFGLIST,BEAM=1", "FREQ", default=NA)
 }
 
 }
