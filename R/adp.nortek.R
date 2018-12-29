@@ -1298,7 +1298,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ## distance: uses variable name that makes sense for average/burst data
             i0 <- 77
             if (velocityIncluded[ch]) { # configuration[,9]=bit8 [1 pages 60 and 62]
-                bottomTrack$v[i$bottomTrack, ] <- readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
+                bottomTrack$v[i$bottomTrack, ] <- 0.001*readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
                 i0 <- i0 + 4*ncol
                 message(" ... stored bottomTrack$altimeterDistance")
             }
