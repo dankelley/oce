@@ -660,7 +660,7 @@ setMethod(f="[[",
                                   "nominalCorrelation",
                                   "powerLevel", "transmitEnergy",
                                   "v", "a", "q", "g",
-                                  "echosounder", "AHRS")) {
+                                  "echosounder", "AHRS", "altimeterDistance", "altimeterFigureOfMerit")) {
                   ##message("i='", i, "'")
                   metadataNames <- names(x@metadata)
                   dataNames <- names(x@data)
@@ -739,7 +739,7 @@ setMethod(f="[[",
                   }
               } else if (i == "recordTypes") {
                   ## FIXME: _AD2CPrecordtype_ update if new record types added to read.adp.ad2cp()
-                  allowed <- c("average", "burst", "echosounder", "interleavedBurst")
+                  allowed <- c("average", "burst", "echosounder", "interleavedBurst", "bottomTrack")
                   allowed[allowed %in% names(x@data)]
               } else if (i == "va") {
                   if (!missing(j) && 1 == length(grep("numeric", j))) {

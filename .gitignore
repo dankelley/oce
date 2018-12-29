@@ -1,3 +1,5 @@
+Meta
+doc
 ^vignettes/figure$
 ^build$
 _site

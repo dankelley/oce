@@ -350,7 +350,7 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 }
 
 ## private function
-ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interleavedBurst"))
+ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interleavedBurst", "bottomTrack"))
 {
     if (!is.ad2cp(x))
         stop("x is not an AD2CP object")
@@ -714,24 +714,26 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     configuration <- rawToBits(d$buf[pointer2 + 3]) == 0x01
     dim(configuration) <- c(16, N)
     configuration <- t(configuration)
-    ## Extract columns as simply-named flags, for convenience.
+    ## Extract columns as simply-named flags, for convenience. The variable
+    ## names to which the assignments are made apply to average/burst data,
+    ## while comments are used to indicate values for other data, e.g.
+    ## bottomTrack.
     pressureValid <- configuration[, 1]
     temperatureValid <- configuration[, 2]
     compassValid <- configuration[, 3]
     tiltValid <- configuration[, 4]
     ## configuration[, 5] -
     velocityIncluded <- configuration[, 6]
-    amplitudeIncluded <- configuration[, 7]
-    correlationIncluded <- configuration[, 8]
-    altimeterIncluded <- configuration[, 9]
-    altimeterRawIncluded <- configuration[,10]
-    ASTIncluded <- configuration[,11]
-    echosounderIncluded <- configuration[,12]
-    AHRSIncluded <- configuration[,13]
-    percentGoodIncluded<- configuration[,14]
-    stdDevIncluded <- configuration[,15]
+    amplitudeIncluded <- configuration[, 7] # bottomTrack:-
+    correlationIncluded <- configuration[, 8] # bottomTrack:-
+    altimeterIncluded <- configuration[, 9] # bottomTrack:distanceIncluded
+    altimeterRawIncluded <- configuration[,10] # bottomTrack:figureOfMeritIncluded
+    ASTIncluded <- configuration[,11] # bottomTrack:-
+    echosounderIncluded <- configuration[,12] # bottomTrack:-
+    AHRSIncluded <- configuration[,13] # bottomTrack:-
+    percentGoodIncluded<- configuration[,14] # bottomTrack:-
+    stdDevIncluded <- configuration[,15] # bottomTrack:-
     ## configuration[, 16] Unused
-    rm(configuration)                  # prune namespace for clarity
     oceDebug(debug, vectorShow(velocityIncluded))
     oceDebug(debug, vectorShow(amplitudeIncluded))
     oceDebug(debug, vectorShow(correlationIncluded))
@@ -834,11 +836,11 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## 0xA0 -- String Data Record, eg. GPS NMEA data, comment from the FWRITE command.
     p <- list(burst=which(d$id==0x15), # coded
               average=which(d$id==0x16), # coded
-              bottomTrack=which(d$id==0x17),
+              bottomTrack=which(d$id==0x17), # coded, but no sample-data test and no plot()
               interleavedBurst=which(d$id==0x18), # coded
               burstAltimeter=which(d$id==0x1a),
               DVLBottomTrack=which(d$id==0x1b),
-              echosounder=which(d$id==0x1c), # coded but no sample-data test and no plot()
+              echosounder=which(d$id==0x1c), # coded, but no sample-data test and no plot()
               waterTrack=which(d$id==0x1d),
               altimeter=which(d$id==0x1e),
               averageAltimeter=which(d$id==0x1f),
@@ -846,9 +848,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     recordCount <- lapply(p, length)
 
     ## Inform the user of things we don't attempt to read
-    for (n in c("bottomTrack", "burstAltimeter",
-                "DVLBottomTrack", "waterTrack", "altimeter",
-                "averageAltimeter")) {
+    for (n in c("burstAltimeter", "DVLBottomTrack", "waterTrack", "altimeter", "averageAltimeter")) {
         if (recordCount[[n]] > 0) {
             warning("skipped ", recordCount[[n]], " '", n, "' data records; only 'average', 'burst', 'interleavedBurst', 'echosounder' and 'text' are handled\n", sep="")
         }
@@ -888,10 +888,22 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         accelerometerz=accelerometerz[p$average],
                         nominalCorrelation=nominalCorrelation[p$average],
                         transmitEnergy=transmitEnergy[p$average],
-                        powerLevel=powerLevel[p$average],
-                        v=array(double(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)),
-                        a=array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)),
-                        q=array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage)))
+                        powerLevel=powerLevel[p$average])
+        if (any(velocityIncluded[p$average])) {
+            if (1 < length(unique(velocityIncluded[p$average])))
+                stop("velocityIncluded values non-unique across 'average' data records")
+            average$v <- array(double(), dim=c(length(p$average), ncellsAverage, nbeamsAverage))
+        }
+        if (any(amplitudeIncluded[p$average])) {
+            if (1 < length(unique(amplitudeIncluded[p$average])))
+                stop("amplitudeIncluded values non-unique across 'average' data records")
+            average$a <- array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage))
+        }
+        if (any(correlationIncluded[p$average])) {
+            if (1 < length(unique(correlationIncluded[p$average])))
+                stop("correlationIncluded values non-unique across 'average' data records")
+            average$q <- array(raw(), dim=c(length(p$average), ncellsAverage, nbeamsAverage))
+        }
         if (any(altimeterIncluded[p$average])) {
             if (1 < length(unique(altimeterIncluded[p$average])))
                 stop("altimeterIncluded values non-unique across 'average' data records")
@@ -910,6 +922,57 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     } else {
         average <- NULL
     }
+    if (length(p$bottomTrack) > 0) {
+        if (any(version[p$bottomTrack] != 3))
+            stop("can only decode 'bottomTrack' data records that are in 'version 3' format")
+        nbeamsBottomTrack <- nbeams[p$bottomTrack[1]]
+        ncellsBottomTrack <- ncells[p$bottomTrack[1]]
+        oceDebug(debug, "bottomTrack data records: nbeams:", nbeamsBottomTrack, ", ncells:", ncellsBottomTrack, "\n")
+        if (any(ncells[p$bottomTrack] != ncellsBottomTrack))
+            stop("the 'bottomTrack' data records do not all have the same number of cells")
+        if (any(nbeams[p$bottomTrack] != nbeamsBottomTrack))
+            stop("the 'bottomTrack' data records do not all have the same number of beams")
+        ## FIXME: read other fields to the following list.
+        bottomTrack <- list(i=1,
+                            numberOfCells=ncellsBottomTrack,
+                            numberOfBeams=nbeamsBottomTrack,
+                            originalCoordinate=coordinateSystem[p$bottomTrack[1]],
+                            oceCoordinate=coordinateSystem[p$bottomTrack[1]],
+                            cellSize=cellSize[p$bottomTrack[1]],
+                            blankingDistance=blankingDistance[p$bottomTrack[1]],
+                            ensemble=ensemble[p$bottomTrack],
+                            time=time[p$bottomTrack],
+                            heading=heading[p$bottomTrack],
+                            pitch=pitch[p$bottomTrack],
+                            roll=roll[p$bottomTrack],
+                            pressure=pressure[p$bottomTrack],
+                            temperature=temperature[p$bottomTrack],
+                            temperatureMagnetometer=temperatureMagnetometer[p$bottomTrack],
+                            temperatureRTC=temperatureRTC[p$bottomTrack],
+                            soundSpeed=soundSpeed[p$bottomTrack],
+                            accelerometerx=accelerometerx[p$bottomTrack],
+                            accelerometery=accelerometery[p$bottomTrack],
+                            accelerometerz=accelerometerz[p$bottomTrack],
+                            nominalCorrelation=nominalCorrelation[p$bottomTrack],
+                            transmitEnergy=transmitEnergy[p$bottomTrack],
+                            powerLevel=powerLevel[p$bottomTrack])
+        if (any(velocityIncluded[p$bottomTrack])) {
+            if (1 < length(unique(velocityIncluded[p$bottomTrack])))
+                stop("velocityIncluded values non-unique across 'bottomTrack' data records")
+            bottomTrack$v <- array(double(), dim=c(length(p$bottomTrack), nbeamsBottomTrack))
+        }
+        if (any(altimeterIncluded[p$bottomTrack])) { # note name-shift from average/burst data
+            if (1 < length(unique(altimeterIncluded[p$bottomTrack])))
+                stop("altimeterIncluded values non-unique across 'bottomTrack' data records")
+            bottomTrack$altimeterDistance <- array(double(), dim=c(length(p$bottomTrack), nbeamsBottomTrack))
+        }
+        if (any(altimeterRawIncluded[p$bottomTrack])) { # note name-shift from average/burst data
+            bottomTrack$altimeterFigureOfMerit <- array(double(), dim=c(length(p$bottomTrack), nbeamsBottomTrack))
+        }
+    } else {
+        bottomTrack <- NULL
+    }
+
     if (length(p$burst) > 0) {
         if (any(version[p$burst] != 3))
             stop("can only decode 'burst' data records that are in 'version 3' format")
@@ -943,10 +1006,22 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                       accelerometerz=accelerometerz[p$burst],
                       nominalCorrelation=nominalCorrelation[p$burst],
                       transmitEnergy=transmitEnergy[p$burst],
-                      powerLevel=powerLevel[p$burst],
-                      v=array(double(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst)),
-                      a=array(raw(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst)),
-                      q=array(raw(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst)))
+                      powerLevel=powerLevel[p$burst])
+        if (any(velocityIncluded[p$burst])) {
+            if (1 < length(unique(velocityIncluded[p$burst])))
+                stop("velocityIncluded values non-unique across 'burst' data records")
+            burst$v <- array(double(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst))
+        }
+        if (any(amplitudeIncluded[p$burst])) {
+            if (1 < length(unique(amplitudeIncluded[p$burst])))
+                stop("amplitudeIncluded values non-unique across 'burst' data records")
+            burst$a <- array(raw(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst))
+        }
+        if (any(correlationIncluded[p$burst])) {
+            if (1 < length(unique(correlationIncluded[p$burst])))
+                stop("correlationIncluded values non-unique across 'burst' data records")
+            burst$q <- array(raw(), dim=c(length(p$burst), ncellsBurst, nbeamsBurst))
+        }
         if (any(altimeterIncluded[p$burst])) {
             if (1 < length(unique(altimeterIncluded[p$burst])))
                 stop("altimeterIncluded values non-unique across 'burst' data records")
@@ -999,10 +1074,22 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         accelerometerz=accelerometerz[p$echosounder],
                         nominalCorrelation=nominalCorrelation[p$echosounder],
                         transmitEnergy=transmitEnergy[p$echosounder],
-                        powerLevel=powerLevel[p$echosounder],
-                        v=array(double(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder)),
-                        a=array(raw(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder)),
-                        q=array(raw(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder)))
+                        powerLevel=powerLevel[p$echosounder])
+        if (any(velocityIncluded[p$echosounder])) {
+            if (1 < length(unique(velocityIncluded[p$echosounder])))
+                stop("velocityIncluded values non-unique across 'echosounder' data records")
+            echosounder$v <- array(double(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder))
+        }
+        if (any(amplitudeIncluded[p$echosounder])) {
+            if (1 < length(unique(amplitudeIncluded[p$echosounder])))
+                stop("amplitudeIncluded values non-unique across 'echosounder' data records")
+            echosounder$a <- array(raw(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder))
+        }
+        if (any(correlationIncluded[p$echosounder])) {
+            if (1 < length(unique(correlationIncluded[p$echosounder])))
+                stop("correlationIncluded values non-unique across 'echosounder' data records")
+            echosounder$q <- array(raw(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder))
+        }
         if (any(altimeterIncluded[p$echosounder])) {
             if (1 < length(unique(altimeterIncluded[p$echosounder])))
                 stop("altimeterIncluded values non-unique across 'echosounder' data records")
@@ -1054,10 +1141,22 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                       accelerometerz=accelerometerz[p$interleavedBurst],
                       nominalCorrelation=nominalCorrelation[p$interleavedBurst],
                       transmitEnergy=transmitEnergy[p$interleavedBurst],
-                      powerLevel=powerLevel[p$interleavedBurst],
-                      v=array(double(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst)),
-                      a=array(raw(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst)),
-                      q=array(raw(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst)))
+                      powerLevel=powerLevel[p$interleavedBurst])
+        if (any(velocityIncluded[p$interleavedBurst])) {
+            if (1 < length(unique(velocityIncluded[p$interleavedBurst])))
+                stop("velocityIncluded values non-unique across 'interleavedBurst' data records")
+            interleavedBurst$v <- array(double(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst))
+        }
+        if (any(amplitudeIncluded[p$interleavedBurst])) {
+            if (1 < length(unique(amplitudeIncluded[p$interleavedBurst])))
+                stop("amplitudeIncluded values non-unique across 'interleavedBurst' data records")
+            interleavedBurst$a <- array(raw(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst))
+        }
+        if (any(correlationIncluded[p$interleavedBurst])) {
+            if (1 < length(unique(correlationIncluded[p$interleavedBurst])))
+                stop("correlationIncluded values non-unique across 'interleavedBurst' data records")
+            interleavedBurst$q <- array(raw(), dim=c(length(p$interleavedBurst), ncellsInterleavedBurst, nbeamsInterleavedBurst))
+        }
         if (any(altimeterIncluded[p$interleavedBurst])) {
             if (1 < length(unique(altimeterIncluded[p$burst])))
                 stop("altimeterIncluded values non-unique across 'interleavedBurst' data records")
@@ -1108,22 +1207,16 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)], "integer",size=2,n=n,endian="little")
                 burst$v[burst$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n2
-            } else {
-                stop("at ch=", ch, " how can velocityIncluded be false?")
             }
             if (amplitudeIncluded[ch]) {
                 a <- d$buf[i + i0 + seq(0, n-1)]
                 burst$a[burst$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
-            } else {
-                stop("at ch=", ch, " how can amplitudeIncluded be false?")
             }
             if (correlationIncluded[ch]) {
                 q <- d$buf[i + i0 + seq(0, n-1)]
                 burst$q[burst$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
-            } else {
-                stop("at ch=", ch, " how can correlationIncluded be false?")
             }
             if (altimeterIncluded[ch]) {
                 burst$altimeterDistance[burst$i] <- readBin(d$buf[i + i0 + seq(0,3)], "numeric", size=4, n=1, endian="little")
@@ -1161,22 +1254,16 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
                 average$v[average$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n2
-            } else {
-                stop("at ch=", ch, " how can velocityIncluded be false?")
             }
             if (amplitudeIncluded[ch]) {
                 a <- d$buf[i + i0 + seq(0, n-1)]
                 average$a[average$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
-            } else {
-                stop("at ch=", ch, " how can amplitudeIncluded be false?")
             }
             if (correlationIncluded[ch]) {
                 q <- d$buf[i + i0 + seq(0, n-1)]
                 average$q[average$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
-            } else {
-                stop("at ch=", ch, " how can correlationIncluded be false?")
             }
             if (altimeterIncluded[ch]) {
                 average$altimeterDistance[average$i] <- readBin(d$buf[i + i0 + seq(0,3)],"numeric", size=4,n=1,endian="little")
@@ -1203,6 +1290,30 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 average$AHRS[average$i,] <- readBin(d$buf[i + i0 + seq(0,35)],"numeric", size=4, n=9, endian="little")
             }
             average$i <- average$i + 1
+        } else if (d$id[ch] == 0x17) { # bottom track (0x17 = 23)
+            i <- d$index[ch]
+            ncol <- bottomTrack$numberOfBeams
+            nrow <- bottomTrack$numberOfCells
+            message("i=", i, ", ch=", ch, ", bottomTrack$i=", bottomTrack$i, " ...")
+            ## distance: uses variable name that makes sense for average/burst data
+            i0 <- 77
+            if (velocityIncluded[ch]) { # configuration[,9]=bit8 [1 pages 60 and 62]
+                bottomTrack$v[i$bottomTrack, ] <- readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
+                i0 <- i0 + 4*ncol
+                message(" ... stored bottomTrack$altimeterDistance")
+            }
+             if (altimeterIncluded[ch]) { # configuration[,9]=bit8 [1 pages 60 and 62]
+                bottomTrack$altimeterDistance[i$bottomTrack, ] <- readBin(buf[i + i0 + seq(0,4*ncol-1)], "numeric", size=4, n=ncol, endian="little")
+                i0 <- i0 + 4*ncol
+                message(" ... stored bottomTrack$altimeterDistance")
+            }
+            ## figureOfMerit: uses variable name that makes sense for average/burst data
+            if (altimeterRawIncluded[ch]) { # configuration[,10]=bit9 [1 pages 60 and 62]
+                bottomTrack$altimeterFigureOfMerit[i$bottomTrack, ] <- readBin(buf[i + i0 + seq(0,2*ncol-1)], "numeric", size=2, n=ncol, endian="little")
+                i0 <- i0 + 4*ncol
+                message(" ... stored bottomTrack$altimeterFigureOfMerit")
+            }
+            bottomTrack$i <- bottomTrack$i + 1
         } else if (d$id[ch] == 0x18) { # interleaved burst (0x18 = 24 )
             i <- d$index[ch]
             ncol <- interleavedBurst$numberOfBeams
@@ -1214,22 +1325,16 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
                 interleavedBurst$v[interleavedBurst$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n2
-            } else {
-                stop("at ch=", ch, " how can velocityIncluded be false?")
             }
             if (amplitudeIncluded[ch]) {
                 a <- d$buf[i + i0 + seq(0, n-1)]
                 interleavedBurst$a[interleavedBurst$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
-            } else {
-                stop("at ch=", ch, " how can amplitudeIncluded be false?")
             }
             if (correlationIncluded[ch]) {
                 q <- d$buf[i + i0 + seq(0, n-1)]
                 interleavedBurst$q[interleavedBurst$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
-            } else {
-                stop("at ch=", ch, " how can correlationIncluded be false?")
             }
             if (altimeterIncluded[ch]) {
                 interleavedBurst$altimeterDistance[interleavedBurst$i] <- readBin(d$buf[i + i0 + seq(0,3)],"numeric", size=4,n=1,endian="little")
@@ -1267,22 +1372,16 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
                 echosounder$v[echosounder$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n2
-            } else {
-                stop("at ch=", ch, " how can velocityIncluded be false?")
             }
             if (amplitudeIncluded[ch]) {
                 a <- d$buf[i + i0 + seq(0, n-1)]
                 echosounder$a[echosounder$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
-            } else {
-                stop("at ch=", ch, " how can amplitudeIncluded be false?")
             }
             if (correlationIncluded[ch]) {
                 q <- d$buf[i + i0 + seq(0, n-1)]
                 echosounder$q[echosounder$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
                 i0 <- i0 + n
-            } else {
-                stop("at ch=", ch, " how can correlationIncluded be false?")
             }
             if (altimeterIncluded[ch]) {
                 echosounder$altimeterDistance[echosounder$i] <- readBin(d$buf[i + i0 + seq(0,3)],"numeric", size=4,n=1,endian="little")
@@ -1321,6 +1420,10 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (!is.null(average)) {
         average$i <- NULL
         data$average <- average
+    }
+    if (!is.null(bottomTrack)) {
+        bottomTrack$i <- NULL
+        data$bottomTrack <- bottomTrack
     }
     if (!is.null(burst)) {
         burst$i <- NULL
