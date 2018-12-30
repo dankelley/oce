@@ -350,7 +350,8 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aq
 }
 
 ## private function
-ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interleavedBurst", "bottomTrack"))
+ad2cpDefaultDataItem <- function(x, j=NULL, order=c("average", "burst", "interleavedBurst",
+                                                    "bottomTrack", "burstAltimeterRaw", "DVLBottomTrack"))
 {
     if (!is.ad2cp(x))
         stop("x is not an AD2CP object")
@@ -832,10 +833,10 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## 0x16 -- Average Data Record.
     ## 0x17 -  Bottom Track Data Record.
     ## 0x18 -- Interleaved Burst Data Record (beam 5).
-    ## 0x1A -  Burst Altimeter Raw Record.
+    ## 0x1A -. Burst Altimeter Raw Record.
     ## 0x1B -  DVL Bottom Track Record.
-    ## 0x1C -- Echo Sounder Record.
-    ## 0x1D -  DVL Water Track Record.
+    ## 0x1C -- Echo Sounder Record. (cf. IMOS does not handle)
+    ## 0x1D -  DVL Water Track Record. (cf. IMOS does not handle)
     ## 0x1E -  Altimeter Record.
     ## 0x1F -  Avg Altimeter Raw Record.
     ## 0xA0 -- String Data Record, eg. GPS NMEA data, comment from the FWRITE command.
@@ -1046,6 +1047,142 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         burst <- NULL
     }
 
+    if (length(p$burstAltimeterRaw) > 0) {
+        if (any(version[p$burstAltimeterRaw] != 3))
+            stop("can only decode 'burstAltimeterRaw' data records that are in 'version 3' format")
+        nbeamsBurstAltimeterRaw <- nbeams[p$burstAltimeterRaw[1]]
+        ncellsBurstAltimeterRaw <- ncells[p$burstAltimeterRaw[1]]
+        oceDebug(debug, "burstAltimeterRaw data records: nbeams:", nbeamsBurstAltimeterRaw, ", ncells:", ncellsBurstAltimeterRaw, "\n")
+        if (any(ncells[p$burstAltimeterRaw] != ncellsBurstAltimeterRaw))
+            stop("the 'burstAltimeterRaw' data records do not all have the same number of cells")
+        if (any(nbeams[p$burstAltimeterRaw] != nbeamsBurstAltimeterRaw))
+            stop("the 'burstAltimeterRaw' data records do not all have the same number of beams")
+        ## FIXME: read other fields to the following list.
+        burstAltimeterRaw <- list(i=1,
+                      numberOfCells=ncellsBurstAltimeterRaw,
+                      numberOfBeams=nbeamsBurstAltimeterRaw,
+                      originalCoordinate=coordinateSystem[p$burstAltimeterRaw[1]],
+                      oceCoordinate=coordinateSystem[p$burstAltimeterRaw[1]],
+                      cellSize=cellSize[p$burstAltimeterRaw[1]],
+                      blankingDistance=blankingDistance[p$burstAltimeterRaw[1]],
+                      ensemble=ensemble[p$burstAltimeterRaw],
+                      time=time[p$burstAltimeterRaw],
+                      heading=heading[p$burstAltimeterRaw],
+                      pitch=pitch[p$burstAltimeterRaw],
+                      roll=roll[p$burstAltimeterRaw],
+                      pressure=pressure[p$burstAltimeterRaw],
+                      temperature=temperature[p$burstAltimeterRaw],
+                      temperatureMagnetometer=temperatureMagnetometer[p$burstAltimeterRaw],
+                      temperatureRTC=temperatureRTC[p$burstAltimeterRaw],
+                      soundSpeed=soundSpeed[p$burstAltimeterRaw],
+                      accelerometerx=accelerometerx[p$burstAltimeterRaw],
+                      accelerometery=accelerometery[p$burstAltimeterRaw],
+                      accelerometerz=accelerometerz[p$burstAltimeterRaw],
+                      nominalCorrelation=nominalCorrelation[p$burstAltimeterRaw],
+                      transmitEnergy=transmitEnergy[p$burstAltimeterRaw],
+                      powerLevel=powerLevel[p$burstAltimeterRaw])
+        if (any(velocityIncluded[p$burstAltimeterRaw])) {
+            if (1 < length(unique(velocityIncluded[p$burstAltimeterRaw])))
+                stop("velocityIncluded values non-unique across 'burstAltimeterRaw' data records")
+            burstAltimeterRaw$v <- array(double(), dim=c(length(p$burstAltimeterRaw), ncellsBurstAltimeterRaw, nbeamsBurstAltimeterRaw))
+        }
+        if (any(amplitudeIncluded[p$burstAltimeterRaw])) {
+            if (1 < length(unique(amplitudeIncluded[p$burstAltimeterRaw])))
+                stop("amplitudeIncluded values non-unique across 'burstAltimeterRaw' data records")
+            burstAltimeterRaw$a <- array(raw(), dim=c(length(p$burstAltimeterRaw), ncellsBurstAltimeterRaw, nbeamsBurstAltimeterRaw))
+        }
+        if (any(correlationIncluded[p$burstAltimeterRaw])) {
+            if (1 < length(unique(correlationIncluded[p$burstAltimeterRaw])))
+                stop("correlationIncluded values non-unique across 'burstAltimeterRaw' data records")
+            burstAltimeterRaw$q <- array(raw(), dim=c(length(p$burstAltimeterRaw), ncellsBurstAltimeterRaw, nbeamsBurstAltimeterRaw))
+        }
+        if (any(altimeterIncluded[p$burstAltimeterRaw])) {
+            if (1 < length(unique(altimeterIncluded[p$burstAltimeterRaw])))
+                stop("altimeterIncluded values non-unique across 'burstAltimeterRaw' data records")
+            burstAltimeterRaw$altimeterDistance <- vector("numeric", length(p$burstAltimeterRaw))
+        }
+        if (any(ASTIncluded[p$burstAltimeterRaw])) {
+            burstAltimeterRaw$ASTDistance <- vector("numeric", length(p$burstAltimeterRaw))
+            burstAltimeterRaw$ASTPressure <- vector("numeric", length(p$burstAltimeterRaw))
+        }
+        if (any(echosounderIncluded[p$burstAltimeterRaw])) {
+            burstAltimeterRaw$echosounder <- matrix(double(), ncol=length(p$burstAltimeterRaw), nrow=ncellsBurstAltimeterRaw)
+        }
+        if (any(AHRSIncluded[p$burstAltimeterRaw])) {
+            burstAltimeterRaw$AHRS <- matrix(numeric(), nrow=length(p$burstAltimeterRaw), ncol=9)
+        }
+    } else {
+        burstAltimeterRaw <- NULL
+    }
+
+    if (length(p$DVLBottomTrack) > 0) {
+        if (any(version[p$DVLBottomTrack] != 3))
+            stop("can only decode 'DVLBottomTrack' data records that are in 'version 3' format")
+        nbeamsDVLBottomTrack <- nbeams[p$DVLBottomTrack[1]]
+        ncellsDVLBottomTrack <- ncells[p$DVLBottomTrack[1]]
+        oceDebug(debug, "DVLBottomTrack data records: nbeams:", nbeamsDVLBottomTrack, ", ncells:", ncellsDVLBottomTrack, "\n")
+        if (any(ncells[p$DVLBottomTrack] != ncellsDVLBottomTrack))
+            stop("the 'DVLBottomTrack' data records do not all have the same number of cells")
+        if (any(nbeams[p$DVLBottomTrack] != nbeamsDVLBottomTrack))
+            stop("the 'DVLBottomTrack' data records do not all have the same number of beams")
+        ## FIXME: read other fields to the following list.
+        DVLBottomTrack <- list(i=1,
+                      numberOfCells=ncellsDVLBottomTrack,
+                      numberOfBeams=nbeamsDVLBottomTrack,
+                      originalCoordinate=coordinateSystem[p$DVLBottomTrack[1]],
+                      oceCoordinate=coordinateSystem[p$DVLBottomTrack[1]],
+                      cellSize=cellSize[p$DVLBottomTrack[1]],
+                      blankingDistance=blankingDistance[p$DVLBottomTrack[1]],
+                      ensemble=ensemble[p$DVLBottomTrack],
+                      time=time[p$DVLBottomTrack],
+                      heading=heading[p$DVLBottomTrack],
+                      pitch=pitch[p$DVLBottomTrack],
+                      roll=roll[p$DVLBottomTrack],
+                      pressure=pressure[p$DVLBottomTrack],
+                      temperature=temperature[p$DVLBottomTrack],
+                      temperatureMagnetometer=temperatureMagnetometer[p$DVLBottomTrack],
+                      temperatureRTC=temperatureRTC[p$DVLBottomTrack],
+                      soundSpeed=soundSpeed[p$DVLBottomTrack],
+                      accelerometerx=accelerometerx[p$DVLBottomTrack],
+                      accelerometery=accelerometery[p$DVLBottomTrack],
+                      accelerometerz=accelerometerz[p$DVLBottomTrack],
+                      nominalCorrelation=nominalCorrelation[p$DVLBottomTrack],
+                      transmitEnergy=transmitEnergy[p$DVLBottomTrack],
+                      powerLevel=powerLevel[p$DVLBottomTrack])
+        if (any(velocityIncluded[p$DVLBottomTrack])) {
+            if (1 < length(unique(velocityIncluded[p$DVLBottomTrack])))
+                stop("velocityIncluded values non-unique across 'DVLBottomTrack' data records")
+            DVLBottomTrack$v <- array(double(), dim=c(length(p$DVLBottomTrack), ncellsDVLBottomTrack, nbeamsDVLBottomTrack))
+        }
+        if (any(amplitudeIncluded[p$DVLBottomTrack])) {
+            if (1 < length(unique(amplitudeIncluded[p$DVLBottomTrack])))
+                stop("amplitudeIncluded values non-unique across 'DVLBottomTrack' data records")
+            DVLBottomTrack$a <- array(raw(), dim=c(length(p$DVLBottomTrack), ncellsDVLBottomTrack, nbeamsDVLBottomTrack))
+        }
+        if (any(correlationIncluded[p$DVLBottomTrack])) {
+            if (1 < length(unique(correlationIncluded[p$DVLBottomTrack])))
+                stop("correlationIncluded values non-unique across 'DVLBottomTrack' data records")
+            DVLBottomTrack$q <- array(raw(), dim=c(length(p$DVLBottomTrack), ncellsDVLBottomTrack, nbeamsBurstDVLBottomTrack))
+        }
+        if (any(altimeterIncluded[p$DVLBottomTrack])) {
+            if (1 < length(unique(altimeterIncluded[p$DVLBottomTrack])))
+                stop("altimeterIncluded values non-unique across 'DVLBottomTrack' data records")
+            DVLBottomTrack$altimeterDistance <- vector("numeric", length(p$DVLBottomTrack))
+        }
+        if (any(ASTIncluded[p$DVLBottomTrack])) {
+            DVLBottomTrack$ASTDistance <- vector("numeric", length(p$DVLBottomTrack))
+            DVLBottomTrack$ASTPressure <- vector("numeric", length(p$DVLBottomTrack))
+        }
+        if (any(echosounderIncluded[p$DVLBottomTrack])) {
+            DVLBottomTrack$echosounder <- matrix(double(), ncol=length(p$DVLBottomTrack), nrow=ncellsDVLBottomTrack)
+        }
+        if (any(AHRSIncluded[p$DVLBottomTrack])) {
+            DVLBottomTrack$AHRS <- matrix(numeric(), nrow=length(p$DVLBottomTrack), ncol=9)
+        }
+    } else {
+        DVLBottomTrack <- NULL
+    }
+ 
     if (length(p$echosounder) > 0) {
         if (any(version[p$echosounder] != 3))
             stop("can only decode 'echosounder' data records that are in 'version 3' format")
@@ -1195,7 +1332,9 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     id <- d$id
     for (ch in 1:N) {
         oceDebug(debug>2, "d$id[", ch, "]=", d$id[[ch]], "\n", sep="")
+
         if (d$id[ch] == 0xa0) {        # text (0xa0 = 160)
+
             chars <- rawToChar(d$buf[seq.int(2+d$index[ch], by=1, length.out=-1+d$length[ch])])
             t <- strsplit(chars, "\r\n")[[1]]
             if (!typeGiven) {
@@ -1206,7 +1345,9 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             text$text[[text$i]] <- t
             text$i <- text$i + 1
             ##oceDebug(debug, "added to text; now, text$i=", text$i, "\n")
+
         } else if (d$id[ch] == 0x15) { # burst (0x15 = 21)
+
             ## FIXME FIXME FIXME put new code here, then insert in other blocks
             i <- d$index[ch]
             ncol <- burst$numberOfBeams
@@ -1254,7 +1395,9 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 burst$AHRS[burst$i,] <- readBin(d$buf[i + i0 + seq(0,35)], "numeric", size=4, n=9, endian="little")
             }
             burst$i <- burst$i + 1
+
         } else if (d$id[ch] == 0x16) { # average (0x16 = 22)
+
             i <- d$index[ch]
             ncol <- average$numberOfBeams
             nrow <- average$numberOfCells
@@ -1301,7 +1444,9 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 average$AHRS[average$i,] <- readBin(d$buf[i + i0 + seq(0,35)],"numeric", size=4, n=9, endian="little")
             }
             average$i <- average$i + 1
+
         } else if (d$id[ch] == 0x17) { # bottom track (0x17 = 23)
+
             i <- d$index[ch]
             ncol <- bottomTrack$numberOfBeams
             nrow <- bottomTrack$numberOfCells
@@ -1325,7 +1470,9 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 message(" ... stored bottomTrack$altimeterFigureOfMerit")
             }
             bottomTrack$i <- bottomTrack$i + 1
-        } else if (d$id[ch] == 0x18) { # interleaved burst (0x18 = 24 )
+
+        } else if (d$id[ch] == 0x18) { # interleaved burst (0x18 = 24)
+
             i <- d$index[ch]
             ncol <- interleavedBurst$numberOfBeams
             nrow <- interleavedBurst$numberOfCells
@@ -1372,7 +1519,107 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 interleavedBurst$AHRS[interleavedBurst$i,] <- readBin(d$buf[i + i0 + seq(0,35)], "numeric", size=4, n=9, endian="little")
             }
             interleavedBurst$i <- interleavedBurst$i + 1
+
+        } else if (d$id[ch] == 0x1a) { # burstAltimeterRaw record (0x1A = 26)
+
+            i <- d$index[ch]
+            ncol <- burstAltimeterRaw$numberOfBeams
+            nrow <- burstAltimeterRaw$numberOfCells
+            n <- ncol * nrow
+            n2 <- 2 * n
+            i0 <- 77
+            if (velocityIncluded[ch]) {
+                v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
+                burstAltimeterRaw$v[burstAltimeterRaw$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n2
+            }
+            if (amplitudeIncluded[ch]) {
+                a <- d$buf[i + i0 + seq(0, n-1)]
+                burstAltimeterRaw$a[burstAltimeterRaw$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n
+            }
+            if (correlationIncluded[ch]) {
+                q <- d$buf[i + i0 + seq(0, n-1)]
+                burstAltimeterRaw$q[burstAltimeterRaw$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n
+            }
+            if (altimeterIncluded[ch]) {
+                burstAltimeterRaw$altimeterDistance[burstAltimeterRaw$i] <- readBin(d$buf[i + i0 + seq(0,3)],"numeric", size=4,n=1,endian="little")
+                ## FIXME: perhaps save altimeterQuality from next 2 bytes
+                ## FIXME: perhaps save altimeterStatus from next 2 bytes
+                i0 <- i0 + 8
+            }
+            if (ASTIncluded[ch]) {
+                ## bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
+                burstAltimeterRaw$ASTDistance <- readBin(d$buf[i + i0 + seq(0,3)], "numeric", size=4, n=1, endian="little")
+                i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
+                burstAltimeterRaw$ASTPressure <- readBin(d$buf[i + i0 + seq(0,3)], "numeric", size=4, n=1, endian="little")
+                i0 <- i0 + 12 # skip spare (8 bytes)
+            }
+            if (altimeterRawIncluded[ch]) {
+                ## FIXME: perhaps read the data
+                i0 <- i0 + 8           # 4(number)+2(distance)+2(samples)
+            }
+            if (echosounderIncluded[ch]) {
+                burstAltimeterRaw$echosounder[burstAltimeterRaw$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
+                i0 <- i0 + 2 * nrow
+            }
+            if (AHRSIncluded[ch]) {
+                burstAltimeterRaw$AHRS[burstAltimeterRaw$i,] <- readBin(d$buf[i + i0 + seq(0,35)], "numeric", size=4, n=9, endian="little")
+            }
+            burstAltimeterRaw$i <- burstAltimeterRaw$i + 1
+
+        } else if (d$id[ch] == 0x1b) { # DVLBottomTrack record (0x1B = 27)
+
+            i <- d$index[ch]
+            ncol <- DVLBottomTrack$numberOfBeams
+            nrow <- DVLBottomTrack$numberOfCells
+            n <- ncol * nrow
+            n2 <- 2 * n
+            i0 <- 77
+            if (velocityIncluded[ch]) {
+                v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
+                DVLBottomTrack$v[DVLBottomTrack$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n2
+            }
+            if (amplitudeIncluded[ch]) {
+                a <- d$buf[i + i0 + seq(0, n-1)]
+                DVLBottomTrack$a[DVLBottomTrack$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n
+            }
+            if (correlationIncluded[ch]) {
+                q <- d$buf[i + i0 + seq(0, n-1)]
+                DVLBottomTrack$q[DVLBottomTrack$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+                i0 <- i0 + n
+            }
+            if (altimeterIncluded[ch]) {
+                DVLBottomTrack$altimeterDistance[DVLBottomTrack$i] <- readBin(d$buf[i + i0 + seq(0,3)],"numeric", size=4,n=1,endian="little")
+                ## FIXME: perhaps save altimeterQuality from next 2 bytes
+                ## FIXME: perhaps save altimeterStatus from next 2 bytes
+                i0 <- i0 + 8
+            }
+            if (ASTIncluded[ch]) {
+                ## bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
+                DVLBottomTrack$ASTDistance <- readBin(d$buf[i + i0 + seq(0,3)], "numeric", size=4, n=1, endian="little")
+                i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
+                DVLBottomTrack$ASTPressure <- readBin(d$buf[i + i0 + seq(0,3)], "numeric", size=4, n=1, endian="little")
+                i0 <- i0 + 12 # skip spare (8 bytes)
+            }
+            if (altimeterRawIncluded[ch]) {
+                ## FIXME: perhaps read the data
+                i0 <- i0 + 8           # 4(number)+2(distance)+2(samples)
+            }
+            if (echosounderIncluded[ch]) {
+                DVLBottomTrack$echosounder[DVLBottomTrack$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
+                i0 <- i0 + 2 * nrow
+            }
+            if (AHRSIncluded[ch]) {
+                DVLBottomTrack$AHRS[DVLBottomTrack$i,] <- readBin(d$buf[i + i0 + seq(0,35)], "numeric", size=4, n=9, endian="little")
+            }
+            DVLBottomTrack$i <- DVLBottomTrack$i + 1
+
         } else if (d$id[ch] == 0x1c) { # echosounder (0x1c)
+
             i <- d$index[ch]
             ## I don't know whether echosounder data ever have v, etc., but we will assume that is
             ## possible, based on lack of guidance in [1].
@@ -1423,7 +1670,9 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 echosounder$AHRS[echosounder$i,] <- readBin(d$buf[i + i0 + seq(0,35)], "numeric", size=4, n=9, endian="little")
             }
             echosounder$i <- echosounder$i + 1
+
         } else {
+
             ## FIXME: read other fields
         }
     }
@@ -1443,6 +1692,10 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (!is.null(burst)) {
         burst$i <- NULL
         data$burst <- burst
+    }
+    if (!is.null(burstAltimeterRaw)) {
+        burstAltimeterRaw$i <- NULL
+        data$AltimeterRawburst <- burstAltimeterRaw
     }
     if (!is.null(echosounder)) {
         echosounder$i <- NULL
