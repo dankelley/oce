@@ -767,12 +767,14 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     heading <- 0.01 * readBin(d$buf[pointer2 + 25], "integer", size=2, n=N, endian="little")
     pitch <- 0.01 * readBin(d$buf[pointer2 + 27], "integer", size=2, n=N, endian="little")
     roll <- 0.01 * readBin(d$buf[pointer2 + 29], "integer", size=2, n=N, endian="little")
-    ## BCC uses packed bits to hold info on # beams, coordinate-system, and # cells.
-    ## [1 page 49] indicates 2 cases:
+    ## BCC (beam, coordinate system, and cell) uses packed bits to hold info on
+    ## the nubmer of beams, coordinate-system, and the number cells. There are
+    ## two cases [1 page 49]:
     ## case 1: Standard bit 9-0 ncell; bit 11-10 coord (00=enu, 01=xyz, 10=beam, 11=NA); bit 15-12 nbeams
     ## case 2: bit 15-0 number of echo sounder cells
     ## As for 'configuration' above, we set this up as a matrix of 0s and 1s,
     ## with rows corresponding to times, for easy transformation into integers.
+    ## BCC case 1
     BCC <- ifelse(0x01 == rawToBits(d$buf[pointer2 + 31]), 1, 0)
     dim(BCC) <- c(16, N)
     BCC <- t(BCC)
@@ -781,6 +783,9 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     nbeams <- BCC[,13]+2*(BCC[,14]+2*(BCC[,15]+2*BCC[,16]))
     ## b00=enu, b01=xyz, b10=beam, b11=- [1 page 49]
     coordinateSystem <- c("enu", "xyz", "beam", "?")[1 + BCC[,11] + 2*BCC[,12]]
+    ## BCC case 2
+    nCellsEchosounder <- readBin(d$buf[pointer2 + 31], "integer", size=2, n=N, signed=FALSE, endian="little")
+
     ## cell size is recorded in mm [1, table 6.1.2, page 49]
     cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size=2, n=N, signed=FALSE, endian="little")
     ## blanking distance is recorded in cm [1, table 6.1.2, page 49]
@@ -1044,13 +1049,13 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (length(p$echosounder) > 0) {
         if (any(version[p$echosounder] != 3))
             stop("can only decode 'echosounder' data records that are in 'version 3' format")
-        nbeamsEchosounder<- nbeams[p$echosounder[1]]
-        ncellsEchosounder <- ncells[p$echosounder[1]]
-        oceDebug(debug, "echosounder data records: nbeams:", nbeamsEchosounder, ", ncells:", ncellsEchosounder, "\n")
-        if (any(ncells[p$echosounder] != ncellsEchosounder))
+        ##? nbeamsEchosounder<- nbeams[p$echosounder[1]]
+        ##? ncellsEchosounder <- ncells[p$echosounder[1]]
+        ##? oceDebug(debug, "echosounder data records: nbeams:", nbeamsEchosounder, ", ncells:", ncellsEchosounder, "\n")
+        if (any(nCellsEchosounder[p$echosounder] != ncellsEchosounder[p$echosounder[1]]))
             stop("the 'echosounder' data records do not all have the same number of cells")
-        if (any(nbeams[p$echosounder] != nbeamsEchosounder))
-            stop("the 'echosounder' data records do not all have the same number of beams")
+        ##? if (any(nbeams[p$echosounder] != nbeamsEchosounder))
+        ##?     stop("the 'echosounder' data records do not all have the same number of beams")
         ## FIXME: read other fields to the following list.
         echosounder <- list(i=1,
                         numberOfCells=ncellsEchosounder,
@@ -1075,6 +1080,12 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         nominalCorrelation=nominalCorrelation[p$echosounder],
                         transmitEnergy=transmitEnergy[p$echosounder],
                         powerLevel=powerLevel[p$echosounder])
+        ## FIXME: Find out whether echosounder records ever have v, a, q, etc. My guess is
+        ## FIXME: that the answer is "no", but the docs [1] are really not clear on this. (They
+        ## FIXME: say little about anything but average/burst/bottomTrack/text.)
+        ## FIXME: If I discover that echosounder data lack these things, I will trim
+        ## FIXME: the code immediately following this comment, and also the data-insertion
+        ## FIXME: code that comes up in the 'ch' loop.
         if (any(velocityIncluded[p$echosounder])) {
             if (1 < length(unique(velocityIncluded[p$echosounder])))
                 stop("velocityIncluded values non-unique across 'echosounder' data records")
@@ -1100,7 +1111,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             echosounder$ASTPressure <- vector("numeric", length(p$echosounder))
         }
         if (any(echosounderIncluded[p$echosounder])) {
-            echosounder$echosounder <- matrix(double(), ncol=length(p$echosounder), nrow=ncellsAverage)
+            echosounder$echosounder <- matrix(double(), ncol=length(p$echosounder), nrow=ncellsEchosounder[p$echosounder][1])
         }
         if (any(AHRSIncluded[p$average])) {
             echosounder$AHRS <- matrix(numeric(), nrow=length(p$echosounder), ncol=9)
@@ -1363,6 +1374,8 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             interleavedBurst$i <- interleavedBurst$i + 1
         } else if (d$id[ch] == 0x1c) { # echosounder (0x1c)
             i <- d$index[ch]
+            ## I don't know whether echosounder data ever have v, etc., but we will assume that is
+            ## possible, based on lack of guidance in [1].
             ncol <- echosounder$numberOfBeams
             nrow <- echosounder$numberOfCells
             n <- ncol * nrow
@@ -1384,7 +1397,9 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 i0 <- i0 + n
             }
             if (altimeterIncluded[ch]) {
-                echosounder$altimeterDistance[echosounder$i] <- readBin(d$buf[i + i0 + seq(0,3)],"numeric", size=4,n=1,endian="little")
+                echosounder$altimeterDistance[echosounder$i] <- readBin(d$buf[i + i0 + seq(0,3)], "numeric", size=4,
+                                                                        n=ncellsEchosounder[p$echosounder][1],
+                                                                        endian="little")
                 ## FIXME: perhaps save altimeterQuality from next 2 bytes
                 ## FIXME: perhaps save altimeterStatus from next 2 bytes
                 i0 <- i0 + 8
