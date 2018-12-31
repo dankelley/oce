@@ -42,15 +42,15 @@ North.}
 
 \item{orientation}{Optional character string specifying the orientation of the
 sensor, provided for those cases in which it cannot be inferred from the
-data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
-\code{"sideward"}.}
+data file. (As of early 2019, the orientation could not be inferred
+in any test file available to the developer.)
+The valid choices are \code{"upward"}, \code{"downward"}, and
+\code{"sideward"}. If provided, this overrides any value inferred from
+the file. Note that the value only matters when converting to east-north-up
+coordinates, e.g. with \code{\link{toEnuAdp}} or \code{\link{xyzToEnuAdp}}.}
 
-\item{distance}{Optional vector holding the distances of bin centres from the
-sensor.  This argument is ignored except for Nortek profilers, and need not
-be given if the function determines the distances correctly from the data.
-The problem is that the distance is poorly documented in the Nortek System
-Integrator Guide (2008 edition, page 31), so the function must rely on
-word-of-mouth formulae that do not work in all cases.}
+\item{distance}{Ignored by this function, and provided only for similarity
+to other adp-reading functions.}
 
 \item{plan}{Optional integer specifying which 'plan' to focus on (see [1]
 for the meaning of 'plan').  If this is not given, it defaults to the most
@@ -91,13 +91,12 @@ in the \code{data} slot).
 }
 \description{
 This function is incomplete in several ways, and is still in active
-development. Users should not expect a stable version until the
-summer of 2019.
+development and testing, as of early 2019.
 }
 \section{Beam-to-xyz conversion}{
 
 The device orientation is not inferred correctly from the file, and
-so a default is assumed -- that the orientation is upwards.
+so a default is assumed, namely that the orientation is upwards.
 }
 
 \examples{

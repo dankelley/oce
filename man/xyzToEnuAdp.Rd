@@ -22,7 +22,7 @@ by specifying higher \code{debug} values.}
 }
 \value{
 An object with \code{data$v[,,1:3]} altered appropriately, and
-\code{metadata$oce.orientation} changed from \code{xyz} to \code{enu}.
+\code{x[["oceCoordinate"]]} changed from \code{xyz} to \code{enu}.
 }
 \description{
 Convert ADP velocity components from a xyz-based coordinate system to

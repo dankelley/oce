@@ -739,7 +739,8 @@ setMethod(f="[[",
                   }
               } else if (i == "recordTypes") {
                   ## FIXME: _AD2CPrecordtype_ update if new record types added to read.adp.ad2cp()
-                  allowed <- c("average", "burst", "echosounder", "interleavedBurst", "bottomTrack")
+                  allowed <- c("burst", "average", "bottomTrack", "interleavedBurst", "burstAltimeter",
+                               "DVLBottomTrack", "echosounder", "waterTrack", "altimeter", "averageAltimeter", "text")
                   allowed[allowed %in% names(x@data)]
               } else if (i == "va") {
                   if (!missing(j) && 1 == length(grep("numeric", j))) {
@@ -2827,7 +2828,7 @@ beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALS
 #' \code{rdi} data, the values at the 4th velocity index are changed to
 #' represent the "error" velocity.)
 #'
-#' To indicate the change, the value of \code{metadata$oce.orientation} is
+#' To indicate the change, the value of \code{x[["oceCoordinate"]]} is
 #' changed from \code{beam} to \code{xyz}.
 #' @author Dan Kelley
 #' @seealso See \code{\link{read.adp}} for other functions that relate to
@@ -2998,7 +2999,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 #' "righting" (see below), to get ENU with N as "true" north.
 #' @template debugTemplate
 #' @return An object with \code{data$v[,,1:3]} altered appropriately, and
-#' \code{metadata$oce.orientation} changed from \code{xyz} to \code{enu}.
+#' \code{x[["oceCoordinate"]]} changed from \code{xyz} to \code{enu}.
 #' @author Dan Kelley and Clark Richards
 #' @references
 #' 1. Teledyne RD Instruments. “ADCP Coordinate Transformation: Formulas and Calculations,”

@@ -34,8 +34,8 @@ test_that("read.adp.ad2cp() on a private AD2CP file that has 'average' and 'burs
           f1 <- "~/Dropbox/ad2cp_secret_1.ad2cp"
           if (file.exists(f1)) {
             expect_silent(read.adp.ad2cp(f1, 1, 100, 1, plan=0))
-            expect_warning(read.adp.ad2cp(f1, 1, 100, 1, plan=10),
-                           "there are no data for plan=10; try one of the following values instead: 1 0")
+            expect_error(read.adp.ad2cp(f1, 1, 100, 1, plan=10),
+                         "there are no data for plan=10; try one of the following values instead: 1 0")
             expect_warning(d1 <- read.adp.ad2cp(f1, 1, 100, 1),
                            "since 'plan' was not given, using the most common value, namely 0")
             nnn <- c("average", "burst", "interleavedBurst")

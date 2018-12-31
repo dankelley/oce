@@ -23,7 +23,7 @@ represent velocity components in xyz (or instrument) coordinates.  (For
 \code{rdi} data, the values at the 4th velocity index are changed to
 represent the "error" velocity.)
 
-To indicate the change, the value of \code{metadata$oce.orientation} is
+To indicate the change, the value of \code{x[["oceCoordinate"]]} is
 changed from \code{beam} to \code{xyz}.
 }
 \description{
