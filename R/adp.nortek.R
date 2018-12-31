@@ -590,40 +590,6 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
     ## Set up object, with key metadata to allow other functions to work.
     res <- new("adp")
-    ## Set up data storage
-    time <- vector("numeric", N)
-    id <- vector("numeric", N)
-    version <- vector("numeric", N)
-    soundSpeed <- vector("numeric", N)
-    temperature <- vector("numeric", N)
-    pressure <- vector("numeric", N)
-    heading <- vector("numeric", N)
-    pitch <- vector("numeric", N)
-    roll <- vector("numeric", N)
-    BCC <- vector("character", N)
-    coordinateSystem <- vector("character", N)
-    ncells <- vector("numeric", N)
-    nbeams <- vector("numeric", N)
-    cellSize <- vector("numeric", N)
-    blankingDistance <- vector("numeric", N)
-    nominalCorrelation <- vector("numeric", N)
-    accelerometerx <- vector("numeric", N)
-    accelerometery <- vector("numeric", N)
-    accelerometerz <- vector("numeric", N)
-    transmitEnergy <- vector("numeric", N)
-    velocityScaling <- vector("numeric", N)
-    powerLevel <- vector("numeric", N)
-    temperatureMagnetometer <- vector("numeric", N)
-    temperatureRTC <- vector("numeric", N)
-    status <- vector("integer", N)
-    activeConfiguration <- vector("integer", N)
-    ensemble <- vector("numeric", N)
-    beam2xyzAverage <- NULL
-    beam2xyzBurst  <- NULL
-    ## Serial number. (It may also be in text records, but it is hard
-    ## to imagine data without non-text records, and I know for sure this is
-    ## in both average and burst records.
-    ## FIXME: see if next will always work for serial number.
     firstData <- which(d$id != 160)[1]
     serialNumber <- readBin(d$buf[d$index[firstData]+5:8], "integer", size=4, endian="little")
 
@@ -795,7 +761,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## b00=enu, b01=xyz, b10=beam, b11=- [1 page 49]
     coordinateSystem <- c("enu", "xyz", "beam", "?")[1 + BCC[,11] + 2*BCC[,12]]
     ## BCC case 2
-    nCellsEchosounder <- readBin(d$buf[pointer2 + 31], "integer", size=2, n=N, signed=FALSE, endian="little")
+    ncellsEchosounder2 <- readBin(d$buf[pointer2 + 31], "integer", size=2, n=N, signed=FALSE, endian="little")
 
     ## cell size is recorded in mm [1, table 6.1.2, page 49]
     cellSize <- 0.001 * readBin(d$buf[pointer2 + 33], "integer", size=2, n=N, signed=FALSE, endian="little")
@@ -1243,7 +1209,7 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         if (any(correlationIncluded[p$DVLBottomTrack])) {
             if (1 < length(unique(correlationIncluded[p$DVLBottomTrack])))
                 stop("correlationIncluded values non-unique across 'DVLBottomTrack' data records")
-            DVLBottomTrack$q <- array(raw(), dim=c(length(p$DVLBottomTrack), ncellsDVLBottomTrack, nbeamsBurstDVLBottomTrack))
+            DVLBottomTrack$q <- array(raw(), dim=c(length(p$DVLBottomTrack), ncellsDVLBottomTrack, nbeamsDVLBottomTrack))
         }
         if (any(altimeterIncluded[p$DVLBottomTrack])) {
             if (1 < length(unique(altimeterIncluded[p$DVLBottomTrack])))
@@ -1267,17 +1233,15 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (length(p$echosounder) > 0) {   # key=0x1c
         if (any(version[p$echosounder] != 3))
             stop("can only decode 'echosounder' data records that are in 'version 3' format")
-        ##? nbeamsEchosounder<- nbeams[p$echosounder[1]]
-        ##? ncellsEchosounder <- ncells[p$echosounder[1]]
         ##? oceDebug(debug, "echosounder data records: nbeams:", nbeamsEchosounder, ", ncells:", ncellsEchosounder, "\n")
-        if (any(nCellsEchosounder[p$echosounder] != ncellsEchosounder[p$echosounder[1]]))
-            stop("the 'echosounder' data records do not all have the same number of cells")
+        ##? if (any(ncellsEchosounder[p$echosounder] != ncellsEchosounder[p$echosounder[1]]))
+        ##?     stop("the 'echosounder' data records do not all have the same number of cells")
         ##? if (any(nbeams[p$echosounder] != nbeamsEchosounder))
         ##?     stop("the 'echosounder' data records do not all have the same number of beams")
         ## FIXME: read other fields to the following list.
         echosounder <- list(i=1,
-                        numberOfCells=ncellsEchosounder,
-                        numberOfBeams=nbeamsEchosounder,
+                        numberOfCells=ncellsEchosounder2,
+                        numberOfBeams=1, # FIXME: is this right?
                         originalCoordinate=coordinateSystem[p$echosounder[1]],
                         oceCoordinate=coordinateSystem[p$echosounder[1]],
                         cellSize=cellSize[p$echosounder[1]],
@@ -1304,36 +1268,36 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ## FIXME: If I discover that echosounder data lack these things, I will trim
         ## FIXME: the code immediately following this comment, and also the data-insertion
         ## FIXME: code that comes up in the 'ch' loop.
-        if (any(velocityIncluded[p$echosounder])) {
-            if (1 < length(unique(velocityIncluded[p$echosounder])))
-                stop("velocityIncluded values non-unique across 'echosounder' data records")
-            echosounder$v <- array(double(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder))
-        }
-        if (any(amplitudeIncluded[p$echosounder])) {
-            if (1 < length(unique(amplitudeIncluded[p$echosounder])))
-                stop("amplitudeIncluded values non-unique across 'echosounder' data records")
-            echosounder$a <- array(raw(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder))
-        }
-        if (any(correlationIncluded[p$echosounder])) {
-            if (1 < length(unique(correlationIncluded[p$echosounder])))
-                stop("correlationIncluded values non-unique across 'echosounder' data records")
-            echosounder$q <- array(raw(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder))
-        }
-        if (any(altimeterIncluded[p$echosounder])) {
-            if (1 < length(unique(altimeterIncluded[p$echosounder])))
-                stop("altimeterIncluded values non-unique across 'echosounder' data records")
-            echosounder$altimeterDistance <- vector("numeric", length(p$echosounder))
-        }
-        if (any(ASTIncluded[p$echosounder])) {
-            echosounder$ASTDistance <- vector("numeric", length(p$echosounder))
-            echosounder$ASTPressure <- vector("numeric", length(p$echosounder))
-        }
+        ##? if (any(velocityIncluded[p$echosounder])) {
+        ##?     if (1 < length(unique(velocityIncluded[p$echosounder])))
+        ##?         stop("velocityIncluded values non-unique across 'echosounder' data records")
+        ##?     echosounder$v <- array(double(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder))
+        ##? }
+        ##? if (any(amplitudeIncluded[p$echosounder])) {
+        ##?     if (1 < length(unique(amplitudeIncluded[p$echosounder])))
+        ##?         stop("amplitudeIncluded values non-unique across 'echosounder' data records")
+        ##?     echosounder$a <- array(raw(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder))
+        ##? }
+        ##? if (any(correlationIncluded[p$echosounder])) {
+        ##?     if (1 < length(unique(correlationIncluded[p$echosounder])))
+        ##?         stop("correlationIncluded values non-unique across 'echosounder' data records")
+        ##?     echosounder$q <- array(raw(), dim=c(length(p$echosounder), ncellsEchosounder, nbeamsEchosounder))
+        ##? }
+        ##? if (any(altimeterIncluded[p$echosounder])) {
+        ##?     if (1 < length(unique(altimeterIncluded[p$echosounder])))
+        ##?         stop("altimeterIncluded values non-unique across 'echosounder' data records")
+        ##?     echosounder$altimeterDistance <- vector("numeric", length(p$echosounder))
+        ##? }
+        ##? if (any(ASTIncluded[p$echosounder])) {
+        ##?     echosounder$ASTDistance <- vector("numeric", length(p$echosounder))
+        ##?     echosounder$ASTPressure <- vector("numeric", length(p$echosounder))
+        ##? }
         if (any(echosounderIncluded[p$echosounder])) {
-            echosounder$echosounder <- matrix(double(), ncol=length(p$echosounder), nrow=ncellsEchosounder[p$echosounder][1])
+            echosounder$echosounder <- matrix(double(), ncol=length(p$echosounder), nrow=ncellsEchosounder2[p$echosounder][1])
         }
-        if (any(AHRSIncluded[p$average])) {
-            echosounder$AHRS <- matrix(numeric(), nrow=length(p$echosounder), ncol=9)
-        }
+        ##? if (any(AHRSIncluded[p$average])) {
+        ##?     echosounder$AHRS <- matrix(numeric(), nrow=length(p$echosounder), ncol=9)
+        ##? }
     } else {
         echosounder <- NULL
     }
@@ -1793,58 +1757,60 @@ read.adp.ad2cp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
         } else if (key == 0x1c) { # echosounder
 
-            ## I don't know whether echosounder data ever have v, etc., but we will assume that is
-            ## possible, based on lack of guidance in [1].
-            ncol <- echosounder$numberOfBeams
-            nrow <- echosounder$numberOfCells
-            n <- ncol * nrow
-            n2 <- 2 * n
-            i0 <- 77
-            if (velocityIncluded[ch]) {
-                v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
-                echosounder$v[echosounder$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n2
-            }
-            if (amplitudeIncluded[ch]) {
-                a <- d$buf[i + i0 + seq(0,n-1)]
-                echosounder$a[echosounder$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n
-            }
-            if (correlationIncluded[ch]) {
-                q <- d$buf[i + i0 + seq(0,n-1)]
-                echosounder$q[echosounder$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
-                i0 <- i0 + n
-            }
-            if (altimeterIncluded[ch]) {
-                echosounder$altimeterDistance[echosounder$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4,
-                                                                        n=ncellsEchosounder[p$echosounder][1],
-                                                                        endian="little")
-                ## FIXME: perhaps save altimeterQuality from next 2 bytes
-                ## FIXME: perhaps save altimeterStatus from next 2 bytes
-                i0 <- i0 + 8
-            }
-            if (ASTIncluded[ch]) {
-                ## bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
-                echosounder$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-                i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
-                echosounder$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
-                i0 <- i0 + 12 # skip spare (8 bytes)
-            }
-            if (altimeterRawIncluded[ch]) {
-                echosounder$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little",signed=FALSE)
-                i0 <- i0 + 4
-                echosounder$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
-                i0 <- i0 + 2
-                echosounder$altimeterRawSamples <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little") # 'singed frac' in docs
-                i0 <- i0 + 2
-            }
+            ## FIXME: determine echosounder records have other types of data intermixed.
+            ## The docs are not clear on whether echosounder data ever have v, etc., so they are commented-out
+            ## here. The main reason I think they *cannot* have such things is that the 2-byte sequence
+            ## that holds nbeam/ncell for other data types holds just ncells, for echosounders.
+            ##? ncol <- echosounder$numberOfBeams
+            ##? nrow <- echosounder$numberOfCells
+            ##? n <- ncol * nrow
+            ##? n2 <- 2 * n
+            ##? i0 <- 77
+            ##? if (velocityIncluded[ch]) {
+            ##?     v <- velocityFactor[ch]*readBin(d$buf[i+i0+seq(0,n2-1)],"integer",size=2,n=n,endian="little")
+            ##?     echosounder$v[echosounder$i, , ] <- matrix(v, ncol=ncol, nrow=nrow, byrow=FALSE)
+            ##?     i0 <- i0 + n2
+            ##? }
+            ##? if (amplitudeIncluded[ch]) {
+            ##?     a <- d$buf[i + i0 + seq(0,n-1)]
+            ##?     echosounder$a[echosounder$i, ,] <- matrix(a, ncol=ncol, nrow=nrow, byrow=FALSE)
+            ##?     i0 <- i0 + n
+            ##? }
+            ##? if (correlationIncluded[ch]) {
+            ##?     q <- d$buf[i + i0 + seq(0,n-1)]
+            ##?     echosounder$q[echosounder$i, ,] <- matrix(q, ncol=ncol, nrow=nrow, byrow=FALSE)
+            ##?     i0 <- i0 + n
+            ##? }
+            ##? if (altimeterIncluded[ch]) {
+            ##?     echosounder$altimeterDistance[echosounder$i] <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4,
+            ##?                                                             n=ncellsEchosounder[p$echosounder][1],
+            ##?                                                             endian="little")
+            ##?     ## FIXME: perhaps save altimeterQuality from next 2 bytes
+            ##?     ## FIXME: perhaps save altimeterStatus from next 2 bytes
+            ##?     i0 <- i0 + 8
+            ##? }
+            ##? if (ASTIncluded[ch]) {
+            ##?     ## bytes: 4(distance)+2(quality)+2(offset)+4(pressure)+8(spare)
+            ##?     echosounder$ASTDistance <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+            ##?     i0 <- i0 + 8 # advance past distance (4 bytes), then skip skip quality (2 bytes) and offset (2 bytes)
+            ##?     echosounder$ASTPressure <- readBin(d$buf[i + i0 + 0:3], "numeric", size=4, n=1, endian="little")
+            ##?     i0 <- i0 + 12 # skip spare (8 bytes)
+            ##? }
+            ##? if (altimeterRawIncluded[ch]) {
+            ##?     echosounder$altimeterRawNumberOfSamples <- readBin(d$buf[i+i0+0:3],"integer",size=4,n=1,endian="little",signed=FALSE)
+            ##?     i0 <- i0 + 4
+            ##?     echosounder$altimeterRawSampleDistance <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little",signed=FALSE)
+            ##?     i0 <- i0 + 2
+            ##?     echosounder$altimeterRawSamples <- readBin(d$buf[i+i0+0:1],"integer",size=2,n=1,endian="little") # 'singed frac' in docs
+            ##?     i0 <- i0 + 2
+            ##? }
             if (echosounderIncluded[ch]) {
                 echosounder$echosounder[echosounder$i, ] <- readBin(d$buf[i + i0 + seq(0,nrow-1)], size=2, n=nrow, endian="little")
                 i0 <- i0 + 2 * nrow
             }
-            if (AHRSIncluded[ch]) {
-                echosounder$AHRS[echosounder$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
-            }
+            ##? if (AHRSIncluded[ch]) {
+            ##?     echosounder$AHRS[echosounder$i,] <- readBin(d$buf[i + i0 + 0:35], "numeric", size=4, n=9, endian="little")
+            ##? }
             echosounder$i <- echosounder$i + 1
 
         } else if (key == 0x1d) { # waterTrack
