@@ -40,3 +40,4 @@ tests/testthat/valgrind_tests.*
 .lintr
 ^cran-comments\.md$
 
+check_urls.R

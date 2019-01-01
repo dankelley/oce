@@ -2662,7 +2662,7 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 #' Determine time offset from timezone
 #'
 #' The data are from
-#' \url{http://www.timeanddate.com/library/abbreviations/timezones/} and were
+#' \url{https://www.timeanddate.com/library/abbreviations/timezones/} and were
 #' hand-edited to develop this code, so there may be errors.  Also, note that
 #' some of these contradict; if you examine the code, you'll see some
 #' commented-out portions that represent solving conflicting definitions by
@@ -2678,7 +2678,7 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 GMTOffsetFromTz <- function(tz)
 {
     ## Data are from
-    ##   http://www.timeanddate.com/library/abbreviations/timezones/
+    ##   https://www.timeanddate.com/library/abbreviations/timezones/
     ## and hand-edited, so there may be errors.  Also, note that some of these
     ## contradict ... I've commented out conflicting definitions that I think
     ## will come up most rarely in use, but perhaps something better should

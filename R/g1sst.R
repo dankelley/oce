@@ -36,7 +36,7 @@ setClass("satellite", contains="oce")
 #'
 #' @concept satellite
 #' @references
-#' 1. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+#' 1. JPO OurOcean Portal \code{https://ourocean.jpl.nasa.gov/SST/}
 #' (link worked in 2016 but was seen to fail 2017 Feb 2).
 #' @author Dan Kelley
 #' @family things related to satellite data
@@ -91,7 +91,7 @@ setMethod(f="[[<-",
 #' lon1 <- -64.0
 #' lat0 <- 44
 #' lat1 <- 46
-#' source <- paste("http://coastwatch.pfeg.noaa.gov/erddap/griddap/",
+#' source <- paste("https://coastwatch.pfeg.noaa.gov/erddap/griddap/",
 #'                 "jplG1SST.nc?",
 #'                 "SST%5B(", day, "T12:00:00Z)",
 #'                 "%5D%5B(", lat0, "):(", lat1, ")",
@@ -107,8 +107,8 @@ setMethod(f="[[<-",
 #'
 #' @author Dan Kelley
 #' @references
-#' 1. ERDDAP Portal \url{http://coastwatch.pfeg.noaa.gov/erddap/}
-#' 2. JPO OurOcean Portal \code{http://ourocean.jpl.nasa.gov/SST/}
+#' 1. ERDDAP Portal \url{https://coastwatch.pfeg.noaa.gov/erddap/}
+#' 2. JPO OurOcean Portal \code{https://ourocean.jpl.nasa.gov/SST/}
 #' (link worked in 2016 but was seen to fail 2017 Feb 2).
 #' @family things related to satellite data
 read.g1sst <- function(filename)

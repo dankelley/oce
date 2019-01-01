@@ -180,8 +180,8 @@ geodXyInverse <- function(x, y, longitudeRef, latitudeRef, debug=getOption("oceD
 #' @seealso \code{\link{geodXy}}
 #' @references T. Vincenty, "Direct and Inverse Solutions of Ellipsoid on the
 #' Ellipsoid with Application of Nested Equations", \emph{Survey Review}, April
-#' 1975.  (As of early 2009, this document is available at
-#' \url{http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf}.)
+#' 1975.
+#'
 #' @examples
 #' library(oce)
 #' km <- geodDist(100, 45, 100, 46)

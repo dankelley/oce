@@ -1225,9 +1225,9 @@ mapLongitudeLatitudeXY <- function(longitude, latitude)
 #' \url{pubs.usgs.gov/pp/1395/report.pdf}).
 #'
 #' 2. Natural Resources Canada
-#' \url{http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
+#' \url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 #'
-#' 3. Wikipedia page \url{http://en.wikipedia.org/wiki/List_of_map_projections}
+#' 3. Wikipedia page \url{https://en.wikipedia.org/wiki/List_of_map_projections}
 #'
 #' 4. Radical Cartography website
 #' \code{http://www.radicalcartography.net/?projectionref} (This URL worked
@@ -3252,7 +3252,7 @@ mapImage <- function(longitude, latitude, z, zlim, zclip=FALSE,
 #' projections and their inverses, use \code{\link{lonlat2map}} and
 #' \code{\link{map2lonlat}}.
 #' @references
-#' \url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
+#' \url{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
 #' downloaded May 31, 2014.
 #' @examples
 #'
@@ -3274,7 +3274,7 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
     }
     if (missing(latitude))
         stop("latitude is missing")
-    ## Code from [wikipedia](http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system)
+    ## Code from https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system
     longitude <- ifelse(longitude < 0, longitude+360, longitude)
     rpd <- atan2(1, 1) / 45
     lambda <- longitude * rpd
@@ -3338,7 +3338,7 @@ lonlat2utm <- function(longitude, latitude, zone, km=FALSE)
 #' projections and their inverses, use \code{\link{lonlat2map}} and
 #' \code{\link{map2lonlat}}.
 #' @references
-#' \url{http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
+#' \url{https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system},
 #' downloaded May 31, 2014.
 #' @examples
 #'
@@ -3357,7 +3357,7 @@ utm2lonlat <- function(easting, northing, zone=1, hemisphere="N", km=FALSE)
             easting <- easting$easting
         }
     }
-    ## Code from [wikipedia](http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system)
+    ## Code from https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system
     a <- 6378.137                          # earth radius in WSG84 (in km for these formulae)
     f <- 1 / 298.257223563                 # flatening
     n <- f / (2 - f)

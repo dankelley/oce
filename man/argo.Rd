@@ -16,7 +16,7 @@ This holds data from ARGO 6900388 in the North Atlantic.
 \details{
 To quote Argo's website: "These data were collected and made freely
 available by the International Argo Program and the national programs
-that contribute to it.  (http://www.argo.ucsd.edu,
+that contribute to it.  (http//www.argo.ucsd.edu,
 http://argo.jcommops.org).  The Argo Program is part of the
 Global Ocean Observing System."
 

@@ -458,9 +458,9 @@ Professional Paper: 1395 (available at
 \url{pubs.usgs.gov/pp/1395/report.pdf}).
 
 2. Natural Resources Canada
-\url{http://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
+\url{https://www.nrcan.gc.ca/earth-sciences/geography/topographic-information/maps/9805}
 
-3. Wikipedia page \url{http://en.wikipedia.org/wiki/List_of_map_projections}
+3. Wikipedia page \url{https://en.wikipedia.org/wiki/List_of_map_projections}
 
 4. Radical Cartography website
 \code{http://www.radicalcartography.net/?projectionref} (This URL worked

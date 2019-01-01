@@ -81,8 +81,8 @@ the Nortek System Integrator Guide (2008) and on postings on the Nortek
 ``knowledge center'' discussion board.  One might assume that the latter is
 less authoritative than the former.  For example, the inference of cell size
 follows advice found at
-\url{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
-(downloaded June 2012), which contains a typo in an early posting that is
+\code{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
+(downloaded June 2012, link no longer working), which contains a typo in an early posting that is
 corrected later on.
 }
 \references{
